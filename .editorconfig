@@ -1,0 +1,18 @@
+root = true
+
+[*]
+guidelines = 80
+guidelines_style = 1px solid 999999
+end_of_line = lf
+insert_final_newline = true
+charset = utf-8
+trim_trailing_whitespace = true
+
+[*.cs]
+guidelines = 80, 120
+indent_style = tab
+indent_size = 4
+
+[*.xaml]
+indent_style = tab
+indent_size = 4
