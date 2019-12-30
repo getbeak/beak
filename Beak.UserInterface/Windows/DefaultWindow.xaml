@@ -1,0 +1,96 @@
+<ResourceDictionary
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:native="clr-namespace:Beak.UserInterface.Native"
+	xmlns:windows="clr-namespace:Beak.UserInterface.Windows"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+>
+	<Style TargetType="{x:Type windows:DefaultWindow}" x:Key="DefaultWindowStyle">
+		<!--This has to be set in the class itself-->
+		<!--<Setter Property="WindowStartupLocation" Value="CenterScreen"/>-->
+
+		<!--Testing this, may need later-->
+		<!--<Setter Property="AllowsTransparency" Value="True"/>-->
+
+		<Setter Property="Background" Value="{DynamicResource DesignSystemBackground}"/>
+		<Setter Property="BorderThickness" Value="0"/>
+		<Setter Property="MinHeight" Value="400"/>
+		<Setter Property="MinWidth" Value="650"/>
+		<Setter Property="ResizeMode" Value="CanResize"/>
+		<Setter Property="SnapsToDevicePixels" Value="True"/>
+		<Setter Property="AllowDrop" Value="False"/>
+		<Setter Property="RenderOptions.BitmapScalingMode" Value="HighQuality"/>
+		<Setter Property="Title" Value="{Binding Title}"/>
+		<Setter Property="WindowChrome.WindowChrome">
+			<Setter.Value>
+				<WindowChrome
+					GlassFrameThickness="1" 
+					ResizeBorderThickness="4"
+					CaptionHeight="0"
+				/>
+			</Setter.Value>
+		</Setter>
+
+		<Setter Property="native:WindowMovement.IsDraggable" Value="True" />
+
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="{x:Type windows:DefaultWindow}">
+					<Border
+						x:Name="WindowBorder"
+						Background="{DynamicResource DesignSystemBackground}"
+						BorderBrush="{DynamicResource BeakAccentBrush}"
+						BorderThickness="1,1,1,25"
+					>
+						<Grid>
+							<Grid.RowDefinitions>
+								<RowDefinition Height="45" />
+								<RowDefinition Height="*" />
+							</Grid.RowDefinitions>
+
+							<Grid
+								x:Name="WindowHeader"
+								native:WindowMovement.DragsWindow="True"
+								IsHitTestVisible="True"
+								VerticalAlignment="Top"
+							>
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="*" />
+									<ColumnDefinition Width="*" />
+									<ColumnDefinition Width="138" />
+								</Grid.ColumnDefinitions>
+
+								<ContentPresenter Content="{TemplateBinding TitleMenu}" />
+								<TextBlock Text="{Binding Title}" Foreground="Pink" Grid.Column="1" />
+								<StackPanel Grid.Column="2" Orientation="Horizontal">
+									<Button
+										x:Name="ButtonWindowMinimize"
+										Content="&#xE949;"
+										Style="{DynamicResource WindowStateButtonStyle}"
+									/>
+									<Button
+										x:Name="ButtonWindowRestore"
+										Content="&#xE923;"
+										Style="{DynamicResource WindowStateButtonStyle}"
+									/>
+									<Button
+										x:Name="ButtonWindowMaxamize"
+										Content="&#xE739;"
+										Style="{DynamicResource WindowStateButtonStyle}"
+									/>
+									<Button
+										x:Name="ButtonWindowClose"
+										Content="&#xE106;"
+										Style="{DynamicResource WindowStateButtonStyle}"
+									/>
+								</StackPanel>
+							</Grid>
+							<Grid x:Name="WindowBody" Grid.Row="1">
+								<ContentPresenter />
+							</Grid>
+						</Grid>
+					</Border>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+</ResourceDictionary>

@@ -1,9 +1,16 @@
-﻿<Application x:Class="Beak.App.App"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:Beak.App"
-             StartupUri="MainWindow.xaml">
-    <Application.Resources>
-         
-    </Application.Resources>
+<Application
+	x:Class="Beak.App.App"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	StartupUri="MainWindow.xaml"
+>
+	<Application.Resources>
+		<ResourceDictionary>
+			<ResourceDictionary.MergedDictionaries>
+				<ResourceDictionary Source="pack://application:,,,/Beak.UserInterface;component/Themes/Modes/Dark.xaml" />
+				<ResourceDictionary Source="pack://application:,,,/Beak.UserInterface;component/Themes/Default.xaml" />
+				<ResourceDictionary Source="pack://application:,,,/Beak.UserInterface;component/Themes/Generic.xaml" />
+			</ResourceDictionary.MergedDictionaries>
+		</ResourceDictionary>
+	</Application.Resources>
 </Application>

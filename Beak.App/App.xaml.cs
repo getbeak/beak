@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Logging;
+using Serilog;
 using System.Windows;
 
 namespace Beak.App
@@ -20,7 +21,7 @@ namespace Beak.App
 
 			loggerFactory.AddSerilog(loggerConfig);
 
-			Logger = loggerFactory.CreateLogger<Program>();
+			Logger = loggerFactory.CreateLogger<App>();
 
 			base.OnStartup(e);
 		}

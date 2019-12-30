@@ -1,0 +1,10 @@
+<ResourceDictionary
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+>
+	<SolidColorBrush x:Key="BeakAccentBrush" Color="#0079cb" />
+	<SolidColorBrush x:Key="BeakAccentBrushSecondary" Color="#1d98eb" />
+
+	<Color x:Key="BeakAccentBrushColour" A="#ff" R="#00" G="#79" B="#cb" />
+	<Color x:Key="BeakAccentBrushColourSecondary" A="#ff" R="#1D" G="#98" B="#eb" />
+</ResourceDictionary>

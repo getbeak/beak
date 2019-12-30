@@ -1,12 +1,26 @@
-﻿<Window x:Class="Beak.App.MainWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Beak.App"
-        mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
-
-    </Grid>
-</Window>
+<Windows:DefaultWindow
+	x:Class="Beak.App.MainWindow"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:Windows="clr-namespace:Beak.UserInterface.Windows;assembly=Beak.UserInterface"
+	mc:Ignorable="d"
+	Title="Beak"
+	Height="450"
+	Width="800"
+	Style="{DynamicResource DefaultWindowStyle}"
+>
+	<Windows:DefaultWindow.TitleMenu>
+		<Menu>
+			<MenuItem Header="_File">
+				<MenuItem Header="_Open"/>
+				<MenuItem Header="_Close"/>
+				<MenuItem Header="_Save"/>
+			</MenuItem>
+		</Menu>
+	</Windows:DefaultWindow.TitleMenu>
+	<Grid>
+		<TextBlock Foreground="Pink" Grid.ColumnSpan="2">Test</TextBlock>
+	</Grid>
+</Windows:DefaultWindow>

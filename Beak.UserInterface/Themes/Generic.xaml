@@ -1,0 +1,14 @@
+<ResourceDictionary
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+>
+	<ResourceDictionary.MergedDictionaries>
+		<!-- Buttons -->
+		<ResourceDictionary Source="pack://application:,,,/Beak.UserInterface;component/Buttons/WindowStateButton.xaml" />
+
+		<!-- Controls -->
+		<ResourceDictionary Source="pack://application:,,,/Beak.UserInterface;component/Controls/Menu.xaml" />
+
+		<!-- Windows -->
+		<ResourceDictionary Source="pack://application:,,,/Beak.UserInterface;component/Windows/DefaultWindow.xaml" />
+	</ResourceDictionary.MergedDictionaries>
+</ResourceDictionary>
