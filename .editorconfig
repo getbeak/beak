@@ -9,6 +9,7 @@ charset = utf-8
 trim_trailing_whitespace = true
 
 [*.xaml]
+guidelines = 80, 120
 indent_style = tab
 indent_size = 4
 
