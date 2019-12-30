@@ -5,7 +5,6 @@ VisualStudioVersion = 16.0.29613.14
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Beak.App", "Beak.App\Beak.App.csproj", "{7DB29F9D-AF78-43AD-82C5-BB92919C4970}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Beak.Controls", "Beak.Controls\Beak.Controls.csproj", "{687FEE5D-3A43-4F47-9863-1D41EE985677}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5E52AC32-E430-4625-9967-B472549B9B80}"
 	ProjectSection(SolutionItems) = preProject
