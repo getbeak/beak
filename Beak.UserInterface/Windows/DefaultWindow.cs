@@ -1,7 +1,9 @@
 using System;
+using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Interop;
 using Beak.UserInterface.Native;
 
@@ -16,12 +18,35 @@ namespace Beak.UserInterface.Windows
 		public Button ButtonWindowMaxamize { get; private set; }
 		public Button ButtonWindowClose { get; private set; }
 
+		public Thumb ResizeCorner { get; private set; }
+		public Thumb ResizeRight { get; private set; }
+		public Thumb ResizeBottom { get; private set; }
+
+		#region [ TitleIcon property ]
+
+		public static readonly DependencyProperty TitleIconProperty = DependencyProperty.Register(
+			"TitleIcon",
+			typeof(object),
+			typeof(DefaultWindow),
+			new FrameworkPropertyMetadata(null)
+		);
+
+		public Grid TitleIcon
+		{
+			get { return (Grid)GetValue(TitleIconProperty); }
+			set { SetValue(TitleIconProperty, value); }
+		}
+
+		#endregion
 
 		#region [ TitleMenu property ]
 
-		public static readonly DependencyProperty TitleMenuProperty =
-			 DependencyProperty.Register("TitleMenu", typeof(object),
-			 typeof(DefaultWindow), new FrameworkPropertyMetadata(null));
+		public static readonly DependencyProperty TitleMenuProperty = DependencyProperty.Register(
+			"TitleMenu",
+			typeof(object),
+			typeof(DefaultWindow),
+			new FrameworkPropertyMetadata(null)
+		);
 
 		public Menu TitleMenu
 		{
@@ -62,10 +87,18 @@ namespace Beak.UserInterface.Windows
 			ButtonWindowMaxamize = GetRequiredTemplateChild<Button>("ButtonWindowMaxamize");
 			ButtonWindowClose = GetRequiredTemplateChild<Button>("ButtonWindowClose");
 
+			ResizeCorner = GetRequiredTemplateChild<Thumb>("ResizeCorner");
+			ResizeRight = GetRequiredTemplateChild<Thumb>("ResizeRight");
+			ResizeBottom = GetRequiredTemplateChild<Thumb>("ResizeBottom");
+
 			ButtonWindowMinimize.Click += ButtonWindowMinimize_Click;
 			ButtonWindowRestore.Click += ButtonWindowRestore_Click;
 			ButtonWindowMaxamize.Click += ButtonWindowMaxamize_Click;
 			ButtonWindowClose.Click += ButtonWindowClose_Click;
+
+			ResizeCorner.DragDelta += ResizeCorner_DragDelta;
+			ResizeRight.DragDelta += ResizeRight_DragDelta;
+			ResizeBottom.DragDelta += ResizeBottom_DragDelta;
 
 			base.OnApplyTemplate();
 
@@ -83,6 +116,33 @@ namespace Beak.UserInterface.Windows
 				hwndSource.AddHook(WindowProc);
 		}
 
+		#region [ Resizing management ]
+
+		private void ResizeCorner_DragDelta(object sender, DragDeltaEventArgs e)
+		{
+			var yadjust = Height + e.VerticalChange;
+			var xadjust = Width + e.HorizontalChange;
+
+			if (xadjust > MinWidth) Width = xadjust;
+			if (yadjust > MinHeight) Height = yadjust;
+		}
+
+		private void ResizeRight_DragDelta(object sender, DragDeltaEventArgs e)
+		{
+			var xadjust = Width + e.HorizontalChange;
+
+			if (xadjust > MinWidth) Width = xadjust;
+		}
+
+		private void ResizeBottom_DragDelta(object sender, DragDeltaEventArgs e)
+		{
+			var yadjust = Height + e.VerticalChange;
+
+			if (yadjust > MinHeight) Height = yadjust;
+		}
+
+		#endregion
+
 		#region [ Window state management ]
 
 		private void DefaultWindow_StateChanged(object sender, EventArgs e)
@@ -93,17 +153,18 @@ namespace Beak.UserInterface.Windows
 					WindowBorder.BorderThickness = new Thickness(1, 1, 1, 23);
 					ButtonWindowRestore.Visibility = Visibility.Collapsed;
 					ButtonWindowMaxamize.Visibility = Visibility.Visible;
-
-					//	ResizeDropVector.Visibility =
-					//		ResizeDrop.Visibility = ResizeRight.Visibility = ResizeBottom.Visibility = Visibility.Visible;
+					ResizeCorner.Visibility = Visibility.Visible;
+					ResizeRight.Visibility = Visibility.Visible;
+					ResizeBottom.Visibility = Visibility.Visible;
 					break;
+
 				case WindowState.Maximized:
 					WindowBorder.BorderThickness = new Thickness(0, 0, 0, 23);
 					ButtonWindowRestore.Visibility = Visibility.Visible;
 					ButtonWindowMaxamize.Visibility = Visibility.Collapsed;
-
-					//	ResizeDropVector.Visibility =
-					//		ResizeDrop.Visibility = ResizeRight.Visibility = ResizeBottom.Visibility = Visibility.Collapsed;
+					ResizeCorner.Visibility = Visibility.Collapsed;
+					ResizeRight.Visibility = Visibility.Collapsed;
+					ResizeBottom.Visibility = Visibility.Collapsed;
 					break;
 			}
 		}

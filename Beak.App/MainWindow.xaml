@@ -11,6 +11,17 @@
 	Width="800"
 	Style="{DynamicResource DefaultWindowStyle}"
 >
+	<Windows:DefaultWindow.TitleIcon>
+		<Grid>
+			<TextBlock
+				Text="B"
+				Foreground="White"
+				FontWeight="Bold"
+				VerticalAlignment="Center"
+				HorizontalAlignment="Center"
+			/>
+		</Grid>
+	</Windows:DefaultWindow.TitleIcon>
 	<Windows:DefaultWindow.TitleMenu>
 		<Menu>
 			<MenuItem Header="_File">
@@ -18,6 +29,8 @@
 				<MenuItem Header="_Close"/>
 				<MenuItem Header="_Save"/>
 			</MenuItem>
+			<MenuItem Header="_Edit" />
+			<MenuItem Header="_Help" />
 		</Menu>
 	</Windows:DefaultWindow.TitleMenu>
 	<Grid>
