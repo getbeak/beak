@@ -8,11 +8,20 @@ insert_final_newline = true
 charset = utf-8
 trim_trailing_whitespace = true
 
+[*.xaml]
+indent_style = tab
+indent_size = 4
+
+[*.csproj]
+indent_style = space
+indent_size = 2
+
 [*.cs]
 guidelines = 80, 120
 indent_style = tab
 indent_size = 4
 
-[*.xaml]
-indent_style = tab
-indent_size = 4
+# IDE rules
+
+# CA1401: P/Invokes should not be visible
+dotnet_diagnostic.CA1401.severity = none
