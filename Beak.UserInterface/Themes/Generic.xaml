@@ -6,6 +6,7 @@
 		<ResourceDictionary Source="pack://application:,,,/Beak.UserInterface;component/Buttons/WindowStateButton.xaml" />
 
 		<!-- Controls -->
+		<ResourceDictionary Source="pack://application:,,,/Beak.UserInterface;component/Controls/Expander.xaml" />
 		<ResourceDictionary Source="pack://application:,,,/Beak.UserInterface;component/Controls/Menu.xaml" />
 
 		<!-- Windows -->

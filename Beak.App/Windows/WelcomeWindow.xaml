@@ -5,12 +5,16 @@
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:Buttons="clr-namespace:Beak.UserInterface.Buttons;assembly=Beak.UserInterface"
+	xmlns:Converters="clr-namespace:Beak.App.Converters"
 	xmlns:Windows="clr-namespace:Beak.App.Windows"
 	mc:Ignorable="d"
 	Title="Welcome to Beak"
 	Style="{DynamicResource WelcomeWindowStyle}"
 >
 	<Window.Resources>
+		<Converters:DateTimeConverter x:Key="DateTimeConverter" />
+		<Converters:TimeboxedAreaConverter x:Key="TimeboxedAreaConverter" />
+
 		<Style TargetType="{x:Type Windows:WelcomeWindow}" x:Key="WelcomeWindowStyle">
 			<Setter Property="Background" Value="{DynamicResource DesignSystemBackground}"/>
 			<Setter Property="BorderThickness" Value="0"/>
@@ -53,8 +57,65 @@
 			<Setter Property="VerticalAlignment" Value="Top"/>
 			<Setter Property="Margin" Value="0,0,0,20"/>
 		</Style>
+
 		<DataTemplate x:Key="RecentProjectsItemTemplate">
-			<TextBlock Text="{Binding Projects[0].Directory, Mode=TwoWay}"/>
+			<Expander
+				Header="{Binding Path=Area, Converter={StaticResource TimeboxedAreaConverter}}"
+				IsExpanded="True"
+			>
+				<StackPanel>
+					<ItemsControl
+						ItemTemplate="{DynamicResource ProjectsItemTemplate}"
+						ItemsSource="{Binding Path=Projects}"
+					/>
+				</StackPanel>
+			</Expander>
+		</DataTemplate>
+		<DataTemplate x:Key="ProjectsItemTemplate">
+			<Grid Margin="28,0,0,0">
+				<Grid.Style>
+					<Style TargetType="{x:Type Grid}">
+						<Style.Triggers>
+							<Trigger Property="IsMouseOver" Value="true">
+								<Setter Property="Background" Value="{DynamicResource DesignSystemSurface}"/>
+							</Trigger>
+						</Style.Triggers>
+					</Style>
+				</Grid.Style>
+				<Grid Margin="10">
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="20" />
+						<ColumnDefinition Width="*" />
+						<ColumnDefinition Width="Auto" />
+					</Grid.ColumnDefinitions>
+
+					<Grid>
+						<Image Source="pack://application:,,,/Beak.UserInterface;component/Assets/Images/GettingStartedPlaceholder.jpg" />
+					</Grid>
+					<Grid Grid.Column="1">
+						<StackPanel Margin="10,0,0,0">
+							<TextBlock
+								FontSize="13"
+								FontWeight="SemiBold"
+								Text="{Binding Path=ProjectName}"
+							/>
+							<TextBlock
+								FontSize="12"
+								Foreground="{DynamicResource DesignSystemTextSecondary}"
+								Margin="0,2,0,0"
+								Text="{Binding Path=Directory}"
+								TextTrimming="CharacterEllipsis"
+							/>
+						</StackPanel>
+					</Grid>
+					<TextBlock
+						Grid.Column="2"
+						FontSize="12"
+						Foreground="{DynamicResource DesignSystemTextSecondary}"
+						Text="{Binding Path=LastModified, Converter={StaticResource DateTimeConverter}, ConverterParameter='MM/dd/yyyy HH:mm'}"
+					/>
+				</Grid>
+			</Grid>
 		</DataTemplate>
 	</Window.Resources>
 
@@ -114,7 +175,7 @@
 		>
 			<TextBlock
 				Foreground="{DynamicResource DesignSystemTextPrimary}"
-				FontSize="26"
+				FontSize="29"
 				Text="Welcome to Beak!"
 			/>
 			<TextBlock
@@ -142,10 +203,7 @@
 					Text="Open recent"
 				/>
 
-				<ScrollViewer
-					Grid.Row="1"
-					VerticalScrollBarVisibility="Auto"
-				>
+				<ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
 					<StackPanel>
 						<ItemsControl
 							ItemTemplate="{DynamicResource RecentProjectsItemTemplate}"
@@ -164,13 +222,13 @@
 					<Buttons:GettingStartedButton
 						MainIcon="&#xE897;"
 						Title="Create a new project"
-						Description="Creates a new location project"
+						Description="Creates a new local project"
 						Margin="0,0,0,10"
 					/>
 					<Buttons:GettingStartedButton
 						MainIcon="&#xE897;"
 						Title="Open an existing project"
-						Description="Creates a new location project"
+						Description="Opens an existing local Beak project"
 						Margin="0,0,0,10"
 					/>
 					<Buttons:GettingStartedButton
