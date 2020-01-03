@@ -22,6 +22,7 @@ bld/
 
 # Visual Studio cache/options directory
 .vs/
+.vscode/
 
 # .NET Core
 project.lock.json
