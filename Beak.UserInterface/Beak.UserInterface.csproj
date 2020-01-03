@@ -6,7 +6,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Assets\Images\GettingStartedPlaceholder.jpg" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="System.Drawing.Common" Version="4.7.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\Images\GettingStartedPlaceholder.jpg" />
   </ItemGroup>
 
   <ItemGroup>
