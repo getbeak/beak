@@ -1,6 +1,5 @@
 <ResourceDictionary
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-	xmlns:Native="clr-namespace:Beak.UserInterface.Native"
 	xmlns:Windows="clr-namespace:Beak.UserInterface.Windows"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 >
@@ -25,7 +24,6 @@
 		<Setter Property="Title" Value="{Binding Title}"/>
 		<Setter Property="WindowStyle" Value="None"/>
 		<Setter Property="AllowsTransparency" Value="True"/>
-		<Setter Property="Native:WindowMovement.IsDraggable" Value="True" />
 
 		<Setter Property="Template">
 			<Setter.Value>
@@ -44,7 +42,6 @@
 
 							<Grid
 								x:Name="WindowHeader"
-								Native:WindowMovement.DragsWindow="True"
 								Background="{DynamicResource DesignSystemSurface}"
 								IsHitTestVisible="True"
 								VerticalAlignment="Top"
@@ -59,6 +56,7 @@
 								<ContentPresenter Content="{TemplateBinding TitleIcon}" />
 								<ContentPresenter Grid.Column="1" Content="{TemplateBinding TitleMenu}" />
 								<TextBlock
+									x:Name="TextBlockTitle"
 									Grid.Column="2"
 									Foreground="{DynamicResource DesignSystemTextSecondary}"
 									Text="{TemplateBinding Title}"

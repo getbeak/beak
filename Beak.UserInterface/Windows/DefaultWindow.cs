@@ -1,5 +1,4 @@
 using System;
-using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
@@ -21,6 +20,8 @@ namespace Beak.UserInterface.Windows
 		public Thumb ResizeCorner { get; private set; }
 		public Thumb ResizeRight { get; private set; }
 		public Thumb ResizeBottom { get; private set; }
+
+		public TextBlock Testing { get; private set; }
 
 		#region [ TitleIcon property ]
 
@@ -91,6 +92,8 @@ namespace Beak.UserInterface.Windows
 			ResizeRight = GetRequiredTemplateChild<Thumb>("ResizeRight");
 			ResizeBottom = GetRequiredTemplateChild<Thumb>("ResizeBottom");
 
+			Testing = GetRequiredTemplateChild<TextBlock>("TextBlockTitle");
+
 			ButtonWindowMinimize.Click += ButtonWindowMinimize_Click;
 			ButtonWindowRestore.Click += ButtonWindowRestore_Click;
 			ButtonWindowMaxamize.Click += ButtonWindowMaxamize_Click;
@@ -100,9 +103,18 @@ namespace Beak.UserInterface.Windows
 			ResizeRight.DragDelta += ResizeRight_DragDelta;
 			ResizeBottom.DragDelta += ResizeBottom_DragDelta;
 
+			Testing.MouseDown += Testing_MouseDown;
+			Testing.PreviewMouseDown += Testing_MouseDown;
+
 			base.OnApplyTemplate();
 
+			// Initial fire of this to setup window action buttons and resize tings
 			DefaultWindow_StateChanged(null, null);
+		}
+
+		private void Testing_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+		{
+			DragMove();
 		}
 
 		protected override void OnSourceInitialized(EventArgs e)
