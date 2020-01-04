@@ -24,27 +24,27 @@
 			<Setter Property="RenderOptions.BitmapScalingMode" Value="HighQuality"/>
 			<Setter Property="Title" Value="{Binding Title}"/>
 			<Setter Property="WindowStyle" Value="None"/>
-			<Setter Property="Height" Value="600" />
-			<Setter Property="Width" Value="900" />
+			<Setter Property="Height" Value="550" />
+			<Setter Property="Width" Value="1000" />
 			<Setter Property="AllowsTransparency" Value="True"/>
 
 			<Setter Property="Template">
 				<Setter.Value>
 					<ControlTemplate TargetType="{x:Type Windows:WelcomeWindow}">
 						<Border
-						Background="{DynamicResource DesignSystemBackground}"
-						BorderThickness="1"
-						BorderBrush="{DynamicResource DesignSystemBorder}"
-					>
+							Background="{DynamicResource DesignSystemBackground}"
+							BorderThickness="1"
+							BorderBrush="{DynamicResource DesignSystemBorder}"
+						>
 							<Grid>
 								<ContentPresenter />
 								<Button
-								x:Name="ButtonWindowClose"
-								Content="&#xE106;"
-								HorizontalAlignment="Right"
-								VerticalAlignment="Top"
-								Style="{DynamicResource WindowStateButtonStyle}"
-							/>
+									x:Name="ButtonWindowClose"
+									Content="&#xE106;"
+									HorizontalAlignment="Right"
+									VerticalAlignment="Top"
+									Style="{DynamicResource WindowStateButtonStyle}"
+								/>
 							</Grid>
 						</Border>
 					</ControlTemplate>
@@ -62,6 +62,7 @@
 			<Expander
 				Header="{Binding Path=Area, Converter={StaticResource TimeboxedAreaConverter}}"
 				IsExpanded="True"
+				Margin="0,0,10,0"
 			>
 				<StackPanel>
 					<ItemsControl
@@ -134,7 +135,7 @@
 
 		<Rectangle
 			Fill="{DynamicResource BeakAccentBrushSecondary}"
-			Margin="572,18,-166,-360"
+			Margin="664,34,-258,-377"
 			RenderTransformOrigin="0.5,0.5"
 			Grid.ColumnSpan="2"
 			Grid.RowSpan="3"
@@ -152,10 +153,9 @@
 		</Rectangle>
 		<Rectangle
 			Fill="{DynamicResource BeakAccentBrushSecondary}"
-			Margin="-183,-442,781,150"
+			Margin="-307,-476,5,184"
 			RenderTransformOrigin="0.5,0.5"
 			Grid.RowSpan="3"
-			Grid.ColumnSpan="2"
 		>
 			<Rectangle.RenderTransform>
 				<TransformGroup>
@@ -203,7 +203,7 @@
 					Text="Open recent"
 				/>
 
-				<ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+				<ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Hidden">
 					<StackPanel>
 						<ItemsControl
 							ItemTemplate="{DynamicResource RecentProjectsItemTemplate}"
