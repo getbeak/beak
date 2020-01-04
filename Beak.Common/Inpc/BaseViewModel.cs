@@ -16,7 +16,7 @@ namespace Beak.Common.Inpc
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 		}
 
-		protected bool SetField<T>(ref T field, T value, string propertyName, bool overrideChecks = false)
+		protected bool SetField<T>(ref T field, T value, [CallerMemberName] string propertyName = "", bool overrideChecks = false)
 		{
 			if (!overrideChecks)
 			{
