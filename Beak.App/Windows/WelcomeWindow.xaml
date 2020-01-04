@@ -226,6 +226,7 @@
 						Margin="0,0,0,10"
 					/>
 					<Buttons:GettingStartedButton
+						MouseLeftButtonDown="GettingStartedButton_MouseLeftButtonDown"
 						MainIcon="&#xE897;"
 						Title="Open an existing project"
 						Description="Opens an existing local Beak project"

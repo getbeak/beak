@@ -4,28 +4,36 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-	xmlns:Converters="clr-namespace:Beak.UserInterface.Converters"
 	xmlns:Buttons="clr-namespace:Beak.UserInterface.Buttons"
 	mc:Ignorable="d"
 	Style="{DynamicResource Style}"
 >
 	<UserControl.Resources>
-		<Converters:EnabledToVisibilityConverter x:Key="EnabledConverter" />
 		<Style x:Key="Style" TargetType="{x:Type Buttons:GettingStartedButton}">
 			<Setter Property="Background" Value="{DynamicResource DesignSystemSurface}" />
+			<Setter Property="IsHitTestVisible" Value="True" />
 			<Setter Property="Template">
 				<Setter.Value>
 					<ControlTemplate TargetType="{x:Type Buttons:GettingStartedButton}">
 						<Grid Background="{TemplateBinding Background}">
-							<ContentPresenter Margin="10" />
+							<Grid>
+								<ContentPresenter Margin="10" />
 
-							<Rectangle
-								Fill="{DynamicResource DesignSystemBackground}"
-								Opacity="0.8"
-								IsHitTestVisible="True"
-								Visibility="{Binding Path=IsEnabled, Converter={StaticResource EnabledConverter}, FallbackValue=Hidden}"
-							/>
+								<Rectangle
+									x:Name="DisabledOverlay"
+									Fill="{DynamicResource DesignSystemBackground}"
+									Opacity="0.8"
+									IsHitTestVisible="True"
+									Visibility="Hidden"
+								/>
+							</Grid>
 						</Grid>
+
+						<ControlTemplate.Triggers>
+							<Trigger Property="IsEnabled" Value="False">
+								<Setter Property="Visibility" TargetName="DisabledOverlay" Value="Visible" />
+							</Trigger>
+						</ControlTemplate.Triggers>
 					</ControlTemplate>
 				</Setter.Value>
 			</Setter>
@@ -38,7 +46,7 @@
 			</Style.Triggers>
 		</Style>
 	</UserControl.Resources>
-	<Grid>
+	<Grid x:Name="GridBackground" Background="Transparent">
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Width="45" />
 			<ColumnDefinition Width="10" />

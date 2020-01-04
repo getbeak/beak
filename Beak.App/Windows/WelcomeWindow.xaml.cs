@@ -12,6 +12,8 @@ namespace Beak.App.Windows
 	{
 		private Button _buttonWindowClose { get; set; }
 
+		public WelcomeViewModel ViewModel { get { return DataContext as WelcomeViewModel; } }
+
 		public WelcomeWindow()
 		{
 			InitializeComponent();
@@ -45,6 +47,14 @@ namespace Beak.App.Windows
 		private void Grid_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
 		{
 			DragMove();
+		}
+
+		private void GettingStartedButton_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+		{
+			if (!ViewModel.OpenExistingProjectCommand.CanExecute(null))
+				return;
+
+			ViewModel.OpenExistingProjectCommand.Execute(null);
 		}
 	}
 }

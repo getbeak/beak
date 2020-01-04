@@ -1,17 +1,33 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows;
+using System.Windows.Input;
 using Beak.App.Enums;
 using Beak.App.Models;
+using Beak.Common.Inpc;
+using Microsoft.Win32;
 
 namespace Beak.App.ViewModels
 {
 	public sealed class WelcomeViewModel : BaseViewModel
 	{
+		public WelcomeViewModel()
+		{
+			OpenExistingProjectCommand = new RelayCommand(OpenExistingProject);
+		}
+
+		public ICommand OpenExistingProjectCommand
+		{
+			get { return _openExistingProjectCommand; }
+			private set { SetField(ref _openExistingProjectCommand, value); }
+		}
+		private ICommand _openExistingProjectCommand;
+
 		public List<RecentTimeboxedProjects> RecentProjects
 		{
 			get { return _recentProjects; }
-			set{ SetField(ref _recentProjects, value, "RecentProjects"); }
+			set { SetField(ref _recentProjects, value); }
 		}
 		private List<RecentTimeboxedProjects> _recentProjects = new List<RecentTimeboxedProjects>();
 
@@ -83,6 +99,27 @@ namespace Beak.App.ViewModels
 					existingArea.Projects.Add(file);
 				}
 			}
+		}
+
+		private void OpenExistingProject()
+		{
+			var ofd = new OpenFileDialog
+			{
+				AddExtension = true,
+				Title = "Open a Beak Project",
+				Filter = "Beak project files|*.pierre",
+				Multiselect = false,
+			};
+
+			if (ofd.ShowDialog() != true)
+				return;
+
+			MessageBox.Show(
+				$"It worked! The filename is {ofd.FileName}",
+				"Ya boii",
+				MessageBoxButton.OK,
+				MessageBoxImage.Information
+			);
 		}
 	}
 }
