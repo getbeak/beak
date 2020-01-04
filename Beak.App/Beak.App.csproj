@@ -14,6 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Beak.Common\Beak.Common.csproj" />
     <ProjectReference Include="..\Beak.UserInterface\Beak.UserInterface.csproj" />
   </ItemGroup>
 
