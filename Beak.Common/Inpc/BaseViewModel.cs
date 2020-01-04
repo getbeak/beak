@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace Beak.App.ViewModels
+namespace Beak.Common.Inpc
 {
 	public abstract class BaseViewModel : INotifyPropertyChanged
 	{
