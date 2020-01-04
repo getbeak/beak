@@ -37,7 +37,7 @@
 							</Grid.ColumnDefinitions>
 							<Path
 								x:Name="arrow"
-								Data="M 0,0 L 4,4 L 0,8 L 0,0"
+								Data="M 0,0 L 4,4 L 0,8 Z"
 								Margin="0,2,0,0"
 								HorizontalAlignment="Center"
 								SnapsToDevicePixels="false"
@@ -57,7 +57,7 @@
 					</Border>
 					<ControlTemplate.Triggers>
 						<Trigger Property="IsChecked" Value="true">
-							<Setter Property="Data" TargetName="arrow" Value="M 0,5.5 L 5.5,5.5 L 5.5,0 L 0,5.5"/>
+							<Setter Property="Data" TargetName="arrow" Value="M 0,5.5 L 5.5,5.5 L 5.5,0 Z"/>
 							<Setter Property="Stroke" TargetName="arrow" Value="{DynamicResource DesignSystemTextPrimary}"/>
 							<Setter Property="Fill" TargetName="arrow" Value="{DynamicResource DesignSystemTextPrimary}"/>
 						</Trigger>
