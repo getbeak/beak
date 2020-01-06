@@ -8,10 +8,10 @@ The file is made up of various sections. It will always start with a header, and
 
 Every section always starts with the following two bits of information:
 
-| name | value(?) | type | length | description |
-|------|----------|------|--------|-------------|
+| name | value | type | length | description |
+|------|-------|------|--------|-------------|
 | Magic  | beak | ascii   | 0x04 | The magic string denoting what section this is. |
-| Length | ???? | uint32  | 0x08 | The length of the section. |
+| Length | ---- | uint32  | 0x08 | The length of the section. |
 
 In the documentation below, these are omitted, but do not forget that they are always there.
 
@@ -25,25 +25,40 @@ In the documentation below, these are omitted, but do not forget that they are a
 
 ### `header`
 
-| name | value(?) | type | length | description |
-|------|----------|------|--------|-------------|
+Magic: `beak`
+
+| name | value | type | length | description |
+|------|-------|------|--------|-------------|
 | Version | 0x00 | uint16 | 0x04 | The version of the project file    |
 | Name    | ---- | asciiz | 0x69 | The name of the project            |
 
+### `folders`
+
+Magic: `flds`
+
+| name | value | type | length | description |
+|------|-------|------|--------|-------------|
+| Number of links | ---- | uint16 | 0x04 | The number of links in the file |
+
 ### `links`
 
-| name | value(?) | type | length | description |
-|------|----------|------|--------|-------------|
-| Magic | lnks | ascii | 0x04 | A magic string of the section |
+Magic: `lnks`
+
+| name | value | type | length | description |
+|------|-------|------|--------|-------------|
+| Number of links | ---- | uint16 | 0x04 | The number of links in the file |
+
 
 ### `activities`
 
-| name | value(?) | type | length | description |
-|------|----------|------|--------|-------------|
-| Magic | atvs | ascii | 0x04 | A magic string of the section |
+Magic: `atvs`
+
+| name | value | type | length | description |
+|------|-------|------|--------|-------------|
 
 ### `footer`
 
-| name | value(?) | type | length | description |
-|------|----------|------|--------|-------------|
-| Magic | _eof | ascii | 0x04 | A magic string of the section |
+Magic: `_eof`
+
+| name | value | type | length | description |
+|------|-------|------|--------|-------------|

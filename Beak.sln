@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Blend for Visual Studio Version 16
+# Visual Studio Version 16
 VisualStudioVersion = 16.0.29613.14
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Beak.App", "Beak.App\Beak.App.csproj", "{7DB29F9D-AF78-43AD-82C5-BB92919C4970}"
@@ -15,6 +15,11 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Beak.UserInterface", "Beak.UserInterface\Beak.UserInterface.csproj", "{A53A0280-6672-4DA8-B3F3-43D8DFE8F36A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Beak.Common", "Beak.Common\Beak.Common.csproj", "{DCD1F52A-6CF4-483E-94DC-5AEB7637E8F7}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{F5B3AC28-94AA-4C3D-B75B-7490976F9790}"
+	ProjectSection(SolutionItems) = preProject
+		Docs\Project format v1.md = Docs\Project format v1.md
+	EndProjectSection
+EndProject
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
