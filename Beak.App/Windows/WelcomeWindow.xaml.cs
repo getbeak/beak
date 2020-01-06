@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using Beak.App.ViewModels;
 using Beak.UserInterface.Native;
 
@@ -18,11 +19,10 @@ namespace Beak.App.Windows
 		{
 			InitializeComponent();
 
-			DataContext = new WelcomeViewModel();
+			DataContext = new WelcomeViewModel(ApplicationService.Instance.EventAggregator);
 			WindowStartupLocation = WindowStartupLocation.CenterScreen;
 
 			DwmDropShadow.DropShadowToWindow(this);
-			(DataContext as WelcomeViewModel).LoadMockData();
 		}
 
 		private T GetRequiredTemplateChild<T>(string childName) where T : DependencyObject
@@ -44,17 +44,9 @@ namespace Beak.App.Windows
 			Close();
 		}
 
-		private void Grid_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+		private void Grid_MouseDown(object sender, MouseButtonEventArgs e)
 		{
 			DragMove();
-		}
-
-		private void GettingStartedButton_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
-		{
-			if (!ViewModel.OpenExistingProjectCommand.CanExecute(null))
-				return;
-
-			ViewModel.OpenExistingProjectCommand.Execute(null);
 		}
 	}
 }
