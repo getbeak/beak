@@ -3,6 +3,7 @@
 >
 	<ResourceDictionary.MergedDictionaries>
 		<!-- Buttons -->
+		<ResourceDictionary Source="pack://application:,,,/Beak.UserInterface;component/Buttons/DefaultButton.xaml" />
 		<ResourceDictionary Source="pack://application:,,,/Beak.UserInterface;component/Buttons/WindowStateButton.xaml" />
 
 		<!-- Controls -->
