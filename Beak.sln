@@ -15,11 +15,13 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Beak.UserInterface", "Beak.UserInterface\Beak.UserInterface.csproj", "{A53A0280-6672-4DA8-B3F3-43D8DFE8F36A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Beak.Common", "Beak.Common\Beak.Common.csproj", "{DCD1F52A-6CF4-483E-94DC-5AEB7637E8F7}"
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{F5B3AC28-94AA-4C3D-B75B-7490976F9790}"
 	ProjectSection(SolutionItems) = preProject
 		Docs\Project format v1.md = Docs\Project format v1.md
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Beak.Project", "Beak.Project\Beak.Project.csproj", "{474114F1-A880-4695-9898-E308680778F3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Beak.Project.Test", "Beak.Project.Test\Beak.Project.Test.csproj", "{8FAAE4A1-BCCF-4E19-8571-D48DC0CFD3F7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,14 @@ Global
 		{DCD1F52A-6CF4-483E-94DC-5AEB7637E8F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DCD1F52A-6CF4-483E-94DC-5AEB7637E8F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DCD1F52A-6CF4-483E-94DC-5AEB7637E8F7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{474114F1-A880-4695-9898-E308680778F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{474114F1-A880-4695-9898-E308680778F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{474114F1-A880-4695-9898-E308680778F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{474114F1-A880-4695-9898-E308680778F3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8FAAE4A1-BCCF-4E19-8571-D48DC0CFD3F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8FAAE4A1-BCCF-4E19-8571-D48DC0CFD3F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8FAAE4A1-BCCF-4E19-8571-D48DC0CFD3F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8FAAE4A1-BCCF-4E19-8571-D48DC0CFD3F7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
