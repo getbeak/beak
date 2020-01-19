@@ -4,4 +4,21 @@
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="Schemas\entry.jsonschema" />
+    <None Remove="Schemas\project.jsonschema" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Schemas\entry.jsonschema" />
+    <EmbeddedResource Include="Schemas\project.jsonschema" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="Newtonsoft.Json.Schema" Version="3.0.11" />
+  </ItemGroup>
+
+  <ProjectExtensions><VisualStudio><UserProperties schemas_4entry_1jsonschema__JsonSchema="http://json-schema.org/draft-04/schema" schemas_4project_1jsonschema__JsonSchema="http://json-schema.org/draft-04/schema" /></VisualStudio></ProjectExtensions>
+
 </Project>

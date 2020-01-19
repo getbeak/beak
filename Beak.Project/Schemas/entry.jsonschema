@@ -1,0 +1,72 @@
+{
+	"type": "object",
+	"additionalProperties": false,
+
+	"required": [
+		"id",
+		"name",
+		"url"
+	],
+
+	"properties": {
+		"id": {
+			"type": "string",
+			"minLength": 1
+		},
+
+		"name": {
+			"type": "string",
+			"minLength": 1
+		},
+
+		"url": {
+			"type": "object",
+			"additionalProperties": false,
+
+			"required": [
+				"method_verb",
+				"protocol",
+				"host",
+				"uri",
+				"uri_parameters"
+			],
+
+			"properties": {
+				"method_verb": {
+					"type": "string",
+					"enum": [
+						"get",
+						"head",
+						"post",
+						"put",
+						"delete",
+						"connect",
+						"options",
+						"trace",
+						"patch"
+					]
+				},
+
+				"protocol": {
+					"type": "string",
+					"enum": [ "http", "https" ]
+				},
+
+				"host": {
+					"type": "string",
+					"minLength": 1
+				},
+
+				"uri": {
+					"type": "string",
+					"minLength": 1
+				},
+
+				"uri_parameters": {
+					"type": "object",
+					"additionalProperties": true
+				}
+			}
+		}
+	}
+}
