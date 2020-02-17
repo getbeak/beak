@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <Folder Include="Controls\Project\" />
+    <Folder Include="Windows\Welcome\" />
   </ItemGroup>
 
 </Project>
