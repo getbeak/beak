@@ -18,7 +18,7 @@
 		</Style>
 
 		<DataTemplate x:Key="EnvironmentLister">
-			<Grid Margin="0,10,0,0">
+			<Grid Margin="0,5,0,0">
 				<Grid.ColumnDefinitions>
 					<ColumnDefinition Width="Auto" />
 					<ColumnDefinition Width="*" />
@@ -28,18 +28,24 @@
 				<TextBlock
 					Foreground="{DynamicResource DesignSystemTextPrimary}"
 					Text="{Binding Path=Name}"
+					TextTrimming="CharacterEllipsis"
+					VerticalAlignment="Center"
 				/>
 				<ComboBox
 					Grid.Column="1"
+					HorizontalAlignment="Right"
 					ItemsSource="{Binding Path=Mapping, Converter={StaticResource DictionaryKeyConverter}}"
+					SelectedIndex="0"
 				/>
 			</Grid>
 		</DataTemplate>
 	</UserControl.Resources>
-	<Grid>
+	<Grid Margin="7,0,7,0">
 		<Grid.RowDefinitions>
 			<RowDefinition Height="25" />
-			<RowDefinition Height="*" />
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="Auto" />
 		</Grid.RowDefinitions>
 		<StackPanel
 			Grid.Row="0"
@@ -62,5 +68,13 @@
 			ItemTemplate="{StaticResource EnvironmentLister}"
 			ItemsSource="{Binding}"
 		/>
+		<Separator Grid.Row="2" Margin="0,4,0,4" />
+		<Grid Grid.Row="3">
+			<Button
+				Content="Manage >>"
+				HorizontalAlignment="Right"
+				Padding="5,4,5,4"
+			/>
+		</Grid>
 	</Grid>
 </UserControl>

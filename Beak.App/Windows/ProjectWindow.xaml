@@ -37,7 +37,7 @@
 	</Windows:DefaultWindow.TitleMenu>
 	<Grid>
 		<Grid.ColumnDefinitions>
-			<ColumnDefinition Width="180" />
+			<ColumnDefinition Width="180" MinWidth="160" />
 			<ColumnDefinition Width="2" />
 			<ColumnDefinition Width="*" />
 			<ColumnDefinition Width="2" />
