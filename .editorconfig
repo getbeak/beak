@@ -18,7 +18,7 @@ indent_style = space
 indent_size = 2
 
 [*.cs]
-guidelines = 80, 120
+guidelines = 120
 indent_style = tab
 indent_size = 4
 dotnet_sort_system_directives_first = true

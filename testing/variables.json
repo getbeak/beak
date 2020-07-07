@@ -1,0 +1,51 @@
+[{
+	"id": "var_000",
+	"name": "Environment",
+	"x_keys": [{
+		"id": "varxkey_000",
+		"name": "Production"
+	}, {
+		"id": "varxkey_001",
+		"name": "Development"
+	}],
+	"y_keys": [{
+		"id": "varykey_000",
+		"name": "auth-url"
+	}, {
+		"id": "varykey_001",
+		"name": "auth-key"
+	}],
+	"values": [{
+		"x": "varxkey_000",
+		"y": "varykey_000",
+		"value": "https://service-auth.branchapp.co"
+	}, {
+		"x": "varxkey_000",
+		"y": "varykey_001",
+		"value": "lolno"
+	}, {
+		"x": "varxkey_001",
+		"y": "varykey_000",
+		"value": "https://service-auth.dev.branchapp.co"
+	}, {
+		"x": "varxkey_001",
+		"y": "varykey_001",
+		"value": "lolmaybe"
+	}]
+}, {
+	"id": "var_001",
+	"name": "Person",
+	"x_keys": [{
+		"id": "varxkey_000",
+		"name": "Alex"
+	}],
+	"y_keys": [{
+		"id": "varykey_000",
+		"name": "user id"
+	}],
+	"values": [{
+		"x": "varxkey_000",
+		"y": "varykey_000",
+		"value": "user_001"
+	}]
+}]
