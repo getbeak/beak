@@ -4,8 +4,8 @@
   "homepage": "./",
   "private": true,
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "start": "parcel ./index.html -p 3000",
+    "build": "parcel build ./index.html",
     "test": "echo Skipped for now."
   },
   "browserslist": {

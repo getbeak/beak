@@ -1,8 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-
-const App = () => (
-	<span>{'hello world'}</span>
-);
+import App from './containers/App';
 
 ReactDOM.render(<App />, document.getElementById('root'));
