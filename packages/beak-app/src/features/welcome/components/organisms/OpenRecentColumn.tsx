@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Col } from 'react-grid-system';
 import styled from 'styled-components';
 
+import WelcomeColumnTitle from '../atoms/WelcomeColumnTitle';
 import Collapse from '../molecules/Collapse';
 import RecentEntry from '../molecules/RecentEntry';
 
@@ -83,7 +84,7 @@ const OpenRecentColumn: React.FunctionComponent = () => {
 
 	return (
 		<Col>
-			<Title>{'Open recent'}</Title>
+			<WelcomeColumnTitle>{'Open recent'}</WelcomeColumnTitle>
 
 			<ScrollViewer>
 				{categories.map(k => (
@@ -107,10 +108,6 @@ const OpenRecentColumn: React.FunctionComponent = () => {
 		</Col>
 	);
 };
-
-const Title = styled.div`
-	margin-bottom: 20px;
-`;
 
 const ScrollViewer = styled.div`
 	height: 100%;

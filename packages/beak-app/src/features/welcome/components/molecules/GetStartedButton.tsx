@@ -39,6 +39,8 @@ const Button = styled.button`
 	padding: 10px;
 	margin-bottom: 10px;
 
+	transition: transform ease .1s;
+
 	&:disabled {
 		opacity: 0.7;
 		cursor: not-allowed;
@@ -55,6 +57,7 @@ const Button = styled.button`
 
 		&:active {
 			background: ${props => props.theme.ui.background};
+			transform: scale(0.99);
 		}
 	}
 `;

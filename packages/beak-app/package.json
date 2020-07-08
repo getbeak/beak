@@ -22,6 +22,7 @@
   },
   "dependencies": {
     "change-case": "^4.1.1",
+    "date-fns": "^2.14.0",
     "parcel-bundler": "^1.12.4",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",

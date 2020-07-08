@@ -15,16 +15,19 @@ function createWelcomeWindow() {
 	const win = new BrowserWindow({
 		height: 550,
 		width: 900,
+		resizable: false,
 		frame: false,
 	});
 
+	windows[windowId] = win;
+
 	win.loadURL(generateLoadUrl('welcome'));
+	win.webContents.openDevTools();
 
 	win.on('closed', () => {
 		delete windows[windowId];
 	});
 
-	windows[windowId] = win;
 }
 
 // Quit application when all windows are closed

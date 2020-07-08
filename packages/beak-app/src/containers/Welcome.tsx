@@ -1,39 +1,34 @@
-import React from 'react';
-import { Container as GridContainer, Row } from 'react-grid-system';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 
-import GetStartedColumn from '../features/welcome/components/organisms/GetStartedColumn';
-import OpenRecentColumn from '../features/welcome/components/organisms/OpenRecentColumn';
+import CloseButton from '../features/welcome/components/atoms/CloseButton';
+import CreateView from '../features/welcome/components/organisms/CreateView';
+import WelcomeView from '../features/welcome/components/organisms/WelcomeView';
 
-const Welcome: React.FunctionComponent = () => (
-	<React.Fragment>
-		<BrandIndicatorTop />
-		<BrandIndicatorBottom />
-		<DragBar />
+export type WelcomeViewType = 'main' | 'create-local';
 
-		<Container>
-			<Title>{'Welcome to Beak!'}</Title>
-			<IntroLine>{'Yet another API client for you to install...'}</IntroLine>
+const Welcome: React.FunctionComponent = () => {
+	const [view, setView] = useState<WelcomeViewType>('create-local');
 
-			<GridContainer fluid>
-				<Row>
-					<OpenRecentColumn />
-					<GetStartedColumn />
-				</Row>
-			</GridContainer>
-		</Container>
-	</React.Fragment>
-);
+	return (
+		<Wrapper>
+			<BrandIndicatorTop />
+			<BrandIndicatorBottom />
+			<DragBar />
+			<Closer>
+				<CloseButton />
+			</Closer>
 
-const DragBar = styled.div`
-	position: absolute;
-	top: 0;
-	left: 0;
-	right: 0;
-	height: 80px;
+			<Container>
+				{view === 'main' && <WelcomeView setView={setView} />}
+				{view === 'create-local' && <CreateView setView={setView} />}
+			</Container>
+		</Wrapper>
+	);
+}
 
-	-webkit-user-select: none;
-	-webkit-app-region: drag;
+const Wrapper = styled.div`
+
 `;
 
 const BrandIndicatorTop = styled.div`
@@ -60,24 +55,29 @@ const BrandIndicatorBottom = styled.div`
 	background: ${props => props.theme.ui.primaryFill};
 `;
 
+const DragBar = styled.div`
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 80px;
+
+	-webkit-user-select: none;
+	-webkit-app-region: drag;
+`;
+
+const Closer = styled.div`
+	position: absolute;
+	top: 15px;
+	right: 10px;
+	z-index: 2;
+`;
+
 const Container = styled.div`
 	position: relative;
 	margin: 40px 30px;
 
 	z-index: 2;
-`;
-
-const Title = styled.h1`
-	margin-bottom: 0;
-	font-size: 35px;
-	font-weight: 300;
-`;
-
-const IntroLine = styled.p`
-	font-size: 15px;
-	margin-top: 0px;
-	margin-bottom: 25px;
-	color: ${props => props.theme.ui.textMinor};
 `;
 
 export default Welcome;

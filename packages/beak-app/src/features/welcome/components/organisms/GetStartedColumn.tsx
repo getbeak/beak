@@ -1,16 +1,22 @@
 import React from 'react';
 import { Col } from 'react-grid-system';
-import styled from 'styled-components';
 
+import { WelcomeViewType } from '../../../../containers/Welcome';
+import WelcomeColumnTitle from '../atoms/WelcomeColumnTitle';
 import GetStartedButton from '../molecules/GetStartedButton';
 
-const GetStartedColumn: React.FunctionComponent = () => (
+export interface GetStartedColumnProps {
+	setView: (view: WelcomeViewType) => void;
+}
+
+const GetStartedColumn: React.FunctionComponent<GetStartedColumnProps> = ({ setView }) => (
 	<Col>
-		<Title>{'Get started'}</Title>
+		<WelcomeColumnTitle>{'Get started'}</WelcomeColumnTitle>
 
 		<GetStartedButton
 			title={'Create a new project'}
 			description={'Creates a new local project'}
+			onClick={() => setView('create-local')}
 		/>
 
 		<GetStartedButton
@@ -25,9 +31,5 @@ const GetStartedColumn: React.FunctionComponent = () => (
 		/>
 	</Col>
 );
-
-const Title = styled.div`
-	margin-bottom: 20px;
-`;
 
 export default GetStartedColumn;

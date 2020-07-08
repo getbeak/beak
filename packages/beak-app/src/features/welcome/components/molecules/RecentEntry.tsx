@@ -1,3 +1,4 @@
+import { format, parseISO } from 'date-fns';
 import React from 'react';
 import styled from 'styled-components';
 
@@ -10,6 +11,8 @@ export interface RecentEntryProps {
 }
 
 const RecentEntry: React.FunctionComponent<RecentEntryProps> = props => {
+	const date = parseISO(props.modifiedDate);
+
 	return (
 		<Wrapper>
 			<Icon />
@@ -17,7 +20,7 @@ const RecentEntry: React.FunctionComponent<RecentEntryProps> = props => {
 				<Name>{props.name}</Name>
 				<Path>{props.path}</Path>
 			</TextWrapper>
-			{props.modifiedDate}
+			<ModifiedDate>{format(date, 'MM/dd/yyyy HH:mm')}</ModifiedDate>
 		</Wrapper>
 	);
 };
@@ -25,26 +28,17 @@ const RecentEntry: React.FunctionComponent<RecentEntryProps> = props => {
 const Wrapper = styled.div`
 	padding: 10px;
 	display: flex;
+	transition: transform .1s ease;
 
 	&:hover {
 		background: ${props => props.theme.ui.secondarySurface};
+		cursor: pointer;
 	}
 
 	&:active {
 		background: ${props => props.theme.ui.background};
+		transform: scale(0.99);
 	}
-`;
-
-const TextWrapper = styled.div`
-
-`;
-
-const Name = styled.span`
-	display: block;
-`;
-
-const Path = styled.span`
-	display: block;
 `;
 
 const Icon = styled.div`
@@ -55,6 +49,32 @@ const Icon = styled.div`
 	background-position: center;
 	background-repeat: no-repeat;
 	background-size: contain;
+`;
+
+const TextWrapper = styled.div`
+	flex-grow: 2;
+	margin-left: 10px;
+`;
+
+const Name = styled.span`
+	display: block;
+	font-size: 16px;
+	font-weight: 500;
+	word-wrap: break-word;
+	text-overflow: ellipsis;
+`;
+
+const Path = styled.span`
+	display: block;
+	font-size: 12px;
+	color: ${props => props.theme.ui.textMinor};
+	word-wrap: break-word;
+	text-overflow: ellipsis;
+`;
+
+const ModifiedDate = styled.div`
+	font-size: 12px;
+	color: ${props => props.theme.ui.textMinor};
 `;
 
 export default RecentEntry;
