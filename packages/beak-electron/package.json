@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "prebuild": "copyfiles -u 2 \"../beak-app/build/**/*\" static/",
+    "prebuild": "copyfiles -u 2 \"../beak-app/dist/**/*\" static/",
     "build": "electron-webpack",
     "electron": "electron dist/main/main.js",
     "package": "electron-builder",
@@ -11,7 +11,9 @@
     "test": "echo Skipped."
   },
   "dependencies": {
-    "source-map-support": "^0.5.19"
+    "@types/uuid": "^8.0.0",
+    "source-map-support": "^0.5.19",
+    "uuid": "^8.2.0"
   },
   "devDependencies": {
     "beak-app": "^0.0.1",

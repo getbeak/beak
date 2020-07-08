@@ -1,26 +1,31 @@
 import { app, BrowserWindow } from 'electron';
 import * as path from 'path';
+import * as url from 'url';
+import * as uuid from 'uuid';
 
 import { staticPath } from './utils/static-path';
 
 const DEV_URL = 'http://localhost:3000';
 const environment = process.env.NODE_ENV;
 
-let mainWindow: BrowserWindow | undefined;
+const windows: Record<string, BrowserWindow> = {};
 
 function createWelcomeWindow() {
-	mainWindow = new BrowserWindow({
-		height: 450,
-		width: 700,
+	const windowId = uuid.v4();
+	const win = new BrowserWindow({
+		height: 550,
+		width: 900,
 		frame: false,
 	});
 
-	mainWindow.loadURL(generateLoadUrl('welcome'));
+	win.loadURL(generateLoadUrl('welcome'));
 
-	mainWindow.on('closed', () => {
-		mainWindow = void 0;
+	win.on('closed', () => {
+		delete windows[windowId];
 	});
-};
+
+	windows[windowId] = win;
+}
 
 // Quit application when all windows are closed
 app.on('window-all-closed', () => {
@@ -29,7 +34,7 @@ app.on('window-all-closed', () => {
 });
 
 app.on('activate', () => {
-	if (!mainWindow)
+	if (Object.keys(windows).length === 0)
 		createWelcomeWindow();
 });
 
@@ -38,7 +43,11 @@ app.on('ready', () => {
 });
 
 function generateLoadUrl(container: 'welcome') {
-	let loadUrl = new URL(`file:///${path.join(staticPath, 'dist', 'index.html')}`);
+	let loadUrl = new URL(url.format({
+		pathname: path.join(staticPath, 'dist', 'index.html'),
+		protocol: 'file:',
+		slashes: true,
+	}));
 
 	if (environment !== 'production')
 		loadUrl = new URL(DEV_URL);
