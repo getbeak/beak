@@ -1,5 +1,6 @@
 import React from 'react';
 
+import About from './About';
 import Welcome from './Welcome';
 
 const App: React.FunctionComponent = () => {
@@ -10,8 +11,11 @@ const App: React.FunctionComponent = () => {
 		case 'welcome':
 			return <Welcome />;
 
+		case 'about':
+			return <About />;
+
 		default:
-			return <span>{'s'}</span>;
+			return <span>{'unknown'}</span>;
 	}
 };
 

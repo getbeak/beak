@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container as GridContainer, Row } from 'react-grid-system';
+import { Row } from 'react-grid-system';
 import styled from 'styled-components';
 
 import GetStartedColumn from '../features/welcome/components/organisms/GetStartedColumn';
@@ -15,12 +15,10 @@ const Welcome: React.FunctionComponent = () => (
 			<Title>{'Welcome to Beak!'}</Title>
 			<IntroLine>{'Yet another API client for you to install...'}</IntroLine>
 
-			<GridContainer fluid>
-				<Row>
-					<OpenRecentColumn />
-					<GetStartedColumn />
-				</Row>
-			</GridContainer>
+			<Row>
+				<OpenRecentColumn />
+				<GetStartedColumn />
+			</Row>
 		</Container>
 	</React.Fragment>
 );
@@ -62,7 +60,7 @@ const BrandIndicatorBottom = styled.div`
 
 const Container = styled.div`
 	position: relative;
-	margin: 40px 30px;
+	margin: 50px;
 
 	z-index: 2;
 `;

@@ -1,12 +1,12 @@
 import React from 'react';
 import { Col } from 'react-grid-system';
-import styled from 'styled-components';
 
+import ColumnTitle from '../atoms/ColumnTitle';
 import GetStartedButton from '../molecules/GetStartedButton';
 
 const GetStartedColumn: React.FunctionComponent = () => (
 	<Col>
-		<Title>{'Get started'}</Title>
+		<ColumnTitle>{'Get started'}</ColumnTitle>
 
 		<GetStartedButton
 			title={'Create a new project'}
@@ -25,9 +25,5 @@ const GetStartedColumn: React.FunctionComponent = () => (
 		/>
 	</Col>
 );
-
-const Title = styled.div`
-	margin-bottom: 20px;
-`;
 
 export default GetStartedColumn;
