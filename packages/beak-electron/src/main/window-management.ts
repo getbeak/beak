@@ -5,7 +5,7 @@ import * as uuid from 'uuid';
 
 import { staticPath } from './utils/static-path';
 
-type Container = 'about' | 'welcome';
+type Container = 'about' | 'project-main' | 'welcome';
 
 const DEV_URL = 'http://localhost:3000';
 const environment = process.env.NODE_ENV;
@@ -68,4 +68,16 @@ export function createAboutWindow() {
 	};
 
 	createWindow(windowOpts, 'about');
+}
+
+export function createProjectMainWindow() {
+	const windowOpts: BrowserWindowConstructorOptions = {
+		height: 580,
+		width: 980,
+		minHeight: 435,
+		minWidth: 760,
+		title: 'Beak Project',
+	};
+
+	createWindow(windowOpts, 'project-main');
 }

@@ -1,11 +1,11 @@
 import { app } from 'electron';
 
 import createMenu from './menu';
-import { createWelcomeWindow, windowStack } from './window-management';
+import { createProjectMainWindow, windowStack } from './window-management';
 
 createMenu();
 
-// Quit application when all windows are closed
+// Quit application when all windows are closed on macOS
 app.on('window-all-closed', () => {
 	if (process.platform !== 'darwin')
 		app.quit();
@@ -13,9 +13,9 @@ app.on('window-all-closed', () => {
 
 app.on('activate', () => {
 	if (Object.keys(windowStack).length === 0)
-		createWelcomeWindow();
+		createProjectMainWindow();
 });
 
 app.on('ready', () => {
-	createWelcomeWindow();
+	createProjectMainWindow();
 });

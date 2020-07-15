@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 import About from './containers/About';
+import ProjectMain from './containers/ProjectMain';
 import Welcome from './containers/Welcome';
 import { DesignSystemProvider, GlobalStyle } from './design-system';
 
@@ -12,6 +13,9 @@ function getComponent(container: string | null) {
 
 		case 'about':
 			return <About />;
+
+		case 'project-main':
+			return <ProjectMain />;
 
 		default:
 			return <span>{'unknown'}</span>;
