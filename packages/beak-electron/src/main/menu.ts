@@ -4,6 +4,26 @@ import { createAboutWindow } from './window-management';
 
 const isMac = process.platform === 'darwin';
 
+const macWindow: MenuItemConstructorOptions = {
+	label: 'Window',
+	submenu: [
+		{ role: 'minimize' },
+		{ role: 'zoom' },
+		{ type: 'separator' },
+		{ role: 'front' },
+		{ type: 'separator' },
+		{ role: 'window' },
+	],
+};
+const nonMacWindow: MenuItemConstructorOptions = {
+	label: 'Window',
+	submenu: [
+		{ role: 'minimize' },
+		{ role: 'zoom' },
+		{ role: 'close' },
+	],
+};
+
 const template: MenuItemConstructorOptions[] = [
 	// { role: 'appMenu' }
 	{
@@ -35,6 +55,8 @@ const template: MenuItemConstructorOptions[] = [
 			{ role: 'togglefullscreen' },
 		],
 	},
+	// { role: 'windowMenu' }
+	(isMac ? macWindow : nonMacWindow),
 	// { role: 'helpMenu' }
 	{
 		role: 'help',

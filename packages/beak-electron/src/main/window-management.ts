@@ -1,4 +1,4 @@
-import { BrowserWindow } from 'electron';
+import { BrowserWindow, BrowserWindowConstructorOptions } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
 import * as uuid from 'uuid';
@@ -27,8 +27,14 @@ function generateLoadUrl(container: Container) {
 	return loadUrl.toString();
 }
 
-function createWindow(window: BrowserWindow, container: Container) {
+function createWindow(windowOpts: BrowserWindowConstructorOptions, container: Container) {
 	const windowId = uuid.v4();
+	const window = new BrowserWindow({
+		webPreferences: {
+			nodeIntegration: true,
+		},
+		...windowOpts,
+	});
 
 	window.loadURL(generateLoadUrl(container));
 	window.on('closed', () => {
@@ -40,26 +46,26 @@ function createWindow(window: BrowserWindow, container: Container) {
 }
 
 export function createWelcomeWindow() {
-	const window = new BrowserWindow({
+	const windowOpts = {
 		height: 550,
 		width: 900,
 		frame: false,
 		resizable: false,
 		title: 'Welcome to Beak!',
-	});
+	};
 
-	createWindow(window, 'welcome');
+	createWindow(windowOpts, 'welcome');
 }
 
 export function createAboutWindow() {
-	const window = new BrowserWindow({
+	const windowOpts: BrowserWindowConstructorOptions = {
 		height: 500,
 		width: 450,
 		titleBarStyle: 'hiddenInset',
 		maximizable: false,
 		resizable: false,
 		title: 'About Beak',
-	});
+	};
 
-	createWindow(window, 'about');
+	createWindow(windowOpts, 'about');
 }

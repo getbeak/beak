@@ -1,6 +1,7 @@
 import React from 'react';
 import { Col } from 'react-grid-system';
 
+import createProject from '../../../../lib/project/create';
 import ColumnTitle from '../atoms/ColumnTitle';
 import GetStartedButton from '../molecules/GetStartedButton';
 
@@ -11,6 +12,15 @@ const GetStartedColumn: React.FunctionComponent = () => (
 		<GetStartedButton
 			title={'Create a new project'}
 			description={'Creates a new local project'}
+
+			onClick={async () => {
+				const opts = {
+					name: 'Beak Test',
+					projectPath: '/Users/afr/Downloads/beak-test',
+				};
+
+				await createProject(opts);
+			}}
 		/>
 
 		<GetStartedButton

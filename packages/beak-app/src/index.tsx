@@ -1,14 +1,34 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import App from './containers/App';
+import About from './containers/About';
+import Welcome from './containers/Welcome';
 import { DesignSystemProvider, GlobalStyle } from './design-system';
 
-const Home = () => (
-	<DesignSystemProvider themeKey={'dark'}>
-		<GlobalStyle />
-		<App />
-	</DesignSystemProvider>
-);
+function getComponent(container: string | null) {
+	switch (container) {
+		case 'welcome':
+			return <Welcome />;
 
-ReactDOM.render(<Home />, document.getElementById('root'));
+		case 'about':
+			return <About />;
+
+		default:
+			return <span>{'unknown'}</span>;
+	}
+}
+
+const FauxRouter: React.FunctionComponent = () => {
+	const params = new URLSearchParams(window.location.search);
+	const container = params.get('container');
+	const component = getComponent(container);
+
+	return (
+		<DesignSystemProvider themeKey={'dark'}>
+			<GlobalStyle />
+			{component}
+		</DesignSystemProvider>
+	);
+};
+
+ReactDOM.render(<FauxRouter />, document.getElementById('root'));
