@@ -90,7 +90,7 @@ export function createProjectMainWindow(projectFilePath: string) {
 		width: 980,
 		minHeight: 435,
 		minWidth: 760,
-		title: 'Beak Project',
+		title: 'Loading... - Beak',
 	};
 
 	createWindow(windowOpts, 'project-main', { projectFilePath });

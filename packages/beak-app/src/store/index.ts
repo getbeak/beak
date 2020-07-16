@@ -3,22 +3,39 @@ import { composeWithDevTools } from 'redux-devtools-extension';
 import createSagaMiddleware from 'redux-saga';
 import { all } from 'redux-saga/effects';
 
-export interface ApplicationState {
+import * as projectStore from './project';
+import { State as ProjectState } from './project/types';
 
+export interface ApplicationState {
+	global: {
+		project: ProjectState;
+	};
 }
 
 function createRootReducer() {
-	return combineReducers<ApplicationState>({});
+	return combineReducers<ApplicationState>({
+		global: combineReducers({
+			project: projectStore.reducers,
+		}),
+	});
 }
 
 function* rootSaga() {
 	yield all([]);
 }
 
+function createInitialState(): ApplicationState {
+	return {
+		global: {
+			project: projectStore.types.initialState,
+		},
+	};
+}
+
 export function configureStore() {
 	const composeEnhancers = composeWithDevTools({});
 	const sagaMiddleware = createSagaMiddleware();
-	const initialState: ApplicationState = {};
+	const initialState = createInitialState();
 
 	const store = createStore(
 		createRootReducer(),
