@@ -12,7 +12,7 @@ const environment = process.env.NODE_ENV;
 
 export const windowStack: Record<string, BrowserWindow> = {};
 
-function generateLoadUrl(container: Container) {
+function generateLoadUrl(container: Container, additionalParams?: Record<string, string>) {
 	let loadUrl = new URL(url.format({
 		pathname: path.join(staticPath, 'dist', 'index.html'),
 		protocol: 'file:',
@@ -22,12 +22,27 @@ function generateLoadUrl(container: Container) {
 	if (environment !== 'production')
 		loadUrl = new URL(DEV_URL);
 
+	if (additionalParams) {
+		Object.keys(additionalParams).forEach(k => {
+			if (k === 'container')
+				return; // Just to be extra safe
+
+			const urlSafe = encodeURIComponent(additionalParams[k]);
+
+			loadUrl.searchParams.set(k, urlSafe);
+		});
+	}
+
 	loadUrl.searchParams.set('container', container);
 
 	return loadUrl.toString();
 }
 
-function createWindow(windowOpts: BrowserWindowConstructorOptions, container: Container) {
+function createWindow(
+	windowOpts: BrowserWindowConstructorOptions,
+	container: Container,
+	additionalParams?: Record<string, string>,
+) {
 	const windowId = uuid.v4();
 	const window = new BrowserWindow({
 		webPreferences: {
@@ -36,13 +51,12 @@ function createWindow(windowOpts: BrowserWindowConstructorOptions, container: Co
 		...windowOpts,
 	});
 
-	window.loadURL(generateLoadUrl(container));
+	window.loadURL(generateLoadUrl(container, additionalParams));
 	window.on('closed', () => {
 		delete windowStack[windowId];
 	});
 
 	windowStack[windowId] = window;
-
 }
 
 export function createWelcomeWindow() {
@@ -70,7 +84,7 @@ export function createAboutWindow() {
 	createWindow(windowOpts, 'about');
 }
 
-export function createProjectMainWindow() {
+export function createProjectMainWindow(projectFilePath: string) {
 	const windowOpts: BrowserWindowConstructorOptions = {
 		height: 580,
 		width: 980,
@@ -79,5 +93,5 @@ export function createProjectMainWindow() {
 		title: 'Beak Project',
 	};
 
-	createWindow(windowOpts, 'project-main');
+	createWindow(windowOpts, 'project-main', { projectFilePath });
 }

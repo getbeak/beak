@@ -1,7 +1,15 @@
+import './ipc';
+
 import { app } from 'electron';
 
 import createMenu from './menu';
-import { createProjectMainWindow, windowStack } from './window-management';
+import { createAboutWindow, createProjectMainWindow, createWelcomeWindow, windowStack } from './window-management';
+
+const quickCreate = {
+	project: createProjectMainWindow,
+	welcome: createWelcomeWindow,
+	about: createAboutWindow,
+};
 
 createMenu();
 
@@ -13,9 +21,9 @@ app.on('window-all-closed', () => {
 
 app.on('activate', () => {
 	if (Object.keys(windowStack).length === 0)
-		createProjectMainWindow();
+		quickCreate.welcome();
 });
 
 app.on('ready', () => {
-	createProjectMainWindow();
+	quickCreate.welcome();
 });

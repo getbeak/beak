@@ -5,6 +5,8 @@ import createProject from '../../../../lib/project/create';
 import ColumnTitle from '../atoms/ColumnTitle';
 import GetStartedButton from '../molecules/GetStartedButton';
 
+const electron = window.require('electron');
+
 const GetStartedColumn: React.FunctionComponent = () => (
 	<Col>
 		<ColumnTitle>{'Get started'}</ColumnTitle>
@@ -26,6 +28,29 @@ const GetStartedColumn: React.FunctionComponent = () => (
 		<GetStartedButton
 			title={'Open an existing project'}
 			description={'Opens an existing local project'}
+
+			onClick={async () => {
+				const { remote, ipcRenderer } = electron;
+				const { dialog } = remote;
+
+				const result = await dialog.showOpenDialog({
+					title: 'Open a beak project',
+					buttonLabel: 'Open',
+					properties: ['openFile'],
+					filters: [
+						{ name: 'Beak project', extensions: ['json'] },
+						{ name: 'All files', extensions: ['*'] },
+					],
+				});
+
+				if (!result || result.canceled || result.filePaths.length !== 1)
+					return;
+
+				const [filePath] = result.filePaths;
+
+				ipcRenderer.send('project-open', filePath);
+				remote.getCurrentWindow().close();
+			}}
 		/>
 
 		<GetStartedButton

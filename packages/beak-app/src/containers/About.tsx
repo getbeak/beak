@@ -28,13 +28,16 @@ const About: React.FunctionComponent = () => (
 			/>
 
 			<TextCenter>
-				<h1>{'🌶🍷'}</h1>
+				<h1>{'🇬🇧🌶🍷'}</h1>
 
 				<p>
-					{/* Might need a real, less cuntish desc one day */}
-					{'Designed and built in various Soho Houses. Fueled by endless '}
-					{'Picante\'s and Lady A'}
+					{'Designed (poorly) and built in the United Kingdom. Fueled by '}
+					{'endless Picante\'s and Lady A'}
 				</p>
+
+				<SmolPara>
+					{'Made in loving memory of Pierre 💔'}
+				</SmolPara>
 			</TextCenter>
 		</Container>
 	</React.Fragment>
@@ -57,6 +60,10 @@ const Blob = styled.div`
 
 const TextCenter = styled.div`
 	text-align: center;
+`;
+
+const SmolPara = styled.p`
+	text-size: 13px;
 `;
 
 export default About;

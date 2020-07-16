@@ -1,3 +1,4 @@
+import * as Electron from 'electron';
 import * as FsExtra from 'fs-extra';
 import * as Path from 'path';
 
@@ -6,6 +7,7 @@ import * as Path from 'path';
 
 declare global {
 	interface Window {
+		require(moduleSpecifier: 'electron'): typeof Electron;
 		require(moduleSpecifier: 'fs-extra'): typeof FsExtra;
 		require(moduleSpecifier: 'path'): typeof Path;
 	}
