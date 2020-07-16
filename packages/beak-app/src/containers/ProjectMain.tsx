@@ -6,27 +6,56 @@ import {
 	ReflexElement,
 	ReflexSplitter,
 } from 'react-reflex';
+import styled from 'styled-components';
 
 const ProjectMain: React.FunctionComponent = () => (
 	<React.Fragment>
-		<div style={{height: '100vh'}}>
-			<ReflexContainer orientation="vertical">
-				<ReflexElement className="left-pane">
-					<div className="pane-content">
-						{'Left Pane (resizeable)'}
-					</div>
+		<Container>
+			<ReflexContainer orientation={'vertical'}>
+				<ReflexElement
+					size={220}
+					minSize={170}
+				>
+					{'Explorer'}
 				</ReflexElement>
 
 				<ReflexSplitter />
 
-				<ReflexElement className="right-pane">
-					<div className="pane-content">
-						{'Right Pane (resizeable)'}
-					</div>
+				<ReflexElement>
+					{'Requester'}
+				</ReflexElement>
+
+				<ReflexSplitter />
+
+				<ReflexElement>
+					{'Inspector'}
 				</ReflexElement>
 			</ReflexContainer>
-		</div>
+		</Container>
+		<StatusContainer>
+			<StatusBar />
+		</StatusContainer>
 	</React.Fragment>
 );
+
+const StatusBar = styled.div`
+	background-color: ${props => props.theme.ui.primaryFill};
+	height: 24px;
+`;
+
+const Container = styled.div`
+	position: absolute;
+	top: 0;
+	bottom: 24px;
+	left: 0;
+	right: 0;
+`;
+
+const StatusContainer = styled.div`
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	right: 0;
+`;
 
 export default ProjectMain;
