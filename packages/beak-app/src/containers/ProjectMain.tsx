@@ -10,7 +10,6 @@ import {
 } from 'react-reflex';
 import styled from 'styled-components';
 
-import { ApplicationState } from '../store';
 import { openProject } from '../store/project/actions';
 
 const ProjectMain: React.FunctionComponent = () => {
