@@ -1,12 +1,12 @@
 import { all, fork, takeEvery } from 'redux-saga/effects';
 
 import { ActionTypes } from '../types';
-import openProject from './open-project';
+import openProjectWorker from './open-project';
 
-export default function* authSaga() {
+export default function* projectSaga() {
 	yield all([
 		fork(function* openProjectWatcher() {
-			yield takeEvery(ActionTypes.OPEN_PROJECT, openProject);
+			yield takeEvery(ActionTypes.OPEN_PROJECT, openProjectWorker);
 		}),
 	]);
 }

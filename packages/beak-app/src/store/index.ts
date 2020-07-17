@@ -1,7 +1,7 @@
 import { applyMiddleware, combineReducers, createStore } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import createSagaMiddleware from 'redux-saga';
-import { all } from 'redux-saga/effects';
+import { all, fork } from 'redux-saga/effects';
 
 import * as projectStore from './project';
 import { State as ProjectState } from './project/types';
@@ -21,7 +21,9 @@ function createRootReducer() {
 }
 
 function* rootSaga() {
-	yield all([]);
+	yield all([
+		fork(projectStore.sagas),
+	]);
 }
 
 function createInitialState(): ApplicationState {
@@ -47,6 +49,9 @@ export function configureStore() {
 
 	sagaMiddleware.setContext(context);
 	sagaMiddleware.run(rootSaga);
+
+	// NOTE(afr): This is temporary until I get the dev tools attached
+	window.store = store;
 
 	return store;
 }
