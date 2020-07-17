@@ -1,6 +1,8 @@
+// TODO(afr): Remove this fucking css import. styled-components only pls
 import 'react-reflex/styles.css';
 
 import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import {
 	ReflexContainer,
 	ReflexElement,
@@ -8,12 +10,17 @@ import {
 } from 'react-reflex';
 import styled from 'styled-components';
 
+import { ApplicationState } from '../store';
+import { openProject } from '../store/project/actions';
+
 const ProjectMain: React.FunctionComponent = () => {
+	const dispatch = useDispatch();
 	const params = new URLSearchParams(window.location.search);
 	const projectFilePath = decodeURIComponent(params.get('projectFilePath') as string);
+	const project = useSelector(s => s.global.project);
 
 	useEffect(() => {
-		// Dispatch load
+		dispatch(openProject(projectFilePath));
 		// Wait until all clear event
 		// ???
 		// PROFIT
@@ -48,7 +55,7 @@ const ProjectMain: React.FunctionComponent = () => {
 			<StatusContainer>
 				<StatusBar />
 			</StatusContainer>
-			<LoadingMask />
+			{project.opening && <LoadingMask />}
 		</React.Fragment>
 	);
 };
