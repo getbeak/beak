@@ -1,8 +1,8 @@
+import { FSWatcher } from 'chokidar';
 import { validate } from 'jsonschema';
 
-import { projectSchema } from './schemas';
-import { FolderNode,Nodes, ProjectFile, RequestNode, RequestNodeFile } from './types';
-import { FSWatcher } from 'chokidar';
+import { projectSchema, requestSchema } from './schemas';
+import { FolderNode, Nodes, ProjectFile, RequestNode, RequestNodeFile } from './types';
 
 const chokidar = window.require('chokidar');
 const fs = window.require('fs-extra');
@@ -39,6 +39,10 @@ export default class BeakProject {
 
 	getProjectPath() {
 		return this._projectPath;
+	}
+
+	getTree() {
+		return this._tree;
 	}
 
 	async loadProject() {
@@ -95,6 +99,7 @@ export default class BeakProject {
 
 		const node: FolderNode = {
 			type: 'folder',
+			name: path.basename(filePath),
 			filePath,
 			parent,
 			children: [],
@@ -103,25 +108,28 @@ export default class BeakProject {
 		const items = await fs.readdir(filePath);
 		const psNode = root === true ? null : node;
 
-		items.forEach(async item => {
+		/* eslint-disable no-await-in-loop */
+		for (const item of items) {
 			const fullPath = path.join(filePath, item);
 			const stat = await fs.stat(fullPath);
+			let out: Nodes | undefined = void 0;
 
 			if (forbiddenFiles.includes(item))
-				return;
+				continue;
 
 			if (stat.isDirectory()) {
-				const nd = await this.readFolderNode(fullPath, { root: false, parent: psNode });
+				out = await this.readFolderNode(fullPath, { root: false, parent: psNode });
 
-				node.children.push(nd);
+				node.children.push(out);
 			} else if (stat.isFile()) {
-				const nd = await this.readRequestNode(fullPath, psNode);
+				out = await this.readRequestNode(fullPath, psNode);
 
-				node.children.push(nd);
+				node.children.push(out);
 			} else {
 				throw new Error('Unknown dir content type');
 			}
-		});
+		}
+		/* eslint-disable no-await-in-loop */
 
 		if (root !== true && node.parent === null)
 			this._tree.push(node);
@@ -131,15 +139,19 @@ export default class BeakProject {
 
 	private async readRequestNode(filePath: string, parent: FolderNode | null) {
 		const node: RequestNode = {
+			id: 'temp',
+			name: 'temp',
 			type: 'request',
-			id: '#',
 			filePath,
 			parent,
 		};
 
 		const requestFile = await fs.readJson(filePath) as RequestNodeFile;
 
-		validate(requestFile, projectSchema, { throwError: true });
+		validate(requestFile, requestSchema, { throwError: true });
+
+		node.name = requestFile.name;
+		node.id = requestFile.id;
 
 		if (node.parent === null)
 			this._tree.push(node);

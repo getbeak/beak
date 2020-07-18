@@ -17,11 +17,13 @@ export interface Node {
 export interface FolderNode extends Node {
 	type: 'folder';
 	children: Nodes[];
+	name: string;
 }
 
 export interface RequestNode extends Node {
 	id: string;
 	type: 'request';
+	name: string;
 }
 
 export type Nodes = FolderNode | RequestNode;

@@ -9,6 +9,7 @@ const projectReducer = createReducer<State, Actions>(initialState)
 	.handleAction(actions.projectOpened, (state, action) => ({
 		...state,
 		opening: false,
+		tree: action.payload.tree,
 		name: action.payload.name,
 		projectPath: action.payload.projectPath,
 	}))

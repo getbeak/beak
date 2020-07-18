@@ -11,6 +11,7 @@ import {
 } from 'react-reflex';
 import styled from 'styled-components';
 
+import ExplorerPane from '../features/explorer-pane/components/ExplorerPane';
 import { openProject } from '../store/project/actions';
 
 const ProjectMain: React.FunctionComponent = () => {
@@ -37,28 +38,30 @@ const ProjectMain: React.FunctionComponent = () => {
 				<title>{title}</title>
 			</Helmet>
 			<Container>
-				<ReflexContainer orientation={'vertical'}>
-					<ReflexElement
-						size={220}
-						minSize={170}
-					>
-						{'Explorer'}
-					</ReflexElement>
+				{!project.opening && (
+					<ReflexContainer orientation={'vertical'}>
+						<ReflexElement
+							size={220}
+							minSize={170}
+						>
+							<ExplorerPane />
+						</ReflexElement>
 
-					<ReflexSplitter />
+						<ReflexSplitter />
 
-					<ReflexElement>
-						{'Requester'}
-						<br />
-						{projectFilePath}
-					</ReflexElement>
+						<ReflexElement>
+							{'Requester'}
+							<br />
+							{projectFilePath}
+						</ReflexElement>
 
-					<ReflexSplitter />
+						<ReflexSplitter />
 
-					<ReflexElement>
-						{'Inspector'}
-					</ReflexElement>
-				</ReflexContainer>
+						<ReflexElement>
+							{'Inspector'}
+						</ReflexElement>
+					</ReflexContainer>
+				)}
 			</Container>
 			<StatusContainer>
 				<StatusBar />
