@@ -1,6 +1,6 @@
 import { deprecated } from 'typesafe-actions';
 
-import { ActionTypes } from './types';
+import { ActionTypes, ProjectOpenedPayload } from './types';
 
 const { createAction } = deprecated;
 
@@ -9,6 +9,12 @@ export const openProject = createAction(
 	action => (projectPath: string) => action({ projectPath }),
 );
 
+export const projectOpened = createAction(
+	ActionTypes.PROJECT_OPENED,
+	action => (project: ProjectOpenedPayload) => action(project),
+);
+
 export default {
 	openProject,
+	projectOpened,
 };

@@ -16,15 +16,29 @@ interface ReadFolderNodeOptions {
 	parent: FolderNode | null;
 }
 
+interface Message {
+	event: string;
+	path: string;
+}
+
 export default class BeakProject {
 	private _projectPath: string;
 	private _project?: ProjectFile;
 	private _tree: Nodes[] = [];
 	private _watcher?: FSWatcher;
-	private _watcherReady: boolean;
+	private _watcherReady = false;
+	private _listenerQueue: Message[] = [];
 
 	constructor(projectFilePath: string) {
 		this._projectPath = path.join(projectFilePath, '..');
+	}
+
+	getProject() {
+		return this._project;
+	}
+
+	getProjectPath() {
+		return this._projectPath;
 	}
 
 	async loadProject() {
@@ -50,11 +64,11 @@ export default class BeakProject {
 		});
 
 		this._watcher
-			.on('add', path => this.eventStub('add', path))
-			.on('change', path => this.eventStub('change', path))
-			.on('unlink', path => this.eventStub('unlink', path))
-			.on('addDir', path => this.eventStub('addDir', path))
-			.on('unlinkDir', path => this.eventStub('unlinkDir', path))
+			.on('add', path => this._listenerQueue.push({ event: 'add', path }))
+			.on('change', path => this._listenerQueue.push({ event: 'change', path }))
+			.on('unlink', path => this._listenerQueue.push({ event: 'unlink', path }))
+			.on('addDir', path => this._listenerQueue.push({ event: 'addDir', path }))
+			.on('unlinkDir', path => this._listenerQueue.push({ event: 'unlinkDir', path }))
 			.on('ready', () => {
 				this._watcherReady = true;
 			});
@@ -67,11 +81,9 @@ export default class BeakProject {
 		this._watcher = void 0;
 	}
 
-	private eventStub(event: string, arg: string) {
-		if (!this._watcherReady)
-			return;
-
-		console.log(`[${event}] => ${arg}`);
+	* on() {
+		while (true)
+			yield this._listenerQueue.shift();
 	}
 
 	printTree() {
