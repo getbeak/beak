@@ -16,7 +16,7 @@ const RequestItem: React.FunctionComponent<RequestItemProps> = props => (
 
 const Wrapper = styled.div<{ depth: number }>`
 	padding: 2px 0;
-	padding-left: ${props => (props.depth * 8) + 14}px;
+	padding-left: ${props => (props.depth * 8) + 19}px;
 	cursor: pointer;
 	font-size: 12px;
 	color: ${props => props.theme.ui.textOnSurfaceBackground};

@@ -19,6 +19,7 @@ const FolderItem: React.FunctionComponent<FolderItemProps> = props => {
 	return (
 		<React.Fragment>
 			<Wrapper depth={depth} onClick={() => setShow(!show)}>
+				<Chevron expanded={show} />
 				{node.name}
 			</Wrapper>
 
@@ -34,7 +35,7 @@ const FolderItem: React.FunctionComponent<FolderItemProps> = props => {
 
 const Wrapper = styled.div<{ depth: number }>`
 	padding: 2px 0;
-	padding-left: ${props => (props.depth * 8) + 14}px;
+	padding-left: ${props => (props.depth * 8) + 21}px;
 	cursor: pointer;
 	font-size: 12px;
 	color: ${props => props.theme.ui.textOnSurfaceBackground};
@@ -42,6 +43,20 @@ const Wrapper = styled.div<{ depth: number }>`
 	&:hover {
 		background-color: ${props => props.theme.ui.background};
 	}
+`;
+
+const Chevron = styled.div<{ expanded: boolean }>`
+	display: inline-block;
+	border-right: 1px solid ${props => props.theme.ui.textOnSurfaceBackground};
+	border-bottom: 1px solid ${props => props.theme.ui.textOnSurfaceBackground};
+	width: 5px;
+	height: 5px;
+	margin-right: 5px;
+	margin-left: -5px;
+	transform: rotate(${props => props.expanded ? '45deg' : '-45deg'});
+	transform-origin: 50%;
+
+	margin-bottom: ${props => props.expanded ? '2px' : '1px'};
 `;
 
 export default FolderItem;
