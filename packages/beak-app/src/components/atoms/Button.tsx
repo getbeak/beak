@@ -6,7 +6,26 @@ const primaryCss = css`
 
 	&:not(:disabled) {
 		&:hover {
-			background: ${props => props.theme.ui.secondaryBackground};
+			background: ${props => props.theme.ui.primaryFill};
+		}
+
+		&:focus {
+			outline-color: ${props => props.theme.ui.primaryFill};
+		}
+	}
+`;
+
+const secondaryCss = css`
+	background: ${props => props.theme.ui.background};
+	border: 2px solid ${props => props.theme.ui.secondaryAction};
+
+	&:not(:disabled) {
+		&:hover {
+			background: ${props => props.theme.ui.secondaryAction};
+		}
+
+		&:focus {
+			outline-color: ${props => props.theme.ui.secondaryAction};
 		}
 	}
 `;
@@ -17,8 +36,8 @@ const mdCss = css`
 `;
 
 export interface ButtonProps {
-	color: 'primary' | 'secondary' | 'action' | 'alert';
-	size: 'md';
+	colour?: 'primary' | 'secondary';
+	size?: 'md';
 }
 
 const Button = styled.button<ButtonProps>`
@@ -34,26 +53,29 @@ const Button = styled.button<ButtonProps>`
 		&:active {
 			transform: scale(.95);
 		}
+
+		&:focus {
+			outline: none;
+			outline-width: 4px;
+			outline-style: solid;
+		}
 	}
 
-	${({ color }) => {
-		if (color === 'primary')
+	${({ colour }) => {
+		if (colour === 'primary')
 			return primaryCss;
+		if (!colour || colour === 'secondary')
+			return secondaryCss;
 
 		return '';
 	}}
 
 	${({ size }) => {
-		if (size === 'md')
+		if (!size || size === 'md')
 			return mdCss;
 
 		return '';
 	}}
 `;
-
-Button.defaultProps = {
-	color: 'primary',
-	size: 'md',
-};
 
 export default Button;

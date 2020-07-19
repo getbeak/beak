@@ -19,7 +19,7 @@ const CreateView: React.FunctionComponent<CreateViewProps> = ({ setView }) => (
 			<p>{'Project path [btn]:'}</p>
 			<p>{'Options?:'}</p>
 
-			<Button onClick={() => setView('main') }>{'Cancel'}</Button>
+			<Button colour={'secondary'} onClick={() => setView('main') }>{'Cancel'}</Button>
 			<Button>{'Create'}</Button>
 		</div>
 	</React.Fragment>
