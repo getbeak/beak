@@ -2,6 +2,7 @@ import React from 'react';
 import { Col } from 'react-grid-system';
 
 import { WelcomeViewType } from '../../../../containers/Welcome';
+import { getGlobal } from '../../../../globals';
 import ColumnTitle from '../atoms/ColumnTitle';
 import GetStartedButton from '../molecules/GetStartedButton';
 
@@ -26,6 +27,7 @@ const GetStartedColumn: React.FunctionComponent<GetStartedColumnProps> = ({ setV
 			description={'Opens an existing local project'}
 
 			onClick={async () => {
+				// TODO(afr): Remove this remote and switch to using ipc
 				const { remote, ipcRenderer } = electron;
 				const { dialog } = remote;
 
@@ -44,8 +46,8 @@ const GetStartedColumn: React.FunctionComponent<GetStartedColumnProps> = ({ setV
 
 				const [filePath] = result.filePaths;
 
-				ipcRenderer.send('project-open', filePath);
-				remote.getCurrentWindow().close();
+				ipcRenderer.invoke('project-open', filePath);
+				ipcRenderer.invoke('close-window', getGlobal('windowId'));
 			}}
 		/>
 

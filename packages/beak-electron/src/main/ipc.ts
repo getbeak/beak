@@ -1,9 +1,15 @@
 import { ipcMain } from 'electron';
 
-import { createProjectMainWindow } from './window-management';
+import { closeWindow, createProjectMainWindow } from './window-management';
 
-ipcMain.on('project-open', (_, args) => {
+ipcMain.handle('project-open', (_, args) => {
 	const filePath = args as string;
 
 	createProjectMainWindow(filePath);
+});
+
+ipcMain.handle('close-window', (_, args) => {
+	const windowId = args as string;
+
+	closeWindow(windowId);
 });

@@ -6,6 +6,7 @@ import About from './containers/About';
 import ProjectMain from './containers/ProjectMain';
 import Welcome from './containers/Welcome';
 import { DesignSystemProvider, GlobalStyle } from './design-system';
+import { setGlobal } from './globals';
 import { configureStore } from './store';
 
 function getComponent(container: string | null) {
@@ -27,7 +28,10 @@ function getComponent(container: string | null) {
 const FauxRouter: React.FunctionComponent = () => {
 	const params = new URLSearchParams(window.location.search);
 	const container = params.get('container');
+	const windowId = params.get('windowId');
 	const component = getComponent(container);
+
+	setGlobal('windowId', windowId);
 
 	return (
 		<Provider store={configureStore()}>

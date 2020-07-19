@@ -64,6 +64,16 @@ function createWindow(
 	windowStack[windowId] = window;
 }
 
+export function closeWindow(windowId: string) {
+	const window = windowStack[windowId];
+
+	if (!window)
+		return; // probs already closed...
+
+	window.close();
+	window[windowId] = void 0;
+}
+
 export function createWelcomeWindow() {
 	const windowOpts = {
 		height: 550,
