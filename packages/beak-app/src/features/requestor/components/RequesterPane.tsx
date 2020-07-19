@@ -35,7 +35,7 @@ const RequesterPane: React.FunctionComponent = () => {
 	return (
 		<Container>
 			<UriPane node={selectedNode!} />
-			<ModifiersPane />
+			<ModifiersPane node={selectedNode!} />
 		</Container>
 	);
 };

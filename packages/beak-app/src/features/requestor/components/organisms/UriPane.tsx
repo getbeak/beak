@@ -3,24 +3,27 @@ import styled from 'styled-components';
 
 import { RequestNode } from '../../../../lib/project/types';
 
+const url = window.require('url');
+
 export interface UriPaneProps {
 	node: RequestNode;
 }
 
 const UriPane: React.FunctionComponent<UriPaneProps> = props => {
 	const { node } = props;
+	const verb = node.info.uri.verb;
 
 	return (
 		<Container>
-			<OmniBar defaultValue={'https://httpbin.com/get'} />
+			<OmniBar defaultValue={constructUri(node)} />
 			<VerbPicker>
-				<option selected>{'GET'}</option>
-				<option>{'POST'}</option>
-				<option>{'PATCH'}</option>
-				<option>{'PUT'}</option>
-				<option>{'DELETE'}</option>
-				<option>{'HEAD'}</option>
-				<option>{'OPTIONS'}</option>
+				<option selected={verbToSelected('get', verb)}>{'GET'}</option>
+				<option selected={verbToSelected('post', verb)}>{'POST'}</option>
+				<option selected={verbToSelected('patch', verb)}>{'PATCH'}</option>
+				<option selected={verbToSelected('put', verb)}>{'PUT'}</option>
+				<option selected={verbToSelected('delete', verb)}>{'DELETE'}</option>
+				<option selected={verbToSelected('head', verb)}>{'HEAD'}</option>
+				<option selected={verbToSelected('options', verb)}>{'OPTIONS'}</option>
 			</VerbPicker>
 			<OkayBoomer>
 				{'⌖'}
@@ -48,7 +51,8 @@ const OmniBar = styled.input`
 	border: 1px solid ${props => props.theme.ui.backgroundBorderSeparator};
 	background: ${props => props.theme.ui.surface};
 	color: white;
-	font-weight: 600;
+	font-size: 14px;
+	font-weight: 400;
 
 	&:focus {
 		outline: 2px solid ${props => props.theme.ui.primaryFill};
@@ -65,8 +69,10 @@ const VerbPicker = styled.select`
 	text-indent: 1px;
 	text-overflow: '';
 
+	width: 32px;
+
 	background-color: transparent;
-	margin-top: 7px;
+	margin-top: 8px;
 	border: none;
 	font-weight: 800;
 	color: ${props => props.theme.ui.primaryFill};
@@ -75,6 +81,7 @@ const VerbPicker = styled.select`
 		outline: none;
 	}
 `;
+
 const OkayBoomer = styled.button`
 	position: absolute;
 	right: 22px;
@@ -92,5 +99,35 @@ const OkayBoomer = styled.button`
 
 	cursor: pointer;
 `;
+
+function constructUri(node: RequestNode) {
+	const {
+		protocol,
+		hostname,
+		path: pathname,
+		query,
+		fragment,
+	} = node.info.uri;
+
+	const uri = url.format({
+		protocol,
+		hostname,
+		pathname,
+		query: query?.reduce((acc, val) => ({
+			...acc,
+			[val.name]: val.value,
+		}), {}),
+		hash: fragment,
+	});
+
+	return new URL(uri).toString();
+}
+
+function verbToSelected(current: string, verb: string) {
+	if (current === verb)
+		return true;
+
+	return void 0;
+}
 
 export default UriPane;

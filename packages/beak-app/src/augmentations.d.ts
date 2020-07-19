@@ -3,6 +3,7 @@ import electron from 'electron';
 import fsExtra from 'fs-extra';
 import path from 'path';
 import { Store } from 'react-redux';
+import url from 'url';
 
 import { ApplicationState } from './store';
 
@@ -14,6 +15,7 @@ declare global {
 		require(moduleSpecifier: 'electron'): typeof electron;
 		require(moduleSpecifier: 'fs-extra'): typeof fsExtra;
 		require(moduleSpecifier: 'path'): typeof path;
+		require(moduleSpecifier: 'url'): typeof url;
 		/* eslint-enable no-undef */
 
 		store: Store<ApplicationState>;

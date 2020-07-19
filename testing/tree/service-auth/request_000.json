@@ -1,17 +1,17 @@
 {
 	"id": "request_000",
-	"name": "Get Users",
+	"name": "Enable Twitter God Mode 🚀",
 	"uri": {
-		"protocol": "https",
+		"protocol": "https:",
 		"verb": "get",
 		"hostname": "httpbin.org",
-		"path": "get",
+		"path": "/get",
 		"query": [{
 			"name": "foo",
 			"value": "bar",
 			"enabled": true
 		}],
-		"fragment": null
+		"fragment": "sexi-fragment"
 	},
 	"headers": [{
 		"name": "X-Example-Header",

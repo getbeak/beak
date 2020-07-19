@@ -138,20 +138,21 @@ export default class BeakProject {
 	}
 
 	private async readRequestNode(filePath: string, parent: FolderNode | null) {
-		const node: RequestNode = {
-			id: 'temp',
-			name: 'temp',
-			type: 'request',
-			filePath,
-			parent,
-		};
-
 		const requestFile = await fs.readJson(filePath) as RequestNodeFile;
 
 		validate(requestFile, requestSchema, { throwError: true });
 
-		node.name = requestFile.name;
-		node.id = requestFile.id;
+		const node: RequestNode = {
+			type: 'request',
+			filePath,
+			parent,
+			name: requestFile.name,
+			id: requestFile.id,
+			info: {
+				uri: requestFile.uri,
+				headers: requestFile.headers,
+			},
+		};
 
 		if (node.parent === null)
 			this._tree.push(node);

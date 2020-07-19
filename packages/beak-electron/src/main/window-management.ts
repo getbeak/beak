@@ -12,7 +12,11 @@ const environment = process.env.NODE_ENV;
 
 export const windowStack: Record<string, BrowserWindow> = {};
 
-function generateLoadUrl(container: Container, additionalParams?: Record<string, string>) {
+function generateLoadUrl(
+	container: Container,
+	windowId: string,
+	additionalParams?: Record<string, string>,
+) {
 	let loadUrl = new URL(url.format({
 		pathname: path.join(staticPath, 'dist', 'index.html'),
 		protocol: 'file:',
@@ -34,6 +38,7 @@ function generateLoadUrl(container: Container, additionalParams?: Record<string,
 	}
 
 	loadUrl.searchParams.set('container', container);
+	loadUrl.searchParams.set('windowId', windowId);
 
 	return loadUrl.toString();
 }
@@ -51,7 +56,7 @@ function createWindow(
 		...windowOpts,
 	});
 
-	window.loadURL(generateLoadUrl(container, additionalParams));
+	window.loadURL(generateLoadUrl(container, windowId, additionalParams));
 	window.on('closed', () => {
 		delete windowStack[windowId];
 	});
