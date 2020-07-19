@@ -13,7 +13,7 @@ const Organiser: React.FunctionComponent = () => (
 
 const Container = styled.div`
 	display: flex;
-	padding: 4px 6px;
+	padding: 5px 6px;
 	padding-left: 2px;
 	border-top: 1px solid ${props => props.theme.ui.backgroundBorderSeparator};
 `;
@@ -28,7 +28,8 @@ const SearchBox = styled.input`
 	flex-grow: 2;
 	background: transparent;
 	border: 1px solid ${props => props.theme.ui.backgroundBorderSeparator};
-	border-radius: 2px;
+	border-radius: 8px;
+	padding-left: 4px; padding-right: 4px;
 
 	min-width: 70px;
 	font-size: 12px;
