@@ -10,6 +10,7 @@ import styled from 'styled-components';
 import ReflexSplitter from '../components/atoms/ReflexSplitter';
 import ExplorerPane from '../features/explorer-pane/components/ExplorerPane';
 import RequesterPane from '../features/requestor/components/RequesterPane';
+import StatusBar from '../features/status-bar/components/StatusBar';
 import { openProject } from '../store/project/actions';
 
 const ProjectMain: React.FunctionComponent = () => {
@@ -61,30 +62,16 @@ const ProjectMain: React.FunctionComponent = () => {
 					</ReflexContainer>
 				)}
 			</Container>
-			<StatusContainer>
-				<StatusBar />
-			</StatusContainer>
+			<StatusBar />
 			{project.opening && <LoadingMask />}
 		</React.Fragment>
 	);
 };
 
-const StatusBar = styled.div`
-	background-color: ${props => props.theme.ui.primaryFill};
-	height: 24px;
-`;
-
 const Container = styled.div`
 	position: absolute;
 	top: 0;
 	bottom: 24px;
-	left: 0;
-	right: 0;
-`;
-
-const StatusContainer = styled.div`
-	position: absolute;
-	bottom: 0;
 	left: 0;
 	right: 0;
 `;
