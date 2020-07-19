@@ -4,13 +4,10 @@ import 'react-reflex/styles.css';
 import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-	ReflexContainer,
-	ReflexElement,
-	ReflexSplitter,
-} from 'react-reflex';
+import { ReflexContainer, ReflexElement } from 'react-reflex';
 import styled from 'styled-components';
 
+import ReflexSplitter from '../components/atoms/ReflexSplitter';
 import ExplorerPane from '../features/explorer-pane/components/ExplorerPane';
 import RequesterPane from '../features/requestor/components/RequesterPane';
 import { openProject } from '../store/project/actions';
@@ -50,7 +47,9 @@ const ProjectMain: React.FunctionComponent = () => {
 
 						<ReflexSplitter />
 
-						<ReflexElement>
+						<ReflexElement
+							minSize={365}
+						>
 							<RequesterPane />
 						</ReflexElement>
 

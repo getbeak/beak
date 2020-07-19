@@ -26,7 +26,7 @@ const RequestItem: React.FunctionComponent<RequestItemProps> = props => {
 			<RequestStatusBlob status={generateMockStatus()} />
 		</Wrapper>
 	);
-}
+};
 
 const Wrapper = styled.div<{ depth: number }>`
 	display: flex;
@@ -34,10 +34,13 @@ const Wrapper = styled.div<{ depth: number }>`
 	padding-left: ${props => (props.depth * 8) + 19}px;
 	cursor: pointer;
 	font-size: 12px;
-	color: ${props => props.theme.ui.textOnSurfaceBackground};
+	line-height: 18px;
+
+	color: ${props => props.theme.ui.textMinor};
 
 	&:hover {
 		background-color: ${props => props.theme.ui.background};
+		color: ${props => props.theme.ui.textOnSurfaceBackground};
 	}
 `;
 

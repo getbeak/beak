@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 
 import { Nodes, RequestNode } from '../../../lib/project/types';
+import ModifiersPane from './organisms/ModifiersPane';
 import UriPane from './organisms/UriPane';
 
 const RequesterPane: React.FunctionComponent = () => {
@@ -24,8 +25,9 @@ const RequesterPane: React.FunctionComponent = () => {
 
 	const selectedNode = traverse(tree!);
 
+	// TODO(afr): Maybe some sort of pergatory state here
 	if (!selectedRequest)
-		return <Container />; // TODO(afr): Maybe some sort of pergatory state here
+		return <Container />;
 
 	if (selectedRequest && !selectedNode)
 		throw new Error('fucked state?!');
@@ -33,12 +35,14 @@ const RequesterPane: React.FunctionComponent = () => {
 	return (
 		<Container>
 			<UriPane node={selectedNode!} />
+			<ModifiersPane />
 		</Container>
 	);
-}
+};
 
 const Container = styled.div`
 	display: flex;
+	flex-direction: column;
 	background-color: ${props => props.theme.ui.secondaryBackground};
 	height: 100%;
 	width: 100%;

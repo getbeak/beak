@@ -36,12 +36,14 @@ const FolderItem: React.FunctionComponent<FolderItemProps> = props => {
 const Wrapper = styled.div<{ depth: number }>`
 	padding: 2px 0;
 	padding-left: ${props => (props.depth * 8) + 21}px;
-	color: ${props => props.theme.ui.textOnSurfaceBackground};
+	color: ${props => props.theme.ui.textMinor};
 	cursor: pointer;
 	font-size: 12px;
+	line-height: 18px;
 
 	&:hover {
 		background-color: ${props => props.theme.ui.background};
+		color: ${props => props.theme.ui.textOnSurfaceBackground};
 	}
 `;
 

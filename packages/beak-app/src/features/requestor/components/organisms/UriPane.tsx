@@ -12,7 +12,7 @@ const UriPane: React.FunctionComponent<UriPaneProps> = props => {
 
 	return (
 		<Container>
-			<OmniBar defaultValue={'httpbin.com/get'} />
+			<OmniBar defaultValue={'https://httpbin.com/get'} />
 			<VerbPicker>
 				<option selected>{'GET'}</option>
 				<option>{'POST'}</option>
@@ -31,9 +31,11 @@ const UriPane: React.FunctionComponent<UriPaneProps> = props => {
 
 const Container = styled.div`
 	position: relative;
-	width: 100%;
 	padding: 25px 20px;
 	border-bottom: 1px solid ${props => props.theme.ui.backgroundBorderSeparator};
+
+	/* TODO(afr): Fix this hack */
+	height: 30px;
 `;
 
 const OmniBar = styled.input`
@@ -75,7 +77,7 @@ const VerbPicker = styled.select`
 `;
 const OkayBoomer = styled.button`
 	position: absolute;
-	right: 20px;
+	right: 22px;
 
 	background: transparent;
 	border: none;
