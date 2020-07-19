@@ -3,11 +3,14 @@ import { composeWithDevTools } from 'redux-devtools-extension';
 import createSagaMiddleware from 'redux-saga';
 import { all, fork } from 'redux-saga/effects';
 
+import * as flightStore from './flight';
+import { State as FlightState } from './flight/types';
 import * as projectStore from './project';
 import { State as ProjectState } from './project/types';
 
 export interface ApplicationState {
 	global: {
+		flight: FlightState;
 		project: ProjectState;
 	};
 }
@@ -15,6 +18,7 @@ export interface ApplicationState {
 function createRootReducer() {
 	return combineReducers<ApplicationState>({
 		global: combineReducers({
+			flight: flightStore.reducers,
 			project: projectStore.reducers,
 		}),
 	});
@@ -22,6 +26,7 @@ function createRootReducer() {
 
 function* rootSaga() {
 	yield all([
+		// fork(flightStore.sagas),
 		fork(projectStore.sagas),
 	]);
 }
@@ -29,6 +34,7 @@ function* rootSaga() {
 function createInitialState(): ApplicationState {
 	return {
 		global: {
+			flight: flightStore.types.initialState,
 			project: projectStore.types.initialState,
 		},
 	};
