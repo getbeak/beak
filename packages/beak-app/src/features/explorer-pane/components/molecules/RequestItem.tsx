@@ -1,5 +1,5 @@
 import React from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 
 import { RequestNode } from '../../../../lib/project/types';
@@ -13,9 +13,11 @@ export interface RequestItemProps {
 
 const RequestItem: React.FunctionComponent<RequestItemProps> = props => {
 	const dispatch = useDispatch();
+	const selectedRequest = useSelector(s => s.global.project.selectedRequest);
 
 	return (
 		<Wrapper
+			active={selectedRequest === props.node.id}
 			depth={props.depth}
 			onClick={() => dispatch(requestSelected(props.node.id))}
 		>
@@ -28,7 +30,12 @@ const RequestItem: React.FunctionComponent<RequestItemProps> = props => {
 	);
 };
 
-const Wrapper = styled.div<{ depth: number }>`
+interface WrapperProps {
+	active: boolean;
+	depth: number;
+}
+
+const Wrapper = styled.div<WrapperProps>`
 	display: flex;
 	padding: 2px 0;
 	padding-left: ${props => (props.depth * 8) + 19}px;
@@ -39,9 +46,10 @@ const Wrapper = styled.div<{ depth: number }>`
 	color: ${props => props.theme.ui.textMinor};
 
 	&:hover {
-		background-color: ${props => props.theme.ui.background};
 		color: ${props => props.theme.ui.textOnSurfaceBackground};
 	}
+
+	background-color: ${props => props.active ? props.theme.ui.background : 'transparent'};
 `;
 
 const Name = styled.abbr`
