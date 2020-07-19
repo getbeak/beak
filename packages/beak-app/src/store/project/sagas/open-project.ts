@@ -2,6 +2,7 @@ import { call, put, setContext } from 'redux-saga/effects';
 import { PayloadAction } from 'typesafe-actions';
 
 import BeakProject from '../../../lib/project/project';
+import { Nodes, RequestNode } from '../../../lib/project/types';
 import * as actions from '../actions';
 
 export default function* workerOpenProject({ payload }: PayloadAction<string, { projectPath: string }>) {
@@ -23,4 +24,18 @@ export default function* workerOpenProject({ payload }: PayloadAction<string, { 
 		projectPath: pp,
 		tree,
 	}));
+
+	// TODO(afr): Remove this, is just for debugging
+	yield put(actions.requestSelected(firstRequest(tree)!.id));
+}
+
+function firstRequest(tree: Nodes[]): RequestNode | null {
+	for (const node of tree) {
+		if (node.type === 'request')
+			return node;
+
+		return firstRequest(node.children);
+	}
+
+	return null;
 }

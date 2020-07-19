@@ -14,7 +14,13 @@ export const projectOpened = createAction(
 	action => (project: ProjectOpenedPayload) => action(project),
 );
 
+export const requestSelected = createAction(
+	ActionTypes.REQUEST_SELECTED,
+	action => (requestId?: string) => action(requestId),
+);
+
 export default {
 	openProject,
 	projectOpened,
+	requestSelected,
 };

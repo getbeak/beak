@@ -1,4 +1,4 @@
-// TODO(afr): Remove this fucking css import. styled-components only pls
+// TODO(afr): Remove this fucking css import one day. styled-components only pls
 import 'react-reflex/styles.css';
 
 import React, { useEffect, useState } from 'react';
@@ -12,6 +12,7 @@ import {
 import styled from 'styled-components';
 
 import ExplorerPane from '../features/explorer-pane/components/ExplorerPane';
+import RequesterPane from '../features/requestor/components/RequesterPane';
 import { openProject } from '../store/project/actions';
 
 const ProjectMain: React.FunctionComponent = () => {
@@ -50,9 +51,7 @@ const ProjectMain: React.FunctionComponent = () => {
 						<ReflexSplitter />
 
 						<ReflexElement>
-							{'Requester'}
-							<br />
-							{projectFilePath}
+							<RequesterPane />
 						</ReflexElement>
 
 						<ReflexSplitter />

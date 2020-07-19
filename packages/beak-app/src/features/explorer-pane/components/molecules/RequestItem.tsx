@@ -1,7 +1,9 @@
 import React from 'react';
+import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 
 import { RequestNode } from '../../../../lib/project/types';
+import { requestSelected } from '../../../../store/project/actions';
 import RequestStatusBlob from '../atoms/RequestStatusBlob';
 
 export interface RequestItemProps {
@@ -9,15 +11,22 @@ export interface RequestItemProps {
 	node: RequestNode;
 }
 
-const RequestItem: React.FunctionComponent<RequestItemProps> = props => (
-	<Wrapper depth={props.depth}>
-		<Name title={props.node.name}>
-			{props.node.name}
-		</Name>
+const RequestItem: React.FunctionComponent<RequestItemProps> = props => {
+	const dispatch = useDispatch();
 
-		<RequestStatusBlob status={generateMockStatus()} />
-	</Wrapper>
-);
+	return (
+		<Wrapper
+			depth={props.depth}
+			onClick={() => dispatch(requestSelected(props.node.id))}
+		>
+			<Name title={props.node.name}>
+				{props.node.name}
+			</Name>
+
+			<RequestStatusBlob status={generateMockStatus()} />
+		</Wrapper>
+	);
+}
 
 const Wrapper = styled.div<{ depth: number }>`
 	display: flex;

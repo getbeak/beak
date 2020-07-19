@@ -3,6 +3,8 @@ import { Nodes } from '../../lib/project/types';
 export const ActionTypes = {
 	OPEN_PROJECT: '@beak/global/project/OPEN_PROJECT',
 	PROJECT_OPENED: '@beak/global/project/PROJECT_OPENED',
+
+	REQUEST_SELECTED: '@beak/global/project/REQUEST_SELECTED',
 };
 
 export interface State {
@@ -10,6 +12,8 @@ export interface State {
 	name?: string;
 	projectPath?: string;
 	tree?: Nodes[];
+
+	selectedRequest?: string;
 }
 
 export const initialState: State = {

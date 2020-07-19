@@ -13,6 +13,10 @@ const projectReducer = createReducer<State, Actions>(initialState)
 		name: action.payload.name,
 		projectPath: action.payload.projectPath,
 	}))
+	.handleAction(actions.requestSelected, (state, action) => ({
+		...state,
+		selectedRequest: action.payload,
+	}))
 	.handleAction(actions.openProject, state => ({
 		...state,
 		opening: true,
