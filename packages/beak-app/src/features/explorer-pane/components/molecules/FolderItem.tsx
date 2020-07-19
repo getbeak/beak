@@ -42,7 +42,6 @@ const Wrapper = styled.div<{ depth: number }>`
 	line-height: 18px;
 
 	&:hover {
-		background-color: ${props => props.theme.ui.background};
 		color: ${props => props.theme.ui.textOnSurfaceBackground};
 	}
 `;
