@@ -4,6 +4,7 @@ import styled from 'styled-components';
 
 import Header from './atoms/Header';
 import SectionHeader from './atoms/SectionHeader';
+import Organiser from './organisms/Organiser';
 import TreeView from './organisms/TreeView';
 
 const ExplorerPane: React.FunctionComponent = () => {
@@ -14,6 +15,7 @@ const ExplorerPane: React.FunctionComponent = () => {
 			<Header>{'Explorer'}</Header>
 			<SectionHeader>{project.name!}</SectionHeader>
 			<TreeView tree={project.tree!} />
+			<Organiser />
 		</Container>
 	);
 };
