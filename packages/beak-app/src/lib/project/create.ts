@@ -13,8 +13,11 @@ export default async function createProject(options: CreationOptions) {
 
 	await fs.ensureDir(projectPath);
 	await ensureDirEmpty(projectPath);
-	await createProjectFile(projectPath, name)
+	await createProjectFile(projectPath, name);
 	await fs.ensureDir(path.join(projectPath, 'tree'));
+	await fs.writeFile(path.join(projectPath, '.gitignore'), '.beak\n');
+	await fs.ensureDir(path.join(projectPath, '.beak'));
+	await fs.writeFile(path.join(projectPath, '.beak', 'supersecret.json'), '{}');
 }
 
 async function ensureDirEmpty(path: string) {
