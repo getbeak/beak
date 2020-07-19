@@ -1,6 +1,7 @@
 import * as path from 'path';
 
 // Is our app packaged in a binary or still in Electron?
+// @ts-ignore
 const appIsPackaged = !process.defaultApp;
 
 /**

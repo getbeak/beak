@@ -1,61 +1,29 @@
-import { app, BrowserWindow } from 'electron';
-import * as path from 'path';
-import * as url from 'url';
-import * as uuid from 'uuid';
+import './ipc';
 
-import { staticPath } from './utils/static-path';
+import { app } from 'electron';
 
-const DEV_URL = 'http://localhost:3000';
-const environment = process.env.NODE_ENV;
+import createMenu from './menu';
+import { createAboutWindow, createProjectMainWindow, createWelcomeWindow, windowStack } from './window-management';
 
-const windows: Record<string, BrowserWindow> = {};
+const quickCreate = {
+	project: createProjectMainWindow,
+	welcome: createWelcomeWindow,
+	about: createAboutWindow,
+};
 
-function createWelcomeWindow() {
-	const windowId = uuid.v4();
-	const win = new BrowserWindow({
-		height: 550,
-		width: 900,
-		resizable: false,
-		frame: false,
-	});
+createMenu();
 
-	windows[windowId] = win;
-
-	win.loadURL(generateLoadUrl('welcome'));
-	win.webContents.openDevTools();
-
-	win.on('closed', () => {
-		delete windows[windowId];
-	});
-
-}
-
-// Quit application when all windows are closed
+// Quit application when all windows are closed on macOS
 app.on('window-all-closed', () => {
 	if (process.platform !== 'darwin')
 		app.quit();
 });
 
 app.on('activate', () => {
-	if (Object.keys(windows).length === 0)
-		createWelcomeWindow();
+	if (Object.keys(windowStack).length === 0)
+		quickCreate.welcome();
 });
 
 app.on('ready', () => {
-	createWelcomeWindow();
+	quickCreate.welcome();
 });
-
-function generateLoadUrl(container: 'welcome') {
-	let loadUrl = new URL(url.format({
-		pathname: path.join(staticPath, 'dist', 'index.html'),
-		protocol: 'file:',
-		slashes: true,
-	}));
-
-	if (environment !== 'production')
-		loadUrl = new URL(DEV_URL);
-
-	loadUrl.searchParams.set('container', container);
-
-	return loadUrl.toString();
-}

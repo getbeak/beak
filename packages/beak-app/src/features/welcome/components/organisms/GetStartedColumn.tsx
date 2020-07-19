@@ -2,8 +2,10 @@ import React from 'react';
 import { Col } from 'react-grid-system';
 
 import { WelcomeViewType } from '../../../../containers/Welcome';
-import WelcomeColumnTitle from '../atoms/WelcomeColumnTitle';
+import ColumnTitle from '../atoms/ColumnTitle';
 import GetStartedButton from '../molecules/GetStartedButton';
+
+const electron = window.require('electron');
 
 export interface GetStartedColumnProps {
 	setView: (view: WelcomeViewType) => void;
@@ -11,7 +13,7 @@ export interface GetStartedColumnProps {
 
 const GetStartedColumn: React.FunctionComponent<GetStartedColumnProps> = ({ setView }) => (
 	<Col>
-		<WelcomeColumnTitle>{'Get started'}</WelcomeColumnTitle>
+		<ColumnTitle>{'Get started'}</ColumnTitle>
 
 		<GetStartedButton
 			title={'Create a new project'}
@@ -22,6 +24,29 @@ const GetStartedColumn: React.FunctionComponent<GetStartedColumnProps> = ({ setV
 		<GetStartedButton
 			title={'Open an existing project'}
 			description={'Opens an existing local project'}
+
+			onClick={async () => {
+				const { remote, ipcRenderer } = electron;
+				const { dialog } = remote;
+
+				const result = await dialog.showOpenDialog({
+					title: 'Open a beak project',
+					buttonLabel: 'Open',
+					properties: ['openFile'],
+					filters: [
+						{ name: 'Beak project', extensions: ['json'] },
+						{ name: 'All files', extensions: ['*'] },
+					],
+				});
+
+				if (!result || result.canceled || result.filePaths.length !== 1)
+					return;
+
+				const [filePath] = result.filePaths;
+
+				ipcRenderer.send('project-open', filePath);
+				remote.getCurrentWindow().close();
+			}}
 		/>
 
 		<GetStartedButton

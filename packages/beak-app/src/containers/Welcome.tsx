@@ -25,7 +25,7 @@ const Welcome: React.FunctionComponent = () => {
 			</Container>
 		</Wrapper>
 	);
-}
+};
 
 const Wrapper = styled.div`
 
@@ -61,9 +61,6 @@ const DragBar = styled.div`
 	left: 0;
 	right: 0;
 	height: 80px;
-
-	-webkit-user-select: none;
-	-webkit-app-region: drag;
 `;
 
 const Closer = styled.div`

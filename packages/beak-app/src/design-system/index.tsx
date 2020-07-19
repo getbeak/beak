@@ -27,6 +27,8 @@ const GlobalStyle = createGlobalStyle`
 	html, body {
 		background-color: ${props => props.theme.ui.background};
 		color: ${props => props.theme.ui.textOnAction};
+		margin: 0;
+		padding: 0;
 
 		overflow: hidden;
 		-webkit-user-select: none;
