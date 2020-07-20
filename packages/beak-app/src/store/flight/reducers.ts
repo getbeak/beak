@@ -13,17 +13,22 @@ const flightReducer = createReducer<State, Actions>(initialState)
 			[action.payload]: false,
 		},
 	}))
+	.handleAction(actions.updateFlightProgress, (state, action) => ({
+		...state,
+		currentFlight: {
+			...state.currentFlight!,
+			percentageComplete: action.payload,
+		},
+	}))
 	.handleAction(actions.completeFlight, (state, action) => {
-		const { flightId, requestId, responseStatus, info } = action.payload;
+		const { flightId, requestId, response, info } = action.payload;
 
 		const newState: State = {
 			...state,
 			currentFlight: {
 				...state.currentFlight!,
 				flighting: false,
-				response: {
-					status: responseStatus,
-				},
+				response,
 			},
 		};
 
@@ -34,9 +39,7 @@ const flightReducer = createReducer<State, Actions>(initialState)
 			flightId,
 			requestId,
 			info,
-			response: {
-				status: responseStatus,
-			},
+			response,
 		};
 
 		newState.flightHistory[requestId] = [
@@ -53,6 +56,7 @@ const flightReducer = createReducer<State, Actions>(initialState)
 			flightId: action.payload.flightId,
 			info: action.payload.info,
 			flighting: true,
+			percentageComplete: 0,
 		},
 		blackBox: {
 			...state.blackBox,

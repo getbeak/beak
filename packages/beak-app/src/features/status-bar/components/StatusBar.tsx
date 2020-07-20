@@ -11,12 +11,12 @@ const StatusBar: React.FunctionComponent = () => {
 		<StatusBarContainer>
 			<Wrapper>
 				{!currentFlight && 'waiting... 🤔'}
-				{currentFlight?.flighting && 'request in progress...'}
-				{currentFlight?.response && `request response (${currentFlight.response.status})`}
+				{currentFlight?.flighting && `request in progress... (${currentFlight.percentageComplete}%)`}
+				{currentFlight?.response && `request response (${currentFlight.response.statusCode})`}
 			</Wrapper>
 		</StatusBarContainer>
 	);
-}
+};
 
 export default StatusBar;
 

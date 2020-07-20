@@ -19,6 +19,11 @@ export const beginFlightRequest = createAction(
 	action => (payload: BeginFlightPayload) => action(payload),
 );
 
+export const updateFlightProgress = createAction(
+	ActionTypes.UPDATE_FLIGHT_PROGRESS,
+	action => (percentage: number) => action(percentage),
+);
+
 export const completeFlight = createAction(
 	ActionTypes.COMPLETE_FLIGHT,
 	action => (payload: CompleteFlightPayload) => action(payload),
@@ -28,4 +33,6 @@ export default {
 	requestFlight,
 	cancelFlightRequest,
 	beginFlightRequest,
+	updateFlightProgress,
+	completeFlight,
 };
