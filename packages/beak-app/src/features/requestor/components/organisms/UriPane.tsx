@@ -13,12 +13,12 @@ export interface UriPaneProps {
 
 const UriPane: React.FunctionComponent<UriPaneProps> = props => {
 	const dispatch = useDispatch();
-	const [flightId, setflightId] = useState(uuid.v4());
+	const [flightId, setFlightId] = useState(uuid.v4());
 	const { node } = props;
 	const verb = node.info.uri.verb;
 
 	useEffect(() => {
-		setflightId(uuid.v4());
+		setFlightId(uuid.v4());
 	}, [node]);
 
 	function dispatchFlightRequest() {
@@ -31,7 +31,7 @@ const UriPane: React.FunctionComponent<UriPaneProps> = props => {
 
 	return (
 		<Container>
-			<OmniBar defaultValue={constructUri(node.info)} />
+			<OmniBar value={constructUri(node.info)} />
 			<VerbPicker>
 				<option selected={verbToSelected('get', verb)}>{'GET'}</option>
 				<option selected={verbToSelected('post', verb)}>{'POST'}</option>

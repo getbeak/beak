@@ -7,9 +7,8 @@ import { constructUri } from '../../../lib/project/url';
 import InspectorTabs from './organisms/InspectorTabs';
 
 const InspectorPane: React.FunctionComponent = () => {
-	const project = useSelector(s => s.global.project);
+	const { tree, selectedRequest } = useSelector(s => s.global.project);
 	const flight = useSelector(s => s.global.flight);
-	const { tree, selectedRequest } = project;
 
 	const traverse = (nodes: Nodes[]): RequestNode | undefined => nodes.map(n => {
 		if (n.type === 'request') {

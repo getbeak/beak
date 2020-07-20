@@ -7,8 +7,7 @@ import ModifiersPane from './organisms/ModifierTabs';
 import UriPane from './organisms/UriPane';
 
 const RequesterPane: React.FunctionComponent = () => {
-	const project = useSelector(s => s.global.project);
-	const { tree, selectedRequest } = project;
+	const { tree, selectedRequest } = useSelector(s => s.global.project);
 
 	const traverse = (nodes: Nodes[]): RequestNode | undefined => nodes.map(n => {
 		if (n.type === 'request') {
