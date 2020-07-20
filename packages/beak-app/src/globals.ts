@@ -1,5 +1,11 @@
-const globals = {
+interface Globals {
+	platform: null | NodeJS.Platform;
+	windowId: null | string;
+}
+
+const globals: Globals = {
 	windowId: null,
+	platform: null,
 };
 
 export function setGlobal(key: keyof typeof globals, value: any) {

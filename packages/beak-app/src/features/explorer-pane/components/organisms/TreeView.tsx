@@ -23,7 +23,7 @@ const TreeView: React.FunctionComponent<TreeViewProps> = ({ tree }) => (
 const Container = styled.div`
 	flex-grow: 2;
 
-	overflow: scroll;
+	overflow-y: auto;
 `;
 
 export default TreeView;

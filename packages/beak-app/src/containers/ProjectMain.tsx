@@ -9,6 +9,7 @@ import styled from 'styled-components';
 
 import ReflexSplitter from '../components/atoms/ReflexSplitter';
 import ExplorerPane from '../features/explorer-pane/components/ExplorerPane';
+import InspectorPane from '../features/insepector/components/InspectorPane';
 import RequesterPane from '../features/requestor/components/RequesterPane';
 import StatusBar from '../features/status-bar/components/StatusBar';
 import { openProject } from '../store/project/actions';
@@ -40,24 +41,29 @@ const ProjectMain: React.FunctionComponent = () => {
 				{!project.opening && (
 					<ReflexContainer orientation={'vertical'}>
 						<ReflexElement
-							size={220}
+							size={250}
 							minSize={170}
+							maxSize={350}
 						>
 							<ExplorerPane />
 						</ReflexElement>
 
-						<ReflexSplitter />
+						<ReflexSplitter propagate />
 
 						<ReflexElement
-							minSize={365}
+							flex={1}
+							minSize={400}
 						>
 							<RequesterPane />
 						</ReflexElement>
 
-						<ReflexSplitter />
+						<ReflexSplitter propagate />
 
-						<ReflexElement>
-							{'Inspector'}
+						<ReflexElement
+							flex={1}
+							minSize={400}
+						>
+							<InspectorPane />
 						</ReflexElement>
 					</ReflexContainer>
 				)}

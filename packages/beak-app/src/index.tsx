@@ -9,6 +9,8 @@ import { DesignSystemProvider, GlobalStyle } from './design-system';
 import { setGlobal } from './globals';
 import { configureStore } from './store';
 
+const process = window.require('process');
+
 function getComponent(container: string | null) {
 	switch (container) {
 		case 'welcome':
@@ -32,6 +34,7 @@ const FauxRouter: React.FunctionComponent = () => {
 	const component = getComponent(container);
 
 	setGlobal('windowId', windowId);
+	setGlobal('platform', process.platform);
 
 	return (
 		<Provider store={configureStore()}>

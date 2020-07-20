@@ -26,7 +26,7 @@ function createRootReducer() {
 
 function* rootSaga() {
 	yield all([
-		// fork(flightStore.sagas),
+		fork(flightStore.sagas),
 		fork(projectStore.sagas),
 	]);
 }

@@ -8,7 +8,7 @@ import WelcomeView from '../features/welcome/components/organisms/WelcomeView';
 export type WelcomeViewType = 'main' | 'create-local';
 
 const Welcome: React.FunctionComponent = () => {
-	const [view, setView] = useState<WelcomeViewType>('create-local');
+	const [view, setView] = useState<WelcomeViewType>('main');
 
 	return (
 		<Wrapper>

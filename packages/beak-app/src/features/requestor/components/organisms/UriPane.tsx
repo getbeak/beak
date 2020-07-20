@@ -1,21 +1,37 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
+import * as uuid from 'uuid';
 
 import { RequestNode } from '../../../../lib/project/types';
-
-const url = window.require('url');
+import { constructUri } from '../../../../lib/project/url';
+import { requestFlight } from '../../../../store/flight/actions';
 
 export interface UriPaneProps {
 	node: RequestNode;
 }
 
 const UriPane: React.FunctionComponent<UriPaneProps> = props => {
+	const dispatch = useDispatch();
+	const [flightId, setflightId] = useState(uuid.v4());
 	const { node } = props;
 	const verb = node.info.uri.verb;
 
+	useEffect(() => {
+		setflightId(uuid.v4());
+	}, [node]);
+
+	function dispatchFlightRequest() {
+		dispatch(requestFlight({
+			requestId: node.id,
+			flightId,
+			info: node.info,
+		}));
+	}
+
 	return (
 		<Container>
-			<OmniBar defaultValue={constructUri(node)} />
+			<OmniBar defaultValue={constructUri(node.info)} />
 			<VerbPicker>
 				<option selected={verbToSelected('get', verb)}>{'GET'}</option>
 				<option selected={verbToSelected('post', verb)}>{'POST'}</option>
@@ -25,7 +41,7 @@ const UriPane: React.FunctionComponent<UriPaneProps> = props => {
 				<option selected={verbToSelected('head', verb)}>{'HEAD'}</option>
 				<option selected={verbToSelected('options', verb)}>{'OPTIONS'}</option>
 			</VerbPicker>
-			<OkayBoomer>
+			<OkayBoomer onClick={() => dispatchFlightRequest()}>
 				{'⌖'}
 			</OkayBoomer>
 		</Container>
@@ -99,29 +115,6 @@ const OkayBoomer = styled.button`
 
 	cursor: pointer;
 `;
-
-function constructUri(node: RequestNode) {
-	const {
-		protocol,
-		hostname,
-		path: pathname,
-		query,
-		fragment,
-	} = node.info.uri;
-
-	const uri = url.format({
-		protocol,
-		hostname,
-		pathname,
-		query: query?.reduce((acc, val) => ({
-			...acc,
-			[val.name]: val.value,
-		}), {}),
-		hash: fragment,
-	});
-
-	return new URL(uri).toString();
-}
 
 function verbToSelected(current: string, verb: string) {
 	if (current === verb)

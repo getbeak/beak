@@ -9,11 +9,11 @@ import styled from 'styled-components';
 
 type Tab = 'debugging' | 'headers' | 'url_query' | 'body' | 'options';
 
-export interface ModifiersPaneProps {
+export interface ModifierTabsProps {
 	node: RequestNode;
 }
 
-const ModifiersPane: React.FunctionComponent<ModifiersPaneProps> = props => {
+const ModifierTabs: React.FunctionComponent<ModifierTabsProps> = props => {
 	const [tab, setTab] = useState<Tab>('debugging');
 
 	return (
@@ -62,9 +62,10 @@ const ModifiersPane: React.FunctionComponent<ModifiersPaneProps> = props => {
 
 const TabBody = styled.div`
 	flex-grow: 2;
-	overflow: scroll;
+
+	overflow-y: auto;
 
 	padding: 0 15px;
 `;
 
-export default ModifiersPane;
+export default ModifierTabs;

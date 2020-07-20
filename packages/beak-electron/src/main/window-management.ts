@@ -108,5 +108,10 @@ export function createProjectMainWindow(projectFilePath: string) {
 		title: 'Loading... - Beak',
 	};
 
+	// TODO(afr): Totally custom frame for Linux/Windows
+	// // On Linux and Windows, we want total control of the frame
+	// if (process.platform !== 'darwin')
+	// 	windowOpts.frame = false;
+
 	createWindow(windowOpts, 'project-main', { projectFilePath });
 }

@@ -1,14 +1,31 @@
 import { deprecated } from 'typesafe-actions';
 
-import { ActionTypes } from './types';
+import { ActionTypes, BeginFlightPayload, CompleteFlightPayload, RequestFlightPayload } from './types';
 
 const { createAction } = deprecated;
 
-export const startFlight = createAction(
-	ActionTypes.START_FLIGHT,
-	action => () => action(),
+export const requestFlight = createAction(
+	ActionTypes.REQUEST_FLIGHT,
+	action => (payload: RequestFlightPayload) => action(payload),
+);
+
+export const cancelFlightRequest = createAction(
+	ActionTypes.CANCEL_FLIGHT_REQUEST,
+	action => (requestId: string) => action(requestId),
+);
+
+export const beginFlightRequest = createAction(
+	ActionTypes.CANCEL_FLIGHT_REQUEST,
+	action => (payload: BeginFlightPayload) => action(payload),
+);
+
+export const completeFlight = createAction(
+	ActionTypes.COMPLETE_FLIGHT,
+	action => (payload: CompleteFlightPayload) => action(payload),
 );
 
 export default {
-	startFlight,
+	requestFlight,
+	cancelFlightRequest,
+	beginFlightRequest,
 };

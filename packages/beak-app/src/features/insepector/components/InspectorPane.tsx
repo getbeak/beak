@@ -3,11 +3,12 @@ import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 
 import { Nodes, RequestNode } from '../../../lib/project/types';
-import ModifiersPane from './organisms/ModifierTabs';
-import UriPane from './organisms/UriPane';
+import { constructUri } from '../../../lib/project/url';
+import InspectorTabs from './organisms/InspectorTabs';
 
-const RequesterPane: React.FunctionComponent = () => {
+const InspectorPane: React.FunctionComponent = () => {
 	const project = useSelector(s => s.global.project);
+	const flight = useSelector(s => s.global.flight);
 	const { tree, selectedRequest } = project;
 
 	const traverse = (nodes: Nodes[]): RequestNode | undefined => nodes.map(n => {
@@ -32,10 +33,18 @@ const RequesterPane: React.FunctionComponent = () => {
 	if (selectedRequest && !selectedNode)
 		throw new Error('fucked state?!');
 
+	const flightHistory = flight.flightHistory[selectedNode!.id]?.[0];
+
+	// TODO(afr): Maybe some sort of purgatory state here
+	if (!flightHistory)
+		return <Container />;
+
 	return (
 		<Container>
-			<UriPane node={selectedNode!} />
-			<ModifiersPane node={selectedNode!} />
+			<TempUrlPane>
+				{constructUri(flightHistory.info)}
+			</TempUrlPane>
+			<InspectorTabs flight={flightHistory!} />
 		</Container>
 	);
 };
@@ -48,4 +57,10 @@ const Container = styled.div`
 	width: 100%;
 `;
 
-export default RequesterPane;
+const TempUrlPane = styled.div`
+	padding: 25px;
+
+	text-align: center;
+`;
+
+export default InspectorPane;
