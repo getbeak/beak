@@ -1,4 +1,4 @@
-import { Nodes, Tree } from '../../lib/project/types';
+import { Tree } from '../../lib/project/types';
 
 export const ActionTypes = {
 	OPEN_PROJECT: '@beak/global/project/OPEN_PROJECT',
@@ -7,6 +7,7 @@ export const ActionTypes = {
 	REQUEST_SELECTED: '@beak/global/project/REQUEST_SELECTED',
 
 	REQUEST_URI_UPDATED: '@beak/global/project/REQUEST_URI_UPDATED',
+	REPORT_NODE_UPDATE: '@beak/global/project/REPORT_NODE_UPDATE',
 };
 
 export interface State {

@@ -1,6 +1,7 @@
 import { call, put, setContext } from 'redux-saga/effects';
 import { PayloadAction } from 'typesafe-actions';
 
+import { setProjectSingleton } from '../../../lib/project';
 import BeakProject from '../../../lib/project/project';
 import { RequestNode } from '../../../lib/project/types';
 import * as actions from '../actions';
@@ -8,6 +9,8 @@ import * as actions from '../actions';
 export default function* workerOpenProject({ payload }: PayloadAction<string, { projectPath: string }>) {
 	const { projectPath } = payload;
 	const project = new BeakProject(projectPath);
+
+	setProjectSingleton(project);
 
 	yield call([project, project.loadProject]);
 	yield call([project, project.loadTree]);

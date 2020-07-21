@@ -89,6 +89,21 @@ export default class BeakProject {
 		console.log(this._tree);
 	}
 
+	async writeFolderNode(node: FolderNode) {
+		throw new Error('nah not done yet lol soz');
+	}
+
+	async writeRequestNode(node: RequestNode) {
+		const requestFile: RequestNodeFile = {
+			id: node.id,
+			name: node.name,
+			uri: node.info.uri,
+			headers: node.info.headers,
+		};
+
+		await fs.writeJson(node.filePath, requestFile);
+	}
+
 	private async readFolderNode(filePath: string, opts: ReadFolderNodeOptions) {
 		const { root, parent } = opts;
 
