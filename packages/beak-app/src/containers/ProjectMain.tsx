@@ -8,6 +8,7 @@ import { ReflexContainer, ReflexElement } from 'react-reflex';
 import styled from 'styled-components';
 
 import ReflexSplitter from '../components/atoms/ReflexSplitter';
+import ProgressIndicator from '../components/molecules/ProgressIndicator';
 import ExplorerPane from '../features/explorer-pane/components/ExplorerPane';
 import InspectorPane from '../features/insepector/components/InspectorPane';
 import RequesterPane from '../features/requestor/components/RequesterPane';
@@ -37,6 +38,7 @@ const ProjectMain: React.FunctionComponent = () => {
 			<Helmet>
 				<title>{title}</title>
 			</Helmet>
+			<ProgressIndicator />
 			<Container>
 				{!project.opening && (
 					<ReflexContainer orientation={'vertical'}>
