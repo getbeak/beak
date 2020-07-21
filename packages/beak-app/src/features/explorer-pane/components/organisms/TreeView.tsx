@@ -12,6 +12,8 @@ export interface TreeViewProps {
 const TreeView: React.FunctionComponent<TreeViewProps> = ({ tree }) => {
 	const items = Object.values(tree).filter(t => !t.parent);
 
+	console.log(items);
+
 	return (
 		<Container>
 			{items.map(n => {

@@ -126,7 +126,8 @@ export default class BeakProject {
 		}
 		/* eslint-disable no-await-in-loop */
 
-		this._tree[node.filePath] = node;
+		if (!root)
+			this._tree[node.filePath] = node;
 
 		return node;
 	}

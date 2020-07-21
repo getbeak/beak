@@ -10,7 +10,7 @@ export interface DebuggerPaneProps {
 const DebuggerPane: React.FunctionComponent<DebuggerPaneProps> = props => (
 	<React.Fragment>
 		<SexiPre>
-			{JSON.stringify({ ...props.node, parent: '[omitted]' }, null, '  ')}
+			{JSON.stringify(props.node, null, '  ')}
 		</SexiPre>
 	</React.Fragment>
 );

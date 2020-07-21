@@ -6,6 +6,9 @@ import * as uuid from 'uuid';
 import { RequestNode } from '../../../../lib/project/types';
 import { constructUri } from '../../../../lib/project/url';
 import { requestFlight } from '../../../../store/flight/actions';
+import { requestUriUpdated } from '../../../../store/project/actions';
+
+const url = window.require('url');
 
 export interface UriPaneProps {
 	node: RequestNode;
@@ -29,17 +32,42 @@ const UriPane: React.FunctionComponent<UriPaneProps> = props => {
 		}));
 	}
 
+	function handleUrlChange(e: React.ChangeEvent<HTMLInputElement>) {
+		const value = e.currentTarget.value;
+		const parsed = url.parse(value);
+
+		// TODO(afr): Fully understand this
+
+		dispatch(requestUriUpdated({
+			requestId: node.id,
+			protocol: parsed.protocol || '',
+			hostname: parsed.hostname || '',
+			path: parsed.path || '',
+		}));
+	}
+
 	return (
 		<Container>
-			<OmniBar value={constructUri(node.info, { includeHash: false, includeQuery: false })} />
-			<VerbPicker>
-				<option selected={verbToSelected('get', verb)}>{'GET'}</option>
-				<option selected={verbToSelected('post', verb)}>{'POST'}</option>
-				<option selected={verbToSelected('patch', verb)}>{'PATCH'}</option>
-				<option selected={verbToSelected('put', verb)}>{'PUT'}</option>
-				<option selected={verbToSelected('delete', verb)}>{'DELETE'}</option>
-				<option selected={verbToSelected('head', verb)}>{'HEAD'}</option>
-				<option selected={verbToSelected('options', verb)}>{'OPTIONS'}</option>
+			<OmniBar
+				value={constructUri(node.info, { includeHash: false, includeQuery: false })}
+				onChange={e => handleUrlChange(e)}
+			/>
+			<VerbPicker
+				value={verb}
+				onChange={e => {
+					dispatch(requestUriUpdated({
+						requestId: node.id,
+						verb: e.currentTarget.value,
+					}));
+				}}
+			>
+				<option value={'get'}>{'GET'}</option>
+				<option value={'post'}>{'POST'}</option>
+				<option value={'patch'}>{'PATCH'}</option>
+				<option value={'put'}>{'PUT'}</option>
+				<option value={'delete'}>{'DELETE'}</option>
+				<option value={'head'}>{'HEAD'}</option>
+				<option value={'options'}>{'OPTIONS'}</option>
 			</VerbPicker>
 			<OkayBoomer onClick={() => dispatchFlightRequest()}>
 				{'⌖'}
