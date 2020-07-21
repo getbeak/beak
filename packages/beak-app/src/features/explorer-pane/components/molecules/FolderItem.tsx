@@ -1,20 +1,22 @@
 import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 
 import { FolderNode } from '../../../../lib/project/types';
-import RequestItem from './RequestItem';
+import Switch from './Switch';
 
 export interface FolderItemProps {
 	depth: number;
-	node: FolderNode;
+	id: string;
 }
 
 // This rule seems to be broken? fails on `depth + 1`
 /* eslint-disable @typescript-eslint/restrict-plus-operands */
 
 const FolderItem: React.FunctionComponent<FolderItemProps> = props => {
-	const { depth, node } = props;
+	const { depth } = props;
 	const [show, setShow] = useState(true);
+	const node = useSelector(s => s.global.project.tree![props.id]) as FolderNode;
 
 	return (
 		<React.Fragment>
@@ -23,12 +25,7 @@ const FolderItem: React.FunctionComponent<FolderItemProps> = props => {
 				{node.name}
 			</Wrapper>
 
-			{show && node.children.map(n => {
-				if (n.type === 'folder')
-					return <FolderItem depth={depth + 1} key={n.filePath} node={n} />;
-
-				return <RequestItem depth={depth + 1} key={n.filePath} node={n} />;
-			})}
+			{show && node.children.map(i => <Switch depth={depth + 1} key={i} id={i} />)}
 		</React.Fragment>
 	);
 };

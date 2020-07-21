@@ -5,8 +5,6 @@ import styled from 'styled-components';
 const ProgressIndicator: React.FunctionComponent = () => {
 	const currentFlight = useSelector(s => s.global.flight.currentFlight);
 
-	console.log(currentFlight?.percentageComplete);
-
 	return (
 		<Wrapper>
 			{currentFlight?.flighting && (

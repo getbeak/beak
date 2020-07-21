@@ -11,12 +11,12 @@ export interface RequestNodeFile extends RequestInfo {
 export interface Node {
 	type: 'folder' | 'request';
 	filePath: string;
-	parent: Node | null;
+	parent: string | null;
 }
 
 export interface FolderNode extends Node {
 	type: 'folder';
-	children: Nodes[];
+	children: string[];
 	name: string;
 }
 
@@ -49,3 +49,5 @@ export interface RequestInfo {
 }
 
 export type Nodes = FolderNode | RequestNode;
+
+export type Tree = Record<string, Nodes>;

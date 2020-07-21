@@ -1,6 +1,6 @@
 import { deprecated } from 'typesafe-actions';
 
-import { ActionTypes, ProjectOpenedPayload } from './types';
+import { ActionTypes, ProjectOpenedPayload, RequestUriUpdatedPayload } from './types';
 
 const { createAction } = deprecated;
 
@@ -19,8 +19,14 @@ export const requestSelected = createAction(
 	action => (requestId?: string) => action(requestId),
 );
 
+export const requestUriUpdated = createAction(
+	ActionTypes.REQUEST_URI_UPDATED,
+	action => (payload: RequestUriUpdatedPayload) => action(payload),
+);
+
 export default {
 	openProject,
 	projectOpened,
 	requestSelected,
+	requestUriUpdated,
 };

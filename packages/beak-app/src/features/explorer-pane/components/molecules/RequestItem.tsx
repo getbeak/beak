@@ -2,27 +2,27 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 
-import { RequestNode } from '../../../../lib/project/types';
 import { requestSelected } from '../../../../store/project/actions';
 import RequestStatusBlob from '../atoms/RequestStatusBlob';
 
 export interface RequestItemProps {
 	depth: number;
-	node: RequestNode;
+	id: string;
 }
 
 const RequestItem: React.FunctionComponent<RequestItemProps> = props => {
 	const dispatch = useDispatch();
+	const node = useSelector(s => s.global.project.tree![props.id]);
 	const selectedRequest = useSelector(s => s.global.project.selectedRequest);
 
 	return (
 		<Wrapper
-			active={selectedRequest === props.node.id}
+			active={selectedRequest === props.id}
 			depth={props.depth}
-			onClick={() => dispatch(requestSelected(props.node.id))}
+			onClick={() => dispatch(requestSelected(props.id))}
 		>
-			<Name title={props.node.name}>
-				{props.node.name}
+			<Name title={node.name}>
+				{node.name}
 			</Name>
 
 			<RequestStatusBlob status={generateMockStatus()} />

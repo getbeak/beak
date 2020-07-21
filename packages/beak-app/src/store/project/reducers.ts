@@ -20,6 +20,14 @@ const projectReducer = createReducer<State, Actions>(initialState)
 	.handleAction(actions.openProject, state => ({
 		...state,
 		opening: true,
-	}));
+	}))
+	.handleAction(actions.requestUriUpdated, (state, action) => {
+		const newState = { ...state };
+
+		// TODO: this is not efficient
+		// newState.
+
+		return newState;
+	});
 
 export default projectReducer;

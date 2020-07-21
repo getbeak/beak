@@ -31,7 +31,7 @@ const UriPane: React.FunctionComponent<UriPaneProps> = props => {
 
 	return (
 		<Container>
-			<OmniBar value={constructUri(node.info)} />
+			<OmniBar value={constructUri(node.info, { includeHash: false, includeQuery: false })} />
 			<VerbPicker>
 				<option selected={verbToSelected('get', verb)}>{'GET'}</option>
 				<option selected={verbToSelected('post', verb)}>{'POST'}</option>

@@ -2,7 +2,18 @@ import { RequestInfo } from './types';
 
 const url = window.require('url');
 
-export function constructUri(info: RequestInfo) {
+interface Options {
+	includeQuery: boolean;
+	includeHash: boolean;
+}
+
+export function constructUri(info: RequestInfo, opts?: Options) {
+	const options = {
+		includeQuery: true,
+		includeHash: true,
+		...opts,
+	};
+
 	const {
 		protocol,
 		hostname,
@@ -15,11 +26,11 @@ export function constructUri(info: RequestInfo) {
 		protocol,
 		hostname,
 		pathname,
-		query: query?.filter(q => q.enabled).reduce((acc, val) => ({
+		query: options.includeQuery ? query?.filter(q => q.enabled).reduce((acc, val) => ({
 			...acc,
 			[val.name]: val.value,
-		}), {}),
-		hash: fragment,
+		}), {}) : null,
+		hash: options.includeHash ? fragment : null,
 	});
 
 	return new URL(uri).toString();

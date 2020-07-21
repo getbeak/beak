@@ -2,7 +2,7 @@ import { FSWatcher } from 'chokidar';
 import { validate } from 'jsonschema';
 
 import { projectSchema, requestSchema } from './schemas';
-import { FolderNode, Nodes, ProjectFile, RequestNode, RequestNodeFile } from './types';
+import { FolderNode, Nodes, ProjectFile, RequestNode, RequestNodeFile, Tree } from './types';
 
 const chokidar = window.require('chokidar');
 const fs = window.require('fs-extra');
@@ -13,7 +13,7 @@ const forbiddenFiles = ['.DS_Store', 'Thumbs.db'];
 
 interface ReadFolderNodeOptions {
 	root: boolean;
-	parent: FolderNode | null;
+	parent: string | null;
 }
 
 interface Message {
@@ -24,7 +24,7 @@ interface Message {
 export default class BeakProject {
 	private _projectPath: string;
 	private _project?: ProjectFile;
-	private _tree: Nodes[] = [];
+	private _tree: Tree = {};
 	private _watcher?: FSWatcher;
 	private _watcherReady = false;
 	private _listenerQueue: Message[] = [];
@@ -85,11 +85,6 @@ export default class BeakProject {
 		this._watcher = void 0;
 	}
 
-	* on() {
-		while (true)
-			yield this._listenerQueue.shift();
-	}
-
 	printTree() {
 		console.log(this._tree);
 	}
@@ -106,7 +101,7 @@ export default class BeakProject {
 		};
 
 		const items = await fs.readdir(filePath);
-		const psNode = root === true ? null : node;
+		const psParent = root === true ? null : node.filePath;
 
 		/* eslint-disable no-await-in-loop */
 		for (const item of items) {
@@ -118,26 +113,25 @@ export default class BeakProject {
 				continue;
 
 			if (stat.isDirectory()) {
-				out = await this.readFolderNode(fullPath, { root: false, parent: psNode });
+				out = await this.readFolderNode(fullPath, { root: false, parent: psParent });
 
-				node.children.push(out);
+				node.children.push(out.filePath);
 			} else if (stat.isFile()) {
-				out = await this.readRequestNode(fullPath, psNode);
+				out = await this.readRequestNode(fullPath, psParent);
 
-				node.children.push(out);
+				node.children.push(out.id);
 			} else {
 				throw new Error('Unknown dir content type');
 			}
 		}
 		/* eslint-disable no-await-in-loop */
 
-		if (root !== true && node.parent === null)
-			this._tree.push(node);
+		this._tree[node.filePath] = node;
 
 		return node;
 	}
 
-	private async readRequestNode(filePath: string, parent: FolderNode | null) {
+	private async readRequestNode(filePath: string, parent: string | null) {
 		const requestFile = await fs.readJson(filePath) as RequestNodeFile;
 
 		validate(requestFile, requestSchema, { throwError: true });
@@ -154,8 +148,7 @@ export default class BeakProject {
 			},
 		};
 
-		if (node.parent === null)
-			this._tree.push(node);
+		this._tree[node.id] = node;
 
 		return node;
 	}

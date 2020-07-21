@@ -1,17 +1,19 @@
-import { Nodes } from '../../lib/project/types';
+import { Nodes, Tree } from '../../lib/project/types';
 
 export const ActionTypes = {
 	OPEN_PROJECT: '@beak/global/project/OPEN_PROJECT',
 	PROJECT_OPENED: '@beak/global/project/PROJECT_OPENED',
 
 	REQUEST_SELECTED: '@beak/global/project/REQUEST_SELECTED',
+
+	REQUEST_URI_UPDATED: '@beak/global/project/REQUEST_URI_UPDATED',
 };
 
 export interface State {
 	opening: boolean;
 	name?: string;
 	projectPath?: string;
-	tree?: Nodes[];
+	tree?: Tree;
 
 	selectedRequest?: string;
 }
@@ -20,10 +22,19 @@ export const initialState: State = {
 	opening: true,
 };
 
+export interface RequestUriUpdatedPayload {
+	requestId: string;
+	protocol?: string;
+	verb?: string;
+	hostname?: string;
+	path?: string;
+	fragment?: string;
+}
+
 export interface ProjectOpenedPayload {
 	name: string;
 	projectPath: string;
-	tree: Nodes[];
+	tree: Tree;
 }
 
 export default {

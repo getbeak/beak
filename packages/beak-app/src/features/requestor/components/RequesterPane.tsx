@@ -2,27 +2,13 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 
-import { Nodes, RequestNode } from '../../../lib/project/types';
+import { RequestNode } from '../../../lib/project/types';
 import ModifiersPane from './organisms/ModifierTabs';
 import UriPane from './organisms/UriPane';
 
 const RequesterPane: React.FunctionComponent = () => {
 	const { tree, selectedRequest } = useSelector(s => s.global.project);
-
-	const traverse = (nodes: Nodes[]): RequestNode | undefined => nodes.map(n => {
-		if (n.type === 'request') {
-			if (n.id === selectedRequest)
-				return n;
-
-			return void 0;
-		}
-
-		return traverse(n.children);
-	})
-		.flat()
-		.filter(Boolean)[0];
-
-	const selectedNode = traverse(tree!);
+	const selectedNode = tree![selectedRequest || 'non_existent'];
 
 	// TODO(afr): Maybe some sort of purgatory state here
 	if (!selectedRequest)
@@ -31,10 +17,12 @@ const RequesterPane: React.FunctionComponent = () => {
 	if (selectedRequest && !selectedNode)
 		throw new Error('fucked state?!');
 
+	const typedSelectedNode = selectedNode as RequestNode;
+
 	return (
 		<Container>
-			<UriPane node={selectedNode!} />
-			<ModifiersPane node={selectedNode!} />
+			<UriPane node={typedSelectedNode} />
+			<ModifiersPane node={typedSelectedNode} />
 		</Container>
 	);
 };
