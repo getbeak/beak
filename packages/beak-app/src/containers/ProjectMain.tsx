@@ -43,7 +43,6 @@ const ProjectMain: React.FunctionComponent = () => {
 				{!project.opening && (
 					<ReflexContainer orientation={'vertical'}>
 						<ReflexElement
-							propagateDimensions
 							size={250}
 							minSize={170}
 							maxSize={350}
@@ -54,7 +53,7 @@ const ProjectMain: React.FunctionComponent = () => {
 						<ReflexSplitter propagate />
 
 						<ReflexElement
-							propagateDimensions
+							flex={1}
 							minSize={400}
 						>
 							<RequesterPane />
@@ -63,7 +62,7 @@ const ProjectMain: React.FunctionComponent = () => {
 						<ReflexSplitter propagate />
 
 						<ReflexElement
-							propagateDimensions
+							flex={1}
 							minSize={400}
 						>
 							<InspectorPane />
