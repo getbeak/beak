@@ -31,11 +31,11 @@ const FolderItem: React.FunctionComponent<FolderItemProps> = props => {
 };
 
 const Wrapper = styled.div<{ depth: number }>`
-	padding: 2px 0;
+	padding: 3px 0;
 	padding-left: ${props => (props.depth * 8) + 21}px;
 	color: ${props => props.theme.ui.textMinor};
 	cursor: pointer;
-	font-size: 12px;
+	font-size: 13px;
 	line-height: 18px;
 
 	&:hover {

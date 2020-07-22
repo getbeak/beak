@@ -2,6 +2,7 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 
+import { RequestNode } from '../../../../lib/project/types';
 import { requestSelected } from '../../../../store/project/actions';
 import RequestStatusBlob from '../atoms/RequestStatusBlob';
 
@@ -12,8 +13,9 @@ export interface RequestItemProps {
 
 const RequestItem: React.FunctionComponent<RequestItemProps> = props => {
 	const dispatch = useDispatch();
-	const node = useSelector(s => s.global.project.tree![props.id]);
+	const node = useSelector(s => s.global.project.tree![props.id]) as RequestNode;
 	const selectedRequest = useSelector(s => s.global.project.selectedRequest);
+	const flight = useSelector(s => s.global.flight.flightHistory[node.id]);
 
 	return (
 		<Wrapper
@@ -25,7 +27,7 @@ const RequestItem: React.FunctionComponent<RequestItemProps> = props => {
 				{node.name}
 			</Name>
 
-			<RequestStatusBlob status={generateMockStatus()} />
+			{flight?.[0] && <RequestStatusBlob status={generateStatus(flight![0]!.response!.statusCode)} />}
 		</Wrapper>
 	);
 };
@@ -37,10 +39,10 @@ interface WrapperProps {
 
 const Wrapper = styled.div<WrapperProps>`
 	display: flex;
-	padding: 2px 0;
+	padding: 4px 0;
 	padding-left: ${props => (props.depth * 8) + 19}px;
 	cursor: pointer;
-	font-size: 12px;
+	font-size: 13px;
 	line-height: 18px;
 
 	color: ${props => props.theme.ui.textMinor};
@@ -61,15 +63,19 @@ const Name = styled.abbr`
 	text-decoration: none;
 `;
 
-function generateMockStatus() {
-	const ran = Math.floor(Math.random() * 3) + 1;
+function generateStatus(statusCode: number) {
+	switch (true) {
+		case statusCode >= 400 && statusCode <= 499:
+			return 'warning';
 
-	if (ran === 1)
-		return 'success';
-	else if (ran === 2)
-		return 'warning';
+		case statusCode >= 500 && statusCode <= 599:
+			return 'failure';
 
-	return 'failure';
+		// I think this is a safe fallback?
+		case statusCode >= 100:
+		default:
+			return 'success';
+	}
 }
 
 export default RequestItem;

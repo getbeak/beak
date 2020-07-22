@@ -1,12 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
+import { ReflexContainer, ReflexElement } from 'react-reflex';
 import styled from 'styled-components';
 
+import ReflexSplitter from '../../../components/atoms/ReflexSplitter';
 import { RequestNode } from '../../../lib/project/types';
 import ModifiersPane from './organisms/ModifierTabs';
+import RequestOutput from './organisms/RequestOutput';
 import UriPane from './organisms/UriPane';
 
 const RequesterPane: React.FunctionComponent = () => {
+	const [editorHeight, setEditorHeight] = useState<string>('100%');
 	const { tree, selectedRequest } = useSelector(s => s.global.project);
 	const selectedNode = tree![selectedRequest || 'non_existent'];
 
@@ -22,7 +26,27 @@ const RequesterPane: React.FunctionComponent = () => {
 	return (
 		<Container>
 			<UriPane node={typedSelectedNode} />
-			<ModifiersPane node={typedSelectedNode} />
+			<ReflexContainer orientation={'horizontal'}>
+				<ReflexElement
+					flex={8}
+					minSize={400}
+				>
+					<ModifiersPane node={typedSelectedNode} />
+				</ReflexElement>
+
+				<ReflexSplitter orientation={'horizontal'} />
+
+				<ReflexElement
+					flex={2}
+					minSize={150}
+					onResize={e => setEditorHeight(`${(e.domElement as Element).clientHeight}px`)}
+				>
+					<RequestOutput
+						editorHeight={editorHeight}
+						selectedNode={typedSelectedNode}
+					/>
+				</ReflexElement>
+			</ReflexContainer>
 		</Container>
 	);
 };
@@ -30,9 +54,10 @@ const RequesterPane: React.FunctionComponent = () => {
 const Container = styled.div`
 	display: flex;
 	flex-direction: column;
-	background-color: ${props => props.theme.ui.secondaryBackground};
-	height: 100%;
-	width: 100%;
+
+	height: 100%; width: 100%;
+
+	background-color: ${props => props.theme.ui.surface};
 `;
 
 export default RequesterPane;

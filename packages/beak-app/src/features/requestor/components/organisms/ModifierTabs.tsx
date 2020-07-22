@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
+import styled from 'styled-components';
 
 import TabBar from '../../../../components/atoms/TabBar';
 import TabItem from '../../../../components/atoms/TabItem';
 import TabSpacer from '../../../../components/atoms/TabSpacer';
 import { RequestNode } from '../../../../lib/project/types';
 import DebuggerPane from './DebuggerPane';
-import styled from 'styled-components';
+import UrlQueryPane from './UrlQueryPane';
 
 type Tab = 'debugging' | 'headers' | 'url_query' | 'body' | 'options';
 
@@ -14,10 +15,10 @@ export interface ModifierTabsProps {
 }
 
 const ModifierTabs: React.FunctionComponent<ModifierTabsProps> = props => {
-	const [tab, setTab] = useState<Tab>('debugging');
+	const [tab, setTab] = useState<Tab>('url_query');
 
 	return (
-		<React.Fragment>
+		<Container>
 			<TabBar centered>
 				<TabSpacer />
 				<TabItem
@@ -55,10 +56,17 @@ const ModifierTabs: React.FunctionComponent<ModifierTabsProps> = props => {
 
 			<TabBody>
 				{tab === 'debugging' && <DebuggerPane node={props.node} />}
+				{tab === 'url_query' && <UrlQueryPane node={props.node} />}
 			</TabBody>
-		</React.Fragment>
+		</Container>
 	);
 };
+
+const Container = styled.div`
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+`;
 
 const TabBody = styled.div`
 	flex-grow: 2;

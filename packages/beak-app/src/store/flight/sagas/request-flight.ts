@@ -20,10 +20,19 @@ export default function* requestFlightWorker({ payload }: PayloadAction<string, 
 
 	yield put(actions.beginFlightRequest({ flightId, requestId, info }));
 
-	// TODO(afr): Move this logic out (maybe to go lib) for better control + no CORS
+	// TODO(afr): Move this logic out (maybe to go lib) for better control + no CORS bs
 
 	const start = Date.now();
-	const fetchResponse: Response = yield call(runRequest, info);
+	let fetchResponse: Response;
+
+	try {
+		fetchResponse = yield call(runRequest, info);
+	} catch (error) {
+		console.error(error);
+
+		throw error;
+	}
+
 	const reader = fetchResponse.body?.getReader();
 
 	const response = {
@@ -86,7 +95,7 @@ async function runRequest(info: RequestInfo) {
 			...acc,
 			[val.name]: val.value,
 		}), {}),
-		mode: 'cors',
+		mode: 'no-cors',
 		credentials: 'omit',
 		cache: 'no-cache',
 		redirect: 'follow',

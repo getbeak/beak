@@ -7,9 +7,9 @@ export interface TabItemProps {
 const TabItem = styled.div<TabItemProps>`
 	border-bottom: 1px solid ${props => props.theme.ui.backgroundBorderSeparator};
 
-	font-size: 12px;
+	font-size: 13px;
 	color: ${props => props.theme.ui.textMinor};
-	padding: 10px 12px;
+	padding: 8px 12px;
 	cursor: pointer;
 	text-overflow: ellipsis;
 	word-wrap: initial;

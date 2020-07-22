@@ -42,11 +42,11 @@ const brandColors: BrandColors = {
 	blank: '#fff',
 
 	shade: '#1b1e2b',
-	shadeVariant: '#11131b',
-	shade1: '#292d3e',
-	shade2: '#353441',
-	shade3: '#4a5d87',
-	shade4: '#9a9cc0',
+	shadeVariant: '#1A1E2D',
+	shade1: '#161824',
+	shade2: '#282D40',
+	shade3: '#3A3F55',
+	shade4: '#4B5178',
 };
 
 export default brandColors;

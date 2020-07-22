@@ -7,7 +7,7 @@ export interface TabBarProps {
 const TabBar = styled.div<TabBarProps>`
 	display: flex;
 	flex-direction: row;
-	align-items: center;
+	align-items: flex-end;
 
 	justify-content: ${props => props.centered ? 'center' : 'initial'};
 

@@ -43,26 +43,25 @@ const ProjectMain: React.FunctionComponent = () => {
 				{!project.opening && (
 					<ReflexContainer orientation={'vertical'}>
 						<ReflexElement
-							size={250}
-							minSize={170}
-							maxSize={350}
+							flex={10}
+							// size={250}
 						>
 							<ExplorerPane />
 						</ReflexElement>
 
-						<ReflexSplitter propagate />
+						<ReflexSplitter orientation={'vertical'} />
 
 						<ReflexElement
-							flex={1}
+							flex={35}
 							minSize={400}
 						>
 							<RequesterPane />
 						</ReflexElement>
 
-						<ReflexSplitter propagate />
+						<ReflexSplitter orientation={'vertical'} />
 
 						<ReflexElement
-							flex={1}
+							flex={55}
 							minSize={400}
 						>
 							<InspectorPane />

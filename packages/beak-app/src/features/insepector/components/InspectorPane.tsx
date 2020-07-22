@@ -38,7 +38,7 @@ const InspectorPane: React.FunctionComponent = () => {
 const Container = styled.div`
 	display: flex;
 	flex-direction: column;
-	background-color: ${props => props.theme.ui.secondaryBackground};
+	background-color: ${props => props.theme.ui.surface};
 	height: 100%;
 	width: 100%;
 `;

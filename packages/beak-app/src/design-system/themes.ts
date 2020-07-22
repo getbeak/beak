@@ -31,9 +31,9 @@ const darkThemeMapping: UIColorsBrandMapping = {
 	secondaryBackground: 'shade1',
 	blankBackground: 'shadeVariant',
 
-	surface: 'shade3',
+	surface: 'shade2',
 	surfaceHighlight: 'shade',
-	secondarySurface: 'shade2',
+	secondarySurface: 'shade3',
 
 	backgroundBorderSeparator: 'greyVariant',
 	surfaceBorderSeparator: 'shadeVariant',
