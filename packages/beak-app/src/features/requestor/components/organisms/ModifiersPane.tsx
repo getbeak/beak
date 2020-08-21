@@ -10,11 +10,11 @@ import UrlQueryPane from './UrlQueryPane';
 
 type Tab = 'debugging' | 'headers' | 'url_query' | 'body' | 'options';
 
-export interface ModifierTabsProps {
+export interface ModifiersPaneProps {
 	node: RequestNode;
 }
 
-const ModifierTabs: React.FunctionComponent<ModifierTabsProps> = props => {
+const ModifiersPane: React.FunctionComponent<ModifiersPaneProps> = props => {
 	const [tab, setTab] = useState<Tab>('url_query');
 
 	return (
@@ -72,8 +72,6 @@ const TabBody = styled.div`
 	flex-grow: 2;
 
 	overflow-y: auto;
-
-	padding: 0 15px;
 `;
 
-export default ModifierTabs;
+export default ModifiersPane;

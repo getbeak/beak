@@ -28,24 +28,22 @@ export interface RequestNode extends Node {
 	info: RequestInfo;
 }
 
+export interface ToggleKeyValue {
+	name: string;
+	value: string;
+	enabled: boolean;
+}
+
 export interface RequestInfo {
 	uri: {
 		protocol: string;
 		verb: string;
 		hostname: string | null;
 		path: string | null;
-		query: {
-			name: string;
-			value: string;
-			enabled: boolean;
-		}[];
+		query: Record<string, ToggleKeyValue>;
 		fragment: string | null;
 	};
-	headers: {
-		name: string;
-		value: string;
-		enabled: boolean;
-	}[];
+	headers: Record<string, ToggleKeyValue>;
 }
 
 export type Nodes = FolderNode | RequestNode;

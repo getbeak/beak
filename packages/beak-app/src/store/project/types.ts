@@ -7,6 +7,7 @@ export const ActionTypes = {
 	REQUEST_SELECTED: '@beak/global/project/REQUEST_SELECTED',
 
 	REQUEST_URI_UPDATED: '@beak/global/project/REQUEST_URI_UPDATED',
+	REQUEST_QUERY_UPDATED: '@beak/global/project/REQUEST_QUERY_UPDATED',
 	REPORT_NODE_UPDATE: '@beak/global/project/REPORT_NODE_UPDATE',
 };
 
@@ -30,6 +31,14 @@ export interface RequestUriUpdatedPayload {
 	hostname?: string;
 	path?: string;
 	fragment?: string;
+}
+
+export interface RequestQueryUpdatedPayload {
+	requestId: string;
+	queryId: string;
+	name?: string;
+	value?: string;
+	enabled?: boolean;
 }
 
 export interface ProjectOpenedPayload {

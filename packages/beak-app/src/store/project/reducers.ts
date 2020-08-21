@@ -1,9 +1,9 @@
-import { ActionType, createReducer } from 'typesafe-actions';
 import cloneDeep from 'lodash.clonedeep';
+import { ActionType, createReducer } from 'typesafe-actions';
 
+import { RequestNode } from '../../lib/project/types';
 import * as actions from './actions';
 import { initialState, State } from './types';
-import { RequestNode } from '../../lib/project/types';
 
 type Actions = ActionType<typeof actions>;
 
@@ -23,6 +23,26 @@ const projectReducer = createReducer<State, Actions>(initialState)
 		...state,
 		opening: true,
 	}))
+	.handleAction(actions.requestQueryUpdated, (state, action) => {
+		const { payload } = action;
+		const newRequest = cloneDeep(state.tree![payload.requestId]) as RequestNode;
+		const existingQuery = newRequest.info.uri.query[payload.queryId];
+
+		if (payload.name !== void 0)
+			existingQuery.name = payload.name;
+		if (payload.value !== void 0)
+			existingQuery.value = payload.value;
+		if (payload.enabled !== void 0)
+			existingQuery.enabled = payload.enabled;
+
+		return {
+			...state,
+			tree: {
+				...state.tree,
+				[payload.requestId]: newRequest,
+			},
+		};
+	})
 	.handleAction(actions.requestUriUpdated, (state, action) => {
 		const { payload } = action;
 		const newRequest = cloneDeep(state.tree![payload.requestId]) as RequestNode;
@@ -35,7 +55,6 @@ const projectReducer = createReducer<State, Actions>(initialState)
 			newRequest.info.uri.hostname = payload.hostname;
 		if (payload.path !== void 0)
 			newRequest.info.uri.path = payload.path;
-		// TODO(afr): Handle query
 		if (payload.fragment !== void 0)
 			newRequest.info.uri.fragment = payload.fragment;
 

@@ -1,6 +1,11 @@
 import { deprecated } from 'typesafe-actions';
 
-import { ActionTypes, ProjectOpenedPayload, RequestUriUpdatedPayload } from './types';
+import {
+	ActionTypes,
+	ProjectOpenedPayload,
+	RequestQueryUpdatedPayload,
+	RequestUriUpdatedPayload,
+} from './types';
 
 const { createAction } = deprecated;
 
@@ -24,6 +29,11 @@ export const requestUriUpdated = createAction(
 	action => (payload: RequestUriUpdatedPayload) => action(payload),
 );
 
+export const requestQueryUpdated = createAction(
+	ActionTypes.REQUEST_QUERY_UPDATED,
+	action => (payload: RequestQueryUpdatedPayload) => action(payload),
+);
+
 export const reportNodeUpdate = createAction(
 	ActionTypes.REPORT_NODE_UPDATE,
 	action => (nodeId: string) => action(nodeId),
@@ -34,4 +44,6 @@ export default {
 	projectOpened,
 	requestSelected,
 	requestUriUpdated,
+	requestQueryUpdated,
+	reportNodeUpdate,
 };

@@ -65,9 +65,9 @@
 				},
 
 				"query": {
-					"type": "array",
+					"type": "object",
 
-					"items": {
+					"properties": {
 						"$ref": "#/definitions/keyValuePair"
 					}
 				},
@@ -103,9 +103,9 @@
 		},
 
 		"headers": {
-			"type": "array",
+			"type": "object",
 
-			"items": {
+			"properties": {
 				"$ref": "#/definitions/keyValuePair"
 			}
 		}

@@ -6,6 +6,7 @@ import { RequestNode } from '../../../../lib/project/types';
 
 import 'ace-builds/src-noconflict/mode-html';
 import 'ace-builds/src-noconflict/theme-terminal';
+import { TypedObject } from '../../../../helpers/typescript';
 
 export interface RequestOutputProps {
 	selectedNode: RequestNode;
@@ -46,7 +47,7 @@ function createBasicHttpOutput(node: RequestNode) {
 	if (uri.query) {
 		const builder = new URLSearchParams();
 
-		for (const { name, value } of uri.query.filter(q => q.enabled))
+		for (const { name, value } of TypedObject.values(uri.query).filter(q => q.enabled))
 			builder.append(name, value);
 
 		firstLine.push(`?${builder.toString()}`);
@@ -62,8 +63,12 @@ function createBasicHttpOutput(node: RequestNode) {
 		'User-Agent: Beak/0.0.1 (Macintosh; OS X/10.15.4)',
 	];
 
-	if (headers)
-		out.push(...headers.filter(h => h.enabled).map(({ name, value }) => `${name}: ${value}`));
+	if (headers) {
+		out.push(...TypedObject.values(headers)
+			.filter(h => h.enabled)
+			.map(({ name, value }) => `${name}: ${value}`),
+		);
+	}
 
 	out.push('');
 

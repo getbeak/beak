@@ -1,3 +1,4 @@
+import { TypedObject } from '../../helpers/typescript';
 import { RequestInfo } from './types';
 
 const url = window.require('url');
@@ -22,14 +23,22 @@ export function constructUri(info: RequestInfo, opts?: Options) {
 		fragment,
 	} = info.uri;
 
+	const uriQuery = (() => {
+		if (!query)
+			return null;
+
+		return TypedObject.values(query).filter(q => q.enabled)
+			.reduce((acc, val) => ({
+				...acc,
+				[val.name]: val.value,
+			}), {});
+	})();
+
 	const uri = url.format({
 		protocol,
 		hostname,
 		pathname,
-		query: options.includeQuery ? query?.filter(q => q.enabled).reduce((acc, val) => ({
-			...acc,
-			[val.name]: val.value,
-		}), {}) : null,
+		query: options.includeQuery ? uriQuery : null,
 		hash: options.includeHash ? fragment : null,
 	});
 

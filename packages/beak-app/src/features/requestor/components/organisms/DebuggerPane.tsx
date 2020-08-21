@@ -18,6 +18,8 @@ const DebuggerPane: React.FunctionComponent<DebuggerPaneProps> = props => (
 const SexiPre = styled.pre`
 	font-size: 13px;
 	font-family: monospace;
+
+	padding: 0 15px;
 `;
 
 export default DebuggerPane;

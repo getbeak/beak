@@ -5,7 +5,7 @@ import styled from 'styled-components';
 
 import ReflexSplitter from '../../../components/atoms/ReflexSplitter';
 import { RequestNode } from '../../../lib/project/types';
-import ModifiersPane from './organisms/ModifierTabs';
+import ModifiersPane from './organisms/ModifiersPane';
 import RequestOutput from './organisms/RequestOutput';
 import UriPane from './organisms/UriPane';
 

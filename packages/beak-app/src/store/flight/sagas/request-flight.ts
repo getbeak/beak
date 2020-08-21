@@ -3,6 +3,7 @@ import { PayloadAction } from 'typesafe-actions';
 
 import { ApplicationState } from '../..';
 import { calculatePercentage } from '../../../helpers/number';
+import { TypedObject } from '../../../helpers/typescript';
 import { RequestInfo } from '../../../lib/project/types';
 import { constructUri } from '../../../lib/project/url';
 import * as actions from '../actions';
@@ -91,10 +92,12 @@ async function runRequest(info: RequestInfo) {
 
 	const options: RequestInit = {
 		method: uri.verb,
-		headers: headers.filter(h => h.enabled).reduce((acc, val) => ({
-			...acc,
-			[val.name]: val.value,
-		}), {}),
+		headers: TypedObject.values(headers)
+			.filter(h => h.enabled)
+			.reduce((acc, val) => ({
+				...acc,
+				[val.name]: val.value,
+			}), {}),
 		mode: 'no-cors',
 		credentials: 'omit',
 		cache: 'no-cache',
