@@ -10,7 +10,5 @@ interface Interop {
 export default function* catchNodeUpdatesWorker({ payload }: PayloadAction<string, Interop>) {
 	const { requestId } = payload;
 
-	console.log(requestId);
-
 	yield put(reportNodeUpdate(requestId));
 }

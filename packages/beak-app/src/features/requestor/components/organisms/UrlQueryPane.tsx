@@ -21,8 +21,6 @@ const UrlQueryPane: React.FunctionComponent<UrlQueryPaneProps> = ({ node }) => {
 			[type]: value,
 		};
 
-		console.log(payload);
-
 		dispatch(actions.requestQueryUpdated(payload));
 	}
 
@@ -62,12 +60,18 @@ const UrlQueryPane: React.FunctionComponent<UrlQueryPaneProps> = ({ node }) => {
 										onChange={e => onChange('value', k, e.target.value)}
 									/>
 								</td>
-								<ToggleCell><Button value={'-'} /></ToggleCell>
+								<ToggleCell>
+									<Button>{'Remove'}</Button>
+								</ToggleCell>
 							</Row>
 						);
 					})}
 				</tbody>
 			</EntryTable>
+
+			<AddButtonWrapper>
+				<Button>{'Add'}</Button>
+			</AddButtonWrapper>
 		</React.Fragment>
 	);
 };
@@ -117,7 +121,27 @@ const InputText = styled.input`
 const Button = styled.button`
 	background: transparent;
 	border: 1px solid ${props => props.theme.ui.backgroundBorderSeparator};
-	border-radius: 100%;
+	border-radius: 10px;
+	color: ${props => props.theme.ui.textOnSurfaceBackground};
+
+	padding: 3px 8px;
+	font-size: 11px;
+
+	&:hover, &:focus {
+		outline: none;
+		border-color: ${props => props.theme.ui.primaryFill};
+	}
+	&:active {
+		background-color: ${props => props.theme.ui.primaryFill};
+	}
+`;
+
+const AddButtonWrapper = styled.div`
+	display: flex;
+	justify-content: flex-end;
+
+	margin-top: 10px;
+	margin-right: 2px;
 `;
 
 export default UrlQueryPane;

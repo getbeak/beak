@@ -7,7 +7,9 @@ import reportNodeUpdateWorker from './report-node-update';
 
 const updateWatcherActions = [
 	ActionTypes.REQUEST_URI_UPDATED,
+	ActionTypes.REQUEST_QUERY_ADDED,
 	ActionTypes.REQUEST_QUERY_UPDATED,
+	ActionTypes.REQUEST_QUERY_REMOVED,
 ];
 
 export default function* projectSaga() {

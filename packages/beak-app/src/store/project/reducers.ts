@@ -2,7 +2,7 @@ import cloneDeep from 'lodash.clonedeep';
 import { ActionType, createReducer } from 'typesafe-actions';
 
 import { RequestNode } from '../../lib/project/types';
-import * as actions from './actions';
+import actions from './actions';
 import { initialState, State } from './types';
 
 type Actions = ActionType<typeof actions>;
@@ -57,6 +57,25 @@ const projectReducer = createReducer<State, Actions>(initialState)
 			newRequest.info.uri.path = payload.path;
 		if (payload.fragment !== void 0)
 			newRequest.info.uri.fragment = payload.fragment;
+
+		return {
+			...state,
+			tree: {
+				...state.tree,
+				[payload.requestId]: newRequest,
+			},
+		};
+	})
+	.handleAction(actions.requestQueryAdded, (state, action) => {
+		const { payload } = action;
+		const newRequest = cloneDeep(state.tree![payload.requestId]) as RequestNode;
+		const existingQuery = newRequest.info.uri.query;
+
+		existingQuery['query_xxxx'] = {
+			name: '',
+			value: '',
+			enabled: true,
+		};
 
 		return {
 			...state,

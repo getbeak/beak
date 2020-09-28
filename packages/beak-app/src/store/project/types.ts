@@ -7,8 +7,13 @@ export const ActionTypes = {
 	REQUEST_SELECTED: '@beak/global/project/REQUEST_SELECTED',
 
 	REQUEST_URI_UPDATED: '@beak/global/project/REQUEST_URI_UPDATED',
+
+	REQUEST_QUERY_ADDED: '@beak/global/project/REQUEST_QUERY_ADDED',
 	REQUEST_QUERY_UPDATED: '@beak/global/project/REQUEST_QUERY_UPDATED',
+	REQUEST_QUERY_REMOVED: '@beak/global/project/REQUEST_QUERY_REMOVED',
+
 	REPORT_NODE_UPDATE: '@beak/global/project/REPORT_NODE_UPDATE',
+
 };
 
 export interface State {
@@ -23,6 +28,10 @@ export interface State {
 export const initialState: State = {
 	opening: true,
 };
+
+export interface RequestIdPayload {
+	requestId: string;
+}
 
 export interface RequestUriUpdatedPayload {
 	requestId: string;
@@ -39,6 +48,11 @@ export interface RequestQueryUpdatedPayload {
 	name?: string;
 	value?: string;
 	enabled?: boolean;
+}
+
+export interface RequestQueryRemovedPayload {
+	requestId: string;
+	queryId: string;
 }
 
 export interface ProjectOpenedPayload {
