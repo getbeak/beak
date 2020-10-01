@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "resolveJsonModule": true,
+    "composite": true
+  },
+  "references": [{
+    "path": "../common"
+  }]
+}

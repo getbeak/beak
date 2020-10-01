@@ -1,0 +1,15 @@
+{
+  "name": "@beak/requester-node",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "test": "echo Skipped for now."
+  },
+  "dependencies": {
+    "@beak/common": "^0.0.0",
+    "node-fetch": "^2.6.1"
+  },
+  "devDependencies": {
+    "@types/node-fetch": "^2.5.7"
+  }
+}

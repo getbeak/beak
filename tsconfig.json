@@ -1,7 +1,15 @@
 {
   "compilerOptions": {
     "strict": true,
-    "target": "ES2020",
-    "moduleResolution": "node"
-  }
+    "target": "ES2018",
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": ".",
+    "paths": {
+      "@beak/*": ["packages/*"]
+    },
+  },
+  "exclude": [
+    "node_modules"
+  ]
 }

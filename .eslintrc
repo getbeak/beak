@@ -4,8 +4,7 @@
 	"parserOptions": {
 		"ecmaVersion": 2018,
 		"sourceType": "module",
-		"project": "./",
-		"tsconfigRootDir": "./tsconfig.json",
+		"project": "./tsconfig.json",
 
 		"ecmaFeatures": {
 			"impliedStrict": true,
@@ -26,6 +25,12 @@
 		"es6": true,
 		"browser": true,
 		"shared-node-browser": true
+	},
+
+	"settings": {
+		"react": {
+			"version": "detect"
+		}
 	},
 
 	"globals": {
@@ -202,7 +207,10 @@
 		"@typescript-eslint/array-type": "error",
 		"@typescript-eslint/ban-types": "error",
 		"@typescript-eslint/consistent-type-assertions": "error",
-		"@typescript-eslint/indent": [1, "tab", { "SwitchCase": 1 }],
+		"@typescript-eslint/indent": [
+			1,
+			"tab", { "SwitchCase": 1 }
+		],
 		"@typescript-eslint/member-delimiter-style": "error",
 		"@typescript-eslint/member-naming": "off",
 		"@typescript-eslint/naming-convention": ["error",
