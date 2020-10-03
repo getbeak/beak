@@ -28,7 +28,7 @@ const InspectorPane: React.FunctionComponent = () => {
 	return (
 		<Container>
 			<TempUrlPane>
-				{constructUri(flightHistory.info)}
+				{constructUri(flightHistory.request)}
 			</TempUrlPane>
 			<InspectorTabs flight={flightHistory!} />
 		</Container>

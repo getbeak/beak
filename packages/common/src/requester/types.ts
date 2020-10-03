@@ -1,4 +1,4 @@
-import { RequestOverview } from '../beak-project/types';
+import { RequestOverview, ResponseOverview } from '../beak-project/types';
 
 export const FlightMessages = {
 	heartbeat: 'flight_heartbeat',
@@ -11,7 +11,7 @@ export type HeartbeatStage = 'fetch_response' | 'parsing_response' | 'reading_bo
 export interface FlightRequestPayload {
 	flightId: string;
 	requestId: string;
-	requestOverview: RequestOverview;
+	request: RequestOverview;
 }
 
 /* eslint-disable @typescript-eslint/indent */
@@ -37,12 +37,13 @@ export interface FlightHeartbeatParsingResponse {
 export interface FlightHeartbeatReadingBody {
 	stage: 'reading_body';
 	payload: {
-		buffer: Buffer | null;
+		buffer: Buffer;
 	};
 }
 
 export interface FlightCompletePayload {
 	timestamp: number;
+	overview: ResponseOverview;
 }
 
 export interface FlightFailedPayload {

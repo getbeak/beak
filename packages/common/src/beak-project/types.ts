@@ -46,6 +46,13 @@ export interface RequestOverview {
 	headers: Record<string, ToggleKeyValue>;
 }
 
+export interface ResponseOverview {
+	headers: Record<string, string>;
+	redirected: boolean;
+	status: number;
+	url: string;
+}
+
 export type Nodes = FolderNode | RequestNode;
 
 export type Tree = Record<string, Nodes>;

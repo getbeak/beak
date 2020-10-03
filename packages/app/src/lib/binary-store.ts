@@ -28,6 +28,8 @@ class BinaryStore {
 		}
 
 		this.override(key, Buffer.concat([this.get(key)!, buf]));
+
+		console.log(this.get(key));
 	}
 
 	remove(key: string) {

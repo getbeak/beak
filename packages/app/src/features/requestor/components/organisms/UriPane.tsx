@@ -28,7 +28,7 @@ const UriPane: React.FunctionComponent<UriPaneProps> = props => {
 		dispatch(requestFlight({
 			requestId: node.id,
 			flightId,
-			info: node.info,
+			request: node.info,
 		}));
 	}
 

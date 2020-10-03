@@ -28,7 +28,7 @@ Stages:
 export async function startRequester(options: RequesterOptions) {
 	const { payload, callbacks } = options;
 	const { complete, failed, heartbeat } = callbacks;
-	const { requestOverview } = payload;
+	const { request } = payload;
 	const start = Date.now();
 
 	heartbeat({
@@ -39,9 +39,9 @@ export async function startRequester(options: RequesterOptions) {
 	let response: Response;
 
 	try {
-		response = await runRequest(requestOverview);
+		response = await runRequest(request);
 	} catch (error) {
-		failed(error);
+		failed({ error });
 
 		return;
 	}
@@ -61,17 +61,23 @@ export async function startRequester(options: RequesterOptions) {
 			return;
 		}
 
-		while (response.body.readable) {
-			const result = response.body.read(0xFF) as Buffer | null;
-
+		for await (const chunk of response.body) {
 			heartbeat({
 				stage: 'reading_body',
-				payload: { buffer: result },
+				payload: { buffer: chunk as Buffer },
 			});
 		}
 	}
 
-	complete({ timestamp: Date.now() }); // TODO(afr): Send response here too
+	complete({
+		timestamp: Date.now(),
+		overview: {
+			headers: headersToObject(response.headers),
+			redirected: response.redirected,
+			status: response.status,
+			url: response.url,
+		},
+	});
 }
 
 async function runRequest(overview: RequestOverview) {
@@ -91,4 +97,13 @@ async function runRequest(overview: RequestOverview) {
 	};
 
 	return await fetch(url, init);
+}
+
+function headersToObject(entries: Iterable<[string, string]>) {
+	const headers: Record<string, string> = {};
+
+	for (const [key, value] of entries)
+		headers[key] = value;
+
+	return headers;
 }

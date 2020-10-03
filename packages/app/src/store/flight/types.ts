@@ -1,4 +1,4 @@
-import { RequestOverview } from "@beak/common/src/beak-project/types";
+import { RequestOverview, ResponseOverview } from '@beak/common/src/beak-project/types';
 
 export const ActionTypes = {
 	REQUEST_FLIGHT: '@beak/global/flight/REQUEST_FLIGHT',
@@ -23,40 +23,33 @@ export const initialState: State = {
 export interface RequestFlightPayload {
 	requestId: string;
 	flightId: string;
-	info: RequestOverview;
+	request: RequestOverview;
 }
 
 export interface BeginFlightPayload {
 	requestId: string;
 	flightId: string;
-	info: RequestOverview;
+	binaryStoreKey: string;
+	request: RequestOverview;
 }
 
 export interface CompleteFlightPayload {
 	requestId: string;
 	flightId: string;
-	info: RequestOverview;
-	response: FlightResponse;
+	response: ResponseOverview;
 }
 
 export interface Flight {
 	requestId: string;
 	flightId: string;
-	info: RequestOverview;
-	response?: FlightResponse;
-}
-
-export interface FlightResponse {
-	statusCode: number;
-	redirected: boolean;
-	headers: Record<string, string>;
-	length: number;
+	request: RequestOverview;
+	response?: ResponseOverview; // TODO(afr): Can this not be optional?
 }
 
 export interface FlightInProgress extends Flight {
 	flighting: boolean;
 	start?: number;
-	binaryStoreKey?: string;
+	binaryStoreKey: string;
 	contentLength?: number;
 	body?: Buffer;
 	finish?: number;

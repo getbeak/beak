@@ -26,7 +26,6 @@ const flightReducer = createReducer<State, Actions>(initialState)
 					currentFlight: {
 						...state.currentFlight!,
 						start: payload.payload.timestamp,
-						binaryStoreKey: uuid.v4(),
 					},
 				};
 
@@ -39,15 +38,8 @@ const flightReducer = createReducer<State, Actions>(initialState)
 					},
 				};
 
-			case 'reading_body': {
-				const binaryStoreKey = state.currentFlight!.binaryStoreKey!;
-				const exists = binaryStore.exists(binaryStoreKey);
-
-				if (exists)
-					binaryStore.append(binaryStoreKey, )
-
+			case 'reading_body':
 				return state;
-			}
 
 			default:
 				break;
@@ -56,7 +48,7 @@ const flightReducer = createReducer<State, Actions>(initialState)
 		throw new Error(`unknown heartbeat stage: ${stage}`);
 	})
 	.handleAction(actions.completeFlight, (state, action) => {
-		const { flightId, requestId, response, info } = action.payload;
+		const { flightId, requestId, response } = action.payload;
 
 		const newState: State = {
 			...state,
@@ -73,7 +65,7 @@ const flightReducer = createReducer<State, Actions>(initialState)
 		const flight = {
 			flightId,
 			requestId,
-			info,
+			request: state.currentFlight!.request,
 			response,
 		};
 
@@ -89,8 +81,9 @@ const flightReducer = createReducer<State, Actions>(initialState)
 		currentFlight: {
 			requestId: action.payload.requestId,
 			flightId: action.payload.flightId,
-			info: action.payload.info,
+			request: action.payload.request,
 			flighting: true,
+			binaryStoreKey: action.payload.binaryStoreKey,
 		},
 		blackBox: {
 			...state.blackBox,
