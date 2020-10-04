@@ -1,10 +1,10 @@
+import { RequestNode } from '@beak/common/src/beak-project/types';
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { ReflexContainer, ReflexElement } from 'react-reflex';
 import styled from 'styled-components';
 
 import ReflexSplitter from '../../../components/atoms/ReflexSplitter';
-import { RequestNode } from '@beak/common/src/beak-project/types';
 import ModifiersPane from './organisms/ModifiersPane';
 import RequestOutput from './organisms/RequestOutput';
 import UriPane from './organisms/UriPane';

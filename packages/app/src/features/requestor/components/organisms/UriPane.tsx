@@ -35,21 +35,30 @@ const UriPane: React.FunctionComponent<UriPaneProps> = props => {
 	function handleUrlChange(e: React.ChangeEvent<HTMLInputElement>) {
 		const value = e.currentTarget.value;
 		const parsed = url.parse(value);
+		const safeFragment = (function safeFraggy() {
+			if (!parsed.hash)
+				return '';
 
-		// TODO(afr): Fully understand this
+			if (parsed.hash === '#')
+				return '#';
 
+			return parsed.hash.substr(1);
+		}());
+
+		// TODO(afr): Handle crash when partially created urls are entered
 		dispatch(requestUriUpdated({
 			requestId: node.id,
 			protocol: parsed.protocol || '',
 			hostname: parsed.hostname || '',
 			path: parsed.path || '',
+			fragment: safeFragment,
 		}));
 	}
 
 	return (
 		<Container>
 			<OmniBar
-				value={constructUri(node.info, { includeHash: false, includeQuery: false })}
+				value={constructUri(node.info, { includeQuery: false })}
 				onChange={e => handleUrlChange(e)}
 			/>
 			<VerbPicker
@@ -79,10 +88,9 @@ const UriPane: React.FunctionComponent<UriPaneProps> = props => {
 const Container = styled.div`
 	position: relative;
 	padding: 25px 20px;
-	border-bottom: 1px solid ${props => props.theme.ui.backgroundBorderSeparator};
 
 	/* TODO(afr): Fix this hack */
-	height: 30px;
+	height: 30px !important;
 `;
 
 const OmniBar = styled.input`

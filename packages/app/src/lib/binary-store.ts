@@ -1,8 +1,8 @@
 class BinaryStore {
-	private _store: Record<string, Buffer | undefined> = {};
+	private _store: Record<string, Buffer> = {};
 
 	create(key: string, buf?: Buffer) {
-		this._store[key] = buf;
+		this._store[key] = buf || Buffer.alloc(0);
 	}
 
 	exists(key: string) {
@@ -13,7 +13,7 @@ class BinaryStore {
 		return this._store[key];
 	}
 
-	override(key: string, buf: Buffer) {
+	set(key: string, buf: Buffer) {
 		this._store[key] = buf;
 	}
 
@@ -21,19 +21,17 @@ class BinaryStore {
 		if (!this.exists(key))
 			throw new Error(`binary store for ${key} doesn't exist`);
 
-		if (this.get(key) === void 0) {
-			this.override(key, buf);
+		if (this.get(key).length === 0) {
+			this.set(key, buf);
 
 			return;
 		}
 
-		this.override(key, Buffer.concat([this.get(key)!, buf]));
-
-		console.log(this.get(key));
+		this.set(key, Buffer.concat([this.get(key), buf]));
 	}
 
 	remove(key: string) {
-		this._store[key] = void 0; // This is more efficient that delete!
+		delete this._store[key];
 	}
 }
 

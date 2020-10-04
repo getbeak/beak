@@ -1,7 +1,8 @@
+import { statusToColour } from '@beak/app/src/design-system/helpers';
 import styled from 'styled-components';
 
 export interface RequestStatusBlobProps {
-	status: 'success' | 'warning' | 'failure';
+	$status: number;
 }
 
 const RequestStatusBlob = styled.div<RequestStatusBlobProps>`
@@ -11,18 +12,7 @@ const RequestStatusBlob = styled.div<RequestStatusBlobProps>`
 	margin-top: 4px;
 	margin-right: 5px;
 	
-	background-color: ${props => {
-		if (props.status === 'success')
-			return props.theme.ui.goAction;
-
-		if (props.status === 'warning')
-			return 'orange'; // TODO(afr): Use design system here
-
-		if (props.status === 'failure')
-			return props.theme.ui.destructiveAction;
-
-		return 'transparent';
-	}};
+	background-color: ${p => statusToColour(p.$status)};
 `;
 
 export default RequestStatusBlob;

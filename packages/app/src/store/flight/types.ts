@@ -43,7 +43,7 @@ export interface Flight {
 	requestId: string;
 	flightId: string;
 	request: RequestOverview;
-	response?: ResponseOverview; // TODO(afr): Can this not be optional?
+	response: ResponseOverview; // TODO(afr): Can this not be optional?
 }
 
 export interface FlightInProgress extends Flight {

@@ -101,7 +101,7 @@ export default class BeakProject {
 			headers: node.info.headers,
 		};
 
-		await fs.writeJson(node.filePath, requestFile);
+		await fs.writeJson(node.filePath, requestFile, { spaces: '\t' });
 	}
 
 	private async readFolderNode(filePath: string, opts: ReadFolderNodeOptions) {

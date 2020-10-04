@@ -1,1 +1,25 @@
-{"id":"request_000","name":"Enable Twitter God Mode 🚀","uri":{"protocol":"https:","verb":"get","hostname":"httpbin.org","path":"/getssssss","query":{"query_000":{"name":"foo","value":"barssssss","enabled":true}},"fragment":"sexi-fragment"},"headers":{"header_000":{"name":"X-Example-Header","value":"bae","enabled":true}}}
+{
+	"id": "request_000",
+	"name": "Enable Twitter God Mode 🚀",
+	"uri": {
+		"protocol": "https:",
+		"verb": "get",
+		"hostname": "httpbin.org",
+		"path": "/get",
+		"query": {
+			"query_000": {
+				"name": "foo",
+				"value": "barssssss",
+				"enabled": true
+			}
+		},
+		"fragment": "fragments"
+	},
+	"headers": {
+		"header_000": {
+			"name": "X-Example-Header",
+			"value": "bae",
+			"enabled": true
+		}
+	}
+}

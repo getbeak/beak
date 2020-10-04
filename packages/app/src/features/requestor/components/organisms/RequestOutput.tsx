@@ -3,8 +3,8 @@ import { RequestNode } from '@beak/common/src/beak-project/types';
 import React from 'react';
 import AceEditor from 'react-ace';
 
-import 'ace-builds/src-noconflict/mode-html';
-import 'ace-builds/src-noconflict/theme-terminal';
+import 'ace-builds/src-noconflict/mode-text';
+import 'ace-builds/src-noconflict/theme-dracula';
 import { TypedObject } from '@beak/common/src/helpers/typescript';
 
 export interface RequestOutputProps {
@@ -18,8 +18,8 @@ const RequestOutput: React.FunctionComponent<RequestOutputProps> = props => {
 	return (
 		<React.Fragment>
 			<AceEditor
-				mode={'html'}
-				theme={'terminal'}
+				mode={'text'}
+				theme={'dracula'}
 				height={'100%'}
 				width={'100%'}
 				readOnly

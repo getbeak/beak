@@ -4,8 +4,8 @@ import { TypedObject } from '../helpers/typescript';
 import { RequestOverview } from './types';
 
 interface Options {
-	includeQuery: boolean;
-	includeHash: boolean;
+	includeQuery?: boolean;
+	includeHash?: boolean;
 }
 
 export function constructUri(info: RequestOverview, opts?: Options) {

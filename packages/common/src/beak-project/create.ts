@@ -33,5 +33,5 @@ async function createProjectFile(projectPath: string, name: string) {
 		version: '1.0.0',
 	};
 
-	fs.writeJson(path.join(projectPath, 'project.json'), file);
+	fs.writeJson(path.join(projectPath, 'project.json'), file, { spaces: '\t' });
 }

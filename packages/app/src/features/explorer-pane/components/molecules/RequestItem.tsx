@@ -27,7 +27,7 @@ const RequestItem: React.FunctionComponent<RequestItemProps> = props => {
 				{node.name}
 			</Name>
 
-			{flight?.[0] && <RequestStatusBlob status={generateStatus(flight![0]!.response!.statusCode)} />}
+			{flight?.[0]!.response && <RequestStatusBlob $status={flight[0].response.status} />}
 		</Wrapper>
 	);
 };
@@ -62,20 +62,5 @@ const Name = styled.abbr`
 	text-overflow: ellipsis;
 	text-decoration: none;
 `;
-
-function generateStatus(statusCode: number) {
-	switch (true) {
-		case statusCode >= 400 && statusCode <= 499:
-			return 'warning';
-
-		case statusCode >= 500 && statusCode <= 599:
-			return 'failure';
-
-		// I think this is a safe fallback?
-		case statusCode >= 100:
-		default:
-			return 'success';
-	}
-}
 
 export default RequestItem;
