@@ -10,3 +10,6 @@ dist/
 
 # JS/TS
 .dist/
+
+# Beak
+.beak
