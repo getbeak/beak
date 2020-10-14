@@ -14,7 +14,7 @@ const RecentEntry: React.FunctionComponent<RecentEntryProps> = props => {
 	const date = parseISO(props.modifiedDate);
 
 	return (
-		<Wrapper>
+		<Wrapper onClick={() => props.onClick()}>
 			<Icon />
 			<TextWrapper>
 				<Name>{props.name}</Name>

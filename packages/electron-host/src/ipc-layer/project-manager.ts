@@ -7,6 +7,23 @@ import path from 'path';
 
 import { closeWindow, createProjectMainWindow, windowStack } from '../window-management';
 
+ipcMain.handle('project:open_folder', async (event, args) => {
+	const projectPath = args as string;
+	const projectFilePath = path.join(projectPath, 'project.json');
+	const projectFile = await fs.readJson(projectFilePath) as ProjectFile;
+
+	await addRecentProject({
+		exists: true, // TODO(afr): Remove requirement to have this
+		modifiedTime: '', // TODO(afr): Remove requirement to have this
+		name: projectFile.name,
+		path: projectPath,
+		type: 'local',
+	});
+
+	closeWindow(event.sender.id);
+	createProjectMainWindow(projectFilePath);
+});
+
 ipcMain.handle('project:open', async event => {
 	const window = windowStack[event.sender.id]!;
 	const result = await dialog.showOpenDialog(window, {

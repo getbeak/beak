@@ -75,7 +75,9 @@ const OpenRecentColumn: React.FunctionComponent = () => {
 								path={m.path}
 								type={m.type}
 
-								onClick={() => void 0}
+								onClick={() => {
+									ipcRenderer.invoke('project:open_folder', m.path);
+								}}
 							/>
 						))}
 					</Collapse>
