@@ -56,7 +56,7 @@ const Button = styled.button<ButtonProps>`
 
 		&:focus {
 			outline: none;
-			outline-width: 4px;
+			outline-width: 1px;
 			outline-style: solid;
 		}
 	}

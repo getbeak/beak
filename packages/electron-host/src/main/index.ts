@@ -25,5 +25,6 @@ app.on('activate', () => {
 });
 
 app.on('ready', () => {
-	quickCreate.project('/Users/afr/Source/github.com/0xdeafcafe/Beak/testing/project.json');
+	quickCreate.welcome();
+	// quickCreate.project('/Users/afr/Source/github.com/0xdeafcafe/Beak/testing/project.json');
 });

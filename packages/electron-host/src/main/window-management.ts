@@ -1,7 +1,6 @@
 import { BrowserWindow, BrowserWindowConstructorOptions } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
-import * as uuid from 'uuid';
 
 import { staticPath } from './utils/static-path';
 
@@ -10,11 +9,11 @@ type Container = 'about' | 'project-main' | 'welcome';
 const DEV_URL = 'http://localhost:3000';
 const environment = process.env.NODE_ENV;
 
-export const windowStack: Record<string, BrowserWindow | undefined> = {};
+export const windowStack: Record<number, BrowserWindow | undefined> = {};
 
 function generateLoadUrl(
 	container: Container,
-	windowId: string,
+	windowId: number,
 	additionalParams?: Record<string, string>,
 ) {
 	let loadUrl = new URL(url.format({
@@ -38,7 +37,7 @@ function generateLoadUrl(
 	}
 
 	loadUrl.searchParams.set('container', container);
-	loadUrl.searchParams.set('windowId', windowId);
+	loadUrl.searchParams.set('windowId', String(windowId));
 
 	return loadUrl.toString();
 }
@@ -48,7 +47,6 @@ function createWindow(
 	container: Container,
 	additionalParams?: Record<string, string>,
 ) {
-	const windowId = uuid.v4();
 	const window = new BrowserWindow({
 		webPreferences: {
 			nodeIntegration: true,
@@ -56,22 +54,22 @@ function createWindow(
 		...windowOpts,
 	});
 
-	window.loadURL(generateLoadUrl(container, windowId, additionalParams));
-	window.on('closed', () => {
-		delete windowStack[windowId];
+	window.loadURL(generateLoadUrl(container, window.id, additionalParams));
+	window.on('close', () => {
+		delete windowStack[window.id];
 	});
 
-	windowStack[windowId] = window;
+	windowStack[window.id] = window;
 }
 
-export function closeWindow(windowId: string) {
+export function closeWindow(windowId: number) {
 	const window = windowStack[windowId];
 
 	if (!window)
 		return; // probs already closed...
 
+	windowStack[window.id] = void 0;
 	window.close();
-	windowStack[windowId] = void 0;
 }
 
 export function createWelcomeWindow() {

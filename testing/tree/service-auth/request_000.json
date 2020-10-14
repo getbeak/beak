@@ -9,7 +9,7 @@
 		"query": {
 			"query_000": {
 				"name": "foo",
-				"value": "barssssss",
+				"value": "testing",
 				"enabled": true
 			}
 		},

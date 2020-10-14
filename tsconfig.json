@@ -6,8 +6,9 @@
     "allowSyntheticDefaultImports": true,
     "baseUrl": ".",
     "paths": {
-      "@beak/*": ["packages/*"]
-    },
+      "@beak/*": ["packages/*"],
+      "*": ["@types/*"]
+    }
   },
   "exclude": [
     "node_modules"

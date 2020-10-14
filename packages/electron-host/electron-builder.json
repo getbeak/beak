@@ -1,4 +1,7 @@
 {
   "appId": "io.0xdeafcafe.beak",
-  "productName": "Beak"
+  "productName": "Beak",
+  "directories": {
+    "buildResources": "build"
+  }
 }

@@ -1,35 +1,27 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 
-import CloseButton from '../features/welcome/components/atoms/CloseButton';
 import CreateView from '../features/welcome/components/organisms/CreateView';
 import WelcomeView from '../features/welcome/components/organisms/WelcomeView';
 
 export type WelcomeViewType = 'main' | 'create-local';
 
 const Welcome: React.FunctionComponent = () => {
-	const [view, setView] = useState<WelcomeViewType>('main');
+	const [view, setView] = useState<WelcomeViewType>('create-local');
 
 	return (
-		<Wrapper>
+		<React.Fragment>
 			<BrandIndicatorTop />
-			<BrandIndicatorBottom />
+			<BrandIndicatorBottom style={{opacity: view === 'main' ? 1 : 0}} />
 			<DragBar />
-			<Closer>
-				<CloseButton />
-			</Closer>
 
 			<Container>
 				{view === 'main' && <WelcomeView setView={setView} />}
 				{view === 'create-local' && <CreateView setView={setView} />}
 			</Container>
-		</Wrapper>
+		</React.Fragment>
 	);
 };
-
-const Wrapper = styled.div`
-
-`;
 
 const BrandIndicatorTop = styled.div`
 	position: absolute;
@@ -52,22 +44,18 @@ const BrandIndicatorBottom = styled.div`
 	transform: rotate(45deg);
 	z-index: 1;
 
+	transition: opacity .5s linear;
+
 	background: ${props => props.theme.ui.primaryFill};
 `;
 
 const DragBar = styled.div`
+	-webkit-app-region: drag;
 	position: absolute;
 	top: 0;
 	left: 0;
 	right: 0;
 	height: 80px;
-`;
-
-const Closer = styled.div`
-	position: absolute;
-	top: 15px;
-	right: 10px;
-	z-index: 2;
 `;
 
 const Container = styled.div`
