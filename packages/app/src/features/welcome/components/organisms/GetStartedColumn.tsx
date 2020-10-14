@@ -2,11 +2,11 @@ import React from 'react';
 import { Col } from 'react-grid-system';
 
 import { WelcomeViewType } from '../../../../containers/Welcome';
-import { getGlobal } from '../../../../globals';
 import ColumnTitle from '../atoms/ColumnTitle';
 import GetStartedButton from '../molecules/GetStartedButton';
 
 const electron = window.require('electron');
+const { ipcRenderer } = electron;
 
 export interface GetStartedColumnProps {
 	setView: (view: WelcomeViewType) => void;
@@ -26,28 +26,8 @@ const GetStartedColumn: React.FunctionComponent<GetStartedColumnProps> = ({ setV
 			title={'Open an existing project'}
 			description={'Opens an existing local project'}
 
-			onClick={async () => {
-				// TODO(afr): Remove this remote and switch to using ipc
-				const { remote, ipcRenderer } = electron;
-				const { dialog } = remote;
-
-				const result = await dialog.showOpenDialog({
-					title: 'Open a beak project',
-					buttonLabel: 'Open',
-					properties: ['openFile'],
-					filters: [
-						{ name: 'Beak project', extensions: ['json'] },
-						{ name: 'All files', extensions: ['*'] },
-					],
-				});
-
-				if (!result || result.canceled || result.filePaths.length !== 1)
-					return;
-
-				const [filePath] = result.filePaths;
-
-				ipcRenderer.invoke('project_open', filePath);
-				ipcRenderer.invoke('close_window', getGlobal('windowId'));
+			onClick={() => {
+				ipcRenderer.invoke('project:open');
 			}}
 		/>
 

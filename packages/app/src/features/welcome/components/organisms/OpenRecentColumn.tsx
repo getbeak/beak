@@ -1,3 +1,4 @@
+import { RecentLocalProject } from '@beak/common/src/beak-hub/types';
 import { sentenceCase } from 'change-case';
 import React, { useEffect, useState } from 'react';
 import { Col } from 'react-grid-system';
@@ -8,14 +9,7 @@ import Collapse from '../molecules/Collapse';
 import RecentEntry from '../molecules/RecentEntry';
 
 type TimeCategory = 'today' | 'week' | 'month' | 'older';
-type Recents = Record<TimeCategory, MockEntry[]>;
-
-interface MockEntry {
-	name: string;
-	path: string;
-	modifiedDate: string;
-	type: 'local';
-}
+type Recents = Record<TimeCategory, RecentLocalProject[]>;
 
 const categories: TimeCategory[] = ['today', 'week', 'month', 'older'];
 
@@ -26,60 +20,40 @@ const defaultRecents: Recents = {
 	older: [],
 };
 
-const mockingData: MockEntry[] = [{
-	name: 'Branch',
-	path: 'C:/Users/afr/Beaks/Branch',
-	modifiedDate: '2020-07-08T19:05:00Z',
-	type: 'local',
-}, {
-	name: 'Xbl research',
-	path: 'C:/Users/afr/Beaks/Xbox Research',
-	modifiedDate: '2020-07-05T14:06:00Z',
-	type: 'local',
-}, {
-	name: 'Monzo',
-	path: 'C:/Users/afr/Beaks/Monzo',
-	modifiedDate: '2020-06-30T11:55:00Z',
-	type: 'local',
-}, {
-	name: 'Cuvva',
-	path: 'C:/Users/afr/Beaks/Cuvva',
-	modifiedDate: '2020-06-27T12:11:00Z',
-	type: 'local',
-}, {
-	name: 'Tinder reversing',
-	path: 'C:/Users/afr/Beaks/Tindr',
-	modifiedDate: '2020-05-08T09:11:00Z',
-	type: 'local',
-}];
+const electron = window.require('electron');
+const { ipcRenderer } = electron;
 
 const OpenRecentColumn: React.FunctionComponent = () => {
 	const [recents, setRecents] = useState<Recents>({ ...defaultRecents });
 
 	useEffect(() => {
-		const newRecents = { ...defaultRecents };
-		const now = new Date().getTime() / 1000;
+		ipcRenderer.invoke('welcome-recents:list').then((recents: RecentLocalProject[]) => {
+			const newRecents = { ...defaultRecents };
+			const now = new Date().getTime() / 1000;
 
-		mockingData.sort((a, b) => {
-			const aD = new Date(a.modifiedDate).getTime();
-			const bD = new Date(b.modifiedDate).getTime();
+			recents.filter(r => r.exists)
+				.sort((a, b) => {
+					const aD = new Date(a.modifiedTime).getTime();
+					const bD = new Date(b.modifiedTime).getTime();
 
-			return Math.sign(aD - bD);
-		}).forEach(m => {
-			const unix = new Date(m.modifiedDate).getTime() / 1000;
-			const diff = now - unix;
+					return Math.sign(aD - bD);
+				})
+				.forEach(m => {
+					const unix = new Date(m.modifiedTime).getTime() / 1000;
+					const diff = now - unix;
 
-			if (diff > 2592000) // 1 month
-				newRecents.older.push(m);
-			else if (diff > 604800) // 1 week
-				newRecents.month.push(m);
-			else if (diff > 86400) // 1 day
-				newRecents.week.push(m);
-			else
-				newRecents.today.push(m);
+					if (diff > 2592000) // 1 month
+						newRecents.older.push(m);
+					else if (diff > 604800) // 1 week
+						newRecents.month.push(m);
+					else if (diff > 86400) // 1 day
+						newRecents.week.push(m);
+					else
+						newRecents.today.push(m);
+				});
+
+			setRecents(newRecents);
 		});
-
-		setRecents(newRecents);
 	}, []);
 
 	return (
@@ -87,7 +61,7 @@ const OpenRecentColumn: React.FunctionComponent = () => {
 			<ColumnTitle>{'Open recent'}</ColumnTitle>
 
 			<ScrollViewer>
-				{categories.map(k => (
+				{categories.filter(k => recents[k].length > 0).map(k => (
 					<Collapse
 						key={k}
 						startOpen={true}
@@ -96,7 +70,7 @@ const OpenRecentColumn: React.FunctionComponent = () => {
 						{recents[k].map(m => (
 							<RecentEntry
 								key={`${m.name}-${m.path}`}
-								modifiedDate={m.modifiedDate}
+								modifiedDate={m.modifiedTime}
 								name={m.name}
 								path={m.path}
 								type={m.type}

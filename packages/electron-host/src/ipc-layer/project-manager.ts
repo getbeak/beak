@@ -1,17 +1,51 @@
+import { addRecentProject } from '@beak/common/src/beak-hub/recents';
 import createProject from '@beak/common/src/beak-project/create';
+import { ProjectFile } from '@beak/common/src/beak-project/types';
 import { dialog, ipcMain } from 'electron';
+import fs from 'fs-extra';
+import path from 'path';
 
 import { closeWindow, createProjectMainWindow, windowStack } from '../window-management';
 
-ipcMain.handle('project_open', (event, args) => {
-	const filePath = args as string;
+ipcMain.handle('project:open', async event => {
+	const window = windowStack[event.sender.id]!;
+	const result = await dialog.showOpenDialog(window, {
+		title: 'Open a beak project',
+		buttonLabel: 'Open',
+		properties: ['openFile'],
+		filters: [
+			{ name: 'Beak project', extensions: ['json'] },
+			{ name: 'All files', extensions: ['*'] },
+		],
+	});
+
+	if (result.canceled)
+		return;
+
+	if (result.filePaths.length !== 1) {
+		await dialog.showMessageBox(window, {
+			type: 'error',
+			title: 'That shouldn\'t happen',
+			message: 'You managed to select more than 1 file... pls don\'t do that.',
+		});
+
+		return;
+	}
+
+	const projectFilePath = result.filePaths[0];
+	const projectFile = await fs.readJson(projectFilePath) as ProjectFile;
+	const projectPath = path.join(projectFilePath, '..');
+
+	await addRecentProject({
+		exists: true,
+		modifiedTime: '',
+		name: projectFile.name,
+		path: projectPath,
+		type: 'local',
+	});
 
 	closeWindow(event.sender.id);
-	createProjectMainWindow(filePath);
-});
-
-ipcMain.handle('close_window', event => {
-	closeWindow(event.sender.id);
+	createProjectMainWindow(projectFilePath);
 });
 
 ipcMain.on('project:create', async (event, args) => {
