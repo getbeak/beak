@@ -57,10 +57,7 @@ const UriPane: React.FunctionComponent<UriPaneProps> = props => {
 
 	return (
 		<Container>
-			<OmniBar
-				value={constructUri(node.info, { includeQuery: false })}
-				onChange={e => handleUrlChange(e)}
-			/>
+			{/* TODO(afr): Stop using native component, build custom to handle auto resize */}
 			<VerbPicker
 				value={verb}
 				onChange={e => {
@@ -77,76 +74,81 @@ const UriPane: React.FunctionComponent<UriPaneProps> = props => {
 				<option value={'delete'}>{'DELETE'}</option>
 				<option value={'head'}>{'HEAD'}</option>
 				<option value={'options'}>{'OPTIONS'}</option>
+				<option disabled>{'____________'}</option>
+				<option value={'custom'} disabled>{'Custom'}</option>
 			</VerbPicker>
+
+			<OmniBar
+				value={constructUri(node.info, { includeQuery: false })}
+				onChange={e => handleUrlChange(e)}
+			/>
+
 			<OkayBoomer onClick={() => dispatchFlightRequest()}>
-				{'⌖'}
+				{'GO'}
 			</OkayBoomer>
 		</Container>
 	);
 };
 
 const Container = styled.div`
-	position: relative;
 	padding: 25px 20px;
+	display: flex;
 
 	/* TODO(afr): Fix this hack */
 	height: 30px !important;
 `;
 
-const OmniBar = styled.input`
-	position: absolute;
-	width: calc(100% - 85px - 40px);
-	padding: 6px;
-	padding-left: 45px;
-	padding-right: 40px;
-	border-radius: 4px;
-	border: 1px solid ${props => props.theme.ui.backgroundBorderSeparator};
-	background: ${props => props.theme.ui.surface};
-	color: white;
-	font-size: 14px;
-	font-weight: 400;
-
-	&:focus {
-		outline: 2px solid ${props => props.theme.ui.primaryFill};
-		outline-style: groove;
-	}
-`;
-
 const VerbPicker = styled.select`
-	position: absolute;
-	left: 30px;
-
 	-webkit-appearance: none;
 	-moz-appearance: none;
 	text-indent: 1px;
 	text-overflow: '';
 
-	width: 32px;
-
-	background-color: transparent;
-	margin-top: 8px;
-	border: none;
-	font-weight: 800;
+	width: 42px;
+	padding: 4px 6px;
+	margin-right: 10px;
+	border-radius: 4px;
+	border: 1px solid ${props => props.theme.ui.backgroundBorderSeparator};
+	background: ${props => props.theme.ui.surface};
 	color: ${props => props.theme.ui.primaryFill};
 
-	&:focus {
+	font-weight: 800;
+
+	&:hover, &:focus {
 		outline: none;
+		border: 1px solid ${props => props.theme.ui.primaryFill};
+	}
+`;
+
+const OmniBar = styled.input`
+	flex-grow: 1;
+	padding: 4px 6px;
+	margin-right: 10px;
+	border-radius: 4px;
+	border: 1px solid ${props => props.theme.ui.backgroundBorderSeparator};
+	background: ${props => props.theme.ui.surface};
+	color: ${props => props.theme.ui.textOnSurfaceBackground};
+	font-size: 14px;
+	font-weight: 400;
+
+	&:hover, &:focus {
+		outline: none;
+		border: 1px solid ${props => props.theme.ui.primaryFill};
 	}
 `;
 
 const OkayBoomer = styled.button`
-	position: absolute;
-	right: 22px;
+	padding: 4px 6px;
+	border-radius: 4px;
+	border: 1px solid ${props => props.theme.ui.backgroundBorderSeparator};
+	background: ${props => props.theme.ui.surface};
 
-	background: transparent;
-	border: none;
-	color: ${props => props.theme.ui.textOnSurfaceBackground};
-	margin-top: 4px;
-	font-size: 13px;
-	font-weight: 300;
+	color: ${props => props.theme.ui.goAction};
+	font-weight: 800;
 
-	&:focus {
+	&:hover, &:focus {
 		outline: none;
+		border: 1px solid ${props => props.theme.ui.goAction};
 	}
 
 	cursor: pointer;

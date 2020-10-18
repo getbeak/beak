@@ -2,13 +2,17 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 
+import binaryStore from '../../lib/binary-store';
+
 const ProgressIndicator: React.FunctionComponent = () => {
 	const currentFlight = useSelector(s => s.global.flight.currentFlight);
+
+	// TODO(afr): Reinstate this
 
 	return (
 		<Wrapper>
 			{currentFlight?.flighting && (
-				<IndicatorBar progress={currentFlight?.percentageComplete} />
+				<IndicatorBar progress={0} />
 			)}
 		</Wrapper>
 	);
