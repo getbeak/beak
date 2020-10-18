@@ -43,7 +43,6 @@ export default function* requestFlightWorker({ payload }: PayloadAction<string, 
 
 		ipcRenderer.on(`flight_complete:${flightId}`, (_, payload: FlightCompletePayload) => {
 			emitter(actions.completeFlight({ flightId, requestId, response: payload.overview }));
-			console.log(binaryStore.get(binaryStoreKey).toString());
 			emitter(END);
 		});
 
@@ -53,7 +52,7 @@ export default function* requestFlightWorker({ payload }: PayloadAction<string, 
 			throw payload.error;
 		});
 
-		return () => {};
+		return () => { /* */ };
 	});
 
 	ipcRenderer.send('flight_request', {
