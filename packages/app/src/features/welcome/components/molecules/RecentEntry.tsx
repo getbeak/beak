@@ -20,7 +20,7 @@ const RecentEntry: React.FunctionComponent<RecentEntryProps> = props => {
 				<Name>{props.name}</Name>
 				<Path>{props.path}</Path>
 			</TextWrapper>
-			<ModifiedDate>{format(date, 'MM/dd/yyyy HH:mm')}</ModifiedDate>
+			<ModifiedDate>{format(date, 'MM/dd/yyyy')}</ModifiedDate>
 		</Wrapper>
 	);
 };
