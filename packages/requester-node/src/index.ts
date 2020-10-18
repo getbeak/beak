@@ -51,7 +51,7 @@ export async function startRequester(options: RequesterOptions) {
 
 	heartbeat({
 		stage: 'parsing_response',
-		payload: { contentLength },
+		payload: { contentLength, timestamp: Date.now() },
 	});
 
 	if (contentLength > 0) {
@@ -64,7 +64,7 @@ export async function startRequester(options: RequesterOptions) {
 		for await (const chunk of response.body) {
 			heartbeat({
 				stage: 'reading_body',
-				payload: { buffer: chunk as Buffer },
+				payload: { buffer: chunk as Buffer, timestamp: Date.now() },
 			});
 		}
 	}

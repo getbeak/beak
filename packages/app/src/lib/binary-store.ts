@@ -27,7 +27,13 @@ class BinaryStore {
 			return;
 		}
 
-		this.set(key, Buffer.concat([this.get(key), buf]));
+		const oldBuf = this.get(key);
+		const newBuf = new Uint8Array(oldBuf.length + buf.length);
+
+		newBuf.set(oldBuf);
+		newBuf.set(buf, oldBuf.length);
+
+		this.set(key, newBuf as Buffer);
 	}
 
 	remove(key: string) {

@@ -1,6 +1,4 @@
 import { ActionType, createReducer } from 'typesafe-actions';
-import * as uuid from 'uuid';
-import binaryStore from '../../lib/binary-store';
 
 import * as actions from './actions';
 import { initialState, State } from './types';
@@ -26,6 +24,7 @@ const flightReducer = createReducer<State, Actions>(initialState)
 					currentFlight: {
 						...state.currentFlight!,
 						start: payload.payload.timestamp,
+						lastUpdate: payload.payload.timestamp,
 					},
 				};
 
@@ -35,11 +34,18 @@ const flightReducer = createReducer<State, Actions>(initialState)
 					currentFlight: {
 						...state.currentFlight!,
 						contentLength: payload.payload.contentLength,
+						lastUpdate: payload.payload.timestamp,
 					},
 				};
 
 			case 'reading_body':
-				return state;
+				return {
+					...state,
+					currentFlight: {
+						...state.currentFlight!,
+						lastUpdate: payload.payload.timestamp,
+					},
+				};
 
 			default:
 				break;
@@ -54,8 +60,8 @@ const flightReducer = createReducer<State, Actions>(initialState)
 			...state,
 			currentFlight: {
 				...state.currentFlight!,
-				flighting: false,
 				response,
+				flighting: false,
 			},
 		};
 

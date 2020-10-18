@@ -30,6 +30,7 @@ export interface FlightHeartbeatFetchResponse {
 export interface FlightHeartbeatParsingResponse {
 	stage: 'parsing_response';
 	payload: {
+		timestamp: number;
 		contentLength: number;
 	};
 }
@@ -37,6 +38,7 @@ export interface FlightHeartbeatParsingResponse {
 export interface FlightHeartbeatReadingBody {
 	stage: 'reading_body';
 	payload: {
+		timestamp: number;
 		buffer: Buffer;
 	};
 }

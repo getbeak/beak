@@ -43,16 +43,19 @@ export interface Flight {
 	requestId: string;
 	flightId: string;
 	request: RequestOverview;
-	response: ResponseOverview; // TODO(afr): Can this not be optional?
+	response: ResponseOverview;
 }
 
-export interface FlightInProgress extends Flight {
+export interface FlightInProgress extends Omit<Flight, 'response'> {
 	flighting: boolean;
 	start?: number;
+	lastUpdate?: number;
+	finish?: number;
+
 	binaryStoreKey: string;
 	contentLength?: number;
 	body?: Buffer;
-	finish?: number;
+	response?: ResponseOverview;
 }
 
 export default {
