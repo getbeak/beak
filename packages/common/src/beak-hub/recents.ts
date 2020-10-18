@@ -45,9 +45,10 @@ export async function addRecentProject(recent: RecentLocalProject) {
 	const wd = process.cwd();
 	const recentsPath = path.join(wd, '.beak', 'recents.json');
 	const recents = await listRecentProjects();
+	const filteredRecents = recents.filter(r => r.path !== recent.path);
 
 	await fs.ensureFile(recentsPath);
-	await fs.writeJson(recentsPath, [recent, ...recents].map(r => ({
+	await fs.writeJson(recentsPath, [recent, ...filteredRecents].map(r => ({
 		type: r.type,
 		name: r.name,
 		path: r.path,
