@@ -1,12 +1,14 @@
+import BasicTableView from '@beak/app/src/components/molecules/BasicTableView';
+import actions from '@beak/app/src/store/project/actions';
 import { RequestNode } from '@beak/common/src/beak-project/types';
 import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 
 import TabBar from '../../../../components/atoms/TabBar';
 import TabItem from '../../../../components/atoms/TabItem';
 import TabSpacer from '../../../../components/atoms/TabSpacer';
 import DebuggerPane from './DebuggerPane';
-import UrlQueryPane from './UrlQueryPane';
 
 type Tab = 'debugging' | 'headers' | 'url_query' | 'body' | 'options';
 
@@ -15,6 +17,8 @@ export interface ModifiersPaneProps {
 }
 
 const ModifiersPane: React.FunctionComponent<ModifiersPaneProps> = props => {
+	const dispatch = useDispatch();
+	const { node } = props;
 	const [tab, setTab] = useState<Tab>('url_query');
 
 	return (
@@ -55,8 +59,41 @@ const ModifiersPane: React.FunctionComponent<ModifiersPaneProps> = props => {
 			</TabBar>
 
 			<TabBody>
-				{tab === 'debugging' && <DebuggerPane node={props.node} />}
-				{tab === 'url_query' && <UrlQueryPane node={props.node} />}
+				{tab === 'debugging' && <DebuggerPane node={node} />}
+				{tab === 'headers' && (
+					<BasicTableView
+						editable
+						items={node.info.headers}
+						addItem={() => dispatch(actions.requestHeaderAdded({ requestId: node.id }))}
+						removeItem={ident =>
+							dispatch(actions.requestHeaderRemoved({ identifier: ident, requestId: node.id }))
+						}
+						updateItem={(type, ident, value) =>
+							dispatch(actions.requestHeaderUpdated({
+								identifier: ident,
+								requestId: node.id,
+								[type]: value,
+							}))
+						}
+					/>
+				)}
+				{tab === 'url_query' && (
+					<BasicTableView
+						editable
+						items={node.info.uri.query}
+						addItem={() => dispatch(actions.requestQueryAdded({ requestId: node.id }))}
+						removeItem={ident =>
+							dispatch(actions.requestQueryRemoved({ identifier: ident, requestId: node.id }))
+						}
+						updateItem={(type, ident, value) =>
+							dispatch(actions.requestQueryUpdated({
+								identifier: ident,
+								requestId: node.id,
+								[type]: value,
+							}))
+						}
+					/>
+				)}
 			</TabBody>
 		</Container>
 	);
@@ -70,6 +107,7 @@ const Container = styled.div`
 
 const TabBody = styled.div`
 	flex-grow: 2;
+	padding-top: 5px;
 
 	overflow-y: auto;
 `;
