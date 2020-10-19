@@ -1,6 +1,7 @@
 // @ts-ignore
 import ksuid from '@cuvva/ksuid';
 import fs from 'fs-extra';
+import NodeGit from 'nodegit';
 import path from 'path';
 
 import { ProjectFile, RequestNodeFile } from './types';
@@ -53,11 +54,13 @@ export default async function createProject(options: CreationOptions) {
 	await fs.writeFile(path.join(projectPath, '.gitignore'), '.beak\n');
 	await fs.ensureDir(path.join(projectPath, '.beak'));
 	await fs.writeFile(path.join(projectPath, '.beak', 'supersecret.json'), '{}');
+	await fs.writeFile(path.join(projectPath, 'README.md'), createReadme(name));
 
-	// TODO(afr): invoke git
-	// TODO(afr): create readme?
+	const projectFilePath = await createProjectFile(projectPath, name);
 
-	return await createProjectFile(projectPath, name);
+	await initRepoAndCommit(projectPath);
+
+	return projectFilePath;
 }
 
 async function ensureDirEmpty(path: string) {
@@ -77,4 +80,25 @@ async function createProjectFile(projectPath: string, name: string) {
 	await fs.writeJson(projectFilePath, file, { spaces: '\t' });
 
 	return projectFilePath;
+}
+
+function createReadme(name: string) {
+	return [
+		`# ${name}`,
+		'',
+		'Welcome to your new Beak project',
+		'',
+	].join('\n');
+}
+
+async function initRepoAndCommit(projectPath: string) {
+	const repo = await NodeGit.Repository.init(projectPath, 0);
+	const files = await repo.getStatus();
+
+	const filePaths = files.map(f => f.path());
+
+	// NOTE(afr): This function is in-fact async, the typing are just wrong
+	const signature = await NodeGit.Signature.default(repo);
+
+	await repo.createCommitOnHead(filePaths, signature, signature, 'Initial commit');
 }
