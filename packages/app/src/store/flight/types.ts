@@ -54,7 +54,10 @@ export interface FlightInProgress extends Omit<Flight, 'response'> {
 
 	binaryStoreKey: string;
 	contentLength?: number;
+	bodyTransferred?: number;
+	bodyTransferPercentage?: number;
 	body?: Buffer;
+
 	response?: ResponseOverview;
 }
 
