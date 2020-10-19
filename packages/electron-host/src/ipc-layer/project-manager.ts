@@ -13,8 +13,6 @@ ipcMain.handle('project:open_folder', async (event, args) => {
 	const projectFile = await fs.readJson(projectFilePath) as ProjectFile;
 
 	await addRecentProject({
-		exists: true, // TODO(afr): Remove requirement to have this
-		modifiedTime: '', // TODO(afr): Remove requirement to have this
 		name: projectFile.name,
 		path: projectPath,
 		type: 'local',
@@ -54,8 +52,6 @@ ipcMain.handle('project:open', async event => {
 	const projectPath = path.join(projectFilePath, '..');
 
 	await addRecentProject({
-		exists: true,
-		modifiedTime: '',
 		name: projectFile.name,
 		path: projectPath,
 		type: 'local',

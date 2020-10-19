@@ -41,7 +41,7 @@ export async function listRecentProjects(): Promise<RecentLocalProject[]> {
 	return await Promise.all(promises);
 }
 
-export async function addRecentProject(recent: RecentLocalProject) {
+export async function addRecentProject(recent: Omit<RecentLocalProject, 'exists' | 'modifiedTime'>) {
 	const wd = process.cwd();
 	const recentsPath = path.join(wd, '.beak', 'recents.json');
 	const recents = await listRecentProjects();
