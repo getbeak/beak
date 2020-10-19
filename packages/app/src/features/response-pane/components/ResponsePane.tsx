@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 
+import FlightHistorySelector from './molecules/FlightHistorySelector';
 import Header from './molecules/Header';
 import PendingSlash from './molecules/PendingSplash';
 import InspectorTabs from './organisms/InspectorTabs';
@@ -30,6 +31,10 @@ const ResponsePane: React.FunctionComponent = () => {
 	return (
 		<Container>
 			<Header
+				flightHistory={flightHistory}
+				selectedFlightIndex={selectedFlightIndex}
+			/>
+			<FlightHistorySelector
 				flightHistory={flightHistory}
 				selectedFlightIndex={selectedFlightIndex}
 				updateSelectedFlight={setSelectedFlightIndex}
