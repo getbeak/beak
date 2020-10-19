@@ -13,76 +13,84 @@ export interface MutableBasicTableViewProps {
 
 export interface ImmutableBasicTableViewProps {
 	editable: false;
+	items: Record<string, ToggleKeyValue>;
 }
 
-// export interface BasicTableViewProps extends EditableBasicTableViewProps, ImmutableBasicTableViewProps { }
+const BasicTableView: React.FunctionComponent<MutableBasicTableViewProps | ImmutableBasicTableViewProps> = props => {
+	const { items } = props;
+	const updateItem = (props as MutableBasicTableViewProps).updateItem || updateItemSnub;
 
-const BasicTableView: React.FunctionComponent<MutableBasicTableViewProps> = props => (
-	<React.Fragment>
-		<EntryTable>
-			<thead>
-				<tr>
-					{props.editable && <Header></Header>}
-					<Header>{'Name'}</Header>
-					<Header>{'Value'}</Header>
-					{props.editable && <Header></Header>}
-				</tr>
-			</thead>
-			<tbody>
-				{TypedObject.keys(props.items).map(k => {
-					const entry = props.items[k];
+	return (
+		<React.Fragment>
+			<EntryTable>
+				<thead>
+					<tr>
+						{props.editable && <Header></Header>}
+						<Header>{'Name'}</Header>
+						<Header>{'Value'}</Header>
+						{props.editable && <Header></Header>}
+					</tr>
+				</thead>
+				<tbody>
+					{TypedObject.keys(items).map(k => {
+						const entry = items[k];
 
-					return (
-						<Row key={k}>
-							{props.editable && (
-								<ToggleCell>
-									<InputToggle
-										type={'checkbox'}
-										checked={entry.enabled}
-										onChange={e => props.updateItem('enabled', k, e.target.checked)}
+						return (
+							<Row key={k}>
+								{props.editable && (
+									<ToggleCell>
+										<InputToggle
+											type={'checkbox'}
+											checked={entry.enabled}
+											onChange={e => updateItem('enabled', k, e.target.checked)}
+										/>
+									</ToggleCell>
+								)}
+								<td>
+									<InputText
+										disabled={!props.editable}
+										value={entry.name}
+										onChange={e => updateItem('name', k, e.target.value)}
 									/>
-								</ToggleCell>
-							)}
-							<td>
-								<InputText
-									disabled={!props.editable}
-									value={entry.name}
-									onChange={e => props.updateItem('name', k, e.target.value)}
-								/>
-							</td>
-							<td>
-								<InputText
-									disabled={!props.editable}
-									value={entry.value}
-									onChange={e => props.updateItem('value', k, e.target.value)}
-								/>
-							</td>
-							{props.editable && (
-								<ToggleCell>
-									<Button onClick={() => {
-										props.removeItem(k);
-									}}>
-										{'Remove'}
-									</Button>
-								</ToggleCell>
-							)}
-						</Row>
-					);
-				})}
-			</tbody>
-		</EntryTable>
+								</td>
+								<td>
+									<InputText
+										disabled={!props.editable}
+										value={entry.value}
+										onChange={e => updateItem('value', k, e.target.value)}
+									/>
+								</td>
+								{props.editable && (
+									<ToggleCell>
+										<Button onClick={() => {
+											props.removeItem(k);
+										}}>
+											{'Remove'}
+										</Button>
+									</ToggleCell>
+								)}
+							</Row>
+						);
+					})}
+				</tbody>
+			</EntryTable>
 
-		{props.editable && (
-			<AddButtonWrapper>
-				<Button onClick={() => {
-					props.addItem();
-				}}>
-					{'Add'}
-				</Button>
-			</AddButtonWrapper>
-		)}
-	</React.Fragment>
-);
+			{props.editable && (
+				<AddButtonWrapper>
+					<Button onClick={() => {
+						props.addItem();
+					}}>
+						{'Add'}
+					</Button>
+				</AddButtonWrapper>
+			)}
+		</React.Fragment>
+	);
+};
+
+function updateItemSnub(_type: keyof ToggleKeyValue, _ident: string, _value: string | boolean) {
+	return;
+}
 
 const EntryTable = styled.table`
 	width: 100%;
