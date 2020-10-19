@@ -4,9 +4,9 @@ import {
 	FlightFailedPayload,
 	FlightHeartbeatPayload,
 } from '@beak/common/src/requester/types';
+import { PayloadAction } from '@reduxjs/toolkit';
 import { END, eventChannel } from 'redux-saga';
 import { put, select, take } from 'redux-saga/effects';
-import { PayloadAction } from 'typesafe-actions';
 import * as uuid from 'uuid';
 
 import { ApplicationState } from '../..';
@@ -16,7 +16,7 @@ import { RequestFlightPayload, State } from '../types';
 const electron = window.require('electron');
 const { ipcRenderer } = electron;
 
-export default function* requestFlightWorker({ payload }: PayloadAction<string, RequestFlightPayload>) {
+export default function* requestFlightWorker({ payload }: PayloadAction<RequestFlightPayload>) {
 	const { flightId, requestId, request } = payload;
 	const flight: State = yield select((s: ApplicationState) => s.global.flight);
 	const binaryStoreKey = uuid.v4();

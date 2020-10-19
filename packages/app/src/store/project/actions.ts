@@ -1,55 +1,31 @@
-import { deprecated } from 'typesafe-actions';
+import { Nodes } from '@beak/common/src/beak-project/types';
+import { createAction } from '@reduxjs/toolkit';
 
 import {
 	ActionTypes,
 	ProjectOpenedPayload,
-	RequestIdPayload,
-	RequestQueryRemovedPayload,
-	RequestQueryUpdatedPayload,
 	RequestUriUpdatedPayload,
+	ToggleableItemAddedPayload,
+	ToggleableItemRemovedPayload,
+	ToggleableItemUpdatedPayload,
 } from './types';
 
-const { createAction } = deprecated;
+export const openProject = createAction<string>(ActionTypes.OPEN_PROJECT);
+export const projectOpened = createAction<ProjectOpenedPayload>(ActionTypes.PROJECT_OPENED);
+export const requestSelected = createAction<string | undefined>(ActionTypes.REQUEST_SELECTED);
+export const requestUriUpdated = createAction<RequestUriUpdatedPayload>(ActionTypes.REQUEST_URI_UPDATED);
 
-export const openProject = createAction(
-	ActionTypes.OPEN_PROJECT,
-	action => (projectPath: string) => action({ projectPath }),
-);
+export const requestQueryAdded = createAction<ToggleableItemAddedPayload>(ActionTypes.REQUEST_QUERY_ADDED);
+export const requestQueryUpdated = createAction<ToggleableItemUpdatedPayload>(ActionTypes.REQUEST_QUERY_UPDATED);
+export const requestQueryRemoved = createAction<ToggleableItemRemovedPayload>(ActionTypes.REQUEST_QUERY_REMOVED);
 
-export const projectOpened = createAction(
-	ActionTypes.PROJECT_OPENED,
-	action => (project: ProjectOpenedPayload) => action(project),
-);
+export const requestHeaderAdded = createAction<ToggleableItemAddedPayload>(ActionTypes.REQUEST_HEADER_ADDED);
+export const requestHeaderUpdated = createAction<ToggleableItemUpdatedPayload>(ActionTypes.REQUEST_HEADER_UPDATED);
+export const requestHeaderRemoved = createAction<ToggleableItemRemovedPayload>(ActionTypes.REQUEST_HEADER_REMOVED);
 
-export const requestSelected = createAction(
-	ActionTypes.REQUEST_SELECTED,
-	action => (requestId?: string) => action(requestId),
-);
-
-export const requestUriUpdated = createAction(
-	ActionTypes.REQUEST_URI_UPDATED,
-	action => (payload: RequestUriUpdatedPayload) => action(payload),
-);
-
-export const requestQueryAdded = createAction(
-	ActionTypes.REQUEST_QUERY_ADDED,
-	action => (payload: RequestIdPayload) => action(payload),
-);
-
-export const requestQueryUpdated = createAction(
-	ActionTypes.REQUEST_QUERY_UPDATED,
-	action => (payload: RequestQueryUpdatedPayload) => action(payload),
-);
-
-export const requestQueryRemoved = createAction(
-	ActionTypes.REQUEST_QUERY_REMOVED,
-	action => (payload: RequestQueryRemovedPayload) => action(payload),
-);
-
-export const reportNodeUpdate = createAction(
-	ActionTypes.REPORT_NODE_UPDATE,
-	action => (nodeId: string) => action(nodeId),
-);
+export const reportNodeUpdate = createAction<string>(ActionTypes.REPORT_NODE_UPDATE);
+export const refreshNodeState = createAction<Nodes>(ActionTypes.REFRESH_NODE_STATE);
+export const startFsListener = createAction(ActionTypes.START_FS_LISTENER);
 
 export default {
 	openProject,
@@ -59,5 +35,10 @@ export default {
 	requestQueryAdded,
 	requestQueryUpdated,
 	requestQueryRemoved,
+	requestHeaderAdded,
+	requestHeaderUpdated,
+	requestHeaderRemoved,
 	reportNodeUpdate,
+	refreshNodeState,
+	startFsListener,
 };

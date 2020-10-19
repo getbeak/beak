@@ -1,100 +1,69 @@
-import { ActionType, createReducer } from 'typesafe-actions';
+/* eslint-disable no-param-reassign */
+
+import { createReducer } from '@reduxjs/toolkit';
 
 import * as actions from './actions';
-import { initialState, State } from './types';
+import { initialState } from './types';
 
-type Actions = ActionType<typeof actions>;
+const flightReducer = createReducer(initialState, builder => {
+	builder
+		.addCase(actions.cancelFlightRequest, (state, action) => {
+			state.blackBox[action.payload] = false;
+		})
+		.addCase(actions.updateFlightProgress, (state, action) => {
+			const { payload } = action;
+			const { stage } = payload;
 
-const flightReducer = createReducer<State, Actions>(initialState)
-	.handleAction(actions.cancelFlightRequest, (state, action) => ({
-		...state,
-		blackBox: {
-			...state.blackBox,
-			[action.payload]: false,
-		},
-	}))
-	.handleAction(actions.updateFlightProgress, (state, action) => {
-		const { payload } = action;
-		const { stage } = payload;
+			switch (payload.stage) {
+				case 'fetch_response':
+					state.currentFlight!.start = payload.payload.timestamp;
+					state.currentFlight!.lastUpdate = payload.payload.timestamp;
 
-		switch (payload.stage) {
-			case 'fetch_response':
-				return {
-					...state,
-					currentFlight: {
-						...state.currentFlight!,
-						start: payload.payload.timestamp,
-						lastUpdate: payload.payload.timestamp,
-					},
-				};
+					return;
 
-			case 'parsing_response':
-				return {
-					...state,
-					currentFlight: {
-						...state.currentFlight!,
-						contentLength: payload.payload.contentLength,
-						lastUpdate: payload.payload.timestamp,
-					},
-				};
+				case 'parsing_response':
+					state.currentFlight!.contentLength = payload.payload.contentLength;
+					state.currentFlight!.bodyTransferred = 0;
+					state.currentFlight!.bodyTransferPercentage = 0;
+					state.currentFlight!.lastUpdate = payload.payload.timestamp;
 
-			case 'reading_body':
-				return {
-					...state,
-					currentFlight: {
-						...state.currentFlight!,
-						lastUpdate: payload.payload.timestamp,
-					},
-				};
+					return;
 
-			default:
-				break;
-		}
+				case 'reading_body': {
+					const bodyTransferred = state.currentFlight!.bodyTransferred! + payload.payload.buffer.length;
+					const bodyTransferPercentage = ((bodyTransferred / state.currentFlight!.contentLength!) * 100);
 
-		throw new Error(`unknown heartbeat stage: ${stage}`);
-	})
-	.handleAction(actions.completeFlight, (state, action) => {
-		const { flightId, requestId, response } = action.payload;
+					state.currentFlight!.bodyTransferred = bodyTransferred;
+					state.currentFlight!.bodyTransferPercentage = bodyTransferPercentage;
+					state.currentFlight!.lastUpdate = payload.payload.timestamp;
 
-		const newState: State = {
-			...state,
-			currentFlight: {
-				...state.currentFlight!,
-				response,
-				flighting: false,
-			},
-		};
+					return;
+				}
 
-		if (!newState.flightHistory[requestId])
-			newState.flightHistory[requestId] = [];
+				default:
+					throw new Error(`unknown heartbeat stage: ${stage}`);
+			}
+		})
+		.addCase(actions.completeFlight, (state, action) => {
+			const { flightId, requestId, response } = action.payload;
 
-		const flight = {
-			flightId,
-			requestId,
-			request: state.currentFlight!.request,
-			response,
-		};
-
-		newState.flightHistory[requestId] = [
-			flight,
-			...newState.flightHistory[requestId],
-		];
-
-		return newState;
-	})
-	.handleAction(actions.beginFlightRequest, (state, action) => ({
-		...state,
-		currentFlight: {
-			requestId: action.payload.requestId,
-			flightId: action.payload.flightId,
-			request: action.payload.request,
-			flighting: true,
-			binaryStoreKey: action.payload.binaryStoreKey,
-		},
-		blackBox: {
-			...state.blackBox,
-			[action.payload.flightId]: true,
-		},
-	}));
+			state.currentFlight!.response = response;
+			state.currentFlight!.flighting = false;
+			state.flightHistory[requestId] = [
+				...state.flightHistory[requestId],
+				{ flightId, requestId, request: state.currentFlight!.request, response },
+			];
+		})
+		.addCase(actions.beginFlightRequest, (state, action) => {
+			state.blackBox[action.payload.flightId] = true;
+			state.currentFlight = {
+				requestId: action.payload.requestId,
+				flightId: action.payload.flightId,
+				request: action.payload.request,
+				flighting: true,
+				binaryStoreKey: action.payload.binaryStoreKey,
+			};
+		});
+});
 
 export default flightReducer;
