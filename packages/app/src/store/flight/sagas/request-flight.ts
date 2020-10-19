@@ -4,10 +4,11 @@ import {
 	FlightFailedPayload,
 	FlightHeartbeatPayload,
 } from '@beak/common/src/requester/types';
+// @ts-ignore
+import ksuid from '@cuvva/ksuid';
 import { PayloadAction } from '@reduxjs/toolkit';
 import { END, eventChannel } from 'redux-saga';
 import { put, select, take } from 'redux-saga/effects';
-import * as uuid from 'uuid';
 
 import { ApplicationState } from '../..';
 import * as actions from '../actions';
@@ -19,7 +20,7 @@ const { ipcRenderer } = electron;
 export default function* requestFlightWorker({ payload }: PayloadAction<RequestFlightPayload>) {
 	const { flightId, requestId, request } = payload;
 	const flight: State = yield select((s: ApplicationState) => s.global.flight);
-	const binaryStoreKey = uuid.v4();
+	const binaryStoreKey = ksuid.generate('binstore').toString();
 
 	if (flight.currentFlight?.flighting) {
 		yield put(actions.cancelFlightRequest(flightId));

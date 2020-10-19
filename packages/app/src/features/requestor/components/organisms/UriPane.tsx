@@ -1,9 +1,10 @@
 import { RequestNode } from '@beak/common/src/beak-project/types';
 import { constructUri } from '@beak/common/src/beak-project/url';
+// @ts-ignore
+import ksuid from '@cuvva/ksuid';
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
-import * as uuid from 'uuid';
 
 import { requestFlight } from '../../../../store/flight/actions';
 import { requestQueryAdded, requestUriUpdated } from '../../../../store/project/actions';
@@ -16,12 +17,12 @@ export interface UriPaneProps {
 
 const UriPane: React.FunctionComponent<UriPaneProps> = props => {
 	const dispatch = useDispatch();
-	const [flightId, setFlightId] = useState(uuid.v4());
+	const [flightId, setFlightId] = useState(ksuid.generate('flight').toString());
 	const { node } = props;
 	const verb = node.info.uri.verb;
 
 	useEffect(() => {
-		setFlightId(uuid.v4());
+		setFlightId(ksuid.generate('flight').toString());
 	}, [node]);
 
 	function dispatchFlightRequest() {
