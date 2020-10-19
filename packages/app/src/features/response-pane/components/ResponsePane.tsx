@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 
 import Header from './molecules/Header';
+import PendingSlash from './molecules/PendingSplash';
 import InspectorTabs from './organisms/InspectorTabs';
 
 const ResponsePane: React.FunctionComponent = () => {
@@ -12,20 +13,19 @@ const ResponsePane: React.FunctionComponent = () => {
 	const [selectedFlightIndex, setSelectedFlightIndex] = useState(0);
 	const selectedNode = tree![selectedRequest || 'non_existent'];
 
-	// TODO(afr): Maybe some sort of purgatory state here
 	if (!selectedRequest)
-		return <Container />;
+		return <PendingSlash />;
 
 	if (selectedRequest && !selectedNode)
 		throw new Error('fucked state?!');
 
 	const typedSelectedNode = selectedNode as RequestNode;
 	const flightHistory = flight.flightHistory[typedSelectedNode.id];
-	const selectedFlightHistory = flightHistory[selectedFlightIndex];
 
-	// TODO(afr): Maybe some sort of purgatory state here
 	if (!flightHistory)
-		return <Container />;
+		return <PendingSlash />;
+
+	const selectedFlightHistory = flightHistory[selectedFlightIndex];
 
 	return (
 		<Container>
