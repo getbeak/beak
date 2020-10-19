@@ -10,7 +10,7 @@ const primaryCss = css`
 		}
 
 		&:focus {
-			outline-color: ${props => props.theme.ui.primaryFill};
+			border-color: ${props => props.theme.ui.primaryFill};
 		}
 	}
 `;
@@ -25,7 +25,7 @@ const secondaryCss = css`
 		}
 
 		&:focus {
-			outline-color: ${props => props.theme.ui.secondaryAction};
+			border-color: ${props => props.theme.ui.secondaryAction};
 		}
 	}
 `;
@@ -41,7 +41,7 @@ export interface ButtonProps {
 }
 
 const Button = styled.button<ButtonProps>`
-	border-radius: none;
+	border-radius: 4px;
 	color: ${props => props.theme.ui.textOnSurfaceBackground};
 	transition: transform ease .1s;
 
@@ -56,8 +56,6 @@ const Button = styled.button<ButtonProps>`
 
 		&:focus {
 			outline: none;
-			outline-width: 1px;
-			outline-style: solid;
 		}
 	}
 
