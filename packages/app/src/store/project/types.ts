@@ -1,8 +1,10 @@
-import { Tree } from '../../lib/project/types';
+import { Tree } from '@beak/common/src/beak-project/types';
 
 export const ActionTypes = {
 	OPEN_PROJECT: '@beak/global/project/OPEN_PROJECT',
 	PROJECT_OPENED: '@beak/global/project/PROJECT_OPENED',
+
+	START_FS_LISTENER: '@beak/global/project/START_FS_LISTENER',
 
 	REQUEST_SELECTED: '@beak/global/project/REQUEST_SELECTED',
 
@@ -12,8 +14,12 @@ export const ActionTypes = {
 	REQUEST_QUERY_UPDATED: '@beak/global/project/REQUEST_QUERY_UPDATED',
 	REQUEST_QUERY_REMOVED: '@beak/global/project/REQUEST_QUERY_REMOVED',
 
-	REPORT_NODE_UPDATE: '@beak/global/project/REPORT_NODE_UPDATE',
+	REQUEST_HEADER_ADDED: '@beak/global/project/REQUEST_HEADER_ADDED',
+	REQUEST_HEADER_UPDATED: '@beak/global/project/REQUEST_HEADER_UPDATED',
+	REQUEST_HEADER_REMOVED: '@beak/global/project/REQUEST_HEADER_REMOVED',
 
+	REFRESH_NODE_STATE: '@beak/global/project/REFRESH_NODE_STATE',
+	REPORT_NODE_UPDATE: '@beak/global/project/REPORT_NODE_UPDATE',
 };
 
 export interface State {
@@ -42,17 +48,23 @@ export interface RequestUriUpdatedPayload {
 	fragment?: string;
 }
 
-export interface RequestQueryUpdatedPayload {
+export interface ToggleableItemAddedPayload {
 	requestId: string;
-	queryId: string;
+	name?: string;
+	value?: string;
+}
+
+export interface ToggleableItemUpdatedPayload {
+	requestId: string;
+	identifier: string;
 	name?: string;
 	value?: string;
 	enabled?: boolean;
 }
 
-export interface RequestQueryRemovedPayload {
+export interface ToggleableItemRemovedPayload {
 	requestId: string;
-	queryId: string;
+	identifier: string;
 }
 
 export interface ProjectOpenedPayload {

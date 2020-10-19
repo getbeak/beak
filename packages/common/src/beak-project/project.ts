@@ -8,7 +8,6 @@ const chokidar = window.require('chokidar');
 const fs = window.require('fs-extra');
 const path = window.require('path');
 
-// TODO(afr): Check what is is for Linux (if they have one?)
 const forbiddenFiles = ['.DS_Store', 'Thumbs.db'];
 
 interface ReadFolderNodeOptions {
@@ -16,10 +15,13 @@ interface ReadFolderNodeOptions {
 	parent: string | null;
 }
 
-interface Message {
-	event: string;
+export interface ListenerEvent {
+	type: 'add' | 'change' | 'unlink' | 'addDir' | 'unlinkDir';
 	path: string;
+	node: Nodes;
 }
+
+type Emitter = (message: ListenerEvent) => void;
 
 export default class BeakProject {
 	private _projectPath: string;
@@ -27,7 +29,7 @@ export default class BeakProject {
 	private _tree: Tree = {};
 	private _watcher?: FSWatcher;
 	private _watcherReady = false;
-	private _listenerQueue: Message[] = [];
+	private _watcherEmitter?: Emitter;
 
 	constructor(projectFilePath: string) {
 		this._projectPath = path.join(projectFilePath, '..');
@@ -62,17 +64,18 @@ export default class BeakProject {
 		await this.readFolderNode(treePath, { root: true, parent: null });
 	}
 
-	async startWatching() {
+	async startWatching(emitter: Emitter) {
+		this._watcherEmitter = emitter;
 		this._watcher = chokidar.watch(this._projectPath, {
 			followSymlinks: false,
 		});
 
 		this._watcher
-			.on('add', path => this._listenerQueue.push({ event: 'add', path }))
-			.on('change', path => this._listenerQueue.push({ event: 'change', path }))
-			.on('unlink', path => this._listenerQueue.push({ event: 'unlink', path }))
-			.on('addDir', path => this._listenerQueue.push({ event: 'addDir', path }))
-			.on('unlinkDir', path => this._listenerQueue.push({ event: 'unlinkDir', path }))
+			.on('add', path => this.recordListenerMessage({ type: 'add', path }))
+			.on('change', path => this.recordListenerMessage({ type: 'change', path }))
+			.on('unlink', path => this.recordListenerMessage({ type: 'unlink', path }))
+			.on('addDir', path => this.recordListenerMessage({ type: 'addDir', path }))
+			.on('unlinkDir', path => this.recordListenerMessage({ type: 'unlinkDir', path }))
 			.on('ready', () => {
 				this._watcherReady = true;
 			});
@@ -93,6 +96,32 @@ export default class BeakProject {
 		throw new Error('nah not done yet lol soz');
 	}
 
+	async updateRequestNode(filePath: string) {
+		const requestFile = await fs.readJson(filePath) as RequestNodeFile;
+
+		validate(requestFile, requestSchema, { throwError: true });
+
+		const node: Nodes = {
+			type: 'request',
+			filePath,
+			parent: this._tree[requestFile.id].parent,
+			name: requestFile.name,
+			id: requestFile.id,
+			info: {
+				uri: requestFile.uri,
+				headers: requestFile.headers,
+			},
+		};
+
+		// this._tree[node.id] = node;
+		this._tree = {
+			...this._tree,
+			[node.id]: node,
+		};
+
+		return node;
+	}
+
 	async writeRequestNode(node: RequestNode) {
 		const requestFile: RequestNodeFile = {
 			id: node.id,
@@ -102,6 +131,25 @@ export default class BeakProject {
 		};
 
 		await fs.writeJson(node.filePath, requestFile, { spaces: '\t' });
+	}
+
+	private recordListenerMessage(message: Omit<ListenerEvent, 'node'>) {
+		if (!this._watcherReady)
+			return;
+
+		if (message.type !== 'change') {
+			console.log('only change events currently supported: ', message);
+
+			return;
+		}
+
+		this.updateRequestNode(message.path).then(node => {
+			this._watcherEmitter!({
+				node,
+				type: message.type,
+				path: message.path,
+			});
+		});
 	}
 
 	private async readFolderNode(filePath: string, opts: ReadFolderNodeOptions) {

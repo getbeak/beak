@@ -1,9 +1,10 @@
-import { all, fork, takeEvery } from 'redux-saga/effects';
+import { all, fork, takeEvery, takeLatest } from 'redux-saga/effects';
 
 import { ActionTypes } from '../types';
 import catchNodeUpdatesWorker from './catch-node-updates';
 import openProjectWorker from './open-project';
 import reportNodeUpdateWorker from './report-node-update';
+import startFsListener from './start-fs-listener';
 
 const updateWatcherActions = [
 	ActionTypes.REQUEST_URI_UPDATED,
@@ -22,6 +23,9 @@ export default function* projectSaga() {
 		}),
 		fork(function* reportNodeUpdateWatcher() {
 			yield takeEvery(ActionTypes.REPORT_NODE_UPDATE, reportNodeUpdateWorker);
+		}),
+		fork(function* startFsListenerWatcher() {
+			yield takeLatest(ActionTypes.START_FS_LISTENER, startFsListener);
 		}),
 	]);
 }
