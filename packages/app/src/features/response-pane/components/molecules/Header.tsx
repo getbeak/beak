@@ -2,17 +2,16 @@ import { statusToColour } from '@beak/app/src/design-system/helpers';
 import { Flight } from '@beak/app/src/store/flight/types';
 import { constructUri } from '@beak/common/src/beak-project/url';
 import { getReasonPhrase } from 'http-status-codes';
-import React, { useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 
 export interface HeaderProps {
 	flightHistory: Flight[];
 	selectedFlightIndex: number;
-	updateSelectedFlight: (index: number) => void;
 }
 
 const Header: React.FunctionComponent<HeaderProps> = props => {
-	const { flightHistory, selectedFlightIndex, updateSelectedFlight } = props;
+	const { flightHistory, selectedFlightIndex } = props;
 	const selectedFlight = flightHistory[selectedFlightIndex];
 	const { request, response } = selectedFlight;
 
