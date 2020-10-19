@@ -1,9 +1,9 @@
 # Beak
 
-Snazzy cross-platform API development and research tool. Firstly in C#/XAML, now in Typescript/Electron. Vote opens soon for next rewrite.
+Snazzy cross-platform API development and research tool. Firstly in C#/XAML, now in Typescript/Electron. Vote opens for next rewrite soon, lol.
 
 ![Project view](assets/home.png)
-<p align="center">still a little rough around the edges lol</p>
+<p align="center">still a little rough around the edges 🤷‍♀️</p>
 
 ## Getting started
 
@@ -12,6 +12,8 @@ Snazzy cross-platform API development and research tool. Firstly in C#/XAML, now
 1. Run yarn start
 1. ???
 1. profit
+
+*You may have to run `yarn rebuild` to get NodeGit to work, depending on your system installed version of Node. tbh, It's safer to just always run it.*
 
 ## Common issues
 
