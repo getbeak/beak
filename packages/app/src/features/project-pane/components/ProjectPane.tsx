@@ -7,7 +7,7 @@ import SectionHeader from './atoms/SectionHeader';
 import Organiser from './organisms/Organiser';
 import TreeView from './organisms/TreeView';
 
-const ExplorerPane: React.FunctionComponent = () => {
+const ProjectPane: React.FunctionComponent = () => {
 	const project = useSelector(s => s.global.project);
 
 	return (
@@ -30,4 +30,4 @@ const Container = styled.div`
 	height: 100%;
 `;
 
-export default ExplorerPane;
+export default ProjectPane;

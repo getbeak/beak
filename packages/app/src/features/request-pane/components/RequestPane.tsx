@@ -9,7 +9,7 @@ import ModifiersPane from './organisms/ModifiersPane';
 import RequestOutput from './organisms/RequestOutput';
 import UriPane from './organisms/UriPane';
 
-const RequesterPane: React.FunctionComponent = () => {
+const RequestPane: React.FunctionComponent = () => {
 	const [editorHeight, setEditorHeight] = useState<string>('100%');
 	const { tree, selectedRequest } = useSelector(s => s.global.project);
 	const selectedNode = tree![selectedRequest || 'non_existent'];
@@ -60,4 +60,4 @@ const Container = styled.div`
 	background-color: ${props => props.theme.ui.surface};
 `;
 
-export default RequesterPane;
+export default RequestPane;

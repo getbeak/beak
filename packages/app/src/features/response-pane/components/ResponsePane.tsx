@@ -8,7 +8,7 @@ import styled from 'styled-components';
 
 import InspectorTabs from './organisms/InspectorTabs';
 
-const InspectorPane: React.FunctionComponent = () => {
+const ResponsePane: React.FunctionComponent = () => {
 	const flight = useSelector(s => s.global.flight);
 	const { tree, selectedRequest } = useSelector(s => s.global.project);
 	const selectedNode = tree![selectedRequest || 'non_existent'];
@@ -96,4 +96,4 @@ const StatusSection = styled(Section)<{ $status: number }>`
 	white-space: nowrap;
 `;
 
-export default InspectorPane;
+export default ResponsePane;

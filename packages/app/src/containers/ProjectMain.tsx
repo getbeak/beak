@@ -9,9 +9,9 @@ import styled from 'styled-components';
 
 import ReflexSplitter from '../components/atoms/ReflexSplitter';
 import ProgressIndicator from '../components/molecules/ProgressIndicator';
-import ExplorerPane from '../features/explorer-pane/components/ExplorerPane';
-import InspectorPane from '../features/insepector/components/InspectorPane';
-import RequesterPane from '../features/requestor/components/RequesterPane';
+import ProjectPane from '../features/project-pane/components/ProjectPane';
+import RequestPane from '../features/request-pane/components/RequestPane';
+import ResponsePane from '../features/response-pane/components/ResponsePane';
 import StatusBar from '../features/status-bar/components/StatusBar';
 import { openProject } from '../store/project/actions';
 
@@ -46,7 +46,7 @@ const ProjectMain: React.FunctionComponent = () => {
 							flex={10}
 							// size={250}
 						>
-							<ExplorerPane />
+							<ProjectPane />
 						</ReflexElement>
 
 						<ReflexSplitter orientation={'vertical'} />
@@ -55,7 +55,7 @@ const ProjectMain: React.FunctionComponent = () => {
 							flex={35}
 							minSize={400}
 						>
-							<RequesterPane />
+							<RequestPane />
 						</ReflexElement>
 
 						<ReflexSplitter orientation={'vertical'} />
@@ -64,7 +64,7 @@ const ProjectMain: React.FunctionComponent = () => {
 							flex={55}
 							minSize={400}
 						>
-							<InspectorPane />
+							<ResponsePane />
 						</ReflexElement>
 					</ReflexContainer>
 				)}
