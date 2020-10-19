@@ -13,6 +13,8 @@ const ExplorerPane: React.FunctionComponent = () => {
 	return (
 		<Container>
 			<Header>{'Explorer'}</Header>
+			<SectionHeader>{'Project'}</SectionHeader>
+			<SectionHeader>{'Environment'}</SectionHeader>
 			<SectionHeader>{project.name!}</SectionHeader>
 			<TreeView tree={project.tree!} />
 			<Organiser />

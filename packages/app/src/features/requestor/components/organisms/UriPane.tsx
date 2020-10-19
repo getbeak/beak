@@ -6,7 +6,7 @@ import styled from 'styled-components';
 import * as uuid from 'uuid';
 
 import { requestFlight } from '../../../../store/flight/actions';
-import { requestUriUpdated } from '../../../../store/project/actions';
+import { requestQueryAdded, requestUriUpdated } from '../../../../store/project/actions';
 
 const url = window.require('url');
 
@@ -45,12 +45,24 @@ const UriPane: React.FunctionComponent<UriPaneProps> = props => {
 			return parsed.hash.substr(1);
 		}());
 
+		if (parsed.query) {
+			const params = new URLSearchParams(parsed.query);
+
+			params.forEach((value, name) => {
+				dispatch(requestQueryAdded({
+					requestId: node.id,
+					name,
+					value,
+				}));
+			});
+		}
+
 		// TODO(afr): Handle crash when partially created urls are entered
 		dispatch(requestUriUpdated({
 			requestId: node.id,
 			protocol: parsed.protocol || '',
 			hostname: parsed.hostname || '',
-			path: parsed.path || '',
+			path: parsed.pathname || '',
 			fragment: safeFragment,
 		}));
 	}

@@ -2,17 +2,15 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 
-import binaryStore from '../../lib/binary-store';
-
 const ProgressIndicator: React.FunctionComponent = () => {
 	const currentFlight = useSelector(s => s.global.flight.currentFlight);
-
-	// TODO(afr): Reinstate this
 
 	return (
 		<Wrapper>
 			{currentFlight?.flighting && (
-				<IndicatorBar progress={0} />
+				<IndicatorBar
+					style={{ width: `${currentFlight.bodyTransferPercentage || 0}%` }}
+				/>
 			)}
 		</Wrapper>
 	);
@@ -23,13 +21,13 @@ const Wrapper = styled.div`
 	height: 4px;
 `;
 
-const IndicatorBar = styled.div<{ progress: number }>`
+const IndicatorBar = styled.div`
 	position: absolute;
 	top: 0;
 	left: 0;
 	z-index: 101;
 
-	width: ${props => props.progress}%;
+	transition: width .1s ease;
 	height: 4px;
 
 	background-color: ${props => props.theme.ui.primaryFill};

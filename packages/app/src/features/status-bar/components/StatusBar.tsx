@@ -1,29 +1,36 @@
-import binaryStore from '@beak/app/src/lib/binary-store';
+import { requestSelected } from '@beak/app/src/store/project/actions';
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 
 import StatusBarContainer from './atoms/StatusBarContainer';
 
 const StatusBar: React.FunctionComponent = () => {
 	const currentFlight = useSelector(s => s.global.flight.currentFlight);
+	const dispatch = useDispatch();
 
 	function generatePercentage() {
 		if (!currentFlight?.contentLength)
 			return '0%';
 
-		const store = binaryStore.get(currentFlight.binaryStoreKey);
-		const percent = (store.length / currentFlight.contentLength) * 100;
+		const percent = currentFlight?.bodyTransferPercentage || 0;
 		const rounded = Math.round(percent * 100 + Number.EPSILON) / 100;
 
 		return `${rounded}%`;
+	}
+
+	function visitCurrentFlight() {
+		if (!currentFlight)
+			return;
+
+		dispatch(requestSelected(currentFlight.requestId));
 	}
 
 	// TODO(afr): Reset status from resource success after 2 seconds?
 
 	return (
 		<StatusBarContainer>
-			<Wrapper>
+			<Wrapper onDoubleClick={() => visitCurrentFlight()}>
 				{!currentFlight && 'waiting... 🤔'}
 				{currentFlight?.flighting && `request in progress... (${generatePercentage()})`}
 				{currentFlight?.response && `request response (${currentFlight.response.status})`}
