@@ -9,7 +9,7 @@ type Container = 'about' | 'project-main' | 'welcome';
 const DEV_URL = 'http://localhost:3000';
 const environment = process.env.NODE_ENV;
 
-export const windowStack: Record<number, BrowserWindow | undefined> = {};
+export const windowStack: Record<number, BrowserWindow> = {};
 
 function generateLoadUrl(
 	container: Container,
@@ -68,8 +68,8 @@ export function closeWindow(windowId: number) {
 	if (!window)
 		return; // probs already closed...
 
-	windowStack[window.id] = void 0;
 	window.close();
+	delete windowStack[windowId];
 }
 
 export function createWelcomeWindow() {
@@ -99,8 +99,8 @@ export function createAboutWindow() {
 
 export function createProjectMainWindow(projectFilePath: string) {
 	const windowOpts: BrowserWindowConstructorOptions = {
-		height: 650,
-		width: 1200,
+		height: 700,
+		width: 1800,
 		minHeight: 435,
 		minWidth: 760,
 		title: 'Loading... - Beak',
