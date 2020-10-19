@@ -23,12 +23,14 @@
     "electron": "lerna run electron --scope @beak/electron-host",
     "prepackage": "yarn build",
     "package": "lerna run package --scope @beak/electron-host --stream",
+    "rebuild": "electron-rebuild -f -b -w nodegit",
     "start": "lerna exec --parallel --stream --scope @beak/electron-host --scope @beak/app yarn start",
     "test": "lerna run test --parallel",
     "lint": "eslint -c .eslintrc --ext .tsx --ext .ts './packages/'",
     "unfuck": "lerna clean && yarn --force"
   },
   "devDependencies": {
+    "@types/nodegit": "^0.26.11",
     "@typescript-eslint/eslint-plugin": "^3.6.0",
     "@typescript-eslint/parser": "^3.6.0",
     "eslint": "^7.4.0",
@@ -41,6 +43,8 @@
   },
   "dependencies": {
     "@cuvva/ksuid": "^1.0.0",
-    "chokidar": "^3.4.1"
+    "chokidar": "^3.4.1",
+    "electron-rebuild": "^2.2.0",
+    "nodegit": "^0.27.0"
   }
 }
