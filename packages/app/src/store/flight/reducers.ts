@@ -50,7 +50,7 @@ const flightReducer = createReducer(initialState, builder => {
 			state.currentFlight!.response = response;
 			state.currentFlight!.flighting = false;
 			state.flightHistory[requestId] = [
-				...state.flightHistory[requestId],
+				...(state.flightHistory[requestId] || []),
 				{ flightId, requestId, request: state.currentFlight!.request, response },
 			];
 		})
