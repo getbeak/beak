@@ -108,6 +108,7 @@ export default class BeakProject {
 			name: requestFile.name,
 			id: requestFile.id,
 			info: {
+				verb: requestFile.verb,
 				uri: requestFile.uri,
 				headers: requestFile.headers,
 			},
@@ -126,6 +127,7 @@ export default class BeakProject {
 		const requestFile: RequestNodeFile = {
 			id: node.id,
 			name: node.name,
+			verb: node.info.verb,
 			uri: node.info.uri,
 			headers: node.info.headers,
 		};
@@ -207,6 +209,7 @@ export default class BeakProject {
 			name: requestFile.name,
 			id: requestFile.id,
 			info: {
+				verb: requestFile.verb,
 				uri: requestFile.uri,
 				headers: requestFile.headers,
 			},

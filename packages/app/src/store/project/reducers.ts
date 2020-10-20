@@ -86,7 +86,7 @@ const projectReducer = createReducer(initialState, builder => {
 			const node = state.tree![action.payload.requestId] as RequestNode;
 
 			if (payload.verb !== void 0)
-				node.info.uri.verb = payload.verb;
+				node.info.verb = payload.verb;
 			if (payload.protocol !== void 0)
 				node.info.uri.protocol = payload.protocol;
 			if (payload.hostname !== void 0)

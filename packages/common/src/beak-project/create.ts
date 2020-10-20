@@ -18,9 +18,9 @@ export default async function createProject(options: CreationOptions) {
 	const exReq: RequestNodeFile = {
 		id: ksuid.generate('request').toString(),
 		name: 'Example request',
+		verb: 'get',
 		uri: {
 			protocol: 'https:',
-			verb: 'get',
 			hostname: 'httpbin.org',
 			path: '/anything',
 			query: {

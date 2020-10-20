@@ -81,11 +81,11 @@ export async function startRequester(options: RequesterOptions) {
 }
 
 async function runRequest(overview: RequestOverview) {
-	const { headers, uri } = overview;
+	const { headers, verb } = overview;
 	const url = constructUri(overview);
 
 	const init: RequestInit = {
-		method: uri.verb,
+		method: verb,
 		headers: TypedObject.values(headers)
 			.filter(h => h.enabled)
 			.reduce((acc, val) => ({

@@ -18,7 +18,7 @@ export interface UriPaneProps {
 const UriPane: React.FunctionComponent<UriPaneProps> = props => {
 	const dispatch = useDispatch();
 	const { node } = props;
-	const verb = node.info.uri.verb;
+	const verb = node.info.verb;
 
 	function dispatchFlightRequest() {
 		dispatch(requestFlight({

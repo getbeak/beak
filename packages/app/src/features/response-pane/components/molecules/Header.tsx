@@ -18,7 +18,7 @@ const Header: React.FunctionComponent<HeaderProps> = props => {
 	return (
 		<UrlHeaderWrapper>
 			<Section>
-				<strong>{request.uri.verb.toUpperCase()}</strong>
+				<strong>{request.verb.toUpperCase()}</strong>
 			</Section>
 			<UrlSection>
 				{constructUri(request)}

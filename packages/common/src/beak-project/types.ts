@@ -35,9 +35,9 @@ export interface ToggleKeyValue {
 }
 
 export interface RequestOverview {
+	verb: string;
 	uri: {
 		protocol: string;
-		verb: string;
 		hostname: string | null;
 		path: string | null;
 		query: Record<string, ToggleKeyValue>;
