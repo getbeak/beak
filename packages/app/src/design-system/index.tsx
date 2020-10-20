@@ -20,11 +20,12 @@ const DesignSystemProvider: React.FunctionComponent<{ themeKey: Theme }> = ({ ch
 );
 
 const GlobalStyle = createGlobalStyle`
-	* {
+	*:not([class^="ace_"]) {
 		font-family: ${props => props.theme.fonts.default};
 	}
 
 	html, body {
+		font-family: ${props => props.theme.fonts.default};
 		background-color: ${props => props.theme.ui.background};
 		color: ${props => props.theme.ui.textOnAction};
 		margin: 0;
