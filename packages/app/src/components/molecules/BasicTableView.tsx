@@ -5,6 +5,7 @@ import styled from 'styled-components';
 
 export interface MutableBasicTableViewProps {
 	editable: true;
+	disableToggle?: boolean;
 	items: Record<string, ToggleKeyValue>;
 	addItem: () => void;
 	updateItem: (type: keyof ToggleKeyValue, ident: string, value: string | boolean) => void;
@@ -13,6 +14,7 @@ export interface MutableBasicTableViewProps {
 
 export interface ImmutableBasicTableViewProps {
 	editable: false;
+	disableToggle?: boolean;
 	items: Record<string, ToggleKeyValue>;
 }
 
@@ -37,7 +39,7 @@ const BasicTableView: React.FunctionComponent<MutableBasicTableViewProps | Immut
 
 						return (
 							<Row key={k}>
-								{props.editable && (
+								{!props.disableToggle && props.editable && (
 									<ToggleCell>
 										<InputToggle
 											type={'checkbox'}
