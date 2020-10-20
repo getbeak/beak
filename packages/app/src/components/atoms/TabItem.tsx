@@ -2,6 +2,7 @@ import styled, { css } from 'styled-components';
 
 export interface TabItemProps {
 	active?: boolean;
+	size?: 'sm' | 'md';
 }
 
 const TabItem = styled.div<TabItemProps>`
@@ -14,6 +15,16 @@ const TabItem = styled.div<TabItemProps>`
 	text-overflow: ellipsis;
 	word-wrap: initial;
 	overflow: hidden;
+
+	${p => {
+		if (p.size !== 'sm')
+			return '';
+
+		return css`
+			padding: 6px 8px;
+			font-size: 12px;
+		`;
+	}}
 
 	${({ active, theme }) => {
 		if (!active) {
