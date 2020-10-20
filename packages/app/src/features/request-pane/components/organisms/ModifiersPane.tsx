@@ -1,15 +1,19 @@
 import BasicTableView from '@beak/app/src/components/molecules/BasicTableView';
 import actions from '@beak/app/src/store/project/actions';
+import { RequestPreference } from '@beak/common/src/beak-hub/types';
 import { RequestNode } from '@beak/common/src/beak-project/types';
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 
 import TabBar from '../../../../components/atoms/TabBar';
 import TabItem from '../../../../components/atoms/TabItem';
 import TabSpacer from '../../../../components/atoms/TabSpacer';
+import RequestPreferencesContext from '../../contexts/request-preferences-context';
 import BodyPane from './BodyPane';
 import DebuggerPane from './DebuggerPane';
+
+const { ipcRenderer } = window.require('electron');
 
 type Tab = 'debugging' | 'headers' | 'url_query' | 'body' | 'options';
 
@@ -19,8 +23,15 @@ export interface ModifiersPaneProps {
 
 const ModifiersPane: React.FunctionComponent<ModifiersPaneProps> = props => {
 	const dispatch = useDispatch();
+	const preferences = useContext(RequestPreferencesContext)!;
 	const { node } = props;
-	const [tab, setTab] = useState<Tab>('body');
+	const [tab, setTabInner] = useState<Tab>(preferences.mainTab as Tab || 'body');
+
+	function setTab(tab: Tab) {
+		setTabInner(tab);
+
+		ipcRenderer.invoke('beak_hub:set-request_preference', node.id, { mainTab: tab });
+	}
 
 	return (
 		<Container>

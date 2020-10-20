@@ -1,7 +1,7 @@
 // eslint-disable-next-line simple-import-sort/sort
 import BasicTableView from '@beak/app/src/components/molecules/BasicTableView';
 import { RequestNode } from '@beak/common/src/beak-project/types';
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import AceEditor from 'react-ace';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
@@ -14,6 +14,7 @@ import 'ace-builds/src-noconflict/mode-text';
 import 'ace-builds/src-noconflict/mode-json';
 import 'ace-builds/src-noconflict/theme-solarized_dark';
 import { requestBodyJsonChanged, requestBodyTextChanged } from '@beak/app/src/store/project/actions';
+import RequestPreferencesContext from '../../contexts/request-preferences-context';
 
 const { ipcRenderer } = window.require('electron');
 
@@ -25,8 +26,9 @@ export interface BodyPaneProps {
 
 const BodyPane: React.FunctionComponent<BodyPaneProps> = props => {
 	const dispatch = useDispatch();
+	const preferences = useContext(RequestPreferencesContext)!;
 	const { node } = props;
-	const [tab, setTab] = useState<Tab>('text');
+	const [tab, setTab] = useState<Tab>(preferences.subTab as Tab || 'text');
 
 	async function setTabWithConfirmation(newTab: Tab) {
 		if (newTab === tab)
@@ -34,8 +36,11 @@ const BodyPane: React.FunctionComponent<BodyPaneProps> = props => {
 
 		const response: number = await ipcRenderer.invoke('dialog:confirm_body_tab_change');
 
-		if (response === 0)
+		if (response === 0) {
 			setTab(newTab);
+
+			await ipcRenderer.invoke('beak_hub:set-request_preference', node.id, { subTab: newTab });
+		}
 	}
 
 	return (
