@@ -99,8 +99,8 @@ export function createAboutWindow() {
 
 export function createProjectMainWindow(projectFilePath: string) {
 	const windowOpts: BrowserWindowConstructorOptions = {
-		height: 700,
-		width: 1800,
+		height: 850,
+		width: 1400,
 		minHeight: 435,
 		minWidth: 760,
 		title: 'Loading... - Beak',
