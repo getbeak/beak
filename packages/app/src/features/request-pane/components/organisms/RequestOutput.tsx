@@ -1,10 +1,10 @@
 // eslint-disable-next-line simple-import-sort/sort
-import { RequestNode } from '@beak/common/src/beak-project/types';
+import { RequestBody, RequestNode, RequestOverview } from '@beak/common/src/beak-project/types';
 import React from 'react';
 import AceEditor from 'react-ace';
 
 import 'ace-builds/src-noconflict/mode-text';
-import 'ace-builds/src-noconflict/theme-dracula';
+import 'ace-builds/src-noconflict/theme-solarized_dark';
 import { TypedObject } from '@beak/common/src/helpers/typescript';
 
 export interface RequestOutputProps {
@@ -13,20 +13,21 @@ export interface RequestOutputProps {
 }
 
 const RequestOutput: React.FunctionComponent<RequestOutputProps> = props => {
-	const code = createBasicHttpOutput(props.selectedNode);
+	const code = createBasicHttpOutput(props.selectedNode.info);
 
 	return (
 		<React.Fragment>
 			<AceEditor
 				mode={'text'}
-				theme={'dracula'}
+				theme={'solarized_dark'}
 				height={'100%'}
 				width={'100%'}
 				readOnly
 				setOptions={{
 					useWorker: false,
+					fixedWidthGutter: true,
 					fontFamily: 'monospace',
-					fontSize: '14px',
+					fontSize: '13px',
 				}}
 				value={code}
 				showPrintMargin={false}
@@ -35,11 +36,21 @@ const RequestOutput: React.FunctionComponent<RequestOutputProps> = props => {
 	);
 };
 
-function createBasicHttpOutput(node: RequestNode) {
-	const { info } = node;
-	const { headers, uri } = info;
+function createResponseOutput(body: RequestBody) {
+	switch (body.type) {
+		case 'text':
+		case 'json':
+			return body.payload;
+
+		default:
+			return `preview not supported for ${body.type}`;
+	}
+}
+
+export function createBasicHttpOutput(overview: RequestOverview) {
+	const { headers, uri, verb, body } = overview;
 	const firstLine = [
-		`${uri.verb.toUpperCase()} `,
+		`${verb.toUpperCase()} `,
 		uri.path,
 	];
 
@@ -70,6 +81,7 @@ function createBasicHttpOutput(node: RequestNode) {
 	}
 
 	out.push('');
+	out.push(createResponseOutput(body));
 
 	return out.join('\n');
 }

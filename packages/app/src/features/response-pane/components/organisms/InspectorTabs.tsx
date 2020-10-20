@@ -6,8 +6,9 @@ import TabItem from '../../../../components/atoms/TabItem';
 import TabSpacer from '../../../../components/atoms/TabSpacer';
 import { Flight } from '../../../../store/flight/types';
 import DebuggerPane from './DebuggerPane';
+import RequestPane from './RequestPane';
 
-type Tab = 'debugging' | 'overview' | 'request' | 'response';
+type Tab = 'debugging' | 'request' | 'response';
 
 export interface InspectorTabsProps {
 	flight: Flight;
@@ -27,12 +28,6 @@ const InspectorTabs: React.FunctionComponent<InspectorTabsProps> = props => {
 					{'Debugging'}
 				</TabItem>
 				<TabItem
-					active={tab === 'overview'}
-					onClick={() => setTab('overview')}
-				>
-					{'Overview'}
-				</TabItem>
-				<TabItem
 					active={tab === 'request'}
 					onClick={() => setTab('request')}
 				>
@@ -49,6 +44,7 @@ const InspectorTabs: React.FunctionComponent<InspectorTabsProps> = props => {
 
 			<TabBody>
 				{tab === 'debugging' && <DebuggerPane flight={props.flight} />}
+				{tab === 'request' && <RequestPane flight={props.flight} />}
 			</TabBody>
 		</React.Fragment>
 	);
@@ -58,8 +54,6 @@ const TabBody = styled.div`
 	flex-grow: 2;
 
 	overflow-y: auto;
-
-	padding: 0 15px;
 `;
 
 export default InspectorTabs;

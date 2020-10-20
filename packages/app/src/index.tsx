@@ -6,6 +6,7 @@ import About from './containers/About';
 import ProjectMain from './containers/ProjectMain';
 import Welcome from './containers/Welcome';
 import { DesignSystemProvider, GlobalStyle } from './design-system';
+import { BeakDarkThemeStyle } from './design-system/editor-themes';
 import { setGlobal } from './globals';
 import { configureStore } from './store';
 
@@ -40,6 +41,7 @@ const FauxRouter: React.FunctionComponent = () => {
 		<Provider store={configureStore()}>
 			<DesignSystemProvider themeKey={'dark'}>
 				<GlobalStyle />
+				<BeakDarkThemeStyle />
 				{component}
 			</DesignSystemProvider>
 		</Provider>
