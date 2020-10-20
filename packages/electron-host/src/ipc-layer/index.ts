@@ -1,4 +1,4 @@
 import './dialog-manager';
 import './requester-manager';
-import './welcome-recents';
+import './beak-hub-manager';
 import './project-manager';

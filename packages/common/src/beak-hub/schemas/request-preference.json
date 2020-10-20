@@ -1,0 +1,21 @@
+{
+	"type": "object",
+	"additionalProperties": false,
+
+	"required": [
+		"mainTab",
+		"subTab"
+	],
+
+	"properties": {
+		"mainTab": {
+			"type": "string",
+			"minLength": 1
+		},
+
+		"subTab": {
+			"type": ["string", "null"],
+			"minLength": 1
+		}
+	}
+}

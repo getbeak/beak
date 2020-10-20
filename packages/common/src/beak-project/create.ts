@@ -57,6 +57,7 @@ export default async function createProject(options: CreationOptions) {
 	});
 	await fs.writeFile(path.join(projectPath, '.gitignore'), '.beak\n');
 	await fs.ensureDir(path.join(projectPath, '.beak'));
+	await fs.ensureDir(path.join(projectPath, '.beak', 'request-preferences'));
 	await fs.writeFile(path.join(projectPath, '.beak', 'supersecret.json'), '{}');
 	await fs.writeFile(path.join(projectPath, 'README.md'), createReadme(name));
 

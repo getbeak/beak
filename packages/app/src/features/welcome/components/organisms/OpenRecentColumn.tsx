@@ -27,7 +27,7 @@ const OpenRecentColumn: React.FunctionComponent = () => {
 	const [recents, setRecents] = useState<Recents>({ ...defaultRecents });
 
 	useEffect(() => {
-		ipcRenderer.invoke('welcome-recents:list').then((recents: RecentLocalProject[]) => {
+		ipcRenderer.invoke('beak_hub:list_recents').then((recents: RecentLocalProject[]) => {
 			const newRecents = { ...defaultRecents };
 			const now = new Date().getTime() / 1000;
 
