@@ -60,8 +60,8 @@ export const BeakDarkThemeStyle = createGlobalStyle`
 			color: #D33682;
 		}
 		.ace_fold {
-			background-color: #268BD2;
-			border-color: #93A1A1;
+			background-color: ${p => p.theme.ui.secondaryFill};
+			border-color: ${p => p.theme.ui.backgroundBorderSeparator};
 		}
 		.ace_entity.ace_name.ace_function, .ace_entity.ace_name.ace_tag, .ace_support.ace_function, .ace_variable,
 		.ace_variable.ace_language {
@@ -75,7 +75,7 @@ export const BeakDarkThemeStyle = createGlobalStyle`
 			color: #657B83;
 		}
 		.ace_indent-guide {
-			background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAYAAACZgbYnAAAAEklEQVQImWNg0Db1ZVCxc/sPAAd4AlUHlLenAAAAAElFTkSuQmCC) right repeat-y;
+			border-right: 1px dotted ${p => p.theme.ui.primaryFill};
 		}
 	}
 `;
