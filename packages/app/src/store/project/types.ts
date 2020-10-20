@@ -18,6 +18,9 @@ export const ActionTypes = {
 	REQUEST_HEADER_UPDATED: '@beak/global/project/REQUEST_HEADER_UPDATED',
 	REQUEST_HEADER_REMOVED: '@beak/global/project/REQUEST_HEADER_REMOVED',
 
+	REQUEST_BODY_TEXT_CHANGED: '@beak/global/project/REQUEST_BODY_TEXT_CHANGED',
+	REQUEST_BODY_JSON_CHANGED: '@beak/global/project/REQUEST_BODY_JSON_CHANGED',
+
 	REFRESH_NODE_STATE: '@beak/global/project/REFRESH_NODE_STATE',
 	REPORT_NODE_UPDATE: '@beak/global/project/REPORT_NODE_UPDATE',
 };
@@ -39,8 +42,7 @@ export interface RequestIdPayload {
 	requestId: string;
 }
 
-export interface RequestUriUpdatedPayload {
-	requestId: string;
+export interface RequestUriUpdatedPayload extends RequestIdPayload {
 	protocol?: string;
 	verb?: string;
 	hostname?: string;
@@ -48,23 +50,28 @@ export interface RequestUriUpdatedPayload {
 	fragment?: string;
 }
 
-export interface ToggleableItemAddedPayload {
-	requestId: string;
+export interface ToggleableItemAddedPayload extends RequestIdPayload {
 	name?: string;
 	value?: string;
 }
 
-export interface ToggleableItemUpdatedPayload {
-	requestId: string;
+export interface ToggleableItemUpdatedPayload extends RequestIdPayload {
 	identifier: string;
 	name?: string;
 	value?: string;
 	enabled?: boolean;
 }
 
-export interface ToggleableItemRemovedPayload {
-	requestId: string;
+export interface ToggleableItemRemovedPayload extends RequestIdPayload {
 	identifier: string;
+}
+
+export interface RequestBodyTextChangedPayload extends RequestIdPayload {
+	text: string;
+}
+
+export interface RequestBodyJsonChangedPayload extends RequestIdPayload {
+	json: string;
 }
 
 export interface ProjectOpenedPayload {

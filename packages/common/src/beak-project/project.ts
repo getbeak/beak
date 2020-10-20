@@ -111,6 +111,7 @@ export default class BeakProject {
 				verb: requestFile.verb,
 				uri: requestFile.uri,
 				headers: requestFile.headers,
+				body: requestFile.body,
 			},
 		};
 
@@ -130,6 +131,7 @@ export default class BeakProject {
 			verb: node.info.verb,
 			uri: node.info.uri,
 			headers: node.info.headers,
+			body: node.info.body,
 		};
 
 		await fs.writeJson(node.filePath, requestFile, { spaces: '\t' });
@@ -212,6 +214,7 @@ export default class BeakProject {
 				verb: requestFile.verb,
 				uri: requestFile.uri,
 				headers: requestFile.headers,
+				body: requestFile.body,
 			},
 		};
 

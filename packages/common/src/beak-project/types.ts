@@ -44,6 +44,25 @@ export interface RequestOverview {
 		fragment: string | null;
 	};
 	headers: Record<string, ToggleKeyValue>;
+	body: RequestBody;
+}
+
+export type RequestBodyType = 'text' | 'json' | 'url-encoded-form';
+export type RequestBody = RequestBodyText | RequestBodyJson | RequestBodyUrlEncodedForm;
+
+export interface RequestBodyText {
+	type: 'text';
+	payload: string;
+}
+
+export interface RequestBodyJson {
+	type: 'json';
+	payload: string;
+}
+
+export interface RequestBodyUrlEncodedForm {
+	type: 'url-encoded-form';
+	payload: Record<string, ToggleKeyValue>;
 }
 
 export interface ResponseOverview {

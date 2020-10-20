@@ -11,6 +11,11 @@ const updateWatcherActions = [
 	ActionTypes.REQUEST_QUERY_ADDED,
 	ActionTypes.REQUEST_QUERY_UPDATED,
 	ActionTypes.REQUEST_QUERY_REMOVED,
+	ActionTypes.REQUEST_HEADER_ADDED,
+	ActionTypes.REQUEST_HEADER_UPDATED,
+	ActionTypes.REQUEST_HEADER_REMOVED,
+	ActionTypes.REQUEST_BODY_JSON_CHANGED,
+	ActionTypes.REQUEST_BODY_TEXT_CHANGED,
 ];
 
 export default function* projectSaga() {

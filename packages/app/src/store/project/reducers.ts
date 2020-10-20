@@ -81,6 +81,19 @@ const projectReducer = createReducer(initialState, builder => {
 			delete node.info.headers[action.payload.identifier];
 		})
 
+		.addCase(actions.requestBodyTextChanged, (state, action) => {
+			const node = state.tree![action.payload.requestId] as RequestNode;
+
+			node.info.body.type = 'text';
+			node.info.body.payload = action.payload.text;
+		})
+		.addCase(actions.requestBodyJsonChanged, (state, action) => {
+			const node = state.tree![action.payload.requestId] as RequestNode;
+
+			node.info.body.type = 'json';
+			node.info.body.payload = action.payload.json;
+		})
+
 		.addCase(actions.requestUriUpdated, (state, action) => {
 			const { payload } = action;
 			const node = state.tree![action.payload.requestId] as RequestNode;

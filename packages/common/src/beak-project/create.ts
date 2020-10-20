@@ -39,6 +39,10 @@ export default async function createProject(options: CreationOptions) {
 				value: 'bae',
 			},
 		},
+		body: {
+			type: 'text',
+			payload: '',
+		},
 	};
 
 	if (await fs.pathExists(projectPath))

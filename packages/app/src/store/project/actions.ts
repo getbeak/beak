@@ -4,6 +4,8 @@ import { createAction } from '@reduxjs/toolkit';
 import {
 	ActionTypes,
 	ProjectOpenedPayload,
+	RequestBodyJsonChangedPayload,
+	RequestBodyTextChangedPayload,
 	RequestUriUpdatedPayload,
 	ToggleableItemAddedPayload,
 	ToggleableItemRemovedPayload,
@@ -23,6 +25,9 @@ export const requestHeaderAdded = createAction<ToggleableItemAddedPayload>(Actio
 export const requestHeaderUpdated = createAction<ToggleableItemUpdatedPayload>(ActionTypes.REQUEST_HEADER_UPDATED);
 export const requestHeaderRemoved = createAction<ToggleableItemRemovedPayload>(ActionTypes.REQUEST_HEADER_REMOVED);
 
+export const requestBodyTextChanged = createAction<RequestBodyTextChangedPayload>(ActionTypes.REQUEST_BODY_TEXT_CHANGED);
+export const requestBodyJsonChanged = createAction<RequestBodyJsonChangedPayload>(ActionTypes.REQUEST_BODY_JSON_CHANGED);
+
 export const reportNodeUpdate = createAction<string>(ActionTypes.REPORT_NODE_UPDATE);
 export const refreshNodeState = createAction<Nodes>(ActionTypes.REFRESH_NODE_STATE);
 export const startFsListener = createAction(ActionTypes.START_FS_LISTENER);
@@ -38,6 +43,8 @@ export default {
 	requestHeaderAdded,
 	requestHeaderUpdated,
 	requestHeaderRemoved,
+	requestBodyTextChanged,
+	requestBodyJsonChanged,
 	reportNodeUpdate,
 	refreshNodeState,
 	startFsListener,

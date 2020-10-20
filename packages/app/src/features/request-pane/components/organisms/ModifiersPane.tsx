@@ -8,6 +8,7 @@ import styled from 'styled-components';
 import TabBar from '../../../../components/atoms/TabBar';
 import TabItem from '../../../../components/atoms/TabItem';
 import TabSpacer from '../../../../components/atoms/TabSpacer';
+import BodyPane from './BodyPane';
 import DebuggerPane from './DebuggerPane';
 
 type Tab = 'debugging' | 'headers' | 'url_query' | 'body' | 'options';
@@ -19,7 +20,7 @@ export interface ModifiersPaneProps {
 const ModifiersPane: React.FunctionComponent<ModifiersPaneProps> = props => {
 	const dispatch = useDispatch();
 	const { node } = props;
-	const [tab, setTab] = useState<Tab>('url_query');
+	const [tab, setTab] = useState<Tab>('body');
 
 	return (
 		<Container>
@@ -94,6 +95,9 @@ const ModifiersPane: React.FunctionComponent<ModifiersPaneProps> = props => {
 						}
 					/>
 				)}
+				{tab === 'body' && (
+					<BodyPane node={node} />
+				)}
 			</TabBody>
 		</Container>
 	);
@@ -103,13 +107,14 @@ const Container = styled.div`
 	display: flex;
 	flex-direction: column;
 	overflow: hidden;
+	height: 100%;
 `;
 
 const TabBody = styled.div`
 	flex-grow: 2;
-	padding-top: 5px;
 
 	overflow-y: auto;
+	height: 100%;
 `;
 
 export default ModifiersPane;

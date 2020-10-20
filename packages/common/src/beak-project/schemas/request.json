@@ -70,6 +70,74 @@
 					"type": ["string", "null"]
 				}
 			}
+		},
+
+		"body": {
+			"type": "object",
+			"additionalProperties": true,
+
+			"required": [
+				"type",
+				"payload"
+			],
+
+			"properties": {
+				"type": {
+					"type": "string",
+					"enum": ["text", "json", "url-encoded-form"]
+				},
+
+				"allOf": [{
+					"if": {
+						"properties": {
+							"type": {
+								"const": "text"
+							}
+						}
+					},
+					"then": {
+						"properties": {
+							"payload": {
+								"type": "string"
+							}
+						}
+					}
+				}, {
+					"if": {
+						"properties": {
+							"type": {
+								"const": "json"
+							}
+						}
+					},
+					"then": {
+						"properties": {
+							"payload": {
+								"type": "string"
+							}
+						}
+					}
+				}, {
+					"if": {
+						"properties": {
+							"type": {
+								"const": "url-encoded-form"
+							}
+						}
+					},
+					"then": {
+						"properties": {
+							"payload": {
+								"type": "object",
+
+								"properties": {
+									"$ref": "#/definitions/keyValuePair"
+								}
+							}
+						}
+					}
+				}]
+			}
 		}
 	},
 
@@ -106,6 +174,26 @@
 
 			"properties": {
 				"$ref": "#/definitions/keyValuePair"
+			}
+		},
+
+		"body": {
+			"type": "object",
+			"additionalProperties": true,
+
+			"required": [
+				"type"
+			],
+
+			"properties": {
+				"type": {
+					"type": "string",
+					"enum": ["text", "json", "url-encoded-form"]
+				},
+
+				"payload": {
+					
+				}
 			}
 		}
 	}
