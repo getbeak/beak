@@ -7,6 +7,7 @@ import TabSpacer from '../../../../components/atoms/TabSpacer';
 import { Flight } from '../../../../store/flight/types';
 import DebuggerPane from './DebuggerPane';
 import RequestPane from './RequestPane';
+import ResponsePane from './ResponsePane';
 
 type Tab = 'debugging' | 'request' | 'response';
 
@@ -15,7 +16,7 @@ export interface InspectorTabsProps {
 }
 
 const InspectorTabs: React.FunctionComponent<InspectorTabsProps> = props => {
-	const [tab, setTab] = useState<Tab>('debugging');
+	const [tab, setTab] = useState<Tab>('response');
 
 	return (
 		<React.Fragment>
@@ -45,6 +46,7 @@ const InspectorTabs: React.FunctionComponent<InspectorTabsProps> = props => {
 			<TabBody>
 				{tab === 'debugging' && <DebuggerPane flight={props.flight} />}
 				{tab === 'request' && <RequestPane flight={props.flight} />}
+				{tab === 'response' && <ResponsePane flight={props.flight} />}
 			</TabBody>
 		</React.Fragment>
 	);
