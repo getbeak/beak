@@ -8,12 +8,11 @@ Snazzy cross-platform API development and research tool. Firstly in C#/XAML, now
 ## Getting started
 
 1. Clone the git repo
-1. Run yarn
-1. Run yarn start
+1. Run `yarn`
+1. Run `yarn rebuild` - to ensure native modules are built against the system node version
+1. Run `yarn start`
 1. ???
 1. profit
-
-*You may have to run `yarn rebuild` to get NodeGit to work, depending on your system installed version of Node. tbh, It's safer to just always run it.*
 
 ## Common issues
 
