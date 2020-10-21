@@ -5,17 +5,17 @@ import TabBar from '../../../../components/atoms/TabBar';
 import TabItem from '../../../../components/atoms/TabItem';
 import TabSpacer from '../../../../components/atoms/TabSpacer';
 import { Flight } from '../../../../store/flight/types';
-import DebuggerPane from './DebuggerPane';
-import RequestPane from './RequestPane';
-import ResponsePane from './ResponsePane';
+import DebuggerTab from './DebuggerTab';
+import RequestTab from './RequestTab';
+import ResponseTab from './ResponseTab';
 
 type Tab = 'debugging' | 'request' | 'response';
 
-export interface InspectorTabsProps {
+export interface InspectorProps {
 	flight: Flight;
 }
 
-const InspectorTabs: React.FunctionComponent<InspectorTabsProps> = props => {
+const Inspector: React.FunctionComponent<InspectorProps> = props => {
 	const [tab, setTab] = useState<Tab>('response');
 
 	return (
@@ -44,9 +44,9 @@ const InspectorTabs: React.FunctionComponent<InspectorTabsProps> = props => {
 			</TabBar>
 
 			<TabBody>
-				{tab === 'debugging' && <DebuggerPane flight={props.flight} />}
-				{tab === 'request' && <RequestPane flight={props.flight} />}
-				{tab === 'response' && <ResponsePane flight={props.flight} />}
+				{tab === 'debugging' && <DebuggerTab flight={props.flight} />}
+				{tab === 'request' && <RequestTab flight={props.flight} />}
+				{tab === 'response' && <ResponseTab flight={props.flight} />}
 			</TabBody>
 		</React.Fragment>
 	);
@@ -58,4 +58,4 @@ const TabBody = styled.div`
 	overflow-y: auto;
 `;
 
-export default InspectorTabs;
+export default Inspector;

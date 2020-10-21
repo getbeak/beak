@@ -11,15 +11,16 @@ import 'ace-builds/src-noconflict/mode-text';
 import 'ace-builds/src-noconflict/mode-json';
 import 'ace-builds/src-noconflict/theme-solarized_dark';
 import { Flight } from '@beak/app/src/store/flight/types';
-import { createBasicHttpOutput } from '../../../request-pane/components/organisms/RequestOutput';
+import { TypedObject } from '@beak/common/src/helpers/typescript';
+import binaryStore from '@beak/app/src/lib/binary-store';
 
 type Tab = 'raw';
 
-export interface RequestPaneProps {
+export interface ResponseTabProps {
 	flight: Flight;
 }
 
-const RequestPane: React.FunctionComponent<RequestPaneProps> = props => {
+const ResponseTab: React.FunctionComponent<ResponseTabProps> = props => {
 	const { flight } = props;
 	const [tab, setTab] = useState<Tab>('raw');
 
@@ -51,7 +52,7 @@ const RequestPane: React.FunctionComponent<RequestPaneProps> = props => {
 								fontFamily: 'monospace',
 								fontSize: '12px',
 							}}
-							value={createBasicHttpOutput(flight.request)}
+							value={createHttpResponseMessage(flight)}
 							showPrintMargin={false}
 						/>
 					</React.Fragment>
@@ -75,4 +76,25 @@ const TabBody = styled.div`
 	height: 100%;
 `;
 
-export default RequestPane;
+function createHttpResponseMessage(flight: Flight) {
+	const { binaryStoreKey, response } = flight;
+	const lines = [
+		`${response.status} HTTP/1.1`,
+		...TypedObject.keys(response.headers).map(k => `${k}: ${response.headers[k]}`),
+	];
+
+	if (response.hasBody) {
+		const store = binaryStore.get(binaryStoreKey);
+
+		// TODO(afr): Read encoding from content headers
+		// TODO(afr): Concatinate bodies longer than 1MB?
+		const decoder = new TextDecoder('utf-8');
+		const string = decoder.decode(store);
+
+		lines.push('\n', string);
+	}
+
+	return lines.join('\n');
+}
+
+export default ResponseTab;

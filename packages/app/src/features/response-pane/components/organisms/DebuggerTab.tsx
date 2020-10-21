@@ -3,11 +3,11 @@ import styled from 'styled-components';
 
 import { Flight } from '../../../../store/flight/types';
 
-export interface DebuggerPaneProps {
+export interface DebuggerTabProps {
 	flight: Flight;
 }
 
-const DebuggerPane: React.FunctionComponent<DebuggerPaneProps> = props => (
+const DebuggerTab: React.FunctionComponent<DebuggerTabProps> = props => (
 	<React.Fragment>
 		<SexiPre>
 			{JSON.stringify({ ...props.flight }, null, '  ')}
@@ -20,4 +20,4 @@ const SexiPre = styled.pre`
 	font-family: monospace;
 `;
 
-export default DebuggerPane;
+export default DebuggerTab;

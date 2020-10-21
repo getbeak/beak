@@ -20,11 +20,11 @@ const { ipcRenderer } = window.require('electron');
 
 type Tab = 'text' | 'json' | 'url-encoded-form';
 
-export interface BodyPaneProps {
+export interface BodyTabProps {
 	node: RequestNode;
 }
 
-const BodyPane: React.FunctionComponent<BodyPaneProps> = props => {
+const BodyTab: React.FunctionComponent<BodyTabProps> = props => {
 	const dispatch = useDispatch();
 	const preferences = useContext(RequestPreferencesContext)!;
 	const { node } = props;
@@ -133,4 +133,4 @@ const TabBody = styled.div`
 	height: 100%;
 `;
 
-export default BodyPane;
+export default BodyTab;

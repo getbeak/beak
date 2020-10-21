@@ -2,11 +2,11 @@ import { RequestNode } from '@beak/common/src/beak-project/types';
 import React from 'react';
 import styled from 'styled-components';
 
-export interface DebuggerPaneProps {
+export interface DebuggerTabProps {
 	node: RequestNode;
 }
 
-const DebuggerPane: React.FunctionComponent<DebuggerPaneProps> = props => (
+const DebuggerTab: React.FunctionComponent<DebuggerTabProps> = props => (
 	<React.Fragment>
 		<SexiPre>
 			{JSON.stringify(props.node, null, '  ')}
@@ -21,4 +21,4 @@ const SexiPre = styled.pre`
 	padding: 0 15px;
 `;
 
-export default DebuggerPane;
+export default DebuggerTab;

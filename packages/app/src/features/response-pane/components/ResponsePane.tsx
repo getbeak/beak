@@ -6,7 +6,7 @@ import styled from 'styled-components';
 import FlightHistorySelector from './molecules/FlightHistorySelector';
 import Header from './molecules/Header';
 import PendingSlash from './molecules/PendingSplash';
-import InspectorTabs from './organisms/InspectorTabs';
+import Inspector from './organisms/Inspector';
 
 const ResponsePane: React.FunctionComponent = () => {
 	const flight = useSelector(s => s.global.flight);
@@ -39,7 +39,7 @@ const ResponsePane: React.FunctionComponent = () => {
 				selectedFlightIndex={selectedFlightIndex}
 				updateSelectedFlight={setSelectedFlightIndex}
 			/>
-			<InspectorTabs flight={selectedFlightHistory} />
+			<Inspector flight={selectedFlightHistory} />
 		</Container>
 	);
 };

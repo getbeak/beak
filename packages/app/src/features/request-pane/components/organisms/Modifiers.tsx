@@ -9,18 +9,18 @@ import TabBar from '../../../../components/atoms/TabBar';
 import TabItem from '../../../../components/atoms/TabItem';
 import TabSpacer from '../../../../components/atoms/TabSpacer';
 import RequestPreferencesContext from '../../contexts/request-preferences-context';
-import BodyPane from './BodyPane';
-import DebuggerPane from './DebuggerPane';
+import BodyTab from './BodyTab';
+import Debugger from './DebuggerTab';
 
 const { ipcRenderer } = window.require('electron');
 
 type Tab = 'debugging' | 'headers' | 'url_query' | 'body' | 'options';
 
-export interface ModifiersPaneProps {
+export interface ModifiersProps {
 	node: RequestNode;
 }
 
-const ModifiersPane: React.FunctionComponent<ModifiersPaneProps> = props => {
+const Modifiers: React.FunctionComponent<ModifiersProps> = props => {
 	const dispatch = useDispatch();
 	const preferences = useContext(RequestPreferencesContext)!;
 	const { node } = props;
@@ -70,7 +70,7 @@ const ModifiersPane: React.FunctionComponent<ModifiersPaneProps> = props => {
 			</TabBar>
 
 			<TabBody>
-				{tab === 'debugging' && <DebuggerPane node={node} />}
+				{tab === 'debugging' && <Debugger node={node} />}
 				{tab === 'headers' && (
 					<BasicTableView
 						editable
@@ -106,7 +106,7 @@ const ModifiersPane: React.FunctionComponent<ModifiersPaneProps> = props => {
 					/>
 				)}
 				{tab === 'body' && (
-					<BodyPane node={node} />
+					<BodyTab node={node} />
 				)}
 			</TabBody>
 		</Container>
@@ -127,4 +127,4 @@ const TabBody = styled.div`
 	height: 100%;
 `;
 
-export default ModifiersPane;
+export default Modifiers;

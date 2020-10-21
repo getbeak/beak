@@ -7,9 +7,9 @@ import styled from 'styled-components';
 
 import ReflexSplitter from '../../../components/atoms/ReflexSplitter';
 import RequestPreferencesContext from '../contexts/request-preferences-context';
-import ModifiersPane from './organisms/ModifiersPane';
+import Modifiers from './organisms/Modifiers';
 import RequestOutput from './organisms/RequestOutput';
-import UriPane from './organisms/UriPane';
+import UriPane from './organisms/UriSection';
 
 const { ipcRenderer } = window.require('electron');
 
@@ -49,7 +49,7 @@ const RequestPane: React.FunctionComponent = () => {
 						flex={8}
 						minSize={400}
 					>
-						<ModifiersPane node={typedSelectedNode} />
+						<Modifiers node={typedSelectedNode} />
 					</ReflexElement>
 
 					<ReflexSplitter orientation={'horizontal'} />

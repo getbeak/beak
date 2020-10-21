@@ -11,11 +11,11 @@ import { requestQueryAdded, requestUriUpdated } from '../../../../store/project/
 
 const url = window.require('url');
 
-export interface UriPaneProps {
+export interface UriSectionProps {
 	node: RequestNode;
 }
 
-const UriPane: React.FunctionComponent<UriPaneProps> = props => {
+const UriSection: React.FunctionComponent<UriSectionProps> = props => {
 	const dispatch = useDispatch();
 	const { node } = props;
 	const verb = node.info.verb;
@@ -162,4 +162,4 @@ const OkayBoomer = styled.button`
 	cursor: pointer;
 `;
 
-export default UriPane;
+export default UriSection;
