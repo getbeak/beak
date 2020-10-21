@@ -11,7 +11,9 @@
       "**/electron-builder",
       "**/electron-builder/**",
       "**/electron-webpack",
-      "**/electron-webpack/**"
+      "**/electron-webpack/**",
+      "**/electron-webpack-ts",
+      "**/electron-webpack-ts/**"
     ]
   },
   "engines": {
@@ -22,9 +24,10 @@
     "preelectron": "yarn build",
     "electron": "lerna run electron --scope @beak/electron-host",
     "prepackage": "yarn build",
-    "package": "lerna run package --scope @beak/electron-host --stream",
-    "rebuild": "electron-rebuild -f -b -w nodegit",
-    "start": "lerna exec --parallel --stream --scope @beak/electron-host --scope @beak/app yarn start",
+    "package": "lerna run package --stream --scope @beak/electron-host",
+    "package-only": "lerna run package --stream --scope @beak/electron-host",
+    "rebuild": "electron-rebuild -b -o nodegit",
+    "start": "lerna exec --parallel --concurrency 1 --stream --scope '@beak/{app,electron-host}' yarn start",
     "test": "lerna run test --parallel",
     "lint": "eslint -c .eslintrc --ext .tsx --ext .ts './packages/'",
     "unfuck": "lerna clean && yarn --force"

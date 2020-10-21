@@ -2,8 +2,14 @@
   "name": "@beak/requester-node",
   "version": "0.0.0",
   "private": true,
+  "main": "dist/index",
+  "types": "dist/index",
+  "files": ["dist"],
   "scripts": {
-    "test": "echo Skipped for now."
+    "build": "yarn clean && yarn compile",
+    "clean": "rm -rf ./dist && rm -rf tsconfig.tsbuildinfo",
+    "compile": "tsc -b tsconfig.json",
+    "start": "tsc -b tsconfig.json -w"
   },
   "dependencies": {
     "@beak/common": "^0.0.0",

@@ -1,4 +1,4 @@
-import { TypedObject } from '@beak/common/src/helpers/typescript';
+import { TypedObject } from '@beak/common/helpers/typescript';
 
 import { BrandColors, Theme, UIColors } from './types';
 

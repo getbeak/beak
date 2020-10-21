@@ -1,4 +1,4 @@
-import url from 'url';
+import * as url from 'url';
 
 import { TypedObject } from '../helpers/typescript';
 import { RequestOverview } from './types';

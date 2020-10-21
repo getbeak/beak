@@ -1,9 +1,9 @@
-import binaryStore from '@beak/app/src/lib/binary-store';
+import binaryStore from '@beak/app/lib/binary-store';
 import {
 	FlightCompletePayload,
 	FlightFailedPayload,
 	FlightHeartbeatPayload,
-} from '@beak/common/src/requester/types';
+} from '@beak/common/requester/types';
 // @ts-ignore
 import ksuid from '@cuvva/ksuid';
 import { PayloadAction } from '@reduxjs/toolkit';

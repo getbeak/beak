@@ -1,4 +1,4 @@
-import { FlightHeartbeatPayload } from '@beak/common/src/requester/types';
+import { FlightHeartbeatPayload } from '@beak/common/requester/types';
 import { createAction } from '@reduxjs/toolkit';
 
 import { ActionTypes, BeginFlightPayload, CompleteFlightPayload, RequestFlightPayload } from './types';

@@ -10,7 +10,7 @@ import TabSpacer from '../../../../components/atoms/TabSpacer';
 import 'ace-builds/src-noconflict/mode-text';
 import 'ace-builds/src-noconflict/mode-json';
 import 'ace-builds/src-noconflict/theme-solarized_dark';
-import { Flight } from '@beak/app/src/store/flight/types';
+import { Flight } from '@beak/app/store/flight/types';
 import { createBasicHttpOutput } from '../../../request-pane/components/molecules/RequestOutput';
 
 type Tab = 'raw';

@@ -1,11 +1,11 @@
 // eslint-disable-next-line simple-import-sort/sort
-import { RequestBody, RequestNode, RequestOverview } from '@beak/common/src/beak-project/types';
+import { RequestBody, RequestNode, RequestOverview } from '@beak/common/beak-project/types';
 import React from 'react';
 import AceEditor from 'react-ace';
 
 import 'ace-builds/src-noconflict/mode-text';
 import 'ace-builds/src-noconflict/theme-solarized_dark';
-import { TypedObject } from '@beak/common/src/helpers/typescript';
+import { TypedObject } from '@beak/common/helpers/typescript';
 
 export interface RequestOutputProps {
 	selectedNode: RequestNode;

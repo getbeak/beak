@@ -1,6 +1,6 @@
-import { setProjectSingleton } from '@beak/common/src/beak-project';
-import BeakProject from '@beak/common/src/beak-project/project';
-import { RequestNode } from '@beak/common/src/beak-project/types';
+import { setProjectSingleton } from '@beak/common/beak-project';
+import BeakProject from '@beak/common/beak-project/project';
+import { RequestNode } from '@beak/common/beak-project/types';
 import { PayloadAction } from '@reduxjs/toolkit';
 import { all, call, put } from 'redux-saga/effects';
 

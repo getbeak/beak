@@ -1,6 +1,6 @@
 // eslint-disable-next-line simple-import-sort/sort
-import BasicTableView from '@beak/app/src/components/molecules/BasicTableView';
-import { RequestNode } from '@beak/common/src/beak-project/types';
+import BasicTableView from '@beak/app/components/molecules/BasicTableView';
+import { RequestNode } from '@beak/common/beak-project/types';
 import React, { useContext, useState } from 'react';
 import AceEditor from 'react-ace';
 import { useDispatch } from 'react-redux';
@@ -13,7 +13,7 @@ import TabSpacer from '../../../../components/atoms/TabSpacer';
 import 'ace-builds/src-noconflict/mode-text';
 import 'ace-builds/src-noconflict/mode-json';
 import 'ace-builds/src-noconflict/theme-solarized_dark';
-import { requestBodyJsonChanged, requestBodyTextChanged } from '@beak/app/src/store/project/actions';
+import { requestBodyJsonChanged, requestBodyTextChanged } from '@beak/app/store/project/actions';
 import RequestPreferencesContext from '../../contexts/request-preferences-context';
 
 const { ipcRenderer } = window.require('electron');

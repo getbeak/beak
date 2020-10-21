@@ -4,12 +4,12 @@ node_modules/
 # Environment
 .vscode/
 
-# Parcel
+# TS/Webpack/React/Electron transpiling nonsense
+dist-electron/
 dist/
-.cache/
-
-# JS/TS
-.dist/
+dist-ts/
+dist-react/
+tsconfig.tsbuildinfo
 
 # Beak
 .beak

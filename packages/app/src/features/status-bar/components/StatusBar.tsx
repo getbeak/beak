@@ -1,4 +1,4 @@
-import { requestSelected } from '@beak/app/src/store/project/actions';
+import { requestSelected } from '@beak/app/store/project/actions';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';

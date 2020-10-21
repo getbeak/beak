@@ -1,4 +1,4 @@
-import { RequestNode } from '@beak/common/src/beak-project/types';
+import { RequestNode } from '@beak/common/beak-project/types';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';

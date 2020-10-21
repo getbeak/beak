@@ -1,7 +1,15 @@
 {
   "appId": "io.0xdeafcafe.beak",
   "productName": "Beak",
+  "copyright": "Copyright © 2020 Alexander Forbes-Reed",
+
+  "files": [
+    "dist-react/**/*",
+    "dist/main/**/*",
+    "../../node_modules/**/*"
+  ],
   "directories": {
-    "buildResources": "build"
+    "buildResources": "assets",
+    "output": "dist-electron"
   }
 }

@@ -1,4 +1,4 @@
-import { Tree } from '@beak/common/src/beak-project/types';
+import { Tree } from '@beak/common/beak-project/types';
 import React from 'react';
 import styled from 'styled-components';
 

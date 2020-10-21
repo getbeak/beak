@@ -1,4 +1,4 @@
-import { RequestPreference } from '@beak/common/src/beak-hub/types';
+import { RequestPreference } from '@beak/common/beak-hub/types';
 import React from 'react';
 
 const RequestPreferencesContext = React.createContext<RequestPreference | null>(null);

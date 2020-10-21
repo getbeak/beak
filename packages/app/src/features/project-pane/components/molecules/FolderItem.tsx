@@ -1,4 +1,4 @@
-import { FolderNode } from '@beak/common/src/beak-project/types';
+import { FolderNode } from '@beak/common/beak-project/types';
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';

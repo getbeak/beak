@@ -1,5 +1,5 @@
-import { RequestPreference } from '@beak/common/src/beak-hub/types';
-import { RequestNode } from '@beak/common/src/beak-project/types';
+import { RequestPreference } from '@beak/common/beak-hub/types';
+import { RequestNode } from '@beak/common/beak-project/types';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { ReflexContainer, ReflexElement } from 'react-reflex';

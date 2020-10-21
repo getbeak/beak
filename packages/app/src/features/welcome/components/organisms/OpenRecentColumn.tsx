@@ -1,4 +1,4 @@
-import { RecentLocalProject } from '@beak/common/src/beak-hub/types';
+import { RecentLocalProject } from '@beak/common/beak-hub/types';
 import { sentenceCase } from 'change-case';
 import React, { useEffect, useState } from 'react';
 import { Col } from 'react-grid-system';

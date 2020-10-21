@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 
-import { RequestNode } from '@beak/common/src/beak-project/types';
+import { RequestNode } from '@beak/common/beak-project/types';
 // @ts-ignore
 import ksuid from '@cuvva/ksuid';
 import { createReducer } from '@reduxjs/toolkit';

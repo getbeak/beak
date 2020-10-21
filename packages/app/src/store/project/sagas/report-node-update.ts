@@ -1,5 +1,5 @@
-import { getProjectSingleton } from '@beak/common/src/beak-project';
-import { Nodes } from '@beak/common/src/beak-project/types';
+import { getProjectSingleton } from '@beak/common/beak-project';
+import { Nodes } from '@beak/common/beak-project/types';
 import { PayloadAction } from '@reduxjs/toolkit';
 import { call, select } from 'redux-saga/effects';
 

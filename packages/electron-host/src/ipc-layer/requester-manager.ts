@@ -1,4 +1,4 @@
-import { FlightMessages, FlightRequestPayload } from '@beak/common/src/requester/types';
+import { FlightMessages, FlightRequestPayload } from '@beak/common/requester/types';
 import { RequesterOptions, startRequester } from '@beak/requester-node/src';
 import { ipcMain } from 'electron';
 

@@ -1,6 +1,6 @@
-import { statusToColour } from '@beak/app/src/design-system/helpers';
-import { Flight } from '@beak/app/src/store/flight/types';
-import { constructUri } from '@beak/common/src/beak-project/url';
+import { statusToColour } from '@beak/app/design-system/helpers';
+import { Flight } from '@beak/app/store/flight/types';
+import { constructUri } from '@beak/common/beak-project/url';
 import { getReasonPhrase } from 'http-status-codes';
 import React from 'react';
 import styled from 'styled-components';

@@ -1,5 +1,5 @@
-import { ToggleKeyValue } from '@beak/common/src/beak-project/types';
-import { TypedObject } from '@beak/common/src/helpers/typescript';
+import { ToggleKeyValue } from '@beak/common/beak-project/types';
+import { TypedObject } from '@beak/common/helpers/typescript';
 import React from 'react';
 import styled from 'styled-components';
 

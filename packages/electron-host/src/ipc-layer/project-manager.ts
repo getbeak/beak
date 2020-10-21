@@ -1,9 +1,9 @@
-import { addRecentProject } from '@beak/common/src/beak-hub/recents';
-import createProject from '@beak/common/src/beak-project/create';
-import { ProjectFile } from '@beak/common/src/beak-project/types';
+import { addRecentProject } from '@beak/common/beak-hub/recents';
+import createProject from '@beak/common/beak-project/create';
+import { ProjectFile } from '@beak/common/beak-project/types';
 import { dialog, ipcMain } from 'electron';
-import fs from 'fs-extra';
-import path from 'path';
+import * as fs from 'fs-extra';
+import * as path from 'path';
 
 import { closeWindow, createProjectMainWindow, windowStack } from '../window-management';
 

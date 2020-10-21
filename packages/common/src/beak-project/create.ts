@@ -1,8 +1,8 @@
 // @ts-ignore
-import ksuid from '@cuvva/ksuid';
-import fs from 'fs-extra';
-import NodeGit from 'nodegit';
-import path from 'path';
+import * as ksuid from '@cuvva/ksuid';
+import * as fs from 'fs-extra';
+import * as NodeGit from 'nodegit';
+import * as path from 'path';
 
 import { ProjectFile, RequestNodeFile } from './types';
 

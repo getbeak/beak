@@ -1,7 +1,7 @@
-import { requestSelected } from '@beak/app/src/store/project/actions';
-import { RequestNode } from '@beak/common/src/beak-project/types';
-import { constructUri } from '@beak/common/src/beak-project/url';
-import { TypedObject } from '@beak/common/src/helpers/typescript';
+import { requestSelected } from '@beak/app/store/project/actions';
+import { RequestNode } from '@beak/common/beak-project/types';
+import { constructUri } from '@beak/common/beak-project/url';
+import { TypedObject } from '@beak/common/helpers/typescript';
 import Fuse from 'fuse.js';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';

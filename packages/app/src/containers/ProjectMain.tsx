@@ -1,6 +1,3 @@
-// TODO(afr): Remove this fucking css import one day. styled-components only pls
-import 'react-reflex/styles.css';
-
 import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { useDispatch, useSelector } from 'react-redux';
@@ -8,6 +5,7 @@ import { ReflexContainer, ReflexElement } from 'react-reflex';
 import styled from 'styled-components';
 
 import ReflexSplitter from '../components/atoms/ReflexSplitter';
+import ReflexStyles from '../components/atoms/ReflexStyles';
 import ProgressIndicator from '../components/molecules/ProgressIndicator';
 import ProjectPane from '../features/project-pane/components/ProjectPane';
 import RequestPane from '../features/request-pane/components/RequestPane';
@@ -40,6 +38,7 @@ const ProjectMain: React.FunctionComponent = () => {
 			</Helmet>
 			<ProgressIndicator />
 			<Container>
+				<ReflexStyles />
 				{!project.opening && (
 					<ReflexContainer orientation={'vertical'}>
 						<ReflexElement

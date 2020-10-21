@@ -1,6 +1,7 @@
 {
   "main": {
-    "sourceDirectory": "src"
+    "sourceDirectory": "src",
+    "webpackConfig": "webpack.main.additions.js"
   },
   "renderer": {
     "sourceDirectory": null

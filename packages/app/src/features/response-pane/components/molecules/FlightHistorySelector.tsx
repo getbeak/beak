@@ -1,5 +1,5 @@
-import Button from '@beak/app/src/components/atoms/Button';
-import { Flight } from '@beak/app/src/store/flight/types';
+import Button from '@beak/app/components/atoms/Button';
+import { Flight } from '@beak/app/store/flight/types';
 import { faCaretSquareLeft, faCaretSquareRight } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';

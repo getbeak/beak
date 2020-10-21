@@ -1,7 +1,7 @@
-import fs from 'fs-extra';
+import * as fs from 'fs-extra';
 import { validate } from 'jsonschema';
-import path from 'path';
-import process from 'process';
+import * as path from 'path';
+import * as process from 'process';
 
 import { recentsSchema } from './schemas';
 import { RecentLocalProject } from './types';

@@ -10,9 +10,9 @@ import TabSpacer from '../../../../components/atoms/TabSpacer';
 import 'ace-builds/src-noconflict/mode-text';
 import 'ace-builds/src-noconflict/mode-json';
 import 'ace-builds/src-noconflict/theme-solarized_dark';
-import { Flight } from '@beak/app/src/store/flight/types';
-import { TypedObject } from '@beak/common/src/helpers/typescript';
-import binaryStore from '@beak/app/src/lib/binary-store';
+import { Flight } from '@beak/app/store/flight/types';
+import { TypedObject } from '@beak/common/helpers/typescript';
+import binaryStore from '@beak/app/lib/binary-store';
 
 type Tab = 'raw';
 
@@ -91,7 +91,10 @@ function createHttpResponseMessage(flight: Flight) {
 		const decoder = new TextDecoder('utf-8');
 		const string = decoder.decode(store);
 
-		lines.push('\n', string);
+		if (string.startsWith('\n'))
+			lines.push(string);
+		else
+			lines.push('\n', string);
 	}
 
 	return lines.join('\n');
