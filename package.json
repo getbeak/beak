@@ -11,9 +11,7 @@
       "**/electron-builder",
       "**/electron-builder/**",
       "**/electron-webpack",
-      "**/electron-webpack/**",
-      "**/electron-webpack-ts",
-      "**/electron-webpack-ts/**"
+      "**/electron-webpack/**"
     ]
   },
   "engines": {

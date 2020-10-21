@@ -14,3 +14,5 @@ const appIsPackaged = !process.defaultApp;
 const staticPath = appIsPackaged ? __dirname.replace(/app\.asar$/, 'static') : path.join(process.cwd(), 'static');
 
 export { staticPath };
+
+// file:///Users/afr/Source/github.com/beak-app/beak/packages/electron-host/dist-electron/mac/Beak.app/Contents/Resources/static/index.html?container=welcome&windowId=1

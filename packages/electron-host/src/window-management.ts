@@ -17,7 +17,7 @@ function generateLoadUrl(
 	additionalParams?: Record<string, string>,
 ) {
 	let loadUrl = new URL(url.format({
-		pathname: path.join(staticPath, 'dist', 'index.html'),
+		pathname: path.join(staticPath, 'index.html'),
 		protocol: 'file:',
 		slashes: true,
 	}));
