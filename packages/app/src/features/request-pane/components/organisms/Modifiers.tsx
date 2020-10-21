@@ -9,8 +9,8 @@ import TabBar from '../../../../components/atoms/TabBar';
 import TabItem from '../../../../components/atoms/TabItem';
 import TabSpacer from '../../../../components/atoms/TabSpacer';
 import RequestPreferencesContext from '../../contexts/request-preferences-context';
+import Debugger from '../molecules/DebuggerTab';
 import BodyTab from './BodyTab';
-import Debugger from './DebuggerTab';
 
 const { ipcRenderer } = window.require('electron');
 

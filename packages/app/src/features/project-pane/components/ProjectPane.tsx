@@ -4,7 +4,6 @@ import styled from 'styled-components';
 
 import Header from './atoms/Header';
 import SectionHeader from './atoms/SectionHeader';
-import Organiser from './organisms/Organiser';
 import TreeView from './organisms/TreeView';
 
 const ProjectPane: React.FunctionComponent = () => {
@@ -12,12 +11,11 @@ const ProjectPane: React.FunctionComponent = () => {
 
 	return (
 		<Container>
-			<Header>{'Explorer'}</Header>
+			<Header>{project.name!}</Header>
 			<SectionHeader>{'Project'}</SectionHeader>
 			<SectionHeader>{'Environment'}</SectionHeader>
-			<SectionHeader>{project.name!}</SectionHeader>
+			<SectionHeader>{'Explorer'}</SectionHeader>
 			<TreeView tree={project.tree!} />
-			<Organiser />
 		</Container>
 	);
 };
