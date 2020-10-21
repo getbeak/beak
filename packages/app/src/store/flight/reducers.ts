@@ -46,11 +46,12 @@ const flightReducer = createReducer(initialState, builder => {
 		})
 		.addCase(actions.completeFlight, (state, action) => {
 			const { flightId, requestId, response } = action.payload;
+			const binaryStoreKey = state.currentFlight!.binaryStoreKey;
 
 			state.currentFlight!.response = response;
 			state.currentFlight!.flighting = false;
 			state.flightHistory[requestId] = [
-				{ flightId, requestId, request: state.currentFlight!.request, response },
+				{ flightId, requestId, request: state.currentFlight!.request, response, binaryStoreKey },
 				...(state.flightHistory[requestId] || []),
 			];
 		})
@@ -60,8 +61,8 @@ const flightReducer = createReducer(initialState, builder => {
 				requestId: action.payload.requestId,
 				flightId: action.payload.flightId,
 				request: action.payload.request,
-				flighting: true,
 				binaryStoreKey: action.payload.binaryStoreKey,
+				flighting: true,
 			};
 		});
 });

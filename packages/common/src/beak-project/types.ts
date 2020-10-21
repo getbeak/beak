@@ -70,6 +70,7 @@ export interface ResponseOverview {
 	redirected: boolean;
 	status: number;
 	url: string;
+	hasBody: boolean;
 }
 
 export type Nodes = FolderNode | RequestNode;

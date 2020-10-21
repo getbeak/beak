@@ -48,13 +48,14 @@ export async function startRequester(options: RequesterOptions) {
 
 	const contentLengthUnstable = response.headers.get('content-length') ?? '0';
 	const contentLength = Number.parseInt(contentLengthUnstable, 10) || 0;
+	const hasBody = contentLength > 0;
 
 	heartbeat({
 		stage: 'parsing_response',
 		payload: { contentLength, timestamp: Date.now() },
 	});
 
-	if (contentLength > 0) {
+	if (hasBody) {
 		if (response.bodyUsed) {
 			failed({ error: new Error('body already used') });
 
@@ -76,6 +77,7 @@ export async function startRequester(options: RequesterOptions) {
 			redirected: response.redirected,
 			status: response.status,
 			url: response.url,
+			hasBody,
 		},
 	});
 }

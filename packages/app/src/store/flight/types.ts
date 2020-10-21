@@ -44,6 +44,7 @@ export interface Flight {
 	flightId: string;
 	request: RequestOverview;
 	response: ResponseOverview;
+	binaryStoreKey: string;
 }
 
 export interface FlightInProgress extends Omit<Flight, 'response'> {
