@@ -1,23 +1,20 @@
-import childProcess from 'child_process';
-import chokidar from 'chokidar';
-import electron from 'electron';
-import fsExtra from 'fs-extra';
-import path from 'path';
+import electron, { Remote } from 'electron';
 import process from 'process';
 import { Store } from 'react-redux';
 import url from 'url';
 
 import { ApplicationState } from './store';
 
-declare global {
-	interface Window {
-		require(moduleSpecifier: 'child-process'): typeof childProcess;
-		require(moduleSpecifier: 'chokidar'): typeof chokidar;
-		require(moduleSpecifier: 'electron'): typeof electron;
-		require(moduleSpecifier: 'fs-extra'): typeof fsExtra;
-		require(moduleSpecifier: 'path'): typeof path;
+declare module 'electron' {
+	interface Remote {
 		require(moduleSpecifier: 'process'): typeof process;
 		require(moduleSpecifier: 'url'): typeof url;
+	}
+}
+
+declare global {
+	interface Window {
+		require(moduleSpecifier: 'electron'): typeof electron;
 
 		store: Store<ApplicationState>;
 	}

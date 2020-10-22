@@ -11,7 +11,7 @@ import Omnibar from './features/omni-bar/components/Omnibar';
 import { setGlobal } from './globals';
 import { configureStore } from './store';
 
-const process = window.require('process');
+const process = window.require('electron').remote.require('process');
 
 function getComponent(container: string | null) {
 	switch (container) {

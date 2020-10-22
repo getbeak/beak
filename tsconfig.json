@@ -8,7 +8,7 @@
     "strict": true,
     "target": "ES2018",
     "moduleResolution": "node",
-    "module": "ESNext",
+    "module": "CommonJS",
     "allowSyntheticDefaultImports": true,
 
     "paths": {

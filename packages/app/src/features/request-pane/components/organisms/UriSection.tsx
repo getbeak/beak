@@ -9,7 +9,7 @@ import styled from 'styled-components';
 import { requestFlight } from '../../../../store/flight/actions';
 import { requestQueryAdded, requestUriUpdated } from '../../../../store/project/actions';
 
-const url = window.require('url');
+const url = window.require('electron').remote.require('url');
 
 export interface UriSectionProps {
 	node: RequestNode;

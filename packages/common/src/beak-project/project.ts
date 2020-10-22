@@ -4,9 +4,9 @@ import { validate } from 'jsonschema';
 import { projectSchema, requestSchema } from './schemas';
 import { FolderNode, Nodes, ProjectFile, RequestNode, RequestNodeFile, Tree } from './types';
 
-const chokidar = window.require('chokidar');
-const fs = window.require('fs-extra');
-const path = window.require('path');
+const chokidar = window.require('electron').remote.require('chokidar');
+const fs = window.require('electron').remote.require('fs-extra');
+const path = window.require('electron').remote.require('path');
 
 const forbiddenFiles = ['.DS_Store', 'Thumbs.db'];
 

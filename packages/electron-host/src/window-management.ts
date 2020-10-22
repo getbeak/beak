@@ -49,6 +49,7 @@ function createWindow(
 ) {
 	const window = new BrowserWindow({
 		webPreferences: {
+			enableRemoteModule: true,
 			nodeIntegration: true,
 		},
 		...windowOpts,

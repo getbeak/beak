@@ -5,6 +5,7 @@ const path = require('path');
 /* eslint-enable @typescript-eslint/no-var-requires */
 
 module.exports = {
+	target: 'electron-renderer',
 	entry: './src/index.tsx',
 	resolve: {
 		extensions: ['.ts', '.tsx', '.js'],
