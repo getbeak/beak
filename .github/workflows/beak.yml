@@ -17,6 +17,8 @@ jobs:
         run: yarn
       - name: Build and package
         run: yarn package
+      - name: Delete app folder
+        run: rm -rf ./packages/electron-host/dist-electron/mac
       - name: Upload S3
         uses: shallwefootball/upload-s3-action@v1.1.2
         with:
@@ -24,4 +26,4 @@ jobs:
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY}}
           aws_bucket: ${{ secrets.AWS_S3_BUILDS_BUCKET }}
           source_dir: 'packages/electron-host/dist-electron/'
-          destination_dir: '${GITHUB_SHA}/'
+          destination_dir: '${{ github.sha }}/'
