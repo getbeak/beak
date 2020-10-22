@@ -1,0 +1,30 @@
+name: Beak
+on:
+  push:
+    branches:
+     - master
+  pull_request:
+
+jobs:
+  build-deploy:
+    name: Build, Package, and Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Setup Node.js
+        uses: actions/setup-node@v2-beta
+        with:
+          node-version: '14'
+      - name: Install modules
+        run: yarn
+      - name: Build and package
+        run: yarn package
+      - name: Upload S3
+        uses: shallwefootball/upload-s3-action@v1.1.2
+        with:
+          aws_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY}}
+          aws_bucket: ${{ secrets.AWS_S3_BUILDS_BUCKET }}
+          source_dir: 'packages/electron-host/dist-electron/'
+          destination_dir: '${GITHUB_SHA}/'
