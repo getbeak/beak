@@ -1,8 +1,8 @@
 // @ts-ignore
 import * as ksuid from '@cuvva/ksuid';
 import * as fs from 'fs-extra';
-import * as NodeGit from 'nodegit';
 import * as path from 'path';
+import simpleGit, { SimpleGitOptions } from 'simple-git';
 
 import { ProjectFile, RequestNodeFile } from './types';
 
@@ -96,13 +96,15 @@ function createReadme(name: string) {
 }
 
 async function initRepoAndCommit(projectPath: string) {
-	const repo = await NodeGit.Repository.init(projectPath, 0);
-	const files = await repo.getStatus();
+	const options: SimpleGitOptions = {
+		baseDir: projectPath,
+		binary: 'git',
+		maxConcurrentProcesses: 6,
+	};
 
-	const filePaths = files.map(f => f.path());
+	const git = simpleGit(options);
 
-	// NOTE(afr): This function is in-fact async, the typing are just wrong
-	const signature = await NodeGit.Signature.default(repo);
-
-	await repo.createCommitOnHead(filePaths, signature, signature, 'Initial commit');
+	await git.init()
+		.add('./*')
+		.commit('Initial commit!');
 }

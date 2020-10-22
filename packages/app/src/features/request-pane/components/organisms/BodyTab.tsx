@@ -39,7 +39,7 @@ const BodyTab: React.FunctionComponent<BodyTabProps> = props => {
 		if (response === 0) {
 			setTab(newTab);
 
-			await ipcRenderer.invoke('beak_hub:set-request_preference', node.id, { subTab: newTab });
+			// await ipcRenderer.invoke('beak_hub:set_request_preference', node.id, { subTab: newTab });
 		}
 	}
 

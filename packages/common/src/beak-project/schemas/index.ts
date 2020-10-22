@@ -1,5 +1,5 @@
-import projectSchema from './project.json';
-import requestSchema from './request.json';
+import projectSchema from './project';
+import requestSchema from './request';
 
 export {
 	projectSchema,

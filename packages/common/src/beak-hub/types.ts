@@ -6,8 +6,3 @@ export interface RecentLocalProject {
 	modifiedTime: string;
 	exists: boolean;
 }
-
-export interface RequestPreference {
-	mainTab: string;
-	subTab: string | null;
-}

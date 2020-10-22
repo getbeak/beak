@@ -29,7 +29,7 @@ const Modifiers: React.FunctionComponent<ModifiersProps> = props => {
 	function setTab(tab: Tab) {
 		setTabInner(tab);
 
-		ipcRenderer.invoke('beak_hub:set-request_preference', node.id, { mainTab: tab });
+		// ipcRenderer.invoke('beak_hub:set_request_preference', node.id, { mainTab: tab });
 	}
 
 	return (
