@@ -1,8 +1,7 @@
+import { RecentLocalProject } from '@beak/common/types/beak-hub';
 import ElectronStore from 'electron-store';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-
-import { RecentLocalProject } from './types';
 
 interface Store {
 	recents: RecentLocalProject[];

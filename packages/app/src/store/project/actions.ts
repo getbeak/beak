@@ -1,4 +1,4 @@
-import { Nodes } from '@beak/common/beak-project/types';
+import { Nodes } from '@beak/common/types/beak-project';
 import { createAction } from '@reduxjs/toolkit';
 
 import {

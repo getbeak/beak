@@ -3,7 +3,7 @@ import {
 	FlightCompletePayload,
 	FlightFailedPayload,
 	FlightHeartbeatPayload,
-} from '@beak/common/requester/types';
+} from '@beak/common/types/requester';
 // @ts-ignore
 import ksuid from '@cuvva/ksuid';
 import { PayloadAction } from '@reduxjs/toolkit';

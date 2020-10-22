@@ -1,4 +1,4 @@
-import { Tree } from '@beak/common/beak-project/types';
+import { Tree } from '@beak/common/types/beak-project';
 
 export const ActionTypes = {
 	OPEN_PROJECT: '@beak/global/project/OPEN_PROJECT',

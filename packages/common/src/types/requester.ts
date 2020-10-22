@@ -1,4 +1,4 @@
-import { RequestOverview, ResponseOverview } from '../beak-project/types';
+import { RequestOverview, ResponseOverview } from './beak-project';
 
 export const FlightMessages = {
 	heartbeat: 'flight_heartbeat',

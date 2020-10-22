@@ -1,7 +1,7 @@
 import * as url from 'url';
 
 import { TypedObject } from '../helpers/typescript';
-import { RequestOverview } from './types';
+import { RequestOverview } from '../types/beak-project';
 
 interface Options {
 	includeQuery?: boolean;

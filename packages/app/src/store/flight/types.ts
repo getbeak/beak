@@ -1,4 +1,4 @@
-import { RequestOverview, ResponseOverview } from '@beak/common/beak-project/types';
+import { RequestOverview, ResponseOverview } from '@beak/common/types/beak-project';
 
 export const ActionTypes = {
 	REQUEST_FLIGHT: '@beak/global/flight/REQUEST_FLIGHT',

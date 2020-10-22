@@ -45,7 +45,7 @@ const Icon = styled.div`
 	width: 40px;
 	height: auto;
 
-	background-image: url('/images/tswift-square.jpg');
+	background-image: url('./images/tswift-square.jpg');
 	background-position: center;
 	background-repeat: no-repeat;
 	background-size: contain;

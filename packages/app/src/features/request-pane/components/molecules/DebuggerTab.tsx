@@ -1,4 +1,4 @@
-import { RequestNode } from '@beak/common/beak-project/types';
+import { RequestNode } from '@beak/common/types/beak-project';
 import React from 'react';
 import styled from 'styled-components';
 

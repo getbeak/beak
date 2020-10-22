@@ -1,8 +1,15 @@
+import {
+	FolderNode,
+	Nodes,
+	ProjectFile,
+	RequestNode,
+	RequestNodeFile,
+	Tree,
+} from '@beak/common/types/beak-project';
 import { FSWatcher } from 'chokidar';
 import { validate } from 'jsonschema';
 
 import { projectSchema, requestSchema } from './schemas';
-import { FolderNode, Nodes, ProjectFile, RequestNode, RequestNodeFile, Tree } from './types';
 
 const chokidar = window.require('electron').remote.require('chokidar');
 const fs = window.require('electron').remote.require('fs-extra');

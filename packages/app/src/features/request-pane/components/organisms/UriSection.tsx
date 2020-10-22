@@ -1,5 +1,5 @@
-import { RequestNode } from '@beak/common/beak-project/types';
-import { constructUri } from '@beak/common/beak-project/url';
+import { constructUri } from '@beak/common/helpers/uri';
+import { RequestNode } from '@beak/common/types/beak-project';
 // @ts-ignore
 import ksuid from '@cuvva/ksuid';
 import React from 'react';

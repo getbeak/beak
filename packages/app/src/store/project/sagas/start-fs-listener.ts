@@ -1,5 +1,5 @@
-import { getProjectSingleton } from '@beak/common/beak-project';
-import { ListenerEvent } from '@beak/common/beak-project/project';
+import { ListenerEvent } from '@beak/app/lib/beak-project';
+import { getProjectSingleton } from '@beak/app/lib/beak-project/instance';
 import { eventChannel } from 'redux-saga';
 import { put, take } from 'redux-saga/effects';
 

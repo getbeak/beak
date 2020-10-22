@@ -1,5 +1,5 @@
 // eslint-disable-next-line simple-import-sort/sort
-import { RequestBody, RequestNode, RequestOverview } from '@beak/common/beak-project/types';
+import { RequestBody, RequestNode, RequestOverview } from '@beak/common/types/beak-project';
 import React from 'react';
 import AceEditor from 'react-ace';
 

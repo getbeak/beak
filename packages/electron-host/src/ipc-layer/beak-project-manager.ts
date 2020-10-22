@@ -1,10 +1,10 @@
-import { addRecentProject } from '@beak/common/beak-hub/recents';
-import createProject from '@beak/common/beak-project/create';
-import { ProjectFile } from '@beak/common/beak-project/types';
+import { ProjectFile } from '@beak/common/dist/types/beak-project';
 import { dialog, ipcMain } from 'electron';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 
+import { addRecentProject } from '../lib/beak-hub';
+import createProject from '../lib/beak-project';
 import { closeWindow, createProjectMainWindow, windowStack } from '../window-management';
 
 ipcMain.handle('project:open_folder', async (event, args) => {

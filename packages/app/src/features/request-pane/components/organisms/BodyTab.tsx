@@ -1,6 +1,6 @@
 // eslint-disable-next-line simple-import-sort/sort
 import BasicTableView from '@beak/app/components/molecules/BasicTableView';
-import { RequestNode } from '@beak/common/beak-project/types';
+import { RequestNode } from '@beak/common/types/beak-project';
 import React, { useContext, useState } from 'react';
 import AceEditor from 'react-ace';
 import { useDispatch } from 'react-redux';

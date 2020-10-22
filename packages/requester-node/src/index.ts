@@ -1,12 +1,12 @@
-import { RequestOverview } from '@beak/common/beak-project/types';
-import { constructUri } from '@beak/common/beak-project/url';
 import { TypedObject } from '@beak/common/helpers/typescript';
+import { constructUri } from '@beak/common/helpers/uri';
+import { RequestOverview } from '@beak/common/types/beak-project';
 import {
 	FlightCompletePayload,
 	FlightFailedPayload,
 	FlightHeartbeatPayload,
 	FlightRequestPayload,
-} from '@beak/common/requester/types';
+} from '@beak/common/types/requester';
 import fetch, { RequestInit, Response } from 'node-fetch';
 
 export interface RequesterOptions {

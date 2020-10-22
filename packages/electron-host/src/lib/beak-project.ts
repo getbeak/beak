@@ -1,10 +1,9 @@
+import { ProjectFile, RequestNodeFile } from '@beak/common/types/beak-project';
 // @ts-ignore
 import * as ksuid from '@cuvva/ksuid';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import simpleGit, { SimpleGitOptions } from 'simple-git';
-
-import { ProjectFile, RequestNodeFile } from './types';
 
 export interface CreationOptions {
 	name: string;

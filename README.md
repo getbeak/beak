@@ -9,7 +9,6 @@ Snazzy cross-platform API development and research tool. Firstly in C#/XAML, now
 
 1. Clone the git repo
 1. Run `yarn`
-1. Run `yarn rebuild` - to ensure native modules are built against the system node version
 1. Run `yarn start`
 1. ???
 1. profit

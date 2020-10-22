@@ -1,6 +1,6 @@
-import { listRecentProjects } from '@beak/common/beak-hub/recents';
-// import { getRequestPreference, setRequestPreference } from '@beak/common/beak-project/request-preferences.ts.temp';
 import { ipcMain } from 'electron';
+
+import { listRecentProjects } from '../lib/beak-hub';
 
 ipcMain.handle('beak_hub:list_recents', async () => await listRecentProjects());
 

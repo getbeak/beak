@@ -1,6 +1,6 @@
 import BasicTableView from '@beak/app/components/molecules/BasicTableView';
 import actions from '@beak/app/store/project/actions';
-import { RequestNode } from '@beak/common/beak-project/types';
+import { RequestNode } from '@beak/common/types/beak-project';
 import React, { useContext, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
