@@ -21,7 +21,7 @@ jobs:
         if: "contains(github.event.head_commit.message, '[cid]')"
         run: rm -rf ./packages/electron-host/dist-electron/mac
       - name: Write commit hash
-        run: mkdir current, echo "${{ github.sha }}" >> ./current/current
+        run: mkdir current; echo "${{ github.sha }}" >> ./current/current
       - name: Upload S3
         uses: shallwefootball/upload-s3-action@v1.1.2
         with:
