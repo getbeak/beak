@@ -1,6 +1,16 @@
-# Beak
+<p align="center">
+	<img width="200" height="200" src="assets/logo.png" />
+</p>
 
-Snazzy cross-platform API development and research tool. Firstly in C#/XAML, now in Typescript/Electron. Vote opens for next rewrite soon, lol.
+<p align="center">
+	<img src="https://github.com/beak-app/beak/workflows/Beak/badge.svg" alt="Build Status" />
+</p>
+
+<h2 style="border-bottom: none" align="center">Beak</h1>
+
+<p align="center">
+	Snazzy cross-platform API development and research tool. Firstly in C#/XAML, now inTypescript/Electron. Vote opens for next rewrite soon, lol.
+</p>
 
 ![Project view](assets/home.png)
 <p align="center">still a little rough around the edges 🤷‍♀️</p>
