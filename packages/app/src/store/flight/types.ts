@@ -21,12 +21,6 @@ export const initialState: State = {
 	blackBox: {},
 };
 
-export interface RequestFlightPayload {
-	requestId: string;
-	flightId: string;
-	request: RequestOverview;
-}
-
 export interface BeginFlightPayload {
 	requestId: string;
 	flightId: string;

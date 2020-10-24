@@ -1,4 +1,5 @@
 import binaryStore from '@beak/app/lib/binary-store';
+import { RequestNode } from '@beak/common/dist/types/beak-project';
 import {
 	FlightCompletePayload,
 	FlightFailedPayload,
@@ -6,31 +7,38 @@ import {
 } from '@beak/common/types/requester';
 // @ts-ignore
 import ksuid from '@cuvva/ksuid';
-import { PayloadAction } from '@reduxjs/toolkit';
 import { END, eventChannel } from 'redux-saga';
 import { put, select, take } from 'redux-saga/effects';
 
 import { ApplicationState } from '../..';
 import * as actions from '../actions';
-import { RequestFlightPayload, State } from '../types';
+import { State } from '../types';
 
 const electron = window.require('electron');
 const { ipcRenderer } = electron;
 
-export default function* requestFlightWorker({ payload }: PayloadAction<RequestFlightPayload>) {
-	const { flightId, requestId, request } = payload;
-	const flight: State = yield select((s: ApplicationState) => s.global.flight);
+export default function* requestFlightWorker() {
 	const binaryStoreKey = ksuid.generate('binstore').toString();
+	const requestId: string = yield select((s: ApplicationState) => s.global.project.selectedRequest);
+	const flightId = ksuid.generate('flight').toString();
+
+	const flight: State = yield select((s: ApplicationState) => s.global.flight);
+	const node: RequestNode = yield select((s: ApplicationState) => s.global.project.tree![requestId]);
 
 	if (flight.currentFlight?.flighting) {
-		yield put(actions.cancelFlightRequest(flightId));
+		// TODO(afr): Ask user if they want to cancel existing, or cancel new
 
 		return;
 	}
 
 	binaryStore.create(binaryStoreKey);
 
-	yield put(actions.beginFlightRequest({ binaryStoreKey, flightId, requestId, request }));
+	yield put(actions.beginFlightRequest({
+		binaryStoreKey,
+		requestId,
+		flightId,
+		request: node.info,
+	}));
 
 	const channel = eventChannel(emitter => {
 		// TODO(afr): Remove these listeners when flight over
@@ -56,9 +64,9 @@ export default function* requestFlightWorker({ payload }: PayloadAction<RequestF
 	});
 
 	ipcRenderer.send('flight_request', {
-		flightId: payload.flightId,
-		requestId: payload.requestId,
-		request: payload.request,
+		flightId,
+		requestId,
+		request: node.info,
 	});
 
 	while (true) {

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
+import { useHotkeys } from 'react-hotkeys-hook';
 import { useDispatch, useSelector } from 'react-redux';
 import { ReflexContainer, ReflexElement } from 'react-reflex';
 import styled from 'styled-components';
@@ -11,6 +12,7 @@ import ProjectPane from '../features/project-pane/components/ProjectPane';
 import RequestPane from '../features/request-pane/components/RequestPane';
 import ResponsePane from '../features/response-pane/components/ResponsePane';
 import StatusBar from '../features/status-bar/components/StatusBar';
+import { requestFlight } from '../store/flight/actions';
 import { openProject } from '../store/project/actions';
 
 const ProjectMain: React.FunctionComponent = () => {
@@ -19,6 +21,7 @@ const ProjectMain: React.FunctionComponent = () => {
 	const params = new URLSearchParams(window.location.search);
 	const projectFilePath = decodeURIComponent(params.get('projectFilePath') as string);
 	const project = useSelector(s => s.global.project);
+	const selectedRequest = useSelector(s => s.global.project.selectedRequest);
 
 	useEffect(() => {
 		dispatch(openProject(projectFilePath));
@@ -30,6 +33,13 @@ const ProjectMain: React.FunctionComponent = () => {
 
 		setTitle(`${project.name} - Beak`);
 	}, [project, project.name]);
+
+	useHotkeys('command+enter,ctrl+enter', () => {
+		if (!selectedRequest)
+			return;
+
+		dispatch(requestFlight());
+	}, [selectedRequest]);
 
 	return (
 		<React.Fragment>

@@ -1,7 +1,5 @@
-import {  convertRequestToUrl } from '@beak/common/helpers/uri';
+import { convertRequestToUrl } from '@beak/common/helpers/uri';
 import { RequestNode } from '@beak/common/types/beak-project';
-// @ts-ignore
-import ksuid from '@cuvva/ksuid';
 import React from 'react';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
@@ -21,11 +19,7 @@ const UriSection: React.FunctionComponent<UriSectionProps> = props => {
 	const verb = node.info.verb;
 
 	function dispatchFlightRequest() {
-		dispatch(requestFlight({
-			requestId: node.id,
-			flightId: ksuid.generate('flight').toString(),
-			request: node.info,
-		}));
+		dispatch(requestFlight());
 	}
 
 	function handleUrlChange(e: React.ChangeEvent<HTMLInputElement>) {
