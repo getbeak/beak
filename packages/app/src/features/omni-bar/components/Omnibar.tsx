@@ -12,12 +12,12 @@ const Omnibar: React.FunctionComponent = () => {
 	const [content, setContent] = useState('');
 	const inputRef = useRef<HTMLInputElement | null>(null);
 
-	useHotkeys('cmd+p', () => {
+	useHotkeys('ctrl+p,command+p', () => {
 		setShow(!show);
 		setMode('finder');
 	}, { enableOnTags: ['INPUT', 'TEXTAREA', 'SELECT'] }, [show, mode]);
 
-	useHotkeys('cmd+shift+p,cmd+k', () => {
+	useHotkeys('ctrl+shift+p,command+shift+p,ctrl+k,command+k', () => {
 		setShow(!show);
 		setMode('commands');
 	}, { enableOnTags: ['INPUT', 'TEXTAREA', 'SELECT'] }, [show, mode]);
