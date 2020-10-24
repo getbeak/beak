@@ -9,7 +9,7 @@
 <h2 style="border-bottom: none" align="center">Beak</h1>
 
 <p align="center">
-	Snazzy cross-platform API development and research tool. Firstly in C#/XAML, now inTypescript/Electron. Vote opens for next rewrite soon, lol.
+	Snazzy cross-platform API development and research tool. Firstly in C#/XAML, now in Typescript/Electron. Vote opens for next rewrite soon, lol.
 </p>
 
 ![Project view](assets/home.png)
