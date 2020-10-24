@@ -6,12 +6,14 @@ export interface RequestStatusBlobProps {
 }
 
 const RequestStatusBlob = styled.div<RequestStatusBlobProps>`
-	border: 1px solid ${props => props.theme.ui.surfaceBorderSeparator};
+	flex-shrink: 0;
 	width: 9px; height: 9px;
+
+	border: 1px solid ${props => props.theme.ui.surfaceBorderSeparator};
 	border-radius: 100%;
 	margin-top: 4px;
 	margin-right: 5px;
-	
+
 	background-color: ${p => statusToColour(p.$status)};
 `;
 

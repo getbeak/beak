@@ -3,10 +3,12 @@ import { RequestBody, RequestNode, RequestOverview } from '@beak/common/types/be
 import React from 'react';
 import AceEditor from 'react-ace';
 
-import 'ace-builds/src-noconflict/mode-text';
-import 'ace-builds/src-noconflict/theme-solarized_dark';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { convertRequestToUrl } from '@beak/common/dist/helpers/uri';
+import { requestBodyContentType } from '@beak/common/helpers/request';
+
+import 'ace-builds/src-noconflict/mode-text';
+import 'ace-builds/src-noconflict/theme-solarized_dark';
 
 const bodyFreeVerbs = ['get', 'head'];
 
@@ -89,8 +91,19 @@ export function createBasicHttpOutput(overview: RequestOverview) {
 
 	const bodyOut = createBodySection(verb, body);
 
-	if (bodyOut !== null)
+	if (bodyOut !== null) {
+		const hasContentTypeHeader = TypedObject.keys(headers)
+			.map(h => h.toLocaleLowerCase())
+			.find(h => h === 'content-type');
+
+		if (!hasContentTypeHeader && body.type !== 'text') {
+			const contentType = requestBodyContentType(body);
+
+			out.push(`Content-Type: ${contentType}`);
+		}
+
 		out.push('', bodyOut);
+	}
 
 	return out.join('\n');
 }

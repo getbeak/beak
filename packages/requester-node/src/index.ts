@@ -1,3 +1,4 @@
+import { requestBodyContentType } from '@beak/common/helpers/request';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { convertRequestToUrl } from '@beak/common/helpers/uri';
 import { RequestOverview } from '@beak/common/types/beak-project';
@@ -103,6 +104,16 @@ async function runRequest(overview: RequestOverview) {
 	if (!bodyFreeVerbs.includes(verb)) {
 		if (['text', 'json'].includes(body.type))
 			init.body = body.payload as string;
+
+		const hasContentTypeHeader = TypedObject.keys(headers)
+			.map(h => h.toLocaleLowerCase())
+			.find(h => h === 'content-type');
+
+		if (!hasContentTypeHeader && body.type !== 'text') {
+			const contentType = requestBodyContentType(body);
+
+			(init.headers as Record<string, string>)['Content-Type'] = contentType;
+		}
 	}
 
 	return await fetch(url.toString(), init);
