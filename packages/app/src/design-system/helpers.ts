@@ -1,7 +1,8 @@
-import { useTheme } from "styled-components";
+import { useTheme } from 'styled-components';
 
 export function statusToColour(status: number) {
 	const theme = useTheme();
+
 
 	switch (true) {
 		case status < 300:
@@ -10,10 +11,8 @@ export function statusToColour(status: number) {
 		case status >= 300 && status < 400:
 			return 'orange';
 
-		case status >= 400 && status < 500:
-			return theme.ui.destructiveAction;
-
 		default:
-			return 'pink';
+		case status >= 400:
+			return theme.ui.destructiveAction;
 	}
 }

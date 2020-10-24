@@ -48,9 +48,8 @@ export default function* requestFlightWorker({ payload }: PayloadAction<RequestF
 		});
 
 		ipcRenderer.on(`flight_failed:${flightId}`, (_, payload: FlightFailedPayload) => {
+			emitter(actions.flightFailure({ flightId, requestId, error: payload.error }));
 			emitter(END);
-
-			throw payload.error;
 		});
 
 		return () => { /* */ };

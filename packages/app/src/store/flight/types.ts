@@ -5,6 +5,7 @@ export const ActionTypes = {
 	BEGIN_FLIGHT: '@beak/global/flight/BEGIN_FLIGHT',
 	UPDATE_FLIGHT_PROGRESS: '@beak/global/flight/UPDATE_FLIGHT_PROGRESS',
 	COMPLETE_FLIGHT: '@beak/global/flight/COMPLETE_FLIGHT',
+	FLIGHT_FAILURE: '@beak/global/flight/FLIGHT_FAILURE',
 
 	CANCEL_FLIGHT_REQUEST: '@beak/global/flight/CANCEL_FLIGHT_REQUEST',
 };
@@ -39,15 +40,22 @@ export interface CompleteFlightPayload {
 	response: ResponseOverview;
 }
 
+export interface FlightFailurePayload {
+	requestId: string;
+	flightId: string;
+	error: Error;
+}
+
 export interface Flight {
 	requestId: string;
 	flightId: string;
 	request: RequestOverview;
-	response: ResponseOverview;
+	response?: ResponseOverview;
+	error?: Error;
 	binaryStoreKey: string;
 }
 
-export interface FlightInProgress extends Omit<Flight, 'response'> {
+export interface FlightInProgress extends Flight {
 	flighting: boolean;
 	start?: number;
 	lastUpdate?: number;
@@ -58,8 +66,6 @@ export interface FlightInProgress extends Omit<Flight, 'response'> {
 	bodyTransferred?: number;
 	bodyTransferPercentage?: number;
 	body?: Buffer;
-
-	response?: ResponseOverview;
 }
 
 export default {

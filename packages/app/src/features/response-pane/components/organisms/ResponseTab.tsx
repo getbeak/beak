@@ -22,6 +22,7 @@ export interface ResponseTabProps {
 
 const ResponseTab: React.FunctionComponent<ResponseTabProps> = props => {
 	const { flight } = props;
+	const { error, response } = flight;
 	const [tab, setTab] = useState<Tab>('raw');
 
 	return (
@@ -41,20 +42,38 @@ const ResponseTab: React.FunctionComponent<ResponseTabProps> = props => {
 			<TabBody>
 				{tab === 'raw' && (
 					<React.Fragment>
-						<AceEditor
-							mode={'text'}
-							theme={'solarized_dark'}
-							height={'100%'}
-							width={'100%'}
-							readOnly
-							setOptions={{
-								useWorker: false,
-								fontFamily: 'monospace',
-								fontSize: '13px',
-							}}
-							value={createHttpResponseMessage(flight)}
-							showPrintMargin={false}
-						/>
+						{response && (
+							<AceEditor
+								mode={'text'}
+								theme={'solarized_dark'}
+								height={'100%'}
+								width={'100%'}
+								readOnly
+								setOptions={{
+									useWorker: false,
+									fontFamily: 'monospace',
+									fontSize: '13px',
+								}}
+								value={createHttpResponseMessage(flight)}
+								showPrintMargin={false}
+							/>
+						)}
+						{error && (
+							<AceEditor
+								mode={'text'}
+								theme={'solarized_dark'}
+								height={'100%'}
+								width={'100%'}
+								readOnly
+								setOptions={{
+									useWorker: false,
+									fontFamily: 'monospace',
+									fontSize: '13px',
+								}}
+								value={[error.name, error.message, error.stack].filter(Boolean).join('\n')}
+								showPrintMargin={false}
+							/>
+						)}
 					</React.Fragment>
 				)}
 			</TabBody>
@@ -79,11 +98,11 @@ const TabBody = styled.div`
 function createHttpResponseMessage(flight: Flight) {
 	const { binaryStoreKey, response } = flight;
 	const lines = [
-		`${response.status} HTTP/1.1`,
-		...TypedObject.keys(response.headers).map(k => `${k}: ${response.headers[k]}`),
+		`${response!.status} HTTP/1.1`,
+		...TypedObject.keys(response!.headers).map(k => `${k}: ${response!.headers[k]}`),
 	];
 
-	if (response.hasBody) {
+	if (response!.hasBody) {
 		const store = binaryStore.get(binaryStoreKey);
 
 		// TODO(afr): Read encoding from content headers

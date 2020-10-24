@@ -13,7 +13,7 @@ export interface HeaderProps {
 const Header: React.FunctionComponent<HeaderProps> = props => {
 	const { flightHistory, selectedFlightIndex } = props;
 	const selectedFlight = flightHistory[selectedFlightIndex];
-	const { request, response } = selectedFlight;
+	const { error, request, response } = selectedFlight;
 
 	return (
 		<UrlHeaderWrapper>
@@ -23,11 +23,18 @@ const Header: React.FunctionComponent<HeaderProps> = props => {
 			<UrlSection>
 				{convertRequestToUrl(request).toString()}
 			</UrlSection>
-			<StatusSection $status={response.status}>
-				<strong>{response.status}</strong>
-				{' '}
-				{safeGetReasonPhrase(response.status)}
-			</StatusSection>
+			{response && (
+				<StatusSection $status={response.status}>
+					<strong>{response.status}</strong>
+					{' '}
+					{safeGetReasonPhrase(response.status)}
+				</StatusSection>
+			)}
+			{error && (
+				<StatusSection $status={500}>
+					<strong>{'Error'}</strong>
+				</StatusSection>
+			)}
 		</UrlHeaderWrapper>
 	);
 };

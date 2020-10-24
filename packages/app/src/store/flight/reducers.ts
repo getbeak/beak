@@ -55,6 +55,17 @@ const flightReducer = createReducer(initialState, builder => {
 				...(state.flightHistory[requestId] || []),
 			];
 		})
+		.addCase(actions.flightFailure, (state, action) => {
+			const { flightId, requestId, error } = action.payload;
+			const binaryStoreKey = state.currentFlight!.binaryStoreKey;
+
+			state.currentFlight!.error = error;
+			state.currentFlight!.flighting = false;
+			state.flightHistory[requestId] = [
+				{ flightId, requestId, request: state.currentFlight!.request, error, binaryStoreKey },
+				...(state.flightHistory[requestId] || []),
+			];
+		})
 		.addCase(actions.beginFlightRequest, (state, action) => {
 			state.blackBox[action.payload.flightId] = true;
 			state.currentFlight = {
