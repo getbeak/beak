@@ -145,7 +145,6 @@ const requestSchema = {
 
 	required: [
 		'id',
-		'name',
 		'verb',
 		'uri',
 		'headers',
@@ -157,14 +156,8 @@ const requestSchema = {
 			minLength: 1,
 		},
 
-		name: {
-			type: 'string',
-			minLength: 1,
-		},
-
 		verb: {
 			type: 'string',
-			minLength: 1,
 		},
 
 		uri: {

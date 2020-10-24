@@ -88,8 +88,8 @@ export default class BeakProject {
 			});
 	}
 
-	async stopWatching() {
-		await this._watcher?.close();
+	stopWatching() {
+		this._watcher?.close();
 
 		this._watcherReady = false;
 		this._watcher = void 0;
@@ -105,6 +105,8 @@ export default class BeakProject {
 
 	async updateRequestNode(filePath: string) {
 		const requestFile = await fs.readJson(filePath) as RequestNodeFile;
+		const extension = path.extname(filePath);
+		const name = path.basename(filePath, extension);
 
 		validate(requestFile, requestSchema, { throwError: true });
 
@@ -112,7 +114,7 @@ export default class BeakProject {
 			type: 'request',
 			filePath,
 			parent: this._tree[requestFile.id].parent,
-			name: requestFile.name,
+			name,
 			id: requestFile.id,
 			info: {
 				verb: requestFile.verb,
@@ -134,7 +136,6 @@ export default class BeakProject {
 	async writeRequestNode(node: RequestNode) {
 		const requestFile: RequestNodeFile = {
 			id: node.id,
-			name: node.name,
 			verb: node.info.verb,
 			uri: node.info.uri,
 			headers: node.info.headers,
@@ -208,6 +209,8 @@ export default class BeakProject {
 
 	private async readRequestNode(filePath: string, parent: string | null) {
 		const requestFile = await fs.readJson(filePath) as RequestNodeFile;
+		const extension = path.extname(filePath);
+		const name = path.basename(filePath, extension);
 
 		validate(requestFile, requestSchema, { throwError: true });
 
@@ -215,7 +218,7 @@ export default class BeakProject {
 			type: 'request',
 			filePath,
 			parent,
-			name: requestFile.name,
+			name,
 			id: requestFile.id,
 			info: {
 				verb: requestFile.verb,

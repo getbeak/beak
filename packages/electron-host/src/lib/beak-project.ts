@@ -16,7 +16,6 @@ export default async function createProject(options: CreationOptions) {
 
 	const exReq: RequestNodeFile = {
 		id: ksuid.generate('request').toString(),
-		name: 'Example request',
 		verb: 'get',
 		uri: {
 			protocol: 'https:',
@@ -51,7 +50,7 @@ export default async function createProject(options: CreationOptions) {
 	await fs.ensureDir(projectPath);
 	await ensureDirEmpty(projectPath);
 	await fs.ensureDir(path.join(projectPath, 'tree'));
-	await fs.writeJson(path.join(projectPath, 'tree', `${exReq.id}.json`), exReq, {
+	await fs.writeJson(path.join(projectPath, 'tree', 'Example request.json'), exReq, {
 		replacer: null,
 		spaces: '\t',
 	});

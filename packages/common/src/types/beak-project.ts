@@ -5,7 +5,6 @@ export interface ProjectFile {
 
 export interface RequestNodeFile extends RequestOverview {
 	id: string;
-	name: string;
 }
 
 export interface Node {
