@@ -1,4 +1,5 @@
-import * as url from 'url';
+import * as nodeUrl from 'url';
+import * as URLParse from 'url-parse';
 
 import { TypedObject } from '../helpers/typescript';
 import { RequestOverview } from '../types/beak-project';
@@ -9,7 +10,8 @@ interface Options {
 	includeHash: boolean;
 }
 
-export function constructUri(info: RequestOverview, opts?: Partial<Options>) {
+export function convertRequestToUrl(info: RequestOverview, opts?: Partial<Options>) {
+	const url = new URLParse('', {}, false);
 	const options = {
 		includeQuery: true,
 		includeHash: true,
@@ -17,45 +19,36 @@ export function constructUri(info: RequestOverview, opts?: Partial<Options>) {
 		...opts,
 	};
 
-	const {
-		protocol,
-		hostname,
-		pathname,
-		port,
-		query,
-		fragment,
-	} = info.uri;
+	url.set('protocol', info.uri.protocol);
+	url.set('hostname', info.uri.hostname || '');
+	url.set('port', info.uri.port || '');
+	url.set('pathname', info.uri.pathname || '');
 
-	const uriQuery = (() => {
-		if (!query)
-			return null;
+	if (options.includeHash)
+		url.set('hash', info.uri.fragment || '');
 
-		return TypedObject.values(query).filter(q => q.enabled)
-			.reduce((acc, val) => ({
-				...acc,
-				[val.name]: val.value,
-			}), {});
-	})();
+	if (options.includeQuery) {
+		const query = (() => {
+			if (!info.uri.query)
+				return void 0;
 
-	const urlOptions: url.UrlObject = {
-		protocol,
-		hostname,
-		pathname,
-		port,
-		query: options.includeQuery ? uriQuery : null,
-		hash: options.includeHash ? fragment : null,
-	};
+			return TypedObject.values(info.uri.query).filter(q => q.enabled)
+				.reduce((acc, val) => ({
+					...acc,
+					[val.name]: val.value,
+				}), {});
+		})();
 
-	if (options.useFallback) {
-		if (urlOptions.protocol === '') urlOptions.protocol = 'https:';
-		if (urlOptions.hostname === '') urlOptions.hostname = 'httpbin';
-
-		if (!hostname && !pathname)
-			urlOptions.pathname = 'anything';
-		else
-			urlOptions.pathname = pathname || '';
+		url.set('query', query);
 	}
 
-	// TODO(afr): Fix weidness around protocol and two slashes
-	return url.format(urlOptions).replace(/\[|\]/g, '');
+	if (options.useFallback) {
+		if (info.uri.protocol === '') url.set('protocol', 'https:');
+		if (info.uri.hostname === '') url.set('hostname', 'httpbin.org');
+
+		if (!info.uri.hostname && !info.uri.pathname)
+			url.set('pathname', 'anything');
+	}
+
+	return url;
 }

@@ -1,4 +1,4 @@
-import { constructUri } from '@beak/common/helpers/uri';
+import {  convertRequestToUrl } from '@beak/common/helpers/uri';
 import { RequestNode } from '@beak/common/types/beak-project';
 // @ts-ignore
 import ksuid from '@cuvva/ksuid';
@@ -88,13 +88,13 @@ const UriSection: React.FunctionComponent<UriSectionProps> = props => {
 			</VerbPicker>
 
 			<OmniBar
-				value={constructUri(node.info, { useFallback: false, includeQuery: false })}
+				value={convertRequestToUrl(node.info, { useFallback: false, includeQuery: false }).toString()}
 				onChange={e => handleUrlChange(e)}
 			/>
 
-			<OkayBoomer onClick={() => dispatchFlightRequest()}>
+			<DispatchButton onClick={() => dispatchFlightRequest()}>
 				{'GO'}
-			</OkayBoomer>
+			</DispatchButton>
 		</Container>
 	);
 };
@@ -146,7 +146,7 @@ const OmniBar = styled.input`
 	}
 `;
 
-const OkayBoomer = styled.button`
+const DispatchButton = styled.button`
 	padding: 4px 6px;
 	border-radius: 4px;
 	border: 1px solid ${props => props.theme.ui.backgroundBorderSeparator};

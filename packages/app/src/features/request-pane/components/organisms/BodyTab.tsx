@@ -82,7 +82,7 @@ const BodyTab: React.FunctionComponent<BodyTabProps> = props => {
 							setOptions={{
 								useWorker: false,
 								fontFamily: 'monospace',
-								fontSize: '12px',
+								fontSize: '13px',
 							}}
 							value={node.info.body.payload as string}
 							onChange={e => dispatch(requestBodyTextChanged({ requestId: node.id, text: e }))}
@@ -100,7 +100,7 @@ const BodyTab: React.FunctionComponent<BodyTabProps> = props => {
 							setOptions={{
 								useWorker: false,
 								fontFamily: 'monospace',
-								fontSize: '12px',
+								fontSize: '13px',
 							}}
 							value={node.info.body.payload as string}
 							onChange={e => dispatch(requestBodyJsonChanged({ requestId: node.id, json: e }))}

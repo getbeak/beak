@@ -12,5 +12,11 @@
     "clean": "rm -rf ./dist && rm -rf tsconfig.tsbuildinfo",
     "compile": "tsc -b tsconfig.json",
     "start": "tsc -b tsconfig.json -w"
+  },
+  "dependencies": {
+    "url-parse": "^1.4.7"
+  },
+  "devDependencies": {
+    "@types/url-parse": "^1.4.3"
   }
 }

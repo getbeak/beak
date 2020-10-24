@@ -1,6 +1,6 @@
 import { requestSelected } from '@beak/app/store/project/actions';
 import { TypedObject } from '@beak/common/helpers/typescript';
-import { constructUri } from '@beak/common/helpers/uri';
+import { convertRequestToUrl } from '@beak/common/helpers/uri';
 import { RequestNode } from '@beak/common/types/beak-project';
 import Fuse from 'fuse.js';
 import React, { useEffect, useState } from 'react';
@@ -54,7 +54,7 @@ const FinderView: React.FunctionComponent<FinderViewProps> = ({ content, reset }
 							<React.Fragment>
 								{' - '}
 								<UriSpan>
-									{`${constructUri(reqNode.info)}`}
+									{convertRequestToUrl(reqNode.info).toString()}
 								</UriSpan>
 							</React.Fragment>
 						)}

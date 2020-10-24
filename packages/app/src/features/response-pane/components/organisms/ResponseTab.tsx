@@ -50,7 +50,7 @@ const ResponseTab: React.FunctionComponent<ResponseTabProps> = props => {
 							setOptions={{
 								useWorker: false,
 								fontFamily: 'monospace',
-								fontSize: '12px',
+								fontSize: '13px',
 							}}
 							value={createHttpResponseMessage(flight)}
 							showPrintMargin={false}
@@ -87,14 +87,14 @@ function createHttpResponseMessage(flight: Flight) {
 		const store = binaryStore.get(binaryStoreKey);
 
 		// TODO(afr): Read encoding from content headers
-		// TODO(afr): Concatinate bodies longer than 1MB?
+		// TODO(afr): Truncate bodies longer than 1MB?
 		const decoder = new TextDecoder('utf-8');
 		const string = decoder.decode(store);
 
 		if (string.startsWith('\n'))
 			lines.push(string);
 		else
-			lines.push('\n', string);
+			lines.push('', string);
 	}
 
 	return lines.join('\n');

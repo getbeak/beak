@@ -1,5 +1,5 @@
 import { TypedObject } from '@beak/common/helpers/typescript';
-import { constructUri } from '@beak/common/helpers/uri';
+import { convertRequestToUrl } from '@beak/common/helpers/uri';
 import { RequestOverview } from '@beak/common/types/beak-project';
 import {
 	FlightCompletePayload,
@@ -8,6 +8,8 @@ import {
 	FlightRequestPayload,
 } from '@beak/common/types/requester';
 import fetch, { RequestInit, Response } from 'node-fetch';
+
+const bodyFreeVerbs = ['get', 'head'];
 
 export interface RequesterOptions {
 	payload: FlightRequestPayload;
@@ -20,9 +22,9 @@ export interface RequesterOptions {
 
 /*
 Stages:
-00%-25%: fetch response
-25%-26%: parsing response
-27%-100%: reading response body
+	00%-025%: fetch response
+	25%-026%: parsing response
+	27%-100%: reading response body
 */
 
 export async function startRequester(options: RequesterOptions) {
@@ -83,8 +85,8 @@ export async function startRequester(options: RequesterOptions) {
 }
 
 async function runRequest(overview: RequestOverview) {
-	const { headers, verb } = overview;
-	const url = constructUri(overview);
+	const { body, headers, verb } = overview;
+	const url = convertRequestToUrl(overview);
 
 	const init: RequestInit = {
 		method: verb,
@@ -98,7 +100,12 @@ async function runRequest(overview: RequestOverview) {
 		compress: false,
 	};
 
-	return await fetch(url, init);
+	if (!bodyFreeVerbs.includes(verb)) {
+		if (['text', 'json'].includes(body.type))
+			init.body = body.payload as string;
+	}
+
+	return await fetch(url.toString(), init);
 }
 
 function headersToObject(entries: Iterable<[string, string]>) {

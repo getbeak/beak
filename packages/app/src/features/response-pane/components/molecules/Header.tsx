@@ -1,6 +1,6 @@
 import { statusToColour } from '@beak/app/design-system/helpers';
 import { Flight } from '@beak/app/store/flight/types';
-import { constructUri } from '@beak/common/helpers/uri';
+import { convertRequestToUrl } from '@beak/common/helpers/uri';
 import { getReasonPhrase } from 'http-status-codes';
 import React from 'react';
 import styled from 'styled-components';
@@ -21,7 +21,7 @@ const Header: React.FunctionComponent<HeaderProps> = props => {
 				<strong>{request.verb.toUpperCase()}</strong>
 			</Section>
 			<UrlSection>
-				{constructUri(request)}
+				{convertRequestToUrl(request).toString()}
 			</UrlSection>
 			<StatusSection $status={response.status}>
 				<strong>{response.status}</strong>

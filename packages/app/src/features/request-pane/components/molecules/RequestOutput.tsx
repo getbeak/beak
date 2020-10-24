@@ -6,6 +6,9 @@ import AceEditor from 'react-ace';
 import 'ace-builds/src-noconflict/mode-text';
 import 'ace-builds/src-noconflict/theme-solarized_dark';
 import { TypedObject } from '@beak/common/helpers/typescript';
+import { convertRequestToUrl } from '@beak/common/dist/helpers/uri';
+
+const bodyFreeVerbs = ['get', 'head'];
 
 export interface RequestOutputProps {
 	selectedNode: RequestNode;
@@ -36,7 +39,10 @@ const RequestOutput: React.FunctionComponent<RequestOutputProps> = props => {
 	);
 };
 
-function createResponseOutput(body: RequestBody) {
+function createBodySection(verb: string, body: RequestBody) {
+	if (bodyFreeVerbs.includes(verb))
+		return null;
+
 	switch (body.type) {
 		case 'text':
 		case 'json':
@@ -48,27 +54,28 @@ function createResponseOutput(body: RequestBody) {
 }
 
 export function createBasicHttpOutput(overview: RequestOverview) {
-	const { headers, uri, verb, body } = overview;
+	const url = convertRequestToUrl(overview);
+	const { headers, verb, body } = overview;
 	const firstLine = [
 		`${verb.toUpperCase()} `,
-		uri.pathname,
+		url.pathname,
 	];
 
-	if (uri.query) {
+	if (overview.uri.query) {
 		const builder = new URLSearchParams();
 
-		for (const { name, value } of TypedObject.values(uri.query).filter(q => q.enabled))
+		for (const { name, value } of TypedObject.values(overview.uri.query).filter(q => q.enabled))
 			builder.append(name, value);
 
 		firstLine.push(`?${builder.toString()}`);
 	}
 
-	if (uri.fragment)
-		firstLine.push(`#${uri.fragment}`);
+	if (url.hash)
+		firstLine.push(url.hash);
 
 	const out = [
 		`${firstLine.join('')} HTTP/1.1`,
-		`Host: ${uri.hostname}`,
+		`Host: ${url.hostname}`,
 		'Connection: close',
 		'User-Agent: Beak/0.0.1 (Macintosh; OS X/10.15.4)',
 	];
@@ -80,8 +87,10 @@ export function createBasicHttpOutput(overview: RequestOverview) {
 		);
 	}
 
-	out.push('');
-	out.push(createResponseOutput(body));
+	const bodyOut = createBodySection(verb, body);
+
+	if (bodyOut !== null)
+		out.push('', bodyOut);
 
 	return out.join('\n');
 }
