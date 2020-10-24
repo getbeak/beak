@@ -1,6 +1,7 @@
 import chokidar from 'chokidar';
 import electron, { Remote } from 'electron';
 import fsExtra from 'fs-extra';
+import path from 'path';
 import process from 'process';
 import { Store } from 'react-redux';
 import url from 'url';
@@ -12,7 +13,6 @@ declare module 'electron' {
 		require(moduleSpecifier: 'process'): typeof process;
 		require(moduleSpecifier: 'url'): typeof url;
 		require(moduleSpecifier: 'path'): typeof path;
-
 		require(moduleSpecifier: 'chokidar'): typeof chokidar;
 		require(moduleSpecifier: 'fs-extra'): typeof fsExtra;
 	}
