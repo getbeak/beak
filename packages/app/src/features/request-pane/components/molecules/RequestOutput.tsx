@@ -51,7 +51,7 @@ export function createBasicHttpOutput(overview: RequestOverview) {
 	const { headers, uri, verb, body } = overview;
 	const firstLine = [
 		`${verb.toUpperCase()} `,
-		uri.path,
+		uri.pathname,
 	];
 
 	if (uri.query) {

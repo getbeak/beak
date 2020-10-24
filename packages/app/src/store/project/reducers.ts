@@ -104,8 +104,10 @@ const projectReducer = createReducer(initialState, builder => {
 				node.info.uri.protocol = payload.protocol;
 			if (payload.hostname !== void 0)
 				node.info.uri.hostname = payload.hostname;
-			if (payload.path !== void 0)
-				node.info.uri.path = payload.path;
+			if (payload.pathname !== void 0)
+				node.info.uri.pathname = payload.pathname;
+			if (payload.port !== void 0)
+				node.info.uri.port = payload.port;
 			if (payload.fragment !== void 0)
 				node.info.uri.fragment = payload.fragment;
 		})

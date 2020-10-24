@@ -4,21 +4,24 @@ import { TypedObject } from '../helpers/typescript';
 import { RequestOverview } from '../types/beak-project';
 
 interface Options {
-	includeQuery?: boolean;
-	includeHash?: boolean;
+	useFallback: boolean;
+	includeQuery: boolean;
+	includeHash: boolean;
 }
 
-export function constructUri(info: RequestOverview, opts?: Options) {
+export function constructUri(info: RequestOverview, opts?: Partial<Options>) {
 	const options = {
 		includeQuery: true,
 		includeHash: true,
+		useFallback: true,
 		...opts,
 	};
 
 	const {
 		protocol,
 		hostname,
-		path: pathname,
+		pathname,
+		port,
 		query,
 		fragment,
 	} = info.uri;
@@ -34,13 +37,25 @@ export function constructUri(info: RequestOverview, opts?: Options) {
 			}), {});
 	})();
 
-	const uri = url.format({
+	const urlOptions: url.UrlObject = {
 		protocol,
 		hostname,
 		pathname,
+		port,
 		query: options.includeQuery ? uriQuery : null,
 		hash: options.includeHash ? fragment : null,
-	});
+	};
 
-	return new URL(uri).toString();
+	if (options.useFallback) {
+		if (urlOptions.protocol === '') urlOptions.protocol = 'https:';
+		if (urlOptions.hostname === '') urlOptions.hostname = 'httpbin';
+
+		if (!hostname && !pathname)
+			urlOptions.pathname = 'anything';
+		else
+			urlOptions.pathname = pathname || '';
+	}
+
+	// TODO(afr): Fix weidness around protocol and two slashes
+	return url.format(urlOptions).replace(/\[|\]/g, '');
 }

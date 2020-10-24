@@ -37,7 +37,8 @@ const requestSchema = {
 			required: [
 				'protocol',
 				'hostname',
-				'path',
+				'pathname',
+				'port',
 				'query',
 				'fragment',
 			],
@@ -45,17 +46,18 @@ const requestSchema = {
 			properties: {
 				protocol: {
 					type: 'string',
-					minLength: 1,
 				},
 
 				hostname: {
 					type: ['string', 'null'],
-					minLength: 1,
 				},
 
-				path: {
+				pathname: {
 					type: ['string', 'null'],
-					minLength: 1,
+				},
+
+				port: {
+					type: ['string', 'null'],
 				},
 
 				query: {

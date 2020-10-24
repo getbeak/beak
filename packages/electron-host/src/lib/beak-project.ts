@@ -21,7 +21,8 @@ export default async function createProject(options: CreationOptions) {
 		uri: {
 			protocol: 'https:',
 			hostname: 'httpbin.org',
-			path: '/anything',
+			port: '',
+			pathname: '/anything',
 			query: {
 				[ksuid.generate('query').toString()]: {
 					enabled: true,

@@ -39,7 +39,8 @@ export interface RequestOverview {
 	uri: {
 		protocol: string;
 		hostname: string | null;
-		path: string | null;
+		pathname: string | null;
+		port: string | null;
 		query: Record<string, ToggleKeyValue>;
 		fragment: string | null;
 	};

@@ -46,7 +46,8 @@ export interface RequestUriUpdatedPayload extends RequestIdPayload {
 	protocol?: string;
 	verb?: string;
 	hostname?: string;
-	path?: string;
+	pathname?: string;
+	port?: string;
 	fragment?: string;
 }
 

@@ -5,11 +5,11 @@ import ksuid from '@cuvva/ksuid';
 import React from 'react';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
+import urlParse from 'url-parse';
 
 import { requestFlight } from '../../../../store/flight/actions';
 import { requestQueryAdded, requestUriUpdated } from '../../../../store/project/actions';
 
-const url = window.require('electron').remote.require('url');
 
 export interface UriSectionProps {
 	node: RequestNode;
@@ -30,7 +30,8 @@ const UriSection: React.FunctionComponent<UriSectionProps> = props => {
 
 	function handleUrlChange(e: React.ChangeEvent<HTMLInputElement>) {
 		const value = e.currentTarget.value;
-		const parsed = url.parse(value);
+		const parsed = urlParse(value, {}, false);
+
 		const safeFragment = (function safeFraggy() {
 			if (!parsed.hash)
 				return '';
@@ -42,7 +43,7 @@ const UriSection: React.FunctionComponent<UriSectionProps> = props => {
 		}());
 
 		if (parsed.query) {
-			const params = new URLSearchParams(parsed.query);
+			const params = new URLSearchParams(parsed.query as Record<string, string>);
 
 			params.forEach((value, name) => {
 				dispatch(requestQueryAdded({
@@ -53,12 +54,12 @@ const UriSection: React.FunctionComponent<UriSectionProps> = props => {
 			});
 		}
 
-		// TODO(afr): Handle crash when partially created urls are entered
 		dispatch(requestUriUpdated({
 			requestId: node.id,
-			protocol: parsed.protocol || '',
-			hostname: parsed.hostname || '',
-			path: parsed.pathname || '',
+			protocol: parsed.protocol,
+			hostname: parsed.hostname,
+			pathname: parsed.pathname,
+			port: parsed.port,
 			fragment: safeFragment,
 		}));
 	}
@@ -87,7 +88,7 @@ const UriSection: React.FunctionComponent<UriSectionProps> = props => {
 			</VerbPicker>
 
 			<OmniBar
-				value={constructUri(node.info, { includeQuery: false })}
+				value={constructUri(node.info, { useFallback: false, includeQuery: false })}
 				onChange={e => handleUrlChange(e)}
 			/>
 
