@@ -36,4 +36,4 @@ jobs:
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY}}
           aws_bucket: ${{ secrets.AWS_S3_BUILDS_BUCKET }}
           source_dir: 'current'
-          destination_dir: '/manifest'
+          destination_dir: 'manifest/'
