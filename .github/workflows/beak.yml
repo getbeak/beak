@@ -14,20 +14,7 @@ jobs:
         with:
           node-version: '14'
 
-      - name: Get Yarn cache directory
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-      - name: Cache yarn modules
-        uses: actions/cache@v1
-        id: yarn-cache
-        with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
-
       - name: Install modules
-        # if: steps.yarn-cache.outputs.cache-hit != 'true' # disabled for now-
         run: yarn
       - name: Build and package
         run: yarn package

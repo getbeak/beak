@@ -1,8 +1,6 @@
-import {  convertRequestToUrl } from '@beak/common/helpers/uri';
+import { convertRequestToUrl } from '@beak/common/helpers/uri';
 import { RequestNode } from '@beak/common/types/beak-project';
-// @ts-ignore
-import ksuid from '@cuvva/ksuid';
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import urlParse from 'url-parse';
@@ -10,22 +8,24 @@ import urlParse from 'url-parse';
 import { requestFlight } from '../../../../store/flight/actions';
 import { requestQueryAdded, requestUriUpdated } from '../../../../store/project/actions';
 
-
 export interface UriSectionProps {
 	node: RequestNode;
 }
 
 const UriSection: React.FunctionComponent<UriSectionProps> = props => {
 	const dispatch = useDispatch();
+	const [verbPickerWidth, setVerbPickerWidth] = useState<string>('auto');
 	const { node } = props;
 	const verb = node.info.verb;
+	const secretSelect = useRef<HTMLSpanElement>(null);
+
+	useEffect(() => {
+		if (secretSelect.current)
+			setVerbPickerWidth(`${secretSelect.current.offsetWidth}px`);
+	}, [secretSelect.current, secretSelect.current?.offsetWidth, setVerbPickerWidth]);
 
 	function dispatchFlightRequest() {
-		dispatch(requestFlight({
-			requestId: node.id,
-			flightId: ksuid.generate('flight').toString(),
-			request: node.info,
-		}));
+		dispatch(requestFlight());
 	}
 
 	function handleUrlChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -66,8 +66,10 @@ const UriSection: React.FunctionComponent<UriSectionProps> = props => {
 
 	return (
 		<Container>
-			{/* TODO(afr): Stop using native component, build custom to handle auto resize */}
+			{/* NOTE(afr): Still not super happy with this */}
+			<VerbPickerSizer ref={secretSelect}>{verb}</VerbPickerSizer>
 			<VerbPicker
+				style={{ width: verbPickerWidth }}
 				value={verb}
 				onChange={e => {
 					dispatch(requestUriUpdated({
@@ -113,7 +115,6 @@ const VerbPicker = styled.select`
 	text-indent: 1px;
 	text-overflow: '';
 
-	width: 42px;
 	padding: 4px 6px;
 	margin-right: 10px;
 	border-radius: 4px;
@@ -127,6 +128,19 @@ const VerbPicker = styled.select`
 		outline: none;
 		border: 1px solid ${props => props.theme.ui.primaryFill};
 	}
+`;
+
+const VerbPickerSizer = styled.span`
+	position: absolute;
+	top: 100000;
+	left: 1000000;
+	visibility: hidden;
+	font-size: 13.3333px;
+	font-weight: 800;
+	padding: 4px 7px;
+	text-transform: uppercase;
+	border: 1px;
+	text-indent: 1px;
 `;
 
 const OmniBar = styled.input`
