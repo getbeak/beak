@@ -1,9 +1,10 @@
 import { ListenerEvent } from '@beak/app/lib/beak-project';
 import { getProjectSingleton } from '@beak/app/lib/beak-project/instance';
+import { RequestNode } from '@beak/common/dist/types/beak-project';
 import { eventChannel } from 'redux-saga';
 import { put, take } from 'redux-saga/effects';
 
-import { insertRequestNode, refreshNodeState } from '../actions';
+import { insertRequestNode, refreshNodeState, removeRequestNode } from '../actions';
 
 export default function* startFsListener() {
 	const project = getProjectSingleton();
@@ -20,18 +21,11 @@ export default function* startFsListener() {
 		if (result === null)
 			break;
 
-		switch (result.type) {
-			case 'change':
-				yield put(refreshNodeState(result.node));
-
-				break;
-
-			case 'add':
-				yield put(insertRequestNode(result.node));
-
-				break;
-
-			default: break;
-		}
+		if (result.type === 'change')
+			yield put(refreshNodeState(result.node as RequestNode));
+		else if (result.type === 'add')
+			yield put(insertRequestNode(result.node));
+		else if (result.type === 'unlink')
+			yield put(removeRequestNode(result.path));
 	}
 }

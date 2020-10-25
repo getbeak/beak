@@ -37,6 +37,7 @@ export const startFsListener = createAction(ActionTypes.START_FS_LISTENER);
 
 export const refreshNodeState = createAction<Nodes>(ActionTypes.REFRESH_NODE_STATE);
 export const insertRequestNode = createAction<Nodes>(ActionTypes.INSERT_REQUEST_NODE);
+export const removeRequestNode = createAction<string>(ActionTypes.REMOVE_REQUEST_NODE);
 
 export default {
 	openProject,
@@ -55,4 +56,5 @@ export default {
 	startFsListener,
 	refreshNodeState,
 	insertRequestNode,
+	removeRequestNode,
 };

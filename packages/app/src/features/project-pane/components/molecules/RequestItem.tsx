@@ -56,7 +56,7 @@ const Wrapper = styled.div<WrapperProps>`
 	line-height: 18px;
 
 	color: ${props => props.theme.ui.textMinor};
-	background-color: ${props => props.active ? props.theme.ui.background : 'transparent'};
+	background-color: ${props => props.active ? props.theme.ui.surface : 'transparent'};
 
 	&:hover {
 		color: ${props => props.theme.ui.textOnSurfaceBackground};
@@ -65,7 +65,6 @@ const Wrapper = styled.div<WrapperProps>`
 		outline: none;
 		background-color: ${props => props.theme.ui.secondarySurface};
 	}
-
 `;
 
 const Name = styled.abbr`

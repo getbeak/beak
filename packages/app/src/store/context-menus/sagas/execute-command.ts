@@ -31,6 +31,17 @@ export default function* executeCommandWorker({ payload }: PayloadAction<Command
 			return;
 		}
 
+		case 'delete_request': {
+			const filePath: string = yield getFilePathFromId(payload.payload);
+			const proj = getProjectSingleton();
+
+			// TODO(afr): Add a confirmation here?
+
+			yield call([proj, proj.removeRequestNode], filePath);
+
+			return;
+		}
+
 		default:
 			return;
 	}

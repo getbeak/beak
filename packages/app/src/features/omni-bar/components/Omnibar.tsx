@@ -52,6 +52,7 @@ const Omnibar: React.FunctionComponent = () => {
 			<Bar>
 				<BarInput
 					placeholder={getPlaceholder()}
+					tabIndex={0}
 					ref={i => {
 						inputRef.current = i;
 					}}

@@ -1,5 +1,6 @@
 /* eslint-disable no-param-reassign */
 
+import { TypedObject } from '@beak/common/dist/helpers/typescript';
 import { RequestNode } from '@beak/common/types/beak-project';
 // @ts-ignore
 import ksuid from '@cuvva/ksuid';
@@ -116,12 +117,16 @@ const projectReducer = createReducer(initialState, builder => {
 
 			state.tree![node.id] = node;
 		})
+
 		.addCase(actions.insertRequestNode, (state, action) => {
 			const node = action.payload as RequestNode;
 
-			console.log(node);
-
 			state.tree![node.id] = node;
+		})
+		.addCase(actions.removeRequestNode, (state, action) => {
+			const node = TypedObject.values(state.tree!).find(n => n.filePath === action.payload) as RequestNode;
+
+			delete state.tree![node.id];
 		});
 });
 

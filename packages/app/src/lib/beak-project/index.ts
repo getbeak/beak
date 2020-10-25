@@ -24,10 +24,13 @@ interface ReadFolderNodeOptions {
 	parent: string | null;
 }
 
-export interface ListenerEvent {
-	type: 'add' | 'change' | 'unlink' | 'addDir' | 'unlinkDir';
+export type ListenerEvent = {
+	type: 'add' | 'change' | 'addDir' | 'unlinkDir';
 	path: string;
 	node: Nodes;
+} | {
+	type: 'unlink';
+	path: string;
 }
 
 type Emitter = (message: ListenerEvent) => void;
@@ -101,10 +104,6 @@ export default class BeakProject {
 		console.log(this._tree);
 	}
 
-	async writeFolderNode(node: FolderNode) {
-		throw new Error('nah not done yet lol soz');
-	}
-
 	async createRequestNode(incomingId: string) {
 		const parentFilePath = (() => {
 			if (incomingId === 'root')
@@ -146,6 +145,32 @@ export default class BeakProject {
 		await fs.writeJson(name, newNode);
 
 		return newNode.id;
+	}
+
+	private async readRequestNode(filePath: string, parent: string | null) {
+		const requestFile = await fs.readJson(filePath) as RequestNodeFile;
+		const extension = path.extname(filePath);
+		const name = path.basename(filePath, extension);
+
+		validate(requestFile, requestSchema, { throwError: true });
+
+		const node: RequestNode = {
+			type: 'request',
+			filePath,
+			parent,
+			name,
+			id: requestFile.id,
+			info: {
+				verb: requestFile.verb,
+				uri: requestFile.uri,
+				headers: requestFile.headers,
+				body: requestFile.body,
+			},
+		};
+
+		this._tree[node.id] = node;
+
+		return node;
 	}
 
 	async updateRequestNode(filePath: string) {
@@ -192,23 +217,8 @@ export default class BeakProject {
 		await fs.writeJson(node.filePath, requestFile, { spaces: '\t' });
 	}
 
-	private recordListenerMessage(message: Omit<ListenerEvent, 'node'>) {
-		if (!this._watcherReady)
-			return;
-
-		if (['add', 'change'].includes(message.type)) {
-			this.updateRequestNode(message.path).then(node => {
-				this._watcherEmitter!({
-					node,
-					type: message.type,
-					path: message.path,
-				});
-			});
-		} else {
-			console.log('only add/change events currently supported: ', message);
-
-			return;
-		}
+	async removeRequestNode(filePath: string) {
+		await fs.remove(filePath);
 	}
 
 	private async readFolderNode(filePath: string, opts: ReadFolderNodeOptions) {
@@ -254,30 +264,33 @@ export default class BeakProject {
 		return node;
 	}
 
-	private async readRequestNode(filePath: string, parent: string | null) {
-		const requestFile = await fs.readJson(filePath) as RequestNodeFile;
-		const extension = path.extname(filePath);
-		const name = path.basename(filePath, extension);
+	async writeFolderNode(node: FolderNode) {
+		throw new Error('nah not done yet lol soz');
+	}
 
-		validate(requestFile, requestSchema, { throwError: true });
+	private recordListenerMessage(message: Omit<ListenerEvent, 'node'>) {
+		if (!this._watcherReady)
+			return;
 
-		const node: RequestNode = {
-			type: 'request',
-			filePath,
-			parent,
-			name,
-			id: requestFile.id,
-			info: {
-				verb: requestFile.verb,
-				uri: requestFile.uri,
-				headers: requestFile.headers,
-				body: requestFile.body,
-			},
-		};
+		if (['add', 'change'].includes(message.type)) {
+			this.updateRequestNode(message.path).then(node => {
+				this._watcherEmitter!({
+					node,
+					type: message.type,
+					path: message.path,
+				});
+			});
+		} else if (message.type === 'unlink') {
+			this.removeRequestNode(message.path);
+			this._watcherEmitter!({
+				type: message.type,
+				path: message.path,
+			})
+		} else {
+			console.log('only add/change events currently supported: ', message);
 
-		this._tree[node.id] = node;
-
-		return node;
+			return;
+		}
 	}
 }
 

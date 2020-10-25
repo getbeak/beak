@@ -36,14 +36,15 @@ const FinderView: React.FunctionComponent<FinderViewProps> = ({ content, reset }
 		return null;
 
 	return (
-		<Container>
-			{matches?.map(k => {
+		<Container tabIndex={0}>
+			{matches?.map((k, index) => {
 				const match = tree[k];
 				const reqNode = match as RequestNode;
 
 				return (
 					<Item
 						key={k}
+						tabIndex={index + 1}
 						onClick={() => {
 							dispatch(requestSelected(k));
 							reset();

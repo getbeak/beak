@@ -17,12 +17,7 @@ export function createExplorerMenu(dispatch: Dispatch, id: string | undefined) {
 		},
 	}));
 
-	explorerMenu.append(new MenuItem({
-		label: 'New folder',
-		click: () => {
-
-		},
-	}));
+	explorerMenu.append(new MenuItem({ label: 'New folder' }));
 
 	explorerMenu.append(new MenuItem({
 		label: 'Reveal in Finder',
@@ -39,7 +34,14 @@ export function createExplorerMenu(dispatch: Dispatch, id: string | undefined) {
 	explorerMenu.append(new MenuItem({ label: 'Copy relative path', enabled: false }));
 	explorerMenu.append(new MenuItem({ type: 'separator' }));
 	explorerMenu.append(new MenuItem({ label: 'Rename', enabled: false }));
-	explorerMenu.append(new MenuItem({ label: 'Delete', enabled: false }));
+
+	explorerMenu.append(new MenuItem({
+		label: 'Delete',
+		enabled: id.startsWith('request_'),
+		click: () => {
+			dispatch(actions.executeCommand({ type: 'delete_request', payload: id }));
+		},
+	}));
 
 	return explorerMenu;
 }
