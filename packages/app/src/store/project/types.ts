@@ -25,6 +25,11 @@ export const ActionTypes = {
 	REMOVE_REQUEST_NODE: '@beak/global/project/REMOVE_REQUEST_NODE',
 	REFRESH_NODE_STATE: '@beak/global/project/REFRESH_NODE_STATE',
 	REPORT_NODE_UPDATE: '@beak/global/project/REPORT_NODE_UPDATE',
+
+	REQUEST_RENAME_STARTED: '@beak/global/project/REQUEST_RENAME_STARTED',
+	REQUEST_RENAME_UPDATED: '@beak/global/project/REQUEST_RENAME_UPDATED',
+	REQUEST_RENAME_CANCELLED: '@beak/global/project/REQUEST_RENAME_CANCELLED',
+	REQUEST_RENAME_SUBMITTED: '@beak/global/project/REQUEST_RENAME_SUBMITTED',
 };
 
 export interface State {

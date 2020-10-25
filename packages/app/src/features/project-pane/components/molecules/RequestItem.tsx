@@ -1,6 +1,6 @@
 import { getGlobal } from '@beak/app/globals';
 import { RequestNode } from '@beak/common/types/beak-project';
-import React from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 
@@ -14,21 +14,38 @@ export interface RequestItemProps {
 
 const RequestItem: React.FunctionComponent<RequestItemProps> = props => {
 	const dispatch = useDispatch();
+	const [editing, setEditing] = useState(false);
 	const node = useSelector(s => s.global.project.tree![props.id]) as RequestNode;
 	const selectedRequest = useSelector(s => s.global.project.selectedRequest);
 	const flight = useSelector(s => s.global.flight.flightHistory[node.id]);
+	const active = selectedRequest === props.id;
+
+	function startEditing(event: React.KeyboardEvent<HTMLDivElement>) {
+		if (!active || event.key !== 'Enter')
+			return;
+
+		setEditing(!editing);
+	}
 
 	return (
 		<Wrapper
-			active={selectedRequest === props.id}
+			active={active}
 			data-tree-id={node.id}
 			depth={props.depth}
 			tabIndex={0}
 			onClick={() => dispatch(requestSelected(props.id))}
+			onKeyDown={event => startEditing(event)}
 		>
-			<Name title={node.name}>
-				{node.name}
-			</Name>
+			{!editing && (
+				<Name title={node.name}>
+					{node.name}
+				</Name>
+			)}
+			{editing && (
+				<RenameInput
+					value={node.name}
+				/>
+			)}
 
 			{flight?.[0]!.response && <RequestStatusBlob $status={flight[0].response.status} />}
 		</Wrapper>
@@ -37,9 +54,9 @@ const RequestItem: React.FunctionComponent<RequestItemProps> = props => {
 
 function getRenameKey() {
 	if (getGlobal('platform') === 'darwin')
-		return 'enter';
+		return 'Enter';
 
-	return 'f2';
+	return 'F2';
 }
 
 interface WrapperProps {
@@ -74,6 +91,20 @@ const Name = styled.abbr`
 	overflow: hidden;
 	text-overflow: ellipsis;
 	text-decoration: none;
+`;
+
+const RenameInput = styled.input`
+	border: 1px solid ${p => p.theme.ui.primaryFill};
+	border-right: 0;
+	background-color: ${p => p.theme.ui.background};
+	color: ${p => p.theme.ui.textOnSurfaceBackground};
+	width: calc(100% - 4px);
+
+	font-size: 13px;
+
+	&:focus {
+		outline: none;
+	}
 `;
 
 export default RequestItem;

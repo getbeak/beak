@@ -17,7 +17,7 @@ export function createExplorerMenu(dispatch: Dispatch, id: string | undefined) {
 		},
 	}));
 
-	explorerMenu.append(new MenuItem({ label: 'New folder' }));
+	explorerMenu.append(new MenuItem({ label: 'New folder', enabled: false }));
 
 	explorerMenu.append(new MenuItem({
 		label: 'Reveal in Finder',
