@@ -20,7 +20,11 @@ const FolderItem: React.FunctionComponent<FolderItemProps> = props => {
 
 	return (
 		<React.Fragment>
-			<Wrapper depth={depth} onClick={() => setShow(!show)}>
+			<Wrapper
+				data-tree-id={node.filePath}
+				depth={depth}
+				onClick={() => setShow(!show)}
+			>
 				<Chevron expanded={show} />
 				{node.name}
 			</Wrapper>

@@ -20,6 +20,7 @@ const RequestItem: React.FunctionComponent<RequestItemProps> = props => {
 	return (
 		<Wrapper
 			active={selectedRequest === props.id}
+			data-tree-id={node.id}
 			depth={props.depth}
 			onClick={() => dispatch(requestSelected(props.id))}
 		>

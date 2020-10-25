@@ -6,6 +6,8 @@ import {
 	RequestNodeFile,
 	Tree,
 } from '@beak/common/types/beak-project';
+// @ts-ignore
+import ksuid from '@cuvva/ksuid';
 import { FSWatcher } from 'chokidar';
 import { validate } from 'jsonschema';
 
@@ -32,6 +34,7 @@ type Emitter = (message: ListenerEvent) => void;
 
 export default class BeakProject {
 	private _projectPath: string;
+	private _projectTreePath: string;
 	private _project?: ProjectFile;
 	private _tree: Tree = {};
 	private _watcher?: FSWatcher;
@@ -40,6 +43,7 @@ export default class BeakProject {
 
 	constructor(projectFilePath: string) {
 		this._projectPath = path.join(projectFilePath, '..');
+		this._projectTreePath = path.join(projectFilePath, '..', 'tree');
 	}
 
 	getProject() {
@@ -66,9 +70,7 @@ export default class BeakProject {
 	// If you're wondering why I'm loading the tree, then launching chokidar and ignoring
 	// the initial read through. It is because I am stupid and lazy xo
 	async loadTree() {
-		const treePath = path.join(this._projectPath, 'tree');
-
-		await this.readFolderNode(treePath, { root: true, parent: null });
+		await this.readFolderNode(this._projectTreePath, { root: true, parent: null });
 	}
 
 	async startWatching(emitter: Emitter) {
@@ -101,6 +103,48 @@ export default class BeakProject {
 
 	async writeFolderNode(node: FolderNode) {
 		throw new Error('nah not done yet lol soz');
+	}
+
+	async createRequestNode(incomingId: string) {
+		const folderPath = (() => {
+			if (incomingId === 'root')
+				return this._projectTreePath;
+
+			const node = this._tree![incomingId];
+
+			if (node.type === 'folder')
+				return node.filePath;
+
+			const parentNode = this._tree![node.parent!];
+
+			if (parentNode === void 0)
+				return this._projectTreePath;
+
+			return parentNode.filePath;
+		})();
+
+		const name = await generateRequestName('Example Request', folderPath);
+		const newNode: RequestNodeFile = {
+			id: ksuid.generate('request').toString(),
+			verb: 'get',
+			headers: {},
+			uri: {
+				protocol: 'https:',
+				hostname: 'httpbin.org',
+				port: '',
+				pathname: '/anything',
+				query: { },
+				fragment: null,
+			},
+			body: {
+				type: 'text',
+				payload: '',
+			},
+		};
+
+		await fs.writeJson(name, newNode);
+
+		return newNode.id;
 	}
 
 	async updateRequestNode(filePath: string) {
@@ -231,5 +275,22 @@ export default class BeakProject {
 		this._tree[node.id] = node;
 
 		return node;
+	}
+}
+
+async function generateRequestName(name: string, directory: string) {
+	if (!await fs.pathExists(path.join(directory, `${name}.json`)))
+		return name;
+
+	let index = 1;
+
+	// eslint-disable-next-line no-constant-condition
+	while (true) {
+		const full = path.join(directory, `${name} (${index}).json`);
+
+		if (!await fs.pathExists(full))
+			return full;
+
+		index += 1;
 	}
 }

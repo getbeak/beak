@@ -3,6 +3,7 @@ import { composeWithDevTools } from 'redux-devtools-extension';
 import createSagaMiddleware from 'redux-saga';
 import { all, fork } from 'redux-saga/effects';
 
+import * as contextMenusStore from './context-menus';
 import * as flightStore from './flight';
 import { State as FlightState } from './flight/types';
 import * as projectStore from './project';
@@ -28,6 +29,7 @@ function* rootSaga() {
 	yield all([
 		fork(flightStore.sagas),
 		fork(projectStore.sagas),
+		fork(contextMenusStore.sagas),
 	]);
 }
 
@@ -56,7 +58,7 @@ export function configureStore() {
 	sagaMiddleware.setContext(context);
 	sagaMiddleware.run(rootSaga);
 
-	// NOTE(afr): This is temporary until I get the dev tools attached
+	// TODO(afr): This is temporary until I get the dev tools attached
 	window.store = store;
 
 	return store;
