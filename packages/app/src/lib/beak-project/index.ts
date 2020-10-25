@@ -106,9 +106,9 @@ export default class BeakProject {
 	}
 
 	async createRequestNode(incomingId: string) {
-		const folderPath = (() => {
+		const parentFilePath = (() => {
 			if (incomingId === 'root')
-				return this._projectTreePath;
+				return null;
 
 			const node = this._tree![incomingId];
 
@@ -117,12 +117,13 @@ export default class BeakProject {
 
 			const parentNode = this._tree![node.parent!];
 
-			if (parentNode === void 0)
-				return this._projectTreePath;
+			if (!parentNode)
+				return null;
 
 			return parentNode.filePath;
 		})();
 
+		const folderPath = parentFilePath ?? this._projectTreePath;
 		const name = await generateRequestName('Example Request', folderPath);
 		const newNode: RequestNodeFile = {
 			id: ksuid.generate('request').toString(),
@@ -149,15 +150,17 @@ export default class BeakProject {
 
 	async updateRequestNode(filePath: string) {
 		const requestFile = await fs.readJson(filePath) as RequestNodeFile;
+		const parentFolder = path.dirname(filePath);
 		const extension = path.extname(filePath);
 		const name = path.basename(filePath, extension);
+		const parent = this._tree[parentFolder]?.filePath;
 
 		validate(requestFile, requestSchema, { throwError: true });
 
-		const node: Nodes = {
+		const node: RequestNode = {
 			type: 'request',
 			filePath,
-			parent: this._tree[requestFile.id].parent,
+			parent,
 			name,
 			id: requestFile.id,
 			info: {
@@ -193,19 +196,19 @@ export default class BeakProject {
 		if (!this._watcherReady)
 			return;
 
-		if (message.type !== 'change') {
-			console.log('only change events currently supported: ', message);
+		if (['add', 'change'].includes(message.type)) {
+			this.updateRequestNode(message.path).then(node => {
+				this._watcherEmitter!({
+					node,
+					type: message.type,
+					path: message.path,
+				});
+			});
+		} else {
+			console.log('only add/change events currently supported: ', message);
 
 			return;
 		}
-
-		this.updateRequestNode(message.path).then(node => {
-			this._watcherEmitter!({
-				node,
-				type: message.type,
-				path: message.path,
-			});
-		});
 	}
 
 	private async readFolderNode(filePath: string, opts: ReadFolderNodeOptions) {
