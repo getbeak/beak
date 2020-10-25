@@ -18,7 +18,7 @@ const ResponsePane: React.FunctionComponent = () => {
 		return <PendingSlash />;
 
 	if (selectedRequest && !selectedNode)
-		throw new Error('fucked state?!');
+		return <span>{'id does not exist'}</span>;
 
 	const typedSelectedNode = selectedNode as RequestNode;
 	const flightHistory = flight.flightHistory[typedSelectedNode.id];
