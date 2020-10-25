@@ -1,3 +1,4 @@
+import { getGlobal } from '@beak/app/globals';
 import { RequestNode } from '@beak/common/types/beak-project';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -21,6 +22,7 @@ const RequestItem: React.FunctionComponent<RequestItemProps> = props => {
 		<Wrapper
 			active={selectedRequest === props.id}
 			depth={props.depth}
+			tabIndex={0}
 			onClick={() => dispatch(requestSelected(props.id))}
 		>
 			<Name title={node.name}>
@@ -31,6 +33,13 @@ const RequestItem: React.FunctionComponent<RequestItemProps> = props => {
 		</Wrapper>
 	);
 };
+
+function getRenameKey() {
+	if (getGlobal('platform') === 'darwin')
+		return 'enter';
+
+	return 'f2';
+}
 
 interface WrapperProps {
 	active: boolean;
@@ -46,17 +55,21 @@ const Wrapper = styled.div<WrapperProps>`
 	line-height: 18px;
 
 	color: ${props => props.theme.ui.textMinor};
+	background-color: ${props => props.active ? props.theme.ui.background : 'transparent'};
 
 	&:hover {
 		color: ${props => props.theme.ui.textOnSurfaceBackground};
 	}
+	&:focus {
+		outline: none;
+		background-color: ${props => props.theme.ui.secondarySurface};
+	}
 
-	background-color: ${props => props.active ? props.theme.ui.background : 'transparent'};
 `;
 
 const Name = styled.abbr`
 	flex-grow: 2;
-	
+
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;

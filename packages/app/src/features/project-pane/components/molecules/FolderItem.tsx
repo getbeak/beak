@@ -10,9 +10,6 @@ export interface FolderItemProps {
 	id: string;
 }
 
-// This rule seems to be broken? fails on `depth + 1`
-/* eslint-disable @typescript-eslint/restrict-plus-operands */
-
 const FolderItem: React.FunctionComponent<FolderItemProps> = props => {
 	const { depth } = props;
 	const [show, setShow] = useState(true);
@@ -20,7 +17,11 @@ const FolderItem: React.FunctionComponent<FolderItemProps> = props => {
 
 	return (
 		<React.Fragment>
-			<Wrapper depth={depth} onClick={() => setShow(!show)}>
+			<Wrapper
+				depth={depth}
+				tabIndex={0}
+				onClick={() => setShow(!show)}
+			>
 				<Chevron expanded={show} />
 				{node.name}
 			</Wrapper>
@@ -41,6 +42,7 @@ const Wrapper = styled.div<{ depth: number }>`
 	&:hover {
 		color: ${props => props.theme.ui.textOnSurfaceBackground};
 	}
+	&:focus { outline: none; }
 `;
 
 const Chevron = styled.div<{ expanded: boolean }>`
