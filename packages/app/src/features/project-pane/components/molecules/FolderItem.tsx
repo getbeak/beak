@@ -18,6 +18,7 @@ const FolderItem: React.FunctionComponent<FolderItemProps> = props => {
 	return (
 		<React.Fragment>
 			<Wrapper
+				data-tree-id={node.filePath}
 				depth={depth}
 				tabIndex={0}
 				onClick={() => setShow(!show)}

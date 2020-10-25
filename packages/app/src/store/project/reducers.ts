@@ -115,6 +115,13 @@ const projectReducer = createReducer(initialState, builder => {
 			const node = action.payload as RequestNode;
 
 			state.tree![node.id] = node;
+		})
+		.addCase(actions.insertRequestNode, (state, action) => {
+			const node = action.payload as RequestNode;
+
+			console.log(node);
+
+			state.tree![node.id] = node;
 		});
 });
 

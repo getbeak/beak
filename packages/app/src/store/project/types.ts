@@ -21,6 +21,7 @@ export const ActionTypes = {
 	REQUEST_BODY_TEXT_CHANGED: '@beak/global/project/REQUEST_BODY_TEXT_CHANGED',
 	REQUEST_BODY_JSON_CHANGED: '@beak/global/project/REQUEST_BODY_JSON_CHANGED',
 
+	INSERT_REQUEST_NODE: '@beak/global/project/INSERT_REQUEST_NODE',
 	REFRESH_NODE_STATE: '@beak/global/project/REFRESH_NODE_STATE',
 	REPORT_NODE_UPDATE: '@beak/global/project/REPORT_NODE_UPDATE',
 };

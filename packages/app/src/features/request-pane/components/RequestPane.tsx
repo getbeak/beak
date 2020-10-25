@@ -35,7 +35,7 @@ const RequestPane: React.FunctionComponent = () => {
 		return <Container />;
 
 	if (selectedRequest && !selectedNode)
-		throw new Error('fucked state?!');
+		return <span>{'id does not exist'}</span>;
 
 	const typedSelectedNode = selectedNode as RequestNode;
 
