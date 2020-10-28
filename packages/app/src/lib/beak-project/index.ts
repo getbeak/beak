@@ -313,12 +313,20 @@ export default class BeakProject {
 async function generateRequestName(name: string, directory: string) {
 	if (!await fs.pathExists(path.join(directory, `${name}.json`)))
 		return name;
-
+	
+	let useableName = name;
 	let index = 1;
+
+	const matches = /^(.+) {1}\(([0-9]+)\)$/gm.exec(useableName);
+
+	if (matches && matches.length === 3) {
+		useableName = matches[1];
+		index = Number(matches[2]) + 1;
+	}
 
 	// eslint-disable-next-line no-constant-condition
 	while (true) {
-		const full = path.join(directory, `${name} (${index}).json`);
+		const full = path.join(directory, `${useableName} (${index}).json`);
 
 		if (!await fs.pathExists(full))
 			return full;
