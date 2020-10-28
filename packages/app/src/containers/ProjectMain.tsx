@@ -8,6 +8,7 @@ import styled from 'styled-components';
 import ReflexSplitter from '../components/atoms/ReflexSplitter';
 import ReflexStyles from '../components/atoms/ReflexStyles';
 import ProgressIndicator from '../components/molecules/ProgressIndicator';
+import Omnibar from '../features/omni-bar/components/Omnibar';
 import ProjectPane from '../features/project-pane/components/ProjectPane';
 import RequestPane from '../features/request-pane/components/RequestPane';
 import ResponsePane from '../features/response-pane/components/ResponsePane';
@@ -50,32 +51,35 @@ const ProjectMain: React.FunctionComponent = () => {
 			<Container>
 				<ReflexStyles />
 				{!project.opening && (
-					<ReflexContainer orientation={'vertical'}>
-						<ReflexElement
-							flex={10}
-							// size={250}
-						>
-							<ProjectPane />
-						</ReflexElement>
+					<React.Fragment>
+						<ReflexContainer orientation={'vertical'}>
+							<ReflexElement
+								flex={10}
+								// size={250}
+							>
+								<ProjectPane />
+							</ReflexElement>
 
-						<ReflexSplitter orientation={'vertical'} />
+							<ReflexSplitter orientation={'vertical'} />
 
-						<ReflexElement
-							flex={35}
-							minSize={400}
-						>
-							<RequestPane />
-						</ReflexElement>
+							<ReflexElement
+								flex={35}
+								minSize={400}
+							>
+								<RequestPane />
+							</ReflexElement>
 
-						<ReflexSplitter orientation={'vertical'} />
+							<ReflexSplitter orientation={'vertical'} />
 
-						<ReflexElement
-							flex={55}
-							minSize={400}
-						>
-							<ResponsePane />
-						</ReflexElement>
-					</ReflexContainer>
+							<ReflexElement
+								flex={55}
+								minSize={400}
+							>
+								<ResponsePane />
+							</ReflexElement>
+						</ReflexContainer>
+						<Omnibar />
+					</React.Fragment>
 				)}
 			</Container>
 			<StatusBar />

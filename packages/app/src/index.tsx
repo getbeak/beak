@@ -7,7 +7,6 @@ import ProjectMain from './containers/ProjectMain';
 import Welcome from './containers/Welcome';
 import { DesignSystemProvider, GlobalStyle } from './design-system';
 import { BeakDarkThemeStyle } from './design-system/editor-themes';
-import Omnibar from './features/omni-bar/components/Omnibar';
 import { setGlobal } from './globals';
 import { configureStore } from './store';
 
@@ -44,7 +43,6 @@ const FauxRouter: React.FunctionComponent = () => {
 				<GlobalStyle />
 				<BeakDarkThemeStyle />
 				{component}
-				<Omnibar />
 			</DesignSystemProvider>
 		</Provider>
 	);

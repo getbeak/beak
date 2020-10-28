@@ -31,6 +31,8 @@ export const ActionTypes = {
 	REQUEST_RENAME_CANCELLED: '@beak/global/project/REQUEST_RENAME_CANCELLED',
 	REQUEST_RENAME_SUBMITTED: '@beak/global/project/REQUEST_RENAME_SUBMITTED',
 	REQUEST_RENAME_RESOLVED: '@beak/global/project/REQUEST_RENAME_RESOLVED',
+
+	DUPLICATE_REQUEST: '@beak/global/project/DUPLICATE_REQUEST',
 };
 
 export interface State {
@@ -104,6 +106,8 @@ export interface RequestRenameResolved extends RequestIdPayload { }
 export interface RequestRenameUpdated extends RequestIdPayload {
 	name: string;
 }
+
+export interface DuplicateRequestPayload extends RequestIdPayload { }
 
 export default {
 	ActionTypes,

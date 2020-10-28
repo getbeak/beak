@@ -6,6 +6,7 @@ import openProjectWorker from './open-project';
 import reportNodeUpdateWorker from './report-node-update';
 import requestRename from './request-rename';
 import startFsListener from './start-fs-listener';
+import duplicateRequest from './duplicate-request';
 
 const updateWatcherActions = [
 	ActionTypes.REQUEST_URI_UPDATED,
@@ -35,6 +36,9 @@ export default function* projectSaga() {
 		}),
 		fork(function* requestRenameWatcher() {
 			yield takeLatest(ActionTypes.REQUEST_RENAME_SUBMITTED, requestRename);
+		}),
+		fork(function* duplicateRequestWatcher() {
+			yield takeLatest(ActionTypes.DUPLICATE_REQUEST, duplicateRequest);
 		}),
 	]);
 }

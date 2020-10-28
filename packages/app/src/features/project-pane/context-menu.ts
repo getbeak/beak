@@ -18,6 +18,14 @@ export function createExplorerMenu(dispatch: Dispatch, id: string | undefined) {
 		},
 	}));
 
+	explorerMenu.append(new MenuItem({
+		label: 'Duplicate request',
+		enabled: id.startsWith('request_'),
+		click: () => {
+			dispatch(projectActions.duplicateRequest({ requestId: id }));
+		},
+	}));
+
 	explorerMenu.append(new MenuItem({ label: 'New folder', enabled: false }));
 
 	explorerMenu.append(new MenuItem({
@@ -37,7 +45,7 @@ export function createExplorerMenu(dispatch: Dispatch, id: string | undefined) {
 
 	explorerMenu.append(new MenuItem({
 		label: 'Rename',
-		enabled: id !== 'root',
+		enabled: id.startsWith('request_'),
 		click: () => {
 			dispatch(projectActions.requestRenameStarted({ requestId: id }));
 		},

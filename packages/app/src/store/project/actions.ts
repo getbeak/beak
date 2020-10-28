@@ -3,6 +3,7 @@ import { createAction } from '@reduxjs/toolkit';
 
 import {
 	ActionTypes,
+	DuplicateRequestPayload,
 	ProjectOpenedPayload,
 	RequestBodyJsonChangedPayload,
 	RequestBodyTextChangedPayload,
@@ -50,6 +51,8 @@ export const requestRenameCancelled = createAction<RequestRenameCancelled>(Actio
 export const requestRenameSubmitted = createAction<RequestRenameSubmitted>(ActionTypes.REQUEST_RENAME_SUBMITTED);
 export const requestRenameResolved = createAction<RequestRenameResolved>(ActionTypes.REQUEST_RENAME_RESOLVED);
 
+export const duplicateRequest = createAction<DuplicateRequestPayload>(ActionTypes.DUPLICATE_REQUEST);
+
 export default {
 	openProject,
 	projectOpened,
@@ -79,4 +82,6 @@ export default {
 	requestRenameCancelled,
 	requestRenameSubmitted,
 	requestRenameResolved,
+
+	duplicateRequest,
 };

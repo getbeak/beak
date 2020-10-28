@@ -104,7 +104,7 @@ export default class BeakProject {
 		console.log(this._tree);
 	}
 
-	async createRequestNode(incomingId: string) {
+	async createRequestNode(incomingId: string, name?: string, template?: RequestNodeFile) {
 		const parentFilePath = (() => {
 			if (incomingId === 'root')
 				return null;
@@ -123,8 +123,8 @@ export default class BeakProject {
 		})();
 
 		const folderPath = parentFilePath ?? this._projectTreePath;
-		const name = await generateRequestName('Example Request', folderPath);
-		const newNode: RequestNodeFile = {
+		const requestName = await generateRequestName(name || 'Example request', folderPath);
+		const newNode: RequestNodeFile = template || {
 			id: ksuid.generate('request').toString(),
 			verb: 'get',
 			headers: {},
@@ -142,7 +142,7 @@ export default class BeakProject {
 			},
 		};
 
-		await fs.writeJson(name, newNode);
+		await fs.writeJson(requestName, newNode);
 
 		return newNode.id;
 	}
@@ -231,6 +231,19 @@ export default class BeakProject {
 			filePath: newFilePath,
 		});
 		await this.removeRequestNode(oldFilePath);
+	}
+
+	async duplicateRequestNode(id: string) {
+		const request = this._tree[id] as RequestNode;
+		const extension = path.extname(request.filePath);
+		const name = path.basename(request.filePath, extension);
+
+		const newId = await this.createRequestNode(id, name, {
+			...request.info,
+			id: ksuid.generate('request').toString(),
+		});
+
+		return newId;
 	}
 
 	async removeRequestNode(filePath: string) {
