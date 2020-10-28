@@ -217,6 +217,22 @@ export default class BeakProject {
 		await fs.writeJson(node.filePath, requestFile, { spaces: '\t' });
 	}
 
+	async renameRequestNode(id: string, newName: string) {
+		const request = this._tree[id] as RequestNode;
+		const directory = path.dirname(request.filePath);
+		const newFilePath = path.join(directory, `${newName}.json`);
+		const oldFilePath = request.filePath;
+
+		if (await fs.pathExists(newFilePath))
+			throw new Error('Request name already exists');
+
+		await this.writeRequestNode({
+			...request,
+			filePath: newFilePath,
+		});
+		await this.removeRequestNode(oldFilePath);
+	}
+
 	async removeRequestNode(filePath: string) {
 		await fs.remove(filePath);
 	}
@@ -285,7 +301,7 @@ export default class BeakProject {
 			this._watcherEmitter!({
 				type: message.type,
 				path: message.path,
-			})
+			});
 		} else {
 			console.log('only add/change events currently supported: ', message);
 

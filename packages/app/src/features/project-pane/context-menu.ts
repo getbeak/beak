@@ -1,4 +1,5 @@
 import { actions } from '@beak/app/store/context-menus';
+import { actions as projectActions } from '@beak/app/store/project';
 import { Dispatch } from '@reduxjs/toolkit';
 
 const { remote } = window.require('electron');
@@ -33,7 +34,14 @@ export function createExplorerMenu(dispatch: Dispatch, id: string | undefined) {
 	explorerMenu.append(new MenuItem({ label: 'Copy path', enabled: false }));
 	explorerMenu.append(new MenuItem({ label: 'Copy relative path', enabled: false }));
 	explorerMenu.append(new MenuItem({ type: 'separator' }));
-	explorerMenu.append(new MenuItem({ label: 'Rename', enabled: false }));
+
+	explorerMenu.append(new MenuItem({
+		label: 'Rename',
+		enabled: id !== 'root',
+		click: () => {
+			dispatch(projectActions.requestRenameStarted({ requestId: id }));
+		},
+	}));
 
 	explorerMenu.append(new MenuItem({
 		label: 'Delete',

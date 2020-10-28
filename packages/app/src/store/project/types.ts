@@ -30,6 +30,7 @@ export const ActionTypes = {
 	REQUEST_RENAME_UPDATED: '@beak/global/project/REQUEST_RENAME_UPDATED',
 	REQUEST_RENAME_CANCELLED: '@beak/global/project/REQUEST_RENAME_CANCELLED',
 	REQUEST_RENAME_SUBMITTED: '@beak/global/project/REQUEST_RENAME_SUBMITTED',
+	REQUEST_RENAME_RESOLVED: '@beak/global/project/REQUEST_RENAME_RESOLVED',
 };
 
 export interface State {
@@ -39,11 +40,18 @@ export interface State {
 	tree?: Tree;
 
 	selectedRequest?: string;
+
+	activeRename?: ActiveRename;
 }
 
 export const initialState: State = {
 	opening: true,
 };
+
+export interface ActiveRename {
+	requestId: string;
+	name: string;
+}
 
 export interface RequestIdPayload {
 	requestId: string;
@@ -86,6 +94,15 @@ export interface ProjectOpenedPayload {
 	name: string;
 	projectPath: string;
 	tree: Tree;
+}
+
+export interface RequestRenameStarted extends RequestIdPayload { }
+export interface RequestRenameCancelled extends RequestIdPayload { }
+export interface RequestRenameSubmitted extends RequestIdPayload { }
+export interface RequestRenameResolved extends RequestIdPayload { }
+
+export interface RequestRenameUpdated extends RequestIdPayload {
+	name: string;
 }
 
 export default {

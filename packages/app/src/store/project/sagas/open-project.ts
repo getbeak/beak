@@ -26,6 +26,8 @@ export default function* workerOpenProject({ payload }: PayloadAction<string>) {
 	}));
 
 	// TODO(afr): Change this to read previously selected request based on history in hub
+	// Also on first load, I think showing the readme of the project as an onboarding
+	// document could be very cool
 	const firstRequest = Object.values(tree).filter(n => n.type === 'request')[0] as RequestNode;
 
 	yield all([

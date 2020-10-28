@@ -127,6 +127,31 @@ const projectReducer = createReducer(initialState, builder => {
 			const node = TypedObject.values(state.tree!).find(n => n.filePath === action.payload) as RequestNode;
 
 			delete state.tree![node.id];
+		})
+
+		.addCase(actions.requestRenameStarted, (state, action) => {
+			const node = state.tree![action.payload.requestId] as RequestNode;
+
+			state.activeRename = {
+				requestId: action.payload.requestId,
+				name: node.name,
+			};
+		})
+		.addCase(actions.requestRenameUpdated, (state, action) => {
+			const { requestId, name } = action.payload;
+
+			if (state.activeRename?.requestId !== requestId)
+				return;
+
+			state.activeRename.name = name;
+		})
+		.addCase(actions.requestRenameCancelled, (state, action) => {
+			if (state.activeRename?.requestId === action.payload.requestId)
+				state.activeRename = void 0;
+		})
+		.addCase(actions.requestRenameResolved, (state, action) => {
+			if (state.activeRename?.requestId === action.payload.requestId)
+				state.activeRename = void 0;
 		});
 });
 

@@ -4,6 +4,7 @@ import { ActionTypes } from '../types';
 import catchNodeUpdatesWorker from './catch-node-updates';
 import openProjectWorker from './open-project';
 import reportNodeUpdateWorker from './report-node-update';
+import requestRename from './request-rename';
 import startFsListener from './start-fs-listener';
 
 const updateWatcherActions = [
@@ -31,6 +32,9 @@ export default function* projectSaga() {
 		}),
 		fork(function* startFsListenerWatcher() {
 			yield takeLatest(ActionTypes.START_FS_LISTENER, startFsListener);
+		}),
+		fork(function* requestRenameWatcher() {
+			yield takeLatest(ActionTypes.REQUEST_RENAME_SUBMITTED, requestRename);
 		}),
 	]);
 }

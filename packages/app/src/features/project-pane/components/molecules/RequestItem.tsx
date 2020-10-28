@@ -1,10 +1,10 @@
 import { getGlobal } from '@beak/app/globals';
 import { RequestNode } from '@beak/common/types/beak-project';
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 
-import { requestSelected } from '../../../../store/project/actions';
+import actions, { requestSelected } from '../../../../store/project/actions';
 import RequestStatusBlob from '../atoms/RequestStatusBlob';
 
 export interface RequestItemProps {
@@ -15,16 +15,34 @@ export interface RequestItemProps {
 const RequestItem: React.FunctionComponent<RequestItemProps> = props => {
 	const dispatch = useDispatch();
 	const [editing, setEditing] = useState(false);
+	const renameInputRef = useRef<HTMLInputElement>(null);
+	const wrapperRef = useRef<HTMLDivElement>(null);
+
 	const node = useSelector(s => s.global.project.tree![props.id]) as RequestNode;
+	const rename = useSelector(s => s.global.project.activeRename);
 	const selectedRequest = useSelector(s => s.global.project.selectedRequest);
 	const flight = useSelector(s => s.global.flight.flightHistory[node.id]);
 	const active = selectedRequest === props.id;
 
+	useEffect(() => {
+		if (rename?.requestId !== node.id) {
+			setEditing(false);
+			wrapperRef?.current?.focus();
+
+			return;
+		}
+
+		if (editing)
+			renameInputRef?.current?.select();
+		else
+			setEditing(true);
+	}, [rename?.requestId, editing]);
+
 	function startEditing(event: React.KeyboardEvent<HTMLDivElement>) {
-		if (!active || event.key !== 'Enter')
+		if (!active || event.key !== getRenameKey())
 			return;
 
-		setEditing(!editing);
+		dispatch(actions.requestRenameStarted({ requestId: node.id }));
 	}
 
 	return (
@@ -33,6 +51,7 @@ const RequestItem: React.FunctionComponent<RequestItemProps> = props => {
 			data-tree-id={node.id}
 			depth={props.depth}
 			tabIndex={0}
+			ref={wrapperRef}
 			onClick={() => dispatch(requestSelected(props.id))}
 			onKeyDown={event => startEditing(event)}
 		>
@@ -41,9 +60,22 @@ const RequestItem: React.FunctionComponent<RequestItemProps> = props => {
 					{node.name}
 				</Name>
 			)}
-			{editing && (
+			{editing && rename && (
 				<RenameInput
-					value={node.name}
+					ref={renameInputRef}
+					value={rename.name}
+					onBlur={() => {
+						dispatch(actions.requestRenameCancelled({ requestId: node.id }));
+					}}
+					onKeyDown={e => {
+						if (e.key === 'Escape')
+							dispatch(actions.requestRenameCancelled({ requestId: node.id }));
+						else if (e.key === 'Enter')
+							dispatch(actions.requestRenameSubmitted({ requestId: node.id }));
+					}}
+					onChange={e => {
+						dispatch(actions.requestRenameUpdated({ requestId: node.id, name: e.currentTarget.value }));
+					}}
 				/>
 			)}
 

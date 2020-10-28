@@ -6,6 +6,11 @@ import {
 	ProjectOpenedPayload,
 	RequestBodyJsonChangedPayload,
 	RequestBodyTextChangedPayload,
+	RequestRenameCancelled,
+	RequestRenameResolved,
+	RequestRenameStarted,
+	RequestRenameSubmitted,
+	RequestRenameUpdated,
 	RequestUriUpdatedPayload,
 	ToggleableItemAddedPayload,
 	ToggleableItemRemovedPayload,
@@ -39,22 +44,39 @@ export const refreshNodeState = createAction<Nodes>(ActionTypes.REFRESH_NODE_STA
 export const insertRequestNode = createAction<Nodes>(ActionTypes.INSERT_REQUEST_NODE);
 export const removeRequestNode = createAction<string>(ActionTypes.REMOVE_REQUEST_NODE);
 
+export const requestRenameStarted = createAction<RequestRenameStarted>(ActionTypes.REQUEST_RENAME_STARTED);
+export const requestRenameUpdated = createAction<RequestRenameUpdated>(ActionTypes.REQUEST_RENAME_UPDATED);
+export const requestRenameCancelled = createAction<RequestRenameCancelled>(ActionTypes.REQUEST_RENAME_CANCELLED);
+export const requestRenameSubmitted = createAction<RequestRenameSubmitted>(ActionTypes.REQUEST_RENAME_SUBMITTED);
+export const requestRenameResolved = createAction<RequestRenameResolved>(ActionTypes.REQUEST_RENAME_RESOLVED);
+
 export default {
 	openProject,
 	projectOpened,
 	requestSelected,
 	requestUriUpdated,
+
 	requestQueryAdded,
 	requestQueryUpdated,
 	requestQueryRemoved,
+
 	requestHeaderAdded,
 	requestHeaderUpdated,
 	requestHeaderRemoved,
+
 	requestBodyTextChanged,
 	requestBodyJsonChanged,
+
 	reportNodeUpdate,
 	startFsListener,
+
 	refreshNodeState,
 	insertRequestNode,
 	removeRequestNode,
+
+	requestRenameStarted,
+	requestRenameUpdated,
+	requestRenameCancelled,
+	requestRenameSubmitted,
+	requestRenameResolved,
 };
