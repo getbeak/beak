@@ -142,7 +142,7 @@ export default class BeakProject {
 			},
 		};
 
-		await fs.writeJson(requestName, newNode);
+		await fs.writeJson(requestName, newNode, { spaces: '\t' });
 
 		return newNode.id;
 	}
