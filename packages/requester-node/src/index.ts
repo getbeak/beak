@@ -51,26 +51,27 @@ export async function startRequester(options: RequesterOptions) {
 
 	const contentLengthUnstable = response.headers.get('content-length') ?? '0';
 	const contentLength = Number.parseInt(contentLengthUnstable, 10) || 0;
-	const hasBody = contentLength > 0;
+
+	let hasBody = contentLength > 0;
 
 	heartbeat({
 		stage: 'parsing_response',
 		payload: { contentLength, timestamp: Date.now() },
 	});
 
-	if (hasBody) {
-		if (response.bodyUsed) {
-			failed({ error: new Error('body already used') });
+	if (response.bodyUsed) {
+		failed({ error: new Error('body already used') });
 
-			return;
-		}
+		return;
+	}
 
-		for await (const chunk of response.body) {
-			heartbeat({
-				stage: 'reading_body',
-				payload: { buffer: chunk as Buffer, timestamp: Date.now() },
-			});
-		}
+	for await (const chunk of response.body) {
+		hasBody = true;
+
+		heartbeat({
+			stage: 'reading_body',
+			payload: { buffer: chunk as Buffer, timestamp: Date.now() },
+		});
 	}
 
 	complete({
