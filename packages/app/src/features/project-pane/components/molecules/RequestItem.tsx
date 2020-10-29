@@ -25,6 +25,12 @@ const RequestItem: React.FunctionComponent<RequestItemProps> = props => {
 	const active = selectedRequest === props.id;
 
 	useEffect(() => {
+		if (!rename) {
+			setEditing(false);
+
+			return;
+		}
+
 		if (rename?.requestId !== node.id) {
 			setEditing(false);
 			wrapperRef?.current?.focus();
@@ -36,7 +42,7 @@ const RequestItem: React.FunctionComponent<RequestItemProps> = props => {
 			renameInputRef?.current?.select();
 		else
 			setEditing(true);
-	}, [rename?.requestId, editing]);
+	}, [rename, rename?.requestId, editing]);
 
 	function startEditing(event: React.KeyboardEvent<HTMLDivElement>) {
 		if (!active || event.key !== getRenameKey())
@@ -54,6 +60,12 @@ const RequestItem: React.FunctionComponent<RequestItemProps> = props => {
 			ref={wrapperRef}
 			onClick={() => dispatch(requestSelected(props.id))}
 			onKeyDown={event => startEditing(event)}
+			onDoubleClick={() => {
+				if (editing)
+					return;
+
+				dispatch(actions.requestRenameStarted({ requestId: node.id }));
+			}}
 		>
 			{!editing && (
 				<Name title={node.name}>

@@ -2,11 +2,11 @@ import { all, fork, takeEvery, takeLatest } from 'redux-saga/effects';
 
 import { ActionTypes } from '../types';
 import catchNodeUpdatesWorker from './catch-node-updates';
+import duplicateRequest from './duplicate-request';
 import openProjectWorker from './open-project';
 import reportNodeUpdateWorker from './report-node-update';
 import requestRename from './request-rename';
 import startFsListener from './start-fs-listener';
-import duplicateRequest from './duplicate-request';
 
 const updateWatcherActions = [
 	ActionTypes.REQUEST_URI_UPDATED,
