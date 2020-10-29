@@ -42,6 +42,15 @@ export default function* executeCommandWorker({ payload }: PayloadAction<Command
 			return;
 		}
 
+		case 'create_new_folder': {
+			const proj = getProjectSingleton();
+
+			yield call([proj, proj.createFolderNode], payload.payload);
+			yield take(ProjectActionTypes.INSERT_FOLDER_NODE);
+
+			return;
+		}
+
 		default:
 			return;
 	}

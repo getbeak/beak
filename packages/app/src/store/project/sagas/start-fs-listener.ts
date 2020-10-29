@@ -4,7 +4,7 @@ import { RequestNode } from '@beak/common/dist/types/beak-project';
 import { eventChannel } from 'redux-saga';
 import { put, take } from 'redux-saga/effects';
 
-import { insertRequestNode, refreshNodeState, removeRequestNode } from '../actions';
+import { insertFolderNode, insertRequestNode, refreshNodeState, removeRequestNode } from '../actions';
 
 export default function* startFsListener() {
 	const project = getProjectSingleton();
@@ -25,6 +25,8 @@ export default function* startFsListener() {
 			yield put(refreshNodeState(result.node as RequestNode));
 		else if (result.type === 'add')
 			yield put(insertRequestNode(result.node));
+		else if (result.type === 'addDir')
+			yield put(insertFolderNode(result.node));
 		else if (result.type === 'unlink')
 			yield put(removeRequestNode(result.path));
 	}

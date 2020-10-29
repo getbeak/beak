@@ -21,18 +21,19 @@ export const ActionTypes = {
 	REQUEST_BODY_TEXT_CHANGED: '@beak/global/project/REQUEST_BODY_TEXT_CHANGED',
 	REQUEST_BODY_JSON_CHANGED: '@beak/global/project/REQUEST_BODY_JSON_CHANGED',
 
+	DUPLICATE_REQUEST: '@beak/global/project/DUPLICATE_REQUEST',
 	INSERT_REQUEST_NODE: '@beak/global/project/INSERT_REQUEST_NODE',
 	REMOVE_REQUEST_NODE: '@beak/global/project/REMOVE_REQUEST_NODE',
 	REFRESH_NODE_STATE: '@beak/global/project/REFRESH_NODE_STATE',
 	REPORT_NODE_UPDATE: '@beak/global/project/REPORT_NODE_UPDATE',
+
+	INSERT_FOLDER_NODE: '@beak/global/project/INSERT_FOLDER_NODE',
 
 	REQUEST_RENAME_STARTED: '@beak/global/project/REQUEST_RENAME_STARTED',
 	REQUEST_RENAME_UPDATED: '@beak/global/project/REQUEST_RENAME_UPDATED',
 	REQUEST_RENAME_CANCELLED: '@beak/global/project/REQUEST_RENAME_CANCELLED',
 	REQUEST_RENAME_SUBMITTED: '@beak/global/project/REQUEST_RENAME_SUBMITTED',
 	REQUEST_RENAME_RESOLVED: '@beak/global/project/REQUEST_RENAME_RESOLVED',
-
-	DUPLICATE_REQUEST: '@beak/global/project/DUPLICATE_REQUEST',
 };
 
 export interface State {
@@ -102,7 +103,6 @@ export interface RequestRenameStarted extends RequestIdPayload { }
 export interface RequestRenameCancelled extends RequestIdPayload { }
 export interface RequestRenameSubmitted extends RequestIdPayload { }
 export interface RequestRenameResolved extends RequestIdPayload { }
-
 export interface RequestRenameUpdated extends RequestIdPayload {
 	name: string;
 }

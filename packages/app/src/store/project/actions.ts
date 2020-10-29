@@ -20,6 +20,7 @@ import {
 
 export const openProject = createAction<string>(ActionTypes.OPEN_PROJECT);
 export const projectOpened = createAction<ProjectOpenedPayload>(ActionTypes.PROJECT_OPENED);
+export const startFsListener = createAction(ActionTypes.START_FS_LISTENER);
 export const requestSelected = createAction<string | undefined>(ActionTypes.REQUEST_SELECTED);
 export const requestUriUpdated = createAction<RequestUriUpdatedPayload>(ActionTypes.REQUEST_URI_UPDATED);
 
@@ -38,12 +39,13 @@ export const requestBodyJsonChanged = createAction<RequestBodyJsonChangedPayload
 	ActionTypes.REQUEST_BODY_JSON_CHANGED,
 );
 
-export const reportNodeUpdate = createAction<string>(ActionTypes.REPORT_NODE_UPDATE);
-export const startFsListener = createAction(ActionTypes.START_FS_LISTENER);
-
-export const refreshNodeState = createAction<Nodes>(ActionTypes.REFRESH_NODE_STATE);
+export const duplicateRequest = createAction<DuplicateRequestPayload>(ActionTypes.DUPLICATE_REQUEST);
 export const insertRequestNode = createAction<Nodes>(ActionTypes.INSERT_REQUEST_NODE);
 export const removeRequestNode = createAction<string>(ActionTypes.REMOVE_REQUEST_NODE);
+export const refreshNodeState = createAction<Nodes>(ActionTypes.REFRESH_NODE_STATE);
+export const reportNodeUpdate = createAction<string>(ActionTypes.REPORT_NODE_UPDATE);
+
+export const insertFolderNode = createAction<Nodes>(ActionTypes.INSERT_FOLDER_NODE);
 
 export const requestRenameStarted = createAction<RequestRenameStarted>(ActionTypes.REQUEST_RENAME_STARTED);
 export const requestRenameUpdated = createAction<RequestRenameUpdated>(ActionTypes.REQUEST_RENAME_UPDATED);
@@ -51,12 +53,11 @@ export const requestRenameCancelled = createAction<RequestRenameCancelled>(Actio
 export const requestRenameSubmitted = createAction<RequestRenameSubmitted>(ActionTypes.REQUEST_RENAME_SUBMITTED);
 export const requestRenameResolved = createAction<RequestRenameResolved>(ActionTypes.REQUEST_RENAME_RESOLVED);
 
-export const duplicateRequest = createAction<DuplicateRequestPayload>(ActionTypes.DUPLICATE_REQUEST);
-
 export default {
 	openProject,
 	projectOpened,
 	requestSelected,
+	startFsListener,
 	requestUriUpdated,
 
 	requestQueryAdded,
@@ -70,18 +71,17 @@ export default {
 	requestBodyTextChanged,
 	requestBodyJsonChanged,
 
-	reportNodeUpdate,
-	startFsListener,
-
-	refreshNodeState,
+	duplicateRequest,
 	insertRequestNode,
 	removeRequestNode,
+	refreshNodeState,
+	reportNodeUpdate,
+
+	insertFolderNode,
 
 	requestRenameStarted,
 	requestRenameUpdated,
 	requestRenameCancelled,
 	requestRenameSubmitted,
 	requestRenameResolved,
-
-	duplicateRequest,
 };

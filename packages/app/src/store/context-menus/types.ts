@@ -4,7 +4,7 @@ export const ActionTypes = {
 
 export type CommandTypes = 'reveal_in_finder';
 
-export type Commands = RevealInFinderCommand | CreateNewRequestCommand | DeleteRequestCommand;
+export type Commands = RevealInFinderCommand | CreateNewRequestCommand | DeleteRequestCommand | CreateNewFolderCommand;
 
 export interface RevealInFinderCommand {
 	type: 'reveal_in_finder';
@@ -18,6 +18,11 @@ export interface CreateNewRequestCommand {
 
 export interface DeleteRequestCommand {
 	type: 'delete_request';
+	payload: string;
+}
+
+export interface CreateNewFolderCommand {
+	type: 'create_new_folder';
 	payload: string;
 }
 

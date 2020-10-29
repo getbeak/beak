@@ -105,24 +105,7 @@ export default class BeakProject {
 	}
 
 	async createRequestNode(incomingId: string, name?: string, template?: RequestNodeFile) {
-		const parentFilePath = (() => {
-			if (incomingId === 'root')
-				return null;
-
-			const node = this._tree![incomingId];
-
-			if (node.type === 'folder')
-				return node.filePath;
-
-			const parentNode = this._tree![node.parent!];
-
-			if (!parentNode)
-				return null;
-
-			return parentNode.filePath;
-		})();
-
-		const folderPath = parentFilePath ?? this._projectTreePath;
+		const folderPath = this.getParentFilePath(incomingId) ?? this._projectTreePath;
 		const requestName = await generateRequestName(name || 'Example request', folderPath);
 		const newNode: RequestNodeFile = template || {
 			id: ksuid.generate('request').toString(),
@@ -250,6 +233,13 @@ export default class BeakProject {
 		await fs.remove(filePath);
 	}
 
+	async createFolderNode(incomingId: string, name?: string) {
+		const parentPath = this.getParentFilePath(incomingId) ?? this._projectTreePath;
+		const folder = await generateFolderName(name || 'New folder', parentPath);
+
+		await fs.ensureDir(folder);
+	}
+
 	private async readFolderNode(filePath: string, opts: ReadFolderNodeOptions) {
 		const { root, parent } = opts;
 
@@ -321,16 +311,33 @@ export default class BeakProject {
 			return;
 		}
 	}
+
+	private getParentFilePath(pseudoId: string) {
+		if (pseudoId === 'root')
+			return null;
+
+		const node = this._tree![pseudoId];
+
+		if (node.type === 'folder')
+			return node.filePath;
+
+		const parentNode = this._tree![node.parent!];
+
+		if (!parentNode)
+			return null;
+
+		return parentNode.filePath;
+	}
 }
 
 async function generateRequestName(name: string, directory: string) {
 	if (!await fs.pathExists(path.join(directory, `${name}.json`)))
 		return name;
-	
+
 	let useableName = name;
 	let index = 1;
 
-	const matches = /^(.+) {1}\(([0-9]+)\)$/gm.exec(useableName);
+	const matches = (/^(.+) {1}\(([0-9]+)\)$/gm).exec(useableName);
 
 	if (matches && matches.length === 3) {
 		useableName = matches[1];
@@ -340,6 +347,31 @@ async function generateRequestName(name: string, directory: string) {
 	// eslint-disable-next-line no-constant-condition
 	while (true) {
 		const full = path.join(directory, `${useableName} (${index}).json`);
+
+		if (!await fs.pathExists(full))
+			return full;
+
+		index += 1;
+	}
+}
+
+async function generateFolderName(name: string, directory: string) {
+	if (!await fs.pathExists(path.join(directory, name)))
+		return name;
+
+	let useableName = name;
+	let index = 1;
+
+	const matches = (/^(.+) {1}\(([0-9]+)\)$/gm).exec(useableName);
+
+	if (matches && matches.length === 3) {
+		useableName = matches[1];
+		index = Number(matches[2]) + 1;
+	}
+
+	// eslint-disable-next-line no-constant-condition
+	while (true) {
+		const full = path.join(directory, `${useableName} (${index})`);
 
 		if (!await fs.pathExists(full))
 			return full;
