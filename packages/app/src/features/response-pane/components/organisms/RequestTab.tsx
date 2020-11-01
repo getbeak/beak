@@ -50,6 +50,7 @@ const RequestTab: React.FunctionComponent<RequestTabProps> = props => {
 								useWorker: false,
 								fontFamily: 'monospace',
 								fontSize: '12px',
+								wrap: true,
 							}}
 							value={createBasicHttpOutput(flight.request)}
 							showPrintMargin={false}
