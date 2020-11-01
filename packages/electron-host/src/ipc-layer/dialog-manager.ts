@@ -1,6 +1,6 @@
 import { dialog, ipcMain } from 'electron';
 
-import { windowStack } from '../window-management';
+import { createVariableGroupEditorWindow, windowStack } from '../window-management';
 
 ipcMain.handle('dialog:confirm_body_tab_change', async event => {
 	const window = windowStack[event.sender.id]!;
@@ -16,4 +16,8 @@ ipcMain.handle('dialog:confirm_body_tab_change', async event => {
 	});
 
 	return result.response;
+});
+
+ipcMain.handle('dialog:project_variable_group_editor', async (_, projectPath) => {
+	createVariableGroupEditorWindow(projectPath);
 });

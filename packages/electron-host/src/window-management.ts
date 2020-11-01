@@ -4,7 +4,7 @@ import * as url from 'url';
 
 import { staticPath } from './utils/static-path';
 
-type Container = 'about' | 'project-main' | 'welcome';
+type Container = 'about' | 'project-main' | 'welcome' | 'variable-group-editor';
 
 const DEV_URL = 'http://localhost:3000';
 const environment = process.env.NODE_ENV;
@@ -113,4 +113,19 @@ export function createProjectMainWindow(projectFilePath: string) {
 	// 	windowOpts.frame = false;
 
 	createWindow(windowOpts, 'project-main', { projectFilePath });
+}
+
+export function createVariableGroupEditorWindow(projectPath: string) {
+	const windowOpts: BrowserWindowConstructorOptions = {
+		height: 600,
+		width: 1000,
+		title: 'Variable Group Editor',
+	};
+
+	// TODO(afr): Totally custom frame for Linux/Windows
+	// // On Linux and Windows, we want total control of the frame
+	// if (process.platform !== 'darwin')
+	// 	windowOpts.frame = false;
+
+	createWindow(windowOpts, 'variable-group-editor', { projectPath });
 }
