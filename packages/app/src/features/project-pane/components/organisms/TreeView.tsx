@@ -8,10 +8,11 @@ import FolderItem from '../molecules/FolderItem';
 import RequestItem from '../molecules/RequestItem';
 
 export interface TreeViewProps {
+	collapsed: boolean;
 	tree: Tree;
 }
 
-const TreeView: React.FunctionComponent<TreeViewProps> = ({ tree }) => {
+const TreeView: React.FunctionComponent<TreeViewProps> = ({ collapsed, tree }) => {
 	const items = Object.values(tree).filter(t => !t.parent);
 	const container = useRef<HTMLDivElement>(null);
 	const dispatch = useDispatch();
@@ -36,6 +37,7 @@ const TreeView: React.FunctionComponent<TreeViewProps> = ({ tree }) => {
 
 	return (
 		<Container
+			collapsed={collapsed}
 			data-tree-id={'root'}
 			ref={container}
 		>
@@ -49,10 +51,12 @@ const TreeView: React.FunctionComponent<TreeViewProps> = ({ tree }) => {
 	);
 };
 
-const Container = styled.div`
+const Container = styled.div<{ collapsed: boolean }>`
 	flex-grow: 2;
 
 	overflow-y: auto;
+
+	${p => p.collapsed ? 'flex: 0' : ''}
 `;
 
 export default TreeView;

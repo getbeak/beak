@@ -61,7 +61,7 @@ const ProjectMain: React.FunctionComponent = () => {
 							<ReflexContainer orientation={'vertical'}>
 								<ReflexElement
 									flex={10}
-									// size={250}
+									style={{ minWidth: '190px' }}
 								>
 									<ProjectPane />
 								</ReflexElement>
