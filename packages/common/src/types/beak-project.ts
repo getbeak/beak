@@ -73,7 +73,18 @@ export interface ResponseOverview {
 	hasBody: boolean;
 }
 
+export interface VariableGroup {
+	groups: string[];
+	items: string[];
+	values: VariableGroupValue[];
+}
+
+export interface VariableGroupValue {
+	group: string;
+	item: string;
+	value: string;
+}
+
 export type Nodes = FolderNode | RequestNode;
-
 export type Tree = Record<string, Nodes>;
-
+export type VariableGroups = Record<string, VariableGroup>;
