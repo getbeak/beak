@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import AceEditor from 'react-ace';
 import styled from 'styled-components';
+import mime from 'mime-types';
 
 import TabBar from '../../../../components/atoms/TabBar';
 import TabItem from '../../../../components/atoms/TabItem';
@@ -13,8 +14,9 @@ import 'ace-builds/src-noconflict/theme-solarized_dark';
 import { Flight } from '@beak/app/store/flight/types';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import binaryStore from '@beak/app/lib/binary-store';
+import EnrichedTab from './EnrichedTab';
 
-type Tab = 'raw';
+type Tab = 'raw' | 'enriched';
 
 export interface ResponseTabProps {
 	flight: Flight;
@@ -23,7 +25,8 @@ export interface ResponseTabProps {
 const ResponseTab: React.FunctionComponent<ResponseTabProps> = props => {
 	const { flight } = props;
 	const { error, response } = flight;
-	const [tab, setTab] = useState<Tab>('raw');
+	const enrichable = canEnrich(flight);
+	const [tab, setTab] = useState<Tab>(enrichable ? 'enriched' : 'raw');
 
 	return (
 		<Container>
@@ -36,6 +39,15 @@ const ResponseTab: React.FunctionComponent<ResponseTabProps> = props => {
 				>
 					{'Raw'}
 				</TabItem>
+				{enrichable && (
+					<TabItem
+						active={tab === 'enriched'}
+						size={'sm'}
+						onClick={() => setTab('enriched')}
+					>
+						{'Enriched'}
+					</TabItem>
+				)}
 				<TabSpacer />
 			</TabBar>
 
@@ -53,6 +65,7 @@ const ResponseTab: React.FunctionComponent<ResponseTabProps> = props => {
 									useWorker: false,
 									fontFamily: 'monospace',
 									fontSize: '13px',
+									wrap: true,
 								}}
 								value={createHttpResponseMessage(flight)}
 								showPrintMargin={false}
@@ -69,12 +82,16 @@ const ResponseTab: React.FunctionComponent<ResponseTabProps> = props => {
 									useWorker: false,
 									fontFamily: 'monospace',
 									fontSize: '13px',
+									wrap: true,
 								}}
 								value={[error.name, error.message, error.stack].filter(Boolean).join('\n')}
 								showPrintMargin={false}
 							/>
 						)}
 					</React.Fragment>
+				)}
+				{enrichable && tab === 'enriched' && (
+					<EnrichedTab flight={flight} />
 				)}
 			</TabBody>
 		</Container>
@@ -117,6 +134,16 @@ function createHttpResponseMessage(flight: Flight) {
 	}
 
 	return lines.join('\n');
+}
+
+function canEnrich(flight: Flight) {
+	if (!flight.response!.hasBody)
+		return false;
+
+	const contentType = flight.response!.headers['content-type'];
+	const extension = mime.extension(contentType);
+
+	return extension === 'json';
 }
 
 export default ResponseTab;
