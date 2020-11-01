@@ -11,6 +11,7 @@ import ksuid from '@cuvva/ksuid';
 import { FSWatcher } from 'chokidar';
 import { validate } from 'jsonschema';
 
+import BeakHub from '../beak-hub';
 import { projectSchema, requestSchema } from './schemas';
 
 const chokidar = window.require('electron').remote.require('chokidar');
@@ -36,6 +37,7 @@ export type ListenerEvent = {
 type Emitter = (message: ListenerEvent) => void;
 
 export default class BeakProject {
+	private _hub: BeakHub;
 	private _projectPath: string;
 	private _projectTreePath: string;
 	private _project?: ProjectFile;
@@ -47,6 +49,11 @@ export default class BeakProject {
 	constructor(projectFilePath: string) {
 		this._projectPath = path.join(projectFilePath, '..');
 		this._projectTreePath = path.join(projectFilePath, '..', 'tree');
+		this._hub = new BeakHub(this._projectPath);
+	}
+
+	getHub() {
+		return this._hub;
 	}
 
 	getProject() {
@@ -68,6 +75,8 @@ export default class BeakProject {
 		validate(projectFile, projectSchema, { throwError: true });
 
 		this._project = projectFile;
+
+		await this._hub.setup();
 	}
 
 	// If you're wondering why I'm loading the tree, then launching chokidar and ignoring
@@ -80,6 +89,10 @@ export default class BeakProject {
 		this._watcherEmitter = emitter;
 		this._watcher = chokidar.watch(this._projectPath, {
 			followSymlinks: false,
+			ignored: [
+				'**/.git/**',
+				'**/.beak/**',
+			],
 		});
 
 		this._watcher

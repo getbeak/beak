@@ -1,4 +1,6 @@
 // eslint-disable-next-line simple-import-sort/sort
+import { getProjectSingleton } from '@beak/app/lib/beak-project/instance';
+import { requestBodyJsonChanged, requestBodyTextChanged } from '@beak/app/store/project/actions';
 import BasicTableView from '@beak/app/components/molecules/BasicTableView';
 import { RequestNode } from '@beak/common/types/beak-project';
 import React, { useContext, useState } from 'react';
@@ -9,12 +11,11 @@ import styled from 'styled-components';
 import TabBar from '../../../../components/atoms/TabBar';
 import TabItem from '../../../../components/atoms/TabItem';
 import TabSpacer from '../../../../components/atoms/TabSpacer';
+import RequestPreferencesContext from '../../contexts/request-preferences-context';
 
 import 'ace-builds/src-noconflict/mode-text';
 import 'ace-builds/src-noconflict/mode-json';
 import 'ace-builds/src-noconflict/theme-solarized_dark';
-import { requestBodyJsonChanged, requestBodyTextChanged } from '@beak/app/store/project/actions';
-import RequestPreferencesContext from '../../contexts/request-preferences-context';
 
 const { ipcRenderer } = window.require('electron');
 
@@ -36,11 +37,13 @@ const BodyTab: React.FunctionComponent<BodyTabProps> = props => {
 
 		const response: number = await ipcRenderer.invoke('dialog:confirm_body_tab_change');
 
-		if (response === 0) {
-			setTab(newTab);
+		if (response !== 0)
+			return;
 
-			// await ipcRenderer.invoke('beak_hub:set_request_preference', node.id, { subTab: newTab });
-		}
+		setTab(newTab);
+
+		getProjectSingleton().getHub()
+			.setRequestPreferences(node.id, { mainTab: 'body', subTab: tab });
 	}
 
 	return (

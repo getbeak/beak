@@ -77,7 +77,3 @@ export type Nodes = FolderNode | RequestNode;
 
 export type Tree = Record<string, Nodes>;
 
-export interface RequestPreference {
-	mainTab: string;
-	subTab: string | null;
-}

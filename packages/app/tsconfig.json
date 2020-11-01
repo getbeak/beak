@@ -23,6 +23,11 @@
   "references": [{
     "path": "../common"
   }],
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "src/**/*.json"
+  ],
   "exclude": [
     "node_modules",
     "dist",

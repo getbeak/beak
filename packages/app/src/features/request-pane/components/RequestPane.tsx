@@ -1,4 +1,6 @@
-import { RequestNode, RequestPreference } from '@beak/common/types/beak-project';
+import { getProjectSingleton } from '@beak/app/lib/beak-project/instance';
+import { RequestPreference } from '@beak/common/dist/types/beak-hub';
+import { RequestNode } from '@beak/common/types/beak-project';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { ReflexContainer, ReflexElement } from 'react-reflex';
@@ -10,10 +12,8 @@ import RequestOutput from './molecules/RequestOutput';
 import Modifiers from './organisms/Modifiers';
 import UriPane from './organisms/UriSection';
 
-const { ipcRenderer } = window.require('electron');
-
 const RequestPane: React.FunctionComponent = () => {
-	const [preferences, setPreferences] = useState<RequestPreference | null>({ mainTab: 'body', subTab: 'json' });
+	const [preferences, setPreferences] = useState<RequestPreference | null>(null);
 	const [editorHeight, setEditorHeight] = useState<string>('100%');
 	const { tree, selectedRequest } = useSelector(s => s.global.project);
 	const selectedNode = tree![selectedRequest || 'non_existent'];
@@ -22,9 +22,9 @@ const RequestPane: React.FunctionComponent = () => {
 		if (!selectedRequest)
 			return;
 
-		// ipcRenderer.invoke('beak_hub:get_request_preference', selectedRequest).then((pref: RequestPreference) => {
-		// 	setPreferences(pref);
-		// });
+		getProjectSingleton().getHub()
+			.getRequestPreferences(selectedRequest)
+			.then(setPreferences);
 	}, [selectedRequest]);
 
 	// TODO(afr): Maybe some sort of purgatory state here
