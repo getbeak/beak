@@ -3,12 +3,13 @@ import './ipc-layer';
 import { app } from 'electron';
 
 import createMenu from './menu';
-import { createAboutWindow, createProjectMainWindow, createWelcomeWindow, windowStack } from './window-management';
+import { createAboutWindow, createProjectMainWindow, createVariableGroupEditorWindow, createWelcomeWindow, windowStack } from './window-management';
 
 const quickCreate = {
 	project: createProjectMainWindow,
 	welcome: createWelcomeWindow,
 	about: createAboutWindow,
+	variableGroupEditor: createVariableGroupEditorWindow,
 };
 
 createMenu();
