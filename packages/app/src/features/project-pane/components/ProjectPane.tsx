@@ -5,9 +5,11 @@ import styled from 'styled-components';
 import Header from './atoms/Header';
 import SectionHeader from './atoms/SectionHeader';
 import TreeView from './organisms/TreeView';
+import VariableGroups from './organisms/VariableGroups';
 
 interface Collapser {
 	project: boolean;
+	variableGroup: boolean;
 	explorer: boolean;
 }
 
@@ -15,6 +17,7 @@ const ProjectPane: React.FunctionComponent = () => {
 	const project = useSelector(s => s.global.project);
 	const [collapser, setCollapser] = useState<Collapser>({
 		project: false,
+		variableGroup: false,
 		explorer: false,
 	});
 
@@ -34,6 +37,13 @@ const ProjectPane: React.FunctionComponent = () => {
 			>
 				{'Project'}
 			</SectionHeader>
+			<SectionHeader
+				collapsed={collapser.variableGroup}
+				onClick={() => toggleCollapser('variableGroup')}
+			>
+				{'Variable groups'}
+			</SectionHeader>
+			<VariableGroups collapsed={collapser.variableGroup} />
 			<SectionHeader
 				collapsed={collapser.explorer}
 				onClick={() => toggleCollapser('explorer')}
