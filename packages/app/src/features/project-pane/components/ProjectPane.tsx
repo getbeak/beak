@@ -15,6 +15,8 @@ interface Collapser {
 	explorer: boolean;
 }
 
+const { ipcRenderer } = window.require('electron');
+
 const ProjectPane: React.FunctionComponent = () => {
 	const theme = useTheme();
 	const project = useSelector(s => s.global.project);
@@ -52,6 +54,8 @@ const ProjectPane: React.FunctionComponent = () => {
 					size={'1x'}
 					onClick={e => {
 						e.stopPropagation();
+
+						ipcRenderer.invoke('dialog:project_variable_group_editor', project.projectPath);
 					}}
 				/>
 			</SectionHeader>
