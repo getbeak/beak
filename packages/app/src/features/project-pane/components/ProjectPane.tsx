@@ -1,6 +1,8 @@
+import { faBars } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
-import styled from 'styled-components';
+import styled, { useTheme } from 'styled-components';
 
 import Header from './atoms/Header';
 import SectionHeader from './atoms/SectionHeader';
@@ -14,6 +16,7 @@ interface Collapser {
 }
 
 const ProjectPane: React.FunctionComponent = () => {
+	const theme = useTheme();
 	const project = useSelector(s => s.global.project);
 	const [collapser, setCollapser] = useState<Collapser>({
 		project: false,
@@ -42,6 +45,15 @@ const ProjectPane: React.FunctionComponent = () => {
 				onClick={() => toggleCollapser('variableGroup')}
 			>
 				{'Variable groups'}
+
+				<FontAwesomeIcon
+					icon={faBars}
+					color={theme.ui.textOnSurfaceBackground}
+					size={'1x'}
+					onClick={e => {
+						e.stopPropagation();
+					}}
+				/>
 			</SectionHeader>
 			<VariableGroups collapsed={collapser.variableGroup} />
 			<SectionHeader

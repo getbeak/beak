@@ -31,7 +31,7 @@ const VariableGroups: React.FunctionComponent<VariableGroupsProps> = ({ collapse
 
 						<Selector>
 							<select value={group.selectedItem}>
-								{group.items.map(i => <option>{i}</option>)}
+								{group.items.map(i => <option key={i}>{i}</option>)}
 							</select>
 						</Selector>
 					</Item>

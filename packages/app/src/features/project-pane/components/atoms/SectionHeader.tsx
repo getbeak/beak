@@ -7,7 +7,17 @@ const SectionHeader = styled.div<{ collapsed: boolean }>`
 	font-size: 11px;
 	font-weight: 600;
 
+	display: flex;
+	justify-content: space-between;
+
 	cursor: pointer;
+
+	> svg {
+		margin-right: -6px;
+		margin-top: 1px;
+
+		cursor: pointer;
+	}
 `;
 
 export default SectionHeader;
