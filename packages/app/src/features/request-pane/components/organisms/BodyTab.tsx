@@ -1,5 +1,4 @@
 // eslint-disable-next-line simple-import-sort/sort
-import { getProjectSingleton } from '@beak/app/lib/beak-project/instance';
 import { requestBodyJsonChanged, requestBodyTextChanged } from '@beak/app/store/project/actions';
 import BasicTableView from '@beak/app/components/molecules/BasicTableView';
 import { RequestNode } from '@beak/common/types/beak-project';
@@ -16,6 +15,7 @@ import RequestPreferencesContext from '../../contexts/request-preferences-contex
 import 'ace-builds/src-noconflict/mode-text';
 import 'ace-builds/src-noconflict/mode-json';
 import 'ace-builds/src-noconflict/theme-solarized_dark';
+import BeakHubContext from '@beak/app/contexts/beak-hub-context';
 
 const { ipcRenderer } = window.require('electron');
 
@@ -29,6 +29,7 @@ const BodyTab: React.FunctionComponent<BodyTabProps> = props => {
 	const dispatch = useDispatch();
 	const preferences = useContext(RequestPreferencesContext)!;
 	const { node } = props;
+	const hub = useContext(BeakHubContext);
 	const [tab, setTab] = useState<Tab>(preferences.subTab as Tab || 'text');
 
 	async function setTabWithConfirmation(newTab: Tab) {
@@ -40,10 +41,8 @@ const BodyTab: React.FunctionComponent<BodyTabProps> = props => {
 		if (response !== 0)
 			return;
 
+		hub!.setRequestPreferences(node.id, { mainTab: 'body', subTab: tab });
 		setTab(newTab);
-
-		getProjectSingleton().getHub()
-			.setRequestPreferences(node.id, { mainTab: 'body', subTab: tab });
 	}
 
 	return (

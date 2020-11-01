@@ -1,7 +1,7 @@
-import { getProjectSingleton } from '@beak/app/lib/beak-project/instance';
+import BeakHubContext from '@beak/app/contexts/beak-hub-context';
 import { RequestPreference } from '@beak/common/dist/types/beak-hub';
 import { RequestNode } from '@beak/common/types/beak-project';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { ReflexContainer, ReflexElement } from 'react-reflex';
 import styled from 'styled-components';
@@ -17,14 +17,13 @@ const RequestPane: React.FunctionComponent = () => {
 	const [editorHeight, setEditorHeight] = useState<string>('100%');
 	const { tree, selectedRequest } = useSelector(s => s.global.project);
 	const selectedNode = tree![selectedRequest || 'non_existent'];
+	const hub = useContext(BeakHubContext);
 
 	useEffect(() => {
 		if (!selectedRequest)
 			return;
 
-		getProjectSingleton().getHub()
-			.getRequestPreferences(selectedRequest)
-			.then(setPreferences);
+		hub!.getRequestPreferences(selectedRequest).then(setPreferences);
 	}, [selectedRequest]);
 
 	// TODO(afr): Maybe some sort of purgatory state here

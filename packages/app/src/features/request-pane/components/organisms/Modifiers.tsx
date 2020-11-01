@@ -1,4 +1,5 @@
 import BasicTableView from '@beak/app/components/molecules/BasicTableView';
+import BeakHubContext from '@beak/app/contexts/beak-hub-context';
 import { getProjectSingleton } from '@beak/app/lib/beak-project/instance';
 import actions from '@beak/app/store/project/actions';
 import { RequestPreferenceMainTab } from '@beak/common/dist/types/beak-hub';
@@ -24,6 +25,8 @@ const Modifiers: React.FunctionComponent<ModifiersProps> = props => {
 	const { node } = props;
 	const [tab, setTabInner] = useState<RequestPreferenceMainTab>(preferences.mainTab);
 
+	const hub = useContext(BeakHubContext);
+
 	useEffect(() => {
 		setTabInner(preferences.mainTab);
 	}, [preferences.mainTab]);
@@ -31,8 +34,7 @@ const Modifiers: React.FunctionComponent<ModifiersProps> = props => {
 	function setTab(tab: RequestPreferenceMainTab) {
 		setTabInner(tab);
 
-		getProjectSingleton().getHub()
-			.setRequestPreferences(node.id, { mainTab: tab, subTab: null });
+		hub!.setRequestPreferences(node.id, { mainTab: tab, subTab: null });
 	}
 
 	return (

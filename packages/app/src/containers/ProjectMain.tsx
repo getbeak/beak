@@ -8,11 +8,13 @@ import styled from 'styled-components';
 import ReflexSplitter from '../components/atoms/ReflexSplitter';
 import ReflexStyles from '../components/atoms/ReflexStyles';
 import ProgressIndicator from '../components/molecules/ProgressIndicator';
+import BeakHubContext from '../contexts/beak-hub-context';
 import Omnibar from '../features/omni-bar/components/Omnibar';
 import ProjectPane from '../features/project-pane/components/ProjectPane';
 import RequestPane from '../features/request-pane/components/RequestPane';
 import ResponsePane from '../features/response-pane/components/ResponsePane';
 import StatusBar from '../features/status-bar/components/StatusBar';
+import BeakHub from '../lib/beak-hub';
 import { requestFlight } from '../store/flight/actions';
 import { openProject } from '../store/project/actions';
 
@@ -24,6 +26,8 @@ const ProjectMain: React.FunctionComponent = () => {
 	const project = useSelector(s => s.global.project);
 	const selectedRequest = useSelector(s => s.global.project.selectedRequest);
 
+	const [hub, setHub] = useState<BeakHub | null>(null);
+
 	useEffect(() => {
 		dispatch(openProject(projectFilePath));
 	}, [projectFilePath]);
@@ -32,6 +36,7 @@ const ProjectMain: React.FunctionComponent = () => {
 		if (project.opening)
 			return;
 
+		setHub(new BeakHub(project.projectPath!));
 		setTitle(`${project.name} - Beak`);
 	}, [project, project.name]);
 
@@ -44,46 +49,48 @@ const ProjectMain: React.FunctionComponent = () => {
 
 	return (
 		<React.Fragment>
-			<Helmet>
-				<title>{title}</title>
-			</Helmet>
-			<ProgressIndicator />
-			<Container>
-				<ReflexStyles />
-				{!project.opening && (
-					<React.Fragment>
-						<ReflexContainer orientation={'vertical'}>
-							<ReflexElement
-								flex={10}
-								// size={250}
-							>
-								<ProjectPane />
-							</ReflexElement>
+			<BeakHubContext.Provider value={hub}>
+				<Helmet>
+					<title>{title}</title>
+				</Helmet>
+				<ProgressIndicator />
+				<Container>
+					<ReflexStyles />
+					{!project.opening && (
+						<React.Fragment>
+							<ReflexContainer orientation={'vertical'}>
+								<ReflexElement
+									flex={10}
+									// size={250}
+								>
+									<ProjectPane />
+								</ReflexElement>
 
-							<ReflexSplitter orientation={'vertical'} />
+								<ReflexSplitter orientation={'vertical'} />
 
-							<ReflexElement
-								flex={35}
-								minSize={400}
-							>
-								<RequestPane />
-							</ReflexElement>
+								<ReflexElement
+									flex={35}
+									minSize={400}
+								>
+									<RequestPane />
+								</ReflexElement>
 
-							<ReflexSplitter orientation={'vertical'} />
+								<ReflexSplitter orientation={'vertical'} />
 
-							<ReflexElement
-								flex={55}
-								minSize={400}
-							>
-								<ResponsePane />
-							</ReflexElement>
-						</ReflexContainer>
-						<Omnibar />
-					</React.Fragment>
-				)}
-			</Container>
-			<StatusBar />
-			{project.opening && <LoadingMask />}
+								<ReflexElement
+									flex={55}
+									minSize={400}
+								>
+									<ResponsePane />
+								</ReflexElement>
+							</ReflexContainer>
+							<Omnibar />
+						</React.Fragment>
+					)}
+				</Container>
+				<StatusBar />
+				{project.opening && <LoadingMask />}
+			</BeakHubContext.Provider>
 		</React.Fragment>
 	);
 };
