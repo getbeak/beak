@@ -26,16 +26,24 @@ const VariableGroupEditor: React.FunctionComponent = () => {
 				<Table>
 					<thead>
 						<tr>
-							<th>{'Item'}</th>
-							<th>{'Production'}</th>
-							<th>{'Local'}</th>
+							<th><Editable value={'Variable'} /></th>
+							<th><Editable value={'Production'} /></th>
+							<th><Editable value={'Local'} /></th>
 						</tr>
 					</thead>
 					<tbody>
 						<tr>
-							<td>{'env'}</td>
-							<td>{'prod'}</td>
-							<td>{'local'}</td>
+							<td>
+								<Editable value={'env'} /></td>
+							<td>
+								<Editable value={'prod'} /></td>
+							<td>
+								<Editable value={'local'} /></td>
+						</tr>
+						<tr>
+							<td><Editable placeholder={'New variable...'} /></td>
+							<td><Editable /></td>
+							<td><Editable /></td>
 						</tr>
 					</tbody>
 				</Table>
@@ -60,6 +68,43 @@ const TabBody = styled.div`
 
 const Table = styled.table`
 	width: 100%;
+	border-collapse: collapse;
+
+	tr {
+		border-bottom: 1px solid ${p => p.theme.ui.backgroundBorderSeparator};
+	}
+
+	tbody > tr {
+		&:last-of-type {
+			border-right: none;
+		}
+	}
+
+	th, td {
+		border-right: 1px solid ${p => p.theme.ui.backgroundBorderSeparator};
+
+		&:last-of-type {
+			border-right: none;
+		}
+	}
+
+	tr > th {
+		padding: 2px 4px;
+	}
+`;
+
+const Editable = styled.input`
+	width: calc(100% - 4px);
+	background: none;
+	border: none;
+	color: ${p => p.theme.ui.textOnSurfaceBackground};
+	font-size: 13px;
+	font-weight: normal;
+	text-align: inherit;
+
+	&:focus, &:active {
+		outline: 1px solid ${p => p.theme.ui.primaryFill};
+	}
 `;
 
 export default VariableGroupEditor;
