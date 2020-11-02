@@ -26,5 +26,6 @@ app.on('activate', () => {
 });
 
 app.on('ready', () => {
-	quickCreate.welcome();
+	// quickCreate.welcome();
+	quickCreate.variableGroupEditor('/Users/afr/Source/github.com/beak-app/testing-project');
 });

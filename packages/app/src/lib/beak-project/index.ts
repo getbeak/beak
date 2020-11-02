@@ -11,7 +11,6 @@ import ksuid from '@cuvva/ksuid';
 import { FSWatcher } from 'chokidar';
 import { validate } from 'jsonschema';
 
-import BeakHub from '../beak-hub';
 import { projectSchema, requestSchema } from './schemas';
 
 const chokidar = window.require('electron').remote.require('chokidar');
@@ -34,7 +33,7 @@ export type ListenerEvent = {
 	path: string;
 }
 
-type Emitter = (message: ListenerEvent) => void;
+export type Emitter = (message: ListenerEvent) => void;
 
 export default class BeakProject {
 	private _projectPath: string;

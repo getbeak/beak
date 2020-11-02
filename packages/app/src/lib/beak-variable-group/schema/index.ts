@@ -1,5 +1,5 @@
-import variableGroup from './variable-group.json';
+import variableGroupSchema from './variable-group.json';
 
 export {
-	variableGroup,
+	variableGroupSchema,
 };

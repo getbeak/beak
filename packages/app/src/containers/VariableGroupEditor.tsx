@@ -1,110 +1,25 @@
-import React from 'react';
-import styled from 'styled-components';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
-import TabBar from '../components/atoms/TabBar';
-import TabItem from '../components/atoms/TabItem';
-import TabSpacer from '../components/atoms/TabSpacer';
+import VGE from '../features/variable-groups/components/VariableGroupEditor';
+import { actions } from '../store/variable-groups';
 
 const VariableGroupEditor: React.FunctionComponent = () => {
+	const dispatch = useDispatch();
 	const params = new URLSearchParams(window.location.search);
 	const projectPath = decodeURIComponent(params.get('projectPath') as string);
+	const vg = useSelector(s => s.global.variableGroups);
 
-	return (
-		<Container>
-			<TabBar centered>
-				<TabSpacer />
-				<TabItem active>
-					{'Environment'}
-				</TabItem>
-				<TabItem>
-					{'Person'}
-				</TabItem>
-				<TabSpacer />
-			</TabBar>
+	useEffect(() => {
+		dispatch(actions.openVariableGroups(projectPath));
+	}, [projectPath]);
 
-			<TabBody>
-				<Table>
-					<thead>
-						<tr>
-							<th><Editable value={'Variable'} /></th>
-							<th><Editable value={'Production'} /></th>
-							<th><Editable value={'Local'} /></th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td>
-								<Editable value={'env'} /></td>
-							<td>
-								<Editable value={'prod'} /></td>
-							<td>
-								<Editable value={'local'} /></td>
-						</tr>
-						<tr>
-							<td><Editable placeholder={'New variable...'} /></td>
-							<td><Editable /></td>
-							<td><Editable /></td>
-						</tr>
-					</tbody>
-				</Table>
-			</TabBody>
-		</Container>
-	);
+	if (vg.opening)
+		return null;
+
+	console.log(vg);
+
+	return <VGE variableGroups={vg.variableGroups!} />;
 };
-
-const Container = styled.div`
-	display: flex;
-	flex-direction: column;
-	overflow: hidden;
-	height: 100%;
-`;
-
-const TabBody = styled.div`
-	flex-grow: 2;
-
-	overflow-y: auto;
-	height: 100%;
-`;
-
-const Table = styled.table`
-	width: 100%;
-	border-collapse: collapse;
-
-	tr {
-		border-bottom: 1px solid ${p => p.theme.ui.backgroundBorderSeparator};
-	}
-
-	tbody > tr {
-		&:last-of-type {
-			border-right: none;
-		}
-	}
-
-	th, td {
-		border-right: 1px solid ${p => p.theme.ui.backgroundBorderSeparator};
-
-		&:last-of-type {
-			border-right: none;
-		}
-	}
-
-	tr > th {
-		padding: 2px 4px;
-	}
-`;
-
-const Editable = styled.input`
-	width: calc(100% - 4px);
-	background: none;
-	border: none;
-	color: ${p => p.theme.ui.textOnSurfaceBackground};
-	font-size: 13px;
-	font-weight: normal;
-	text-align: inherit;
-
-	&:focus, &:active {
-		outline: 1px solid ${p => p.theme.ui.primaryFill};
-	}
-`;
 
 export default VariableGroupEditor;
