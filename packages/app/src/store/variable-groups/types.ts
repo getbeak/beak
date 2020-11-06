@@ -6,6 +6,7 @@ export const ActionTypes = {
 
 	UPDATE_GROUP_NAME: '@beak/global/variable-groups/UPDATE_GROUP_NAME',
 	UPDATE_ITEM_NAME: '@beak/global/variable-groups/UPDATE_ITEM_NAME',
+	UPDATE_VALUE: '@beak/global/variable-groups/UPDATE_VALUE',
 };
 
 export interface State {
@@ -20,7 +21,14 @@ export const initialState: State = {
 
 export interface UpdateEntityNamePayload {
 	variableGroup: string;
-	name: string;
+	ident: string;
+	updated: string;
+}
+
+export interface UpdateValuePayload {
+	variableGroup: string;
+	groupId: string;
+	itemId: string;
 	updated: string;
 }
 

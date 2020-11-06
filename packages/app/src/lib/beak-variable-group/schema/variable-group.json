@@ -2,6 +2,18 @@
 	"type": "object",
 	"additionalProperties": false,
 
+	"definitions": {
+		"mapping": {
+			"type": "object",
+
+			"patternProperties": {
+				"^.*$": {
+					"type": "string"
+				}
+			}
+		}
+	},
+
 	"required": [
 		"groups",
 		"items",
@@ -9,19 +21,8 @@
 	],
 
 	"properties": {
-		"groups": {
-			"type": "array",
-			"items": {
-				"type": "string"
-			}
-		},
-
-		"items": {
-			"type": "array",
-			"items": {
-				"type": "string"
-			}
-		},
+		"groups": { "ref": "#/definitions/mapping" },
+		"items": { "ref": "#/definitions/mapping" },
 
 		"values": {
 			"type": "array",
@@ -30,23 +31,15 @@
 				"additionalProperties": false,
 
 				"required": [
-					"group",
-					"item",
+					"groupId",
+					"itemId",
 					"value"
 				],
 
 				"properties": {
-					"group": {
-						"type": "string"
-					},
-
-					"item": {
-						"type": "string"
-					},
-
-					"value": {
-						"type": "string"
-					}
+					"groupId": { "type": "string" },
+					"itemId": { "type": "string" },
+					"value": { "type": "string" }
 				}
 			}
 		}

@@ -74,14 +74,14 @@ export interface ResponseOverview {
 }
 
 export interface VariableGroup {
-	groups: string[];
-	items: string[];
+	groups: Record<string, string>;
+	items: Record<string, string>;
 	values: VariableGroupValue[];
 }
 
 export interface VariableGroupValue {
-	group: string;
-	item: string;
+	groupId: string;
+	itemId: string;
 	value: string;
 }
 

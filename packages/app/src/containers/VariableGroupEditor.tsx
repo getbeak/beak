@@ -17,8 +17,6 @@ const VariableGroupEditor: React.FunctionComponent = () => {
 	if (vg.opening)
 		return null;
 
-	console.log(vg);
-
 	return <VGE variableGroups={vg.variableGroups!} />;
 };
 

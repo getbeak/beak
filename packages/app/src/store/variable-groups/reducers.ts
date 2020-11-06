@@ -1,4 +1,5 @@
 /* eslint-disable no-param-reassign */
+import { VariableGroupValue } from '@beak/common/dist/types/beak-project';
 import { createReducer } from '@reduxjs/toolkit';
 
 import * as actions from './actions';
@@ -16,32 +17,32 @@ const variableGroupsReducer = createReducer(initialState, builder => {
 		})
 
 		.addCase(actions.updateGroupName, (state, action) => {
-			const { name, updated, variableGroup } = action.payload;
-			const groups = state.variableGroups![variableGroup].groups;
-			const groupIndex = groups.findIndex(i => i === name);
+			const { ident, updated, variableGroup } = action.payload;
 
-			groups[groupIndex] = updated;
-
-			// return {
-			// 	...state,
-			// 	variableGroups: {
-			// 		...state.variableGroups,
-			// 		[variableGroup]: {
-			// 			...state.variableGroups![variableGroup],
-			// 			groups: { ...groups, [groupIndex]: updated },
-			// 		},
-			// 	},
-			// };
+			state.variableGroups![variableGroup].groups[ident] = updated;
 		})
 		.addCase(actions.updateItemName, (state, action) => {
-			const { name, updated, variableGroup } = action.payload;
-			const items = state.variableGroups![variableGroup].items;
-			const values = state.variableGroups![variableGroup].values;
+			const { ident, updated, variableGroup } = action.payload;
 
-			items[items.findIndex(i => i === name)] = updated;
+			state.variableGroups![variableGroup].items[ident] = updated;
+		})
+		.addCase(actions.updateValue, (state, action) => {
+			const { groupId, itemId, updated, variableGroup } = action.payload;
+			const vg = state.variableGroups![variableGroup];
+			const exists = vg.values.find(v => v.groupId === groupId && v.itemId === itemId);
 
-			for (const value of values.filter(v => v.item === name))
-				value.item = updated;
+			if (exists) {
+				vg.values = vg.values.reduce<VariableGroupValue[]>((acc, val) => {
+					const match = val.groupId === groupId && val.itemId && itemId;
+
+					if (!match)
+						return [...acc, val];
+
+					return [...acc, { ...val, value: updated }];
+				}, []);
+			} else {
+				vg.values.push({ groupId, itemId, value: updated });
+			}
 		});
 });
 

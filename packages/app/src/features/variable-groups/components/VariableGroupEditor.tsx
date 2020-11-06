@@ -40,14 +40,14 @@ const VariableGroupEditor: React.FunctionComponent<VariableGroupEditorProps> = p
 					<thead>
 						<tr>
 							<th><Editable disabled value={'Variable'} /></th>
-							{variableGroup.groups.map(g => (
-								<th>
+							{TypedObject.keys(variableGroup.groups).map(k => (
+								<th key={k}>
 									<Editable
-										value={g}
+										value={variableGroup.groups[k]}
 										onChange={e => {
 											dispatch(actions.updateGroupName({
 												variableGroup: tab,
-												name: g,
+												ident: k,
 												updated: e.target.value,
 											}));
 										}}
@@ -57,31 +57,39 @@ const VariableGroupEditor: React.FunctionComponent<VariableGroupEditorProps> = p
 						</tr>
 					</thead>
 					<tbody>
-						{variableGroup.items.map(item => {
-							const filteredValues = variableGroup.values
-								.filter(v => v.item === item);
+						{TypedObject.keys(variableGroup.items).map(ik => {
+							const filteredValues = variableGroup.values.filter(v => v.itemId === ik);
 
 							return (
-								<tr key={item}>
+								<tr key={ik}>
 									<td>
 										<Editable
-											value={item}
+											value={variableGroup.items[ik]}
 											onChange={e => {
 												dispatch(actions.updateItemName({
 													variableGroup: tab,
-													name: item,
+													ident: ik,
 													updated: e.target.value,
 												}));
 											}}
 										/>
 									</td>
-									{variableGroup.groups.map(g => {
-										const value = filteredValues.find(v => v.group === g);
+
+									{TypedObject.keys(variableGroup.groups).map(gk => {
+										const value = filteredValues.find(v => v.groupId === gk);
 
 										return (
-											<td key={g}>
+											<td key={gk}>
 												<Editable
 													value={value?.value || ''}
+													onChange={e => {
+														dispatch(actions.updateValue({
+															variableGroup: tab,
+															groupId: gk,
+															itemId: ik,
+															updated: e.target.value,
+														}));
+													}}
 												/>
 											</td>
 										);

@@ -1,3 +1,4 @@
+import { TypedObject } from '@beak/common/dist/helpers/typescript';
 import { VariableGroup, VariableGroups } from '@beak/common/dist/types/beak-project';
 import { FSWatcher } from 'fs-extra';
 import { validate } from 'jsonschema';
@@ -49,6 +50,16 @@ export default class BeakVariableGroup {
 		/* eslint-disable no-await-in-loop */
 
 		return variableGroups;
+	}
+
+	async saveGroups(vgs: VariableGroups) {
+		// TODO(afr): Move to doing a reconciliation here
+
+		await Promise.all(TypedObject.keys(vgs).map(k => {
+			const filePath = path.join(this._variableGroupPath, `${k}.json`);
+
+			return fs.writeJson(filePath, vgs[k], { spaces: '\t' });
+		}));
 	}
 
 	async startWatching(emitter: Emitter) {
