@@ -3,6 +3,7 @@ import { VariableGroups } from '@beak/common/dist/types/beak-project';
 export const ActionTypes = {
 	OPEN_VARIABLE_GROUPS: '@beak/global/variable-groups/OPEN_VARIABLE_GROUPS',
 	VARIABLE_GROUPS_OPENED: '@beak/global/variable-groups/VARIABLE_GROUPS_OPENED',
+	START_FS_LISTENER: '@beak/global/variable-groups/START_FS_LISTENER',
 
 	UPDATE_GROUP_NAME: '@beak/global/variable-groups/UPDATE_GROUP_NAME',
 	UPDATE_ITEM_NAME: '@beak/global/variable-groups/UPDATE_ITEM_NAME',

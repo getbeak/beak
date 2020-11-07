@@ -3,7 +3,6 @@ import { VariableGroup, VariableGroups } from '@beak/common/dist/types/beak-proj
 import { FSWatcher } from 'fs-extra';
 import { validate } from 'jsonschema';
 
-import { Emitter } from '../beak-project';
 import { variableGroupSchema } from './schema';
 
 const chokidar = window.require('electron').remote.require('chokidar');
@@ -11,6 +10,13 @@ const fs = window.require('electron').remote.require('fs-extra');
 const path = window.require('electron').remote.require('path');
 
 const forbiddenFiles = ['.DS_Store', 'Thumbs.db'];
+
+export type ListenerEvent = {
+	type: 'add' | 'change' | 'unlink';
+	path: string;
+}
+
+export type Emitter = (message: ListenerEvent) => void;
 
 export default class BeakVariableGroup {
 	private _projectPath: string;
@@ -69,6 +75,9 @@ export default class BeakVariableGroup {
 		});
 
 		this._watcher
+			.on('add', path => this.recordListenerMessage({ type: 'add', path }))
+			.on('change', path => this.recordListenerMessage({ type: 'change', path }))
+			.on('unlink', path => this.recordListenerMessage({ type: 'unlink', path }))
 			.on('ready', () => {
 				this._watcherReady = true;
 			});
@@ -79,5 +88,12 @@ export default class BeakVariableGroup {
 
 		this._watcherReady = false;
 		this._watcher = void 0;
+	}
+
+	private recordListenerMessage(message: ListenerEvent) {
+		if (!this._watcherReady)
+			return;
+
+		this._watcherEmitter!({ ...message });
 	}
 }

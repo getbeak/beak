@@ -14,5 +14,6 @@ export default function* workerOpenVariableGroups({ payload }: PayloadAction<str
 
 	const variableGroups: VariableGroups = yield call([variableGroup, variableGroup.load]);
 
+	yield put(actions.startFsListener());
 	yield put(actions.variableGroupsOpened(variableGroups));
 }

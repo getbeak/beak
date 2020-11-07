@@ -310,7 +310,7 @@ export default class BeakProject {
 				path: message.path,
 			});
 		} else {
-			console.log('only add/change events currently supported: ', message);
+			console.log('only add/change/unlink events currently supported: ', message);
 
 			return;
 		}

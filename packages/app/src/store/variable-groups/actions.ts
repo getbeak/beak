@@ -10,6 +10,7 @@ import {
 
 export const openVariableGroups = createAction<string>(ActionTypes.OPEN_VARIABLE_GROUPS);
 export const variableGroupsOpened = createAction<VariableGroups>(ActionTypes.VARIABLE_GROUPS_OPENED);
+export const startFsListener = createAction(ActionTypes.START_FS_LISTENER);
 
 export const updateGroupName = createAction<UpdateEntityNamePayload>(ActionTypes.UPDATE_GROUP_NAME);
 export const updateItemName = createAction<UpdateEntityNamePayload>(ActionTypes.UPDATE_ITEM_NAME);
@@ -20,6 +21,7 @@ export const insertNewItem = createAction<InsertNewItemPayload>(ActionTypes.INSE
 export default {
 	openVariableGroups,
 	variableGroupsOpened,
+	startFsListener,
 
 	updateGroupName,
 	updateItemName,
