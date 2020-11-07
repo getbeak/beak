@@ -1,27 +1,26 @@
 import { TypedObject } from '@beak/common/dist/helpers/typescript';
-import React from 'react';
+import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components';
-
-const mock = {
-	Environment: {
-		selectedItem: 'Production',
-		items: ['Production', 'Local'],
-	},
-	User: {
-		selectedItem: 'AFR',
-		items: ['AFR', 'George'],
-	},
-};
 
 export interface VariableGroupsProps {
 	collapsed: boolean;
 }
 
 const VariableGroups: React.FunctionComponent<VariableGroupsProps> = ({ collapsed }) => {
+	const vg = useSelector(s => s.global.variableGroups);
+	const variableGroups = useSelector(s => s.global.variableGroups.variableGroups!);
+	const [selectionMapping, setSelection] = useState<Record<string, string>>({});
+
+	if (vg.opening)
+		return null;
+
 	return (
 		<Container collapsed={collapsed}>
-			{TypedObject.keys(mock).map(k => {
-				const group = mock[k];
+			{TypedObject.keys(variableGroups).map(k => {
+				const groups = variableGroups[k].groups;
+				const groupKeys = TypedObject.keys(groups);
+				const value = selectionMapping[k] || groupKeys[0];
 
 				return (
 					<Item key={k}>
@@ -30,8 +29,18 @@ const VariableGroups: React.FunctionComponent<VariableGroupsProps> = ({ collapse
 						</GroupName>
 
 						<Selector>
-							<select value={group.selectedItem}>
-								{group.items.map(i => <option key={i}>{i}</option>)}
+							<select
+								value={value}
+								onChange={e => {
+									setSelection({
+										...selectionMapping,
+										[k]: e.target.value,
+									});
+								}}
+							>
+								{groupKeys.map(gk => (
+									<option key={gk} value={gk}>{groups[gk]}</option>
+								))}
 							</select>
 						</Selector>
 					</Item>
