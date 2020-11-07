@@ -24,6 +24,11 @@ const VariableGroupEditor: React.FunctionComponent<VariableGroupEditorProps> = p
 	const newItemRef = useRef<HTMLInputElement>(null);
 
 	useEffect(() => {
+		if (!tabs.includes(tab))
+			setTab(tabs[0]);
+	}, [tabs, tab, setTab]);
+
+	useEffect(() => {
 		if (!newItem)
 			return;
 
@@ -35,7 +40,7 @@ const VariableGroupEditor: React.FunctionComponent<VariableGroupEditorProps> = p
 
 		newItemRef.current.focus();
 		setNewItem(void 0);
-	}, [newItem, setNewItem, vg[tab].items, newItemRef]);
+	}, [newItem, setNewItem, vg[tab]?.items, newItemRef]);
 
 	return (
 		<Container>
@@ -58,7 +63,7 @@ const VariableGroupEditor: React.FunctionComponent<VariableGroupEditorProps> = p
 					<thead>
 						<tr>
 							<th><Editable disabled value={'Variable'} /></th>
-							{TypedObject.keys(variableGroup.groups).map(k => (
+							{variableGroup && TypedObject.keys(variableGroup.groups).map(k => (
 								<th key={k}>
 									<Editable
 										value={variableGroup.groups[k]}
@@ -75,7 +80,7 @@ const VariableGroupEditor: React.FunctionComponent<VariableGroupEditorProps> = p
 						</tr>
 					</thead>
 					<tbody>
-						{TypedObject.keys(variableGroup.items).map(ik => {
+						{variableGroup && TypedObject.keys(variableGroup.items).map(ik => {
 							const filteredValues = variableGroup.values.filter(v => v.itemId === ik);
 
 							return (
