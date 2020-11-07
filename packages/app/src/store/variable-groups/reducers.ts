@@ -32,10 +32,14 @@ const variableGroupsReducer = createReducer(initialState, builder => {
 			const { groupId, itemId, updated, variableGroup } = action.payload;
 			const vg = state.variableGroups![variableGroup];
 			const exists = vg.values.find(v => v.groupId === groupId && v.itemId === itemId);
+			const empty = updated === '';
 
 			if (exists) {
 				vg.values = vg.values.reduce<VariableGroupValue[]>((acc, val) => {
 					const match = val.groupId === groupId && val.itemId === itemId;
+
+					if (match && empty)
+						return acc;
 
 					if (!match)
 						return [...acc, val];
