@@ -46,7 +46,7 @@ const variableGroupsReducer = createReducer(initialState, builder => {
 				return;
 			}
 
-			vg.values.push({ groupId, itemId, value: updated });
+			vg.values = [...vg.values, { groupId, itemId, value: updated }];
 		})
 
 		.addCase(actions.insertNewItem, (state, action) => {
