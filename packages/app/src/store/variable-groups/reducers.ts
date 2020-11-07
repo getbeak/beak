@@ -1,5 +1,7 @@
 /* eslint-disable no-param-reassign */
 import { VariableGroupValue } from '@beak/common/dist/types/beak-project';
+// @ts-ignore
+import ksuid from '@cuvva/ksuid';
 import { createReducer } from '@reduxjs/toolkit';
 
 import * as actions from './actions';
@@ -33,16 +35,24 @@ const variableGroupsReducer = createReducer(initialState, builder => {
 
 			if (exists) {
 				vg.values = vg.values.reduce<VariableGroupValue[]>((acc, val) => {
-					const match = val.groupId === groupId && val.itemId && itemId;
+					const match = val.groupId === groupId && val.itemId === itemId;
 
 					if (!match)
 						return [...acc, val];
 
 					return [...acc, { ...val, value: updated }];
 				}, []);
-			} else {
-				vg.values.push({ groupId, itemId, value: updated });
+
+				return;
 			}
+
+			vg.values.push({ groupId, itemId, value: updated });
+		})
+
+		.addCase(actions.insertNewItem, (state, action) => {
+			const { name, variableGroup } = action.payload;
+
+			state.variableGroups![variableGroup].items[ksuid.generate('item').toString()] = name;
 		});
 });
 

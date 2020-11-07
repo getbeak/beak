@@ -7,6 +7,8 @@ export const ActionTypes = {
 	UPDATE_GROUP_NAME: '@beak/global/variable-groups/UPDATE_GROUP_NAME',
 	UPDATE_ITEM_NAME: '@beak/global/variable-groups/UPDATE_ITEM_NAME',
 	UPDATE_VALUE: '@beak/global/variable-groups/UPDATE_VALUE',
+
+	INSERT_NEW_ITEM: '@beak/global/variable-groups/INSERT_NEW_ITEM',
 };
 
 export interface State {
@@ -30,6 +32,11 @@ export interface UpdateValuePayload {
 	groupId: string;
 	itemId: string;
 	updated: string;
+}
+
+export interface InsertNewItemPayload {
+	variableGroup: string;
+	name: string;
 }
 
 export default {

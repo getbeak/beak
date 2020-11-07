@@ -2,9 +2,10 @@ import TabBar from '@beak/app/components/atoms/TabBar';
 import TabItem from '@beak/app/components/atoms/TabItem';
 import TabSpacer from '@beak/app/components/atoms/TabSpacer';
 import { actions } from '@beak/app/store/variable-groups';
+import { insertNewItem } from '@beak/app/store/variable-groups/actions';
 import { TypedObject } from '@beak/common/dist/helpers/typescript';
 import { VariableGroups } from '@beak/common/dist/types/beak-project';
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 
@@ -18,6 +19,23 @@ const VariableGroupEditor: React.FunctionComponent<VariableGroupEditorProps> = p
 	const tabs = TypedObject.keys(vg);
 	const [tab, setTab] = useState(tabs[0]);
 	const variableGroup = vg[tab];
+
+	const [newItem, setNewItem] = useState<string | undefined>(void 0);
+	const newItemRef = useRef<HTMLInputElement>(null);
+
+	useEffect(() => {
+		if (!newItem)
+			return;
+
+		if (!TypedObject.values(vg[tab].items).includes(newItem))
+			return;
+
+		if (newItemRef?.current === null)
+			return;
+
+		newItemRef.current.focus();
+		setNewItem(void 0);
+	}, [newItem, setNewItem, vg[tab].items, newItemRef]);
 
 	return (
 		<Container>
@@ -64,6 +82,7 @@ const VariableGroupEditor: React.FunctionComponent<VariableGroupEditorProps> = p
 								<tr key={ik}>
 									<td>
 										<Editable
+											ref={variableGroup.items[ik] === newItem ? newItemRef : null}
 											value={variableGroup.items[ik]}
 											onChange={e => {
 												dispatch(actions.updateItemName({
@@ -98,7 +117,19 @@ const VariableGroupEditor: React.FunctionComponent<VariableGroupEditorProps> = p
 							);
 						})}
 						<tr>
-							<td><Editable placeholder={'New variable...'} /></td>
+							<td>
+								<Editable
+									placeholder={'New variable...'}
+									value={''}
+									onChange={e => {
+										setNewItem(e.target.value);
+										dispatch(insertNewItem({
+											variableGroup: tab,
+											name: e.target.value,
+										}));
+									}}
+								/>
+							</td>
 							<td><Editable disabled /></td>
 							<td><Editable disabled /></td>
 						</tr>
