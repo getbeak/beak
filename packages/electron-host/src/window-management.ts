@@ -6,10 +6,11 @@ import { staticPath } from './utils/static-path';
 
 type Container = 'about' | 'project-main' | 'welcome' | 'variable-group-editor';
 
+export const windowStack: Record<number, BrowserWindow> = {};
+
 const DEV_URL = 'http://localhost:3000';
 const environment = process.env.NODE_ENV;
-
-export const windowStack: Record<number, BrowserWindow> = {};
+const stacks: Record<string, number> = { };
 
 function generateLoadUrl(
 	container: Container,
@@ -61,6 +62,8 @@ function createWindow(
 	});
 
 	windowStack[window.id] = window;
+
+	return window.id;
 }
 
 export function closeWindow(windowId: number) {
@@ -116,6 +119,15 @@ export function createProjectMainWindow(projectFilePath: string) {
 }
 
 export function createVariableGroupEditorWindow(projectPath: string) {
+	const key = `variable_group_editor:${projectPath}`;
+	const existing = stacks[key];
+
+	if (existing) {
+		windowStack[existing].focus();
+
+		return;
+	}
+
 	const windowOpts: BrowserWindowConstructorOptions = {
 		height: 600,
 		width: 1000,
@@ -127,5 +139,7 @@ export function createVariableGroupEditorWindow(projectPath: string) {
 	// if (process.platform !== 'darwin')
 	// 	windowOpts.frame = false;
 
-	createWindow(windowOpts, 'variable-group-editor', { projectPath });
+	const windowId = createWindow(windowOpts, 'variable-group-editor', { projectPath });
+
+	stacks[key] = windowId;
 }
