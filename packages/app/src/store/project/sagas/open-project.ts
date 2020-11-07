@@ -4,6 +4,7 @@ import { RequestNode } from '@beak/common/types/beak-project';
 import { PayloadAction } from '@reduxjs/toolkit';
 import { all, call, put } from 'redux-saga/effects';
 
+import { openVariableGroups } from '../../variable-groups/actions';
 import * as actions from '../actions';
 
 export default function* workerOpenProject({ payload }: PayloadAction<string>) {
@@ -31,6 +32,7 @@ export default function* workerOpenProject({ payload }: PayloadAction<string>) {
 	const firstRequest = Object.values(tree).filter(n => n.type === 'request')[0] as RequestNode;
 
 	yield all([
+		put(openVariableGroups(project.getProjectPath())),
 		put(actions.requestSelected(firstRequest.id)),
 		put(actions.startFsListener()),
 	]);
