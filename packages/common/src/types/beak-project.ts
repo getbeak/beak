@@ -76,7 +76,7 @@ export interface ResponseOverview {
 export interface VariableGroup {
 	groups: Record<string, string>;
 	items: Record<string, string>;
-	values: VariableGroupValue[];
+	values: Record<string, VariableGroupValue>;
 }
 
 export interface VariableGroupValue {

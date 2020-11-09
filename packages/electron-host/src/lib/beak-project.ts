@@ -1,4 +1,4 @@
-import { ProjectFile, RequestNodeFile } from '@beak/common/types/beak-project';
+import { ProjectFile, RequestNodeFile, VariableGroup, VariableGroups } from '@beak/common/types/beak-project';
 // @ts-ignore
 import * as ksuid from '@cuvva/ksuid';
 import * as fs from 'fs-extra';
@@ -44,6 +44,28 @@ export default async function createProject(options: CreationOptions) {
 		},
 	};
 
+	const variableGroup: VariableGroup = {
+		groups: {
+			[ksuid.generate('group').toString()]: 'Production',
+			[ksuid.generate('group').toString()]: 'Local',
+		},
+		items: {
+			[ksuid.generate('item').toString()]: 'env-identifer',
+		},
+		values: {},
+	};
+
+	variableGroup.values[ksuid.generate('value').toString()] = {
+		groupId: variableGroup.groups[0],
+		itemId: variableGroup.items[0],
+		value: 'prod',
+	};
+	variableGroup.values[ksuid.generate('value').toString()] = {
+		groupId: variableGroup.groups[1],
+		itemId: variableGroup.items[0],
+		value: 'local',
+	};
+
 	if (await fs.pathExists(projectPath))
 		throw new Error('project folder already exists');
 
@@ -51,7 +73,10 @@ export default async function createProject(options: CreationOptions) {
 	await ensureDirEmpty(projectPath);
 	await fs.ensureDir(path.join(projectPath, 'tree'));
 	await fs.writeJson(path.join(projectPath, 'tree', 'Example request.json'), exReq, {
-		replacer: null,
+		spaces: '\t',
+	});
+	await fs.ensureDir(path.join(projectPath, 'variable-groups'));
+	await fs.writeJson(path.join(projectPath, 'variable-groups', 'Environment.json'), variableGroup, {
 		spaces: '\t',
 	});
 	await fs.writeFile(path.join(projectPath, '.gitignore'), '.beak\n');

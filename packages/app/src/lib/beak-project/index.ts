@@ -83,6 +83,7 @@ export default class BeakProject {
 			ignored: [
 				'**/.git/**',
 				'**/.beak/**',
+				'**/variable-groups/**',
 			],
 		});
 
