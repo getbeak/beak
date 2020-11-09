@@ -80,47 +80,53 @@ const VariableGroupEditor: React.FunctionComponent<VariableGroupEditorProps> = p
 						</tr>
 					</thead>
 					<tbody>
-						{variableGroup && TypedObject.keys(variableGroup.items).map(ik => {
-							const filteredValues = variableGroup.values.filter(v => v.itemId === ik);
+						{variableGroup && TypedObject.keys(variableGroup.items).map(ik => (
+							<tr key={ik}>
+								<td>
+									<Editable
+										ref={variableGroup.items[ik] === newItem ? newItemRef : null}
+										value={variableGroup.items[ik]}
+										onChange={e => {
+											dispatch(actions.updateItemName({
+												variableGroup: tab,
+												ident: ik,
+												updated: e.target.value,
+											}));
+										}}
+									/>
+								</td>
 
-							return (
-								<tr key={ik}>
-									<td>
-										<Editable
-											ref={variableGroup.items[ik] === newItem ? newItemRef : null}
-											value={variableGroup.items[ik]}
-											onChange={e => {
-												dispatch(actions.updateItemName({
-													variableGroup: tab,
-													ident: ik,
-													updated: e.target.value,
-												}));
-											}}
-										/>
-									</td>
+								{TypedObject.keys(variableGroup.groups).map(gk => {
+									const valueKey = TypedObject.keys(variableGroup.values).find(k => {
+										const value = variableGroup.values[k];
 
-									{TypedObject.keys(variableGroup.groups).map(gk => {
-										const value = filteredValues.find(v => v.groupId === gk);
+										if (value.groupId === gk && value.itemId === ik)
+											return true;
 
-										return (
-											<td key={gk}>
-												<Editable
-													value={value?.value || ''}
-													onChange={e => {
-														dispatch(actions.updateValue({
-															variableGroup: tab,
-															groupId: gk,
-															itemId: ik,
-															updated: e.target.value,
-														}));
-													}}
-												/>
-											</td>
-										);
-									})}
-								</tr>
-							);
-						})}
+										return false;
+									});
+
+									const value = variableGroup.values[valueKey || ''];
+
+									return (
+										<td key={gk}>
+											<Editable
+												value={value?.value || ''}
+												onChange={e => {
+													dispatch(actions.updateValue({
+														variableGroup: tab,
+														ident: valueKey,
+														groupId: gk,
+														itemId: ik,
+														updated: e.target.value,
+													}));
+												}}
+											/>
+										</td>
+									);
+								})}
+							</tr>
+						))}
 						<tr>
 							<td>
 								<Editable

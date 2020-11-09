@@ -29,28 +29,26 @@ const variableGroupsReducer = createReducer(initialState, builder => {
 			state.variableGroups![variableGroup].items[ident] = updated;
 		})
 		.addCase(actions.updateValue, (state, action) => {
-			const { groupId, itemId, updated, variableGroup } = action.payload;
+			const { groupId, itemId, ident, updated, variableGroup } = action.payload;
 			const vg = state.variableGroups![variableGroup];
-			const exists = vg.values.find(v => v.groupId === groupId && v.itemId === itemId);
+			const exists = ident !== void 0 && vg.values[ident];
 			const empty = updated === '';
 
 			if (exists) {
-				vg.values = vg.values.reduce<VariableGroupValue[]>((acc, val) => {
-					const match = val.groupId === groupId && val.itemId === itemId;
+				if (empty) {
+					delete vg.values[ident!];
 
-					if (match && empty)
-						return acc;
+					return;
+				}
 
-					if (!match)
-						return [...acc, val];
-
-					return [...acc, { ...val, value: updated }];
-				}, []);
-
-				return;
+				vg.values[ident!].value = updated;
+			} else {
+				vg.values[ksuid.generate('value').toString()] = {
+					groupId,
+					itemId,
+					value: updated,
+				};
 			}
-
-			vg.values = [...vg.values, { groupId, itemId, value: updated }];
 		})
 
 		.addCase(actions.insertNewItem, (state, action) => {

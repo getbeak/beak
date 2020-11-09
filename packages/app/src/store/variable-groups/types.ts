@@ -22,17 +22,16 @@ export const initialState: State = {
 	opening: true,
 };
 
-export interface UpdateEntityNamePayload {
+export interface UpdateEntityPayload {
 	variableGroup: string;
 	ident: string;
 	updated: string;
 }
 
-export interface UpdateValuePayload {
-	variableGroup: string;
+export interface UpdateValuePayload extends Omit<UpdateEntityPayload, 'ident'> {
 	groupId: string;
 	itemId: string;
-	updated: string;
+	ident: string | undefined;
 }
 
 export interface InsertNewItemPayload {

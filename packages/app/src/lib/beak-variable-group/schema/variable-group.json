@@ -25,21 +25,23 @@
 		"items": { "ref": "#/definitions/mapping" },
 
 		"values": {
-			"type": "array",
-			"items": {
-				"type": "object",
-				"additionalProperties": false,
+			"type": "object",
 
-				"required": [
-					"groupId",
-					"itemId",
-					"value"
-				],
+			"patternProperties": {
+				"^.*$": {
+					"type": "object",
 
-				"properties": {
-					"groupId": { "type": "string" },
-					"itemId": { "type": "string" },
-					"value": { "type": "string" }
+					"required": [
+						"groupId",
+						"itemId",
+						"value"
+					],
+
+					"properties": {
+						"groupId": { "type": "string" },
+						"itemId": { "type": "string" },
+						"value": { "type": "string" }
+					}
 				}
 			}
 		}

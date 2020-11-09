@@ -4,7 +4,7 @@ import { createAction } from '@reduxjs/toolkit';
 import {
 	ActionTypes,
 	InsertNewItemPayload,
-	UpdateEntityNamePayload,
+	UpdateEntityPayload,
 	UpdateValuePayload,
 } from './types';
 
@@ -12,8 +12,8 @@ export const openVariableGroups = createAction<string>(ActionTypes.OPEN_VARIABLE
 export const variableGroupsOpened = createAction<VariableGroups>(ActionTypes.VARIABLE_GROUPS_OPENED);
 export const startFsListener = createAction(ActionTypes.START_FS_LISTENER);
 
-export const updateGroupName = createAction<UpdateEntityNamePayload>(ActionTypes.UPDATE_GROUP_NAME);
-export const updateItemName = createAction<UpdateEntityNamePayload>(ActionTypes.UPDATE_ITEM_NAME);
+export const updateGroupName = createAction<UpdateEntityPayload>(ActionTypes.UPDATE_GROUP_NAME);
+export const updateItemName = createAction<UpdateEntityPayload>(ActionTypes.UPDATE_ITEM_NAME);
 export const updateValue = createAction<UpdateValuePayload>(ActionTypes.UPDATE_VALUE);
 
 export const insertNewItem = createAction<InsertNewItemPayload>(ActionTypes.INSERT_NEW_ITEM);
