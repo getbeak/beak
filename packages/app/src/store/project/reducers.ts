@@ -23,6 +23,11 @@ const projectReducer = createReducer(initialState, builder => {
 			state.projectPath = projectPath;
 		})
 		.addCase(actions.requestSelected, (state, action) => {
+			if (action.payload !== void 0) {
+				if (!state.selectedRequests.find(v => v === action.payload))
+					state.selectedRequests.push(action.payload);
+			}
+
 			state.selectedRequest = action.payload;
 		})
 

@@ -43,12 +43,14 @@ export interface State {
 	tree?: Tree;
 
 	selectedRequest?: string;
+	selectedRequests: string[];
 
 	activeRename?: ActiveRename;
 }
 
 export const initialState: State = {
 	opening: true,
+	selectedRequests: [],
 };
 
 export interface ActiveRename {

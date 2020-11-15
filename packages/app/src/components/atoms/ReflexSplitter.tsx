@@ -17,8 +17,8 @@ const ReflexSplitter = styled(RS)<ReflexSplitterProps>`
 	${p => p.hideVisualIndicator ? `
 	background: linear-gradient(
 		${p.theme.ui.background} 0px,
-		${p.theme.ui.background} 39px,
-		${p.theme.ui.surface} 40px,
+		${p.theme.ui.background} 72px,
+		${p.theme.ui.surface} 73px,
 		${p.theme.ui.surface} 100%
 	);
 	` : ''}
