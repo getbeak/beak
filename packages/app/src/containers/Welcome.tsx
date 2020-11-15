@@ -10,7 +10,7 @@ const Welcome: React.FunctionComponent = () => {
 	const [view, setView] = useState<WelcomeViewType>('main');
 
 	return (
-		<React.Fragment>
+		<Wrapper>
 			<BrandIndicatorTop />
 			<BrandIndicatorBottom style={{opacity: view === 'main' ? 1 : 0}} />
 			<DragBar />
@@ -19,9 +19,14 @@ const Welcome: React.FunctionComponent = () => {
 				{view === 'main' && <WelcomeView setView={setView} />}
 				{view === 'create-local' && <CreateView setView={setView} />}
 			</Container>
-		</React.Fragment>
+		</Wrapper>
 	);
 };
+
+const Wrapper = styled.div`
+	background: ${props => props.theme.ui.background};
+	height: 100vh;
+`;
 
 const BrandIndicatorTop = styled.div`
 	position: absolute;
@@ -60,7 +65,7 @@ const DragBar = styled.div`
 
 const Container = styled.div`
 	position: relative;
-	margin: 40px 30px;
+	padding: 40px 30px;
 
 	z-index: 2;
 `;

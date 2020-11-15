@@ -77,12 +77,13 @@ export function closeWindow(windowId: number) {
 }
 
 export function createWelcomeWindow() {
-	const windowOpts = {
+	const windowOpts: BrowserWindowConstructorOptions = {
 		height: 550,
 		width: 900,
 		frame: false,
 		resizable: false,
 		title: 'Welcome to Beak!',
+		// vibrancy: 'dark', // TODO(afr): Change this to `under-window` or `sidebar` soon.
 	};
 
 	createWindow(windowOpts, 'welcome');
@@ -108,6 +109,8 @@ export function createProjectMainWindow(projectFilePath: string) {
 		minHeight: 435,
 		minWidth: 760,
 		title: 'Loading... - Beak',
+		titleBarStyle: 'hiddenInset',
+		vibrancy: 'dark', // TODO(afr): Change this to `under-window` or `sidebar` soon.
 	};
 
 	// TODO(afr): Totally custom frame for Linux/Windows
@@ -122,7 +125,7 @@ export function createVariableGroupEditorWindow(projectPath: string) {
 	const key = `variable_group_editor:${projectPath}`;
 	const existing = stacks[key];
 
-	if (existing) {
+	if (existing && windowStack[existing]) {
 		windowStack[existing].focus();
 
 		return;

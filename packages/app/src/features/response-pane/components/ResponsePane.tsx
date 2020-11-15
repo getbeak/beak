@@ -14,17 +14,32 @@ const ResponsePane: React.FunctionComponent = () => {
 	const [selectedFlightIndex, setSelectedFlightIndex] = useState(0);
 	const selectedNode = tree![selectedRequest || 'non_existent'];
 
-	if (!selectedRequest)
-		return <PendingSlash />;
+	if (!selectedRequest) {
+		return (
+			<Container>
+				<PendingSlash />
+			</Container>
+		);
+	}
 
-	if (selectedRequest && !selectedNode)
-		return <span>{'id does not exist'}</span>;
+	if (selectedRequest && !selectedNode) {
+		return (
+			<Container>
+				<span>{'id does not exist'}</span>
+			</Container>
+		);
+	}
 
 	const typedSelectedNode = selectedNode as RequestNode;
 	const flightHistory = flight.flightHistory[typedSelectedNode.id];
 
-	if (!flightHistory)
-		return <PendingSlash />;
+	if (!flightHistory) {
+		return (
+			<Container>
+				<PendingSlash />
+			</Container>
+		);
+	}
 
 	const selectedFlightHistory = flightHistory[selectedFlightIndex];
 
@@ -48,7 +63,7 @@ const Container = styled.div`
 	display: flex;
 	flex-direction: column;
 	background-color: ${props => props.theme.ui.surface};
-	height: 100%;
+	height: calc(100% - 40px);
 	width: 100%;
 `;
 

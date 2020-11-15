@@ -10,7 +10,7 @@ const PendingSlash: React.FunctionComponent = () => {
 		<Wrapper>
 			<FontAwesomeIcon
 				icon={faDove}
-				color={theme.ui.surface}
+				color={theme.ui.surfaceFill}
 				size={'10x'}
 			/>
 			<Text>
@@ -35,6 +35,8 @@ const Text = styled.div`
 	font-weight: 200;
 	font-size: 35px;
 	margin-top: 25px;
+	padding: 0 20px;
+	text-align: center;
 `;
 
 export default PendingSlash;

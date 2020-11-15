@@ -50,7 +50,7 @@ const ProjectMain: React.FunctionComponent = () => {
 	return (
 		<React.Fragment>
 			<BeakHubContext.Provider value={hub}>
-				<Helmet>
+				<Helmet defer={false}>
 					<title>{title}</title>
 				</Helmet>
 				<ProgressIndicator />
@@ -59,29 +59,35 @@ const ProjectMain: React.FunctionComponent = () => {
 					{!project.opening && (
 						<React.Fragment>
 							<ReflexContainer orientation={'vertical'}>
-								<ReflexElement
-									flex={10}
-									style={{ minWidth: '190px' }}
-								>
+								<ReflexElement flex={20}>
 									<ProjectPane />
 								</ReflexElement>
 
-								<ReflexSplitter orientation={'vertical'} />
+								<ReflexSplitter
+									hideVisualIndicator
+									orientation={'vertical'}
+								/>
 
-								<ReflexElement
-									flex={35}
-									minSize={400}
-								>
-									<RequestPane />
-								</ReflexElement>
+								<ReflexElement flex={80}>
+									<TitleBar />
 
-								<ReflexSplitter orientation={'vertical'} />
+									<ReflexContainer orientation={'vertical'}>
+										<ReflexElement
+											flex={50}
+											minSize={400}
+										>
+											<RequestPane />
+										</ReflexElement>
 
-								<ReflexElement
-									flex={55}
-									minSize={400}
-								>
-									<ResponsePane />
+										<ReflexSplitter orientation={'vertical'} />
+
+										<ReflexElement
+											flex={50}
+											minSize={400}
+										>
+											<ResponsePane />
+										</ReflexElement>
+									</ReflexContainer>
 								</ReflexElement>
 							</ReflexContainer>
 							<Omnibar />
@@ -101,6 +107,12 @@ const Container = styled.div`
 	bottom: 24px;
 	left: 0;
 	right: 0;
+`;
+
+const TitleBar = styled.div`
+	height: 40px;
+	-webkit-app-region: drag;
+	background-color: ${props => props.theme.ui.background};
 `;
 
 const LoadingMask = styled.div`

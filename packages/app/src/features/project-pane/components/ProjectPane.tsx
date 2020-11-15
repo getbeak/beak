@@ -35,6 +35,7 @@ const ProjectPane: React.FunctionComponent = () => {
 
 	return (
 		<Container>
+			<TitleBar />
 			<Header>{project.name!}</Header>
 			<SectionHeader
 				collapsed={collapser.project}
@@ -78,8 +79,14 @@ const Container = styled.div`
 	display: flex;
 	flex-direction: column;
 
-	background-color: ${props => props.theme.ui.secondaryBackground};
+	background: ${p => p.theme.ui.background}AA;
+
 	height: 100%;
+`;
+
+const TitleBar = styled.div`
+	height: 40px;
+	-webkit-app-region: drag;
 `;
 
 export default ProjectPane;

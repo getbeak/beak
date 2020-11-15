@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import styled from 'styled-components';
 
 import VGE from '../features/variable-groups/components/VariableGroupEditor';
 import { actions } from '../store/variable-groups';
@@ -17,7 +18,16 @@ const VariableGroupEditor: React.FunctionComponent = () => {
 	if (vg.opening)
 		return null;
 
-	return <VGE variableGroups={vg.variableGroups!} />;
+	return (
+		<Wrapper>
+			<VGE variableGroups={vg.variableGroups!} />
+		</Wrapper>
+	);
 };
+
+const Wrapper = styled.div`
+	height: 100vh;
+	background-color: ${props => props.theme.ui.background};
+`;
 
 export default VariableGroupEditor;
