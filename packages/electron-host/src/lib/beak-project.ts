@@ -26,7 +26,7 @@ export default async function createProject(options: CreationOptions) {
 				[ksuid.generate('query').toString()]: {
 					enabled: true,
 					name: 'artist',
-					value: 'Taylor Swift',
+					value: ['Taylor Swift'],
 				},
 			},
 			fragment: null,
@@ -35,7 +35,7 @@ export default async function createProject(options: CreationOptions) {
 			[ksuid.generate('header').toString()]: {
 				enabled: true,
 				name: 'X-Example-Header',
-				value: 'bae',
+				value: ['bae'],
 			},
 		},
 		body: {
