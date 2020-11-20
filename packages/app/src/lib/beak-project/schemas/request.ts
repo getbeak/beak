@@ -3,6 +3,47 @@ const requestSchema = {
 	additionalProperties: true,
 
 	definitions: {
+		valueParts: {
+			type: 'array',
+
+			items: [
+				{
+					type: 'string',
+				},
+				{
+					type: 'object',
+					additionalProperties: true,
+
+					required: [
+						'type',
+						'payload',
+					],
+
+					properties: {
+						type: {
+							type: 'string',
+							enum: ['variable_group_item'],
+						},
+
+						payload: {
+							type: 'object',
+							additionalProperties: true,
+
+							required: [
+								'itemId',
+							],
+
+							properties: {
+								itemId: {
+									type: 'string',
+								},
+							},
+						},
+					},
+				},
+			],
+		},
+
 		keyValuePair: {
 			type: 'object',
 			additionalProperties: true,
@@ -20,8 +61,7 @@ const requestSchema = {
 				},
 
 				value: {
-					type: 'string',
-					minLength: 1,
+					$ref: '#/definitions/valueParts',
 				},
 
 				enabled: {

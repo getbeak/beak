@@ -1,6 +1,6 @@
 import BasicTableView from '@beak/app/components/molecules/BasicTableView';
+import VariableInput from '@beak/app/components/molecules/VariableInput';
 import BeakHubContext from '@beak/app/contexts/beak-hub-context';
-import { getProjectSingleton } from '@beak/app/lib/beak-project/instance';
 import actions from '@beak/app/store/project/actions';
 import { RequestPreferenceMainTab } from '@beak/common/dist/types/beak-hub';
 import { RequestNode } from '@beak/common/types/beak-project';
@@ -77,21 +77,23 @@ const Modifiers: React.FunctionComponent<ModifiersProps> = props => {
 			<TabBody>
 				{tab === 'debugging' && <Debugger node={node} />}
 				{tab === 'headers' && (
-					<BasicTableView
-						editable
-						items={node.info.headers}
-						addItem={() => dispatch(actions.requestHeaderAdded({ requestId: node.id }))}
-						removeItem={ident =>
-							dispatch(actions.requestHeaderRemoved({ identifier: ident, requestId: node.id }))
-						}
-						updateItem={(type, ident, value) =>
-							dispatch(actions.requestHeaderUpdated({
-								identifier: ident,
-								requestId: node.id,
-								[type]: value,
-							}))
-						}
-					/>
+					<React.Fragment>
+						<BasicTableView
+							editable
+							items={node.info.headers}
+							addItem={() => dispatch(actions.requestHeaderAdded({ requestId: node.id }))}
+							removeItem={ident =>
+								dispatch(actions.requestHeaderRemoved({ identifier: ident, requestId: node.id }))
+							}
+							updateItem={(type, ident, value) =>
+								dispatch(actions.requestHeaderUpdated({
+									identifier: ident,
+									requestId: node.id,
+									[type]: value,
+								}))
+							}
+						/>
+					</React.Fragment>
 				)}
 				{tab === 'url_query' && (
 					<BasicTableView

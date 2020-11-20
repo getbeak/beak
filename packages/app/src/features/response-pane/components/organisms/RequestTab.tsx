@@ -12,6 +12,7 @@ import 'ace-builds/src-noconflict/mode-json';
 import 'ace-builds/src-noconflict/theme-solarized_dark';
 import { Flight } from '@beak/app/store/flight/types';
 import { createBasicHttpOutput } from '../../../request-pane/components/molecules/RequestOutput';
+import { useSelector } from 'react-redux';
 
 type Tab = 'raw';
 
@@ -22,6 +23,7 @@ export interface RequestTabProps {
 const RequestTab: React.FunctionComponent<RequestTabProps> = props => {
 	const { flight } = props;
 	const [tab, setTab] = useState<Tab>('raw');
+	const variableGroups = useSelector(s => s.global.variableGroups.variableGroups!);
 
 	return (
 		<Container>
@@ -52,7 +54,7 @@ const RequestTab: React.FunctionComponent<RequestTabProps> = props => {
 								fontSize: '12px',
 								wrap: true,
 							}}
-							value={createBasicHttpOutput(flight.request)}
+							value={createBasicHttpOutput(flight.request, variableGroups)}
 							showPrintMargin={false}
 						/>
 					</React.Fragment>

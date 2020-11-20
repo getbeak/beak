@@ -84,6 +84,7 @@ const ProjectMain: React.FunctionComponent = () => {
 												<TabItem
 													active={selectedRequest === id}
 													onClick={() => dispatch(requestSelected(node.id))}
+													key={node.id}
 												>
 													{node.name}
 												</TabItem>

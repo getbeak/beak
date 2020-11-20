@@ -29,7 +29,7 @@ export interface RequestNode extends Node {
 
 export interface ToggleKeyValue {
 	name: string;
-	value: string;
+	value: ValueParts;
 	enabled: boolean;
 }
 
@@ -83,6 +83,15 @@ export interface VariableGroupValue {
 	groupId: string;
 	itemId: string;
 	value: string;
+}
+
+export type ValueParts = (string | ValuePartVariableGroupItem)[];
+
+export interface ValuePartVariableGroupItem {
+	type: 'variable_group_item';
+	payload: {
+		itemId: string;
+	};
 }
 
 export type Nodes = FolderNode | RequestNode;

@@ -1,7 +1,8 @@
+import { parsePartsValue } from '@beak/app/features/variable-groups/helpers/getters';
 import { convertRequestToUrl } from '@beak/common/helpers/uri';
 import { RequestNode } from '@beak/common/types/beak-project';
 import React, { useEffect, useRef, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import urlParse from 'url-parse';
 
@@ -15,6 +16,7 @@ export interface UriSectionProps {
 const UriSection: React.FunctionComponent<UriSectionProps> = props => {
 	const dispatch = useDispatch();
 	const [verbPickerWidth, setVerbPickerWidth] = useState<string>('auto');
+	const variableGroups = useSelector(s => s.global.variableGroups.variableGroups)!;
 	const { node } = props;
 	const verb = node.info.verb;
 	const secretSelect = useRef<HTMLSpanElement>(null);
@@ -49,7 +51,7 @@ const UriSection: React.FunctionComponent<UriSectionProps> = props => {
 				dispatch(requestQueryAdded({
 					requestId: node.id,
 					name,
-					value,
+					value: [value], // TODO(afr): Change how url's are parsed... sad
 				}));
 			});
 		}

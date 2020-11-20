@@ -1,14 +1,16 @@
 import { TypedObject } from '@beak/common/helpers/typescript';
-import { ToggleKeyValue } from '@beak/common/types/beak-project';
+import { ToggleKeyValue, ValueParts } from '@beak/common/types/beak-project';
 import React from 'react';
 import styled from 'styled-components';
+
+import VariableInput from './VariableInput';
 
 export interface MutableBasicTableViewProps {
 	editable: true;
 	disableToggle?: boolean;
 	items: Record<string, ToggleKeyValue>;
 	addItem: () => void;
-	updateItem: (type: keyof ToggleKeyValue, ident: string, value: string | boolean) => void;
+	updateItem: (type: keyof ToggleKeyValue, ident: string, value: string | boolean | ValueParts) => void;
 	removeItem: (ident: string) => void;
 }
 
@@ -55,13 +57,16 @@ const BasicTableView: React.FunctionComponent<MutableBasicTableViewProps | Immut
 										onChange={e => updateItem('name', k, e.target.value)}
 									/>
 								</td>
-								<td>
-									<InputText
+								{/* <td>
+									<InputText />
+								</td> */}
+								<VariableInputCell>
+									<VariableInput
 										disabled={!props.editable}
-										value={entry.value}
-										onChange={e => updateItem('value', k, e.target.value)}
+										parts={entry.value}
+										onChange={e => updateItem('value', k, e)}
 									/>
-								</td>
+								</VariableInputCell>
 								{props.editable && (
 									<ToggleCell>
 										<Button onClick={() => {
@@ -90,7 +95,7 @@ const BasicTableView: React.FunctionComponent<MutableBasicTableViewProps | Immut
 	);
 };
 
-function updateItemSnub(_type: keyof ToggleKeyValue, _ident: string, _value: string | boolean) {
+function updateItemSnub(_type: keyof ToggleKeyValue, _ident: string, _value: string | boolean | ValueParts) {
 	return;
 }
 
@@ -133,6 +138,25 @@ const InputText = styled.input`
 	&:focus {
 		outline: none;
 		border: 1px solid ${props => props.theme.ui.primaryFill};
+	}
+`;
+
+const VariableInputCell = styled.td`
+	> div {
+		width: calc(100% - 10px);
+		border: none;
+		background: transparent;
+		padding: 2px 5px;
+		margin: 0; margin-bottom: -2px;
+		border: 1px solid transparent;
+
+		color: ${props => props.theme.ui.textOnFill};
+		font-size: 12px;
+
+		&:focus {
+			outline: none;
+			border: 1px solid ${props => props.theme.ui.primaryFill};
+		}
 	}
 `;
 

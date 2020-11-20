@@ -37,7 +37,7 @@ const projectReducer = createReducer(initialState, builder => {
 
 			node.info.uri.query[ksuid.generate('query').toString()] = {
 				name: payload.name || '',
-				value: payload.value || '',
+				value: payload.value || [''],
 				enabled: true,
 			};
 		})
@@ -65,7 +65,7 @@ const projectReducer = createReducer(initialState, builder => {
 
 			node.info.headers[ksuid.generate('header').toString()] = {
 				name: payload.name || '',
-				value: payload.value || '',
+				value: payload.value || [''],
 				enabled: true,
 			};
 		})

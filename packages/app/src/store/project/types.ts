@@ -1,4 +1,4 @@
-import { Tree } from '@beak/common/types/beak-project';
+import { Tree, ValueParts } from '@beak/common/types/beak-project';
 
 export const ActionTypes = {
 	OPEN_PROJECT: '@beak/global/project/OPEN_PROJECT',
@@ -73,13 +73,13 @@ export interface RequestUriUpdatedPayload extends RequestIdPayload {
 
 export interface ToggleableItemAddedPayload extends RequestIdPayload {
 	name?: string;
-	value?: string;
+	value?: ValueParts;
 }
 
 export interface ToggleableItemUpdatedPayload extends RequestIdPayload {
 	identifier: string;
 	name?: string;
-	value?: string;
+	value?: ValueParts;
 	enabled?: boolean;
 }
 

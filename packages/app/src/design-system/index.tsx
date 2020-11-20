@@ -36,6 +36,21 @@ const GlobalStyle = createGlobalStyle`
 		overflow: hidden;
 		-webkit-user-select: none;
 	}
+
+	.bvs-blob {
+		display: inline-block;
+		padding: 1px 3px;
+		margin-left: 1px; margin-right: 0;
+		border-radius: 4px;
+		font-size: 11px;
+		line-height: 12px;
+		background: ${p => p.theme.ui.primaryFill};
+		color: ${props => props.theme.ui.textOnAction};
+
+		> strong {
+			font-weight: 600;
+		}
+	}
 `;
 
 export {
