@@ -67,7 +67,6 @@ const VariableSelector: React.FunctionComponent<VariableSelectorProps> = props =
 const Wrapper = styled.div`
 	position: fixed;
 	border: 1px solid ${p => p.theme.ui.backgroundBorderSeparator};
-	background: ${p => p.theme.ui.surface};
 
 	font-size: 12px;
 
@@ -81,6 +80,8 @@ const Wrapper = styled.div`
 const Item = styled.div<{ active: boolean }>`
 	padding: 2px 4px;
 	cursor: pointer;
+	color: ${p => p.theme.ui.textOnAction};
+	background: ${p => p.theme.ui.surface};
 
 	${p => p.active ? `background-color: ${p.theme.ui.primaryFill};'` : ''}
 `;

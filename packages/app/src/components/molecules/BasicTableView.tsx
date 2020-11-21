@@ -142,7 +142,7 @@ const InputText = styled.input`
 `;
 
 const VariableInputCell = styled.td`
-	> div {
+	> article {
 		width: calc(100% - 10px);
 		border: none;
 		background: transparent;

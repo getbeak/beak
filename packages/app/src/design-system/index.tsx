@@ -28,7 +28,7 @@ const GlobalStyle = createGlobalStyle`
 		font-family: ${props => props.theme.fonts.default};
 		background-color: ${props => props.theme.ui.background};
 		background-color: transparent; // This is needed for Vibrancy
-		
+
 		color: ${props => props.theme.ui.textOnAction};
 		margin: 0;
 		padding: 0;

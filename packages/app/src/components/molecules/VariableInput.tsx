@@ -5,6 +5,8 @@ import styled from 'styled-components';
 
 import VariableSelector from './VariableSelector';
 
+const querySelectorId = 'booyakasha';
+
 export interface VariableInputProps {
 	disabled?: boolean;
 	parts: ValueParts;
@@ -15,6 +17,45 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, 
 	const [query, setQuery] = useState('');
 	const [selectorPosition, setSelectorPosition] = useState<{ top: number; left: number } | null>(null);
 	const ref = useRef<HTMLDivElement>(null);
+	const [partIndex, setPartIndex] = useState<number>();
+	const [queryOffset, setQueryOffset] = useState<number>();
+
+	function closeSelector() {
+		setSelectorPosition(null);
+		setQuery('');
+		setQueryOffset(void 0);
+		setPartIndex(void 0);
+	}
+
+	function insertVariable(_variableGroupName: string, itemId: string) {
+		if (selectorPosition === null || partIndex === void 0 || queryOffset === void 0)
+			return;
+
+		const lastPart = partIndex + 1 === parts.length;
+		const newPart: ValuePartVariableGroupItem = {
+			type: 'variable_group_item',
+			payload: { itemId },
+		};
+
+		closeSelector();
+
+		if (lastPart) {
+			const newParts: ValueParts = [...parts, newPart];
+
+			newParts[partIndex] = (parts[partIndex] as string).substring(0, queryOffset - 1);
+
+			onChange(newParts);
+
+			return;
+		}
+
+		const newParts: ValueParts = [...parts];
+
+		newParts.splice(partIndex + 1, 0, newPart);
+		newParts[partIndex] = (parts[partIndex] as string).substring(0, queryOffset - 1);
+
+		onChange(newParts);
+	}
 
 	function change(event: React.FormEvent<HTMLDivElement>) {
 		event.stopPropagation();
@@ -78,37 +119,52 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, 
 			// This is getting crazy
 			window.setTimeout(() => {
 				ref.current!.style.caretColor = caretColorStore;
-			}, 1);
+			}, 10);
 		}, 0);
 
-		// // Check if we want to open variable selector
-		// if (delta === '{') {
-		// 	const sel = window.getSelection()!;
-		// 	const range = sel.getRangeAt(0);
-		// 	const elem = range.startContainer.parentElement! as HTMLElement;
-		// 	const rect = elem.getBoundingClientRect();
-		// 	const contentLength = (elem.textContent ?? '').length;
-		// 	const caretOffset = range.startOffset;
-		// 	const positionOffset = caretOffset / contentLength;
-		// 	const width = elem.offsetWidth;
-		// 	const offsetDelta = width * positionOffset;
+		// Check if we want to open variable selector
+		if (delta === '{') {
+			const sel = window.getSelection()!;
+			const range = sel.getRangeAt(0);
+			const elem = range.startContainer.parentElement! as HTMLElement;
+			const rect = elem.getBoundingClientRect();
+			const contentLength = (elem.textContent ?? '').length;
+			const caretOffset = range.startOffset;
+			const positionOffset = caretOffset / contentLength;
+			const width = elem.offsetWidth;
+			const offsetDelta = width * positionOffset;
 
-		// 	setSelectorPosition({
-		// 		left: (rect.left + offsetDelta) - 5,
-		// 		top: rect.top + elem.offsetHeight,
-		// 	});
+			const partIndex = newParts.findIndex(p => p === elem.textContent);
 
-		// 	return;
-		// }
+			setPartIndex(partIndex);
+			setQueryOffset(range.startOffset);
+			setQuery(elem.textContent!.substr(range.startOffset));
+			setSelectorPosition({
+				left: (rect.left + offsetDelta) - 5,
+				top: rect.top + elem.offsetHeight,
+			});
 
-		// // Update selector query if selector is being shown
-		// if (selectorPosition === null)
-		// 	return;
+			return;
+		}
 
-		// if (delta === null)
-		// 	setQuery(query.slice(0, -1));
-		// else
-		// 	setQuery(`${query}${delta}`);
+		// Scrub if the variable selector isn't open
+		if (selectorPosition === null || partIndex === void 0 || queryOffset === void 0)
+			return;
+
+		const part = newParts[partIndex];
+
+		if (typeof part !== 'string') {
+			closeSelector();
+
+			return;
+		}
+
+		const queryLength = part.length - queryOffset;
+
+		if (queryLength === -1)
+			closeSelector();
+		else
+			setQuery(part.substr(queryOffset));
 	}
 
 	function renderParts() {
@@ -156,8 +212,9 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, 
 				key={Date() /* this looks weird but is intention and required */}
 				ref={ref}
 				suppressContentEditableWarning
-				onBlur={() => {
-					setSelectorPosition(null);
+				onBlur={event => {
+					// event.
+					// closeSelector();
 				}}
 				onInput={change}
 				onKeyDown={event => {
@@ -176,13 +233,12 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, 
 			/>
 			{(ref.current && selectorPosition) && (
 				<VariableSelector
-					done={(vgName, itemId) => { }}
+					done={insertVariable}
 					close={() => {
-						setSelectorPosition(null);
-						setQuery('');
+						closeSelector();
 					}}
 					query={query}
-					parent={ref.current!}
+					parent={ref.current}
 					position={selectorPosition}
 				/>
 			)}
@@ -190,7 +246,7 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, 
 	);
 };
 
-const Input = styled.div`
+const Input = styled.article`
 	font-size: 12px;
 	border: 1px solid ${p => p.theme.ui.backgroundBorderSeparator};
 	white-space: nowrap;
