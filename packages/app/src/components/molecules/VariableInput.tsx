@@ -5,8 +5,6 @@ import styled from 'styled-components';
 
 import VariableSelector from './VariableSelector';
 
-const querySelectorId = 'booyakasha';
-
 export interface VariableInputProps {
 	disabled?: boolean;
 	parts: ValueParts;
@@ -31,7 +29,9 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, 
 		if (selectorPosition === null || partIndex === void 0 || queryOffset === void 0)
 			return;
 
-		const lastPart = partIndex + 1 === parts.length;
+		const part = parts[partIndex] as string;
+		const lastPart = parts.length === partIndex - 1;
+		const atEnd = lastPart && part.length === queryOffset + query.length;
 		const newPart: ValuePartVariableGroupItem = {
 			type: 'variable_group_item',
 			payload: { itemId },
@@ -39,7 +39,7 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, 
 
 		closeSelector();
 
-		if (lastPart) {
+		if (atEnd) {
 			const newParts: ValueParts = [...parts, newPart];
 
 			newParts[partIndex] = (parts[partIndex] as string).substring(0, queryOffset - 1);
@@ -50,9 +50,13 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, 
 		}
 
 		const newParts: ValueParts = [...parts];
+		const [start, end] = [
+			part.substring(0, queryOffset - 1),
+			part.substring(queryOffset + query.length),
+		];
 
-		newParts.splice(partIndex + 1, 0, newPart);
-		newParts[partIndex] = (parts[partIndex] as string).substring(0, queryOffset - 1);
+		newParts.splice(partIndex, 1);
+		newParts.splice(partIndex, 0, start, newPart, end);
 
 		onChange(newParts);
 	}
@@ -134,11 +138,21 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, 
 			const width = elem.offsetWidth;
 			const offsetDelta = width * positionOffset;
 
+			const queryOffset = range.startOffset;
 			const partIndex = newParts.findIndex(p => p === elem.textContent);
+			const part = (newParts[partIndex] as string);
+			const [start, end] = [part.substring(0, queryOffset), part.substring(queryOffset)];
+			const newerParts = [...newParts];
 
+			newerParts[partIndex] = start;
+
+			// eslint-disable-next-line @typescript-eslint/restrict-plus-operands
+			newerParts.splice(partIndex + 1, 0, end);
+
+			onChange(newerParts);
 			setPartIndex(partIndex);
-			setQueryOffset(range.startOffset);
-			setQuery(elem.textContent!.substr(range.startOffset));
+			setQueryOffset(queryOffset);
+			setQuery(start.substring(queryOffset));
 			setSelectorPosition({
 				left: (rect.left + offsetDelta) - 5,
 				top: rect.top + elem.offsetHeight,
