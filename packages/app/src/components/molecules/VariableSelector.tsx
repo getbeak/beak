@@ -6,11 +6,15 @@ import styled from 'styled-components';
 export interface VariableSelectorProps {
 	parent: HTMLElement;
 	query: string;
-	done: (vg: string, itemId: string) => void;
-	close: () => void;
+	onDone: (vg: string, itemId: string) => void;
+	onClose: () => void;
 	position: {
 		top: number;
 		left: number;
+	};
+	keyPassthrough?: {
+		code: string;
+		invalidator: string;
 	};
 }
 
@@ -21,7 +25,12 @@ interface Item {
 }
 
 const VariableSelector: React.FunctionComponent<VariableSelectorProps> = props => {
-	const { close, done, query, parent, position } = props;
+	const {
+		onDone,
+		query,
+		parent,
+		position,
+	} = props;
 	const variableGroups = useSelector(s => s.global.variableGroups.variableGroups)!;
 	const [active, setActive] = useState<string | undefined>(void 0);
 
@@ -53,9 +62,11 @@ const VariableSelector: React.FunctionComponent<VariableSelectorProps> = props =
 			{items.map(i => (
 				<Item
 					active={active === i.itemId}
+					className={'variable-selector'}
 					key={i.itemId}
+					tabIndex={0}
 					onClick={() => setActive(i.itemId)}
-					onDoubleClick={() => done(i.varibleGroupName, i.itemId)}
+					onDoubleClick={() => onDone(i.varibleGroupName, i.itemId)}
 				>
 					{`${i.varibleGroupName} (${i.itemName})`}
 				</Item>
@@ -82,6 +93,11 @@ const Item = styled.div<{ active: boolean }>`
 	cursor: pointer;
 	color: ${p => p.theme.ui.textOnAction};
 	background: ${p => p.theme.ui.surface};
+
+	&:focus {
+		background-color: ${p => p.theme.ui.primaryFill};
+		outline: none;
+	}
 
 	${p => p.active ? `background-color: ${p.theme.ui.primaryFill};'` : ''}
 `;

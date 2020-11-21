@@ -227,28 +227,36 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, 
 				ref={ref}
 				suppressContentEditableWarning
 				onBlur={event => {
-					// event.
-					// closeSelector();
+					if (!event.relatedTarget) {
+						closeSelector();
+
+						return;
+					}
+
+					const elem = event.relatedTarget as HTMLDivElement;
+
+					if (!elem.className?.includes('variable-selector'))
+						closeSelector();
 				}}
 				onInput={change}
 				onKeyDown={event => {
-					if (!['ArrowUp', 'ArrowDown'].includes(event.key))
+					if (!['Escape', 'Enter', 'ArrowUp', 'ArrowDown'].includes(event.key))
 						return;
 
 					event.preventDefault();
 
-					if (event.key === 'ArrowUp') {
-						// do up thing
-					} else if (event.key === 'ArrowDown') {
-						// do down thing
+					if (event.key === 'Escape') {
+						closeSelector();
+
+						return;
 					}
 				}}
 				dangerouslySetInnerHTML={{ __html: renderParts() }}
 			/>
 			{(ref.current && selectorPosition) && (
 				<VariableSelector
-					done={insertVariable}
-					close={() => {
+					onDone={insertVariable}
+					onClose={() => {
 						closeSelector();
 					}}
 					query={query}
