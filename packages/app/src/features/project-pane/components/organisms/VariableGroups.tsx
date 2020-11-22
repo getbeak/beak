@@ -1,6 +1,7 @@
+import { actions } from '@beak/app/store/variable-groups';
 import { TypedObject } from '@beak/common/dist/helpers/typescript';
-import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
+import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 
 export interface VariableGroupsProps {
@@ -8,19 +9,15 @@ export interface VariableGroupsProps {
 }
 
 const VariableGroups: React.FunctionComponent<VariableGroupsProps> = ({ collapsed }) => {
-	const vg = useSelector(s => s.global.variableGroups);
-	const variableGroups = useSelector(s => s.global.variableGroups.variableGroups!);
-	const [selectionMapping, setSelection] = useState<Record<string, string>>({});
-
-	if (vg.opening)
-		return null;
+	const dispatch = useDispatch();
+	const { variableGroups, selectedGroups } = useSelector(s => s.global.variableGroups)!;
 
 	return (
 		<Container collapsed={collapsed}>
-			{TypedObject.keys(variableGroups).map(k => {
-				const groups = variableGroups[k].groups;
+			{TypedObject.keys(variableGroups!).map(k => {
+				const groups = variableGroups![k].groups;
 				const groupKeys = TypedObject.keys(groups);
-				const value = selectionMapping[k] || groupKeys[0];
+				const value = selectedGroups[k];
 
 				return (
 					<Item key={k}>
@@ -32,10 +29,10 @@ const VariableGroups: React.FunctionComponent<VariableGroupsProps> = ({ collapse
 							<select
 								value={value}
 								onChange={e => {
-									setSelection({
-										...selectionMapping,
-										[k]: e.target.value,
-									});
+									dispatch(actions.changeSelectedGroup({
+										variableGroup: k,
+										group: e.target.value,
+									}));
 								}}
 							>
 								{groupKeys.map(gk => (

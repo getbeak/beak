@@ -23,7 +23,7 @@ export interface RequestTabProps {
 const RequestTab: React.FunctionComponent<RequestTabProps> = props => {
 	const { flight } = props;
 	const [tab, setTab] = useState<Tab>('raw');
-	const variableGroups = useSelector(s => s.global.variableGroups.variableGroups!);
+	const { selectedGroups, variableGroups } = useSelector(s => s.global.variableGroups);
 
 	return (
 		<Container>
@@ -54,7 +54,7 @@ const RequestTab: React.FunctionComponent<RequestTabProps> = props => {
 								fontSize: '12px',
 								wrap: true,
 							}}
-							value={createBasicHttpOutput(flight.request, variableGroups)}
+							value={createBasicHttpOutput(flight.request, selectedGroups, variableGroups!)}
 							showPrintMargin={false}
 						/>
 					</React.Fragment>

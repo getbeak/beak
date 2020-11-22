@@ -20,8 +20,8 @@ export interface RequestOutputProps {
 }
 
 const RequestOutput: React.FunctionComponent<RequestOutputProps> = props => {
-	const variableGroups = useSelector(s => s.global.variableGroups.variableGroups!);
-	const code = createBasicHttpOutput(props.selectedNode.info, variableGroups);
+	const { selectedGroups, variableGroups } = useSelector(s => s.global.variableGroups!);
+	const code = createBasicHttpOutput(props.selectedNode.info, selectedGroups, variableGroups!);
 
 	return (
 		<React.Fragment>
@@ -58,7 +58,11 @@ function createBodySection(verb: string, body: RequestBody) {
 	}
 }
 
-export function createBasicHttpOutput(overview: RequestOverview, variableGroups: VariableGroups) {
+export function createBasicHttpOutput(
+	overview: RequestOverview,
+	selectedGroups: Record<string, string>,
+	variableGroups: VariableGroups,
+) {
 	const url = convertRequestToUrl(overview);
 	const { headers, verb, body } = overview;
 	const firstLine = [
@@ -70,7 +74,7 @@ export function createBasicHttpOutput(overview: RequestOverview, variableGroups:
 		const builder = new URLSearchParams();
 
 		for (const { name, value } of TypedObject.values(overview.uri.query).filter(q => q.enabled))
-			builder.append(name, parsePartsValue(variableGroups, value));
+			builder.append(name, parsePartsValue(selectedGroups, variableGroups, value));
 
 		firstLine.push(`?${builder.toString()}`);
 	}
@@ -88,7 +92,7 @@ export function createBasicHttpOutput(overview: RequestOverview, variableGroups:
 	if (headers) {
 		out.push(...TypedObject.values(headers)
 			.filter(h => h.enabled)
-			.map(({ name, value }) => `${name}: ${parsePartsValue(variableGroups, value)}`),
+			.map(({ name, value }) => `${name}: ${parsePartsValue(selectedGroups, variableGroups, value)}`),
 		);
 	}
 

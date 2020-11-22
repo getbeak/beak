@@ -23,6 +23,6 @@ export default function* startFsListener() {
 
 		const variableGroups: VariableGroups = yield call([variableGroup, variableGroup.load]);
 
-		yield put(actions.variableGroupsOpened(variableGroups));
+		yield put(actions.variableGroupsOpened({ variableGroups }));
 	}
 }

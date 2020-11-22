@@ -1,4 +1,3 @@
-import { parsePartsValue } from '@beak/app/features/variable-groups/helpers/getters';
 import { convertRequestToUrl } from '@beak/common/helpers/uri';
 import { RequestNode } from '@beak/common/types/beak-project';
 import React, { useEffect, useRef, useState } from 'react';
@@ -16,7 +15,7 @@ export interface UriSectionProps {
 const UriSection: React.FunctionComponent<UriSectionProps> = props => {
 	const dispatch = useDispatch();
 	const [verbPickerWidth, setVerbPickerWidth] = useState<string>('auto');
-	const variableGroups = useSelector(s => s.global.variableGroups.variableGroups)!;
+	const { selectedGroups, variableGroups } = useSelector(s => s.global.variableGroups);
 	const { node } = props;
 	const verb = node.info.verb;
 	const secretSelect = useRef<HTMLSpanElement>(null);

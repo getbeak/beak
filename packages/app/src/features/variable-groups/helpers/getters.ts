@@ -1,9 +1,11 @@
 import { TypedObject } from '@beak/common/dist/helpers/typescript';
 import { ValueParts, VariableGroups } from '@beak/common/dist/types/beak-project';
 
-const selectedGroup = 'group_000000C1Dk7PnLNyP4cdGzrVFy6fB';
-
-export function parsePartsValue(variableGroups: VariableGroups, parts: ValueParts) {
+export function parsePartsValue(
+	selectedGroups: Record<string, string>,
+	variableGroups: VariableGroups,
+	parts: ValueParts,
+) {
 	const out = [];
 
 	for (const part of parts) {
@@ -22,19 +24,23 @@ export function parsePartsValue(variableGroups: VariableGroups, parts: ValuePart
 			continue;
 		}
 
-		out.push(getValueString(variableGroups, part.payload.itemId));
+		const value = getValueString(selectedGroups, variableGroups, part.payload.itemId);
+
+		if (value)
+			out.push(getValueString(selectedGroups, variableGroups, part.payload.itemId));
 	}
 
 	return out.join('');
 }
 
-export function getValueString(variableGroups: VariableGroups, itemId: string) {
-	return getValueObject(variableGroups, itemId)?.value;
+export function getValueString(selectedGroups: Record<string, string>, variableGroups: VariableGroups, itemId: string) {
+	return getValueObject(selectedGroups, variableGroups, itemId)?.value;
 }
 
-export function getValueObject(variableGroups: VariableGroups, itemId: string) {
+export function getValueObject(selectedGroups: Record<string, string>, variableGroups: VariableGroups, itemId: string) {
 	for (const key of TypedObject.keys(variableGroups)) {
 		const variableGroup = variableGroups[key];
+		const selectedGroup = selectedGroups[key];
 		const value = TypedObject.values(variableGroup.values)
 			.find(v => v.groupId === selectedGroup && v.itemId === itemId);
 

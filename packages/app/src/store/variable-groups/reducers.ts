@@ -1,5 +1,4 @@
 /* eslint-disable no-param-reassign */
-import { VariableGroupValue } from '@beak/common/dist/types/beak-project';
 // @ts-ignore
 import ksuid from '@cuvva/ksuid';
 import { createReducer } from '@reduxjs/toolkit';
@@ -14,8 +13,12 @@ const variableGroupsReducer = createReducer(initialState, builder => {
 			state.projectPath = action.payload;
 		})
 		.addCase(actions.variableGroupsOpened, (state, action) => {
+			state.variableGroups = action.payload.variableGroups;
+
+			if (action.payload.selectedGroups)
+				state.selectedGroups = action.payload.selectedGroups;
+
 			state.opening = false;
-			state.variableGroups = action.payload;
 		})
 
 		.addCase(actions.updateGroupName, (state, action) => {
@@ -55,6 +58,11 @@ const variableGroupsReducer = createReducer(initialState, builder => {
 			const { name, variableGroup } = action.payload;
 
 			state.variableGroups![variableGroup].items[ksuid.generate('item').toString()] = name;
+		})
+		.addCase(actions.changeSelectedGroup, (state, action) => {
+			const { group, variableGroup } = action.payload;
+
+			state.selectedGroups[variableGroup] = group;
 		});
 });
 
