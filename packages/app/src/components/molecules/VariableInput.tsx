@@ -1,6 +1,7 @@
 import { ValueParts, ValuePartVariableGroupItem } from '@beak/common/dist/types/beak-project';
 import React, { useRef, useState } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 
 import VariableSelector from './VariableSelector';
@@ -17,6 +18,7 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, 
 	const ref = useRef<HTMLDivElement>(null);
 	const [partIndex, setPartIndex] = useState<number>();
 	const [queryOffset, setQueryOffset] = useState<number>();
+	const { selectedGroups, variableGroups } = useSelector(s => s.global.variableGroups);
 
 	function closeSelector() {
 		setSelectorPosition(null);
@@ -198,6 +200,8 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, 
 
 					if (p.type !== 'variable_group_item')
 						throw new Error('unknown part type');
+
+					// TODO(afr): gather the correct information for below
 
 					return (
 						<div
