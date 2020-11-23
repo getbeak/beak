@@ -1,3 +1,4 @@
+import { TypedObject } from '@beak/common/src/helpers/typescript';
 import { ProjectFile, RequestNodeFile, VariableGroup, VariableGroups } from '@beak/common/types/beak-project';
 // @ts-ignore
 import * as ksuid from '@cuvva/ksuid';
@@ -50,13 +51,13 @@ export default async function createProject(options: CreationOptions) {
 	};
 
 	variableGroup.values[ksuid.generate('value').toString()] = {
-		groupId: variableGroup.groups[0],
-		itemId: variableGroup.items[0],
+		groupId: TypedObject.keys(variableGroup.groups)[0],
+		itemId: TypedObject.keys(variableGroup.items)[0],
 		value: 'prod',
 	};
 	variableGroup.values[ksuid.generate('value').toString()] = {
-		groupId: variableGroup.groups[1],
-		itemId: variableGroup.items[0],
+		groupId: TypedObject.keys(variableGroup.groups)[1],
+		itemId: TypedObject.keys(variableGroup.items)[0],
 		value: 'local',
 	};
 
