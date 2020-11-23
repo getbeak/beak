@@ -1,5 +1,5 @@
-import { TypedObject } from '@beak/common/dist/helpers/typescript';
-import { ValueParts, VariableGroups } from '@beak/common/dist/types/beak-project';
+import { TypedObject } from '@beak/common/helpers/typescript';
+import { ValueParts, VariableGroups } from '@beak/common/types/beak-project';
 
 export function parsePartsValue(
 	selectedGroups: Record<string, string>,
