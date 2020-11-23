@@ -2,6 +2,8 @@ import { TypedObject } from '@beak/common/helpers/typescript';
 import { ToggleKeyValue, ValueParts } from '@beak/common/types/beak-project';
 import React from 'react';
 import styled from 'styled-components';
+// @ts-ignore
+import ColumnResizer from 'react-column-resizer';
 
 import VariableInput from './VariableInput';
 
@@ -31,6 +33,7 @@ const BasicTableView: React.FunctionComponent<MutableBasicTableViewProps | Immut
 					<tr>
 						{props.editable && <Header></Header>}
 						<Header>{'Name'}</Header>
+						<Resizer />
 						<Header>{'Value'}</Header>
 						{props.editable && <Header></Header>}
 					</tr>
@@ -57,9 +60,7 @@ const BasicTableView: React.FunctionComponent<MutableBasicTableViewProps | Immut
 										onChange={e => updateItem('name', k, e.target.value)}
 									/>
 								</td>
-								{/* <td>
-									<InputText />
-								</td> */}
+								<Resizer />
 								<VariableInputCell>
 									<VariableInput
 										disabled={!props.editable}
@@ -104,10 +105,16 @@ const EntryTable = styled.table`
 	border-collapse: collapse;
 `;
 
+const Resizer = styled(ColumnResizer)`
+	width: 2px;
+	background-color: ${p => p.theme.ui.backgroundBorderSeparator};
+`;
+
 const Header = styled.th`
 	text-align: left;
 	font-size: 13px;
 	font-weight: 400;
+	padding-left: 6px;
 
 	color: ${props => props.theme.ui.textOnFill};
 `;

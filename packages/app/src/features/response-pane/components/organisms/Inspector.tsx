@@ -5,11 +5,10 @@ import TabBar from '../../../../components/atoms/TabBar';
 import TabItem from '../../../../components/atoms/TabItem';
 import TabSpacer from '../../../../components/atoms/TabSpacer';
 import { Flight } from '../../../../store/flight/types';
-import DebuggerTab from './DebuggerTab';
 import RequestTab from './RequestTab';
 import ResponseTab from './ResponseTab';
 
-type Tab = 'debugging' | 'request' | 'response';
+type Tab = 'request' | 'response';
 
 export interface InspectorProps {
 	flight: Flight;
@@ -22,12 +21,6 @@ const Inspector: React.FunctionComponent<InspectorProps> = props => {
 		<React.Fragment>
 			<TabBar centered>
 				<TabSpacer />
-				<TabItem
-					active={tab === 'debugging'}
-					onClick={() => setTab('debugging')}
-				>
-					{'Debugging'}
-				</TabItem>
 				<TabItem
 					active={tab === 'request'}
 					onClick={() => setTab('request')}
@@ -44,7 +37,6 @@ const Inspector: React.FunctionComponent<InspectorProps> = props => {
 			</TabBar>
 
 			<TabBody>
-				{tab === 'debugging' && <DebuggerTab flight={props.flight} />}
 				{tab === 'request' && <RequestTab flight={props.flight} />}
 				{tab === 'response' && <ResponseTab flight={props.flight} />}
 			</TabBody>

@@ -1,5 +1,4 @@
 import BasicTableView from '@beak/app/components/molecules/BasicTableView';
-import VariableInput from '@beak/app/components/molecules/VariableInput';
 import BeakHubContext from '@beak/app/contexts/beak-hub-context';
 import actions from '@beak/app/store/project/actions';
 import { RequestPreferenceMainTab } from '@beak/common/dist/types/beak-hub';
@@ -12,7 +11,6 @@ import TabBar from '../../../../components/atoms/TabBar';
 import TabItem from '../../../../components/atoms/TabItem';
 import TabSpacer from '../../../../components/atoms/TabSpacer';
 import RequestPreferencesContext from '../../contexts/request-preferences-context';
-import Debugger from '../molecules/DebuggerTab';
 import BodyTab from './BodyTab';
 
 export interface ModifiersProps {
@@ -42,12 +40,6 @@ const Modifiers: React.FunctionComponent<ModifiersProps> = props => {
 			<TabBar centered>
 				<TabSpacer />
 				<TabItem
-					active={tab === 'debugging'}
-					onClick={() => setTab('debugging')}
-				>
-					{'Debugging'}
-				</TabItem>
-				<TabItem
 					active={tab === 'headers'}
 					onClick={() => setTab('headers')}
 				>
@@ -75,7 +67,6 @@ const Modifiers: React.FunctionComponent<ModifiersProps> = props => {
 			</TabBar>
 
 			<TabBody>
-				{tab === 'debugging' && <Debugger node={node} />}
 				{tab === 'headers' && (
 					<React.Fragment>
 						<BasicTableView

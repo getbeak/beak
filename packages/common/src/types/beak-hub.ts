@@ -7,7 +7,7 @@ export interface RecentLocalProject {
 	exists: boolean;
 }
 
-export type RequestPreferenceMainTab = 'debugging' | 'headers' | 'url_query' | 'body' | 'options';
+export type RequestPreferenceMainTab = 'headers' | 'url_query' | 'body' | 'options';
 
 export interface RequestPreference {
 	mainTab: RequestPreferenceMainTab;
