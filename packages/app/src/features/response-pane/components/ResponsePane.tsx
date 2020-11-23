@@ -49,11 +49,12 @@ const ResponsePane: React.FunctionComponent = () => {
 				flightHistory={flightHistory}
 				selectedFlightIndex={selectedFlightIndex}
 			/>
-			<FlightHistorySelector
+			{/* Being this back when it's moved into the header */}
+			{/* <FlightHistorySelector
 				flightHistory={flightHistory}
 				selectedFlightIndex={selectedFlightIndex}
 				updateSelectedFlight={setSelectedFlightIndex}
-			/>
+			/> */}
 			<Inspector flight={selectedFlightHistory} />
 		</Container>
 	);
