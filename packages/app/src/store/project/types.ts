@@ -63,12 +63,8 @@ export interface RequestIdPayload {
 }
 
 export interface RequestUriUpdatedPayload extends RequestIdPayload {
-	protocol?: string;
+	url?: ValueParts;
 	verb?: string;
-	hostname?: string;
-	pathname?: string;
-	port?: string;
-	fragment?: string;
 }
 
 export interface ToggleableItemAddedPayload extends RequestIdPayload {

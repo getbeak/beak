@@ -74,7 +74,10 @@ const Modifiers: React.FunctionComponent<ModifiersProps> = props => {
 							items={node.info.headers}
 							addItem={() => dispatch(actions.requestHeaderAdded({ requestId: node.id }))}
 							removeItem={ident =>
-								dispatch(actions.requestHeaderRemoved({ identifier: ident, requestId: node.id }))
+								dispatch(actions.requestHeaderRemoved({
+									identifier: ident,
+									requestId: node.id,
+								}))
 							}
 							updateItem={(type, ident, value) =>
 								dispatch(actions.requestHeaderUpdated({
@@ -89,7 +92,7 @@ const Modifiers: React.FunctionComponent<ModifiersProps> = props => {
 				{tab === 'url_query' && (
 					<BasicTableView
 						editable
-						items={node.info.uri.query}
+						items={node.info.query}
 						addItem={() => dispatch(actions.requestQueryAdded({ requestId: node.id }))}
 						removeItem={ident =>
 							dispatch(actions.requestQueryRemoved({ identifier: ident, requestId: node.id }))

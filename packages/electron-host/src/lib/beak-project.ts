@@ -17,19 +17,13 @@ export default async function createProject(options: CreationOptions) {
 	const exReq: RequestNodeFile = {
 		id: ksuid.generate('request').toString(),
 		verb: 'get',
-		uri: {
-			protocol: 'https:',
-			hostname: 'httpbin.org',
-			port: '',
-			pathname: '/anything',
-			query: {
-				[ksuid.generate('query').toString()]: {
-					enabled: true,
-					name: 'artist',
-					value: ['Taylor Swift'],
-				},
+		url: ['https://httpbin.org/anything'],
+		query: {
+			[ksuid.generate('query').toString()]: {
+				enabled: true,
+				name: 'artist',
+				value: ['Taylor Swift'],
 			},
-			fragment: null,
 		},
 		headers: {
 			[ksuid.generate('header').toString()]: {

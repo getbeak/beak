@@ -3,6 +3,7 @@ import { Flight } from '@beak/app/store/flight/types';
 import { convertRequestToUrl } from '@beak/common/helpers/uri';
 import { getReasonPhrase } from 'http-status-codes';
 import React from 'react';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 
 export interface HeaderProps {
@@ -11,6 +12,7 @@ export interface HeaderProps {
 }
 
 const Header: React.FunctionComponent<HeaderProps> = props => {
+	const { selectedGroups, variableGroups } = useSelector(s => s.global.variableGroups);
 	const { flightHistory, selectedFlightIndex } = props;
 	const selectedFlight = flightHistory[selectedFlightIndex];
 	const { error, request, response } = selectedFlight;
@@ -21,7 +23,7 @@ const Header: React.FunctionComponent<HeaderProps> = props => {
 				<strong>{request.verb.toUpperCase()}</strong>
 			</Section>
 			<UrlSection>
-				{convertRequestToUrl(request).toString()}
+				{convertRequestToUrl(selectedGroups, variableGroups!, request).toString()}
 			</UrlSection>
 			{response && (
 				<StatusSection $status={response.status}>
@@ -49,12 +51,15 @@ function safeGetReasonPhrase(status: number) {
 
 const UrlHeaderWrapper = styled.div`
 	display: flex;
-	margin: 25px auto;
+	justify-content: space-between;
+	align-items: center;
 
+	margin: 25px auto;
 	font-size: 15px;
 `;
 
 const Section = styled.div`
+	flex: 0 0 auto;
 	background-color: ${p => p.theme.ui.background};
 
 	border: 1px solid ${p => p.theme.ui.primaryFill};
@@ -65,6 +70,7 @@ const Section = styled.div`
 `;
 
 const UrlSection = styled(Section)`
+	flex: 1 1 auto;
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;

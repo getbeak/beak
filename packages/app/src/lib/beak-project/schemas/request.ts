@@ -70,50 +70,6 @@ const requestSchema = {
 			},
 		},
 
-		uri: {
-			type: 'object',
-			additionalProperties: true,
-
-			required: [
-				'protocol',
-				'hostname',
-				'pathname',
-				'port',
-				'query',
-				'fragment',
-			],
-
-			properties: {
-				protocol: {
-					type: 'string',
-				},
-
-				hostname: {
-					type: ['string', 'null'],
-				},
-
-				pathname: {
-					type: ['string', 'null'],
-				},
-
-				port: {
-					type: ['string', 'null'],
-				},
-
-				query: {
-					type: 'object',
-
-					properties: {
-						$ref: '#/definitions/keyValuePair',
-					},
-				},
-
-				fragment: {
-					type: ['string', 'null'],
-				},
-			},
-		},
-
 		body: {
 			type: 'object',
 			additionalProperties: true,
@@ -186,7 +142,8 @@ const requestSchema = {
 	required: [
 		'id',
 		'verb',
-		'uri',
+		'url',
+		'query',
 		'headers',
 	],
 
@@ -200,8 +157,16 @@ const requestSchema = {
 			type: 'string',
 		},
 
-		uri: {
-			$ref: '#/definitions/uri',
+		url: {
+			$ref: '#/definitions/valueParts',
+		},
+
+		query: {
+			type: 'object',
+
+			properties: {
+				$ref: '#/definitions/keyValuePair',
+			},
 		},
 
 		headers: {

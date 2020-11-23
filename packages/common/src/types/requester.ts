@@ -1,4 +1,4 @@
-import { RequestOverview, ResponseOverview } from './beak-project';
+import { RequestOverview, ResponseOverview, VariableGroups } from './beak-project';
 
 export const FlightMessages = {
 	heartbeat: 'flight_heartbeat',
@@ -12,6 +12,9 @@ export interface FlightRequestPayload {
 	flightId: string;
 	requestId: string;
 	request: RequestOverview;
+
+	selectedGroups: Record<string, string>;
+	variableGroups: VariableGroups;
 }
 
 /* eslint-disable @typescript-eslint/indent */

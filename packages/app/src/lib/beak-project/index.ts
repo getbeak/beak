@@ -116,14 +116,8 @@ export default class BeakProject {
 			id: ksuid.generate('request').toString(),
 			verb: 'get',
 			headers: {},
-			uri: {
-				protocol: 'https:',
-				hostname: 'httpbin.org',
-				port: '',
-				pathname: '/anything',
-				query: { },
-				fragment: null,
-			},
+			url: ['https://httpbin.org/anything'],
+			query: { },
 			body: {
 				type: 'text',
 				payload: '',
@@ -150,7 +144,8 @@ export default class BeakProject {
 			id: requestFile.id,
 			info: {
 				verb: requestFile.verb,
-				uri: requestFile.uri,
+				url: requestFile.url,
+				query: requestFile.query,
 				headers: requestFile.headers,
 				body: requestFile.body,
 			},
@@ -178,7 +173,8 @@ export default class BeakProject {
 			id: requestFile.id,
 			info: {
 				verb: requestFile.verb,
-				uri: requestFile.uri,
+				url: requestFile.url,
+				query: requestFile.query,
 				headers: requestFile.headers,
 				body: requestFile.body,
 			},
@@ -197,7 +193,8 @@ export default class BeakProject {
 		const requestFile: RequestNodeFile = {
 			id: node.id,
 			verb: node.info.verb,
-			uri: node.info.uri,
+			url: node.info.url,
+			query: node.info.query,
 			headers: node.info.headers,
 			body: node.info.body,
 		};

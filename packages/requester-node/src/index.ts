@@ -1,7 +1,8 @@
 import { requestBodyContentType } from '@beak/common/helpers/request';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { convertRequestToUrl } from '@beak/common/helpers/uri';
-import { RequestOverview } from '@beak/common/types/beak-project';
+import { parsePartsValue } from '@beak/common/src/helpers/variable-groups';
+import { RequestOverview, VariableGroups } from '@beak/common/types/beak-project';
 import {
 	FlightCompletePayload,
 	FlightFailedPayload,
@@ -31,7 +32,7 @@ Stages:
 export async function startRequester(options: RequesterOptions) {
 	const { payload, callbacks } = options;
 	const { complete, failed, heartbeat } = callbacks;
-	const { request } = payload;
+	const { request, selectedGroups, variableGroups } = payload;
 	const start = Date.now();
 
 	heartbeat({
@@ -42,7 +43,7 @@ export async function startRequester(options: RequesterOptions) {
 	let response: Response;
 
 	try {
-		response = await runRequest(request);
+		response = await runRequest(selectedGroups, variableGroups, request);
 	} catch (error) {
 		failed({ error });
 
@@ -86,9 +87,13 @@ export async function startRequester(options: RequesterOptions) {
 	});
 }
 
-async function runRequest(overview: RequestOverview) {
+async function runRequest(
+	selectedGroups: Record<string, string>,
+	variableGroups: VariableGroups,
+	overview: RequestOverview,
+) {
 	const { body, headers, verb } = overview;
-	const url = convertRequestToUrl(overview);
+	const url = convertRequestToUrl(selectedGroups, variableGroups, overview);
 
 	const init: RequestInit = {
 		method: verb,
@@ -96,7 +101,7 @@ async function runRequest(overview: RequestOverview) {
 			.filter(h => h.enabled)
 			.reduce((acc, val) => ({
 				...acc,
-				[val.name]: val.value,
+				[val.name]: parsePartsValue(selectedGroups, variableGroups, val.value),
 			}), {}),
 		redirect: 'follow',
 		compress: false,

@@ -11,6 +11,7 @@ import { END, eventChannel } from 'redux-saga';
 import { put, select, take } from 'redux-saga/effects';
 
 import { ApplicationState } from '../..';
+import { State as VGState } from '../../variable-groups/types';
 import * as actions from '../actions';
 import { State } from '../types';
 
@@ -24,6 +25,8 @@ export default function* requestFlightWorker() {
 
 	const flight: State = yield select((s: ApplicationState) => s.global.flight);
 	const node: RequestNode = yield select((s: ApplicationState) => s.global.project.tree![requestId]);
+	const vgState: VGState = yield select((s: ApplicationState) => s.global.variableGroups);
+	const { selectedGroups, variableGroups } = vgState;
 
 	if (flight.currentFlight?.flighting) {
 		// TODO(afr): Ask user if they want to cancel existing, or cancel new
@@ -67,6 +70,9 @@ export default function* requestFlightWorker() {
 		flightId,
 		requestId,
 		request: node.info,
+
+		selectedGroups,
+		variableGroups,
 	});
 
 	while (true) {

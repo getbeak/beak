@@ -35,14 +35,8 @@ export interface ToggleKeyValue {
 
 export interface RequestOverview {
 	verb: string;
-	uri: {
-		protocol: string;
-		hostname: string | null;
-		pathname: string | null;
-		port: string | null;
-		query: Record<string, ToggleKeyValue>;
-		fragment: string | null;
-	};
+	url: ValueParts;
+	query: Record<string, ToggleKeyValue>;
 	headers: Record<string, ToggleKeyValue>;
 	body: RequestBody;
 }

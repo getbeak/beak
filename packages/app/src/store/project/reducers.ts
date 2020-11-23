@@ -35,7 +35,7 @@ const projectReducer = createReducer(initialState, builder => {
 			const { payload } = action;
 			const node = state.tree![payload.requestId] as RequestNode;
 
-			node.info.uri.query[ksuid.generate('query').toString()] = {
+			node.info.query[ksuid.generate('query').toString()] = {
 				name: payload.name || '',
 				value: payload.value || [''],
 				enabled: true,
@@ -44,7 +44,7 @@ const projectReducer = createReducer(initialState, builder => {
 		.addCase(actions.requestQueryUpdated, (state, action) => {
 			const { payload } = action;
 			const node = state.tree![payload.requestId] as RequestNode;
-			const existingItem = node.info.uri.query[payload.identifier];
+			const existingItem = node.info.query[payload.identifier];
 
 			if (payload.name !== void 0)
 				existingItem.name = payload.name;
@@ -56,7 +56,7 @@ const projectReducer = createReducer(initialState, builder => {
 		.addCase(actions.requestQueryRemoved, (state, action) => {
 			const node = state.tree![action.payload.requestId] as RequestNode;
 
-			delete node.info.uri.query[action.payload.identifier];
+			delete node.info.query[action.payload.identifier];
 		})
 
 		.addCase(actions.requestHeaderAdded, (state, action) => {
@@ -106,16 +106,8 @@ const projectReducer = createReducer(initialState, builder => {
 
 			if (payload.verb !== void 0)
 				node.info.verb = payload.verb;
-			if (payload.protocol !== void 0)
-				node.info.uri.protocol = payload.protocol;
-			if (payload.hostname !== void 0)
-				node.info.uri.hostname = payload.hostname;
-			if (payload.pathname !== void 0)
-				node.info.uri.pathname = payload.pathname;
-			if (payload.port !== void 0)
-				node.info.uri.port = payload.port;
-			if (payload.fragment !== void 0)
-				node.info.uri.fragment = payload.fragment;
+			if (payload.url !== void 0)
+				node.info.url = payload.url;
 		})
 		.addCase(actions.refreshNodeState, (state, action) => {
 			const node = action.payload as RequestNode;

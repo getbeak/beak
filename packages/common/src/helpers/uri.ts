@@ -1,53 +1,44 @@
-import * as nodeUrl from 'url';
 import * as URLParse from 'url-parse';
 
 import { TypedObject } from '../helpers/typescript';
-import { RequestOverview } from '../types/beak-project';
+import { RequestOverview, VariableGroups } from '../types/beak-project';
+import { parsePartsValue } from './variable-groups';
 
 interface Options {
-	useFallback: boolean;
 	includeQuery: boolean;
 	includeHash: boolean;
 }
 
-export function convertRequestToUrl(info: RequestOverview, opts?: Partial<Options>) {
-	const url = new URLParse('', {}, false);
+export function convertRequestToUrl(
+	selectedGroups: Record<string, string>,
+	variableGroups: VariableGroups,
+	info: RequestOverview,
+	opts?: Partial<Options>,
+) {
+	const value = parsePartsValue(selectedGroups, variableGroups, info.url);
+	const url = new URLParse(value, {}, false);
 	const options = {
 		includeQuery: true,
 		includeHash: true,
-		useFallback: true,
 		...opts,
 	};
 
-	url.set('protocol', info.uri.protocol);
-	url.set('hostname', info.uri.hostname || '');
-	url.set('port', info.uri.port || '');
-	url.set('pathname', info.uri.pathname || '');
-
-	if (options.includeHash)
-		url.set('hash', info.uri.fragment || '');
+	if (!options.includeHash)
+		url.set('hash', void 0);
 
 	if (options.includeQuery) {
 		const query = (() => {
-			if (!info.uri.query)
+			if (!info.query)
 				return void 0;
 
-			return TypedObject.values(info.uri.query).filter(q => q.enabled)
+			return TypedObject.values(info.query).filter(q => q.enabled)
 				.reduce((acc, val) => ({
 					...acc,
-					[val.name]: val.value,
+					[val.name]: parsePartsValue(selectedGroups, variableGroups, val.value),
 				}), {});
 		})();
 
 		url.set('query', query);
-	}
-
-	if (options.useFallback) {
-		if (info.uri.protocol === '') url.set('protocol', 'https:');
-		if (info.uri.hostname === '') url.set('hostname', 'httpbin.org');
-
-		if (!info.uri.hostname && !info.uri.pathname)
-			url.set('pathname', 'anything');
 	}
 
 	return url;

@@ -10,7 +10,7 @@ import { requestBodyContentType } from '@beak/common/helpers/request';
 import 'ace-builds/src-noconflict/mode-text';
 import 'ace-builds/src-noconflict/theme-solarized_dark';
 import { useSelector } from 'react-redux';
-import { parsePartsValue } from '@beak/app/features/variable-groups/helpers/getters';
+import { parsePartsValue } from '@beak/common/dist/helpers/variable-groups';
 
 const bodyFreeVerbs = ['get', 'head'];
 
@@ -63,17 +63,17 @@ export function createBasicHttpOutput(
 	selectedGroups: Record<string, string>,
 	variableGroups: VariableGroups,
 ) {
-	const url = convertRequestToUrl(overview);
+	const url = convertRequestToUrl(selectedGroups, variableGroups, overview);
 	const { headers, verb, body } = overview;
 	const firstLine = [
 		`${verb.toUpperCase()} `,
 		url.pathname,
 	];
 
-	if (overview.uri.query) {
+	if (overview.query) {
 		const builder = new URLSearchParams();
 
-		for (const { name, value } of TypedObject.values(overview.uri.query).filter(q => q.enabled))
+		for (const { name, value } of TypedObject.values(overview.query).filter(q => q.enabled))
 			builder.append(name, parsePartsValue(selectedGroups, variableGroups, value));
 
 		firstLine.push(`?${builder.toString()}`);

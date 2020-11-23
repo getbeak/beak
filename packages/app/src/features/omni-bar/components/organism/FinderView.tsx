@@ -15,6 +15,7 @@ export interface FinderViewProps {
 const FinderView: React.FunctionComponent<FinderViewProps> = ({ content, reset }) => {
 	const dispatch = useDispatch();
 	const tree = useSelector(s => s.global.project.tree) || {};
+	const { selectedGroups, variableGroups } = useSelector(s => s.global.variableGroups);
 	const flattened = TypedObject.values(tree).filter(t => t.type === 'request') as RequestNode[];
 	const [matches, setMatches] = useState<string[] | undefined>(void 0);
 	const fuse = new Fuse(flattened, {
@@ -55,7 +56,7 @@ const FinderView: React.FunctionComponent<FinderViewProps> = ({ content, reset }
 							<React.Fragment>
 								{' - '}
 								<UriSpan>
-									{convertRequestToUrl(reqNode.info).toString()}
+									{convertRequestToUrl(selectedGroups, variableGroups!, reqNode.info).toString()}
 								</UriSpan>
 							</React.Fragment>
 						)}
