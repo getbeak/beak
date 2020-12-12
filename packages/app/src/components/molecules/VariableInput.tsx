@@ -1,3 +1,4 @@
+import { TypedObject } from '@beak/common/dist/helpers/typescript';
 import { ValueParts, ValuePartVariableGroupItem } from '@beak/common/dist/types/beak-project';
 import React, { useRef, useState } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
@@ -183,6 +184,27 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, 
 			setQuery(part.substr(queryOffset));
 	}
 
+	function getItemIdFlair(itemId: string) {
+		if (!variableGroups)
+			return { variableGroup: 'Unknown' };
+
+		const keys = TypedObject.keys(variableGroups);
+
+		for (const key of keys) {
+			const vg = variableGroups[key];
+			const itemValue = vg.items[itemId];
+
+			if (itemValue) {
+				return {
+					variableGroup: key,
+					item: itemValue,
+				};
+			}
+		}
+
+		return { variableGroup: 'Unknown' };
+	}
+
 	function renderParts() {
 		return renderToStaticMarkup(
 			<React.Fragment>
@@ -201,7 +223,7 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, 
 					if (p.type !== 'variable_group_item')
 						throw new Error('unknown part type');
 
-					// TODO(afr): gather the correct information for below
+					const { variableGroup, item } = getItemIdFlair(p.payload.itemId);
 
 					return (
 						<div
@@ -212,10 +234,9 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, 
 							key={index}
 						>
 							<strong>
-								{'Environment'}
+								{variableGroup}
 							</strong>
-							{' '}
-							{'(env)'}
+							{item && ` (${item})`}
 						</div>
 					);
 				})}
