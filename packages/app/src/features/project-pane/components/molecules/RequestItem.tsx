@@ -1,4 +1,5 @@
 import { getGlobal } from '@beak/app/globals';
+import { TypedObject } from '@beak/common/dist/helpers/typescript';
 import { RequestNode } from '@beak/common/types/beak-project';
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -23,6 +24,11 @@ const RequestItem: React.FunctionComponent<RequestItemProps> = props => {
 	const selectedRequest = useSelector(s => s.global.project.selectedRequest);
 	const flight = useSelector(s => s.global.flight.flightHistory[node.id]);
 	const active = selectedRequest === props.id;
+
+	let mostRecentFlight = null;
+
+	if (flight?.history)
+		mostRecentFlight = TypedObject.values(flight.history)[0]?.response?.status;
 
 	useEffect(() => {
 		if (!rename) {
@@ -91,7 +97,7 @@ const RequestItem: React.FunctionComponent<RequestItemProps> = props => {
 				/>
 			)}
 
-			{flight?.[0]!.response && <RequestStatusBlob $status={flight[0].response.status} />}
+			{mostRecentFlight && <RequestStatusBlob $status={mostRecentFlight} />}
 		</Wrapper>
 	);
 };

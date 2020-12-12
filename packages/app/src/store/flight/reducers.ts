@@ -1,5 +1,6 @@
 /* eslint-disable no-param-reassign */
 
+import { TypedObject } from '@beak/common/dist/helpers/typescript';
 import { createReducer } from '@reduxjs/toolkit';
 
 import * as actions from './actions';
@@ -50,10 +51,22 @@ const flightReducer = createReducer(initialState, builder => {
 
 			state.currentFlight!.response = response;
 			state.currentFlight!.flighting = false;
-			state.flightHistory[requestId] = [
-				{ flightId, requestId, request: state.currentFlight!.request, response, binaryStoreKey },
-				...(state.flightHistory[requestId] || []),
-			];
+
+			if (!state.flightHistory[requestId]) {
+				state.flightHistory[requestId] = {
+					selected: void 0,
+					history: {},
+				};
+			}
+
+			state.flightHistory[requestId].selected = flightId;
+			state.flightHistory[requestId].history[flightId] = {
+				flightId,
+				requestId,
+				request: state.currentFlight!.request,
+				response,
+				binaryStoreKey,
+			};
 		})
 		.addCase(actions.flightFailure, (state, action) => {
 			const { flightId, requestId, error } = action.payload;
@@ -61,10 +74,21 @@ const flightReducer = createReducer(initialState, builder => {
 
 			state.currentFlight!.error = error;
 			state.currentFlight!.flighting = false;
-			state.flightHistory[requestId] = [
-				{ flightId, requestId, request: state.currentFlight!.request, error, binaryStoreKey },
-				...(state.flightHistory[requestId] || []),
-			];
+
+			if (!state.flightHistory[requestId]) {
+				state.flightHistory[requestId] = {
+					selected: void 0,
+					history: {},
+				};
+			}
+
+			state.flightHistory[requestId].selected = flightId;
+			state.flightHistory[requestId].history[flightId] = {
+				flightId,
+				requestId,
+				request: state.currentFlight!.request,
+				binaryStoreKey,
+			};
 		})
 		.addCase(actions.beginFlightRequest, (state, action) => {
 			state.blackBox[action.payload.flightId] = true;
@@ -75,6 +99,49 @@ const flightReducer = createReducer(initialState, builder => {
 				binaryStoreKey: action.payload.binaryStoreKey,
 				flighting: true,
 			};
+		})
+
+		.addCase(actions.nextFlightHistory, (state, action) => {
+			const { requestId } = action.payload;
+			const flightHistory = state.flightHistory[requestId];
+
+			if (!flightHistory)
+				return;
+
+			const currentFlightId = flightHistory.selected;
+
+			if (!currentFlightId)
+				return;
+
+			const flightHistoryKeys = TypedObject.keys(flightHistory.history);
+			const currentFlightIndex = flightHistoryKeys.findIndex(i => currentFlightId === i);
+			const nextFlightIndex = currentFlightIndex + 1;
+
+			if (nextFlightIndex < 0)
+				return;
+
+			state.flightHistory[requestId].selected = flightHistoryKeys[nextFlightIndex];
+		})
+		.addCase(actions.previousFlightHistory, (state, action) => {
+			const { requestId } = action.payload;
+			const flightHistory = state.flightHistory[requestId];
+
+			if (!flightHistory)
+				return;
+
+			const currentFlightId = flightHistory.selected;
+
+			if (!currentFlightId)
+				return;
+
+			const flightHistoryKeys = TypedObject.keys(flightHistory.history);
+			const currentFlightIndex = flightHistoryKeys.findIndex(i => currentFlightId === i);
+			const nextFlightIndex = currentFlightIndex - 1;
+
+			if (nextFlightIndex > flightHistoryKeys.length)
+				return;
+
+			state.flightHistory[requestId].selected = flightHistoryKeys[nextFlightIndex];
 		});
 });
 

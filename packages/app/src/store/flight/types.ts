@@ -7,12 +7,15 @@ export const ActionTypes = {
 	COMPLETE_FLIGHT: '@beak/global/flight/COMPLETE_FLIGHT',
 	FLIGHT_FAILURE: '@beak/global/flight/FLIGHT_FAILURE',
 
+	NEXT_FLIGHT_HISTORY: '@beak/global/flight/NEXT_FLIGHT_HISTORY',
+	PREVIOUS_FLIGHT_HISTORY: '@beak/global/flight/PREVIOUS_FLIGHT_HISTORY',
+
 	CANCEL_FLIGHT_REQUEST: '@beak/global/flight/CANCEL_FLIGHT_REQUEST',
 };
 
 export interface State {
 	currentFlight?: FlightInProgress;
-	flightHistory: Record<string, Flight[]>;
+	flightHistory: Record<string, FlightHistory>;
 	blackBox: Record<string, boolean>;
 }
 
@@ -20,6 +23,11 @@ export const initialState: State = {
 	flightHistory: {},
 	blackBox: {},
 };
+
+export interface FlightHistory {
+	selected?: string;
+	history: Record<string, Flight>;
+}
 
 export interface BeginFlightPayload {
 	requestId: string;
@@ -60,6 +68,10 @@ export interface FlightInProgress extends Flight {
 	bodyTransferred?: number;
 	bodyTransferPercentage?: number;
 	body?: Buffer;
+}
+
+export interface FlightHistoryChangePayload {
+	requestId: string;
 }
 
 export default {

@@ -7,15 +7,12 @@ import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 
 export interface HeaderProps {
-	flightHistory: Flight[];
-	selectedFlightIndex: number;
+	selectedFlight: Flight;
 }
 
 const Header: React.FunctionComponent<HeaderProps> = props => {
 	const { selectedGroups, variableGroups } = useSelector(s => s.global.variableGroups);
-	const { flightHistory, selectedFlightIndex } = props;
-	const selectedFlight = flightHistory[selectedFlightIndex];
-	const { error, request, response } = selectedFlight;
+	const { error, request, response } = props.selectedFlight;
 
 	return (
 		<UrlHeaderWrapper>

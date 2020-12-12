@@ -6,6 +6,7 @@ import {
 	BeginFlightPayload,
 	CompleteFlightPayload,
 	FlightFailurePayload,
+	FlightHistoryChangePayload,
 } from './types';
 
 export const requestFlight = createAction(ActionTypes.REQUEST_FLIGHT);
@@ -14,6 +15,8 @@ export const beginFlightRequest = createAction<BeginFlightPayload>(ActionTypes.B
 export const updateFlightProgress = createAction<FlightHeartbeatPayload>(ActionTypes.UPDATE_FLIGHT_PROGRESS);
 export const completeFlight = createAction<CompleteFlightPayload>(ActionTypes.COMPLETE_FLIGHT);
 export const flightFailure = createAction<FlightFailurePayload>(ActionTypes.FLIGHT_FAILURE);
+export const nextFlightHistory = createAction<FlightHistoryChangePayload>(ActionTypes.NEXT_FLIGHT_HISTORY);
+export const previousFlightHistory = createAction<FlightHistoryChangePayload>(ActionTypes.PREVIOUS_FLIGHT_HISTORY);
 
 export default {
 	requestFlight,
@@ -22,4 +25,6 @@ export default {
 	updateFlightProgress,
 	completeFlight,
 	flightFailure,
+	nextFlightHistory,
+	previousFlightHistory,
 };

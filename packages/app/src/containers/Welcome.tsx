@@ -12,7 +12,7 @@ const Welcome: React.FunctionComponent = () => {
 	return (
 		<Wrapper>
 			<BrandIndicatorTop />
-			<BrandIndicatorBottom style={{opacity: view === 'main' ? 1 : 0}} />
+			<BrandIndicatorBottom style={{ opacity: view === 'main' ? 1 : 0 }} />
 			<DragBar />
 
 			<Container>

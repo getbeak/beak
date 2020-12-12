@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 
-import FlightHistorySelector from './molecules/FlightHistorySelector';
 import Header from './molecules/Header';
 import PendingSlash from './molecules/PendingSplash';
 import Inspector from './organisms/Inspector';
@@ -11,7 +10,7 @@ import Inspector from './organisms/Inspector';
 const ResponsePane: React.FunctionComponent = () => {
 	const flight = useSelector(s => s.global.flight);
 	const { tree, selectedRequest } = useSelector(s => s.global.project);
-	const [selectedFlightIndex, setSelectedFlightIndex] = useState(0);
+	const flightHistories = useSelector(s => s.global.flight.flightHistory);
 	const selectedNode = tree![selectedRequest || 'non_existent'];
 
 	if (!selectedRequest) {
@@ -30,8 +29,7 @@ const ResponsePane: React.FunctionComponent = () => {
 		);
 	}
 
-	const typedSelectedNode = selectedNode as RequestNode;
-	const flightHistory = flight.flightHistory[typedSelectedNode.id];
+	const flightHistory = flightHistories[selectedRequest];
 
 	if (!flightHistory) {
 		return (
@@ -41,21 +39,20 @@ const ResponsePane: React.FunctionComponent = () => {
 		);
 	}
 
-	const selectedFlightHistory = flightHistory[selectedFlightIndex];
+	const selectedFlight = flightHistory.history[flightHistory.selected!];
+
+	if (!selectedFlight) {
+		return (
+			<Container>
+				<span>{'selected flight id does not exist'}</span>
+			</Container>
+		);
+	}
 
 	return (
 		<Container>
-			<Header
-				flightHistory={flightHistory}
-				selectedFlightIndex={selectedFlightIndex}
-			/>
-			{/* Being this back when it's moved into the header */}
-			{/* <FlightHistorySelector
-				flightHistory={flightHistory}
-				selectedFlightIndex={selectedFlightIndex}
-				updateSelectedFlight={setSelectedFlightIndex}
-			/> */}
-			<Inspector flight={selectedFlightHistory} />
+			<Header selectedFlight={selectedFlight} />
+			<Inspector flight={selectedFlight} />
 		</Container>
 	);
 };
