@@ -23,7 +23,7 @@ export function convertRequestToUrl(
 		...opts,
 	};
 
-	if (!options.includeHash)
+	if (options.includeHash)
 		url.set('hash', void 0);
 
 	if (options.includeQuery) {
