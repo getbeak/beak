@@ -28,6 +28,7 @@
     "@fortawesome/free-solid-svg-icons": "^5.14.0",
     "@fortawesome/react-fontawesome": "^0.1.11",
     "@reduxjs/toolkit": "^1.4.0",
+    "@types/command-exists": "^1.2.0",
     "@types/fs-extra": "^9.0.1",
     "@types/jest": "^26.0.3",
     "@types/lodash.clonedeep": "^4.5.6",
@@ -39,6 +40,7 @@
     "@types/styled-components": "^5.1.1",
     "ace-builds": "^1.4.12",
     "change-case": "^4.1.1",
+    "command-exists": "^1.2.9",
     "copy-webpack-plugin": "^5.1.2",
     "css-loader": "^5.0.0",
     "date-fns": "^2.15.0",
@@ -64,6 +66,7 @@
     "ts-loader": "^8.0.6",
     "tsconfig-paths-webpack-plugin": "^3.3.0",
     "url-loader": "^4.1.1",
+    "valid-filename": "^3.1.0",
     "webpack": "^4.44.2",
     "webpack-cli": "^3.3.12",
     "webpack-dev-server": "^3.11.0"

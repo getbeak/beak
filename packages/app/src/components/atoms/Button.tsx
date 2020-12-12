@@ -44,9 +44,11 @@ const Button = styled.button<ButtonProps>`
 	border-radius: 4px;
 	color: ${props => props.theme.ui.textOnSurfaceBackground};
 	transition: transform ease .1s;
+	cursor: pointer;
 
 	&:disabled {
 		opacity: .7;
+		cursor: default;
 	}
 
 	&:not(:disabled) {
