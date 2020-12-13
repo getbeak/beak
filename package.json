@@ -5,7 +5,8 @@
   "private": true,
   "workspaces": {
     "packages": [
-      "packages/*"
+      "packages/*",
+      "scripts/*"
     ],
     "nohoist": [
       "**/electron-builder",
@@ -25,6 +26,7 @@
     "package": "lerna run package --stream --scope @beak/electron-host",
     "package-only": "lerna run package --stream --scope @beak/electron-host",
     "start": "lerna exec --parallel --concurrency 1 --stream --scope '@beak/{app,electron-host}' yarn start",
+    "release": "lerna run release --scope @beak/pelican",
     "test": "lerna run test --parallel",
     "lint": "eslint -c .eslintrc --ext .tsx --ext .ts './packages/'",
     "unfuck": "lerna clean && yarn --force"

@@ -12,5 +12,13 @@
   "directories": {
     "buildResources": "assets",
     "output": "dist-electron"
+  },
+
+  "mac": {
+    "target": "dmg",
+    "category": "public.app-category.developer-tools"
+  },
+  "win": {
+    "target": "nsis"
   }
 }

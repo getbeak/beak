@@ -6,13 +6,14 @@
     "name": "Alexander Forbes-Reed (0xdeafcafe)",
     "email": "info@beak.alex.forbrs.red"
   },
+  "homepage": "https://getbeak.app",
   "scripts": {
     "clean": "rm -rf ./dist && rm -rf tsconfig.tsbuildinfo",
     "prebuild": "copyfiles -u 3 \"../app/dist/**/*\" dist-react/",
     "build": "electron-webpack",
     "electron": "electron dist/main/main.js",
     "prepackage": "rm -rf ./dist-electron",
-    "package": "electron-builder",
+    "package": "electron-builder --win",
     "start": "electron-webpack dev",
     "test": "echo Skipped."
   },
