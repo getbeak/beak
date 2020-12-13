@@ -7,27 +7,3 @@ end_of_line = lf
 insert_final_newline = true
 charset = utf-8
 trim_trailing_whitespace = true
-
-[*.xaml]
-guidelines = 80, 120
-indent_style = tab
-indent_size = 4
-
-[*.csproj]
-indent_style = space
-indent_size = 2
-
-[*.cs]
-guidelines = 120
-indent_style = tab
-indent_size = 4
-dotnet_sort_system_directives_first = true
-dotnet_separate_import_directive_groups = false
-csharp_style_var_for_built_in_types = true
-csharp_style_var_when_type_is_apparent = true
-csharp_style_var_elsewhere = true
-
-# IDE rules
-
-# CA1401: P/Invokes should not be visible
-dotnet_diagnostic.CA1401.severity = none
