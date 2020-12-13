@@ -67,14 +67,14 @@ async function setupReleaseFolder(): Promise<ReleaseFile[]> {
 }
 
 async function deployReleases(releases: ReleaseFile[]) {
-	const version = '0.0.1';
-	const identifier = 'non+ci+build';
+	const version = await getBeakAppVersion();
+	const identifier = getReleaseIdentifier();
 
 	await Promise.all(releases.map(async r => {
 		const { filePath, platform } = r;
 		const ext = path.extname(filePath);
 		const releaseName = `${version}-${identifier}${ext}`;
-		const createUrl = `https://dist.keygen.sh/v1/${ACCOUNT}/${PRODUCT}/releases/${platform}/${releaseName}`;
+		const createUrl = `https://dist.keygen.sh/v1/${ACCOUNT}/${PRODUCT}/releases/${platform}/${version}`;
 
 		logger.info(`Creating new release for @${releaseName}"!`);
 
@@ -113,4 +113,21 @@ async function deployReleases(releases: ReleaseFile[]) {
 
 		logger.info(`Deployed new release for @${releaseName}"!`);
 	}));
+}
+
+async function getBeakAppVersion() {
+	const wd = process.cwd();
+	const beakPackagePath = path.join(wd, '../..', 'packages', 'electron-host', 'package.json');
+	const { version } = await fs.readJSON(beakPackagePath);
+
+	return version;
+}
+
+function getReleaseIdentifier() {
+	const githubHash = process.env.GITHUB_SHA;
+
+	if (githubHash)
+		return githubHash.substr(0, 7);
+
+	return 'non+ci+build';
 }
