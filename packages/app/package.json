@@ -41,7 +41,7 @@
     "ace-builds": "^1.4.12",
     "change-case": "^4.1.1",
     "command-exists": "^1.2.9",
-    "copy-webpack-plugin": "^5.1.2",
+    "copy-webpack-plugin": "^7.0.0",
     "css-loader": "^5.0.0",
     "date-fns": "^2.15.0",
     "fuse.js": "^6.4.1",
