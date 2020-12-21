@@ -65,7 +65,7 @@ const RequestItem: React.FunctionComponent<RequestItemProps> = props => {
 			tabIndex={0}
 			ref={wrapperRef}
 			onClick={() => dispatch(requestSelected(props.id))}
-			onKeyDown={event => startEditing(event)}
+			onKeyDown={(event: React.KeyboardEvent<HTMLDivElement>) => startEditing(event)}
 			onDoubleClick={() => {
 				if (editing)
 					return;
