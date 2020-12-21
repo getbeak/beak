@@ -10,14 +10,10 @@
   },
   "browserslist": {
     "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
+      "last 1 chrome version"
     ],
     "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
+      "last 1 chrome version"
     ]
   },
   "dependencies": {
@@ -43,6 +39,7 @@
     "command-exists": "^1.2.9",
     "copy-webpack-plugin": "^5.1.2",
     "css-loader": "^5.0.0",
+    "custom-electron-titlebar": "^3.2.5",
     "date-fns": "^2.15.0",
     "fuse.js": "^6.4.1",
     "http-status-codes": "^2.1.4",
@@ -68,7 +65,7 @@
     "url-loader": "^4.1.1",
     "valid-filename": "^3.1.0",
     "webpack": "^5.10.1",
-    "webpack-cli": "^4.2.0",
+    "webpack-cli": "^3.3.12",
     "webpack-dev-server": "^3.11.0"
   }
 }
