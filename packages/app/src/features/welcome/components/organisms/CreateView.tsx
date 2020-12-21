@@ -1,3 +1,5 @@
+import Input, { InputInvalidText } from '@beak/app/components/atoms/Input';
+import Label from '@beak/app/components/atoms/Label';
 import { sync } from 'command-exists';
 import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
@@ -115,35 +117,6 @@ const RecheckButtonContainer = styled.div`
 	display: flex;
 	margin-top: 10px;
 	width: 100%;
-`;
-
-const Label = styled.label`
-	display: block;
-	margin-bottom: 5px;
-`;
-
-const Input = styled.input`
-	background-color: ${p => p.theme.ui.surface};
-	color: ${p => p.theme.ui.textOnSurfaceBackground};
-	border: 1px solid ${p => p.theme.ui.primaryFill};
-	border-radius: 4px;
-	padding: 3px 5px;
-	width: 100%;
-	font-size: 15px;
-
-	&:focus {
-		outline: 0;
-		border-color: ${p => p.theme.ui.primaryFill};
-		box-shadow: 0 0 0 3px ${p => p.theme.ui.primaryFill}AA;
-	}
-`;
-
-const InputInvalidText = styled.span`
-	display: block;
-	padding: 1px 0;
-	font-size: 13px;
-	font-weight: bold;
-	color: ${p => p.theme.ui.destructiveAction};
 `;
 
 const ActionsWrapper = styled.div`
