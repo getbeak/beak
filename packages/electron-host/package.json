@@ -21,6 +21,7 @@
     "chokidar": "^3.4.1",
     "electron-store": "^6.0.1",
     "fs-extra": "^9.0.1",
+    "node-fetch": "^2.6.1",
     "simple-git": "^2.21.0",
     "source-map-support": "^0.5.19",
     "uuid": "^8.2.0"
@@ -35,7 +36,7 @@
     "electron": "10.1.5",
     "electron-builder": "^22.9.1",
     "electron-webpack": "^2.8.2",
-    "webpack": "^5.10.1"
+    "webpack": "^4.44.2"
   },
   "resolutions": {
     "webpack-sources": "^1.1.0"

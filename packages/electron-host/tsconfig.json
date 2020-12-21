@@ -23,6 +23,8 @@
     "dist",
     "dist-ts",
     "dist-react",
+    "dist-electron",
+    "../app",
     "../common",
     "../requester-node"
   ]
