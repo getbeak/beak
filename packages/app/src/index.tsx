@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 
 import About from './containers/About';
+import Onboarding from './containers/Onboarding';
 import ProjectMain from './containers/ProjectMain';
 import VariableGroupEditor from './containers/VariableGroupEditor';
 import Welcome from './containers/Welcome';
@@ -26,6 +27,9 @@ function getComponent(container: string | null) {
 
 		case 'variable-group-editor':
 			return <VariableGroupEditor />;
+
+		case 'onboarding':
+			return <Onboarding />;
 
 		default:
 			return <span>{'unknown'}</span>;

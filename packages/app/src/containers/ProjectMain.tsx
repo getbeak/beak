@@ -19,6 +19,7 @@ import RequestPane from '../features/request-pane/components/RequestPane';
 import ResponsePane from '../features/response-pane/components/ResponsePane';
 import StatusBar from '../features/status-bar/components/StatusBar';
 import TitleBar from '../features/title-bar/components/TitleBar';
+import useTitleBar from '../hooks/use-title-bar';
 import BeakHub from '../lib/beak-hub';
 import { requestFlight } from '../store/flight/actions';
 import { openProject, requestSelected } from '../store/project/actions';
@@ -53,6 +54,8 @@ const ProjectMain: React.FunctionComponent = () => {
 
 		dispatch(requestFlight());
 	}, [selectedRequest]);
+
+	useTitleBar();
 
 	return (
 		<React.Fragment>

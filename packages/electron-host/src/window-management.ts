@@ -4,7 +4,7 @@ import * as url from 'url';
 
 import { staticPath } from './utils/static-path';
 
-type Container = 'about' | 'project-main' | 'welcome' | 'variable-group-editor';
+type Container = 'about' | 'project-main' | 'welcome' | 'variable-group-editor' | 'onboarding';
 
 export const windowStack: Record<number, BrowserWindow> = {};
 
@@ -83,7 +83,6 @@ export function createWelcomeWindow() {
 		frame: false,
 		resizable: false,
 		title: 'Welcome to Beak!',
-		// vibrancy: 'dark', // TODO(afr): Change this to `under-window` or `sidebar` soon.
 	};
 
 	createWindow(windowOpts, 'welcome');
@@ -110,13 +109,15 @@ export function createProjectMainWindow(projectFilePath: string) {
 		minWidth: 760,
 		title: 'Loading... - Beak',
 		titleBarStyle: 'hiddenInset',
-		vibrancy: 'dark', // TODO(afr): Change this to `under-window` or `sidebar` soon.
 	};
 
-	// TODO(afr): Totally custom frame for Linux/Windows
-	// // On Linux and Windows, we want total control of the frame
-	// if (process.platform !== 'darwin')
-	// 	windowOpts.frame = false;
+	// Hopefully vibrancy comes to windows soon
+	if (process.platform === 'darwin')
+		windowOpts.vibrancy = 'dark'; // TODO(afr): Change this to `under-window` or `sidebar` soon.
+
+	// On Linux and Windows, we want total control of the frame
+	if (process.platform !== 'darwin')
+		windowOpts.frame = false;
 
 	createWindow(windowOpts, 'project-main', { projectFilePath });
 }
@@ -145,4 +146,17 @@ export function createVariableGroupEditorWindow(projectPath: string) {
 	const windowId = createWindow(windowOpts, 'variable-group-editor', { projectPath });
 
 	stacks[key] = windowId;
+}
+
+export function createOnboardingWindow() {
+	const windowOpts: BrowserWindowConstructorOptions = {
+		height: 310,
+		width: 650,
+		resizable: false,
+		autoHideMenuBar: true,
+		titleBarStyle: 'hiddenInset',
+		title: 'Welcome to the Beak Alpha!',
+	};
+
+	createWindow(windowOpts, 'onboarding');
 }
