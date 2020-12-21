@@ -2,15 +2,25 @@ import './ipc-layer';
 
 import { app } from 'electron';
 
+import persistentStore from './lib/persistent-store';
 import createMenu from './menu';
-import { createAboutWindow, createProjectMainWindow, createVariableGroupEditorWindow, createWelcomeWindow, windowStack } from './window-management';
+import {
+	createAboutWindow,
+	createOnboardingWindow,
+	createProjectMainWindow,
+	createVariableGroupEditorWindow,
+	createWelcomeWindow,
+	windowStack,
+} from './window-management';
 
-const quickCreate = {
-	project: createProjectMainWindow,
-	welcome: createWelcomeWindow,
-	about: createAboutWindow,
-	variableGroupEditor: createVariableGroupEditorWindow,
-};
+async function createDefaultWindow() {
+	// const user = persistentStore.get('user');
+
+	// if (!user)
+	// 	return createOnboardingWindow();
+
+	return createWelcomeWindow();
+}
 
 createMenu();
 
@@ -22,10 +32,9 @@ app.on('window-all-closed', () => {
 
 app.on('activate', () => {
 	if (Object.keys(windowStack).length === 0)
-		quickCreate.welcome();
+		createDefaultWindow();
 });
 
 app.on('ready', () => {
-	quickCreate.welcome();
-	// quickCreate.variableGroupEditor('/Users/afr/Source/github.com/beak-app/testing-project');
+	createDefaultWindow();
 });
