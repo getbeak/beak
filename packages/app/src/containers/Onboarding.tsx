@@ -1,3 +1,4 @@
+import crpc from 'crpc';
 import React, { useState } from 'react';
 import styled from 'styled-components';
 
@@ -30,7 +31,9 @@ const Onboarding: React.FunctionComponent = () => {
 				</FormInput>
 
 				<ActionsWrapper>
-					<Button disabled={!enabled}>
+					<Button
+						disabled={!enabled}
+					>
 						{'Send magic link'}
 					</Button>
 				</ActionsWrapper>

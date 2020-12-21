@@ -2,6 +2,7 @@ import { applyMiddleware, combineReducers, createStore } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import createSagaMiddleware from 'redux-saga';
 import { all, fork } from 'redux-saga/effects';
+import NestClient from '../lib/nest-client';
 
 import * as contextMenusStore from './context-menus';
 import * as flightStore from './flight';
@@ -59,7 +60,9 @@ export function configureStore() {
 		composeEnhancers(applyMiddleware(sagaMiddleware)),
 	);
 
-	const context = {};
+	const context = {
+		client: new NestClient('https://nest.getbeak.app/1/'),
+	};
 
 	sagaMiddleware.setContext(context);
 	sagaMiddleware.run(rootSaga);
