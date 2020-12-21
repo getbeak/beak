@@ -1,14 +1,12 @@
 // eslint-disable-next-line simple-import-sort/sort
 import { RequestBody, RequestNode, RequestOverview, VariableGroups } from '@beak/common/types/beak-project';
 import React from 'react';
-import AceEditor from 'react-ace';
+import MonacoEditor from 'react-monaco-editor';
 
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { convertRequestToUrl } from '@beak/common/dist/helpers/uri';
 import { requestBodyContentType } from '@beak/common/helpers/request';
 
-import 'ace-builds/src-noconflict/mode-text';
-import 'ace-builds/src-noconflict/theme-solarized_dark';
 import { useSelector } from 'react-redux';
 import { parsePartsValue } from '@beak/common/dist/helpers/variable-groups';
 
@@ -25,20 +23,21 @@ const RequestOutput: React.FunctionComponent<RequestOutputProps> = props => {
 
 	return (
 		<React.Fragment>
-			<AceEditor
-				mode={'text'}
-				theme={'solarized_dark'}
+			<MonacoEditor
 				height={'100%'}
 				width={'100%'}
-				readOnly
-				setOptions={{
-					useWorker: false,
-					fixedWidthGutter: true,
-					fontFamily: 'monospace',
-					fontSize: '13px',
-				}}
+				language={'http'}
+				theme={'vs-dark'}
 				value={code}
-				showPrintMargin={false}
+				options={{
+					readOnly: true,
+					automaticLayout: true,
+					minimap: {
+						enabled: false,
+					},
+					fontFamily: 'monospace',
+					fontSize: 13,
+				}}
 			/>
 		</React.Fragment>
 	);

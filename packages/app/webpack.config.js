@@ -1,8 +1,11 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const CopyPlugin = require('copy-webpack-plugin');
-const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
+const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 const path = require('path');
+const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 /* eslint-enable @typescript-eslint/no-var-requires */
+
+const MONACO_DIR = path.resolve(__dirname, '../../node_modules/monaco-editor');
 
 module.exports = {
 	target: 'electron-renderer',
@@ -25,12 +28,25 @@ module.exports = {
 			options: {
 				projectReferences: true,
 			},
+		}, {
+			test: /\.(eot|otf|ttf|woff|woff2)$/,
+			include: MONACO_DIR,
+			use: 'file-loader',
+		}, {
+			test: /\.css$/,
+			include: MONACO_DIR,
+			use: ['style-loader', 'css-loader'],
 		}],
 	},
 	plugins: [
 		new CopyPlugin([
 			{ from: 'public' },
 		]),
+		new MonacoWebpackPlugin({
+			// available options are documented at https://github.com/Microsoft/monaco-editor-webpack-plugin#options
+			languages: ['http'],
+			themes: ['vs-dark'],
+		}),
 	],
 	devServer: {
 		// contentBase: path.join(__dirname, 'dist'),
