@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-const TitleBarIcon = styled.button`
+const ActionBarIcon = styled.button`
 	border: none;
 	border-radius: 4px;
 	padding: 0px 8px;
@@ -18,4 +18,4 @@ const TitleBarIcon = styled.button`
 	}
 `;
 
-export default TitleBarIcon;
+export default ActionBarIcon;

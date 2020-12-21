@@ -1,4 +1,3 @@
-import BeakHubContext from '@beak/app/contexts/beak-hub-context';
 import { actions } from '@beak/app/store/flight';
 import { TypedObject } from '@beak/common/dist/helpers/typescript';
 import { Nodes } from '@beak/common/dist/types/beak-project';
@@ -14,10 +13,10 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled, { useTheme } from 'styled-components';
 
-import TitleBarIcon from './atoms/TitleBarIcon';
-import TitleBarSeperator from './atoms/TitleBarSeperator';
+import ActionBarIcon from './atoms/ActionBarIcon';
+import ActionBarSeperator from './atoms/ActionBarSeperator';
 
-const TitleBar: React.FunctionComponent = () => {
+const ActionBar: React.FunctionComponent = () => {
 	const theme = useTheme();
 	const dispatch = useDispatch();
 	const selectedRequest = useSelector(s => s.global.project.selectedRequest);
@@ -26,23 +25,23 @@ const TitleBar: React.FunctionComponent = () => {
 
 	return (
 		<Wrapper>
-			<TitleBarIcon disabled>
+			<ActionBarIcon disabled>
 				<FontAwesomeIcon
 					color={theme.ui.textMinor}
 					size={'1x'}
 					icon={faRing}
 				/>
-			</TitleBarIcon>
-			<TitleBarIcon disabled>
+			</ActionBarIcon>
+			<ActionBarIcon disabled>
 				<FontAwesomeIcon
 					color={theme.ui.textMinor}
 					size={'1x'}
 					icon={faKiwiBird}
 				/>
-			</TitleBarIcon>
-			<TitleBarSeperator />
+			</ActionBarIcon>
+			<ActionBarSeperator />
 			<abbr title={'Go to previous item in flight history'}>
-				<TitleBarIcon
+				<ActionBarIcon
 					disabled={!requirements?.canGoBack}
 					onClick={() => dispatch(actions.previousFlightHistory({ requestId: selectedRequest! }))}
 				>
@@ -51,10 +50,10 @@ const TitleBar: React.FunctionComponent = () => {
 						size={'lg'}
 						icon={faCaretLeft}
 					/>
-				</TitleBarIcon>
+				</ActionBarIcon>
 			</abbr>
 			<abbr title={'Go to next item in flight history'}>
-				<TitleBarIcon
+				<ActionBarIcon
 					disabled={!requirements?.canGoForward}
 					onClick={() => dispatch(actions.nextFlightHistory({ requestId: selectedRequest! }))}
 				>
@@ -63,17 +62,17 @@ const TitleBar: React.FunctionComponent = () => {
 						size={'lg'}
 						icon={faCaretRight}
 					/>
-				</TitleBarIcon>
+				</ActionBarIcon>
 			</abbr>
-			<TitleBarSeperator />
+			<ActionBarSeperator />
 			<abbr title={'Go bird watching'}>
-				<TitleBarIcon>
+				<ActionBarIcon>
 					<FontAwesomeIcon
 						color={theme.ui.textMinor}
 						size={'1x'}
 						icon={faSearch}
 					/>
-				</TitleBarIcon>
+				</ActionBarIcon>
 			</abbr>
 		</Wrapper>
 	);
@@ -116,4 +115,4 @@ const Wrapper = styled.div`
 	padding: 0 10px;
 `;
 
-export default TitleBar;
+export default ActionBar;

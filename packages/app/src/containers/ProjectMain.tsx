@@ -12,6 +12,7 @@ import TB from '../components/atoms/TabBar';
 import TabItem from '../components/atoms/TabItem';
 import ProgressIndicator from '../components/molecules/ProgressIndicator';
 import BeakHubContext from '../contexts/beak-hub-context';
+import ActionBar from '../features/action-bar/components/ActionBar';
 import Omnibar from '../features/omni-bar/components/Omnibar';
 import ProjectPane from '../features/project-pane/components/ProjectPane';
 import RequestPane from '../features/request-pane/components/RequestPane';
@@ -74,8 +75,11 @@ const ProjectMain: React.FunctionComponent = () => {
 									orientation={'vertical'}
 								/>
 
-								<ReflexElement flex={80}>
-									<TitleBar />
+								<ReflexElement
+									flex={80}
+									style={{ overflowY: 'hidden' }}
+								>
+									<ActionBar />
 
 									<TabBar>
 										{selectedRequests.map(id => {
@@ -93,7 +97,7 @@ const ProjectMain: React.FunctionComponent = () => {
 										})}
 									</TabBar>
 
-									<ReflexContainer orientation={'vertical'}>
+									<ReqResContainer orientation={'vertical'}>
 										<ReflexElement
 											flex={50}
 											minSize={400}
@@ -109,7 +113,7 @@ const ProjectMain: React.FunctionComponent = () => {
 										>
 											<ResponsePane />
 										</ReflexElement>
-									</ReflexContainer>
+									</ReqResContainer>
 								</ReflexElement>
 							</ReflexContainer>
 							<Omnibar />
@@ -146,6 +150,10 @@ const LoadingMask = styled.div`
 	opacity: 0.6;
 
 	z-index: 1000;
+`;
+
+const ReqResContainer = styled(ReflexContainer)`
+	height: calc(100% - 34px);
 `;
 
 export default ProjectMain;
