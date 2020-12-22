@@ -26,7 +26,7 @@ const RequestOutput: React.FunctionComponent<RequestOutputProps> = props => {
 			<MonacoEditor
 				height={'100%'}
 				width={'100%'}
-				language={'http'}
+				language={'javascript'}
 				theme={'vs-dark'}
 				value={code}
 				options={{
@@ -35,7 +35,6 @@ const RequestOutput: React.FunctionComponent<RequestOutputProps> = props => {
 					minimap: {
 						enabled: false,
 					},
-					fontFamily: 'monospace',
 					fontSize: 13,
 				}}
 			/>

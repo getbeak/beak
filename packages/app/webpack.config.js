@@ -18,7 +18,7 @@ module.exports = {
 	},
 	output: {
 		path: path.join(__dirname, 'dist'),
-		publicPath: 'public',
+		publicPath: './../',
 		filename: 'bundle.min.js',
 	},
 	module: {
@@ -44,7 +44,7 @@ module.exports = {
 		]),
 		new MonacoWebpackPlugin({
 			// available options are documented at https://github.com/Microsoft/monaco-editor-webpack-plugin#options
-			languages: ['http'],
+			languages: ['json', 'javascript', 'typescript'],
 			themes: ['vs-dark'],
 		}),
 	],

@@ -1,4 +1,5 @@
-import { getGlobal } from '@beak/app/globals';
+import { toHexAlpha, toVibrancyAlpha } from '@beak/app/design-system/utils';
+import { getGlobal, isDarwin } from '@beak/app/globals';
 import { TypedObject } from '@beak/common/dist/helpers/typescript';
 import { RequestNode } from '@beak/common/types/beak-project';
 import React, { useEffect, useRef, useState } from 'react';
@@ -81,6 +82,7 @@ const RequestItem: React.FunctionComponent<RequestItemProps> = props => {
 			{editing && rename && (
 				<RenameInput
 					ref={renameInputRef}
+					type={'text'}
 					value={rename.name}
 					onBlur={() => {
 						dispatch(actions.requestRenameCancelled({ requestId: node.id }));
@@ -123,14 +125,14 @@ const Wrapper = styled.div<WrapperProps>`
 	line-height: 18px;
 
 	color: ${props => props.theme.ui.textMinor};
-	background-color: ${props => props.active ? props.theme.ui.surface : 'transparent'};
+	background-color: ${props => props.active ? toVibrancyAlpha(props.theme.ui.surface, 0.7) : 'transparent'};
 
 	&:hover {
 		color: ${props => props.theme.ui.textOnSurfaceBackground};
 	}
 	&:focus {
 		outline: none;
-		background-color: ${props => props.theme.ui.secondarySurface};
+		background-color: ${props => toVibrancyAlpha(props.theme.ui.secondarySurface, 0.7)};
 	}
 `;
 
@@ -151,10 +153,6 @@ const RenameInput = styled.input`
 	width: calc(100% - 4px);
 
 	font-size: 13px;
-
-	&:focus {
-		outline: none;
-	}
 `;
 
 export default RequestItem;

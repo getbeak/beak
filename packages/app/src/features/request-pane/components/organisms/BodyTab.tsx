@@ -1,9 +1,7 @@
-// eslint-disable-next-line simple-import-sort/sort
 import { requestBodyJsonChanged, requestBodyTextChanged } from '@beak/app/store/project/actions';
 import BasicTableView from '@beak/app/components/molecules/BasicTableView';
 import { RequestNode } from '@beak/common/types/beak-project';
 import React, { useContext, useState } from 'react';
-import AceEditor from 'react-ace';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 
@@ -11,11 +9,8 @@ import TabBar from '../../../../components/atoms/TabBar';
 import TabItem from '../../../../components/atoms/TabItem';
 import TabSpacer from '../../../../components/atoms/TabSpacer';
 import RequestPreferencesContext from '../../contexts/request-preferences-context';
-
-import 'ace-builds/src-noconflict/mode-text';
-import 'ace-builds/src-noconflict/mode-json';
-import 'ace-builds/src-noconflict/theme-solarized_dark';
 import BeakHubContext from '@beak/app/contexts/beak-hub-context';
+import MonacoEditor from 'react-monaco-editor';
 
 const { ipcRenderer } = window.require('electron');
 
@@ -76,37 +71,35 @@ const BodyTab: React.FunctionComponent<BodyTabProps> = props => {
 			<TabBody>
 				{tab === 'text' && (
 					<React.Fragment>
-						<AceEditor
-							mode={'text'}
-							theme={'solarized_dark'}
+						<MonacoEditor
 							height={'100%'}
 							width={'100%'}
-							setOptions={{
-								useWorker: false,
-								fontFamily: 'monospace',
-								fontSize: '13px',
-							}}
+							language={'plaintext'}
+							theme={'vs-dark'}
 							value={node.info.body.payload as string}
-							onChange={e => dispatch(requestBodyTextChanged({ requestId: node.id, text: e }))}
-							showPrintMargin={false}
+							options={{
+								automaticLayout: true,
+								minimap: { enabled: false },
+								fontFamily: "'Fira Code', Source Code Pro, Menlo, Monaco, 'Courier New', monospace",
+								fontSize: 13,
+							}}
 						/>
 					</React.Fragment>
 				)}
 				{tab === 'json' && (
 					<React.Fragment>
-						<AceEditor
-							mode={'json'}
-							theme={'solarized_dark'}
+						<MonacoEditor
 							height={'100%'}
 							width={'100%'}
-							setOptions={{
-								useWorker: false,
-								fontFamily: 'monospace',
-								fontSize: '13px',
-							}}
+							language={'json'}
+							theme={'vs-dark'}
 							value={node.info.body.payload as string}
-							onChange={e => dispatch(requestBodyJsonChanged({ requestId: node.id, json: e }))}
-							showPrintMargin={false}
+							options={{
+								automaticLayout: true,
+								minimap: { enabled: false },
+								fontFamily: "'Fira Code', Source Code Pro, Menlo, Monaco, 'Courier New', monospace",
+								fontSize: 13,
+							}}
 						/>
 					</React.Fragment>
 				)}
@@ -131,7 +124,7 @@ const Container = styled.div`
 const TabBody = styled.div`
 	flex-grow: 2;
 
-	overflow-y: auto;
+	overflow-y: hidden;
 	height: 100%;
 `;
 

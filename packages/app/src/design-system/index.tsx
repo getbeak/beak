@@ -21,10 +21,6 @@ const DesignSystemProvider: React.FunctionComponent<{ themeKey: Theme }> = ({ ch
 );
 
 const GlobalStyle = createGlobalStyle`
-	*:not([class^="ace_"]) {
-		font-family: ${p => p.theme.fonts.default};
-	}
-
 	* {
 		-webkit-font-smoothing: subpixel-antialiased;
 	}

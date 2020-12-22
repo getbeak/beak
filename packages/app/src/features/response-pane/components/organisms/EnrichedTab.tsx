@@ -1,19 +1,8 @@
-// eslint-disable-next-line simple-import-sort/sort
-import React, { useState } from 'react';
-import AceEditor from 'react-ace';
-import styled from 'styled-components';
-import mime from 'mime-types';
-
-import TabBar from '../../../../components/atoms/TabBar';
-import TabItem from '../../../../components/atoms/TabItem';
-import TabSpacer from '../../../../components/atoms/TabSpacer';
-
-import 'ace-builds/src-noconflict/mode-text';
-import 'ace-builds/src-noconflict/mode-json';
-import 'ace-builds/src-noconflict/theme-solarized_dark';
-import { Flight } from '@beak/app/store/flight/types';
-import { TypedObject } from '@beak/common/helpers/typescript';
 import binaryStore from '@beak/app/lib/binary-store';
+import { Flight } from '@beak/app/store/flight/types';
+import mime from 'mime-types';
+import React from 'react';
+import MonacoEditor from 'react-monaco-editor';
 
 export interface EnrichedTabProps {
 	flight: Flight;
@@ -27,19 +16,19 @@ const EnrichedTab: React.FunctionComponent<EnrichedTabProps> = props => {
 		return null;
 
 	return (
-		<AceEditor
-			mode={enriched.extension}
-			theme={'solarized_dark'}
+		<MonacoEditor
 			height={'100%'}
 			width={'100%'}
-			readOnly
-			setOptions={{
-				useWorker: false,
-				fontFamily: 'monospace',
-				fontSize: '13px',
-			}}
+			language={enriched.extension}
+			theme={'vs-dark'}
 			value={enriched.body}
-			showPrintMargin={false}
+			options={{
+				automaticLayout: true,
+				readOnly: true,
+				minimap: { enabled: false },
+				fontFamily: "'Fira Code', Source Code Pro, Menlo, Monaco, 'Courier New', monospace",
+				fontSize: 13,
+			}}
 		/>
 	);
 };

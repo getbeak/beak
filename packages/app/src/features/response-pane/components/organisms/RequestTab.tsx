@@ -1,18 +1,13 @@
-// eslint-disable-next-line simple-import-sort/sort
+import { Flight } from '@beak/app/store/flight/types';
 import React, { useState } from 'react';
-import AceEditor from 'react-ace';
+import MonacoEditor from 'react-monaco-editor';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 
 import TabBar from '../../../../components/atoms/TabBar';
 import TabItem from '../../../../components/atoms/TabItem';
 import TabSpacer from '../../../../components/atoms/TabSpacer';
-
-import 'ace-builds/src-noconflict/mode-text';
-import 'ace-builds/src-noconflict/mode-json';
-import 'ace-builds/src-noconflict/theme-solarized_dark';
-import { Flight } from '@beak/app/store/flight/types';
 import { createBasicHttpOutput } from '../../../request-pane/components/molecules/RequestOutput';
-import { useSelector } from 'react-redux';
 
 type Tab = 'raw';
 
@@ -42,20 +37,19 @@ const RequestTab: React.FunctionComponent<RequestTabProps> = props => {
 			<TabBody>
 				{tab === 'raw' && (
 					<React.Fragment>
-						<AceEditor
-							mode={'text'}
-							theme={'solarized_dark'}
+						<MonacoEditor
 							height={'100%'}
 							width={'100%'}
-							readOnly
-							setOptions={{
-								useWorker: false,
-								fontFamily: 'monospace',
-								fontSize: '12px',
-								wrap: true,
-							}}
+							language={'javascript'}
+							theme={'vs-dark'}
 							value={createBasicHttpOutput(flight.request, selectedGroups, variableGroups!)}
-							showPrintMargin={false}
+							options={{
+								automaticLayout: true,
+								readOnly: true,
+								minimap: { enabled: false },
+								fontFamily: "'Fira Code', Source Code Pro, Menlo, Monaco, 'Courier New', monospace",
+								fontSize: 13,
+							}}
 						/>
 					</React.Fragment>
 				)}
