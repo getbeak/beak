@@ -46,7 +46,14 @@ const TreeView: React.FunctionComponent<TreeViewProps> = ({ collapsed, tree }) =
 				if (n.type === 'folder')
 					return <FolderItem depth={0} key={n.filePath} id={n.filePath} />;
 
-				return <RequestItem depth={0} key={n.filePath} id={n.id} />;
+				return (
+					<RequestItem
+						depth={0}
+						key={n.filePath}
+						id={n.id}
+						parentNode={null}
+					/>
+				);
 			})}
 		</Container>
 	);

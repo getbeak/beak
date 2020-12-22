@@ -7,15 +7,17 @@ import RequestItem from './RequestItem';
 interface SwitchProps {
 	id: string;
 	depth: number;
+	parentNode: null | HTMLElement;
 }
 
 const Switch: React.FunctionComponent<SwitchProps> = props => {
-	const node = useSelector(s => s.global.project.tree![props.id]);
+	const { id, depth, parentNode } = props;
+	const node = useSelector(s => s.global.project.tree![id]);
 
 	if (node.type === 'folder')
-		return <FolderItem depth={props.depth} id={props.id} />;
+		return <FolderItem depth={depth} id={id} />;
 
-	return <RequestItem depth={props.depth} id={props.id} />;
+	return <RequestItem depth={depth} id={id} parentNode={parentNode} />;
 };
 
 export default Switch;

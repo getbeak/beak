@@ -67,7 +67,9 @@ const FolderItem: React.FunctionComponent<FolderItemProps> = props => {
 				{node.name}
 			</Wrapper>
 
-			{expanded && node.children.map(i => <Switch depth={depth + 1} key={i} id={i} />)}
+			{expanded && node.children.map(i => (
+				<Switch depth={depth + 1} key={i} id={i} parentNode={element.current} />
+			))}
 		</React.Fragment>
 	);
 };

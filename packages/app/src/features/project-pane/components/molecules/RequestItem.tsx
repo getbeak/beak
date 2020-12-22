@@ -12,6 +12,7 @@ import RequestStatusBlob from '../atoms/RequestStatusBlob';
 export interface RequestItemProps {
 	depth: number;
 	id: string;
+	parentNode: null | HTMLElement;
 }
 
 const RequestItem: React.FunctionComponent<RequestItemProps> = props => {
@@ -64,6 +65,10 @@ const RequestItem: React.FunctionComponent<RequestItemProps> = props => {
 
 		switch (event.key) {
 			case 'ArrowLeft':
+				if (props.parentNode)
+					props.parentNode.focus();
+				break;
+
 			case 'ArrowUp':
 				if (wrapperRef.current?.previousElementSibling)
 					(wrapperRef.current.previousElementSibling as HTMLElement).focus();
