@@ -39,6 +39,7 @@ const TreeView: React.FunctionComponent<TreeViewProps> = ({ collapsed, tree }) =
 		<Container
 			collapsed={collapsed}
 			data-tree-id={'root'}
+			tabIndex={-1}
 			ref={container}
 		>
 			{items.map(n => {
@@ -53,10 +54,13 @@ const TreeView: React.FunctionComponent<TreeViewProps> = ({ collapsed, tree }) =
 
 const Container = styled.div<{ collapsed: boolean }>`
 	flex-grow: 2;
-
 	overflow-y: auto;
 
 	${p => p.collapsed ? 'flex: 0' : ''}
+
+	&:focus {
+		outline: none;
+	}
 `;
 
 export default TreeView;

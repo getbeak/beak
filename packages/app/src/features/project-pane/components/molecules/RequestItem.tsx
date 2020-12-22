@@ -1,5 +1,5 @@
-import { toHexAlpha, toVibrancyAlpha } from '@beak/app/design-system/utils';
-import { getGlobal, isDarwin } from '@beak/app/globals';
+import { toVibrancyAlpha } from '@beak/app/design-system/utils';
+import { getGlobal } from '@beak/app/globals';
 import { TypedObject } from '@beak/common/dist/helpers/typescript';
 import { RequestNode } from '@beak/common/types/beak-project';
 import React, { useEffect, useRef, useState } from 'react';
@@ -58,15 +58,41 @@ const RequestItem: React.FunctionComponent<RequestItemProps> = props => {
 		dispatch(actions.requestRenameStarted({ requestId: node.id }));
 	}
 
+	function navigation(event: React.KeyboardEvent<HTMLDivElement>) {
+		if (event.ctrlKey || event.altKey || event.metaKey)
+			return;
+
+		switch (event.key) {
+			case 'ArrowLeft':
+			case 'ArrowUp':
+				if (wrapperRef.current?.previousElementSibling)
+					(wrapperRef.current.previousElementSibling as HTMLElement).focus();
+
+				break;
+
+			case 'ArrowDown':
+				if (wrapperRef.current?.nextElementSibling)
+					(wrapperRef.current.nextElementSibling as HTMLElement).focus();
+
+				break;
+
+			default:
+				break;
+		}
+	}
+
 	return (
 		<Wrapper
 			active={active}
 			data-tree-id={node.id}
 			depth={props.depth}
-			tabIndex={0}
 			ref={wrapperRef}
+			tabIndex={0}
 			onClick={() => dispatch(requestSelected(props.id))}
-			onKeyDown={(event: React.KeyboardEvent<HTMLDivElement>) => startEditing(event)}
+			onKeyDown={(event: React.KeyboardEvent<HTMLDivElement>) => {
+				startEditing(event);
+				navigation(event);
+			}}
 			onDoubleClick={() => {
 				if (editing)
 					return;

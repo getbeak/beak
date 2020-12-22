@@ -1,5 +1,6 @@
+import { toVibrancyAlpha } from '@beak/app/design-system/utils';
 import { FolderNode } from '@beak/common/types/beak-project';
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 
@@ -12,7 +13,8 @@ export interface FolderItemProps {
 
 const FolderItem: React.FunctionComponent<FolderItemProps> = props => {
 	const { depth } = props;
-	const [show, setShow] = useState(true);
+	const [expanded, setExpanded] = useState(true);
+	const element = useRef<HTMLDivElement>(null);
 	const node = useSelector(s => s.global.project.tree![props.id]) as FolderNode;
 
 	return (
@@ -20,14 +22,52 @@ const FolderItem: React.FunctionComponent<FolderItemProps> = props => {
 			<Wrapper
 				data-tree-id={node.filePath}
 				depth={depth}
+				ref={element}
 				tabIndex={0}
-				onClick={() => setShow(!show)}
+				onKeyDown={event => {
+					if (event.ctrlKey || event.altKey || event.metaKey)
+						return;
+
+					switch (event.key) {
+						case 'ArrowLeft':
+							if (expanded)
+								setExpanded(false);
+							else if (element.current)
+								element.current.parentElement?.focus();
+
+							break;
+
+						case 'ArrowRight':
+							if (!expanded)
+								setExpanded(true);
+							else if (element.current?.nextElementSibling)
+								(element.current.nextElementSibling as HTMLElement).focus();
+
+							break;
+
+						case 'ArrowUp':
+							if (element.current?.previousElementSibling)
+								(element.current.previousElementSibling as HTMLElement).focus();
+
+							break;
+
+						case 'ArrowDown':
+							if (element.current?.nextElementSibling)
+								(element.current.nextElementSibling as HTMLElement).focus();
+
+							break;
+
+						default:
+							break;
+					}
+				}}
+				onClick={() => setExpanded(!expanded)}
 			>
-				<Chevron expanded={show} />
+				<Chevron expanded={expanded} />
 				{node.name}
 			</Wrapper>
 
-			{show && node.children.map(i => <Switch depth={depth + 1} key={i} id={i} />)}
+			{expanded && node.children.map(i => <Switch depth={depth + 1} key={i} id={i} />)}
 		</React.Fragment>
 	);
 };
@@ -43,7 +83,10 @@ const Wrapper = styled.div<{ depth: number }>`
 	&:hover {
 		color: ${props => props.theme.ui.textOnSurfaceBackground};
 	}
-	&:focus { outline: none; }
+	&:focus {
+		outline: none;
+		background-color: ${props => toVibrancyAlpha(props.theme.ui.secondarySurface, 0.7)};
+	}
 `;
 
 const Chevron = styled.div<{ expanded: boolean }>`
