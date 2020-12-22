@@ -47,7 +47,7 @@ const Inspector: React.FunctionComponent<InspectorProps> = props => {
 const TabBody = styled.div`
 	flex-grow: 2;
 
-	overflow-y: auto;
+	overflow-y: hidden;
 `;
 
 export default Inspector;
