@@ -1,5 +1,6 @@
 import binaryStore from '@beak/app/lib/binary-store';
 import { Flight } from '@beak/app/store/flight/types';
+import { createDefaultOptions } from '@beak/app/utils/monaco';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import mime from 'mime-types';
 import React, { useState } from 'react';
@@ -57,11 +58,8 @@ const ResponseTab: React.FunctionComponent<ResponseTabProps> = props => {
 								theme={'vs-dark'}
 								value={createHttpResponseMessage(flight)}
 								options={{
-									automaticLayout: true,
+									...createDefaultOptions(),
 									readOnly: true,
-									minimap: { enabled: false },
-									fontFamily: "'Fira Code', Source Code Pro, Menlo, Monaco, 'Courier New', monospace",
-									fontSize: 13,
 								}}
 							/>
 						)}
@@ -73,11 +71,8 @@ const ResponseTab: React.FunctionComponent<ResponseTabProps> = props => {
 								theme={'vs-dark'}
 								value={[error.name, error.message, error.stack].filter(Boolean).join('\n')}
 								options={{
-									automaticLayout: true,
+									...createDefaultOptions(),
 									readOnly: true,
-									minimap: { enabled: false },
-									fontFamily: "'Fira Code', Source Code Pro, Menlo, Monaco, 'Courier New', monospace",
-									fontSize: 13,
 								}}
 							/>
 						)}
@@ -101,7 +96,7 @@ const Container = styled.div`
 const TabBody = styled.div`
 	flex-grow: 2;
 
-	overflow-y: auto;
+	overflow-y: hidden;
 	height: 100%;
 `;
 

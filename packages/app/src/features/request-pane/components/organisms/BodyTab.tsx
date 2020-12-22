@@ -11,6 +11,7 @@ import TabSpacer from '../../../../components/atoms/TabSpacer';
 import RequestPreferencesContext from '../../contexts/request-preferences-context';
 import BeakHubContext from '@beak/app/contexts/beak-hub-context';
 import MonacoEditor from 'react-monaco-editor';
+import { createDefaultOptions } from '@beak/app/utils/monaco';
 
 const { ipcRenderer } = window.require('electron');
 
@@ -77,12 +78,7 @@ const BodyTab: React.FunctionComponent<BodyTabProps> = props => {
 							language={'plaintext'}
 							theme={'vs-dark'}
 							value={node.info.body.payload as string}
-							options={{
-								automaticLayout: true,
-								minimap: { enabled: false },
-								fontFamily: "'Fira Code', Source Code Pro, Menlo, Monaco, 'Courier New', monospace",
-								fontSize: 13,
-							}}
+							options={createDefaultOptions()}
 						/>
 					</React.Fragment>
 				)}
@@ -94,12 +90,7 @@ const BodyTab: React.FunctionComponent<BodyTabProps> = props => {
 							language={'json'}
 							theme={'vs-dark'}
 							value={node.info.body.payload as string}
-							options={{
-								automaticLayout: true,
-								minimap: { enabled: false },
-								fontFamily: "'Fira Code', Source Code Pro, Menlo, Monaco, 'Courier New', monospace",
-								fontSize: 13,
-							}}
+							options={createDefaultOptions()}
 						/>
 					</React.Fragment>
 				)}

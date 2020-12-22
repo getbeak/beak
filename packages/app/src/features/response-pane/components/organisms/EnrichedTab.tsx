@@ -1,5 +1,6 @@
 import binaryStore from '@beak/app/lib/binary-store';
 import { Flight } from '@beak/app/store/flight/types';
+import { createDefaultOptions } from '@beak/app/utils/monaco';
 import mime from 'mime-types';
 import React from 'react';
 import MonacoEditor from 'react-monaco-editor';
@@ -23,11 +24,8 @@ const EnrichedTab: React.FunctionComponent<EnrichedTabProps> = props => {
 			theme={'vs-dark'}
 			value={enriched.body}
 			options={{
-				automaticLayout: true,
+				...createDefaultOptions(),
 				readOnly: true,
-				minimap: { enabled: false },
-				fontFamily: "'Fira Code', Source Code Pro, Menlo, Monaco, 'Courier New', monospace",
-				fontSize: 13,
 			}}
 		/>
 	);

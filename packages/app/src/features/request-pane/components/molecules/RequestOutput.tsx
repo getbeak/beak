@@ -9,6 +9,7 @@ import { requestBodyContentType } from '@beak/common/helpers/request';
 
 import { useSelector } from 'react-redux';
 import { parsePartsValue } from '@beak/common/dist/helpers/variable-groups';
+import { createDefaultOptions } from '@beak/app/utils/monaco';
 
 const bodyFreeVerbs = ['get', 'head'];
 
@@ -30,12 +31,8 @@ const RequestOutput: React.FunctionComponent<RequestOutputProps> = props => {
 				theme={'vs-dark'}
 				value={code}
 				options={{
+					...createDefaultOptions(),
 					readOnly: true,
-					automaticLayout: true,
-					minimap: {
-						enabled: false,
-					},
-					fontSize: 13,
 				}}
 			/>
 		</React.Fragment>
