@@ -16,3 +16,7 @@ export function setGlobal(key: keyof typeof globals, value: any) {
 export function getGlobal(key: keyof typeof globals) {
 	return globals[key];
 }
+
+export function isDarwin() {
+	return getGlobal('platform') === 'darwin';
+}

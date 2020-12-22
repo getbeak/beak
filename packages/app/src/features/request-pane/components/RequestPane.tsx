@@ -56,6 +56,7 @@ const RequestPane: React.FunctionComponent = () => {
 						flex={2}
 						minSize={150}
 						onResize={e => setEditorHeight(`${(e.domElement as Element).clientHeight}px`)}
+						style={{overflowY: 'hidden'}}
 					>
 						<RequestOutput
 							editorHeight={editorHeight}

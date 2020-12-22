@@ -1,5 +1,5 @@
+import { isDarwin } from '@beak/app/globals';
 import React, { useEffect, useRef, useState } from 'react';
-import { useHotkeys } from 'react-hotkeys-hook';
 import styled from 'styled-components';
 
 import FinderView from './organism/FinderView';
@@ -12,25 +12,40 @@ const Omnibar: React.FunctionComponent = () => {
 	const [content, setContent] = useState('');
 	const inputRef = useRef<HTMLInputElement | null>(null);
 
-	useHotkeys('ctrl+p,command+p', () => {
-		setShow(!show);
-		setMode('finder');
-	}, { enableOnTags: ['INPUT', 'TEXTAREA', 'SELECT'] }, [show, mode]);
+	useEffect(() => {
+		window.addEventListener('keydown', onKeyDown);
 
-	useHotkeys('ctrl+shift+p,command+shift+p,ctrl+k,command+k', () => {
-		setShow(!show);
-		setMode('commands');
-	}, { enableOnTags: ['INPUT', 'TEXTAREA', 'SELECT'] }, [show, mode]);
-
-	useHotkeys('escape', () => {
-		if (show)
-			setShow(false);
-	}, { enableOnTags: ['INPUT', 'TEXTAREA', 'SELECT'] }, [show, mode]);
+		return function remove() {
+			window.removeEventListener('keydown', onKeyDown);
+		};
+	}, []);
 
 	useEffect(() => {
 		if (show)
 			inputRef?.current?.focus();
 	}, [show, inputRef]);
+
+	function onKeyDown(event: KeyboardEvent) {
+		if (!['p', 'k', 'Escape'].includes(event.key))
+			return;
+
+		if (event.key === 'Escape') {
+			reset();
+
+			return;
+		}
+
+		const isAct = (isDarwin() && event.metaKey) || (!isDarwin() && event.ctrlKey);
+		const isFinder = event.key === 'p' && isAct;
+		const isCommands = event.key === 'k' && event.shiftKey && isAct;
+
+		if (isCommands)
+			setMode('commands');
+		else if (isFinder)
+			setMode('finder');
+
+		setShow(!show);
+	}
 
 	function reset() {
 		setContent('');

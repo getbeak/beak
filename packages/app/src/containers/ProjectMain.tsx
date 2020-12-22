@@ -18,6 +18,7 @@ import ProjectPane from '../features/project-pane/components/ProjectPane';
 import RequestPane from '../features/request-pane/components/RequestPane';
 import ResponsePane from '../features/response-pane/components/ResponsePane';
 import StatusBar from '../features/status-bar/components/StatusBar';
+import { isDarwin } from '../globals';
 import useTitleBar from '../hooks/use-title-bar';
 import BeakHub from '../lib/beak-hub';
 import { requestFlight } from '../store/flight/actions';
@@ -40,12 +41,30 @@ const ProjectMain: React.FunctionComponent = () => {
 	}, [projectFilePath]);
 
 	useEffect(() => {
+		window.addEventListener('keydown', onKeyDown);
+
+		return function remove() {
+			window.removeEventListener('keydown', onKeyDown);
+		};
+	}, []);
+
+	useEffect(() => {
 		if (opening)
 			return;
 
 		setHub(new BeakHub(project.projectPath!));
 		setTitle(`${project.name} - Beak`);
 	}, [project, project.name, opening]);
+
+	function onKeyDown(event: KeyboardEvent) {
+		if (!selectedRequest || event.key !== 'Return')
+			return;
+
+		const isAct = (isDarwin() && event.metaKey) || (!isDarwin() && event.ctrlKey);
+
+		if (isAct)
+			dispatch(requestFlight());
+	}
 
 	useHotkeys('command+enter,ctrl+enter', () => {
 		if (!selectedRequest)
