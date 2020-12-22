@@ -63,6 +63,7 @@ const CreateView: React.FunctionComponent<CreateViewProps> = ({ setView }) => {
 			<Input
 				ref={projNameInput}
 				placeholder={'My billion dollar side project'}
+				type={'text'}
 				value={name}
 				onChange={e => projectNameChange(e.target.value)}
 			/>

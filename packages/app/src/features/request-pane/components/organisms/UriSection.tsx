@@ -54,28 +54,30 @@ const UriSection: React.FunctionComponent<UriSectionProps> = props => {
 
 	return (
 		<Container>
-			{/* NOTE(afr): Still not super happy with this */}
-			<VerbPickerSizer ref={secretSelect}>{verb}</VerbPickerSizer>
-			<VerbPicker
-				style={{ width: verbPickerWidth }}
-				value={verb}
-				onChange={e => {
-					dispatch(requestUriUpdated({
-						requestId: node.id,
-						verb: e.currentTarget.value,
-					}));
-				}}
-			>
-				<option value={'get'}>{'GET'}</option>
-				<option value={'post'}>{'POST'}</option>
-				<option value={'patch'}>{'PATCH'}</option>
-				<option value={'put'}>{'PUT'}</option>
-				<option value={'delete'}>{'DELETE'}</option>
-				<option value={'head'}>{'HEAD'}</option>
-				<option value={'options'}>{'OPTIONS'}</option>
-				<option disabled>{'____________'}</option>
-				<option value={'custom'} disabled>{'Custom'}</option>
-			</VerbPicker>
+			<VerbContainer>
+				{/* NOTE(afr): Still not super happy with this hack */}
+				<VerbPickerSizer ref={secretSelect}>{verb}</VerbPickerSizer>
+				<VerbPicker
+					style={{ width: verbPickerWidth }}
+					value={verb}
+					onChange={e => {
+						dispatch(requestUriUpdated({
+							requestId: node.id,
+							verb: e.currentTarget.value,
+						}));
+					}}
+				>
+					<option value={'get'}>{'GET'}</option>
+					<option value={'post'}>{'POST'}</option>
+					<option value={'patch'}>{'PATCH'}</option>
+					<option value={'put'}>{'PUT'}</option>
+					<option value={'delete'}>{'DELETE'}</option>
+					<option value={'head'}>{'HEAD'}</option>
+					<option value={'options'}>{'OPTIONS'}</option>
+					<option disabled>{'____________'}</option>
+					<option value={'custom'} disabled>{'Custom'}</option>
+				</VerbPicker>
+			</VerbContainer>
 
 			<OmniBar>
 				<VariableInput
@@ -92,11 +94,17 @@ const UriSection: React.FunctionComponent<UriSectionProps> = props => {
 };
 
 const Container = styled.div`
-	padding: 25px 20px;
 	display: flex;
+	justify-content: space-between;
+	align-items: center;
 
-	/* TODO(afr): Fix this hack */
-	height: 30px !important;
+	margin: 25px 0;
+	padding: 0 10px;
+	font-size: 15px;
+`;
+
+const VerbContainer = styled.div`
+	flex: 0 0 auto;
 `;
 
 const VerbPicker = styled.select`
@@ -105,7 +113,8 @@ const VerbPicker = styled.select`
 	text-indent: 1px;
 	text-overflow: '';
 
-	padding: 4px 6px;
+	padding: 6px 6px;
+	padding-top: 7px;
 	margin-right: 10px;
 	border-radius: 4px;
 	border: 1px solid ${props => props.theme.ui.backgroundBorderSeparator};
@@ -138,7 +147,7 @@ const VerbPickerSizer = styled.span`
 `;
 
 const OmniBar = styled.div`
-	flex-grow: 1;
+	flex: 1 1 auto;
 
 	> article {
 		padding: 6px 6px;
@@ -158,7 +167,9 @@ const OmniBar = styled.div`
 `;
 
 const DispatchButton = styled.button`
-	padding: 4px 6px;
+	flex: 0 0 auto;
+	padding: 6px 6px;
+	padding-top: 7px;
 	border-radius: 4px;
 	border: 1px solid ${props => props.theme.ui.backgroundBorderSeparator};
 	background: ${props => props.theme.ui.surface};

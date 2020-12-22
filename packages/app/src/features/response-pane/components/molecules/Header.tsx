@@ -52,7 +52,9 @@ const UrlHeaderWrapper = styled.div`
 	align-items: center;
 
 	margin: 25px auto;
+	padding: 0 10px;
 	font-size: 15px;
+	max-width: calc(100% - 20px);
 `;
 
 const Section = styled.div`
@@ -71,6 +73,7 @@ const UrlSection = styled(Section)`
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
+	direction: rtl;
 `;
 
 const StatusSection = styled(Section)<{ $status: number }>`
