@@ -26,6 +26,7 @@ const Onboarding: React.FunctionComponent = () => {
 					<Input
 						placeholder={'taylor.swift@gmail.com'}
 						value={emailAddy}
+						type={'text'}
 						onChange={e => setEmailAddy(e.target.value)}
 					/>
 				</FormInput>

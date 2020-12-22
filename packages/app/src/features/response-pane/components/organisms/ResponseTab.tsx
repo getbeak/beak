@@ -1,19 +1,14 @@
-// eslint-disable-next-line simple-import-sort/sort
-import React, { useState } from 'react';
-import AceEditor from 'react-ace';
-import styled from 'styled-components';
+import binaryStore from '@beak/app/lib/binary-store';
+import { Flight } from '@beak/app/store/flight/types';
+import { TypedObject } from '@beak/common/helpers/typescript';
 import mime from 'mime-types';
+import React, { useState } from 'react';
+import MonacoEditor from 'react-monaco-editor';
+import styled from 'styled-components';
 
 import TabBar from '../../../../components/atoms/TabBar';
 import TabItem from '../../../../components/atoms/TabItem';
 import TabSpacer from '../../../../components/atoms/TabSpacer';
-
-import 'ace-builds/src-noconflict/mode-text';
-import 'ace-builds/src-noconflict/mode-json';
-import 'ace-builds/src-noconflict/theme-solarized_dark';
-import { Flight } from '@beak/app/store/flight/types';
-import { TypedObject } from '@beak/common/helpers/typescript';
-import binaryStore from '@beak/app/lib/binary-store';
 import EnrichedTab from './EnrichedTab';
 
 type Tab = 'raw' | 'enriched';
@@ -55,37 +50,35 @@ const ResponseTab: React.FunctionComponent<ResponseTabProps> = props => {
 				{tab === 'raw' && (
 					<React.Fragment>
 						{response && (
-							<AceEditor
-								mode={'text'}
-								theme={'solarized_dark'}
+							<MonacoEditor
 								height={'100%'}
 								width={'100%'}
-								readOnly
-								setOptions={{
-									useWorker: false,
-									fontFamily: 'monospace',
-									fontSize: '13px',
-									wrap: true,
-								}}
+								language={'javascript'}
+								theme={'vs-dark'}
 								value={createHttpResponseMessage(flight)}
-								showPrintMargin={false}
+								options={{
+									automaticLayout: true,
+									readOnly: true,
+									minimap: { enabled: false },
+									fontFamily: "'Fira Code', Source Code Pro, Menlo, Monaco, 'Courier New', monospace",
+									fontSize: 13,
+								}}
 							/>
 						)}
 						{error && (
-							<AceEditor
-								mode={'text'}
-								theme={'solarized_dark'}
+							<MonacoEditor
 								height={'100%'}
 								width={'100%'}
-								readOnly
-								setOptions={{
-									useWorker: false,
-									fontFamily: 'monospace',
-									fontSize: '13px',
-									wrap: true,
-								}}
+								language={'plaintext'}
+								theme={'vs-dark'}
 								value={[error.name, error.message, error.stack].filter(Boolean).join('\n')}
-								showPrintMargin={false}
+								options={{
+									automaticLayout: true,
+									readOnly: true,
+									minimap: { enabled: false },
+									fontFamily: "'Fira Code', Source Code Pro, Menlo, Monaco, 'Courier New', monospace",
+									fontSize: 13,
+								}}
 							/>
 						)}
 					</React.Fragment>

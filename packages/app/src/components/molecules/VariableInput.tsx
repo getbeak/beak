@@ -70,7 +70,6 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, 
 
 		// https://rawgit.com/w3c/input-events/v1/index.html#overview
 		const delta = (event.nativeEvent as InputEvent).data as string | null;
-		const inputType = (event.nativeEvent as InputEvent).inputType as string;
 
 		const newParts = Array.from(ref.current!.childNodes)
 			.map(n => {
@@ -298,11 +297,6 @@ const Input = styled.article`
 	border: 1px solid ${p => p.theme.ui.backgroundBorderSeparator};
 	white-space: nowrap;
 	overflow: hidden;
-
-	&:focus {
-		outline: 0;
-		border: 1px solid ${p => p.theme.ui.primaryFill};
-	}
 
 	> * {
 		display:inline;

@@ -9,12 +9,6 @@ const Input = styled.input`
 	width: 100%;
 	box-sizing: border-box;
 	font-size: 15px;
-
-	&:focus {
-		outline: 0;
-		border-color: ${p => p.theme.ui.primaryFill};
-		box-shadow: 0 0 0 3px ${p => p.theme.ui.primaryFill}AA;
-	}
 `;
 
 export const InputInvalidText = styled.span`

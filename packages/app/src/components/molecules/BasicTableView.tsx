@@ -57,6 +57,7 @@ const BasicTableView: React.FunctionComponent<MutableBasicTableViewProps | Immut
 									<InputText
 										disabled={!props.editable}
 										value={entry.name}
+										type={'text'}
 										onChange={e => updateItem('name', k, e.target.value)}
 									/>
 								</td>
@@ -141,11 +142,6 @@ const InputText = styled.input`
 
 	color: ${props => props.theme.ui.textOnFill};
 	font-size: 12px;
-
-	&:focus {
-		outline: none;
-		border: 1px solid ${props => props.theme.ui.primaryFill};
-	}
 `;
 
 const VariableInputCell = styled.td`

@@ -30,7 +30,6 @@ const GlobalStyle = createGlobalStyle`
 
 		// This is needed for Vibrancy
 		background-color: ${p => getGlobal('platform') === 'darwin' ? 'transparent' : p.theme.ui.background};
-		
 
 		color: ${p => p.theme.ui.textOnAction};
 		margin: 0;
@@ -38,6 +37,14 @@ const GlobalStyle = createGlobalStyle`
 
 		overflow: hidden;
 		-webkit-user-select: none;
+	}
+
+	input[type=text], article[contenteditable=true] {
+		&:focus {
+			outline: 0;
+			border-color: ${p => p.theme.ui.primaryFill};
+			box-shadow: 0 0 0 3px ${p => p.theme.ui.primaryFill}AA;
+		}
 	}
 
 	.bvs-blob {

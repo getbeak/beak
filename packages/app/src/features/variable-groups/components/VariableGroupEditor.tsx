@@ -204,10 +204,6 @@ const Editable = styled.input`
 	text-align: inherit;
 	padding: 3px 2px;
 
-	&:focus:not(:disabled), &:active:not(:disabled) {
-		outline: 1px solid ${p => p.theme.ui.primaryFill};
-	}
-
 	&:disabled {
 		user-select: none;
 	}
