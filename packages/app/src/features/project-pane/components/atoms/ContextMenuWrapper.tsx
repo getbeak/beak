@@ -61,9 +61,11 @@ const ContextMenuWrapper: React.FunctionComponent<ContextMenuWrapperProps> = pro
 			},
 		}, {
 			label: 'Delete',
-			enabled: mode === 'request',
 			click: () => {
-				dispatch(actions.executeCommand({ type: 'delete_request', payload: nodeId }));
+				dispatch(actions.executeCommand({
+					type: mode === 'folder' ? 'delete_folder' : 'delete_request',
+					payload: nodeId,
+				}));
 			},
 		}]);
 	}, []);
