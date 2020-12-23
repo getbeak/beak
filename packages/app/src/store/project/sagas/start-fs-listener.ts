@@ -29,5 +29,7 @@ export default function* startFsListener() {
 			yield put(insertFolderNode(result.node));
 		else if (result.type === 'unlink')
 			yield put(removeRequestNode(result.path));
+		else if (result.type === 'unlinkDir')
+			yield put(removeRequestNode(result.path));
 	}
 }

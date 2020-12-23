@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 
 import { TypedObject } from '@beak/common/dist/helpers/typescript';
-import { RequestNode } from '@beak/common/types/beak-project';
+import { FolderNode, RequestNode } from '@beak/common/types/beak-project';
 // @ts-ignore
 import ksuid from '@cuvva/ksuid';
 import { createReducer } from '@reduxjs/toolkit';
@@ -114,7 +114,6 @@ const projectReducer = createReducer(initialState, builder => {
 
 			state.tree![node.id] = node;
 		})
-
 		.addCase(actions.insertRequestNode, (state, action) => {
 			const node = action.payload as RequestNode;
 
@@ -122,8 +121,20 @@ const projectReducer = createReducer(initialState, builder => {
 		})
 		.addCase(actions.removeRequestNode, (state, action) => {
 			const node = TypedObject.values(state.tree!).find(n => n.filePath === action.payload) as RequestNode;
+			const { [node.id]: remove, ...rest } = state.tree!;
 
-			delete state.tree![node.id];
+			state.tree = rest;
+		})
+
+		.addCase(actions.insertFolderNode, (state, action) => {
+			const node = action.payload as FolderNode;
+
+			state.tree![node.filePath] = node;
+		})
+		.addCase(actions.removeFolderNode, (state, action) => {
+			const { [action.payload]: remove, ...rest } = state.tree!;
+
+			state.tree = rest;
 		})
 
 		.addCase(actions.requestRenameStarted, (state, action) => {

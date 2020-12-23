@@ -28,6 +28,7 @@ export const ActionTypes = {
 	REPORT_NODE_UPDATE: '@beak/global/project/REPORT_NODE_UPDATE',
 
 	INSERT_FOLDER_NODE: '@beak/global/project/INSERT_FOLDER_NODE',
+	REMOVE_FOLDER_NODE: '@beak/global/project/REMOVE_FOLDER_NODE',
 
 	REQUEST_RENAME_STARTED: '@beak/global/project/REQUEST_RENAME_STARTED',
 	REQUEST_RENAME_UPDATED: '@beak/global/project/REQUEST_RENAME_UPDATED',

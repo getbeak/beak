@@ -106,6 +106,9 @@ const ProjectMain: React.FunctionComponent = () => {
 										{selectedRequests.map(id => {
 											const node = tree![id] as RequestNode;
 
+											if (!node)
+												return null;
+
 											return (
 												<TabItem
 													active={selectedRequest === id}

@@ -46,6 +46,7 @@ export const refreshNodeState = createAction<Nodes>(ActionTypes.REFRESH_NODE_STA
 export const reportNodeUpdate = createAction<string>(ActionTypes.REPORT_NODE_UPDATE);
 
 export const insertFolderNode = createAction<Nodes>(ActionTypes.INSERT_FOLDER_NODE);
+export const removeFolderNode = createAction<string>(ActionTypes.REMOVE_FOLDER_NODE);
 
 export const requestRenameStarted = createAction<RequestRenameStarted>(ActionTypes.REQUEST_RENAME_STARTED);
 export const requestRenameUpdated = createAction<RequestRenameUpdated>(ActionTypes.REQUEST_RENAME_UPDATED);
@@ -78,6 +79,7 @@ export default {
 	reportNodeUpdate,
 
 	insertFolderNode,
+	removeFolderNode,
 
 	requestRenameStarted,
 	requestRenameUpdated,

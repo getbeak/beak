@@ -25,11 +25,11 @@ interface ReadFolderNodeOptions {
 }
 
 export type ListenerEvent = {
-	type: 'add' | 'change' | 'addDir' | 'unlinkDir';
+	type: 'add' | 'change' | 'addDir';
 	path: string;
 	node: Nodes;
 } | {
-	type: 'unlink';
+	type: 'unlink' | 'unlinkDir';
 	path: string;
 }
 
@@ -124,7 +124,7 @@ export default class BeakProject {
 			},
 		};
 
-		await fs.writeJson(requestName, newNode, { spaces: '\t' });
+		await fs.writeJson(path.join(folderPath, requestName), newNode, { spaces: '\t' });
 
 		return newNode.id;
 	}
@@ -180,7 +180,6 @@ export default class BeakProject {
 			},
 		};
 
-		// this._tree[node.id] = node;
 		this._tree = {
 			...this._tree,
 			[node.id]: node,
@@ -239,7 +238,7 @@ export default class BeakProject {
 		const parentPath = this.getParentFilePath(incomingId) ?? this._projectTreePath;
 		const folder = await generateFolderName(name || 'New folder', parentPath);
 
-		await fs.ensureDir(folder);
+		await fs.ensureDir(path.join(parentPath, folder));
 	}
 
 	private async readFolderNode(filePath: string, opts: ReadFolderNodeOptions) {
@@ -250,7 +249,6 @@ export default class BeakProject {
 			name: path.basename(filePath),
 			filePath,
 			parent,
-			children: [],
 		};
 
 		const items = await fs.readdir(filePath);
@@ -260,22 +258,16 @@ export default class BeakProject {
 		for (const item of items) {
 			const fullPath = path.join(filePath, item);
 			const stat = await fs.stat(fullPath);
-			let out: Nodes | undefined = void 0;
 
 			if (forbiddenFiles.includes(item))
 				continue;
 
-			if (stat.isDirectory()) {
-				out = await this.readFolderNode(fullPath, { root: false, parent: psParent });
-
-				node.children.push(out.filePath);
-			} else if (stat.isFile()) {
-				out = await this.readRequestNode(fullPath, psParent);
-
-				node.children.push(out.id);
-			} else {
+			if (stat.isDirectory())
+				await this.readFolderNode(fullPath, { root: false, parent: psParent });
+			else if (stat.isFile())
+				await this.readRequestNode(fullPath, psParent);
+			else
 				throw new Error('Unknown dir content type');
-			}
 		}
 		/* eslint-disable no-await-in-loop */
 
@@ -285,8 +277,49 @@ export default class BeakProject {
 		return node;
 	}
 
+	async updateFolderNode(filePath: string) {
+		const parent = path.join(filePath, '..');
+		const node: FolderNode = {
+			type: 'folder',
+			name: path.basename(filePath),
+			filePath,
+			parent: parent === this._projectTreePath ? null : parent,
+		};
+
+		// TODO(afr): May need this later for reconcilling after a rename
+		// const items = await fs.readdir(filePath);
+
+		// /* eslint-disable no-await-in-loop */
+		// for (const item of items) {
+		// 	const fullPath = path.join(filePath, item);
+		// 	const stat = await fs.stat(fullPath);
+
+		// 	if (forbiddenFiles.includes(item))
+		// 		continue;
+
+		// 	if (stat.isDirectory())
+		// 		await this.readFolderNode(fullPath, { root: false, parent: psParent });
+		// 	else if (stat.isFile())
+		// 		await this.readRequestNode(fullPath, psParent);
+		// 	else
+		// 		throw new Error('Unknown dir content type');
+		// }
+		// /* eslint-disable no-await-in-loop */
+
+		this._tree = {
+			...this._tree,
+			[node.filePath]: node,
+		};
+
+		return node;
+	}
+
 	async writeFolderNode(node: FolderNode) {
 		throw new Error('nah not done yet lol soz');
+	}
+
+	async removeFolderNode(filePath: string) {
+		await fs.remove(filePath);
 	}
 
 	private recordListenerMessage(message: Omit<ListenerEvent, 'node'>) {
@@ -301,14 +334,28 @@ export default class BeakProject {
 					path: message.path,
 				});
 			});
+		} else if (message.type === 'addDir') {
+			this.updateFolderNode(message.path).then(node => {
+				this._watcherEmitter!({
+					node,
+					type: message.type,
+					path: message.path,
+				});
+			});
 		} else if (message.type === 'unlink') {
 			this.removeRequestNode(message.path);
 			this._watcherEmitter!({
 				type: message.type,
 				path: message.path,
 			});
+		} else if (message.type === 'unlinkDir') {
+			this.removeRequestNode(message.path);
+			this._watcherEmitter!({
+				type: message.type,
+				path: message.path,
+			});
 		} else {
-			console.log('only add/change/unlink events currently supported: ', message);
+			console.log(`Unknown FS event: ${message}`);
 
 			return;
 		}
@@ -334,7 +381,7 @@ export default class BeakProject {
 
 async function generateRequestName(name: string, directory: string) {
 	if (!await fs.pathExists(path.join(directory, `${name}.json`)))
-		return name;
+		return `${name}.json`;
 
 	let useableName = name;
 	let index = 1;
@@ -351,7 +398,7 @@ async function generateRequestName(name: string, directory: string) {
 		const full = path.join(directory, `${useableName} (${index}).json`);
 
 		if (!await fs.pathExists(full))
-			return full;
+			return `${useableName} (${index}).json`;
 
 		index += 1;
 	}
@@ -376,7 +423,7 @@ async function generateFolderName(name: string, directory: string) {
 		const full = path.join(directory, `${useableName} (${index})`);
 
 		if (!await fs.pathExists(full))
-			return full;
+			return `${useableName} (${index})`;
 
 		index += 1;
 	}
