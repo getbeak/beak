@@ -8,20 +8,11 @@ export interface ReflexSplitterProps extends RSP {
 	hideVisualIndicator?: boolean;
 }
 
-const ReflexSplitter = styled(RS)<ReflexSplitterProps>`
+const ReflexSplitter = styled(RS) <ReflexSplitterProps>`
 	width: ${props => props.orientation === 'vertical' ? '2px' : 'auto'} !important;
 	height: ${props => props.orientation === 'horizontal' ? '2px' : 'auto'} !important;
 	background-color: ${props => props.theme.ui.backgroundBorderSeparator} !important;
 	border: none !important;
-
-	${p => p.hideVisualIndicator ? `
-	background: linear-gradient(
-		${p.theme.ui.background} 0px,
-		${p.theme.ui.background} 72px,
-		${p.theme.ui.surface} 73px,
-		${p.theme.ui.surface} 100%
-	);
-	` : ''}
 `;
 
 export default ReflexSplitter;
