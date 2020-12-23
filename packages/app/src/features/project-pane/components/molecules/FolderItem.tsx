@@ -1,10 +1,12 @@
 import { toVibrancyAlpha } from '@beak/app/design-system/utils';
 import { checkShortcut } from '@beak/app/lib/keyboard-shortcuts';
+import { TypedObject } from '@beak/common/helpers/typescript';
 import { FolderNode } from '@beak/common/types/beak-project';
 import React, { useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 
+import ContextMenuWrapper from '../atoms/ContextMenuWrapper';
 import Switch from './Switch';
 
 export interface FolderItemProps {
@@ -15,15 +17,20 @@ export interface FolderItemProps {
 const FolderItem: React.FunctionComponent<FolderItemProps> = props => {
 	const { depth } = props;
 	const [expanded, setExpanded] = useState(true);
-	const element = useRef<HTMLDivElement>(null);
+	const element = useRef<HTMLDivElement>();
+	const [target, setTarget] = useState<HTMLElement>();
 	const node = useSelector(s => s.global.project.tree![props.id]) as FolderNode;
+	const nodes = useSelector(s => s.global.project.tree!);
+	const childNodes = TypedObject.values(nodes).filter(n => n.parent === node.filePath);
 
 	return (
-		<React.Fragment>
+		<ContextMenuWrapper mode={'folder'} nodeId={node.filePath} target={target}>
 			<Wrapper
-				data-tree-id={node.filePath}
 				depth={depth}
-				ref={element}
+				ref={(i: HTMLDivElement) => {
+					element.current = i;
+					setTarget(i);
+				}}
 				tabIndex={0}
 				onKeyDown={event => {
 					switch (true) {
@@ -65,10 +72,18 @@ const FolderItem: React.FunctionComponent<FolderItemProps> = props => {
 				{node.name}
 			</Wrapper>
 
-			{expanded && node.children.map(i => (
-				<Switch depth={depth + 1} key={i} id={i} parentNode={element.current} />
-			))}
-		</React.Fragment>
+			{expanded && childNodes.map(n => {
+				const id = n.type === 'folder' ? n.filePath : n.id;
+
+				return (
+					<Switch
+						depth={depth + 1}
+						key={id}
+						id={id} parentNode={element.current!}
+					/>
+				);
+			})}
+		</ContextMenuWrapper>
 	);
 };
 
