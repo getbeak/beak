@@ -1,9 +1,7 @@
 import { Tree } from '@beak/common/types/beak-project';
-import React, { useEffect, useRef } from 'react';
-import { useDispatch } from 'react-redux';
+import React, { useRef } from 'react';
 import styled from 'styled-components';
 
-import { createExplorerMenu } from '../../context-menu';
 import FolderItem from '../molecules/FolderItem';
 import RequestItem from '../molecules/RequestItem';
 
@@ -15,30 +13,10 @@ export interface TreeViewProps {
 const TreeView: React.FunctionComponent<TreeViewProps> = ({ collapsed, tree }) => {
 	const items = Object.values(tree).filter(t => !t.parent);
 	const container = useRef<HTMLDivElement>(null);
-	const dispatch = useDispatch();
-
-	useEffect(() => {
-		if (!container.current)
-			return;
-
-		container.current.addEventListener('contextmenu', event => {
-			const id = (function getId() {
-				const elem = (event.target as HTMLDivElement);
-
-				if (elem.dataset.treeId)
-					return elem.dataset.treeId;
-
-				return elem.parentElement!.dataset.treeId;
-			}());
-
-			createExplorerMenu(dispatch, id)?.popup();
-		});
-	}, [container.current]);
 
 	return (
 		<Container
 			collapsed={collapsed}
-			data-tree-id={'root'}
 			tabIndex={-1}
 			ref={container}
 		>

@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 
 import actions, { requestSelected } from '../../../../store/project/actions';
+import ContextMenuWrapper from '../atoms/ContextMenuWrapper';
 import RequestStatusBlob from '../atoms/RequestStatusBlob';
 
 export interface RequestItemProps {
@@ -19,7 +20,8 @@ const RequestItem: React.FunctionComponent<RequestItemProps> = props => {
 	const dispatch = useDispatch();
 	const [editing, setEditing] = useState(false);
 	const renameInputRef = useRef<HTMLInputElement>(null);
-	const wrapperRef = useRef<HTMLDivElement>(null);
+	const wrapperRef = useRef<HTMLDivElement>();
+	const [target, setTarget] = useState<HTMLElement>();
 
 	const node = useSelector(s => s.global.project.tree![props.id]) as RequestNode;
 	const rename = useSelector(s => s.global.project.activeRename);
@@ -53,83 +55,88 @@ const RequestItem: React.FunctionComponent<RequestItemProps> = props => {
 	}, [rename, rename?.requestId, editing]);
 
 	return (
-		<Wrapper
-			active={active}
-			data-tree-id={node.id}
-			depth={props.depth}
-			ref={wrapperRef}
-			tabIndex={0}
-			onClick={() => dispatch(requestSelected(props.id))}
-			onKeyDown={(event: React.KeyboardEvent<HTMLDivElement>) => {
-				switch (true) {
-					case checkShortcut('project-explorer.request.left', event):
-						if (props.parentNode)
-							props.parentNode.focus();
-						break;
+		<ContextMenuWrapper mode={'request'} nodeId={props.id} target={target}>
+			<Wrapper
+				active={active}
+				depth={props.depth}
+				ref={(i: HTMLDivElement) => {
+					wrapperRef.current = i;
 
-					case checkShortcut('project-explorer.request.up', event):
-						if (wrapperRef.current?.previousElementSibling)
-							(wrapperRef.current.previousElementSibling as HTMLElement).focus();
+					setTarget(i);
+				}}
+				tabIndex={0}
+				onClick={() => dispatch(requestSelected(props.id))}
+				onKeyDown={(event: React.KeyboardEvent<HTMLDivElement>) => {
+					switch (true) {
+						case checkShortcut('project-explorer.request.left', event):
+							if (props.parentNode)
+								props.parentNode.focus();
+							break;
 
-						break;
+						case checkShortcut('project-explorer.request.up', event):
+							if (wrapperRef.current?.previousElementSibling)
+								(wrapperRef.current.previousElementSibling as HTMLElement).focus();
 
-					case checkShortcut('project-explorer.request.down', event):
-						if (wrapperRef.current?.nextElementSibling)
-							(wrapperRef.current.nextElementSibling as HTMLElement).focus();
+							break;
 
-						break;
+						case checkShortcut('project-explorer.request.down', event):
+							if (wrapperRef.current?.nextElementSibling)
+								(wrapperRef.current.nextElementSibling as HTMLElement).focus();
 
-					case checkShortcut('project-explorer.request.open', event):
-						dispatch(actions.requestSelected(node.id));
+							break;
 
-						break;
+						case checkShortcut('project-explorer.request.open', event):
+							dispatch(actions.requestSelected(node.id));
 
-					case checkShortcut('project-explorer.request.rename', event):
-						dispatch(actions.requestRenameStarted({ requestId: node.id }));
+							break;
 
-						break;
+						case checkShortcut('project-explorer.request.rename', event):
+							dispatch(actions.requestRenameStarted({ requestId: node.id }));
 
-					default:
-						break;
-				}
-			}}
-			onDoubleClick={() => {
-				if (editing)
-					return;
+							break;
 
-				dispatch(actions.requestRenameStarted({ requestId: node.id }));
-			}}
-		>
-			{!editing && (
-				<Name title={node.name}>
-					{node.name}
-				</Name>
-			)}
-			{editing && rename && (
-				<RenameInput
-					ref={renameInputRef}
-					type={'text'}
-					value={rename.name}
-					onBlur={() => {
-						dispatch(actions.requestRenameCancelled({ requestId: node.id }));
-					}}
-					onKeyDown={e => {
-						if (e.key === 'Escape')
+						default:
+							break;
+					}
+				}}
+				onDoubleClick={() => {
+					if (editing)
+						return;
+
+					dispatch(actions.requestRenameStarted({ requestId: node.id }));
+				}}
+			>
+				{!editing && (
+					<Name title={node.name}>
+						{node.name}
+					</Name>
+				)}
+				{editing && rename && (
+					<RenameInput
+						ref={renameInputRef}
+						type={'text'}
+						value={rename.name}
+						onBlur={() => {
 							dispatch(actions.requestRenameCancelled({ requestId: node.id }));
-						else if (e.key === 'Enter')
-							dispatch(actions.requestRenameSubmitted({ requestId: node.id }));
+						}}
+						onKeyDown={e => {
+							if (e.key === 'Escape')
+								dispatch(actions.requestRenameCancelled({ requestId: node.id }));
+							else if (e.key === 'Enter')
+								dispatch(actions.requestRenameSubmitted({ requestId: node.id }));
 
-						// Return focus to the element behind the input!
-						window.setTimeout(() => wrapperRef.current?.focus(), 1);
-					}}
-					onChange={e => {
-						dispatch(actions.requestRenameUpdated({ requestId: node.id, name: e.currentTarget.value }));
-					}}
-				/>
-			)}
+							// Return focus to the element behind the input!
+							window.setTimeout(() => wrapperRef.current?.focus(), 1);
+						}}
+						onChange={e => {
+							dispatch(actions.requestRenameUpdated({ requestId: node.id, name: e.currentTarget.value }));
+						}}
+					/>
+				)}
 
-			{mostRecentFlight && <RequestStatusBlob $status={mostRecentFlight} />}
-		</Wrapper>
+				{mostRecentFlight && <RequestStatusBlob $status={mostRecentFlight} />}
+			</Wrapper>
+		</ContextMenuWrapper>
 	);
 };
 

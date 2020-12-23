@@ -35,7 +35,7 @@ export default function* executeCommandWorker({ payload }: PayloadAction<Command
 			const filePath: string = yield getFilePathFromId(payload.payload);
 			const proj = getProjectSingleton();
 
-			// TODO(afr): Add a confirmation here?
+			// TODO(afr): Add a confirmation here
 
 			yield call([proj, proj.removeRequestNode], filePath);
 
@@ -47,6 +47,17 @@ export default function* executeCommandWorker({ payload }: PayloadAction<Command
 
 			yield call([proj, proj.createFolderNode], payload.payload);
 			yield take(ProjectActionTypes.INSERT_FOLDER_NODE);
+
+			return;
+		}
+
+		case 'delete_folder': {
+			const proj = getProjectSingleton();
+
+			// TODO(afr): Add a confirmation here
+
+			yield call([proj, proj.removeFolderNode], payload.payload);
+			yield take(ProjectActionTypes.REMOVE_REQUEST_NODE);
 
 			return;
 		}
