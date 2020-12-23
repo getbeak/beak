@@ -118,6 +118,9 @@ const RequestItem: React.FunctionComponent<RequestItemProps> = props => {
 							dispatch(actions.requestRenameCancelled({ requestId: node.id }));
 						else if (e.key === 'Enter')
 							dispatch(actions.requestRenameSubmitted({ requestId: node.id }));
+
+						// Return focus to the element behind the input!
+						window.setTimeout(() => wrapperRef.current?.focus(), 1);
 					}}
 					onChange={e => {
 						dispatch(actions.requestRenameUpdated({ requestId: node.id, name: e.currentTarget.value }));
