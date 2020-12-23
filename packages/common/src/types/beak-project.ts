@@ -15,7 +15,6 @@ export interface Node {
 
 export interface FolderNode extends Node {
 	type: 'folder';
-	children: string[];
 	name: string;
 }
 
