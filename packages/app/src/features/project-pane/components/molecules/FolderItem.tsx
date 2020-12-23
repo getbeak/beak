@@ -1,4 +1,5 @@
 import { toVibrancyAlpha } from '@beak/app/design-system/utils';
+import { checkShortcut } from '@beak/app/lib/keyboard-shortcuts';
 import { FolderNode } from '@beak/common/types/beak-project';
 import React, { useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -25,11 +26,8 @@ const FolderItem: React.FunctionComponent<FolderItemProps> = props => {
 				ref={element}
 				tabIndex={0}
 				onKeyDown={event => {
-					if (event.ctrlKey || event.altKey || event.metaKey)
-						return;
-
-					switch (event.key) {
-						case 'ArrowLeft':
+					switch (true) {
+						case checkShortcut('project-explorer.folder.left', event):
 							if (expanded)
 								setExpanded(false);
 							else if (element.current)
@@ -37,7 +35,7 @@ const FolderItem: React.FunctionComponent<FolderItemProps> = props => {
 
 							break;
 
-						case 'ArrowRight':
+						case checkShortcut('project-explorer.folder.right', event):
 							if (!expanded)
 								setExpanded(true);
 							else if (element.current?.nextElementSibling)
@@ -45,13 +43,13 @@ const FolderItem: React.FunctionComponent<FolderItemProps> = props => {
 
 							break;
 
-						case 'ArrowUp':
+						case checkShortcut('project-explorer.folder.up', event):
 							if (element.current?.previousElementSibling)
 								(element.current.previousElementSibling as HTMLElement).focus();
 
 							break;
 
-						case 'ArrowDown':
+						case checkShortcut('project-explorer.folder.down', event):
 							if (element.current?.nextElementSibling)
 								(element.current.nextElementSibling as HTMLElement).focus();
 

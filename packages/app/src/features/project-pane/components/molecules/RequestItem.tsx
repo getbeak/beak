@@ -1,5 +1,5 @@
 import { toVibrancyAlpha } from '@beak/app/design-system/utils';
-import { getGlobal } from '@beak/app/globals';
+import { checkShortcut } from '@beak/app/lib/keyboard-shortcuts';
 import { TypedObject } from '@beak/common/dist/helpers/typescript';
 import { RequestNode } from '@beak/common/types/beak-project';
 import React, { useEffect, useRef, useState } from 'react';
@@ -52,40 +52,6 @@ const RequestItem: React.FunctionComponent<RequestItemProps> = props => {
 			setEditing(true);
 	}, [rename, rename?.requestId, editing]);
 
-	function startEditing(event: React.KeyboardEvent<HTMLDivElement>) {
-		if (!active || event.key !== getRenameKey())
-			return;
-
-		dispatch(actions.requestRenameStarted({ requestId: node.id }));
-	}
-
-	function navigation(event: React.KeyboardEvent<HTMLDivElement>) {
-		if (event.ctrlKey || event.altKey || event.metaKey)
-			return;
-
-		switch (event.key) {
-			case 'ArrowLeft':
-				if (props.parentNode)
-					props.parentNode.focus();
-				break;
-
-			case 'ArrowUp':
-				if (wrapperRef.current?.previousElementSibling)
-					(wrapperRef.current.previousElementSibling as HTMLElement).focus();
-
-				break;
-
-			case 'ArrowDown':
-				if (wrapperRef.current?.nextElementSibling)
-					(wrapperRef.current.nextElementSibling as HTMLElement).focus();
-
-				break;
-
-			default:
-				break;
-		}
-	}
-
 	return (
 		<Wrapper
 			active={active}
@@ -95,8 +61,37 @@ const RequestItem: React.FunctionComponent<RequestItemProps> = props => {
 			tabIndex={0}
 			onClick={() => dispatch(requestSelected(props.id))}
 			onKeyDown={(event: React.KeyboardEvent<HTMLDivElement>) => {
-				startEditing(event);
-				navigation(event);
+				switch (true) {
+					case checkShortcut('project-explorer.request.left', event):
+						if (props.parentNode)
+							props.parentNode.focus();
+						break;
+
+					case checkShortcut('project-explorer.request.up', event):
+						if (wrapperRef.current?.previousElementSibling)
+							(wrapperRef.current.previousElementSibling as HTMLElement).focus();
+
+						break;
+
+					case checkShortcut('project-explorer.request.down', event):
+						if (wrapperRef.current?.nextElementSibling)
+							(wrapperRef.current.nextElementSibling as HTMLElement).focus();
+
+						break;
+
+					case checkShortcut('project-explorer.request.open', event):
+						dispatch(actions.requestSelected(node.id));
+
+						break;
+
+					case checkShortcut('project-explorer.request.rename', event):
+						dispatch(actions.requestRenameStarted({ requestId: node.id }));
+
+						break;
+
+					default:
+						break;
+				}
 			}}
 			onDoubleClick={() => {
 				if (editing)
@@ -134,13 +129,6 @@ const RequestItem: React.FunctionComponent<RequestItemProps> = props => {
 		</Wrapper>
 	);
 };
-
-function getRenameKey() {
-	if (getGlobal('platform') === 'darwin')
-		return 'Enter';
-
-	return 'F2';
-}
 
 interface WrapperProps {
 	active: boolean;
