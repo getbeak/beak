@@ -3,6 +3,8 @@ import { getPlatform } from '@beak/app/globals';
 import { PlatformAgnosticDefinitions, PlatformSpecificDefinitions } from './types';
 
 type Shortcuts =
+	'global.execute-request' |
+
 	'project-explorer.request.up' |
 	'project-explorer.request.down' |
 	'project-explorer.request.left' |
@@ -15,6 +17,13 @@ type Shortcuts =
 	'project-explorer.folder.right';
 
 const definitions: Record<Shortcuts, PlatformSpecificDefinitions | PlatformAgnosticDefinitions> = {
+	'global.execute-request': {
+		type: 'psd',
+		windows: { shift: false, alt: false, meta: false, ctrl: true, key: 'Enter' },
+		linux: { shift: false, alt: false, meta: false, ctrl: true, key: 'Enter' },
+		darwin: { shift: false, alt: false, meta: true, ctrl: false, key: 'Enter' },
+	},
+
 	'project-explorer.request.up': { type: 'pad', shift: false, alt: false, meta: false, ctrl: false, key: 'ArrowUp' },
 	'project-explorer.request.down': { type: 'pad', shift: false, alt: false, meta: false, ctrl: false, key: 'ArrowDown' },
 	'project-explorer.request.left': { type: 'pad', shift: false, alt: false, meta: false, ctrl: false, key: 'ArrowLeft' },
