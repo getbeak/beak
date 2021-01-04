@@ -5,7 +5,6 @@ import createSagaMiddleware from 'redux-saga';
 import { all, fork } from 'redux-saga/effects';
 
 import NestClient from '../lib/nest-client';
-import * as contextMenusStore from './context-menus';
 import * as flightStore from './flight';
 import { State as FlightState } from './flight/types';
 import * as projectStore from './project';
@@ -35,7 +34,6 @@ function* rootSaga() {
 	yield all([
 		fork(flightStore.sagas),
 		fork(projectStore.sagas),
-		fork(contextMenusStore.sagas),
 		fork(variableGroupsStore.sagas),
 	]);
 }
