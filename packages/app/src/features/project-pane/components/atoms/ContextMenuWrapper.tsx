@@ -1,9 +1,12 @@
 import ContextMenu from '@beak/app/components/atoms/ContextMenu';
-import { actions } from '@beak/app/store/context-menus';
-import { actions as projectActions } from '@beak/app/store/project';
-import { MenuItemConstructorOptions } from 'electron';
+import { actions } from '@beak/app/store/project';
+import { clipboard, MenuItemConstructorOptions } from 'electron';
 import React, { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+
+const electron = window.require('electron');
+const { remote, ipcRenderer } = electron;
+const path = remote.require('path');
 
 interface ContextMenuWrapperProps {
 	nodeId: string;
@@ -14,29 +17,34 @@ interface ContextMenuWrapperProps {
 const ContextMenuWrapper: React.FunctionComponent<ContextMenuWrapperProps> = props => {
 	const dispatch = useDispatch();
 	const { nodeId, mode, target, children } = props;
+	const projectPath = useSelector(s => s.global.project.projectPath)!;
+	const node = useSelector(s => s.global.project.tree[nodeId]);
 	const [menuItems, setMenuItems] = useState<MenuItemConstructorOptions[]>([]);
 
 	useEffect(() => {
+		if (!node)
+			return;
+
 		setMenuItems([{
 			label: 'New request',
 			click: () => {
-				dispatch(actions.executeCommand({ type: 'create_new_request', payload: nodeId }));
+				// dispatch(actions.executeCommand({ type: 'create_new_request', payload: nodeId }));
 			},
 		}, {
 			label: 'Duplicate request',
 			enabled: mode === 'request',
 			click: () => {
-				dispatch(projectActions.duplicateRequest({ requestId: nodeId }));
+				dispatch(actions.duplicateRequest({ requestId: nodeId }));
 			},
 		}, {
 			label: 'New folder',
 			click: () => {
-				dispatch(actions.executeCommand({ type: 'create_new_folder', payload: nodeId }));
+				// dispatch(actions.executeCommand({ type: 'create_new_folder', payload: nodeId }));
 			},
 		}, {
 			label: 'Reveal in Finder',
 			click: () => {
-				dispatch(actions.executeCommand({ type: 'reveal_in_finder', payload: nodeId }));
+				ipcRenderer.send('misc:open_path_in_finder', node.filePath);
 			},
 		},
 
@@ -48,8 +56,21 @@ const ContextMenuWrapper: React.FunctionComponent<ContextMenuWrapperProps> = pro
 
 		{ type: 'separator' },
 
-		{ label: 'Copy path', enabled: false },
-		{ label: 'Copy relative path', enabled: false },
+		{
+			label: 'Copy path',
+			click: () => {
+				clipboard.writeText(node.filePath);
+			},
+		},
+		{
+			label: 'Copy relative path',
+			click: () => {
+				// Is there a better way to do this lol
+				const relativePath = node.filePath.substring(projectPath.length + 1);
+
+				clipboard.writeText(relativePath);
+			},
+		},
 
 		{ type: 'separator' },
 
@@ -57,18 +78,15 @@ const ContextMenuWrapper: React.FunctionComponent<ContextMenuWrapperProps> = pro
 			label: 'Rename',
 			enabled: mode === 'request',
 			click: () => {
-				dispatch(projectActions.requestRenameStarted({ requestId: nodeId }));
+				dispatch(actions.requestRenameStarted({ requestId: nodeId }));
 			},
 		}, {
 			label: 'Delete',
 			click: () => {
-				dispatch(actions.executeCommand({
-					type: mode === 'folder' ? 'delete_folder' : 'delete_request',
-					payload: nodeId,
-				}));
+				dispatch(actions.removeNodeFromDisk({ requestId: node.id, withConfirmation: true }));
 			},
 		}]);
-	}, []);
+	}, [mode, nodeId, node]);
 
 	return (
 		<ContextMenu menuItems={menuItems} target={target}>
