@@ -1,4 +1,4 @@
-import { Tree, ValueParts } from '@beak/common/types/beak-project';
+import { Nodes, Tree, ValueParts } from '@beak/common/types/beak-project';
 
 export const ActionTypes = {
 	START_PROJECT: '@beak/global/project/START_PROJECT',
@@ -24,10 +24,14 @@ export const ActionTypes = {
 
 	DUPLICATE_REQUEST: '@beak/global/project/DUPLICATE_REQUEST',
 	INSERT_REQUEST_NODE: '@beak/global/project/INSERT_REQUEST_NODE',
-	REFRESH_NODE_STATE: '@beak/global/project/REFRESH_NODE_STATE',
-
 	INSERT_FOLDER_NODE: '@beak/global/project/INSERT_FOLDER_NODE',
-	REMOVE_NODE_BY_FILE_PATH: '@beak/global/project/REMOVE_NODE_BY_FILE_PATH',
+
+	REMOVE_NODE_FROM_STORE: '@beak/global/project/REMOVE_NODE_FROM_STORE',
+	REMOVE_NODE_FROM_STORE_BY_PATH: '@beak/global/project/REMOVE_NODE_FROM_STORE_BY_PATH',
+	REMOVE_NODE_FROM_DISK: '@beak/global/project/REMOVE_NODE_FROM_DISK',
+
+	CREATE_NEW_REQUEST: '@beak/global/project/CREATE_NEW_REQUEST',
+	CREATE_NEW_FOLDER: '@beak/global/project/CREATE_NEW_FOLDER',
 
 	REQUEST_RENAME_STARTED: '@beak/global/project/REQUEST_RENAME_STARTED',
 	REQUEST_RENAME_UPDATED: '@beak/global/project/REQUEST_RENAME_UPDATED',
@@ -70,17 +74,10 @@ export interface ScanEntryPayload {
 	isDirectory: boolean;
 }
 
-export interface InitialScanCompletePayload {
-	entries: ScanEntryPayload[];
-}
+export interface InitialScanCompletePayload { entries: ScanEntryPayload[] }
+export interface ProjectOpenedPayload { tree: Tree }
 
-export interface ProjectOpenedPayload {
-	tree: Tree;
-}
-
-export interface RequestIdPayload {
-	requestId: string;
-}
+export interface RequestIdPayload { requestId: string }
 
 export interface RequestUriUpdatedPayload extends RequestIdPayload {
 	url?: ValueParts;
@@ -103,23 +100,25 @@ export interface ToggleableItemRemovedPayload extends RequestIdPayload {
 	identifier: string;
 }
 
-export interface RequestBodyTextChangedPayload extends RequestIdPayload {
-	text: string;
-}
-
-export interface RequestBodyJsonChangedPayload extends RequestIdPayload {
-	json: string;
-}
+export interface RequestBodyTextChangedPayload extends RequestIdPayload { text: string }
+export interface RequestBodyJsonChangedPayload extends RequestIdPayload { json: string }
 
 export interface RequestRenameStarted extends RequestIdPayload { }
 export interface RequestRenameCancelled extends RequestIdPayload { }
 export interface RequestRenameSubmitted extends RequestIdPayload { }
 export interface RequestRenameResolved extends RequestIdPayload { }
-export interface RequestRenameUpdated extends RequestIdPayload {
-	name: string;
-}
+export interface RequestRenameUpdated extends RequestIdPayload { name: string }
 
 export interface DuplicateRequestPayload extends RequestIdPayload { }
+
+export interface RemoveNodeFromDiskPayload extends RequestIdPayload {
+	withConfirmation: boolean;
+}
+
+export interface CreateNewThing {
+	highlightedNodeId: string;
+	name?: string;
+}
 
 export interface ActiveRename {
 	requestId: string;

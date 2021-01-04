@@ -117,11 +117,6 @@ const projectReducer = createReducer(initialState, builder => {
 			if (payload.url !== void 0)
 				node.info.url = payload.url;
 		})
-		.addCase(actions.refreshNodeState, (state, action) => {
-			const node = action.payload as RequestNode;
-
-			state.tree![node.id] = node;
-		})
 
 		.addCase(actions.insertRequestNode, (state, action) => {
 			const node = action.payload as RequestNode;
@@ -133,7 +128,13 @@ const projectReducer = createReducer(initialState, builder => {
 
 			state.tree![node.filePath] = node;
 		})
-		.addCase(actions.removeNodeByFilePath, (state, { payload }) => {
+
+		.addCase(actions.removeNodeFromStore, (state, { payload }) => {
+			const { [payload]: remove, ...rest } = state.tree;
+
+			state.tree = rest;
+		})
+		.addCase(actions.removeNodeFromStoreByPath, (state, { payload }) => {
 			const node = Object.values(state.tree).find(n => n.filePath === payload);
 
 			if (!node)

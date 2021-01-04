@@ -3,10 +3,12 @@ import { createAction } from '@reduxjs/toolkit';
 
 import {
 	ActionTypes,
+	CreateNewThing,
 	DuplicateRequestPayload,
 	InitialScanCompletePayload,
 	ProjectInfoPayload,
 	ProjectOpenedPayload,
+	RemoveNodeFromDiskPayload,
 	RequestBodyJsonChangedPayload,
 	RequestBodyTextChangedPayload,
 	RequestRenameCancelled,
@@ -47,10 +49,14 @@ export const requestBodyJsonChanged = createAction<RequestBodyJsonChangedPayload
 
 export const duplicateRequest = createAction<DuplicateRequestPayload>(ActionTypes.DUPLICATE_REQUEST);
 export const insertRequestNode = createAction<Nodes>(ActionTypes.INSERT_REQUEST_NODE);
-export const refreshNodeState = createAction<Nodes>(ActionTypes.REFRESH_NODE_STATE);
-
 export const insertFolderNode = createAction<Nodes>(ActionTypes.INSERT_FOLDER_NODE);
-export const removeNodeByFilePath = createAction<string>(ActionTypes.REMOVE_NODE_BY_FILE_PATH);
+
+export const removeNodeFromStore = createAction<string>(ActionTypes.REMOVE_NODE_FROM_STORE);
+export const removeNodeFromStoreByPath = createAction<string>(ActionTypes.REMOVE_NODE_FROM_STORE_BY_PATH);
+export const removeNodeFromDisk = createAction<RemoveNodeFromDiskPayload>(ActionTypes.REMOVE_NODE_FROM_DISK);
+
+export const createNewRequest = createAction<CreateNewThing>(ActionTypes.CREATE_NEW_REQUEST);
+export const createNewFolder = createAction<CreateNewThing>(ActionTypes.CREATE_NEW_FOLDER);
 
 export const requestRenameStarted = createAction<RequestRenameStarted>(ActionTypes.REQUEST_RENAME_STARTED);
 export const requestRenameUpdated = createAction<RequestRenameUpdated>(ActionTypes.REQUEST_RENAME_UPDATED);
@@ -81,10 +87,14 @@ export default {
 
 	duplicateRequest,
 	insertRequestNode,
-	refreshNodeState,
-
 	insertFolderNode,
-	removeNodeByFilePath,
+
+	removeNodeFromStore,
+	removeNodeFromStoreByPath,
+	removeNodeFromDisk,
+
+	createNewRequest,
+	createNewFolder,
 
 	requestRenameStarted,
 	requestRenameUpdated,
