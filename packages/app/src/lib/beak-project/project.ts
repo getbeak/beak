@@ -1,7 +1,7 @@
 import { ProjectFile } from '@beak/common/types/beak-project';
 
 import { projectSchema } from './schemas';
-import readJsonAndValidate from './utils';
+import { readJsonAndValidate } from './utils';
 
 const { remote } = window.require('electron');
 const path = remote.require('path');
