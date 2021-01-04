@@ -8,17 +8,33 @@ import { initialState } from './types';
 
 const variableGroupsReducer = createReducer(initialState, builder => {
 	builder
-		.addCase(actions.openVariableGroups, (state, action) => {
-			state.opening = true;
+		.addCase(actions.startVariableGroups, (state, action) => {
+			state.loaded = false;
 			state.projectPath = action.payload;
 		})
-		.addCase(actions.variableGroupsOpened, (state, action) => {
-			state.variableGroups = action.payload.variableGroups;
+		.addCase(actions.variableGroupsInfo, (state, { payload }) => {
+			state.variableGroupsPath = payload.variableGroupsPath;
+		})
+		.addCase(actions.insertScanItem, (state, { payload }) => {
+			state.initialScan?.push(payload);
+		})
+		.addCase(actions.initialScanComplete, state => {
+			state.initialScan = null;
+		})
+		.addCase(actions.variableGroupsOpened, (state, { payload }) => {
+			state.variableGroups = payload;
+			state.loaded = true;
+		})
 
-			if (action.payload.selectedGroups)
-				state.selectedGroups = action.payload.selectedGroups;
+		.addCase(actions.updateVg, (state, { payload }) => {
+			const { name, file } = payload;
 
-			state.opening = false;
+			state.variableGroups[name] = file;
+		})
+		.addCase(actions.removeVg, (state, { payload }) => {
+			const { [payload]: remove, ...rest } = state.variableGroups;
+
+			state.variableGroups = rest;
 		})
 
 		.addCase(actions.updateGroupName, (state, action) => {

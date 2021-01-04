@@ -1,5 +1,6 @@
 import { Tree } from '@beak/common/types/beak-project';
 import React, { useRef } from 'react';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 
 import FolderItem from '../molecules/FolderItem';
@@ -11,7 +12,8 @@ export interface TreeViewProps {
 }
 
 const TreeView: React.FunctionComponent<TreeViewProps> = ({ collapsed, tree }) => {
-	const items = Object.values(tree).filter(t => !t.parent);
+	const projectTreePath = useSelector(s => s.global.project.projectTreePath)!;
+	const items = Object.values(tree).filter(t => t.parent === projectTreePath);
 	const container = useRef<HTMLDivElement>(null);
 
 	return (

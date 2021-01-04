@@ -4933,6 +4933,11 @@ electron-publish@22.9.1:
     lazy-val "^1.0.4"
     mime "^2.4.6"
 
+electron-redux-devtools@^0.3.4:
+  version "0.3.4"
+  resolved "https://registry.yarnpkg.com/electron-redux-devtools/-/electron-redux-devtools-0.3.4.tgz#21c2eafd739248c6414f1d346e6847b0981550e1"
+  integrity sha1-IcLq/XOSSMZBTx00bmhHsJgVUOE=
+
 electron-store@^6.0.1:
   version "6.0.1"
   resolved "https://registry.yarnpkg.com/electron-store/-/electron-store-6.0.1.tgz#2178b9dc37aeb749d99cf9d1d1bc090890b922dc"

@@ -62,10 +62,11 @@ const VariableGroupEditor: React.FunctionComponent<VariableGroupEditorProps> = p
 				<Table>
 					<thead>
 						<tr>
-							<th><Editable disabled value={'Variable'} /></th>
+							<th><Editable disabled value={'Variable name'} /></th>
 							{variableGroup && TypedObject.keys(variableGroup.groups).map(k => (
 								<th key={k}>
 									<Editable
+										type={'text'}
 										value={variableGroup.groups[k]}
 										onChange={e => {
 											dispatch(actions.updateGroupName({
@@ -85,6 +86,7 @@ const VariableGroupEditor: React.FunctionComponent<VariableGroupEditorProps> = p
 								<td>
 									<Editable
 										ref={variableGroup.items[ik] === newItem ? newItemRef : null}
+										type={'text'}
 										value={variableGroup.items[ik]}
 										onChange={e => {
 											dispatch(actions.updateItemName({
@@ -111,6 +113,7 @@ const VariableGroupEditor: React.FunctionComponent<VariableGroupEditorProps> = p
 									return (
 										<td key={gk}>
 											<Editable
+												type={'text'}
 												value={value?.value || ''}
 												onChange={e => {
 													dispatch(actions.updateValue({
@@ -131,6 +134,7 @@ const VariableGroupEditor: React.FunctionComponent<VariableGroupEditorProps> = p
 							<td>
 								<Editable
 									placeholder={'New variable...'}
+									type={'text'}
 									value={''}
 									onChange={e => {
 										setNewItem(e.target.value);
@@ -141,8 +145,9 @@ const VariableGroupEditor: React.FunctionComponent<VariableGroupEditorProps> = p
 									}}
 								/>
 							</td>
-							<td><Editable disabled /></td>
-							<td><Editable disabled /></td>
+							{variableGroup && TypedObject.keys(variableGroup.groups).map(k => (
+								<td><Editable disabled /></td>
+							))}
 						</tr>
 					</tbody>
 				</Table>

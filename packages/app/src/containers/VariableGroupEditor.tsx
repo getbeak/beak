@@ -12,10 +12,10 @@ const VariableGroupEditor: React.FunctionComponent = () => {
 	const vg = useSelector(s => s.global.variableGroups);
 
 	useEffect(() => {
-		dispatch(actions.openVariableGroups(projectPath));
+		dispatch(actions.startVariableGroups(projectPath));
 	}, [projectPath]);
 
-	if (vg.opening)
+	if (!vg.loaded)
 		return null;
 
 	return (

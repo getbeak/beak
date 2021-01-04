@@ -4,6 +4,8 @@ import { createAction } from '@reduxjs/toolkit';
 import {
 	ActionTypes,
 	DuplicateRequestPayload,
+	InitialScanCompletePayload,
+	ProjectInfoPayload,
 	ProjectOpenedPayload,
 	RequestBodyJsonChangedPayload,
 	RequestBodyTextChangedPayload,
@@ -13,14 +15,18 @@ import {
 	RequestRenameSubmitted,
 	RequestRenameUpdated,
 	RequestUriUpdatedPayload,
+	ScanEntryPayload,
 	ToggleableItemAddedPayload,
 	ToggleableItemRemovedPayload,
 	ToggleableItemUpdatedPayload,
 } from './types';
 
-export const openProject = createAction<string>(ActionTypes.OPEN_PROJECT);
+export const startProject = createAction<string>(ActionTypes.START_PROJECT);
+export const insertProjectInfo = createAction<ProjectInfoPayload>(ActionTypes.INSERT_PROJECT_INFO);
+export const insertScanItem = createAction<ScanEntryPayload>(ActionTypes.INSERT_SCAN_ITEM);
+export const initialScanComplete = createAction<InitialScanCompletePayload>(ActionTypes.INITIAL_SCAN_COMPLETE);
 export const projectOpened = createAction<ProjectOpenedPayload>(ActionTypes.PROJECT_OPENED);
-export const startFsListener = createAction(ActionTypes.START_FS_LISTENER);
+
 export const requestSelected = createAction<string | undefined>(ActionTypes.REQUEST_SELECTED);
 export const requestUriUpdated = createAction<RequestUriUpdatedPayload>(ActionTypes.REQUEST_URI_UPDATED);
 
@@ -41,12 +47,10 @@ export const requestBodyJsonChanged = createAction<RequestBodyJsonChangedPayload
 
 export const duplicateRequest = createAction<DuplicateRequestPayload>(ActionTypes.DUPLICATE_REQUEST);
 export const insertRequestNode = createAction<Nodes>(ActionTypes.INSERT_REQUEST_NODE);
-export const removeRequestNode = createAction<string>(ActionTypes.REMOVE_REQUEST_NODE);
 export const refreshNodeState = createAction<Nodes>(ActionTypes.REFRESH_NODE_STATE);
-export const reportNodeUpdate = createAction<string>(ActionTypes.REPORT_NODE_UPDATE);
 
 export const insertFolderNode = createAction<Nodes>(ActionTypes.INSERT_FOLDER_NODE);
-export const removeFolderNode = createAction<string>(ActionTypes.REMOVE_FOLDER_NODE);
+export const removeNodeByFilePath = createAction<string>(ActionTypes.REMOVE_NODE_BY_FILE_PATH);
 
 export const requestRenameStarted = createAction<RequestRenameStarted>(ActionTypes.REQUEST_RENAME_STARTED);
 export const requestRenameUpdated = createAction<RequestRenameUpdated>(ActionTypes.REQUEST_RENAME_UPDATED);
@@ -55,10 +59,13 @@ export const requestRenameSubmitted = createAction<RequestRenameSubmitted>(Actio
 export const requestRenameResolved = createAction<RequestRenameResolved>(ActionTypes.REQUEST_RENAME_RESOLVED);
 
 export default {
-	openProject,
+	startProject,
+	insertProjectInfo,
+	insertScanItem,
+	initialScanComplete,
 	projectOpened,
+
 	requestSelected,
-	startFsListener,
 	requestUriUpdated,
 
 	requestQueryAdded,
@@ -74,12 +81,10 @@ export default {
 
 	duplicateRequest,
 	insertRequestNode,
-	removeRequestNode,
 	refreshNodeState,
-	reportNodeUpdate,
 
 	insertFolderNode,
-	removeFolderNode,
+	removeNodeByFilePath,
 
 	requestRenameStarted,
 	requestRenameUpdated,

@@ -1,12 +1,11 @@
 import { all, fork, takeEvery, takeLatest } from 'redux-saga/effects';
 
 import { ActionTypes } from '../types';
-import catchNodeUpdatesWorker from './catch-node-updates';
+import catchNodeUpdates from './catch-node-updates';
 import duplicateRequest from './duplicate-request';
-import openProjectWorker from './open-project';
-import reportNodeUpdateWorker from './report-node-update';
+import initialScanComplete from './initial-scan-complete';
 import requestRename from './request-rename';
-import startFsListener from './start-fs-listener';
+import startProject from './start-project';
 
 const updateWatcherActions = [
 	ActionTypes.REQUEST_URI_UPDATED,
@@ -23,22 +22,19 @@ const updateWatcherActions = [
 export default function* projectSaga() {
 	yield all([
 		fork(function* catchNodeUpdatesWatcher() {
-			yield takeEvery(updateWatcherActions, catchNodeUpdatesWorker);
-		}),
-		fork(function* openProjectWatcher() {
-			yield takeEvery(ActionTypes.OPEN_PROJECT, openProjectWorker);
-		}),
-		fork(function* reportNodeUpdateWatcher() {
-			yield takeEvery(ActionTypes.REPORT_NODE_UPDATE, reportNodeUpdateWorker);
-		}),
-		fork(function* startFsListenerWatcher() {
-			yield takeLatest(ActionTypes.START_FS_LISTENER, startFsListener);
-		}),
-		fork(function* requestRenameWatcher() {
-			yield takeLatest(ActionTypes.REQUEST_RENAME_SUBMITTED, requestRename);
+			yield takeEvery(updateWatcherActions, catchNodeUpdates);
 		}),
 		fork(function* duplicateRequestWatcher() {
 			yield takeLatest(ActionTypes.DUPLICATE_REQUEST, duplicateRequest);
+		}),
+		fork(function* initialScanCompleteWatcher() {
+			yield takeLatest(ActionTypes.INITIAL_SCAN_COMPLETE, initialScanComplete);
+		}),
+		fork(function* startProjectWatcher() {
+			yield takeEvery(ActionTypes.START_PROJECT, startProject);
+		}),
+		fork(function* requestRenameWatcher() {
+			yield takeLatest(ActionTypes.REQUEST_RENAME_SUBMITTED, requestRename);
 		}),
 	]);
 }

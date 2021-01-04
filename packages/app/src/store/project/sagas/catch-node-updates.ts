@@ -1,14 +1,21 @@
+import { writeRequestNode } from '@beak/app/lib/beak-project/request';
+import { Nodes, RequestNode } from '@beak/common/types/beak-project';
 import { PayloadAction } from '@reduxjs/toolkit';
-import { put } from 'redux-saga/effects';
+import { call, select } from 'redux-saga/effects';
 
-import { reportNodeUpdate } from '../actions';
+import { ApplicationState } from '../..';
 
-interface Interop {
+interface RequestIdPayload {
 	requestId: string;
 }
 
-export default function* catchNodeUpdatesWorker({ payload }: PayloadAction<Interop>) {
+export default function* catchNodeUpdatesWorker({ payload }: PayloadAction<RequestIdPayload>) {
 	const { requestId } = payload;
 
-	yield put(reportNodeUpdate(requestId));
+	const node: Nodes = yield select((s: ApplicationState) => s.global.project.tree[requestId]);
+
+	if (!node || node.type !== 'request')
+		return;
+
+	yield call(writeRequestNode, node as RequestNode);
 }

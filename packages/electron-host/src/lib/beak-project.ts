@@ -1,5 +1,5 @@
 import { TypedObject } from '@beak/common/src/helpers/typescript';
-import { ProjectFile, RequestNodeFile, VariableGroup, VariableGroups } from '@beak/common/types/beak-project';
+import { ProjectFile, RequestNodeFile, VariableGroup } from '@beak/common/types/beak-project';
 // @ts-ignore
 import * as ksuid from '@cuvva/ksuid';
 import * as fs from 'fs-extra';
@@ -74,7 +74,7 @@ export default async function createProject(options: CreationOptions) {
 	await fs.writeJson(path.join(projectPath, 'variable-groups', 'Environment.json'), variableGroup, {
 		spaces: '\t',
 	});
-	await fs.writeFile(path.join(projectPath, '.gitignore'), '.beak\n');
+	await fs.writeFile(path.join(projectPath, '.gitignore'), createGitIgnore());
 	await fs.ensureDir(path.join(projectPath, '.beak'));
 	await fs.writeFile(path.join(projectPath, '.beak', 'supersecret.json'), '{}');
 	await fs.writeFile(path.join(projectPath, 'README.md'), createReadme(name));
@@ -111,6 +111,16 @@ function createReadme(name: string) {
 		'',
 		'Welcome to your new Beak project',
 		'',
+	].join('\n');
+}
+
+function createGitIgnore() {
+	return [
+		'.beak',
+		'',
+		'# Platform files',
+		'.DS_Store',
+		'Thumbs.db',
 	].join('\n');
 }
 

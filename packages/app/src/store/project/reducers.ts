@@ -11,17 +11,25 @@ import { initialState } from './types';
 
 const projectReducer = createReducer(initialState, builder => {
 	builder
-		.addCase(actions.openProject, state => {
-			state.opening = true;
+		.addCase(actions.startProject, state => {
+			state.loaded = false;
 		})
-		.addCase(actions.projectOpened, (state, action) => {
-			const { tree, name, projectPath } = action.payload;
+		.addCase(actions.insertProjectInfo, (state, { payload }) => {
+			state.name = payload.name;
+			state.projectPath = payload.projectPath;
+			state.projectTreePath = payload.treePath;
+		})
+		.addCase(actions.insertScanItem, (state, { payload }) => {
+			state.initialScan?.push(payload);
+		})
+		.addCase(actions.initialScanComplete, state => {
+			state.initialScan = null;
+		})
+		.addCase(actions.projectOpened, (state, { payload }) => {
+			state.loaded = true;
+			state.tree = payload.tree;
+		})
 
-			state.opening = false;
-			state.tree = tree;
-			state.name = name;
-			state.projectPath = projectPath;
-		})
 		.addCase(actions.requestSelected, (state, action) => {
 			if (action.payload !== void 0) {
 				if (!state.selectedRequests.find(v => v === action.payload))
@@ -114,25 +122,24 @@ const projectReducer = createReducer(initialState, builder => {
 
 			state.tree![node.id] = node;
 		})
+
 		.addCase(actions.insertRequestNode, (state, action) => {
 			const node = action.payload as RequestNode;
 
 			state.tree![node.id] = node;
 		})
-		.addCase(actions.removeRequestNode, (state, action) => {
-			const node = TypedObject.values(state.tree!).find(n => n.filePath === action.payload) as RequestNode;
-			const { [node.id]: remove, ...rest } = state.tree!;
-
-			state.tree = rest;
-		})
-
 		.addCase(actions.insertFolderNode, (state, action) => {
 			const node = action.payload as FolderNode;
 
 			state.tree![node.filePath] = node;
 		})
-		.addCase(actions.removeFolderNode, (state, action) => {
-			const { [action.payload]: remove, ...rest } = state.tree!;
+		.addCase(actions.removeNodeByFilePath, (state, { payload }) => {
+			const node = Object.values(state.tree).find(n => n.filePath === payload);
+
+			if (!node)
+				return;
+
+			const { [node?.id]: remove, ...rest } = state.tree;
 
 			state.tree = rest;
 		})

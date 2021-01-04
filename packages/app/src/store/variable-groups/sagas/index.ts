@@ -1,9 +1,9 @@
 import { all, fork, takeEvery } from 'redux-saga/effects';
 
 import { ActionTypes } from '../types';
-import workerCatchUpdates from './catch-updates';
-import openVariableGroupsWorker from './open-variable-groups';
-import startFsListener from './start-fs-listener';
+import catchUpdates from './catch-updates';
+import initialScanComplete from './initial-scan-complete';
+import startVariableGroups from './start-variable-groups';
 
 const updateWatcherActions = [
 	ActionTypes.UPDATE_GROUP_NAME,
@@ -14,14 +14,14 @@ const updateWatcherActions = [
 
 export default function* variableGroupsSaga() {
 	yield all([
-		fork(function* openVariableGroupsWatcher() {
-			yield takeEvery(ActionTypes.OPEN_VARIABLE_GROUPS, openVariableGroupsWorker);
+		fork(function* startVariableGroupsWatcher() {
+			yield takeEvery(ActionTypes.START_VARIABLE_GROUPS, startVariableGroups);
 		}),
-		fork(function* startFsListenerWatcher() {
-			yield takeEvery(ActionTypes.START_FS_LISTENER, startFsListener);
+		fork(function* initialScanCompleteWatcher() {
+			yield takeEvery(ActionTypes.INITIAL_SCAN_COMPLETE, initialScanComplete);
 		}),
 		fork(function* catchNodeUpdatesWatcher() {
-			yield takeEvery(updateWatcherActions, workerCatchUpdates);
+			yield takeEvery(updateWatcherActions, catchUpdates);
 		}),
 	]);
 }

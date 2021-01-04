@@ -22,7 +22,7 @@ import { isDarwin } from '../globals';
 import useTitleBar from '../hooks/use-title-bar';
 import BeakHub from '../lib/beak-hub';
 import { requestFlight } from '../store/flight/actions';
-import { openProject, requestSelected } from '../store/project/actions';
+import { requestSelected, startProject } from '../store/project/actions';
 
 const ProjectMain: React.FunctionComponent = () => {
 	const dispatch = useDispatch();
@@ -34,10 +34,10 @@ const ProjectMain: React.FunctionComponent = () => {
 	const { selectedRequest, selectedRequests, tree } = useSelector(s => s.global.project);
 
 	const [hub, setHub] = useState<BeakHub | null>(null);
-	const opening = project.opening || variableGroups.opening;
+	const loaded = project.loaded && variableGroups.loaded;
 
 	useEffect(() => {
-		dispatch(openProject(projectFilePath));
+		dispatch(startProject(projectFilePath));
 	}, [projectFilePath]);
 
 	useEffect(() => {
@@ -49,12 +49,12 @@ const ProjectMain: React.FunctionComponent = () => {
 	}, []);
 
 	useEffect(() => {
-		if (opening)
+		if (!loaded)
 			return;
 
 		setHub(new BeakHub(project.projectPath!));
 		setTitle(`${project.name} - Beak`);
-	}, [project, project.name, opening]);
+	}, [project, project.name, loaded]);
 
 	function onKeyDown(event: KeyboardEvent) {
 		if (!selectedRequest || event.key !== 'Return')
@@ -84,7 +84,7 @@ const ProjectMain: React.FunctionComponent = () => {
 				<ProgressIndicator />
 				<Container>
 					<ReflexStyles />
-					{!opening && (
+					{loaded && (
 						<React.Fragment>
 							<ReflexContainer orientation={'vertical'}>
 								<ReflexElement flex={20}>
@@ -145,7 +145,7 @@ const ProjectMain: React.FunctionComponent = () => {
 					)}
 				</Container>
 				<StatusBar />
-				{opening && <LoadingMask />}
+				{!loaded && <LoadingMask />}
 			</BeakHubContext.Provider>
 		</React.Fragment>
 	);

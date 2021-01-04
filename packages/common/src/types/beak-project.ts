@@ -8,21 +8,19 @@ export interface RequestNodeFile extends RequestOverview {
 }
 
 export interface Node {
+	id: string;
 	type: 'folder' | 'request';
+	name: string;
 	filePath: string;
 	parent: string | null;
 }
 
 export interface FolderNode extends Node {
 	type: 'folder';
-	name: string;
 }
 
 export interface RequestNode extends Node {
-	id: string;
 	type: 'request';
-	name: string;
-
 	info: RequestOverview;
 }
 

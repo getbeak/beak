@@ -42,6 +42,7 @@
     "css-loader": "^5.0.0",
     "custom-electron-titlebar": "^3.2.5",
     "date-fns": "^2.15.0",
+    "electron-redux-devtools": "^0.3.4",
     "file-loader": "^6.2.0",
     "fuse.js": "^6.4.1",
     "http-status-codes": "^2.1.4",

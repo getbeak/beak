@@ -1,10 +1,11 @@
 import { Tree, ValueParts } from '@beak/common/types/beak-project';
 
 export const ActionTypes = {
-	OPEN_PROJECT: '@beak/global/project/OPEN_PROJECT',
+	START_PROJECT: '@beak/global/project/START_PROJECT',
+	INSERT_PROJECT_INFO: '@beak/global/project/INSERT_PROJECT_INFO',
+	INSERT_SCAN_ITEM: '@beak/global/project/INSERT_SCAN_ITEM',
+	INITIAL_SCAN_COMPLETE: '@beak/global/project/INITIAL_SCAN_COMPLETE',
 	PROJECT_OPENED: '@beak/global/project/PROJECT_OPENED',
-
-	START_FS_LISTENER: '@beak/global/project/START_FS_LISTENER',
 
 	REQUEST_SELECTED: '@beak/global/project/REQUEST_SELECTED',
 
@@ -23,12 +24,10 @@ export const ActionTypes = {
 
 	DUPLICATE_REQUEST: '@beak/global/project/DUPLICATE_REQUEST',
 	INSERT_REQUEST_NODE: '@beak/global/project/INSERT_REQUEST_NODE',
-	REMOVE_REQUEST_NODE: '@beak/global/project/REMOVE_REQUEST_NODE',
 	REFRESH_NODE_STATE: '@beak/global/project/REFRESH_NODE_STATE',
-	REPORT_NODE_UPDATE: '@beak/global/project/REPORT_NODE_UPDATE',
 
 	INSERT_FOLDER_NODE: '@beak/global/project/INSERT_FOLDER_NODE',
-	REMOVE_FOLDER_NODE: '@beak/global/project/REMOVE_FOLDER_NODE',
+	REMOVE_NODE_BY_FILE_PATH: '@beak/global/project/REMOVE_NODE_BY_FILE_PATH',
 
 	REQUEST_RENAME_STARTED: '@beak/global/project/REQUEST_RENAME_STARTED',
 	REQUEST_RENAME_UPDATED: '@beak/global/project/REQUEST_RENAME_UPDATED',
@@ -38,10 +37,13 @@ export const ActionTypes = {
 };
 
 export interface State {
-	opening: boolean;
+	loaded: boolean;
+	initialScan: ScanEntryPayload[] | null;
+
 	name?: string;
 	projectPath?: string;
-	tree?: Tree;
+	projectTreePath?: string;
+	tree: Tree;
 
 	selectedRequest?: string;
 	selectedRequests: string[];
@@ -50,13 +52,30 @@ export interface State {
 }
 
 export const initialState: State = {
-	opening: true,
+	loaded: false,
+	initialScan: [],
+
+	tree: {},
 	selectedRequests: [],
 };
 
-export interface ActiveRename {
-	requestId: string;
+export interface ProjectInfoPayload {
 	name: string;
+	projectPath: string;
+	treePath: string;
+}
+
+export interface ScanEntryPayload {
+	filePath: string;
+	isDirectory: boolean;
+}
+
+export interface InitialScanCompletePayload {
+	entries: ScanEntryPayload[];
+}
+
+export interface ProjectOpenedPayload {
+	tree: Tree;
 }
 
 export interface RequestIdPayload {
@@ -92,12 +111,6 @@ export interface RequestBodyJsonChangedPayload extends RequestIdPayload {
 	json: string;
 }
 
-export interface ProjectOpenedPayload {
-	name: string;
-	projectPath: string;
-	tree: Tree;
-}
-
 export interface RequestRenameStarted extends RequestIdPayload { }
 export interface RequestRenameCancelled extends RequestIdPayload { }
 export interface RequestRenameSubmitted extends RequestIdPayload { }
@@ -107,6 +120,11 @@ export interface RequestRenameUpdated extends RequestIdPayload {
 }
 
 export interface DuplicateRequestPayload extends RequestIdPayload { }
+
+export interface ActiveRename {
+	requestId: string;
+	name: string;
+}
 
 export default {
 	ActionTypes,

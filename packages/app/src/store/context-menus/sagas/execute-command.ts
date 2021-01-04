@@ -1,4 +1,3 @@
-import { getProjectSingleton } from '@beak/app/lib/beak-project/instance';
 import { Nodes } from '@beak/common/dist/types/beak-project';
 import { PayloadAction } from '@reduxjs/toolkit';
 import { call, put, select, take } from 'redux-saga/effects';
@@ -12,66 +11,66 @@ const electron = window.require('electron');
 const { ipcRenderer } = electron;
 
 export default function* executeCommandWorker({ payload }: PayloadAction<Commands>) {
-	switch (payload.type) {
-		case 'reveal_in_finder': {
-			const filePath: string = yield getFilePathFromId(payload.payload);
+	// switch (payload.type) {
+	// 	case 'reveal_in_finder': {
+	// 		const filePath: string = yield getFilePathFromId(payload.payload);
 
-			ipcRenderer.send('misc:open_path_in_finder', filePath);
+	// 		ipcRenderer.send('misc:open_path_in_finder', filePath);
 
-			return;
-		}
+	// 		return;
+	// 	}
 
-		case 'create_new_request': {
-			const proj = getProjectSingleton();
-			const id: string = yield call([proj, proj.createRequestNode], payload.payload);
+	// 	case 'create_new_request': {
+	// 		const proj = getProjectSingleton();
+	// 		const id: string = yield call([proj, proj.createRequestNode], payload.payload);
 
-			yield take(ProjectActionTypes.INSERT_REQUEST_NODE);
-			yield put(actions.requestSelected(id));
+	// 		yield take(ProjectActionTypes.INSERT_REQUEST_NODE);
+	// 		yield put(actions.requestSelected(id));
 
-			return;
-		}
+	// 		return;
+	// 	}
 
-		case 'delete_request': {
-			const filePath: string = yield getFilePathFromId(payload.payload);
-			const proj = getProjectSingleton();
+	// 	case 'delete_request': {
+	// 		const filePath: string = yield getFilePathFromId(payload.payload);
+	// 		const proj = getProjectSingleton();
 
-			// TODO(afr): Add a confirmation here
+	// 		// TODO(afr): Add a confirmation here
 
-			yield call([proj, proj.removeRequestNode], filePath);
+	// 		yield call([proj, proj.removeRequestNode], filePath);
 
-			return;
-		}
+	// 		return;
+	// 	}
 
-		case 'create_new_folder': {
-			const proj = getProjectSingleton();
+	// 	case 'create_new_folder': {
+	// 		const proj = getProjectSingleton();
 
-			yield call([proj, proj.createFolderNode], payload.payload);
-			yield take(ProjectActionTypes.INSERT_FOLDER_NODE);
+	// 		yield call([proj, proj.createFolderNode], payload.payload);
+	// 		yield take(ProjectActionTypes.INSERT_FOLDER_NODE);
 
-			return;
-		}
+	// 		return;
+	// 	}
 
-		case 'delete_folder': {
-			const proj = getProjectSingleton();
+	// 	case 'delete_folder': {
+	// 		const proj = getProjectSingleton();
 
-			// TODO(afr): Add a confirmation here
+	// 		// TODO(afr): Add a confirmation here
 
-			yield call([proj, proj.removeFolderNode], payload.payload);
-			yield take(ProjectActionTypes.REMOVE_REQUEST_NODE);
+	// 		yield call([proj, proj.removeFolderNode], payload.payload);
+	// 		yield take(ProjectActionTypes.REMOVE_REQUEST_NODE);
 
-			return;
-		}
+	// 		return;
+	// 	}
 
-		default:
-			return;
-	}
+	// 	default:
+	// 		return;
+	// }
 }
 
-function* getFilePathFromId(id: string) {
-	if (id === 'root')
-		return getProjectSingleton().getProjectPath();
+// function* getFilePathFromId(id: string) {
+// 	if (id === 'root')
+// 		return getProjectSingleton().getProjectPath();
 
-	const node: Nodes = yield select((s: ApplicationState) => s.global.project.tree![id]);
+// 	const node: Nodes = yield select((s: ApplicationState) => s.global.project.tree![id]);
 
-	return node.filePath;
-}
+// 	return node.filePath;
+// }

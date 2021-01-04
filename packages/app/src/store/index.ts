@@ -1,9 +1,10 @@
+// @ts-ignore
+import { composeWithDevTools } from 'electron-redux-devtools';
 import { applyMiddleware, combineReducers, createStore } from 'redux';
-import { composeWithDevTools } from 'redux-devtools-extension';
 import createSagaMiddleware from 'redux-saga';
 import { all, fork } from 'redux-saga/effects';
-import NestClient from '../lib/nest-client';
 
+import NestClient from '../lib/nest-client';
 import * as contextMenusStore from './context-menus';
 import * as flightStore from './flight';
 import { State as FlightState } from './flight/types';
