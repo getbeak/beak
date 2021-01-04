@@ -2,6 +2,22 @@ import { dialog, ipcMain } from 'electron';
 
 import { createVariableGroupEditorWindow, windowStack } from '../window-management';
 
+ipcMain.handle('dialog:remove_node', async event => {
+	const window = windowStack[event.sender.id]!;
+
+	const result = await dialog.showMessageBox(window, {
+		message: 'Are you sure you want to remove this node?',
+		type: 'warning',
+		buttons: [
+			'Remove',
+			'Cancel',
+		],
+		defaultId: 1,
+	});
+
+	return result.response;
+});
+
 ipcMain.handle('dialog:confirm_body_tab_change', async event => {
 	const window = windowStack[event.sender.id]!;
 
