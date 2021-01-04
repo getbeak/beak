@@ -97,7 +97,7 @@ function* handleRequest(event: Event) {
 		}
 
 		case 'unlink':
-			yield put(actions.removeNodeByFilePath(event.path));
+			yield put(actions.removeNodeFromStoreByPath(event.path));
 
 			break;
 
@@ -119,7 +119,7 @@ function* handleFolder(event: Event) {
 		}
 
 		case 'unlinkDir':
-			yield put(actions.removeNodeByFilePath(event.path));
+			yield put(actions.removeNodeFromStoreByPath(event.path));
 
 			break;
 
