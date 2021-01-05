@@ -1,4 +1,4 @@
-import { Nodes, Tree, ValueParts } from '@beak/common/types/beak-project';
+import { Tree, ValueParts } from '@beak/common/types/beak-project';
 
 export const ActionTypes = {
 	START_PROJECT: '@beak/global/project/START_PROJECT',
@@ -8,6 +8,11 @@ export const ActionTypes = {
 	PROJECT_OPENED: '@beak/global/project/PROJECT_OPENED',
 
 	REQUEST_SELECTED: '@beak/global/project/REQUEST_SELECTED',
+	CLOSE_SELECTED_REQUEST: '@beak/global/project/CLOSE_SELECTED_REQUEST',
+	CLOSE_OTHER_SELECTED_REQUESTS: '@beak/global/project/CLOSE_OTHER_SELECTED_REQUESTS',
+	CLOSE_SELECTED_REQUESTS_TO_RIGHT: '@beak/global/project/CLOSE_SELECTED_REQUESTS_TO_RIGHT',
+	CLOSE_SELECTED_REQUESTS_TO_LEFT: '@beak/global/project/CLOSE_SELECTED_REQUESTS_TO_LEFT',
+	CLOSE_ALL_SELECTED_REQUESTS: '@beak/global/project/CLOSE_ALL_SELECTED_REQUESTS',
 
 	REQUEST_URI_UPDATED: '@beak/global/project/REQUEST_URI_UPDATED',
 

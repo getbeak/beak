@@ -30,6 +30,12 @@ export const initialScanComplete = createAction<InitialScanCompletePayload>(Acti
 export const projectOpened = createAction<ProjectOpenedPayload>(ActionTypes.PROJECT_OPENED);
 
 export const requestSelected = createAction<string | undefined>(ActionTypes.REQUEST_SELECTED);
+export const closeSelectedRequest = createAction<string>(ActionTypes.CLOSE_SELECTED_REQUEST);
+export const closeOtherSelectedRequests = createAction<string>(ActionTypes.CLOSE_OTHER_SELECTED_REQUESTS);
+export const closeSelectedRequestsToRight = createAction<string>(ActionTypes.CLOSE_SELECTED_REQUESTS_TO_RIGHT);
+export const closeSelectedRequestsToLeft = createAction<string>(ActionTypes.CLOSE_SELECTED_REQUESTS_TO_LEFT);
+export const closeAllSelectedRequests = createAction<string>(ActionTypes.CLOSE_ALL_SELECTED_REQUESTS);
+
 export const requestUriUpdated = createAction<RequestUriUpdatedPayload>(ActionTypes.REQUEST_URI_UPDATED);
 
 export const requestQueryAdded = createAction<ToggleableItemAddedPayload>(ActionTypes.REQUEST_QUERY_ADDED);
@@ -72,6 +78,12 @@ export default {
 	projectOpened,
 
 	requestSelected,
+	closeSelectedRequest,
+	closeOtherSelectedRequests,
+	closeSelectedRequestsToRight,
+	closeSelectedRequestsToLeft,
+	closeAllSelectedRequests,
+
 	requestUriUpdated,
 
 	requestQueryAdded,

@@ -38,6 +38,19 @@ const projectReducer = createReducer(initialState, builder => {
 
 			state.selectedRequest = action.payload;
 		})
+		.addCase(actions.closeSelectedRequest, (state, { payload }) => {
+			state.selectedRequests = state.selectedRequests.filter(r => r !== payload);
+		})
+
+		.addCase(actions.requestUriUpdated, (state, action) => {
+			const { payload } = action;
+			const node = state.tree![action.payload.requestId] as RequestNode;
+
+			if (payload.verb !== void 0)
+				node.info.verb = payload.verb;
+			if (payload.url !== void 0)
+				node.info.url = payload.url;
+		})
 
 		.addCase(actions.requestQueryAdded, (state, action) => {
 			const { payload } = action;
@@ -106,16 +119,6 @@ const projectReducer = createReducer(initialState, builder => {
 
 			node.info.body.type = 'json';
 			node.info.body.payload = action.payload.json;
-		})
-
-		.addCase(actions.requestUriUpdated, (state, action) => {
-			const { payload } = action;
-			const node = state.tree![action.payload.requestId] as RequestNode;
-
-			if (payload.verb !== void 0)
-				node.info.verb = payload.verb;
-			if (payload.url !== void 0)
-				node.info.url = payload.url;
 		})
 
 		.addCase(actions.insertRequestNode, (state, action) => {
