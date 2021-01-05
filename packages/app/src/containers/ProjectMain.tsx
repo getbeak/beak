@@ -1,4 +1,3 @@
-import { RequestNode } from '@beak/common/dist/types/beak-project';
 import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { useHotkeys } from 'react-hotkeys-hook';
@@ -9,8 +8,8 @@ import styled from 'styled-components';
 import ReflexSplitter from '../components/atoms/ReflexSplitter';
 import ReflexStyles from '../components/atoms/ReflexStyles';
 import TB from '../components/atoms/TabBar';
-import TabItem from '../components/atoms/TabItem';
 import ProgressIndicator from '../components/molecules/ProgressIndicator';
+import ProjectTab from '../components/molecules/ProjectTab';
 import BeakHubContext from '../contexts/beak-hub-context';
 import ActionBar from '../features/action-bar/components/ActionBar';
 import Omnibar from '../features/omni-bar/components/Omnibar';
@@ -22,7 +21,7 @@ import { isDarwin } from '../globals';
 import useTitleBar from '../hooks/use-title-bar';
 import BeakHub from '../lib/beak-hub';
 import { requestFlight } from '../store/flight/actions';
-import { requestSelected, startProject } from '../store/project/actions';
+import { startProject } from '../store/project/actions';
 
 const ProjectMain: React.FunctionComponent = () => {
 	const dispatch = useDispatch();
@@ -31,7 +30,7 @@ const ProjectMain: React.FunctionComponent = () => {
 	const projectFilePath = decodeURIComponent(params.get('projectFilePath') as string);
 	const project = useSelector(s => s.global.project);
 	const variableGroups = useSelector(s => s.global.variableGroups);
-	const { selectedRequest, selectedRequests, tree } = useSelector(s => s.global.project);
+	const { selectedRequest, selectedRequests } = useSelector(s => s.global.project);
 
 	const [hub, setHub] = useState<BeakHub | null>(null);
 	const loaded = project.loaded && variableGroups.loaded;
@@ -103,22 +102,13 @@ const ProjectMain: React.FunctionComponent = () => {
 									<ActionBar />
 
 									<TabBar>
-										{selectedRequests.map(id => {
-											const node = tree![id] as RequestNode;
-
-											if (!node)
-												return null;
-
-											return (
-												<TabItem
-													active={selectedRequest === id}
-													onClick={() => dispatch(requestSelected(node.id))}
-													key={node.id}
-												>
-													{node.name}
-												</TabItem>
-											);
-										})}
+										{selectedRequests.map(id => (
+											<ProjectTab
+												nodeId={id}
+												selectedRequestId={selectedRequest}
+												key={id}
+											/>
+										))}
 									</TabBar>
 
 									<ReqResContainer orientation={'vertical'}>
