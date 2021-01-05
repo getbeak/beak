@@ -5,8 +5,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 const electron = window.require('electron');
-const { remote, ipcRenderer } = electron;
-const path = remote.require('path');
+const { ipcRenderer } = electron;
 
 interface ContextMenuWrapperProps {
 	nodeId: string;
@@ -28,7 +27,7 @@ const ContextMenuWrapper: React.FunctionComponent<ContextMenuWrapperProps> = pro
 		setMenuItems([{
 			label: 'New request',
 			click: () => {
-				// dispatch(actions.executeCommand({ type: 'create_new_request', payload: nodeId }));
+				dispatch(actions.createNewRequest({ highlightedNodeId: node.id }));
 			},
 		}, {
 			label: 'Duplicate request',
@@ -39,7 +38,7 @@ const ContextMenuWrapper: React.FunctionComponent<ContextMenuWrapperProps> = pro
 		}, {
 			label: 'New folder',
 			click: () => {
-				// dispatch(actions.executeCommand({ type: 'create_new_folder', payload: nodeId }));
+				dispatch(actions.createNewFolder({ highlightedNodeId: node.id }));
 			},
 		}, {
 			label: 'Reveal in Finder',
@@ -50,9 +49,12 @@ const ContextMenuWrapper: React.FunctionComponent<ContextMenuWrapperProps> = pro
 
 		{ type: 'separator' },
 
-		{ role: 'copy', enabled: false },
-		{ role: 'cut', enabled: false },
-		{ role: 'paste', enabled: false },
+		// { role: 'copy', enabled: false },
+		// { role: 'cut', enabled: false },
+		// { role: 'paste', enabled: false },
+		{ label: 'Copy', enabled: false },
+		{ label: 'Cut', enabled: false },
+		{ label: 'Paste', enabled: false },
 
 		{ type: 'separator' },
 
