@@ -93,7 +93,7 @@ export async function duplicateRequestNode(request: RequestNode) {
 		body: request.info.body,
 	};
 
-	await fs.writeJson(fullPath, node, { spaces: '/t' });
+	await fs.writeJson(fullPath, node, { spaces: '\t' });
 
 	return node.id;
 }
