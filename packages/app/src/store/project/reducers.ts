@@ -1,6 +1,5 @@
 /* eslint-disable no-param-reassign */
 
-import { TypedObject } from '@beak/common/dist/helpers/typescript';
 import { FolderNode, RequestNode } from '@beak/common/types/beak-project';
 // @ts-ignore
 import ksuid from '@cuvva/ksuid';
@@ -40,6 +39,25 @@ const projectReducer = createReducer(initialState, builder => {
 		})
 		.addCase(actions.closeSelectedRequest, (state, { payload }) => {
 			state.selectedRequests = state.selectedRequests.filter(r => r !== payload);
+		})
+		.addCase(actions.closeOtherSelectedRequests, (state, { payload }) => {
+			state.selectedRequests = [payload];
+			state.selectedRequest = payload;
+		})
+		.addCase(actions.closeSelectedRequestsToRight, (state, { payload }) => {
+			const index = state.selectedRequests.indexOf(payload);
+
+			state.selectedRequests = state.selectedRequests.slice(0, index + 1);
+		})
+		.addCase(actions.closeSelectedRequestsToLeft, (state, { payload }) => {
+			const index = state.selectedRequests.indexOf(payload);
+
+			state.selectedRequests = state.selectedRequests.slice(index);
+			state.selectedRequest = state.selectedRequests[0];
+		})
+		.addCase(actions.closeAllSelectedRequests, state => {
+			state.selectedRequests = [];
+			state.selectedRequest = void 0;
 		})
 
 		.addCase(actions.requestUriUpdated, (state, action) => {

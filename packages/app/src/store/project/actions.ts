@@ -34,7 +34,7 @@ export const closeSelectedRequest = createAction<string>(ActionTypes.CLOSE_SELEC
 export const closeOtherSelectedRequests = createAction<string>(ActionTypes.CLOSE_OTHER_SELECTED_REQUESTS);
 export const closeSelectedRequestsToRight = createAction<string>(ActionTypes.CLOSE_SELECTED_REQUESTS_TO_RIGHT);
 export const closeSelectedRequestsToLeft = createAction<string>(ActionTypes.CLOSE_SELECTED_REQUESTS_TO_LEFT);
-export const closeAllSelectedRequests = createAction<string>(ActionTypes.CLOSE_ALL_SELECTED_REQUESTS);
+export const closeAllSelectedRequests = createAction(ActionTypes.CLOSE_ALL_SELECTED_REQUESTS);
 
 export const requestUriUpdated = createAction<RequestUriUpdatedPayload>(ActionTypes.REQUEST_URI_UPDATED);
 

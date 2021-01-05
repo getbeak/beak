@@ -16,12 +16,16 @@ const TabContextMenuWrapper: React.FunctionComponent<TabContextMenuWrapperProps>
 	const dispatch = useDispatch();
 	const { nodeId, target, children } = props;
 	const node = useSelector(s => s.global.project.tree[nodeId]);
-	const projectPath = useSelector(s => s.global.project.projectPath)!;
+	const { selectedRequests, selectedRequest, projectPath } = useSelector(s => s.global.project)!;
 	const [menuItems, setMenuItems] = useState<MenuItemConstructorOptions[]>([]);
 
 	useEffect(() => {
 		if (!node)
 			return;
+
+		const selectedIndex = selectedRequests.indexOf(node.id);
+		const startTab = selectedIndex <= 0;
+		const endTab = selectedIndex === selectedRequests.length - 1;
 
 		setMenuItems([
 			{
@@ -30,10 +34,32 @@ const TabContextMenuWrapper: React.FunctionComponent<TabContextMenuWrapperProps>
 					dispatch(actions.closeSelectedRequest(node.id));
 				},
 			},
-			{ label: 'Close Others', enabled: false },
-			{ label: 'Close to the Right', enabled: false },
-			{ label: 'Close to the Left', enabled: false },
-			{ label: 'Close All', enabled: false },
+			{
+				label: 'Close Others',
+				click: () => {
+					dispatch(actions.closeOtherSelectedRequests(node.id));
+				},
+			},
+			{
+				label: 'Close to the Right',
+				enabled: !endTab,
+				click: () => {
+					dispatch(actions.closeSelectedRequestsToRight(node.id));
+				},
+			},
+			{
+				label: 'Close to the Left',
+				enabled: !startTab,
+				click: () => {
+					dispatch(actions.closeSelectedRequestsToLeft(node.id));
+				},
+			},
+			{
+				label: 'Close All',
+				click: () => {
+					dispatch(actions.closeAllSelectedRequests());
+				},
+			},
 
 			{ type: 'separator' },
 
@@ -47,7 +73,7 @@ const TabContextMenuWrapper: React.FunctionComponent<TabContextMenuWrapperProps>
 				label: 'Copy relative path',
 				click: () => {
 					// Is there a better way to do this lol
-					const relativePath = node.filePath.substring(projectPath.length + 1);
+					const relativePath = node.filePath.substring(projectPath!.length + 1);
 
 					clipboard.writeText(relativePath);
 				},
@@ -62,7 +88,7 @@ const TabContextMenuWrapper: React.FunctionComponent<TabContextMenuWrapperProps>
 				},
 			},
 		]);
-	}, [nodeId, node]);
+	}, [nodeId, node, selectedRequest, selectedRequests]);
 
 	return (
 		<ContextMenu menuItems={menuItems} target={target}>
