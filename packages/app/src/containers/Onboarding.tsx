@@ -1,15 +1,62 @@
-import crpc from 'crpc';
-import React, { useState } from 'react';
+import Squawk from '@beak/common/utils/squawk';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 
 import Button from '../components/atoms/Button';
+import FormError from '../components/atoms/FormError';
 import FormInput from '../components/atoms/FormInput';
 import Input from '../components/atoms/Input';
 import Label from '../components/atoms/Label';
+import { actions } from '../store/nest';
+
+const { ipcRenderer } = window.require('electron');
 
 const Onboarding: React.FunctionComponent = () => {
+	const dispatch = useDispatch();
 	const [emailAddy, setEmailAddy] = useState('');
-	const enabled = emailAddy;
+	const magicLink = useSelector(s => s.global.nest.sendMagicLink);
+	const [doing, setDoing] = useState(false);
+	const [error, setError] = useState<Squawk>();
+	const [done, setDone] = useState(false);
+	const enabled = emailAddy && !doing && !done;
+
+	useEffect(() => {
+		ipcRenderer.on('inbound-magic-link', (_event, payload: { code: string; state: string }) => {
+			const { code, state } = payload;
+
+			dispatch(actions.handleMagicLink.request({ code, state }));
+		});
+	}, []);
+
+	useEffect(() => {
+		if (magicLink.fetching)
+			return;
+
+		setDoing(false);
+
+		if (magicLink.error)
+			setError(magicLink.error);
+		else
+			setDone(true);
+	}, [magicLink]);
+
+	function sendMagicLink() {
+		setDoing(true);
+		setDone(false);
+		setError(void 0);
+		dispatch(actions.sendMagicLink.request({ email: emailAddy }));
+	}
+
+	function getButtonContent() {
+		if (doing)
+			return 'Sending magic link';
+
+		if (done)
+			return 'Magic link sent!';
+
+		return 'Send magic link';
+	}
 
 	return (
 		<Wrapper>
@@ -18,7 +65,7 @@ const Onboarding: React.FunctionComponent = () => {
 			<Container>
 				<Title>{'Welcome to the Beak Alpha α!'}</Title>
 				<SubTitle>
-					{'Before you get started please enter your alpha enrolled email!'}
+					{'To get started please enter your alpha enrolled email'}
 				</SubTitle>
 
 				<FormInput>
@@ -29,13 +76,19 @@ const Onboarding: React.FunctionComponent = () => {
 						type={'text'}
 						onChange={e => setEmailAddy(e.target.value)}
 					/>
+					{error && (
+						<FormError>
+							{`There was a problem sending the magic link (${error.code})`}
+						</FormError>
+					)}
 				</FormInput>
 
 				<ActionsWrapper>
 					<Button
 						disabled={!enabled}
+						onClick={() => sendMagicLink()}
 					>
-						{'Send magic link'}
+						{getButtonContent()}
 					</Button>
 				</ActionsWrapper>
 			</Container>
@@ -60,7 +113,8 @@ const DragBar = styled.div`
 const Container = styled.div`
 	position: relative;
 	padding: 15px;
-	height: calc(100vh - 30px);
+	padding-top: 30px;
+	height: calc(100vh - 45px);
 
 	z-index: 2;
 `;
