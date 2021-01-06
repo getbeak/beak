@@ -1,17 +1,17 @@
-import { AsyncMapState } from '../types';
+import { AsyncState, createInitialAsyncState } from '../types';
 
 export const ActionTypes = {
-	SEND_MAGIC_LINK: '@beak/global/project/SEND_MAGIC_LINK',
-	SEND_MAGIC_LINK_FAILURE: '@beak/global/project/SEND_MAGIC_LINK_FAILURE',
-	SEND_MAGIC_LINK_SUCCESS: '@beak/global/project/SEND_MAGIC_LINK_SUCCESS',
+	SEND_MAGIC_LINK: '@beak/global/nest/SEND_MAGIC_LINK',
+	SEND_MAGIC_LINK_FAILURE: '@beak/global/nest/SEND_MAGIC_LINK_FAILURE',
+	SEND_MAGIC_LINK_SUCCESS: '@beak/global/nest/SEND_MAGIC_LINK_SUCCESS',
 };
 
 export interface State {
-	sendMagicLink: AsyncMapState<void>;
+	sendMagicLink: AsyncState<void>;
 }
 
 export const initialState: State = {
-	sendMagicLink: {},
+	sendMagicLink: createInitialAsyncState(),
 };
 
 export type GrantType = 'authorization_code' | 'refresh_token' | 'access_token';
@@ -19,6 +19,10 @@ export type GrantType = 'authorization_code' | 'refresh_token' | 'access_token';
 export interface Grant {
 	type: GrantType;
 	value: string;
+}
+
+export interface SendMagicLinkPayload {
+	email: string;
 }
 
 export interface SendMagicLinkRequest {

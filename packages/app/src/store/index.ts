@@ -7,6 +7,8 @@ import { all, fork } from 'redux-saga/effects';
 import NestClient from '../lib/nest-client';
 import * as flightStore from './flight';
 import { State as FlightState } from './flight/types';
+import * as nestStore from './nest';
+import { State as NestState } from './nest/types';
 import * as projectStore from './project';
 import { State as ProjectState } from './project/types';
 import * as variableGroupsStore from './variable-groups';
@@ -15,6 +17,7 @@ import { State as VariableGroupState } from './variable-groups/types';
 export interface ApplicationState {
 	global: {
 		flight: FlightState;
+		nest: NestState;
 		project: ProjectState;
 		variableGroups: VariableGroupState;
 	};
@@ -24,6 +27,7 @@ function createRootReducer() {
 	return combineReducers<ApplicationState>({
 		global: combineReducers({
 			flight: flightStore.reducers,
+			nest: nestStore.reducers,
 			project: projectStore.reducers,
 			variableGroups: variableGroupsStore.reducers,
 		}),
@@ -33,6 +37,7 @@ function createRootReducer() {
 function* rootSaga() {
 	yield all([
 		fork(flightStore.sagas),
+		fork(nestStore.sagas),
 		fork(projectStore.sagas),
 		fork(variableGroupsStore.sagas),
 	]);
@@ -42,6 +47,7 @@ function createInitialState(): ApplicationState {
 	return {
 		global: {
 			flight: flightStore.types.initialState,
+			nest: nestStore.types.initialState,
 			project: projectStore.types.initialState,
 			variableGroups: variableGroupsStore.types.initialState,
 		},
