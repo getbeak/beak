@@ -1,4 +1,4 @@
-import { isDarwin } from "../globals";
+import { isDarwin } from '../globals';
 
 export function toHexAlpha(color: string, opacity: number, ignoreAlpha?: boolean) {
 	if (ignoreAlpha)

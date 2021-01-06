@@ -2,7 +2,7 @@ import Squawk from '@beak/common/utils/squawk';
 
 export type AsyncState<T> = T extends void ? {
 	fetching: boolean;
-	response?: void;
+	response: void;
 	error?: Squawk;
 } : {
 	fetching: boolean;
@@ -22,4 +22,4 @@ export interface MetaPayloadAction<T> {
 	payload: T;
 }
 
-export const createInitialAsyncState = () => ({ fetching: true });
+export const createInitialAsyncState = () => ({ fetching: true, error: void 0, response: void 0 });
