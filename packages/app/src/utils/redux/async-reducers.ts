@@ -24,17 +24,15 @@ export function createAsyncReducer<R = void>(
 
 			case success:
 				return {
-					...state,
 					fetching: false,
 					response: payload as R,
-				};
+				} as AsyncState<R>;
 
 			case failure:
 				return {
-					...state,
 					fetching: false,
 					error: payload,
-				};
+				} as AsyncState<R>;
 
 			default:
 				return state;
