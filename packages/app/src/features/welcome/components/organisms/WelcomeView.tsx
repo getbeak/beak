@@ -14,7 +14,7 @@ export interface WelcomeViewProps {
 const WelcomeView: React.FunctionComponent<WelcomeViewProps> = ({ setView }) => (
 	<React.Fragment>
 		<ViewTitle>{'Welcome to Beak!'}</ViewTitle>
-		<ViewIntroLine>{'Yet another API client for you to install...'}</ViewIntroLine>
+		<ViewIntroLine>{'The feathery cross-platform API crafting tool'}</ViewIntroLine>
 
 		<Row>
 			<OpenRecentColumn />
