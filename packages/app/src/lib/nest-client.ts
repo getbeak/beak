@@ -1,6 +1,8 @@
 import { MagicStates } from '@beak/common/types/nest';
+import Squawk from '@beak/common/utils/squawk';
 import base64 from 'base64-js';
 import crpc, { Client } from 'crpc';
+import { AuthenticateUserResponse } from '../store/nest/types';
 
 import { LocalStorage } from './local-storage';
 
@@ -70,6 +72,26 @@ export default class NestClient {
 			identifierType: 'email',
 			identifierValue: email,
 		});
+	}
+
+	async handleMagicLink(code: string, state: string) {
+		const magicStates = this.storage.getJsonItem<MagicStates>(magicStatesKey) || {};
+		const magicState = magicStates[state];
+
+		if (!magicState)
+			throw new Squawk('invalid_state');
+
+		const authentication = await this.rpcNoAuth<AuthenticateUserResponse>('2020-12-14/authenticate_user', {
+			clientId: 'client_000000C2kdCzNlbL1BqR5FeMatItU',
+			grantType: 'authorization_code',
+			redirectUri: magicState.redirectUri,
+			code,
+			codeVerifier: magicState.codeVerifier,
+		});
+
+		this.storage.remove(magicStatesKey);
+
+		return authentication;
 	}
 }
 

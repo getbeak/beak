@@ -1,16 +1,17 @@
 import { AsyncState, createInitialAsyncState } from '../types';
 
 export const ActionTypes = {
+	HANDLE_MAGIC_LINK: '@beak/global/nest/HANDLE_MAGIC_LINK',
 	SEND_MAGIC_LINK: '@beak/global/nest/SEND_MAGIC_LINK',
-	SEND_MAGIC_LINK_FAILURE: '@beak/global/nest/SEND_MAGIC_LINK_FAILURE',
-	SEND_MAGIC_LINK_SUCCESS: '@beak/global/nest/SEND_MAGIC_LINK_SUCCESS',
 };
 
 export interface State {
+	handleMagicLink: AsyncState<void>;
 	sendMagicLink: AsyncState<void>;
 }
 
 export const initialState: State = {
+	handleMagicLink: createInitialAsyncState(),
 	sendMagicLink: createInitialAsyncState(),
 };
 
@@ -23,6 +24,11 @@ export interface Grant {
 
 export interface SendMagicLinkPayload {
 	email: string;
+}
+
+export interface HandleMagicLinkPayload {
+	code: string;
+	state: string;
 }
 
 export interface SendMagicLinkRequest {
