@@ -149,6 +149,14 @@ export function createVariableGroupEditorWindow(projectPath: string) {
 }
 
 export function createOnboardingWindow() {
+	const existing = stacks.onboarding;
+
+	if (existing && windowStack[existing]) {
+		windowStack[existing].focus();
+
+		return existing;
+	}
+
 	const windowOpts: BrowserWindowConstructorOptions = {
 		height: 310,
 		width: 650,
@@ -158,5 +166,9 @@ export function createOnboardingWindow() {
 		title: 'Welcome to the Beak Alpha!',
 	};
 
-	createWindow(windowOpts, 'onboarding');
+	const windowId = createWindow(windowOpts, 'onboarding');
+
+	stacks.onboarding = windowId;
+
+	return windowId;
 }
