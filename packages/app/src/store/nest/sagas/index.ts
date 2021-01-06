@@ -1,12 +1,11 @@
-import { all, fork, takeEvery } from 'redux-saga/effects';
+import { all } from 'redux-saga/effects';
 
-import { ActionTypes } from '../types';
+import handleMagicLinkWorker from './handle-magic-link';
 import sendMagicLinkWorker from './send-magic-link';
 
 export default function* nestSaga() {
 	yield all([
-		fork(function* requestFlightWatcher() {
-			yield takeEvery(ActionTypes.SEND_MAGIC_LINK, sendMagicLinkWorker);
-		}),
+		handleMagicLinkWorker,
+		sendMagicLinkWorker,
 	]);
 }
