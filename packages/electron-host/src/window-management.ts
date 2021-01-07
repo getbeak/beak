@@ -158,7 +158,7 @@ export function createOnboardingWindow() {
 	}
 
 	const windowOpts: BrowserWindowConstructorOptions = {
-		height: 310,
+		height: 350,
 		width: 650,
 		resizable: false,
 		autoHideMenuBar: true,
