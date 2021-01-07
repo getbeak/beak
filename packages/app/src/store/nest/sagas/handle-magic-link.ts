@@ -6,6 +6,9 @@ import { call, getContext, put } from 'redux-saga/effects';
 import { actions } from '..';
 import { AuthenticateUserResponse } from '../types';
 
+const electron = window.require('electron');
+const { ipcRenderer } = electron;
+
 export default createTakeEverySagaSet(actions.handleMagicLink.request, function* handleMagicLinkWorker(action) {
 	const client: NestClient = yield getContext('client');
 	const { code, state } = action.payload;
@@ -14,6 +17,8 @@ export default createTakeEverySagaSet(actions.handleMagicLink.request, function*
 		const authentication: AuthenticateUserResponse = yield call([client, client.handleMagicLink], code, state);
 
 		yield put(actions.handleMagicLink.success(authentication));
+
+		ipcRenderer.send('nest:set_user', authentication.userId);
 	} catch (error) {
 		yield put(actions.handleMagicLink.failure(Squawk.coerce(error)));
 	}
