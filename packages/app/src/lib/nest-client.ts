@@ -2,10 +2,11 @@ import { MagicStates } from '@beak/common/types/nest';
 import Squawk from '@beak/common/utils/squawk';
 import base64 from 'base64-js';
 import crpc, { Client } from 'crpc';
-import { AuthenticateUserResponse } from '../store/nest/types';
 
+import { AuthenticateUserResponse } from '../store/nest/types';
 import { LocalStorage } from './local-storage';
 
+const authKey = 'auth';
 const magicStatesKey = 'magic-states';
 
 interface CrpcOptions {
@@ -21,13 +22,23 @@ export default class NestClient {
 		this.storage = new LocalStorage('beak.nest-client');
 	}
 
+	getAuth(): AuthenticateUserResponse | null {
+		return this.storage.getJsonItem<AuthenticateUserResponse>(authKey);
+	}
+
+	setAuth(auth: AuthenticateUserResponse | null) {
+		this.storage.setJsonItem(authKey, auth);
+	}
+
 	async rpc<T>(path: string, body: unknown, options?: CrpcOptions) {
+		const auth = this.getAuth();
+		const token = auth === null ? '' : auth.accessToken;
+
 		return await this.client<T>(path, body, {
 			...options,
 			headers: {
 				...options?.headers,
-				// TODO(afr): Add JWT
-				authorization: 'bearer x',
+				authorization: `bearer ${token}`,
 			},
 		});
 	}
@@ -90,6 +101,7 @@ export default class NestClient {
 		});
 
 		this.storage.remove(magicStatesKey);
+		this.setAuth(authentication);
 
 		return authentication;
 	}
