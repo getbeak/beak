@@ -4,18 +4,20 @@ import base64 from 'base64-js';
 import crpc, { Client } from 'crpc';
 
 import { AuthenticateUserResponse } from '../store/nest/types';
+import { makeQueryablePromise, QueryablePromise } from '../utils/promises';
 import { LocalStorage } from './local-storage';
 
 const authKey = 'auth';
 const magicStatesKey = 'magic-states';
 
-interface CrpcOptions {
-	headers: Record<string, string>;
+export interface AuthenticateOptions {
+
 }
 
 export default class NestClient {
 	private client: Client;
 	private storage: LocalStorage;
+	private authRefreshPromise?: QueryablePromise<unknown>;
 
 	constructor(baseUrl: string) {
 		this.client = crpc(baseUrl);
@@ -30,21 +32,23 @@ export default class NestClient {
 		this.storage.setJsonItem(authKey, auth);
 	}
 
-	async rpc<T>(path: string, body: unknown, options?: CrpcOptions) {
-		const auth = this.getAuth();
-		const token = auth === null ? '' : auth.accessToken;
+	async rpc<T>(path: string, body: unknown) {
+		const fn = (auth: AuthenticateUserResponse | null) => this.client<T>(path, body, generateOptions(auth));
 
-		return await this.client<T>(path, body, {
-			...options,
-			headers: {
-				...options?.headers,
-				authorization: `bearer ${token}`,
-			},
-		});
+		try {
+			return await fn(this.getAuth());
+		} catch (error) {
+			if (error.code !== 'unauthorized')
+				throw error;
+
+			await this.refresh();
+
+			return await fn(this.getAuth());
+		}
 	}
 
-	async rpcNoAuth<T>(path: string, body: unknown, options?: CrpcOptions) {
-		return await this.client<T>(path, body, options);
+	async rpcNoAuth<T>(path: string, body: unknown) {
+		return await this.client<T>(path, body);
 	}
 
 	async sendMagicLink(email: string) {
@@ -105,6 +109,34 @@ export default class NestClient {
 
 		return authentication;
 	}
+
+	private async refresh() {
+		// Check promise exists and that is hasn't been fulfilled
+		if (this.authRefreshPromise && this.authRefreshPromise.isPending())
+			return await this.authRefreshPromise;
+
+		const promise = makeQueryablePromise(this.authenticate('refresh_token'));
+
+		return await (this.authRefreshPromise = promise);
+	}
+
+	private async authenticate(grantType: 'refresh_token') {
+		const auth = this.getAuth() ?? { clientId: '', refreshToken: '' };
+
+		const payload = {
+			clientId: auth.clientId,
+			grantType,
+			refreshToken: auth.refreshToken,
+		};
+
+		const response = await this.rpcNoAuth<AuthenticateUserResponse>(
+			'2/2018-12-11/authenticate',
+			payload,
+		);
+
+		this.setAuth(response);
+	}
+
 }
 
 function webSafeBase64(arr: Uint8Array) {
@@ -113,4 +145,11 @@ function webSafeBase64(arr: Uint8Array) {
 		.replace(/[+]/g, '-')
 		.replace(/[/]/g, '_')
 		.replace(/[=]+$/, '');
+}
+
+function generateOptions(auth: AuthenticateUserResponse | null) {
+	if (!auth)
+		return void 0;
+
+	return { headers: { authorization: `bearer ${auth.accessToken}` } };
 }
