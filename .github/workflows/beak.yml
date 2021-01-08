@@ -26,7 +26,7 @@ jobs:
           rm -rf ./packages/electron-host/dist-electron/.icon-icns
 
       - name: Write commit hash
-        run: mkdir current; echo "${{ github.sha }}" >> ./current/current
+        run: mkdir current; echo "commits/${{ github.sha }}/" >> ./current/current
       - name: Upload artifacts to S3
         uses: shallwefootball/upload-s3-action@v1.1.2
         with:
@@ -34,7 +34,7 @@ jobs:
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY}}
           aws_bucket: ${{ secrets.AWS_S3_BUILDS_BUCKET }}
           source_dir: 'packages/electron-host/dist-electron/'
-          destination_dir: '/commits/${{ github.sha }}/'
+          destination_dir: 'commits/${{ github.sha }}/'
       - name: Upload latest build manifest to s3
         uses: shallwefootball/upload-s3-action@v1.1.2
         with:
