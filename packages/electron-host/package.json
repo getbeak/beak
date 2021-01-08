@@ -13,7 +13,7 @@
     "build": "electron-webpack",
     "electron": "electron dist/main/main.js",
     "prepackage": "rm -rf ./dist-electron",
-    "package": "electron-builder --win",
+    "package": "electron-builder",
     "start": "electron-webpack dev",
     "test": "echo Skipped."
   },
@@ -34,7 +34,7 @@
     "@types/uuid": "^8.0.0",
     "copyfiles": "^2.3.0",
     "electron": "11.1.1",
-    "electron-builder": "^22.9.1",
+    "electron-builder": "^22.10.4",
     "electron-webpack": "^2.8.2",
     "webpack": "^4.44.2"
   },
