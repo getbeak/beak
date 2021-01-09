@@ -110,6 +110,20 @@ export default class NestClient {
 		return authentication;
 	}
 
+	async ensureAlphaUser() {
+		const auth = this.getAuth();
+
+		if (!auth)
+			throw new Squawk('unauthenticated');
+
+		const response = await this.rpc<{ subscription: string }>('2020-12-14/get_subscription_status', {
+			userId: auth.userId,
+		});
+
+		if (response.subscription !== 'beak_alpha')
+			throw new Squawk('user_not_alpha_enrolled');
+	}
+
 	private async refresh() {
 		// Check promise exists and that is hasn't been fulfilled
 		if (this.authRefreshPromise && this.authRefreshPromise.isPending())
@@ -130,7 +144,7 @@ export default class NestClient {
 		};
 
 		const response = await this.rpcNoAuth<AuthenticateUserResponse>(
-			'2/2018-12-11/authenticate',
+			'2020-12-14/authenticate_user',
 			payload,
 		);
 
