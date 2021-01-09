@@ -7,6 +7,7 @@ import { all, fork } from 'redux-saga/effects';
 import NestClient from '../lib/nest-client';
 import * as flightStore from './flight';
 import { State as FlightState } from './flight/types';
+import * as guardianStore from './guardian';
 import * as nestStore from './nest';
 import { State as NestState } from './nest/types';
 import * as projectStore from './project';
@@ -37,6 +38,7 @@ function createRootReducer() {
 function* rootSaga() {
 	yield all([
 		fork(flightStore.sagas),
+		fork(guardianStore.sagas),
 		fork(nestStore.sagas),
 		fork(projectStore.sagas),
 		fork(variableGroupsStore.sagas),
