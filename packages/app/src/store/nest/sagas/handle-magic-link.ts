@@ -18,7 +18,7 @@ export default createTakeEverySagaSet(actions.handleMagicLink.request, function*
 
 		yield put(actions.handleMagicLink.success(authentication));
 
-		ipcRenderer.send('nest:set_user', authentication.userId);
+		ipcRenderer.send('nest:set_user', authentication.userId, true);
 	} catch (error) {
 		yield put(actions.handleMagicLink.failure(Squawk.coerce(error)));
 	}

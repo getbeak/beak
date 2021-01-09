@@ -7,10 +7,10 @@ import { staticPath } from './utils/static-path';
 type Container = 'about' | 'project-main' | 'welcome' | 'variable-group-editor' | 'onboarding';
 
 export const windowStack: Record<number, BrowserWindow> = {};
+export const stackMap: Record<string, number> = { };
 
 const DEV_URL = 'http://localhost:3000';
 const environment = process.env.NODE_ENV;
-const stacks: Record<string, number> = { };
 
 function generateLoadUrl(
 	container: Container,
@@ -115,7 +115,7 @@ export function createProjectMainWindow(projectFilePath: string) {
 	if (process.platform === 'darwin')
 		windowOpts.vibrancy = 'dark'; // TODO(afr): Change this to `under-window` or `sidebar` soon.
 
-	// On Linux and Windows, we want total control of the frame
+	// On Linux and Windows we want total control of the frame
 	if (process.platform !== 'darwin')
 		windowOpts.frame = false;
 
@@ -124,7 +124,7 @@ export function createProjectMainWindow(projectFilePath: string) {
 
 export function createVariableGroupEditorWindow(projectPath: string) {
 	const key = `variable_group_editor:${projectPath}`;
-	const existing = stacks[key];
+	const existing = stackMap[key];
 
 	if (existing && windowStack[existing]) {
 		windowStack[existing].focus();
@@ -145,11 +145,11 @@ export function createVariableGroupEditorWindow(projectPath: string) {
 
 	const windowId = createWindow(windowOpts, 'variable-group-editor', { projectPath });
 
-	stacks[key] = windowId;
+	stackMap[key] = windowId;
 }
 
 export function createOnboardingWindow() {
-	const existing = stacks.onboarding;
+	const existing = stackMap.onboarding;
 
 	if (existing && windowStack[existing]) {
 		windowStack[existing].focus();
@@ -168,7 +168,7 @@ export function createOnboardingWindow() {
 
 	const windowId = createWindow(windowOpts, 'onboarding');
 
-	stacks.onboarding = windowId;
+	stackMap.onboarding = windowId;
 
 	return windowId;
 }
