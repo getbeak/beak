@@ -1,7 +1,10 @@
-import { requestBodyJsonChanged, requestBodyTextChanged } from '@beak/app/store/project/actions';
 import BasicTableView from '@beak/app/components/molecules/BasicTableView';
+import BeakHubContext from '@beak/app/contexts/beak-hub-context';
+import { requestBodyJsonChanged, requestBodyTextChanged } from '@beak/app/store/project/actions';
+import { createDefaultOptions } from '@beak/app/utils/monaco';
 import { RequestNode } from '@beak/common/types/beak-project';
 import React, { useContext, useState } from 'react';
+import MonacoEditor from 'react-monaco-editor';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 
@@ -9,9 +12,6 @@ import TabBar from '../../../../components/atoms/TabBar';
 import TabItem from '../../../../components/atoms/TabItem';
 import TabSpacer from '../../../../components/atoms/TabSpacer';
 import RequestPreferencesContext from '../../contexts/request-preferences-context';
-import BeakHubContext from '@beak/app/contexts/beak-hub-context';
-import MonacoEditor from 'react-monaco-editor';
-import { createDefaultOptions } from '@beak/app/utils/monaco';
 
 const { ipcRenderer } = window.require('electron');
 
@@ -79,6 +79,7 @@ const BodyTab: React.FunctionComponent<BodyTabProps> = props => {
 							theme={'vs-dark'}
 							value={node.info.body.payload as string}
 							options={createDefaultOptions()}
+							onChange={text => dispatch(requestBodyTextChanged({ requestId: node.id, text }))}
 						/>
 					</React.Fragment>
 				)}
@@ -91,6 +92,7 @@ const BodyTab: React.FunctionComponent<BodyTabProps> = props => {
 							theme={'vs-dark'}
 							value={node.info.body.payload as string}
 							options={createDefaultOptions()}
+							onChange={json => dispatch(requestBodyJsonChanged({ requestId: node.id, json }))}
 						/>
 					</React.Fragment>
 				)}
