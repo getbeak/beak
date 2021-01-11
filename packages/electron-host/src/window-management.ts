@@ -120,6 +120,8 @@ export function createProjectMainWindow(projectFilePath: string) {
 		windowOpts.frame = false;
 
 	const window = createWindow(windowOpts, 'project-main', { projectFilePath });
+
+	window.setRepresentedFilename(projectFilePath);
 }
 
 export function createVariableGroupEditorWindow(projectPath: string) {
