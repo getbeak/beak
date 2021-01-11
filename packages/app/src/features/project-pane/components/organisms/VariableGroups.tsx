@@ -72,6 +72,7 @@ const GroupName = styled.span`
 
 const Selector = styled.div`
 	position: relative;
+	margin-right: -3px;
 
 	> select {
 		font-size: 12px;
