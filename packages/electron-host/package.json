@@ -18,7 +18,7 @@
     "test": "echo Skipped."
   },
   "dependencies": {
-    "chokidar": "^3.4.1",
+    "chokidar": "^3.5.0",
     "electron-store": "^6.0.1",
     "fs-extra": "^9.0.1",
     "node-fetch": "^2.6.1",
