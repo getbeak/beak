@@ -13,7 +13,6 @@ const SectionHeader = styled.div<{ collapsed: boolean }>`
 	cursor: pointer;
 
 	> svg {
-		margin-right: -6px;
 		margin-top: 1px;
 
 		cursor: pointer;

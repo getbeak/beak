@@ -49,9 +49,6 @@ const ContextMenuWrapper: React.FunctionComponent<ContextMenuWrapperProps> = pro
 
 		{ type: 'separator' },
 
-		// { role: 'copy', enabled: false },
-		// { role: 'cut', enabled: false },
-		// { role: 'paste', enabled: false },
 		{ label: 'Copy', enabled: false },
 		{ label: 'Cut', enabled: false },
 		{ label: 'Paste', enabled: false },

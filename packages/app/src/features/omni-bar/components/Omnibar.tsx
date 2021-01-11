@@ -43,6 +43,8 @@ const Omnibar: React.FunctionComponent = () => {
 			setMode('commands');
 		else if (isFinder)
 			setMode('finder');
+		else
+			return;
 
 		setShow(!show);
 	}

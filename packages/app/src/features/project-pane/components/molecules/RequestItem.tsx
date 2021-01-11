@@ -41,7 +41,7 @@ const RequestItem: React.FunctionComponent<RequestItemProps> = props => {
 			return;
 		}
 
-		if (rename?.requestId !== node.id) {
+		if (rename.requestId !== node.id) {
 			setEditing(false);
 			wrapperRef?.current?.focus();
 
@@ -52,7 +52,7 @@ const RequestItem: React.FunctionComponent<RequestItemProps> = props => {
 			renameInputRef?.current?.select();
 		else
 			setEditing(true);
-	}, [rename, rename?.requestId, editing]);
+	}, [rename?.requestId, editing]);
 
 	return (
 		<ContextMenuWrapper mode={'request'} nodeId={props.id} target={target}>
@@ -67,6 +67,9 @@ const RequestItem: React.FunctionComponent<RequestItemProps> = props => {
 				tabIndex={0}
 				onClick={() => dispatch(requestSelected(props.id))}
 				onKeyDown={(event: React.KeyboardEvent<HTMLDivElement>) => {
+					if (editing)
+						return;
+
 					switch (true) {
 						case checkShortcut('project-explorer.request.left', event):
 							if (props.parentNode)
@@ -120,9 +123,13 @@ const RequestItem: React.FunctionComponent<RequestItemProps> = props => {
 							dispatch(actions.requestRenameCancelled({ requestId: node.id }));
 						}}
 						onKeyDown={e => {
+							if (!['Escape', 'Enter'].includes(e.key))
+								return;
+
+
 							if (e.key === 'Escape')
 								dispatch(actions.requestRenameCancelled({ requestId: node.id }));
-							else if (e.key === 'Enter')
+							else if (e.key === 'Enter') // TODO(afr): Validation here
 								dispatch(actions.requestRenameSubmitted({ requestId: node.id }));
 
 							// Return focus to the element behind the input!

@@ -146,7 +146,7 @@ const VariableGroupEditor: React.FunctionComponent<VariableGroupEditorProps> = p
 								/>
 							</td>
 							{variableGroup && TypedObject.keys(variableGroup.groups).map(k => (
-								<td><Editable disabled /></td>
+								<td key={k}><Editable disabled /></td>
 							))}
 						</tr>
 					</tbody>

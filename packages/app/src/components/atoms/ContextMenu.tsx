@@ -13,7 +13,7 @@ const ContextMenu: React.FunctionComponent<ContextMenuProps> = props => {
 	const { children, menuItems, target } = props;
 
 	useEffect(() => {
-		if (target === void 0)
+		if (!target)
 			return void 0;
 
 		const menu = Menu.buildFromTemplate(menuItems);
