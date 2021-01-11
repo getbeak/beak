@@ -107,6 +107,8 @@ export default class NestClient {
 		this.storage.remove(magicStatesKey);
 		this.setAuth(authentication);
 
+		await this.ensureAlphaUser();
+
 		return authentication;
 	}
 
@@ -150,7 +152,6 @@ export default class NestClient {
 
 		this.setAuth(response);
 	}
-
 }
 
 function webSafeBase64(arr: Uint8Array) {
