@@ -15,12 +15,6 @@ const variableGroupsReducer = createReducer(initialState, builder => {
 		.addCase(actions.variableGroupsInfo, (state, { payload }) => {
 			state.variableGroupsPath = payload.variableGroupsPath;
 		})
-		.addCase(actions.insertScanItem, (state, { payload }) => {
-			state.initialScan?.push(payload);
-		})
-		.addCase(actions.initialScanComplete, state => {
-			state.initialScan = null;
-		})
 		.addCase(actions.variableGroupsOpened, (state, { payload }) => {
 			state.variableGroups = payload;
 			state.loaded = true;

@@ -7,7 +7,6 @@ import {
 	workerCreateNewRequest as createNewRequest,
 } from './create-things';
 import duplicateRequest from './duplicate-request';
-import initialScanComplete from './initial-scan-complete';
 import removeNodeFromDisk from './remove-node-from-disk';
 import requestRename from './request-rename';
 import startProject from './start-project';
@@ -37,9 +36,6 @@ export default function* projectSaga() {
 		}),
 		fork(function* duplicateRequestWatcher() {
 			yield takeLatest(ActionTypes.DUPLICATE_REQUEST, duplicateRequest);
-		}),
-		fork(function* initialScanCompleteWatcher() {
-			yield takeLatest(ActionTypes.INITIAL_SCAN_COMPLETE, initialScanComplete);
 		}),
 		fork(function* removeNodeFromDiskWatcher() {
 			yield takeEvery(ActionTypes.REMOVE_NODE_FROM_DISK, removeNodeFromDisk);

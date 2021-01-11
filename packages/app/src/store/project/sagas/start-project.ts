@@ -1,18 +1,16 @@
 import { readFolderNode } from '@beak/app/lib/beak-project/folder';
 import { readProjectFile } from '@beak/app/lib/beak-project/project';
 import { readRequestNode } from '@beak/app/lib/beak-project/request';
-import { ApplicationState } from '@beak/app/src/store';
+import createFsEmitter, { scanDirectoryRecursively, ScanResult } from '@beak/app/lib/fs-emitter';
 import actions from '@beak/app/src/store/project/actions';
-import { ProjectFile } from '@beak/common/types/beak-project';
+import { TypedObject } from '@beak/common/helpers/typescript';
+import { FolderNode, ProjectFile, RequestNode, Tree } from '@beak/common/types/beak-project';
 import { PayloadAction } from '@reduxjs/toolkit';
-import { eventChannel } from 'redux-saga';
-import { call, put, select, take } from 'redux-saga/effects';
+import { all, call, put, take } from 'redux-saga/effects';
 
 import { startVariableGroups } from '../../variable-groups/actions';
-import { ScanEntryPayload } from '../types';
 
 const { remote } = window.require('electron');
-const chokidar = remote.require('chokidar');
 const path = remote.require('path');
 
 interface Event {
@@ -27,41 +25,21 @@ export default function* workerStartProject({ payload }: PayloadAction<string>) 
 
 	// TODO(afr): Listen to this file too
 	const project: ProjectFile = yield call(readProjectFile, projectPath);
+	const channel = createFsEmitter(projectTreePath, { followSymlinks: false });
 
-	// TODO(afr): Read project file
 	yield put(actions.insertProjectInfo({
 		projectPath,
 		treePath: projectTreePath,
 		name: project.name,
 	}));
 	yield put(startVariableGroups(projectPath));
-
-	const channel = eventChannel(emitter => {
-		const watcher = chokidar
-			.watch(projectTreePath, { followSymlinks: false })
-			.on('all', (event, path) => emitter({ type: event, path }))
-			.on('ready', () => emitter({ type: 'ready' }))
-			.on('error', console.error);
-
-		return () => {
-			watcher.close();
-		};
-	});
+	yield initialImport(projectTreePath);
 
 	while (true) {
 		const result: Event = yield take(channel);
-		const initScan: ScanEntryPayload[] | null = yield select((s: ApplicationState) => s.global.project.initialScan);
-		const isInitialScan = initScan !== null;
 
 		if (result === null)
 			break;
-
-		if (result.type === 'ready') {
-			yield put(actions.initialScanComplete({ entries: initScan! }));
-			// TODO(afr): Set selected request
-
-			continue;
-		}
 
 		const isDirectory = ['addDir', 'unlinkDir'].includes(result.type);
 
@@ -69,20 +47,58 @@ export default function* workerStartProject({ payload }: PayloadAction<string>) 
 		if (!isDirectory && path.extname(result.path) !== '.json')
 			continue;
 
-		if (isInitialScan) {
-			yield put(actions.insertScanItem({
-				filePath: result.path,
-				isDirectory,
-			}));
-
-			continue;
-		}
-
 		if (isDirectory)
 			yield handleFolder(result);
 		else
 			yield handleRequest(result);
 	}
+}
+
+function* initialImport(treePath: string) {
+	const items: ScanResult[] = yield scanDirectoryRecursively(treePath);
+
+	const folders = items.filter(s => s.isDirectory);
+	const requests = items.filter(s => !s.isDirectory);
+
+	const folderNodes: Record<string, FolderNode> = yield call(readFolderNodes, folders);
+	const requestNodes: Record<string, RequestNode> = yield call(readRequestNodes, requests);
+	const firstRequest = TypedObject.values(requestNodes)[0];
+	const tree: Tree = {
+		...folderNodes,
+		...requestNodes,
+	};
+
+	yield all([
+		// TODO(afr): Change this to read the previously selected request based on history
+		// in the hub. Also on first load, I think showing the readme of the project as an
+		// onboarding document could be very cool!
+		put(actions.requestSelected(firstRequest?.id)),
+		put(actions.projectOpened({ tree })),
+	]);
+}
+
+async function readFolderNodes(folders: ScanResult[]) {
+	if (folders.length === 0)
+		return null;
+
+	const results = await Promise.all(folders.map(f => readFolderNode(f.path)));
+
+	return results.reduce((acc, val) => ({
+		...acc,
+		[val.id]: val,
+	}), {}) as Record<string, FolderNode>;
+}
+
+async function readRequestNodes(requests: ScanResult[]) {
+	if (requests.length === 0)
+		return null;
+
+	const results = await Promise.all(requests.map(f => readRequestNode(f.path)));
+
+	return results.reduce((acc, val) => ({
+		...acc,
+		[val.id]: val,
+	}), {}) as Record<string, RequestNode>;
 }
 
 function* handleRequest(event: Event) {

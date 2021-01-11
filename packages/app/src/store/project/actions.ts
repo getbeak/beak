@@ -5,7 +5,6 @@ import {
 	ActionTypes,
 	CreateNewThing,
 	DuplicateRequestPayload,
-	InitialScanCompletePayload,
 	ProjectInfoPayload,
 	ProjectOpenedPayload,
 	RemoveNodeFromDiskPayload,
@@ -17,7 +16,6 @@ import {
 	RequestRenameSubmitted,
 	RequestRenameUpdated,
 	RequestUriUpdatedPayload,
-	ScanEntryPayload,
 	ToggleableItemAddedPayload,
 	ToggleableItemRemovedPayload,
 	ToggleableItemUpdatedPayload,
@@ -25,8 +23,6 @@ import {
 
 export const startProject = createAction<string>(ActionTypes.START_PROJECT);
 export const insertProjectInfo = createAction<ProjectInfoPayload>(ActionTypes.INSERT_PROJECT_INFO);
-export const insertScanItem = createAction<ScanEntryPayload>(ActionTypes.INSERT_SCAN_ITEM);
-export const initialScanComplete = createAction<InitialScanCompletePayload>(ActionTypes.INITIAL_SCAN_COMPLETE);
 export const projectOpened = createAction<ProjectOpenedPayload>(ActionTypes.PROJECT_OPENED);
 
 export const requestSelected = createAction<string | undefined>(ActionTypes.REQUEST_SELECTED);
@@ -73,8 +69,6 @@ export const requestRenameResolved = createAction<RequestRenameResolved>(ActionT
 export default {
 	startProject,
 	insertProjectInfo,
-	insertScanItem,
-	initialScanComplete,
 	projectOpened,
 
 	requestSelected,

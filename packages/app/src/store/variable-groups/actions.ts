@@ -13,8 +13,6 @@ import {
 
 export const startVariableGroups = createAction<string>(ActionTypes.START_VARIABLE_GROUPS);
 export const variableGroupsInfo = createAction<VariableGroupsInfoPayload>(ActionTypes.VARIABLE_GROUPS_INFO);
-export const insertScanItem = createAction<string>(ActionTypes.INSERT_SCAN_ITEM);
-export const initialScanComplete = createAction<string[]>(ActionTypes.INITIAL_SCAN_COMPLETE);
 export const variableGroupsOpened = createAction<VariableGroups>(ActionTypes.VARIABLE_GROUPS_OPENED);
 
 export const updateVg = createAction<UpdateVgPayload>(ActionTypes.UPDATE_VG);
@@ -32,8 +30,6 @@ export const changeSelectedGroup = createAction<ChangeSelectedGroupPayload>(
 export default {
 	startVariableGroups,
 	variableGroupsInfo,
-	insertScanItem,
-	initialScanComplete,
 	variableGroupsOpened,
 
 	updateVg,

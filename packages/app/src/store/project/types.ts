@@ -3,8 +3,6 @@ import { Tree, ValueParts } from '@beak/common/types/beak-project';
 export const ActionTypes = {
 	START_PROJECT: '@beak/global/project/START_PROJECT',
 	INSERT_PROJECT_INFO: '@beak/global/project/INSERT_PROJECT_INFO',
-	INSERT_SCAN_ITEM: '@beak/global/project/INSERT_SCAN_ITEM',
-	INITIAL_SCAN_COMPLETE: '@beak/global/project/INITIAL_SCAN_COMPLETE',
 	PROJECT_OPENED: '@beak/global/project/PROJECT_OPENED',
 
 	REQUEST_SELECTED: '@beak/global/project/REQUEST_SELECTED',
@@ -47,7 +45,6 @@ export const ActionTypes = {
 
 export interface State {
 	loaded: boolean;
-	initialScan: ScanEntryPayload[] | null;
 
 	name?: string;
 	projectPath?: string;
@@ -62,7 +59,6 @@ export interface State {
 
 export const initialState: State = {
 	loaded: false,
-	initialScan: [],
 
 	tree: {},
 	selectedRequests: [],
@@ -74,12 +70,6 @@ export interface ProjectInfoPayload {
 	treePath: string;
 }
 
-export interface ScanEntryPayload {
-	filePath: string;
-	isDirectory: boolean;
-}
-
-export interface InitialScanCompletePayload { entries: ScanEntryPayload[] }
 export interface ProjectOpenedPayload { tree: Tree }
 
 export interface RequestIdPayload { requestId: string }

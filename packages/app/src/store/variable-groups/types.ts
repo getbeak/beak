@@ -3,8 +3,6 @@ import { VariableGroup, VariableGroups } from '@beak/common/dist/types/beak-proj
 export const ActionTypes = {
 	START_VARIABLE_GROUPS: '@beak/global/variable-groups/START_VARIABLE_GROUPS',
 	VARIABLE_GROUPS_INFO: '@beak/global/variable-groups/VARIABLE_GROUPS_INFO',
-	INSERT_SCAN_ITEM: '@beak/global/variable-groups/INSERT_SCAN_ITEM',
-	INITIAL_SCAN_COMPLETE: '@beak/global/variable-groups/INITIAL_SCAN_COMPLETE',
 	VARIABLE_GROUPS_OPENED: '@beak/global/variable-groups/VARIABLE_GROUPS_OPENED',
 
 	UPDATE_VG: '@beak/global/variable-groups/UPDATE_VG',
@@ -21,7 +19,6 @@ export const ActionTypes = {
 
 export interface State {
 	loaded: boolean;
-	initialScan: string[] | null;
 
 	projectPath?: string;
 	variableGroupsPath?: string;
@@ -32,7 +29,6 @@ export interface State {
 
 export const initialState: State = {
 	loaded: false,
-	initialScan: [],
 
 	variableGroups: {},
 

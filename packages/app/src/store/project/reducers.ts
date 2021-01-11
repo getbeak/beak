@@ -18,15 +18,9 @@ const projectReducer = createReducer(initialState, builder => {
 			state.projectPath = payload.projectPath;
 			state.projectTreePath = payload.treePath;
 		})
-		.addCase(actions.insertScanItem, (state, { payload }) => {
-			state.initialScan?.push(payload);
-		})
-		.addCase(actions.initialScanComplete, state => {
-			state.initialScan = null;
-		})
 		.addCase(actions.projectOpened, (state, { payload }) => {
-			state.loaded = true;
 			state.tree = payload.tree;
+			state.loaded = true;
 		})
 
 		.addCase(actions.requestSelected, (state, action) => {
