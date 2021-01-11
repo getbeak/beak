@@ -65,7 +65,7 @@ export function createBasicHttpOutput(
 		url.pathname,
 	];
 
-	if (overview.query) {
+	if (overview.query && TypedObject.keys(overview.query).length > 0) {
 		const builder = new URLSearchParams();
 
 		for (const { name, value } of TypedObject.values(overview.query).filter(q => q.enabled))
