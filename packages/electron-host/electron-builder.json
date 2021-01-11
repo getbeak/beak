@@ -1,5 +1,5 @@
 {
-  "appId": "io.0xdeafcafe.beak",
+  "appId": "app.getbeak.beak",
   "productName": "Beak",
   "copyright": "Copyright © 2020 Alexander Forbes-Reed",
   "files": [
@@ -10,19 +10,30 @@
   ],
 
   "directories": {
-    "buildResources": "assets",
     "output": "dist-electron"
   },
 
   "mac": {
     "category": "public.app-category.developer-tools",
+    "hardenedRuntime": true,
+    "gatekeeperAssess": false,
+    "entitlements": "build/entitlements.mac.plist",
+    "entitlementsInherit": "build/entitlements.mac.plist",
     "target": [
       {
         "target": "dmg",
         "arch": ["x64", "arm64"]
+      },
+      {
+        "target": "zip",
+        "arch": ["x64", "arm64"]
       }
     ]
   },
+  "dmg": {
+    "sign": false
+  },
+  "afterSign": "scripts/notarize.js",
 
   "win": {
     "target": [
