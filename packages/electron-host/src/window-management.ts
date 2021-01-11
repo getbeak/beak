@@ -63,7 +63,7 @@ function createWindow(
 
 	windowStack[window.id] = window;
 
-	return window.id;
+	return window;
 }
 
 export function closeWindow(windowId: number) {
@@ -119,7 +119,7 @@ export function createProjectMainWindow(projectFilePath: string) {
 	if (process.platform !== 'darwin')
 		windowOpts.frame = false;
 
-	createWindow(windowOpts, 'project-main', { projectFilePath });
+	const window = createWindow(windowOpts, 'project-main', { projectFilePath });
 }
 
 export function createVariableGroupEditorWindow(projectPath: string) {
@@ -143,9 +143,9 @@ export function createVariableGroupEditorWindow(projectPath: string) {
 	// if (process.platform !== 'darwin')
 	// 	windowOpts.frame = false;
 
-	const windowId = createWindow(windowOpts, 'variable-group-editor', { projectPath });
+	const window = createWindow(windowOpts, 'variable-group-editor', { projectPath });
 
-	stackMap[key] = windowId;
+	stackMap[key] = window.id;
 }
 
 export function createOnboardingWindow() {
@@ -166,9 +166,9 @@ export function createOnboardingWindow() {
 		title: 'Welcome to the Beak Alpha!',
 	};
 
-	const windowId = createWindow(windowOpts, 'onboarding');
+	const window = createWindow(windowOpts, 'onboarding');
 
-	stackMap.onboarding = windowId;
+	stackMap.onboarding = window.id;
 
-	return windowId;
+	return window.id;
 }

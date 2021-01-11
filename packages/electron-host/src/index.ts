@@ -45,5 +45,5 @@ app.on('open-url', (_event, url) => {
 	const windowId = createOnboardingWindow();
 	const window = windowStack[windowId];
 
-	window.webContents.send('inbound-magic-link', { code, state });
+	window?.webContents.send('inbound-magic-link', { code, state });
 });
