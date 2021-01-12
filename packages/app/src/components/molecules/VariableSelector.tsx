@@ -78,21 +78,19 @@ const VariableSelector: React.FunctionComponent<VariableSelectorProps> = props =
 const Wrapper = styled.div`
 	position: fixed;
 	border: 1px solid ${p => p.theme.ui.backgroundBorderSeparator};
+	background: ${p => p.theme.ui.surface};
 
 	font-size: 12px;
 
-	max-height: 120px;
-	min-width: 350px;
-	max-width: 400px;
+	height: 120px; width: 325px;
 
-	overflow-y: scroll;
+	overflow-y: auto;
 `;
 
 const Item = styled.div<{ active: boolean }>`
 	padding: 2px 4px;
 	cursor: pointer;
 	color: ${p => p.theme.ui.textOnAction};
-	background: ${p => p.theme.ui.surface};
 
 	&:focus {
 		background-color: ${p => p.theme.ui.primaryFill};
