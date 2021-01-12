@@ -69,7 +69,7 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, 
 		event.preventDefault();
 
 		// https://rawgit.com/w3c/input-events/v1/index.html#overview
-		const delta = (event.nativeEvent as InputEvent).data as string | null;
+		const delta = (event.nativeEvent as InputEvent).data;
 
 		const newParts = Array.from(ref.current!.childNodes)
 			.map(n => {

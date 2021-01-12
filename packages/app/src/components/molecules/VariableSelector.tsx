@@ -85,6 +85,7 @@ const Wrapper = styled.div`
 	height: 120px; width: 325px;
 
 	overflow-y: auto;
+	z-index: 100;
 `;
 
 const Item = styled.div<{ active: boolean }>`
