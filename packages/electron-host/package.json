@@ -13,7 +13,7 @@
     "build": "electron-webpack",
     "electron": "electron dist/main/main.js",
     "prepackage": "rm -rf ./dist-electron",
-    "package": "electron-builder",
+    "package": "electron-builder --publish always",
     "start": "electron-webpack dev",
     "test": "echo Skipped."
   },
