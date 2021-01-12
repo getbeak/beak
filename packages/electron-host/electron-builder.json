@@ -13,6 +13,12 @@
     "output": "dist-electron"
   },
 
+  "publish": {
+    "provider": "s3",
+    "bucket": "builds.getbeak.app",
+    "region": "eu-west-2"
+  },
+
   "mac": {
     "category": "public.app-category.developer-tools",
     "hardenedRuntime": true,
