@@ -1,10 +1,11 @@
 {
   "name": "@beak/electron-host",
-  "version": "0.0.1",
+  "description": "A feathery cross-platform API crafting tool",
+  "version": "0.1.0",
   "private": true,
   "author": {
     "name": "Alexander Forbes-Reed (0xdeafcafe)",
-    "email": "info@beak.alex.forbrs.red"
+    "email": "info@getbeak.app"
   },
   "homepage": "https://getbeak.app",
   "scripts": {
@@ -13,7 +14,7 @@
     "build": "electron-webpack",
     "electron": "electron dist/main/main.js",
     "prepackage": "rm -rf ./dist-electron",
-    "package": "electron-builder --publish always",
+    "package": "electron-builder -mw",
     "start": "electron-webpack dev",
     "test": "echo Skipped."
   },

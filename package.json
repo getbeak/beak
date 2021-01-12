@@ -1,12 +1,15 @@
 {
   "name": "beak",
-  "version": "0.0.1",
-  "description": "Postman, but sexi",
+  "description": "A feathery cross-platform API crafting tool",
   "private": true,
+  "author": {
+    "name": "Alexander Forbes-Reed (0xdeafcafe)",
+    "email": "info@getbeak.app"
+  },
+  "homepage": "https://getbeak.app",
   "workspaces": {
     "packages": [
-      "packages/*",
-      "scripts/*"
+      "packages/*"
     ],
     "nohoist": [
       "**/electron-builder",
@@ -26,7 +29,6 @@
     "package": "lerna run package --stream --scope @beak/electron-host",
     "package-only": "lerna run package --stream --scope @beak/electron-host",
     "start": "lerna exec --parallel --concurrency 1 --stream --scope '@beak/{app,electron-host}' yarn start",
-    "release": "lerna run release --scope @beak/pelican",
     "test": "lerna run test --parallel",
     "lint": "eslint -c .eslintrc --ext .tsx --ext .ts './packages/'",
     "unfuck": "lerna clean && yarn --force"
