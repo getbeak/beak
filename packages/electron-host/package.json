@@ -1,7 +1,7 @@
 {
   "name": "@beak/electron-host",
   "description": "A feathery cross-platform API crafting tool",
-  "version": "0.1.0",
+  "version": "1.0.0-alpha",
   "private": true,
   "author": {
     "name": "Alexander Forbes-Reed (0xdeafcafe)",
@@ -14,13 +14,14 @@
     "build": "electron-webpack",
     "electron": "electron dist/main/main.js",
     "prepackage": "rm -rf ./dist-electron",
-    "package": "electron-builder -mw",
+    "package": "electron-builder -mw --publish always",
     "start": "electron-webpack dev",
     "test": "echo Skipped."
   },
   "dependencies": {
     "chokidar": "^3.5.0",
     "electron-store": "^6.0.1",
+    "electron-updater": "^4.3.5",
     "fs-extra": "^9.0.1",
     "node-fetch": "^2.6.1",
     "simple-git": "^2.21.0",
