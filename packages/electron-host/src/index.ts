@@ -1,6 +1,7 @@
 import './ipc-layer';
 
 import { app } from 'electron';
+import { autoUpdater } from 'electron-updater';
 
 import persistentStore from './lib/persistent-store';
 import { handleOpenUrl } from './lib/protocol';
@@ -33,6 +34,8 @@ app.on('activate', () => {
 
 app.on('ready', () => {
 	createDefaultWindow();
+
+	autoUpdater.checkForUpdatesAndNotify();
 });
 
 app.on('open-url', (_event, url) => {
