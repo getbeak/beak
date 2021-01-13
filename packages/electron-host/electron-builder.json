@@ -13,6 +13,8 @@
     "output": "dist-electron"
   },
 
+  "generateUpdatesFilesForAllChannels": true,
+  "detectUpdateChannel": true,
   "publish": {
     "provider": "s3",
     "bucket": "builds.getbeak.app",
