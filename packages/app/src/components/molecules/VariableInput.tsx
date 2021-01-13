@@ -19,7 +19,7 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, 
 	const ref = useRef<HTMLDivElement>(null);
 	const [partIndex, setPartIndex] = useState<number>();
 	const [queryOffset, setQueryOffset] = useState<number>();
-	const { selectedGroups, variableGroups } = useSelector(s => s.global.variableGroups);
+	const { variableGroups } = useSelector(s => s.global.variableGroups);
 
 	function closeSelector() {
 		setSelectorPosition(null);
