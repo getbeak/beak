@@ -1,3 +1,4 @@
+import { movePosition } from '@beak/app/utils/arrays';
 import { TypedObject } from '@beak/common/dist/helpers/typescript';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -26,9 +27,8 @@ interface Item {
 
 const VariableSelector: React.FunctionComponent<VariableSelectorProps> = props => {
 	const {
+		onClose,
 		onDone,
-		query,
-		parent,
 		position,
 	} = props;
 	const variableGroups = useSelector(s => s.global.variableGroups.variableGroups)!;
@@ -53,6 +53,57 @@ const VariableSelector: React.FunctionComponent<VariableSelectorProps> = props =
 		if (!active)
 			setActive(items[0]?.itemId || void 0);
 	}, [active, setActive, items]);
+
+	useEffect(() => {
+		function onKeyDown(event: KeyboardEvent) {
+			console.log(event.key);
+
+			if (event.shiftKey || event.metaKey || event.altKey || event.ctrlKey)
+				return;
+
+			if (!['ArrowDown', 'ArrowUp', 'Enter', 'Escape'].includes(event.key))
+				return;
+
+			switch (event.key) {
+				case 'ArrowUp':
+				case 'ArrowDown': {
+					const activeIndex = items.findIndex(i => i.itemId === active);
+					let newIndex = activeIndex;
+
+					if (event.key === 'ArrowUp')
+						newIndex = movePosition(items, activeIndex, 'backward');
+					else if (event.key === 'ArrowDown')
+						newIndex = movePosition(items, activeIndex, 'forward');
+
+					console.log({ activeIndex, newIndex });
+
+					setActive(items[newIndex].itemId);
+					break;
+				}
+
+				case 'Enter': {
+					const item = items.find(i => i.itemId === active);
+
+					if (!item)
+						return;
+
+					onDone(item.varibleGroupName, item.itemId);
+					break;
+				}
+
+				case 'Escape':
+					onClose();
+
+					break;
+
+				default: break;
+			}
+		}
+
+		window.addEventListener('keydown', onKeyDown);
+
+		return () => window.removeEventListener('keydown', onKeyDown);
+	}, [active, items]);
 
 	return (
 		<Wrapper style={{
