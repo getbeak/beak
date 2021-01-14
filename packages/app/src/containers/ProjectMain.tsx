@@ -86,7 +86,10 @@ const ProjectMain: React.FunctionComponent = () => {
 					{loaded && (
 						<React.Fragment>
 							<ReflexContainer orientation={'vertical'}>
-								<ReflexElement flex={20}>
+								<ReflexElement
+									flex={20}
+									minSize={200}
+								>
 									<ProjectPane />
 								</ReflexElement>
 
@@ -114,7 +117,7 @@ const ProjectMain: React.FunctionComponent = () => {
 									<ReqResContainer orientation={'vertical'}>
 										<ReflexElement
 											flex={50}
-											minSize={400}
+											minSize={450}
 										>
 											<RequestPane />
 										</ReflexElement>
@@ -123,7 +126,7 @@ const ProjectMain: React.FunctionComponent = () => {
 
 										<ReflexElement
 											flex={50}
-											minSize={400}
+											minSize={450}
 										>
 											<ResponsePane />
 										</ReflexElement>
