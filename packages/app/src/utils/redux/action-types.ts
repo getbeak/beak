@@ -7,7 +7,8 @@ export interface TypedActionCreator {
 
 export function createAsyncActionTypes(actionType: string) {
 	return {
-		main: actionType,
+		request: actionType,
+		reset: `${actionType}_RESET`,
 		success: `${actionType}_SUCCESS`,
 		failure: `${actionType}_FAILURE`,
 	};

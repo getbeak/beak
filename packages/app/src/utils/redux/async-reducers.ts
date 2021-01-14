@@ -9,18 +9,21 @@ export function createAsyncReducer<R = void>(
 	actionType: string,
 	initialState: AsyncState<R>,
 ): Reducer<AsyncState<R>, PayloadAction<R | Squawk>> {
-	const { main, success, failure } = createAsyncActionTypes(actionType);
+	const { request, reset, success, failure } = createAsyncActionTypes(actionType);
 
 	return function asyncReducer(
 		state = initialState,
 		{ type, payload },
 	) {
 		switch (type) {
-			case main:
+			case request:
 				return {
 					...state,
 					fetching: true,
 				};
+
+			case reset:
+				return { fetching: false } as AsyncState<R>;
 
 			case success:
 				return {
@@ -44,20 +47,26 @@ export default function createAsyncMapReducer<R = void>(
 	actionType: string,
 	initialState: AsyncMapState<R>,
 ): Reducer<AsyncMapState<R>, MetaPayloadAction<R | Squawk>> {
-	const { main, success, failure } = createAsyncActionTypes(actionType);
+	const { request, reset, success, failure } = createAsyncActionTypes(actionType);
 
 	return function asyncMapReducer(
 		state = initialState,
 		{ type, payload, meta },
 	): AsyncMapState<R> {
 		switch (type) {
-			case main:
+			case request:
 				return {
 					...state,
 					[meta.ident]: {
 						...state[meta.ident],
 						fetching: true,
 					},
+				};
+
+			case reset:
+				return {
+					...state,
+					[meta.ident]: { fetching: false } as AsyncState<R>,
 				};
 
 			case success:
