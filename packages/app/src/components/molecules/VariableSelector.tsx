@@ -75,8 +75,6 @@ const VariableSelector: React.FunctionComponent<VariableSelectorProps> = props =
 					else if (event.key === 'ArrowDown')
 						newIndex = movePosition(items, activeIndex, 'forward');
 
-					console.log({ activeIndex, newIndex });
-
 					setActive(items[newIndex].itemId);
 					break;
 				}
@@ -136,7 +134,7 @@ const Wrapper = styled.div`
 	height: 120px; width: 325px;
 
 	overflow-y: auto;
-	z-index: 100;
+	z-index: 101; /* Cheaky... */
 `;
 
 const Item = styled.div<{ active: boolean }>`
