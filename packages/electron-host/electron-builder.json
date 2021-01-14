@@ -2,6 +2,10 @@
   "appId": "app.getbeak.beak",
   "productName": "Beak",
   "copyright": "Copyright © 2020 Alexander Forbes-Reed",
+  "extraMetadata": {
+    "name": "Beak"
+  },
+
   "files": [
     "**/*"
   ],
