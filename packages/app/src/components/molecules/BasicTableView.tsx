@@ -1,9 +1,9 @@
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { ToggleKeyValue, ValueParts } from '@beak/common/types/beak-project';
+import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 import styled from 'styled-components';
-// @ts-ignore
-import ColumnResizer from 'react-column-resizer';
 
 import VariableInput from './VariableInput';
 
@@ -33,7 +33,6 @@ const BasicTableView: React.FunctionComponent<MutableBasicTableViewProps | Immut
 					<tr>
 						{props.editable && <Header></Header>}
 						<Header>{'Name'}</Header>
-						<Resizer />
 						<Header>{'Value'}</Header>
 						{props.editable && <Header></Header>}
 					</tr>
@@ -46,7 +45,7 @@ const BasicTableView: React.FunctionComponent<MutableBasicTableViewProps | Immut
 							<Row key={k}>
 								{!props.disableToggle && props.editable && (
 									<ToggleCell>
-										<InputToggle
+										<input
 											type={'checkbox'}
 											checked={entry.enabled}
 											onChange={e => updateItem('enabled', k, e.target.checked)}
@@ -61,7 +60,6 @@ const BasicTableView: React.FunctionComponent<MutableBasicTableViewProps | Immut
 										onChange={e => updateItem('name', k, e.target.value)}
 									/>
 								</td>
-								<Resizer />
 								<VariableInputCell>
 									<VariableInput
 										disabled={!props.editable}
@@ -71,11 +69,14 @@ const BasicTableView: React.FunctionComponent<MutableBasicTableViewProps | Immut
 								</VariableInputCell>
 								{props.editable && (
 									<ToggleCell>
-										<Button onClick={() => {
+										<RemoveButton onClick={() => {
 											props.removeItem(k);
 										}}>
-											{'Remove'}
-										</Button>
+											<FontAwesomeIcon
+												size={'sm'}
+												icon={faTrashAlt}
+											/>
+										</RemoveButton>
 									</ToggleCell>
 								)}
 							</Row>
@@ -102,13 +103,9 @@ function updateItemSnub(_type: keyof ToggleKeyValue, _ident: string, _value: str
 }
 
 const EntryTable = styled.table`
+	margin-top: 5px;
 	width: 100%;
 	border-collapse: collapse;
-`;
-
-const Resizer = styled(ColumnResizer)`
-	width: 2px;
-	background-color: ${p => p.theme.ui.backgroundBorderSeparator};
 `;
 
 const Header = styled.th`
@@ -128,10 +125,6 @@ const ToggleCell = styled.td`
 	width: 20px;
 `;
 
-const InputToggle = styled.input`
-
-`;
-
 const InputText = styled.input`
 	width: calc(100% - 10px);
 	border: none;
@@ -142,6 +135,10 @@ const InputText = styled.input`
 
 	color: ${props => props.theme.ui.textOnFill};
 	font-size: 12px;
+
+	&:focus {
+		box-shadow: none !important;
+	}
 `;
 
 const VariableInputCell = styled.td`
@@ -157,8 +154,7 @@ const VariableInputCell = styled.td`
 		font-size: 12px;
 
 		&:focus {
-			outline: none;
-			border: 1px solid ${props => props.theme.ui.primaryFill};
+			box-shadow: none !important;
 		}
 	}
 `;
@@ -179,6 +175,11 @@ const Button = styled.button`
 	&:active {
 		background-color: ${props => props.theme.ui.primaryFill};
 	}
+`;
+
+const RemoveButton = styled(Button)`
+	padding: 3px 6px;
+	margin-left: 5px;
 `;
 
 const AddButtonWrapper = styled.div`
