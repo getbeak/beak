@@ -1,9 +1,14 @@
+import { IpcNestServiceMain, SetUserReq } from '@beak/common/ipc/nest';
 import { ipcMain } from 'electron';
 
 import persistentStore from '../lib/persistent-store';
 import { createWelcomeWindow, stackMap, windowStack } from '../window-management';
 
-ipcMain.on('nest:set_user', (_event, userId: string, fromOnboarding = false) => {
+const service = new IpcNestServiceMain(ipcMain);
+
+service.registerSetUser(async (_event, payload: SetUserReq) => {
+	const { userId, fromOnboarding } = payload;
+
 	persistentStore.set('user', { userId });
 
 	if (!fromOnboarding)

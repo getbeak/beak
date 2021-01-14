@@ -1,11 +1,10 @@
 import ContextMenu from '@beak/app/components/atoms/ContextMenu';
+import { isDarwin } from '@beak/app/globals';
+import { ipcExplorerService } from '@beak/app/lib/ipc';
 import { actions } from '@beak/app/store/project';
 import { clipboard, MenuItemConstructorOptions } from 'electron';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-
-const electron = window.require('electron');
-const { ipcRenderer } = electron;
 
 interface TabContextMenuWrapperProps {
 	nodeId: string;
@@ -82,9 +81,9 @@ const TabContextMenuWrapper: React.FunctionComponent<TabContextMenuWrapperProps>
 			{ type: 'separator' },
 
 			{
-				label: 'Reveal in Finder',
+				label: `Reveal in ${isDarwin() ? 'Finder' : 'Explorer'}`,
 				click: () => {
-					ipcRenderer.send('misc:open_path_in_finder', node.filePath);
+					ipcExplorerService.revealFile(node.filePath);
 				},
 			},
 		]);

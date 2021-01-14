@@ -8,22 +8,20 @@ import {
 export type AsyncListener<T = any | void, T2 = any | void> = (event: IpcMainInvokeEvent, payload: T) => Promise<T2>;
 export type SyncListener<T = any | void> = (event: IpcRendererEvent, payload: T) => void;
 
-type Listener = AsyncListener | SyncListener;
-
 export interface IpcMessage {
 	code: string;
 	payload: unknown;
 }
 
-class IpcServiceBase {
+class IpcServiceBase<TL> {
 	protected channel: string;
-	protected listeners: Record<string, Listener[]> = {};
+	protected listeners: Record<string, TL[]> = {};
 
 	constructor(channel: string) {
 		this.channel = channel;
 	}
 
-	registerListener(eventType: string, listener: Listener) {
+	registerListener(eventType: string, listener: TL) {
 		if (!this.listeners[eventType])
 			this.listeners[eventType] = [];
 
@@ -31,7 +29,7 @@ class IpcServiceBase {
 	}
 }
 
-export class IpcServiceRenderer extends IpcServiceBase {
+export class IpcServiceRenderer extends IpcServiceBase<SyncListener> {
 	protected ipc: IpcRenderer;
 
 	constructor(channel: string, ipc: IpcRenderer) {
@@ -47,7 +45,7 @@ export class IpcServiceRenderer extends IpcServiceBase {
 			if (!message.code)
 				throw new Error('Malformed ipc message');
 
-			const listeners = this.listeners[message.code] as SyncListener[];
+			const listeners = this.listeners[message.code];
 
 			if (!listeners || listeners.length === 0)
 				throw new Error(`No listener attached for ${message.code}`);
@@ -57,7 +55,7 @@ export class IpcServiceRenderer extends IpcServiceBase {
 	}
 }
 
-export class IpcServiceMain extends IpcServiceBase {
+export class IpcServiceMain extends IpcServiceBase<AsyncListener> {
 	protected ipc: IpcMain;
 
 	constructor(channel: string, ipc: IpcMain) {
@@ -73,7 +71,7 @@ export class IpcServiceMain extends IpcServiceBase {
 			if (!message.code)
 				throw new Error('Malformed ipc message');
 
-			const listeners = this.listeners[message.code] as AsyncListener[];
+			const listeners = this.listeners[message.code];
 
 			if (!listeners || listeners.length === 0)
 				throw new Error(`No listeners attached for ${message.code}`);
