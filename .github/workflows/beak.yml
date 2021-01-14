@@ -20,7 +20,9 @@ jobs:
 
       - name: Install modules
         run: yarn
+
       - name: Build and package
+        if: github.ref == 'ref/head/master'
         env:
           CSC_LINK: ${{ secrets.CSC_LINK }}
           CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
@@ -31,6 +33,9 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           BUILD_NUMBER: ${{ steps.short-sha.outputs.sha }}
         run: yarn package
+      - name: Build and package
+        if: github.ref != 'ref/head/master'
+        run: yarn build
 
       - name: Delete stupid folders
         run: |
