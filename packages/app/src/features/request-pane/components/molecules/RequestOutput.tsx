@@ -79,7 +79,7 @@ export function createBasicHttpOutput(
 
 	const out = [
 		`${firstLine.join('')} HTTP/1.1`,
-		`Host: ${url.hostname}`,
+		`Host: ${url.hostname}${url.port ? `:${url.port}` : ''}`,
 		'Connection: close',
 		'User-Agent: Beak/0.0.1 (Macintosh; OS X/10.15.4)',
 	];
