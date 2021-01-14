@@ -18,7 +18,7 @@ const Onboarding: React.FunctionComponent = () => {
 	const [manualInfo, setManualInfo] = useState('');
 	const [doing, setDoing] = useState(false);
 	const [error, setError] = useState<Squawk>();
-	const [mgError, setMgError] = useState<Squawk>();
+	const [magicError, setMagicError] = useState<Squawk>();
 	const [done, setDone] = useState(false);
 	const [resender, setResender] = useState<number | null>(null);
 	const [showManualInfo, setShowManualInfo] = useState(false);
@@ -65,8 +65,12 @@ const Onboarding: React.FunctionComponent = () => {
 		if (handleMagicLink.fetching)
 			return;
 
-		if (handleMagicLink.error)
-			setMgError(handleMagicLink.error);
+		if (!handleMagicLink.error)
+			return;
+
+		setMagicError(handleMagicLink.error);
+		setDone(false);
+		dispatch(actions.sendMagicLink.reset());
 	}, [handleMagicLink]);
 
 	function sendMagicLink() {
@@ -76,6 +80,7 @@ const Onboarding: React.FunctionComponent = () => {
 		setManualInfo('');
 		setError(void 0);
 		dispatch(actions.sendMagicLink.request({ email: emailAddy }));
+		dispatch(actions.handleMagicLink.reset());
 	}
 
 	function validManualInfo() {
@@ -137,7 +142,11 @@ const Onboarding: React.FunctionComponent = () => {
 							{'. Click the link in the email to sign into Beak.'}
 						</SmolPara>
 
-						{mgError && `magic link brok: ${mgError.code}`}
+						{magicError && (
+							<FormError>
+								{`There was a problem with that magic link (${magicError.code})`}
+							</FormError>
+						)}
 
 						{!showManualInfo && (
 							<OtherSmolPara>
