@@ -1,5 +1,7 @@
 import { removeFolderNode } from '@beak/app/lib/beak-project/folder';
 import { removeRequestNode } from '@beak/app/lib/beak-project/request';
+import { ipcDialogService } from '@beak/app/lib/ipc';
+import { ShowMessageBoxRes } from '@beak/common/ipc/dialog';
 import { Nodes } from '@beak/common/types/beak-project';
 import { PayloadAction } from '@reduxjs/toolkit';
 import { call, put, select } from 'redux-saga/effects';
@@ -8,16 +10,19 @@ import { ApplicationState } from '../..';
 import actions from '../actions';
 import { RemoveNodeFromDiskPayload } from '../types';
 
-const { ipcRenderer } = window.require('electron');
-
 export default function* workerRemoveNodeFromDisk({ payload }: PayloadAction<RemoveNodeFromDiskPayload>) {
 	const { requestId, withConfirmation } = payload;
 	const node: Nodes = yield select((s: ApplicationState) => s.global.project.tree[requestId]);
 
 	if (withConfirmation) {
-		const response: number = yield call([ipcRenderer, ipcRenderer.invoke], 'dialog:confirm_body_tab_change');
+		const response: ShowMessageBoxRes = yield call([ipcDialogService, ipcDialogService.showMessageBox], {
+			message: 'Are you sure you want to remove this node?',
+			type: 'warning',
+			buttons: ['Remove', 'Cancel'],
+			defaultId: 1,
+		});
 
-		if (response !== 0)
+		if (response.response !== 0)
 			return;
 	}
 

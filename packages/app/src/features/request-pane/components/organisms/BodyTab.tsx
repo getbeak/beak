@@ -1,5 +1,6 @@
 import BasicTableView from '@beak/app/components/molecules/BasicTableView';
 import BeakHubContext from '@beak/app/contexts/beak-hub-context';
+import { ipcDialogService } from '@beak/app/lib/ipc';
 import { requestBodyJsonChanged, requestBodyTextChanged } from '@beak/app/store/project/actions';
 import { createDefaultOptions } from '@beak/app/utils/monaco';
 import { RequestNode } from '@beak/common/types/beak-project';
@@ -32,9 +33,14 @@ const BodyTab: React.FunctionComponent<BodyTabProps> = props => {
 		if (newTab === tab)
 			return;
 
-		const response: number = await ipcRenderer.invoke('dialog:confirm_body_tab_change');
+		const result = await ipcDialogService.showMessageBox({
+			message: 'Are you sure you want to change body type? Doing so will cause any data in the current body to be wiped!',
+			type: 'warning',
+			buttons: ['Change', 'Cancel'],
+			defaultId: 1,
+		});
 
-		if (response !== 0)
+		if (result.response !== 0)
 			return;
 
 		hub!.setRequestPreferences(node.id, { mainTab: 'body', subTab: tab });

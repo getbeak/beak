@@ -56,7 +56,7 @@ const ProjectPane: React.FunctionComponent = () => {
 					onClick={e => {
 						e.stopPropagation();
 
-						ipcRenderer.invoke('dialog:project_variable_group_editor', project.projectPath);
+						// TODO(afr): Load into tab
 					}}
 				/>
 			</SectionHeader>
