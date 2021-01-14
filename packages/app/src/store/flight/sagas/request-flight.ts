@@ -44,26 +44,32 @@ export default function* requestFlightWorker() {
 	}));
 
 	const channel = eventChannel(emitter => {
-		// TODO(afr): Remove these listeners when flight over
-
-		ipcRenderer.on(`flight_heartbeat:${flightId}`, (_, payload: FlightHeartbeatPayload) => {
+		function flightHeartbeat(_: unknown, payload: FlightHeartbeatPayload) {
 			if (payload.stage === 'reading_body')
 				binaryStore.append(binaryStoreKey, payload.payload.buffer);
 
 			emitter(actions.updateFlightProgress(payload));
-		});
+		}
 
-		ipcRenderer.on(`flight_complete:${flightId}`, (_, payload: FlightCompletePayload) => {
+		function flightComplete(_: unknown, payload: FlightCompletePayload) {
 			emitter(actions.completeFlight({ flightId, requestId, response: payload.overview }));
 			emitter(END);
-		});
+		}
 
-		ipcRenderer.on(`flight_failed:${flightId}`, (_, payload: FlightFailedPayload) => {
+		function flightFailed(_: unknown, payload: FlightFailedPayload) {
 			emitter(actions.flightFailure({ flightId, requestId, error: payload.error }));
 			emitter(END);
-		});
+		}
 
-		return () => { /* */ };
+		ipcRenderer.on(`flight_heartbeat:${flightId}`, flightHeartbeat);
+		ipcRenderer.on(`flight_complete:${flightId}`, flightComplete);
+		ipcRenderer.on(`flight_failed:${flightId}`, flightFailed);
+
+		return () => {
+			ipcRenderer.removeListener(`flight_heartbeat:${flightId}`, flightHeartbeat);
+			ipcRenderer.removeListener(`flight_complete:${flightId}`, flightComplete);
+			ipcRenderer.removeListener(`flight_failed:${flightId}`, flightFailed);
+		};
 	});
 
 	ipcRenderer.send('flight_request', {
