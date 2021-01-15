@@ -56,8 +56,6 @@ const VariableSelector: React.FunctionComponent<VariableSelectorProps> = props =
 
 	useEffect(() => {
 		function onKeyDown(event: KeyboardEvent) {
-			console.log(event.key);
-
 			if (event.shiftKey || event.metaKey || event.altKey || event.ctrlKey)
 				return;
 

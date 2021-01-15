@@ -11,8 +11,7 @@ export default function createFsEmitter(path: string, options?: WatchOptions) {
 		const watcher = chokidar
 			.watch(path, { ...options, ignoreInitial: true })
 			.on('all', (event, path) => emitter({ type: event, path }))
-			.on('error', console.error)
-			.on('raw', console.log);
+			.on('error', console.error);
 
 		return () => {
 			watcher.close();
