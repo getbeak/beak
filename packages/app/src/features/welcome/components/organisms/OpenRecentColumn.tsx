@@ -1,3 +1,4 @@
+import { ipcBeakHubService } from '@beak/app/lib/ipc';
 import { RecentLocalProject } from '@beak/common/types/beak-hub';
 import { sentenceCase } from 'change-case';
 import React, { useEffect, useState } from 'react';
@@ -27,7 +28,7 @@ const OpenRecentColumn: React.FunctionComponent = () => {
 	const [recents, setRecents] = useState<Recents>({ ...defaultRecents });
 
 	useEffect(() => {
-		ipcRenderer.invoke('beak_hub:list_recents').then((recents: RecentLocalProject[]) => {
+		ipcBeakHubService.listRecentProjects().then(recents => {
 			const newRecents = { ...defaultRecents };
 			const now = new Date().getTime() / 1000;
 

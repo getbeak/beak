@@ -15,17 +15,22 @@ export interface IpcMessage {
 
 class IpcServiceBase<TL> {
 	protected channel: string;
-	protected listeners: Record<string, TL[]> = {};
+	protected listeners: Record<string, TL | undefined> = {};
 
 	constructor(channel: string) {
 		this.channel = channel;
 	}
 
-	registerListener(eventType: string, listener: TL) {
-		if (!this.listeners[eventType])
-			this.listeners[eventType] = [];
+	getChannel() {
+		return this.channel;
+	}
 
-		this.listeners[eventType].push(listener);
+	registerListener(eventCode: string, listener: TL) {
+		this.listeners[eventCode] = listener;
+	}
+
+	unregisterListener(eventCode: string) {
+		this.listeners[eventCode] = void 0;
 	}
 }
 
@@ -45,12 +50,12 @@ export class IpcServiceRenderer extends IpcServiceBase<SyncListener> {
 			if (!message.code)
 				throw new Error('Malformed ipc message');
 
-			const listeners = this.listeners[message.code];
+			const listener = this.listeners[message.code];
 
-			if (!listeners || listeners.length === 0)
+			if (!listener)
 				throw new Error(`No listener attached for ${message.code}`);
 
-			listeners.map(l => l(event, message.payload));
+			listener(event, message.payload);
 		});
 	}
 }
@@ -71,15 +76,12 @@ export class IpcServiceMain extends IpcServiceBase<AsyncListener> {
 			if (!message.code)
 				throw new Error('Malformed ipc message');
 
-			const listeners = this.listeners[message.code];
+			const listener = this.listeners[message.code];
 
-			if (!listeners || listeners.length === 0)
-				throw new Error(`No listeners attached for ${message.code}`);
+			if (!listener)
+				throw new Error(`No listener attached for ${message.code}`);
 
-			const results = await Promise.all(listeners.map(l => l(event, message.payload)));
-			const result = results.filter(Boolean)[0];
-
-			return result;
+			return await listener(event, message.payload);
 		});
 	}
 }
