@@ -4,18 +4,14 @@ import TabSpacer from '@beak/app/components/atoms/TabSpacer';
 import { actions } from '@beak/app/store/variable-groups';
 import { insertNewItem } from '@beak/app/store/variable-groups/actions';
 import { TypedObject } from '@beak/common/dist/helpers/typescript';
-import { VariableGroups } from '@beak/common/dist/types/beak-project';
 import React, { useEffect, useRef, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 
-export interface VariableGroupEditorProps {
-	variableGroups: VariableGroups;
-}
-
-const VariableGroupEditor: React.FunctionComponent<VariableGroupEditorProps> = props => {
+const VariableGroupEditor: React.FunctionComponent = () => {
 	const dispatch = useDispatch();
-	const vg = props.variableGroups;
+	const variableGroups = useSelector(s => s.global.variableGroups);
+	const vg = variableGroups.variableGroups;
 	const tabs = TypedObject.keys(vg);
 	const [tab, setTab] = useState(tabs[0]);
 	const variableGroup = vg[tab];
@@ -161,7 +157,10 @@ const Container = styled.div`
 	flex-direction: column;
 	overflow: hidden;
 
+	background-color: ${props => props.theme.ui.background};
+
 	height: 100%;
+	width: 100%;
 `;
 
 const TabBody = styled.div`
@@ -209,9 +208,8 @@ const Editable = styled.input`
 	text-align: inherit;
 	padding: 3px 2px;
 
-	&:disabled {
-		user-select: none;
-	}
+	&:disabled { user-select: none; }
+	&:focus { box-shadow: none; }
 `;
 
 export default VariableGroupEditor;

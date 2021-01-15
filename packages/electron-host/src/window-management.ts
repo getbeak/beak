@@ -4,7 +4,7 @@ import * as url from 'url';
 
 import { staticPath } from './utils/static-path';
 
-type Container = 'about' | 'project-main' | 'welcome' | 'variable-group-editor' | 'onboarding';
+type Container = 'about' | 'project-main' | 'welcome' | 'onboarding';
 
 export const windowStack: Record<number, BrowserWindow> = {};
 export const stackMap: Record<string, number> = { };
@@ -122,32 +122,6 @@ export function createProjectMainWindow(projectFilePath: string) {
 	const window = createWindow(windowOpts, 'project-main', { projectFilePath });
 
 	window.setRepresentedFilename(projectFilePath);
-}
-
-export function createVariableGroupEditorWindow(projectPath: string) {
-	const key = `variable_group_editor:${projectPath}`;
-	const existing = stackMap[key];
-
-	if (existing && windowStack[existing]) {
-		windowStack[existing].focus();
-
-		return;
-	}
-
-	const windowOpts: BrowserWindowConstructorOptions = {
-		height: 600,
-		width: 1000,
-		title: 'Variable Group Editor',
-	};
-
-	// TODO(afr): Totally custom frame for Linux/Windows
-	// // On Linux and Windows, we want total control of the frame
-	// if (process.platform !== 'darwin')
-	// 	windowOpts.frame = false;
-
-	const window = createWindow(windowOpts, 'variable-group-editor', { projectPath });
-
-	stackMap[key] = window.id;
 }
 
 export function createOnboardingWindow() {
