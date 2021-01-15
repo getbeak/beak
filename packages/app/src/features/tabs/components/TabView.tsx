@@ -46,13 +46,6 @@ const TabView: React.FunctionComponent<TabViewProps> = ({ selectedTab, tabs }) =
 				else if (event.key === 'ArrowRight')
 					newIndex = movePosition(tabs, activeIndex, 'forward');
 
-				console.log({
-					tabs,
-					activeIndex,
-					newIndex,
-					tab: tabs[newIndex],
-				});
-
 				dispatch(actions.tabSelected(tabs[newIndex]));
 				break;
 			}
