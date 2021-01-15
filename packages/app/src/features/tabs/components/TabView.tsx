@@ -63,10 +63,10 @@ const TabView: React.FunctionComponent<TabViewProps> = ({ selectedTab, tabs }) =
 			<TabBar>
 				{tabs.map(t => {
 					if (t.type === 'request')
-						return <RequestTab tab={t} />;
+						return <RequestTab key={t.payload} tab={t} />;
 
 					if (t.type === 'renderer')
-						return <RendererTab tab={t} />;
+						return <RendererTab key={t.payload} tab={t} />;
 
 					return null;
 				})}
