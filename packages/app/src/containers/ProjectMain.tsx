@@ -7,16 +7,13 @@ import styled from 'styled-components';
 
 import ReflexSplitter from '../components/atoms/ReflexSplitter';
 import ReflexStyles from '../components/atoms/ReflexStyles';
-import TB from '../components/atoms/TabBar';
 import ProgressIndicator from '../components/molecules/ProgressIndicator';
-import ProjectTab from '../components/molecules/ProjectTab';
 import BeakHubContext from '../contexts/beak-hub-context';
 import ActionBar from '../features/action-bar/components/ActionBar';
 import Omnibar from '../features/omni-bar/components/Omnibar';
 import ProjectPane from '../features/project-pane/components/ProjectPane';
-import RequestPane from '../features/request-pane/components/RequestPane';
-import ResponsePane from '../features/response-pane/components/ResponsePane';
 import StatusBar from '../features/status-bar/components/StatusBar';
+import TabView from '../features/tabs/components/TabView';
 import { isDarwin } from '../globals';
 import useTitleBar from '../hooks/use-title-bar';
 import BeakHub from '../lib/beak-hub';
@@ -30,7 +27,8 @@ const ProjectMain: React.FunctionComponent = () => {
 	const projectFilePath = decodeURIComponent(params.get('projectFilePath') as string);
 	const project = useSelector(s => s.global.project);
 	const variableGroups = useSelector(s => s.global.variableGroups);
-	const { selectedRequest, selectedRequests } = useSelector(s => s.global.project);
+	const { selectedTabPayload, tabs } = useSelector(s => s.global.project);
+	const selectedTab = tabs.find(t => t.payload === selectedTabPayload);
 
 	const [hub, setHub] = useState<BeakHub | null>(null);
 	const loaded = project.loaded && variableGroups.loaded;
@@ -42,9 +40,7 @@ const ProjectMain: React.FunctionComponent = () => {
 	useEffect(() => {
 		window.addEventListener('keydown', onKeyDown);
 
-		return function remove() {
-			window.removeEventListener('keydown', onKeyDown);
-		};
+		return () => window.removeEventListener('keydown', onKeyDown);
 	}, []);
 
 	useEffect(() => {
@@ -56,7 +52,7 @@ const ProjectMain: React.FunctionComponent = () => {
 	}, [project, project.name, loaded]);
 
 	function onKeyDown(event: KeyboardEvent) {
-		if (!selectedRequest || event.key !== 'Return')
+		if (!selectedTab || event.key !== 'Return')
 			return;
 
 		const isAct = (isDarwin() && event.metaKey) || (!isDarwin() && event.ctrlKey);
@@ -66,11 +62,11 @@ const ProjectMain: React.FunctionComponent = () => {
 	}
 
 	useHotkeys('command+enter,ctrl+enter', () => {
-		if (!selectedRequest)
+		if (selectedTab?.type !== 'request')
 			return;
 
 		dispatch(requestFlight());
-	}, [selectedRequest]);
+	}, [tabs, selectedTab]);
 
 	useTitleBar();
 
@@ -104,33 +100,7 @@ const ProjectMain: React.FunctionComponent = () => {
 								>
 									<ActionBar />
 
-									<TabBar>
-										{selectedRequests.map(id => (
-											<ProjectTab
-												nodeId={id}
-												selectedRequestId={selectedRequest}
-												key={id}
-											/>
-										))}
-									</TabBar>
-
-									<ReqResContainer orientation={'vertical'}>
-										<ReflexElement
-											flex={50}
-											minSize={450}
-										>
-											<RequestPane />
-										</ReflexElement>
-
-										<ReflexSplitter orientation={'vertical'} />
-
-										<ReflexElement
-											flex={50}
-											minSize={450}
-										>
-											<ResponsePane />
-										</ReflexElement>
-									</ReqResContainer>
+									<TabView tabs={tabs} selectedTab={selectedTab} />
 								</ReflexElement>
 							</ReflexContainer>
 							<Omnibar />
@@ -152,10 +122,6 @@ const Container = styled.div`
 	right: 0;
 `;
 
-const TabBar = styled(TB)`
-	background-color: ${props => props.theme.ui.secondarySurface};
-`;
-
 const LoadingMask = styled.div`
 	position: absolute;
 	top: 0;
@@ -167,10 +133,6 @@ const LoadingMask = styled.div`
 	opacity: 0.6;
 
 	z-index: 1000;
-`;
-
-const ReqResContainer = styled(ReflexContainer)`
-	height: calc(100% - 34px);
 `;
 
 export default ProjectMain;

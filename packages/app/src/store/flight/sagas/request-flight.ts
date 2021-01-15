@@ -14,13 +14,18 @@ import { State } from '../types';
 
 export default function* requestFlightWorker() {
 	const binaryStoreKey = ksuid.generate('binstore').toString();
-	const requestId: string = yield select((s: ApplicationState) => s.global.project.selectedRequest);
+	const requestId: string = yield select((s: ApplicationState) => s.global.project.selectedTabPayload);
 	const flightId = ksuid.generate('flight').toString();
 
 	const flight: State = yield select((s: ApplicationState) => s.global.flight);
 	const node: RequestNode = yield select((s: ApplicationState) => s.global.project.tree![requestId]);
 	const vgState: VGState = yield select((s: ApplicationState) => s.global.variableGroups);
 	const { selectedGroups, variableGroups } = vgState;
+
+	// If the node doesn't exist, either it has been deleted, or a non-request tab was
+	// sent through, either way, cancel.
+	if (!node)
+		return;
 
 	if (flight.currentFlight?.flighting) {
 		// TODO(afr): Ask user if they want to cancel existing, or cancel new

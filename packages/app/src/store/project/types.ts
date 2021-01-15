@@ -5,12 +5,13 @@ export const ActionTypes = {
 	INSERT_PROJECT_INFO: '@beak/global/project/INSERT_PROJECT_INFO',
 	PROJECT_OPENED: '@beak/global/project/PROJECT_OPENED',
 
-	REQUEST_SELECTED: '@beak/global/project/REQUEST_SELECTED',
-	CLOSE_SELECTED_REQUEST: '@beak/global/project/CLOSE_SELECTED_REQUEST',
-	CLOSE_OTHER_SELECTED_REQUESTS: '@beak/global/project/CLOSE_OTHER_SELECTED_REQUESTS',
-	CLOSE_SELECTED_REQUESTS_TO_RIGHT: '@beak/global/project/CLOSE_SELECTED_REQUESTS_TO_RIGHT',
-	CLOSE_SELECTED_REQUESTS_TO_LEFT: '@beak/global/project/CLOSE_SELECTED_REQUESTS_TO_LEFT',
-	CLOSE_ALL_SELECTED_REQUESTS: '@beak/global/project/CLOSE_ALL_SELECTED_REQUESTS',
+	TAB_SELECTED: '@beak/global/project/TAB_SELECTED',
+	CLOSE_SELECTED_TAB: '@beak/global/project/CLOSE_SELECTED_TAB',
+	CLOSE_OTHER_SELECTED_TABS: '@beak/global/project/CLOSE_OTHER_SELECTED_TABS',
+	CLOSE_SELECTED_TABS_TO_RIGHT: '@beak/global/project/CLOSE_SELECTED_TABS_TO_RIGHT',
+	CLOSE_SELECTED_TABS_TO_LEFT: '@beak/global/project/CLOSE_SELECTED_TABS_TO_LEFT',
+	CLOSE_ALL_SELECTED_TABS: '@beak/global/project/CLOSE_ALL_SELECTED_TABS',
+	SET_TAB_AS_PERMANENT: '@beak/global/project/SET_TAB_AS_PERMANENT',
 
 	REQUEST_URI_UPDATED: '@beak/global/project/REQUEST_URI_UPDATED',
 
@@ -51,8 +52,8 @@ export interface State {
 	projectTreePath?: string;
 	tree: Tree;
 
-	selectedRequest?: string;
-	selectedRequests: string[];
+	selectedTabPayload?: string;
+	tabs: TabItem[];
 
 	activeRename?: ActiveRename;
 }
@@ -61,8 +62,24 @@ export const initialState: State = {
 	loaded: false,
 
 	tree: {},
-	selectedRequests: [],
+	tabs: [],
 };
+
+export type TabItem = RequestTabItem | RendererTabItem;
+
+export interface TabBase {
+	temporary: boolean;
+}
+
+export interface RequestTabItem extends TabBase {
+	type: 'request';
+	payload: string;
+}
+
+export interface RendererTabItem extends TabBase {
+	type: 'renderer';
+	payload: 'variable_group_editor';
+}
 
 export interface ProjectInfoPayload {
 	name: string;

@@ -1,5 +1,4 @@
-import { RequestNode } from '@beak/common/types/beak-project';
-import React, { useState } from 'react';
+import React from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 
@@ -8,12 +7,11 @@ import PendingSlash from './molecules/PendingSplash';
 import Inspector from './organisms/Inspector';
 
 const ResponsePane: React.FunctionComponent = () => {
-	const flight = useSelector(s => s.global.flight);
-	const { tree, selectedRequest } = useSelector(s => s.global.project);
+	const { tree, selectedTabPayload } = useSelector(s => s.global.project);
 	const flightHistories = useSelector(s => s.global.flight.flightHistory);
-	const selectedNode = tree![selectedRequest || 'non_existent'];
+	const selectedNode = tree![selectedTabPayload || 'non_existent'];
 
-	if (!selectedRequest) {
+	if (!selectedTabPayload) {
 		return (
 			<Container>
 				<PendingSlash />
@@ -21,7 +19,7 @@ const ResponsePane: React.FunctionComponent = () => {
 		);
 	}
 
-	if (selectedRequest && !selectedNode) {
+	if (selectedTabPayload && !selectedNode) {
 		return (
 			<Container>
 				<span>{'id does not exist'}</span>
@@ -29,7 +27,7 @@ const ResponsePane: React.FunctionComponent = () => {
 		);
 	}
 
-	const flightHistory = flightHistories[selectedRequest];
+	const flightHistory = flightHistories[selectedTabPayload];
 
 	if (!flightHistory) {
 		return (

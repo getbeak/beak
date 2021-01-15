@@ -1,7 +1,8 @@
+import { actions } from '@beak/app/store/project';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import styled, { useTheme } from 'styled-components';
 
 import Header from './atoms/Header';
@@ -15,9 +16,8 @@ interface Collapser {
 	explorer: boolean;
 }
 
-const { ipcRenderer } = window.require('electron');
-
 const ProjectPane: React.FunctionComponent = () => {
+	const dispatch = useDispatch();
 	const theme = useTheme();
 	const project = useSelector(s => s.global.project);
 	const [collapser, setCollapser] = useState<Collapser>({
@@ -56,7 +56,11 @@ const ProjectPane: React.FunctionComponent = () => {
 					onClick={e => {
 						e.stopPropagation();
 
-						// TODO(afr): Load into tab
+						dispatch(actions.tabSelected({
+							type: 'renderer',
+							payload: 'variable_group_editor',
+							temporary: false,
+						}));
 					}}
 				/>
 			</SectionHeader>

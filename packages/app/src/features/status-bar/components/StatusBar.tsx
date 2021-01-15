@@ -1,4 +1,4 @@
-import { requestSelected } from '@beak/app/store/project/actions';
+import { tabSelected } from '@beak/app/store/project/actions';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
@@ -23,7 +23,11 @@ const StatusBar: React.FunctionComponent = () => {
 		if (!currentFlight)
 			return;
 
-		dispatch(requestSelected(currentFlight.requestId));
+		dispatch(tabSelected({
+			type: 'request',
+			payload: currentFlight.requestId,
+			temporary: true,
+		}));
 	}
 
 	// TODO(afr): Reset status from resource success after 2 seconds?

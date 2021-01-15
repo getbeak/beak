@@ -19,9 +19,9 @@ import ActionBarSeperator from './atoms/ActionBarSeperator';
 const ActionBar: React.FunctionComponent = () => {
 	const theme = useTheme();
 	const dispatch = useDispatch();
-	const selectedRequest = useSelector(s => s.global.project.selectedRequest);
-	const request = useSelector(s => s.global.project.tree![selectedRequest ?? 'non_existent']);
-	const requirements = gatherRequirements(selectedRequest, request);
+	const selectedTabPayload = useSelector(s => s.global.project.selectedTabPayload);
+	const request = useSelector(s => s.global.project.tree![selectedTabPayload ?? 'non_existent']);
+	const requirements = gatherRequirements(selectedTabPayload, request);
 
 	return (
 		<Wrapper>
@@ -43,7 +43,7 @@ const ActionBar: React.FunctionComponent = () => {
 			<abbr title={'Go to previous item in flight history'}>
 				<ActionBarIcon
 					disabled={!requirements?.canGoBack}
-					onClick={() => dispatch(actions.previousFlightHistory({ requestId: selectedRequest! }))}
+					onClick={() => dispatch(actions.previousFlightHistory({ requestId: selectedTabPayload! }))}
 				>
 					<FontAwesomeIcon
 						color={theme.ui.textMinor}
@@ -55,7 +55,7 @@ const ActionBar: React.FunctionComponent = () => {
 			<abbr title={'Go to next item in flight history'}>
 				<ActionBarIcon
 					disabled={!requirements?.canGoForward}
-					onClick={() => dispatch(actions.nextFlightHistory({ requestId: selectedRequest! }))}
+					onClick={() => dispatch(actions.nextFlightHistory({ requestId: selectedTabPayload! }))}
 				>
 					<FontAwesomeIcon
 						color={theme.ui.textMinor}
@@ -89,14 +89,6 @@ function gatherRequirements(selectedRequestId: string | undefined, request: Node
 
 	const keys = TypedObject.keys(flight.history);
 	const selectedIndex = keys.findIndex(i => i === flight.selected);
-
-	// console.log({
-	// 	keys,
-	// 	selectedIndex,
-	// 	canGoBack: selectedIndex < keys.length - 1,
-	// 	canGoForward: selectedIndex > 0,
-	// 	canExecute: true,
-	// });
 
 	return {
 		canGoBack: selectedIndex > 0,

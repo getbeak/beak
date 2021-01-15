@@ -23,35 +23,52 @@ const projectReducer = createReducer(initialState, builder => {
 			state.loaded = true;
 		})
 
-		.addCase(actions.requestSelected, (state, action) => {
-			if (action.payload !== void 0) {
-				if (!state.selectedRequests.find(v => v === action.payload))
-					state.selectedRequests.push(action.payload);
+		.addCase(actions.tabSelected, (state, action) => {
+			const tab = action.payload;
+
+			if (tab !== void 0) {
+				if (!state.tabs.find(t => t.payload === tab.payload)) {
+					// Remove any temporary tabs if we are inserting a new one
+					state.tabs = state.tabs.filter(t => !t.temporary);
+
+					state.tabs.push(tab);
+				}
 			}
 
-			state.selectedRequest = action.payload;
+			state.selectedTabPayload = tab?.payload ?? void 0;
 		})
-		.addCase(actions.closeSelectedRequest, (state, { payload }) => {
-			state.selectedRequests = state.selectedRequests.filter(r => r !== payload);
+		.addCase(actions.closeSelectedTab, (state, { payload }) => {
+			state.tabs = state.tabs.filter(r => r.payload !== payload);
 		})
-		.addCase(actions.closeOtherSelectedRequests, (state, { payload }) => {
-			state.selectedRequests = [payload];
-			state.selectedRequest = payload;
-		})
-		.addCase(actions.closeSelectedRequestsToRight, (state, { payload }) => {
-			const index = state.selectedRequests.indexOf(payload);
+		.addCase(actions.closeOtherSelectedTabs, (state, { payload }) => {
+			const tab = state.tabs.find(t => t.payload === payload);
 
-			state.selectedRequests = state.selectedRequests.slice(0, index + 1);
-		})
-		.addCase(actions.closeSelectedRequestsToLeft, (state, { payload }) => {
-			const index = state.selectedRequests.indexOf(payload);
+			state.tabs = [];
 
-			state.selectedRequests = state.selectedRequests.slice(index);
-			state.selectedRequest = state.selectedRequests[0];
+			if (tab)
+				state.tabs.push(tab);
+
+			state.selectedTabPayload = payload;
 		})
-		.addCase(actions.closeAllSelectedRequests, state => {
-			state.selectedRequests = [];
-			state.selectedRequest = void 0;
+		.addCase(actions.closeSelectedTabsToRight, (state, { payload }) => {
+			const index = state.tabs.findIndex(t => t.payload === payload);
+
+			state.tabs = state.tabs.slice(0, index + 1);
+		})
+		.addCase(actions.closeSelectedTabsToLeft, (state, { payload }) => {
+			const index = state.tabs.findIndex(t => t.payload === payload);
+
+			state.tabs = state.tabs.slice(index);
+			state.selectedTabPayload = state.tabs[0].payload;
+		})
+		.addCase(actions.closeAllSelectedTabs, state => {
+			state.tabs = [];
+			state.selectedTabPayload = void 0;
+		})
+		.addCase(actions.setTabAsPermanent, (state, { payload }) => {
+			const index = state.tabs.findIndex(t => t.payload === payload);
+
+			state.tabs[index].temporary = false;
 		})
 
 		.addCase(actions.requestUriUpdated, (state, action) => {

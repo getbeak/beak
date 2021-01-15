@@ -20,5 +20,9 @@ export default function* workerDuplicateRequest({ payload }: PayloadAction<Dupli
 		take(ActionTypes.INSERT_REQUEST_NODE),
 	]);
 
-	yield put(actions.requestSelected(newNodeId));
+	yield put(actions.tabSelected({
+		type: 'request',
+		payload: newNodeId,
+		temporary: true,
+	}));
 }

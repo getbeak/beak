@@ -6,7 +6,7 @@ import actions from '@beak/app/src/store/project/actions';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { FolderNode, ProjectFile, RequestNode, Tree } from '@beak/common/types/beak-project';
 import { PayloadAction } from '@reduxjs/toolkit';
-import { all, call, put, take } from 'redux-saga/effects';
+import { call, put, take } from 'redux-saga/effects';
 
 import { startVariableGroups } from '../../variable-groups/actions';
 
@@ -68,13 +68,11 @@ function* initialImport(treePath: string) {
 		...requestNodes,
 	};
 
-	yield all([
-		// TODO(afr): Change this to read the previously selected request based on history
-		// in the hub. Also on first load, I think showing the readme of the project as an
-		// onboarding document could be very cool!
-		put(actions.requestSelected(firstRequest?.id)),
-		put(actions.projectOpened({ tree })),
-	]);
+	// TODO(afr): Read previously tab state from the history in the hub.
+	if (firstRequest)
+		yield put(actions.tabSelected({ type: 'request', payload: firstRequest.id, temporary: false }));
+
+	yield put(actions.projectOpened({ tree }));
 }
 
 async function readFolderNodes(folders: ScanResult[]) {

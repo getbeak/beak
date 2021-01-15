@@ -34,5 +34,5 @@ export function* workerCreateNewRequest({ payload }: PayloadAction<CreateNewThin
 		delay(250),
 		take(ActionTypes.INSERT_REQUEST_NODE),
 	]);
-	yield put(actions.requestSelected(nodeId));
+	yield put(actions.tabSelected({ type: 'request', payload: nodeId, temporary: true }));
 }

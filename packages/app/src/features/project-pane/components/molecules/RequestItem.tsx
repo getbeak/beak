@@ -6,7 +6,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 
-import actions, { requestSelected } from '../../../../store/project/actions';
+import actions from '../../../../store/project/actions';
 import ContextMenuWrapper from '../atoms/ContextMenuWrapper';
 import RequestStatusBlob from '../atoms/RequestStatusBlob';
 
@@ -25,9 +25,9 @@ const RequestItem: React.FunctionComponent<RequestItemProps> = props => {
 
 	const node = useSelector(s => s.global.project.tree![props.id]) as RequestNode;
 	const rename = useSelector(s => s.global.project.activeRename);
-	const selectedRequest = useSelector(s => s.global.project.selectedRequest);
+	const selectedTabPayload = useSelector(s => s.global.project.selectedTabPayload);
 	const flight = useSelector(s => s.global.flight.flightHistory[node.id]);
-	const active = selectedRequest === props.id;
+	const active = selectedTabPayload === props.id;
 
 	let mostRecentFlight = null;
 
@@ -65,7 +65,12 @@ const RequestItem: React.FunctionComponent<RequestItemProps> = props => {
 					setTarget(i);
 				}}
 				tabIndex={0}
-				onClick={() => dispatch(requestSelected(props.id))}
+				onClick={() => dispatch(actions.tabSelected({
+					type: 'request',
+					temporary: true,
+					payload: node.id,
+				}))}
+				onDoubleClick={() => dispatch(actions.setTabAsPermanent(node.id))}
 				onKeyDown={(event: React.KeyboardEvent<HTMLDivElement>) => {
 					if (editing)
 						return;
@@ -89,7 +94,11 @@ const RequestItem: React.FunctionComponent<RequestItemProps> = props => {
 							break;
 
 						case checkShortcut('project-explorer.request.open', event):
-							dispatch(actions.requestSelected(node.id));
+							dispatch(actions.tabSelected({
+								type: 'request',
+								temporary: true,
+								payload: node.id,
+							}));
 
 							break;
 
@@ -101,12 +110,6 @@ const RequestItem: React.FunctionComponent<RequestItemProps> = props => {
 						default:
 							break;
 					}
-				}}
-				onDoubleClick={() => {
-					if (editing)
-						return;
-
-					dispatch(actions.requestRenameStarted({ requestId: node.id }));
 				}}
 			>
 				{!editing && (

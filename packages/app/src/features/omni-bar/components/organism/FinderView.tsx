@@ -1,4 +1,4 @@
-import { requestSelected } from '@beak/app/store/project/actions';
+import { tabSelected } from '@beak/app/store/project/actions';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { convertRequestToUrl } from '@beak/common/helpers/uri';
 import { RequestNode } from '@beak/common/types/beak-project';
@@ -47,7 +47,11 @@ const FinderView: React.FunctionComponent<FinderViewProps> = ({ content, reset }
 						key={k}
 						tabIndex={index + 1}
 						onClick={() => {
-							dispatch(requestSelected(k));
+							dispatch(tabSelected({
+								type: 'request',
+								payload: k,
+								temporary: true,
+							}));
 							reset();
 						}}
 					>

@@ -15,25 +15,25 @@ import UriPane from './organisms/UriSection';
 const RequestPane: React.FunctionComponent = () => {
 	const [preferences, setPreferences] = useState<RequestPreference | null>(null);
 	const [editorHeight, setEditorHeight] = useState<string>('100%');
-	const { tree, selectedRequest } = useSelector(s => s.global.project);
-	const selectedNode = tree![selectedRequest || 'non_existent'];
+	const { tree, selectedTabPayload } = useSelector(s => s.global.project);
+	const selectedNode = tree[selectedTabPayload!];
 	const hub = useContext(BeakHubContext);
 
 	useEffect(() => {
-		if (!selectedRequest)
+		if (!selectedTabPayload)
 			return;
 
-		hub!.getRequestPreferences(selectedRequest).then(setPreferences);
-	}, [selectedRequest]);
+		hub!.getRequestPreferences(selectedTabPayload!).then(setPreferences);
+	}, [selectedTabPayload]);
 
 	// TODO(afr): Maybe some sort of purgatory state here
-	if (!selectedRequest)
+	if (!selectedTabPayload)
 		return <Container />;
 
 	if (!preferences)
 		return <Container />;
 
-	if (selectedRequest && !selectedNode)
+	if (selectedTabPayload && !selectedNode)
 		return <span>{'id does not exist'}</span>;
 
 	const typedSelectedNode = selectedNode as RequestNode;

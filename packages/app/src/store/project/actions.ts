@@ -16,6 +16,7 @@ import {
 	RequestRenameSubmitted,
 	RequestRenameUpdated,
 	RequestUriUpdatedPayload,
+	TabItem,
 	ToggleableItemAddedPayload,
 	ToggleableItemRemovedPayload,
 	ToggleableItemUpdatedPayload,
@@ -25,12 +26,13 @@ export const startProject = createAction<string>(ActionTypes.START_PROJECT);
 export const insertProjectInfo = createAction<ProjectInfoPayload>(ActionTypes.INSERT_PROJECT_INFO);
 export const projectOpened = createAction<ProjectOpenedPayload>(ActionTypes.PROJECT_OPENED);
 
-export const requestSelected = createAction<string | undefined>(ActionTypes.REQUEST_SELECTED);
-export const closeSelectedRequest = createAction<string>(ActionTypes.CLOSE_SELECTED_REQUEST);
-export const closeOtherSelectedRequests = createAction<string>(ActionTypes.CLOSE_OTHER_SELECTED_REQUESTS);
-export const closeSelectedRequestsToRight = createAction<string>(ActionTypes.CLOSE_SELECTED_REQUESTS_TO_RIGHT);
-export const closeSelectedRequestsToLeft = createAction<string>(ActionTypes.CLOSE_SELECTED_REQUESTS_TO_LEFT);
-export const closeAllSelectedRequests = createAction(ActionTypes.CLOSE_ALL_SELECTED_REQUESTS);
+export const tabSelected = createAction<TabItem>(ActionTypes.TAB_SELECTED);
+export const closeSelectedTab = createAction<string>(ActionTypes.CLOSE_SELECTED_TAB);
+export const closeOtherSelectedTabs = createAction<string>(ActionTypes.CLOSE_OTHER_SELECTED_TABS);
+export const closeSelectedTabsToRight = createAction<string>(ActionTypes.CLOSE_SELECTED_TABS_TO_RIGHT);
+export const closeSelectedTabsToLeft = createAction<string>(ActionTypes.CLOSE_SELECTED_TABS_TO_LEFT);
+export const closeAllSelectedTabs = createAction(ActionTypes.CLOSE_ALL_SELECTED_TABS);
+export const setTabAsPermanent = createAction<string>(ActionTypes.SET_TAB_AS_PERMANENT);
 
 export const requestUriUpdated = createAction<RequestUriUpdatedPayload>(ActionTypes.REQUEST_URI_UPDATED);
 
@@ -71,12 +73,13 @@ export default {
 	insertProjectInfo,
 	projectOpened,
 
-	requestSelected,
-	closeSelectedRequest,
-	closeOtherSelectedRequests,
-	closeSelectedRequestsToRight,
-	closeSelectedRequestsToLeft,
-	closeAllSelectedRequests,
+	tabSelected,
+	closeSelectedTab,
+	closeOtherSelectedTabs,
+	closeSelectedTabsToRight,
+	closeSelectedTabsToLeft,
+	closeAllSelectedTabs,
+	setTabAsPermanent,
 
 	requestUriUpdated,
 
