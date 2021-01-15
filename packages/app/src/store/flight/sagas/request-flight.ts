@@ -1,10 +1,7 @@
 import binaryStore from '@beak/app/lib/binary-store';
+import { ipcFlightService } from '@beak/app/lib/ipc';
 import { RequestNode } from '@beak/common/dist/types/beak-project';
-import {
-	FlightCompletePayload,
-	FlightFailedPayload,
-	FlightHeartbeatPayload,
-} from '@beak/common/types/requester';
+import { FlightMessages } from '@beak/common/ipc/flight';
 // @ts-ignore
 import ksuid from '@cuvva/ksuid';
 import { END, eventChannel } from 'redux-saga';
@@ -14,9 +11,6 @@ import { ApplicationState } from '../..';
 import { State as VGState } from '../../variable-groups/types';
 import * as actions from '../actions';
 import { State } from '../types';
-
-const electron = window.require('electron');
-const { ipcRenderer } = electron;
 
 export default function* requestFlightWorker() {
 	const binaryStoreKey = ksuid.generate('binstore').toString();
@@ -44,35 +38,31 @@ export default function* requestFlightWorker() {
 	}));
 
 	const channel = eventChannel(emitter => {
-		function flightHeartbeat(_: unknown, payload: FlightHeartbeatPayload) {
+		ipcFlightService.registerFlightHeartbeat((_event, payload) => {
 			if (payload.stage === 'reading_body')
 				binaryStore.append(binaryStoreKey, payload.payload.buffer);
 
 			emitter(actions.updateFlightProgress(payload));
-		}
+		});
 
-		function flightComplete(_: unknown, payload: FlightCompletePayload) {
+		ipcFlightService.registerFlightComplete((_event, payload) => {
 			emitter(actions.completeFlight({ flightId, requestId, response: payload.overview }));
 			emitter(END);
-		}
+		});
 
-		function flightFailed(_: unknown, payload: FlightFailedPayload) {
+		ipcFlightService.registerFlightFailed((_event, payload) => {
 			emitter(actions.flightFailure({ flightId, requestId, error: payload.error }));
 			emitter(END);
-		}
-
-		ipcRenderer.on(`flight_heartbeat:${flightId}`, flightHeartbeat);
-		ipcRenderer.on(`flight_complete:${flightId}`, flightComplete);
-		ipcRenderer.on(`flight_failed:${flightId}`, flightFailed);
+		});
 
 		return () => {
-			ipcRenderer.removeListener(`flight_heartbeat:${flightId}`, flightHeartbeat);
-			ipcRenderer.removeListener(`flight_complete:${flightId}`, flightComplete);
-			ipcRenderer.removeListener(`flight_failed:${flightId}`, flightFailed);
+			ipcFlightService.unregisterListener(FlightMessages.FlightHeartbeat);
+			ipcFlightService.unregisterListener(FlightMessages.FlightComplete);
+			ipcFlightService.unregisterListener(FlightMessages.FlightFailed);
 		};
 	});
 
-	ipcRenderer.send('flight_request', {
+	ipcFlightService.startFlight({
 		flightId,
 		requestId,
 		request: node.info,

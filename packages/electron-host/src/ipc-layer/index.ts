@@ -5,4 +5,3 @@ import './explorer-service';
 import './nest-service';
 
 import './beak-project-manager';
-import './requester-manager';
