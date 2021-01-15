@@ -22,7 +22,7 @@ jobs:
         run: yarn
 
       - name: Build and package
-        if: github.ref == 'ref/head/master'
+        if: github.ref == 'refs/head/master'
         env:
           CSC_LINK: ${{ secrets.CSC_LINK }}
           CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
@@ -34,7 +34,7 @@ jobs:
           BUILD_NUMBER: ${{ steps.short-sha.outputs.sha }}
         run: yarn package
       - name: Build and package
-        if: github.ref != 'ref/head/master'
+        if: github.ref != 'refs/head/master'
         run: yarn build
 
       - name: Delete stupid folders
@@ -47,8 +47,10 @@ jobs:
           rm -rf ./packages/electron-host/dist-electron/win-ia32-unpacked
 
       - name: Write commit hash
+        if: github.ref == 'refs/head/master'
         run: mkdir current; echo "commits/${{ github.sha }}/" >> ./current/current
       - name: Upload artifacts to S3
+        if: github.ref == 'refs/head/master'
         uses: shallwefootball/upload-s3-action@v1.1.2
         with:
           aws_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -57,6 +59,7 @@ jobs:
           source_dir: 'packages/electron-host/dist-electron/'
           destination_dir: 'commits/${{ github.sha }}/'
       - name: Upload latest build manifest to s3
+        if: github.ref == 'refs/head/master'
         uses: shallwefootball/upload-s3-action@v1.1.2
         with:
           aws_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
