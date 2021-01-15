@@ -1,4 +1,5 @@
-import { ProjectFile } from '@beak/common/dist/types/beak-project';
+import { IpcProjectServiceMain } from '@beak/common/ipc/project';
+import { ProjectFile } from '@beak/common/types/beak-project';
 import { dialog, ipcMain } from 'electron';
 import * as fs from 'fs-extra';
 import * as path from 'path';
@@ -7,8 +8,9 @@ import { addRecentProject } from '../lib/beak-hub';
 import createProject from '../lib/beak-project';
 import { closeWindow, createProjectMainWindow, windowStack } from '../window-management';
 
-ipcMain.handle('project:open_folder', async (event, args) => {
-	const projectPath = args as string;
+const service = new IpcProjectServiceMain(ipcMain);
+
+service.registerOpenFolder(async (event, projectPath) => {
 	const projectFilePath = path.join(projectPath, 'project.json');
 	const projectFile = await fs.readJson(projectFilePath) as ProjectFile;
 
@@ -22,10 +24,10 @@ ipcMain.handle('project:open_folder', async (event, args) => {
 	createProjectMainWindow(projectFilePath);
 });
 
-ipcMain.handle('project:open', async event => {
+service.registerOpenProject(async event => {
 	const window = windowStack[event.sender.id]!;
 	const result = await dialog.showOpenDialog(window, {
-		title: 'Open a beak project',
+		title: 'Open a Beak project',
 		buttonLabel: 'Open',
 		properties: ['openFile'],
 		filters: [
@@ -61,12 +63,12 @@ ipcMain.handle('project:open', async event => {
 	createProjectMainWindow(projectFilePath);
 });
 
-ipcMain.on('project:create', async (event, args) => {
-	const projectName = args as string;
+service.registerCreateProject(async (event, payload) => {
+	const { projectName } = payload;
 	const window = windowStack[event.sender.id]!;
 
 	const result = await dialog.showOpenDialog(window, {
-		title: 'Where do you want to create the new Beak project?',
+		title: 'Where do you want to create your new Beak project?',
 		buttonLabel: 'Select',
 		properties: [
 			'openDirectory',

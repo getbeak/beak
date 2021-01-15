@@ -1,4 +1,4 @@
-import { ipcBeakHubService } from '@beak/app/lib/ipc';
+import { ipcBeakHubService, ipcProjectService } from '@beak/app/lib/ipc';
 import { RecentLocalProject } from '@beak/common/types/beak-hub';
 import { sentenceCase } from 'change-case';
 import React, { useEffect, useState } from 'react';
@@ -20,9 +20,6 @@ const defaultRecents: Recents = {
 	month: [],
 	older: [],
 };
-
-const electron = window.require('electron');
-const { ipcRenderer } = electron;
 
 const OpenRecentColumn: React.FunctionComponent = () => {
 	const [recents, setRecents] = useState<Recents>({ ...defaultRecents });
@@ -77,7 +74,7 @@ const OpenRecentColumn: React.FunctionComponent = () => {
 								type={m.type}
 
 								onClick={() => {
-									ipcRenderer.invoke('project:open_folder', m.path);
+									ipcProjectService.openFolder(m.path);
 								}}
 							/>
 						))}

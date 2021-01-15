@@ -1,5 +1,6 @@
 import Input, { InputInvalidText } from '@beak/app/components/atoms/Input';
 import Label from '@beak/app/components/atoms/Label';
+import { ipcProjectService } from '@beak/app/lib/ipc';
 import { sync } from 'command-exists';
 import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
@@ -9,9 +10,6 @@ import Button from '../../../../components/atoms/Button';
 import { WelcomeViewType } from '../../../../containers/Welcome';
 import ViewIntroLine from '../atoms/ViewIntroLine';
 import ViewTitle from '../atoms/ViewTitle';
-
-const electron = window.require('electron');
-const { ipcRenderer } = electron;
 
 export interface CreateViewProps {
 	setView: (view: WelcomeViewType) => void;
@@ -77,7 +75,7 @@ const CreateView: React.FunctionComponent<CreateViewProps> = ({ setView }) => {
 				<Button
 					disabled={!name || !detectedGit || !validProjectName}
 					onClick={() => {
-						ipcRenderer.send('project:create', name);
+						ipcProjectService.createProject({ projectName: name });
 					}}
 				>
 					{'Select folder'}

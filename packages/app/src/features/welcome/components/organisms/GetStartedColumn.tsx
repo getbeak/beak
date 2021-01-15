@@ -1,12 +1,10 @@
+import { ipcProjectService } from '@beak/app/lib/ipc';
 import React from 'react';
 import { Col } from 'react-grid-system';
 
 import { WelcomeViewType } from '../../../../containers/Welcome';
 import ColumnTitle from '../atoms/ColumnTitle';
 import GetStartedButton from '../molecules/GetStartedButton';
-
-const electron = window.require('electron');
-const { ipcRenderer } = electron;
 
 export interface GetStartedColumnProps {
 	setView: (view: WelcomeViewType) => void;
@@ -27,7 +25,7 @@ const GetStartedColumn: React.FunctionComponent<GetStartedColumnProps> = ({ setV
 			description={'Opens an existing local project'}
 
 			onClick={() => {
-				ipcRenderer.invoke('project:open');
+				ipcProjectService.openProject();
 			}}
 		/>
 
