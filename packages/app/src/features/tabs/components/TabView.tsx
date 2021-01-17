@@ -1,4 +1,3 @@
-import ReflexSplitter from '@beak/app/components/atoms/ReflexSplitter';
 import RendererTab from '@beak/app/components/molecules/RendererTab';
 import RequestTab from '@beak/app/components/molecules/RequestTab';
 import { checkShortcut } from '@beak/app/lib/keyboard-shortcuts';
@@ -7,13 +6,10 @@ import { TabItem } from '@beak/app/store/project/types';
 import { movePosition } from '@beak/app/utils/arrays';
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import { ReflexContainer, ReflexElement } from 'react-reflex';
 import styled from 'styled-components';
 
 import TB from '../../../components/atoms/TabBar';
-import RequestPane from '../../request-pane/components/RequestPane';
-import ResponsePane from '../../response-pane/components/ResponsePane';
-import VariableGroupEditor from '../../variable-groups/components/VariableGroupEditor';
+import Router from './Router';
 
 interface TabViewProps {
 	tabs: TabItem[];
@@ -73,28 +69,7 @@ const TabView: React.FunctionComponent<TabViewProps> = ({ selectedTab, tabs }) =
 			</TabBar>
 
 			<ShortcutContainer onKeyDown={onKeyDown}>
-				<SelectedTabContainer orientation={'vertical'}>
-					{selectedTab?.type === 'request' && (
-						<React.Fragment>
-							<ReflexElement
-								flex={50}
-								minSize={450}
-							>
-								<RequestPane />
-							</ReflexElement>
-
-							<ReflexSplitter orientation={'vertical'} />
-
-							<ReflexElement
-								flex={50}
-								minSize={450}
-							>
-								<ResponsePane />
-							</ReflexElement>
-						</React.Fragment>
-					)}
-					{selectedTab?.type === 'renderer' && <VariableGroupEditor />}
-				</SelectedTabContainer>
+				<Router selectedTab={selectedTab} />
 			</ShortcutContainer>
 		</React.Fragment>
 	);
@@ -102,10 +77,6 @@ const TabView: React.FunctionComponent<TabViewProps> = ({ selectedTab, tabs }) =
 
 const ShortcutContainer = styled.div`
 	height: calc(100% - 34px);
-`;
-
-const SelectedTabContainer = styled(ReflexContainer)`
-	
 `;
 
 const TabBar = styled(TB)`
