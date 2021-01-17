@@ -53,7 +53,7 @@ const UrlHeaderWrapper = styled.div`
 
 	margin: 25px auto;
 	padding: 0 10px;
-	font-size: 15px;
+	font-size: 13px;
 	max-width: calc(100% - 20px);
 `;
 
@@ -64,7 +64,7 @@ const Section = styled.div`
 	border: 1px solid ${p => p.theme.ui.primaryFill};
 	border-radius: 4px;
 
-	padding: 5px 9px;
+	padding: 5px 8px;
 	margin: 0 5px;
 `;
 

@@ -10,7 +10,7 @@ import ReflexSplitter from '../../../components/atoms/ReflexSplitter';
 import RequestPreferencesContext from '../contexts/request-preferences-context';
 import RequestOutput from './molecules/RequestOutput';
 import Modifiers from './organisms/Modifiers';
-import UriPane from './organisms/UriSection';
+import Header from './organisms/Header';
 
 const RequestPane: React.FunctionComponent = () => {
 	const [preferences, setPreferences] = useState<RequestPreference | null>(null);
@@ -41,7 +41,7 @@ const RequestPane: React.FunctionComponent = () => {
 	return (
 		<RequestPreferencesContext.Provider value={preferences}>
 			<Container>
-				<UriPane node={typedSelectedNode} />
+				<Header node={typedSelectedNode} />
 				<ReflexContainer orientation={'horizontal'}>
 					<ReflexElement
 						flex={8}

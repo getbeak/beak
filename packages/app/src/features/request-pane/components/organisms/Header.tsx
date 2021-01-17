@@ -9,11 +9,11 @@ import urlParse from 'url-parse';
 import { requestFlight } from '../../../../store/flight/actions';
 import { requestQueryAdded, requestUriUpdated } from '../../../../store/project/actions';
 
-export interface UriSectionProps {
+export interface HeaderProps {
 	node: RequestNode;
 }
 
-const UriSection: React.FunctionComponent<UriSectionProps> = props => {
+const Header: React.FunctionComponent<HeaderProps> = props => {
 	const dispatch = useDispatch();
 	const [verbPickerWidth, setVerbPickerWidth] = useState<string>('auto');
 	const { selectedGroups, variableGroups } = useSelector(s => s.global.variableGroups);
@@ -100,7 +100,8 @@ const Container = styled.div`
 
 	margin: 25px 0;
 	padding: 0 10px;
-	font-size: 15px;
+	font-size: 13px;
+	max-width: calc(100% - 20px);
 `;
 
 const VerbContainer = styled.div`
@@ -185,4 +186,4 @@ const DispatchButton = styled.button`
 	cursor: pointer;
 `;
 
-export default UriSection;
+export default Header;
