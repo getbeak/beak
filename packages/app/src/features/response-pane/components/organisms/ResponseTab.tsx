@@ -21,6 +21,7 @@ export interface ResponseTabProps {
 const ResponseTab: React.FunctionComponent<ResponseTabProps> = props => {
 	const { flight } = props;
 	const { error, response } = flight;
+	const hasErrored = Boolean(error);
 	const enrichable = canEnrich(flight);
 	const [tab, setTab] = useState<Tab>(enrichable ? 'enriched' : 'raw');
 
@@ -33,7 +34,7 @@ const ResponseTab: React.FunctionComponent<ResponseTabProps> = props => {
 					size={'sm'}
 					onClick={() => setTab('raw')}
 				>
-					{'Raw'}
+					{hasErrored ? 'Error' : 'Raw'}
 				</TabItem>
 				{enrichable && (
 					<TabItem
@@ -125,7 +126,7 @@ function createHttpResponseMessage(flight: Flight) {
 }
 
 function canEnrich(flight: Flight) {
-	if (!flight.response!.hasBody)
+	if (!flight.response?.hasBody)
 		return false;
 
 	const contentType = flight.response!.headers['content-type'];
