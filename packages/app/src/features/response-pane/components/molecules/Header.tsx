@@ -20,7 +20,8 @@ const Header: React.FunctionComponent<HeaderProps> = props => {
 				<strong>{request.verb.toUpperCase()}</strong>
 			</Section>
 			<UrlSection>
-				{convertRequestToUrl(selectedGroups, variableGroups!, request).toString()}
+				{/* The "&lrm;" char is a requirement of using RTL to trim the end vs start of the string */}
+				{convertRequestToUrl(selectedGroups, variableGroups!, request).toString()}&lrm;
 			</UrlSection>
 			{response && (
 				<StatusSection $status={response.status}>
