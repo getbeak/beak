@@ -1,4 +1,5 @@
 import { Flight } from '@beak/app/store/flight/types';
+import { createDefaultOptions } from '@beak/app/utils/monaco';
 import React, { useState } from 'react';
 import MonacoEditor from 'react-monaco-editor';
 import { useSelector } from 'react-redux';
@@ -44,11 +45,8 @@ const RequestTab: React.FunctionComponent<RequestTabProps> = props => {
 							theme={'vs-dark'}
 							value={createBasicHttpOutput(flight.request, selectedGroups, variableGroups!)}
 							options={{
-								automaticLayout: true,
+								...createDefaultOptions(),
 								readOnly: true,
-								minimap: { enabled: false },
-								fontFamily: "'Fira Code', Source Code Pro, Menlo, Monaco, 'Courier New', monospace",
-								fontSize: 13,
 							}}
 						/>
 					</React.Fragment>
