@@ -87,6 +87,7 @@ const flightReducer = createReducer(initialState, builder => {
 				flightId,
 				requestId,
 				request: state.currentFlight!.request,
+				error,
 				binaryStoreKey,
 			};
 		})
