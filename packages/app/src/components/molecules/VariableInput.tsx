@@ -127,6 +127,7 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, 
 				// Should mean input box is empty
 				case properStart === null:
 					range.setStart(ref.current as Node, 0);
+
 					break;
 
 				default:
@@ -144,8 +145,8 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, 
 
 			window.setTimeout(() => {
 				ref.current!.style.caretColor = caretColorStore;
-			}, 0);
-		}, 0);
+			}, 250);
+		}, 100);
 
 		// Check if we want to open variable selector
 		if (delta === '{') {
