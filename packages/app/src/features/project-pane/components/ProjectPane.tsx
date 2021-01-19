@@ -1,3 +1,4 @@
+import { toVibrancyAlpha } from '@beak/app/design-system/utils';
 import { actions } from '@beak/app/store/project';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -83,7 +84,8 @@ const Container = styled.div`
 	display: flex;
 	flex-direction: column;
 
-	background: ${p => p.theme.ui.background}AA;
+	background: ${p => p.theme.ui.background};
+	background: ${p => toVibrancyAlpha(p.theme.ui.background, 0.7)};
 
 	height: 100%;
 `;
