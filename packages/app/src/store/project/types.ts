@@ -42,6 +42,8 @@ export const ActionTypes = {
 	REQUEST_RENAME_CANCELLED: '@beak/global/project/REQUEST_RENAME_CANCELLED',
 	REQUEST_RENAME_SUBMITTED: '@beak/global/project/REQUEST_RENAME_SUBMITTED',
 	REQUEST_RENAME_RESOLVED: '@beak/global/project/REQUEST_RENAME_RESOLVED',
+
+	SET_LATEST_WRITE: '@beak/global/project/SET_LATEST_WRITE',
 };
 
 export interface State {
@@ -56,6 +58,7 @@ export interface State {
 	tabs: TabItem[];
 
 	activeRename?: ActiveRename;
+	latestWrite?: LatestWrite;
 }
 
 export const initialState: State = {
@@ -135,6 +138,11 @@ export interface CreateNewThing {
 export interface ActiveRename {
 	requestId: string;
 	name: string;
+}
+
+export interface LatestWrite {
+	filePath: string;
+	writtenAt: number;
 }
 
 export default {

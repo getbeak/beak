@@ -200,6 +200,10 @@ const projectReducer = createReducer(initialState, builder => {
 		.addCase(actions.requestRenameResolved, (state, action) => {
 			if (state.activeRename?.requestId === action.payload.requestId)
 				state.activeRename = void 0;
+		})
+
+		.addCase(actions.setLatestWrite, (state, { payload }) => {
+			state.latestWrite = payload;
 		});
 });
 

@@ -5,6 +5,7 @@ import {
 	ActionTypes,
 	CreateNewThing,
 	DuplicateRequestPayload,
+	LatestWrite,
 	ProjectInfoPayload,
 	ProjectOpenedPayload,
 	RemoveNodeFromDiskPayload,
@@ -68,6 +69,8 @@ export const requestRenameCancelled = createAction<RequestRenameCancelled>(Actio
 export const requestRenameSubmitted = createAction<RequestRenameSubmitted>(ActionTypes.REQUEST_RENAME_SUBMITTED);
 export const requestRenameResolved = createAction<RequestRenameResolved>(ActionTypes.REQUEST_RENAME_RESOLVED);
 
+export const setLatestWrite = createAction<LatestWrite>(ActionTypes.SET_LATEST_WRITE);
+
 export default {
 	startProject,
 	insertProjectInfo,
@@ -110,4 +113,6 @@ export default {
 	requestRenameCancelled,
 	requestRenameSubmitted,
 	requestRenameResolved,
+
+	setLatestWrite,
 };

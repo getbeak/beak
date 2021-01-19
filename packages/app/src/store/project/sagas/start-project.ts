@@ -6,9 +6,11 @@ import actions from '@beak/app/src/store/project/actions';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { FolderNode, ProjectFile, RequestNode, Tree } from '@beak/common/types/beak-project';
 import { PayloadAction } from '@reduxjs/toolkit';
-import { call, put, take } from 'redux-saga/effects';
+import { call, put, select, take } from 'redux-saga/effects';
+import { ApplicationState } from '../..';
 
 import { startVariableGroups } from '../../variable-groups/actions';
+import { LatestWrite } from '../types';
 
 const { remote } = window.require('electron');
 const path = remote.require('path');
@@ -99,29 +101,6 @@ async function readRequestNodes(requests: ScanResult[]) {
 	}), {}) as Record<string, RequestNode>;
 }
 
-function* handleRequest(event: Event) {
-	switch (event.type) {
-		case 'add':
-		case 'change': {
-			const node = yield call(readRequestNode, event.path);
-
-			yield put(actions.insertRequestNode(node));
-
-			break;
-		}
-
-		case 'unlink':
-			yield put(actions.removeNodeFromStoreByPath(event.path));
-
-			break;
-
-		default:
-			console.warn('Unknown listener type for folder:', event.type);
-
-			break;
-	}
-}
-
 function* handleFolder(event: Event) {
 	switch (event.type) {
 		case 'addDir': {
@@ -133,6 +112,42 @@ function* handleFolder(event: Event) {
 		}
 
 		case 'unlinkDir':
+			yield put(actions.removeNodeFromStoreByPath(event.path));
+
+			break;
+
+		default:
+			console.warn('Unknown listener type for folder:', event.type);
+
+			break;
+	}
+}
+
+function* handleRequest(event: Event) {
+	// Protection to only read changes if they haven't been recently written by Beak itself
+	if (event.type === 'change') {
+		const lastWrite: LatestWrite = yield select((s: ApplicationState) => s.global.project.latestWrite);
+
+		if (lastWrite && lastWrite.filePath === event.path) {
+			const now = Date.now();
+			const expiry = lastWrite.writtenAt + 500;
+
+			if (expiry < now)
+				return;
+		}
+	}
+
+	switch (event.type) {
+		case 'change':
+		case 'add': {
+			const node = yield call(readRequestNode, event.path);
+
+			yield put(actions.insertRequestNode(node));
+
+			break;
+		}
+
+		case 'unlink':
 			yield put(actions.removeNodeFromStoreByPath(event.path));
 
 			break;

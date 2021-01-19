@@ -1,9 +1,10 @@
 import { writeRequestNode } from '@beak/app/lib/beak-project/request';
 import { Nodes, RequestNode } from '@beak/common/types/beak-project';
 import { PayloadAction } from '@reduxjs/toolkit';
-import { call, select } from 'redux-saga/effects';
+import { call, put, select } from 'redux-saga/effects';
 
 import { ApplicationState } from '../..';
+import actions from '../actions';
 
 interface RequestIdPayload {
 	requestId: string;
@@ -17,5 +18,6 @@ export default function* catchNodeUpdatesWorker({ payload }: PayloadAction<Reque
 	if (!node || node.type !== 'request')
 		return;
 
+	yield put(actions.setLatestWrite({ filePath: node.filePath, writtenAt: Date.now() }));
 	yield call(writeRequestNode, node as RequestNode);
 }
