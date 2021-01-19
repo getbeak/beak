@@ -124,13 +124,13 @@ function* handleFolder(event: Event) {
 }
 
 function* handleRequest(event: Event) {
-	// Protection to only read changes if they haven't been recently written by Beak itself
+	// Protection to only read changes if they haven't been recently written by Beak
 	if (event.type === 'change') {
 		const lastWrite: LatestWrite = yield select((s: ApplicationState) => s.global.project.latestWrite);
 
 		if (lastWrite && lastWrite.filePath === event.path) {
 			const now = Date.now();
-			const expiry = lastWrite.writtenAt + 500;
+			const expiry = lastWrite.writtenAt + 1000;
 
 			if (expiry < now)
 				return;
