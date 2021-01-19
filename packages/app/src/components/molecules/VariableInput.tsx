@@ -17,6 +17,7 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, 
 	const [query, setQuery] = useState('');
 	const [selectorPosition, setSelectorPosition] = useState<{ top: number; left: number } | null>(null);
 	const ref = useRef<HTMLDivElement>(null);
+	const lastCursorEditIndexRef = useRef<number>(0);
 	const [partIndex, setPartIndex] = useState<number>();
 	const [queryOffset, setQueryOffset] = useState<number>();
 	const { variableGroups } = useSelector(s => s.global.variableGroups);
@@ -89,12 +90,10 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, 
 
 				return {
 					type,
-					payload: {
-						itemId,
-					},
+					payload: { itemId },
 				} as ValuePartVariableGroupItem;
 			})
-			.filter(f => f !== null) as ValueParts;
+			.filter(f => f !== null && f !== '') as ValueParts;
 
 		onChange(newParts);
 
@@ -110,22 +109,42 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, 
 			const properStart = getProperNode(ref.current!, startContainer);
 			const properEnd = getProperNode(ref.current!, endContainer);
 
-			// If there is nothing in the input box anymore
-			if (properStart === null) {
-				range.setStart(ref.current as Node, 0);
-			} else {
-				range.setStart(properStart, startOffset);
-				range.setEnd(properEnd!, endOffset);
+			switch (true) {
+				// Deleted last text node after an inline variable
+				case delta === null && properStart === null: {
+					// When the last text node is deleted before an inline variable, the
+					// selection scope changes from the text node, to the outer article
+					// scope. This means the index is just the number of nodes in the
+					// article.
+					const lastIndex = lastCursorEditIndexRef.current;
+
+					range.setStart(ref.current!, lastIndex);
+					range.setEnd(ref.current!, lastIndex);
+
+					break;
+				}
+
+				// Should mean input box is empty
+				case properStart === null:
+					range.setStart(ref.current as Node, 0);
+					break;
+
+				default:
+					range.setStart(properStart!, startOffset);
+					range.setEnd(properEnd!, endOffset);
+
+					break;
 			}
 
 			range.collapse(true);
 			sel.removeAllRanges();
 			sel.addRange(range);
 
-			// This is getting crazy
+			lastCursorEditIndexRef.current = Number((sel.focusNode!.parentElement as HTMLElement).dataset.index);
+
 			window.setTimeout(() => {
 				ref.current!.style.caretColor = caretColorStore;
-			}, 10);
+			}, 0);
 		}, 0);
 
 		// Check if we want to open variable selector
@@ -210,7 +229,7 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, 
 				{parts.map((p, index) => {
 					if (typeof p === 'string') {
 						return (
-							<span key={index}>
+							<span key={index} data-index={index}>
 								{p}
 							</span>
 						);
@@ -228,6 +247,7 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, 
 						<div
 							className={'bvs-blob'}
 							contentEditable={false}
+							data-index={index}
 							data-type={p.type}
 							data-payload-item-id={p.payload.itemId}
 							key={index}
@@ -243,10 +263,25 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, 
 		);
 	}
 
+	function handlePaste(event: React.ClipboardEvent<HTMLElement>) {
+		const hasHtml = event.clipboardData.types.includes('text/html');
+
+		if (!hasHtml)
+			return;
+
+		event.preventDefault();
+
+		// TODO(afr): Bring back HTML pasting
+		const html = event.clipboardData.getData('text/html');
+
+		console.error('No HTML pasting allowed', html);
+	}
+
 	return (
 		<React.Fragment>
 			<Input
 				contentEditable={!disabled}
+				spellCheck={false}
 				key={Date() /* this looks weird but is intention and required */}
 				ref={ref}
 				suppressContentEditableWarning
@@ -275,6 +310,7 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, 
 						return;
 					}
 				}}
+				onPaste={handlePaste}
 				dangerouslySetInnerHTML={{ __html: renderParts() }}
 			/>
 			{(ref.current && selectorPosition) && (
