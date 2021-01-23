@@ -22,8 +22,7 @@
   "publish": {
     "provider": "s3",
     "bucket": "builds.getbeak.app",
-    "region": "eu-west-2",
-    "endpoint": "https://builds.getbeak.app"
+    "region": "eu-west-2"
   },
 
   "mac": {
