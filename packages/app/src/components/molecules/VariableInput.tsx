@@ -1,11 +1,16 @@
 import { TypedObject } from '@beak/common/dist/helpers/typescript';
 import { ValueParts, ValuePartVariableGroupItem } from '@beak/common/dist/types/beak-project';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 
 import VariableSelector from './VariableSelector';
+
+interface Position {
+	top: number;
+	left: number;
+}
 
 export interface VariableInputProps {
 	disabled?: boolean;
@@ -14,13 +19,40 @@ export interface VariableInputProps {
 }
 
 const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, parts, onChange }) => {
-	const [query, setQuery] = useState('');
-	const [selectorPosition, setSelectorPosition] = useState<{ top: number; left: number } | null>(null);
+	const [selectorPosition, setSelectorPosition] = useState<Position | null>(null);
 	const ref = useRef<HTMLDivElement>(null);
-	const lastCursorEditIndexRef = useRef<number>(0);
+	const valueRef = useRef<ValueParts>(parts);
+	const lastKnownWriteRef = useRef(0);
+
+	const [query, setQuery] = useState('');
 	const [partIndex, setPartIndex] = useState<number>();
+	const [, setNonce] = useState(0);
 	const [queryOffset, setQueryOffset] = useState<number>();
 	const { variableGroups } = useSelector(s => s.global.variableGroups);
+
+	useEffect(() => {
+		const now = Date.now();
+
+		// Don't update from state if last known write was less than 150ms ago
+		if (lastKnownWriteRef.current + 150 > now)
+			return;
+
+		valueRef.current = parts;
+	}, [parts]);
+
+	function updateParts(parts: ValueParts, options?: { forceRefUpdate?: boolean; immediateWrite?: boolean }) {
+		const opts = { ...options };
+
+		lastKnownWriteRef.current = opts.forceRefUpdate ? 0 : Date.now();
+
+		if (opts.immediateWrite) {
+			valueRef.current = parts;
+
+			setNonce(Date.now());
+		}
+
+		onChange(parts);
+	}
 
 	function closeSelector() {
 		setSelectorPosition(null);
@@ -43,12 +75,24 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, 
 
 		closeSelector();
 
+		// Set the correct cursor position
+		window.setTimeout(() => {
+			const sel = window.getSelection()!;
+			const range = sel.getRangeAt(0);
+
+			range.setStart(ref.current as Node, partIndex + 2);
+
+			range.collapse(true);
+			sel.removeAllRanges();
+			sel.addRange(range);
+		}, 0);
+
 		if (atEnd) {
 			const newParts: ValueParts = [...parts, newPart];
 
 			newParts[partIndex] = (parts[partIndex] as string).substring(0, queryOffset - 1);
 
-			onChange(newParts);
+			updateParts(newParts, { immediateWrite: true });
 
 			return;
 		}
@@ -62,7 +106,37 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, 
 		newParts.splice(partIndex, 1);
 		newParts.splice(partIndex, 0, start, newPart, end);
 
-		onChange(newParts);
+		updateParts(newParts, { immediateWrite: true });
+	}
+
+	function showVariableSelector(newParts: ValueParts) {
+		const sel = window.getSelection()!;
+		const range = sel.getRangeAt(0);
+		const elem = range.startContainer.parentElement! as HTMLElement;
+		const rect = elem.getBoundingClientRect();
+		const contentLength = (elem.textContent ?? '').length;
+		const caretOffset = range.startOffset;
+		const positionOffset = caretOffset / contentLength;
+		const width = elem.offsetWidth;
+		const offsetDelta = width * positionOffset;
+
+		const queryOffset = range.startOffset;
+		const partIndex = newParts.findIndex(p => p === elem.textContent);
+		const part = (newParts[partIndex] as string);
+		const [start, end] = [part.substring(0, queryOffset), part.substring(queryOffset)];
+		const newerParts = [...newParts];
+
+		newerParts[partIndex] = start;
+		newerParts.splice(partIndex + 1, 0, end);
+
+		updateParts(newerParts);
+		setPartIndex(partIndex);
+		setQueryOffset(queryOffset);
+		setQuery(start.substring(queryOffset));
+		setSelectorPosition({
+			left: (rect.left + offsetDelta) - 5,
+			top: rect.top + elem.offsetHeight,
+		});
 	}
 
 	function change(event: React.FormEvent<HTMLDivElement>) {
@@ -71,7 +145,6 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, 
 
 		// https://rawgit.com/w3c/input-events/v1/index.html#overview
 		const delta = (event.nativeEvent as InputEvent).data;
-
 		const newParts = Array.from(ref.current!.childNodes)
 			.map(n => {
 				if (n.nodeName === '#text' || n.nodeName === 'SPAN')
@@ -95,90 +168,11 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, 
 			})
 			.filter(f => f !== null && f !== '') as ValueParts;
 
-		onChange(newParts);
-
-		const sel = window.getSelection()!;
-		const curRange = sel.getRangeAt(0);
-		const { startContainer, startOffset, endContainer, endOffset } = curRange;
-		const range = document.createRange();
-		const caretColorStore = ref.current!.style.caretColor;
-
-		ref.current!.style.caretColor = 'transparent';
-
-		window.setTimeout(() => {
-			const properStart = getProperNode(ref.current!, startContainer);
-			const properEnd = getProperNode(ref.current!, endContainer);
-
-			switch (true) {
-				// Deleted last text node after an inline variable
-				case delta === null && properStart === null: {
-					// When the last text node is deleted before an inline variable, the
-					// selection scope changes from the text node, to the outer article
-					// scope. This means the index is just the number of nodes in the
-					// article.
-					const lastIndex = lastCursorEditIndexRef.current;
-
-					range.setStart(ref.current!, lastIndex);
-					range.setEnd(ref.current!, lastIndex);
-
-					break;
-				}
-
-				// Should mean input box is empty
-				case properStart === null:
-					range.setStart(ref.current as Node, 0);
-
-					break;
-
-				default:
-					range.setStart(properStart!, startOffset);
-					range.setEnd(properEnd!, endOffset);
-
-					break;
-			}
-
-			range.collapse(true);
-			sel.removeAllRanges();
-			sel.addRange(range);
-
-			lastCursorEditIndexRef.current = Number((sel.focusNode!.parentElement as HTMLElement).dataset.index);
-
-			window.setTimeout(() => {
-				ref.current!.style.caretColor = caretColorStore;
-			}, 250);
-		}, 100);
+		updateParts(newParts);
 
 		// Check if we want to open variable selector
 		if (delta === '{') {
-			const sel = window.getSelection()!;
-			const range = sel.getRangeAt(0);
-			const elem = range.startContainer.parentElement! as HTMLElement;
-			const rect = elem.getBoundingClientRect();
-			const contentLength = (elem.textContent ?? '').length;
-			const caretOffset = range.startOffset;
-			const positionOffset = caretOffset / contentLength;
-			const width = elem.offsetWidth;
-			const offsetDelta = width * positionOffset;
-
-			const queryOffset = range.startOffset;
-			const partIndex = newParts.findIndex(p => p === elem.textContent);
-			const part = (newParts[partIndex] as string);
-			const [start, end] = [part.substring(0, queryOffset), part.substring(queryOffset)];
-			const newerParts = [...newParts];
-
-			newerParts[partIndex] = start;
-
-			// eslint-disable-next-line @typescript-eslint/restrict-plus-operands
-			newerParts.splice(partIndex + 1, 0, end);
-
-			onChange(newerParts);
-			setPartIndex(partIndex);
-			setQueryOffset(queryOffset);
-			setQuery(start.substring(queryOffset));
-			setSelectorPosition({
-				left: (rect.left + offsetDelta) - 5,
-				top: rect.top + elem.offsetHeight,
-			});
+			showVariableSelector(newParts);
 
 			return;
 		}
@@ -224,15 +218,13 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, 
 		return { variableGroup: 'Unknown' };
 	}
 
-	function renderParts() {
+	function renderParts(parts: ValueParts) {
 		return renderToStaticMarkup(
 			<React.Fragment>
-				{parts.map((p, index) => {
+				{parts.map(p => {
 					if (typeof p === 'string') {
 						return (
-							<span key={index} data-index={index}>
-								{p}
-							</span>
+							<span key={p}>{p}</span>
 						);
 					}
 
@@ -248,14 +240,11 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, 
 						<div
 							className={'bvs-blob'}
 							contentEditable={false}
-							data-index={index}
 							data-type={p.type}
 							data-payload-item-id={p.payload.itemId}
-							key={index}
+							key={`variable_group_item:${p.payload.itemId}`}
 						>
-							<strong>
-								{variableGroup}
-							</strong>
+							<strong>{variableGroup}</strong>
 							{item && ` (${item})`}
 						</div>
 					);
@@ -283,7 +272,6 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, 
 			<Input
 				contentEditable={!disabled}
 				spellCheck={false}
-				key={Date() /* this looks weird but is intention and required */}
 				ref={ref}
 				suppressContentEditableWarning
 				onBlur={event => {
@@ -312,14 +300,12 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, 
 					}
 				}}
 				onPaste={handlePaste}
-				dangerouslySetInnerHTML={{ __html: renderParts() }}
+				dangerouslySetInnerHTML={{ __html: renderParts(valueRef.current) }}
 			/>
 			{(ref.current && selectorPosition) && (
 				<VariableSelector
 					onDone={insertVariable}
-					onClose={() => {
-						closeSelector();
-					}}
+					onClose={() => closeSelector()}
 					query={query}
 					parent={ref.current}
 					position={selectorPosition}
@@ -340,18 +326,5 @@ const Input = styled.article`
 		white-space:nowrap;
 	}
 `;
-
-function getProperNode(elem: HTMLElement, container: Node) {
-	for (const child of elem.childNodes) {
-		if (child.textContent === container.textContent) {
-			if (child.nodeName === '#text')
-				return child;
-
-			return child.childNodes[0] || null;
-		}
-	}
-
-	return null;
-}
 
 export default VariableInput;
