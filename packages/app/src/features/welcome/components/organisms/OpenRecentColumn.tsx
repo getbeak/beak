@@ -14,19 +14,12 @@ type Recents = Record<TimeCategory, RecentLocalProject[]>;
 
 const categories: TimeCategory[] = ['today', 'week', 'month', 'older'];
 
-const defaultRecents: Recents = {
-	today: [],
-	week: [],
-	month: [],
-	older: [],
-};
-
 const OpenRecentColumn: React.FunctionComponent = () => {
-	const [recents, setRecents] = useState<Recents>({ ...defaultRecents });
+	const [recents, setRecents] = useState<Recents>({ ...defaultRecents() });
 
 	useEffect(() => {
 		ipcBeakHubService.listRecentProjects().then(recents => {
-			const newRecents = { ...defaultRecents };
+			const newRecents = { ...defaultRecents() };
 			const now = new Date().getTime() / 1000;
 
 			recents.filter(r => r.exists)
@@ -54,11 +47,14 @@ const OpenRecentColumn: React.FunctionComponent = () => {
 		});
 	}, []);
 
+	const noRecents = checkIfNoRecents(recents);
+
 	return (
 		<Col>
 			<ColumnTitle>{'Open recent'}</ColumnTitle>
 
 			<ScrollViewer>
+				{noRecents && 'No recent projects, why not make one?'}
 				{categories.filter(k => recents[k].length > 0).map(k => (
 					<Collapse
 						key={k}
@@ -85,14 +81,30 @@ const OpenRecentColumn: React.FunctionComponent = () => {
 	);
 };
 
+function defaultRecents(): Recents {
+	return {
+		today: [],
+		week: [],
+		month: [],
+		older: [],
+	};
+}
+
+function checkIfNoRecents(recents: Recents) {
+	const hasToday = recents.today.length > 0;
+	const hasWeek = recents.week.length > 0;
+	const hasMonth = recents.month.length > 0;
+	const hasOlder = recents.older.length > 0;
+
+	return !hasToday && !hasWeek && !hasMonth && !hasOlder;
+}
+
 const ScrollViewer = styled.div`
 	height: 100%;
 
 	overflow: scroll;
 	overflow-y: scroll;
 	overflow-x: hidden;
-
-	scrollbar-color: auto;
 `;
 
 export default OpenRecentColumn;
