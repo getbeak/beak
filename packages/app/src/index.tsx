@@ -43,7 +43,7 @@ const FauxRouter: React.FunctionComponent = () => {
 
 	return (
 		<Provider store={configureStore()}>
-			<base href="./" />
+			<base href={'./'} />
 			<DesignSystemProvider themeKey={'dark'}>
 				<GlobalStyle />
 				<BeakDarkThemeStyle />
