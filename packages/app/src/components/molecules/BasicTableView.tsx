@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 import styled from 'styled-components';
 
-import VariableInput from './VariableInput';
+import VariableInput from '../../features/variable-input/components/molecules/VariableInput';
 
 export interface MutableBasicTableViewProps {
 	editable: true;

@@ -1,4 +1,4 @@
-import VariableInput from '@beak/app/components/molecules/VariableInput';
+import VariableInput from '@beak/app/features/variable-input/components/molecules/VariableInput';
 import { parsePartsValue } from '@beak/common/dist/helpers/variable-groups';
 import { RequestNode, ValueParts } from '@beak/common/types/beak-project';
 import React, { useEffect, useRef, useState } from 'react';
