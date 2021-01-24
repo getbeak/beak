@@ -1,13 +1,17 @@
 import { movePosition } from '@beak/app/utils/arrays';
 import { TypedObject } from '@beak/common/dist/helpers/typescript';
+import { RealtimeValue, VariableGroupItem } from '@beak/common/types/beak-project';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
+import * as uuid from 'uuid';
+
+import { getImplementation, listValues } from '../../realtime-values';
 
 export interface VariableSelectorProps {
 	parent: HTMLElement;
 	query: string;
-	onDone: (vg: string, itemId: string) => void;
+	onDone: (value: RealtimeValue) => void;
 	onClose: () => void;
 	position: {
 		top: number;
@@ -31,28 +35,25 @@ const VariableSelector: React.FunctionComponent<VariableSelectorProps> = props =
 		onDone,
 		position,
 	} = props;
+
 	const variableGroups = useSelector(s => s.global.variableGroups.variableGroups)!;
-	const [active, setActive] = useState<string | undefined>(void 0);
+	const [active, setActive] = useState<number>(0);
+	const items: RealtimeValue[] = [
+		...listValues(),
+		...TypedObject.keys(variableGroups)
+			.map(vgKey => {
+				const vg = variableGroups[vgKey];
 
-	const items = TypedObject.keys(variableGroups)
-		.map(vgKey => {
-			const vg = variableGroups[vgKey];
-
-			return TypedObject.keys(vg.items).reduce<Item[]>((acc, val) => ([
-				...acc,
-				{
-					varibleGroupName: vgKey,
-					itemId: val,
-					itemName: vg.items[val],
-				},
-			]), []);
-		})
-		.flat();
-
-	useEffect(() => {
-		if (!active)
-			setActive(items[0]?.itemId || void 0);
-	}, [active, setActive, items]);
+				return TypedObject.keys(vg.items).reduce<VariableGroupItem[]>((acc, val) => ([
+					...acc,
+					{
+						type: 'variable_group_item',
+						payload: { itemId: val },
+					},
+				]), []);
+			})
+			.flat(),
+	];
 
 	useEffect(() => {
 		function onKeyDown(event: KeyboardEvent) {
@@ -65,25 +66,24 @@ const VariableSelector: React.FunctionComponent<VariableSelectorProps> = props =
 			switch (event.key) {
 				case 'ArrowUp':
 				case 'ArrowDown': {
-					const activeIndex = items.findIndex(i => i.itemId === active);
-					let newIndex = activeIndex;
+					let newIndex = active;
 
 					if (event.key === 'ArrowUp')
-						newIndex = movePosition(items, activeIndex, 'backward');
+						newIndex = movePosition(items, active, 'backward');
 					else if (event.key === 'ArrowDown')
-						newIndex = movePosition(items, activeIndex, 'forward');
+						newIndex = movePosition(items, active, 'forward');
 
-					setActive(items[newIndex].itemId);
+					setActive(newIndex);
 					break;
 				}
 
 				case 'Enter': {
-					const item = items.find(i => i.itemId === active);
+					const item = items[active];
 
 					if (!item)
 						return;
 
-					onDone(item.varibleGroupName, item.itemId);
+					onDone(item);
 					break;
 				}
 
@@ -102,22 +102,24 @@ const VariableSelector: React.FunctionComponent<VariableSelectorProps> = props =
 	}, [active, items]);
 
 	return (
-		<Wrapper style={{
-			top: position.top,
-			left: position.left,
-		}}>
-			{items.map(i => (
-				<Item
-					active={active === i.itemId}
-					className={'variable-selector'}
-					key={i.itemId}
-					tabIndex={0}
-					onClick={() => setActive(i.itemId)}
-					onDoubleClick={() => onDone(i.varibleGroupName, i.itemId)}
-				>
-					{`${i.varibleGroupName} (${i.itemName})`}
-				</Item>
-			))}
+		<Wrapper style={{ top: position.top, left: position.left }}>
+			{items.map((i, idx) => {
+				const impl = getImplementation(i.type);
+				const { renderer } = impl.toHtml(i, variableGroups);
+
+				return (
+					<Item
+						active={active === idx}
+						key={uuid.v4()}
+						tabIndex={0}
+						onClick={() => setActive(idx)}
+						onDoubleClick={() => onDone(i)}
+					>
+						<strong>{renderer.title}</strong>
+						{renderer.body && ` (${renderer.body})`}
+					</Item>
+				);
+			})}
 		</Wrapper>
 	);
 };

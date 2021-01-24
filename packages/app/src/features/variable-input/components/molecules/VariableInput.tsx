@@ -1,11 +1,12 @@
 import { TypedObject } from '@beak/common/dist/helpers/typescript';
-import { RealtimeValue, ValueParts, VariableGroupItem } from '@beak/common/dist/types/beak-project';
+import { RealtimeValue, ValueParts } from '@beak/common/dist/types/beak-project';
 import React, { useEffect, useRef, useState } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { getImplementation } from '../../realtime-values';
+import * as uuid from 'uuid';
 
+import { getImplementation } from '../../realtime-values';
 import VariableSelector from './VariableSelector';
 
 interface Position {
@@ -62,17 +63,13 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, 
 		setPartIndex(void 0);
 	}
 
-	function insertVariable(_variableGroupName: string, itemId: string) {
+	function insertVariable(value: RealtimeValue) {
 		if (selectorPosition === null || partIndex === void 0 || queryOffset === void 0)
 			return;
 
 		const part = parts[partIndex] as string;
 		const lastPart = parts.length === partIndex - 1;
 		const atEnd = lastPart && part.length === queryOffset + query.length;
-		const newPart: VariableGroupItem = {
-			type: 'variable_group_item',
-			payload: { itemId },
-		};
 
 		closeSelector();
 
@@ -89,7 +86,7 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, 
 		}, 0);
 
 		if (atEnd) {
-			const newParts: ValueParts = [...parts, newPart];
+			const newParts: ValueParts = [...parts, value];
 
 			newParts[partIndex] = (parts[partIndex] as string).substring(0, queryOffset - 1);
 
@@ -105,7 +102,7 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, 
 		];
 
 		newParts.splice(partIndex, 1);
-		newParts.splice(partIndex, 0, start, newPart, end);
+		newParts.splice(partIndex, 0, start, value, end);
 
 		updateParts(newParts, { immediateWrite: true });
 	}
