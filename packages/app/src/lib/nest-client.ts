@@ -1,9 +1,9 @@
 import { MagicStates } from '@beak/common/types/nest';
 import Squawk from '@beak/common/utils/squawk';
-import base64 from 'base64-js';
 import crpc, { Client } from 'crpc';
 
 import { AuthenticateUserResponse } from '../store/nest/types';
+import { toWebSafeBase64 } from '../utils/base64';
 import { makeQueryablePromise, QueryablePromise } from '../utils/promises';
 import { LocalStorage } from './local-storage';
 
@@ -60,12 +60,12 @@ export default class NestClient {
 		crypto.getRandomValues(randomState);
 		crypto.getRandomValues(randomVerifier);
 
-		const state = webSafeBase64(randomState);
-		const codeVerifier = webSafeBase64(randomVerifier);
+		const state = toWebSafeBase64(randomState);
+		const codeVerifier = toWebSafeBase64(randomVerifier);
 
 		const codeVerifierEncoded = encoder.encode(codeVerifier);
 		const codeChallengeHash = await crypto.subtle.digest('SHA-256', codeVerifierEncoded);
-		const codeChallenge = webSafeBase64(new Uint8Array(codeChallengeHash));
+		const codeChallenge = toWebSafeBase64(new Uint8Array(codeChallengeHash));
 
 		// Create, insert, and store magic states to local storage
 		this.storage.setJsonItem(magicStatesKey, {
@@ -152,14 +152,6 @@ export default class NestClient {
 
 		this.setAuth(response);
 	}
-}
-
-function webSafeBase64(arr: Uint8Array) {
-	return base64
-		.fromByteArray(arr)
-		.replace(/[+]/g, '-')
-		.replace(/[/]/g, '_')
-		.replace(/[=]+$/, '');
 }
 
 function generateOptions(auth: AuthenticateUserResponse | null) {
