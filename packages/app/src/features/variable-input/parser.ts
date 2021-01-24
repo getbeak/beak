@@ -3,7 +3,7 @@ import { ValueParts, VariableGroups } from '@beak/common/types/beak-project';
 
 import { getImplementation } from './realtime-values';
 
-export function parsePartsValue(
+export function parseValueParts(
 	selectedGroups: Record<string, string>,
 	variableGroups: VariableGroups,
 	parts: ValueParts,
