@@ -4,7 +4,6 @@ import { RequestNode, ValueParts } from '@beak/common/types/beak-project';
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import urlParse from 'url-parse';
 
 import { requestFlight } from '../../../../store/flight/actions';
 import { requestQueryAdded, requestUriUpdated } from '../../../../store/project/actions';
@@ -32,12 +31,10 @@ const Header: React.FunctionComponent<HeaderProps> = props => {
 
 	function handleUrlChange(parts: ValueParts) {
 		const value = parseValueParts(selectedGroups, variableGroups!, parts);
-		const parsed = urlParse(value, {}, false);
+		const parsed = new URL(value);
 
-		if (parsed.query) {
-			const params = new URLSearchParams(parsed.query as Record<string, string>);
-
-			params.forEach((value, name) => {
+		if (parsed.search) {
+			parsed.searchParams.forEach((value, name) => {
 				dispatch(requestQueryAdded({
 					requestId: node.id,
 					name,
