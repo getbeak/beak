@@ -44,6 +44,7 @@ const GlobalStyle = createGlobalStyle`
 			outline: 0;
 			border-color: ${p => p.theme.ui.primaryFill};
 			box-shadow: 0 0 0 3px ${p => p.theme.ui.primaryFill}AA;
+			background: ${p => p.theme.ui.surfaceHighlight};
 		}
 	}
 

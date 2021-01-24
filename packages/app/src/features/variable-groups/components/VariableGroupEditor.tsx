@@ -157,7 +157,7 @@ const Container = styled.div`
 	flex-direction: column;
 	overflow: hidden;
 
-	background-color: ${props => props.theme.ui.background};
+	background-color: ${props => props.theme.ui.surface};
 
 	height: 100%;
 	width: 100%;
@@ -209,7 +209,6 @@ const Editable = styled.input`
 	padding: 3px 2px;
 
 	&:disabled { user-select: none; }
-	&:focus { box-shadow: none; }
 `;
 
 export default VariableGroupEditor;
