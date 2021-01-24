@@ -1,6 +1,9 @@
+import { parseValueParts } from '@beak/app/features/variable-input/parser';
 import binaryStore from '@beak/app/lib/binary-store';
 import { ipcFlightService } from '@beak/app/lib/ipc';
-import { RequestNode } from '@beak/common/dist/types/beak-project';
+import { convertRequestToUrl } from '@beak/app/utils/uri';
+import { RequestNode, RequestOverview, ToggleKeyValue, VariableGroups } from '@beak/common/dist/types/beak-project';
+import { TypedObject } from '@beak/common/helpers/typescript';
 import { FlightMessages } from '@beak/common/ipc/flight';
 // @ts-ignore
 import ksuid from '@cuvva/ksuid';
@@ -70,10 +73,7 @@ export default function* requestFlightWorker() {
 	ipcFlightService.startFlight({
 		flightId,
 		requestId,
-		request: node.info,
-
-		selectedGroups,
-		variableGroups,
+		request: flattenValueParts(node.info, selectedGroups, variableGroups),
 	});
 
 	while (true) {
@@ -84,4 +84,33 @@ export default function* requestFlightWorker() {
 
 		yield put(result);
 	}
+}
+
+function flattenValueParts(
+	overview: RequestOverview,
+	selectedGroups: Record<string, string>,
+	variableGroups: VariableGroups,
+): RequestOverview {
+	const url = convertRequestToUrl(selectedGroups, variableGroups, overview);
+
+	return {
+		...overview,
+		url: [url.toString()],
+		query: flattenToggleValueParts(overview.query, selectedGroups, variableGroups),
+		headers: flattenToggleValueParts(overview.headers, selectedGroups, variableGroups),
+	};
+}
+
+function flattenToggleValueParts(
+	toggleValueParts: Record<string, ToggleKeyValue>,
+	selectedGroups: Record<string, string>,
+	variableGroups: VariableGroups,
+): Record<string, ToggleKeyValue> {
+	return TypedObject.keys(toggleValueParts).reduce((acc, val) => ({
+		...acc,
+		[val]: {
+			...toggleValueParts[val],
+			value: [parseValueParts(selectedGroups, variableGroups, toggleValueParts[val].value)],
+		},
+	}), {});
 }
