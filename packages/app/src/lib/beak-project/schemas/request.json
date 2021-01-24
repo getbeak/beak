@@ -12,24 +12,16 @@
 						"additionalProperties": true,
 
 						"required": [
-							"type",
-							"payload"
+							"type"
 						],
 
 						"properties": {
 							"type": {
-								"type": "string",
-								"enum": ["variable_group_item"]
+								"type": "string"
 							},
+
 							"payload": {
-								"type": "object",
-								"additionalProperties": true,
-
-								"required": ["itemId"],
-
-								"properties": {
-									"itemId": { "type": "string" }
-								}
+								"type": "object"
 							}
 						}
 					}
