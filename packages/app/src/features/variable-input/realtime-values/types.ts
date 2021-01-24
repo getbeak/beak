@@ -2,8 +2,8 @@ import { RealtimeValue, VariableGroups } from '@beak/common/types/beak-project';
 
 interface HtmlBlob {
 	type: string;
-	dataset: Record<string, string | number | boolean>;
-	key: string;
+	dataset?: Record<string, string | number | boolean>;
+	key?: string;
 	renderer: {
 		title: string;
 		body?: string;

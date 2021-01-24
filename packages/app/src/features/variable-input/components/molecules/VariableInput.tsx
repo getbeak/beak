@@ -205,17 +205,21 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, 
 
 					const impl = getImplementation(p.type);
 					const html = impl.toHtml(p, variableGroups);
-					const dataProps = TypedObject.keys(html.dataset).reduce((acc, val) => ({
-						...acc,
-						[`data-payload-${val}`]: html.dataset[val],
-					}), { 'data-type': html.type });
+					const dataset = html.dataset ?? {};
+					const key = html.key ?? `${html.type}:${uuid.v4()}`;
+
+					const dataProps = TypedObject.keys(dataset)
+						.reduce((acc, val) => ({
+							...acc,
+							[`data-payload-${val}`]: dataset[val],
+						}), { 'data-type': html.type });
 
 					return (
 						<div
 							className={'bvs-blob'}
 							contentEditable={false}
 							{...dataProps}
-							key={html.key}
+							key={key}
 						>
 							<strong>{html.renderer.title}</strong>
 							{html.renderer.body && ` (${html.renderer.body})`}
