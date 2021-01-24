@@ -1,15 +1,12 @@
-// eslint-disable-next-line simple-import-sort/sort
+import { parseValueParts } from '@beak/app/features/variable-input/parser';
+import { createDefaultOptions } from '@beak/app/utils/monaco';
+import { convertRequestToUrl } from '@beak/app/utils/uri';
+import { requestBodyContentType } from '@beak/common/helpers/request';
+import { TypedObject } from '@beak/common/helpers/typescript';
 import { RequestBody, RequestNode, RequestOverview, VariableGroups } from '@beak/common/types/beak-project';
 import React from 'react';
 import MonacoEditor from 'react-monaco-editor';
-
-import { TypedObject } from '@beak/common/helpers/typescript';
-import { convertRequestToUrl } from '@beak/common/dist/helpers/uri';
-import { requestBodyContentType } from '@beak/common/helpers/request';
-
 import { useSelector } from 'react-redux';
-import { parsePartsValue } from '@beak/common/dist/helpers/variable-groups';
-import { createDefaultOptions } from '@beak/app/utils/monaco';
 
 const bodyFreeVerbs = ['get', 'head'];
 
@@ -69,7 +66,7 @@ export function createBasicHttpOutput(
 		const builder = new URLSearchParams();
 
 		for (const { name, value } of TypedObject.values(overview.query).filter(q => q.enabled))
-			builder.append(name, parsePartsValue(selectedGroups, variableGroups, value));
+			builder.append(name, parseValueParts(selectedGroups, variableGroups, value));
 
 		firstLine.push(`?${builder.toString()}`);
 	}
@@ -87,7 +84,7 @@ export function createBasicHttpOutput(
 	if (headers) {
 		out.push(...TypedObject.values(headers)
 			.filter(h => h.enabled)
-			.map(({ name, value }) => `${name}: ${parsePartsValue(selectedGroups, variableGroups, value)}`),
+			.map(({ name, value }) => `${name}: ${parseValueParts(selectedGroups, variableGroups, value)}`),
 		);
 	}
 

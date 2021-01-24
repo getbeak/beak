@@ -1,5 +1,5 @@
 import VariableInput from '@beak/app/features/variable-input/components/molecules/VariableInput';
-import { parsePartsValue } from '@beak/common/dist/helpers/variable-groups';
+import { parseValueParts } from '@beak/app/features/variable-input/parser';
 import { RequestNode, ValueParts } from '@beak/common/types/beak-project';
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -31,7 +31,7 @@ const Header: React.FunctionComponent<HeaderProps> = props => {
 	}
 
 	function handleUrlChange(parts: ValueParts) {
-		const value = parsePartsValue(selectedGroups, variableGroups!, parts);
+		const value = parseValueParts(selectedGroups, variableGroups!, parts);
 		const parsed = urlParse(value, {}, false);
 
 		if (parsed.query) {

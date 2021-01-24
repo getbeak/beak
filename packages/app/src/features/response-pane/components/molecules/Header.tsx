@@ -1,6 +1,6 @@
 import { statusToColour } from '@beak/app/design-system/helpers';
 import { Flight } from '@beak/app/store/flight/types';
-import { convertRequestToUrl } from '@beak/common/helpers/uri';
+import { convertRequestToUrl } from '@beak/app/utils/uri';
 import { getReasonPhrase } from 'http-status-codes';
 import React from 'react';
 import { useSelector } from 'react-redux';

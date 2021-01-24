@@ -1,6 +1,6 @@
 import { tabSelected } from '@beak/app/store/project/actions';
+import { convertRequestToUrl } from '@beak/app/utils/uri';
 import { TypedObject } from '@beak/common/helpers/typescript';
-import { convertRequestToUrl } from '@beak/common/helpers/uri';
 import { RequestNode } from '@beak/common/types/beak-project';
 import Fuse from 'fuse.js';
 import React, { useEffect, useState } from 'react';

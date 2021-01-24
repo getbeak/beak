@@ -12,9 +12,6 @@ export interface FlightRequestPayload {
 	flightId: string;
 	requestId: string;
 	request: RequestOverview;
-
-	selectedGroups: Record<string, string>;
-	variableGroups: VariableGroups;
 }
 
 /* eslint-disable @typescript-eslint/indent */
