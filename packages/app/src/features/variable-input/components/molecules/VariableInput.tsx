@@ -1,9 +1,10 @@
 import { TypedObject } from '@beak/common/dist/helpers/typescript';
-import { ValueParts, ValuePartVariableGroupItem } from '@beak/common/dist/types/beak-project';
+import { RealtimeValue, ValueParts, VariableGroupItem } from '@beak/common/dist/types/beak-project';
 import React, { useEffect, useRef, useState } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
+import { getImplementation } from '../../realtime-values';
 
 import VariableSelector from './VariableSelector';
 
@@ -68,7 +69,7 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, 
 		const part = parts[partIndex] as string;
 		const lastPart = parts.length === partIndex - 1;
 		const atEnd = lastPart && part.length === queryOffset + query.length;
-		const newPart: ValuePartVariableGroupItem = {
+		const newPart: VariableGroupItem = {
 			type: 'variable_group_item',
 			payload: { itemId },
 		};
@@ -154,17 +155,12 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, 
 					return null;
 
 				const elem = n as HTMLElement;
-				const type = elem.dataset.type;
+				const type = elem.dataset.type ?? '';
 
-				if (type !== 'variable_group_item')
-					return null;
+				const impl = getImplementation(type);
+				const value = impl.fromHtml(elem.dataset);
 
-				const itemId = elem.dataset.payloadItemId;
-
-				return {
-					type,
-					payload: { itemId },
-				} as ValuePartVariableGroupItem;
+				return value as RealtimeValue;
 			})
 			.filter(f => f !== null && f !== '') as ValueParts;
 
@@ -197,55 +193,32 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, 
 			setQuery(part.substr(queryOffset));
 	}
 
-	function getItemIdFlair(itemId: string) {
-		if (!variableGroups)
-			return { variableGroup: 'Unknown' };
-
-		const keys = TypedObject.keys(variableGroups);
-
-		for (const key of keys) {
-			const vg = variableGroups[key];
-			const itemValue = vg.items[itemId];
-
-			if (itemValue) {
-				return {
-					variableGroup: key,
-					item: itemValue,
-				};
-			}
-		}
-
-		return { variableGroup: 'Unknown' };
-	}
-
 	function renderParts(parts: ValueParts) {
 		return renderToStaticMarkup(
 			<React.Fragment>
 				{parts.map(p => {
-					if (typeof p === 'string') {
-						return (
-							<span key={p}>{p}</span>
-						);
-					}
+					if (typeof p === 'string')
+						return <span key={p}>{p}</span>;
 
 					if (typeof p !== 'object')
 						throw new Error('unknown part');
 
-					if (p.type !== 'variable_group_item')
-						throw new Error('unknown part type');
-
-					const { variableGroup, item } = getItemIdFlair(p.payload.itemId);
+					const impl = getImplementation(p.type);
+					const html = impl.toHtml(p, variableGroups);
+					const dataProps = TypedObject.keys(html.dataset).reduce((acc, val) => ({
+						...acc,
+						[`data-payload-${val}`]: html.dataset[val],
+					}), { 'data-type': html.type });
 
 					return (
 						<div
 							className={'bvs-blob'}
 							contentEditable={false}
-							data-type={p.type}
-							data-payload-item-id={p.payload.itemId}
-							key={`variable_group_item:${p.payload.itemId}`}
+							{...dataProps}
+							key={html.key}
 						>
-							<strong>{variableGroup}</strong>
-							{item && ` (${item})`}
+							<strong>{html.renderer.title}</strong>
+							{html.renderer.body && ` (${html.renderer.body})`}
 						</div>
 					);
 				})}

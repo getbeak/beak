@@ -76,9 +76,11 @@ export interface VariableGroupValue {
 	value: string;
 }
 
-export type ValueParts = (string | ValuePartVariableGroupItem)[];
+export type ValueParts = (string | RealtimeValue)[];
 
-export interface ValuePartVariableGroupItem {
+export type RealtimeValue = VariableGroupItem;
+
+export interface VariableGroupItem {
 	type: 'variable_group_item';
 	payload: {
 		itemId: string;

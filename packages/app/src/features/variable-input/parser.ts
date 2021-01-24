@@ -1,6 +1,8 @@
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { ValueParts, VariableGroups } from '@beak/common/types/beak-project';
 
+import { getImplementation } from './realtime-values';
+
 export function parsePartsValue(
 	selectedGroups: Record<string, string>,
 	variableGroups: VariableGroups,
@@ -16,18 +18,12 @@ export function parsePartsValue(
 		}
 
 		if (typeof part !== 'object')
-			throw new Error('unknown part type');
+			throw new Error('Unknown part type');
 
-		if (part.type !== 'variable_group_item') {
-			out.push('');
+		const impl = getImplementation(part.type);
+		const value = impl.parse(part, variableGroups, selectedGroups);
 
-			continue;
-		}
-
-		const value = getValueString(selectedGroups, variableGroups, part.payload.itemId);
-
-		if (value)
-			out.push(getValueString(selectedGroups, variableGroups, part.payload.itemId));
+		out.push(value);
 	}
 
 	return out.join('');
