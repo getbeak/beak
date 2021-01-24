@@ -24,6 +24,7 @@ export default function* requestFlightWorker() {
 	const node: RequestNode = yield select((s: ApplicationState) => s.global.project.tree![requestId]);
 	const vgState: VGState = yield select((s: ApplicationState) => s.global.variableGroups);
 	const { selectedGroups, variableGroups } = vgState;
+	const flattenedOverview = flattenValueParts(node.info, selectedGroups, variableGroups);
 
 	// If the node doesn't exist, either it has been deleted, or a non-request tab was
 	// sent through, either way, cancel.
@@ -42,7 +43,7 @@ export default function* requestFlightWorker() {
 		binaryStoreKey,
 		requestId,
 		flightId,
-		request: node.info,
+		request: flattenedOverview,
 	}));
 
 	const channel = eventChannel(emitter => {
@@ -73,7 +74,7 @@ export default function* requestFlightWorker() {
 	ipcFlightService.startFlight({
 		flightId,
 		requestId,
-		request: flattenValueParts(node.info, selectedGroups, variableGroups),
+		request: flattenedOverview,
 	});
 
 	while (true) {
