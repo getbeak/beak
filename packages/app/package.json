@@ -53,7 +53,7 @@
     "mime-types": "^2.1.27",
     "monaco-editor": "^0.21.2",
     "monaco-editor-webpack-plugin": "^2.0.0",
-    "react": "^16.13.1",
+    "react": "^17.0.1",
     "react-column-resizer": "^1.1.9",
     "react-dom": "^17.0.1",
     "react-grid-system": "^7.0.3",
