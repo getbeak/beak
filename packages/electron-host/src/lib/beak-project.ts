@@ -6,6 +6,8 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import simpleGit, { SimpleGitOptions } from 'simple-git';
 
+import { encryptionAlgoVersions, generateKey } from './aes';
+
 export interface CreationOptions {
 	name: string;
 	rootPath: string;
@@ -76,7 +78,12 @@ export default async function createProject(options: CreationOptions) {
 	});
 	await fs.writeFile(path.join(projectPath, '.gitignore'), createGitIgnore());
 	await fs.ensureDir(path.join(projectPath, '.beak'));
-	await fs.writeFile(path.join(projectPath, '.beak', 'supersecret.json'), '{}');
+	await fs.writeJson(path.join(projectPath, '.beak', 'supersecret.json'), {
+		encryption: {
+			algo: encryptionAlgoVersions['2020-01-25'],
+			key: await generateKey(),
+		},
+	}, { spaces: '/t' });
 	await fs.writeFile(path.join(projectPath, 'README.md'), createReadme(name));
 
 	const projectFilePath = await createProjectFile(projectPath, name);
@@ -109,13 +116,14 @@ function createReadme(name: string) {
 	return [
 		`# ${name}`,
 		'',
-		'Welcome to your new Beak project',
+		'Welcome to your new Beak project! For getting started help, visit the [Beak docs](https://docs.getbeak.app/).',
 		'',
 	].join('\n');
 }
 
 function createGitIgnore() {
 	return [
+		'# Beak specific files',
 		'.beak',
 		'',
 		'# Platform files',
