@@ -2,10 +2,12 @@ import { readFolderNode } from '@beak/app/lib/beak-project/folder';
 import { readProjectFile } from '@beak/app/lib/beak-project/project';
 import { readRequestNode } from '@beak/app/lib/beak-project/request';
 import createFsEmitter, { scanDirectoryRecursively, ScanResult } from '@beak/app/lib/fs-emitter';
+import { ipcDialogService, ipcWindowService } from '@beak/app/lib/ipc';
 import actions from '@beak/app/src/store/project/actions';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { FolderNode, ProjectFile, RequestNode, Tree } from '@beak/common/types/beak-project';
 import { PayloadAction } from '@reduxjs/toolkit';
+import { EventChannel } from 'redux-saga';
 import { call, put, select, take } from 'redux-saga/effects';
 import { ApplicationState } from '../..';
 
@@ -25,17 +27,45 @@ export default function* workerStartProject({ payload }: PayloadAction<string>) 
 	const projectPath = path.join(projectFilePath, '..');
 	const projectTreePath = path.join(projectPath, 'tree');
 
-	// TODO(afr): Listen to this file too
-	const project: ProjectFile = yield call(readProjectFile, projectPath);
-	const channel = createFsEmitter(projectTreePath, { followSymlinks: false });
+	let project: ProjectFile;
+	let channel: EventChannel<unknown>;
 
-	yield put(actions.insertProjectInfo({
-		projectPath,
-		treePath: projectTreePath,
-		name: project.name,
-	}));
-	yield put(startVariableGroups(projectPath));
-	yield initialImport(projectTreePath);
+	try {
+		// TODO(afr): Listen to this file too
+		project = yield call(readProjectFile, projectPath);
+		channel = createFsEmitter(projectTreePath, { followSymlinks: false });
+
+		yield put(actions.insertProjectInfo({
+			projectPath,
+			treePath: projectTreePath,
+			name: project.name,
+		}));
+		yield put(startVariableGroups(projectPath));
+		yield initialImport(projectTreePath);
+	} catch (error) {
+		if (error.message === 'Unsupported project version') {
+			yield call([ipcDialogService, ipcDialogService.showMessageBox], {
+				type: 'error',
+				title: 'Unsupported project version',
+				message: 'The project you opened is no longer supported by Beak. Message @0xdeafcafe on twitter for support.',
+			});
+		} else {
+			yield call([ipcDialogService, ipcDialogService.showMessageBox], {
+				type: 'error',
+				title: 'Project failed to open',
+				message: [
+					'There was a problem loading the Beak project.The error is below: ',
+					'',
+					error.message,
+					error.stack,
+				].join('\n'),
+			});
+		}
+
+		yield call([ipcWindowService, ipcWindowService.closeSelfWindow]);
+
+		return;
+	}
 
 	while (true) {
 		const result: Event = yield take(channel);
@@ -45,7 +75,7 @@ export default function* workerStartProject({ payload }: PayloadAction<string>) 
 
 		const isDirectory = ['addDir', 'unlinkDir'].includes(result.type);
 
-		// Skip and non json files
+		// Skip non-directories and non-json files
 		if (!isDirectory && path.extname(result.path) !== '.json')
 			continue;
 
