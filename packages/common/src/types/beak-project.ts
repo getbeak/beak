@@ -7,6 +7,12 @@ export interface RequestNodeFile extends RequestOverview {
 	id: string;
 }
 
+export interface SupersecretFile {
+	encryption: {
+		key: string;
+	};
+}
+
 export interface Node {
 	id: string;
 	type: 'folder' | 'request';
