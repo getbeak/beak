@@ -18,6 +18,7 @@ import { isDarwin } from '../globals';
 import useTitleBar from '../hooks/use-title-bar';
 import BeakHub from '../lib/beak-hub';
 import { requestFlight } from '../store/flight/actions';
+import { actions } from '../store/guardian';
 import { startProject } from '../store/project/actions';
 
 const ProjectMain: React.FunctionComponent = () => {
@@ -34,6 +35,7 @@ const ProjectMain: React.FunctionComponent = () => {
 	const loaded = project.loaded && variableGroups.loaded;
 
 	useEffect(() => {
+		dispatch(actions.startGuardian());
 		dispatch(startProject(projectFilePath));
 	}, [projectFilePath]);
 
