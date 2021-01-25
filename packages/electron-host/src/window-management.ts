@@ -77,6 +77,14 @@ export function closeWindow(windowId: number) {
 }
 
 export function createWelcomeWindow() {
+	const existingWindow = stackMap['welcome'];
+
+	if (existingWindow && windowStack[existingWindow]) {
+		windowStack[existingWindow].focus();
+
+		return;
+	}
+
 	const windowOpts: BrowserWindowConstructorOptions = {
 		height: 550,
 		width: 900,
@@ -85,7 +93,9 @@ export function createWelcomeWindow() {
 		title: 'Welcome to Beak!',
 	};
 
-	createWindow(windowOpts, 'welcome');
+	const window = createWindow(windowOpts, 'welcome');
+
+	stackMap['welcome'] = window.id;
 }
 
 export function createAboutWindow() {
