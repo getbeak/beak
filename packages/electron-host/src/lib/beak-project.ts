@@ -104,7 +104,7 @@ async function createProjectFile(projectPath: string, name: string) {
 	const projectFilePath = path.join(projectPath, 'project.json');
 	const file: ProjectFile = {
 		name,
-		version: '0.0.1',
+		version: '0.1.0',
 	};
 
 	await fs.writeJson(projectFilePath, file, { spaces: '\t' });

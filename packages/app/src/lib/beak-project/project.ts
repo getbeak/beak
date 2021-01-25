@@ -10,5 +10,8 @@ export async function readProjectFile(projectPath: string) {
 	const projectFilePath = path.join(projectPath, 'project.json');
 	const { file } = await readJsonAndValidate<ProjectFile>(projectFilePath, projectSchema);
 
+	if (file.version !== '0.1.0')
+		throw new Error('Unsupported project version');
+
 	return file;
 }
