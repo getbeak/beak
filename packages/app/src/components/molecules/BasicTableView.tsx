@@ -29,15 +29,15 @@ const BasicTableView: React.FunctionComponent<MutableBasicTableViewProps | Immut
 	return (
 		<React.Fragment>
 			<EntryTable>
-				<thead>
-					<tr>
-						{props.editable && <Header></Header>}
-						<Header>{'Name'}</Header>
-						<Header>{'Value'}</Header>
-						{props.editable && <Header></Header>}
-					</tr>
-				</thead>
-				<tbody>
+				<Header>
+					<Row>
+						{!props.disableToggle && props.editable && <ToggleCell />}
+						<NameCell>{'Name'}</NameCell>
+						<ValueCell>{'Value'}</ValueCell>
+						{props.editable && <ActionCell />}
+					</Row>
+				</Header>
+				<Body>
 					{TypedObject.keys(items).map(k => {
 						const entry = items[k];
 
@@ -52,37 +52,35 @@ const BasicTableView: React.FunctionComponent<MutableBasicTableViewProps | Immut
 										/>
 									</ToggleCell>
 								)}
-								<td>
-									<InputText
+								<NameCell>
+									<input
 										disabled={!props.editable}
 										value={entry.name}
 										type={'text'}
 										onChange={e => updateItem('name', k, e.target.value)}
 									/>
-								</td>
-								<VariableInputCell>
+								</NameCell>
+								<ValueCell>
 									<VariableInput
 										disabled={!props.editable}
 										parts={entry.value}
 										onChange={e => updateItem('value', k, e)}
 									/>
-								</VariableInputCell>
+								</ValueCell>
 								{props.editable && (
-									<ToggleCell>
-										<RemoveButton onClick={() => {
-											props.removeItem(k);
-										}}>
+									<ActionCell>
+										<RemoveButton onClick={() => props.removeItem(k)}>
 											<FontAwesomeIcon
 												size={'sm'}
 												icon={faTrashAlt}
 											/>
 										</RemoveButton>
-									</ToggleCell>
+									</ActionCell>
 								)}
 							</Row>
 						);
 					})}
-				</tbody>
+				</Body>
 			</EntryTable>
 
 			{props.editable && (
@@ -102,52 +100,20 @@ function updateItemSnub(_type: keyof ToggleKeyValue, _ident: string, _value: str
 	return;
 }
 
-const EntryTable = styled.table`
+const EntryTable = styled.div`
 	margin-top: 5px;
 	width: 100%;
-	border-collapse: collapse;
 `;
 
-const Header = styled.th`
-	text-align: left;
-	font-size: 13px;
-	font-weight: 400;
-	padding-left: 6px;
-
-	color: ${props => props.theme.ui.textOnFill};
-`;
-
-const Row = styled.tr`
-	border-bottom: 1px solid ${props => props.theme.ui.backgroundBorderSeparator};
-`;
-
-const ToggleCell = styled.td`
-	width: 20px;
-`;
-
-const InputText = styled.input`
-	width: calc(100% - 10px);
-	border: none;
-	background: transparent;
-	padding: 2px 5px;
-	margin: 0; margin-bottom: -2px;
-	border: 1px solid transparent;
-
-	color: ${props => props.theme.ui.textOnFill};
-	font-size: 12px;
-
-	&:focus {
-		box-shadow: none !important;
-	}
-`;
-
-const VariableInputCell = styled.td`
-	> article {
+const Cell = styled.div`
+	> article, > input[type=text] {
 		width: calc(100% - 10px);
+		height: calc(100% - 5px);
 		border: none;
 		background: transparent;
 		padding: 2px 5px;
-		margin: 0; margin-bottom: -2px;
+		margin: 0;
+		/* margin-bottom: -2px; */
 		border: 1px solid transparent;
 
 		color: ${props => props.theme.ui.textOnFill};
@@ -156,6 +122,41 @@ const VariableInputCell = styled.td`
 		&:focus {
 			box-shadow: none !important;
 		}
+	}
+`;
+
+const NameCell = styled(Cell)`
+	flex: 35%;
+`;
+
+const ValueCell = styled(Cell)`
+	flex: 65%;
+`;
+
+const Body = styled.div``;
+
+const Row = styled.div`
+	display: flex;
+	border-bottom: 1px solid ${props => props.theme.ui.backgroundBorderSeparator};
+`;
+
+const ToggleCell = styled.div`
+	width: 20px;
+`;
+
+const ActionCell = styled.div`
+	width: 30px;
+`;
+
+const Header = styled.div`
+	text-align: left;
+	font-size: 13px;
+	font-weight: 400;
+
+	color: ${props => props.theme.ui.textOnFill};
+
+	${NameCell}, ${ValueCell} {
+		padding-left: 6px;
 	}
 `;
 
