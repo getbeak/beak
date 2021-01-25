@@ -83,7 +83,7 @@ export default async function createProject(options: CreationOptions) {
 			algo: encryptionAlgoVersions['2020-01-25'],
 			key: await generateKey(),
 		},
-	}, { spaces: '/t' });
+	}, { spaces: '\t' });
 	await fs.writeFile(path.join(projectPath, 'README.md'), createReadme(name));
 
 	const projectFilePath = await createProjectFile(projectPath, name);
