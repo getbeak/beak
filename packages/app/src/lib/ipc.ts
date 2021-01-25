@@ -10,7 +10,7 @@ const { ipcRenderer } = window.require('electron');
 
 const ipcBeakHubService = new IpcBeakHubServiceRenderer(ipcRenderer);
 const ipcDialogService = new IpcDialogServiceRenderer(ipcRenderer);
-const IpcEncryptionService = new IpcEncryptionServiceRenderer(ipcRenderer);
+const ipcEncryptionService = new IpcEncryptionServiceRenderer(ipcRenderer);
 const ipcExplorerService = new IpcExplorerServiceRenderer(ipcRenderer);
 const ipcFlightService = new IpcFlightServiceRenderer(ipcRenderer);
 const ipcNestService = new IpcNestServiceRenderer(ipcRenderer);
@@ -19,7 +19,7 @@ const ipcProjectService = new IpcProjectServiceRenderer(ipcRenderer);
 export {
 	ipcBeakHubService,
 	ipcDialogService,
-	IpcEncryptionService,
+	ipcEncryptionService,
 	ipcExplorerService,
 	ipcFlightService,
 	ipcNestService,
