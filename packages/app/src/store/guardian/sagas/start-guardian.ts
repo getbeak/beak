@@ -10,7 +10,7 @@ const intervalUpper = 2700; // 45 minutes
 export default createTakeLatestSagaSet(actions.startGuardian, function* startGuardianWorker() {
 	const client: NestClient = yield getContext('client');
 
-	let first = false;
+	let first = true;
 
 	while (true) {
 		if (!first)
@@ -23,7 +23,7 @@ export default createTakeLatestSagaSet(actions.startGuardian, function* startGua
 			console.error(error);
 		}
 
-		first = true;
+		first = false;
 	}
 });
 
