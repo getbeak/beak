@@ -5,3 +5,4 @@ import './explorer-service';
 import './flight-service';
 import './nest-service';
 import './project-service';
+import './window-service';

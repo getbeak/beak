@@ -5,6 +5,7 @@ import { IpcExplorerServiceRenderer } from '@beak/common/ipc/explorer';
 import { IpcFlightServiceRenderer } from '@beak/common/ipc/flight';
 import { IpcNestServiceRenderer } from '@beak/common/ipc/nest';
 import { IpcProjectServiceRenderer } from '@beak/common/ipc/project';
+import { IpcWindowServiceRenderer } from '@beak/common/ipc/window';
 
 const { ipcRenderer } = window.require('electron');
 
@@ -15,6 +16,7 @@ const ipcExplorerService = new IpcExplorerServiceRenderer(ipcRenderer);
 const ipcFlightService = new IpcFlightServiceRenderer(ipcRenderer);
 const ipcNestService = new IpcNestServiceRenderer(ipcRenderer);
 const ipcProjectService = new IpcProjectServiceRenderer(ipcRenderer);
+const ipcWindowService = new IpcWindowServiceRenderer(ipcRenderer);
 
 export {
 	ipcBeakHubService,
@@ -24,4 +26,5 @@ export {
 	ipcFlightService,
 	ipcNestService,
 	ipcProjectService,
+	ipcWindowService,
 };
