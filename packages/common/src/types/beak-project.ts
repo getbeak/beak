@@ -8,9 +8,7 @@ export interface RequestNodeFile extends RequestOverview {
 }
 
 export interface SupersecretFile {
-	encryption: {
-		key: string;
-	};
+	encryption: { key: string };
 }
 
 export interface Node {
