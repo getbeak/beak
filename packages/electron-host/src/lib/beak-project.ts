@@ -47,7 +47,7 @@ export default async function createProject(options: CreationOptions) {
 			[ksuid.generate('group').toString()]: 'Local',
 		},
 		items: {
-			[ksuid.generate('item').toString()]: 'env-identifer',
+			[ksuid.generate('item').toString()]: 'env_identifer',
 		},
 		values: {},
 	};
