@@ -1,3 +1,5 @@
+import { Entries } from './beak-json-editor';
+
 export interface ProjectFile {
 	name: string;
 	version: string;
@@ -52,7 +54,7 @@ export interface RequestBodyText {
 
 export interface RequestBodyJson {
 	type: 'json';
-	payload: string;
+	payload: Entries;
 }
 
 export interface RequestBodyUrlEncodedForm {
