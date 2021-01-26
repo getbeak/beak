@@ -1,3 +1,4 @@
+import { Entries } from '@beak/common/types/beak-json-editor';
 import { Tree, ValueParts } from '@beak/common/types/beak-project';
 
 export const ActionTypes = {
@@ -116,7 +117,7 @@ export interface ToggleableItemRemovedPayload extends RequestIdPayload {
 }
 
 export interface RequestBodyTextChangedPayload extends RequestIdPayload { text: string }
-export interface RequestBodyJsonChangedPayload extends RequestIdPayload { json: string }
+export interface RequestBodyJsonChangedPayload extends RequestIdPayload { json: Entries }
 
 export interface RequestRenameStarted extends RequestIdPayload { }
 export interface RequestRenameCancelled extends RequestIdPayload { }
