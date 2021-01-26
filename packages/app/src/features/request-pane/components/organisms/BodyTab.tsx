@@ -1,8 +1,10 @@
 import BasicTableView from '@beak/app/components/molecules/BasicTableView';
 import BeakHubContext from '@beak/app/contexts/beak-hub-context';
+import JsonEditor from '@beak/app/features/json-editor/components/JsonEditor';
 import { ipcDialogService } from '@beak/app/lib/ipc';
-import { requestBodyJsonChanged, requestBodyTextChanged } from '@beak/app/store/project/actions';
+import { requestBodyTextChanged } from '@beak/app/store/project/actions';
 import { createDefaultOptions } from '@beak/app/utils/monaco';
+import { Entries } from '@beak/common/types/beak-json-editor';
 import { RequestNode } from '@beak/common/types/beak-project';
 import React, { useContext, useState } from 'react';
 import MonacoEditor from 'react-monaco-editor';
@@ -61,7 +63,7 @@ const BodyTab: React.FunctionComponent<BodyTabProps> = props => {
 					size={'sm'}
 					onClick={() => setTabWithConfirmation('json')}
 				>
-					{'JSON'}
+					{'Json'}
 				</TabItem>
 				<TabItem
 					active={tab === 'url-encoded-form'}
@@ -88,17 +90,7 @@ const BodyTab: React.FunctionComponent<BodyTabProps> = props => {
 					</React.Fragment>
 				)}
 				{tab === 'json' && (
-					<React.Fragment>
-						<MonacoEditor
-							height={'100%'}
-							width={'100%'}
-							language={'json'}
-							theme={'vs-dark'}
-							value={node.info.body.payload as string}
-							options={createDefaultOptions()}
-							onChange={json => dispatch(requestBodyJsonChanged({ requestId: node.id, json }))}
-						/>
-					</React.Fragment>
+					<JsonEditor value={node.info.body.payload as Entries} />
 				)}
 				{tab === 'url-encoded-form' && (
 					<BasicTableView
