@@ -9,8 +9,8 @@ import styled from 'styled-components';
 import ReflexSplitter from '../../../components/atoms/ReflexSplitter';
 import RequestPreferencesContext from '../contexts/request-preferences-context';
 import RequestOutput from './molecules/RequestOutput';
-import Modifiers from './organisms/Modifiers';
 import Header from './organisms/Header';
+import Modifiers from './organisms/Modifiers';
 
 const RequestPane: React.FunctionComponent = () => {
 	const [preferences, setPreferences] = useState<RequestPreference | null>(null);

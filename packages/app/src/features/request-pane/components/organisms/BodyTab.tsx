@@ -14,8 +14,6 @@ import TabItem from '../../../../components/atoms/TabItem';
 import TabSpacer from '../../../../components/atoms/TabSpacer';
 import RequestPreferencesContext from '../../contexts/request-preferences-context';
 
-const { ipcRenderer } = window.require('electron');
-
 type Tab = 'text' | 'json' | 'url-encoded-form';
 
 export interface BodyTabProps {
