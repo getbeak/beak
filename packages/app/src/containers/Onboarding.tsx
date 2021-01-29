@@ -1,5 +1,5 @@
 import Squawk from '@beak/common/utils/squawk';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 
@@ -19,6 +19,7 @@ const Onboarding: React.FunctionComponent = () => {
 	const [doing, setDoing] = useState(false);
 	const [error, setError] = useState<Squawk>();
 	const [magicError, setMagicError] = useState<Squawk>();
+	const inputRef = useRef<HTMLInputElement>();
 	const [done, setDone] = useState(false);
 	const [resender, setResender] = useState<number | null>(null);
 	const [showManualInfo, setShowManualInfo] = useState(false);
@@ -73,7 +74,13 @@ const Onboarding: React.FunctionComponent = () => {
 		dispatch(actions.sendMagicLink.reset());
 	}, [handleMagicLink]);
 
+	useEffect(() => {
+		inputRef.current?.focus();
+	}, [inputRef.current]);
+
 	function sendMagicLink() {
+		inputRef.current?.blur();
+
 		setDoing(true);
 		setDone(false);
 		setShowManualInfo(false);
@@ -125,7 +132,17 @@ const Onboarding: React.FunctionComponent = () => {
 						placeholder={'taylor.swift@gmail.com'}
 						value={emailAddy}
 						type={'text'}
+						ref={i => {
+							inputRef.current = i!;
+						}}
 						onChange={e => setEmailAddy(e.target.value)}
+						onKeyDown={e => {
+							if (!enabled)
+								return;
+
+							if (e.key === 'Enter')
+								sendMagicLink();
+						}}
 					/>
 					{error && (
 						<FormError>
