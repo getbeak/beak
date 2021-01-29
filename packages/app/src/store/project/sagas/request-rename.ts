@@ -1,4 +1,5 @@
 import { renameRequestNode } from '@beak/app/lib/beak-project/request';
+import { ipcDialogService } from '@beak/app/lib/ipc';
 import { RequestNode } from '@beak/common/dist/types/beak-project';
 import { PayloadAction } from '@reduxjs/toolkit';
 import { call, put, select } from 'redux-saga/effects';
@@ -6,8 +7,6 @@ import { call, put, select } from 'redux-saga/effects';
 import { ApplicationState } from '../..';
 import actions from '../actions';
 import { ActiveRename, RequestRenameSubmitted } from '../types';
-
-const { dialog } = window.require('electron');
 
 export default function* workerRequestRename({ payload }: PayloadAction<RequestRenameSubmitted>) {
 	const activeRename: ActiveRename = yield select((s: ApplicationState) => s.global.project.activeRename);
@@ -29,11 +28,10 @@ export default function* workerRequestRename({ payload }: PayloadAction<RequestR
 		if (error.message !== 'Request name already exists')
 			throw error;
 
-		// TODO(afr): Move this out to IPC layer
-		dialog.showMessageBox({
+		yield call([ipcDialogService, ipcDialogService.showMessageBox], {
+			title: 'Already exists!',
+			message: 'The request name you specified already exists, please try something else.',
 			type: 'info',
-			title: 'Request name already exists',
-			message: 'The request name you entered already exists. Some other name might work though',
 		});
 	}
 }

@@ -16,13 +16,15 @@ export default function* workerRemoveNodeFromDisk({ payload }: PayloadAction<Rem
 
 	if (withConfirmation) {
 		const response: ShowMessageBoxRes = yield call([ipcDialogService, ipcDialogService.showMessageBox], {
+			title: 'Removal confirmation',
 			message: 'Are you sure you want to remove this node?',
 			type: 'warning',
 			buttons: ['Remove', 'Cancel'],
 			defaultId: 1,
+			cancelId: 1,
 		});
 
-		if (response.response !== 0)
+		if (response.response === 1)
 			return;
 	}
 

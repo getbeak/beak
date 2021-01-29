@@ -47,15 +47,15 @@ export default function* workerStartProject({ payload }: PayloadAction<string>) 
 			yield call([ipcDialogService, ipcDialogService.showMessageBox], {
 				type: 'error',
 				title: 'Unsupported project version',
-				message: 'The project you opened is no longer supported by Beak. Message @0xdeafcafe on twitter for support.',
+				message: 'The project you opened is no longer supported by Beak',
+				detail: 'Message @0xdeafcafe on twitter for support.',
 			});
 		} else {
 			yield call([ipcDialogService, ipcDialogService.showMessageBox], {
 				type: 'error',
 				title: 'Project failed to open',
-				message: [
-					'There was a problem loading the Beak project.The error is below: ',
-					'',
+				message: 'There was a problem loading the Beak project.The error is below: ',
+				detail: [
 					error.message,
 					error.stack,
 				].join('\n'),

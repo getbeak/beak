@@ -34,13 +34,16 @@ const BodyTab: React.FunctionComponent<BodyTabProps> = props => {
 			return;
 
 		const result = await ipcDialogService.showMessageBox({
-			message: 'Are you sure you want to change body type? Doing so will cause any data in the current body to be wiped!',
+			title: 'Are you sure?',
+			message: 'Are you sure you want to change body type?',
+			detail: 'Changing the body type could cause data to be lost!',
 			type: 'warning',
 			buttons: ['Change', 'Cancel'],
 			defaultId: 1,
+			cancelId: 1,
 		});
 
-		if (result.response !== 0)
+		if (result.response === 1)
 			return;
 
 		hub!.setRequestPreferences(node.id, { mainTab: 'body', subTab: tab });
