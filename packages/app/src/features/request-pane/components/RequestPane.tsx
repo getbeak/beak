@@ -14,7 +14,6 @@ import Modifiers from './organisms/Modifiers';
 
 const RequestPane: React.FunctionComponent = () => {
 	const [preferences, setPreferences] = useState<RequestPreference | null>(null);
-	const [editorHeight, setEditorHeight] = useState<string>('100%');
 	const { tree, selectedTabPayload } = useSelector(s => s.global.project);
 	const selectedNode = tree[selectedTabPayload!];
 	const hub = useContext(BeakHubContext);
@@ -33,6 +32,7 @@ const RequestPane: React.FunctionComponent = () => {
 	if (!preferences)
 		return <Container />;
 
+	// TODO(afr): Handle this state
 	if (selectedTabPayload && !selectedNode)
 		return <span>{'id does not exist'}</span>;
 
@@ -55,13 +55,9 @@ const RequestPane: React.FunctionComponent = () => {
 					<ReflexElement
 						flex={2}
 						minSize={150}
-						onResize={e => setEditorHeight(`${(e.domElement as Element).clientHeight}px`)}
 						style={{ overflowY: 'hidden' }}
 					>
-						<RequestOutput
-							editorHeight={editorHeight}
-							selectedNode={typedSelectedNode}
-						/>
+						<RequestOutput selectedNode={typedSelectedNode} />
 					</ReflexElement>
 				</ReflexContainer>
 			</Container>

@@ -12,7 +12,6 @@ const bodyFreeVerbs = ['get', 'head'];
 
 export interface RequestOutputProps {
 	selectedNode: RequestNode;
-	editorHeight: string;
 }
 
 const RequestOutput: React.FunctionComponent<RequestOutputProps> = props => {
@@ -101,7 +100,8 @@ export function createBasicHttpOutput(
 			out.push(`Content-Type: ${contentType}`);
 		}
 
-		out.push('', bodyOut);
+		// TODO(afr): Parse this correctly
+		out.push('', ''/* bodyOut */);
 	}
 
 	return out.join('\n');
