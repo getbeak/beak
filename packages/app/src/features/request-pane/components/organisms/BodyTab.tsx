@@ -4,6 +4,7 @@ import JsonEditor from '@beak/app/features/json-editor/components/JsonEditor';
 import { ipcDialogService } from '@beak/app/lib/ipc';
 import { requestBodyTextChanged } from '@beak/app/store/project/actions';
 import { createDefaultOptions } from '@beak/app/utils/monaco';
+import { RequestPreferenceBodySubTab } from '@beak/common/types/beak-hub';
 import { Entries } from '@beak/common/types/beak-json-editor';
 import { RequestNode } from '@beak/common/types/beak-project';
 import React, { useContext, useState } from 'react';
@@ -16,8 +17,6 @@ import TabItem from '../../../../components/atoms/TabItem';
 import TabSpacer from '../../../../components/atoms/TabSpacer';
 import RequestPreferencesContext from '../../contexts/request-preferences-context';
 
-type Tab = 'text' | 'json' | 'url-encoded-form';
-
 export interface BodyTabProps {
 	node: RequestNode;
 }
@@ -27,9 +26,9 @@ const BodyTab: React.FunctionComponent<BodyTabProps> = props => {
 	const preferences = useContext(RequestPreferencesContext)!;
 	const { node } = props;
 	const hub = useContext(BeakHubContext);
-	const [tab, setTab] = useState<Tab>(preferences.subTab as Tab || 'text');
+	const [tab, setTab] = useState<RequestPreferenceBodySubTab>(preferences.bodySubTab);
 
-	async function setTabWithConfirmation(newTab: Tab) {
+	async function setTabWithConfirmation(newTab: RequestPreferenceBodySubTab) {
 		if (newTab === tab)
 			return;
 
@@ -46,7 +45,7 @@ const BodyTab: React.FunctionComponent<BodyTabProps> = props => {
 		if (result.response === 1)
 			return;
 
-		hub!.setRequestPreferences(node.id, { mainTab: 'body', subTab: tab });
+		hub!.setRequestPreferences(node.id, { mainTab: 'body', bodySubTab: tab });
 		setTab(newTab);
 	}
 
@@ -69,9 +68,9 @@ const BodyTab: React.FunctionComponent<BodyTabProps> = props => {
 					{'Json'}
 				</TabItem>
 				<TabItem
-					active={tab === 'url-encoded-form'}
+					active={tab === 'url_encoded_form'}
 					size={'sm'}
-					onClick={() => setTabWithConfirmation('url-encoded-form')}
+					onClick={() => setTabWithConfirmation('url_encoded_form')}
 				>
 					{'URL-encoded form'}
 				</TabItem>
@@ -95,7 +94,7 @@ const BodyTab: React.FunctionComponent<BodyTabProps> = props => {
 				{tab === 'json' && (
 					<JsonEditor value={node.info.body.payload as Entries} />
 				)}
-				{tab === 'url-encoded-form' && (
+				{tab === 'url_encoded_form' && (
 					<BasicTableView
 						editable={false}
 						items={{}}

@@ -32,7 +32,7 @@ const Modifiers: React.FunctionComponent<ModifiersProps> = props => {
 	function setTab(tab: RequestPreferenceMainTab) {
 		setTabInner(tab);
 
-		hub!.setRequestPreferences(node.id, { mainTab: tab, subTab: null });
+		hub!.setRequestPreferences(node.id, { mainTab: tab });
 	}
 
 	return (

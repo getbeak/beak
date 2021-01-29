@@ -4,7 +4,7 @@
 
 	"required": [
 		"mainTab",
-		"subTab"
+		"bodySubTab"
 	],
 
 	"properties": {
@@ -13,8 +13,8 @@
 			"minLength": 1
 		},
 
-		"subTab": {
-			"type": ["string", "null"],
+		"bodySubTab": {
+			"type": "string",
 			"minLength": 1
 		}
 	}

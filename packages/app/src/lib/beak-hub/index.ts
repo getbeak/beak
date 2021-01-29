@@ -15,15 +15,13 @@ export default class BeakHub {
 		this._hubPath = path.join(projectPath, '.beak');
 	}
 
-	async setup() { }
-
 	async getRequestPreferences(requestId: string): Promise<RequestPreference> {
 		const preferencesPath = path.join(this._hubPath, 'preferences', 'request-pane', `${requestId}.json`);
 
 		if (!await fs.pathExists(preferencesPath)) {
 			return {
 				mainTab: 'headers',
-				subTab: null,
+				bodySubTab: 'json',
 			};
 		}
 
