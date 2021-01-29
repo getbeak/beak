@@ -13,10 +13,11 @@ const ReflexSplitter = styled(RS) <ReflexSplitterProps>`
 	height: ${props => props.orientation === 'horizontal' ? '2px' : 'auto'} !important;
 	background-color: ${props => props.theme.ui.backgroundBorderSeparator} !important;
 	border: none !important;
-	transition: background .1s;
+	transition: background .6s, box-shadow .6s !important;
 
 	&:hover {
 		background-color: ${props => props.theme.ui.primaryFill} !important;
+		box-shadow: 0px 0px 0px 1px ${props => props.theme.ui.primaryFill} !important;
 	}
 `;
 
