@@ -149,7 +149,6 @@ const ActionCell = styled.div`
 `;
 
 const Header = styled.div`
-	text-align: left;
 	font-size: 13px;
 	font-weight: 400;
 

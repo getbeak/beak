@@ -85,7 +85,7 @@ const Container = styled.div`
 	flex-direction: column;
 
 	background: ${p => p.theme.ui.background};
-	background: ${p => toVibrancyAlpha(p.theme.ui.background, 0.7)};
+	background: ${p => toVibrancyAlpha(p.theme.ui.background, 0.6)};
 
 	height: 100%;
 `;
