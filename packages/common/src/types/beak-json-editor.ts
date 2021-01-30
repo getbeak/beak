@@ -1,21 +1,23 @@
 import { ValueParts } from './beak-project';
 
+export type EntryType = 'string' | 'number' | 'boolean' | 'null' | 'object' | 'array';
+
 export interface Base {
 	enabled: boolean;
 }
 
 export interface NamedEntry {
-	name: ValueParts[];
+	name: string;
 }
 
 export interface StringEntry extends Base {
 	type: 'string';
-	value: ValueParts[];
+	value: ValueParts;
 }
 
 export interface NumberEntry extends Base {
 	type: 'number';
-	value: ValueParts[];
+	value: ValueParts;
 }
 
 export interface BooleanEntry extends Base {
