@@ -40,7 +40,7 @@ const darkThemeMapping: UIColorsBrandMapping = {
 	surfaceBorderSeparator: 'shadeVariant',
 
 	textOnAction: 'blank',
-	textOnFill: 'grey',
+	textOnFill: 'greyVariant',
 	textHighlight: 'primary',
 	textSuccess: 'tertiary',
 	textAlert: 'alert',
