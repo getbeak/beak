@@ -53,10 +53,15 @@ function createWindow(
 			enableRemoteModule: true,
 			nodeIntegration: true,
 		},
+		show: false,
 		...windowOpts,
 	});
 
 	window.loadURL(generateLoadUrl(container, window.id, additionalParams));
+	window.on('ready-to-show', () => {
+		window.show();
+		window.focus();
+	});
 	window.on('close', () => {
 		delete windowStack[window.id];
 	});
