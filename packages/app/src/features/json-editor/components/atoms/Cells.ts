@@ -4,25 +4,19 @@ export const HeaderCell = styled.div`
 	padding: 2px 0;
 `;
 
-export const HeaderFoldCell = styled(HeaderCell)`
-	width: 20px;
-`;
 export const HeaderKeyCell = styled(HeaderCell)`
-	flex: 35%;
-	padding-left: 5px;
-`;
-export const HeaderValueCell = styled(HeaderCell)`
-	flex: 65%;
+	flex: 3;
 	padding-left: 5px;
 `;
 export const HeaderTypeCell = styled(HeaderCell)`
 	width: 40px;
 `;
-export const HeaderToggle = styled(HeaderCell)`
-	width: 20px;
+export const HeaderValueCell = styled(HeaderCell)`
+	flex: 7;
+	padding-left: 5px;
 `;
 export const HeaderAction = styled(HeaderCell)`
-	width: 20px;
+	width: 30px;
 `;
 
 export const BodyCell = styled.div`
@@ -47,25 +41,20 @@ export const BodyCell = styled.div`
 	}
 `;
 
-export const BodyFoldCell = styled(BodyCell)`
-	width: 20px;
-`;
-export const BodyKeyCell = styled(BodyCell)`
-	flex: 35%;
-`;
-export const BodyInputValueCell = styled(BodyCell)`
-	flex: 65%;
-`;
-export const BodyLabelValueCell = styled(BodyCell)`
-	flex: 65%;
-	padding-left: 5px;
+export const BodyPrimaryCell = styled(BodyCell)<{ depth: number }>`
+	flex: 3;
+
+	padding-left: ${p => p.depth * 5}px;
 `;
 export const BodyTypeCell = styled(BodyCell)`
 	width: 40px;
 `;
-export const BodyToggleCell = styled(BodyCell)`
-	width: 20px;
+export const BodyInputValueCell = styled(BodyCell)`
+	flex: 7;
+`;
+export const BodyLabelValueCell = styled(BodyInputValueCell)`
+	padding-left: 5px;
 `;
 export const BodyAction = styled(BodyCell)`
-	width: 20px;
+	width: 30px;
 `;

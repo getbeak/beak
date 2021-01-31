@@ -4,9 +4,7 @@ import styled from 'styled-components';
 
 import {
 	HeaderAction,
-	HeaderFoldCell,
 	HeaderKeyCell,
-	HeaderToggle,
 	HeaderTypeCell,
 	HeaderValueCell,
 } from './atoms/Cells';
@@ -21,17 +19,15 @@ const JsonEditor: React.FunctionComponent<JsonEditorProps> = ({ value }) => (
 	<Wrapper>
 		<Header>
 			<Row>
-				<HeaderFoldCell />
-				<HeaderToggle />
-				<HeaderTypeCell>{'Type'}</HeaderTypeCell>
 				<HeaderKeyCell>{'Key'}</HeaderKeyCell>
+				<HeaderTypeCell>{'Type'}</HeaderTypeCell>
 				<HeaderValueCell>{'Value'}</HeaderValueCell>
 				<HeaderAction />
 			</Row>
 		</Header>
 		<Body>
 			<JsonItemEntry
-				isRoot
+				depth={0}
 				value={value}
 			/>
 		</Body>

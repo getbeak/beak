@@ -48,7 +48,7 @@ const Wrapper = styled.div`
 
 const Button = styled.button`
 	padding: 1px 0;
-	width: 24px;
+	width: 22px;
 	margin-top: 1px;
 	text-align: center;
 
@@ -56,13 +56,18 @@ const Button = styled.button`
 	border-radius: 2px;
 	border: 1px solid ${p => p.theme.ui.backgroundBorderSeparator};
 	color: ${p => p.theme.ui.textMinor};
+
+	> svg {
+		padding-top: 1px;
+		transform: scale(0.9);
+	}
 `;
 
 const Select = styled.select`
 	position: absolute;
 
 	opacity: 0;
-	width: 24px;
+	width: 22px;
 	height: 20px;
 `;
 
