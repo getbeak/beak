@@ -1,9 +1,12 @@
 /* eslint-disable no-param-reassign */
 
-import { FolderNode, RequestNode } from '@beak/common/types/beak-project';
+import { Entries, EntryType, NamedEntries } from '@beak/common/types/beak-json-editor';
+import { FolderNode, RequestBodyJson, RequestNode } from '@beak/common/types/beak-project';
 // @ts-ignore
 import ksuid from '@cuvva/ksuid';
 import { createReducer } from '@reduxjs/toolkit';
+import get from 'lodash.get';
+import set from 'lodash.set';
 
 import * as actions from './actions';
 import { initialState } from './types';
@@ -73,7 +76,7 @@ const projectReducer = createReducer(initialState, builder => {
 
 		.addCase(actions.requestUriUpdated, (state, action) => {
 			const { payload } = action;
-			const node = state.tree![action.payload.requestId] as RequestNode;
+			const node = state.tree[action.payload.requestId] as RequestNode;
 
 			if (payload.verb !== void 0)
 				node.info.verb = payload.verb;
@@ -83,7 +86,7 @@ const projectReducer = createReducer(initialState, builder => {
 
 		.addCase(actions.requestQueryAdded, (state, action) => {
 			const { payload } = action;
-			const node = state.tree![payload.requestId] as RequestNode;
+			const node = state.tree[payload.requestId] as RequestNode;
 
 			node.info.query[ksuid.generate('query').toString()] = {
 				name: payload.name || '',
@@ -93,7 +96,7 @@ const projectReducer = createReducer(initialState, builder => {
 		})
 		.addCase(actions.requestQueryUpdated, (state, action) => {
 			const { payload } = action;
-			const node = state.tree![payload.requestId] as RequestNode;
+			const node = state.tree[payload.requestId] as RequestNode;
 			const existingItem = node.info.query[payload.identifier];
 
 			if (payload.name !== void 0)
@@ -104,14 +107,14 @@ const projectReducer = createReducer(initialState, builder => {
 				existingItem.enabled = payload.enabled;
 		})
 		.addCase(actions.requestQueryRemoved, (state, action) => {
-			const node = state.tree![action.payload.requestId] as RequestNode;
+			const node = state.tree[action.payload.requestId] as RequestNode;
 
 			delete node.info.query[action.payload.identifier];
 		})
 
 		.addCase(actions.requestHeaderAdded, (state, action) => {
 			const { payload } = action;
-			const node = state.tree![payload.requestId] as RequestNode;
+			const node = state.tree[payload.requestId] as RequestNode;
 
 			node.info.headers[ksuid.generate('header').toString()] = {
 				name: payload.name || '',
@@ -121,7 +124,7 @@ const projectReducer = createReducer(initialState, builder => {
 		})
 		.addCase(actions.requestHeaderUpdated, (state, action) => {
 			const { payload } = action;
-			const node = state.tree![payload.requestId] as RequestNode;
+			const node = state.tree[payload.requestId] as RequestNode;
 			const existingItem = node.info.headers[payload.identifier];
 
 			if (payload.name !== void 0)
@@ -132,33 +135,20 @@ const projectReducer = createReducer(initialState, builder => {
 				existingItem.enabled = payload.enabled;
 		})
 		.addCase(actions.requestHeaderRemoved, (state, action) => {
-			const node = state.tree![action.payload.requestId] as RequestNode;
+			const node = state.tree[action.payload.requestId] as RequestNode;
 
 			delete node.info.headers[action.payload.identifier];
 		})
 
-		.addCase(actions.requestBodyTextChanged, (state, action) => {
-			const node = state.tree![action.payload.requestId] as RequestNode;
-
-			node.info.body.type = 'text';
-			node.info.body.payload = action.payload.text;
-		})
-		// .addCase(actions.requestBodyJsonChanged, (state, action) => {
-		// 	const node = state.tree![action.payload.requestId] as RequestNode;
-
-		// 	node.info.body.type = 'json';
-		// 	node.info.body.payload = action.payload.json;
-		// })
-
 		.addCase(actions.insertRequestNode, (state, action) => {
 			const node = action.payload as RequestNode;
 
-			state.tree![node.id] = node;
+			state.tree[node.id] = node;
 		})
 		.addCase(actions.insertFolderNode, (state, action) => {
 			const node = action.payload as FolderNode;
 
-			state.tree![node.filePath] = node;
+			state.tree[node.filePath] = node;
 		})
 
 		.addCase(actions.removeNodeFromStore, (state, { payload }) => {
@@ -178,7 +168,7 @@ const projectReducer = createReducer(initialState, builder => {
 		})
 
 		.addCase(actions.requestRenameStarted, (state, action) => {
-			const node = state.tree![action.payload.requestId] as RequestNode;
+			const node = state.tree[action.payload.requestId] as RequestNode;
 
 			state.activeRename = {
 				requestId: action.payload.requestId,
@@ -204,7 +194,63 @@ const projectReducer = createReducer(initialState, builder => {
 
 		.addCase(actions.setLatestWrite, (state, { payload }) => {
 			state.latestWrite = payload;
+		})
+
+		.addCase(actions.requestBodyTextChanged, (state, action) => {
+			const node = state.tree[action.payload.requestId] as RequestNode;
+
+			node.info.body.type = 'text';
+			node.info.body.payload = action.payload.text;
+		})
+		.addCase(actions.requestBodyJsonEditorNameChange, (state, { payload }) => {
+			const { jPath, name, requestId } = payload;
+			const node = state.tree[requestId] as RequestNode;
+			const body = node.info.body as RequestBodyJson;
+			const atRoot = jPath === '';
+
+			// Sanity check, not possible for root node to have a name
+			if (atRoot)
+				return;
+
+			set(body.payload, jPath.substr(1), name);
+		})
+		.addCase(actions.requestBodyJsonEditorValueChange, (state, { payload }) => {
+			const { jPath, value, requestId } = payload;
+			const node = state.tree[requestId] as RequestNode;
+			const body = node.info.body as RequestBodyJson;
+
+			set(body.payload, jPath.substr(1), value);
+		})
+		.addCase(actions.requestBodyJsonEditorTypeChange, (state, { payload }) => {
+			const { jPath, type, requestId } = payload;
+			const node = state.tree[requestId] as RequestNode;
+			const body = node.info.body as RequestBodyJson;
+			const existingEntry = get(body.payload, jPath.substr(1));
+
+			set(body.payload, jPath.substr(1), convertEntryToType(type, existingEntry));
 		});
 });
 
 export default projectReducer;
+
+function convertEntryToType(newType: EntryType, existingEntry: Entries | NamedEntries) {
+	const name = (existingEntry as NamedEntries).name;
+	const output: any = { type: newType, enabled: true };
+
+	if (['string', 'number'].includes(newType))
+		output.value = [''];
+	else if (newType === 'boolean')
+		output.value = true;
+	else if (newType === 'null')
+		output.value = null;
+	else if (['object', 'array'].includes(newType))
+		output.value = [];
+
+	if (name !== void 0) {
+		output.name = name;
+
+		return output as NamedEntries;
+	}
+
+	return output as Entries;
+}

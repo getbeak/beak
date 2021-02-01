@@ -10,6 +10,8 @@ import {
 	ProjectOpenedPayload,
 	RemoveNodeFromDiskPayload,
 	RequestBodyJsonEditorNameChangePayload,
+	RequestBodyJsonEditorTypeChangePayload,
+	RequestBodyJsonEditorValueChangePayload,
 	RequestBodyTextChangedPayload,
 	RequestRenameCancelled,
 	RequestRenameResolved,
@@ -67,8 +69,14 @@ export const setLatestWrite = createAction<LatestWrite>(ActionTypes.SET_LATEST_W
 export const requestBodyTextChanged = createAction<RequestBodyTextChangedPayload>(
 	ActionTypes.REQUEST_BODY_TEXT_CHANGED,
 );
-export const requestBodyJsonEditorNameChangePayload = createAction<RequestBodyJsonEditorNameChangePayload>(
+export const requestBodyJsonEditorNameChange = createAction<RequestBodyJsonEditorNameChangePayload>(
 	ActionTypes.REQUEST_BODY_JSON_EDITOR_NAME_CHANGE,
+);
+export const requestBodyJsonEditorValueChange = createAction<RequestBodyJsonEditorValueChangePayload>(
+	ActionTypes.REQUEST_BODY_JSON_EDITOR_VALUE_CHANGE,
+);
+export const requestBodyJsonEditorTypeChange = createAction<RequestBodyJsonEditorTypeChangePayload>(
+	ActionTypes.REQUEST_BODY_JSON_EDITOR_TYPE_CHANGE,
 );
 
 export default {
@@ -114,5 +122,7 @@ export default {
 	setLatestWrite,
 
 	requestBodyTextChanged,
-	requestBodyJsonEditorNameChangePayload,
+	requestBodyJsonEditorNameChange,
+	requestBodyJsonEditorValueChange,
+	requestBodyJsonEditorTypeChange,
 };

@@ -1,3 +1,4 @@
+import { EntryType } from '@beak/common/types/beak-json-editor';
 import { Tree, ValueParts } from '@beak/common/types/beak-project';
 
 export const ActionTypes = {
@@ -151,6 +152,16 @@ export interface LatestWrite {
 export interface RequestBodyJsonEditorNameChangePayload extends RequestIdPayload {
 	jPath: string;
 	name: string;
+}
+
+export interface RequestBodyJsonEditorValueChangePayload extends RequestIdPayload {
+	jPath: string;
+	value: ValueParts;
+}
+
+export interface RequestBodyJsonEditorTypeChangePayload extends RequestIdPayload {
+	jPath: string;
+	type: EntryType;
 }
 
 export default {
