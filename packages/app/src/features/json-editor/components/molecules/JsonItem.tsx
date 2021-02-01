@@ -3,14 +3,15 @@ import { actions } from '@beak/app/store/project';
 import {
 	Entries,
 	NamedEntries,
+	NamedNumberEntry,
 	NamedObjectEntry,
 	NamedStringEntry,
+	NumberEntry,
 	ObjectEntry,
 	StringEntry,
 } from '@beak/common/types/beak-json-editor';
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import * as uuid from 'uuid';
 
 import {
 	BodyAction,
@@ -36,7 +37,9 @@ export const JsonItemEntry: React.FunctionComponent<JsonItemEntryProps> = props 
 		case 'string':
 			return <JsonStringEntry depth={depth} jPath={jPath} requestId={requestId} value={value} />;
 
-		// case 'number':
+		case 'number':
+			return <JsonNumberEntry depth={depth} jPath={jPath} requestId={requestId} value={value} />;
+
 		// case 'boolean':
 		// case 'null':
 
@@ -67,23 +70,80 @@ const JsonStringEntry: React.FunctionComponent<JsonStringEntryProps> = props => 
 					disabled={depth === 0}
 					type={'text'}
 					value={detectName(depth, value)}
-					onChange={e => dispatch(actions.requestBodyJsonEditorNameChangePayload({
+					onChange={e => dispatch(actions.requestBodyJsonEditorNameChange({
 						requestId,
 						name: e.target.value,
-						jPath,
+						jPath: [jPath, '[name]'].join('.'),
 					}))}
 				/>
 			</BodyPrimaryCell>
 			<BodyTypeCell>
 				<TypeSelector
 					value={value.type}
-					onChange={() => { }}
+					onChange={type => dispatch(actions.requestBodyJsonEditorTypeChange({
+						requestId,
+						jPath,
+						type,
+					}))}
 				/>
 			</BodyTypeCell>
 			<BodyInputValueCell>
 				<VariableInput
 					parts={props.value.value}
-					onChange={() => { /* Update value with jPath */ }}
+					onChange={parts => dispatch(actions.requestBodyJsonEditorValueChange({
+						requestId,
+						value: parts,
+						jPath: [jPath, '[value]'].join('.'),
+					}))}
+				/>
+			</BodyInputValueCell>
+			<BodyAction />
+		</Row>
+	);
+};
+
+interface JsonNumberEntryProps extends JsonItemEntryProps {
+	value: NumberEntry | NamedNumberEntry;
+}
+
+const JsonNumberEntry: React.FunctionComponent<JsonNumberEntryProps> = props => {
+	const { depth, jPath, requestId, value } = props;
+	const dispatch = useDispatch();
+
+	return (
+		<Row>
+			<BodyPrimaryCell depth={depth}>
+				{/* Fold */}
+				{/* Toggle */}
+				<input
+					disabled={depth === 0}
+					type={'text'}
+					value={detectName(depth, value)}
+					onChange={e => dispatch(actions.requestBodyJsonEditorNameChange({
+						requestId,
+						name: e.target.value,
+						jPath: [jPath, '[name]'].join('.'),
+					}))}
+				/>
+			</BodyPrimaryCell>
+			<BodyTypeCell>
+				<TypeSelector
+					value={value.type}
+					onChange={type => dispatch(actions.requestBodyJsonEditorTypeChange({
+						requestId,
+						jPath,
+						type,
+					}))}
+				/>
+			</BodyTypeCell>
+			<BodyInputValueCell>
+				<VariableInput
+					parts={props.value.value}
+					onChange={parts => dispatch(actions.requestBodyJsonEditorValueChange({
+						requestId,
+						value: parts,
+						jPath: [jPath, '[value]'].join('.'),
+					}))}
 				/>
 			</BodyInputValueCell>
 			<BodyAction />
@@ -110,7 +170,7 @@ const JsonObjectEntry: React.FunctionComponent<JsonObjectEntryProps> = props => 
 						disabled={depth === 0}
 						type={'text'}
 						value={detectName(depth, value)}
-						onChange={e => dispatch(actions.requestBodyJsonEditorNameChangePayload({
+						onChange={e => dispatch(actions.requestBodyJsonEditorNameChange({
 							requestId,
 							name: e.target.value,
 							jPath,
@@ -131,8 +191,8 @@ const JsonObjectEntry: React.FunctionComponent<JsonObjectEntryProps> = props => 
 			{children.map((c, i) => (
 				<JsonItemEntry
 					depth={depth + 1}
-					jPath={[jPath, `value[${i}]`].join('.')}
-					key={uuid.v4()}
+					jPath={[jPath, '[value]', `[${i}]`].join('.')}
+					key={i}
 					requestId={requestId}
 					value={c}
 				/>

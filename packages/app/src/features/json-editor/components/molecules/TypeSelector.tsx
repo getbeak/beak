@@ -33,7 +33,7 @@ const TypeSelector: React.FunctionComponent<TypeSelectorProps> = ({ value, onCha
 				}}
 			>
 				<option value={'string'}>{'String'}</option>
-				<option disabled value={'number'}>{'Number'}</option>
+				<option value={'number'}>{'Number'}</option>
 				<option disabled value={'boolean'}>{'Boolean'}</option>
 				<option disabled value={'null'}>{'Null'}</option>
 				<option disabled>{'──────────'}</option>
