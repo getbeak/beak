@@ -9,7 +9,7 @@ import {
 	ProjectInfoPayload,
 	ProjectOpenedPayload,
 	RemoveNodeFromDiskPayload,
-	RequestBodyJsonChangedPayload,
+	RequestBodyJsonEditorNameChangePayload,
 	RequestBodyTextChangedPayload,
 	RequestRenameCancelled,
 	RequestRenameResolved,
@@ -45,13 +45,6 @@ export const requestHeaderAdded = createAction<ToggleableItemAddedPayload>(Actio
 export const requestHeaderUpdated = createAction<ToggleableItemUpdatedPayload>(ActionTypes.REQUEST_HEADER_UPDATED);
 export const requestHeaderRemoved = createAction<ToggleableItemRemovedPayload>(ActionTypes.REQUEST_HEADER_REMOVED);
 
-export const requestBodyTextChanged = createAction<RequestBodyTextChangedPayload>(
-	ActionTypes.REQUEST_BODY_TEXT_CHANGED,
-);
-export const requestBodyJsonChanged = createAction<RequestBodyJsonChangedPayload>(
-	ActionTypes.REQUEST_BODY_JSON_CHANGED,
-);
-
 export const duplicateRequest = createAction<DuplicateRequestPayload>(ActionTypes.DUPLICATE_REQUEST);
 export const insertRequestNode = createAction<Nodes>(ActionTypes.INSERT_REQUEST_NODE);
 export const insertFolderNode = createAction<Nodes>(ActionTypes.INSERT_FOLDER_NODE);
@@ -70,6 +63,13 @@ export const requestRenameSubmitted = createAction<RequestRenameSubmitted>(Actio
 export const requestRenameResolved = createAction<RequestRenameResolved>(ActionTypes.REQUEST_RENAME_RESOLVED);
 
 export const setLatestWrite = createAction<LatestWrite>(ActionTypes.SET_LATEST_WRITE);
+
+export const requestBodyTextChanged = createAction<RequestBodyTextChangedPayload>(
+	ActionTypes.REQUEST_BODY_TEXT_CHANGED,
+);
+export const requestBodyJsonEditorNameChangePayload = createAction<RequestBodyJsonEditorNameChangePayload>(
+	ActionTypes.REQUEST_BODY_JSON_EDITOR_NAME_CHANGE,
+);
 
 export default {
 	startProject,
@@ -94,9 +94,6 @@ export default {
 	requestHeaderUpdated,
 	requestHeaderRemoved,
 
-	requestBodyTextChanged,
-	requestBodyJsonChanged,
-
 	duplicateRequest,
 	insertRequestNode,
 	insertFolderNode,
@@ -115,4 +112,7 @@ export default {
 	requestRenameResolved,
 
 	setLatestWrite,
+
+	requestBodyTextChanged,
+	requestBodyJsonEditorNameChangePayload,
 };

@@ -143,12 +143,12 @@ const projectReducer = createReducer(initialState, builder => {
 			node.info.body.type = 'text';
 			node.info.body.payload = action.payload.text;
 		})
-		.addCase(actions.requestBodyJsonChanged, (state, action) => {
-			const node = state.tree![action.payload.requestId] as RequestNode;
+		// .addCase(actions.requestBodyJsonChanged, (state, action) => {
+		// 	const node = state.tree![action.payload.requestId] as RequestNode;
 
-			node.info.body.type = 'json';
-			node.info.body.payload = action.payload.json;
-		})
+		// 	node.info.body.type = 'json';
+		// 	node.info.body.payload = action.payload.json;
+		// })
 
 		.addCase(actions.insertRequestNode, (state, action) => {
 			const node = action.payload as RequestNode;

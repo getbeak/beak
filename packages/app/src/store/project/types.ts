@@ -1,4 +1,3 @@
-import { Entries } from '@beak/common/types/beak-json-editor';
 import { Tree, ValueParts } from '@beak/common/types/beak-project';
 
 export const ActionTypes = {
@@ -24,8 +23,6 @@ export const ActionTypes = {
 	REQUEST_HEADER_UPDATED: '@beak/global/project/REQUEST_HEADER_UPDATED',
 	REQUEST_HEADER_REMOVED: '@beak/global/project/REQUEST_HEADER_REMOVED',
 
-	REQUEST_BODY_TEXT_CHANGED: '@beak/global/project/REQUEST_BODY_TEXT_CHANGED',
-	REQUEST_BODY_JSON_CHANGED: '@beak/global/project/REQUEST_BODY_JSON_CHANGED',
 
 	DUPLICATE_REQUEST: '@beak/global/project/DUPLICATE_REQUEST',
 	INSERT_REQUEST_NODE: '@beak/global/project/INSERT_REQUEST_NODE',
@@ -45,6 +42,12 @@ export const ActionTypes = {
 	REQUEST_RENAME_RESOLVED: '@beak/global/project/REQUEST_RENAME_RESOLVED',
 
 	SET_LATEST_WRITE: '@beak/global/project/SET_LATEST_WRITE',
+
+	// TODO(afr): Move the text editor into the below
+	REQUEST_BODY_TEXT_CHANGED: '@beak/global/project/REQUEST_BODY_TEXT_CHANGED',
+	REQUEST_BODY_JSON_EDITOR_NAME_CHANGE: '@beak/global/project/REQUEST_BODY_JSON_EDITOR_NAME_CHANGE',
+	REQUEST_BODY_JSON_EDITOR_VALUE_CHANGE: '@beak/global/project/REQUEST_BODY_JSON_EDITOR_VALUE_CHANGE',
+	REQUEST_BODY_JSON_EDITOR_TYPE_CHANGE: '@beak/global/project/REQUEST_BODY_JSON_EDITOR_TYPE_CHANGE',
 };
 
 export interface State {
@@ -117,7 +120,6 @@ export interface ToggleableItemRemovedPayload extends RequestIdPayload {
 }
 
 export interface RequestBodyTextChangedPayload extends RequestIdPayload { text: string }
-export interface RequestBodyJsonChangedPayload extends RequestIdPayload { json: Entries }
 
 export interface RequestRenameStarted extends RequestIdPayload { }
 export interface RequestRenameCancelled extends RequestIdPayload { }
@@ -144,6 +146,11 @@ export interface ActiveRename {
 export interface LatestWrite {
 	filePath: string;
 	writtenAt: number;
+}
+
+export interface RequestBodyJsonEditorNameChangePayload extends RequestIdPayload {
+	jPath: string;
+	name: string;
 }
 
 export default {

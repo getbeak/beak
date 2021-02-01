@@ -19,8 +19,10 @@ const updateWatcherActions = [
 	ActionTypes.REQUEST_HEADER_ADDED,
 	ActionTypes.REQUEST_HEADER_UPDATED,
 	ActionTypes.REQUEST_HEADER_REMOVED,
-	ActionTypes.REQUEST_BODY_JSON_CHANGED,
 	ActionTypes.REQUEST_BODY_TEXT_CHANGED,
+	ActionTypes.REQUEST_BODY_JSON_EDITOR_NAME_CHANGE,
+	ActionTypes.REQUEST_BODY_JSON_EDITOR_TYPE_CHANGE,
+	ActionTypes.REQUEST_BODY_JSON_EDITOR_VALUE_CHANGE,
 ];
 
 export default function* projectSaga() {
