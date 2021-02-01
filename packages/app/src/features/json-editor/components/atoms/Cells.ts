@@ -14,7 +14,7 @@ export const HeaderValueCell = styled(HeaderCell)`
 export const HeaderAction = styled(HeaderCell)``;
 
 export const BodyCell = styled.div`
-	> article, > input {
+	> article, > input[type=text] {
 		width: calc(100% - 10px);
 		height: calc(100% - 5px);
 		border: none;
@@ -24,7 +24,7 @@ export const BodyCell = styled.div`
 		border: 1px solid transparent;
 		font-size: 12px;
 
-		/* color: ${props => props.theme.ui.textOnFill}; */
+		color: ${props => props.theme.ui.textMinor};
 
 		&:focus {
 			box-shadow: none !important;
