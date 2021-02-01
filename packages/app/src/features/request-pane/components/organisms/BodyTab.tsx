@@ -92,7 +92,10 @@ const BodyTab: React.FunctionComponent<BodyTabProps> = props => {
 					</React.Fragment>
 				)}
 				{tab === 'json' && (
-					<JsonEditor value={node.info.body.payload as Entries} />
+					<JsonEditor
+						requestId={node.id}
+						value={node.info.body.payload as Entries}
+					/>
 				)}
 				{tab === 'url_encoded_form' && (
 					<BasicTableView

@@ -12,10 +12,11 @@ import { Body, Header, Row } from './atoms/Structure';
 import { JsonItemEntry } from './molecules/JsonItem';
 
 interface JsonEditorProps {
+	requestId: string;
 	value: Entries;
 }
 
-const JsonEditor: React.FunctionComponent<JsonEditorProps> = ({ value }) => (
+const JsonEditor: React.FunctionComponent<JsonEditorProps> = ({ requestId, value }) => (
 	<Wrapper>
 		<Header>
 			<Row>
@@ -27,7 +28,9 @@ const JsonEditor: React.FunctionComponent<JsonEditorProps> = ({ value }) => (
 		</Header>
 		<Body>
 			<JsonItemEntry
+				requestId={requestId}
 				depth={0}
+				jPath={''}
 				value={value}
 			/>
 		</Body>

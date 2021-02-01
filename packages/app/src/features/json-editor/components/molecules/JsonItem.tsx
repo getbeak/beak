@@ -1,4 +1,5 @@
 import VariableInput from '@beak/app/features/variable-input/components/molecules/VariableInput';
+import { actions } from '@beak/app/store/project';
 import {
 	Entries,
 	NamedEntries,
@@ -8,6 +9,8 @@ import {
 	StringEntry,
 } from '@beak/common/types/beak-json-editor';
 import React from 'react';
+import { useDispatch } from 'react-redux';
+import * as uuid from 'uuid';
 
 import {
 	BodyAction,
@@ -21,23 +24,26 @@ import TypeSelector from './TypeSelector';
 
 interface JsonItemEntryProps {
 	depth: number;
-	jPath?: string;
+	jPath: string;
+	requestId: string;
 	value: Entries;
 }
 
 export const JsonItemEntry: React.FunctionComponent<JsonItemEntryProps> = props => {
-	const { depth, jPath, value } = props;
+	const { depth, jPath, requestId, value } = props;
 
 	switch (value.type) {
 		case 'string':
-			return <JsonStringEntry depth={depth} jPath={jPath} value={value} />;
+			return <JsonStringEntry depth={depth} jPath={jPath} requestId={requestId} value={value} />;
 
 		// case 'number':
 		// case 'boolean':
 		// case 'null':
+
 		// case 'array':
+
 		case 'object':
-			return <JsonObjectEntry depth={depth} jPath={jPath} value={value} />;
+			return <JsonObjectEntry depth={depth} jPath={jPath} requestId={requestId} value={value} />;
 
 		default:
 			return null;
@@ -49,17 +55,30 @@ interface JsonStringEntryProps extends JsonItemEntryProps {
 }
 
 const JsonStringEntry: React.FunctionComponent<JsonStringEntryProps> = props => {
-	const { depth, value } = props;
+	const { depth, jPath, requestId, value } = props;
+	const dispatch = useDispatch();
 
 	return (
 		<Row>
 			<BodyPrimaryCell depth={depth}>
 				{/* Fold */}
 				{/* Toggle */}
-				<input disabled value={detectName(depth, value)} />
+				<input
+					disabled={depth === 0}
+					type={'text'}
+					value={detectName(depth, value)}
+					onChange={e => dispatch(actions.requestBodyJsonEditorNameChangePayload({
+						requestId,
+						name: e.target.value,
+						jPath,
+					}))}
+				/>
 			</BodyPrimaryCell>
 			<BodyTypeCell>
-				<TypeSelector />
+				<TypeSelector
+					value={value.type}
+					onChange={() => { }}
+				/>
 			</BodyTypeCell>
 			<BodyInputValueCell>
 				<VariableInput
@@ -77,7 +96,8 @@ interface JsonObjectEntryProps extends JsonItemEntryProps {
 }
 
 const JsonObjectEntry: React.FunctionComponent<JsonObjectEntryProps> = props => {
-	const { depth, value } = props;
+	const { depth, jPath, requestId, value } = props;
+	const dispatch = useDispatch();
 	const children = value.value;
 
 	return (
@@ -86,20 +106,34 @@ const JsonObjectEntry: React.FunctionComponent<JsonObjectEntryProps> = props => 
 				<BodyPrimaryCell depth={depth}>
 					{/* Fold */}
 					{/* Toggle */}
-					<input disabled value={detectName(depth, value)} />
+					<input
+						disabled={depth === 0}
+						type={'text'}
+						value={detectName(depth, value)}
+						onChange={e => dispatch(actions.requestBodyJsonEditorNameChangePayload({
+							requestId,
+							name: e.target.value,
+							jPath,
+						}))}
+					/>
 				</BodyPrimaryCell>
 				<BodyTypeCell>
-					<TypeSelector />
+					<TypeSelector
+						value={value.type}
+						onChange={() => { }}
+					/>
 				</BodyTypeCell>
 				<BodyLabelValueCell>
-					{`${children.length} ${children.length === 1 ? 'keys' : 'keys'}`}
+					{`${children.length} ${children.length === 1 ? 'key' : 'keys'}`}
 				</BodyLabelValueCell>
 				<BodyAction />
 			</Row>
-			{children.map(c => (
+			{children.map((c, i) => (
 				<JsonItemEntry
 					depth={depth + 1}
-					jPath={''}
+					jPath={[jPath, `value[${i}]`].join('.')}
+					key={uuid.v4()}
+					requestId={requestId}
 					value={c}
 				/>
 			))}

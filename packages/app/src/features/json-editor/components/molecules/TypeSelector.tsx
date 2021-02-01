@@ -9,30 +9,35 @@ import {
 	faStream,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import styled from 'styled-components';
 
-const TypeSelector: React.FunctionComponent = () => {
-	const [selected, setSelected] = useState<EntryType>('string');
+interface TypeSelectorProps {
+	value: EntryType;
+	onChange: (entryType: EntryType) => void;
+}
+
+const TypeSelector: React.FunctionComponent<TypeSelectorProps> = ({ value, onChange }) => {
 	const selectRef = useRef<HTMLSelectElement>(null);
-	const icon = getIconFromType(selected);
+	const icon = getIconFromType(value);
 
 	return (
 		<Wrapper>
 			<Select
 				ref={selectRef}
-				value={selected}
+				value={value}
+				tabIndex={-1}
 				onChange={e => {
-					setSelected(e.currentTarget.value as EntryType);
+					onChange(e.currentTarget.value as EntryType);
 					selectRef.current!.blur();
 				}}
 			>
 				<option value={'string'}>{'String'}</option>
-				<option value={'number'}>{'Number'}</option>
-				<option value={'boolean'}>{'Boolean'}</option>
-				<option value={'null'}>{'Null'}</option>
+				<option disabled value={'number'}>{'Number'}</option>
+				<option disabled value={'boolean'}>{'Boolean'}</option>
+				<option disabled value={'null'}>{'Null'}</option>
 				<option disabled>{'──────────'}</option>
-				<option value={'array'}>{'Array'}</option>
+				<option disabled value={'array'}>{'Array'}</option>
 				<option value={'object'}>{'Object'}</option>
 			</Select>
 			<Button>
@@ -46,13 +51,13 @@ const Wrapper = styled.div`
 	position: relative;
 `;
 
-const Button = styled.button`
+const Button = styled.div`
 	padding: 1px 0;
 	width: 22px;
+	margin: 0 auto;
 	margin-top: 1px;
 	text-align: center;
 
-	background: none;
 	border-radius: 2px;
 	border: 1px solid ${p => p.theme.ui.backgroundBorderSeparator};
 	color: ${p => p.theme.ui.textMinor};
@@ -66,6 +71,7 @@ const Button = styled.button`
 const Select = styled.select`
 	position: absolute;
 
+	margin: 0 auto;
 	opacity: 0;
 	width: 22px;
 	height: 20px;
