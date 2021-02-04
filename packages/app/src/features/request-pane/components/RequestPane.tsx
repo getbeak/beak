@@ -1,5 +1,5 @@
 import BeakHubContext from '@beak/app/contexts/beak-hub-context';
-import { RequestPreference } from '@beak/common/dist/types/beak-hub';
+import BeakRequestPreferences from '@beak/app/lib/beak-hub/request-preferences';
 import { RequestNode } from '@beak/common/types/beak-project';
 import React, { useContext, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -13,17 +13,19 @@ import Header from './organisms/Header';
 import Modifiers from './organisms/Modifiers';
 
 const RequestPane: React.FunctionComponent = () => {
-	const [preferences, setPreferences] = useState<RequestPreference | null>(null);
+	const [preferences, setPreferences] = useState<BeakRequestPreferences>();
 	const { tree, selectedTabPayload } = useSelector(s => s.global.project);
 	const selectedNode = tree[selectedTabPayload!];
 	const hub = useContext(BeakHubContext);
 
 	useEffect(() => {
-		if (!selectedTabPayload)
+		if (!selectedTabPayload || !selectedNode)
 			return;
 
-		hub!.getRequestPreferences(selectedTabPayload!).then(setPreferences);
-	}, [selectedTabPayload]);
+		const reqPref = new BeakRequestPreferences(hub!, selectedNode.id);
+
+		reqPref.load().then(() => setPreferences(reqPref));
+	}, [selectedTabPayload, selectedNode]);
 
 	// TODO(afr): Maybe some sort of purgatory state here
 	if (!selectedTabPayload)

@@ -1,5 +1,4 @@
 import BasicTableView from '@beak/app/components/molecules/BasicTableView';
-import BeakHubContext from '@beak/app/contexts/beak-hub-context';
 import JsonEditor from '@beak/app/features/json-editor/components/JsonEditor';
 import { ipcDialogService } from '@beak/app/lib/ipc';
 import { requestBodyTextChanged } from '@beak/app/store/project/actions';
@@ -23,10 +22,9 @@ export interface BodyTabProps {
 
 const BodyTab: React.FunctionComponent<BodyTabProps> = props => {
 	const dispatch = useDispatch();
-	const preferences = useContext(RequestPreferencesContext)!;
+	const reqPref = useContext(RequestPreferencesContext)!;
 	const { node } = props;
-	const hub = useContext(BeakHubContext);
-	const [tab, setTab] = useState<RequestPreferenceBodySubTab>(preferences.bodySubTab);
+	const [tab, setTab] = useState<RequestPreferenceBodySubTab>(reqPref.getPreferences().bodySubTab);
 
 	async function setTabWithConfirmation(newTab: RequestPreferenceBodySubTab) {
 		if (newTab === tab)
@@ -45,7 +43,7 @@ const BodyTab: React.FunctionComponent<BodyTabProps> = props => {
 		if (result.response === 1)
 			return;
 
-		hub!.setRequestPreferences(node.id, { mainTab: 'body', bodySubTab: tab });
+		reqPref.setBodySubTab(tab);
 		setTab(newTab);
 	}
 
