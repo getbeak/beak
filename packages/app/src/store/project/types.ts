@@ -49,6 +49,7 @@ export const ActionTypes = {
 	REQUEST_BODY_JSON_EDITOR_NAME_CHANGE: '@beak/global/project/REQUEST_BODY_JSON_EDITOR_NAME_CHANGE',
 	REQUEST_BODY_JSON_EDITOR_VALUE_CHANGE: '@beak/global/project/REQUEST_BODY_JSON_EDITOR_VALUE_CHANGE',
 	REQUEST_BODY_JSON_EDITOR_TYPE_CHANGE: '@beak/global/project/REQUEST_BODY_JSON_EDITOR_TYPE_CHANGE',
+	REQUEST_BODY_JSON_EDITOR_ENABLED_CHANGE: '@beak/global/project/REQUEST_BODY_JSON_EDITOR_ENABLED_CHANGE',
 };
 
 export interface State {
@@ -162,6 +163,11 @@ export interface RequestBodyJsonEditorValueChangePayload extends RequestIdPayloa
 export interface RequestBodyJsonEditorTypeChangePayload extends RequestIdPayload {
 	jPath: string;
 	type: EntryType;
+}
+
+export interface RequestBodyJsonEditorEnabledChangePayload extends RequestIdPayload {
+	jPath: string;
+	enabled: boolean;
 }
 
 export default {

@@ -228,6 +228,13 @@ const projectReducer = createReducer(initialState, builder => {
 			const existingEntry = get(body.payload, jPath.substr(1));
 
 			set(body.payload, jPath.substr(1), convertEntryToType(type, existingEntry));
+		})
+		.addCase(actions.requestBodyJsonEditorEnabledChange, (state, { payload }) => {
+			const { jPath, enabled, requestId } = payload;
+			const node = state.tree[requestId] as RequestNode;
+			const body = node.info.body as RequestBodyJson;
+
+			set(body.payload, jPath.substr(1), enabled);
 		});
 });
 

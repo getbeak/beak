@@ -9,6 +9,7 @@ import {
 	ProjectInfoPayload,
 	ProjectOpenedPayload,
 	RemoveNodeFromDiskPayload,
+	RequestBodyJsonEditorEnabledChangePayload,
 	RequestBodyJsonEditorNameChangePayload,
 	RequestBodyJsonEditorTypeChangePayload,
 	RequestBodyJsonEditorValueChangePayload,
@@ -78,6 +79,9 @@ export const requestBodyJsonEditorValueChange = createAction<RequestBodyJsonEdit
 export const requestBodyJsonEditorTypeChange = createAction<RequestBodyJsonEditorTypeChangePayload>(
 	ActionTypes.REQUEST_BODY_JSON_EDITOR_TYPE_CHANGE,
 );
+export const requestBodyJsonEditorEnabledChange = createAction<RequestBodyJsonEditorEnabledChangePayload>(
+	ActionTypes.REQUEST_BODY_JSON_EDITOR_ENABLED_CHANGE,
+);
 
 export default {
 	startProject,
@@ -125,4 +129,5 @@ export default {
 	requestBodyJsonEditorNameChange,
 	requestBodyJsonEditorValueChange,
 	requestBodyJsonEditorTypeChange,
+	requestBodyJsonEditorEnabledChange,
 };
