@@ -25,7 +25,7 @@ const EntryFolder: React.FunctionComponent<EntryFolderProps> = props => {
 	);
 };
 
-export const ExtryFolderIrrelevant: React.FunctionComponent = () => (<Wrapper />);
+export const EntryFolderIrrelevant: React.FunctionComponent = () => (<Wrapper />);
 
 const Wrapper = styled.div`
 	margin-top: 1px;

@@ -23,7 +23,7 @@ import {
 	BodyTypeCell,
 } from '../atoms/Cells';
 import { Row } from '../atoms/Structure';
-import EntryFolder, { ExtryFolderIrrelevant } from './EntryFolder';
+import EntryFolder, { EntryFolderIrrelevant } from './EntryFolder';
 import EntryToggler from './EntryToggler';
 import TypeSelector from './TypeSelector';
 
@@ -68,7 +68,7 @@ const JsonStringEntry: React.FunctionComponent<JsonStringEntryProps> = props => 
 	return (
 		<Row>
 			<BodyPrimaryCell depth={depth}>
-				<ExtryFolderIrrelevant />
+				<EntryFolderIrrelevant />
 				<EntryToggler
 					jPath={[jPath, '[enabled]'].filter(Boolean).join('.')}
 					requestId={requestId}
@@ -122,7 +122,7 @@ const JsonNumberEntry: React.FunctionComponent<JsonNumberEntryProps> = props => 
 	return (
 		<Row>
 			<BodyPrimaryCell depth={depth}>
-				<ExtryFolderIrrelevant />
+				<EntryFolderIrrelevant />
 				<EntryToggler
 					jPath={[jPath, '[enabled]'].filter(Boolean).join('.')}
 					requestId={requestId}
