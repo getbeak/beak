@@ -1,3 +1,4 @@
+import actions from '@beak/app/store/project/actions';
 import { EntryType } from '@beak/common/types/beak-json-editor';
 import {
 	faBan,
@@ -10,16 +11,21 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useRef } from 'react';
+import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 
 interface TypeSelectorProps {
+	requestId: string;
+	jPath: string;
 	value: EntryType;
-	onChange: (entryType: EntryType) => void;
+	onChange?: (entryType: EntryType) => void;
 }
 
-const TypeSelector: React.FunctionComponent<TypeSelectorProps> = ({ value, onChange }) => {
+const TypeSelector: React.FunctionComponent<TypeSelectorProps> = props => {
+	const { requestId, jPath, value, onChange } = props;
 	const selectRef = useRef<HTMLSelectElement>(null);
 	const icon = getIconFromType(value);
+	const dispatch = useDispatch();
 
 	return (
 		<Wrapper>
@@ -28,7 +34,17 @@ const TypeSelector: React.FunctionComponent<TypeSelectorProps> = ({ value, onCha
 				value={value}
 				tabIndex={-1}
 				onChange={e => {
-					onChange(e.currentTarget.value as EntryType);
+					const type = e.currentTarget.value as EntryType;
+
+					dispatch(actions.requestBodyJsonEditorTypeChange({
+						requestId,
+						jPath,
+						type,
+					}));
+
+					if (onChange)
+						onChange(type);
+
 					selectRef.current!.blur();
 				}}
 			>
