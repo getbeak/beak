@@ -235,6 +235,20 @@ const projectReducer = createReducer(initialState, builder => {
 			const body = node.info.body as RequestBodyJson;
 
 			set(body.payload, jPath, enabled);
+		})
+		.addCase(actions.requestBodyJsonEditorAddEntry, (state, { payload }) => {
+			const { jPath, requestId } = payload;
+			const node = state.tree[requestId] as RequestNode;
+			const body = node.info.body as RequestBodyJson;
+
+			console.log(jPath);
+		})
+		.addCase(actions.requestBodyJsonEditorRemoveEntry, (state, { payload }) => {
+			const { jPath, requestId } = payload;
+			const node = state.tree[requestId] as RequestNode;
+			const body = node.info.body as RequestBodyJson;
+
+			console.log(jPath);
 		});
 });
 
