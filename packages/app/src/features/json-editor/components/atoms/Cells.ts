@@ -13,7 +13,15 @@ export const HeaderValueCell = styled(HeaderCell)`
 `;
 export const HeaderAction = styled(HeaderCell)``;
 
-export const BodyCell = styled.div`
+export const BodyCell = styled.div``;
+export const BodyPrimaryCell = styled(BodyCell) <{ depth: number }>`
+	display: flex;
+	flex-direction: row;
+	padding-left: ${p => p.depth * 10}px;
+`;
+export const BodyInputWrapper = styled(BodyCell)`
+	flex-grow: 1;
+
 	> article, > input[type=text] {
 		width: calc(100% - 10px);
 		height: calc(100% - 5px);
@@ -35,9 +43,6 @@ export const BodyCell = styled.div`
 		color: inherit;
 		user-select: none;
 	}
-`;
-export const BodyPrimaryCell = styled(BodyCell)<{ depth: number }>`
-	padding-left: ${p => p.depth * 10}px;
 `;
 export const BodyTypeCell = styled(BodyCell)``;
 export const BodyInputValueCell = styled(BodyCell)``;

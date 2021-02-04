@@ -1,3 +1,4 @@
+import RequestPreferencesContext from '@beak/app/features/request-pane/contexts/request-preferences-context';
 import VariableInput from '@beak/app/features/variable-input/components/molecules/VariableInput';
 import { actions } from '@beak/app/store/project';
 import {
@@ -10,17 +11,20 @@ import {
 	ObjectEntry,
 	StringEntry,
 } from '@beak/common/types/beak-json-editor';
-import React from 'react';
+import React, { useContext, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
 import {
 	BodyAction,
 	BodyInputValueCell,
+	BodyInputWrapper,
 	BodyLabelValueCell,
 	BodyPrimaryCell,
 	BodyTypeCell,
 } from '../atoms/Cells';
 import { Row } from '../atoms/Structure';
+import EntryFolder, { ExtryFolderIrrelevant } from './EntryFolder';
+import EntryToggler from './EntryToggler';
 import TypeSelector from './TypeSelector';
 
 interface JsonItemEntryProps {
@@ -64,38 +68,43 @@ const JsonStringEntry: React.FunctionComponent<JsonStringEntryProps> = props => 
 	return (
 		<Row>
 			<BodyPrimaryCell depth={depth}>
-				{/* Fold */}
-				{/* Toggle */}
-				<input
-					disabled={depth === 0}
-					type={'text'}
-					value={detectName(depth, value)}
-					onChange={e => dispatch(actions.requestBodyJsonEditorNameChange({
-						requestId,
-						name: e.target.value,
-						jPath: [jPath, '[name]'].join('.'),
-					}))}
+				<ExtryFolderIrrelevant />
+				<EntryToggler
+					jPath={[jPath, '[enabled]'].join('.')}
+					requestId={requestId}
+					value={value.enabled}
 				/>
+				<BodyInputWrapper>
+					<input
+						disabled={depth === 0}
+						type={'text'}
+						value={detectName(depth, value)}
+						onChange={e => dispatch(actions.requestBodyJsonEditorNameChange({
+							requestId,
+							name: e.target.value,
+							jPath: [jPath, '[name]'].join('.'),
+						}))}
+					/>
+				</BodyInputWrapper>
 			</BodyPrimaryCell>
 			<BodyTypeCell>
 				<TypeSelector
+					requestId={requestId}
+					jPath={jPath}
 					value={value.type}
-					onChange={type => dispatch(actions.requestBodyJsonEditorTypeChange({
-						requestId,
-						jPath,
-						type,
-					}))}
 				/>
 			</BodyTypeCell>
 			<BodyInputValueCell>
-				<VariableInput
-					parts={props.value.value}
-					onChange={parts => dispatch(actions.requestBodyJsonEditorValueChange({
-						requestId,
-						value: parts,
-						jPath: [jPath, '[value]'].join('.'),
-					}))}
-				/>
+				<BodyInputWrapper>
+					<VariableInput
+						parts={props.value.value}
+						onChange={parts => dispatch(actions.requestBodyJsonEditorValueChange({
+							requestId,
+							value: parts,
+							jPath: [jPath, '[value]'].join('.'),
+						}))}
+					/>
+				</BodyInputWrapper>
 			</BodyInputValueCell>
 			<BodyAction />
 		</Row>
@@ -113,38 +122,43 @@ const JsonNumberEntry: React.FunctionComponent<JsonNumberEntryProps> = props => 
 	return (
 		<Row>
 			<BodyPrimaryCell depth={depth}>
-				{/* Fold */}
-				{/* Toggle */}
-				<input
-					disabled={depth === 0}
-					type={'text'}
-					value={detectName(depth, value)}
-					onChange={e => dispatch(actions.requestBodyJsonEditorNameChange({
-						requestId,
-						name: e.target.value,
-						jPath: [jPath, '[name]'].join('.'),
-					}))}
+				<ExtryFolderIrrelevant />
+				<EntryToggler
+					jPath={[jPath, '[enabled]'].join('.')}
+					requestId={requestId}
+					value={value.enabled}
 				/>
+				<BodyInputWrapper>
+					<input
+						disabled={depth === 0}
+						type={'text'}
+						value={detectName(depth, value)}
+						onChange={e => dispatch(actions.requestBodyJsonEditorNameChange({
+							requestId,
+							name: e.target.value,
+							jPath: [jPath, '[name]'].join('.'),
+						}))}
+					/>
+				</BodyInputWrapper>
 			</BodyPrimaryCell>
 			<BodyTypeCell>
 				<TypeSelector
+					requestId={requestId}
+					jPath={jPath}
 					value={value.type}
-					onChange={type => dispatch(actions.requestBodyJsonEditorTypeChange({
-						requestId,
-						jPath,
-						type,
-					}))}
 				/>
 			</BodyTypeCell>
 			<BodyInputValueCell>
-				<VariableInput
-					parts={props.value.value}
-					onChange={parts => dispatch(actions.requestBodyJsonEditorValueChange({
-						requestId,
-						value: parts,
-						jPath: [jPath, '[value]'].join('.'),
-					}))}
-				/>
+				<BodyInputWrapper>
+					<VariableInput
+						parts={props.value.value}
+						onChange={parts => dispatch(actions.requestBodyJsonEditorValueChange({
+							requestId,
+							value: parts,
+							jPath: [jPath, '[value]'].join('.'),
+						}))}
+					/>
+				</BodyInputWrapper>
 			</BodyInputValueCell>
 			<BodyAction />
 		</Row>
@@ -157,6 +171,8 @@ interface JsonObjectEntryProps extends JsonItemEntryProps {
 
 const JsonObjectEntry: React.FunctionComponent<JsonObjectEntryProps> = props => {
 	const { depth, jPath, requestId, value } = props;
+	const reqPref = useContext(RequestPreferencesContext);
+	const [expanded, setExpanded] = useState(reqPref!.getPreferences().jsonEditor?.expands[jPath]);
 	const dispatch = useDispatch();
 	const children = value.value;
 
@@ -164,23 +180,35 @@ const JsonObjectEntry: React.FunctionComponent<JsonObjectEntryProps> = props => 
 		<React.Fragment>
 			<Row>
 				<BodyPrimaryCell depth={depth}>
-					{/* Fold */}
-					{/* Toggle */}
-					<input
-						disabled={depth === 0}
-						type={'text'}
-						value={detectName(depth, value)}
-						onChange={e => dispatch(actions.requestBodyJsonEditorNameChange({
-							requestId,
-							name: e.target.value,
-							jPath,
-						}))}
+					<EntryFolder
+						jPath={jPath}
+						expanded={expanded}
+						requestId={requestId}
+						onChange={expanded => setExpanded(expanded)}
 					/>
+					<EntryToggler
+						jPath={[jPath, '[enabled]'].join('.')}
+						requestId={requestId}
+						value={value.enabled}
+					/>
+					<BodyInputWrapper>
+						<input
+							disabled={depth === 0}
+							type={'text'}
+							value={detectName(depth, value)}
+							onChange={e => dispatch(actions.requestBodyJsonEditorNameChange({
+								requestId,
+								name: e.target.value,
+								jPath,
+							}))}
+						/>
+					</BodyInputWrapper>
 				</BodyPrimaryCell>
 				<BodyTypeCell>
 					<TypeSelector
+						requestId={requestId}
+						jPath={jPath}
 						value={value.type}
-						onChange={() => { }}
 					/>
 				</BodyTypeCell>
 				<BodyLabelValueCell>
@@ -188,7 +216,7 @@ const JsonObjectEntry: React.FunctionComponent<JsonObjectEntryProps> = props => 
 				</BodyLabelValueCell>
 				<BodyAction />
 			</Row>
-			{children.map((c, i) => (
+			{expanded && children.map((c, i) => (
 				<JsonItemEntry
 					depth={depth + 1}
 					jPath={[jPath, '[value]', `[${i}]`].join('.')}
