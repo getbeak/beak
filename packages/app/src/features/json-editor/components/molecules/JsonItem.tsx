@@ -23,6 +23,7 @@ import {
 	BodyTypeCell,
 } from '../atoms/Cells';
 import { Row } from '../atoms/Structure';
+import EntryActions from './EntryActions';
 import EntryFolder, { EntryFolderIrrelevant } from './EntryFolder';
 import EntryToggler from './EntryToggler';
 import TypeSelector from './TypeSelector';
@@ -106,7 +107,9 @@ const JsonStringEntry: React.FunctionComponent<JsonStringEntryProps> = props => 
 					/>
 				</BodyInputWrapper>
 			</BodyInputValueCell>
-			<BodyAction />
+			<BodyAction>
+				<EntryActions jPath={jPath} requestId={requestId} />
+			</BodyAction>
 		</Row>
 	);
 };
@@ -160,7 +163,9 @@ const JsonNumberEntry: React.FunctionComponent<JsonNumberEntryProps> = props => 
 					/>
 				</BodyInputWrapper>
 			</BodyInputValueCell>
-			<BodyAction />
+			<BodyAction>
+				<EntryActions jPath={jPath} requestId={requestId} />
+			</BodyAction>
 		</Row>
 	);
 };
@@ -214,7 +219,9 @@ const JsonObjectEntry: React.FunctionComponent<JsonObjectEntryProps> = props => 
 				<BodyLabelValueCell>
 					{`${children.length} ${children.length === 1 ? 'key' : 'keys'}`}
 				</BodyLabelValueCell>
-				<BodyAction />
+				<BodyAction>
+					<EntryActions jPath={jPath} requestId={requestId} />
+				</BodyAction>
 			</Row>
 			{expanded && children.map((c, i) => (
 				<JsonItemEntry
