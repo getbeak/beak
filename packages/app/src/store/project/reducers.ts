@@ -212,29 +212,29 @@ const projectReducer = createReducer(initialState, builder => {
 			if (atRoot)
 				return;
 
-			set(body.payload, jPath.substr(1), name);
+			set(body.payload, jPath, name);
 		})
 		.addCase(actions.requestBodyJsonEditorValueChange, (state, { payload }) => {
 			const { jPath, value, requestId } = payload;
 			const node = state.tree[requestId] as RequestNode;
 			const body = node.info.body as RequestBodyJson;
 
-			set(body.payload, jPath.substr(1), value);
+			set(body.payload, jPath, value);
 		})
 		.addCase(actions.requestBodyJsonEditorTypeChange, (state, { payload }) => {
 			const { jPath, type, requestId } = payload;
 			const node = state.tree[requestId] as RequestNode;
 			const body = node.info.body as RequestBodyJson;
-			const existingEntry = get(body.payload, jPath.substr(1));
+			const existingEntry = get(body.payload, jPath);
 
-			set(body.payload, jPath.substr(1), convertEntryToType(type, existingEntry));
+			set(body.payload, jPath, convertEntryToType(type, existingEntry));
 		})
 		.addCase(actions.requestBodyJsonEditorEnabledChange, (state, { payload }) => {
 			const { jPath, enabled, requestId } = payload;
 			const node = state.tree[requestId] as RequestNode;
 			const body = node.info.body as RequestBodyJson;
 
-			set(body.payload, jPath.substr(1), enabled);
+			set(body.payload, jPath, enabled);
 		});
 });
 

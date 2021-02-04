@@ -70,7 +70,7 @@ const JsonStringEntry: React.FunctionComponent<JsonStringEntryProps> = props => 
 			<BodyPrimaryCell depth={depth}>
 				<ExtryFolderIrrelevant />
 				<EntryToggler
-					jPath={[jPath, '[enabled]'].join('.')}
+					jPath={[jPath, '[enabled]'].filter(Boolean).join('.')}
 					requestId={requestId}
 					value={value.enabled}
 				/>
@@ -82,7 +82,7 @@ const JsonStringEntry: React.FunctionComponent<JsonStringEntryProps> = props => 
 						onChange={e => dispatch(actions.requestBodyJsonEditorNameChange({
 							requestId,
 							name: e.target.value,
-							jPath: [jPath, '[name]'].join('.'),
+							jPath: [jPath, '[name]'].filter(Boolean).join('.'),
 						}))}
 					/>
 				</BodyInputWrapper>
@@ -101,7 +101,7 @@ const JsonStringEntry: React.FunctionComponent<JsonStringEntryProps> = props => 
 						onChange={parts => dispatch(actions.requestBodyJsonEditorValueChange({
 							requestId,
 							value: parts,
-							jPath: [jPath, '[value]'].join('.'),
+							jPath: [jPath, '[value]'].filter(Boolean).join('.'),
 						}))}
 					/>
 				</BodyInputWrapper>
@@ -124,7 +124,7 @@ const JsonNumberEntry: React.FunctionComponent<JsonNumberEntryProps> = props => 
 			<BodyPrimaryCell depth={depth}>
 				<ExtryFolderIrrelevant />
 				<EntryToggler
-					jPath={[jPath, '[enabled]'].join('.')}
+					jPath={[jPath, '[enabled]'].filter(Boolean).join('.')}
 					requestId={requestId}
 					value={value.enabled}
 				/>
@@ -136,7 +136,7 @@ const JsonNumberEntry: React.FunctionComponent<JsonNumberEntryProps> = props => 
 						onChange={e => dispatch(actions.requestBodyJsonEditorNameChange({
 							requestId,
 							name: e.target.value,
-							jPath: [jPath, '[name]'].join('.'),
+							jPath: [jPath, '[name]'].filter(Boolean).join('.'),
 						}))}
 					/>
 				</BodyInputWrapper>
@@ -155,7 +155,7 @@ const JsonNumberEntry: React.FunctionComponent<JsonNumberEntryProps> = props => 
 						onChange={parts => dispatch(actions.requestBodyJsonEditorValueChange({
 							requestId,
 							value: parts,
-							jPath: [jPath, '[value]'].join('.'),
+							jPath: [jPath, '[value]'].filter(Boolean).join('.'),
 						}))}
 					/>
 				</BodyInputWrapper>
@@ -187,7 +187,7 @@ const JsonObjectEntry: React.FunctionComponent<JsonObjectEntryProps> = props => 
 						onChange={expanded => setExpanded(expanded)}
 					/>
 					<EntryToggler
-						jPath={[jPath, '[enabled]'].join('.')}
+						jPath={[jPath, '[enabled]'].filter(Boolean).join('.')}
 						requestId={requestId}
 						value={value.enabled}
 					/>
@@ -219,7 +219,7 @@ const JsonObjectEntry: React.FunctionComponent<JsonObjectEntryProps> = props => 
 			{expanded && children.map((c, i) => (
 				<JsonItemEntry
 					depth={depth + 1}
-					jPath={[jPath, '[value]', `[${i}]`].join('.')}
+					jPath={[jPath, '[value]', `[${i}]`].filter(Boolean).join('.')}
 					key={i}
 					requestId={requestId}
 					value={c}
