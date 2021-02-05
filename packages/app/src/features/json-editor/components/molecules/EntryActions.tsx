@@ -11,18 +11,21 @@ interface EntryActionsProps {
 const EntryActions: React.FunctionComponent<EntryActionsProps> = props => {
 	const { requestId, jPath } = props;
 	const dispatch = useDispatch();
+	const isRoot = jPath === '';
 
 	return (
 		<Wrapper>
-			<Button onClick={() => {
-				// Show warning??
-				dispatch(actions.requestBodyJsonEditorRemoveEntry({
-					jPath,
-					requestId,
-				}));
-			}}>
-				{'-'}
-			</Button>
+			{!isRoot && (
+				<Button onClick={() => {
+					// Show warning??
+					dispatch(actions.requestBodyJsonEditorRemoveEntry({
+						jPath,
+						requestId,
+					}));
+				}}>
+					{'-'}
+				</Button>
+			)}
 			<Button onClick={() => {
 				dispatch(actions.requestBodyJsonEditorAddEntry({
 					jPath,
@@ -36,17 +39,25 @@ const EntryActions: React.FunctionComponent<EntryActionsProps> = props => {
 };
 
 const Wrapper = styled.div`
-	
+	display: flex;
+	height: 100%;
+
+	flex-direction: row;
+	justify-content: flex-end;
+	align-items: center;
 `;
 
-const Button = styled.div`
-	display: inline-block;
+const Button = styled.button`
 	width: 15px; height: 15px;
 	text-align: center;
+	margin-right: 5px;
+	padding: 0;
 
 	background: none;
-	border: 1px solid ${p => p.theme.ui.backgroundBorderSeparator};
+	border: 1px solid ${p => p.theme.ui.blankFill};
+	color: ${p => p.theme.ui.blankFill};
 	border-radius: 100%;
+	line-height: 15px;
 `;
 
 export default EntryActions;
