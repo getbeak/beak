@@ -72,8 +72,9 @@ const Button = styled.div`
 	width: 22px;
 	margin: 0 auto;
 	margin-top: 1px;
-	text-align: center;
+	pointer-events: none;
 
+	text-align: center;
 	border-radius: 2px;
 	border: 1px solid ${p => p.theme.ui.backgroundBorderSeparator};
 	color: ${p => p.theme.ui.textMinor};
@@ -89,7 +90,7 @@ const Select = styled.select`
 
 	margin: 0 auto;
 	opacity: 0;
-	width: 22px;
+	width: 100%;
 	height: 20px;
 `;
 

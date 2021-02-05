@@ -16,7 +16,7 @@ const EntryActions: React.FunctionComponent<EntryActionsProps> = props => {
 	return (
 		<Wrapper>
 			{!isRoot && (
-				<Button onClick={() => {
+				<Button tabIndex={-1} onClick={() => {
 					// Show warning??
 					dispatch(actions.requestBodyJsonEditorRemoveEntry({
 						jPath,
@@ -26,7 +26,7 @@ const EntryActions: React.FunctionComponent<EntryActionsProps> = props => {
 					{'-'}
 				</Button>
 			)}
-			<Button onClick={() => {
+			<Button tabIndex={-1} onClick={() => {
 				dispatch(actions.requestBodyJsonEditorAddEntry({
 					jPath,
 					requestId,
