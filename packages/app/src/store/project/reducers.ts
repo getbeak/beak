@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 
-import { Entries, EntryType, NamedEntries } from '@beak/common/types/beak-json-editor';
+import { Entries, EntryType, NamedEntries, NamedStringEntry, StringEntry } from '@beak/common/types/beak-json-editor';
 import { FolderNode, RequestBodyJson, RequestNode } from '@beak/common/types/beak-project';
 // @ts-ignore
 import ksuid from '@cuvva/ksuid';
@@ -240,19 +240,64 @@ const projectReducer = createReducer(initialState, builder => {
 			const { jPath, requestId } = payload;
 			const node = state.tree[requestId] as RequestNode;
 			const body = node.info.body as RequestBodyJson;
+			const isRoot = jPath === '';
+			const item = (isRoot ? body.payload : get(body.payload, jPath)) as Entries;
+			const insertAsSibling = item.type !== 'array' && item.type !== 'object';
+			const insertBaseJPath = insertAsSibling ? getSiblingPath(jPath) : [jPath, '[value]']
+				.filter(Boolean)
+				.join('.');
 
-			console.log(jPath);
+			const children = get(body.payload, insertBaseJPath);
+			const insertPath = [insertBaseJPath, `[${children.length}]`].join('.');
+			let type = item.type;
+
+			// If we are inserting the item as a sibling, we need to get the parent's type
+			if (insertAsSibling) {
+				const index = insertBaseJPath.lastIndexOf('[value]');
+				const parent = insertBaseJPath.substring(0, index - 1);
+				const itemTwo = parent === '' ? body.payload : get(body.payload, parent) as Entries;
+
+				type = itemTwo.type;
+			}
+
+			if (type === 'object') {
+				set(body.payload, insertPath, {
+					type: 'string',
+					enabled: true,
+					name: '',
+					value: [''],
+				} as NamedStringEntry);
+			} else if (type === 'array') {
+				set(body.payload, insertPath, {
+					type: 'string',
+					enabled: true,
+					value: [''],
+				} as StringEntry);
+			}
 		})
 		.addCase(actions.requestBodyJsonEditorRemoveEntry, (state, { payload }) => {
 			const { jPath, requestId } = payload;
 			const node = state.tree[requestId] as RequestNode;
 			const body = node.info.body as RequestBodyJson;
+			const index = jPath.lastIndexOf('.');
+			const path = jPath.substring(0, index);
+			const removeIndex = Number(jPath.substr(index + 1).replace(/[[\]]/g, ''));
+			const children = get(body.payload, path) as Entries[];
 
-			console.log(jPath);
+			children.splice(removeIndex, 1);
+
+			set(body.payload, path, children);
 		});
 });
 
 export default projectReducer;
+
+function getSiblingPath(jPath: string) {
+	const index = jPath.lastIndexOf('.');
+	const path = jPath.substring(0, index);
+
+	return path;
+}
 
 function convertEntryToType(newType: EntryType, existingEntry: Entries | NamedEntries) {
 	const name = (existingEntry as NamedEntries).name;
