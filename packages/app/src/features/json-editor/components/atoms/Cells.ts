@@ -44,10 +44,14 @@ export const BodyInputWrapper = styled(BodyCell)`
 		user-select: none;
 	}
 `;
+export const BodyNullWrapper = styled(BodyCell)`
+	padding-left: 5px;
+	line-height: 19px;
+`;
 export const BodyTypeCell = styled(BodyCell)``;
 export const BodyInputValueCell = styled(BodyCell)``;
 export const BodyLabelValueCell = styled(BodyInputValueCell)`
-	padding-top: 3px;
+	padding-top: 2px;
 	padding-left: 5px;
 `;
 export const BodyAction = styled(BodyCell)`
