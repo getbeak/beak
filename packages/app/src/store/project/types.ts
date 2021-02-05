@@ -44,7 +44,6 @@ export const ActionTypes = {
 
 	SET_LATEST_WRITE: '@beak/global/project/SET_LATEST_WRITE',
 
-	// TODO(afr): Move the text editor into the below
 	REQUEST_BODY_TEXT_CHANGED: '@beak/global/project/REQUEST_BODY_TEXT_CHANGED',
 	REQUEST_BODY_JSON_EDITOR_NAME_CHANGE: '@beak/global/project/REQUEST_BODY_JSON_EDITOR_NAME_CHANGE',
 	REQUEST_BODY_JSON_EDITOR_VALUE_CHANGE: '@beak/global/project/REQUEST_BODY_JSON_EDITOR_VALUE_CHANGE',
@@ -159,7 +158,7 @@ export interface RequestBodyJsonEditorNameChangePayload extends RequestIdPayload
 
 export interface RequestBodyJsonEditorValueChangePayload extends RequestIdPayload {
 	jPath: string;
-	value: ValueParts;
+	value: ValueParts | boolean | null;
 }
 
 export interface RequestBodyJsonEditorTypeChangePayload extends RequestIdPayload {
