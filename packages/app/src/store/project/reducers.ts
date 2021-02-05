@@ -248,7 +248,6 @@ const projectReducer = createReducer(initialState, builder => {
 				.join('.');
 
 			const children = get(body.payload, insertBaseJPath);
-			const insertPath = [insertBaseJPath, `[${children.length}]`].join('.');
 			let type = item.type;
 
 			// If we are inserting the item as a sibling, we need to get the parent's type
@@ -261,19 +260,21 @@ const projectReducer = createReducer(initialState, builder => {
 			}
 
 			if (type === 'object') {
-				set(body.payload, insertPath, {
+				children.push({
 					type: 'string',
 					enabled: true,
 					name: '',
 					value: [''],
 				} as NamedStringEntry);
 			} else if (type === 'array') {
-				set(body.payload, insertPath, {
+				children.push({
 					type: 'string',
 					enabled: true,
 					value: [''],
 				} as StringEntry);
 			}
+
+			set(body.payload, insertBaseJPath, children);
 		})
 		.addCase(actions.requestBodyJsonEditorRemoveEntry, (state, { payload }) => {
 			const { jPath, requestId } = payload;
