@@ -50,10 +50,10 @@ const TypeSelector: React.FunctionComponent<TypeSelectorProps> = props => {
 			>
 				<option value={'string'}>{'String'}</option>
 				<option value={'number'}>{'Number'}</option>
-				<option disabled value={'boolean'}>{'Boolean'}</option>
-				<option disabled value={'null'}>{'Null'}</option>
+				<option value={'boolean'}>{'Boolean'}</option>
+				<option value={'null'}>{'Null'}</option>
 				<option disabled>{'──────────'}</option>
-				<option disabled value={'array'}>{'Array'}</option>
+				<option value={'array'}>{'Array'}</option>
 				<option value={'object'}>{'Object'}</option>
 			</Select>
 			<Button>

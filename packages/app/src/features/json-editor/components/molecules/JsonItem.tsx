@@ -2,11 +2,17 @@ import RequestPreferencesContext from '@beak/app/features/request-pane/contexts/
 import VariableInput from '@beak/app/features/variable-input/components/molecules/VariableInput';
 import { actions } from '@beak/app/store/project';
 import {
+	ArrayEntry,
+	BooleanEntry,
 	Entries,
+	NamedArrayEntry,
+	NamedBooleanEntry,
 	NamedEntries,
+	NamedNullEntry,
 	NamedNumberEntry,
 	NamedObjectEntry,
 	NamedStringEntry,
+	NullEntry,
 	NumberEntry,
 	ObjectEntry,
 	StringEntry,
@@ -45,10 +51,14 @@ export const JsonItemEntry: React.FunctionComponent<JsonItemEntryProps> = props 
 		case 'number':
 			return <JsonNumberEntry depth={depth} jPath={jPath} requestId={requestId} value={value} />;
 
-		// case 'boolean':
-		// case 'null':
+		case 'boolean':
+			return <JsonBooleanEntry depth={depth} jPath={jPath} requestId={requestId} value={value} />;
 
-		// case 'array':
+		case 'null':
+			return <JsonNullEntry depth={depth} jPath={jPath} requestId={requestId} value={value} />;
+
+		case 'array':
+			return <JsonArrayEntry depth={depth} jPath={jPath} requestId={requestId} value={value} />;
 
 		case 'object':
 			return <JsonObjectEntry depth={depth} jPath={jPath} requestId={requestId} value={value} />;
@@ -170,6 +180,112 @@ const JsonNumberEntry: React.FunctionComponent<JsonNumberEntryProps> = props => 
 	);
 };
 
+interface JsonBooleanEntryProps extends JsonItemEntryProps {
+	value: BooleanEntry | NamedBooleanEntry;
+}
+
+const JsonBooleanEntry: React.FunctionComponent<JsonBooleanEntryProps> = props => {
+	const { depth, jPath, requestId, value } = props;
+	const dispatch = useDispatch();
+
+	return (
+		<Row>
+			<BodyPrimaryCell depth={depth}>
+				<EntryFolderIrrelevant />
+				<EntryToggler
+					jPath={[jPath, '[enabled]'].filter(Boolean).join('.')}
+					requestId={requestId}
+					value={value.enabled}
+				/>
+				<BodyInputWrapper>
+					<input
+						disabled={depth === 0}
+						type={'text'}
+						value={detectName(depth, value)}
+						onChange={e => dispatch(actions.requestBodyJsonEditorNameChange({
+							requestId,
+							name: e.target.value,
+							jPath: [jPath, '[name]'].filter(Boolean).join('.'),
+						}))}
+					/>
+				</BodyInputWrapper>
+			</BodyPrimaryCell>
+			<BodyTypeCell>
+				<TypeSelector
+					requestId={requestId}
+					jPath={jPath}
+					value={value.type}
+				/>
+			</BodyTypeCell>
+			<BodyInputValueCell>
+				<BodyInputWrapper>
+					<input
+						type={'checkbox'}
+						checked={value.value}
+						onChange={e => dispatch(actions.requestBodyJsonEditorValueChange({
+							requestId,
+							value: e.target.checked,
+							jPath: [jPath, '[value]'].filter(Boolean).join('.'),
+						}))}
+					/>
+				</BodyInputWrapper>
+			</BodyInputValueCell>
+			<BodyAction>
+				<EntryActions jPath={jPath} requestId={requestId} />
+			</BodyAction>
+		</Row>
+	);
+};
+
+interface JsonNullEntryProps extends JsonItemEntryProps {
+	value: NullEntry | NamedNullEntry;
+}
+
+const JsonNullEntry: React.FunctionComponent<JsonNullEntryProps> = props => {
+	const { depth, jPath, requestId, value } = props;
+	const dispatch = useDispatch();
+
+	return (
+		<Row>
+			<BodyPrimaryCell depth={depth}>
+				<EntryFolderIrrelevant />
+				<EntryToggler
+					jPath={[jPath, '[enabled]'].filter(Boolean).join('.')}
+					requestId={requestId}
+					value={value.enabled}
+				/>
+				<BodyInputWrapper>
+					<input
+						disabled={depth === 0}
+						type={'text'}
+						value={detectName(depth, value)}
+						onChange={e => dispatch(actions.requestBodyJsonEditorNameChange({
+							requestId,
+							name: e.target.value,
+							jPath: [jPath, '[name]'].filter(Boolean).join('.'),
+						}))}
+					/>
+				</BodyInputWrapper>
+			</BodyPrimaryCell>
+			<BodyTypeCell>
+				<TypeSelector
+					requestId={requestId}
+					jPath={jPath}
+					value={value.type}
+				/>
+			</BodyTypeCell>
+			<BodyInputValueCell>
+				<BodyInputWrapper>
+					{'null'}
+				</BodyInputWrapper>
+			</BodyInputValueCell>
+			<BodyAction>
+				<EntryActions jPath={jPath} requestId={requestId} />
+			</BodyAction>
+		</Row>
+	);
+};
+
 interface JsonObjectEntryProps extends JsonItemEntryProps {
 	value: ObjectEntry | NamedObjectEntry;
 }
@@ -218,6 +334,72 @@ const JsonObjectEntry: React.FunctionComponent<JsonObjectEntryProps> = props => 
 				</BodyTypeCell>
 				<BodyLabelValueCell>
 					{`${children.length} ${children.length === 1 ? 'key' : 'keys'}`}
+				</BodyLabelValueCell>
+				<BodyAction>
+					<EntryActions jPath={jPath} requestId={requestId} />
+				</BodyAction>
+			</Row>
+			{expanded && children.map((c, i) => (
+				<JsonItemEntry
+					depth={depth + 1}
+					jPath={[jPath, '[value]', `[${i}]`].filter(Boolean).join('.')}
+					key={i}
+					requestId={requestId}
+					value={c}
+				/>
+			))}
+		</React.Fragment>
+	);
+};
+
+interface JsonArrayEntryProps extends JsonItemEntryProps {
+	value: ArrayEntry | NamedArrayEntry;
+}
+
+const JsonArrayEntry: React.FunctionComponent<JsonArrayEntryProps> = props => {
+	const { depth, jPath, requestId, value } = props;
+	const reqPref = useContext(RequestPreferencesContext);
+	const [expanded, setExpanded] = useState(reqPref!.getPreferences().jsonEditor?.expands[jPath]);
+	const dispatch = useDispatch();
+	const children = value.value;
+
+	return (
+		<React.Fragment>
+			<Row>
+				<BodyPrimaryCell depth={depth}>
+					<EntryFolder
+						jPath={jPath}
+						expanded={expanded}
+						requestId={requestId}
+						onChange={expanded => setExpanded(expanded)}
+					/>
+					<EntryToggler
+						jPath={[jPath, '[enabled]'].filter(Boolean).join('.')}
+						requestId={requestId}
+						value={value.enabled}
+					/>
+					<BodyInputWrapper>
+						<input
+							disabled={depth === 0}
+							type={'text'}
+							value={detectName(depth, value)}
+							onChange={e => dispatch(actions.requestBodyJsonEditorNameChange({
+								requestId,
+								name: e.target.value,
+								jPath,
+							}))}
+						/>
+					</BodyInputWrapper>
+				</BodyPrimaryCell>
+				<BodyTypeCell>
+					<TypeSelector
+						requestId={requestId}
+						jPath={jPath}
+						value={value.type}
+					/>
+				</BodyTypeCell>
+				<BodyLabelValueCell>
+					{`${children.length} ${children.length === 1 ? 'item' : 'items'}`}
 				</BodyLabelValueCell>
 				<BodyAction>
 					<EntryActions jPath={jPath} requestId={requestId} />
