@@ -237,12 +237,17 @@ const projectReducer = createReducer(initialState, builder => {
 			const node = state.tree[requestId] as RequestNode;
 			const body = node.info.body as RequestBodyJson;
 			const entry = body.payload[id];
-			const insertAsChild = ['array', 'object'].includes(entry.type);
-			const newId = ksuid.generate('value').toString();
+			const isRoot = entry.parentId === null;
+			const allowsChildren = ['array', 'object'].includes(entry.type);
+			const newId = ksuid.generate('jsonentry').toString();
+
+			// Don't allow non-child friendly root entries to have children
+			if (!allowsChildren && isRoot)
+				return;
 
 			body.payload[newId] = {
 				id: newId,
-				parentId: insertAsChild ? id : entry.parentId,
+				parentId: allowsChildren ? id : entry.parentId,
 				type: 'string',
 				name: entry.type === 'array' ? void 0 : '',
 				enabled: true,
