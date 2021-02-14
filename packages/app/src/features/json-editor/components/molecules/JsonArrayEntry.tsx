@@ -85,7 +85,7 @@ const JsonArrayEntry: React.FunctionComponent<JsonArrayEntryProps> = props => {
 				<JsonEntry
 					// eslint-disable-next-line @typescript-eslint/restrict-plus-operands
 					depth={depth + 1}
-					key={i}
+					key={c.id}
 					requestId={requestId}
 					value={c}
 					nameOverride={`Index ${i}`}

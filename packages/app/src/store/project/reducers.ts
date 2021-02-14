@@ -1,12 +1,14 @@
 /* eslint-disable no-param-reassign */
 
-import { Entries, EntryType, NamedEntries, NamedStringEntry, StringEntry } from '@beak/common/types/beak-json-editor';
+import {
+	NamedEntries,
+	NamedStringEntry,
+	ValueEntries,
+} from '@beak/common/types/beak-json-editor';
 import { FolderNode, RequestBodyJson, RequestNode } from '@beak/common/types/beak-project';
 // @ts-ignore
 import ksuid from '@cuvva/ksuid';
 import { createReducer } from '@reduxjs/toolkit';
-import get from 'lodash.get';
-import set from 'lodash.set';
 
 import * as actions from './actions';
 import { initialState } from './types';
@@ -203,121 +205,59 @@ const projectReducer = createReducer(initialState, builder => {
 			node.info.body.payload = action.payload.text;
 		})
 		.addCase(actions.requestBodyJsonEditorNameChange, (state, { payload }) => {
-			// const { jPath, name, requestId } = payload;
-			// const node = state.tree[requestId] as RequestNode;
-			// const body = node.info.body as RequestBodyJson;
-			// const atRoot = jPath === '';
+			const { id, name, requestId } = payload;
+			const node = state.tree[requestId] as RequestNode;
+			const body = node.info.body as RequestBodyJson;
 
-			// // Sanity check, not possible for root node to have a name
-			// if (atRoot)
-			// 	return;
-
-			// set(body.payload, jPath, name);
+			(body.payload[id] as NamedEntries).name = name;
 		})
 		.addCase(actions.requestBodyJsonEditorValueChange, (state, { payload }) => {
-			// const { jPath, value, requestId } = payload;
-			// const node = state.tree[requestId] as RequestNode;
-			// const body = node.info.body as RequestBodyJson;
+			const { id, value, requestId } = payload;
+			const node = state.tree[requestId] as RequestNode;
+			const body = node.info.body as RequestBodyJson;
 
-			// set(body.payload, jPath, value);
+			(body.payload[id] as ValueEntries).value = value;
 		})
 		.addCase(actions.requestBodyJsonEditorTypeChange, (state, { payload }) => {
-			// const { jPath, type, requestId } = payload;
-			// const node = state.tree[requestId] as RequestNode;
-			// const body = node.info.body as RequestBodyJson;
-			// const existingEntry = get(body.payload, jPath);
+			const { id, type, requestId } = payload;
+			const node = state.tree[requestId] as RequestNode;
+			const body = node.info.body as RequestBodyJson;
 
-			// set(body.payload, jPath, convertEntryToType(type, existingEntry));
+			body.payload[id].type = type;
 		})
 		.addCase(actions.requestBodyJsonEditorEnabledChange, (state, { payload }) => {
-			// const { jPath, enabled, requestId } = payload;
-			// const node = state.tree[requestId] as RequestNode;
-			// const body = node.info.body as RequestBodyJson;
+			const { id, enabled, requestId } = payload;
+			const node = state.tree[requestId] as RequestNode;
+			const body = node.info.body as RequestBodyJson;
 
-			// set(body.payload, jPath, enabled);
+			body.payload[id].enabled = enabled;
 		})
 		.addCase(actions.requestBodyJsonEditorAddEntry, (state, { payload }) => {
-			// const { jPath, requestId } = payload;
-			// const node = state.tree[requestId] as RequestNode;
-			// const body = node.info.body as RequestBodyJson;
-			// const isRoot = jPath === '';
-			// const item = (isRoot ? body.payload : get(body.payload, jPath)) as Entries;
-			// const insertAsSibling = item.type !== 'array' && item.type !== 'object';
-			// const insertBaseJPath = insertAsSibling ? getSiblingPath(jPath) : [jPath, '[value]']
-			// 	.filter(Boolean)
-			// 	.join('.');
+			const { id, requestId } = payload;
+			const node = state.tree[requestId] as RequestNode;
+			const body = node.info.body as RequestBodyJson;
+			const entry = body.payload[id];
+			const insertAsChild = ['array', 'object'].includes(entry.type);
+			const newId = ksuid.generate('value').toString();
 
-			// const children = get(body.payload, insertBaseJPath);
-			// let type = item.type;
-
-			// // If we are inserting the item as a sibling, we need to get the parent's type
-			// if (insertAsSibling) {
-			// 	const index = insertBaseJPath.lastIndexOf('[value]');
-			// 	const parent = insertBaseJPath.substring(0, index - 1);
-			// 	const itemTwo = parent === '' ? body.payload : get(body.payload, parent) as Entries;
-
-			// 	type = itemTwo.type;
-			// }
-
-			// if (type === 'object') {
-			// 	children.push({
-			// 		type: 'string',
-			// 		enabled: true,
-			// 		name: '',
-			// 		value: [''],
-			// 	} as NamedStringEntry);
-			// } else if (type === 'array') {
-			// 	children.push({
-			// 		type: 'string',
-			// 		enabled: true,
-			// 		value: [''],
-			// 	} as StringEntry);
-			// }
-
-			// set(body.payload, insertBaseJPath, children);
+			body.payload[newId] = {
+				id: newId,
+				parentId: insertAsChild ? id : entry.parentId,
+				type: 'string',
+				name: entry.type === 'array' ? void 0 : '',
+				enabled: true,
+				value: [],
+			} as NamedStringEntry;
 		})
 		.addCase(actions.requestBodyJsonEditorRemoveEntry, (state, { payload }) => {
-			// const { jPath, requestId } = payload;
-			// const node = state.tree[requestId] as RequestNode;
-			// const body = node.info.body as RequestBodyJson;
-			// const index = jPath.lastIndexOf('.');
-			// const path = jPath.substring(0, index);
-			// const removeIndex = Number(jPath.substr(index + 1).replace(/[[\]]/g, ''));
-			// const children = get(body.payload, path) as Entries[];
+			const { id, requestId } = payload;
+			const node = state.tree[requestId] as RequestNode;
+			const body = node.info.body as RequestBodyJson;
 
-			// children.splice(removeIndex, 1);
+			delete body.payload[id];
 
-			// set(body.payload, path, children);
+			// TODO(afr): Cleanup unlinked entries
 		});
 });
 
 export default projectReducer;
-
-function getSiblingPath(jPath: string) {
-	const index = jPath.lastIndexOf('.');
-	const path = jPath.substring(0, index);
-
-	return path;
-}
-
-function convertEntryToType(newType: EntryType, existingEntry: Entries | NamedEntries) {
-	const name = (existingEntry as NamedEntries).name;
-	const output: any = { type: newType, enabled: true };
-
-	if (['string', 'number'].includes(newType))
-		output.value = [''];
-	else if (newType === 'boolean')
-		output.value = true;
-	else if (newType === 'null')
-		output.value = null;
-	else if (['object', 'array'].includes(newType))
-		output.value = [];
-
-	if (name !== void 0) {
-		output.name = name;
-
-		return output as NamedEntries;
-	}
-
-	return output as Entries;
-}

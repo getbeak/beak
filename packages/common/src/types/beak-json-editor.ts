@@ -43,6 +43,7 @@ export interface NamedArrayEntry extends ArrayEntry, NamedEntryBase { }
 
 export type Entries = NamedEntries | AnonymousEntries;
 export type AnonymousEntries = StringEntry | NumberEntry | BooleanEntry | NullEntry | ObjectEntry | ArrayEntry;
+export type ValueEntries = StringEntry | NumberEntry | BooleanEntry | NullEntry;
 
 /* eslint-disable @typescript-eslint/indent */
 export type NamedEntries = NamedStringEntry |
