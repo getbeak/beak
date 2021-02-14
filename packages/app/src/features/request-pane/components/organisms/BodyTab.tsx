@@ -1,12 +1,10 @@
 import BasicTableView from '@beak/app/components/molecules/BasicTableView';
 import JsonEditor from '@beak/app/features/json-editor/components/JsonEditor';
 import { ipcDialogService } from '@beak/app/lib/ipc';
-import { requestBodyTextChanged } from '@beak/app/store/project/actions';
+import actions, { requestBodyTextChanged } from '@beak/app/store/project/actions';
 import { createDefaultOptions } from '@beak/app/utils/monaco';
-import { RequestPreferenceBodySubTab } from '@beak/common/types/beak-hub';
-import { Entries, EntryMap } from '@beak/common/types/beak-json-editor';
-import { RequestNode } from '@beak/common/types/beak-project';
-import React, { useContext, useState } from 'react';
+import { RequestBodyType, RequestNode } from '@beak/common/types/beak-project';
+import React from 'react';
 import MonacoEditor from 'react-monaco-editor';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
@@ -14,7 +12,6 @@ import styled from 'styled-components';
 import TabBar from '../../../../components/atoms/TabBar';
 import TabItem from '../../../../components/atoms/TabItem';
 import TabSpacer from '../../../../components/atoms/TabSpacer';
-import RequestPreferencesContext from '../../contexts/request-preferences-context';
 
 export interface BodyTabProps {
 	node: RequestNode;
@@ -22,29 +19,29 @@ export interface BodyTabProps {
 
 const BodyTab: React.FunctionComponent<BodyTabProps> = props => {
 	const dispatch = useDispatch();
-	const reqPref = useContext(RequestPreferencesContext)!;
 	const { node } = props;
-	const [tab, setTab] = useState<RequestPreferenceBodySubTab>(reqPref.getPreferences().bodySubTab);
+	const { body } = node.info;
 
-	async function setTabWithConfirmation(newTab: RequestPreferenceBodySubTab) {
-		if (newTab === tab)
+	async function changeRequestBodyType(newType: RequestBodyType) {
+		if (newType === body.type)
 			return;
 
-		const result = await ipcDialogService.showMessageBox({
-			title: 'Are you sure?',
-			message: 'Are you sure you want to change body type?',
-			detail: 'Changing the body type could cause data to be lost!',
-			type: 'warning',
-			buttons: ['Change', 'Cancel'],
-			defaultId: 1,
-			cancelId: 1,
-		});
+		if (body.type !== 'text') {
+			const result = await ipcDialogService.showMessageBox({
+				title: 'Are you sure?',
+				message: 'Are you sure you want to change body type?',
+				detail: 'Changing the body type could cause data to be lost!',
+				type: 'warning',
+				buttons: ['Change', 'Cancel'],
+				defaultId: 1,
+				cancelId: 1,
+			});
 
-		if (result.response === 1)
-			return;
+			if (result.response === 1)
+				return;
+		}
 
-		reqPref.setBodySubTab(tab);
-		setTab(newTab);
+		dispatch(actions.requestBodyTypeChanged(newType));
 	}
 
 	return (
@@ -52,23 +49,23 @@ const BodyTab: React.FunctionComponent<BodyTabProps> = props => {
 			<TabBar centered>
 				<TabSpacer />
 				<TabItem
-					active={tab === 'text'}
+					active={body.type === 'text'}
 					size={'sm'}
-					onClick={() => setTabWithConfirmation('text')}
+					onClick={() => changeRequestBodyType('text')}
 				>
 					{'Text'}
 				</TabItem>
 				<TabItem
-					active={tab === 'json'}
+					active={body.type === 'json'}
 					size={'sm'}
-					onClick={() => setTabWithConfirmation('json')}
+					onClick={() => changeRequestBodyType('json')}
 				>
 					{'Json'}
 				</TabItem>
 				<TabItem
-					active={tab === 'url_encoded_form'}
+					active={body.type === 'url_encoded_form'}
 					size={'sm'}
-					onClick={() => setTabWithConfirmation('url_encoded_form')}
+					onClick={() => changeRequestBodyType('url_encoded_form')}
 				>
 					{'URL-encoded form'}
 				</TabItem>
@@ -76,26 +73,21 @@ const BodyTab: React.FunctionComponent<BodyTabProps> = props => {
 			</TabBar>
 
 			<TabBody>
-				{tab === 'text' && (
+				{body.type === 'text' && (
 					<React.Fragment>
 						<MonacoEditor
 							height={'100%'}
 							width={'100%'}
 							language={'plaintext'}
 							theme={'vs-dark'}
-							value={node.info.body.payload as string}
+							value={body.payload}
 							options={createDefaultOptions()}
 							onChange={text => dispatch(requestBodyTextChanged({ requestId: node.id, text }))}
 						/>
 					</React.Fragment>
 				)}
-				{tab === 'json' && (
-					<JsonEditor
-						requestId={node.id}
-						value={node.info.body.payload as EntryMap}
-					/>
-				)}
-				{tab === 'url_encoded_form' && (
+				{body.type === 'json' && <JsonEditor requestId={node.id} value={body.payload} />}
+				{body.type === 'url_encoded_form' && (
 					<BasicTableView
 						editable={false}
 						items={{}}

@@ -1,4 +1,4 @@
-import { RequestPreference, RequestPreferenceBodySubTab, RequestPreferenceMainTab } from '@beak/common/dist/types/beak-hub';
+import { RequestPreference, RequestPreferenceMainTab } from '@beak/common/dist/types/beak-hub';
 import { validate } from 'jsonschema';
 
 import BeakHub from '.';
@@ -8,21 +8,16 @@ const fs = window.require('electron').remote.require('fs-extra');
 const path = window.require('electron').remote.require('path');
 
 export default class BeakRequestPreferences {
-	private requestId: string;
 	private requestPreferencePath: string;
 	private preferences!: RequestPreference;
 
 	constructor(hub: BeakHub, requestId: string) {
-		this.requestId = requestId;
 		this.requestPreferencePath = path.join(hub.getHubPath(), 'preferences', 'requests', `${requestId}.json`);
 	}
 
 	async load() {
 		if (!await fs.pathExists(this.requestPreferencePath)) {
-			this.preferences = {
-				mainTab: 'headers',
-				bodySubTab: 'json',
-			};
+			this.preferences = { mainTab: 'headers' };
 
 			return;
 		}
@@ -62,16 +57,6 @@ export default class BeakRequestPreferences {
 		this.preferences = {
 			...this.preferences,
 			mainTab: tab,
-		};
-
-		await this.write();
-	}
-
-	async setBodySubTab(tab: RequestPreferenceBodySubTab) {
-		this.preferences = {
-			...this.preferences,
-			mainTab: 'body',
-			bodySubTab: tab,
 		};
 
 		await this.write();

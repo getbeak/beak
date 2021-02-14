@@ -1,4 +1,4 @@
-import { Nodes } from '@beak/common/types/beak-project';
+import { Nodes, RequestBodyType } from '@beak/common/types/beak-project';
 import { createAction } from '@reduxjs/toolkit';
 
 import {
@@ -69,6 +69,7 @@ export const requestRenameResolved = createAction<RequestRenameResolved>(ActionT
 
 export const setLatestWrite = createAction<LatestWrite>(ActionTypes.SET_LATEST_WRITE);
 
+export const requestBodyTypeChanged = createAction<RequestBodyType>(ActionTypes.REQUEST_BODY_TYPE_CHANGED);
 export const requestBodyTextChanged = createAction<RequestBodyTextChangedPayload>(
 	ActionTypes.REQUEST_BODY_TEXT_CHANGED,
 );
@@ -133,6 +134,7 @@ export default {
 
 	setLatestWrite,
 
+	requestBodyTypeChanged,
 	requestBodyTextChanged,
 	requestBodyJsonEditorNameChange,
 	requestBodyJsonEditorValueChange,

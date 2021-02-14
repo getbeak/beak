@@ -3,17 +3,11 @@
 	"additionalProperties": false,
 
 	"required": [
-		"mainTab",
-		"bodySubTab"
+		"mainTab"
 	],
 
 	"properties": {
 		"mainTab": {
-			"type": "string",
-			"minLength": 1
-		},
-
-		"bodySubTab": {
 			"type": "string",
 			"minLength": 1
 		},

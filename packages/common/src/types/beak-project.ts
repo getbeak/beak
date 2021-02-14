@@ -44,7 +44,7 @@ export interface RequestOverview {
 	body: RequestBody;
 }
 
-export type RequestBodyType = 'text' | 'json' | 'url-encoded-form';
+export type RequestBodyType = 'text' | 'json' | 'url_encoded_form';
 export type RequestBody = RequestBodyText | RequestBodyJson | RequestBodyUrlEncodedForm;
 
 export interface RequestBodyText {
@@ -58,7 +58,7 @@ export interface RequestBodyJson {
 }
 
 export interface RequestBodyUrlEncodedForm {
-	type: 'url-encoded-form';
+	type: 'url_encoded_form';
 	payload: Record<string, ToggleKeyValue>;
 }
 
