@@ -7,6 +7,7 @@ import {
 	BodyAction,
 	BodyInputValueCell,
 	BodyInputWrapper,
+	BodyNameOverrideWrapper,
 	BodyPrimaryCell,
 	BodyTypeCell,
 } from '../atoms/Cells';
@@ -48,7 +49,9 @@ const JsonBooleanEntry: React.FunctionComponent<JsonBooleanEntryProps> = props =
 							}))}
 						/>
 					)}
-					{nameOverride !== void 0 && nameOverride}
+					{nameOverride !== void 0 && (
+						<BodyNameOverrideWrapper>{nameOverride}</BodyNameOverrideWrapper>
+					)}
 				</BodyInputWrapper>
 			</BodyPrimaryCell>
 			<BodyTypeCell>

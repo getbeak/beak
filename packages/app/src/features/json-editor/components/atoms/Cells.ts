@@ -46,7 +46,11 @@ export const BodyInputWrapper = styled(BodyCell)`
 `;
 export const BodyNullWrapper = styled(BodyCell)`
 	padding-left: 5px;
-	line-height: 19px;
+	line-height: 20px;
+`;
+export const BodyNameOverrideWrapper = styled(BodyCell)`
+	padding-left: 5px;
+	line-height: 20px;
 `;
 export const BodyTypeCell = styled(BodyCell)``;
 export const BodyInputValueCell = styled(BodyCell)``;

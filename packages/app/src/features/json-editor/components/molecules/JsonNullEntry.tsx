@@ -7,6 +7,7 @@ import {
 	BodyAction,
 	BodyInputValueCell,
 	BodyInputWrapper,
+	BodyNameOverrideWrapper,
 	BodyNullWrapper,
 	BodyPrimaryCell,
 	BodyTypeCell,
@@ -49,7 +50,9 @@ const JsonNullEntry: React.FunctionComponent<JsonNullEntryProps> = props => {
 							}))}
 						/>
 					)}
-					{nameOverride !== void 0 && nameOverride}
+					{nameOverride !== void 0 && (
+						<BodyNameOverrideWrapper>{nameOverride}</BodyNameOverrideWrapper>
+					)}
 				</BodyInputWrapper>
 			</BodyPrimaryCell>
 			<BodyTypeCell>

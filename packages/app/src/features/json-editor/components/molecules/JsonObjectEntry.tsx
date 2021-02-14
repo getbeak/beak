@@ -10,6 +10,7 @@ import {
 	BodyAction,
 	BodyInputWrapper,
 	BodyLabelValueCell,
+	BodyNameOverrideWrapper,
 	BodyPrimaryCell,
 	BodyTypeCell,
 } from '../atoms/Cells';
@@ -64,7 +65,9 @@ const JsonObjectEntry: React.FunctionComponent<JsonObjectEntryProps> = props => 
 								}))}
 							/>
 						)}
-						{nameOverride !== void 0 && nameOverride}
+						{nameOverride !== void 0 && (
+							<BodyNameOverrideWrapper>{nameOverride}</BodyNameOverrideWrapper>
+						)}
 					</BodyInputWrapper>
 				</BodyPrimaryCell>
 				<BodyTypeCell>
@@ -81,7 +84,7 @@ const JsonObjectEntry: React.FunctionComponent<JsonObjectEntryProps> = props => 
 					<EntryActions id={id} isRoot={parentId === null} requestId={requestId} />
 				</BodyAction>
 			</Row>
-			{expanded && children.map((c, i) => (
+			{expanded && children.map(c => (
 				<JsonEntry
 					// eslint-disable-next-line @typescript-eslint/restrict-plus-operands
 					depth={depth + 1}
