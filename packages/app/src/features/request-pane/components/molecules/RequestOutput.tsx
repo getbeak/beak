@@ -1,3 +1,4 @@
+import { convertToRealJson } from '@beak/app/features/json-editor/parsers';
 import { parseValueParts } from '@beak/app/features/variable-input/parser';
 import { createDefaultOptions } from '@beak/app/utils/monaco';
 import { convertRequestToUrl } from '@beak/app/utils/uri';
@@ -100,8 +101,13 @@ export function createBasicHttpOutput(
 			out.push(`Content-Type: ${contentType}`);
 		}
 
-		// TODO(afr): Parse this correctly
-		out.push('', ''/* bodyOut */);
+		// Padding between headers/body
+		out.push('', '');
+
+		if (body.type === 'json')
+			out.push(JSON.stringify(convertToRealJson(body.payload), null, '\t'));
+		// else
+		// 	out.push(body.payload);
 	}
 
 	return out.join('\n');
