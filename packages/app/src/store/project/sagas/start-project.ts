@@ -9,8 +9,8 @@ import { FolderNode, ProjectFile, RequestNode, Tree } from '@beak/common/types/b
 import { PayloadAction } from '@reduxjs/toolkit';
 import { EventChannel } from 'redux-saga';
 import { call, put, select, take } from 'redux-saga/effects';
-import { ApplicationState } from '../..';
 
+import { ApplicationState } from '../..';
 import { startVariableGroups } from '../../variable-groups/actions';
 import { LatestWrite } from '../types';
 
@@ -134,7 +134,12 @@ async function readRequestNodes(requests: ScanResult[]) {
 function* handleFolder(event: Event) {
 	switch (event.type) {
 		case 'addDir': {
-			const node = yield call(readFolderNode, event.path);
+			const node: FolderNode = yield call(readFolderNode, event.path);
+			const existingNode = yield select((s: ApplicationState) => s.global.project.tree[node.id]);
+
+			// This is to avoid a re-rendering bug due to chokidar firing this event for seemingly no reason.
+			if (existingNode)
+				return;
 
 			yield put(actions.insertFolderNode(node));
 
