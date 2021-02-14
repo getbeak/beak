@@ -162,7 +162,7 @@ function* handleRequest(event: Event) {
 			const now = Date.now();
 			const expiry = lastWrite.writtenAt + 1000;
 
-			if (expiry < now)
+			if (expiry > now)
 				return;
 		}
 	}
