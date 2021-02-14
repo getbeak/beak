@@ -19,10 +19,6 @@ export function convertToRealJson(
 	return convertEntry(selectedGroups, variableGroups, entries, root);
 }
 
-export function convertToEntryJson(json: JsonTypes): EntryMap {
-	return {};
-}
-
 function convertEntry(
 	selectedGroups: Record<string, string>,
 	variableGroups: VariableGroups,
@@ -62,4 +58,18 @@ function convertEntry(
 		default:
 			return null;
 	}
+}
+
+export function convertToEntryJson(json: JsonTypes): EntryMap {
+	// switch (true) {
+	// 	case typeof json === 'string':
+	// 		return {
+	// 			id: ksuid.generate().toString(),
+	// 		} as JsonStringEntry;
+
+	// 	default:
+	// 		return null;
+	// }
+
+	return {};
 }
