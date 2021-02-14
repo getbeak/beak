@@ -222,8 +222,21 @@ const projectReducer = createReducer(initialState, builder => {
 			const { id, type, requestId } = payload;
 			const node = state.tree[requestId] as RequestNode;
 			const body = node.info.body as RequestBodyJson;
+			const entry = body.payload[id];
 
-			body.payload[id].type = type;
+			entry.type = type;
+
+			if (['array', 'object'].includes(type)) {
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				(entry as any).value = void 0;
+
+				return;
+			}
+
+			if (type === 'boolean')
+				(entry as ValueEntries).value = true;
+			else if (type === 'null')
+				(entry as ValueEntries).value = null;
 		})
 		.addCase(actions.requestBodyJsonEditorEnabledChange, (state, { payload }) => {
 			const { id, enabled, requestId } = payload;
