@@ -1,44 +1,61 @@
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { Entries, EntryMap, NamedEntries } from '@beak/common/types/beak-json-editor';
+import { VariableGroups } from '@beak/common/types/beak-project';
 
-export function convertToRealJson(entries: EntryMap) {
+import { parseValueParts } from '../variable-input/parser';
+
+type JsonTypes = null | string | number | boolean | Record<string, unknown> | unknown[];
+
+export function convertToRealJson(
+	selectedGroups: Record<string, string>,
+	variableGroups: VariableGroups,
+	entries: EntryMap,
+) {
 	const root = TypedObject.values(entries).find(e => e.parentId === null);
 
-	if (!root)
+	if (!root || !root.enabled)
 		return null;
 
-	return convertEntry(entries, root);
+	return convertEntry(selectedGroups, variableGroups, entries, root);
 }
 
-type Test = Record<string, unknown> | null | string | number | boolean | unknown[];
+export function convertToEntryJson(json: JsonTypes): EntryMap {
+	return {};
+}
 
-function convertEntry(entries: EntryMap, entry: Entries): Test {
-	console.log(entry);
-
+function convertEntry(
+	selectedGroups: Record<string, string>,
+	variableGroups: VariableGroups,
+	entries: EntryMap,
+	entry: Entries,
+): JsonTypes {
 	switch (entry.type) {
 		case 'null':
 		case 'boolean':
 			return entry.value;
 
 		case 'number':
-		case 'string': {
-			// const parts = entry.value;
+			return Number(parseValueParts(selectedGroups, variableGroups, entry.value));
 
-			return 'parts';
-		}
+		case 'string':
+			return parseValueParts(selectedGroups, variableGroups, entry.value);
 
 		case 'array': {
-			const children = TypedObject.values(entries).filter(e => e.parentId === entry.id);
+			const children = TypedObject
+				.values(entries)
+				.filter(e => e.parentId === entry.id && e.enabled);
 
-			return children.map(c => convertEntry(entries, c));
+			return children.map(c => convertEntry(selectedGroups, variableGroups, entries, c));
 		}
 
 		case 'object': {
-			const children = TypedObject.values(entries).filter(e => e.parentId === entry.id) as NamedEntries[];
+			const children = TypedObject
+				.values(entries)
+				.filter(e => e.parentId === entry.id && e.enabled) as NamedEntries[];
 
 			return children.reduce((acc, val) => ({
 				...acc,
-				[val.name]: convertEntry(entries, val),
+				[val.name]: convertEntry(selectedGroups, variableGroups, entries, val),
 			}), {});
 		}
 

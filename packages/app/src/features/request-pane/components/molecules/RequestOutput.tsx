@@ -105,7 +105,7 @@ export function createBasicHttpOutput(
 		out.push('', '');
 
 		if (body.type === 'json')
-			out.push(JSON.stringify(convertToRealJson(body.payload), null, '\t'));
+			out.push(JSON.stringify(convertToRealJson(selectedGroups, variableGroups, body.payload), null, '\t'));
 		// else
 		// 	out.push(body.payload);
 	}
