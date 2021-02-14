@@ -203,91 +203,91 @@ const projectReducer = createReducer(initialState, builder => {
 			node.info.body.payload = action.payload.text;
 		})
 		.addCase(actions.requestBodyJsonEditorNameChange, (state, { payload }) => {
-			const { jPath, name, requestId } = payload;
-			const node = state.tree[requestId] as RequestNode;
-			const body = node.info.body as RequestBodyJson;
-			const atRoot = jPath === '';
+			// const { jPath, name, requestId } = payload;
+			// const node = state.tree[requestId] as RequestNode;
+			// const body = node.info.body as RequestBodyJson;
+			// const atRoot = jPath === '';
 
-			// Sanity check, not possible for root node to have a name
-			if (atRoot)
-				return;
+			// // Sanity check, not possible for root node to have a name
+			// if (atRoot)
+			// 	return;
 
-			set(body.payload, jPath, name);
+			// set(body.payload, jPath, name);
 		})
 		.addCase(actions.requestBodyJsonEditorValueChange, (state, { payload }) => {
-			const { jPath, value, requestId } = payload;
-			const node = state.tree[requestId] as RequestNode;
-			const body = node.info.body as RequestBodyJson;
+			// const { jPath, value, requestId } = payload;
+			// const node = state.tree[requestId] as RequestNode;
+			// const body = node.info.body as RequestBodyJson;
 
-			set(body.payload, jPath, value);
+			// set(body.payload, jPath, value);
 		})
 		.addCase(actions.requestBodyJsonEditorTypeChange, (state, { payload }) => {
-			const { jPath, type, requestId } = payload;
-			const node = state.tree[requestId] as RequestNode;
-			const body = node.info.body as RequestBodyJson;
-			const existingEntry = get(body.payload, jPath);
+			// const { jPath, type, requestId } = payload;
+			// const node = state.tree[requestId] as RequestNode;
+			// const body = node.info.body as RequestBodyJson;
+			// const existingEntry = get(body.payload, jPath);
 
-			set(body.payload, jPath, convertEntryToType(type, existingEntry));
+			// set(body.payload, jPath, convertEntryToType(type, existingEntry));
 		})
 		.addCase(actions.requestBodyJsonEditorEnabledChange, (state, { payload }) => {
-			const { jPath, enabled, requestId } = payload;
-			const node = state.tree[requestId] as RequestNode;
-			const body = node.info.body as RequestBodyJson;
+			// const { jPath, enabled, requestId } = payload;
+			// const node = state.tree[requestId] as RequestNode;
+			// const body = node.info.body as RequestBodyJson;
 
-			set(body.payload, jPath, enabled);
+			// set(body.payload, jPath, enabled);
 		})
 		.addCase(actions.requestBodyJsonEditorAddEntry, (state, { payload }) => {
-			const { jPath, requestId } = payload;
-			const node = state.tree[requestId] as RequestNode;
-			const body = node.info.body as RequestBodyJson;
-			const isRoot = jPath === '';
-			const item = (isRoot ? body.payload : get(body.payload, jPath)) as Entries;
-			const insertAsSibling = item.type !== 'array' && item.type !== 'object';
-			const insertBaseJPath = insertAsSibling ? getSiblingPath(jPath) : [jPath, '[value]']
-				.filter(Boolean)
-				.join('.');
+			// const { jPath, requestId } = payload;
+			// const node = state.tree[requestId] as RequestNode;
+			// const body = node.info.body as RequestBodyJson;
+			// const isRoot = jPath === '';
+			// const item = (isRoot ? body.payload : get(body.payload, jPath)) as Entries;
+			// const insertAsSibling = item.type !== 'array' && item.type !== 'object';
+			// const insertBaseJPath = insertAsSibling ? getSiblingPath(jPath) : [jPath, '[value]']
+			// 	.filter(Boolean)
+			// 	.join('.');
 
-			const children = get(body.payload, insertBaseJPath);
-			let type = item.type;
+			// const children = get(body.payload, insertBaseJPath);
+			// let type = item.type;
 
-			// If we are inserting the item as a sibling, we need to get the parent's type
-			if (insertAsSibling) {
-				const index = insertBaseJPath.lastIndexOf('[value]');
-				const parent = insertBaseJPath.substring(0, index - 1);
-				const itemTwo = parent === '' ? body.payload : get(body.payload, parent) as Entries;
+			// // If we are inserting the item as a sibling, we need to get the parent's type
+			// if (insertAsSibling) {
+			// 	const index = insertBaseJPath.lastIndexOf('[value]');
+			// 	const parent = insertBaseJPath.substring(0, index - 1);
+			// 	const itemTwo = parent === '' ? body.payload : get(body.payload, parent) as Entries;
 
-				type = itemTwo.type;
-			}
+			// 	type = itemTwo.type;
+			// }
 
-			if (type === 'object') {
-				children.push({
-					type: 'string',
-					enabled: true,
-					name: '',
-					value: [''],
-				} as NamedStringEntry);
-			} else if (type === 'array') {
-				children.push({
-					type: 'string',
-					enabled: true,
-					value: [''],
-				} as StringEntry);
-			}
+			// if (type === 'object') {
+			// 	children.push({
+			// 		type: 'string',
+			// 		enabled: true,
+			// 		name: '',
+			// 		value: [''],
+			// 	} as NamedStringEntry);
+			// } else if (type === 'array') {
+			// 	children.push({
+			// 		type: 'string',
+			// 		enabled: true,
+			// 		value: [''],
+			// 	} as StringEntry);
+			// }
 
-			set(body.payload, insertBaseJPath, children);
+			// set(body.payload, insertBaseJPath, children);
 		})
 		.addCase(actions.requestBodyJsonEditorRemoveEntry, (state, { payload }) => {
-			const { jPath, requestId } = payload;
-			const node = state.tree[requestId] as RequestNode;
-			const body = node.info.body as RequestBodyJson;
-			const index = jPath.lastIndexOf('.');
-			const path = jPath.substring(0, index);
-			const removeIndex = Number(jPath.substr(index + 1).replace(/[[\]]/g, ''));
-			const children = get(body.payload, path) as Entries[];
+			// const { jPath, requestId } = payload;
+			// const node = state.tree[requestId] as RequestNode;
+			// const body = node.info.body as RequestBodyJson;
+			// const index = jPath.lastIndexOf('.');
+			// const path = jPath.substring(0, index);
+			// const removeIndex = Number(jPath.substr(index + 1).replace(/[[\]]/g, ''));
+			// const children = get(body.payload, path) as Entries[];
 
-			children.splice(removeIndex, 1);
+			// children.splice(removeIndex, 1);
 
-			set(body.payload, path, children);
+			// set(body.payload, path, children);
 		});
 });
 
