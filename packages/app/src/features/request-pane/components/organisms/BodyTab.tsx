@@ -67,7 +67,7 @@ const BodyTab: React.FunctionComponent<BodyTabProps> = props => {
 					size={'sm'}
 					onClick={() => changeRequestBodyType('url_encoded_form')}
 				>
-					{'URL-encoded form'}
+					{'Url encoded form'}
 				</TabItem>
 				<TabSpacer />
 			</TabBar>

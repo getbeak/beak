@@ -1,8 +1,9 @@
+import { convertToRealJson } from '@beak/app/features/json-editor/parsers';
 import { parseValueParts } from '@beak/app/features/variable-input/parser';
 import binaryStore from '@beak/app/lib/binary-store';
 import { ipcFlightService } from '@beak/app/lib/ipc';
 import { convertRequestToUrl } from '@beak/app/utils/uri';
-import { RequestNode, RequestOverview, ToggleKeyValue, VariableGroups } from '@beak/common/dist/types/beak-project';
+import { RequestBody, RequestNode, RequestOverview, ToggleKeyValue, VariableGroups } from '@beak/common/dist/types/beak-project';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { FlightMessages } from '@beak/common/ipc/flight';
 // @ts-ignore
@@ -24,7 +25,7 @@ export default function* requestFlightWorker() {
 	const node: RequestNode = yield select((s: ApplicationState) => s.global.project.tree![requestId]);
 	const vgState: VGState = yield select((s: ApplicationState) => s.global.variableGroups);
 	const { selectedGroups, variableGroups } = vgState;
-	const flattenedOverview = flattenValueParts(node.info, selectedGroups, variableGroups);
+	const flattenedOverview = flattenRequestOverview(node.info, selectedGroups, variableGroups);
 
 	// If the node doesn't exist, either it has been deleted, or a non-request tab was
 	// sent through, either way, cancel.
@@ -87,7 +88,7 @@ export default function* requestFlightWorker() {
 	}
 }
 
-function flattenValueParts(
+function flattenRequestOverview(
 	overview: RequestOverview,
 	selectedGroups: Record<string, string>,
 	variableGroups: VariableGroups,
@@ -99,6 +100,7 @@ function flattenValueParts(
 		url: [url.toString()],
 		query: flattenToggleValueParts(overview.query, selectedGroups, variableGroups),
 		headers: flattenToggleValueParts(overview.headers, selectedGroups, variableGroups),
+		body: flattenBody(selectedGroups, variableGroups, overview.body),
 	};
 }
 
@@ -114,4 +116,26 @@ function flattenToggleValueParts(
 			value: [parseValueParts(selectedGroups, variableGroups, toggleValueParts[val].value)],
 		},
 	}), {});
+}
+
+function flattenBody(
+	selectedGroups: Record<string, string>,
+	variableGroups: VariableGroups,
+	body: RequestBody,
+): RequestBody {
+	switch (body.type) {
+		case 'text':
+			return body;
+
+		case 'json': {
+			const json = convertToRealJson(selectedGroups, variableGroups, body.payload);
+
+			return {
+				type: 'text',
+				payload: JSON.stringify(json),
+			};
+		}
+
+		default: return { type: 'text', payload: 'not done yet' };
+	}
 }
