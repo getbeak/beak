@@ -1,8 +1,10 @@
 import RequestPreferencesContext from '@beak/app/features/request-pane/contexts/request-preferences-context';
 import { actions } from '@beak/app/store/project';
+import { TypedObject } from '@beak/common/helpers/typescript';
 import { ArrayEntry, NamedArrayEntry } from '@beak/common/types/beak-json-editor';
+import { RequestBodyJson, RequestNode } from '@beak/common/types/beak-project';
 import React, { useContext, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import {
 	BodyAction,
@@ -15,55 +17,60 @@ import { Row } from '../atoms/Structure';
 import EntryActions from './EntryActions';
 import EntryFolder from './EntryFolder';
 import EntryToggler from './EntryToggler';
-import { detectName, JsonItemEntry, JsonItemEntryProps } from './JsonItem';
+import { detectName, JsonEntry, JsonEntryProps } from './JsonEntry';
 import TypeSelector from './TypeSelector';
 
-interface JsonArrayEntryProps extends JsonItemEntryProps {
+interface JsonArrayEntryProps extends JsonEntryProps {
 	value: ArrayEntry | NamedArrayEntry;
 }
 
 const JsonArrayEntry: React.FunctionComponent<JsonArrayEntryProps> = props => {
-	const { depth, jPath, requestId, value, arrayIndex } = props;
-	const reqPref = useContext(RequestPreferencesContext);
-	const [expanded, setExpanded] = useState(reqPref!.getPreferences().jsonEditor?.expands[jPath]);
 	const dispatch = useDispatch();
-	const children = value.value;
+	const { depth, requestId, nameOverride, value } = props;
+	const { id, parentId } = value;
+	const reqPref = useContext(RequestPreferencesContext);
+	const [expanded, setExpanded] = useState(reqPref!.getPreferences().jsonEditor?.expands[id]);
+
+	const entries = useSelector(s =>
+		((s.global.project.tree[requestId] as RequestNode).info.body as RequestBodyJson).payload,
+	);
+	const children = TypedObject.values(entries).filter(e => e.parentId === id);
 
 	return (
 		<React.Fragment>
 			<Row>
 				<BodyPrimaryCell depth={depth}>
 					<EntryFolder
-						jPath={jPath}
+						id={id}
 						expanded={expanded}
 						requestId={requestId}
 						onChange={expanded => setExpanded(expanded)}
 					/>
 					<EntryToggler
-						jPath={[jPath, '[enabled]'].filter(Boolean).join('.')}
+						id={id}
 						requestId={requestId}
 						value={value.enabled}
 					/>
 					<BodyInputWrapper>
-						{arrayIndex === void 0 && (
+						{nameOverride === void 0 && (
 							<input
 								disabled={depth === 0}
 								type={'text'}
 								value={detectName(depth, value)}
 								onChange={e => dispatch(actions.requestBodyJsonEditorNameChange({
+									id,
 									requestId,
 									name: e.target.value,
-									jPath: [jPath, '[name]'].filter(Boolean).join('.'),
 								}))}
 							/>
 						)}
-						{arrayIndex !== void 0 && `Index ${arrayIndex}`}
+						{nameOverride !== void 0 && nameOverride}
 					</BodyInputWrapper>
 				</BodyPrimaryCell>
 				<BodyTypeCell>
 					<TypeSelector
 						requestId={requestId}
-						jPath={jPath}
+						id={id}
 						value={value.type}
 					/>
 				</BodyTypeCell>
@@ -71,18 +78,17 @@ const JsonArrayEntry: React.FunctionComponent<JsonArrayEntryProps> = props => {
 					{`${children.length} ${children.length === 1 ? 'item' : 'items'}`}
 				</BodyLabelValueCell>
 				<BodyAction>
-					<EntryActions jPath={jPath} requestId={requestId} />
+					<EntryActions id={id} isRoot={parentId === null} requestId={requestId} />
 				</BodyAction>
 			</Row>
 			{expanded && children.map((c, i) => (
-				<JsonItemEntry
+				<JsonEntry
 					// eslint-disable-next-line @typescript-eslint/restrict-plus-operands
 					depth={depth + 1}
-					jPath={[jPath, '[value]', `[${i}]`].filter(Boolean).join('.')}
 					key={i}
 					requestId={requestId}
 					value={c}
-					arrayIndex={i}
+					nameOverride={`Index ${i}`}
 				/>
 			))}
 		</React.Fragment>

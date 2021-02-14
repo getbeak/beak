@@ -14,15 +14,16 @@ import { Row } from '../atoms/Structure';
 import EntryActions from './EntryActions';
 import { EntryFolderIrrelevant } from './EntryFolder';
 import EntryToggler from './EntryToggler';
-import { detectName, JsonItemEntryProps } from './JsonItem';
+import { detectName, JsonEntryProps } from './JsonEntry';
 import TypeSelector from './TypeSelector';
 
-interface JsonBooleanEntryProps extends JsonItemEntryProps {
+interface JsonBooleanEntryProps extends JsonEntryProps {
 	value: BooleanEntry | NamedBooleanEntry;
 }
 
 const JsonBooleanEntry: React.FunctionComponent<JsonBooleanEntryProps> = props => {
-	const { depth, jPath, requestId, value, arrayIndex } = props;
+	const { depth, requestId, value, nameOverride } = props;
+	const { id, parentId } = value;
 	const dispatch = useDispatch();
 
 	return (
@@ -30,30 +31,30 @@ const JsonBooleanEntry: React.FunctionComponent<JsonBooleanEntryProps> = props =
 			<BodyPrimaryCell depth={depth}>
 				<EntryFolderIrrelevant />
 				<EntryToggler
-					jPath={[jPath, '[enabled]'].filter(Boolean).join('.')}
+					id={id}
 					requestId={requestId}
 					value={value.enabled}
 				/>
 				<BodyInputWrapper>
-					{arrayIndex === void 0 && (
+					{nameOverride === void 0 && (
 						<input
 							disabled={depth === 0}
 							type={'text'}
 							value={detectName(depth, value)}
 							onChange={e => dispatch(actions.requestBodyJsonEditorNameChange({
+								id,
 								requestId,
 								name: e.target.value,
-								jPath: [jPath, '[name]'].filter(Boolean).join('.'),
 							}))}
 						/>
 					)}
-					{arrayIndex !== void 0 && `Index ${arrayIndex}`}
+					{nameOverride !== void 0 && nameOverride}
 				</BodyInputWrapper>
 			</BodyPrimaryCell>
 			<BodyTypeCell>
 				<TypeSelector
 					requestId={requestId}
-					jPath={jPath}
+					id={id}
 					value={value.type}
 				/>
 			</BodyTypeCell>
@@ -63,15 +64,15 @@ const JsonBooleanEntry: React.FunctionComponent<JsonBooleanEntryProps> = props =
 						type={'checkbox'}
 						checked={value.value}
 						onChange={e => dispatch(actions.requestBodyJsonEditorValueChange({
+							id,
 							requestId,
 							value: e.target.checked,
-							jPath: [jPath, '[value]'].filter(Boolean).join('.'),
 						}))}
 					/>
 				</BodyInputWrapper>
 			</BodyInputValueCell>
 			<BodyAction>
-				<EntryActions jPath={jPath} requestId={requestId} />
+				<EntryActions id={id} isRoot={parentId === null} requestId={requestId} />
 			</BodyAction>
 		</Row>
 	);

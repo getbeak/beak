@@ -1,4 +1,5 @@
-import { Entries } from '@beak/common/types/beak-json-editor';
+import { TypedObject } from '@beak/common/helpers/typescript';
+import { EntryMap } from '@beak/common/types/beak-json-editor';
 import React from 'react';
 import styled from 'styled-components';
 
@@ -9,33 +10,36 @@ import {
 	HeaderValueCell,
 } from './atoms/Cells';
 import { Body, Header, Row } from './atoms/Structure';
-import { JsonItemEntry } from './molecules/JsonItem';
+import { JsonEntry } from './molecules/JsonEntry';
 
 interface JsonEditorProps {
 	requestId: string;
-	value: Entries;
+	value: EntryMap;
 }
 
-const JsonEditor: React.FunctionComponent<JsonEditorProps> = ({ requestId, value }) => (
-	<Wrapper>
-		<Header>
-			<Row>
-				<HeaderKeyCell>{'Key'}</HeaderKeyCell>
-				<HeaderTypeCell>{'Type'}</HeaderTypeCell>
-				<HeaderValueCell>{'Value'}</HeaderValueCell>
-				<HeaderAction />
-			</Row>
-		</Header>
-		<Body>
-			<JsonItemEntry
-				requestId={requestId}
-				depth={0}
-				jPath={''}
-				value={value}
-			/>
-		</Body>
-	</Wrapper>
-);
+const JsonEditor: React.FunctionComponent<JsonEditorProps> = ({ requestId, value }) => {
+	const root = TypedObject.values(value).find(e => e.parentId === null);
+
+	return (
+		<Wrapper>
+			<Header>
+				<Row>
+					<HeaderKeyCell>{'Key'}</HeaderKeyCell>
+					<HeaderTypeCell>{'Type'}</HeaderTypeCell>
+					<HeaderValueCell>{'Value'}</HeaderValueCell>
+					<HeaderAction />
+				</Row>
+			</Header>
+			<Body>
+				<JsonEntry
+					requestId={requestId}
+					depth={0}
+					value={root!}
+				/>
+			</Body>
+		</Wrapper>
+	);
+}
 
 export default JsonEditor;
 

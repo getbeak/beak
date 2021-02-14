@@ -5,13 +5,13 @@ import styled from 'styled-components';
 
 interface EntryTogglerProps {
 	requestId: string;
-	jPath: string;
+	id: string;
 	value: boolean;
 	onChange?: (enabled: boolean) => void;
 }
 
 const EntryToggler: React.FunctionComponent<EntryTogglerProps> = props => {
-	const { requestId, jPath, value, onChange } = props;
+	const { requestId, id, value, onChange } = props;
 	const dispatch = useDispatch();
 
 	return (
@@ -22,7 +22,7 @@ const EntryToggler: React.FunctionComponent<EntryTogglerProps> = props => {
 				onChange={e => {
 					dispatch(actions.requestBodyJsonEditorEnabledChange({
 						requestId,
-						jPath,
+						id,
 						enabled: e.target.checked,
 					}));
 

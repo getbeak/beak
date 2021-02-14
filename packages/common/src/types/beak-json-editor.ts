@@ -1,14 +1,15 @@
 import { ValueParts } from './beak-project';
 
+export type EntryMap = Record<string, Entries>;
 export type EntryType = 'string' | 'number' | 'boolean' | 'null' | 'object' | 'array';
 
 export interface Base {
+	id: string;
+	parentId: string | null;
 	enabled: boolean;
 }
 
-export interface NamedEntry {
-	name: string;
-}
+export interface NamedEntryBase { name: string }
 
 export interface StringEntry extends Base {
 	type: 'string';
@@ -30,17 +31,18 @@ export interface NullEntry extends Base {
 	value: null;
 }
 
-export interface ObjectEntry extends Base {
-	type: 'object';
-	value: NamedEntries[];
-}
+export interface ObjectEntry extends Base { type: 'object' }
+export interface ArrayEntry extends Base { type: 'array' }
 
-export interface ArrayEntry extends Base {
-	type: 'array';
-	value: Entries[];
-}
+export interface NamedStringEntry extends StringEntry, NamedEntryBase { }
+export interface NamedNumberEntry extends NumberEntry, NamedEntryBase { }
+export interface NamedBooleanEntry extends BooleanEntry, NamedEntryBase { }
+export interface NamedNullEntry extends NullEntry, NamedEntryBase { }
+export interface NamedObjectEntry extends ObjectEntry, NamedEntryBase { }
+export interface NamedArrayEntry extends ArrayEntry, NamedEntryBase { }
 
-export type Entries = StringEntry | NumberEntry | BooleanEntry | NullEntry | ObjectEntry | ArrayEntry;
+export type Entries = NamedEntries | AnonymousEntries;
+export type AnonymousEntries = StringEntry | NumberEntry | BooleanEntry | NullEntry | ObjectEntry | ArrayEntry;
 
 /* eslint-disable @typescript-eslint/indent */
 export type NamedEntries = NamedStringEntry |
@@ -50,10 +52,3 @@ export type NamedEntries = NamedStringEntry |
 	NamedObjectEntry |
 	NamedArrayEntry;
 /* eslint-enable @typescript-eslint/indent */
-
-export interface NamedStringEntry extends StringEntry, NamedEntry { }
-export interface NamedNumberEntry extends NumberEntry, NamedEntry { }
-export interface NamedBooleanEntry extends BooleanEntry, NamedEntry { }
-export interface NamedNullEntry extends NullEntry, NamedEntry { }
-export interface NamedObjectEntry extends ObjectEntry, NamedEntry { }
-export interface NamedArrayEntry extends ArrayEntry, NamedEntry { }

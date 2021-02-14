@@ -7,20 +7,20 @@ import styled from 'styled-components';
 
 interface EntryActionsProps {
 	requestId: string;
-	jPath: string;
+	id: string;
+	isRoot: boolean;
 }
 
 const EntryActions: React.FunctionComponent<EntryActionsProps> = props => {
-	const { requestId, jPath } = props;
+	const { requestId, id, isRoot } = props;
 	const dispatch = useDispatch();
-	const isRoot = jPath === '';
 
 	return (
 		<Wrapper>
 			{!isRoot && (
 				<Button tabIndex={-1} onClick={() => {
 					dispatch(actions.requestBodyJsonEditorRemoveEntry({
-						jPath,
+						id,
 						requestId,
 					}));
 				}}>
@@ -29,7 +29,7 @@ const EntryActions: React.FunctionComponent<EntryActionsProps> = props => {
 			)}
 			<Button tabIndex={-1} onClick={() => {
 				dispatch(actions.requestBodyJsonEditorAddEntry({
-					jPath,
+					id,
 					requestId,
 				}));
 			}}>

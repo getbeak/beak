@@ -15,15 +15,16 @@ import { Row } from '../atoms/Structure';
 import EntryActions from './EntryActions';
 import { EntryFolderIrrelevant } from './EntryFolder';
 import EntryToggler from './EntryToggler';
-import { detectName, JsonItemEntryProps } from './JsonItem';
+import { detectName, JsonEntryProps } from './JsonEntry';
 import TypeSelector from './TypeSelector';
 
-interface JsonNullEntryProps extends JsonItemEntryProps {
+interface JsonNullEntryProps extends JsonEntryProps {
 	value: NullEntry | NamedNullEntry;
 }
 
 const JsonNullEntry: React.FunctionComponent<JsonNullEntryProps> = props => {
-	const { depth, jPath, requestId, value, arrayIndex } = props;
+	const { depth, requestId, value, nameOverride } = props;
+	const { id, parentId } = value;
 	const dispatch = useDispatch();
 
 	return (
@@ -31,30 +32,30 @@ const JsonNullEntry: React.FunctionComponent<JsonNullEntryProps> = props => {
 			<BodyPrimaryCell depth={depth}>
 				<EntryFolderIrrelevant />
 				<EntryToggler
-					jPath={[jPath, '[enabled]'].filter(Boolean).join('.')}
+					id={id}
 					requestId={requestId}
 					value={value.enabled}
 				/>
 				<BodyInputWrapper>
-					{arrayIndex === void 0 && (
+					{nameOverride === void 0 && (
 						<input
 							disabled={depth === 0}
 							type={'text'}
 							value={detectName(depth, value)}
 							onChange={e => dispatch(actions.requestBodyJsonEditorNameChange({
+								id,
 								requestId,
 								name: e.target.value,
-								jPath: [jPath, '[name]'].filter(Boolean).join('.'),
 							}))}
 						/>
 					)}
-					{arrayIndex !== void 0 && `Index ${arrayIndex}`}
+					{nameOverride !== void 0 && nameOverride}
 				</BodyInputWrapper>
 			</BodyPrimaryCell>
 			<BodyTypeCell>
 				<TypeSelector
 					requestId={requestId}
-					jPath={jPath}
+					id={id}
 					value={value.type}
 				/>
 			</BodyTypeCell>
@@ -64,7 +65,7 @@ const JsonNullEntry: React.FunctionComponent<JsonNullEntryProps> = props => {
 				</BodyNullWrapper>
 			</BodyInputValueCell>
 			<BodyAction>
-				<EntryActions jPath={jPath} requestId={requestId} />
+				<EntryActions id={id} isRoot={parentId === null} requestId={requestId} />
 			</BodyAction>
 		</Row>
 	);

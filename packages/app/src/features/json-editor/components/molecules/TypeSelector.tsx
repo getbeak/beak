@@ -16,13 +16,13 @@ import styled from 'styled-components';
 
 interface TypeSelectorProps {
 	requestId: string;
-	jPath: string;
+	id: string;
 	value: EntryType;
 	onChange?: (entryType: EntryType) => void;
 }
 
 const TypeSelector: React.FunctionComponent<TypeSelectorProps> = props => {
-	const { requestId, jPath, value, onChange } = props;
+	const { requestId, id, value, onChange } = props;
 	const selectRef = useRef<HTMLSelectElement>(null);
 	const icon = getIconFromType(value);
 	const dispatch = useDispatch();
@@ -38,7 +38,7 @@ const TypeSelector: React.FunctionComponent<TypeSelectorProps> = props => {
 
 					dispatch(actions.requestBodyJsonEditorTypeChange({
 						requestId,
-						jPath,
+						id,
 						type,
 					}));
 

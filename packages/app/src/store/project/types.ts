@@ -152,27 +152,27 @@ export interface LatestWrite {
 }
 
 export interface RequestBodyJsonEditorNameChangePayload extends RequestIdPayload {
-	jPath: string;
+	id: string;
 	name: string;
 }
 
 export interface RequestBodyJsonEditorValueChangePayload extends RequestIdPayload {
-	jPath: string;
+	id: string;
 	value: ValueParts | boolean | null;
 }
 
 export interface RequestBodyJsonEditorTypeChangePayload extends RequestIdPayload {
-	jPath: string;
+	id: string;
 	type: EntryType;
 }
 
 export interface RequestBodyJsonEditorEnabledChangePayload extends RequestIdPayload {
-	jPath: string;
+	id: string;
 	enabled: boolean;
 }
 
-export interface RequestBodyJsonEditorAddEntryPayload extends RequestIdPayload { jPath: string }
-export interface RequestBodyJsonEditorRemoveEntryPayload extends RequestIdPayload { jPath: string }
+export interface RequestBodyJsonEditorAddEntryPayload extends RequestIdPayload { id: string }
+export interface RequestBodyJsonEditorRemoveEntryPayload extends RequestIdPayload { id: string }
 
 export default {
 	ActionTypes,

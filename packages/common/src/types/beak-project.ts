@@ -1,4 +1,4 @@
-import { Entries } from './beak-json-editor';
+import { EntryMap } from './beak-json-editor';
 
 export interface ProjectFile {
 	name: string;
@@ -54,7 +54,7 @@ export interface RequestBodyText {
 
 export interface RequestBodyJson {
 	type: 'json';
-	payload: Entries;
+	payload: EntryMap;
 }
 
 export interface RequestBodyUrlEncodedForm {

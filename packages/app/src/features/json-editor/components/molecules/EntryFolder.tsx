@@ -1,23 +1,21 @@
 import RequestPreferencesContext from '@beak/app/features/request-pane/contexts/request-preferences-context';
-import { faChevronDown, faChevronRight } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useContext } from 'react';
 import styled from 'styled-components';
 
 interface EntryFolderProps {
+	id: string;
 	requestId: string;
-	jPath: string;
 	expanded?: boolean;
 	onChange: (expanded: boolean) => void;
 }
 
 const EntryFolder: React.FunctionComponent<EntryFolderProps> = props => {
-	const { expanded, jPath, onChange } = props;
+	const { expanded, id, onChange } = props;
 	const reqPref = useContext(RequestPreferencesContext);
 
 	return (
 		<Wrapper onClick={() => {
-			reqPref?.setJsonEditorExpand(jPath, !expanded);
+			reqPref?.setJsonEditorExpand(id, !expanded);
 			onChange(!expanded);
 		}}>
 			<Chevron expanded={Boolean(expanded)} />

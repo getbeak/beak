@@ -4,7 +4,7 @@ import { ipcDialogService } from '@beak/app/lib/ipc';
 import { requestBodyTextChanged } from '@beak/app/store/project/actions';
 import { createDefaultOptions } from '@beak/app/utils/monaco';
 import { RequestPreferenceBodySubTab } from '@beak/common/types/beak-hub';
-import { Entries } from '@beak/common/types/beak-json-editor';
+import { Entries, EntryMap } from '@beak/common/types/beak-json-editor';
 import { RequestNode } from '@beak/common/types/beak-project';
 import React, { useContext, useState } from 'react';
 import MonacoEditor from 'react-monaco-editor';
@@ -92,7 +92,7 @@ const BodyTab: React.FunctionComponent<BodyTabProps> = props => {
 				{tab === 'json' && (
 					<JsonEditor
 						requestId={node.id}
-						value={node.info.body.payload as Entries}
+						value={node.info.body.payload as EntryMap}
 					/>
 				)}
 				{tab === 'url_encoded_form' && (
