@@ -198,6 +198,11 @@ const projectReducer = createReducer(initialState, builder => {
 		.addCase(actions.setLatestWrite, (state, { payload }) => {
 			state.latestWrite = payload;
 		})
+		.addCase(actions.setWriteDebounce, (state, { payload }) => {
+			const { requestId, nonce } = payload;
+
+			state.writeDebouncer[requestId] = nonce;
+		})
 
 		.addCase(actions.requestBodyTypeChanged, (state, { payload }) => {
 			const { requestId, type } = payload;

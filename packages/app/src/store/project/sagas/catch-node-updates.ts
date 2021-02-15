@@ -1,14 +1,12 @@
 import { writeRequestNode } from '@beak/app/lib/beak-project/request';
 import { Nodes, RequestNode } from '@beak/common/types/beak-project';
 import { PayloadAction } from '@reduxjs/toolkit';
-import { call, put, select } from 'redux-saga/effects';
+import { call, delay, put, select } from 'redux-saga/effects';
+import * as uuid from 'uuid';
 
 import { ApplicationState } from '../..';
 import actions from '../actions';
-
-interface RequestIdPayload {
-	requestId: string;
-}
+import { RequestIdPayload } from '../types';
 
 export default function* catchNodeUpdatesWorker({ payload }: PayloadAction<RequestIdPayload>) {
 	const { requestId } = payload;
@@ -16,6 +14,17 @@ export default function* catchNodeUpdatesWorker({ payload }: PayloadAction<Reque
 	const node: Nodes = yield select((s: ApplicationState) => s.global.project.tree[requestId]);
 
 	if (!node || node.type !== 'request')
+		return;
+
+	const nonce = uuid.v4();
+
+	yield put(actions.setWriteDebounce({ requestId, nonce }));
+	yield delay(300);
+
+	const debounce = yield select((s: ApplicationState) => s.global.project.writeDebouncer[requestId]);
+
+	// This prevents us writing the file too often while data is changing
+	if (debounce !== nonce)
 		return;
 
 	yield put(actions.setLatestWrite({ filePath: node.filePath, writtenAt: Date.now() }));

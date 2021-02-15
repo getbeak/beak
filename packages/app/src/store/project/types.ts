@@ -42,6 +42,7 @@ export const ActionTypes = {
 	REQUEST_RENAME_RESOLVED: '@beak/global/project/REQUEST_RENAME_RESOLVED',
 
 	SET_LATEST_WRITE: '@beak/global/project/SET_LATEST_WRITE',
+	SET_WRITE_DEBOUNCE: '@beak/global/project/SET_WRITE_DEBOUNCE',
 
 	REQUEST_BODY_TYPE_CHANGED: '@beak/global/project/REQUEST_BODY_TYPE_CHANGED',
 	REQUEST_BODY_TEXT_CHANGED: '@beak/global/project/REQUEST_BODY_TEXT_CHANGED',
@@ -66,6 +67,7 @@ export interface State {
 
 	activeRename?: ActiveRename;
 	latestWrite?: LatestWrite;
+	writeDebouncer: Record<string, string>;
 }
 
 export const initialState: State = {
@@ -73,6 +75,8 @@ export const initialState: State = {
 
 	tree: {},
 	tabs: [],
+
+	writeDebouncer: {},
 };
 
 export type TabItem = RequestTabItem | RendererTabItem;
@@ -147,6 +151,10 @@ export interface ActiveRename {
 export interface LatestWrite {
 	filePath: string;
 	writtenAt: number;
+}
+
+export interface WriteDebouncePayload extends RequestIdPayload {
+	nonce: string;
 }
 
 export interface RequestBodyTypeChangedPayload extends RequestIdPayload {

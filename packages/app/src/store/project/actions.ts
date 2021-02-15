@@ -27,6 +27,7 @@ import {
 	ToggleableItemAddedPayload,
 	ToggleableItemRemovedPayload,
 	ToggleableItemUpdatedPayload,
+	WriteDebouncePayload,
 } from './types';
 
 export const startProject = createAction<string>(AT.START_PROJECT);
@@ -69,6 +70,7 @@ export const requestRenameSubmitted = createAction<RequestRenameSubmitted>(AT.RE
 export const requestRenameResolved = createAction<RequestRenameResolved>(AT.REQUEST_RENAME_RESOLVED);
 
 export const setLatestWrite = createAction<LatestWrite>(AT.SET_LATEST_WRITE);
+export const setWriteDebounce = createAction<WriteDebouncePayload>(AT.SET_WRITE_DEBOUNCE);
 
 export const requestBodyTypeChanged = createAction<RequestBodyTypeChangedPayload>(AT.REQUEST_BODY_TYPE_CHANGED);
 export const requestBodyTextChanged = createAction<RequestBodyTextChangedPayload>(AT.REQUEST_BODY_TEXT_CHANGED);
@@ -132,6 +134,7 @@ export default {
 	requestRenameResolved,
 
 	setLatestWrite,
+	setWriteDebounce,
 
 	requestBodyTypeChanged,
 	requestBodyTextChanged,
