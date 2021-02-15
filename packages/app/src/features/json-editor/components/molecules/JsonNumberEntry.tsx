@@ -75,7 +75,7 @@ const JsonNumberEntry: React.FunctionComponent<JsonNumberEntryProps> = props => 
 				</BodyInputWrapper>
 			</BodyInputValueCell>
 			<BodyAction>
-				<EntryActions id={id} isRoot={parentId === null} requestId={requestId} />
+				<EntryActions id={id} entry={value} requestId={requestId} />
 			</BodyAction>
 		</Row>
 	);

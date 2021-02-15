@@ -81,7 +81,7 @@ const JsonObjectEntry: React.FunctionComponent<JsonObjectEntryProps> = props => 
 					{`${children.length} ${children.length === 1 ? 'key' : 'keys'}`}
 				</BodyLabelValueCell>
 				<BodyAction>
-					<EntryActions id={id} isRoot={parentId === null} requestId={requestId} />
+					<EntryActions id={id} entry={value} requestId={requestId} />
 				</BodyAction>
 			</Row>
 			{expanded && children.map(c => (

@@ -75,7 +75,7 @@ const JsonBooleanEntry: React.FunctionComponent<JsonBooleanEntryProps> = props =
 				</BodyInputWrapper>
 			</BodyInputValueCell>
 			<BodyAction>
-				<EntryActions id={id} isRoot={parentId === null} requestId={requestId} />
+				<EntryActions id={id} entry={value} requestId={requestId} />
 			</BodyAction>
 		</Row>
 	);

@@ -1,4 +1,5 @@
 import actions from '@beak/app/store/project/actions';
+import { Entries } from '@beak/common/types/beak-json-editor';
 import { faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
@@ -8,12 +9,17 @@ import styled from 'styled-components';
 interface EntryActionsProps {
 	requestId: string;
 	id: string;
-	isRoot: boolean;
+	entry: Entries;
 }
 
 const EntryActions: React.FunctionComponent<EntryActionsProps> = props => {
-	const { requestId, id, isRoot } = props;
+	const { requestId, id, entry } = props;
+	const isRoot = entry.parentId === null;
 	const dispatch = useDispatch();
+
+	// Don't show any icons for root level primitives
+	if (isRoot && !['array', 'object'].includes(entry.type))
+		return null;
 
 	return (
 		<Wrapper>
