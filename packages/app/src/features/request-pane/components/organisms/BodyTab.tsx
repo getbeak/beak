@@ -41,7 +41,7 @@ const BodyTab: React.FunctionComponent<BodyTabProps> = props => {
 				return;
 		}
 
-		dispatch(actions.requestBodyTypeChanged(newType));
+		dispatch(actions.requestBodyTypeChanged({ requestId: node.id, type: newType }));
 	}
 
 	return (

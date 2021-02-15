@@ -1,5 +1,5 @@
 import { EntryType } from '@beak/common/types/beak-json-editor';
-import { Tree, ValueParts } from '@beak/common/types/beak-project';
+import { RequestBodyType, Tree, ValueParts } from '@beak/common/types/beak-project';
 
 export const ActionTypes = {
 	START_PROJECT: '@beak/global/project/START_PROJECT',
@@ -23,7 +23,6 @@ export const ActionTypes = {
 	REQUEST_HEADER_ADDED: '@beak/global/project/REQUEST_HEADER_ADDED',
 	REQUEST_HEADER_UPDATED: '@beak/global/project/REQUEST_HEADER_UPDATED',
 	REQUEST_HEADER_REMOVED: '@beak/global/project/REQUEST_HEADER_REMOVED',
-
 
 	DUPLICATE_REQUEST: '@beak/global/project/DUPLICATE_REQUEST',
 	INSERT_REQUEST_NODE: '@beak/global/project/INSERT_REQUEST_NODE',
@@ -123,8 +122,6 @@ export interface ToggleableItemRemovedPayload extends RequestIdPayload {
 	identifier: string;
 }
 
-export interface RequestBodyTextChangedPayload extends RequestIdPayload { text: string }
-
 export interface RequestRenameStarted extends RequestIdPayload { }
 export interface RequestRenameCancelled extends RequestIdPayload { }
 export interface RequestRenameSubmitted extends RequestIdPayload { }
@@ -151,6 +148,12 @@ export interface LatestWrite {
 	filePath: string;
 	writtenAt: number;
 }
+
+export interface RequestBodyTypeChangedPayload extends RequestIdPayload {
+	type: RequestBodyType;
+}
+
+export interface RequestBodyTextChangedPayload extends RequestIdPayload { text: string }
 
 export interface RequestBodyJsonEditorNameChangePayload extends RequestIdPayload {
 	id: string;
