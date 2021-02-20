@@ -11,6 +11,11 @@
     "module": "CommonJS",
     "allowSyntheticDefaultImports": true,
 
+    "typeRoots": [
+      "./typings",
+      "./node_modules/@types"
+    ],
+
     "paths": {
       "@beak/app": ["packages/app/src"],
       "@beak/app/*": ["packages/app/src/*"],
@@ -24,6 +29,7 @@
   },
   "exclude": [
     "node_modules",
-    "dist"
+    "dist",
+    "typings"
   ]
 }
