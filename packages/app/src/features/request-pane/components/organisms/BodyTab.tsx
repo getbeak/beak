@@ -1,5 +1,6 @@
 import BasicTableView from '@beak/app/components/molecules/BasicTableView';
 import JsonEditor from '@beak/app/features/json-editor/components/JsonEditor';
+import { convertToEntryJson, convertToRealJson } from '@beak/app/features/json-editor/parsers';
 import { ipcDialogService } from '@beak/app/lib/ipc';
 import actions, { requestBodyTextChanged } from '@beak/app/store/project/actions';
 import { createDefaultOptions } from '@beak/app/utils/monaco';
@@ -41,7 +42,20 @@ const BodyTab: React.FunctionComponent<BodyTabProps> = props => {
 				return;
 		}
 
-		dispatch(actions.requestBodyTypeChanged({ requestId: node.id, type: newType }));
+		// Json switches
+		if (newType === 'json' && body.type === 'text') {
+			dispatch(actions.requestBodyTypeChanged({
+				requestId: node.id,
+				type: 'json',
+				payload: convertToEntryJson(JSON.parse(body.payload)),
+			}));
+		} else if (newType === 'text' && body.type === 'json') {
+			dispatch(actions.requestBodyTypeChanged({
+				requestId: node.id,
+				type: 'text',
+				payload: JSON.stringify(convertToRealJson({}, {}, body.payload)),
+			}));
+		}
 	}
 
 	return (

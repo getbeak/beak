@@ -39,7 +39,7 @@ const JsonEditor: React.FunctionComponent<JsonEditorProps> = ({ requestId, value
 			</Body>
 		</Wrapper>
 	);
-}
+};
 
 export default JsonEditor;
 

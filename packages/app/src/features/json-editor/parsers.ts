@@ -1,6 +1,8 @@
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { Entries, EntryMap, NamedEntries } from '@beak/common/types/beak-json-editor';
 import { VariableGroups } from '@beak/common/types/beak-project';
+// @ts-ignore
+import ksuid from '@cuvva/ksuid';
 
 import { parseValueParts } from '../variable-input/parser';
 
@@ -60,16 +62,85 @@ function convertEntry(
 	}
 }
 
-export function convertToEntryJson(json: JsonTypes): EntryMap {
-	// switch (true) {
-	// 	case typeof json === 'string':
-	// 		return {
-	// 			id: ksuid.generate().toString(),
-	// 		} as JsonStringEntry;
+export function convertToEntryJson(json: JsonTypes, parentId: string | null = null, name?: string): EntryMap {
+	const out: EntryMap = {};
+	const id = ksuid.generate('jsonentry').toString() as string;
 
-	// 	default:
-	// 		return null;
-	// }
+	switch (true) {
+		case typeof json === 'number':
+		case typeof json === 'string':
+			out[id] = {
+				id,
+				name,
+				enabled: true,
+				parentId,
+				type: typeof json,
+				value: [json],
+			} as Entries;
+			break;
 
-	return {};
+		case typeof json === 'boolean':
+			out[id] = {
+				id,
+				name,
+				enabled: true,
+				parentId,
+				type: 'boolean',
+				value: json,
+			} as Entries;
+			break;
+
+		case json === null:
+			out[id] = {
+				id,
+				name,
+				enabled: true,
+				parentId,
+				type: 'null',
+				value: null,
+			} as Entries;
+			break;
+
+		case Array.isArray(json): {
+			out[id] = {
+				id,
+				name,
+				enabled: true,
+				parentId,
+				type: 'array',
+			} as Entries;
+
+			(json as JsonTypes[])
+				.map(e => convertToEntryJson(e, id))
+				.map(e => TypedObject.keys(e).forEach(k => {
+					out[k] = e[k];
+				}));
+
+			break;
+		}
+
+		case typeof json === 'object': {
+			out[id] = {
+				id,
+				name,
+				enabled: true,
+				parentId,
+				type: 'object',
+			} as Entries;
+
+			TypedObject
+				.keys(json as Record<string, JsonTypes>)
+				.map(key => convertToEntryJson((json as Record<string, JsonTypes>)[key], id, key))
+				.map(e => TypedObject.keys(e).forEach(k => {
+					out[k] = e[k];
+				}));
+
+			break;
+		}
+
+		default:
+			break;
+	}
+
+	return out;
 }

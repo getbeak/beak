@@ -1,6 +1,5 @@
 /* eslint-disable no-param-reassign */
 
-import { convertToRealJson } from '@beak/app/features/json-editor/parsers';
 import {
 	NamedEntries,
 	NamedStringEntry,
@@ -209,8 +208,8 @@ const projectReducer = createReducer(initialState, builder => {
 			const node = state.tree[requestId] as RequestNode;
 			const body = node.info.body;
 
-			// TODO(afr): Handle payload coercion
 			body.type = type;
+			body.payload = payload.payload;
 		})
 		.addCase(actions.requestBodyTextChanged, (state, action) => {
 			const node = state.tree[action.payload.requestId] as RequestNode;

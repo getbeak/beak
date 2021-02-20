@@ -1,5 +1,5 @@
-import { EntryType } from '@beak/common/types/beak-json-editor';
-import { RequestBodyType, Tree, ValueParts } from '@beak/common/types/beak-project';
+import { EntryMap, EntryType } from '@beak/common/types/beak-json-editor';
+import { ToggleKeyValue, Tree, ValueParts } from '@beak/common/types/beak-project';
 
 export const ActionTypes = {
 	START_PROJECT: '@beak/global/project/START_PROJECT',
@@ -157,8 +157,23 @@ export interface WriteDebouncePayload extends RequestIdPayload {
 	nonce: string;
 }
 
-export interface RequestBodyTypeChangedPayload extends RequestIdPayload {
-	type: RequestBodyType;
+export type RequestBodyTypeChangedPayload = RequestBodyTypeToJsonPayload |
+RequestBodyTypeToTextPayload |
+RequestBodyTypeToUrlEncodedFormPayload;
+
+interface RequestBodyTypeToJsonPayload extends RequestIdPayload {
+	type: 'json';
+	payload: EntryMap;
+}
+
+interface RequestBodyTypeToTextPayload extends RequestIdPayload {
+	type: 'text';
+	payload: string;
+}
+
+interface RequestBodyTypeToUrlEncodedFormPayload extends RequestIdPayload {
+	type: 'url_encoded_form';
+	payload: Record<string, ToggleKeyValue>;
 }
 
 export interface RequestBodyTextChangedPayload extends RequestIdPayload { text: string }
