@@ -49,20 +49,19 @@ const BasicTableEditor: React.FunctionComponent<BasicTableEditorProps> = props =
 					return (
 						<Row key={k}>
 							<BodyPrimaryCell>
+								{editable && showToggle && (
+									<EntryToggler
+										value={item.enabled}
+										onChange={enabled => updateItem?.('enabled', k, enabled)}
+									/>
+								)}
 								<BodyInputWrapper>
-									{editable && showToggle && (
-										<EntryToggler
-											value={item.enabled}
-											onChange={enabled => updateItem?.('enabled', k, enabled)}
-										/>
-									)}
-									{editable && (
-										<input
-											type={'text'}
-											value={item.name}
-											onChange={e => updateItem?.('name', k, e.target.value)}
-										/>
-									)}
+									<input
+										type={'text'}
+										value={item.name}
+										readOnly={readOnly}
+										onChange={e => updateItem?.('name', k, e.target.value)}
+									/>
 								</BodyInputWrapper>
 							</BodyPrimaryCell>
 							<BodyInputValueCell>
