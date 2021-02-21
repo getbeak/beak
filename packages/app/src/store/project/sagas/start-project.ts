@@ -54,7 +54,7 @@ export default function* workerStartProject({ payload }: PayloadAction<string>) 
 			yield call([ipcDialogService, ipcDialogService.showMessageBox], {
 				type: 'error',
 				title: 'Project failed to open',
-				message: 'There was a problem loading the Beak project.The error is below: ',
+				message: 'There was a problem loading the Beak project. ',
 				detail: [
 					error.message,
 					error.stack,
