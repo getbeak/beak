@@ -19,7 +19,7 @@ export default function* catchNodeUpdatesWorker({ payload }: PayloadAction<Reque
 	const nonce = uuid.v4();
 
 	yield put(actions.setWriteDebounce({ requestId, nonce }));
-	yield delay(300);
+	yield delay(500); // 0.5 seconds
 
 	const debounce = yield select((s: ApplicationState) => s.global.project.writeDebouncer[requestId]);
 
