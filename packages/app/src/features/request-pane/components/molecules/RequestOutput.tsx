@@ -1,3 +1,4 @@
+import { convertKeyValueToString } from '@beak/app/features/basic-table-editor/parsers';
 import { convertToRealJson } from '@beak/app/features/json-editor/parsers';
 import { parseValueParts } from '@beak/app/features/variable-input/parser';
 import { createDefaultOptions } from '@beak/app/utils/monaco';
@@ -102,12 +103,16 @@ export function createBasicHttpOutput(
 		}
 
 		// Padding between headers/body
-		out.push('', '');
+		out.push('');
 
 		if (body.type === 'json')
 			out.push(JSON.stringify(convertToRealJson(selectedGroups, variableGroups, body.payload), null, '\t'));
-		// else
-		// 	out.push(body.payload);
+		else if (body.type === 'text')
+			out.push(body.payload);
+		else if (body.type === 'url_encoded_form')
+			out.push(convertKeyValueToString(selectedGroups, variableGroups, body.payload));
+		else
+			out.push('Unknow body type...');
 	}
 
 	return out.join('\n');

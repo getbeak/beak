@@ -1,13 +1,15 @@
 import BasicTableView from '@beak/app/components/molecules/BasicTableView';
+import BasicTableEditor from '@beak/app/features/basic-table-editor/components/BasicTableEditor';
+import { convertKeyValueToString, convertStringToKeyValue } from '@beak/app/features/basic-table-editor/parsers';
 import JsonEditor from '@beak/app/features/json-editor/components/JsonEditor';
 import { convertToEntryJson, convertToRealJson } from '@beak/app/features/json-editor/parsers';
 import { ipcDialogService } from '@beak/app/lib/ipc';
 import actions, { requestBodyTextChanged } from '@beak/app/store/project/actions';
 import { createDefaultOptions } from '@beak/app/utils/monaco';
-import { RequestBodyType, RequestNode } from '@beak/common/types/beak-project';
+import { RequestBodyType, RequestNode, ValueParts } from '@beak/common/types/beak-project';
 import React from 'react';
 import MonacoEditor from 'react-monaco-editor';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 
 import TabBar from '../../../../components/atoms/TabBar';
@@ -20,6 +22,7 @@ export interface BodyTabProps {
 
 const BodyTab: React.FunctionComponent<BodyTabProps> = props => {
 	const dispatch = useDispatch();
+	const { selectedGroups, variableGroups } = useSelector(s => s.global.variableGroups);
 	const { node } = props;
 	const { body } = node.info;
 
@@ -31,7 +34,7 @@ const BodyTab: React.FunctionComponent<BodyTabProps> = props => {
 			const result = await ipcDialogService.showMessageBox({
 				title: 'Are you sure?',
 				message: 'Are you sure you want to change body type?',
-				detail: 'Changing the body type could cause data to be lost!',
+				detail: newType === 'text' ? 'Changing to text could cause data loss from disabled values!' : 'Changing editor will cause your existing body to be lost.',
 				type: 'warning',
 				buttons: ['Change', 'Cancel'],
 				defaultId: 1,
@@ -42,18 +45,55 @@ const BodyTab: React.FunctionComponent<BodyTabProps> = props => {
 				return;
 		}
 
-		// Json switches
-		if (newType === 'json' && body.type === 'text') {
+		// TODO(afr): Abstract this out somewhere proper
+
+		// Changing from text to lang specific editor
+		if (body.type === 'text') {
+			if (newType === 'json') {
+				dispatch(actions.requestBodyTypeChanged({
+					requestId: node.id,
+					type: 'json',
+					payload: convertToEntryJson(JSON.parse(body.payload)),
+				}));
+
+				return;
+			} else if (newType === 'url_encoded_form') {
+				dispatch(actions.requestBodyTypeChanged({
+					requestId: node.id,
+					type: 'url_encoded_form',
+					payload: convertStringToKeyValue(body.payload, 'urlencodeditem'),
+				}));
+
+				return;
+			}
+		}
+
+		// Changing from lang specific editor to text
+		if (newType === 'text') {
+			if (body.type === 'json') {
+				dispatch(actions.requestBodyTypeChanged({
+					requestId: node.id,
+					type: 'text',
+					payload: JSON.stringify(convertToRealJson(selectedGroups, variableGroups, body.payload), null, '\t'),
+				}));
+
+				return;
+			} else if (body.type === 'url_encoded_form') {
+				dispatch(actions.requestBodyTypeChanged({
+					requestId: node.id,
+					type: 'text',
+					payload: convertKeyValueToString(selectedGroups, variableGroups, body.payload),
+				}));
+
+				return;
+			}
+		}
+
+		if (newType === 'text') {
 			dispatch(actions.requestBodyTypeChanged({
 				requestId: node.id,
-				type: 'json',
-				payload: convertToEntryJson(JSON.parse(body.payload)),
-			}));
-		} else if (newType === 'text' && body.type === 'json') {
-			dispatch(actions.requestBodyTypeChanged({
-				requestId: node.id,
-				type: 'text',
-				payload: JSON.stringify(convertToRealJson({}, {}, body.payload)),
+				type: newType,
+				payload: '',
 			}));
 		}
 	}
@@ -88,23 +128,46 @@ const BodyTab: React.FunctionComponent<BodyTabProps> = props => {
 
 			<TabBody>
 				{body.type === 'text' && (
-					<React.Fragment>
-						<MonacoEditor
-							height={'100%'}
-							width={'100%'}
-							language={'plaintext'}
-							theme={'vs-dark'}
-							value={body.payload}
-							options={createDefaultOptions()}
-							onChange={text => dispatch(requestBodyTextChanged({ requestId: node.id, text }))}
-						/>
-					</React.Fragment>
+					<MonacoEditor
+						height={'100%'}
+						width={'100%'}
+						language={'plaintext'}
+						theme={'vs-dark'}
+						value={body.payload}
+						options={createDefaultOptions()}
+						onChange={text => dispatch(requestBodyTextChanged({ requestId: node.id, text }))}
+					/>
 				)}
 				{body.type === 'json' && <JsonEditor requestId={node.id} value={body.payload} />}
 				{body.type === 'url_encoded_form' && (
-					<BasicTableView
-						editable={false}
-						items={{}}
+					<BasicTableEditor
+						items={body.payload}
+						addItem={() => dispatch(actions.requestBodyUrlEncodedEditorAddItem({ requestId: node.id }))}
+						removeItem={id => dispatch(actions.requestBodyUrlEncodedEditorRemoveItem({
+							requestId: node.id,
+							id,
+						}))}
+						updateItem={(type, id, value) => {
+							if (type === 'name') {
+								dispatch(actions.requestBodyUrlEncodedEditorNameChange({
+									requestId: node.id,
+									id,
+									name: value as string,
+								}));
+							} else if (type === 'enabled') {
+								dispatch(actions.requestBodyUrlEncodedEditorEnabledChange({
+									requestId: node.id,
+									id,
+									enabled: value as boolean,
+								}));
+							} else if (type === 'value') {
+								dispatch(actions.requestBodyUrlEncodedEditorValueChange({
+									requestId: node.id,
+									id,
+									value: value as ValueParts,
+								}));
+							}
+						}}
 					/>
 				)}
 			</TabBody>
