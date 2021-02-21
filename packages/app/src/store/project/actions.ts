@@ -17,6 +17,11 @@ import {
 	RequestBodyJsonEditorValueChangePayload,
 	RequestBodyTextChangedPayload,
 	RequestBodyTypeChangedPayload,
+	RequestBodyUrlEncodedEditorAddItemPayload,
+	RequestBodyUrlEncodedEditorEnabledChangePayload,
+	RequestBodyUrlEncodedEditorNameChangePayload,
+	RequestBodyUrlEncodedEditorRemoveItemPayload,
+	RequestBodyUrlEncodedEditorValueChangePayload,
 	RequestRenameCancelled,
 	RequestRenameResolved,
 	RequestRenameStarted,
@@ -74,6 +79,7 @@ export const setWriteDebounce = createAction<WriteDebouncePayload>(AT.SET_WRITE_
 
 export const requestBodyTypeChanged = createAction<RequestBodyTypeChangedPayload>(AT.REQUEST_BODY_TYPE_CHANGED);
 export const requestBodyTextChanged = createAction<RequestBodyTextChangedPayload>(AT.REQUEST_BODY_TEXT_CHANGED);
+
 export const requestBodyJsonEditorNameChange = createAction<RequestBodyJsonEditorNameChangePayload>(
 	AT.REQUEST_BODY_JSON_EDITOR_NAME_CHANGE,
 );
@@ -91,6 +97,22 @@ export const requestBodyJsonEditorAddEntry = createAction<RequestBodyJsonEditorA
 );
 export const requestBodyJsonEditorRemoveEntry = createAction<RequestBodyJsonEditorRemoveEntryPayload>(
 	AT.REQUEST_BODY_JSON_EDITOR_REMOVE_ENTRY,
+);
+
+export const requestBodyUrlEncodedEditorNameChange = createAction<RequestBodyUrlEncodedEditorNameChangePayload>(
+	AT.REQUEST_BODY_URL_ENCODED_EDITOR_NAME_CHANGE,
+);
+export const requestBodyUrlEncodedEditorValueChange = createAction<RequestBodyUrlEncodedEditorValueChangePayload>(
+	AT.REQUEST_BODY_URL_ENCODED_EDITOR_VALUE_CHANGE,
+);
+export const requestBodyUrlEncodedEditorEnabledChange = createAction<RequestBodyUrlEncodedEditorEnabledChangePayload>(
+	AT.REQUEST_BODY_URL_ENCODED_EDITOR_ENABLED_CHANGE,
+);
+export const requestBodyUrlEncodedEditorAddItem = createAction<RequestBodyUrlEncodedEditorAddItemPayload>(
+	AT.REQUEST_BODY_URL_ENCODED_EDITOR_ADD_ITEM,
+);
+export const requestBodyUrlEncodedEditorRemoveItem = createAction<RequestBodyUrlEncodedEditorRemoveItemPayload>(
+	AT.REQUEST_BODY_URL_ENCODED_EDITOR_REMOVE_ITEM,
 );
 
 export default {
@@ -138,10 +160,17 @@ export default {
 
 	requestBodyTypeChanged,
 	requestBodyTextChanged,
+
 	requestBodyJsonEditorNameChange,
 	requestBodyJsonEditorValueChange,
 	requestBodyJsonEditorTypeChange,
 	requestBodyJsonEditorEnabledChange,
 	requestBodyJsonEditorAddEntry,
 	requestBodyJsonEditorRemoveEntry,
+
+	requestBodyUrlEncodedEditorNameChange,
+	requestBodyUrlEncodedEditorValueChange,
+	requestBodyUrlEncodedEditorEnabledChange,
+	requestBodyUrlEncodedEditorAddItem,
+	requestBodyUrlEncodedEditorRemoveItem,
 };

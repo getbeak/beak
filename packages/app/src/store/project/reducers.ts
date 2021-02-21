@@ -5,7 +5,7 @@ import {
 	NamedStringEntry,
 	ValueEntries,
 } from '@beak/common/types/beak-json-editor';
-import { FolderNode, RequestBodyJson, RequestNode } from '@beak/common/types/beak-project';
+import { FolderNode, RequestBodyJson, RequestBodyUrlEncodedForm, RequestNode } from '@beak/common/types/beak-project';
 // @ts-ignore
 import ksuid from '@cuvva/ksuid';
 import { createReducer } from '@reduxjs/toolkit';
@@ -287,6 +287,47 @@ const projectReducer = createReducer(initialState, builder => {
 			delete body.payload[id];
 
 			// TODO(afr): Cleanup unlinked entries
+		})
+
+		.addCase(actions.requestBodyUrlEncodedEditorNameChange, (state, { payload }) => {
+			const { requestId, id, name } = payload;
+			const node = state.tree[requestId] as RequestNode;
+			const body = node.info.body as RequestBodyUrlEncodedForm;
+
+			body.payload[id].name = name;
+		})
+		.addCase(actions.requestBodyUrlEncodedEditorValueChange, (state, { payload }) => {
+			const { requestId, id, value } = payload;
+			const node = state.tree[requestId] as RequestNode;
+			const body = node.info.body as RequestBodyUrlEncodedForm;
+
+			body.payload[id].value = value;
+		})
+		.addCase(actions.requestBodyUrlEncodedEditorEnabledChange, (state, { payload }) => {
+			const { requestId, id, enabled } = payload;
+			const node = state.tree[requestId] as RequestNode;
+			const body = node.info.body as RequestBodyUrlEncodedForm;
+
+			body.payload[id].enabled = enabled;
+		})
+		.addCase(actions.requestBodyUrlEncodedEditorAddItem, (state, { payload }) => {
+			const { requestId } = payload;
+			const node = state.tree[requestId] as RequestNode;
+			const body = node.info.body as RequestBodyUrlEncodedForm;
+			const id = ksuid.generate('urlencodeditem').toString();
+
+			body.payload[id] = {
+				name: '',
+				value: [],
+				enabled: true,
+			};
+		})
+		.addCase(actions.requestBodyUrlEncodedEditorRemoveItem, (state, { payload }) => {
+			const { requestId, id } = payload;
+			const node = state.tree[requestId] as RequestNode;
+			const body = node.info.body as RequestBodyUrlEncodedForm;
+
+			delete body.payload[id];
 		});
 });
 

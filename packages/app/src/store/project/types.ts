@@ -46,12 +46,19 @@ export const ActionTypes = {
 
 	REQUEST_BODY_TYPE_CHANGED: '@beak/global/project/REQUEST_BODY_TYPE_CHANGED',
 	REQUEST_BODY_TEXT_CHANGED: '@beak/global/project/REQUEST_BODY_TEXT_CHANGED',
+
 	REQUEST_BODY_JSON_EDITOR_NAME_CHANGE: '@beak/global/project/REQUEST_BODY_JSON_EDITOR_NAME_CHANGE',
 	REQUEST_BODY_JSON_EDITOR_VALUE_CHANGE: '@beak/global/project/REQUEST_BODY_JSON_EDITOR_VALUE_CHANGE',
 	REQUEST_BODY_JSON_EDITOR_TYPE_CHANGE: '@beak/global/project/REQUEST_BODY_JSON_EDITOR_TYPE_CHANGE',
 	REQUEST_BODY_JSON_EDITOR_ENABLED_CHANGE: '@beak/global/project/REQUEST_BODY_JSON_EDITOR_ENABLED_CHANGE',
 	REQUEST_BODY_JSON_EDITOR_ADD_ENTRY: '@beak/global/project/REQUEST_BODY_JSON_EDITOR_ADD_ENTRY',
 	REQUEST_BODY_JSON_EDITOR_REMOVE_ENTRY: '@beak/global/project/REQUEST_BODY_JSON_EDITOR_REMOVE_ENTRY',
+
+	REQUEST_BODY_URL_ENCODED_EDITOR_NAME_CHANGE: '@beak/global/project/REQUEST_BODY_URL_ENCODED_EDITOR_NAME_CHANGE',
+	REQUEST_BODY_URL_ENCODED_EDITOR_VALUE_CHANGE: '@beak/global/project/REQUEST_BODY_URL_ENCODED_EDITOR_VALUE_CHANGE',
+	REQUEST_BODY_URL_ENCODED_EDITOR_ADD_ITEM: '@beak/global/project/REQUEST_BODY_URL_ENCODED_EDITOR_ADD_ITEM',
+	REQUEST_BODY_URL_ENCODED_EDITOR_REMOVE_ITEM: '@beak/global/project/REQUEST_BODY_URL_ENCODED_EDITOR_REMOVE_ITEM',
+	REQUEST_BODY_URL_ENCODED_EDITOR_ENABLED_CHANGE: '@beak/global/project/REQUEST_BODY_URL_ENCODED_EDITOR_ENABLED_CHANGE',
 };
 
 export interface State {
@@ -200,6 +207,24 @@ export interface RequestBodyJsonEditorEnabledChangePayload extends RequestIdPayl
 
 export interface RequestBodyJsonEditorAddEntryPayload extends RequestIdPayload { id: string }
 export interface RequestBodyJsonEditorRemoveEntryPayload extends RequestIdPayload { id: string }
+
+export interface RequestBodyUrlEncodedEditorNameChangePayload extends RequestIdPayload {
+	id: string;
+	name: string;
+}
+
+export interface RequestBodyUrlEncodedEditorValueChangePayload extends RequestIdPayload {
+	id: string;
+	value: ValueParts;
+}
+
+export interface RequestBodyUrlEncodedEditorEnabledChangePayload extends RequestIdPayload {
+	id: string;
+	enabled: boolean;
+}
+
+export interface RequestBodyUrlEncodedEditorAddItemPayload extends RequestIdPayload { }
+export interface RequestBodyUrlEncodedEditorRemoveItemPayload extends RequestIdPayload { id: string }
 
 export default {
 	ActionTypes,
