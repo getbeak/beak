@@ -28,6 +28,43 @@
 				]
 			}
 		},
+		"jsonEntry": {
+			"type": "object",
+			"additionalProperties": true,
+
+			"required": [
+				"id",
+				"parentId",
+				"type",
+				"enabled"
+			],
+
+			"properties": {
+				"id": {
+					"type": "string",
+					"minLength": 1
+				},
+
+				"parentId": {
+					"type": ["string", "null"],
+					"minLength": 1
+				},
+
+				"type": {
+					"type": "string",
+					"enum": ["object", "array", "string", "number", "boolean", "null"]
+				},
+
+				"enabled": { "type": "boolean" },
+
+				"name": {
+					"type": "string",
+					"minLength": 1
+				},
+
+				"value": { "$ref": "#/definitions/valueParts" }
+			}
+		},
 		"keyValuePair": {
 			"type": "object",
 			"additionalProperties": true,
@@ -63,7 +100,7 @@
 					"enum": [
 						"text",
 						"json",
-						"url-encoded-form"
+						"url_encoded_form"
 					]
 				},
 
@@ -88,14 +125,19 @@
 						},
 						"then": {
 							"properties": {
-								"payload": { "type": "string" }
+								"payload": {
+									"type": "object",
+									"properties": {
+										"$ref": "#/definitions/jsonEntry"
+									}
+								}
 							}
 						}
 					},
 					{
 						"if": {
 							"properties": {
-								"type": { "const": "url-encoded-form" }
+								"type": { "const": "url_encoded_form" }
 							}
 						},
 						"then": {
