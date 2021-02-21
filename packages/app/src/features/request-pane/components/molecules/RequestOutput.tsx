@@ -1,11 +1,12 @@
 import { convertKeyValueToString } from '@beak/app/features/basic-table-editor/parsers';
 import { convertToRealJson } from '@beak/app/features/json-editor/parsers';
 import { parseValueParts } from '@beak/app/features/variable-input/parser';
+import { getGlobal } from '@beak/app/globals';
 import { createDefaultOptions } from '@beak/app/utils/monaco';
 import { convertRequestToUrl } from '@beak/app/utils/uri';
 import { requestBodyContentType } from '@beak/common/helpers/request';
 import { TypedObject } from '@beak/common/helpers/typescript';
-import { RequestBody, RequestNode, RequestOverview, VariableGroups } from '@beak/common/types/beak-project';
+import { RequestBody, RequestNode, RequestOverview, ToggleKeyValue, VariableGroups } from '@beak/common/types/beak-project';
 import React from 'react';
 import MonacoEditor from 'react-monaco-editor';
 import { useSelector } from 'react-redux';
@@ -75,12 +76,13 @@ export function createBasicHttpOutput(
 	if (url.hash)
 		firstLine.push(url.hash);
 
-	const out = [
-		`${firstLine.join('')} HTTP/1.1`,
-		`Host: ${url.hostname}${url.port ? `:${url.port}` : ''}`,
-		'Connection: close',
-		'User-Agent: Beak/0.0.1 (Macintosh; OS X/10.15.4)',
-	];
+	const out = [`${firstLine.join('')} HTTP/1.1`];
+
+	if (!hasHeader('host', headers))
+		out.push(`Host: ${url.hostname}${url.port ? `:${url.port}` : ''}`);
+
+	if (!hasHeader('user-agent', headers))
+		out.push(`User-Agent: Beak/${getGlobal('version') ?? ''} (${getGlobal('os')})`);
 
 	if (headers) {
 		out.push(...TypedObject.values(headers)
@@ -116,6 +118,10 @@ export function createBasicHttpOutput(
 	}
 
 	return out.join('\n');
+}
+
+function hasHeader(header: string, headers: Record<string, ToggleKeyValue>) {
+	return Boolean(TypedObject.values(headers).find(h => h.enabled && h.name.toLowerCase() === header.toLowerCase()));
 }
 
 export default RequestOutput;
