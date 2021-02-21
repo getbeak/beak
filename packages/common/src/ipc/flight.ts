@@ -10,11 +10,6 @@ export const FlightMessages = {
 	FlightFailed: 'flight_failed',
 };
 
-export interface SetUserReq {
-	userId: string;
-	fromOnboarding?: boolean;
-}
-
 export class IpcFlightServiceRenderer extends IpcServiceRenderer {
 	constructor(ipc: IpcRenderer) {
 		super('flight', ipc);

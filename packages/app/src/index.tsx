@@ -9,6 +9,7 @@ import Welcome from './containers/Welcome';
 import { DesignSystemProvider, GlobalStyle } from './design-system';
 import { BeakDarkThemeStyle } from './design-system/editor-themes';
 import { setGlobal } from './globals';
+import { ipcAppService } from './lib/ipc';
 import { configureStore } from './store';
 
 const process = window.require('electron').remote.require('process');
@@ -40,6 +41,7 @@ const FauxRouter: React.FunctionComponent = () => {
 
 	setGlobal('windowId', windowId);
 	setGlobal('platform', process.platform);
+	ipcAppService.getVersion().then(version => setGlobal('version', version));
 
 	return (
 		<Provider store={configureStore()}>
