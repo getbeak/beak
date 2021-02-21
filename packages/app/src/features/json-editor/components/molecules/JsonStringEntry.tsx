@@ -25,7 +25,7 @@ interface JsonStringEntryProps extends JsonEntryProps {
 
 const JsonStringEntry: React.FunctionComponent<JsonStringEntryProps> = props => {
 	const { depth, requestId, value, nameOverride } = props;
-	const { id, parentId } = value;
+	const { id } = value;
 	const dispatch = useDispatch();
 
 	return (
