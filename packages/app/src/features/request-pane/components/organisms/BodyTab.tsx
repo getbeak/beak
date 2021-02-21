@@ -1,4 +1,3 @@
-import BasicTableView from '@beak/app/components/molecules/BasicTableView';
 import BasicTableEditor from '@beak/app/features/basic-table-editor/components/BasicTableEditor';
 import { convertKeyValueToString, convertStringToKeyValue } from '@beak/app/features/basic-table-editor/parsers';
 import JsonEditor from '@beak/app/features/json-editor/components/JsonEditor';
@@ -87,9 +86,7 @@ const BodyTab: React.FunctionComponent<BodyTabProps> = props => {
 
 				return;
 			}
-		}
 
-		if (newType === 'text') {
 			dispatch(actions.requestBodyTypeChanged({
 				requestId: node.id,
 				type: newType,
