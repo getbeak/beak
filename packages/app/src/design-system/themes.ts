@@ -1,71 +1,81 @@
-import { TypedObject } from '@beak/common/helpers/typescript';
+import { Theme, UIColors } from './types';
 
-import { BrandColors, Theme, UIColors } from './types';
+const darkTheme: UIColors = {
+	primaryFill: '#d45d80',
+	secondaryFill: '#333399',
+	tertiaryFill: '#33CC99',
+	surfaceFill: '#1A1E2D',
+	blankFill: '#fff',
+	alertFill: '#FC3233',
 
-type UIColorsBrandMapping =
-	Record<keyof UIColors, keyof BrandColors> &
-	Partial<Record<'modifiers', Partial<Record<keyof UIColors, Modifiers>>>>;
+	goAction: '#33CC99',
+	goActionMuted: 'rgba(51, 204, 153, 0.1)',
+	secondaryAction: '#d45d80',
+	secondaryActionMuted: 'rgba(212, 93, 128, 0.1)',
+	destructiveAction: '#FC3233',
+	destructiveActionMuted: '#DB182C',
 
-export type Modifiers = OpacityModifier;
+	background: '#1A1E2D',
+	secondaryBackground: '#161824',
+	blankBackground: '#1A1E2D',
 
-export interface OpacityModifier {
-	type: 'opacity';
-	value: number;
-}
+	surface: '#282D40',
+	surfaceHighlight: '#1b1e2b',
+	secondarySurface: '#3A3F55',
 
-const darkThemeMapping: UIColorsBrandMapping = {
-	primaryFill: 'primary',
-	secondaryFill: 'secondary',
-	tertiaryFill: 'tertiary',
-	surfaceFill: 'shadeVariant',
-	blankFill: 'blank',
-	alertFill: 'alert',
+	backgroundBorderSeparator: '#4a4651',
+	surfaceBorderSeparator: '#1A1E2D',
 
-	goAction: 'tertiary',
-	goActionMuted: 'tertiaryFaded',
-	secondaryAction: 'primary',
-	secondaryActionMuted: 'primaryFaded',
-	destructiveAction: 'alert',
-	destructiveActionMuted: 'alertMuted1',
-
-	background: 'shadeVariant',
-	secondaryBackground: 'shade1',
-	blankBackground: 'shadeVariant',
-
-	surface: 'shade2',
-	surfaceHighlight: 'shade',
-	secondarySurface: 'shade3',
-
-	backgroundBorderSeparator: 'greyVariant',
-	surfaceBorderSeparator: 'shadeVariant',
-
-	textOnAction: 'blank',
-	textOnFill: 'grey',
-	textHighlight: 'primary',
-	textSuccess: 'tertiary',
-	textAlert: 'alert',
-	textOnSurfaceBackground: 'blank',
-	textOnSurfaceBackgroundMuted: 'shade4',
-	textMinor: 'greyMuted1',
-	textMinorMuted: 'grey',
+	textOnAction: '#fff',
+	textOnFill: '#a6accd',
+	textHighlight: '#d45d80',
+	textSuccess: '#33CC99',
+	textAlert: '#FC3233',
+	textOnSurfaceBackground: '#fff',
+	textOnSurfaceBackgroundMuted: '#4B5178',
+	textMinor: '#BEBEC6',
+	textMinorMuted: '#a6accd',
 };
 
-function createUiColors(brand: BrandColors, theme: Theme): UIColors {
-	if (theme === 'light')
-		throw new Error('not implemented yet');
+const lightTheme: UIColors = {
+	primaryFill: '#d45d80',
+	secondaryFill: '#333399',
+	tertiaryFill: '#33CC99',
+	surfaceFill: '#1A1E2D',
+	blankFill: '#fff',
+	alertFill: '#FC3233',
 
-	const mapping = darkThemeMapping;
-	const colors = TypedObject.keys(mapping).filter(k => k !== 'modifiers')
-		.reduce((acc, key) => {
-			const value = mapping[key] as keyof BrandColors;
+	goAction: '#33CC99',
+	goActionMuted: 'rgba(51, 204, 153, 0.1)',
+	secondaryAction: '#d45d80',
+	secondaryActionMuted: 'rgba(212, 93, 128, 0.1)',
+	destructiveAction: '#FC3233',
+	destructiveActionMuted: '#DB182C',
 
-			return {
-				...acc,
-				[key]: brand[value],
-			};
-		}, {}) as UIColors;
+	background: '#F7F7FF',
+	secondaryBackground: '#fff',
+	blankBackground: '#fff',
 
-	return colors;
+	surface: '#fff',
+	surfaceHighlight: '#1b1e2b',
+	secondarySurface: '#3A3F55',
+
+	backgroundBorderSeparator: '#4a4651',
+	surfaceBorderSeparator: '#1A1E2D',
+
+	textOnAction: '#fff',
+	textOnFill: '#a6accd',
+	textHighlight: '#d45d80',
+	textSuccess: '#33CC99',
+	textAlert: '#FC3233',
+	textOnSurfaceBackground: '#fff',
+	textOnSurfaceBackgroundMuted: '#4B5178',
+	textMinor: '#BEBEC6',
+	textMinorMuted: '#a6accd',
+};
+
+function createUiColors(theme: Theme): UIColors {
+	return theme === 'dark' ? darkTheme : lightTheme;
 }
 
 export { createUiColors };

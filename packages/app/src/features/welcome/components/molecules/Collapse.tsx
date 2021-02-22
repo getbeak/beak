@@ -53,7 +53,7 @@ const Arrow = styled.div<{ direction: 'right' | 'down' }>`
 
 	border-top: 5px solid transparent;
 	border-bottom: 5px solid transparent;
-	border-left: 5px solid ${props => props.theme.brand.blank};
+	border-left: 5px solid ${props => props.theme.ui.blankFill};
 
 	${({ direction }) => direction === 'down' ? css`transform: rotate(90deg);` : ''};
 `;

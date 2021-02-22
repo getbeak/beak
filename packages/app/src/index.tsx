@@ -7,7 +7,6 @@ import Onboarding from './containers/Onboarding';
 import ProjectMain from './containers/ProjectMain';
 import Welcome from './containers/Welcome';
 import { DesignSystemProvider, GlobalStyle } from './design-system';
-import { BeakDarkThemeStyle } from './design-system/editor-themes';
 import { setGlobal } from './globals';
 import { ipcAppService } from './lib/ipc';
 import { configureStore } from './store';
@@ -48,7 +47,6 @@ const FauxRouter: React.FunctionComponent = () => {
 			<base href={'./'} />
 			<DesignSystemProvider themeKey={'dark'}>
 				<GlobalStyle />
-				<BeakDarkThemeStyle />
 				{component}
 			</DesignSystemProvider>
 		</Provider>

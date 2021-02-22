@@ -2,58 +2,9 @@ export type Theme = 'light' | 'dark';
 export type Themes = Record<Theme, UIColors>;
 
 export interface DesignSystem {
+	theme: Theme;
 	ui: UIColors;
-	brand: BrandColors;
 	fonts: Fonts;
-}
-
-export interface BrandColors {
-	primary: string;
-	primaryFaded: string;
-	primaryVariant: string;
-	primaryMuted1: string;
-	primaryMuted2: string;
-	primaryMuted3: string;
-	primaryMuted4: string;
-	primaryMuted5: string;
-
-	secondary: string;
-	secondaryFaded: string;
-	secondaryVariant: string;
-	secondaryMuted1: string;
-
-	tertiary: string;
-	tertiaryFaded: string;
-	tertiaryVariant: string;
-	tertiaryMuted1: string;
-	tertiaryMuted2: string;
-
-	accent: string;
-	accentVariant1: string;
-	accentVariant2: string;
-	accentVariant3: string;
-	accentMuted1: string;
-	accentMuted2: string;
-	accentMuted3: string;
-	accentMuted4: string;
-
-	alert: string;
-	alertVariant: string;
-	alertMuted1: string;
-
-	grey: string;
-	greyVariant: string;
-	greyMuted1: string;
-	greyMuted2: string;
-
-	blank: string;
-
-	shade: string;
-	shadeVariant: string;
-	shade1: string;
-	shade2: string;
-	shade3: string;
-	shade4: string;
 }
 
 export interface UIColors {

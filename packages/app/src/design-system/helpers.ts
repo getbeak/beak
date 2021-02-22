@@ -11,7 +11,7 @@ export function statusToColour(status: number) {
 		case status >= 300 && status < 400:
 			return 'orange';
 		case status >= 400 && status < 500:
-			return theme.brand.secondaryMuted1;
+			return '#5B5B95';
 		case status >= 500 && status < 600:
 			return theme.ui.destructiveAction;
 

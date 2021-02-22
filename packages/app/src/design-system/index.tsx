@@ -2,16 +2,15 @@ import React from 'react';
 import { createGlobalStyle, ThemeProvider } from 'styled-components';
 
 import { getGlobal } from '../globals';
-import brand from './brand';
 import fonts from './fonts';
 import { createUiColors } from './themes';
 import { DesignSystem, Theme } from './types';
 
 function createDesignSystem(themeKey: Theme): DesignSystem {
 	return {
-		ui: createUiColors(brand, themeKey),
+		theme: themeKey,
+		ui: createUiColors(themeKey),
 
-		brand,
 		fonts,
 	};
 }
