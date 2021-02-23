@@ -5,7 +5,14 @@ import { getGlobal } from '@beak/app/globals';
 import binaryStore from '@beak/app/lib/binary-store';
 import { ipcFlightService } from '@beak/app/lib/ipc';
 import { convertRequestToUrl } from '@beak/app/utils/uri';
-import { RequestBody, RequestBodyText, RequestNode, RequestOverview, ToggleKeyValue, VariableGroups } from '@beak/common/dist/types/beak-project';
+import {
+	RequestBody,
+	RequestBodyText,
+	RequestNode,
+	RequestOverview,
+	ToggleKeyValue,
+	VariableGroups,
+} from '@beak/common/dist/types/beak-project';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { FlightMessages } from '@beak/common/ipc/flight';
 // @ts-ignore
@@ -99,7 +106,7 @@ function prepareRequest(
 	if (!hasHeader('host', headers)) {
 		headers[ksuid.generate('header').toString()] = {
 			name: 'Host',
-			value: [`Host: ${url.hostname}${url.port ? `:${url.port}` : ''}`],
+			value: [`${url.hostname}${url.port ? `:${url.port}` : ''}`],
 			enabled: true,
 		};
 	}
@@ -107,7 +114,7 @@ function prepareRequest(
 	if (!hasHeader('user-agent', headers)) {
 		headers[ksuid.generate('header').toString()] = {
 			name: 'User-Agent',
-			value: [`User-Agent: Beak/${getGlobal('version') ?? ''} (${getGlobal('os')})`],
+			value: [`Beak/${getGlobal('version') ?? ''} (${getGlobal('os')})`],
 			enabled: true,
 		};
 	}
