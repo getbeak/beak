@@ -59,6 +59,8 @@ export const ActionTypes = {
 	REQUEST_BODY_URL_ENCODED_EDITOR_ADD_ITEM: '@beak/global/project/REQUEST_BODY_URL_ENCODED_EDITOR_ADD_ITEM',
 	REQUEST_BODY_URL_ENCODED_EDITOR_REMOVE_ITEM: '@beak/global/project/REQUEST_BODY_URL_ENCODED_EDITOR_REMOVE_ITEM',
 	REQUEST_BODY_URL_ENCODED_EDITOR_ENABLED_CHANGE: '@beak/global/project/REQUEST_BODY_URL_ENCODED_EDITOR_ENABLED_CHANGE',
+
+	REQUEST_OPTION_FOLLOW_REDIRECTS: '@beak/global/project/REQUEST_OPTION_FOLLOW_REDIRECTS',
 };
 
 export interface State {
@@ -225,6 +227,8 @@ export interface RequestBodyUrlEncodedEditorEnabledChangePayload extends Request
 
 export interface RequestBodyUrlEncodedEditorAddItemPayload extends RequestIdPayload { }
 export interface RequestBodyUrlEncodedEditorRemoveItemPayload extends RequestIdPayload { id: string }
+
+export interface RequestOptionFollowRedirects extends RequestIdPayload { followRedirects: boolean }
 
 export default {
 	ActionTypes,

@@ -1,6 +1,7 @@
 {
 	"type": "object",
-	"additionalProperties": true,
+	"additionalProperties": false,
+
 	"definitions": {
 		"valueParts": {
 			"type": "array",
@@ -188,6 +189,15 @@
 			}
 		},
 
-		"body": { "$ref": "#/definitions/body" }
+		"body": { "$ref": "#/definitions/body" },
+
+		"options": {
+			"type": "object",
+			"additionalProperties": false,
+
+			"properties": {
+				"follow_redirects": { "type": "boolean" }
+			}
+		}
 	}
 }

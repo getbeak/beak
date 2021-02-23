@@ -328,6 +328,13 @@ const projectReducer = createReducer(initialState, builder => {
 			const body = node.info.body as RequestBodyUrlEncodedForm;
 
 			delete body.payload[id];
+		})
+
+		.addCase(actions.requestOptionFollowRedirects, (state, { payload }) => {
+			const { requestId, followRedirects } = payload;
+			const node = state.tree[requestId] as RequestNode;
+
+			node.info.options.followRedirects = followRedirects;
 		});
 });
 

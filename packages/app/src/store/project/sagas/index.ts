@@ -32,6 +32,7 @@ const updateWatcherActions = [
 	ActionTypes.REQUEST_BODY_URL_ENCODED_EDITOR_ADD_ITEM,
 	ActionTypes.REQUEST_BODY_URL_ENCODED_EDITOR_REMOVE_ITEM,
 	ActionTypes.REQUEST_BODY_URL_ENCODED_EDITOR_ENABLED_CHANGE,
+	ActionTypes.REQUEST_OPTION_FOLLOW_REDIRECTS,
 ];
 
 export default function* projectSaga() {

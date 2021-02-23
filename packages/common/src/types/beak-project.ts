@@ -42,6 +42,7 @@ export interface RequestOverview {
 	query: Record<string, ToggleKeyValue>;
 	headers: Record<string, ToggleKeyValue>;
 	body: RequestBody;
+	options: RequestOptions;
 }
 
 export type RequestBodyType = 'text' | 'json' | 'url_encoded_form';
@@ -60,6 +61,10 @@ export interface RequestBodyJson {
 export interface RequestBodyUrlEncodedForm {
 	type: 'url_encoded_form';
 	payload: Record<string, ToggleKeyValue>;
+}
+
+export interface RequestOptions {
+	followRedirects: boolean;
 }
 
 export interface ResponseOverview {

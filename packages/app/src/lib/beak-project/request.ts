@@ -21,6 +21,9 @@ export async function createRequestNode(directory: string, name?: string, templa
 			type: 'text',
 			payload: '',
 		},
+		options: {
+			followRedirects: false,
+		},
 	};
 
 	await fs.writeJson(fullPath, node, { spaces: '\t' });
@@ -37,13 +40,7 @@ export async function readRequestNode(requestFilePath: string) {
 		parent: path.join(filePath, '..'),
 		name,
 		id: file.id,
-		info: {
-			verb: file.verb,
-			url: file.url,
-			query: file.query,
-			headers: file.headers,
-			body: file.body,
-		},
+		info: { ...file },
 	};
 
 	return node;
@@ -52,11 +49,7 @@ export async function readRequestNode(requestFilePath: string) {
 export async function writeRequestNode(request: RequestNode) {
 	const node: RequestNodeFile = {
 		id: request.id,
-		verb: request.info.verb,
-		url: request.info.url,
-		query: request.info.query,
-		headers: request.info.headers,
-		body: request.info.body,
+		...request.info,
 	};
 
 	await fs.writeJson(request.filePath, node, { spaces: '\t' });
@@ -85,12 +78,8 @@ export async function duplicateRequestNode(request: RequestNode) {
 
 	const { fullPath } = await generateSafeNewPath(name, directory, extension);
 	const node: RequestNodeFile = {
+		...request.info,
 		id: ksuid.generate('request').toString(),
-		verb: request.info.verb,
-		url: request.info.url,
-		query: request.info.query,
-		headers: request.info.headers,
-		body: request.info.body,
 	};
 
 	await fs.writeJson(fullPath, node, { spaces: '\t' });

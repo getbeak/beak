@@ -21,23 +21,20 @@ export default async function createProject(options: CreationOptions) {
 		id: ksuid.generate('request').toString(),
 		verb: 'get',
 		url: ['https://httpbin.org/anything'],
-		query: {
-			[ksuid.generate('query').toString()]: {
-				enabled: true,
-				name: 'artist',
-				value: ['Taylor Swift'],
-			},
-		},
+		query: { },
 		headers: {
 			[ksuid.generate('header').toString()]: {
 				enabled: true,
 				name: 'X-Example-Header',
-				value: ['bae'],
+				value: ['Taylor Swift'],
 			},
 		},
 		body: {
 			type: 'text',
 			payload: '',
+		},
+		options: {
+			followRedirects: false,
 		},
 	};
 
@@ -49,7 +46,7 @@ export default async function createProject(options: CreationOptions) {
 		items: {
 			[ksuid.generate('item').toString()]: 'env_identifer',
 		},
-		values: {},
+		values: { },
 	};
 
 	variableGroup.values[ksuid.generate('value').toString()] = {
@@ -123,7 +120,7 @@ function createReadme(name: string) {
 
 function createGitIgnore() {
 	return [
-		'# Beak specific files',
+		'# Beak specific files, DO NOT REMOVE THIS',
 		'.beak',
 		'',
 		'# Platform files',

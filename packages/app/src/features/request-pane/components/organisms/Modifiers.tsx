@@ -11,6 +11,7 @@ import TabItem from '../../../../components/atoms/TabItem';
 import TabSpacer from '../../../../components/atoms/TabSpacer';
 import RequestPreferencesContext from '../../contexts/request-preferences-context';
 import BodyTab from './BodyTab';
+import OptionsView from './OptionsView';
 
 export interface ModifiersProps {
 	node: RequestNode;
@@ -90,9 +91,8 @@ const Modifiers: React.FunctionComponent<ModifiersProps> = props => {
 						}))}
 					/>
 				)}
-				{tab === 'body' && (
-					<BodyTab node={node} />
-				)}
+				{tab === 'body' && <BodyTab node={node} />}
+				{tab === 'options' && <OptionsView node={node} />}
 			</TabBody>
 		</Container>
 	);
