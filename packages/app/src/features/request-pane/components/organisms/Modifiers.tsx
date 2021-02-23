@@ -1,4 +1,4 @@
-import BasicTableView from '@beak/app/components/molecules/BasicTableView';
+import BasicTableEditor from '@beak/app/features/basic-table-editor/components/BasicTableEditor';
 import actions from '@beak/app/store/project/actions';
 import { RequestPreferenceMainTab } from '@beak/common/dist/types/beak-hub';
 import { RequestNode } from '@beak/common/types/beak-project';
@@ -61,42 +61,33 @@ const Modifiers: React.FunctionComponent<ModifiersProps> = props => {
 
 			<TabBody>
 				{tab === 'headers' && (
-					<React.Fragment>
-						<BasicTableView
-							editable
-							items={node.info.headers}
-							addItem={() => dispatch(actions.requestHeaderAdded({ requestId: node.id }))}
-							removeItem={ident =>
-								dispatch(actions.requestHeaderRemoved({
-									identifier: ident,
-									requestId: node.id,
-								}))
-							}
-							updateItem={(type, ident, value) =>
-								dispatch(actions.requestHeaderUpdated({
-									identifier: ident,
-									requestId: node.id,
-									[type]: value,
-								}))
-							}
-						/>
-					</React.Fragment>
+					<BasicTableEditor
+						items={node.info.headers}
+						addItem={() => dispatch(actions.requestHeaderAdded({ requestId: node.id }))}
+						removeItem={id => dispatch(actions.requestHeaderRemoved({
+							requestId: node.id,
+							identifier: id,
+						}))}
+						updateItem={(type, id, value) => dispatch(actions.requestHeaderUpdated({
+							requestId: node.id,
+							identifier: id,
+							[type]: value,
+						}))}
+					/>
 				)}
 				{tab === 'url_query' && (
-					<BasicTableView
-						editable
+					<BasicTableEditor
 						items={node.info.query}
 						addItem={() => dispatch(actions.requestQueryAdded({ requestId: node.id }))}
-						removeItem={ident =>
-							dispatch(actions.requestQueryRemoved({ identifier: ident, requestId: node.id }))
-						}
-						updateItem={(type, ident, value) =>
-							dispatch(actions.requestQueryUpdated({
-								identifier: ident,
-								requestId: node.id,
-								[type]: value,
-							}))
-						}
+						removeItem={id => dispatch(actions.requestQueryRemoved({
+							requestId: node.id,
+							identifier: id,
+						}))}
+						updateItem={(type, id, value) => dispatch(actions.requestQueryUpdated({
+							requestId: node.id,
+							identifier: id,
+							[type]: value,
+						}))}
 					/>
 				)}
 				{tab === 'body' && (

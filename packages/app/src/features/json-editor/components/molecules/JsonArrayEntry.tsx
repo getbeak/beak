@@ -28,9 +28,9 @@ interface JsonArrayEntryProps extends JsonEntryProps {
 const JsonArrayEntry: React.FunctionComponent<JsonArrayEntryProps> = props => {
 	const dispatch = useDispatch();
 	const { depth, requestId, nameOverride, value } = props;
-	const { id, parentId } = value;
+	const { id } = value;
 	const reqPref = useContext(RequestPreferencesContext);
-	const [expanded, setExpanded] = useState(reqPref!.getPreferences().jsonEditor?.expands[id]);
+	const [expanded, setExpanded] = useState(reqPref!.getPreferences().jsonEditor?.expands[id] !== false);
 
 	const entries = useSelector(s =>
 		((s.global.project.tree[requestId] as RequestNode).info.body as RequestBodyJson).payload,
