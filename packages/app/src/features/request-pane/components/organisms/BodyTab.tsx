@@ -4,8 +4,11 @@ import JsonEditor from '@beak/app/features/json-editor/components/JsonEditor';
 import { convertToEntryJson, convertToRealJson } from '@beak/app/features/json-editor/parsers';
 import { ipcDialogService } from '@beak/app/lib/ipc';
 import actions, { requestBodyTextChanged } from '@beak/app/store/project/actions';
+import { RequestBodyTypeChangedPayload } from '@beak/app/store/project/types';
 import { createDefaultOptions } from '@beak/app/utils/monaco';
 import { RequestBodyType, RequestNode, ValueParts } from '@beak/common/types/beak-project';
+// @ts-ignore
+import ksuid from '@cuvva/ksuid';
 import React from 'react';
 import MonacoEditor from 'react-monaco-editor';
 import { useDispatch, useSelector } from 'react-redux';
@@ -86,13 +89,10 @@ const BodyTab: React.FunctionComponent<BodyTabProps> = props => {
 
 				return;
 			}
-
-			dispatch(actions.requestBodyTypeChanged({
-				requestId: node.id,
-				type: newType,
-				payload: '',
-			}));
 		}
+
+		// Catch all cross-fancy editor switching and just reset
+		dispatch(actions.requestBodyTypeChanged(createEmptyBodyPayload(node.id, newType)));
 	}
 
 	return (
@@ -185,5 +185,33 @@ const TabBody = styled.div`
 	overflow-y: hidden;
 	height: 100%;
 `;
+
+function createEmptyBodyPayload(requestId: string, type: RequestBodyType): RequestBodyTypeChangedPayload {
+	switch (type) {
+		case 'url_encoded_form':
+			return { requestId, type, payload: {} };
+
+		case 'json': {
+			const id = ksuid.generate('jsonentry').toString() as string;
+
+			return {
+				requestId,
+				type,
+				payload: {
+					[id]: {
+						id,
+						parentId: null,
+						type: 'object',
+						enabled: true,
+					},
+				},
+			};
+		}
+
+		case 'text':
+		default:
+			return { requestId, type, payload: '' };
+	}
+}
 
 export default BodyTab;
