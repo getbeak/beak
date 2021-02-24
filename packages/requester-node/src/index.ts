@@ -97,13 +97,15 @@ async function runRequest(overview: RequestOverview) {
 				...acc,
 				[val.name]: val.value[0],
 			}), {}),
-		redirect: 'follow',
+		redirect: 'manual',
 		compress: false,
 	};
 
 	if (!bodyFreeVerbs.includes(verb)) {
-		if (['text', 'json'].includes(body.type))
+		if (['text'].includes(body.type))
 			init.body = body.payload as string;
+		else
+			throw new Error(`Unknown body type ${body.type}`);
 
 		const hasContentTypeHeader = TypedObject.keys(headers)
 			.map(h => h.toLocaleLowerCase())
