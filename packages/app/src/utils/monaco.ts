@@ -6,5 +6,9 @@ export function createDefaultOptions(): editor.IStandaloneEditorConstructionOpti
 		minimap: { enabled: false },
 		fontFamily: '"Fira Code", Source Code Pro, Menlo, Monaco, "Courier New", monospace',
 		fontSize: 10,
+		scrollbar: {
+			verticalScrollbarSize: 10,
+			horizontalScrollbarSize: 10,
+		},
 	};
 }
