@@ -3,7 +3,6 @@ import { convertToRealJson } from '@beak/app/features/json-editor/parsers';
 import { parseValueParts } from '@beak/app/features/variable-input/parser';
 import { getGlobal } from '@beak/app/globals';
 import binaryStore from '@beak/app/lib/binary-store';
-import { ipcFlightService } from '@beak/app/lib/ipc';
 import { convertRequestToUrl } from '@beak/app/utils/uri';
 import {
 	RequestBody,
@@ -14,11 +13,9 @@ import {
 	VariableGroups,
 } from '@beak/common/dist/types/beak-project';
 import { TypedObject } from '@beak/common/helpers/typescript';
-import { FlightMessages } from '@beak/common/ipc/flight';
 // @ts-ignore
 import ksuid from '@cuvva/ksuid';
-import { END, eventChannel } from 'redux-saga';
-import { put, select, take } from 'redux-saga/effects';
+import { put, select } from 'redux-saga/effects';
 
 import { ApplicationState } from '../..';
 import { State as VGState } from '../../variable-groups/types';
@@ -52,47 +49,8 @@ export default function* requestFlightWorker() {
 		requestId,
 		flightId,
 		request: preparedRequest,
+		redirectDepth: 0,
 	}));
-
-	const channel = eventChannel(emitter => {
-		ipcFlightService.registerFlightHeartbeat((_event, payload) => {
-			if (payload.stage === 'reading_body')
-				binaryStore.append(binaryStoreKey, payload.payload.buffer);
-
-			emitter(actions.updateFlightProgress(payload));
-		});
-
-		ipcFlightService.registerFlightComplete((_event, payload) => {
-			emitter(actions.completeFlight({ flightId, requestId, response: payload.overview }));
-			emitter(END);
-		});
-
-		ipcFlightService.registerFlightFailed((_event, payload) => {
-			emitter(actions.flightFailure({ flightId, requestId, error: payload.error }));
-			emitter(END);
-		});
-
-		return () => {
-			ipcFlightService.unregisterListener(FlightMessages.FlightHeartbeat);
-			ipcFlightService.unregisterListener(FlightMessages.FlightComplete);
-			ipcFlightService.unregisterListener(FlightMessages.FlightFailed);
-		};
-	});
-
-	ipcFlightService.startFlight({
-		flightId,
-		requestId,
-		request: preparedRequest,
-	});
-
-	while (true) {
-		const result = yield take(channel);
-
-		if (result === null)
-			break;
-
-		yield put(result);
-	}
 }
 
 function prepareRequest(
@@ -103,13 +61,13 @@ function prepareRequest(
 	const url = convertRequestToUrl(selectedGroups, variableGroups, overview);
 	const headers = flattenToggleValueParts(overview.headers, selectedGroups, variableGroups);
 
-	if (!hasHeader('host', headers)) {
-		headers[ksuid.generate('header').toString()] = {
-			name: 'Host',
-			value: [`${url.hostname}${url.port ? `:${url.port}` : ''}`],
-			enabled: true,
-		};
-	}
+	// if (!hasHeader('host', headers)) {
+	// 	headers[ksuid.generate('header').toString()] = {
+	// 		name: 'Host',
+	// 		value: [`${url.hostname}${url.port ? `:${url.port}` : ''}`],
+	// 		enabled: true,
+	// 	};
+	// }
 
 	if (!hasHeader('user-agent', headers)) {
 		headers[ksuid.generate('header').toString()] = {
