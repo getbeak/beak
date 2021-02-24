@@ -2,7 +2,6 @@ import './ipc-layer';
 
 import { app } from 'electron';
 import electronDebug from 'electron-debug';
-import installExtension, { REACT_DEVELOPER_TOOLS,REDUX_DEVTOOLS } from 'electron-devtools-installer';
 import { autoUpdater } from 'electron-updater';
 
 import persistentStore from './lib/persistent-store';
@@ -41,6 +40,13 @@ app.on('ready', () => {
 
 	if (appIsPackaged)
 		return;
+
+	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	const {
+		default: installExtension,
+		REDUX_DEVTOOLS,
+		REACT_DEVELOPER_TOOLS,
+	} = require('electron-devtools-installer');
 
 	electronDebug();
 	installExtension(REDUX_DEVTOOLS);
