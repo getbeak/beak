@@ -42,8 +42,6 @@ export default function* requestFlightWorker() {
 		return;
 	}
 
-	binaryStore.create(binaryStoreKey);
-
 	yield put(actions.beginFlightRequest({
 		binaryStoreKey,
 		requestId,

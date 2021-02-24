@@ -18,6 +18,8 @@ import { BeginFlightPayload } from '../types';
 export default function* requestFlightWorker({ payload }: PayloadAction<BeginFlightPayload>) {
 	const { binaryStoreKey, flightId, request, requestId, redirectDepth } = payload;
 
+	binaryStore.create(binaryStoreKey);
+
 	if (redirectDepth >= 10) {
 		yield put(actions.flightFailure({
 			flightId,
