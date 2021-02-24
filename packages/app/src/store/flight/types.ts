@@ -2,6 +2,7 @@ import { RequestOverview, ResponseOverview } from '@beak/common/types/beak-proje
 
 export const ActionTypes = {
 	REQUEST_FLIGHT: '@beak/global/flight/REQUEST_FLIGHT',
+
 	BEGIN_FLIGHT: '@beak/global/flight/BEGIN_FLIGHT',
 	UPDATE_FLIGHT_PROGRESS: '@beak/global/flight/UPDATE_FLIGHT_PROGRESS',
 	COMPLETE_FLIGHT: '@beak/global/flight/COMPLETE_FLIGHT',
@@ -34,6 +35,7 @@ export interface BeginFlightPayload {
 	flightId: string;
 	binaryStoreKey: string;
 	request: RequestOverview;
+	redirectDepth: number;
 }
 
 export interface CompleteFlightPayload {
