@@ -196,7 +196,7 @@
 			"additionalProperties": false,
 
 			"properties": {
-				"follow_redirects": { "type": "boolean" }
+				"followRedirects": { "type": "boolean" }
 			}
 		}
 	}
