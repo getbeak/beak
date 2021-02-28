@@ -228,17 +228,12 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, 
 	}
 
 	function handlePaste(event: React.ClipboardEvent<HTMLElement>) {
-		const hasHtml = event.clipboardData.types.includes('text/html');
-
-		if (!hasHtml)
-			return;
-
+		// NOTE(afr): This is a temporary solution, more feature rich version needed later
 		event.preventDefault();
 
-		// TODO(afr): Bring back HTML pasting
-		const html = event.clipboardData.getData('text/html');
+		const plainText = event.clipboardData.getData('text/plain');
 
-		console.error('No HTML pasting allowed', html);
+		document.execCommand('insertText', false, plainText);
 	}
 
 	return (
