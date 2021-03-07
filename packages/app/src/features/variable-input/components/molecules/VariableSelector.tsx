@@ -101,17 +101,19 @@ const VariableSelector: React.FunctionComponent<VariableSelectorProps> = props =
 
 	return (
 		<Wrapper style={{ top: position.top, left: position.left }}>
-			{items.map((i, idx) => (
-				<Item
-					active={active === idx}
-					key={uuid.v4()}
-					tabIndex={0}
-					onClick={() => setActive(idx)}
-					onDoubleClick={() => onDone(i.initValuePart(variableGroups))}
-				>
-					{i.name}
-				</Item>
-			))}
+			<ItemContainer>
+				{items.map((i, idx) => (
+					<Item
+						active={active === idx}
+						key={uuid.v4()}
+						tabIndex={0}
+						onClick={() => setActive(idx)}
+						onDoubleClick={() => onDone(i.initValuePart(variableGroups))}
+					>
+						{i.name}
+					</Item>
+				))}
+			</ItemContainer>
 			<Description>
 				{items[active]?.description}
 			</Description>
@@ -121,21 +123,29 @@ const VariableSelector: React.FunctionComponent<VariableSelectorProps> = props =
 
 const Wrapper = styled.div`
 	position: fixed;
+	display: flex;
+	height: 120px; width: 325px;
+	flex-direction: column;
+
 	border: 1px solid ${p => p.theme.ui.backgroundBorderSeparator};
 	background: ${p => p.theme.ui.surface};
 
 	font-size: 12px;
 
-	height: 120px; width: 325px;
+	z-index: 101; /* Cheaky... */
+`;
+
+const ItemContainer = styled.div`
+	flex-grow: 2;
 
 	overflow-y: auto;
-	z-index: 101; /* Cheaky... */
 `;
 
 const Item = styled.div<{ active: boolean }>`
 	padding: 2px 4px;
 	cursor: pointer;
 	color: ${p => p.theme.ui.textOnAction};
+	overflow-x: hidden;
 
 	&:focus {
 		background-color: ${p => p.theme.ui.primaryFill};
@@ -146,7 +156,10 @@ const Item = styled.div<{ active: boolean }>`
 `;
 
 const Description = styled.div`
+	border-top: 1px solid ${p => p.theme.ui.backgroundBorderSeparator};
+	background: ${p => p.theme.ui.background};
 
+	padding: 3px 4px;
 `;
 
 export default VariableSelector;
