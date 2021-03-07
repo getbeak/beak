@@ -232,8 +232,6 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, 
 							key={uuid.v4()}
 						>
 							{name}
-							{/* <strong>{html.renderer.title}</strong>
-							{html.renderer.body && ` (${html.renderer.body})`} */}
 						</div>
 					);
 				})}

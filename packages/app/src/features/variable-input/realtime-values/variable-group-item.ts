@@ -24,10 +24,7 @@ export default {
 	getValue: (item, variableGroups, selectedGroups) => getValueString(selectedGroups, variableGroups, item.itemId),
 } as RealtimeValue<VariableGroupItemRtv['payload']>;
 
-export function createFauxGviRtv(
-	item: VariableGroupItemRtv['payload'],
-	variableGroups: VariableGroups,
-) {
+export function createFauxGviRtv(item: VariableGroupItemRtv['payload'], variableGroups: VariableGroups) {
 	return {
 		type,
 
@@ -49,10 +46,7 @@ export function createFauxGviRtv(
 	} as RealtimeValue<VariableGroupItemRtv['payload']>;
 }
 
-export function getVariableGroupItemName(
-	item: VariableGroupItemRtv['payload'],
-	variableGroups: VariableGroups,
-) {
+export function getVariableGroupItemName(item: VariableGroupItemRtv['payload'], variableGroups: VariableGroups) {
 	if (!variableGroups)
 		return 'Unknown';
 
