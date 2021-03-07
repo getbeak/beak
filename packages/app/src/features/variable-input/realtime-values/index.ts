@@ -1,24 +1,24 @@
 import { TypedObject } from '@beak/common/helpers/typescript';
 
-import nonce from './nonce';
-import { RealtimeValueImplementation } from './types';
-import variableGroupItem from './variable-group-item';
+import nonceRtv from './nonce';
+import { RealtimeValue } from './types';
+import variableGroupItemRtv from './variable-group-item';
 
-const realtimeImplementations: Record<string, RealtimeValueImplementation<any>> = {
-	[nonce.type]: nonce,
-	[variableGroupItem.type]: variableGroupItem,
+const realtimeImplementations: Record<string, RealtimeValue<any>> = {
+	[nonceRtv.type]: nonceRtv,
+	[variableGroupItemRtv.type]: variableGroupItemRtv,
 };
 
-export function getImplementation(type: string) {
+export function getRealtimeValue(type: string) {
 	return realtimeImplementations[type];
 }
 
-export function listValues() {
+export function getRealtimeValues() {
 	return TypedObject.values(realtimeImplementations)
-		.filter(v => v.type !== variableGroupItem.type)
-		.map(v => v.fromHtml({})); // TODO(afr): Handle this in a proper way
+		// Remove the variable group item as it's a special case tbh
+		.filter(v => v.type !== variableGroupItemRtv.type);
 }
 
 export {
-	variableGroupItem,
+	// variableGroupItem,
 };

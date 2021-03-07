@@ -1,59 +1,70 @@
 import { TypedObject } from '@beak/common/helpers/typescript';
-import { VariableGroupItem, VariableGroups } from '@beak/common/types/beak-project';
+import { VariableGroupItemRtv, VariableGroups } from '@beak/common/types/beak-project';
 
 import { getValueString } from '../parser';
-import { RealtimeValueImplementation } from './types';
+import { RealtimeValue } from './types';
 
 const type = 'variable_group_item';
 
-function getItemIdFlair(variableGroups: VariableGroups, itemId: string) {
+export default {
+	type,
+
+	name: 'Variable group item',
+	description: 'Blah blah blah, something should go here.',
+
+	initValuePart: () => {
+		throw new Error('Not supported, this should not happen.');
+	},
+
+	createValuePart: item => ({
+		type,
+		payload: item,
+	}),
+
+	getValue: (item, variableGroups, selectedGroups) => getValueString(selectedGroups, variableGroups, item.itemId),
+} as RealtimeValue<VariableGroupItemRtv['payload']>;
+
+export function createFauxGviRtv(
+	item: VariableGroupItemRtv['payload'],
+	variableGroups: VariableGroups,
+) {
+	return {
+		type,
+
+		name: getVariableGroupItemName(item, variableGroups),
+		description: 'Blah blah blah, something should go here.',
+
+		initValuePart: () => ({
+			type,
+			payload: item,
+		}),
+
+		createValuePart: () => {
+			throw new Error('Not supported, this should not happen.');
+		},
+
+		getValue: () => {
+			throw new Error('Not supported, this should not happen.');
+		},
+	} as RealtimeValue<VariableGroupItemRtv['payload']>;
+}
+
+export function getVariableGroupItemName(
+	item: VariableGroupItemRtv['payload'],
+	variableGroups: VariableGroups,
+) {
 	if (!variableGroups)
-		return { variableGroup: 'Unknown' };
+		return 'Unknown';
 
 	const keys = TypedObject.keys(variableGroups);
 
 	for (const key of keys) {
 		const vg = variableGroups[key];
-		const itemValue = vg.items[itemId];
+		const itemValue = vg.items[item.itemId];
 
-		if (itemValue) {
-			return {
-				variableGroup: key,
-				item: itemValue,
-			};
-		}
+		if (itemValue)
+			return `${key} (${itemValue})`;
 	}
 
-	return { variableGroup: 'Unknown' };
+	return 'Unknown';
 }
-
-export default {
-	type,
-
-	toHtml: ({ payload }, variableGroups) => {
-		const itemId = payload.itemId;
-		const { variableGroup, item } = getItemIdFlair(variableGroups, itemId);
-
-		return {
-			type,
-			key: `${type}:${itemId}`,
-			dataset: { 'item-id': itemId },
-			renderer: {
-				title: variableGroup,
-				body: item,
-			},
-		};
-	},
-
-	fromHtml: dataset => {
-		const itemId = dataset.payloadItemId;
-
-		return {
-			type,
-			payload: { itemId },
-		};
-	},
-
-	parse: (item, variableGroups, selectedGroups) =>
-		getValueString(selectedGroups, variableGroups, item.payload.itemId),
-} as RealtimeValueImplementation<VariableGroupItem>;

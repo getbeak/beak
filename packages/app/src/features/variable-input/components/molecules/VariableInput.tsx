@@ -1,12 +1,13 @@
 import { TypedObject } from '@beak/common/dist/helpers/typescript';
-import { RealtimeValue, ValueParts } from '@beak/common/dist/types/beak-project';
+import { RealtimeValuePart, ValueParts } from '@beak/common/dist/types/beak-project';
 import React, { useEffect, useRef, useState } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import * as uuid from 'uuid';
 
-import { getImplementation } from '../../realtime-values';
+import { getRealtimeValue } from '../../realtime-values';
+import { getVariableGroupItemName } from '../../realtime-values/variable-group-item';
 import VariableSelector from './VariableSelector';
 
 interface Position {
@@ -63,7 +64,7 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, 
 		setPartIndex(void 0);
 	}
 
-	function insertVariable(value: RealtimeValue) {
+	function insertVariable(value: RealtimeValuePart) {
 		if (selectorPosition === null || partIndex === void 0 || queryOffset === void 0)
 			return;
 
@@ -152,12 +153,20 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, 
 					return null;
 
 				const elem = n as HTMLElement;
-				const type = elem.dataset.type ?? '';
+				const type = elem.dataset.type!;
+				const impl = getRealtimeValue(type);
+				const purePayload = elem.dataset.payload;
 
-				const impl = getImplementation(type);
-				const value = impl.fromHtml(elem.dataset);
+				if (!impl) {
+					console.error(`Unknown RTV ${type}`);
 
-				return value as RealtimeValue;
+					return null;
+				}
+
+				return {
+					type,
+					payload: purePayload ? JSON.parse(purePayload) : void 0,
+				} as RealtimeValuePart;
 			})
 			.filter(f => f !== null && f !== '') as ValueParts;
 
@@ -200,26 +209,31 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, 
 					if (typeof p !== 'object')
 						throw new Error('unknown part');
 
-					const impl = getImplementation(p.type);
-					const html = impl.toHtml(p, variableGroups);
-					const dataset = html.dataset ?? {};
-					const key = html.key ?? `${html.type}:${uuid.v4()}`;
+					const impl = getRealtimeValue(p.type);
+					const name = (() => {
+						if (p.type === 'variable_group_item')
+							return getVariableGroupItemName(p.payload, variableGroups);
 
-					const dataProps = TypedObject.keys(dataset)
-						.reduce((acc, val) => ({
-							...acc,
-							[`data-payload-${val}`]: dataset[val],
-						}), { 'data-type': html.type });
+						return impl.name;
+					})();
+
+					if (!impl) {
+						console.error(`Unknown RTV ${p.type}`);
+
+						return null;
+					}
 
 					return (
 						<div
 							className={'bvs-blob'}
 							contentEditable={false}
-							{...dataProps}
-							key={key}
+							data-type={p.type}
+							data-payload={p.payload ? JSON.stringify(p.payload) : void 0}
+							key={uuid.v4()}
 						>
-							<strong>{html.renderer.title}</strong>
-							{html.renderer.body && ` (${html.renderer.body})`}
+							{name}
+							{/* <strong>{html.renderer.title}</strong>
+							{html.renderer.body && ` (${html.renderer.body})`} */}
 						</div>
 					);
 				})}
@@ -228,7 +242,8 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, 
 	}
 
 	function handlePaste(event: React.ClipboardEvent<HTMLElement>) {
-		// NOTE(afr): This is a temporary solution, more feature rich version needed later
+		// NOTE(afr): This is a temporary solution, more feature rich version needed
+		// later. Parsing the clipboard HTML to preserve value part blobs will be sick
 		event.preventDefault();
 
 		const plainText = event.clipboardData.getData('text/plain');

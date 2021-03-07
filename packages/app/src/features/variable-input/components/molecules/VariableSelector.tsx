@@ -1,17 +1,19 @@
 import { movePosition } from '@beak/app/utils/arrays';
 import { TypedObject } from '@beak/common/dist/helpers/typescript';
-import { RealtimeValue, VariableGroupItem } from '@beak/common/types/beak-project';
-import React, { useEffect, useState } from 'react';
+import { RealtimeValuePart } from '@beak/common/types/beak-project';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import * as uuid from 'uuid';
 
-import { getImplementation, listValues } from '../../realtime-values';
+import { getRealtimeValues } from '../../realtime-values';
+import { RealtimeValue } from '../../realtime-values/types';
+import { createFauxGviRtv } from '../../realtime-values/variable-group-item';
 
 export interface VariableSelectorProps {
 	parent: HTMLElement;
 	query: string;
-	onDone: (value: RealtimeValue) => void;
+	onDone: (value: RealtimeValuePart) => void;
 	onClose: () => void;
 	position: {
 		top: number;
@@ -38,22 +40,18 @@ const VariableSelector: React.FunctionComponent<VariableSelectorProps> = props =
 
 	const variableGroups = useSelector(s => s.global.variableGroups.variableGroups)!;
 	const [active, setActive] = useState<number>(0);
-	const items: RealtimeValue[] = [
-		...listValues(),
+	const items: RealtimeValue<any>[] = useMemo(() => ([
+		...getRealtimeValues(),
+
+		// Variable groups act a little differently
 		...TypedObject.keys(variableGroups)
 			.map(vgKey => {
 				const vg = variableGroups[vgKey];
 
-				return TypedObject.keys(vg.items).reduce<VariableGroupItem[]>((acc, val) => ([
-					...acc,
-					{
-						type: 'variable_group_item',
-						payload: { itemId: val },
-					},
-				]), []);
+				return TypedObject.keys(vg.items).map(i => createFauxGviRtv({ itemId: i }, variableGroups));
 			})
 			.flat(),
-	];
+	]), [variableGroups]);
 
 	useEffect(() => {
 		function onKeyDown(event: KeyboardEvent) {
@@ -83,7 +81,7 @@ const VariableSelector: React.FunctionComponent<VariableSelectorProps> = props =
 					if (!item)
 						return;
 
-					onDone(item);
+					onDone(item.initValuePart(variableGroups));
 					break;
 				}
 
@@ -103,23 +101,20 @@ const VariableSelector: React.FunctionComponent<VariableSelectorProps> = props =
 
 	return (
 		<Wrapper style={{ top: position.top, left: position.left }}>
-			{items.map((i, idx) => {
-				const impl = getImplementation(i.type);
-				const { renderer } = impl.toHtml(i, variableGroups);
-
-				return (
-					<Item
-						active={active === idx}
-						key={uuid.v4()}
-						tabIndex={0}
-						onClick={() => setActive(idx)}
-						onDoubleClick={() => onDone(i)}
-					>
-						<strong>{renderer.title}</strong>
-						{renderer.body && ` (${renderer.body})`}
-					</Item>
-				);
-			})}
+			{items.map((i, idx) => (
+				<Item
+					active={active === idx}
+					key={uuid.v4()}
+					tabIndex={0}
+					onClick={() => setActive(idx)}
+					onDoubleClick={() => onDone(i.initValuePart(variableGroups))}
+				>
+					{i.name}
+				</Item>
+			))}
+			<Description>
+				{items[active]?.description}
+			</Description>
 		</Wrapper>
 	);
 };
@@ -148,6 +143,10 @@ const Item = styled.div<{ active: boolean }>`
 	}
 
 	${p => p.active ? `background-color: ${p.theme.ui.primaryFill};'` : ''}
+`;
+
+const Description = styled.div`
+
 `;
 
 export default VariableSelector;

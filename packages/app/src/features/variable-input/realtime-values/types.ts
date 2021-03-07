@@ -1,19 +1,13 @@
-import { RealtimeValue, VariableGroups } from '@beak/common/types/beak-project';
+import { RealtimeValuePart, VariableGroups } from '@beak/common/types/beak-project';
 
-interface HtmlBlob {
-	type: string;
-	dataset?: Record<string, string | number | boolean>;
-	key?: string;
-	renderer: {
-		title: string;
-		body?: string;
-	};
-}
-
-export interface RealtimeValueImplementation<T extends RealtimeValue> {
+export interface RealtimeValue<T extends Record<string, unknown> | void = void> {
 	type: string;
 
-	toHtml: (item: T, variableGroups: VariableGroups) => HtmlBlob;
-	fromHtml: (dataset: DOMStringMap) => T;
-	parse: (item: T, variableGroups: VariableGroups, selectedGroups: Record<string, string>) => string;
+	name: string;
+	description: string;
+
+	initValuePart: (variableGroups: VariableGroups) => RealtimeValuePart;
+	createValuePart: (item: T, variableGroups: VariableGroups) => RealtimeValuePart;
+
+	getValue: (item: T, variableGroups: VariableGroups, selectedGroups: Record<string, string>) => string;
 }

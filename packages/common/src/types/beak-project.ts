@@ -87,20 +87,20 @@ export interface VariableGroupValue {
 	value: string;
 }
 
-export type ValueParts = (string | RealtimeValue)[];
+export type ValueParts = (string | RealtimeValuePart)[];
 
-export type RealtimeValue = VariableGroupItem | NonceValue;
+export type RealtimeValuePart = VariableGroupItemRtv | NonceRtv;
 
-export interface VariableGroupItem {
+export interface VariableGroupItemRtv {
 	type: 'variable_group_item';
 	payload: {
 		itemId: string;
 	};
 }
 
-export interface NonceValue {
+export interface NonceRtv {
 	type: 'nonce';
-	payload?: undefined;
+	payload: void;
 }
 
 export type Nodes = FolderNode | RequestNode;
