@@ -54,10 +54,10 @@ export class IpcEncryptionServiceMain extends IpcServiceMain {
 	}
 
 	registerEncryptString(fn: AsyncListener<EncryptStringReq, string>) {
-		this.registerListener(EncryptionMessages.GenerateIv, fn);
+		this.registerListener(EncryptionMessages.EncryptString, fn);
 	}
 
 	registerDecryptString(fn: AsyncListener<DecryptStringReq, string>) {
-		this.registerListener(EncryptionMessages.GenerateIv, fn);
+		this.registerListener(EncryptionMessages.DecryptString, fn);
 	}
 }
