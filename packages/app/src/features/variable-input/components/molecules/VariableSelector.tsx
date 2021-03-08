@@ -81,7 +81,9 @@ const VariableSelector: React.FunctionComponent<VariableSelectorProps> = props =
 					if (!item)
 						return;
 
-					onDone(item.initValuePart(variableGroups));
+					// fucking love a promise
+					item.initValuePart(variableGroups).then(onDone);
+
 					break;
 				}
 
@@ -108,7 +110,9 @@ const VariableSelector: React.FunctionComponent<VariableSelectorProps> = props =
 						key={uuid.v4()}
 						tabIndex={0}
 						onClick={() => setActive(idx)}
-						onDoubleClick={() => onDone(i.initValuePart(variableGroups))}
+						onDoubleClick={() => {
+							i.initValuePart(variableGroups).then(onDone);
+						}}
 					>
 						{i.name}
 					</Item>

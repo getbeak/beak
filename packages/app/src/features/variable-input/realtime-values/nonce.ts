@@ -11,7 +11,7 @@ export default {
 	name: 'Nonce',
 	description: 'Generates a cryptographically random string',
 
-	initValuePart: () => ({
+	initValuePart: async () => ({
 		type,
 		payload: void 0,
 	}),

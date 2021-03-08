@@ -31,7 +31,7 @@ export function createFauxGviRtv(item: VariableGroupItemRtv['payload'], variable
 		name: getVariableGroupItemName(item, variableGroups),
 		description: 'Blah blah blah, something should go here.',
 
-		initValuePart: () => ({
+		initValuePart: async () => ({
 			type,
 			payload: item,
 		}),
