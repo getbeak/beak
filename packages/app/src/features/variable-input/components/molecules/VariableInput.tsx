@@ -1,3 +1,4 @@
+import RealtimeValueEditor from '@beak/app/features/realtime-value-editor/components/RealtimeValueEditor';
 import { TypedObject } from '@beak/common/dist/helpers/typescript';
 import { RealtimeValuePart, ValueParts } from '@beak/common/dist/types/beak-project';
 import React, { useEffect, useRef, useState } from 'react';
@@ -7,6 +8,7 @@ import styled from 'styled-components';
 import * as uuid from 'uuid';
 
 import { getRealtimeValue } from '../../realtime-values';
+import { RealtimeValue } from '../../realtime-values/types';
 import { getVariableGroupItemName } from '../../realtime-values/variable-group-item';
 import VariableSelector from './VariableSelector';
 
@@ -21,8 +23,15 @@ export interface VariableInputProps {
 	onChange: (parts: ValueParts) => void;
 }
 
+interface RtvEditorContext {
+	realtimeValue: RealtimeValue<any>;
+	item: any;
+	parent: HTMLDivElement;
+}
+
 const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, parts, onChange }) => {
 	const [selectorPosition, setSelectorPosition] = useState<Position | null>(null);
+	const [rtvEditorContext, setRtvEditorContext] = useState<RtvEditorContext | null>(null);
 	const ref = useRef<HTMLDivElement>(null);
 	const valueRef = useRef<ValueParts>(parts);
 	const lastKnownWriteRef = useRef(0);
@@ -42,6 +51,37 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, 
 
 		valueRef.current = parts;
 	}, [parts]);
+
+	useEffect(() => {
+		const onClick = (event: MouseEvent) => {
+			const target = event.target as HTMLDivElement;
+
+			if (target.className !== 'bvs-blob')
+				return;
+
+			const { type, payload } = target.dataset;
+
+			if (!type)
+				return;
+
+			const rtv = getRealtimeValue(type);
+
+			if (!rtv.editor)
+				return;
+
+			setRtvEditorContext({
+				realtimeValue: rtv,
+				item: JSON.parse(payload!),
+				parent: target,
+			});
+		};
+
+		ref.current?.addEventListener('click', onClick);
+
+		return () => {
+			ref.current?.removeEventListener('click', onClick);
+		};
+	}, []);
 
 	function updateParts(parts: ValueParts, options?: { forceRefUpdate?: boolean; immediateWrite?: boolean }) {
 		const opts = { ...options };
@@ -291,6 +331,13 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, 
 					query={query}
 					parent={ref.current}
 					position={selectorPosition}
+				/>
+			)}
+			{(ref.current && rtvEditorContext) && (
+				<RealtimeValueEditor
+					realtimeValue={rtvEditorContext.realtimeValue}
+					item={rtvEditorContext.item}
+					parent={rtvEditorContext.parent}
 				/>
 			)}
 		</React.Fragment>

@@ -89,7 +89,7 @@ export interface VariableGroupValue {
 
 export type ValueParts = (string | RealtimeValuePart)[];
 
-export type RealtimeValuePart = VariableGroupItemRtv | NonceRtv;
+export type RealtimeValuePart = VariableGroupItemRtv | NonceRtv | SecureRtv;
 
 export interface VariableGroupItemRtv {
 	type: 'variable_group_item';
@@ -101,6 +101,14 @@ export interface VariableGroupItemRtv {
 export interface NonceRtv {
 	type: 'nonce';
 	payload: void;
+}
+
+export interface SecureRtv {
+	type: 'secure';
+	payload: {
+		iv: string;
+		datum: string;
+	};
 }
 
 export type Nodes = FolderNode | RequestNode;
