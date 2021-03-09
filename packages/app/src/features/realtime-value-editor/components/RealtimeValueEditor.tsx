@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import * as uuid from 'uuid';
 
 import { RealtimeValue, UISection } from '../../variable-input/realtime-values/types';
 
@@ -8,6 +7,8 @@ interface RealtimeValueEditorProps {
 	realtimeValue: RealtimeValue<any, any>;
 	item: Record<string, unknown>;
 	parent: HTMLDivElement;
+
+	onClose: (item: any) => void;
 }
 
 const RealtimeValueEditor: React.FunctionComponent<RealtimeValueEditorProps> = props => {
@@ -59,7 +60,7 @@ const RealtimeValueEditor: React.FunctionComponent<RealtimeValueEditorProps> = p
 
 			<Button
 				onClick={() => {
-					save(item, state).then(console.log);
+					save(item, state).then(updatedItem => props.onClose(updatedItem));
 				}}>
 				{'Save!'}
 			</Button>

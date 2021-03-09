@@ -27,6 +27,7 @@ interface RtvEditorContext {
 	realtimeValue: RealtimeValue<any>;
 	item: any;
 	parent: HTMLDivElement;
+	partIndex: number;
 }
 
 const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, parts, onChange }) => {
@@ -59,7 +60,7 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, 
 			if (target.className !== 'bvs-blob')
 				return;
 
-			const { type, payload } = target.dataset;
+			const { index, type, payload } = target.dataset;
 
 			if (!type)
 				return;
@@ -73,6 +74,7 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, 
 				realtimeValue: rtv,
 				item: JSON.parse(payload!),
 				parent: target,
+				partIndex: Number(index!),
 			});
 		};
 
@@ -242,7 +244,7 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, 
 	function renderParts(parts: ValueParts) {
 		return renderToStaticMarkup(
 			<React.Fragment>
-				{parts.map(p => {
+				{parts.map((p, idx) => {
 					if (typeof p === 'string')
 						return <span key={p}>{p}</span>;
 
@@ -267,6 +269,7 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, 
 						<div
 							className={'bvs-blob'}
 							contentEditable={false}
+							data-index={idx}
 							data-type={p.type}
 							data-payload={p.payload ? JSON.stringify(p.payload) : void 0}
 							key={uuid.v4()}
@@ -338,6 +341,25 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, 
 					realtimeValue={rtvEditorContext.realtimeValue}
 					item={rtvEditorContext.item}
 					parent={rtvEditorContext.parent}
+					onClose={item => {
+						setRtvEditorContext(null);
+
+						// save part based on rtvEditorContext.partIndex
+						const part = parts[rtvEditorContext.partIndex];
+						const type = rtvEditorContext.realtimeValue.type;
+
+						if (typeof part !== 'object' || type !== part.type) {
+							console.error('');
+
+							return;
+						}
+
+						const newParts = [...parts];
+
+						(newParts[rtvEditorContext.partIndex] as RealtimeValuePart).payload = item;
+
+						onChange(newParts);
+					}}
 				/>
 			)}
 		</React.Fragment>

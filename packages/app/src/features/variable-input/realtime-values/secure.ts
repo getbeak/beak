@@ -43,7 +43,7 @@ export default {
 	editor: {
 		ui: [{
 			type: 'string_input',
-			label: 'Enter your value:',
+			label: 'Enter the value you want to be encrypted:',
 			stateBinding: 'value',
 		}],
 
@@ -53,8 +53,6 @@ export default {
 				payload: item.datum,
 				projectFolder: '/Users/afr/Documents/Beaks/Acme Api',
 			});
-
-			console.log(decrypted);
 
 			return { value: decrypted };
 		},
