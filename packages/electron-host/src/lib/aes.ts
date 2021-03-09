@@ -6,8 +6,6 @@ import { promisify } from 'util';
 
 const aesAlgo = 'aes-256-ctr'; // 256 bit counter, very nice :borat:
 const scrypt = promisify(crypto.scrypt);
-const createCipherIv = promisify(crypto.createCipheriv);
-const createDecipherIv = promisify(crypto.createDecipheriv);
 
 export const encryptionAlgoVersions: Record<string, string> = {
 	'2020-01-25': aesAlgo,
@@ -31,7 +29,7 @@ export async function encrypt(payload: Buffer, key: string, iv: string) {
 	const keyBuffer = Buffer.from(key, 'base64');
 	const ivBuffer = Buffer.from(iv, 'base64');
 
-	const cipher = await createCipherIv(aesAlgo, keyBuffer, ivBuffer, void 0) as Cipher;
+	const cipher = crypto.createCipheriv(aesAlgo, keyBuffer, ivBuffer, void 0) as Cipher;
 	const update = cipher.update(payload);
 	const final = Buffer.concat([update, cipher.final()]);
 
@@ -48,7 +46,7 @@ export async function decrypt(payload: Buffer, key: string, iv: string) {
 	const keyBuffer = Buffer.from(key, 'base64');
 	const ivBuffer = Buffer.from(iv, 'base64');
 
-	const decipher = await createDecipherIv(aesAlgo, keyBuffer, ivBuffer, void 0) as Decipher;
+	const decipher = crypto.createDecipheriv(aesAlgo, keyBuffer, ivBuffer, void 0) as Decipher;
 	const update = decipher.update(payload);
 	const final = Buffer.concat([update, decipher.final()]);
 
