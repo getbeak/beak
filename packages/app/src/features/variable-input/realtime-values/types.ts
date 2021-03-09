@@ -12,7 +12,7 @@ export interface RealtimeValue<
 	initValuePart: (variableGroups: VariableGroups) => Promise<RealtimeValuePart>;
 	createValuePart: (item: T, variableGroups: VariableGroups) => RealtimeValuePart;
 
-	getValue: (item: T, variableGroups: VariableGroups, selectedGroups: Record<string, string>) => string;
+	getValue: (item: T, variableGroups: VariableGroups, selectedGroups: Record<string, string>) => Promise<string>;
 
 	editor?: {
 		ui: UISection<TS>[];

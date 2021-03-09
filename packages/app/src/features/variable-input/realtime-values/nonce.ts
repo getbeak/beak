@@ -21,7 +21,7 @@ export default {
 		payload: void 0,
 	}),
 
-	getValue: () => {
+	getValue: async () => {
 		const array = new Uint8Array(10);
 
 		crypto.getRandomValues(array);

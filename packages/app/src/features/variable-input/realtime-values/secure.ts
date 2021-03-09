@@ -32,14 +32,18 @@ export default {
 		payload: item,
 	}),
 
-	getValue: () => {
-		// TODO(afr): Change this to support promises so we can use the encryption service
-		// to actually decrypt the datum.
+	// TODO(afr): Read the project path in correctly, somehow
 
-		return 'not implemnted';
+	getValue: async item => {
+		const decrypted = await ipcEncryptionService.decryptString({
+			iv: item.iv,
+			payload: item.datum,
+			projectFolder: '/Users/afr/Documents/Beaks/Acme Api',
+		});
+
+		return decrypted;
 	},
 
-	// TODO(afr): Read the project path in correctly
 	editor: {
 		ui: [{
 			type: 'string_input',

@@ -21,7 +21,8 @@ export default {
 		payload: item,
 	}),
 
-	getValue: (item, variableGroups, selectedGroups) => getValueString(selectedGroups, variableGroups, item.itemId),
+	getValue: async (item, variableGroups, selectedGroups) =>
+		getValueString(selectedGroups, variableGroups, item.itemId),
 } as RealtimeValue<VariableGroupItemRtv['payload']>;
 
 export function createFauxGviRtv(item: VariableGroupItemRtv['payload'], variableGroups: VariableGroups) {
