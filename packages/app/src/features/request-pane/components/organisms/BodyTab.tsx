@@ -47,7 +47,7 @@ const BodyTab: React.FunctionComponent<BodyTabProps> = props => {
 				return;
 		}
 
-		// TODO(afr): Abstract this out somewhere proper
+		// TODO(afr): Abstract this out somewhere more fitting
 
 		// Changing from text to lang specific editor
 		if (body.type === 'text') {
@@ -76,7 +76,7 @@ const BodyTab: React.FunctionComponent<BodyTabProps> = props => {
 				dispatch(actions.requestBodyTypeChanged({
 					requestId: node.id,
 					type: 'text',
-					payload: JSON.stringify(convertToRealJson(selectedGroups, variableGroups, body.payload), null, '\t'),
+					payload: JSON.stringify(await convertToRealJson(selectedGroups, variableGroups, body.payload), null, '\t'),
 				}));
 
 				return;
@@ -84,7 +84,7 @@ const BodyTab: React.FunctionComponent<BodyTabProps> = props => {
 				dispatch(actions.requestBodyTypeChanged({
 					requestId: node.id,
 					type: 'text',
-					payload: convertKeyValueToString(selectedGroups, variableGroups, body.payload),
+					payload: await convertKeyValueToString(selectedGroups, variableGroups, body.payload),
 				}));
 
 				return;

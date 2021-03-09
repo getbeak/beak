@@ -8,13 +8,13 @@ interface Options {
 	includeHash: boolean;
 }
 
-export function convertRequestToUrl(
+export async function convertRequestToUrl(
 	selectedGroups: Record<string, string>,
 	variableGroups: VariableGroups,
 	info: RequestOverview,
 	opts?: Partial<Options>,
 ) {
-	const value = parseValueParts(selectedGroups, variableGroups, info.url);
+	const value = await parseValueParts(selectedGroups, variableGroups, info.url);
 	const url = new URL(value);
 	const options = {
 		includeQuery: true,
@@ -25,7 +25,7 @@ export function convertRequestToUrl(
 		for (const query of TypedObject.values(info.query).filter(q => q.enabled)) {
 			url.searchParams.set(
 				query.name,
-				parseValueParts(selectedGroups, variableGroups, query.value),
+				await parseValueParts(selectedGroups, variableGroups, query.value),
 			);
 		}
 	}

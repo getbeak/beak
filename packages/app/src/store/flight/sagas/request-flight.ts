@@ -15,7 +15,7 @@ import {
 import { TypedObject } from '@beak/common/helpers/typescript';
 // @ts-ignore
 import ksuid from '@cuvva/ksuid';
-import { put, select } from 'redux-saga/effects';
+import { call, put, select } from 'redux-saga/effects';
 
 import { ApplicationState } from '../..';
 import { State as VGState } from '../../variable-groups/types';
@@ -31,7 +31,7 @@ export default function* requestFlightWorker() {
 	const node: RequestNode = yield select((s: ApplicationState) => s.global.project.tree![requestId]);
 	const vgState: VGState = yield select((s: ApplicationState) => s.global.variableGroups);
 	const { selectedGroups, variableGroups } = vgState;
-	const preparedRequest = prepareRequest(node.info, selectedGroups, variableGroups);
+	const preparedRequest: RequestOverview = yield call(prepareRequest, node.info, selectedGroups, variableGroups);
 
 	if (!node)
 		return;
@@ -51,13 +51,13 @@ export default function* requestFlightWorker() {
 	}));
 }
 
-function prepareRequest(
+async function prepareRequest(
 	overview: RequestOverview,
 	selectedGroups: Record<string, string>,
 	variableGroups: VariableGroups,
-): RequestOverview {
+): Promise<RequestOverview> {
 	const url = convertRequestToUrl(selectedGroups, variableGroups, overview);
-	const headers = flattenToggleValueParts(overview.headers, selectedGroups, variableGroups);
+	const headers = await flattenToggleValueParts(overview.headers, selectedGroups, variableGroups);
 
 	// if (!hasHeader('host', headers)) {
 	// 	headers[ksuid.generate('header').toString()] = {
@@ -78,37 +78,39 @@ function prepareRequest(
 	return {
 		...overview,
 		url: [url.toString()],
-		query: flattenToggleValueParts(overview.query, selectedGroups, variableGroups),
+		query: await flattenToggleValueParts(overview.query, selectedGroups, variableGroups),
 		headers,
-		body: flattenBody(selectedGroups, variableGroups, overview.body),
+		body: await flattenBody(selectedGroups, variableGroups, overview.body),
 	};
 }
 
-function flattenToggleValueParts(
+async function flattenToggleValueParts(
 	toggleValueParts: Record<string, ToggleKeyValue>,
 	selectedGroups: Record<string, string>,
 	variableGroups: VariableGroups,
-): Record<string, ToggleKeyValue> {
-	return TypedObject.keys(toggleValueParts).reduce((acc, val) => ({
-		...acc,
-		[val]: {
-			...toggleValueParts[val],
-			value: [parseValueParts(selectedGroups, variableGroups, toggleValueParts[val].value)],
-		},
-	}), {});
+) {
+	const out: Record<string, ToggleKeyValue> = {};
+
+	for (const key of TypedObject.keys(toggleValueParts)) {
+		out[key].enabled = toggleValueParts[key].enabled;
+		out[key].name = toggleValueParts[key].name;
+		out[key].value = [await parseValueParts(selectedGroups, variableGroups, toggleValueParts[key].value)];
+	}
+
+	return out;
 }
 
-function flattenBody(
+async function flattenBody(
 	selectedGroups: Record<string, string>,
 	variableGroups: VariableGroups,
 	body: RequestBody,
-): RequestBodyText {
+): Promise<RequestBodyText> {
 	switch (body.type) {
 		case 'text':
 			return body;
 
 		case 'json': {
-			const json = convertToRealJson(selectedGroups, variableGroups, body.payload);
+			const json = await convertToRealJson(selectedGroups, variableGroups, body.payload);
 
 			return {
 				type: 'text',
@@ -119,7 +121,7 @@ function flattenBody(
 		case 'url_encoded_form':
 			return {
 				type: 'text',
-				payload: convertKeyValueToString(selectedGroups, variableGroups, body.payload),
+				payload: await convertKeyValueToString(selectedGroups, variableGroups, body.payload),
 			};
 
 		default: return { type: 'text', payload: 'body type not supported' };

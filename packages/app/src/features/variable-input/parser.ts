@@ -3,28 +3,22 @@ import { ValueParts, VariableGroups } from '@beak/common/types/beak-project';
 
 import { getRealtimeValue } from './realtime-values';
 
-export function parseValueParts(
+export async function parseValueParts(
 	selectedGroups: Record<string, string>,
 	variableGroups: VariableGroups,
 	parts: ValueParts,
 ) {
-	const out = [];
+	const out = await Promise.all(parts.map(p => {
+		if (typeof p === 'string')
+			return p;
 
-	for (const part of parts) {
-		if (typeof part === 'string') {
-			out.push(part);
-
-			continue;
-		}
-
-		if (typeof part !== 'object')
+		if (typeof p !== 'object')
 			throw new Error('Unknown part type');
 
-		const rtv = getRealtimeValue(part.type);
-		const value = rtv.getValue(part, variableGroups, selectedGroups);
+		const rtv = getRealtimeValue(p.type);
 
-		out.push(value);
-	}
+		return rtv.getValue(p.payload, variableGroups, selectedGroups);
+	}));
 
 	return out.join('');
 }

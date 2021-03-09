@@ -29,8 +29,8 @@ const Header: React.FunctionComponent<HeaderProps> = props => {
 		dispatch(requestFlight());
 	}
 
-	function handleUrlChange(parts: ValueParts) {
-		const value = parseValueParts(selectedGroups, variableGroups!, parts);
+	async function handleUrlChange(parts: ValueParts) {
+		const value = await parseValueParts(selectedGroups, variableGroups!, parts);
 		const parsed = new URL(value);
 
 		if (parsed.search) {

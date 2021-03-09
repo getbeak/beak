@@ -7,7 +7,7 @@ import { convertRequestToUrl } from '@beak/app/utils/uri';
 import { requestBodyContentType } from '@beak/common/helpers/request';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { RequestBody, RequestNode, RequestOverview, ToggleKeyValue, VariableGroups } from '@beak/common/types/beak-project';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import MonacoEditor from 'react-monaco-editor';
 import { useSelector } from 'react-redux';
 
@@ -19,7 +19,11 @@ export interface RequestOutputProps {
 
 const RequestOutput: React.FunctionComponent<RequestOutputProps> = props => {
 	const { selectedGroups, variableGroups } = useSelector(s => s.global.variableGroups!);
-	const code = createBasicHttpOutput(props.selectedNode.info, selectedGroups, variableGroups!);
+	const [output, setOutput] = useState('');
+
+	useEffect(() => {
+		createBasicHttpOutput(props.selectedNode.info, selectedGroups, variableGroups!).then(setOutput);
+	}, [props.selectedNode.info, selectedGroups, variableGroups]);
 
 	return (
 		<React.Fragment>
@@ -28,7 +32,7 @@ const RequestOutput: React.FunctionComponent<RequestOutputProps> = props => {
 				width={'100%'}
 				language={'javascript'}
 				theme={'vs-dark'}
-				value={code}
+				value={output}
 				options={{
 					...createDefaultOptions(),
 					readOnly: true,
@@ -52,12 +56,12 @@ function createBodySection(verb: string, body: RequestBody) {
 	}
 }
 
-export function createBasicHttpOutput(
+export async function createBasicHttpOutput(
 	overview: RequestOverview,
 	selectedGroups: Record<string, string>,
 	variableGroups: VariableGroups,
 ) {
-	const url = convertRequestToUrl(selectedGroups, variableGroups, overview);
+	const url = await convertRequestToUrl(selectedGroups, variableGroups, overview);
 	const { headers, verb, body } = overview;
 	const firstLine = [
 		`${verb.toUpperCase()} `,
@@ -68,7 +72,7 @@ export function createBasicHttpOutput(
 		const builder = new URLSearchParams();
 
 		for (const { name, value } of TypedObject.values(overview.query).filter(q => q.enabled))
-			builder.append(name, parseValueParts(selectedGroups, variableGroups, value));
+			builder.append(name, await parseValueParts(selectedGroups, variableGroups, value));
 
 		firstLine.push(`?${builder.toString()}`);
 	}
@@ -85,9 +89,10 @@ export function createBasicHttpOutput(
 		out.push(`User-Agent: Beak/${getGlobal('version') ?? ''} (${getGlobal('os')})`);
 
 	if (headers) {
-		out.push(...TypedObject.values(headers)
-			.filter(h => h.enabled)
-			.map(({ name, value }) => `${name}: ${parseValueParts(selectedGroups, variableGroups, value)}`),
+		out.push(...await Promise.all(
+			TypedObject.values(headers)
+				.filter(h => h.enabled)
+				.map(async ({ name, value }) => `${name}: ${await parseValueParts(selectedGroups, variableGroups, value)}`)),
 		);
 	}
 
@@ -108,11 +113,11 @@ export function createBasicHttpOutput(
 		out.push('');
 
 		if (body.type === 'json')
-			out.push(JSON.stringify(convertToRealJson(selectedGroups, variableGroups, body.payload), null, '\t'));
+			out.push(JSON.stringify(await convertToRealJson(selectedGroups, variableGroups, body.payload), null, '\t'));
 		else if (body.type === 'text')
 			out.push(body.payload);
 		else if (body.type === 'url_encoded_form')
-			out.push(convertKeyValueToString(selectedGroups, variableGroups, body.payload));
+			out.push(await convertKeyValueToString(selectedGroups, variableGroups, body.payload));
 		else
 			out.push('Unknow body type...');
 	}

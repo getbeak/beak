@@ -8,7 +8,7 @@ import { parseValueParts } from '../variable-input/parser';
 
 type JsonTypes = null | string | number | boolean | Record<string, unknown> | unknown[];
 
-export function convertToRealJson(
+export async function convertToRealJson(
 	selectedGroups: Record<string, string>,
 	variableGroups: VariableGroups,
 	entries: EntryMap,
@@ -18,25 +18,25 @@ export function convertToRealJson(
 	if (!root || !root.enabled)
 		return null;
 
-	return convertEntry(selectedGroups, variableGroups, entries, root);
+	return await convertEntry(selectedGroups, variableGroups, entries, root);
 }
 
-function convertEntry(
+async function convertEntry(
 	selectedGroups: Record<string, string>,
 	variableGroups: VariableGroups,
 	entries: EntryMap,
 	entry: Entries,
-): JsonTypes {
+): Promise<JsonTypes> {
 	switch (entry.type) {
 		case 'null':
 		case 'boolean':
 			return entry.value;
 
 		case 'number':
-			return Number(parseValueParts(selectedGroups, variableGroups, entry.value));
+			return Number(await parseValueParts(selectedGroups, variableGroups, entry.value));
 
 		case 'string':
-			return parseValueParts(selectedGroups, variableGroups, entry.value);
+			return await parseValueParts(selectedGroups, variableGroups, entry.value);
 
 		case 'array': {
 			const children = TypedObject

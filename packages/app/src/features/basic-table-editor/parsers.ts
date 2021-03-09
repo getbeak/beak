@@ -7,16 +7,15 @@ import { parseValueParts } from '../variable-input/parser';
 
 const queryStringRegex = /[a-z0-9%=+-[\]]+/;
 
-export function convertKeyValueToString(
+export async function convertKeyValueToString(
 	selectedGroups: Record<string, string>,
 	variableGroups: VariableGroups,
 	items: Record<string, ToggleKeyValue>,
 ) {
 	const params = new URLSearchParams();
 
-	TypedObject.values(items)
-		.filter(i => i.enabled)
-		.forEach(({ name, value }) => params.set(name, parseValueParts(selectedGroups, variableGroups, value)));
+	for (const { name, value } of TypedObject.values(items).filter(i => i.enabled))
+		params.set(name, await parseValueParts(selectedGroups, variableGroups, value));
 
 	return params.toString();
 }

@@ -1,6 +1,6 @@
 import { Flight } from '@beak/app/store/flight/types';
 import { createDefaultOptions } from '@beak/app/utils/monaco';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import MonacoEditor from 'react-monaco-editor';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
@@ -18,8 +18,13 @@ export interface RequestTabProps {
 
 const RequestTab: React.FunctionComponent<RequestTabProps> = props => {
 	const { flight } = props;
+	const [output, setOutput] = useState('');
 	const [tab, setTab] = useState<Tab>('raw');
 	const { selectedGroups, variableGroups } = useSelector(s => s.global.variableGroups);
+
+	useEffect(() => {
+		createBasicHttpOutput(flight.request, selectedGroups, variableGroups!).then(setOutput);
+	}, [flight.request, selectedGroups, variableGroups]);
 
 	return (
 		<Container>
@@ -43,7 +48,7 @@ const RequestTab: React.FunctionComponent<RequestTabProps> = props => {
 							width={'100%'}
 							language={'javascript'}
 							theme={'vs-dark'}
-							value={createBasicHttpOutput(flight.request, selectedGroups, variableGroups!)}
+							value={output}
 							options={{
 								...createDefaultOptions(),
 								readOnly: true,
