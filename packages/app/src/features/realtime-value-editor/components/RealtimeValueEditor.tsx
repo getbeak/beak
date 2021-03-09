@@ -33,7 +33,12 @@ const RealtimeValueEditor: React.FunctionComponent<RealtimeValueEditorProps> = p
 			case 'string_input':
 				return (
 					<FormGroup>
-						<Label>{section.label}</Label><br />
+						{section.label && (
+							<React.Fragment>
+								<Label>{section.label}</Label>
+								<br />
+							</React.Fragment>
+						)}
 						<Input
 							value={state[section.stateBinding as string] || ''}
 							onChange={e => setState({
@@ -41,6 +46,27 @@ const RealtimeValueEditor: React.FunctionComponent<RealtimeValueEditorProps> = p
 								[section.stateBinding]: e.currentTarget.value,
 							})}
 						/>
+					</FormGroup>
+				);
+
+			case 'options_input':
+				return (
+					<FormGroup>
+						{section.label && (
+							<React.Fragment>
+								<Label>{section.label}</Label>
+								<br />
+							</React.Fragment>
+						)}
+						<Select
+							value={state[section.stateBinding as string] || ''}
+							onChange={e => setState({
+								...(state),
+								[section.stateBinding]: e.currentTarget.value,
+							})}
+						>
+							{section.options.map(o => <option key={o.key} value={o.key}>{o.label}</option>)}
+						</Select>
 					</FormGroup>
 				);
 
@@ -88,6 +114,10 @@ const Label = styled.label`
 `;
 
 const Input = styled.input`
+
+`;
+
+const Select = styled.select`
 
 `;
 
