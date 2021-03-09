@@ -56,6 +56,9 @@ export async function decrypt(payload: Buffer, key: string, iv: string) {
 }
 
 export async function decryptString(payload: string, key: string, iv: string) {
+	if (payload === '')
+		return '';
+
 	const buf = Buffer.from(payload, 'base64');
 
 	return await decrypt(buf, key, iv);
