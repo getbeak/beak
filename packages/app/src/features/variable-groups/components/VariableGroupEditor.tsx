@@ -8,6 +8,10 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 
+import VariableInput from '../../variable-input/components/molecules/VariableInput';
+import { BodyNameCell, BodyValueCell, HeaderGroupCell, HeaderNameCell } from './atoms/Cells';
+import { Body, Header, Row } from './atoms/Structure';
+
 const VariableGroupEditor: React.FunctionComponent = () => {
 	const dispatch = useDispatch();
 	const variableGroups = useSelector(s => s.global.variableGroups);
@@ -55,98 +59,101 @@ const VariableGroupEditor: React.FunctionComponent = () => {
 			</TabBar>
 
 			<TabBody>
-				<Table>
-					<thead>
-						<tr>
-							<th><Editable disabled value={'Variable name'} /></th>
-							{variableGroup && TypedObject.keys(variableGroup.groups).map(k => (
-								<th key={k}>
-									<Editable
-										type={'text'}
-										value={variableGroup.groups[k]}
-										onChange={e => {
-											dispatch(actions.updateGroupName({
-												variableGroup: tab,
-												ident: k,
-												updated: e.target.value,
-											}));
-										}}
-									/>
-								</th>
-							))}
-						</tr>
-					</thead>
-					<tbody>
-						{variableGroup && TypedObject.keys(variableGroup.items).map(ik => (
-							<tr key={ik}>
-								<td>
-									<Editable
-										ref={variableGroup.items[ik] === newItem ? newItemRef : null}
-										type={'text'}
-										value={variableGroup.items[ik]}
-										onChange={e => {
-											dispatch(actions.updateItemName({
-												variableGroup: tab,
-												ident: ik,
-												updated: e.target.value,
-											}));
-										}}
-									/>
-								</td>
-
-								{TypedObject.keys(variableGroup.groups).map(gk => {
-									const valueKey = TypedObject.keys(variableGroup.values).find(k => {
-										const value = variableGroup.values[k];
-
-										if (value.groupId === gk && value.itemId === ik)
-											return true;
-
-										return false;
-									});
-
-									const value = variableGroup.values[valueKey || ''];
-
-									return (
-										<td key={gk}>
-											<Editable
-												type={'text'}
-												value={value?.value || ''}
-												onChange={e => {
-													dispatch(actions.updateValue({
-														variableGroup: tab,
-														ident: valueKey,
-														groupId: gk,
-														itemId: ik,
-														updated: e.target.value,
-													}));
-												}}
-											/>
-										</td>
-									);
-								})}
-							</tr>
-						))}
-						<tr>
-							<td>
+				<Header>
+					<Row cols={TypedObject.keys(variableGroup.groups).length + 1}>
+						<HeaderNameCell>
+							<Editable disabled value={'Name'} />
+						</HeaderNameCell>
+						{variableGroup && TypedObject.keys(variableGroup.groups).map(k => (
+							<HeaderGroupCell key={k}>
 								<Editable
-									placeholder={'New variable...'}
 									type={'text'}
-									value={''}
+									value={variableGroup.groups[k]}
 									onChange={e => {
-										setNewItem(e.target.value);
-										dispatch(insertNewItem({
+										dispatch(actions.updateGroupName({
 											variableGroup: tab,
-											name: e.target.value,
+											ident: k,
+											updated: e.target.value,
 										}));
 									}}
 								/>
-							</td>
-							{variableGroup && TypedObject.keys(variableGroup.groups).map(k => (
-								<td key={k}><Editable disabled /></td>
-							))}
-						</tr>
-					</tbody>
-				</Table>
+							</HeaderGroupCell>
+						))}
+					</Row>
+				</Header>
+
+				<Body>
+					{variableGroup && TypedObject.keys(variableGroup.items).map(ik => (
+						<Row key={ik} cols={TypedObject.keys(variableGroup.groups).length + 1}>
+							<BodyNameCell>
+								<Editable
+									ref={variableGroup.items[ik] === newItem ? newItemRef : null}
+									type={'text'}
+									value={variableGroup.items[ik]}
+									onChange={e => {
+										dispatch(actions.updateItemName({
+											variableGroup: tab,
+											ident: ik,
+											updated: e.target.value,
+										}));
+									}}
+								/>
+							</BodyNameCell>
+
+							{TypedObject.keys(variableGroup.groups).map(gk => {
+								const valueKey = TypedObject.keys(variableGroup.values).find(k => {
+									const value = variableGroup.values[k];
+
+									if (value.groupId === gk && value.itemId === ik)
+										return true;
+
+									return false;
+								});
+
+								const value = variableGroup.values[valueKey || ''];
+
+								return (
+									<BodyValueCell key={gk}>
+										<VariableInput
+											parts={value?.value || ['']}
+											onChange={parts => {
+												dispatch(actions.updateValue({
+													variableGroup: tab,
+													ident: valueKey,
+													groupId: gk,
+													itemId: ik,
+													updated: parts,
+												}));
+											}}
+										/>
+									</BodyValueCell>
+								);
+							})}
+						</Row>
+					))}
+
+					<Row cols={TypedObject.keys(variableGroup.groups).length + 1}>
+						<BodyNameCell>
+							<Editable
+								placeholder={'New variable...'}
+								type={'text'}
+								value={''}
+								onChange={e => {
+									setNewItem(e.target.value);
+									dispatch(insertNewItem({
+										variableGroup: tab,
+										name: e.target.value,
+									}));
+								}}
+							/>
+						</BodyNameCell>
+						{variableGroup && TypedObject.keys(variableGroup.groups).map(k => (
+							<BodyValueCell key={k}>
+								<Editable disabled />
+							</BodyValueCell>
+						))}
+					</Row>
+				</Body>
 			</TabBody>
 		</Container>
 	);
@@ -170,45 +177,22 @@ const TabBody = styled.div`
 	height: 100%;
 `;
 
-const Table = styled.table`
-	width: 100%;
-	border-collapse: collapse;
-
-	tr {
-		border-bottom: 1px solid ${p => p.theme.ui.backgroundBorderSeparator};
-	}
-
-	tbody > tr {
-		&:last-of-type {
-			border-right: none;
-		}
-	}
-
-	th, td {
-		border-right: 1px solid ${p => p.theme.ui.backgroundBorderSeparator};
-
-		&:last-of-type {
-			border-right: none;
-		}
-	}
-
-	tr > th > input {
-		padding: 4px 2px;
-	}
-`;
-
 const Editable = styled.input`
-	margin-bottom: -1px;
-	width: calc(100% - 3px);
+	width: calc(100% - 12px);
 	background: none;
-	border: none;
-	color: ${p => p.theme.ui.textOnSurfaceBackground};
+	border: 1px solid transparent;
+	color: ${props => props.theme.ui.textMinor};
 	font-size: 13px;
 	font-weight: normal;
 	text-align: inherit;
-	padding: 3px 2px;
+	padding: 3px 5px;
 
 	&:disabled { user-select: none; }
+	&:focus {
+		/* forgive me for the importants */
+		box-shadow: none !important;
+		border: 1px solid ${p => p.theme.ui.primaryFill} !important;
+	}
 `;
 
 export default VariableGroupEditor;
