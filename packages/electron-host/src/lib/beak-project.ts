@@ -52,12 +52,12 @@ export default async function createProject(options: CreationOptions) {
 	variableGroup.values[ksuid.generate('value').toString()] = {
 		groupId: TypedObject.keys(variableGroup.groups)[0],
 		itemId: TypedObject.keys(variableGroup.items)[0],
-		value: 'prod',
+		value: ['prod'],
 	};
 	variableGroup.values[ksuid.generate('value').toString()] = {
 		groupId: TypedObject.keys(variableGroup.groups)[1],
 		itemId: TypedObject.keys(variableGroup.items)[0],
-		value: 'local',
+		value: ['local'],
 	};
 
 	if (await fs.pathExists(projectPath))
