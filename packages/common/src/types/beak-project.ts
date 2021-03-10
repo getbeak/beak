@@ -84,7 +84,7 @@ export interface VariableGroup {
 export interface VariableGroupValue {
 	groupId: string;
 	itemId: string;
-	value: string;
+	value: ValueParts;
 }
 
 export type ValueParts = (string | RealtimeValuePart)[];

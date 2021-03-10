@@ -45,7 +45,7 @@ const variableGroupsReducer = createReducer(initialState, builder => {
 			const { groupId, itemId, ident, updated, variableGroup } = action.payload;
 			const vg = state.variableGroups![variableGroup];
 			const exists = ident !== void 0 && vg.values[ident];
-			const empty = updated === '';
+			const empty = updated.length === 0 || (updated.length === 1 && updated[0] === '');
 
 			if (exists) {
 				if (empty) {

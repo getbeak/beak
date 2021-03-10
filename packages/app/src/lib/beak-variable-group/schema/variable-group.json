@@ -40,7 +40,7 @@
 					"properties": {
 						"groupId": { "type": "string" },
 						"itemId": { "type": "string" },
-						"value": { "type": "string" }
+						"value": { "type": "array" }
 					}
 				}
 			}

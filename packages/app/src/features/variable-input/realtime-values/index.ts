@@ -22,7 +22,3 @@ export function getRealtimeValues() {
 		// Remove the variable group item as it's a special case tbh
 		.filter(v => v.type !== variableGroupItemRtv.type);
 }
-
-export {
-	// variableGroupItem,
-};

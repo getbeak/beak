@@ -1,4 +1,4 @@
-import { VariableGroup, VariableGroups } from '@beak/common/dist/types/beak-project';
+import { ValueParts, VariableGroup, VariableGroups } from '@beak/common/dist/types/beak-project';
 
 export const ActionTypes = {
 	START_VARIABLE_GROUPS: '@beak/global/variable-groups/START_VARIABLE_GROUPS',
@@ -50,10 +50,11 @@ export interface UpdateEntityPayload {
 	updated: string;
 }
 
-export interface UpdateValuePayload extends Omit<UpdateEntityPayload, 'ident'> {
+export interface UpdateValuePayload extends Omit<UpdateEntityPayload, 'ident' | 'updated'> {
 	groupId: string;
 	itemId: string;
 	ident: string | undefined;
+	updated: ValueParts;
 }
 
 export interface InsertNewItemPayload {

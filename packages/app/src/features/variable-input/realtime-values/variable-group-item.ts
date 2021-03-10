@@ -1,7 +1,7 @@
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { VariableGroupItemRtv, VariableGroups } from '@beak/common/types/beak-project';
 
-import { getValueString } from '../parser';
+import { getValueString, parseValueParts } from '../parser';
 import { RealtimeValue } from './types';
 
 const type = 'variable_group_item';
@@ -21,8 +21,11 @@ export default {
 		payload: item,
 	}),
 
-	getValue: async (item, variableGroups, selectedGroups) =>
-		getValueString(selectedGroups, variableGroups, item.itemId),
+	getValue: async (item, variableGroups, selectedGroups) => await parseValueParts(
+		selectedGroups,
+		variableGroups,
+		getValueString(selectedGroups, variableGroups, item.itemId) || [],
+	),
 } as RealtimeValue<VariableGroupItemRtv['payload']>;
 
 export function createFauxGviRtv(item: VariableGroupItemRtv['payload'], variableGroups: VariableGroups) {
