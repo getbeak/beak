@@ -22,17 +22,29 @@ export interface RealtimeValue<
 	};
 }
 
-export type UISection<T> = TextInput<T> | OptionsInput<T>;
+export type UISection<T> = TextInput<T> | NumberInput<T> | CheckboxInput<T> | OptionsInput<T>;
 
 interface TextInput<T> {
 	type: 'string_input';
 	stateBinding: keyof T;
-	label: string;
+	label?: string;
+}
+
+interface NumberInput<T> {
+	type: 'number_input';
+	stateBinding: keyof T;
+	label?: string;
+}
+
+interface CheckboxInput<T> {
+	type: 'checkbox_input';
+	stateBinding: keyof T;
+	label?: string;
 }
 
 interface OptionsInput<T> {
 	type: 'options_input';
 	stateBinding: keyof T;
-	label: string;
-	options: { key: string, label: string }[];
+	label?: string;
+	options: { key: string; label: string }[];
 }

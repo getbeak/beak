@@ -40,6 +40,27 @@ const RealtimeValueEditor: React.FunctionComponent<RealtimeValueEditorProps> = p
 							</React.Fragment>
 						)}
 						<Input
+							type={'text'}
+							value={state[section.stateBinding as string] || ''}
+							onChange={e => setState({
+								...(state),
+								[section.stateBinding]: e.currentTarget.value,
+							})}
+						/>
+					</FormGroup>
+				);
+
+			case 'number_input':
+				return (
+					<FormGroup>
+						{section.label && (
+							<React.Fragment>
+								<Label>{section.label}</Label>
+								<br />
+							</React.Fragment>
+						)}
+						<Input
+							type={'number'}
 							value={state[section.stateBinding as string] || ''}
 							onChange={e => setState({
 								...(state),
@@ -84,12 +105,14 @@ const RealtimeValueEditor: React.FunctionComponent<RealtimeValueEditorProps> = p
 		>
 			{ui.map(section => renderUiSection(section))}
 
-			<Button
-				onClick={() => {
-					save(item, state).then(updatedItem => props.onClose(updatedItem));
-				}}>
-				{'Save!'}
-			</Button>
+			<ButtonContainer>
+				<Button
+					onClick={() => {
+						save(item, state).then(updatedItem => props.onClose(updatedItem));
+					}}>
+					{'Save!'}
+				</Button>
+			</ButtonContainer>
 		</Wrapper>
 	);
 };
@@ -100,7 +123,7 @@ const Wrapper = styled.div<{ top: number; left: number }>`
 	left: ${p => p.left}px;
 
 	width: 300px;
-	padding: 5px;
+	padding: 8px 12px;
 	border: 1px solid ${p => p.theme.ui.backgroundBorderSeparator};
 	background: ${p => p.theme.ui.surface};
 `;
@@ -121,8 +144,21 @@ const Select = styled.select`
 
 `;
 
-const Button = styled.button`
+const ButtonContainer = styled.div`
+	display: flex;
+	flex-direction: row-reverse;
+`;
 
+const Button = styled.button`
+	background: none;
+	border: none;
+	font-weight: 600;
+	color: ${p => p.theme.ui.textMinor};
+	cursor: pointer;
+
+	&:hover {
+		color: ${p => p.theme.ui.textMinorMuted};
+	}
 `;
 
 export default RealtimeValueEditor;
