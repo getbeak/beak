@@ -22,7 +22,7 @@ const OptionsMenu: React.FunctionComponent<OptionsMenuProps> = ({ type, id, inTa
 	function showContextMenu(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
 		event.stopPropagation();
 		event.preventDefault();
-		
+
 		const menu = (() => {
 			if (type === 'variable-group') {
 				return Menu.buildFromTemplate([{

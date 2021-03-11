@@ -82,7 +82,7 @@ const VariableGroupEditor: React.FunctionComponent = () => {
 				{variableGroup && TypedObject.keys(variableGroup.groups).length > 0 && (
 					<React.Fragment>
 						<Header>
-							<Row cols={TypedObject.keys(variableGroup.groups).length + 1}>
+							<Row cols={TypedObject.keys(variableGroup.groups).length}>
 								<HeaderNameCell>
 									<Editable center disabled value={'Name'} />
 								</HeaderNameCell>
@@ -113,7 +113,7 @@ const VariableGroupEditor: React.FunctionComponent = () => {
 
 						<Body>
 							{variableGroup && TypedObject.keys(variableGroup.items).map(ik => (
-								<Row key={ik} cols={TypedObject.keys(variableGroup.groups).length + 1}>
+								<Row key={ik} cols={TypedObject.keys(variableGroup.groups).length}>
 									<BodyNameCell>
 										<Editable
 											ref={variableGroup.items[ik] === newItem ? newItemRef : null}
@@ -167,7 +167,7 @@ const VariableGroupEditor: React.FunctionComponent = () => {
 								</Row>
 							))}
 
-							<Row cols={TypedObject.keys(variableGroup.groups).length + 1}>
+							<Row cols={TypedObject.keys(variableGroup.groups).length}>
 								<BodyNameCell>
 									<Editable
 										placeholder={'New item...'}
