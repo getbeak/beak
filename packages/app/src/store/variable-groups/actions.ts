@@ -7,6 +7,7 @@ import {
 	IdPayload,
 	InsertNewGroupPayload,
 	InsertNewItemPayload,
+	InsertNewVariableGroupPayload,
 	UpdateEntityPayload,
 	UpdateValuePayload,
 	UpdateVgPayload,
@@ -24,6 +25,8 @@ export const updateGroupName = createAction<UpdateEntityPayload>(ActionTypes.UPD
 export const updateItemName = createAction<UpdateEntityPayload>(ActionTypes.UPDATE_ITEM_NAME);
 export const updateValue = createAction<UpdateValuePayload>(ActionTypes.UPDATE_VALUE);
 
+// eslint-disable-next-line max-len
+export const insertNewVariableGroup = createAction<InsertNewVariableGroupPayload>(ActionTypes.INSERT_NEW_VARIABLE_GROUP);
 export const insertNewGroup = createAction<InsertNewGroupPayload>(ActionTypes.INSERT_NEW_GROUP);
 export const insertNewItem = createAction<InsertNewItemPayload>(ActionTypes.INSERT_NEW_ITEM);
 export const removeGroup = createAction<IdPayload>(ActionTypes.REMOVE_GROUP);
@@ -45,6 +48,7 @@ export default {
 	updateItemName,
 	updateValue,
 
+	insertNewVariableGroup,
 	insertNewGroup,
 	insertNewItem,
 	removeGroup,

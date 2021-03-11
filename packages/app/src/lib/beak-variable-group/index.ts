@@ -16,3 +16,9 @@ export async function writeVariableGroup(name: string, variableGroup: VariableGr
 
 	await fs.writeJson(filePath, variableGroup, { spaces: '\t' });
 }
+
+export async function removeVariableGroup(name: string, vgFilePath: string) {
+	const filePath = path.join(vgFilePath, `${name}.json`);
+
+	await fs.remove(filePath);
+}

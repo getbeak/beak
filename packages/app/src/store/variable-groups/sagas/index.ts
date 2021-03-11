@@ -8,7 +8,12 @@ const updateWatcherActions = [
 	ActionTypes.UPDATE_GROUP_NAME,
 	ActionTypes.UPDATE_ITEM_NAME,
 	ActionTypes.UPDATE_VALUE,
+	ActionTypes.INSERT_NEW_VARIABLE_GROUP,
+	ActionTypes.INSERT_NEW_GROUP,
 	ActionTypes.INSERT_NEW_ITEM,
+	ActionTypes.REMOVE_GROUP,
+	ActionTypes.REMOVE_ITEM,
+	ActionTypes.REMOVE_VG,
 ];
 
 export default function* variableGroupsSaga() {

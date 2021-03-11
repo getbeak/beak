@@ -1,5 +1,5 @@
 import { ipcDialogService } from '@beak/app/lib/ipc';
-import { insertNewGroup, removeGroup, removeItem } from '@beak/app/store/variable-groups/actions';
+import { insertNewGroup, insertNewVariableGroup, removeGroup, removeItem, removeVg } from '@beak/app/store/variable-groups/actions';
 import { faEllipsisV } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { MenuItemConstructorOptions, remote } from 'electron';
@@ -10,8 +10,8 @@ import styled from 'styled-components';
 const { Menu } = remote;
 
 interface OptionsMenuProps {
-	type: 'group' | 'item';
-	id: string;
+	type: 'variable-group' | 'group' | 'item';
+	id?: string;
 	variableGroup: string;
 }
 
@@ -20,6 +20,33 @@ const OptionsMenu: React.FunctionComponent<OptionsMenuProps> = ({ type, id, vari
 
 	function showContextMenu() {
 		const menu = (() => {
+			if (type === 'variable-group') {
+				return Menu.buildFromTemplate([{
+					label: 'Create a new variable group',
+					click: () => {
+						dispatch(insertNewVariableGroup({ name: 'Variable group' }));
+					},
+				}, {
+					label: 'Remove this variable group',
+					click: async () => {
+						const result = await ipcDialogService.showMessageBox({
+							title: 'Are you sure?',
+							message: 'Are you sure you want to remove this variable group?',
+							detail: 'This action cannot be undone from inside Beak',
+							type: 'warning',
+							buttons: ['Remove', 'Cancel'],
+							defaultId: 1,
+							cancelId: 1,
+						});
+
+						if (result.response === 1)
+							return;
+
+						dispatch(removeVg(variableGroup));
+					},
+				}] as MenuItemConstructorOptions[]);
+			}
+
 			if (type === 'group') {
 				return Menu.buildFromTemplate([{
 					label: 'Create a new group',
@@ -42,7 +69,7 @@ const OptionsMenu: React.FunctionComponent<OptionsMenuProps> = ({ type, id, vari
 						if (result.response === 1)
 							return;
 
-						dispatch(removeGroup({ variableGroup, id }));
+						dispatch(removeGroup({ variableGroup, id: id! }));
 					},
 				}, {
 					type: 'separator',
@@ -71,7 +98,7 @@ const OptionsMenu: React.FunctionComponent<OptionsMenuProps> = ({ type, id, vari
 					if (result.response === 1)
 						return;
 
-					dispatch(removeItem({ variableGroup, id }));
+					dispatch(removeItem({ variableGroup, id: id! }));
 				},
 			}, {
 				type: 'separator',

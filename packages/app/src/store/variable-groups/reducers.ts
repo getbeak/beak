@@ -65,6 +65,31 @@ const variableGroupsReducer = createReducer(initialState, builder => {
 			}
 		})
 
+		.addCase(actions.insertNewVariableGroup, (state, action) => {
+			if (action.payload === null) {
+				const groupId = ksuid.generate('group').toString();
+				const itemId = ksuid.generate('item').toString();
+				const valueId = ksuid.generate('value').toString();
+
+				state.variableGroups!.Environment = {
+					groups: { [groupId]: 'Production' },
+					items: { [itemId]: 'env_identifier' },
+					values: { [valueId]: { groupId, itemId, value: ['prod'] } },
+				};
+
+				return;
+			}
+
+			const { name } = action.payload;
+			const groupId = ksuid.generate('group').toString();
+			const itemId = ksuid.generate('item').toString();
+
+			state.variableGroups![name] = {
+				groups: { [groupId]: 'Group' },
+				items: { [itemId]: 'Item' },
+				values: { },
+			};
+		})
 		.addCase(actions.insertNewGroup, (state, action) => {
 			const { group, variableGroup } = action.payload;
 

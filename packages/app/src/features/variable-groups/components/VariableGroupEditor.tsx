@@ -1,9 +1,8 @@
-import Button from '@beak/app/components/atoms/Button';
 import TabBar from '@beak/app/components/atoms/TabBar';
 import TabItem from '@beak/app/components/atoms/TabItem';
 import TabSpacer from '@beak/app/components/atoms/TabSpacer';
 import { actions } from '@beak/app/store/variable-groups';
-import { insertNewGroup, insertNewItem } from '@beak/app/store/variable-groups/actions';
+import { insertNewItem } from '@beak/app/store/variable-groups/actions';
 import { TypedObject } from '@beak/common/dist/helpers/typescript';
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -12,6 +11,7 @@ import styled from 'styled-components';
 import VariableInput from '../../variable-input/components/molecules/VariableInput';
 import { BodyNameCell, BodyValueCell, HeaderGroupNameCell, HeaderNameCell } from './atoms/Cells';
 import { Body, Header, Row } from './atoms/Structure';
+import CreateNewSplash from './molecules/CreateNewSplash';
 import OptionsMenu from './molecules/OptionsMenu';
 
 const VariableGroupEditor: React.FunctionComponent = () => {
@@ -44,6 +44,14 @@ const VariableGroupEditor: React.FunctionComponent = () => {
 		setNewItem(void 0);
 	}, [newItem, setNewItem, vg[tab]?.items, newItemRef]);
 
+	if (tabs.length === 0) {
+		return (
+			<Container>
+				<CreateNewSplash type={'variable-group'} />
+			</Container>
+		);
+	}
+
 	return (
 		<Container>
 			<TabBar centered>
@@ -55,6 +63,11 @@ const VariableGroupEditor: React.FunctionComponent = () => {
 						onClick={() => setTab(t)}
 					>
 						{t}
+
+						<OptionsMenu
+							type={'variable-group'}
+							variableGroup={t}
+						/>
 					</TabItem>
 				))}
 				<TabSpacer />
@@ -62,16 +75,7 @@ const VariableGroupEditor: React.FunctionComponent = () => {
 
 			<TabBody>
 				{variableGroup && TypedObject.keys(variableGroup.groups).length === 0 && (
-					<React.Fragment>
-						{'No groupes!?!?!'}
-
-						<Button onClick={() => dispatch(insertNewGroup({
-							variableGroup: tab,
-							group: '',
-						}))}>
-							{'Create new group'}
-						</Button>
-					</React.Fragment>
+					<CreateNewSplash type={'group'} variableGroup={tab} />
 				)}
 
 				{variableGroup && TypedObject.keys(variableGroup.groups).length > 0 && (

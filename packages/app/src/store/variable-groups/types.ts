@@ -12,6 +12,7 @@ export const ActionTypes = {
 	UPDATE_ITEM_NAME: '@beak/global/variable-groups/UPDATE_ITEM_NAME',
 	UPDATE_VALUE: '@beak/global/variable-groups/UPDATE_VALUE',
 
+	INSERT_NEW_VARIABLE_GROUP: '@beak/global/variable-groups/INSERT_NEW_VARIABLE_GROUP',
 	INSERT_NEW_GROUP: '@beak/global/variable-groups/INSERT_NEW_GROUP',
 	INSERT_NEW_ITEM: '@beak/global/variable-groups/INSERT_NEW_ITEM',
 
@@ -60,6 +61,8 @@ export interface UpdateValuePayload extends Omit<UpdateEntityPayload, 'ident' | 
 	ident: string | undefined;
 	updated: ValueParts;
 }
+
+export type InsertNewVariableGroupPayload = { name: string } | null;
 
 export interface InsertNewGroupPayload {
 	variableGroup: string;
