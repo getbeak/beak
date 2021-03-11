@@ -12,13 +12,17 @@ const { Menu } = remote;
 interface OptionsMenuProps {
 	type: 'variable-group' | 'group' | 'item';
 	id?: string;
+	inTab?: boolean;
 	variableGroup: string;
 }
 
-const OptionsMenu: React.FunctionComponent<OptionsMenuProps> = ({ type, id, variableGroup }) => {
+const OptionsMenu: React.FunctionComponent<OptionsMenuProps> = ({ type, id, inTab, variableGroup }) => {
 	const dispatch = useDispatch();
 
-	function showContextMenu() {
+	function showContextMenu(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
+		event.stopPropagation();
+		event.preventDefault();
+		
 		const menu = (() => {
 			if (type === 'variable-group') {
 				return Menu.buildFromTemplate([{
@@ -115,8 +119,8 @@ const OptionsMenu: React.FunctionComponent<OptionsMenuProps> = ({ type, id, vari
 	}
 
 	return (
-		<Wrapper onClick={() => showContextMenu()}>
-			<InnerWrapper>
+		<Wrapper onClick={e => showContextMenu(e)}>
+			<InnerWrapper inTab={inTab}>
 				<FontAwesomeIcon icon={faEllipsisV} />
 			</InnerWrapper>
 		</Wrapper>
@@ -127,9 +131,9 @@ const Wrapper = styled.div`
 	cursor: pointer;
 `;
 
-const InnerWrapper = styled.div`
+const InnerWrapper = styled.div<{ inTab?: boolean }>`
 	transform: scale(0.8);
-	padding: 2px 4px;
+	padding: ${p => p.inTab ? '0 4px' : '2px 4px'};
 `;
 
 export default OptionsMenu;

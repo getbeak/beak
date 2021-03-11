@@ -66,6 +66,7 @@ const VariableGroupEditor: React.FunctionComponent = () => {
 
 						<OptionsMenu
 							type={'variable-group'}
+							inTab
 							variableGroup={t}
 						/>
 					</TabItem>

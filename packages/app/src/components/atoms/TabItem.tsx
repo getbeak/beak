@@ -6,6 +6,9 @@ export interface TabItemProps {
 }
 
 const TabItem = styled.div<TabItemProps>`
+	display: flex;
+	flex-direction: row;
+
 	border-bottom: 1px solid ${props => props.theme.ui.backgroundBorderSeparator};
 
 	font-size: 13px;
