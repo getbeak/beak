@@ -1,4 +1,5 @@
 /* eslint-disable no-param-reassign */
+import { TypedObject } from '@beak/common/helpers/typescript';
 // @ts-ignore
 import ksuid from '@cuvva/ksuid';
 import { createReducer } from '@reduxjs/toolkit';
@@ -64,11 +65,49 @@ const variableGroupsReducer = createReducer(initialState, builder => {
 			}
 		})
 
+		.addCase(actions.insertNewGroup, (state, action) => {
+			const { group, variableGroup } = action.payload;
+
+			state.variableGroups![variableGroup].groups[ksuid.generate('group').toString()] = group;
+		})
 		.addCase(actions.insertNewItem, (state, action) => {
 			const { name, variableGroup } = action.payload;
 
 			state.variableGroups![variableGroup].items[ksuid.generate('item').toString()] = name;
 		})
+		.addCase(actions.removeGroup, (state, action) => {
+			const { id, variableGroup } = action.payload;
+
+			state.variableGroups![variableGroup].values = TypedObject
+				.keys(state.variableGroups![variableGroup].values)
+				.reduce((acc, key) => {
+					const value = state.variableGroups![variableGroup].values[key];
+
+					if (value.groupId === id)
+						return acc;
+
+					return { ...acc, [key]: value };
+				}, {});
+
+			delete state.variableGroups![variableGroup].groups[id];
+		})
+		.addCase(actions.removeItem, (state, action) => {
+			const { id, variableGroup } = action.payload;
+
+			state.variableGroups![variableGroup].values = TypedObject
+				.keys(state.variableGroups![variableGroup].values)
+				.reduce((acc, key) => {
+					const value = state.variableGroups![variableGroup].values[key];
+
+					if (value.itemId === id)
+						return acc;
+
+					return { ...acc, [key]: value };
+				}, {});
+
+			delete state.variableGroups![variableGroup].items[id];
+		})
+
 		.addCase(actions.changeSelectedGroup, (state, action) => {
 			const { group, variableGroup } = action.payload;
 

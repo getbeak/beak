@@ -1,7 +1,6 @@
 import { MenuItemConstructorOptions, remote } from 'electron';
 import React, { useEffect } from 'react';
 
-// const remote = window.require('electron');
 const { Menu } = remote;
 
 interface ContextMenuProps {

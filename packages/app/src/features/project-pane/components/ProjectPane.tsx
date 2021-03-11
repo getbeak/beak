@@ -2,7 +2,7 @@ import { toVibrancyAlpha } from '@beak/app/design-system/utils';
 import { actions } from '@beak/app/store/project';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled, { useTheme } from 'styled-components';
 
@@ -26,6 +26,14 @@ const ProjectPane: React.FunctionComponent = () => {
 		variableGroup: false,
 		explorer: false,
 	});
+
+	useEffect(() => {
+		dispatch(actions.tabSelected({
+			type: 'renderer',
+			payload: 'variable_group_editor',
+			temporary: false,
+		}));
+	}, []);
 
 	function toggleCollapser(key: keyof Collapser) {
 		setCollapser({

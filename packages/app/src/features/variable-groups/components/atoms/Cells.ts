@@ -8,15 +8,12 @@ export const HeaderNameCell = styled(HeaderCell)`
 	border-left: none;
 
 	> input {
-		background: none;
-		border: 1px solid transparent;
 		color: ${p => p.theme.ui.textOnSurfaceBackground};
-		padding: 3px 5px;
-		font-size: 13px;
-		text-align: center;
 	}
 `;
-export const HeaderGroupCell = styled(HeaderCell)`
+export const HeaderGroupNameCell = styled(HeaderCell)`
+	display: flex;
+	flex-direction: row;
 `;
 export const HeaderAction = styled(HeaderCell)``;
 
@@ -24,6 +21,8 @@ export const BodyCell = styled.div`
 	border-left: 1px solid ${p => p.theme.ui.backgroundBorderSeparator};
 `;
 export const BodyNameCell = styled(BodyCell)`
+	display: flex;
+	flex-direction: row;
 	border-left: none;
 `;
 export const BodyValueCell = styled(BodyCell)`

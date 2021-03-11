@@ -4,6 +4,8 @@ import { createAction } from '@reduxjs/toolkit';
 import {
 	ActionTypes,
 	ChangeSelectedGroupPayload,
+	IdPayload,
+	InsertNewGroupPayload,
 	InsertNewItemPayload,
 	UpdateEntityPayload,
 	UpdateValuePayload,
@@ -22,7 +24,11 @@ export const updateGroupName = createAction<UpdateEntityPayload>(ActionTypes.UPD
 export const updateItemName = createAction<UpdateEntityPayload>(ActionTypes.UPDATE_ITEM_NAME);
 export const updateValue = createAction<UpdateValuePayload>(ActionTypes.UPDATE_VALUE);
 
+export const insertNewGroup = createAction<InsertNewGroupPayload>(ActionTypes.INSERT_NEW_GROUP);
 export const insertNewItem = createAction<InsertNewItemPayload>(ActionTypes.INSERT_NEW_ITEM);
+export const removeGroup = createAction<IdPayload>(ActionTypes.REMOVE_GROUP);
+export const removeItem = createAction<IdPayload>(ActionTypes.REMOVE_ITEM);
+
 export const changeSelectedGroup = createAction<ChangeSelectedGroupPayload>(
 	ActionTypes.CHANGE_SELECTED_GROUP_ITEM,
 );
@@ -39,6 +45,10 @@ export default {
 	updateItemName,
 	updateValue,
 
+	insertNewGroup,
 	insertNewItem,
+	removeGroup,
+	removeItem,
+
 	changeSelectedGroup,
 };
