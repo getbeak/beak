@@ -2,12 +2,6 @@ import { TimestampRtv } from '@beak/common/types/beak-project';
 
 import { RealtimeValue } from './types';
 
-const formatTypes = [
-	'iso_8601',
-	'unix_s',
-	'unix_ms',
-];
-
 interface EditorState {
 	type: string;
 }
