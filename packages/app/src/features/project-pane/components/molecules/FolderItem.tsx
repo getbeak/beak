@@ -21,7 +21,9 @@ const FolderItem: React.FunctionComponent<FolderItemProps> = props => {
 	const [target, setTarget] = useState<HTMLElement>();
 	const node = useSelector(s => s.global.project.tree![props.id]) as FolderNode;
 	const nodes = useSelector(s => s.global.project.tree!);
-	const childNodes = TypedObject.values(nodes).filter(n => n.parent === node.filePath);
+	const childNodes = TypedObject.values(nodes)
+		.filter(n => n.parent === node.filePath)
+		.sort((a, b) => a.name.localeCompare(b.name));
 
 	return (
 		<ContextMenuWrapper mode={'folder'} nodeId={node.filePath} target={target}>
@@ -72,17 +74,23 @@ const FolderItem: React.FunctionComponent<FolderItemProps> = props => {
 				{node.name}
 			</Wrapper>
 
-			{expanded && childNodes.map(n => {
-				const id = n.type === 'folder' ? n.filePath : n.id;
+			{expanded && childNodes.filter(n => n.type === 'folder').map(n => (
+				<Switch
+					depth={depth + 1}
+					key={n.filePath}
+					id={n.filePath}
+					parentNode={element.current!}
+				/>
+			))}
 
-				return (
-					<Switch
-						depth={depth + 1}
-						key={id}
-						id={id} parentNode={element.current!}
-					/>
-				);
-			})}
+			{expanded && childNodes.filter(n => n.type === 'request').map(n => (
+				<Switch
+					depth={depth + 1}
+					key={n.id}
+					id={n.id}
+					parentNode={element.current!}
+				/>
+			))}
 		</ContextMenuWrapper>
 	);
 };
