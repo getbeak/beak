@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 
 import { RealtimeValue, UISection } from '../../variable-input/realtime-values/types';
@@ -14,12 +15,15 @@ interface RealtimeValueEditorProps {
 const RealtimeValueEditor: React.FunctionComponent<RealtimeValueEditorProps> = props => {
 	const [state, setState] = useState<Record<string, string>>({});
 	const [ready, setReady] = useState(false);
+	const projectPath = useSelector(s => s.global.project.projectPath)!;
+	const { selectedGroups, variableGroups } = useSelector(s => s.global.variableGroups);
 	const { realtimeValue, item, parent } = props;
 	const editor = realtimeValue.editor!;
 	const { load, save, ui } = editor;
+	const context = { projectPath, selectedGroups, variableGroups };
 
 	useEffect(() => {
-		load(item).then(state => {
+		load(context, item).then(state => {
 			setState(state);
 			setReady(true);
 		}).catch(console.error);
@@ -108,7 +112,7 @@ const RealtimeValueEditor: React.FunctionComponent<RealtimeValueEditorProps> = p
 			<ButtonContainer>
 				<Button
 					onClick={() => {
-						save(item, state).then(updatedItem => props.onClose(updatedItem));
+						save(context, item, state).then(updatedItem => props.onClose(updatedItem));
 					}}>
 					{'Save!'}
 				</Button>

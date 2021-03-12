@@ -9,20 +9,26 @@ export interface RealtimeValue<
 	name: string;
 	description: string;
 
-	initValuePart: (variableGroups: VariableGroups) => Promise<RealtimeValuePart>;
-	createValuePart: (item: T, variableGroups: VariableGroups) => RealtimeValuePart;
+	initValuePart: (ctx: Context) => Promise<RealtimeValuePart>;
+	createValuePart: (ctx: Context, item: T) => RealtimeValuePart;
 
-	getValue: (item: T, variableGroups: VariableGroups, selectedGroups: Record<string, string>) => Promise<string>;
+	getValue: (ctx: Context, item: T) => Promise<string>;
 
 	editor?: {
 		ui: UISection<TS>[];
 
-		load: (item: T) => Promise<TS>;
-		save: (item: T, state: TS) => Promise<T>;
+		load: (ctx: Context, item: T) => Promise<TS>;
+		save: (ctx: Context, item: T, state: TS) => Promise<T>;
 	};
 }
 
 export type UISection<T> = TextInput<T> | NumberInput<T> | CheckboxInput<T> | OptionsInput<T>;
+
+export interface Context {
+	projectPath: string;
+	selectedGroups: Record<string, string>;
+	variableGroups: VariableGroups;
+}
 
 interface TextInput<T> {
 	type: 'string_input';

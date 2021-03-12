@@ -1,21 +1,18 @@
 import { TypedObject } from '@beak/common/helpers/typescript';
-import { ToggleKeyValue, VariableGroups } from '@beak/common/types/beak-project';
+import { ToggleKeyValue } from '@beak/common/types/beak-project';
 // @ts-ignore
 import ksuid from '@cuvva/ksuid';
 
 import { parseValueParts } from '../variable-input/parser';
+import { Context } from '../variable-input/realtime-values/types';
 
 const queryStringRegex = /[a-z0-9%=+-[\]]+/;
 
-export async function convertKeyValueToString(
-	selectedGroups: Record<string, string>,
-	variableGroups: VariableGroups,
-	items: Record<string, ToggleKeyValue>,
-) {
+export async function convertKeyValueToString(context: Context, items: Record<string, ToggleKeyValue>) {
 	const params = new URLSearchParams();
 
 	for (const { name, value } of TypedObject.values(items).filter(i => i.enabled))
-		params.set(name, await parseValueParts(selectedGroups, variableGroups, value));
+		params.set(name, await parseValueParts(context, value));
 
 	return params.toString();
 }

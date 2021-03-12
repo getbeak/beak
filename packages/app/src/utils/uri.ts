@@ -1,7 +1,8 @@
 import { TypedObject } from '@beak/common/helpers/typescript';
-import { RequestOverview, VariableGroups } from '@beak/common/types/beak-project';
+import { RequestOverview } from '@beak/common/types/beak-project';
 
 import { parseValueParts } from '../features/variable-input/parser';
+import { Context } from '../features/variable-input/realtime-values/types';
 
 interface Options {
 	includeQuery: boolean;
@@ -9,12 +10,11 @@ interface Options {
 }
 
 export async function convertRequestToUrl(
-	selectedGroups: Record<string, string>,
-	variableGroups: VariableGroups,
+	context: Context,
 	info: RequestOverview,
 	opts?: Partial<Options>,
 ) {
-	const value = await parseValueParts(selectedGroups, variableGroups, info.url);
+	const value = await parseValueParts(context, info.url);
 	const url = new URL(value);
 	const options = {
 		includeQuery: true,
@@ -25,7 +25,7 @@ export async function convertRequestToUrl(
 		for (const query of TypedObject.values(info.query).filter(q => q.enabled)) {
 			url.searchParams.set(
 				query.name,
-				await parseValueParts(selectedGroups, variableGroups, query.value),
+				await parseValueParts(context, query.value),
 			);
 		}
 	}

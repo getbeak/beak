@@ -38,8 +38,11 @@ const VariableSelector: React.FunctionComponent<VariableSelectorProps> = props =
 		position,
 	} = props;
 
-	const variableGroups = useSelector(s => s.global.variableGroups.variableGroups)!;
+	const { selectedGroups, variableGroups } = useSelector(s => s.global.variableGroups);
+	const projectPath = useSelector(s => s.global.project.projectPath)!;
 	const [active, setActive] = useState<number>(0);
+	const context = { projectPath, selectedGroups, variableGroups };
+
 	const items: RealtimeValue<any>[] = useMemo(() => ([
 		...getRealtimeValues(),
 
@@ -82,7 +85,7 @@ const VariableSelector: React.FunctionComponent<VariableSelectorProps> = props =
 						return;
 
 					// fucking love a promise
-					item.initValuePart(variableGroups).then(onDone);
+					item.initValuePart(context).then(onDone);
 
 					break;
 				}
@@ -111,7 +114,7 @@ const VariableSelector: React.FunctionComponent<VariableSelectorProps> = props =
 						tabIndex={0}
 						onClick={() => setActive(idx)}
 						onDoubleClick={() => {
-							i.initValuePart(variableGroups).then(onDone);
+							i.initValuePart(context).then(onDone);
 						}}
 					>
 						{i.name}

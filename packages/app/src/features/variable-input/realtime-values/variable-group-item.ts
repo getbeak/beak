@@ -16,15 +16,14 @@ export default {
 		throw new Error('Not supported, this should not happen.');
 	},
 
-	createValuePart: item => ({
+	createValuePart: (_ctx, item) => ({
 		type,
 		payload: item,
 	}),
 
-	getValue: async (item, variableGroups, selectedGroups) => await parseValueParts(
-		selectedGroups,
-		variableGroups,
-		getValueString(selectedGroups, variableGroups, item.itemId) || [],
+	getValue: async (ctx, item) => await parseValueParts(
+		ctx,
+		getValueString(ctx, item.itemId) || [],
 	),
 } as RealtimeValue<VariableGroupItemRtv['payload']>;
 

@@ -21,12 +21,12 @@ export default {
 		},
 	}),
 
-	createValuePart: item => ({
+	createValuePart: (_ctx, item) => ({
 		type,
 		payload: item,
 	}),
 
-	getValue: async item => {
+	getValue: async (_ctx, item) => {
 		const now = new Date();
 
 		switch (item.type) {
@@ -61,7 +61,7 @@ export default {
 			}],
 		}],
 
-		load: async item => ({ type: item.type }),
-		save: async (_item, state) => ({ type: state.type }),
+		load: async (_ctx, item) => ({ type: item.type }),
+		save: async (_ctx, _item, state) => ({ type: state.type }),
 	},
 } as RealtimeValue<TimestampRtv['payload'], EditorState>;

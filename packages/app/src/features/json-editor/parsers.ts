@@ -1,29 +1,24 @@
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { Entries, EntryMap, NamedEntries } from '@beak/common/types/beak-json-editor';
-import { VariableGroups } from '@beak/common/types/beak-project';
 // @ts-ignore
 import ksuid from '@cuvva/ksuid';
 
 import { parseValueParts } from '../variable-input/parser';
+import { Context } from '../variable-input/realtime-values/types';
 
 type JsonTypes = null | string | number | boolean | Record<string, unknown> | unknown[];
 
-export async function convertToRealJson(
-	selectedGroups: Record<string, string>,
-	variableGroups: VariableGroups,
-	entries: EntryMap,
-) {
+export async function convertToRealJson(context: Context, entries: EntryMap) {
 	const root = TypedObject.values(entries).find(e => e.parentId === null);
 
 	if (!root || !root.enabled)
 		return null;
 
-	return await convertEntry(selectedGroups, variableGroups, entries, root);
+	return await convertEntry(context, entries, root);
 }
 
 async function convertEntry(
-	selectedGroups: Record<string, string>,
-	variableGroups: VariableGroups,
+	context: Context,
 	entries: EntryMap,
 	entry: Entries,
 ): Promise<JsonTypes> {
@@ -33,17 +28,17 @@ async function convertEntry(
 			return entry.value;
 
 		case 'number':
-			return Number(await parseValueParts(selectedGroups, variableGroups, entry.value));
+			return Number(await parseValueParts(context, entry.value));
 
 		case 'string':
-			return await parseValueParts(selectedGroups, variableGroups, entry.value);
+			return await parseValueParts(context, entry.value);
 
 		case 'array': {
 			const children = TypedObject
 				.values(entries)
 				.filter(e => e.parentId === entry.id && e.enabled);
 
-			return children.map(c => convertEntry(selectedGroups, variableGroups, entries, c));
+			return children.map(c => convertEntry(context, entries, c));
 		}
 
 		case 'object': {
@@ -53,7 +48,7 @@ async function convertEntry(
 
 			return children.reduce((acc, val) => ({
 				...acc,
-				[val.name]: convertEntry(selectedGroups, variableGroups, entries, val),
+				[val.name]: convertEntry(context, entries, val),
 			}), {});
 		}
 

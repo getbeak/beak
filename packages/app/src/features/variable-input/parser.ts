@@ -1,13 +1,10 @@
 import { TypedObject } from '@beak/common/helpers/typescript';
-import { ValueParts, VariableGroups } from '@beak/common/types/beak-project';
+import { ValueParts } from '@beak/common/types/beak-project';
 
 import { getRealtimeValue } from './realtime-values';
+import { Context } from './realtime-values/types';
 
-export async function parseValueParts(
-	selectedGroups: Record<string, string>,
-	variableGroups: VariableGroups,
-	parts: ValueParts,
-) {
+export async function parseValueParts(ctx: Context, parts: ValueParts) {
 	const out = await Promise.all(parts.map(p => {
 		if (typeof p === 'string')
 			return p;
@@ -17,20 +14,20 @@ export async function parseValueParts(
 
 		const rtv = getRealtimeValue(p.type);
 
-		return rtv.getValue(p.payload, variableGroups, selectedGroups);
+		return rtv.getValue(ctx, p.payload);
 	}));
 
 	return out.join('');
 }
 
-export function getValueString(selectedGroups: Record<string, string>, variableGroups: VariableGroups, itemId: string) {
-	return getValueObject(selectedGroups, variableGroups, itemId)?.value;
+export function getValueString(ctx: Context, itemId: string) {
+	return getValueObject(ctx, itemId)?.value;
 }
 
-export function getValueObject(selectedGroups: Record<string, string>, variableGroups: VariableGroups, itemId: string) {
-	for (const key of TypedObject.keys(variableGroups)) {
-		const variableGroup = variableGroups[key];
-		const selectedGroup = selectedGroups[key];
+export function getValueObject(ctx: Context, itemId: string) {
+	for (const key of TypedObject.keys(ctx.variableGroups)) {
+		const variableGroup = ctx.variableGroups[key];
+		const selectedGroup = ctx.selectedGroups[key];
 		const value = TypedObject.values(variableGroup.values)
 			.find(v => v.groupId === selectedGroup && v.itemId === itemId);
 

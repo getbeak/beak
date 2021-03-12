@@ -27,18 +27,16 @@ export default {
 		};
 	},
 
-	createValuePart: item => ({
+	createValuePart: (_ctx, item) => ({
 		type,
 		payload: item,
 	}),
 
-	// TODO(afr): Read the project path in correctly, somehow
-
-	getValue: async item => {
+	getValue: async (ctx, item) => {
 		const decrypted = await ipcEncryptionService.decryptString({
 			iv: item.iv,
 			payload: item.datum,
-			projectFolder: '/Users/afr/Documents/Beaks/Acme Api',
+			projectFolder: ctx.projectPath,
 		});
 
 		return decrypted;
@@ -51,22 +49,22 @@ export default {
 			stateBinding: 'value',
 		}],
 
-		load: async item => {
+		load: async (ctx, item) => {
 			const decrypted = await ipcEncryptionService.decryptString({
 				iv: item.iv,
 				payload: item.datum,
-				projectFolder: '/Users/afr/Documents/Beaks/Acme Api',
+				projectFolder: ctx.projectPath,
 			});
 
 			return { value: decrypted };
 		},
 
-		save: async (item, state) => {
+		save: async (ctx, item, state) => {
 			const { iv } = item;
 			const datum = await ipcEncryptionService.encryptString({
 				iv,
 				payload: state.value,
-				projectFolder: '/Users/afr/Documents/Beaks/Acme Api',
+				projectFolder: ctx.projectPath,
 			});
 
 			return { iv, datum };

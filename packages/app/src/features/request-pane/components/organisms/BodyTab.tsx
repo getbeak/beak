@@ -25,6 +25,8 @@ export interface BodyTabProps {
 const BodyTab: React.FunctionComponent<BodyTabProps> = props => {
 	const dispatch = useDispatch();
 	const { selectedGroups, variableGroups } = useSelector(s => s.global.variableGroups);
+	const projectPath = useSelector(s => s.global.project.projectPath!);
+	const context = { projectPath, selectedGroups, variableGroups };
 	const { node } = props;
 	const { body } = node.info;
 
@@ -76,7 +78,7 @@ const BodyTab: React.FunctionComponent<BodyTabProps> = props => {
 				dispatch(actions.requestBodyTypeChanged({
 					requestId: node.id,
 					type: 'text',
-					payload: JSON.stringify(await convertToRealJson(selectedGroups, variableGroups, body.payload), null, '\t'),
+					payload: JSON.stringify(await convertToRealJson(context, body.payload), null, '\t'),
 				}));
 
 				return;
@@ -84,7 +86,7 @@ const BodyTab: React.FunctionComponent<BodyTabProps> = props => {
 				dispatch(actions.requestBodyTypeChanged({
 					requestId: node.id,
 					type: 'text',
-					payload: await convertKeyValueToString(selectedGroups, variableGroups, body.payload),
+					payload: await convertKeyValueToString(context, body.payload),
 				}));
 
 				return;

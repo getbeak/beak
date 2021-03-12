@@ -21,9 +21,11 @@ const RequestTab: React.FunctionComponent<RequestTabProps> = props => {
 	const [output, setOutput] = useState('');
 	const [tab, setTab] = useState<Tab>('raw');
 	const { selectedGroups, variableGroups } = useSelector(s => s.global.variableGroups);
+	const projectPath = useSelector(s => s.global.project.projectPath!);
+	const context = { projectPath, selectedGroups, variableGroups };
 
 	useEffect(() => {
-		createBasicHttpOutput(flight.request, selectedGroups, variableGroups!).then(setOutput);
+		createBasicHttpOutput(flight.request, context).then(setOutput);
 	}, [flight.request, selectedGroups, variableGroups]);
 
 	return (

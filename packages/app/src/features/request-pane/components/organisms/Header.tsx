@@ -16,6 +16,7 @@ const Header: React.FunctionComponent<HeaderProps> = props => {
 	const dispatch = useDispatch();
 	const [verbPickerWidth, setVerbPickerWidth] = useState<string>('auto');
 	const { selectedGroups, variableGroups } = useSelector(s => s.global.variableGroups);
+	const projectPath = useSelector(s => s.global.project.projectPath)!;
 	const { node } = props;
 	const verb = node.info.verb;
 	const secretSelect = useRef<HTMLSpanElement>(null);
@@ -30,7 +31,8 @@ const Header: React.FunctionComponent<HeaderProps> = props => {
 	}
 
 	async function handleUrlChange(parts: ValueParts) {
-		const value = await parseValueParts(selectedGroups, variableGroups!, parts);
+		const context = { projectPath, selectedGroups, variableGroups };
+		const value = await parseValueParts(context, parts);
 		const parsed = new URL(value);
 
 		if (parsed.search) {

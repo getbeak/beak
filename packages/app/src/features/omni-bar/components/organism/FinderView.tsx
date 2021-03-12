@@ -16,8 +16,11 @@ const FinderView: React.FunctionComponent<FinderViewProps> = ({ content, reset }
 	const dispatch = useDispatch();
 	const tree = useSelector(s => s.global.project.tree) || {};
 	const { selectedGroups, variableGroups } = useSelector(s => s.global.variableGroups);
+	const projectPath = useSelector(s => s.global.project.projectPath)!;
 	const flattened = TypedObject.values(tree).filter(t => t.type === 'request') as RequestNode[];
 	const [matches, setMatches] = useState<string[] | undefined>(void 0);
+	const context = { projectPath, selectedGroups, variableGroups };
+
 	const fuse = new Fuse(flattened, {
 		includeScore: true,
 		keys: [
@@ -60,7 +63,7 @@ const FinderView: React.FunctionComponent<FinderViewProps> = ({ content, reset }
 							<React.Fragment>
 								{' - '}
 								<UriSpan>
-									{convertRequestToUrl(selectedGroups, variableGroups!, reqNode.info).toString()}
+									{convertRequestToUrl(context, reqNode.info).toString()}
 								</UriSpan>
 							</React.Fragment>
 						)}

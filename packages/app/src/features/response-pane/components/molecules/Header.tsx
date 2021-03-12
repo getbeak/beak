@@ -12,7 +12,9 @@ export interface HeaderProps {
 
 const Header: React.FunctionComponent<HeaderProps> = props => {
 	const { selectedGroups, variableGroups } = useSelector(s => s.global.variableGroups);
+	const projectPath = useSelector(s => s.global.project.projectPath)!;
 	const { error, request, response } = props.selectedFlight;
+	const context = { projectPath, selectedGroups, variableGroups };
 
 	return (
 		<UrlHeaderWrapper>
@@ -21,7 +23,7 @@ const Header: React.FunctionComponent<HeaderProps> = props => {
 			</Section>
 			<UrlSection>
 				{/* The "&lrm;" char is a requirement of using RTL to trim the end vs start of the string */}
-				{convertRequestToUrl(selectedGroups, variableGroups!, request).toString()}&lrm;
+				{convertRequestToUrl(context, request).toString()}&lrm;
 			</UrlSection>
 			{response && (
 				<StatusSection $status={response.status}>

@@ -1,8 +1,8 @@
 import { convertKeyValueToString } from '@beak/app/features/basic-table-editor/parsers';
 import { convertToRealJson } from '@beak/app/features/json-editor/parsers';
 import { parseValueParts } from '@beak/app/features/variable-input/parser';
+import { Context } from '@beak/app/features/variable-input/realtime-values/types';
 import { getGlobal } from '@beak/app/globals';
-import binaryStore from '@beak/app/lib/binary-store';
 import { convertRequestToUrl } from '@beak/app/utils/uri';
 import {
 	RequestBody,
@@ -10,7 +10,6 @@ import {
 	RequestNode,
 	RequestOverview,
 	ToggleKeyValue,
-	VariableGroups,
 } from '@beak/common/dist/types/beak-project';
 import { TypedObject } from '@beak/common/helpers/typescript';
 // @ts-ignore
@@ -28,10 +27,12 @@ export default function* requestFlightWorker() {
 	const flightId = ksuid.generate('flight').toString();
 
 	const flight: State = yield select((s: ApplicationState) => s.global.flight);
+	const projectPath: string = yield select((s: ApplicationState) => s.global.project.projectPath);
 	const node: RequestNode = yield select((s: ApplicationState) => s.global.project.tree![requestId]);
 	const vgState: VGState = yield select((s: ApplicationState) => s.global.variableGroups);
 	const { selectedGroups, variableGroups } = vgState;
-	const preparedRequest: RequestOverview = yield call(prepareRequest, node.info, selectedGroups, variableGroups);
+	const context = { projectPath, selectedGroups, variableGroups };
+	const preparedRequest: RequestOverview = yield call(prepareRequest, node.info, context);
 
 	if (!node)
 		return;
@@ -51,13 +52,9 @@ export default function* requestFlightWorker() {
 	}));
 }
 
-async function prepareRequest(
-	overview: RequestOverview,
-	selectedGroups: Record<string, string>,
-	variableGroups: VariableGroups,
-): Promise<RequestOverview> {
-	const url = convertRequestToUrl(selectedGroups, variableGroups, overview);
-	const headers = await flattenToggleValueParts(overview.headers, selectedGroups, variableGroups);
+async function prepareRequest(overview: RequestOverview, context: Context): Promise<RequestOverview> {
+	const url = convertRequestToUrl(context, overview);
+	const headers = await flattenToggleValueParts(overview.headers, context);
 
 	// if (!hasHeader('host', headers)) {
 	// 	headers[ksuid.generate('header').toString()] = {
@@ -78,39 +75,31 @@ async function prepareRequest(
 	return {
 		...overview,
 		url: [url.toString()],
-		query: await flattenToggleValueParts(overview.query, selectedGroups, variableGroups),
+		query: await flattenToggleValueParts(overview.query, context),
 		headers,
-		body: await flattenBody(selectedGroups, variableGroups, overview.body),
+		body: await flattenBody(context, overview.body),
 	};
 }
 
-async function flattenToggleValueParts(
-	toggleValueParts: Record<string, ToggleKeyValue>,
-	selectedGroups: Record<string, string>,
-	variableGroups: VariableGroups,
-) {
+async function flattenToggleValueParts(toggleValueParts: Record<string, ToggleKeyValue>, context: Context) {
 	const out: Record<string, ToggleKeyValue> = {};
 
 	for (const key of TypedObject.keys(toggleValueParts)) {
 		out[key].enabled = toggleValueParts[key].enabled;
 		out[key].name = toggleValueParts[key].name;
-		out[key].value = [await parseValueParts(selectedGroups, variableGroups, toggleValueParts[key].value)];
+		out[key].value = [await parseValueParts(context, toggleValueParts[key].value)];
 	}
 
 	return out;
 }
 
-async function flattenBody(
-	selectedGroups: Record<string, string>,
-	variableGroups: VariableGroups,
-	body: RequestBody,
-): Promise<RequestBodyText> {
+async function flattenBody(context: Context, body: RequestBody): Promise<RequestBodyText> {
 	switch (body.type) {
 		case 'text':
 			return body;
 
 		case 'json': {
-			const json = await convertToRealJson(selectedGroups, variableGroups, body.payload);
+			const json = await convertToRealJson(context, body.payload);
 
 			return {
 				type: 'text',
@@ -121,7 +110,7 @@ async function flattenBody(
 		case 'url_encoded_form':
 			return {
 				type: 'text',
-				payload: await convertKeyValueToString(selectedGroups, variableGroups, body.payload),
+				payload: await convertKeyValueToString(context, body.payload),
 			};
 
 		default: return { type: 'text', payload: 'body type not supported' };
