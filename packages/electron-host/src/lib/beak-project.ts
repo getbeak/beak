@@ -21,7 +21,7 @@ export default async function createProject(options: CreationOptions) {
 		id: ksuid.generate('request').toString(),
 		verb: 'get',
 		url: ['https://httpbin.org/anything'],
-		query: { },
+		query: {},
 		headers: {
 			[ksuid.generate('header').toString()]: {
 				enabled: true,
@@ -46,7 +46,7 @@ export default async function createProject(options: CreationOptions) {
 		items: {
 			[ksuid.generate('item').toString()]: 'env_identifer',
 		},
-		values: { },
+		values: {},
 	};
 
 	variableGroup.values[ksuid.generate('value').toString()] = {
@@ -131,6 +131,36 @@ function createGitIgnore() {
 
 async function initRepoAndCommit(projectPath: string) {
 	await git.init({ fs, dir: projectPath, defaultBranch: 'master' });
-	await git.add({ fs, dir: projectPath, filepath: './*' });
-	await git.commit({ fs, dir: projectPath, message: 'Initial commit' });
+
+	for await (const filePath of listFilesRecursive(projectPath)) {
+		const relativePath = filePath.substr(projectPath.length + 1);
+
+		await git.add({ fs, dir: projectPath, filepath: relativePath });
+	}
+
+	await git.commit({
+		fs,
+		dir: projectPath,
+		message: 'Initial commit',
+		author: {
+			name: 'Pierre (Beak App)',
+			email: 'pierre@getbeak.app',
+		},
+	});
+}
+
+async function* listFilesRecursive(dir: string): AsyncGenerator<string> {
+	const dirents = await fs.readdir(dir, { withFileTypes: true });
+
+	for (const dirent of dirents) {
+		const res = path.resolve(dir, dirent.name);
+
+		if (dirent.name === '.git')
+			continue;
+
+		if (dirent.isDirectory())
+			yield* listFilesRecursive(res);
+		else
+			yield res;
+	}
 }
