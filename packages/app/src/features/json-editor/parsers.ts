@@ -38,7 +38,7 @@ async function convertEntry(
 				.values(entries)
 				.filter(e => e.parentId === entry.id && e.enabled);
 
-			return children.map(c => convertEntry(context, entries, c));
+			return await Promise.all(children.map(c => convertEntry(context, entries, c)));
 		}
 
 		case 'object': {
@@ -46,10 +46,13 @@ async function convertEntry(
 				.values(entries)
 				.filter(e => e.parentId === entry.id && e.enabled) as NamedEntries[];
 
-			return children.reduce((acc, val) => ({
-				...acc,
-				[val.name]: convertEntry(context, entries, val),
-			}), {});
+			const out: Record<string, unknown> = {};
+
+			await Promise.all(children.map(async c => {
+				out[c.name] = await convertEntry(context, entries, c);
+			}));
+
+			return out;
 		}
 
 		default:
