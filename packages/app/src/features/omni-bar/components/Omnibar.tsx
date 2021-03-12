@@ -1,4 +1,5 @@
-import { isDarwin } from '@beak/app/globals';
+import { toVibrancyAlpha } from '@beak/app/design-system/utils';
+import { checkShortcut } from '@beak/app/lib/keyboard-shortcuts';
 import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
@@ -15,7 +16,7 @@ const Omnibar: React.FunctionComponent = () => {
 	useEffect(() => {
 		window.addEventListener('keydown', onKeyDown);
 
-		return function remove() {
+		return () => {
 			window.removeEventListener('keydown', onKeyDown);
 		};
 	}, []);
@@ -26,27 +27,25 @@ const Omnibar: React.FunctionComponent = () => {
 	}, [show, inputRef]);
 
 	function onKeyDown(event: KeyboardEvent) {
-		if (!['p', 'k', 'Escape'].includes(event.key))
-			return;
+		switch (true) {
+			case checkShortcut('omni-bar.launch.finder', event):
+				if (show) {
+					setShow(false);
+				} else {
+					setShow(true);
+					setMode('finder');
+				}
 
-		if (event.key === 'Escape') {
-			reset();
+				return;
 
-			return;
+			case event.key === 'Escape':
+				reset();
+
+				return;
+
+			default:
+				return;
 		}
-
-		const isAct = (isDarwin() && event.metaKey) || (!isDarwin() && event.ctrlKey);
-		const isFinder = event.key === 'p' && isAct;
-		const isCommands = event.key === 'k' && event.shiftKey && isAct;
-
-		if (isCommands)
-			setMode('commands');
-		else if (isFinder)
-			setMode('finder');
-		else
-			return;
-
-		setShow(!show);
 	}
 
 	function reset() {
@@ -66,19 +65,21 @@ const Omnibar: React.FunctionComponent = () => {
 
 	return (
 		<Container>
-			<Bar>
-				<BarInput
-					placeholder={getPlaceholder()}
-					tabIndex={0}
-					ref={i => {
-						inputRef.current = i;
-					}}
-					value={content}
-					onChange={e => setContent(e.currentTarget.value)}
-				/>
-				{mode === 'finder' && <FinderView content={content} reset={reset} />}
-				{mode === 'commands' && <span>{'todo'}</span>}
-			</Bar>
+			<BarOuter>
+				<Bar>
+					<BarInput
+						placeholder={getPlaceholder()}
+						tabIndex={0}
+						ref={i => {
+							inputRef.current = i;
+						}}
+						value={content}
+						onChange={e => setContent(e.currentTarget.value)}
+					/>
+					{mode === 'finder' && <FinderView content={content} reset={reset} />}
+					{mode === 'commands' && <span>{'todo'}</span>}
+				</Bar>
+			</BarOuter>
 		</Container>
 	);
 };
@@ -88,16 +89,22 @@ const Container = styled.div`
 	top: 120px; bottom: 0; left: 0; right: 0;
 `;
 
-const Bar = styled.div`
+const BarOuter = styled.div`
+	background: ${p => p.theme.ui.surfaceHighlight};
+	border: 1px solid ${p => p.theme.ui.blankBackground};
+	box-shadow: 0px 8px 12px 2px ${p => toVibrancyAlpha(p.theme.ui.surfaceFill, 1)};
+
 	position: relative;
 	margin: 0 auto;
 	width: 450px;
-
 	border-radius: 10px;
-	background: ${p => p.theme.ui.backgroundBorderSeparator};
-	border: 1px solid ${p => p.theme.ui.primaryFill};
 
 	z-index: 101;
+`;
+
+const Bar = styled.div`
+	border: 1px solid ${p => p.theme.ui.backgroundBorderSeparator};
+	border-radius: 10px;
 `;
 
 const BarInput = styled.input`

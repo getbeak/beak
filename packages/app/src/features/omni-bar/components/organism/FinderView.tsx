@@ -1,11 +1,12 @@
 import { tabSelected } from '@beak/app/store/project/actions';
-import { convertRequestToUrl } from '@beak/app/utils/uri';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { RequestNode } from '@beak/common/types/beak-project';
 import Fuse from 'fuse.js';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
+
+import FinderRequestItem from '../molecule/FinderRequestItem';
 
 export interface FinderViewProps {
 	content: string;
@@ -62,9 +63,7 @@ const FinderView: React.FunctionComponent<FinderViewProps> = ({ content, reset }
 						{match.type === 'request' && (
 							<React.Fragment>
 								{' - '}
-								<UriSpan>
-									{convertRequestToUrl(context, reqNode.info).toString()}
-								</UriSpan>
+								<FinderRequestItem context={context} info={reqNode.info} />
 							</React.Fragment>
 						)}
 					</Item>
@@ -75,7 +74,7 @@ const FinderView: React.FunctionComponent<FinderViewProps> = ({ content, reset }
 };
 
 const Container = styled.div`
-	border-top: 1px solid ${p => p.theme.ui.surfaceBorderSeparator};
+	border-top: 1px solid ${p => p.theme.ui.backgroundBorderSeparator};
 	padding: 8px 0;
 `;
 
@@ -89,12 +88,8 @@ const Item = styled.div`
 	text-decoration: none;
 
 	&:hover {
-		background: ${p => p.theme.ui.secondaryBackground};
+		background: ${p => p.theme.ui.secondaryActionMuted};
 	}
-`;
-
-const UriSpan = styled.small`
-	opacity: 0.9;
 `;
 
 export default FinderView;

@@ -21,7 +21,7 @@ const Router: React.FunctionComponent<RouterProps> = ({ selectedTab }) => {
 
 	if (selectedTab.type === 'request') {
 		if (!selectedRequest)
-			return <NotTheTabYourLookingFor />
+			return <NotTheTabYourLookingFor />;
 
 		return (
 			<ReflexContainer orientation={'vertical'}>

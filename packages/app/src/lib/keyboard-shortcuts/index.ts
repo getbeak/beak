@@ -16,6 +16,9 @@ type Shortcuts =
 	'project-explorer.folder.left' |
 	'project-explorer.folder.right' |
 
+	'omni-bar.launch.commands' |
+	'omni-bar.launch.finder' |
+
 	'tab-bar.all.next' |
 	'tab-bar.all.previous' |
 	'tab-bar.all.close';
@@ -45,6 +48,19 @@ const definitions: Record<Shortcuts, PlatformSpecificDefinitions | PlatformAgnos
 	'project-explorer.folder.left': { type: 'agnostic', key: 'ArrowLeft' },
 	'project-explorer.folder.right': { type: 'agnostic', key: 'ArrowRight' },
 
+	'omni-bar.launch.commands': {
+		type: 'specific',
+		windows: { ctrl: true, shift: true, key: 'p' },
+		linux: { ctrl: true, shift: true, key: 'p' },
+		darwin: { meta: true, shift: true, key: 'p' },
+	},
+	'omni-bar.launch.finder': {
+		type: 'specific',
+		windows: { ctrl: true, key: 'p' },
+		linux: { ctrl: true, key: 'p' },
+		darwin: { meta: true, key: 'p' },
+	},
+
 	'tab-bar.all.next': {
 		type: 'specific',
 		windows: { ctrl: true, key: 'Tab' },
@@ -57,7 +73,7 @@ const definitions: Record<Shortcuts, PlatformSpecificDefinitions | PlatformAgnos
 		linux: { ctrl: true, shift: true, key: 'Tab' },
 		darwin: { meta: true, alt: true, key: 'ArrowLeft' },
 	},
-	'tab-bar.all.close': { type: 'agnostic', key: 'W' },
+	'tab-bar.all.close': { type: 'agnostic', key: 'w' },
 };
 
 export function checkShortcut(shortcutKey: Shortcuts, event: React.KeyboardEvent | KeyboardEvent) {
