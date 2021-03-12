@@ -5,7 +5,7 @@ import { getRealtimeValue } from './realtime-values';
 import { Context } from './realtime-values/types';
 
 export async function parseValueParts(ctx: Context, parts: ValueParts) {
-	const out = await Promise.all(parts.map(p => {
+	const out = await Promise.all(parts.map(async p => {
 		if (typeof p === 'string')
 			return p;
 
@@ -14,7 +14,7 @@ export async function parseValueParts(ctx: Context, parts: ValueParts) {
 
 		const rtv = getRealtimeValue(p.type);
 
-		return rtv.getValue(ctx, p.payload);
+		return await rtv.getValue(ctx, p.payload);
 	}));
 
 	return out.join('');

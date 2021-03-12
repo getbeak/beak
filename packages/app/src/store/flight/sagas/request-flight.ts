@@ -53,16 +53,8 @@ export default function* requestFlightWorker() {
 }
 
 async function prepareRequest(overview: RequestOverview, context: Context): Promise<RequestOverview> {
-	const url = convertRequestToUrl(context, overview);
-	const headers = await flattenToggleValueParts(overview.headers, context);
-
-	// if (!hasHeader('host', headers)) {
-	// 	headers[ksuid.generate('header').toString()] = {
-	// 		name: 'Host',
-	// 		value: [`${url.hostname}${url.port ? `:${url.port}` : ''}`],
-	// 		enabled: true,
-	// 	};
-	// }
+	const url = await convertRequestToUrl(context, overview);
+	const headers = await flattenToggleValueParts(context, overview.headers);
 
 	if (!hasHeader('user-agent', headers)) {
 		headers[ksuid.generate('header').toString()] = {
@@ -75,19 +67,21 @@ async function prepareRequest(overview: RequestOverview, context: Context): Prom
 	return {
 		...overview,
 		url: [url.toString()],
-		query: await flattenToggleValueParts(overview.query, context),
+		query: await flattenToggleValueParts(context, overview.query),
 		headers,
 		body: await flattenBody(context, overview.body),
 	};
 }
 
-async function flattenToggleValueParts(toggleValueParts: Record<string, ToggleKeyValue>, context: Context) {
+async function flattenToggleValueParts(context: Context, toggleValueParts: Record<string, ToggleKeyValue>) {
 	const out: Record<string, ToggleKeyValue> = {};
 
 	for (const key of TypedObject.keys(toggleValueParts)) {
-		out[key].enabled = toggleValueParts[key].enabled;
-		out[key].name = toggleValueParts[key].name;
-		out[key].value = [await parseValueParts(context, toggleValueParts[key].value)];
+		out[key] = {
+			enabled: toggleValueParts[key].enabled,
+			name: toggleValueParts[key].name,
+			value: [await parseValueParts(context, toggleValueParts[key].value)],
+		};
 	}
 
 	return out;

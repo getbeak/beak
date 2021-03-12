@@ -2,7 +2,7 @@ import { statusToColour } from '@beak/app/design-system/helpers';
 import { Flight } from '@beak/app/store/flight/types';
 import { convertRequestToUrl } from '@beak/app/utils/uri';
 import { getReasonPhrase } from 'http-status-codes';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 
@@ -15,6 +15,11 @@ const Header: React.FunctionComponent<HeaderProps> = props => {
 	const projectPath = useSelector(s => s.global.project.projectPath)!;
 	const { error, request, response } = props.selectedFlight;
 	const context = { projectPath, selectedGroups, variableGroups };
+	const [url, setUrl] = useState('');
+
+	useEffect(() => {
+		convertRequestToUrl(context, request).then(s => setUrl(s.toString()));
+	}, [context, request]);
 
 	return (
 		<UrlHeaderWrapper>
@@ -22,8 +27,10 @@ const Header: React.FunctionComponent<HeaderProps> = props => {
 				<strong>{request.verb.toUpperCase()}</strong>
 			</Section>
 			<UrlSection>
-				{/* The "&lrm;" char is a requirement of using RTL to trim the end vs start of the string */}
-				{convertRequestToUrl(context, request).toString()}&lrm;
+				<abbr title={url}>
+					{/* The "&lrm;" char is a requirement of using RTL to trim the end vs start of the string */}
+					{url}&lrm;
+				</abbr>
 			</UrlSection>
 			{response && (
 				<StatusSection $status={response.status}>
