@@ -64,7 +64,7 @@ const Omnibar: React.FunctionComponent = () => {
 		return null;
 
 	return (
-		<Container>
+		<Container onClick={() => setShow(false)}>
 			<BarOuter>
 				<Bar>
 					<BarInput
@@ -86,7 +86,7 @@ const Omnibar: React.FunctionComponent = () => {
 
 const Container = styled.div`
 	position: absolute;
-	top: 120px; bottom: 0; left: 0; right: 0;
+	top: 0; bottom: 0; left: 0; right: 0;
 `;
 
 const BarOuter = styled.div`
@@ -96,6 +96,7 @@ const BarOuter = styled.div`
 
 	position: relative;
 	margin: 0 auto;
+	margin-top: 120px;
 	width: 450px;
 	border-radius: 10px;
 

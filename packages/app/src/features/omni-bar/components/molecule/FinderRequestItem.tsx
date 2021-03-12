@@ -18,13 +18,19 @@ const FinderRequestItem: React.FunctionComponent<FinderRequestItemProps> = ({ co
 
 	return (
 		<UriSpan>
-			{uri}
+			<Abbr title={uri}>
+				{uri}
+			</Abbr>
 		</UriSpan>
 	);
 };
 
 const UriSpan = styled.small`
-	opacity: 0.9;
+	opacity: 0.6;
+`;
+
+const Abbr = styled.abbr`
+	text-decoration: none;
 `;
 
 export default FinderRequestItem;

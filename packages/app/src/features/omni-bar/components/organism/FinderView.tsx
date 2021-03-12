@@ -79,6 +79,8 @@ const Container = styled.div`
 `;
 
 const Item = styled.div`
+	font-size: 13px;
+	color: ${p => p.theme.ui.textOnSurfaceBackground};
 	padding: 4px 10px;
 	cursor: pointer;
 
