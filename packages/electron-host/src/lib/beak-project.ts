@@ -3,8 +3,8 @@ import { ProjectFile, RequestNodeFile, VariableGroup } from '@beak/common/types/
 // @ts-ignore
 import * as ksuid from '@cuvva/ksuid';
 import * as fs from 'fs-extra';
+import git from 'isomorphic-git';
 import * as path from 'path';
-import simpleGit, { SimpleGitOptions } from 'simple-git';
 
 import { encryptionAlgoVersions, generateKey } from './aes';
 
@@ -130,15 +130,7 @@ function createGitIgnore() {
 }
 
 async function initRepoAndCommit(projectPath: string) {
-	const options: SimpleGitOptions = {
-		baseDir: projectPath,
-		binary: 'git',
-		maxConcurrentProcesses: 6,
-	};
-
-	const git = simpleGit(options);
-
-	await git.init()
-		.add('./*')
-		.commit('Initial commit!');
+	await git.init({ fs, dir: projectPath, defaultBranch: 'master' });
+	await git.add({ fs, dir: projectPath, filepath: './*' });
+	await git.commit({ fs, dir: projectPath, message: 'Initial commit' });
 }
