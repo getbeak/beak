@@ -1,7 +1,7 @@
 import { movePosition } from '@beak/app/utils/arrays';
 import { TypedObject } from '@beak/common/dist/helpers/typescript';
 import { RealtimeValuePart } from '@beak/common/types/beak-project';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import * as uuid from 'uuid';
@@ -38,6 +38,7 @@ const VariableSelector: React.FunctionComponent<VariableSelectorProps> = props =
 		position,
 	} = props;
 
+	const activeRef = useRef<HTMLDivElement>();
 	const { selectedGroups, variableGroups } = useSelector(s => s.global.variableGroups);
 	const projectPath = useSelector(s => s.global.project.projectPath)!;
 	const [active, setActive] = useState<number>(0);
@@ -55,6 +56,12 @@ const VariableSelector: React.FunctionComponent<VariableSelectorProps> = props =
 			})
 			.flat(),
 	]), [variableGroups]);
+
+	useEffect(() => {
+		// This actually exists
+		// @ts-ignore
+		activeRef.current?.scrollIntoViewIfNeeded();
+	}, [activeRef, active]);
 
 	useEffect(() => {
 		function onKeyDown(event: KeyboardEvent) {
@@ -95,8 +102,10 @@ const VariableSelector: React.FunctionComponent<VariableSelectorProps> = props =
 
 					break;
 
-				default: break;
+				default: return;
 			}
+
+			event.preventDefault();
 		}
 
 		window.addEventListener('keydown', onKeyDown);
@@ -109,6 +118,10 @@ const VariableSelector: React.FunctionComponent<VariableSelectorProps> = props =
 			<ItemContainer>
 				{items.map((i, idx) => (
 					<Item
+						ref={(i: HTMLDivElement) => {
+							if (active === idx)
+								activeRef.current = i;
+						}}
 						active={active === idx}
 						key={uuid.v4()}
 						tabIndex={0}
