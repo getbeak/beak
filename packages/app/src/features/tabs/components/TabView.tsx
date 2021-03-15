@@ -26,10 +26,12 @@ const TabView: React.FunctionComponent<TabViewProps> = ({ selectedTab, tabs }) =
 		switch (true) {
 			case checkShortcut('tab-bar.all.close', event):
 				dispatch(actions.closeSelectedTab(selectedTab.payload));
+
 				break;
 
 			// case checkShortcut('tab-bar.all.close-others', event):
 			// 	dispatch(actions.closeOtherSelectedTabs(selectedTab.payload));
+			//
 			// 	break;
 
 			case checkShortcut('tab-bar.all.previous', event):
@@ -43,6 +45,7 @@ const TabView: React.FunctionComponent<TabViewProps> = ({ selectedTab, tabs }) =
 					newIndex = movePosition(tabs, activeIndex, 'forward');
 
 				dispatch(actions.tabSelected(tabs[newIndex]));
+
 				break;
 			}
 

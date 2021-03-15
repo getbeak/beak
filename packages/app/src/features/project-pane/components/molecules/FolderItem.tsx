@@ -65,8 +65,10 @@ const FolderItem: React.FunctionComponent<FolderItemProps> = props => {
 							break;
 
 						default:
-							break;
+							return;
 					}
+
+					event.preventDefault();
 				}}
 				onClick={() => setExpanded(!expanded)}
 			>

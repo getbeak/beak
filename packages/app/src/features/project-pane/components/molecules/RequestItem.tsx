@@ -79,6 +79,7 @@ const RequestItem: React.FunctionComponent<RequestItemProps> = props => {
 						case checkShortcut('project-explorer.request.left', event):
 							if (props.parentNode)
 								props.parentNode.focus();
+
 							break;
 
 						case checkShortcut('project-explorer.request.up', event):
@@ -108,8 +109,10 @@ const RequestItem: React.FunctionComponent<RequestItemProps> = props => {
 							break;
 
 						default:
-							break;
+							return;
 					}
+
+					event.preventDefault();
 				}}
 			>
 				{!editing && (

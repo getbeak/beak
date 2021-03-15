@@ -36,16 +36,18 @@ const Omnibar: React.FunctionComponent = () => {
 					setMode('finder');
 				}
 
-				return;
+				break;
 
 			case event.key === 'Escape':
 				reset();
 
-				return;
+				break;
 
 			default:
 				return;
 		}
+
+		event.preventDefault();
 	}
 
 	function reset() {
@@ -57,7 +59,7 @@ const Omnibar: React.FunctionComponent = () => {
 		if (mode === 'finder')
 			return 'Search requests by name, host, or path';
 
-		return 'commands n tings, todo';
+		return 'command selector isn\'t ready yet xoxo';
 	}
 
 	if (!show)
