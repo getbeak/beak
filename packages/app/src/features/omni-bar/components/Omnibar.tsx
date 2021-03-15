@@ -67,7 +67,7 @@ const Omnibar: React.FunctionComponent = () => {
 
 	return (
 		<Container onClick={() => setShow(false)}>
-			<BarOuter>
+			<BarOuter onClick={event => void event.stopPropagation()}>
 				<Bar>
 					<BarInput
 						placeholder={getPlaceholder()}
