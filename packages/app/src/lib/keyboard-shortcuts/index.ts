@@ -48,18 +48,8 @@ const definitions: Record<Shortcuts, PlatformSpecificDefinitions | PlatformAgnos
 	'project-explorer.folder.left': { type: 'agnostic', key: 'ArrowLeft' },
 	'project-explorer.folder.right': { type: 'agnostic', key: 'ArrowRight' },
 
-	'omni-bar.launch.commands': {
-		type: 'specific',
-		windows: { ctrl: true, shift: true, key: 'p' },
-		linux: { ctrl: true, shift: true, key: 'p' },
-		darwin: { meta: true, shift: true, key: 'p' },
-	},
-	'omni-bar.launch.finder': {
-		type: 'specific',
-		windows: { ctrl: true, key: 'p' },
-		linux: { ctrl: true, key: 'p' },
-		darwin: { meta: true, key: 'p' },
-	},
+	'omni-bar.launch.commands': { type: 'agnostic', ctrlOrMeta: true, shift: true, key: 'p' },
+	'omni-bar.launch.finder': { type: 'agnostic', ctrlOrMeta: true, key: 'p' },
 
 	'tab-bar.all.next': {
 		type: 'specific',
@@ -73,7 +63,7 @@ const definitions: Record<Shortcuts, PlatformSpecificDefinitions | PlatformAgnos
 		linux: { ctrl: true, shift: true, key: 'Tab' },
 		darwin: { meta: true, alt: true, key: 'ArrowLeft' },
 	},
-	'tab-bar.all.close': { type: 'agnostic', key: 'w' },
+	'tab-bar.all.close': { type: 'agnostic', ctrlOrMeta: true, key: 'w' },
 };
 
 export function checkShortcut(shortcutKey: Shortcuts, event: React.KeyboardEvent | KeyboardEvent) {
@@ -86,6 +76,20 @@ export function checkShortcut(shortcutKey: Shortcuts, event: React.KeyboardEvent
 
 		return platformDefinition[getPlatform()];
 	})();
+
+	if (shortcutDefinition.ctrlOrMeta) {
+		const useMeta = getPlatform() === 'darwin';
+		const useCtrl = !useMeta;
+
+		/* eslint-disable operator-linebreak */
+		return (
+			((useMeta && metaKey) || (useCtrl && ctrlKey)) &&
+			Boolean(shortcutDefinition.alt) === altKey &&
+			Boolean(shortcutDefinition.shift) === shiftKey &&
+			shortcutDefinition.key === key
+		);
+		/* eslint-enable operator-linebreak */
+	}
 
 	/* eslint-disable operator-linebreak */
 	return (
