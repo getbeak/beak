@@ -9,7 +9,7 @@ interface RealtimeValueEditorProps {
 	item: Record<string, unknown>;
 	parent: HTMLDivElement;
 
-	onClose: (item: any) => void;
+	onClose: (item: any | null) => void;
 }
 
 const RealtimeValueEditor: React.FunctionComponent<RealtimeValueEditorProps> = props => {
@@ -103,28 +103,36 @@ const RealtimeValueEditor: React.FunctionComponent<RealtimeValueEditorProps> = p
 	const boundingRect = parent.getBoundingClientRect();
 
 	return (
-		<Wrapper
-			top={boundingRect.top + parent.clientHeight + 5}
-			left={boundingRect.left - (300 / 2)}
-		>
-			{ui.map(section => renderUiSection(section))}
+		<Container onClick={() => props.onClose(null)}>
+			<Wrapper
+				top={boundingRect.top + parent.clientHeight + 5}
+				left={boundingRect.left - (300 / 2)}
+				onClick={event => void event.stopPropagation()}
+			>
+				{ui.map(section => renderUiSection(section))}
 
-			<ButtonContainer>
-				<Button
-					onClick={() => {
-						save(context, item, state).then(updatedItem => props.onClose(updatedItem));
-					}}>
-					{'Save!'}
-				</Button>
-			</ButtonContainer>
-		</Wrapper>
+				<ButtonContainer>
+					<Button
+						onClick={() => {
+							save(context, item, state).then(updatedItem => props.onClose(updatedItem));
+						}}>
+						{'Save!'}
+					</Button>
+				</ButtonContainer>
+			</Wrapper>
+		</Container>
 	);
 };
 
+const Container = styled.div`
+	position: fixed;
+	top: 0; bottom: 0; left: 0; right: 0;
+`;
+
 const Wrapper = styled.div<{ top: number; left: number }>`
 	position: fixed;
-	top: ${p => p.top}px;
-	left: ${p => p.left}px;
+	margin-top: ${p => p.top}px;
+	margin-left: ${p => p.left}px;
 
 	width: 300px;
 	padding: 8px 12px;

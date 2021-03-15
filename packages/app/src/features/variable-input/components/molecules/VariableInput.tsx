@@ -344,6 +344,9 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, 
 					onClose={item => {
 						setRtvEditorContext(null);
 
+						if (item === null)
+							return;
+
 						// save part based on rtvEditorContext.partIndex
 						const part = parts[rtvEditorContext.partIndex];
 						const type = rtvEditorContext.realtimeValue.type;
