@@ -1,3 +1,4 @@
+import Input, { Select } from '@beak/app/components/atoms/Input';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
@@ -37,13 +38,9 @@ const RealtimeValueEditor: React.FunctionComponent<RealtimeValueEditorProps> = p
 			case 'string_input':
 				return (
 					<FormGroup>
-						{section.label && (
-							<React.Fragment>
-								<Label>{section.label}</Label>
-								<br />
-							</React.Fragment>
-						)}
+						{section.label && <Label>{section.label}</Label>}
 						<Input
+							beakSize={'sm'}
 							type={'text'}
 							value={state[section.stateBinding as string] || ''}
 							onChange={e => setState({
@@ -57,13 +54,9 @@ const RealtimeValueEditor: React.FunctionComponent<RealtimeValueEditorProps> = p
 			case 'number_input':
 				return (
 					<FormGroup>
-						{section.label && (
-							<React.Fragment>
-								<Label>{section.label}</Label>
-								<br />
-							</React.Fragment>
-						)}
+						{section.label && <Label>{section.label}</Label>}
 						<Input
+							beakSize={'sm'}
 							type={'number'}
 							value={state[section.stateBinding as string] || ''}
 							onChange={e => setState({
@@ -77,13 +70,9 @@ const RealtimeValueEditor: React.FunctionComponent<RealtimeValueEditorProps> = p
 			case 'options_input':
 				return (
 					<FormGroup>
-						{section.label && (
-							<React.Fragment>
-								<Label>{section.label}</Label>
-								<br />
-							</React.Fragment>
-						)}
+						{section.label && <Label>{section.label}</Label>}
 						<Select
+							beakSize={'sm'}
 							value={state[section.stateBinding as string] || ''}
 							onChange={e => setState({
 								...(state),
@@ -112,11 +101,10 @@ const RealtimeValueEditor: React.FunctionComponent<RealtimeValueEditorProps> = p
 				{ui.map(section => renderUiSection(section))}
 
 				<ButtonContainer>
-					<Button
-						onClick={() => {
-							save(context, item, state).then(updatedItem => props.onClose(updatedItem));
-						}}>
-						{'Save!'}
+					<Button onClick={() => {
+						save(context, item, state).then(updatedItem => props.onClose(updatedItem));
+					}}>
+						{'Save'}
 					</Button>
 				</ButtonContainer>
 			</Wrapper>
@@ -141,19 +129,14 @@ const Wrapper = styled.div<{ top: number; left: number }>`
 `;
 
 const FormGroup = styled.div`
-
+	margin-bottom: 8px;
 `;
 
 const Label = styled.label`
+	display: block;
+	margin-bottom: 4px;
 
-`;
-
-const Input = styled.input`
-
-`;
-
-const Select = styled.select`
-
+	font-size: 13px;
 `;
 
 const ButtonContainer = styled.div`
@@ -165,11 +148,11 @@ const Button = styled.button`
 	background: none;
 	border: none;
 	font-weight: 600;
-	color: ${p => p.theme.ui.textMinor};
+	color: ${p => p.theme.ui.textOnAction};
 	cursor: pointer;
 
 	&:hover {
-		color: ${p => p.theme.ui.textMinorMuted};
+		color: ${p => p.theme.ui.textOnFill};
 	}
 `;
 
