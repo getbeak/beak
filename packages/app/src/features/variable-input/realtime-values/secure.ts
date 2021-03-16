@@ -59,8 +59,9 @@ export default {
 			return { value: decrypted };
 		},
 
-		save: async (ctx, item, state) => {
-			const { iv } = item;
+		save: async (ctx, _item, state) => {
+			// We want to generate a new IV every time
+			const iv = await ipcEncryptionService.generateIv();
 			const datum = await ipcEncryptionService.encryptString({
 				iv,
 				payload: state.value,
