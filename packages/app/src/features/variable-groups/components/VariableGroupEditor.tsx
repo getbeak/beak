@@ -1,3 +1,4 @@
+import DebouncedInput from '@beak/app/components/atoms/DebouncedInput';
 import TabBar from '@beak/app/components/atoms/TabBar';
 import TabItem from '@beak/app/components/atoms/TabItem';
 import TabSpacer from '@beak/app/components/atoms/TabSpacer';
@@ -6,7 +7,7 @@ import { insertNewItem } from '@beak/app/store/variable-groups/actions';
 import { TypedObject } from '@beak/common/dist/helpers/typescript';
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
 import VariableInput from '../../variable-input/components/molecules/VariableInput';
 import { BodyNameCell, BodyValueCell, HeaderGroupNameCell, HeaderNameCell } from './atoms/Cells';
@@ -84,19 +85,19 @@ const VariableGroupEditor: React.FunctionComponent = () => {
 						<Header>
 							<Row cols={TypedObject.keys(variableGroup.groups).length}>
 								<HeaderNameCell>
-									<Editable center disabled value={'Name'} />
+									<EmptyInput center disabled value={'Name'} />
 								</HeaderNameCell>
 								{variableGroup && TypedObject.keys(variableGroup.groups).map(k => (
 									<HeaderGroupNameCell key={k}>
-										<Editable
+										<StyledDebounce
 											center
 											type={'text'}
 											value={variableGroup.groups[k]}
-											onChange={e => {
+											onChange={v => {
 												dispatch(actions.updateGroupName({
 													variableGroup: tab,
 													ident: k,
-													updated: e.target.value,
+													updated: v,
 												}));
 											}}
 										/>
@@ -115,15 +116,15 @@ const VariableGroupEditor: React.FunctionComponent = () => {
 							{variableGroup && TypedObject.keys(variableGroup.items).map(ik => (
 								<Row key={ik} cols={TypedObject.keys(variableGroup.groups).length}>
 									<BodyNameCell>
-										<Editable
-											ref={variableGroup.items[ik] === newItem ? newItemRef : null}
+										<StyledDebounce
+											innerRef={variableGroup.items[ik] === newItem ? newItemRef : null}
 											type={'text'}
 											value={variableGroup.items[ik]}
-											onChange={e => {
+											onChange={value => {
 												dispatch(actions.updateItemName({
 													variableGroup: tab,
 													ident: ik,
-													updated: e.target.value,
+													updated: value,
 												}));
 											}}
 										/>
@@ -169,22 +170,19 @@ const VariableGroupEditor: React.FunctionComponent = () => {
 
 							<Row cols={TypedObject.keys(variableGroup.groups).length}>
 								<BodyNameCell>
-									<Editable
+									<EmptyInput
 										placeholder={'New item...'}
 										type={'text'}
 										value={''}
 										onChange={e => {
 											setNewItem(e.target.value);
-											dispatch(insertNewItem({
-												variableGroup: tab,
-												name: e.target.value,
-											}));
+											dispatch(insertNewItem({ variableGroup: tab, name: e.target.value }));
 										}}
 									/>
 								</BodyNameCell>
 								{variableGroup && TypedObject.keys(variableGroup.groups).map(k => (
 									<BodyValueCell key={k}>
-										<Editable disabled />
+										<EmptyInput disabled />
 									</BodyValueCell>
 								))}
 							</Row>
@@ -214,7 +212,7 @@ const TabBody = styled.div`
 	height: 100%;
 `;
 
-const Editable = styled.input<{ center?: boolean }>`
+const inputCss = css<{ center?: boolean }>`
 	width: calc(100% - 12px);
 	background: none;
 	border: 1px solid transparent;
@@ -231,5 +229,8 @@ const Editable = styled.input<{ center?: boolean }>`
 		border: 1px solid ${p => p.theme.ui.primaryFill} !important;
 	}
 `;
+
+const StyledDebounce = styled(DebouncedInput)<{ center?: boolean }>`${inputCss}`;
+const EmptyInput = styled.input<{ center?: boolean }>`${inputCss}`;
 
 export default VariableGroupEditor;

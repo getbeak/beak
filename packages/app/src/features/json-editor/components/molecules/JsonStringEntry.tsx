@@ -1,3 +1,4 @@
+import DebouncedInput from '@beak/app/components/atoms/DebouncedInput';
 import VariableInput from '@beak/app/features/variable-input/components/molecules/VariableInput';
 import { actions } from '@beak/app/store/project';
 import { NamedStringEntry, StringEntry } from '@beak/common/types/beak-json-editor';
@@ -39,14 +40,14 @@ const JsonStringEntry: React.FunctionComponent<JsonStringEntryProps> = props => 
 				/>
 				<BodyInputWrapper>
 					{nameOverride === void 0 && (
-						<input
+						<DebouncedInput
 							disabled={depth === 0}
 							type={'text'}
 							value={detectName(depth, value)}
-							onChange={e => dispatch(actions.requestBodyJsonEditorNameChange({
+							onChange={name => dispatch(actions.requestBodyJsonEditorNameChange({
 								id,
 								requestId,
-								name: e.target.value,
+								name,
 							}))}
 						/>
 					)}

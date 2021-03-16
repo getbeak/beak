@@ -1,3 +1,4 @@
+import DebouncedInput from '@beak/app/components/atoms/DebouncedInput';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { ToggleKeyValue, ValueParts } from '@beak/common/types/beak-project';
 import React from 'react';
@@ -56,11 +57,11 @@ const BasicTableEditor: React.FunctionComponent<BasicTableEditorProps> = props =
 									/>
 								)}
 								<BodyInputWrapper>
-									<input
+									<DebouncedInput
 										type={'text'}
 										value={item.name}
 										readOnly={readOnly}
-										onChange={e => updateItem?.('name', k, e.target.value)}
+										onChange={v => updateItem?.('name', k, v)}
 									/>
 								</BodyInputWrapper>
 							</BodyPrimaryCell>

@@ -1,3 +1,4 @@
+import DebouncedInput from '@beak/app/components/atoms/DebouncedInput';
 import RequestPreferencesContext from '@beak/app/features/request-pane/contexts/request-preferences-context';
 import { actions } from '@beak/app/store/project';
 import { TypedObject } from '@beak/common/helpers/typescript';
@@ -54,14 +55,14 @@ const JsonObjectEntry: React.FunctionComponent<JsonObjectEntryProps> = props => 
 					/>
 					<BodyInputWrapper>
 						{nameOverride === void 0 && (
-							<input
+							<DebouncedInput
 								disabled={depth === 0}
 								type={'text'}
 								value={detectName(depth, value)}
-								onChange={e => dispatch(actions.requestBodyJsonEditorNameChange({
+								onChange={name => dispatch(actions.requestBodyJsonEditorNameChange({
 									id,
 									requestId,
-									name: e.target.value,
+									name,
 								}))}
 							/>
 						)}

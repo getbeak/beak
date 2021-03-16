@@ -57,7 +57,7 @@ const BodyTab: React.FunctionComponent<BodyTabProps> = props => {
 				dispatch(actions.requestBodyTypeChanged({
 					requestId: node.id,
 					type: 'json',
-					payload: convertToEntryJson(JSON.parse(body.payload)),
+					payload: convertToEntryJson(attemptTextToJson(body.payload)),
 				}));
 
 				return;
@@ -187,6 +187,14 @@ const TabBody = styled.div`
 	overflow-y: hidden;
 	height: 100%;
 `;
+
+function attemptTextToJson(input: string) {
+	try {
+		return JSON.parse(input);
+	} catch {
+		return JSON.stringify(input);
+	}
+}
 
 function createEmptyBodyPayload(requestId: string, type: RequestBodyType): RequestBodyTypeChangedPayload {
 	switch (type) {
