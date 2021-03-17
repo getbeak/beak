@@ -17,12 +17,12 @@ const DebouncedInput: React.FunctionComponent<DebouncedInput> = props => {
 		setLocalValue(props.value);
 	}, [props.value]);
 
-	useDebounce(() => onChange(localValue), 500, [localValue]);
 	useEffect(() => () => {
 		if (props.value !== localValue)
 			onChange(localValue);
 	}, []);
 
+	useDebounce(() => onChange(localValue), 300, [localValue]);
 
 	return (
 		<input
