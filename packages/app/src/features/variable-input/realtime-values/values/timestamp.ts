@@ -1,6 +1,6 @@
 import { TimestampRtv } from '@beak/common/types/beak-project';
 
-import { RealtimeValue } from './types';
+import { RealtimeValue } from '../types';
 
 interface EditorState {
 	type: string;

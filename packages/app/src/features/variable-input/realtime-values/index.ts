@@ -1,10 +1,10 @@
 import { TypedObject } from '@beak/common/helpers/typescript';
 
-import nonceRtv from './nonce';
-import secureRtv from './secure';
-import timestampRtv from './timestamp';
 import { RealtimeValue } from './types';
-import variableGroupItemRtv from './variable-group-item';
+import nonceRtv from './values/nonce';
+import secureRtv from './values/secure';
+import timestampRtv from './values/timestamp';
+import variableGroupItemRtv from './values/variable-group-item';
 
 const realtimeImplementations: Record<string, RealtimeValue<any, any>> = {
 	[nonceRtv.type]: nonceRtv,

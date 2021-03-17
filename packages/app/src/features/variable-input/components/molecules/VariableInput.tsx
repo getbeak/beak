@@ -9,7 +9,7 @@ import * as uuid from 'uuid';
 
 import { getRealtimeValue } from '../../realtime-values';
 import { RealtimeValue } from '../../realtime-values/types';
-import { getVariableGroupItemName } from '../../realtime-values/variable-group-item';
+import { getVariableGroupItemName } from '../../realtime-values/values/variable-group-item';
 import VariableSelector from './VariableSelector';
 
 interface Position {

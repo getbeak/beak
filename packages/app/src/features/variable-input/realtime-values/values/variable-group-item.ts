@@ -1,8 +1,8 @@
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { VariableGroupItemRtv, VariableGroups } from '@beak/common/types/beak-project';
 
-import { getValueString, parseValueParts } from '../parser';
-import { RealtimeValue } from './types';
+import { getValueString, parseValueParts } from '../../parser';
+import { RealtimeValue } from '../types';
 
 const type = 'variable_group_item';
 
@@ -10,7 +10,7 @@ export default {
 	type,
 
 	name: 'Variable group item',
-	description: 'Blah blah blah, something should go here.',
+	description: 'A realtime value, you can edit it\'s value from the Variable Group editor',
 
 	initValuePart: () => {
 		throw new Error('Not supported, this should not happen.');
@@ -27,12 +27,12 @@ export default {
 	),
 } as RealtimeValue<VariableGroupItemRtv['payload']>;
 
-export function createFauxGviRtv(item: VariableGroupItemRtv['payload'], variableGroups: VariableGroups) {
+export function createFauxValue(item: VariableGroupItemRtv['payload'], variableGroups: VariableGroups) {
 	return {
 		type,
 
 		name: getVariableGroupItemName(item, variableGroups),
-		description: 'Blah blah blah, something should go here.',
+		description: 'A realtime value, you can edit it\'s value from the Variable Group editor',
 
 		initValuePart: async () => ({
 			type,

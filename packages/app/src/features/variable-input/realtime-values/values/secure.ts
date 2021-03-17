@@ -1,7 +1,7 @@
 import { ipcEncryptionService } from '@beak/app/lib/ipc';
 import { SecureRtv } from '@beak/common/types/beak-project';
 
-import { RealtimeValue } from './types';
+import { RealtimeValue } from '../types';
 
 interface EditorState {
 	value: string;
@@ -13,7 +13,7 @@ export default {
 	type,
 
 	name: 'Secure',
-	description: 'A value protected by Beak project encryption.',
+	description: 'A value protected by Beak project encryption',
 
 	initValuePart: async () => {
 		const iv = await ipcEncryptionService.generateIv();

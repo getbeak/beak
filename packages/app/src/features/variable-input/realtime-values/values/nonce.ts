@@ -1,7 +1,7 @@
 import { toWebSafeBase64 } from '@beak/app/utils/base64';
 import { NonceRtv } from '@beak/common/types/beak-project';
 
-import { RealtimeValue } from './types';
+import { RealtimeValue } from '../types';
 
 const type = 'nonce';
 

@@ -8,7 +8,7 @@ import * as uuid from 'uuid';
 
 import { getRealtimeValues } from '../../realtime-values';
 import { RealtimeValue } from '../../realtime-values/types';
-import { createFauxGviRtv } from '../../realtime-values/variable-group-item';
+import { createFauxValue } from '../../realtime-values/values/variable-group-item';
 
 export interface VariableSelectorProps {
 	parent: HTMLElement;
@@ -52,7 +52,7 @@ const VariableSelector: React.FunctionComponent<VariableSelectorProps> = props =
 			.map(vgKey => {
 				const vg = variableGroups[vgKey];
 
-				return TypedObject.keys(vg.items).map(i => createFauxGviRtv({ itemId: i }, variableGroups));
+				return TypedObject.keys(vg.items).map(i => createFauxValue({ itemId: i }, variableGroups));
 			})
 			.flat(),
 	]), [variableGroups]);
