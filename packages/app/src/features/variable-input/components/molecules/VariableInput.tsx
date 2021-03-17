@@ -36,7 +36,7 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, 
 	const ref = useRef<HTMLDivElement>(null);
 	const lastKnownWriteRef = useRef(0);
 
-	const valueRef = useRef<ValueParts>(parts);
+	const valueRef = useRef<ValueParts>([]);
 	const [localValue, setLocalValue] = useState<ValueParts>([]);
 
 	const [query, setQuery] = useState('');
@@ -46,7 +46,7 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, 
 
 	useEffect(() => {
 		// Don't update from state if last known write was less than 150ms ago
-		if (lastKnownWriteRef.current + 150 > Date.now())
+		if (lastKnownWriteRef.current + 200 > Date.now())
 			return;
 
 		valueRef.current = parts;
@@ -54,10 +54,10 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, 
 	}, [parts]);
 
 	useDebounce(() => {
-		onChange(localValue);
-
 		lastKnownWriteRef.current = Date.now();
-	}, 500, [localValue]);
+
+		onChange(localValue);
+	}, 300, [localValue]);
 
 	useEffect(() => {
 		const onClick = (event: MouseEvent) => {
@@ -94,10 +94,14 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, 
 	function updateParts(parts: ValueParts, options?: { immediateWrite?: boolean }) {
 		const opts = { ...options };
 
-		if (opts.immediateWrite)
+		setLocalValue(parts);
+
+		if (opts.immediateWrite) {
+			lastKnownWriteRef.current = Date.now();
 			valueRef.current = parts;
 
-		setLocalValue(parts);
+			onChange(parts);
+		}
 	}
 
 	function closeSelector() {
@@ -155,6 +159,7 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, 
 		const sel = window.getSelection()!;
 		const range = sel.getRangeAt(0);
 		const elem = range.startContainer! as HTMLElement;
+
 		const rect = elem.parentElement!.getBoundingClientRect();
 		const contentLength = (elem.textContent ?? '').length;
 		const caretOffset = range.startOffset;
@@ -171,7 +176,6 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, 
 		newerParts[partIndex] = start;
 		newerParts.splice(partIndex + 1, 0, end);
 
-		updateParts(newerParts);
 		setPartIndex(partIndex);
 		setQueryOffset(queryOffset);
 		setQuery(start.substring(queryOffset));
@@ -341,7 +345,7 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, 
 						const type = rtvEditorContext.realtimeValue.type;
 
 						if (typeof part !== 'object' || type !== part.type) {
-							console.error('');
+							console.error(`Part ordering change mid edit, cannot continue. expected ${type}`);
 
 							return;
 						}
@@ -350,7 +354,7 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, 
 
 						(newParts[rtvEditorContext.partIndex] as RealtimeValuePart).payload = item;
 
-						onChange(newParts);
+						updateParts(newParts, { immediateWrite: true });
 					}}
 				/>
 			)}
