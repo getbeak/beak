@@ -114,45 +114,56 @@ const VariableSelector: React.FunctionComponent<VariableSelectorProps> = props =
 	}, [active, items]);
 
 	return (
-		<Wrapper style={{ top: position.top, left: position.left }}>
-			<ItemContainer>
-				{items.map((i, idx) => (
-					<Item
-						ref={(i: HTMLDivElement) => {
-							if (active === idx)
-								activeRef.current = i;
-						}}
-						active={active === idx}
-						key={uuid.v4()}
-						tabIndex={0}
-						onClick={() => setActive(idx)}
-						onDoubleClick={() => {
-							i.initValuePart(context).then(onDone);
-						}}
-					>
-						{i.name}
-					</Item>
-				))}
-			</ItemContainer>
-			<Description>
-				{items[active]?.description}
-			</Description>
-		</Wrapper>
+		<Container onClick={() => onClose()}>
+			<Wrapper
+				top={position.top}
+				left={position.left}
+				onClick={event => void event.stopPropagation()}
+			>
+				<ItemContainer>
+					{items.map((i, idx) => (
+						<Item
+							ref={(i: HTMLDivElement) => {
+								if (active === idx)
+									activeRef.current = i;
+							}}
+							active={active === idx}
+							key={uuid.v4()}
+							tabIndex={0}
+							onClick={() => setActive(idx)}
+							onDoubleClick={() => {
+								i.initValuePart(context).then(onDone);
+							}}
+						>
+							{i.name}
+						</Item>
+					))}
+				</ItemContainer>
+				<Description>
+					{items[active]?.description}
+				</Description>
+			</Wrapper>
+		</Container>
 	);
 };
 
-const Wrapper = styled.div`
+const Container = styled.div`
+	z-index: 101;
 	position: fixed;
+	top: 0; bottom: 0; left: 0; right: 0;
+`;
+
+const Wrapper = styled.div<{ top: number; left: number }>`
 	display: flex;
 	height: 120px; width: 325px;
 	flex-direction: column;
+	margin-top: ${p => p.top}px;
+	margin-left: ${p => p.left}px;
 
 	border: 1px solid ${p => p.theme.ui.backgroundBorderSeparator};
 	background: ${p => p.theme.ui.surface};
 
 	font-size: 12px;
-
-	z-index: 101; /* Cheaky... */
 `;
 
 const ItemContainer = styled.div`

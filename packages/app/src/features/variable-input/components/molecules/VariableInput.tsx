@@ -299,18 +299,6 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, 
 				spellCheck={false}
 				ref={ref}
 				suppressContentEditableWarning
-				onBlur={event => {
-					if (!event.relatedTarget) {
-						closeSelector();
-
-						return;
-					}
-
-					const elem = event.relatedTarget as HTMLDivElement;
-
-					if (!elem.className?.includes('variable-selector'))
-						closeSelector();
-				}}
 				onInput={change}
 				onKeyDown={event => {
 					if (!['Escape', 'Enter', 'ArrowUp', 'ArrowDown'].includes(event.key))
