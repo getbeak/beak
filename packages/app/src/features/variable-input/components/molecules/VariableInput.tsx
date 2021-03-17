@@ -158,7 +158,7 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, 
 		const contentLength = (elem.textContent ?? '').length;
 		const caretOffset = range.startOffset;
 		const positionOffset = caretOffset / contentLength;
-		const width = elem.offsetWidth;
+		const width = rect.width;
 		const offsetDelta = width * positionOffset;
 
 		const queryOffset = range.startOffset;
@@ -175,8 +175,8 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, 
 		setQueryOffset(queryOffset);
 		setQuery(start.substring(queryOffset));
 		setSelectorPosition({
-			left: (rect.left + offsetDelta) - 5,
-			top: rect.top + elem.offsetHeight,
+			left: rect.left + offsetDelta,
+			top: rect.top + rect.height + 5,
 		});
 	}
 
