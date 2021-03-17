@@ -1,5 +1,5 @@
 import RealtimeValueEditor from '@beak/app/features/realtime-value-editor/components/RealtimeValueEditor';
-import { TypedObject } from '@beak/common/dist/helpers/typescript';
+import useDebounce from '@beak/app/hooks/use-debounce';
 import { RealtimeValuePart, ValueParts } from '@beak/common/dist/types/beak-project';
 import React, { useEffect, useRef, useState } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
@@ -34,24 +34,30 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, 
 	const [selectorPosition, setSelectorPosition] = useState<Position | null>(null);
 	const [rtvEditorContext, setRtvEditorContext] = useState<RtvEditorContext | null>(null);
 	const ref = useRef<HTMLDivElement>(null);
-	const valueRef = useRef<ValueParts>(parts);
 	const lastKnownWriteRef = useRef(0);
+
+	const valueRef = useRef<ValueParts>(parts);
+	const [localValue, setLocalValue] = useState<ValueParts>([]);
 
 	const [query, setQuery] = useState('');
 	const [partIndex, setPartIndex] = useState<number>();
-	const [, setNonce] = useState(0);
 	const [queryOffset, setQueryOffset] = useState<number>();
 	const { variableGroups } = useSelector(s => s.global.variableGroups);
 
 	useEffect(() => {
-		const now = Date.now();
-
 		// Don't update from state if last known write was less than 150ms ago
-		if (lastKnownWriteRef.current + 150 > now)
+		if (lastKnownWriteRef.current + 150 > Date.now())
 			return;
 
 		valueRef.current = parts;
+		setLocalValue(parts);
 	}, [parts]);
+
+	useDebounce(() => {
+		onChange(localValue);
+
+		lastKnownWriteRef.current = Date.now();
+	}, 500, [localValue]);
 
 	useEffect(() => {
 		const onClick = (event: MouseEvent) => {
@@ -85,18 +91,13 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, 
 		};
 	}, []);
 
-	function updateParts(parts: ValueParts, options?: { forceRefUpdate?: boolean; immediateWrite?: boolean }) {
+	function updateParts(parts: ValueParts, options?: { immediateWrite?: boolean }) {
 		const opts = { ...options };
 
-		lastKnownWriteRef.current = opts.forceRefUpdate ? 0 : Date.now();
-
-		if (opts.immediateWrite) {
+		if (opts.immediateWrite)
 			valueRef.current = parts;
 
-			setNonce(Date.now());
-		}
-
-		onChange(parts);
+		setLocalValue(parts);
 	}
 
 	function closeSelector() {
