@@ -7,6 +7,7 @@ import git from 'isomorphic-git';
 import * as path from 'path';
 
 import { encryptionAlgoVersions, generateKey } from './aes';
+import { addRecentProject } from './beak-hub';
 
 export interface CreationOptions {
 	name: string;
@@ -86,6 +87,11 @@ export default async function createProject(options: CreationOptions) {
 	const projectFilePath = await createProjectFile(projectPath, name);
 
 	await initRepoAndCommit(projectPath);
+	await addRecentProject({
+		name,
+		path: projectPath,
+		type: 'local',
+	});
 
 	return projectFilePath;
 }
