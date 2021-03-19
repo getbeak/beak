@@ -2,6 +2,8 @@ import React from 'react';
 import styled from 'styled-components';
 
 import Container from '../../../components/atoms/Container';
+import BeakOverview from './molecules/BeakOverview';
+import FeatureOverview from './molecules/FeatureOverview';
 import HeaderCta from './molecules/HeaderCta';
 import SneakPeak from './molecules/SneakPeak';
 
@@ -24,9 +26,10 @@ const Home: React.FunctionComponent = () => (
 			</Container>
 		</Header>
 		<Main>
-			<FeatureOverview as={'section'}>
-				<FeatureTitle>{'The only API crafting tool you\'d introduce to your mother'}</FeatureTitle>
-			</FeatureOverview>
+			<Container>
+				<FeatureOverview />
+				<BeakOverview />
+			</Container>
 		</Main>
 	</React.Fragment>
 );
@@ -34,6 +37,8 @@ const Home: React.FunctionComponent = () => (
 const Header = styled.div`
 	padding-top: 125px;
 	text-align: center;
+
+	background: ${p => p.theme.ui.background};
 `;
 
 const Title = styled.h1`
@@ -52,7 +57,6 @@ const Title = styled.h1`
 const Main = styled.main`
 	position: relative;
 	z-index: 1;
-	height: 600px;
 	margin-top: -80px;
 	padding-top: 80px;
 
@@ -70,16 +74,6 @@ const SubTitle = styled.h2`
 	font-weight: 100;
 	line-height: 35px;
 	color: ${p => p.theme.ui.textMinorMuted};
-`;
-
-const FeatureOverview = styled(Container)`
-	padding: 25px 0;
-`;
-
-const FeatureTitle = styled.h3`
-	text-align: center;
-	font-size: 30px;
-	font-weight: 100;
 `;
 
 export default Home;

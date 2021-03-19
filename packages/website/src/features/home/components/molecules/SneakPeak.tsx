@@ -9,22 +9,20 @@ const pulse = keyframes`
 
 	25% {
 		transform: scale(1.2);
-		opacity: 0.8;
 	}
 
 	50% {
-		transform: scale(1);
-		opacity: 0.9;
+		transform: scale(0.9);
+		opacity: 0.8;
 	}
 
 	75% {
-		transform: scale(0.8);
-		opacity: 1;
+		transform: scale(1.3);
 	}
 
 	100% {
 		transform: scale(1);
-		opacity: 0.8;
+		opacity: 1;
 	}
 }
 `;
