@@ -26,7 +26,9 @@
       "@beak/electron-host": ["packages/electron-host/src"],
       "@beak/electron-host/*": ["packages/electron-host/src/*"],
       "@beak/requester-node": ["packages/requester-node/src"],
-      "@beak/requester-node/*": ["packages/requester-node/src/*"]
+      "@beak/requester-node/*": ["packages/requester-node/src/*"],
+      "@beak/website": ["packages/website/src"],
+      "@beak/website/*": ["packages/website/src/*"],
     }
   },
   "exclude": [

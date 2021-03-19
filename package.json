@@ -28,7 +28,6 @@
     "electron": "lerna run electron --scope @beak/electron-host",
     "prepackage": "yarn build",
     "package": "lerna run package --stream --scope @beak/electron-host",
-    "package-web": "lerna run package --stream --scope @beak/website",
     "prepackage:simple": "yarn build",
     "package:simple": "lerna run package:simple --stream --scope @beak/electron-host",
     "start": "lerna exec --parallel --concurrency 1 --stream --scope '@beak/{app,electron-host}' yarn start",

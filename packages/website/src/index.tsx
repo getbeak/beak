@@ -1,21 +1,24 @@
 import { DesignSystemProvider } from '@beak/design-system';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Provider } from 'react-redux';
 
+import AppContainer from './containers/App';
 import { GlobalStyle } from './design-system';
+import Home from './features/home/components/Home';
 // import { configureStore } from './store';
 
-const FauxRouter: React.FunctionComponent = () => (
+const EntryPoint: React.FunctionComponent = () => (
 	<React.Fragment>
-	{/* <Provider store={configureStore()}> */}
+		{/* <Provider store={configureStore()}> */}
 		<base href={'./'} />
 		<DesignSystemProvider themeKey={'dark'}>
 			<GlobalStyle />
-			{'test'}
+			<AppContainer>
+				<Home />
+			</AppContainer>
 		</DesignSystemProvider>
-	{/* </Provider> */}
+		{/* </Provider> */}
 	</React.Fragment>
 );
 
-ReactDOM.render(<FauxRouter />, document.getElementById('root'));
+ReactDOM.render(<EntryPoint />, document.getElementById('root'));
