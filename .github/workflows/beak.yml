@@ -57,4 +57,4 @@ jobs:
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY}}
           aws_bucket: ${{ secrets.AWS_S3_BUCKET_PREVIEW }}
           source_dir: 'packages/website/dist/'
-          destination_dir: '/'
+          destination_dir: ''
