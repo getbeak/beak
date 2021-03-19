@@ -57,14 +57,4 @@ jobs:
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY}}
           aws_bucket: ${{ secrets.AWS_S3_BUCKET_PREVIEW }}
           source_dir: 'packages/website/dist/'
-          destination_dir: ''
-
-      - name: Upload latest build manifest to s3
-        if: github.ref == 'refs/heads/master'
-        uses: shallwefootball/upload-s3-action@v1.1.2
-        with:
-          aws_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY}}
-          aws_bucket: ${{ secrets.AWS_S3_BUILDS_BUCKET }}
-          source_dir: 'current'
-          destination_dir: 'manifest/'
+          destination_dir: '/'
