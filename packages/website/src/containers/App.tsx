@@ -1,7 +1,9 @@
 import React from 'react';
 
 import Container from '../components/atoms/Container';
-import Navbar, { NavBrand, NavItem,NavItems, NavLogo } from '../components/atoms/Navbar';
+import Footer from '../components/atoms/Footer';
+import FooterLogo from '../components/atoms/FooterLogo';
+import Navbar, { NavBrand, NavItem, NavItems, NavLogo } from '../components/atoms/Navbar';
 
 const AppContainer: React.FunctionComponent = ({ children }) => (
 	<React.Fragment>
@@ -27,10 +29,15 @@ const AppContainer: React.FunctionComponent = ({ children }) => (
 				</NavItems>
 			</Container>
 		</Navbar>
+
 		{children}
-		<footer>
-			{'footer'}
-		</footer>
+
+		<Footer>
+			<Container>
+				<span>{'Made with ❤️ in the UK'}</span>
+				<FooterLogo />
+			</Container>
+		</Footer>
 	</React.Fragment>
 );
 
