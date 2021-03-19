@@ -23,13 +23,16 @@
   },
   "scripts": {
     "build": "lerna run build --stream",
+    "build-web": "lerna run build --stream --scope @beak/website",
     "preelectron": "yarn build",
     "electron": "lerna run electron --scope @beak/electron-host",
     "prepackage": "yarn build",
     "package": "lerna run package --stream --scope @beak/electron-host",
+    "package-web": "lerna run package --stream --scope @beak/website",
     "prepackage:simple": "yarn build",
     "package:simple": "lerna run package:simple --stream --scope @beak/electron-host",
     "start": "lerna exec --parallel --concurrency 1 --stream --scope '@beak/{app,electron-host}' yarn start",
+    "start-web": "lerna exec --parallel --concurrency 1 --stream --scope '@beak/website' yarn start",
     "test": "lerna run test --parallel",
     "lint": "eslint -c .eslintrc --ext .tsx --ext .ts './packages/'",
     "unfuck": "lerna clean && yarn --force"
