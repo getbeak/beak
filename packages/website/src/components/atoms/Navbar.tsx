@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import Container from './Container';
 
 const Navbar = styled.nav`
-	position: static;
+	position: sticky;
 	top: 0;
 	width: 100%;
 	padding: 25px 0;
@@ -12,7 +12,7 @@ const Navbar = styled.nav`
 	z-index: 101;
 
 	backdrop-filter: blur(10px);
-	background: ${p => p.theme.ui.surface}BB;
+	background: ${p => p.theme.ui.surface}50;
 	border-bottom: 1px solid ${p => p.theme.ui.backgroundBorderSeparator};
 
 	> ${Container} {
