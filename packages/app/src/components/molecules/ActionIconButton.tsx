@@ -25,7 +25,6 @@ const Button = styled.button`
 	padding: 0;
 
 	background: none;
-	/* TODO(afr): Change this to a real colour, not text colour */
 	border: 1px solid ${p => p.theme.ui.textMinor};
 	color: ${p => p.theme.ui.textMinor};
 	border-radius: 100%;

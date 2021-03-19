@@ -1,3 +1,4 @@
+import { DesignSystemProvider } from '@beak/design-system';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
@@ -6,7 +7,7 @@ import About from './containers/About';
 import Onboarding from './containers/Onboarding';
 import ProjectMain from './containers/ProjectMain';
 import Welcome from './containers/Welcome';
-import { DesignSystemProvider, GlobalStyle } from './design-system';
+import { GlobalStyle } from './design-system';
 import { setGlobal } from './globals';
 import { ipcAppService } from './lib/ipc';
 import { configureStore } from './store';

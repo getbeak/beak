@@ -22,6 +22,8 @@
   },
   "references": [{
     "path": "../common"
+  }, {
+    "path": "../design-system"
   }],
   "include": [
     "src/**/*.ts",

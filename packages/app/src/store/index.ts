@@ -74,8 +74,5 @@ export function configureStore() {
 	sagaMiddleware.setContext(context);
 	sagaMiddleware.run(rootSaga);
 
-	// TODO(afr): This is temporary until I get the dev tools attached
-	window.store = store;
-
 	return store;
 }

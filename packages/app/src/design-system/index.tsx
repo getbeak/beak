@@ -1,24 +1,6 @@
-import React from 'react';
-import { createGlobalStyle, ThemeProvider } from 'styled-components';
+import { createGlobalStyle } from 'styled-components';
 
 import { getGlobal } from '../globals';
-import fonts from './fonts';
-import { createUiColors } from './themes';
-import { DesignSystem, Theme } from './types';
-
-function createDesignSystem(themeKey: Theme): DesignSystem {
-	return {
-		theme: themeKey,
-		ui: createUiColors(themeKey),
-
-		fonts,
-	};
-}
-
-const DesignSystemProvider: React.FunctionComponent<{ themeKey: Theme }> = ({ children, themeKey }) => (
-	<ThemeProvider theme={createDesignSystem(themeKey)}>{children}</ThemeProvider>
-);
-
 const GlobalStyle = createGlobalStyle`
 	* {
 		-webkit-font-smoothing: subpixel-antialiased;
@@ -109,6 +91,5 @@ const GlobalStyle = createGlobalStyle`
 `;
 
 export {
-	DesignSystemProvider,
 	GlobalStyle,
 };

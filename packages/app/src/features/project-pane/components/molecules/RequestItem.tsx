@@ -125,9 +125,7 @@ const RequestItem: React.FunctionComponent<RequestItemProps> = props => {
 						ref={renameInputRef}
 						type={'text'}
 						value={rename.name}
-						onBlur={() => {
-							dispatch(actions.requestRenameCancelled({ requestId: node.id }));
-						}}
+						onBlur={() => dispatch(actions.requestRenameCancelled({ requestId: node.id }))}
 						onKeyDown={e => {
 							if (!['Escape', 'Enter'].includes(e.key))
 								return;

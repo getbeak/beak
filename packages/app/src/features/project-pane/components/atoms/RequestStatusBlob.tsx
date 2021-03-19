@@ -1,4 +1,4 @@
-import { statusToColour } from '@beak/app/design-system/helpers';
+import { statusToColour } from '@beak/design-system/helpers';
 import styled from 'styled-components';
 
 export interface RequestStatusBlobProps {
