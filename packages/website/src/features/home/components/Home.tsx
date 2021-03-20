@@ -3,6 +3,7 @@ import styled from 'styled-components';
 
 import Container from '../../../components/atoms/Container';
 import BeakOverview from './molecules/BeakOverview';
+import Downloader from './molecules/Downloader';
 import FeatureHighlight from './molecules/FeatureHighlight';
 import FeatureOverview from './molecules/FeatureOverview';
 import HeaderCta from './molecules/HeaderCta';
@@ -27,10 +28,10 @@ const Home: React.FunctionComponent = () => (
 			</Container>
 		</Header>
 		<Main>
-			<Container>
-				<FeatureOverview />
-				<BeakOverview />
-			</Container>
+			<FeatureOverview />
+			<BeakOverview />
+
+			<Downloader />
 
 			<FeatureHighlight
 				flipped
