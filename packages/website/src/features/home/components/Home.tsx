@@ -3,6 +3,7 @@ import styled from 'styled-components';
 
 import Container from '../../../components/atoms/Container';
 import BeakOverview from './molecules/BeakOverview';
+import FeatureHighlight from './molecules/FeatureHighlight';
 import FeatureOverview from './molecules/FeatureOverview';
 import HeaderCta from './molecules/HeaderCta';
 import SneakPeak from './molecules/SneakPeak';
@@ -30,6 +31,29 @@ const Home: React.FunctionComponent = () => (
 				<FeatureOverview />
 				<BeakOverview />
 			</Container>
+
+			<FeatureHighlight
+				flipped
+				title={'Multi-tasking'}
+				description={'Tabs allow you to switch context quickly, without losing your train of thought. We\'re past iOS 1...'}
+				asset={'feature-highlight'}
+			/>
+			<FeatureHighlight
+				title={'Enhanced discovery'}
+				description={'Open up the the Omni Bar to search through your project. Spend less time digging through lists and more time hacking.'}
+				asset={'feature-highlight'}
+			/>
+			<FeatureHighlight
+				flipped
+				title={'Intuitive, secure collaboration'}
+				description={'None of your project ever touches our servers, and projects are just simple directories. Use your existing workflow, for example Git, with Beak for minimal distruption.'}
+				asset={'feature-highlight'}
+			/>
+			<FeatureHighlight
+				title={'Something else!'}
+				description={''}
+				asset={'feature-highlight'}
+			/>
 		</Main>
 	</React.Fragment>
 );
