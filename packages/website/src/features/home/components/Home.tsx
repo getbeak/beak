@@ -64,19 +64,36 @@ const Header = styled.div`
 	text-align: center;
 
 	background: ${p => p.theme.ui.background};
+
+	@media (max-width: 850px) {
+		padding-top: 50px;
+	}
 `;
 
 const Title = styled.h1`
 	margin: 0 auto;
 	max-width: 510px;
-	padding: 0 25px;
-	font-size: 60px;
 	font-weight: 800;
-	line-height: 75px;
+	font-size: min(8vw, 60px);
+	line-height: min(8.75vw, 75px);
 
 	> span {
 		color: ${p => p.theme.ui.textHighlight};
 	}
+`;
+
+const SubTitle = styled.h2`
+	margin: 0 auto;
+	margin-top: 20px;
+	max-width: 550px;
+	padding: 0 25px;
+
+	font-weight: 100;
+
+	font-size: min(4vw, 20px);
+	line-height: min(5.25vw, 35px);
+
+	color: ${p => p.theme.ui.textMinorMuted};
 `;
 
 const Main = styled.main`
@@ -86,18 +103,6 @@ const Main = styled.main`
 	padding-top: 80px;
 
 	background: ${p => p.theme.ui.secondaryBackground};
-	color: ${p => p.theme.ui.textMinorMuted};
-`;
-
-const SubTitle = styled.h2`
-	margin: 0 auto;
-	margin-top: 20px;
-	max-width: 550px;
-	padding: 0 25px;
-
-	font-size: 20px;
-	font-weight: 100;
-	line-height: 35px;
 	color: ${p => p.theme.ui.textMinorMuted};
 `;
 

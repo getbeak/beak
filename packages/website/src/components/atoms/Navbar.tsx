@@ -3,25 +3,6 @@ import styled from 'styled-components';
 
 import Container from './Container';
 
-const Navbar = styled.nav`
-	position: sticky;
-	top: 0;
-	width: 100%;
-	padding: 25px 0;
-
-	z-index: 101;
-
-	backdrop-filter: blur(10px);
-	background: ${p => p.theme.ui.surface}50;
-	border-bottom: 1px solid ${p => p.theme.ui.backgroundBorderSeparator};
-
-	> ${Container} {
-		display: grid;
-		grid-template-columns: 120px 1fr 120px;
-		grid-template-rows: 1fr;
-	}
-`;
-
 export const NavBrand = styled.div`
 	display: flex;
 	flex-direction: row;
@@ -69,6 +50,36 @@ export const NavItem = styled.a`
 
 	&:hover {
 		color: ${p => p.theme.ui.textOnSurfaceBackground};
+	}
+`;
+
+const Navbar = styled.nav`
+	position: sticky;
+	top: 0;
+	width: 100%;
+	padding: 25px 0;
+
+	z-index: 101;
+
+	backdrop-filter: blur(10px);
+	background: ${p => p.theme.ui.surface}50;
+	border-bottom: 1px solid ${p => p.theme.ui.backgroundBorderSeparator};
+
+	> ${Container} {
+		display: grid;
+		grid-template-columns: 120px 1fr 120px;
+		grid-template-rows: 1fr;
+	}
+
+	@media (max-width: 676px) {
+		${NavItems} {
+			display: none;
+		}
+
+		> ${Container} {
+			display: flex;
+			justify-content: center;
+		}
 	}
 `;
 
