@@ -67,7 +67,7 @@ const Downloader: React.FunctionComponent = () => {
 							size={'4x'}
 						/>
 
-						<DownloadButton href={downloads.windows!.path}>
+						<DownloadButton href={downloads.windows!.downloadPath}>
 							<FontAwesomeIcon icon={faDownload} color={theme.ui.textOnAction} />
 							{'Download for Windows'}
 						</DownloadButton>
@@ -78,7 +78,7 @@ const Downloader: React.FunctionComponent = () => {
 							size={'4x'}
 						/>
 
-						<DownloadButton href={downloads.linux!.path}>
+						<DownloadButton href={downloads.linux!.downloadPath}>
 							<FontAwesomeIcon icon={faDownload} color={theme.ui.textOnAction} />
 							{'Download for Linux'}
 						</DownloadButton>
