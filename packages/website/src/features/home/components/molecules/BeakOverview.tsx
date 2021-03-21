@@ -20,6 +20,7 @@ const BeakOverview: React.FunctionComponent = () => (
 
 const Wrapper = styled.div`
 	margin: 60px 0;
+	text-align: center;
 `;
 
 const Image = styled.img`

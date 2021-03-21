@@ -43,7 +43,7 @@ const Wrapper = styled.div`
 	grid-template: 1fr / 1fr;
 	place-items: center;
 
-	margin-top: 150px;
+	margin-top: min(10vw, 150px);
 
 	> * {
 		grid-column: 1 / 1;
@@ -67,6 +67,11 @@ const Gradient = styled.div`
 		#ff81a7AA 60deg,
 		#1A1E2DAA 360deg
 	);
+
+	@media (max-width: 676px) {
+		display: none;
+	}
+`;
 
 const AppPicture = styled.picture`
 	z-index: 2;

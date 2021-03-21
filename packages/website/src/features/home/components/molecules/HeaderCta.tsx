@@ -4,7 +4,7 @@ import styled from 'styled-components';
 
 const HeaderCta: React.FunctionComponent = () => (
 	<Wrapper>
-		<CtaButton href={'#stripe'}>{'Buy Beak for $20'}</CtaButton>
+		<CtaButton href={'#stripe'}>{'Buy Beak for $19'}</CtaButton>
 		<CtaButton href={'#downloads'}>{'Download the free trial'}</CtaButton>
 	</Wrapper>
 );
@@ -16,8 +16,12 @@ const Wrapper = styled.div`
 	flex-direction: row;
 	justify-content: center;
 
-	> ${CtaButton} {
-		margin: 0 15px;
+	@media (max-width: 676px) {
+		flex-direction: column;
+
+		> ${CtaButton}:first-child {
+			margin-bottom: 10px;
+		}
 	}
 `;
 

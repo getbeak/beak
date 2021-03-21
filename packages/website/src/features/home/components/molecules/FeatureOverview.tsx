@@ -127,10 +127,12 @@ const FeatureOverview: React.FunctionComponent = () => {
 };
 
 const Wrapper = styled.section`
-	padding: 25px 25px;
+	padding: 25px 0;
 `;
 
 const FeatureTitle = styled.h3`
+	margin: 10px 0;
+	margin-bottom: 35px;
 	text-align: center;
 	font-size: 30px;
 	font-weight: 100;

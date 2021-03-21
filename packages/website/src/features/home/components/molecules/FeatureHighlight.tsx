@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 
 import Container from '../../../../components/atoms/Container';
+import { SubTitle, Title } from '../../../../components/atoms/Typography';
 
 interface FeatureHighlightProps {
 	title: string;
@@ -20,7 +21,7 @@ const FeatureHighlight: React.FunctionComponent<FeatureHighlightProps> = props =
 				<Grid flipped={flipped}>
 					<DetailContainer>
 						<Title>{title}</Title>
-						<Description>{description}</Description>
+						<SubTitle>{description}</SubTitle>
 					</DetailContainer>
 					<VisualContainer>
 						<HighlightAsset src={`/assets/${asset}.png`} />
@@ -41,19 +42,6 @@ const DetailContainer = styled.div`
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
-
-	text-align: left;
-`;
-
-const Title = styled.div`
-	font-weight: 700;
-	font-size: 35px;
-	color: ${p => p.theme.ui.textOnSurfaceBackground};
-`;
-const Description = styled.div`
-	margin-top: 10px;
-	font-size: 16px;
-	color: ${p => p.theme.ui.textMinor};
 `;
 
 const VisualContainer = styled.div`
@@ -76,6 +64,16 @@ const Grid = styled.div<{ flipped: boolean | undefined }>`
 
 	> ${DetailContainer}, > ${VisualContainer} {
 		margin: 0 20px;
+	}
+
+	@media (max-width: 850px) {
+		flex-direction: column;
+		text-align: center;
+		padding: 0;
+
+		> ${DetailContainer} {
+			margin-bottom: 20px;
+		}
 	}
 `;
 

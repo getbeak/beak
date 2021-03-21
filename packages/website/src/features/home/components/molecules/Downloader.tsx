@@ -72,6 +72,7 @@ const Downloader: React.FunctionComponent = () => {
 
 const Wrapper = styled.div`
 	margin-bottom: 60px;
+	text-align: center;
 `;
 
 const Grid = styled.div`
@@ -95,8 +96,11 @@ const Platform = styled.div`
 
 const DownloadButton = styled.a`
 	margin-top: 10px;
-	border-radius: 10px;
 	padding: 10px 20px;
+	width: calc(100% - 40px);
+	text-align: center;
+
+	border-radius: 10px;
 	background: ${p => p.theme.ui.primaryFill};
 	color: ${p => p.theme.ui.textOnAction};
 	text-decoration: none;
