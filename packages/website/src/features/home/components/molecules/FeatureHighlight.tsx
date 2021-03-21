@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 
 import Container from '../../../../components/atoms/Container';
+import ScrollTarget from '../../../../components/atoms/ScrollTarget';
 import { SubTitle, Title } from '../../../../components/atoms/Typography';
 
 interface FeatureHighlightProps {
@@ -17,6 +18,8 @@ const FeatureHighlight: React.FunctionComponent<FeatureHighlightProps> = props =
 
 	return (
 		<Wrapper flipped={flipped}>
+			<ScrollTarget target={'features'} />
+
 			<Container>
 				<Grid flipped={flipped}>
 					<DetailContainer>
