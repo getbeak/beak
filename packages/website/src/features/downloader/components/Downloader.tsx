@@ -1,5 +1,7 @@
-import { faApple, faLinux,faWindows } from '@fortawesome/free-brands-svg-icons';
-import { faDownload } from '@fortawesome/free-solid-svg-icons';
+import { faApple } from '@fortawesome/free-brands-svg-icons/faApple';
+import { faLinux } from '@fortawesome/free-brands-svg-icons/faLinux';
+import { faWindows } from '@fortawesome/free-brands-svg-icons/faWindows';
+import { faDownload } from '@fortawesome/free-solid-svg-icons/faDownload';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ScrollTarget from 'packages/website/src/components/atoms/ScrollTarget';
 import React, { useEffect, useState } from 'react';
