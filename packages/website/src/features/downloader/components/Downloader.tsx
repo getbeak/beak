@@ -4,38 +4,20 @@ import { faWindows } from '@fortawesome/free-brands-svg-icons/faWindows';
 import { faDownload } from '@fortawesome/free-solid-svg-icons/faDownload';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ScrollTarget from 'packages/website/src/components/atoms/ScrollTarget';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import styled, { useTheme } from 'styled-components';
-import UAParser from 'ua-parser-js';
 
 import Container from '../../../components/atoms/Container';
 import { SubTitle, Title } from '../../../components/atoms/Typography';
-import downloadsFetcher, { buildsRepoBaseUrl, Downloads } from '../api/fetcher';
+import useDownloadLinks from '../hooks/use-download-links';
 import BetaBadge from './atoms/BetaBadge';
 
 const Downloader: React.FunctionComponent = () => {
 	const theme = useTheme();
-	const [downloads, setDownloads] = useState<Downloads>();
-
-	useEffect(() => {
-		downloadsFetcher().then(response => {
-			setDownloads(response);
-		});
-	}, []);
-
-	useEffect(() => {
-		const ua = new UAParser(window.navigator.userAgent);
-		const os = ua.getOS();
-	}, [window.navigator.userAgent]);
+	const { downloads, getSiliconDownloadPath } = useDownloadLinks();
 
 	if (!downloads)
 		return null;
-
-	function getSiliconDownloadPath() {
-		const armFile = downloads!.macOS!.files.find(f => f.url.endsWith('arm64-mac.zip'));
-
-		return `${buildsRepoBaseUrl}/${armFile?.url}`;
-	}
 
 	return (
 		<Wrapper>
