@@ -20,11 +20,11 @@ const AppContainer: React.FunctionComponent = ({ children }) => (
 					<NavItem href={'https://docs.getbeak.app'}>
 						{'Docs'}
 					</NavItem>
-					<NavItem href={'mailto:info@getbeak.app'}>
-						{'Support'}
+					<NavItem href={'https://blog.getbeak.app'}>
+						{'Blog'}
 					</NavItem>
 					<NavItem href={'https://twitter.com/beakapp'}>
-						{'Tiwtter'}
+						{'Twitter'}
 					</NavItem>
 				</NavItems>
 			</Container>
