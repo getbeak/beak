@@ -13,13 +13,22 @@ jobs:
         id: short-sha
         with:
           length: 6
+
       - name: Setup Node.js
         uses: actions/setup-node@v2-beta
         with:
           node-version: '14'
 
+      - name: Cache dependencies
+        uses: actions/cache@v2.1.4
+        with:
+          path: /tmp/yarncache
+          key: v1-yarn-cache-${{ hashFiles('yarn.lock') }} }}
+          restore-keys: |
+            v1-yarn-cache-
+
       - name: Install modules
-        run: yarn
+        run: yarn install --frozen-lockfile --cache-folder /tmp/yarncache
 
       - name: Build and package
         if: github.ref == 'refs/heads/master'
