@@ -11,6 +11,7 @@ import UAParser from 'ua-parser-js';
 import Container from '../../../components/atoms/Container';
 import { SubTitle, Title } from '../../../components/atoms/Typography';
 import downloadsFetcher, { buildsRepoBaseUrl, Downloads } from '../api/fetcher';
+import BetaBadge from './atoms/BetaBadge';
 
 const Downloader: React.FunctionComponent = () => {
 	const theme = useTheme();
@@ -41,7 +42,10 @@ const Downloader: React.FunctionComponent = () => {
 			<ScrollTarget target={'downloads'} />
 
 			<Container>
-				<Title>{'Download'}</Title>
+				<BadgedTitle>
+					<BetaBadge>{'Beta'}</BetaBadge>
+					{'Download'}
+				</BadgedTitle>
 				<SubTitle>{'Grab the freshest build of Beak for whatever device you own'}</SubTitle>
 
 				<Grid>
@@ -90,8 +94,14 @@ const Downloader: React.FunctionComponent = () => {
 };
 
 const Wrapper = styled.div`
-	margin-bottom: 60px;
+	margin: min(3vw, 60px) 0;
 	text-align: center;
+`;
+
+const BadgedTitle = styled(Title)`
+	position: relative;
+	width: fit-content;
+	margin: 0 auto;
 `;
 
 const Grid = styled.div`

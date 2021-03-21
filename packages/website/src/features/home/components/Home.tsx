@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
+import Alert from '../../../components/atoms/Alert';
 import Container from '../../../components/atoms/Container';
 import Downloader from '../../downloader/components/Downloader';
 import BeakOverview from './molecules/BeakOverview';
@@ -24,14 +25,20 @@ const Home: React.FunctionComponent = () => (
 				</SubTitle>
 
 				<HeaderCta />
+
+				<Alert color={'info'} title={'Pardon our dust'}>
+					{'Beak is currently in closed Beta. If you\'d like access then '}
+					{'please send a DM to '}
+					<a href={'https://twitter.com/beakapp'}>{'@beakapp'}</a>
+				</Alert>
+
 				<SneakPeak />
 			</Container>
 		</Header>
 		<Main>
 			<FeatureOverview />
-			<BeakOverview />
-
 			<Downloader />
+			<BeakOverview />
 
 			<FeatureHighlight
 				flipped
