@@ -14,9 +14,6 @@ jobs:
         with:
           length: 6
 
-      - name: Install Snapcraft
-        uses: samuelmeuli/action-snapcraft@v1
-
       - name: Setup Node.js
         uses: actions/setup-node@v2-beta
         with:

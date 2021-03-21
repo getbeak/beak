@@ -54,5 +54,8 @@
         "arch": ["x64", "ia32"]
       }
     ]
+  },
+  "linux": {
+    "target": "AppImage"
   }
 }
