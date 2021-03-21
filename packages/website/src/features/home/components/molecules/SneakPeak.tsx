@@ -30,7 +30,11 @@ const pulse = keyframes`
 const SneakPeak: React.FunctionComponent = () => (
 	<Wrapper>
 		<Gradient />
-		<AppImage alt={'The Beak application'} src={'/assets/home.png'} />
+		<AppPicture>
+			<source srcSet={'/assets/home.webp'} type={'image/webp'} />
+			<source srcSet={'/assets/home.png'} type={'image/png'} />
+			<AppImage src={'/assets/home.png'} alt={'The Beak application!'} />
+		</AppPicture>
 	</Wrapper>
 );
 
@@ -63,6 +67,11 @@ const Gradient = styled.div`
 		#ff81a7AA 60deg,
 		#1A1E2DAA 360deg
 	);
+
+const AppPicture = styled.picture`
+	z-index: 2;
+	max-width: 100%;
+	object-fit: contain;
 `;
 
 const AppImage = styled.img`
