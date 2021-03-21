@@ -46,19 +46,6 @@ jobs:
         if: github.ref != 'refs/heads/master'
         run: yarn build
 
-      - name: Delete stupid folders
-        run: |
-          rm -rf ./packages/electron-host/dist-electron/.icon-icns
-          rm -rf ./packages/electron-host/dist-electron/.icon-ico
-          rm -rf ./packages/electron-host/dist-electron/mac
-          rm -rf ./packages/electron-host/dist-electron/mac-arm64
-          rm -rf ./packages/electron-host/dist-electron/win-unpacked
-          rm -rf ./packages/electron-host/dist-electron/win-ia32-unpacked
-
-      - name: Write commit hash
-        if: github.ref == 'refs/heads/master'
-        run: mkdir current; echo "commits/${{ github.sha }}/" >> ./current/current
-
       - name: Upload preview website to S3
         uses: shallwefootball/upload-s3-action@v1.1.2
         with:
