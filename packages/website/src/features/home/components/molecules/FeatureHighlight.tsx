@@ -24,7 +24,11 @@ const FeatureHighlight: React.FunctionComponent<FeatureHighlightProps> = props =
 						<SubTitle>{description}</SubTitle>
 					</DetailContainer>
 					<VisualContainer>
-						<HighlightAsset src={`/assets/${asset}.png`} />
+						<picture>
+							<source srcSet={`/assets/${asset}.jpg`} type={'image/webp'} />
+							<source srcSet={`/assets/${asset}.jpg`} type={'image/jpeg'} />
+							<HighlightAsset src={`/assets/${asset}.jpg`} />
+						</picture>
 					</VisualContainer>
 				</Grid>
 			</Container>
@@ -70,6 +74,10 @@ const Grid = styled.div<{ flipped: boolean | undefined }>`
 		flex-direction: column;
 		text-align: center;
 		padding: 0;
+
+		> ${DetailContainer}, > ${VisualContainer} {
+			margin: 0;
+		}
 
 		> ${DetailContainer} {
 			margin-bottom: 20px;
