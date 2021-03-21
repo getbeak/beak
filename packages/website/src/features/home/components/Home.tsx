@@ -2,8 +2,8 @@ import React from 'react';
 import styled from 'styled-components';
 
 import Container from '../../../components/atoms/Container';
+import Downloader from '../../downloader/components/Downloader';
 import BeakOverview from './molecules/BeakOverview';
-import Downloader from './molecules/Downloader';
 import FeatureHighlight from './molecules/FeatureHighlight';
 import FeatureOverview from './molecules/FeatureOverview';
 import HeaderCta from './molecules/HeaderCta';

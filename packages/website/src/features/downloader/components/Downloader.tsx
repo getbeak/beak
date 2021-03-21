@@ -2,20 +2,37 @@ import { faApple, faLinux,faWindows } from '@fortawesome/free-brands-svg-icons';
 import { faDownload } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ScrollTarget from 'packages/website/src/components/atoms/ScrollTarget';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled, { useTheme } from 'styled-components';
 import UAParser from 'ua-parser-js';
 
-import Container from '../../../../components/atoms/Container';
-import { SubTitle, Title } from '../../../../components/atoms/Typography';
+import Container from '../../../components/atoms/Container';
+import { SubTitle, Title } from '../../../components/atoms/Typography';
+import downloadsFetcher, { buildsRepoBaseUrl, Downloads } from '../api/fetcher';
 
 const Downloader: React.FunctionComponent = () => {
 	const theme = useTheme();
+	const [downloads, setDownloads] = useState<Downloads>();
+
+	useEffect(() => {
+		downloadsFetcher().then(response => {
+			setDownloads(response);
+		});
+	}, []);
 
 	useEffect(() => {
 		const ua = new UAParser(window.navigator.userAgent);
 		const os = ua.getOS();
 	}, [window.navigator.userAgent]);
+
+	if (!downloads)
+		return null;
+
+	function getSiliconDownloadPath() {
+		const armFile = downloads!.macOS!.files.find(f => f.url.endsWith('arm64-mac.zip'));
+
+		return `${buildsRepoBaseUrl}/${armFile?.url}`;
+	}
 
 	return (
 		<Wrapper>
@@ -32,12 +49,12 @@ const Downloader: React.FunctionComponent = () => {
 							size={'4x'}
 						/>
 
-						<DownloadButton href={'#download'}>
+						<DownloadButton href={downloads.macOS!.downloadPath}>
 							<FontAwesomeIcon icon={faDownload} color={theme.ui.textOnAction} />
 							{'Download for Mac (Intel)'}
 						</DownloadButton>
 						<SiliconExplainer>{'👆 Most common'}</SiliconExplainer>
-						<DownloadButton href={'#download'}>
+						<DownloadButton href={getSiliconDownloadPath()}>
 							<FontAwesomeIcon icon={faDownload} color={theme.ui.textOnAction} />
 							{'Download for Mac (Silicon)'}
 						</DownloadButton>
@@ -48,7 +65,7 @@ const Downloader: React.FunctionComponent = () => {
 							size={'4x'}
 						/>
 
-						<DownloadButton href={'#download'}>
+						<DownloadButton href={downloads.windows!.path}>
 							<FontAwesomeIcon icon={faDownload} color={theme.ui.textOnAction} />
 							{'Download for Windows'}
 						</DownloadButton>
@@ -59,7 +76,7 @@ const Downloader: React.FunctionComponent = () => {
 							size={'4x'}
 						/>
 
-						<DownloadButton href={'#download'}>
+						<DownloadButton href={downloads.linux!.path}>
 							<FontAwesomeIcon icon={faDownload} color={theme.ui.textOnAction} />
 							{'Download for Linux'}
 						</DownloadButton>
