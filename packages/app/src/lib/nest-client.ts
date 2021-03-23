@@ -123,7 +123,7 @@ export default class NestClient {
 		});
 
 		if (response.subscription !== 'beak_alpha')
-			throw new Squawk('user_not_alpha_enrolled');
+			throw new Squawk('user_not_beta_enrolled');
 	}
 
 	private async refresh() {

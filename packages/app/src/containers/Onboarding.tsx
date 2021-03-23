@@ -121,9 +121,11 @@ const Onboarding: React.FunctionComponent = () => {
 			<DragBar />
 
 			<Container>
-				<Title>{'Welcome to the Beak α!'}</Title>
+				<Title>{'Welcome to the super secret Beak Beta!'}</Title>
 				<SubTitle>
-					{'To get started please enter your alpha enrolled email'}
+					{'Please request a magic link with your Beta enrolled email. If you don\'t have access yet please '}
+					{'visit '}
+					<a href={'https://getbeak.app'}>{'https://getbeak.app'}</a>
 				</SubTitle>
 
 				<FormInput>
