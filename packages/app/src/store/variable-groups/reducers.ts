@@ -137,6 +137,13 @@ const variableGroupsReducer = createReducer(initialState, builder => {
 			const { group, variableGroup } = action.payload;
 
 			state.selectedGroups[variableGroup] = group;
+		})
+
+		.addCase(actions.setLatestWrite, (state, { payload }) => {
+			state.latestWrite = payload;
+		})
+		.addCase(actions.setWriteDebounce, (state, { payload }) => {
+			state.writeDebouncer = payload;
 		});
 });
 

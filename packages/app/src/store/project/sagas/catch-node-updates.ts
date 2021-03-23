@@ -21,7 +21,7 @@ export default function* catchNodeUpdatesWorker({ payload }: PayloadAction<Reque
 	yield put(actions.setWriteDebounce({ requestId, nonce }));
 	yield delay(500); // 0.5 seconds
 
-	const debounce = yield select((s: ApplicationState) => s.global.project.writeDebouncer[requestId]);
+	const debounce: string = yield select((s: ApplicationState) => s.global.project.writeDebouncer[requestId]);
 
 	// This prevents us writing the file too often while data is changing
 	if (debounce !== nonce)

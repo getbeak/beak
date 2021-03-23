@@ -48,7 +48,7 @@ export default function* workerStartProject({ payload }: PayloadAction<string>) 
 				type: 'error',
 				title: 'Unsupported project version',
 				message: 'The project you opened is no longer supported by Beak',
-				detail: 'Message @0xdeafcafe on twitter for support.',
+				detail: 'Message @beakapp on twitter for support.',
 			});
 		} else {
 			yield call([ipcDialogService, ipcDialogService.showMessageBox], {
@@ -135,7 +135,7 @@ function* handleFolder(event: Event) {
 	switch (event.type) {
 		case 'addDir': {
 			const node: FolderNode = yield call(readFolderNode, event.path);
-			const existingNode = yield select((s: ApplicationState) => s.global.project.tree[node.id]);
+			const existingNode: FolderNode = yield select((s: ApplicationState) => s.global.project.tree[node.id]);
 
 			// This is to avoid a re-rendering bug due to chokidar firing this event for seemingly no reason.
 			if (existingNode)
@@ -175,7 +175,7 @@ function* handleRequest(event: Event) {
 	switch (event.type) {
 		case 'change':
 		case 'add': {
-			const node = yield call(readRequestNode, event.path);
+			const node: RequestNode = yield call(readRequestNode, event.path);
 
 			yield put(actions.insertRequestNode(node));
 

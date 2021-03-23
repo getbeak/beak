@@ -20,6 +20,9 @@ export const ActionTypes = {
 	REMOVE_ITEM: '@beak/global/variable-groups/REMOVE_ITEM',
 
 	CHANGE_SELECTED_GROUP_ITEM: '@beak/global/variable-groups/CHANGE_SELECTED_GROUP_ITEM',
+
+	SET_LATEST_WRITE: '@beak/global/variable-groups/SET_LATEST_WRITE',
+	SET_WRITE_DEBOUNCE: '@beak/global/variable-groups/SET_WRITE_DEBOUNCE',
 };
 
 export interface State {
@@ -30,6 +33,9 @@ export interface State {
 	variableGroups: VariableGroups;
 
 	selectedGroups: Record<string, string>;
+
+	latestWrite?: number;
+	writeDebouncer: string;
 }
 
 export const initialState: State = {
@@ -38,6 +44,9 @@ export const initialState: State = {
 	variableGroups: {},
 
 	selectedGroups: {},
+
+	latestWrite: 0,
+	writeDebouncer: '',
 };
 
 export interface UpdateVgPayload {

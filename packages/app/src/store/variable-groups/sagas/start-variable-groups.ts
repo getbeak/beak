@@ -3,8 +3,9 @@ import createFsEmitter, { scanDirectoryRecursively, ScanResult } from '@beak/app
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { VariableGroups } from '@beak/common/types/beak-project';
 import { PayloadAction } from '@reduxjs/toolkit';
-import { call, put, take } from 'redux-saga/effects';
+import { call, put, select, take } from 'redux-saga/effects';
 
+import { ApplicationState } from '../..';
 import * as actions from '../actions';
 
 const { remote } = window.require('electron');
@@ -36,6 +37,19 @@ export default function* workerStartVariableGroups({ payload }: PayloadAction<st
 		// Skip non json files
 		if (path.extname(result.path) !== '.json')
 			continue;
+
+		// Protection to only read changes if they haven't been recently written by Beak
+		if (result.type === 'change') {
+			const lastWrite: number = yield select((s: ApplicationState) => s.global.variableGroups.latestWrite);
+
+			if (lastWrite) {
+				const now = Date.now();
+				const expiry = lastWrite + 1000; // 1 second
+
+				if (expiry > now)
+					continue;
+			}
+		}
 
 		if (['add', 'change'].includes(result.type)) {
 			const { file, name } = yield call(readVariableGroup, result.path);
