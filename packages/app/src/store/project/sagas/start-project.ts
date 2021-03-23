@@ -79,10 +79,22 @@ export default function* workerStartProject({ payload }: PayloadAction<string>) 
 		if (!isDirectory && path.extname(result.path) !== '.json')
 			continue;
 
-		if (isDirectory)
-			yield handleFolder(result);
-		else
-			yield handleRequest(result);
+		try {
+			if (isDirectory)
+				yield handleFolder(result);
+			else
+				yield handleRequest(result);
+		} catch (error) {
+			yield call([ipcDialogService, ipcDialogService.showMessageBox], {
+				type: 'error',
+				title: 'Project data error',
+				message: 'There was a problem reading a file or directory in your project',
+				detail: [
+					error.message,
+					error.stack,
+				].join('\n'),
+			});
+		}
 	}
 }
 

@@ -1,5 +1,6 @@
 import { readVariableGroup } from '@beak/app/lib/beak-variable-group';
 import createFsEmitter, { scanDirectoryRecursively, ScanResult } from '@beak/app/lib/fs-emitter';
+import { ipcDialogService } from '@beak/app/lib/ipc';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { VariableGroups } from '@beak/common/types/beak-project';
 import { PayloadAction } from '@reduxjs/toolkit';
@@ -52,13 +53,37 @@ export default function* workerStartVariableGroups({ payload }: PayloadAction<st
 		}
 
 		if (['add', 'change'].includes(result.type)) {
-			const { file, name } = yield call(readVariableGroup, result.path);
+			try {
+				const { file, name } = yield call(readVariableGroup, result.path);
 
-			yield put(actions.updateVg({ name, file }));
+				yield put(actions.updateVg({ name, file }));
+			} catch (error) {
+				yield call([ipcDialogService, ipcDialogService.showMessageBox], {
+					type: 'error',
+					title: 'Project data error',
+					message: 'There was a problem reading a variable group file in your project',
+					detail: [
+						error.message,
+						error.stack,
+					].join('\n'),
+				});
+			}
 		} else if (result.type === 'unlink') {
-			const vgName = path.basename(result.path, path.extname(result.path));
+			try {
+				const vgName = path.basename(result.path, path.extname(result.path));
 
-			yield put(actions.removeVg(vgName));
+				yield put(actions.removeVg(vgName));
+			} catch (error) {
+				yield call([ipcDialogService, ipcDialogService.showMessageBox], {
+					type: 'error',
+					title: 'Project data error',
+					message: 'There was a problem deleting a variable group from your project',
+					detail: [
+						error.message,
+						error.stack,
+					].join('\n'),
+				});
+			}
 		}
 	}
 }
