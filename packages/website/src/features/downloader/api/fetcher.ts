@@ -20,7 +20,7 @@ interface Update {
 	releaseDate: string;
 }
 
-const updateChannel = 'alpha';
+const updateChannel = 'beta';
 
 export const buildsRepoBaseUrl = 'https://builds.getbeak.app';
 
