@@ -43,7 +43,7 @@ const Wrapper = styled.div`
 	grid-template: 1fr / 1fr;
 	place-items: center;
 
-	margin-top: min(10vw, 150px);
+	margin-top: min(10vw, 75px);
 
 	> * {
 		grid-column: 1 / 1;
@@ -63,9 +63,8 @@ const Gradient = styled.div`
 		from 0 at 45% 65%,
 		#d45d80AA 0deg,
 		#333399AA 120deg,
-		#8d40f8AA 180deg,
-		#ff81a7AA 60deg,
-		#1A1E2DAA 360deg
+		#FC3233AA 180deg,
+		#ff81a7AA 260deg
 	);
 
 	@media (max-width: 676px) {

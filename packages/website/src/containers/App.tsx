@@ -18,16 +18,32 @@ const AppContainer: React.FunctionComponent = ({ children }) => {
 						{'Beak'}
 					</NavBrand>
 					<NavItems>
-						<NavItem href={'#features'}>
+						<NavItem
+							target={'_blank'}
+							rel={'noopener noreferrer nofollow'}
+							href={'#features'}
+						>
 							{'Features'}
 						</NavItem>
-						<NavItem href={'https://docs.getbeak.app'}>
+						<NavItem
+							target={'_blank'}
+							rel={'noopener noreferrer nofollow'}
+							href={'https://docs.getbeak.app'}
+						>
 							{'Docs'}
 						</NavItem>
-						<NavItem href={'https://blog.getbeak.app'}>
+						<NavItem
+							target={'_blank'}
+							rel={'noopener noreferrer nofollow'}
+							href={'https://blog.getbeak.app'}
+						>
 							{'Blog'}
 						</NavItem>
-						<NavItem href={'https://twitter.com/beakapp'}>
+						<NavItem
+							target={'_blank'}
+							rel={'noopener noreferrer nofollow'}
+							href={'https://twitter.com/beakapp'}
+						>
 							{'Twitter'}
 						</NavItem>
 					</NavItems>

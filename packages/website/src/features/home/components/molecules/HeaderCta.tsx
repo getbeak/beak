@@ -2,17 +2,10 @@ import CtaButton from '@beak/website/src/components/atoms/Buttons';
 import React from 'react';
 import styled from 'styled-components';
 
-const beta = true;
-
 const HeaderCta: React.FunctionComponent = () => (
 	<Wrapper>
-		{beta && <CtaButton href={'#downloads'}>{'Download the beta'}</CtaButton>}
-		{!beta && (
-			<React.Fragment>
-				<CtaButton href={'#stripe'}>{'Buy Beak for $19'}</CtaButton>
-				<CtaButton href={'#downloads'}>{'Download the free trial'}</CtaButton>
-			</React.Fragment>
-		)}
+		<CtaButton href={'#stripe'}>{'Buy Beak for $19'}</CtaButton>
+		<CtaButton href={'#downloads'}>{'Download the free trial'}</CtaButton>
 	</Wrapper>
 );
 
@@ -27,9 +20,9 @@ const Wrapper = styled.div`
 	@media (max-width: 676px) {
 		flex-direction: column;
 
-		/* > ${CtaButton}:first-child {
+		> ${CtaButton}:first-child {
 			margin-bottom: 10px;
-		} */
+		}
 	}
 `;
 

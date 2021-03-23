@@ -7,10 +7,9 @@ import { SubTitle, Title } from '../../../../components/atoms/Typography';
 const BeakOverview: React.FunctionComponent = () => (
 	<Container>
 		<Wrapper>
-			<Title>{'Some product info'}</Title>
+			<Title>{'Some cool product info'}</Title>
 			<SubTitle>
-				{'Some more detailed product information, maybe in a smaller font with a '}
-				{'slightly faded colour...'}
+				{'Not sure what to put here, but we\'re in beta so I\'m excusing my lazyness xo'}
 			</SubTitle>
 
 			<Image src={'/assets/overview.png'} />
@@ -26,6 +25,8 @@ const Wrapper = styled.div`
 const Image = styled.img`
 	max-width: 100%;
 	object-fit: contain;
+
+	border-bottom: 1px solid ${p => p.theme.ui.backgroundBorderSeparator};
 `;
 
 export default BeakOverview;

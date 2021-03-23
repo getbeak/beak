@@ -1,13 +1,12 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import Alert from '../../../components/atoms/Alert';
 import Container from '../../../components/atoms/Container';
+import BetaRegistration from '../../beta-registration/components/BetaRegistration';
 import Downloader from '../../downloader/components/Downloader';
 import BeakOverview from './molecules/BeakOverview';
 import FeatureHighlight from './molecules/FeatureHighlight';
 import FeatureOverview from './molecules/FeatureOverview';
-import HeaderCta from './molecules/HeaderCta';
 import SneakPeak from './molecules/SneakPeak';
 
 const Home: React.FunctionComponent = () => (
@@ -24,13 +23,7 @@ const Home: React.FunctionComponent = () => (
 					{'development fast, frictionless, and dare we say... fun'}
 				</SubTitle>
 
-				<HeaderCta />
-
-				<Alert color={'info'} title={'Pardon our dust'}>
-					{'Beak is currently in closed Beta. If you\'d like access then '}
-					{'please send a DM to '}
-					<a href={'https://twitter.com/beakapp'}>{'@beakapp'}</a>
-				</Alert>
+				<BetaRegistration />
 
 				<SneakPeak />
 			</Container>

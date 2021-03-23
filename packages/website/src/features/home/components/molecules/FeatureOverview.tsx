@@ -120,7 +120,7 @@ const FeatureOverview: React.FunctionComponent = () => {
 						</CardTitle>
 						<CardBody>
 							{'Wether you\'re on macOS, Windows, or Linux. Beak will '}
-							{'look, work, and most importantly, feel the same. '}
+							{'look, work, and most importantly, feel the same.'}
 						</CardBody>
 					</Card>
 				</CardGrid>
@@ -134,8 +134,8 @@ const Wrapper = styled.section`
 `;
 
 const FeatureTitle = styled.h3`
-	margin: 10px 0;
-	margin-bottom: 35px;
+	margin: 30px 0;
+	margin-bottom: 55px;
 	text-align: center;
 	font-size: 30px;
 	font-weight: 100;
