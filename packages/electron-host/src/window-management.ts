@@ -82,7 +82,7 @@ export function closeWindow(windowId: number) {
 }
 
 export function createWelcomeWindow() {
-	const existingWindow = stackMap['welcome'];
+	const existingWindow = stackMap.welcome;
 
 	if (existingWindow && windowStack[existingWindow]) {
 		windowStack[existingWindow].focus();
@@ -100,7 +100,7 @@ export function createWelcomeWindow() {
 
 	const window = createWindow(windowOpts, 'welcome');
 
-	stackMap['welcome'] = window.id;
+	stackMap.welcome = window.id;
 }
 
 export function createAboutWindow() {
