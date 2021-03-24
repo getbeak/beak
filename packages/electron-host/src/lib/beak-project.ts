@@ -105,6 +105,7 @@ async function ensureDirEmpty(path: string) {
 async function createProjectFile(projectPath: string, name: string) {
 	const projectFilePath = path.join(projectPath, 'project.json');
 	const file: ProjectFile = {
+		id: ksuid.generate('project').toString(),
 		name,
 		version: '0.2.0',
 	};

@@ -4,6 +4,7 @@ While we don't use the environment portion of the KSUID (for obvious reasons), w
 
 | Resource | Description |
 | -------- | ----------- |
+| `project` | A Beak Project ID. |
 | `jsonentry` | A unique json entry, used in the body of the rich json editor. |
 | `urlencodeditem` | A url encoded form item, used in the body of the rich url encoded form editor. |
 | `request` | An individual request, used in the request json files. |

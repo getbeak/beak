@@ -3,11 +3,17 @@
 	"additionalProperties": false,
 
 	"required": [
+		"id",
 		"version",
 		"name"
 	],
 
 	"properties": {
+		"id": {
+			"type": "string",
+			"minLength": 1
+		},
+
 		"version": {
 			"type": "string",
 			"minLength": 1
