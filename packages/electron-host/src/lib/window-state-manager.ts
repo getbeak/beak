@@ -64,26 +64,18 @@ export default class WindowStateManager {
 		// TODO(afr): Set bounds and display
 		this.window.setSize(this.state.width, this.state.height);
 
-		this.window.on('resize', this.stateChangedHandler);
-		this.window.on('move', this.stateChangedHandler);
-		this.window.on('close', this.closeHandler);
-		this.window.on('closed', this.closedHandler);
+		this.window.on('resize', () => this.stateChangedHandler());
+		this.window.on('move', () => this.stateChangedHandler());
+		this.window.on('close', () => this.closeHandler());
+		this.window.on('closed', () => this.closedHandler());
 	}
 
 	detach() {
 		if (!this.window)
 			return;
 
-		this.window.removeListener('resize', this.stateChangedHandler);
-		this.window.removeListener('move', this.stateChangedHandler);
-
 		if (this.stateChangeTimer)
 			global.clearTimeout(this.stateChangeTimer);
-
-		this.window.removeListener('close', this.closeHandler);
-		this.window.removeListener('closed', this.closedHandler);
-
-		this.window = void 0;
 	}
 
 	private stateChangedHandler() {
@@ -132,14 +124,10 @@ export default class WindowStateManager {
 	}
 
 	private saveState() {
-		if (this.window)
-			this.updateState();
-
 		const windowStates = persistentStore.get('windowStates');
 
 		windowStates[this.windowKey] = this.state;
-
-		persistentStore.set(windowStates);
+		persistentStore.set('windowStates', windowStates);
 
 		this.window = void 0;
 	}
