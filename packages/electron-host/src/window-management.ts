@@ -154,7 +154,7 @@ export function createOnboardingWindow() {
 		resizable: false,
 		autoHideMenuBar: true,
 		titleBarStyle: 'hiddenInset',
-		title: 'Welcome to the Beak Alpha!',
+		title: 'Welcome to the Beak Beta!',
 	};
 
 	const window = createWindow(windowOpts, 'onboarding');
