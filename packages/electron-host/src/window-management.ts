@@ -2,6 +2,7 @@ import { BrowserWindow, BrowserWindowConstructorOptions } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
 
+import WindowStateManager from './lib/window-state-manager';
 import { staticPath } from './utils/static-path';
 
 type Container = 'about' | 'project-main' | 'welcome' | 'onboarding';
@@ -48,6 +49,7 @@ function createWindow(
 	container: Container,
 	additionalParams?: Record<string, string>,
 ) {
+	const windowStateManager = new WindowStateManager(container, windowOpts);
 	const window = new BrowserWindow({
 		webPreferences: {
 			enableRemoteModule: true,
@@ -56,6 +58,8 @@ function createWindow(
 		show: false,
 		...windowOpts,
 	});
+
+	windowStateManager.attach(window);
 
 	window.loadURL(generateLoadUrl(container, window.id, additionalParams));
 	window.on('ready-to-show', () => {
