@@ -1,6 +1,5 @@
 /* eslint-disable no-param-reassign */
 import { TypedObject } from '@beak/common/helpers/typescript';
-// @ts-ignore
 import ksuid from '@cuvva/ksuid';
 import { createReducer } from '@reduxjs/toolkit';
 

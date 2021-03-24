@@ -12,7 +12,6 @@ import {
 	ToggleKeyValue,
 } from '@beak/common/dist/types/beak-project';
 import { TypedObject } from '@beak/common/helpers/typescript';
-// @ts-ignore
 import ksuid from '@cuvva/ksuid';
 import { call, put, select } from 'redux-saga/effects';
 

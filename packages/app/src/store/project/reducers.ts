@@ -6,7 +6,6 @@ import {
 	ValueEntries,
 } from '@beak/common/types/beak-json-editor';
 import { FolderNode, RequestBodyJson, RequestBodyUrlEncodedForm, RequestNode } from '@beak/common/types/beak-project';
-// @ts-ignore
 import ksuid from '@cuvva/ksuid';
 import { createReducer } from '@reduxjs/toolkit';
 

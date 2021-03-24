@@ -1,5 +1,4 @@
-import { RequestNode, RequestNodeFile } from '@beak/common/types/beak-project';
-// @ts-ignore
+import { RequestNode, RequestNodeFile } from '@beak/common/types/beak-project';@ts-ignore
 import ksuid from '@cuvva/ksuid';
 
 import { requestSchema } from './schemas';

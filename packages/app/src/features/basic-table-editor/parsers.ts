@@ -1,6 +1,5 @@
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { ToggleKeyValue } from '@beak/common/types/beak-project';
-// @ts-ignore
 import ksuid from '@cuvva/ksuid';
 
 import { parseValueParts } from '../variable-input/parser';

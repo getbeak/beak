@@ -1,6 +1,5 @@
 import { TypedObject } from '@beak/common/src/helpers/typescript';
 import { ProjectFile, RequestNodeFile, VariableGroup } from '@beak/common/types/beak-project';
-// @ts-ignore
 import * as ksuid from '@cuvva/ksuid';
 import * as fs from 'fs-extra';
 import git from 'isomorphic-git';

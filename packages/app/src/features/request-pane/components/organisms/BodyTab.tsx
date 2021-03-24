@@ -7,7 +7,6 @@ import actions, { requestBodyTextChanged } from '@beak/app/store/project/actions
 import { RequestBodyTypeChangedPayload } from '@beak/app/store/project/types';
 import { createDefaultOptions } from '@beak/app/utils/monaco';
 import { RequestBodyType, RequestNode, ValueParts } from '@beak/common/types/beak-project';
-// @ts-ignore
 import ksuid from '@cuvva/ksuid';
 import React from 'react';
 import MonacoEditor from 'react-monaco-editor';

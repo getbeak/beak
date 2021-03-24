@@ -1,6 +1,5 @@
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { Entries, EntryMap, NamedEntries } from '@beak/common/types/beak-json-editor';
-// @ts-ignore
 import ksuid from '@cuvva/ksuid';
 
 import { parseValueParts } from '../variable-input/parser';
