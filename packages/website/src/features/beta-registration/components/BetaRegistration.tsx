@@ -44,9 +44,7 @@ const Body = styled.p`
 	margin-top: 5px;
 `;
 
-const InterestForm = styled.div`
-
-`;
+const InterestForm = styled.div``;
 
 const Input = styled.input`
 	background-color: ${p => p.theme.ui.surface};
@@ -81,6 +79,8 @@ const Button = styled.input`
 
 	width: 100%;
 	font-size: 17px;
+
+	-webkit-appearance: none;
 `;
 
 export default BetaRegistration;
