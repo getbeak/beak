@@ -1,5 +1,3 @@
-import RendererTab from '@beak/app/components/molecules/RendererTab';
-import RequestTab from '@beak/app/components/molecules/RequestTab';
 import { checkShortcut } from '@beak/app/lib/keyboard-shortcuts';
 import { actions } from '@beak/app/store/project';
 import { TabItem } from '@beak/app/store/project/types';
@@ -9,6 +7,8 @@ import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 
 import TB from '../../../components/atoms/TabBar';
+import RendererTab from './molecules/RendererTab';
+import RequestTab from './molecules/RequestTab';
 import Router from './Router';
 
 interface TabViewProps {

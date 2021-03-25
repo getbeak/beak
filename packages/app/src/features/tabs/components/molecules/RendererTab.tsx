@@ -3,8 +3,8 @@ import { RendererTabItem } from '@beak/app/store/project/types';
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import TabContextMenuWrapper from '../atoms/TabContextMenuWrapper';
-import TabItem from '../atoms/TabItem';
+import TabItem from '../../../../components/atoms/TabItem';
+import TabContextMenuWrapper from '../atoms/RendererTabContextMenuWrapper';
 
 interface RendererTabProps {
 	tab: RendererTabItem;

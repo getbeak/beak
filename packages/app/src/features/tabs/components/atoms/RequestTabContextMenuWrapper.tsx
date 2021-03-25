@@ -7,12 +7,12 @@ import { clipboard, MenuItemConstructorOptions } from 'electron';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-interface TabContextMenuWrapperProps {
+interface RequestTabContextMenuWrapperProps {
 	tab: TabItem;
 	target: HTMLElement | undefined;
 }
 
-const TabContextMenuWrapper: React.FunctionComponent<TabContextMenuWrapperProps> = props => {
+const RequestTabContextMenuWrapper: React.FunctionComponent<RequestTabContextMenuWrapperProps> = props => {
 	const dispatch = useDispatch();
 	const { tab, target, children } = props;
 	const node = useSelector(s => s.global.project.tree[tab.payload]);
@@ -101,4 +101,4 @@ const TabContextMenuWrapper: React.FunctionComponent<TabContextMenuWrapperProps>
 	);
 };
 
-export default TabContextMenuWrapper;
+export default RequestTabContextMenuWrapper;
