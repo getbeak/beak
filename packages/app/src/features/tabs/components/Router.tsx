@@ -17,7 +17,7 @@ const Router: React.FunctionComponent<RouterProps> = ({ selectedTab }) => {
 	const selectedRequest = useSelector(s => s.global.project.tree[selectedTab?.payload || '']);
 
 	if (!selectedTab)
-		return null;
+		return <NotTheTabYourLookingFor />;
 
 	if (selectedTab.type === 'request') {
 		if (!selectedRequest)
