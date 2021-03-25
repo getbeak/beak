@@ -30,14 +30,15 @@ export default class WindowStateManager {
 
 	constructor(windowKey: string, windowOptions: BrowserWindowConstructorOptions) {
 		const existingState = persistentStore.get('windowStates')[windowKey];
-		const cursor = screen.getCursorScreenPoint();
-		const display = screen.getDisplayNearestPoint(cursor);
 
 		this.windowKey = windowKey;
 
 		if (existingState) {
 			this.state = existingState;
 		} else {
+			const cursor = screen.getCursorScreenPoint();
+			const display = screen.getDisplayNearestPoint(cursor);
+
 			this.state = {
 				height: windowOptions.height!,
 				width: windowOptions.width!,
@@ -56,12 +57,16 @@ export default class WindowStateManager {
 	attach(window: BrowserWindow) {
 		this.window = window;
 
+		this.ensureWindowBoundsAcceptable();
+
 		if (this.state.isMaximized)
 			this.window.maximize();
-		if (this.state.isFullScreen)
+		else if (this.state.isFullScreen)
 			this.window.setFullScreen(true);
+		// else
 
-		// TODO(afr): Set bounds and display
+		this.window.setBounds(this.state.display.bounds);
+		this.window.setPosition(this.state.x, this.state.y);
 		this.window.setSize(this.state.width, this.state.height);
 
 		this.window.on('resize', () => this.stateChangedHandler());
@@ -82,7 +87,7 @@ export default class WindowStateManager {
 		if (this.stateChangeTimer)
 			global.clearTimeout(this.stateChangeTimer);
 
-		this.stateChangeTimer = global.setTimeout(this.updateState, 250);
+		this.stateChangeTimer = setTimeout(() => this.updateState(), 100);
 	}
 
 	private closeHandler() {
@@ -124,11 +129,38 @@ export default class WindowStateManager {
 	}
 
 	private saveState() {
+		console.log('a');
+		console.log(this.state);
+
 		const windowStates = persistentStore.get('windowStates');
 
 		windowStates[this.windowKey] = this.state;
 		persistentStore.set('windowStates', windowStates);
 
 		this.window = void 0;
+	}
+
+	private windowWithinBounds(bounds: Rectangle) {
+		/* eslint-disable operator-linebreak */
+		return (
+			this.state.x >= bounds.x &&
+			this.state.y >= bounds.y &&
+			this.state.x + this.state.width <= bounds.x + bounds.width &&
+			this.state.y + this.state.height <= bounds.y + bounds.height
+		);
+		/* eslint-enable operator-linebreak */
+	}
+
+	private ensureWindowBoundsAcceptable() {
+		const visible = screen.getAllDisplays().some(display => this.windowWithinBounds(display.bounds));
+
+		if (!visible) {
+			this.state.x = 0;
+			this.state.y = 0;
+			this.state.display = {
+				id: screen.getPrimaryDisplay().id,
+				bounds: screen.getPrimaryDisplay().bounds,
+			};
+		}
 	}
 }

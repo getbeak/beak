@@ -6,8 +6,7 @@ Beak is still a WIP, so technically there are no supported versions. Yet.
 
 | Version | Supported          |
 | ------- | ------------------ |
-| 0.0.x   | :x: |
-| 0.1.x   | :x: |
+| 1.0.0   | :x: |
 
 ## Reporting a Vulnerability
 
