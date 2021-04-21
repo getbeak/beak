@@ -79,13 +79,7 @@ export interface ResponseOverview {
 export interface VariableGroup {
 	groups: Record<string, string>;
 	items: Record<string, string>;
-	values: Record<string, VariableGroupValue>;
-}
-
-export interface VariableGroupValue {
-	groupId: string;
-	itemId: string;
-	value: ValueParts;
+	values: Record<string, ValueParts>;
 }
 
 export type ValueParts = (string | RealtimeValuePart)[];

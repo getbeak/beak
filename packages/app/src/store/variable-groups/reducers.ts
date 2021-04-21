@@ -1,4 +1,5 @@
 /* eslint-disable no-param-reassign */
+import { generateValueIdent } from '@beak/app/lib/beak-variable-group/utils';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import ksuid from '@cuvva/ksuid';
 import { createReducer } from '@reduxjs/toolkit';
@@ -42,7 +43,8 @@ const variableGroupsReducer = createReducer(initialState, builder => {
 			state.variableGroups![variableGroup].items[ident] = updated;
 		})
 		.addCase(actions.updateValue, (state, action) => {
-			const { groupId, itemId, ident, updated, variableGroup } = action.payload;
+			const { groupId, itemId, updated, variableGroup } = action.payload;
+			const ident = generateValueIdent(groupId, itemId);
 			const vg = state.variableGroups![variableGroup];
 			const exists = ident !== void 0 && vg.values[ident];
 			const empty = updated.length === 0 || (updated.length === 1 && updated[0] === '');
@@ -54,13 +56,9 @@ const variableGroupsReducer = createReducer(initialState, builder => {
 					return;
 				}
 
-				vg.values[ident!].value = updated;
+				vg.values[ident!] = updated;
 			} else {
-				vg.values[ksuid.generate('value').toString()] = {
-					groupId,
-					itemId,
-					value: updated,
-				};
+				vg.values[ident] = updated;
 			}
 		})
 
@@ -68,12 +66,11 @@ const variableGroupsReducer = createReducer(initialState, builder => {
 			if (action.payload === null) {
 				const groupId = ksuid.generate('group').toString();
 				const itemId = ksuid.generate('item').toString();
-				const valueId = ksuid.generate('value').toString();
 
 				state.variableGroups!.Environment = {
 					groups: { [groupId]: 'Production' },
 					items: { [itemId]: 'env_identifier' },
-					values: { [valueId]: { groupId, itemId, value: ['prod'] } },
+					values: { [`${groupId}&${itemId}`]: ['prod'] },
 				};
 
 				return;
@@ -102,32 +99,34 @@ const variableGroupsReducer = createReducer(initialState, builder => {
 		.addCase(actions.removeGroup, (state, action) => {
 			const { id, variableGroup } = action.payload;
 
-			state.variableGroups![variableGroup].values = TypedObject
-				.keys(state.variableGroups![variableGroup].values)
-				.reduce((acc, key) => {
-					const value = state.variableGroups![variableGroup].values[key];
+			// TODO(afr): Remove values belonging to group
+			// state.variableGroups![variableGroup].values = TypedObject
+			// 	.keys(state.variableGroups![variableGroup].values)
+			// 	.reduce((acc, key) => {
+			// 		const value = state.variableGroups![variableGroup].values[key];
 
-					if (value.groupId === id)
-						return acc;
+			// 		if (value.groupId === id)
+			// 			return acc;
 
-					return { ...acc, [key]: value };
-				}, {});
+			// 		return { ...acc, [key]: value };
+			// 	}, {});
 
 			delete state.variableGroups![variableGroup].groups[id];
 		})
 		.addCase(actions.removeItem, (state, action) => {
 			const { id, variableGroup } = action.payload;
 
-			state.variableGroups![variableGroup].values = TypedObject
-				.keys(state.variableGroups![variableGroup].values)
-				.reduce((acc, key) => {
-					const value = state.variableGroups![variableGroup].values[key];
+			// TODO(afr): Remove values belonging to item
+			// state.variableGroups![variableGroup].values = TypedObject
+			// 	.keys(state.variableGroups![variableGroup].values)
+			// 	.reduce((acc, key) => {
+			// 		const value = state.variableGroups![variableGroup].values[key];
 
-					if (value.itemId === id)
-						return acc;
+			// 		if (value.itemId === id)
+			// 			return acc;
 
-					return { ...acc, [key]: value };
-				}, {});
+			// 		return { ...acc, [key]: value };
+			// 	}, {});
 
 			delete state.variableGroups![variableGroup].items[id];
 		})

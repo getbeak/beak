@@ -67,7 +67,6 @@ export interface UpdateEntityPayload {
 export interface UpdateValuePayload extends Omit<UpdateEntityPayload, 'ident' | 'updated'> {
 	groupId: string;
 	itemId: string;
-	ident: string | undefined;
 	updated: ValueParts;
 }
 

@@ -29,19 +29,7 @@
 
 			"patternProperties": {
 				"^.*$": {
-					"type": "object",
-
-					"required": [
-						"groupId",
-						"itemId",
-						"value"
-					],
-
-					"properties": {
-						"groupId": { "type": "string" },
-						"itemId": { "type": "string" },
-						"value": { "type": "array" }
-					}
+					"type": "array"
 				}
 			}
 		}

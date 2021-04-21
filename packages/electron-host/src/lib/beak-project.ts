@@ -49,16 +49,8 @@ export default async function createProject(options: CreationOptions) {
 		values: {},
 	};
 
-	variableGroup.values[ksuid.generate('value').toString()] = {
-		groupId: TypedObject.keys(variableGroup.groups)[0],
-		itemId: TypedObject.keys(variableGroup.items)[0],
-		value: ['prod'],
-	};
-	variableGroup.values[ksuid.generate('value').toString()] = {
-		groupId: TypedObject.keys(variableGroup.groups)[1],
-		itemId: TypedObject.keys(variableGroup.items)[0],
-		value: ['local'],
-	};
+	variableGroup.values[`${TypedObject.keys(variableGroup.groups)[0]}&${TypedObject.keys(variableGroup.items)[0]}`] = ['prod'];
+	variableGroup.values[`${TypedObject.keys(variableGroup.groups)[1]}&${TypedObject.keys(variableGroup.items)[1]}`] = ['local'];
 
 	if (await fs.pathExists(projectPath))
 		throw new Error('project folder already exists');

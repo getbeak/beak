@@ -257,18 +257,19 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, 
 						throw new Error('unknown part');
 
 					const impl = getRealtimeValue(p.type);
+
+					if (!impl) {
+						console.error(`Unknown RTV ${p} ${typeof p} ${p.type}`);
+
+						return null;
+					}
+
 					const name = (() => {
 						if (p.type === 'variable_group_item')
 							return getVariableGroupItemName(p.payload, variableGroups);
 
 						return impl.name;
 					})();
-
-					if (!impl) {
-						console.error(`Unknown RTV ${p.type}`);
-
-						return null;
-					}
 
 					return (
 						<div

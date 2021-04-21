@@ -2,6 +2,7 @@ import DebouncedInput from '@beak/app/components/atoms/DebouncedInput';
 import TabBar from '@beak/app/components/atoms/TabBar';
 import TabItem from '@beak/app/components/atoms/TabItem';
 import TabSpacer from '@beak/app/components/atoms/TabSpacer';
+import { generateValueIdent } from '@beak/app/lib/beak-variable-group/utils';
 import { actions } from '@beak/app/store/variable-groups';
 import { insertNewItem } from '@beak/app/store/variable-groups/actions';
 import { TypedObject } from '@beak/common/dist/helpers/typescript';
@@ -53,6 +54,9 @@ const VariableGroupEditor: React.FunctionComponent = () => {
 		);
 	}
 
+	const groupKeys = variableGroup && TypedObject.keys(variableGroup.groups);
+	const itemKeys = variableGroup && TypedObject.keys(variableGroup.items);
+
 	return (
 		<Container>
 			<TabBar centered>
@@ -76,18 +80,18 @@ const VariableGroupEditor: React.FunctionComponent = () => {
 			</TabBar>
 
 			<TabBody>
-				{variableGroup && TypedObject.keys(variableGroup.groups).length === 0 && (
+				{variableGroup && groupKeys.length === 0 && (
 					<CreateNewSplash type={'group'} variableGroup={tab} />
 				)}
 
-				{variableGroup && TypedObject.keys(variableGroup.groups).length > 0 && (
+				{variableGroup && groupKeys.length > 0 && (
 					<React.Fragment>
 						<Header>
-							<Row cols={TypedObject.keys(variableGroup.groups).length}>
+							<Row cols={groupKeys.length}>
 								<HeaderNameCell>
 									<EmptyInput center disabled value={'Name'} />
 								</HeaderNameCell>
-								{variableGroup && TypedObject.keys(variableGroup.groups).map(k => (
+								{variableGroup && groupKeys.map(k => (
 									<HeaderGroupNameCell key={k}>
 										<StyledDebounce
 											center
@@ -113,8 +117,8 @@ const VariableGroupEditor: React.FunctionComponent = () => {
 						</Header>
 
 						<Body>
-							{variableGroup && TypedObject.keys(variableGroup.items).map(ik => (
-								<Row key={ik} cols={TypedObject.keys(variableGroup.groups).length}>
+							{variableGroup && itemKeys.map(ik => (
+								<Row key={ik} cols={groupKeys.length}>
 									<BodyNameCell>
 										<StyledDebounce
 											innerRef={variableGroup.items[ik] === newItem ? newItemRef : null}
@@ -136,26 +140,17 @@ const VariableGroupEditor: React.FunctionComponent = () => {
 										/>
 									</BodyNameCell>
 
-									{TypedObject.keys(variableGroup.groups).map(gk => {
-										const valueKey = TypedObject.keys(variableGroup.values).find(k => {
-											const value = variableGroup.values[k];
-
-											if (value.groupId === gk && value.itemId === ik)
-												return true;
-
-											return false;
-										});
-
-										const value = variableGroup.values[valueKey || ''];
+									{groupKeys.map(gk => {
+										const key = generateValueIdent(gk, ik);
+										const value = variableGroup.values[key];
 
 										return (
 											<BodyValueCell key={gk}>
 												<VariableInput
-													parts={value?.value || ['']}
+													parts={value || ['']}
 													onChange={parts => {
 														dispatch(actions.updateValue({
 															variableGroup: tab,
-															ident: valueKey,
 															groupId: gk,
 															itemId: ik,
 															updated: parts,
@@ -168,7 +163,7 @@ const VariableGroupEditor: React.FunctionComponent = () => {
 								</Row>
 							))}
 
-							<Row cols={TypedObject.keys(variableGroup.groups).length}>
+							<Row cols={groupKeys.length}>
 								<BodyNameCell>
 									<EmptyInput
 										placeholder={'New item...'}
@@ -180,7 +175,7 @@ const VariableGroupEditor: React.FunctionComponent = () => {
 										}}
 									/>
 								</BodyNameCell>
-								{variableGroup && TypedObject.keys(variableGroup.groups).map(k => (
+								{variableGroup && groupKeys.map(k => (
 									<BodyValueCell key={k}>
 										<EmptyInput disabled />
 									</BodyValueCell>
