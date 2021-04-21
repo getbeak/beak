@@ -12,8 +12,6 @@ export async function readJsonAndValidate<T>(filePath: string, schema: SchemaObj
 	const extension = path.extname(filePath);
 	const name = path.basename(filePath, extension);
 
-	console.log(schema);
-
 	const validator = avj.compile(schema);
 
 	if (!validator(requestFile))
