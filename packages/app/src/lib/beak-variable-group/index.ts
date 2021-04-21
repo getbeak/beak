@@ -1,7 +1,7 @@
 import { VariableGroup } from '@beak/common/types/beak-project';
 
+import { readJsonAndValidate } from '../fs';
 import { variableGroupSchema } from './schema';
-import readJsonAndValidate from './utils';
 
 const { remote } = window.require('electron');
 const fs = remote.require('fs-extra');

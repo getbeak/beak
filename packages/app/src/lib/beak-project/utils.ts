@@ -1,18 +1,6 @@
-import { validate } from 'jsonschema';
-
 const { remote } = window.require('electron');
 const fs = remote.require('fs-extra');
 const path = remote.require('path');
-
-export async function readJsonAndValidate<T>(filePath: string, schema: any) {
-	const requestFile = await fs.readJson(filePath) as T;
-	const extension = path.extname(filePath);
-	const name = path.basename(filePath, extension);
-
-	validate(requestFile, schema, { throwError: true });
-
-	return { file: requestFile, filePath, name, extension };
-}
 
 export async function generateSafeNewPath(name: string, directory: string, extension?: string) {
 	function createPath(name: string) {

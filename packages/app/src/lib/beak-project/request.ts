@@ -1,8 +1,9 @@
 import { RequestNode, RequestNodeFile } from '@beak/common/types/beak-project';
 import ksuid from '@cuvva/ksuid';
 
+import { readJsonAndValidate } from '../fs';
 import { requestSchema } from './schemas';
-import { generateSafeNewPath, readJsonAndValidate } from './utils';
+import { generateSafeNewPath } from './utils';
 
 const { remote } = window.require('electron');
 const path = remote.require('path');

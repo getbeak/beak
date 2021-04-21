@@ -1,6 +1,6 @@
 import { RequestPreference, RequestPreferenceMainTab } from '@beak/common/dist/types/beak-hub';
-import { validate } from 'jsonschema';
 
+import { readJsonAndValidate } from '../fs';
 import BeakHub from '.';
 import { requestPreference } from './schemas';
 
@@ -22,11 +22,9 @@ export default class BeakRequestPreferences {
 			return;
 		}
 
-		const preferenceFile = await fs.readJson(this.requestPreferencePath);
+		const preferenceFile = await readJsonAndValidate<RequestPreference>(this.requestPreferencePath, requestPreference);
 
-		validate(preferenceFile, requestPreference, { throwError: true });
-
-		this.preferences = preferenceFile;
+		this.preferences = preferenceFile.file;
 	}
 
 	async write() {
