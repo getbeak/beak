@@ -103,55 +103,63 @@
 						"json",
 						"url_encoded_form"
 					]
-				},
+				}
+			},
 
-				"allOf": [
-					{
-						"if": {
-							"properties": {
-								"type": { "const": "text" }
-							}
-						},
-						"then": {
-							"properties": {
-								"payload": { "type": "string" }
-							}
+			"allOf": [
+				{
+					"if": {
+						"properties": {
+							"type": { "const": "text" }
 						}
 					},
-					{
-						"if": {
-							"properties": {
-								"type": { "const": "json" }
-							}
-						},
-						"then": {
-							"properties": {
-								"payload": {
-									"type": "object",
-									"properties": {
+					"then": {
+						"properties": {
+							"payload": { "type": "string" }
+						}
+					}
+				},
+				{
+					"if": {
+						"properties": {
+							"type": { "const": "json" }
+						}
+					},
+					"then": {
+						"properties": {
+							"payload": {
+								"type": "object",
+
+								"patternProperties": {
+									"^.*$": {
 										"$ref": "#/definitions/jsonEntry"
 									}
 								}
 							}
 						}
+					}
+				},
+				{
+					"if": {
+						"properties": {
+							"type": { "const": "url_encoded_form" }
+						}
 					},
-					{
-						"if": {
-							"properties": {
-								"type": { "const": "url_encoded_form" }
-							}
-						},
-						"then": {
-							"properties": {
-								"payload": {
-									"type": "object",
-									"properties": { "$ref": "#/definitions/keyValuePair" }
+					"then": {
+						"properties": {
+							"payload": {
+								"type": "object",
+
+								"patternProperties": {
+									"^.*$": {
+										"$ref": "#/definitions/keyValuePair"
+									}
 								}
 							}
 						}
 					}
-				]
-			}
+				}
+			]
 		}
 	},
 
@@ -177,15 +185,21 @@
 
 		"query": {
 			"type": "object",
-			"properties": {
-				"$ref": "#/definitions/keyValuePair"
+
+			"patternProperties": {
+				"^.*$": {
+					"$ref": "#/definitions/keyValuePair"
+				}
 			}
 		},
 
 		"headers": {
 			"type": "object",
-			"properties": {
-				"$ref": "#/definitions/keyValuePair"
+
+			"patternProperties": {
+				"^.*$": {
+					"$ref": "#/definitions/keyValuePair"
+				}
 			}
 		},
 

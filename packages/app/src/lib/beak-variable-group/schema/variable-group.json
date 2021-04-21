@@ -21,8 +21,8 @@
 	],
 
 	"properties": {
-		"groups": { "ref": "#/definitions/mapping" },
-		"items": { "ref": "#/definitions/mapping" },
+		"groups": { "$ref": "#/definitions/mapping" },
+		"items": { "$ref": "#/definitions/mapping" },
 
 		"values": {
 			"type": "object",
