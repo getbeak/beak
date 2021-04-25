@@ -92,7 +92,8 @@ const Container = styled.div`
 `;
 
 const BarOuter = styled.div`
-	background: ${p => p.theme.ui.surfaceHighlight};
+	backdrop-filter: blur(25px);
+	background: ${p => toVibrancyAlpha(p.theme.ui.surfaceHighlight, 0.5)};
 	border: 1px solid ${p => p.theme.ui.blankBackground};
 	box-shadow: 0px 8px 12px 2px ${p => toVibrancyAlpha(p.theme.ui.surfaceFill, 1)};
 
