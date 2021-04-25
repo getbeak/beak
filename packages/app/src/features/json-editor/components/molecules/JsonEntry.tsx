@@ -41,7 +41,7 @@ export const JsonEntry: React.FunctionComponent<JsonEntryProps> = props => {
 
 export function detectName(depth: number, entry: Entries) {
 	if (depth === 0)
-		return '<Root value>';
+		return '<Root>';
 
 	if ((entry as NamedEntries).name !== void 0)
 		return (entry as NamedEntries).name;
