@@ -57,12 +57,7 @@
 				},
 
 				"enabled": { "type": "boolean" },
-
-				"name": {
-					"type": "string",
-					"minLength": 1
-				},
-
+				"name": { "type": "string" },
 				"value": { "$ref": "#/definitions/valueParts" }
 			}
 		},
@@ -77,11 +72,7 @@
 			],
 
 			"properties": {
-				"name": {
-					"type": "string",
-					"minLength": 1
-				},
-
+				"name": { "type": "string" },
 				"value": { "$ref": "#/definitions/valueParts" },
 				"enabled": { "type": "boolean" }
 			}
