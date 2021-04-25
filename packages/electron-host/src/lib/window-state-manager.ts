@@ -129,9 +129,6 @@ export default class WindowStateManager {
 	}
 
 	private saveState() {
-		console.log('a');
-		console.log(this.state);
-
 		const windowStates = persistentStore.get('windowStates');
 
 		windowStates[this.windowKey] = this.state;
