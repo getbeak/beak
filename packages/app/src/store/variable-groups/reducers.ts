@@ -99,34 +99,26 @@ const variableGroupsReducer = createReducer(initialState, builder => {
 		.addCase(actions.removeGroup, (state, action) => {
 			const { id, variableGroup } = action.payload;
 
-			// TODO(afr): Remove values belonging to group
-			// state.variableGroups![variableGroup].values = TypedObject
-			// 	.keys(state.variableGroups![variableGroup].values)
-			// 	.reduce((acc, key) => {
-			// 		const value = state.variableGroups![variableGroup].values[key];
-
-			// 		if (value.groupId === id)
-			// 			return acc;
-
-			// 		return { ...acc, [key]: value };
-			// 	}, {});
+			TypedObject
+				.keys(state.variableGroups[variableGroup].values)
+				.filter(k => k.startsWith(id))
+				.forEach(k => {
+					// @ts-expect-error
+					state.variableGroups[variableGroup].values[k] = void 0;
+				});
 
 			delete state.variableGroups![variableGroup].groups[id];
 		})
 		.addCase(actions.removeItem, (state, action) => {
 			const { id, variableGroup } = action.payload;
 
-			// TODO(afr): Remove values belonging to item
-			// state.variableGroups![variableGroup].values = TypedObject
-			// 	.keys(state.variableGroups![variableGroup].values)
-			// 	.reduce((acc, key) => {
-			// 		const value = state.variableGroups![variableGroup].values[key];
-
-			// 		if (value.itemId === id)
-			// 			return acc;
-
-			// 		return { ...acc, [key]: value };
-			// 	}, {});
+			TypedObject
+				.keys(state.variableGroups[variableGroup].values)
+				.filter(k => k.endsWith(id))
+				.forEach(k => {
+					// @ts-expect-error
+					state.variableGroups[variableGroup].values[k] = void 0;
+				});
 
 			delete state.variableGroups![variableGroup].items[id];
 		})
