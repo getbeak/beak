@@ -33,7 +33,7 @@ const SneakPeak: React.FunctionComponent = () => (
 		<AppPicture>
 			<source srcSet={'/assets/home.webp'} type={'image/webp'} />
 			<source srcSet={'/assets/home.png'} type={'image/png'} />
-			<AppImage src={'/assets/home.png'} alt={'The Beak application!'} />
+			<AppImage loading={'eager'} src={'/assets/home.png'} alt={'The Beak application!'} />
 		</AppPicture>
 	</Wrapper>
 );

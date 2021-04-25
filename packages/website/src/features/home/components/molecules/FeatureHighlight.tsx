@@ -30,7 +30,7 @@ const FeatureHighlight: React.FunctionComponent<FeatureHighlightProps> = props =
 						<picture>
 							<source srcSet={`/assets/${asset}.jpg`} type={'image/webp'} />
 							<source srcSet={`/assets/${asset}.jpg`} type={'image/jpeg'} />
-							<HighlightAsset src={`/assets/${asset}.jpg`} />
+							<HighlightAsset loading={'lazy'} src={`/assets/${asset}.jpg`} />
 						</picture>
 					</VisualContainer>
 				</Grid>
