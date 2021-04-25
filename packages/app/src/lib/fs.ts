@@ -14,8 +14,12 @@ export async function readJsonAndValidate<T>(filePath: string, schema: SchemaObj
 
 	const validator = avj.compile(schema);
 
-	if (!validator(requestFile))
-		throw new Squawk('schema_invalid', { errors: validator.errors });
+	if (!validator(requestFile)) {
+		throw new Squawk('schema_invalid', {
+			errors: validator.errors,
+			filePath,
+		});
+	}
 
 	return { file: requestFile, filePath, name, extension };
 }
