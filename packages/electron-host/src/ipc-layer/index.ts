@@ -1,4 +1,5 @@
 import './app-service';
+import './arbiter-service';
 import './beak-hub-service';
 import './dialog-service';
 import './encryption-service';

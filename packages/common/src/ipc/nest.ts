@@ -2,8 +2,14 @@ import { IpcMain, IpcRenderer } from 'electron';
 
 import { AsyncListener, IpcServiceMain, IpcServiceRenderer } from './ipc';
 
-export interface SetUserReq {
-	userId: string;
+export const NestMessages = {
+	SendMagicLink: 'send_magic_link',
+	HandleMagicLink: 'handle_magic_link',
+};
+
+interface HandleMagicLinkReq {
+	code: string;
+	state: string;
 	fromOnboarding?: boolean;
 }
 
@@ -12,9 +18,16 @@ export class IpcNestServiceRenderer extends IpcServiceRenderer {
 		super('nest', ipc);
 	}
 
-	async setUser(payload: SetUserReq) {
+	async sendMagicLink(email: string) {
 		return this.ipc.invoke(this.channel, {
-			code: 'set_user',
+			code: NestMessages.SendMagicLink,
+			payload: email,
+		});
+	}
+
+	async handleMagicLink(payload: HandleMagicLinkReq) {
+		return this.ipc.invoke(this.channel, {
+			code: NestMessages.HandleMagicLink,
 			payload,
 		});
 	}
@@ -25,7 +38,11 @@ export class IpcNestServiceMain extends IpcServiceMain {
 		super('nest', ipc);
 	}
 
-	registerSetUser(fn: AsyncListener<SetUserReq>) {
-		this.registerListener('set_user', fn);
+	registerSendMagicLink(fn: AsyncListener<string>) {
+		this.registerListener(NestMessages.SendMagicLink, fn);
+	}
+
+	registerHandleMagicLink(fn: AsyncListener<HandleMagicLinkReq>) {
+		this.registerListener(NestMessages.HandleMagicLink, fn);
 	}
 }

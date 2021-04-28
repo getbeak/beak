@@ -1,22 +1,17 @@
-import { IpcNestServiceMain, SetUserReq } from '@beak/common/ipc/nest';
+import { IpcNestServiceMain } from '@beak/common/ipc/nest';
 import { ipcMain } from 'electron';
 
-import persistentStore from '../lib/persistent-store';
-import { createWelcomeWindow, stackMap, windowStack } from '../window-management';
+import nestClient from '../lib/nest-client';
 
 const service = new IpcNestServiceMain(ipcMain);
 
-service.registerSetUser(async (_event, payload: SetUserReq) => {
-	const { userId, fromOnboarding } = payload;
-
-	persistentStore.set('user', { userId });
-
-	if (!fromOnboarding)
-		return;
-
-	// Close onboarding window
-	windowStack[stackMap.onboarding]?.close();
-
-	// Launch welcome window
-	createWelcomeWindow();
+service.registerSendMagicLink(async (_event, email) => {
+	await nestClient.sendMagicLink(email);
 });
+
+service.registerHandleMagicLink(async (_event, payload) => {
+	await nestClient.handleMagicLink(payload.code, payload.state);
+
+	// TODO(afr): Handle if we came from onboarding
+});
+
