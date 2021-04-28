@@ -1,6 +1,5 @@
 import Squawk from '@beak/common/utils/squawk';
 import React, { useEffect, useRef, useState } from 'react';
-import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 
 import Button from '../components/atoms/Button';
@@ -13,7 +12,6 @@ import { ipcNestService } from '../lib/ipc';
 const { ipcRenderer } = window.require('electron');
 
 const Onboarding: React.FunctionComponent = () => {
-	const dispatch = useDispatch();
 	const [emailAddress, setEmailAddress] = useState('');
 	const [manualInfo, setManualInfo] = useState('');
 	const [doing, setDoing] = useState(false);
