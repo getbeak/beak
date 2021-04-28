@@ -7,7 +7,8 @@ import persistentStore from './persistent-store';
 
 class Arbiter {
 	start() {
-		setInterval(() => this.check().catch(console.error), 900000);
+		// TODO(afr): Change this back to 15 minutes
+		setInterval(() => this.check().catch(console.error), 5000);
 	}
 
 	getStatus() {
@@ -43,7 +44,7 @@ class Arbiter {
 			if (!window)
 				return;
 
-			window.webContents.send('arbiter', { code: 'check_update', payload: status });
+			window.webContents.send('arbiter_broadcast', { code: 'check_update', payload: status });
 		});
 	}
 }
