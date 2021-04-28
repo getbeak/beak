@@ -1,8 +1,8 @@
 import { AuthenticateUserResponse } from '@beak/common/types/nest';
-import { toWebSafeBase64 } from '@beak/common/utils/base64';
 import { makeQueryablePromise, QueryablePromise } from '@beak/common/utils/promises';
 import Squawk from '@beak/common/utils/squawk';
 import crpc, { Client } from 'crpc';
+import crypto from 'crypto';
 
 import persistentStore from './persistent-store';
 
@@ -44,20 +44,18 @@ class NestClient {
 	}
 
 	async sendMagicLink(email: string) {
-		const encoder = new TextEncoder();
-		const randomState = new Uint8Array(32);
-		const randomVerifier = new Uint8Array(32);
+		const randomState = crypto.randomBytes(32);
+		const randomVerifier = crypto.randomBytes(32);
 
-		// Generate some Prince Andrews
-		crypto.getRandomValues(randomState);
-		crypto.getRandomValues(randomVerifier);
+		const state = convertToWebSafe(randomState.toString('base64'));
+		const codeVerifier = convertToWebSafe(randomVerifier.toString('base64'));
 
-		const state = toWebSafeBase64(randomState);
-		const codeVerifier = toWebSafeBase64(randomVerifier);
+		// Hash the code verifier, then make it web-safe base64
+		const codeChallengeHash = crypto.createHash('sha256')
+			.update(codeVerifier, 'ascii')
+			.digest('base64');
 
-		const codeVerifierEncoded = encoder.encode(codeVerifier);
-		const codeChallengeHash = await crypto.subtle.digest('SHA-256', codeVerifierEncoded);
-		const codeChallenge = toWebSafeBase64(new Uint8Array(codeChallengeHash));
+		const codeChallenge = convertToWebSafe(codeChallengeHash);
 
 		// Create, insert, and store magic states to local storage
 		persistentStore.set('magicStates', {
@@ -153,6 +151,13 @@ function generateOptions(auth: AuthenticateUserResponse | null) {
 		return void 0;
 
 	return { headers: { authorization: `bearer ${auth.accessToken}` } };
+}
+
+function convertToWebSafe(str: string) {
+	return str
+		.replace(/[+]/g, '-')
+		.replace(/[/]/g, '_')
+		.replace(/[=]+$/, '');
 }
 
 const nestClient = new NestClient('https://nest.getbeak.app/1/');
