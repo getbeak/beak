@@ -1,35 +1,27 @@
-import { MagicStates } from '@beak/common/types/nest';
+import { AuthenticateUserResponse } from '@beak/common/types/nest';
+import { toWebSafeBase64 } from '@beak/common/utils/base64';
+import { makeQueryablePromise, QueryablePromise } from '@beak/common/utils/promises';
 import Squawk from '@beak/common/utils/squawk';
 import crpc, { Client } from 'crpc';
 
-import { AuthenticateUserResponse } from '../store/nest/types';
-import { toWebSafeBase64 } from '../utils/base64';
-import { makeQueryablePromise, QueryablePromise } from '../utils/promises';
-import { LocalStorage } from './local-storage';
+import persistentStore from './persistent-store';
 
-const authKey = 'auth';
-const magicStatesKey = 'magic-states';
+export interface AuthenticateOptions { }
 
-export interface AuthenticateOptions {
-
-}
-
-export default class NestClient {
+class NestClient {
 	private client: Client;
-	private storage: LocalStorage;
 	private authRefreshPromise?: QueryablePromise<unknown>;
 
 	constructor(baseUrl: string) {
 		this.client = crpc(baseUrl);
-		this.storage = new LocalStorage('beak.nest-client');
 	}
 
-	getAuth(): AuthenticateUserResponse | null {
-		return this.storage.getJsonItem<AuthenticateUserResponse>(authKey);
+	getAuth() {
+		return persistentStore.get('auth');
 	}
 
 	setAuth(auth: AuthenticateUserResponse | null) {
-		this.storage.setJsonItem(authKey, auth);
+		persistentStore.set('auth', auth);
 	}
 
 	async rpc<T>(path: string, body: unknown) {
@@ -68,8 +60,8 @@ export default class NestClient {
 		const codeChallenge = toWebSafeBase64(new Uint8Array(codeChallengeHash));
 
 		// Create, insert, and store magic states to local storage
-		this.storage.setJsonItem(magicStatesKey, {
-			...(this.storage.getJsonItem<MagicStates>(magicStatesKey) || {}),
+		persistentStore.set('magicStates', {
+			...persistentStore.get('magicStates'),
 			[state]: {
 				state,
 				codeVerifier,
@@ -90,7 +82,7 @@ export default class NestClient {
 	}
 
 	async handleMagicLink(code: string, state: string) {
-		const magicStates = this.storage.getJsonItem<MagicStates>(magicStatesKey) || {};
+		const magicStates = persistentStore.get('magicStates');
 		const magicState = magicStates[state];
 
 		if (!magicState)
@@ -104,9 +96,8 @@ export default class NestClient {
 			codeVerifier: magicState.codeVerifier,
 		});
 
-		this.storage.remove(magicStatesKey);
+		persistentStore.reset('magicStates');
 		this.setAuth(authentication);
-
 		await this.ensureAlphaUser();
 
 		return authentication;
@@ -151,6 +142,9 @@ export default class NestClient {
 		);
 
 		this.setAuth(response);
+
+		// This... shouldn't have to be done, but here we are
+		await new Promise(resolve => setTimeout(resolve, 1000));
 	}
 }
 
@@ -160,3 +154,7 @@ function generateOptions(auth: AuthenticateUserResponse | null) {
 
 	return { headers: { authorization: `bearer ${auth.accessToken}` } };
 }
+
+const nestClient = new NestClient('https://nest.getbeak.app/1/');
+
+export default nestClient;
