@@ -4,9 +4,9 @@ import { applyMiddleware, combineReducers, createStore, Store } from 'redux';
 import createSagaMiddleware from 'redux-saga';
 import { all, fork } from 'redux-saga/effects';
 
+import * as arbiterStore from './arbiter';
 import * as flightStore from './flight';
 import { State as FlightState } from './flight/types';
-import * as guardianStore from './guardian';
 import * as projectStore from './project';
 import { State as ProjectState } from './project/types';
 import * as variableGroupsStore from './variable-groups';
@@ -33,7 +33,7 @@ function createRootReducer() {
 function* rootSaga() {
 	yield all([
 		fork(flightStore.sagas),
-		fork(guardianStore.sagas),
+		fork(arbiterStore.sagas),
 		fork(projectStore.sagas),
 		fork(variableGroupsStore.sagas),
 	]);
@@ -61,7 +61,7 @@ export function configureStore(): Store<ApplicationState> {
 	);
 
 	sagaMiddleware.run(rootSaga);
-	store.dispatch(guardianStore.actions.startGuardian());
+	store.dispatch(arbiterStore.actions.startArbiter());
 
 	return store;
 }

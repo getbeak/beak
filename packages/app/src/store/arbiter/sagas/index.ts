@@ -1,9 +1,9 @@
 import { all } from 'redux-saga/effects';
 
-import startGuardianWorker from './start-guardian';
+import startArbiterWorker from './start-arbiter';
 
 export default function* nestSaga() {
 	yield all([
-		startGuardianWorker,
+		startArbiterWorker,
 	]);
 }

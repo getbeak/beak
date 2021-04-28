@@ -1,5 +1,5 @@
 export const ActionTypes = {
-	START_GUARDIAN: '@beak/global/guardian/START_GUARDIAN',
+	START_ARBITER: '@beak/global/arbiter/START_ARBITER',
 };
 
 export interface State { }
