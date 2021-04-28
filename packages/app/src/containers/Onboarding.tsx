@@ -1,6 +1,6 @@
 import Squawk from '@beak/common/utils/squawk';
 import React, { useEffect, useRef, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 
 import Button from '../components/atoms/Button';
@@ -8,13 +8,13 @@ import FormError from '../components/atoms/FormError';
 import FormInput from '../components/atoms/FormInput';
 import Input from '../components/atoms/Input';
 import Label from '../components/atoms/Label';
-import { actions } from '../store/nest';
+import { ipcNestService } from '../lib/ipc';
 
 const { ipcRenderer } = window.require('electron');
 
 const Onboarding: React.FunctionComponent = () => {
 	const dispatch = useDispatch();
-	const [emailAddy, setEmailAddy] = useState('');
+	const [emailAddress, setEmailAddress] = useState('');
 	const [manualInfo, setManualInfo] = useState('');
 	const [doing, setDoing] = useState(false);
 	const [error, setError] = useState<Squawk>();
@@ -23,16 +23,15 @@ const Onboarding: React.FunctionComponent = () => {
 	const [done, setDone] = useState(false);
 	const [resender, setResender] = useState<number | null>(null);
 	const [showManualInfo, setShowManualInfo] = useState(false);
-	const enabled = emailAddy && !doing && !done;
-
-	const magicLink = useSelector(s => s.global.nest.sendMagicLink);
-	const handleMagicLink = useSelector(s => s.global.nest.handleMagicLink);
+	const enabled = emailAddress && !doing && !done;
 
 	useEffect(() => {
 		ipcRenderer.on('inbound-magic-link', (_event, payload: { code: string; state: string }) => {
-			const { code, state } = payload;
+			// TODO(afr): Catch errors here
+			ipcNestService.handleMagicLink({ ...payload, fromOnboarding: true });
 
-			dispatch(actions.handleMagicLink.request({ code, state }));
+			// setMagicError(handleMagicLink.error);
+			// dispatch(actions.sendMagicLink.reset());
 		});
 	}, []);
 
@@ -49,32 +48,6 @@ const Onboarding: React.FunctionComponent = () => {
 	}, [resender]);
 
 	useEffect(() => {
-		if (magicLink.fetching)
-			return;
-
-		setDoing(false);
-
-		if (magicLink.error) {
-			setError(magicLink.error);
-		} else {
-			setResender(30);
-			setDone(true);
-		}
-	}, [magicLink]);
-
-	useEffect(() => {
-		if (handleMagicLink.fetching)
-			return;
-
-		if (!handleMagicLink.error)
-			return;
-
-		setMagicError(handleMagicLink.error);
-		setDone(false);
-		dispatch(actions.sendMagicLink.reset());
-	}, [handleMagicLink]);
-
-	useEffect(() => {
 		inputRef.current?.focus();
 	}, [inputRef.current]);
 
@@ -86,8 +59,14 @@ const Onboarding: React.FunctionComponent = () => {
 		setShowManualInfo(false);
 		setManualInfo('');
 		setError(void 0);
-		dispatch(actions.sendMagicLink.request({ email: emailAddy }));
-		dispatch(actions.handleMagicLink.reset());
+
+		ipcNestService.sendMagicLink(emailAddress)
+			.then(() => {
+				setDone(true);
+				setResender(30);
+			})
+			.catch(error => setError(error))
+			.finally(() => setDoing(false));
 	}
 
 	function validManualInfo() {
@@ -103,7 +82,8 @@ const Onboarding: React.FunctionComponent = () => {
 		const code = params.get('code')!;
 		const state = params.get('state')!;
 
-		dispatch(actions.handleMagicLink.request({ code, state }));
+		// TODO(afr): Catch errors here
+		ipcNestService.handleMagicLink({ code, state, fromOnboarding: true });
 	}
 
 	function getButtonContent() {
@@ -132,12 +112,12 @@ const Onboarding: React.FunctionComponent = () => {
 					<Label>{'Email address'}</Label>
 					<Input
 						placeholder={'taylor.swift@gmail.com'}
-						value={emailAddy}
+						value={emailAddress}
 						type={'text'}
 						ref={i => {
 							inputRef.current = i!;
 						}}
-						onChange={e => setEmailAddy(e.target.value)}
+						onChange={e => setEmailAddress(e.target.value)}
 						onKeyDown={e => {
 							if (!enabled)
 								return;
@@ -157,7 +137,7 @@ const Onboarding: React.FunctionComponent = () => {
 					<React.Fragment>
 						<SmolPara>
 							{'Your magic link is on the way to '}
-							<strong>{emailAddy}</strong>
+							<strong>{emailAddress}</strong>
 							{'. Click the link in the email to sign into Beak.'}
 						</SmolPara>
 
@@ -182,7 +162,7 @@ const Onboarding: React.FunctionComponent = () => {
 									{'Paste the code from the magic page below 👇'}
 								</Label>
 								<Input
-									placeholder={'code=420&state=69'}
+									placeholder={'code=xxxx&state=xxyy'}
 									value={manualInfo}
 									type={'text'}
 									onChange={e => setManualInfo(e.target.value)}
