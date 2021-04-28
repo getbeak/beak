@@ -61,6 +61,7 @@ export function configureStore(): Store<ApplicationState> {
 	);
 
 	sagaMiddleware.run(rootSaga);
+	store.dispatch(guardianStore.actions.startGuardian());
 
 	return store;
 }

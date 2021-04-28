@@ -35,7 +35,6 @@ const ProjectMain: React.FunctionComponent = () => {
 	const loaded = project.loaded && variableGroups.loaded;
 
 	useEffect(() => {
-		dispatch(actions.startGuardian());
 		dispatch(startProject(projectFilePath));
 	}, [projectFilePath]);
 
