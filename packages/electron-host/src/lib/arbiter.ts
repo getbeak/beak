@@ -44,7 +44,7 @@ class Arbiter {
 			if (!window)
 				return;
 
-			window.webContents.send('arbiter_broadcast', { code: 'check_update', payload: status });
+			window.webContents.send('arbiter_broadcast', { code: 'status_update', payload: status });
 		});
 	}
 }

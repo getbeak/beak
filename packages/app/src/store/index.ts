@@ -5,6 +5,7 @@ import createSagaMiddleware from 'redux-saga';
 import { all, fork } from 'redux-saga/effects';
 
 import * as arbiterStore from './arbiter';
+import { State as ArbiterState } from './arbiter/types';
 import * as flightStore from './flight';
 import { State as FlightState } from './flight/types';
 import * as projectStore from './project';
@@ -14,6 +15,7 @@ import { State as VariableGroupState } from './variable-groups/types';
 
 export interface ApplicationState {
 	global: {
+		arbiter: ArbiterState;
 		flight: FlightState;
 		project: ProjectState;
 		variableGroups: VariableGroupState;
@@ -23,6 +25,7 @@ export interface ApplicationState {
 function createRootReducer() {
 	return combineReducers<ApplicationState>({
 		global: combineReducers({
+			arbiter: arbiterStore.reducers,
 			flight: flightStore.reducers,
 			project: projectStore.reducers,
 			variableGroups: variableGroupsStore.reducers,
@@ -32,8 +35,8 @@ function createRootReducer() {
 
 function* rootSaga() {
 	yield all([
-		fork(flightStore.sagas),
 		fork(arbiterStore.sagas),
+		fork(flightStore.sagas),
 		fork(projectStore.sagas),
 		fork(variableGroupsStore.sagas),
 	]);
@@ -42,6 +45,7 @@ function* rootSaga() {
 function createInitialState(): ApplicationState {
 	return {
 		global: {
+			arbiter: arbiterStore.types.initialState,
 			flight: flightStore.types.initialState,
 			project: projectStore.types.initialState,
 			variableGroups: variableGroupsStore.types.initialState,
