@@ -8,6 +8,7 @@ import Onboarding from './containers/Onboarding';
 import ProjectMain from './containers/ProjectMain';
 import Welcome from './containers/Welcome';
 import { GlobalStyle } from './design-system';
+import Arbiter from './features/arbiter/components/Arbiter';
 import { setGlobal } from './globals';
 import { ipcAppService } from './lib/ipc';
 import { configureStore } from './store';
@@ -48,7 +49,9 @@ const FauxRouter: React.FunctionComponent = () => {
 			<base href={'./'} />
 			<DesignSystemProvider themeKey={'dark'}>
 				<GlobalStyle />
-				{component}
+				<Arbiter>
+					{component}
+				</Arbiter>
 			</DesignSystemProvider>
 		</Provider>
 	);

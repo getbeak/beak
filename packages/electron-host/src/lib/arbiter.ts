@@ -17,7 +17,7 @@ class Arbiter {
 
 	async check() {
 		const auth = persistentStore.get('auth');
-		let status: ArbiterStatus;
+		let status = this.getStatus();
 
 		if (!auth)
 			return;
@@ -26,11 +26,13 @@ class Arbiter {
 			await nestClient.ensureAlphaUser();
 
 			status = {
+				lastSuccessfulCheck: new Date().toISOString(),
 				lastCheck: new Date().toISOString(),
 				status: true,
 			};
 		} catch (error) {
 			status = {
+				lastSuccessfulCheck: status.lastSuccessfulCheck,
 				lastCheck: new Date().toISOString(),
 				status: false,
 			};
