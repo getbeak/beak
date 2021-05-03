@@ -27,10 +27,10 @@ const Header: React.FunctionComponent<HeaderProps> = props => {
 				<strong>{request.verb.toUpperCase()}</strong>
 			</Section>
 			<UrlSection>
-				<abbr title={url}>
+				<Abbr title={url}>
 					{/* The "&lrm;" char is a requirement of using RTL to trim the end vs start of the string */}
 					{url}&lrm;
-				</abbr>
+				</Abbr>
 			</UrlSection>
 			{response && (
 				<StatusSection $status={response.status}>
@@ -84,6 +84,10 @@ const UrlSection = styled(Section)`
 	overflow: hidden;
 	text-overflow: ellipsis;
 	direction: rtl;
+`;
+
+const Abbr = styled.abbr`
+	text-decoration: none;
 `;
 
 const StatusSection = styled(Section)<{ $status: number }>`
