@@ -7,23 +7,37 @@ import { autoUpdater } from 'electron-updater';
 
 import arbiter from './lib/arbiter';
 import persistentStore from './lib/persistent-store';
-import { handleOpenUrl } from './lib/protocol';
+import { parseAppUrl } from './lib/protocol';
 import createMenu from './menu';
 import { appIsPackaged } from './utils/static-path';
-import { createOnboardingWindow, createWelcomeWindow, windowStack } from './window-management';
-
-async function createDefaultWindow() {
-	const auth = persistentStore.get('auth');
-
-	if (!auth)
-		return createOnboardingWindow();
-
-	return createWelcomeWindow();
-}
+import {
+	createOnboardingWindow,
+	createWelcomeWindow,
+	windowStack,
+} from './window-management';
 
 createMenu();
-
 app.setAsDefaultProtocolClient('beak-app');
+
+const instanceLock = app.requestSingleInstanceLock();
+
+if (instanceLock) {
+	app.on('second-instance', (_event, argv, _wd) => {
+		if (process.platform !== 'darwin') {
+			const url = argv.find(a => a.startsWith('beak-app://'));
+
+			if (url) {
+				handleOpenUrl(url);
+
+				return;
+			}
+		}
+
+		createOrFocusDefaultWindow();
+	});
+} else {
+	app.quit();
+}
 
 // Quit application when all windows are closed on macOS
 app.on('window-all-closed', () => {
@@ -32,13 +46,12 @@ app.on('window-all-closed', () => {
 });
 
 app.on('activate', () => {
-	if (Object.keys(windowStack).length === 0)
-		createDefaultWindow();
+	createOrFocusDefaultWindow();
 });
 
 app.on('ready', () => {
 	arbiter.start();
-	createDefaultWindow();
+	createOrFocusDefaultWindow();
 
 	autoUpdater.checkForUpdatesAndNotify();
 
@@ -58,7 +71,20 @@ app.on('ready', () => {
 });
 
 app.on('open-url', (_event, url) => {
-	const magicInfo = handleOpenUrl(url);
+	handleOpenUrl(url);
+});
+
+async function createOrFocusDefaultWindow() {
+	const auth = persistentStore.get('auth');
+
+	if (!auth)
+		return createOnboardingWindow();
+
+	return createWelcomeWindow();
+}
+
+function handleOpenUrl(url: string) {
+	const magicInfo = parseAppUrl(url);
 
 	if (!magicInfo)
 		return;
@@ -68,4 +94,4 @@ app.on('open-url', (_event, url) => {
 	const window = windowStack[windowId];
 
 	window?.webContents.send('inbound-magic-link', { code, state });
-});
+}

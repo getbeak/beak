@@ -86,12 +86,15 @@ export function closeWindow(windowId: number) {
 }
 
 export function createWelcomeWindow() {
-	const existingWindow = stackMap.welcome;
+	const existing = stackMap.welcome;
 
-	if (existingWindow && windowStack[existingWindow]) {
-		windowStack[existingWindow].focus();
+	if (existing && windowStack[existing]) {
+		if (windowStack[existing].isMinimized())
+			windowStack[existing].restore();
 
-		return;
+		windowStack[existing].focus();
+
+		return existing;
 	}
 
 	const windowOpts: BrowserWindowConstructorOptions = {
@@ -105,6 +108,8 @@ export function createWelcomeWindow() {
 	const window = createWindow(windowOpts, 'welcome');
 
 	stackMap.welcome = window.id;
+
+	return window.id;
 }
 
 export function createAboutWindow() {
@@ -147,6 +152,9 @@ export function createOnboardingWindow() {
 	const existing = stackMap.onboarding;
 
 	if (existing && windowStack[existing]) {
+		if (windowStack[existing].isMinimized())
+			windowStack[existing].restore();
+
 		windowStack[existing].focus();
 
 		return existing;

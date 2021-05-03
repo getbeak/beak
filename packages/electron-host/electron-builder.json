@@ -6,6 +6,13 @@
     "name": "Beak"
   },
 
+  "protocols": [
+    {
+      "name": "Beak app launcher protocol",
+      "schemes": ["beak-app"]
+    }
+  ],
+
   "files": [
     "**/*"
   ],

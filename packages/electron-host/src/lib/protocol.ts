@@ -1,4 +1,4 @@
-export function handleOpenUrl(openedUrl: string) {
+export function parseAppUrl(openedUrl: string) {
 	const url = new URL(openedUrl);
 
 	switch (url.hostname) {
