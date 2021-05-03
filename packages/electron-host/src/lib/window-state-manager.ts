@@ -63,9 +63,7 @@ export default class WindowStateManager {
 			this.window.maximize();
 		else if (this.state.isFullScreen)
 			this.window.setFullScreen(true);
-		// else
 
-		this.window.setBounds(this.state.display.bounds);
 		this.window.setPosition(this.state.x, this.state.y);
 		this.window.setSize(this.state.width, this.state.height);
 
