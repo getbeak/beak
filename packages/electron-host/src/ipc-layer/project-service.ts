@@ -32,7 +32,6 @@ service.registerOpenProject(async event => {
 		properties: ['openFile'],
 		filters: [
 			{ name: 'Beak project', extensions: ['json'] },
-			{ name: 'All files', extensions: ['*'] },
 		],
 	});
 
