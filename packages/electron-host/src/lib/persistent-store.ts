@@ -20,6 +20,7 @@ const persistentStore = new ElectronStore<Store>({
 		windowStates: {},
 
 		arbiter: {
+			lastSuccessfulCheck: '1989-12-13T00:00:00.01Z',
 			lastCheck: '1989-12-13T00:00:00.01Z',
 			status: false,
 		},

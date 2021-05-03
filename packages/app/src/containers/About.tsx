@@ -28,16 +28,7 @@ const About: React.FunctionComponent = () => (
 			/>
 
 			<TextCenter>
-				<h1>{'🇬🇧🌶🍷'}</h1>
-
-				<p>
-					{'Designed (poorly) and built in the United Kingdom. Fueled by '}
-					{'endless Picante\'s and Lady A'}
-				</p>
-
-				<SmolPara>
-					{'Made in loving memory of Pierre 💔'}
-				</SmolPara>
+				
 			</TextCenter>
 		</Container>
 	</React.Fragment>

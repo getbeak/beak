@@ -25,11 +25,11 @@ const Onboarding: React.FunctionComponent = () => {
 
 	useEffect(() => {
 		ipcRenderer.on('inbound-magic-link', (_event, payload: { code: string; state: string }) => {
-			// TODO(afr): Catch errors here
-			ipcNestService.handleMagicLink({ ...payload, fromOnboarding: true });
-
-			// setMagicError(handleMagicLink.error);
-			// dispatch(actions.sendMagicLink.reset());
+			ipcNestService
+				.handleMagicLink({ ...payload, fromOnboarding: true })
+				.catch(error => {
+					setMagicError(error);
+				});
 		});
 	}, []);
 
@@ -80,8 +80,11 @@ const Onboarding: React.FunctionComponent = () => {
 		const code = params.get('code')!;
 		const state = params.get('state')!;
 
-		// TODO(afr): Catch errors here
-		ipcNestService.handleMagicLink({ code, state, fromOnboarding: true });
+		ipcNestService
+			.handleMagicLink({ code, state, fromOnboarding: true })
+			.catch(error => {
+				setMagicError(error);
+			});
 	}
 
 	function getButtonContent() {
@@ -99,11 +102,17 @@ const Onboarding: React.FunctionComponent = () => {
 			<DragBar />
 
 			<Container>
-				<Title>{'Welcome to the super secret Beak Beta!'}</Title>
+				<Title>{'Welcome to the Beak Beta!'}</Title>
 				<SubTitle>
-					{'Please request a magic link with your Beta enrolled email. If you don\'t have access yet please '}
-					{'visit '}
-					<a href={'https://getbeak.app'}>{'https://getbeak.app'}</a>
+					{'To sign in please enter the email address enrolled in the Beta Beta. '}
+					{'We\'ll send you a magic link you can use to sign in. If you aren\'t in the Beta yet, you can '}
+					{'request access over at '}
+					<Anchor
+						target={'_blank'}
+						href={'https://getbeak.app'}
+					>
+						{'https://getbeak.app'}
+					</Anchor>
 				</SubTitle>
 
 				<FormInput>
@@ -206,7 +215,6 @@ const DragBar = styled.div`
 const Container = styled.div`
 	position: relative;
 	padding: 15px;
-	padding-top: 30px;
 	height: calc(100vh - 45px);
 
 	z-index: 2;
@@ -223,7 +231,12 @@ const SubTitle = styled.h2`
 	font-size: 14px;
 	margin: 0;
 	margin-bottom: 10px;
+	font-weight: 400;
 	color: ${props => props.theme.ui.textMinor};
+`;
+
+const Anchor = styled.a`
+	color: #e08130;
 `;
 
 const ActionsWrapper = styled.div`

@@ -49,9 +49,12 @@ const FauxRouter: React.FunctionComponent = () => {
 			<base href={'./'} />
 			<DesignSystemProvider themeKey={'dark'}>
 				<GlobalStyle />
-				<Arbiter>
-					{component}
-				</Arbiter>
+				{container === 'onboarding' && component}
+				{container !== 'onboarding' && (
+					<Arbiter>
+						{component}
+					</Arbiter>
+				)}
 			</DesignSystemProvider>
 		</Provider>
 	);

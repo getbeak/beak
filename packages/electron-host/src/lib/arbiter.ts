@@ -1,5 +1,4 @@
 import { TypedObject } from '@beak/common/helpers/typescript';
-import { ArbiterStatus } from '@beak/common/types/arbiter';
 
 import { windowStack } from '../window-management';
 import nestClient from './nest-client';
