@@ -29,11 +29,11 @@ const GetStartedColumn: React.FunctionComponent<GetStartedColumnProps> = ({ setV
 			}}
 		/>
 
-		<GetStartedButton
+		{/* <GetStartedButton
 			disabled
 			title={'Create a team project'}
 			description={'Creates a new cloud-based team project'}
-		/>
+		/> */}
 	</Col>
 );
 

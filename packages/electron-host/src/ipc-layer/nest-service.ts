@@ -2,6 +2,7 @@ import { IpcNestServiceMain } from '@beak/common/ipc/nest';
 import { ipcMain } from 'electron';
 
 import nestClient from '../lib/nest-client';
+import { createWelcomeWindow, stackMap, windowStack } from '../window-management';
 
 const service = new IpcNestServiceMain(ipcMain);
 
@@ -12,6 +13,17 @@ service.registerSendMagicLink(async (_event, email) => {
 service.registerHandleMagicLink(async (_event, payload) => {
 	await nestClient.handleMagicLink(payload.code, payload.state);
 
-	// TODO(afr): Handle if we came from onboarding
+	if (!payload.fromOnboarding)
+		return;
+
+	const onboardingWindowId = stackMap.onboarding;
+
+	if (onboardingWindowId !== void 0) {
+		const onboardingWindow = windowStack[onboardingWindowId];
+
+		onboardingWindow?.close();
+	}
+
+	createWelcomeWindow();
 });
 

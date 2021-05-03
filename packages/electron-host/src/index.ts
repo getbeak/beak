@@ -26,11 +26,8 @@ if (instanceLock) {
 		if (process.platform !== 'darwin') {
 			const url = argv.find(a => a.startsWith('beak-app://'));
 
-			if (url) {
-				handleOpenUrl(url);
-
+			if (url && handleOpenUrl(url))
 				return;
-			}
 		}
 
 		createOrFocusDefaultWindow();
@@ -71,7 +68,8 @@ app.on('ready', () => {
 });
 
 app.on('open-url', (_event, url) => {
-	handleOpenUrl(url);
+	if (!handleOpenUrl(url))
+		createOrFocusDefaultWindow();
 });
 
 async function createOrFocusDefaultWindow() {
@@ -87,11 +85,13 @@ function handleOpenUrl(url: string) {
 	const magicInfo = parseAppUrl(url);
 
 	if (!magicInfo)
-		return;
+		return false;
 
 	const { code, state } = magicInfo;
 	const windowId = createOnboardingWindow();
 	const window = windowStack[windowId];
 
 	window?.webContents.send('inbound-magic-link', { code, state });
+
+	return true;
 }
