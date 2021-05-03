@@ -2,7 +2,10 @@
 const CopyPlugin = require('copy-webpack-plugin');
 const path = require('path');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 /* eslint-enable @typescript-eslint/no-var-requires */
+
+const environment = process.env.NODE_ENV;
 
 module.exports = {
 	entry: './src/index.tsx',
@@ -17,8 +20,8 @@ module.exports = {
 	},
 	output: {
 		path: path.join(__dirname, 'dist'),
-		publicPath: './',
-		filename: 'bundle.min.js',
+		publicPath: '/',
+		filename: '[name].[contenthash].js',
 	},
 	module: {
 		rules: [{
@@ -33,11 +36,21 @@ module.exports = {
 		new CopyPlugin([
 			{ from: 'public' },
 		]),
+		new HtmlWebpackPlugin({
+			template: path.join(__dirname, 'public', 'index.html'),
+			filename: 'index.html',
+		}),
 	],
 	devServer: {
+		historyApiFallback: true,
 		publicPath: '/',
-		open: false,
+		contentBase: path.resolve(__dirname, 'public'),
 		port: 3000,
 	},
-	devtool: 'eval-cheap-source-map',
+	optimization: {
+		splitChunks: {
+			chunks: 'all',
+		},
+	},
+	devtool: environment === 'development' ? 'eval-cheap-source-map' : void 0,
 };
