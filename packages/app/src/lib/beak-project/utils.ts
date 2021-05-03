@@ -4,11 +4,11 @@ const path = remote.require('path');
 
 export async function generateSafeNewPath(name: string, directory: string, extension?: string) {
 	function createPath(name: string) {
-		return path.join(directory, `${name}${extension}`);
+		return path.join(directory, `${name}${extension ?? ''}`);
 	}
 
 	if (!await fs.pathExists(createPath(name)))
-		return { name: `${name}${extension}`, fullPath: createPath(name) };
+		return { name: `${name}${extension ?? ''}`, fullPath: createPath(name) };
 
 	let useableName = name;
 	let index = 1;
@@ -27,7 +27,7 @@ export async function generateSafeNewPath(name: string, directory: string, exten
 		// eslint-disable-next-line no-await-in-loop
 		if (!await fs.pathExists(full)) {
 			return {
-				name: `${useableName} (${index})${extension}`,
+				name: `${useableName} (${index})${extension ?? ''}`,
 				fullPath: full,
 			};
 		}
