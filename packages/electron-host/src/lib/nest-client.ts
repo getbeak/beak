@@ -1,5 +1,5 @@
 import { AuthenticateUserResponse } from '@beak/common/types/nest';
-import { makeQueryablePromise, QueryablePromise } from '@beak/common/utils/promises';
+import QueryablePromise from '@beak/common/utils/promises';
 import Squawk from '@beak/common/utils/squawk';
 import crpc, { Client } from 'crpc';
 import crypto from 'crypto';
@@ -96,6 +96,7 @@ class NestClient {
 
 		persistentStore.reset('magicStates');
 		this.setAuth(authentication);
+
 		await this.ensureAlphaUser();
 
 		return authentication;
@@ -117,10 +118,12 @@ class NestClient {
 
 	private async refresh() {
 		// Check promise exists and that is hasn't been fulfilled
-		if (this.authRefreshPromise && this.authRefreshPromise.isPending())
+		if (this.authRefreshPromise && this.authRefreshPromise.status === 'pending')
 			return await this.authRefreshPromise;
 
-		const promise = makeQueryablePromise(this.authenticate('refresh_token'));
+		const promise = new QueryablePromise<void>((_resolve, reject) => {
+			this.authenticate('refresh_token').catch(reject);
+		});
 
 		return await (this.authRefreshPromise = promise);
 	}
@@ -140,9 +143,6 @@ class NestClient {
 		);
 
 		this.setAuth(response);
-
-		// This... shouldn't have to be done, but here we are
-		await new Promise(resolve => setTimeout(resolve, 1000));
 	}
 }
 

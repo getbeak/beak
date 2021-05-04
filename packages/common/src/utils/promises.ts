@@ -1,42 +1,27 @@
-export interface QueryablePromise<T> extends Promise<T> {
-	isFulfilled: () => boolean;
-	isPending: () => boolean;
-	isRejected: () => boolean;
+type Executor<T> = (resolve: (value: T | PromiseLike<T>) => void, reject: (reason?: any) => void) => void;
+type Status = 'pending' | 'resolved' | 'rejected';
+
+export default class QueryablePromise<T> extends Promise<T> {
+	private internalStatus: Status = 'pending';
+
+	constructor(executor: Executor<T>) {
+		super((resolve, reject) => executor(
+			response => {
+				resolve(response);
+
+				this.internalStatus = 'resolved';
+			},
+			error => {
+				reject(error);
+
+				this.internalStatus = 'rejected';
+			},
+		));
+
+		this.internalStatus = 'pending';
+	}
+
+	get status() {
+		return this.internalStatus;
+	}
 }
-
-// This function allow you to modify a JS Promise by adding some status properties.
-// Based on: http://stackoverflow.com/questions/21485545/is-there-a-way-to-tell-if-an-es6-promise-is-fulfilled-rejected-resolved
-// But modified according to the specs of promises : https://promisesaplus.com/
-export function makeQueryablePromise<T>(promise: Promise<T>): QueryablePromise<T> {
-	// Don't modify any promise that has been already modified.
-	// @ts-ignore
-	if (promise.isResolved) return promise;
-
-	// Set initial state
-	let isPending = true;
-	let isRejected = false;
-	let isFulfilled = false;
-
-	// Observe the promise, saving the fulfillment in a closure scope.
-	const result = {
-		...promise.then(
-			f => {
-				isFulfilled = true;
-				isPending = false;
-
-				return f;
-			},
-			p => {
-				isRejected = true;
-				isPending = false;
-
-				throw p;
-			},
-		),
-		isFulfilled: () => isFulfilled,
-		isPending: () => isPending,
-		isRejected: () => isRejected,
-	};
-
-	return result;
-};
