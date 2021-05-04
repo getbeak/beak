@@ -1,4 +1,5 @@
 import { TypedObject } from '@beak/common/helpers/typescript';
+import Squawk from '@beak/common/utils/squawk';
 
 import { windowStack } from '../window-management';
 import nestClient from './nest-client';
@@ -26,15 +27,29 @@ class Arbiter {
 
 			status = {
 				lastSuccessfulCheck: new Date().toISOString(),
+				lastCheckError: null,
 				lastCheck: new Date().toISOString(),
 				status: true,
 			};
 		} catch (error) {
-			status = {
-				lastSuccessfulCheck: status.lastSuccessfulCheck,
-				lastCheck: new Date().toISOString(),
-				status: false,
-			};
+			const squawk = Squawk.coerce(error);
+
+			// TODO(afr): Need to add more here!
+			if (['unauthenticated', 'user_not_beta_enrolled'].includes(squawk.code)) {
+				status = {
+					lastSuccessfulCheck: status.lastSuccessfulCheck,
+					lastCheckError: squawk,
+					lastCheck: new Date().toISOString(),
+					status: false,
+				};
+			} else {
+				status = {
+					lastSuccessfulCheck: status.lastSuccessfulCheck,
+					lastCheckError: squawk,
+					lastCheck: new Date().toISOString(),
+					status: true,
+				};
+			}
 
 			console.error(error);
 		}
