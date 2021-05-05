@@ -1,5 +1,7 @@
 import UAParser from 'ua-parser-js';
 
+const process = window.require('electron').remote.require('process');
+
 interface Globals {
 	platform: null | NodeJS.Platform;
 	windowId: null | string;
@@ -9,7 +11,7 @@ interface Globals {
 
 const globals: Globals = {
 	windowId: null,
-	platform: null,
+	platform: process.platform,
 	version: null,
 	os: generateOS(),
 };

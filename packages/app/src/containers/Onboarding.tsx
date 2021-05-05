@@ -7,6 +7,7 @@ import FormError from '../components/atoms/FormError';
 import FormInput from '../components/atoms/FormInput';
 import Input from '../components/atoms/Input';
 import Label from '../components/atoms/Label';
+import { isDarwin } from '../globals';
 import { ipcNestService } from '../lib/ipc';
 
 const { ipcRenderer } = window.require('electron');
@@ -215,7 +216,7 @@ const DragBar = styled.div`
 const Container = styled.div`
 	position: relative;
 	padding: 15px;
-	height: calc(100vh - 45px);
+	height: calc(100vh - 30px);
 
 	z-index: 2;
 `;
@@ -223,6 +224,7 @@ const Container = styled.div`
 const Title = styled.h1`
 	margin: 0;
 	margin-bottom: 5px;
+	${isDarwin() && 'margin-top: 15px;'}
 	font-size: 28px;
 	font-weight: 300;
 `;

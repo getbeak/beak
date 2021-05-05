@@ -13,8 +13,6 @@ import { setGlobal } from './globals';
 import { ipcAppService } from './lib/ipc';
 import { configureStore } from './store';
 
-const process = window.require('electron').remote.require('process');
-
 function getComponent(container: string | null) {
 	switch (container) {
 		case 'welcome':
@@ -41,7 +39,6 @@ const FauxRouter: React.FunctionComponent = () => {
 	const component = getComponent(container);
 
 	setGlobal('windowId', windowId);
-	setGlobal('platform', process.platform);
 	ipcAppService.getVersion().then(version => setGlobal('version', version));
 
 	return (
