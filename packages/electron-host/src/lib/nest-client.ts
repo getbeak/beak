@@ -6,8 +6,6 @@ import crypto from 'crypto';
 
 import persistentStore from './persistent-store';
 
-export interface AuthenticateOptions { }
-
 class NestClient {
 	private client: Client;
 	private authRefreshPromise?: QueryablePromise<unknown>;
