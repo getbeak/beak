@@ -1,4 +1,9 @@
 type Meta = Record<string, unknown>;
+interface PossibleSquawk {
+	code: string;
+	reasons?: Squawk[];
+	meta?: Meta;
+}
 
 export default class Squawk extends Error {
 	readonly code: string = '';
@@ -7,7 +12,6 @@ export default class Squawk extends Error {
 
 	constructor(code: string, meta?: Meta | null, reasons?: Error[]) {
 		super(code);
-		// Error.captureStackTrace(this, this.constructor);
 
 		this.code = code;
 
@@ -35,9 +39,14 @@ export default class Squawk extends Error {
 		if (Squawk.isSquawk(error))
 			return error as Squawk;
 
+		const possibleSquawk = error as unknown as PossibleSquawk;
+
 		let newError: Squawk;
 
-		if (error instanceof Error)
+		if (error && typeof possibleSquawk.code === 'string')
+			// if code is a string, obj already conforms to Cher structure (e.g. cuvva-log CuvvaError)
+			newError = new Squawk(possibleSquawk.code, possibleSquawk.meta, possibleSquawk.reasons);
+		else if (error instanceof Error)
 			newError = new Squawk('unknown', error.message ? { message: error.message } : void 0);
 		else
 			newError = new Squawk('unknown', error ? { error } : void 0);
