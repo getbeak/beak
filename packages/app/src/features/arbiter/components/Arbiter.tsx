@@ -19,7 +19,6 @@ const Arbiter: React.FunctionComponent = ({ children }) => {
 	const arbiter = useSelector(s => s.global.arbiter.status);
 	const now = new Date();
 	const lastSuccessfulCheck = new Date(arbiter.lastSuccessfulCheck);
-	// const lastCheck = new Date(arbiter.lastCheck);
 	const sinceLastCheck = differenceInDays(now, lastSuccessfulCheck);
 
 	const mode = (function generateMode() {
@@ -33,7 +32,7 @@ const Arbiter: React.FunctionComponent = ({ children }) => {
 	}());
 
 	return (
-		<Wrapper>
+		<React.Fragment>
 			{mode !== 'locked' && children}
 			{mode === 'warning' && (
 				<WarningBanner>
@@ -41,13 +40,9 @@ const Arbiter: React.FunctionComponent = ({ children }) => {
 					{`day${(7 - sinceLastCheck === 1 ? '' : 's')}`}
 				</WarningBanner>
 			)}
-		</Wrapper>
+		</React.Fragment>
 	);
 };
-
-const Wrapper = styled.div`
-	
-`;
 
 const WarningBanner = styled.div`
 	position: absolute;
