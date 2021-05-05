@@ -16,7 +16,7 @@ class Arbiter {
 	}
 
 	async check() {
-		const auth = persistentStore.get('auth');
+		const auth = nestClient.getAuth();
 		let status = this.getStatus();
 
 		if (!auth)
@@ -47,13 +47,13 @@ class Arbiter {
 				status.status = false;
 			}
 
-			// TODO(afr): If status is flase, or it's been over 7 days since last check, then we need to close all open
-			// windows and show onboarding here
-
 			console.error(error);
 		}
 
 		persistentStore.set('arbiter', status);
+
+		// TODO(afr): If status is false, or it's been over 7 days since last check, then we need to close all open
+		// windows and show onboarding here
 
 		TypedObject.values(windowStack).forEach(window => {
 			if (!window)
