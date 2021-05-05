@@ -34,22 +34,21 @@ class Arbiter {
 		} catch (error) {
 			const squawk = Squawk.coerce(error);
 
-			// TODO(afr): Need to add more here!
-			if (['unauthenticated', 'user_not_beta_enrolled'].includes(squawk.code)) {
-				status = {
-					lastSuccessfulCheck: status.lastSuccessfulCheck,
-					lastCheckError: squawk,
-					lastCheck: new Date().toISOString(),
-					status: false,
-				};
-			} else {
-				status = {
-					lastSuccessfulCheck: status.lastSuccessfulCheck,
-					lastCheckError: squawk,
-					lastCheck: new Date().toISOString(),
-					status: true,
-				};
+			status = {
+				lastSuccessfulCheck: status.lastSuccessfulCheck,
+				lastCheckError: squawk,
+				lastCheck: new Date().toISOString(),
+				status: true,
+			};
+
+			if (squawk.code !== 'unknown') {
+				nestClient.setAuth(null);
+
+				status.status = false;
 			}
+
+			// TODO(afr): If status is flase, or it's been over 7 days since last check, then we need to close all open
+			// windows and show onboarding here
 
 			console.error(error);
 		}
