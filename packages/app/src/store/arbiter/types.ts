@@ -12,6 +12,7 @@ export interface State {
 export const initialState: State = {
 	status: {
 		lastSuccessfulCheck: new Date().toISOString(),
+		lastCheckError: null,
 		lastCheck: new Date().toISOString(),
 		status: true,
 	},
