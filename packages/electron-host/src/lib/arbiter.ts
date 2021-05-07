@@ -7,8 +7,8 @@ import persistentStore from './persistent-store';
 
 class Arbiter {
 	start() {
-		// TODO(afr): Change this back to 15 minutes
-		setInterval(() => this.check().catch(console.error), 30000);
+		// 30 minutes
+		setInterval(() => this.check().catch(console.error), 1800000);
 	}
 
 	getStatus() {
