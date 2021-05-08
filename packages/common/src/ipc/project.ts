@@ -1,6 +1,6 @@
 import { IpcMain, IpcRenderer } from 'electron';
 
-import { AsyncListener, IpcServiceMain, IpcServiceRenderer } from './ipc';
+import { IpcServiceMain, IpcServiceRenderer, Listener } from './ipc';
 
 export const ProjectMessages = {
 	OpenFolder: 'open_folder',
@@ -18,23 +18,15 @@ export class IpcProjectServiceRenderer extends IpcServiceRenderer {
 	}
 
 	async openFolder(folderPath: string) {
-		return this.ipc.invoke(this.channel, {
-			code: ProjectMessages.OpenFolder,
-			payload: folderPath,
-		});
+		return await this.invoke(ProjectMessages.OpenFolder, folderPath);
 	}
 
 	async openProject() {
-		return this.ipc.invoke(this.channel, {
-			code: ProjectMessages.OpenProject,
-		});
+		return await this.invoke(ProjectMessages.OpenProject);
 	}
 
 	async createProject(payload: CreateProjectReq) {
-		return this.ipc.invoke(this.channel, {
-			code: ProjectMessages.CreateProject,
-			payload,
-		});
+		return await this.invoke(ProjectMessages.CreateProject, payload);
 	}
 }
 
@@ -43,15 +35,15 @@ export class IpcProjectServiceMain extends IpcServiceMain {
 		super('project', ipc);
 	}
 
-	registerOpenFolder(fn: AsyncListener<string>) {
+	registerOpenFolder(fn: Listener<string>) {
 		this.registerListener(ProjectMessages.OpenFolder, fn);
 	}
 
-	registerOpenProject(fn: AsyncListener) {
+	registerOpenProject(fn: Listener) {
 		this.registerListener(ProjectMessages.OpenProject, fn);
 	}
 
-	registerCreateProject(fn: AsyncListener<CreateProjectReq>) {
+	registerCreateProject(fn: Listener<CreateProjectReq>) {
 		this.registerListener(ProjectMessages.CreateProject, fn);
 	}
 }

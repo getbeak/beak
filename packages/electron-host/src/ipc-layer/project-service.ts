@@ -1,6 +1,6 @@
 import { IpcProjectServiceMain } from '@beak/common/ipc/project';
 import { ProjectFile } from '@beak/common/types/beak-project';
-import { dialog, ipcMain } from 'electron';
+import { dialog, ipcMain, IpcMainInvokeEvent } from 'electron';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 
@@ -20,12 +20,12 @@ service.registerOpenFolder(async (event, projectPath) => {
 		type: 'local',
 	});
 
-	closeWindow(event.sender.id);
+	closeWindow((event as IpcMainInvokeEvent).sender.id);
 	createProjectMainWindow(projectFilePath);
 });
 
 service.registerOpenProject(async event => {
-	const window = windowStack[event.sender.id]!;
+	const window = windowStack[(event as IpcMainInvokeEvent).sender.id]!;
 	const result = await dialog.showOpenDialog(window, {
 		title: 'Open a Beak project',
 		buttonLabel: 'Open',
@@ -58,13 +58,13 @@ service.registerOpenProject(async event => {
 		type: 'local',
 	});
 
-	closeWindow(event.sender.id);
+	closeWindow((event as IpcMainInvokeEvent).sender.id);
 	createProjectMainWindow(projectFilePath);
 });
 
 service.registerCreateProject(async (event, payload) => {
 	const { projectName } = payload;
-	const window = windowStack[event.sender.id]!;
+	const window = windowStack[(event as IpcMainInvokeEvent).sender.id]!;
 
 	const result = await dialog.showOpenDialog(window, {
 		title: 'Where do you want to create your new Beak project?',
@@ -95,7 +95,7 @@ service.registerCreateProject(async (event, payload) => {
 			rootPath: result.filePaths[0],
 		});
 
-		closeWindow(event.sender.id);
+		closeWindow((event as IpcMainInvokeEvent).sender.id);
 		createProjectMainWindow(projectFilePath);
 	} catch (error) {
 		if (error.code === 'project folder already exists') {

@@ -3,7 +3,11 @@ import {
 	IpcRenderer,
 } from 'electron';
 
-import { AsyncListener, IpcServiceMain, IpcServiceRenderer } from './ipc';
+import { IpcServiceMain, IpcServiceRenderer, Listener } from './ipc';
+
+export const ExplorerMessages = {
+	RevealFile: 'reveal_file',
+};
 
 export class IpcExplorerServiceRenderer extends IpcServiceRenderer {
 	constructor(ipc: IpcRenderer) {
@@ -11,10 +15,7 @@ export class IpcExplorerServiceRenderer extends IpcServiceRenderer {
 	}
 
 	async revealFile(filePath: string) {
-		return this.ipc.invoke(this.channel, {
-			code: 'reveal_file',
-			payload: filePath,
-		});
+		return this.invoke(ExplorerMessages.RevealFile, filePath);
 	}
 }
 
@@ -23,7 +24,7 @@ export class IpcExplorerServiceMain extends IpcServiceMain {
 		super('explorer', ipc);
 	}
 
-	registerRevealFile(fn: AsyncListener<string>) {
-		this.registerListener('reveal_file', fn);
+	registerRevealFile(fn: Listener<string>) {
+		this.registerListener(ExplorerMessages.RevealFile, fn);
 	}
 }

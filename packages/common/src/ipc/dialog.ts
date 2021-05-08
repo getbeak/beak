@@ -5,7 +5,12 @@ import {
 	MessageBoxReturnValue,
 } from 'electron';
 
-import { AsyncListener, IpcServiceMain, IpcServiceRenderer } from './ipc';
+import { IpcServiceMain, IpcServiceRenderer, Listener } from './ipc';
+
+export const DialogMessages = {
+	ShowMessageBox: 'show_message_box',
+};
+
 
 export interface ShowMessageBoxReq extends MessageBoxOptions { }
 export interface ShowMessageBoxRes extends MessageBoxReturnValue { }
@@ -15,11 +20,8 @@ export class IpcDialogServiceRenderer extends IpcServiceRenderer {
 		super('dialog', ipc);
 	}
 
-	async showMessageBox(options: ShowMessageBoxReq): Promise<ShowMessageBoxRes> {
-		return this.ipc.invoke(this.channel, {
-			code: 'show_message_box',
-			payload: options,
-		});
+	async showMessageBox(options: ShowMessageBoxReq) {
+		return this.invoke<ShowMessageBoxRes>(DialogMessages.ShowMessageBox, options);
 	}
 }
 
@@ -28,7 +30,7 @@ export class IpcDialogServiceMain extends IpcServiceMain {
 		super('dialog', ipc);
 	}
 
-	registerShowMessageBox(fn: AsyncListener<ShowMessageBoxReq, ShowMessageBoxRes>) {
-		this.registerListener('show_message_box', fn);
+	registerShowMessageBox(fn: Listener<ShowMessageBoxReq, ShowMessageBoxRes>) {
+		this.registerListener(DialogMessages.ShowMessageBox, fn);
 	}
 }

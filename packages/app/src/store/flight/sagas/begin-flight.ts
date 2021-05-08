@@ -32,21 +32,21 @@ export default function* requestFlightWorker({ payload }: PayloadAction<BeginFli
 	let response: ResponseOverview | null = null;
 
 	const channel = eventChannel(emitter => {
-		ipcFlightService.registerFlightHeartbeat((_event, payload) => {
+		ipcFlightService.registerFlightHeartbeat(async (_event, payload) => {
 			if (payload.stage === 'reading_body')
 				binaryStore.append(binaryStoreKey, payload.payload.buffer);
 
 			emitter(actions.updateFlightProgress(payload));
 		});
 
-		ipcFlightService.registerFlightComplete((_event, payload) => {
+		ipcFlightService.registerFlightComplete(async (_event, payload) => {
 			response = payload.overview;
 
 			emitter(actions.completeFlight({ flightId, requestId, response: payload.overview }));
 			emitter(END);
 		});
 
-		ipcFlightService.registerFlightFailed((_event, payload) => {
+		ipcFlightService.registerFlightFailed(async (_event, payload) => {
 			emitter(actions.flightFailure({ flightId, requestId, error: payload.error }));
 			emitter(END);
 		});
@@ -66,7 +66,7 @@ export default function* requestFlightWorker({ payload }: PayloadAction<BeginFli
 
 	try {
 		while (true) {
-			const result = yield take(channel);
+			const result: PayloadAction = yield take(channel);
 
 			yield put(result);
 		}

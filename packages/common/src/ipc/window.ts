@@ -3,7 +3,7 @@ import {
 	IpcRenderer,
 } from 'electron';
 
-import { AsyncListener, IpcServiceMain, IpcServiceRenderer } from './ipc';
+import { IpcServiceMain, IpcServiceRenderer, Listener } from './ipc';
 
 const WindowMessages = {
 	CloseSelfWindow: 'close_self_window',
@@ -15,7 +15,7 @@ export class IpcWindowServiceRenderer extends IpcServiceRenderer {
 	}
 
 	async closeSelfWindow() {
-		return this.ipc.invoke(this.channel, { code: WindowMessages.CloseSelfWindow });
+		return await this.invoke(WindowMessages.CloseSelfWindow);
 	}
 }
 
@@ -24,7 +24,7 @@ export class IpcWindowServiceMain extends IpcServiceMain {
 		super('window', ipc);
 	}
 
-	registerCloseSelfWindow(fn: AsyncListener) {
+	registerCloseSelfWindow(fn: Listener) {
 		this.registerListener(WindowMessages.CloseSelfWindow, fn);
 	}
 }

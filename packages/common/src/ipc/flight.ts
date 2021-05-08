@@ -1,7 +1,7 @@
 import { IpcMain, IpcRenderer, WebContents } from 'electron';
 
 import { FlightCompletePayload, FlightFailedPayload, FlightHeartbeatPayload, FlightRequestPayload } from '../types/requester';
-import { AsyncListener, IpcServiceMain, IpcServiceRenderer, SyncListener } from './ipc';
+import { IpcServiceMain, IpcServiceRenderer, Listener } from './ipc';
 
 export const FlightMessages = {
 	StartFlight: 'start_flight',
@@ -16,21 +16,18 @@ export class IpcFlightServiceRenderer extends IpcServiceRenderer {
 	}
 
 	async startFlight(payload: FlightRequestPayload) {
-		this.ipc.invoke(this.channel, {
-			code: FlightMessages.StartFlight,
-			payload,
-		});
+		await this.invoke(FlightMessages.StartFlight, payload);
 	}
 
-	registerFlightHeartbeat(fn: SyncListener<FlightHeartbeatPayload>) {
+	registerFlightHeartbeat(fn: Listener<FlightHeartbeatPayload>) {
 		this.registerListener(FlightMessages.FlightHeartbeat, fn);
 	}
 
-	registerFlightComplete(fn: SyncListener<FlightCompletePayload>) {
+	registerFlightComplete(fn: Listener<FlightCompletePayload>) {
 		this.registerListener(FlightMessages.FlightComplete, fn);
 	}
 
-	registerFlightFailed(fn: SyncListener<FlightFailedPayload>) {
+	registerFlightFailed(fn: Listener<FlightFailedPayload>) {
 		this.registerListener(FlightMessages.FlightFailed, fn);
 	}
 }
@@ -40,7 +37,7 @@ export class IpcFlightServiceMain extends IpcServiceMain {
 		super('flight', ipc);
 	}
 
-	registerStartFlight(fn: AsyncListener<FlightRequestPayload, void>) {
+	registerStartFlight(fn: Listener<FlightRequestPayload, void>) {
 		this.registerListener(FlightMessages.StartFlight, fn);
 	}
 

@@ -1,6 +1,6 @@
 import { IpcMain, IpcRenderer } from 'electron';
 
-import { AsyncListener, IpcServiceMain, IpcServiceRenderer } from './ipc';
+import { IpcServiceMain, IpcServiceRenderer, Listener } from './ipc';
 
 export const EncryptionMessages = {
 	GenerateIv: 'generate_iv',
@@ -25,22 +25,16 @@ export class IpcEncryptionServiceRenderer extends IpcServiceRenderer {
 		super('encryption', ipc);
 	}
 
-	async generateIv(): Promise<string> {
-		return this.ipc.invoke(this.channel, { code: EncryptionMessages.GenerateIv });
+	async generateIv() {
+		return this.invoke<string>(EncryptionMessages.GenerateIv);
 	}
 
-	async encryptString(payload: EncryptStringReq): Promise<string> {
-		return this.ipc.invoke(this.channel, {
-			code: EncryptionMessages.EncryptString,
-			payload,
-		});
+	async encryptString(payload: EncryptStringReq) {
+		return this.invoke<string>(EncryptionMessages.EncryptString, payload);
 	}
 
-	async decryptString(payload: DecryptStringReq): Promise<string> {
-		return this.ipc.invoke(this.channel, {
-			code: EncryptionMessages.DecryptString,
-			payload,
-		});
+	async decryptString(payload: DecryptStringReq) {
+		return this.invoke<string>(EncryptionMessages.DecryptString, payload);
 	}
 }
 
@@ -49,15 +43,15 @@ export class IpcEncryptionServiceMain extends IpcServiceMain {
 		super('encryption', ipc);
 	}
 
-	registerGenerateIv(fn: AsyncListener<void, string>) {
+	registerGenerateIv(fn: Listener<void, string>) {
 		this.registerListener(EncryptionMessages.GenerateIv, fn);
 	}
 
-	registerEncryptString(fn: AsyncListener<EncryptStringReq, string>) {
+	registerEncryptString(fn: Listener<EncryptStringReq, string>) {
 		this.registerListener(EncryptionMessages.EncryptString, fn);
 	}
 
-	registerDecryptString(fn: AsyncListener<DecryptStringReq, string>) {
+	registerDecryptString(fn: Listener<DecryptStringReq, string>) {
 		this.registerListener(EncryptionMessages.DecryptString, fn);
 	}
 }

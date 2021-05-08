@@ -3,7 +3,7 @@ import {
 	IpcRenderer,
 } from 'electron';
 
-import { AsyncListener, IpcServiceMain, IpcServiceRenderer } from './ipc';
+import { IpcServiceMain, IpcServiceRenderer, Listener } from './ipc';
 
 const AppMessages = {
 	GetVersion: 'get_version',
@@ -14,8 +14,8 @@ export class IpcAppServiceRenderer extends IpcServiceRenderer {
 		super('app', ipc);
 	}
 
-	async getVersion(): Promise<string> {
-		return this.ipc.invoke(this.channel, { code: AppMessages.GetVersion });
+	async getVersion() {
+		return this.invoke<string>(AppMessages.GetVersion);
 	}
 }
 
@@ -24,7 +24,7 @@ export class IpcAppServiceMain extends IpcServiceMain {
 		super('app', ipc);
 	}
 
-	registerGetVersion(fn: AsyncListener<void, string>) {
+	registerGetVersion(fn: Listener<void, string>) {
 		this.registerListener(AppMessages.GetVersion, fn);
 	}
 }

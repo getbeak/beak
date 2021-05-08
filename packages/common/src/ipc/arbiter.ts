@@ -1,7 +1,7 @@
 import { IpcMain, IpcRenderer } from 'electron';
 
 import { ArbiterStatus } from '../types/arbiter';
-import { AsyncListener, IpcServiceMain, IpcServiceRenderer } from './ipc';
+import { IpcServiceMain, IpcServiceRenderer, Listener } from './ipc';
 
 export const ArbiterMessages = {
 	GetStatus: 'get_status',
@@ -12,8 +12,8 @@ export class IpcArbiterServiceRenderer extends IpcServiceRenderer {
 		super('arbiter', ipc);
 	}
 
-	async getStatus(): Promise<ArbiterStatus> {
-		return this.ipc.invoke(this.channel, { code: ArbiterMessages.GetStatus });
+	async getStatus() {
+		return this.invoke<ArbiterStatus>(ArbiterMessages.GetStatus);
 	}
 }
 
@@ -22,7 +22,7 @@ export class IpcArbiterServiceMain extends IpcServiceMain {
 		super('arbiter', ipc);
 	}
 
-	registerGetStatus(fn: AsyncListener<void, ArbiterStatus>) {
+	registerGetStatus(fn: Listener<void, ArbiterStatus>) {
 		this.registerListener(ArbiterMessages.GetStatus, fn);
 	}
 }

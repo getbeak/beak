@@ -5,17 +5,29 @@ import {
 	IpcRendererEvent,
 } from 'electron';
 
-export type AsyncListener<T = any | void, T2 = any | void> = (event: IpcMainInvokeEvent, payload: T) => Promise<T2>;
-export type SyncListener<T = any | void> = (event: IpcRendererEvent, payload: T) => void;
+import Squawk from '../utils/squawk';
+
+export interface RequestPayload {
+	code: string;
+	payload: unknown;
+}
+
+export interface Response<T> {
+	response?: T;
+	error: Squawk;
+}
+
+export type IpcEvent = IpcMainInvokeEvent | IpcRendererEvent;
+export type Listener<TP = any, TR = void | any> = (event: IpcEvent, payload: TP) => Promise<TR>;
 
 export interface IpcMessage {
 	code: string;
 	payload: unknown;
 }
 
-class IpcServiceBase<TL> {
+class IpcServiceBase<T> {
 	protected channel: string;
-	protected listeners: Record<string, TL | undefined> = {};
+	protected listeners: Record<string, Listener | undefined> = {};
 
 	constructor(channel: string) {
 		this.channel = channel;
@@ -25,7 +37,7 @@ class IpcServiceBase<TL> {
 		return this.channel;
 	}
 
-	registerListener(eventCode: string, listener: TL) {
+	registerListener(eventCode: string, listener: Listener) {
 		this.listeners[eventCode] = listener;
 	}
 
@@ -34,15 +46,24 @@ class IpcServiceBase<TL> {
 	}
 }
 
-export class IpcServiceRenderer extends IpcServiceBase<SyncListener> {
+export class IpcServiceRenderer extends IpcServiceBase<IpcRendererEvent> {
 	protected ipc: IpcRenderer;
 
 	constructor(channel: string, ipc: IpcRenderer) {
 		super(channel);
 
 		this.ipc = ipc;
-
 		this.register();
+	}
+
+	async invoke<T = void>(code: string, payload?: unknown) {
+		const y = await this.ipc.invoke(this.channel, { code, payload });
+		const { response, error } = y;
+
+		if (error)
+			throw Squawk.coerce(error);
+
+		return response as T;
 	}
 
 	register() {
@@ -60,28 +81,33 @@ export class IpcServiceRenderer extends IpcServiceBase<SyncListener> {
 	}
 }
 
-export class IpcServiceMain extends IpcServiceBase<AsyncListener> {
+export class IpcServiceMain extends IpcServiceBase<IpcMainInvokeEvent> {
 	protected ipc: IpcMain;
 
 	constructor(channel: string, ipc: IpcMain) {
 		super(channel);
 
 		this.ipc = ipc;
-
 		this.register();
 	}
 
 	register() {
 		this.ipc.handle(this.channel, async (event, message: IpcMessage) => {
-			if (!message.code)
-				throw new Error('Malformed ipc message');
+			try {
+				if (!message.code)
+					throw new Error('Malformed ipc message');
 
-			const listener = this.listeners[message.code];
+				const listener = this.listeners[message.code];
 
-			if (!listener)
-				throw new Error(`No listener attached for ${message.code}`);
+				if (!listener)
+					throw new Error(`No listener attached for ${message.code}`);
 
-			return await listener(event, message.payload);
+				const response = await listener(event, message.payload);
+
+				return { response };
+			} catch (error) {
+				return { error };
+			}
 		});
 	}
 }
