@@ -66,15 +66,25 @@ class NestClient {
 			},
 		});
 
-		await this.rpcNoAuth('2020-12-14/send_magic_link', {
-			clientId: 'client_000000C2kdCzNlbL1BqR5FeMatItU',
-			redirectUri: 'https://magic.getbeak.app/',
-			state,
-			codeChallengeMethod: 'S256',
-			codeChallenge,
-			identifierType: 'email',
-			identifierValue: email,
-		});
+		try {
+			await this.rpcNoAuth('2020-12-14/send_magic_link', {
+				clientId: 'client_000000C2kdCzNlbL1BqR5FeMatItU',
+				redirectUri: 'https://magic.getbeak.app/',
+				state,
+				codeChallengeMethod: 'S256',
+				codeChallenge,
+				identifierType: 'email',
+				identifierValue: email,
+			});
+		} catch (error) {
+			const squawk = Squawk.coerce(error);
+			const message = (squawk.meta?.message ?? '') as string;
+
+			if (['Missing final \'@domain\'', 'Domain starts with dot'].includes(message))
+				throw new Squawk('invalid_email', void 0, [squawk]);
+
+			throw error;
+		}
 	}
 
 	async handleMagicLink(code: string, state: string) {

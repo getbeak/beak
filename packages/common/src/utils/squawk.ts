@@ -44,7 +44,6 @@ export default class Squawk extends Error {
 		let newError: Squawk;
 
 		if (error && typeof possibleSquawk.code === 'string')
-			// if code is a string, obj already conforms to Cher structure (e.g. cuvva-log CuvvaError)
 			newError = new Squawk(possibleSquawk.code, possibleSquawk.meta, possibleSquawk.reasons);
 		else if (error instanceof Error)
 			newError = new Squawk('unknown', error.message ? { message: error.message } : void 0);
