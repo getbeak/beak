@@ -106,7 +106,8 @@ export class IpcServiceMain extends IpcServiceBase<IpcMainInvokeEvent> {
 
 				return { response };
 			} catch (error) {
-				return { error };
+				// TODO(afr): Yeah this is shit, can't be bothered to find out why I need it
+				return { error: JSON.parse(JSON.stringify(Squawk.coerce(error))) };
 			}
 		});
 	}
