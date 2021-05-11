@@ -35,12 +35,11 @@ const RequestMagicLink: React.FunctionComponent<RequestMagicLinkProps> = props =
 		ipcNestService.sendMagicLink(email)
 			.then(() => {
 				setError(void 0);
+				setWorking(false);
 				complete();
 			})
 			.catch(error => {
 				setError(error);
-			})
-			.finally(() => {
 				setWorking(false);
 			});
 	}
