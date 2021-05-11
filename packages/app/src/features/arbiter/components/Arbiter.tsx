@@ -20,24 +20,15 @@ const Arbiter: React.FunctionComponent = ({ children }) => {
 	const now = new Date();
 	const lastSuccessfulCheck = new Date(arbiter.lastSuccessfulCheck);
 	const sinceLastCheck = differenceInDays(now, lastSuccessfulCheck);
-
-	const mode = (function generateMode() {
-		if (sinceLastCheck >= 4)
-			return 'locked';
-
-		if (sinceLastCheck > 1)
-			return 'warning';
-
-		return 'gucci';
-	}());
+	const showWarning = sinceLastCheck > 1;
 
 	return (
 		<React.Fragment>
-			{mode !== 'locked' && children}
-			{mode === 'warning' && (
+			{arbiter.status && children}
+			{showWarning && (
 				<WarningBanner>
-					{`Unable to check license. Beak will lock in ${7 - sinceLastCheck} `}
-					{`day${(7 - sinceLastCheck === 1 ? '' : 's')}`}
+					{`Unable to check license. Beak will lock in ${5 - sinceLastCheck} `}
+					{`day${(5 - sinceLastCheck === 1 ? '' : 's')}`}
 				</WarningBanner>
 			)}
 		</React.Fragment>

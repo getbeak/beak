@@ -33,12 +33,13 @@ class Arbiter {
 			};
 		} catch (error) {
 			const squawk = Squawk.coerce(error);
+			const expired = checkExpired(status.lastSuccessfulCheck);
 
 			status = {
 				lastSuccessfulCheck: status.lastSuccessfulCheck,
 				lastCheckError: squawk,
 				lastCheck: new Date().toISOString(),
-				status: true,
+				status: !expired,
 			};
 
 			if (squawk.code !== 'unknown') {
@@ -52,8 +53,7 @@ class Arbiter {
 
 		persistentStore.set('arbiter', status);
 
-		// If the status is false, or it's been 5 days we need to reset
-		if (status.status === false || checkExpired(status.lastSuccessfulCheck)) {
+		if (status.status === false) {
 			persistentStore.set('auth', null);
 
 			const onboardingWindowId = createOnboardingWindow();
