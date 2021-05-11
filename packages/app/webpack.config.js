@@ -5,6 +5,7 @@ const path = require('path');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 /* eslint-enable @typescript-eslint/no-var-requires */
 
+const environment = process.env.NODE_ENV;
 const MONACO_DIR = path.resolve(__dirname, '../../node_modules/monaco-editor');
 
 module.exports = {
@@ -54,5 +55,5 @@ module.exports = {
 		open: false,
 		port: 3000,
 	},
-	devtool: 'eval-cheap-source-map',
+	devtool: environment === 'development' ? 'eval-cheap-source-map' : void 0,
 };
