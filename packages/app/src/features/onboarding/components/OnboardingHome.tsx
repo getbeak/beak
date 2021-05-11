@@ -11,17 +11,23 @@ type State = 'request_magic_link' | 'enter_magic_state';
 const { ipcRenderer } = window.require('electron');
 
 const OnboardingHome: React.FunctionComponent = () => {
-	const [email, setEmail] = useState('taylor@beak.app');
+	const [email, setEmail] = useState('');
 	const [state, setState] = useState<State>('request_magic_link');
 	const [inboundState, setInboundState] = useState<MagicState | undefined>(void 0);
 
 	useEffect(() => {
-		ipcRenderer.on('inbound-magic-link', (_event, payload: { code: string; state: string }) => {
+		function listener(_event: unknown, payload: MagicState) {
 			const { code, state } = payload;
 
 			setState('enter_magic_state');
 			setInboundState({ code, state });
-		});
+		}
+
+		ipcRenderer.on('inbound-magic-link', listener);
+
+		return () => {
+			ipcRenderer.off('inbound-magic-link', listener);
+		};
 	}, []);
 
 	return (
