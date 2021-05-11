@@ -1,7 +1,8 @@
 import { TypedObject } from '@beak/common/helpers/typescript';
 import Squawk from '@beak/common/utils/squawk';
+import { differenceInDays } from 'date-fns';
 
-import { windowStack } from '../window-management';
+import { closeWindow, createOnboardingWindow, windowStack } from '../window-management';
 import nestClient from './nest-client';
 import persistentStore from './persistent-store';
 
@@ -51,16 +52,33 @@ class Arbiter {
 
 		persistentStore.set('arbiter', status);
 
-		// TODO(afr): If status is false, or it's been over 7 days since last check, then we need to close all open
-		// windows and show onboarding here
+		// If the status is false, or it's been 5 days we need to reset
+		if (status.status === false || checkExpired(status.lastSuccessfulCheck)) {
+			const onboardingWindowId = createOnboardingWindow();
 
-		TypedObject.values(windowStack).forEach(window => {
-			if (!window)
-				return;
+			TypedObject.keys(windowStack).forEach(windowId => {
+				if (windowId !== onboardingWindowId)
+					closeWindow(windowId);
+			});
 
-			window.webContents.send('arbiter_broadcast', { code: 'status_update', payload: status });
-		});
+			windowStack[onboardingWindowId].focus();
+		} else {
+			TypedObject.values(windowStack).forEach(window => {
+				if (!window)
+					return;
+
+				window.webContents.send('arbiter_broadcast', { code: 'status_update', payload: status });
+			});
+		}
 	}
+}
+
+function checkExpired(lastSuccessfulCheck: string) {
+	const now = new Date();
+	const lastCheck = new Date(lastSuccessfulCheck);
+	const diff = differenceInDays(now, lastCheck);
+
+	return diff >= 5;
 }
 
 const arbiter = new Arbiter();
