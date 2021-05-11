@@ -1,6 +1,7 @@
 import { IpcNestServiceMain } from '@beak/common/ipc/nest';
 import { ipcMain } from 'electron';
 
+import arbiter from '../lib/arbiter';
 import nestClient from '../lib/nest-client';
 import { createWelcomeWindow, stackMap, windowStack } from '../window-management';
 
@@ -12,6 +13,7 @@ service.registerSendMagicLink(async (_event, email) => {
 
 service.registerHandleMagicLink(async (_event, payload) => {
 	await nestClient.handleMagicLink(payload.code, payload.state);
+	await arbiter.check();
 
 	if (!payload.fromOnboarding)
 		return;

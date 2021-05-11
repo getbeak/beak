@@ -7,8 +7,7 @@ import persistentStore from './persistent-store';
 
 class Arbiter {
 	start() {
-		// 30 minutes
-		setInterval(() => this.check().catch(console.error), 1800000);
+		setInterval(() => this.check().catch(console.error), 1800000); // 30 minutes
 	}
 
 	getStatus() {
