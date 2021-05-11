@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "chokidar": "^3.5.0",
+    "date-fns": "^2.15.0",
     "electron-store": "^6.0.1",
     "electron-updater": "^4.3.5",
     "fs-extra": "^9.0.1",

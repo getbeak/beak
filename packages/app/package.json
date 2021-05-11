@@ -57,7 +57,6 @@
     "monaco-editor": "^0.21.2",
     "monaco-editor-webpack-plugin": "^2.0.0",
     "react-column-resizer": "^1.1.9",
-    "react-grid-system": "^7.0.3",
     "react-helmet": "^6.1.0",
     "react-hotkeys-hook": "^2.3.1",
     "react-monaco-editor": "^0.41.1",
