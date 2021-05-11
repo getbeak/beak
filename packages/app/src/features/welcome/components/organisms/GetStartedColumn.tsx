@@ -1,6 +1,6 @@
 import { ipcProjectService } from '@beak/app/lib/ipc';
 import React from 'react';
-import { Col } from 'react-grid-system';
+import styled from 'styled-components';
 
 import { WelcomeViewType } from '../../../../containers/Welcome';
 import ColumnTitle from '../atoms/ColumnTitle';
@@ -11,7 +11,7 @@ export interface GetStartedColumnProps {
 }
 
 const GetStartedColumn: React.FunctionComponent<GetStartedColumnProps> = ({ setView }) => (
-	<Col>
+	<Wrapper>
 		<ColumnTitle>{'Get started'}</ColumnTitle>
 
 		<GetStartedButton
@@ -34,7 +34,9 @@ const GetStartedColumn: React.FunctionComponent<GetStartedColumnProps> = ({ setV
 			title={'Create a team project'}
 			description={'Creates a new cloud-based team project'}
 		/> */}
-	</Col>
+	</Wrapper>
 );
+
+const Wrapper = styled.div``;
 
 export default GetStartedColumn;

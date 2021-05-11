@@ -64,8 +64,8 @@ const Title = styled.span`
 `;
 
 const ChildrenWrapper = styled.div`
-	margin-left: 20px;
-	margin-right: 10px;
+	margin-left: 5px;
+	margin-right: 5px;
 `;
 
 export default Collapse;

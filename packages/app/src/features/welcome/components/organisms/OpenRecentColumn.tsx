@@ -2,7 +2,6 @@ import { ipcBeakHubService, ipcProjectService } from '@beak/app/lib/ipc';
 import { RecentLocalProject } from '@beak/common/types/beak-hub';
 import { sentenceCase } from 'change-case';
 import React, { useEffect, useState } from 'react';
-import { Col } from 'react-grid-system';
 import styled from 'styled-components';
 
 import ColumnTitle from '../atoms/ColumnTitle';
@@ -50,7 +49,7 @@ const OpenRecentColumn: React.FunctionComponent = () => {
 	const noRecents = checkIfNoRecents(recents);
 
 	return (
-		<Col>
+		<Wrapper>
 			<ColumnTitle>{'Open recent'}</ColumnTitle>
 
 			<ScrollViewer>
@@ -77,7 +76,7 @@ const OpenRecentColumn: React.FunctionComponent = () => {
 					</Collapse>
 				))}
 			</ScrollViewer>
-		</Col>
+		</Wrapper>
 	);
 };
 
@@ -98,6 +97,8 @@ function checkIfNoRecents(recents: Recents) {
 
 	return !hasToday && !hasWeek && !hasMonth && !hasOlder;
 }
+
+const Wrapper = styled.div``;
 
 const ScrollViewer = styled.div`
 	height: 100%;

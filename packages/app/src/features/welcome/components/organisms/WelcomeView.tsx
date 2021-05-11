@@ -1,5 +1,5 @@
 import React from 'react';
-import { Row } from 'react-grid-system';
+import styled from 'styled-components';
 
 import { WelcomeViewType } from '../../../../containers/Welcome';
 import ViewIntroLine from '../atoms/ViewIntroLine';
@@ -16,11 +16,17 @@ const WelcomeView: React.FunctionComponent<WelcomeViewProps> = ({ setView }) => 
 		<ViewTitle>{'Welcome to Beak!'}</ViewTitle>
 		<ViewIntroLine>{'The feathery cross-platform API crafting tool'}</ViewIntroLine>
 
-		<Row>
+		<Grid>
 			<OpenRecentColumn />
 			<GetStartedColumn setView={setView} />
-		</Row>
+		</Grid>
 	</React.Fragment>
 );
+
+const Grid = styled.div`
+	display: grid;
+
+	grid-template-columns: 60% 40%;
+`;
 
 export default WelcomeView;

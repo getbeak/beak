@@ -60,16 +60,16 @@ const Name = styled.span`
 	display: block;
 	font-size: 16px;
 	font-weight: 500;
-	word-wrap: break-word;
-	text-overflow: ellipsis;
 `;
 
 const Path = styled.span`
 	display: block;
 	font-size: 12px;
 	color: ${props => props.theme.ui.textMinor};
-	word-wrap: break-word;
-	text-overflow: ellipsis;
+	
+	/* white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis; */
 `;
 
 const ModifiedDate = styled.div`
