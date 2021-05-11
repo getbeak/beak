@@ -2,7 +2,7 @@ import { TypedObject } from '@beak/common/helpers/typescript';
 import Squawk from '@beak/common/utils/squawk';
 import { differenceInDays } from 'date-fns';
 
-import { closeWindow, createOnboardingWindow, windowStack } from '../window-management';
+import { createOnboardingWindow, windowStack } from '../window-management';
 import nestClient from './nest-client';
 import persistentStore from './persistent-store';
 
@@ -54,11 +54,13 @@ class Arbiter {
 
 		// If the status is false, or it's been 5 days we need to reset
 		if (status.status === false || checkExpired(status.lastSuccessfulCheck)) {
+			persistentStore.set('auth', null);
+
 			const onboardingWindowId = createOnboardingWindow();
 
-			TypedObject.keys(windowStack).forEach(windowId => {
-				if (windowId !== onboardingWindowId)
-					closeWindow(windowId);
+			TypedObject.values(windowStack).forEach(window => {
+				if (window.id !== onboardingWindowId)
+					window.close();
 			});
 
 			windowStack[onboardingWindowId].focus();
