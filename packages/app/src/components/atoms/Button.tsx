@@ -35,9 +35,14 @@ const mdCss = css`
 	font-size: 14px;
 `;
 
+const smCss = css`
+	padding: 4px 8px;
+	font-size: 13px;
+`;
+
 export interface ButtonProps {
 	colour?: 'primary' | 'secondary';
-	size?: 'md';
+	size?: 'md' | 'sm';
 }
 
 const Button = styled.button<ButtonProps>`
@@ -71,6 +76,9 @@ const Button = styled.button<ButtonProps>`
 	}}
 
 	${({ size }) => {
+		if (size === 'sm')
+			return smCss;
+
 		if (!size || size === 'md')
 			return mdCss;
 
