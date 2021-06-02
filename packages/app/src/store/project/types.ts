@@ -65,6 +65,7 @@ export const ActionTypes = {
 	ALERTS_INSERT: '@beak/global/project/ALERTS_INSERT',
 	ALERTS_REMOVE: '@beak/global/project/ALERTS_REMOVE',
 	ALERTS_REMOVE_DEPENDENTS: '@beak/global/project/ALERTS_REMOVE_DEPENDENTS',
+	ALERTS_REMOVE_TYPE: '@beak/global/project/ALERTS_REMOVE_TYPE',
 	ALERTS_CLEAR: '@beak/global/project/ALERTS_CLEAR',
 };
 

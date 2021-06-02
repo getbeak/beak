@@ -365,6 +365,20 @@ const projectReducer = createReducer(initialState, builder => {
 
 			removeIdents.forEach(i => void (state.alerts[i] = void 0));
 		})
+		.addCase(actions.alertRemoveType, (state, { payload }) => {
+			const removeIdents = TypedObject.keys(state.alerts)
+				.map(i => {
+					const alert = state.alerts[i]!;
+
+					if (alert.type === payload)
+						return i;
+
+					return null;
+				})
+				.filter(Boolean) as unknown as string[];
+
+			removeIdents.forEach(i => void (state.alerts[i] = void 0));
+		})
 		.addCase(actions.alertClear, state => {
 			state.alerts = { };
 		});

@@ -125,6 +125,7 @@ export const requestOptionFollowRedirects = createAction<RequestOptionFollowRedi
 export const alertInsert = createAction<AlertInsertPayload>(AT.ALERTS_INSERT);
 export const alertRemove = createAction<string>(AT.ALERTS_REMOVE);
 export const alertRemoveDependents = createAction<AlertDependencies>(AT.ALERTS_REMOVE_DEPENDENTS);
+export const alertRemoveType = createAction<string>(AT.ALERTS_REMOVE_TYPE);
 export const alertClear = createAction(AT.ALERTS_CLEAR);
 
 export default {
@@ -191,5 +192,6 @@ export default {
 	alertInsert,
 	alertRemove,
 	alertRemoveDependents,
+	alertRemoveType,
 	alertClear,
 };
