@@ -1,5 +1,6 @@
 /* eslint-disable no-param-reassign */
 
+import { TypedObject } from '@beak/common/helpers/typescript';
 import {
 	NamedEntries,
 	NamedStringEntry,
@@ -334,6 +335,38 @@ const projectReducer = createReducer(initialState, builder => {
 			const node = state.tree[requestId] as RequestNode;
 
 			node.info.options.followRedirects = followRedirects;
+		})
+
+		.addCase(actions.alertInsert, (state, { payload }) => {
+			const { ident, alert } = payload;
+
+			state.alerts[ident] = alert;
+		})
+		.addCase(actions.alertRemove, (state, { payload }) => {
+			state.alerts[payload] = void 0;
+		})
+		.addCase(actions.alertRemoveDependents, (state, { payload }) => {
+			const { requestId } = payload;
+
+			const removeIdents = TypedObject.keys(state.alerts)
+				.map(i => {
+					const alert = state.alerts[i]!;
+					const dependencies = alert.dependencies;
+
+					if (!dependencies)
+						return null;
+
+					if (dependencies.requestId !== void 0 && dependencies.requestId === requestId)
+						return i;
+
+					return null;
+				})
+				.filter(Boolean) as unknown as string[];
+
+			removeIdents.forEach(i => void (state.alerts[i] = void 0));
+		})
+		.addCase(actions.alertClear, state => {
+			state.alerts = { };
 		});
 });
 

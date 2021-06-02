@@ -61,6 +61,11 @@ export const ActionTypes = {
 	REQUEST_BODY_URL_ENCODED_EDITOR_ENABLED_CHANGE: '@beak/global/project/REQUEST_BODY_URL_ENCODED_EDITOR_ENABLED_CHANGE',
 
 	REQUEST_OPTION_FOLLOW_REDIRECTS: '@beak/global/project/REQUEST_OPTION_FOLLOW_REDIRECTS',
+
+	ALERTS_INSERT: '@beak/global/project/ALERTS_INSERT',
+	ALERTS_REMOVE: '@beak/global/project/ALERTS_REMOVE',
+	ALERTS_REMOVE_DEPENDENTS: '@beak/global/project/ALERTS_REMOVE_DEPENDENTS',
+	ALERTS_CLEAR: '@beak/global/project/ALERTS_CLEAR',
 };
 
 export interface State {
@@ -77,6 +82,8 @@ export interface State {
 	activeRename?: ActiveRename;
 	latestWrite?: LatestWrite;
 	writeDebouncer: Record<string, string>;
+
+	alerts: Record<string, Alert | undefined>;
 }
 
 export const initialState: State = {
@@ -86,6 +93,7 @@ export const initialState: State = {
 	tabs: [],
 
 	writeDebouncer: {},
+	alerts: {},
 };
 
 export type TabItem = RequestTabItem | RendererTabItem;
@@ -229,6 +237,26 @@ export interface RequestBodyUrlEncodedEditorAddItemPayload extends RequestIdPayl
 export interface RequestBodyUrlEncodedEditorRemoveItemPayload extends RequestIdPayload { id: string }
 
 export interface RequestOptionFollowRedirects extends RequestIdPayload { followRedirects: boolean }
+
+export type Alert = AlertMissingEncryption;
+
+export interface AlertBase {
+	type: string;
+	dependencies?: AlertDependencies;
+}
+
+export interface AlertDependencies {
+	requestId?: string;
+}
+
+export interface AlertMissingEncryption extends AlertBase {
+	type: 'missing_encryption';
+}
+
+export interface AlertInsertPayload {
+	ident: string;
+	alert: Alert;
+}
 
 export default {
 	ActionTypes,

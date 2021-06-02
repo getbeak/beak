@@ -3,6 +3,8 @@ import { createAction } from '@reduxjs/toolkit';
 
 import {
 	ActionTypes as AT,
+	AlertDependencies,
+	AlertInsertPayload,
 	CreateNewThing,
 	DuplicateRequestPayload,
 	LatestWrite,
@@ -116,7 +118,14 @@ export const requestBodyUrlEncodedEditorRemoveItem = createAction<RequestBodyUrl
 	AT.REQUEST_BODY_URL_ENCODED_EDITOR_REMOVE_ITEM,
 );
 
-export const requestOptionFollowRedirects = createAction<RequestOptionFollowRedirects>(AT.REQUEST_OPTION_FOLLOW_REDIRECTS);
+export const requestOptionFollowRedirects = createAction<RequestOptionFollowRedirects>(
+	AT.REQUEST_OPTION_FOLLOW_REDIRECTS,
+);
+
+export const alertInsert = createAction<AlertInsertPayload>(AT.ALERTS_INSERT);
+export const alertRemove = createAction<string>(AT.ALERTS_REMOVE);
+export const alertRemoveDependents = createAction<AlertDependencies>(AT.ALERTS_REMOVE_DEPENDENTS);
+export const alertClear = createAction(AT.ALERTS_CLEAR);
 
 export default {
 	startProject,
@@ -178,4 +187,9 @@ export default {
 	requestBodyUrlEncodedEditorRemoveItem,
 
 	requestOptionFollowRedirects,
+
+	alertInsert,
+	alertRemove,
+	alertRemoveDependents,
+	alertClear,
 };
