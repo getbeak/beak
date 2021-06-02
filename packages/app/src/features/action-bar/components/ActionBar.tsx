@@ -15,6 +15,7 @@ import styled, { useTheme } from 'styled-components';
 
 import ActionBarButton from './atoms/ActionBarButton';
 import ActionBarSeperator from './atoms/ActionBarSeperator';
+import ActionBarAlertButton from './molecules/ActionBarAlertButton';
 
 const ActionBar: React.FunctionComponent = () => {
 	const theme = useTheme();
@@ -65,6 +66,9 @@ const ActionBar: React.FunctionComponent = () => {
 				</ActionBarButton>
 			</abbr>
 			<ActionBarSeperator />
+			<abbr title={'Shows possible errors with your project'}>
+				<ActionBarAlertButton />
+			</abbr>
 			<abbr title={'Go bird watching'}>
 				<ActionBarButton>
 					<FontAwesomeIcon
@@ -99,11 +103,12 @@ function gatherRequirements(selectedRequestId: string | undefined, request: Node
 
 const Wrapper = styled.div`
 	display: flex;
-	height: 40px;
-	-webkit-app-region: drag;
-	background-color: ${props => props.theme.ui.secondarySurface};
 	justify-content: flex-end;
 	align-items: center;
+	height: 40px;
+
+	-webkit-app-region: drag;
+	background-color: ${props => props.theme.ui.secondarySurface};
 	padding: 0 10px;
 `;
 
