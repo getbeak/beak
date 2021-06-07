@@ -17,7 +17,7 @@ const AlertSwitch: React.FunctionComponent<AlertSwitchProps> = ({ alert }) => {
 					action={{
 						cta: 'Fix',
 						callback: () => {
-
+							
 						},
 					}}
 				/>

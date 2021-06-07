@@ -21,7 +21,7 @@ const AlertsPopover: React.FunctionComponent<AlertsPopoverProps> = props => {
 		<Container onClick={() => onClose()}>
 			<Wrapper
 				$top={boundingRect.top + parent.clientHeight + 5}
-				$left={boundingRect.left - 175 + 10}
+				$left={boundingRect.left - 300 + 30}
 				onClick={event => void event.stopPropagation()}
 			>
 				{!hasAlerts && <NoAlerts>{'You have no alerts 🎉'}</NoAlerts>}
@@ -42,8 +42,7 @@ const Wrapper = styled.div<{ $top: number; $left: number }>`
 	margin-top: ${p => p.$top}px;
 	margin-left: ${p => p.$left}px;
 
-	width: 175px;
-	padding: 8px 12px;
+	width: 300px;
 	border: 1px solid ${p => p.theme.ui.backgroundBorderSeparator};
 	border-radius: 5px;
 	background: ${p => p.theme.ui.surface};
@@ -52,6 +51,7 @@ const Wrapper = styled.div<{ $top: number; $left: number }>`
 `;
 
 const NoAlerts = styled.span`
+	padding: 8px 12px;
 	font-size: 14px;
 `;
 

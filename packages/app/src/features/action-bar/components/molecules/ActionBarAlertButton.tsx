@@ -11,7 +11,7 @@ import AlertsPopover from '../organisms/AlertsPopover';
 const ActionBarAlertButton: React.FunctionComponent = () => {
 	const dispatch = useDispatch();
 	const theme = useTheme();
-	const [showPopover, setShowPopover] = useState(false);
+	const [showPopover, setShowPopover] = useState(true);
 	const alerts = useSelector(s => s.global.project.alerts);
 	const hasAlerts = TypedObject.keys(alerts).length > 0;
 	const parentRef = useRef() as React.MutableRefObject<HTMLButtonElement>;
