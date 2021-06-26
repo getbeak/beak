@@ -11,7 +11,10 @@ export interface RequestNodeFile extends RequestOverview {
 }
 
 export interface SupersecretFile {
-	encryption: { key: string };
+	encryption: {
+		algo: 'aes-256-ctr';
+		key: string;
+	};
 }
 
 export interface Node {

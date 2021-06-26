@@ -64,7 +64,26 @@ export async function decryptString(payload: string, key: string, iv: string) {
 
 export async function readProjectEncryptionKey(projectPath: string) {
 	const supersecretFile = path.join(projectPath, '.beak', 'supersecret.json');
+
+	// eslint-disable-next-line no-sync
+	if (!fs.existsSync(supersecretFile))
+		return null;
+
 	const file = await fs.readJson(supersecretFile) as SupersecretFile;
 
 	return file.encryption.key;
+}
+
+export async function writeProjectEncryptionKey(key: string, projectPath: string) {
+	const supersecretFilePath = path.join(projectPath, '.beak', 'supersecret.json');
+	const supersecretFile: SupersecretFile = {
+		encryption: {
+			algo: aesAlgo,
+			key,
+		},
+	};
+
+	await fs.writeJson(supersecretFilePath, supersecretFile, { spaces: '\t' });
+
+	return true;
 }
