@@ -14,7 +14,7 @@ interface AlertsPopoverProps {
 const AlertsPopover: React.FunctionComponent<AlertsPopoverProps> = props => {
 	const { parent, onClose } = props;
 	const alerts = useSelector(s => s.global.project.alerts);
-	const hasAlerts = TypedObject.keys(alerts).length > 0;
+	const hasAlerts = TypedObject.values(alerts).filter(Boolean).length > 0;
 	const boundingRect = parent.getBoundingClientRect();
 
 	return createPortal(
@@ -25,7 +25,10 @@ const AlertsPopover: React.FunctionComponent<AlertsPopoverProps> = props => {
 				onClick={event => void event.stopPropagation()}
 			>
 				{!hasAlerts && <NoAlerts>{'You have no alerts 🎉'}</NoAlerts>}
-				{hasAlerts && TypedObject.values(alerts).map(alert => (<AlertSwitch alert={alert!} />))}
+
+				{hasAlerts && TypedObject.values(alerts)
+					.filter(Boolean)
+					.map(alert => (<AlertSwitch alert={alert!} />))}
 			</Wrapper>
 		</Container>,
 		document.getElementById('action-alerts-popover')!,
@@ -51,6 +54,7 @@ const Wrapper = styled.div<{ $top: number; $left: number }>`
 `;
 
 const NoAlerts = styled.span`
+	display: block;
 	padding: 8px 12px;
 	font-size: 14px;
 `;
