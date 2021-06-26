@@ -127,7 +127,7 @@
 		"no-octal-escape": 1,
 		"no-param-reassign": [1, { "props": true }],
 		"no-path-concat": 1,
-		"no-plusplus": [1, { "allowForLoopAfterthoughts": true }],
+		"no-plusplus": 0,
 		"no-process-env": 0,
 		"no-process-exit": 1,
 		"no-proto": 1,
