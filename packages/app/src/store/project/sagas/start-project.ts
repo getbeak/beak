@@ -2,10 +2,11 @@ import { readFolderNode } from '@beak/app/lib/beak-project/folder';
 import { readProjectFile } from '@beak/app/lib/beak-project/project';
 import { readRequestNode } from '@beak/app/lib/beak-project/request';
 import createFsEmitter, { scanDirectoryRecursively, ScanResult } from '@beak/app/lib/fs-emitter';
-import { ipcDialogService, ipcWindowService } from '@beak/app/lib/ipc';
-import actions from '@beak/app/src/store/project/actions';
+import { ipcDialogService, ipcEncryptionService, ipcWindowService } from '@beak/app/lib/ipc';
+import actions, { alertInsert } from '@beak/app/src/store/project/actions';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { FolderNode, ProjectFile, RequestNode, Tree } from '@beak/common/types/beak-project';
+import ksuid from '@cuvva/ksuid';
 import { PayloadAction } from '@reduxjs/toolkit';
 import { EventChannel } from 'redux-saga';
 import { call, put, select, take } from 'redux-saga/effects';
@@ -65,6 +66,16 @@ export default function* workerStartProject({ payload }: PayloadAction<string>) 
 		yield call([ipcWindowService, ipcWindowService.closeSelfWindow]);
 
 		return;
+	}
+
+	// Check encryption status
+	const encryptionStatus: boolean = yield call([ipcEncryptionService, ipcEncryptionService.checkStatus], projectPath);
+
+	if (!encryptionStatus) {
+		yield put(alertInsert({
+			ident: ksuid.generate('alert').toString(),
+			alert: { type: 'missing_encryption' },
+		}));
 	}
 
 	while (true) {
