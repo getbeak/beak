@@ -1,7 +1,7 @@
 import { Flight } from '@beak/app/store/flight/types';
+import { getStatusReasonPhrase } from '@beak/app/utils/http';
 import { convertRequestToUrl } from '@beak/app/utils/uri';
 import { statusToColour } from '@beak/design-system/helpers';
-import { getReasonPhrase } from 'http-status-codes';
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
@@ -36,7 +36,7 @@ const Header: React.FunctionComponent<HeaderProps> = props => {
 				<StatusSection $status={response.status}>
 					<strong>{response.status}</strong>
 					{' '}
-					{safeGetReasonPhrase(response.status)}
+					{getStatusReasonPhrase(response.status)}
 				</StatusSection>
 			)}
 			{error && (
@@ -47,14 +47,6 @@ const Header: React.FunctionComponent<HeaderProps> = props => {
 		</UrlHeaderWrapper>
 	);
 };
-
-function safeGetReasonPhrase(status: number) {
-	try {
-		return getReasonPhrase(status);
-	} catch {
-		return '';
-	}
-}
 
 const UrlHeaderWrapper = styled.div`
 	display: flex;
