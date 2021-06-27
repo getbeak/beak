@@ -42,6 +42,8 @@ class Arbiter {
 				status: !expired,
 			};
 
+			// TODO(afr): Handle no internet connection here
+
 			if (squawk.code !== 'unknown') {
 				nestClient.setAuth(null);
 
