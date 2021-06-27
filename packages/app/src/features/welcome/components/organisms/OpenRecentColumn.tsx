@@ -23,13 +23,13 @@ const OpenRecentColumn: React.FunctionComponent = () => {
 
 			recents.filter(r => r.exists)
 				.sort((a, b) => {
-					const aD = new Date(a.modifiedTime).getTime();
-					const bD = new Date(b.modifiedTime).getTime();
+					const aD = new Date(a.accessTime).getTime();
+					const bD = new Date(b.accessTime).getTime();
 
 					return Math.sign(aD - bD);
 				})
 				.forEach(m => {
-					const unix = new Date(m.modifiedTime).getTime() / 1000;
+					const unix = new Date(m.accessTime).getTime() / 1000;
 					const diff = now - unix;
 
 					if (diff > 2592000) // 1 month
@@ -63,7 +63,7 @@ const OpenRecentColumn: React.FunctionComponent = () => {
 						{recents[k].map(m => (
 							<RecentEntry
 								key={`${m.name}-${m.path}`}
-								modifiedDate={m.modifiedTime}
+								modifiedDate={m.accessTime}
 								name={m.name}
 								path={m.path}
 								type={m.type}

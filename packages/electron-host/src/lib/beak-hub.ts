@@ -18,25 +18,25 @@ export async function listRecentProjects(): Promise<RecentLocalProject[]> {
 
 		// Placeholder. Should never be seen as the UI should filter out projects that
 		// do not exist..
-		let modifiedTime = '1989-12-13T00:00:00Z';
+		let accessTime = '1989-12-13T00:00:00Z';
 
 		if (exists) {
 			const pfStat = await fs.stat(projectFile);
 
-			modifiedTime = pfStat.mtime.toISOString();
+			accessTime = pfStat.atime.toISOString();
 		}
 
 		return {
 			...r,
 			exists,
-			modifiedTime,
+			accessTime,
 		};
 	});
 
 	return await Promise.all(promises);
 }
 
-export async function addRecentProject(recent: Omit<RecentLocalProject, 'exists' | 'modifiedTime'>) {
+export async function addRecentProject(recent: Omit<RecentLocalProject, 'exists' | 'accessTime'>) {
 	const recents = await listRecentProjects();
 	const filteredRecents = recents.filter(r => r.path !== recent.path);
 

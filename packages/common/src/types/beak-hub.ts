@@ -3,7 +3,7 @@ export interface RecentLocalProject {
 
 	name: string;
 	path: string;
-	modifiedTime: string;
+	accessTime: string;
 	exists: boolean;
 }
 
