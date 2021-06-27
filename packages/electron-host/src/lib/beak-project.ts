@@ -111,7 +111,7 @@ function createReadme(name: string) {
 	return [
 		`# ${name}`,
 		'',
-		'Welcome to your new Beak project! For getting started help, visit the [Beak docs](https://docs.getbeak.app/).',
+		'Welcome to your new Beak project! For help getting started, please visit the [Beak docs](https://docs.getbeak.app/).',
 		'',
 	].join('\n');
 }
