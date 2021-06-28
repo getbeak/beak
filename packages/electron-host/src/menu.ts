@@ -45,9 +45,15 @@ const macHelp: MenuItemConstructorOptions = {
 	role: 'help',
 	submenu: [
 		{
+			label: 'Documentation',
+			click: async () => {
+				await shell.openExternal('https://docs.getbeak.app');
+			},
+		},
+		{
 			label: 'Learn More',
 			click: async () => {
-				await shell.openExternal('https://github.com/beak-app/beak');
+				await shell.openExternal('https://getbeak.app');
 			},
 		},
 	],
@@ -56,9 +62,15 @@ const nonMacHelp: MenuItemConstructorOptions = {
 	role: 'help',
 	submenu: [
 		{
+			label: 'Documentation',
+			click: async () => {
+				await shell.openExternal('https://docs.getbeak.app');
+			},
+		},
+		{
 			label: 'Learn More',
 			click: async () => {
-				await shell.openExternal('https://github.com/beak-app/beak');
+				await shell.openExternal('https://getbeak.app');
 			},
 		},
 		{ label: 'Check for updates...', click: () => autoUpdater.checkForUpdatesAndNotify() },
