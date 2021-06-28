@@ -22,7 +22,7 @@ const FixProjectEncryption: React.FunctionComponent<FixProjectEncryptionProps> =
 	const projectPath = useSelector(s => s.global.project.projectPath)!;
 
 	function submit() {
-		if (key === '')
+		if (key === '' || disable)
 			return;
 
 		if (!base64regex.test(key)) {
@@ -45,20 +45,20 @@ const FixProjectEncryption: React.FunctionComponent<FixProjectEncryptionProps> =
 			<Container>
 				<Title>{'Project encryption'}</Title>
 				<Description>
-					{'Beak projects come with built-in encryption for storing secure values '}
-					{'and secrets to be stored remotly. You currently don\'t have the project encryption '}
-					{'key stored, so you won\'t be able to use any encrypted values.'}
+					{'Beak projects come with built-in encryption for storing secrets, such as passwords or tokens. '}
+					{'You currently don\'t have the project encryption key stored, so you won\'t be able to use any '}
+					{'encrypted values.'}
 				</Description>
 
 				<Description>
-					{'Once you get the encryption key for the project, enter it below and you\'ll be all good to go!'}
+					{'Ask for the project encryption key and then enter it below, then you\'ll be good to go!'}
 				</Description>
 
 				<FormInput>
 					<Label>{'Encryption key'}</Label>
 					<Input
 						type={'text'}
-						placeholder={'d2h5IGJvdGhlciBkZWNvZGluZyB0aGlzPw=='}
+						placeholder={'example: d2h5IGJvdGhlciBkZWNvZGluZyB0aGlzPw=='}
 						value={key}
 						onChange={e => setKey(e.currentTarget.value)}
 						onKeyPress={e => {
