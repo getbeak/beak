@@ -11,6 +11,7 @@ import {
 	RequestOverview,
 	ToggleKeyValue,
 } from '@beak/common/dist/types/beak-project';
+import { requestBodyContentType } from '@beak/common/helpers/request';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import ksuid from '@cuvva/ksuid';
 import { call, put, select } from 'redux-saga/effects';
@@ -63,6 +64,14 @@ async function prepareRequest(overview: RequestOverview, context: Context): Prom
 		};
 	}
 
+	if (!hasHeader('content-type', headers)) {
+		headers[ksuid.generate('header').toString()] = {
+			name: 'Content-Type',
+			value: [requestBodyContentType(overview.body)],
+			enabled: true,
+		};
+	}
+
 	return {
 		...overview,
 		url: [url.toString()],
@@ -106,7 +115,7 @@ async function flattenBody(context: Context, body: RequestBody): Promise<Request
 				payload: await convertKeyValueToString(context, body.payload),
 			};
 
-		default: return { type: 'text', payload: 'body type not supported' };
+		default: return { type: 'text', payload: '' };
 	}
 }
 
