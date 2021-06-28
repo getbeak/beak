@@ -79,6 +79,11 @@ export default function* requestFlightWorker({ payload }: PayloadAction<BeginFli
 			yield put(result);
 		}
 	} finally {
+		// This should already be done, but it's a good safety check
+		ipcFlightService.unregisterListener(FlightMessages.FlightHeartbeat);
+		ipcFlightService.unregisterListener(FlightMessages.FlightComplete);
+		ipcFlightService.unregisterListener(FlightMessages.FlightFailed);
+
 		switch (true) {
 			case Boolean(error): {
 				ipcNotificationService.sendNotification({
