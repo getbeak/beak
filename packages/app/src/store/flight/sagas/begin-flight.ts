@@ -80,7 +80,7 @@ export default function* requestFlightWorker({ payload }: PayloadAction<BeginFli
 		}
 	} finally {
 		switch (true) {
-			case error: {
+			case Boolean(error): {
 				ipcNotificationService.sendNotification({
 					title: 'Request failed',
 					body: `${requestNode.name} failed in transit`,
@@ -89,7 +89,7 @@ export default function* requestFlightWorker({ payload }: PayloadAction<BeginFli
 				break;
 			}
 
-			case response: {
+			case Boolean(response): {
 				const redirected: boolean = yield detectAndHandleRedirect(request, response!, redirectDepth, requestId);
 
 				if (redirected)
