@@ -84,6 +84,12 @@ export async function createBasicHttpOutput(overview: RequestOverview, context: 
 	if (!hasHeader('host', headers))
 		out.push(`Host: ${url.hostname}${url.port ? `:${url.port}` : ''}`);
 
+	if (!hasHeader('connection', headers))
+		out.push('Connection: close');
+
+	if (!hasHeader('accept', headers))
+		out.push('Accept: */*');
+
 	if (!hasHeader('user-agent', headers))
 		out.push(`User-Agent: Beak/${getGlobal('version') ?? ''} (${getGlobal('os')})`);
 
@@ -102,7 +108,7 @@ export async function createBasicHttpOutput(overview: RequestOverview, context: 
 			.map(h => h.toLocaleLowerCase())
 			.find(h => h === 'content-type');
 
-		if (!hasContentTypeHeader && body.type !== 'text') {
+		if (!hasContentTypeHeader) {
 			const contentType = requestBodyContentType(body);
 
 			out.push(`Content-Type: ${contentType}`);
@@ -118,7 +124,7 @@ export async function createBasicHttpOutput(overview: RequestOverview, context: 
 		else if (body.type === 'url_encoded_form')
 			out.push(await convertKeyValueToString(context, body.payload));
 		else
-			out.push('Unknow body type...');
+			out.push('[Unknown body type]');
 	}
 
 	return out.join('\n');
