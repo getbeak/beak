@@ -1,0 +1,14 @@
+{
+	"type": "object",
+	"additionalProperties": false,
+
+	"required": [
+		"tabs"
+	],
+
+	"properties": {
+		"mainTab": {
+			"type": "array"
+		}
+	}
+}

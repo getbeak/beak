@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { useDispatch, useSelector } from 'react-redux';
@@ -30,7 +30,7 @@ const ProjectMain: React.FunctionComponent = () => {
 	const { selectedTabPayload, tabs } = useSelector(s => s.global.project);
 	const selectedTab = tabs.find(t => t.payload === selectedTabPayload);
 
-	const [hub, setHub] = useState<BeakHub | null>(null);
+	const hub = useRef<BeakHub | null>(null);
 	const loaded = project.loaded && variableGroups.loaded;
 
 	useEffect(() => {
@@ -47,7 +47,7 @@ const ProjectMain: React.FunctionComponent = () => {
 		if (!loaded)
 			return;
 
-		setHub(new BeakHub(project.projectPath!));
+		hub.current = new BeakHub(project.projectPath!);
 		setTitle(`${project.name} - Beak`);
 	}, [project, project.name, loaded]);
 
@@ -72,7 +72,7 @@ const ProjectMain: React.FunctionComponent = () => {
 
 	return (
 		<React.Fragment>
-			<BeakHubContext.Provider value={hub}>
+			<BeakHubContext.Provider value={hub.current!}>
 				<Helmet defer={false}>
 					<title>{title}</title>
 				</Helmet>

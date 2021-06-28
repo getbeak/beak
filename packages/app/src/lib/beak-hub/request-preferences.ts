@@ -15,16 +15,30 @@ export default class BeakRequestPreferences {
 		this.requestPreferencePath = path.join(hub.getHubPath(), 'preferences', 'requests', `${requestId}.json`);
 	}
 
+	private defaultPreferences(): RequestPreference {
+		return { mainTab: 'headers' };
+	}
+
 	async load() {
 		if (!await fs.pathExists(this.requestPreferencePath)) {
-			this.preferences = { mainTab: 'headers' };
+			this.preferences = this.defaultPreferences();
 
 			return;
 		}
 
-		const preferenceFile = await readJsonAndValidate<RequestPreference>(this.requestPreferencePath, requestPreference);
+		try {
+			const preferenceFile = await readJsonAndValidate<RequestPreference>(
+				this.requestPreferencePath,
+				requestPreference,
+			);
 
-		this.preferences = preferenceFile.file;
+			this.preferences = preferenceFile.file;
+		} catch (error) {
+			if (error.code !== 'schema_invalid')
+				throw error;
+
+			this.preferences = this.defaultPreferences();
+		}
 	}
 
 	async write() {

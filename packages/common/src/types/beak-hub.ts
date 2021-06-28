@@ -16,3 +16,7 @@ export interface RequestPreference {
 		expands: Record<string, boolean>;
 	};
 }
+
+export interface UserPreferences {
+	tabs: unknown;
+}
