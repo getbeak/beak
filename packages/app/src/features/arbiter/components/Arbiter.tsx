@@ -22,13 +22,28 @@ const Arbiter: React.FunctionComponent = ({ children }) => {
 	const sinceLastCheck = differenceInDays(now, lastSuccessfulCheck);
 	const showWarning = sinceLastCheck > 1;
 
+	function renderFriendlyLockNotice() {
+		const daysUntilLock = 5 - sinceLastCheck;
+
+		switch (true) {
+			case daysUntilLock > 2:
+				return `${daysUntilLock} days`;
+
+			case daysUntilLock === 1:
+				return 'tomorrow';
+
+			default:
+			case daysUntilLock <= 0:
+				return 'soon';
+		}
+	}
+
 	return (
 		<React.Fragment>
 			{arbiter.status && children}
 			{showWarning && (
 				<WarningBanner>
-					{`Unable to check license. Beak will lock in ${5 - sinceLastCheck} `}
-					{`day${(5 - sinceLastCheck === 1 ? '' : 's')}`}
+					{`Unable to check license. Beak will lock in ${renderFriendlyLockNotice()}`}
 				</WarningBanner>
 			)}
 		</React.Fragment>
