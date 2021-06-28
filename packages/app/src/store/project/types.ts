@@ -13,6 +13,7 @@ export const ActionTypes = {
 	CLOSE_SELECTED_TABS_TO_LEFT: '@beak/global/project/CLOSE_SELECTED_TABS_TO_LEFT',
 	CLOSE_ALL_SELECTED_TABS: '@beak/global/project/CLOSE_ALL_SELECTED_TABS',
 	SET_TAB_AS_PERMANENT: '@beak/global/project/SET_TAB_AS_PERMANENT',
+	POPULATE_TABS: '@beak/global/project/POPULATE_TABS',
 
 	REQUEST_URI_UPDATED: '@beak/global/project/REQUEST_URI_UPDATED',
 

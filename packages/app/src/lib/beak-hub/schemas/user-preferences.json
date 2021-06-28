@@ -6,9 +6,60 @@
 		"tabs"
 	],
 
+	"definitions": {
+		"requestTab": {
+			"type": "object",
+			"additionalProperties": false,
+
+			"required": [
+				"type",
+				"payload",
+				"temporary"
+			],
+
+			"properties": {
+				"type": { "const": "request" },
+				"payload": {
+					"type": "string",
+					"minLength": 1
+				},
+				"temporary": { "type": "boolean" }
+			}
+		},
+
+		"rendererTab": {
+			"type": "object",
+			"additionalProperties": false,
+
+			"required": [
+				"type",
+				"payload",
+				"temporary"
+			],
+
+			"properties": {
+				"type": { "const": "renderer" },
+				"payload": { "const": "variable_group_editor" },
+				"temporary": { "type": "boolean" }
+			}
+		}
+	},
+
 	"properties": {
-		"mainTab": {
-			"type": "array"
+		"selectedTabPayload": {
+			"type": "string",
+			"minLength": 1
+		},
+		
+		"tabs": {
+			"type": "array",
+
+			"items": {
+				"oneOf": [
+					{ "$ref": "#/definitions/requestTab" },
+					{ "$ref": "#/definitions/rendererTab" }
+				]
+			}
 		}
 	}
 }

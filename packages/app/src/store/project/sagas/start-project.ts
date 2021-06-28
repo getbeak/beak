@@ -4,7 +4,6 @@ import { readRequestNode } from '@beak/app/lib/beak-project/request';
 import createFsEmitter, { scanDirectoryRecursively, ScanResult } from '@beak/app/lib/fs-emitter';
 import { ipcDialogService, ipcEncryptionService, ipcWindowService } from '@beak/app/lib/ipc';
 import actions, { alertInsert } from '@beak/app/src/store/project/actions';
-import { TypedObject } from '@beak/common/helpers/typescript';
 import { FolderNode, ProjectFile, RequestNode, Tree } from '@beak/common/types/beak-project';
 import ksuid from '@cuvva/ksuid';
 import { PayloadAction } from '@reduxjs/toolkit';
@@ -117,15 +116,10 @@ function* initialImport(treePath: string) {
 
 	const folderNodes: Record<string, FolderNode> = yield call(readFolderNodes, folders);
 	const requestNodes: Record<string, RequestNode> = yield call(readRequestNodes, requests);
-	const firstRequest = TypedObject.values(requestNodes)[0];
 	const tree: Tree = {
 		...folderNodes,
 		...requestNodes,
 	};
-
-	// TODO(afr): Read previously tab state from the history in the hub.
-	if (firstRequest)
-		yield put(actions.tabSelected({ type: 'request', payload: firstRequest.id, temporary: false }));
 
 	yield put(actions.projectOpened({ tree }));
 }

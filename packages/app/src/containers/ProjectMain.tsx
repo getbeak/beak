@@ -9,6 +9,7 @@ import ReflexSplitter from '../components/atoms/ReflexSplitter';
 import ReflexStyles from '../components/atoms/ReflexStyles';
 import ProgressIndicator from '../components/molecules/ProgressIndicator';
 import BeakHubContext from '../contexts/beak-hub-context';
+import BeakUserPreferencesContext from '../contexts/beak-user-preferences-context';
 import ActionBar from '../features/action-bar/components/ActionBar';
 import Omnibar from '../features/omni-bar/components/Omnibar';
 import ProjectPane from '../features/project-pane/components/ProjectPane';
@@ -17,12 +18,14 @@ import TabView from '../features/tabs/components/TabView';
 import { isDarwin } from '../globals';
 import useTitleBar from '../hooks/use-title-bar';
 import BeakHub from '../lib/beak-hub';
+import BeakUserPreferences from '../lib/beak-hub/user-preferences';
 import { requestFlight } from '../store/flight/actions';
-import { startProject } from '../store/project/actions';
+import { populateTabs, startProject, tabSelected } from '../store/project/actions';
 
 const ProjectMain: React.FunctionComponent = () => {
 	const dispatch = useDispatch();
 	const [title, setTitle] = useState('Loading... - Beak');
+	const [setup, setSetup] = useState(false);
 	const params = new URLSearchParams(window.location.search);
 	const projectFilePath = decodeURIComponent(params.get('projectFilePath') as string);
 	const project = useSelector(s => s.global.project);
@@ -44,12 +47,31 @@ const ProjectMain: React.FunctionComponent = () => {
 	}, []);
 
 	useEffect(() => {
-		if (!loaded)
+		if (!loaded || setup)
 			return;
 
 		hub.current = new BeakHub(project.projectPath!);
+
+		const instance = BeakUserPreferences.setupInstance(hub.current);
+
+		instance.load()
+			.then(() => {
+				const { tabs, selectedTabPayload } = instance!.getPreferences();
+
+				dispatch(populateTabs(tabs));
+
+				if (tabs.length !== 0 && selectedTabPayload) {
+					const selectedTab = tabs.find(t => t.payload === selectedTabPayload);
+
+					if (selectedTab)
+						dispatch(tabSelected(selectedTab));
+				}
+
+				setSetup(true);
+			});
+
 		setTitle(`${project.name} - Beak`);
-	}, [project, project.name, loaded]);
+	}, [setup, project, project.name, loaded]);
 
 	function onKeyDown(event: KeyboardEvent) {
 		if (!selectedTab || event.key !== 'Return')
@@ -73,42 +95,44 @@ const ProjectMain: React.FunctionComponent = () => {
 	return (
 		<React.Fragment>
 			<BeakHubContext.Provider value={hub.current!}>
-				<Helmet defer={false}>
-					<title>{title}</title>
-				</Helmet>
-				<ProgressIndicator />
-				<Container>
-					<ReflexStyles />
-					{loaded && (
-						<React.Fragment>
-							<ReflexContainer orientation={'vertical'}>
-								<ReflexElement
-									flex={20}
-									minSize={200}
-								>
-									<ProjectPane />
-								</ReflexElement>
+				<BeakUserPreferencesContext.Provider value={BeakUserPreferences.getInstance()}>
+					<Helmet defer={false}>
+						<title>{title}</title>
+					</Helmet>
+					<ProgressIndicator />
+					<Container>
+						<ReflexStyles />
+						{setup && loaded && (
+							<React.Fragment>
+								<ReflexContainer orientation={'vertical'}>
+									<ReflexElement
+										flex={20}
+										minSize={200}
+									>
+										<ProjectPane />
+									</ReflexElement>
 
-								<ReflexSplitter
-									hideVisualIndicator
-									orientation={'vertical'}
-								/>
+									<ReflexSplitter
+										hideVisualIndicator
+										orientation={'vertical'}
+									/>
 
-								<ReflexElement
-									flex={80}
-									style={{ overflowY: 'hidden' }}
-								>
-									<ActionBar />
+									<ReflexElement
+										flex={80}
+										style={{ overflowY: 'hidden' }}
+									>
+										<ActionBar />
 
-									<TabView tabs={tabs} selectedTab={selectedTab} />
-								</ReflexElement>
-							</ReflexContainer>
-							<Omnibar />
-						</React.Fragment>
-					)}
-				</Container>
-				<StatusBar />
-				{!loaded && <LoadingMask />}
+										<TabView tabs={tabs} selectedTab={selectedTab} />
+									</ReflexElement>
+								</ReflexContainer>
+								<Omnibar />
+							</React.Fragment>
+						)}
+					</Container>
+					<StatusBar />
+					{(!loaded || !setup) && <LoadingMask />}
+				</BeakUserPreferencesContext.Provider>
 			</BeakHubContext.Provider>
 		</React.Fragment>
 	);

@@ -48,6 +48,7 @@ export const closeSelectedTabsToRight = createAction<string>(AT.CLOSE_SELECTED_T
 export const closeSelectedTabsToLeft = createAction<string>(AT.CLOSE_SELECTED_TABS_TO_LEFT);
 export const closeAllSelectedTabs = createAction(AT.CLOSE_ALL_SELECTED_TABS);
 export const setTabAsPermanent = createAction<string>(AT.SET_TAB_AS_PERMANENT);
+export const populateTabs = createAction<TabItem[]>(AT.POPULATE_TABS);
 
 export const requestUriUpdated = createAction<RequestUriUpdatedPayload>(AT.REQUEST_URI_UPDATED);
 
@@ -139,6 +140,7 @@ export default {
 	closeSelectedTabsToLeft,
 	closeAllSelectedTabs,
 	setTabAsPermanent,
+	populateTabs,
 
 	requestUriUpdated,
 

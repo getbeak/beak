@@ -6,7 +6,7 @@ import {
 	NamedStringEntry,
 	ValueEntries,
 } from '@beak/common/types/beak-json-editor';
-import { FolderNode, RequestBodyJson, RequestBodyUrlEncodedForm, RequestNode } from '@beak/common/types/beak-project';
+import { FolderNode, RequestBodyJson, RequestBodyUrlEncodedForm, RequestNode, Tree } from '@beak/common/types/beak-project';
 import ksuid from '@cuvva/ksuid';
 import { createReducer } from '@reduxjs/toolkit';
 
@@ -74,6 +74,25 @@ const projectReducer = createReducer(initialState, builder => {
 			const index = state.tabs.findIndex(t => t.payload === payload);
 
 			state.tabs[index].temporary = false;
+		})
+		.addCase(actions.populateTabs, (state, { payload }) => {
+			if (payload.length > 0) {
+				state.tabs = payload;
+
+				return;
+			}
+
+			const firstRequest = TypedObject.values(state.tree).find(n => n.type === 'request');
+
+			if (firstRequest) {
+				state.tabs = [{
+					type: 'request',
+					payload: firstRequest.id,
+					temporary: false,
+				}];
+
+				state.selectedTabPayload = firstRequest.id;
+			}
 		})
 
 		.addCase(actions.requestUriUpdated, (state, action) => {

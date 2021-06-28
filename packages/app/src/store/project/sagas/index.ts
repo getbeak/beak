@@ -2,6 +2,7 @@ import { all, fork, takeEvery, takeLatest } from 'redux-saga/effects';
 
 import { ActionTypes } from '../types';
 import catchNodeUpdates from './catch-node-updates';
+import catchTabUpdates from './catch-tab-updates';
 import {
 	workerCreateNewFolder as createNewFolder,
 	workerCreateNewRequest as createNewRequest,
@@ -11,7 +12,7 @@ import removeNodeFromDisk from './remove-node-from-disk';
 import requestRename from './request-rename';
 import startProject from './start-project';
 
-const updateWatcherActions = [
+const nodeUpdateWatcherActions = [
 	ActionTypes.REQUEST_URI_UPDATED,
 	ActionTypes.REQUEST_QUERY_ADDED,
 	ActionTypes.REQUEST_QUERY_UPDATED,
@@ -35,11 +36,25 @@ const updateWatcherActions = [
 	ActionTypes.REQUEST_OPTION_FOLLOW_REDIRECTS,
 ];
 
+const tabUpdateWatcherActions = [
+	ActionTypes.TAB_SELECTED,
+	ActionTypes.CLOSE_SELECTED_TAB,
+	ActionTypes.CLOSE_OTHER_SELECTED_TABS,
+	ActionTypes.CLOSE_SELECTED_TABS_TO_RIGHT,
+	ActionTypes.CLOSE_SELECTED_TABS_TO_LEFT,
+	ActionTypes.CLOSE_ALL_SELECTED_TABS,
+	ActionTypes.SET_TAB_AS_PERMANENT,
+];
+
 export default function* projectSaga() {
 	yield all([
 		fork(function* catchNodeUpdatesWatcher() {
-			yield takeEvery(updateWatcherActions, catchNodeUpdates);
+			yield takeEvery(nodeUpdateWatcherActions, catchNodeUpdates);
 		}),
+		fork(function* catchTabUpdatesWatcher() {
+			yield takeEvery(tabUpdateWatcherActions, catchTabUpdates);
+		}),
+
 		fork(function* createNewFolderWatcher() {
 			yield takeEvery(ActionTypes.CREATE_NEW_FOLDER, createNewFolder);
 		}),
