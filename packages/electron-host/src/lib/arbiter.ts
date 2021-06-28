@@ -3,12 +3,15 @@ import Squawk from '@beak/common/utils/squawk';
 import { differenceInDays } from 'date-fns';
 
 import { createOnboardingWindow, windowStack } from '../window-management';
+import logger from './logger';
 import nestClient from './nest-client';
 import persistentStore from './persistent-store';
 
 class Arbiter {
 	start() {
-		setInterval(() => this.check().catch(console.error), 1800000); // 30 minutes
+		this.check().catch(logger.error);
+
+		setInterval(() => this.check().catch(logger.error), 1800000); // 30 minutes
 	}
 
 	getStatus() {
@@ -42,15 +45,24 @@ class Arbiter {
 				status: !expired,
 			};
 
-			// TODO(afr): Handle no internet connection here
+			switch (true) {
+				// No internet connection, do nothing
+				case squawk.code === 'ENOTFOUND':
+					break;
 
-			if (squawk.code !== 'unknown') {
-				nestClient.setAuth(null);
+				// Any error that we do know about
+				case squawk.code !== 'unknown': {
+					nestClient.setAuth(null);
+					status.status = false;
 
-				status.status = false;
+					logger.error('Known but unknown error in arbiter fetching', squawk);
+
+					break;
+				}
+
+				default:
+					break;
 			}
-
-			console.error(error);
 		}
 
 		persistentStore.set('arbiter', status);
