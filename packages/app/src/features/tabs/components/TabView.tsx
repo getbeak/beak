@@ -1,7 +1,7 @@
 import { checkShortcut } from '@beak/app/lib/keyboard-shortcuts';
 import { actions } from '@beak/app/store/project';
-import { TabItem } from '@beak/app/store/project/types';
 import { movePosition } from '@beak/app/utils/arrays';
+import { TabItem } from '@beak/common/types/beak-project';
 import React from 'react';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';

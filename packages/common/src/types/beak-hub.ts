@@ -1,3 +1,5 @@
+import { TabItem } from './beak-project';
+
 export interface RecentLocalProject {
 	type: 'local';
 
@@ -18,5 +20,7 @@ export interface RequestPreference {
 }
 
 export interface UserPreferences {
-	tabs: unknown;
+	selectedTabPayload?: string;
+
+	tabs: TabItem[];
 }

@@ -1,4 +1,4 @@
-import { Nodes } from '@beak/common/types/beak-project';
+import { Nodes, TabItem } from '@beak/common/types/beak-project';
 import { createAction } from '@reduxjs/toolkit';
 
 import {
@@ -31,7 +31,6 @@ import {
 	RequestRenameSubmitted,
 	RequestRenameUpdated,
 	RequestUriUpdatedPayload,
-	TabItem,
 	ToggleableItemAddedPayload,
 	ToggleableItemRemovedPayload,
 	ToggleableItemUpdatedPayload,

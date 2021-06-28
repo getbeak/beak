@@ -1,4 +1,5 @@
 import { UserPreferences } from '@beak/common/dist/types/beak-hub';
+import { TabItem } from '@beak/common/types/beak-project';
 
 import { readJsonAndValidate } from '../fs';
 import BeakHub from '.';
@@ -6,6 +7,8 @@ import { userPreferences } from './schemas';
 
 const fs = window.require('electron').remote.require('fs-extra');
 const path = window.require('electron').remote.require('path');
+
+let beakUserPreferences: BeakUserPreferences;
 
 export default class BeakUserPreferences {
 	private userPreferencePath: string;
@@ -16,7 +19,7 @@ export default class BeakUserPreferences {
 	}
 
 	private defaultPreferences(): UserPreferences {
-		return { tabs: [] };
+		return { tabs: [], selectedTabPayload: void 0 };
 	}
 
 	async load() {
@@ -48,5 +51,26 @@ export default class BeakUserPreferences {
 
 	getPreferences() {
 		return this.preferences;
+	}
+
+	async setTabPreferences(tabs: TabItem[], selectedTabPayload: string | undefined) {
+		// Don't accept updates until we have loaded in from disk
+		if (!this.preferences)
+			return;
+
+		this.preferences.tabs = tabs;
+		this.preferences.selectedTabPayload = selectedTabPayload;
+
+		await this.write();
+	}
+
+	static setupInstance(hub: BeakHub) {
+		beakUserPreferences = new BeakUserPreferences(hub);
+
+		return this.getInstance();
+	}
+
+	static getInstance() {
+		return beakUserPreferences;
 	}
 }

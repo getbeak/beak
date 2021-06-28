@@ -119,3 +119,20 @@ export interface TimestampRtv {
 export type Nodes = FolderNode | RequestNode;
 export type Tree = Record<string, Nodes>;
 export type VariableGroups = Record<string, VariableGroup>;
+
+// NOTE(afr): Adding a new tab item? Don't forget to update user-preferences schema too!
+export type TabItem = RequestTabItem | RendererTabItem;
+
+export interface TabBase {
+	temporary: boolean;
+}
+
+export interface RequestTabItem extends TabBase {
+	type: 'request';
+	payload: string;
+}
+
+export interface RendererTabItem extends TabBase {
+	type: 'renderer';
+	payload: 'variable_group_editor';
+}

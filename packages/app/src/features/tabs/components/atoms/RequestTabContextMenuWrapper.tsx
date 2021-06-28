@@ -2,7 +2,7 @@ import ContextMenu from '@beak/app/components/atoms/ContextMenu';
 import { isDarwin } from '@beak/app/globals';
 import { ipcExplorerService } from '@beak/app/lib/ipc';
 import { actions } from '@beak/app/store/project';
-import { TabItem } from '@beak/app/store/project/types';
+import { TabItem } from '@beak/common/types/beak-project';
 import { clipboard, MenuItemConstructorOptions } from 'electron';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';

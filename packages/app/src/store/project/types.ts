@@ -1,5 +1,5 @@
 import { EntryMap, EntryType } from '@beak/common/types/beak-json-editor';
-import { ToggleKeyValue, Tree, ValueParts } from '@beak/common/types/beak-project';
+import { TabItem, ToggleKeyValue, Tree, ValueParts } from '@beak/common/types/beak-project';
 
 export const ActionTypes = {
 	START_PROJECT: '@beak/global/project/START_PROJECT',
@@ -96,22 +96,6 @@ export const initialState: State = {
 	writeDebouncer: {},
 	alerts: {},
 };
-
-export type TabItem = RequestTabItem | RendererTabItem;
-
-export interface TabBase {
-	temporary: boolean;
-}
-
-export interface RequestTabItem extends TabBase {
-	type: 'request';
-	payload: string;
-}
-
-export interface RendererTabItem extends TabBase {
-	type: 'renderer';
-	payload: 'variable_group_editor';
-}
 
 export interface ProjectInfoPayload {
 	name: string;

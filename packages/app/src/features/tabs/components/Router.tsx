@@ -1,5 +1,5 @@
 import ReflexSplitter from '@beak/app/components/atoms/ReflexSplitter';
-import { TabItem } from '@beak/app/store/project/types';
+import { TabItem } from '@beak/common/types/beak-project';
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { ReflexContainer, ReflexElement } from 'react-reflex';

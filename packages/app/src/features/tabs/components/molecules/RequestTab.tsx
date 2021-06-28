@@ -1,5 +1,5 @@
 import { actions } from '@beak/app/store/project';
-import { RequestTabItem } from '@beak/app/store/project/types';
+import { RequestTabItem } from '@beak/common/types/beak-project';
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
