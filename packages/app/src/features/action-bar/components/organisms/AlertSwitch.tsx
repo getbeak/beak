@@ -29,9 +29,11 @@ const AlertSwitch: React.FunctionComponent<AlertSwitchProps> = ({ alert }) => {
 
 					{fixer === 'encryption' && (
 						<FixProjectEncryption
-							onClose={() => {
+							onClose={resolved => {
 								setFixer(void 0);
-								dispatch(alertRemoveType('missing_encryption'));
+
+								if (resolved)
+									dispatch(alertRemoveType('missing_encryption'));
 							}}
 						/>
 					)}
