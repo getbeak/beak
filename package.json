@@ -21,6 +21,10 @@
   "engines": {
     "yarn": "^1.4.2"
   },
+  "resolutions": {
+    "@types/react": "^17.0.11",
+    "@types/react-dom": "^17.0.8"
+  },
   "scripts": {
     "build": "lerna run build --stream",
     "build-web": "lerna run build --stream --scope @beak/website",
@@ -49,6 +53,11 @@
   },
   "dependencies": {
     "@cuvva/ksuid": "^1.0.0",
+    "@types/react": "^17.0.11",
+    "@types/react-dom": "^17.0.8",
+
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
     "@electron/remote": "^1.2.0",
     "chokidar": "^3.5.2",
     "html-webpack-plugin": "4",
