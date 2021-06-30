@@ -1,7 +1,7 @@
 import { WatchOptions } from 'chokidar';
 import { eventChannel } from 'redux-saga';
 
-const { remote } = window.require('electron');
+const remote = window.require('@electron/remote');
 const chokidar = remote.require('chokidar');
 const path = remote.require('path');
 const fs = remote.require('fs-extra');

@@ -9,7 +9,7 @@ import { call, put, select, take } from 'redux-saga/effects';
 import { ApplicationState } from '../..';
 import * as actions from '../actions';
 
-const { remote } = window.require('electron');
+const remote = window.require('@electron/remote');
 const path = remote.require('path');
 
 interface Emitter {

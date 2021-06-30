@@ -16,6 +16,9 @@ import {
 	windowStack,
 } from './window-management';
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+require('@electron/remote/main').initialize();
+
 createMenu();
 app.setAsDefaultProtocolClient('beak-app');
 
@@ -91,7 +94,7 @@ function handleOpenUrl(url: string) {
 	const windowId = createOnboardingWindow();
 	const window = windowStack[windowId];
 
-	window?.webContents.send('inbound-magic-link', { code, state });
+	window?.webContents.send('inbound_magic_link', { code, state });
 
 	return true;
 }

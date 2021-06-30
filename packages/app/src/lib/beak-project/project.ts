@@ -3,7 +3,7 @@ import { ProjectFile } from '@beak/common/types/beak-project';
 import { readJsonAndValidate } from '../fs';
 import { projectSchema } from './schemas';
 
-const { remote } = window.require('electron');
+const remote = window.require('@electron/remote');
 const path = remote.require('path');
 
 export async function readProjectFile(projectPath: string) {

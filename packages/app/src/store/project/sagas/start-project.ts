@@ -14,7 +14,7 @@ import { ApplicationState } from '../..';
 import { startVariableGroups } from '../../variable-groups/actions';
 import { LatestWrite } from '../types';
 
-const { remote } = window.require('electron');
+const remote = window.require('@electron/remote');
 const path = remote.require('path');
 
 interface Event {

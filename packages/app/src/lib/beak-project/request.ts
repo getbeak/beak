@@ -5,7 +5,7 @@ import { readJsonAndValidate } from '../fs';
 import { requestSchema } from './schemas';
 import { generateSafeNewPath } from './utils';
 
-const { remote } = window.require('electron');
+const remote = window.require('@electron/remote');
 const path = remote.require('path');
 const fs = remote.require('fs-extra');
 

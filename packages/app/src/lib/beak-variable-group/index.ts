@@ -3,7 +3,7 @@ import { VariableGroup } from '@beak/common/types/beak-project';
 import { readJsonAndValidate } from '../fs';
 import { variableGroupSchema } from './schema';
 
-const { remote } = window.require('electron');
+const remote = window.require('@electron/remote');
 const fs = remote.require('fs-extra');
 const path = remote.require('path');
 

@@ -1,6 +1,6 @@
 import UAParser from 'ua-parser-js';
 
-const process = window.require('electron').remote.require('process');
+const process = window.require('@electron/remote').require('process');
 
 interface Globals {
 	platform: null | NodeJS.Platform;

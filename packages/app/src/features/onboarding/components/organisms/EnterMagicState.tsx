@@ -80,12 +80,20 @@ const EnterMagicState: React.FunctionComponent<EnterMagicStateProps> = props => 
 
 	return (
 		<React.Fragment>
-			<Paragraph>
-				{'Your magic link is on the way to '}
-				<b>{email}</b>{'. '}
-				{'Clicking the link in the email will finish signing you into Beak. '}
-				<HelpButton onClick={() => showManualState()}>{'Having trouble with the link?'}</HelpButton>
-			</Paragraph>
+			{!working && (
+				<Paragraph>
+					{'Your magic link is on the way to '}
+					<b>{email}</b>{'. '}
+					{'Clicking the link in the email will finish signing you into Beak. '}
+					<HelpButton onClick={() => showManualState()}>{'Having trouble with the link?'}</HelpButton>
+				</Paragraph>
+			)}
+
+			{working && (
+				<Paragraph>
+					{'Working away on your magic link, make a wish 🪄 '}
+				</Paragraph>
+			)}
 
 			{manualState !== void 0 && (
 				<React.Fragment>

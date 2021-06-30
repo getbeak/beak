@@ -2,7 +2,7 @@ import { FolderNode } from '@beak/common/types/beak-project';
 
 import { generateSafeNewPath } from './utils';
 
-const { remote } = window.require('electron');
+const remote = window.require('@electron/remote');
 const path = remote.require('path');
 const fs = remote.require('fs-extra');
 

@@ -5,8 +5,9 @@ import { readJsonAndValidate } from '../fs';
 import BeakHub from '.';
 import { userPreferences } from './schemas';
 
-const fs = window.require('electron').remote.require('fs-extra');
-const path = window.require('electron').remote.require('path');
+const remote = window.require('@electron/remote');
+const fs = remote.require('fs-extra');
+const path = remote.require('path');
 
 let beakUserPreferences: BeakUserPreferences;
 

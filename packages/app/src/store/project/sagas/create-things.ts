@@ -8,7 +8,7 @@ import { ApplicationState } from '../..';
 import actions from '../actions';
 import { ActionTypes, CreateNewThing } from '../types';
 
-const path = window.require('electron').remote.require('path');
+const path = window.require('@electron/remote').require('path');
 
 export function* workerCreateNewFolder({ payload }: PayloadAction<CreateNewThing>) {
 	const parentNode: Nodes = yield select((s: ApplicationState) => s.global.project.tree[payload.highlightedNodeId]);

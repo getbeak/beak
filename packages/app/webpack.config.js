@@ -3,6 +3,7 @@ const CopyPlugin = require('copy-webpack-plugin');
 const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 const path = require('path');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 /* eslint-enable @typescript-eslint/no-var-requires */
 
 const environment = process.env.NODE_ENV;
@@ -21,6 +22,7 @@ module.exports = {
 		path: path.join(__dirname, 'dist'),
 		publicPath: './',
 		filename: 'bundle.min.js',
+		// clean: true,
 	},
 	module: {
 		rules: [{
@@ -40,6 +42,10 @@ module.exports = {
 		}],
 	},
 	plugins: [
+		new HtmlWebpackPlugin({
+			template: path.join(__dirname, 'public', 'index.html'),
+			filename: 'index.html',
+		}),
 		new CopyPlugin([
 			{ from: 'public' },
 		]),
@@ -50,10 +56,15 @@ module.exports = {
 		}),
 	],
 	devServer: {
-		// contentBase: path.join(__dirname, 'dist'),
+		contentBase: path.join(__dirname, 'public'),
 		publicPath: '/',
 		open: false,
 		port: 3000,
 	},
 	devtool: environment === 'development' ? 'eval-cheap-source-map' : void 0,
+	optimization: {
+		splitChunks: {
+			chunks: 'all',
+		},
+	},
 };

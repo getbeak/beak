@@ -23,10 +23,10 @@ const OnboardingHome: React.FunctionComponent = () => {
 			setInboundState({ code, state });
 		}
 
-		ipcRenderer.on('inbound-magic-link', listener);
+		ipcRenderer.on('inbound_magic_link', listener);
 
 		return () => {
-			ipcRenderer.off('inbound-magic-link', listener);
+			ipcRenderer.off('inbound_magic_link', listener);
 		};
 	}, []);
 

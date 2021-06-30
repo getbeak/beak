@@ -1,4 +1,4 @@
-const path = window.require('electron').remote.require('path');
+const path = window.require('@electron/remote').require('path');
 
 export default class BeakHub {
 	private projectPath: string;

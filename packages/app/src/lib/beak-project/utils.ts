@@ -1,4 +1,4 @@
-const { remote } = window.require('electron');
+const remote = window.require('@electron/remote');
 const fs = remote.require('fs-extra');
 const path = remote.require('path');
 
