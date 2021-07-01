@@ -68,7 +68,7 @@ class NestClient {
 
 		try {
 			await this.rpcNoAuth('2020-12-14/send_magic_link', {
-				clientId: 'client_000000C2kdCzNlbL1BqR5FeMatItU',
+				clientId: getClientId(),
 				redirectUri: 'https://magic.getbeak.app/',
 				state,
 				codeChallengeMethod: 'S256',
@@ -95,7 +95,7 @@ class NestClient {
 			throw new Squawk('invalid_state');
 
 		const authentication = await this.rpcNoAuth<AuthenticateUserResponse>('2020-12-14/authenticate_user', {
-			clientId: 'client_000000C2kdCzNlbL1BqR5FeMatItU',
+			clientId: getClientId(),
 			grantType: 'authorization_code',
 			redirectUri: magicState.redirectUri,
 			code,
@@ -151,6 +151,20 @@ class NestClient {
 		);
 
 		this.setAuth(response);
+	}
+}
+
+function getClientId() {
+	switch (process.platform) {
+		case 'darwin':
+			return 'client_000000C2kdCzNlbL1BqR5FeMatItU';
+
+		case 'win32':
+			return 'client_000000CAixkP7YVb0cH1zvNfE5mYi';
+
+		case 'linux':
+		default:
+			return 'client_000000CAixjPMTECPznenOM8rKRxQ';
 	}
 }
 
