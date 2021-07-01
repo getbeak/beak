@@ -1,6 +1,7 @@
+import path from 'path-browserify';
+
 const remote = window.require('@electron/remote');
 const fs = remote.require('fs-extra');
-const path = remote.require('path');
 
 export async function generateSafeNewPath(name: string, directory: string, extension?: string) {
 	function createPath(name: string) {

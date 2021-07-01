@@ -1,9 +1,9 @@
 import { FolderNode } from '@beak/common/types/beak-project';
+import path from 'path-browserify';
 
 import { generateSafeNewPath } from './utils';
 
 const remote = window.require('@electron/remote');
-const path = remote.require('path');
 const fs = remote.require('fs-extra');
 
 export async function createFolderNode(directory: string, name?: string) {

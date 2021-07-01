@@ -1,9 +1,9 @@
 import Squawk from '@beak/common/utils/squawk';
 import Ajv, { SchemaObject } from 'ajv';
+import path from 'path-browserify';
 
 const remote = window.require('@electron/remote');
 const fs = remote.require('fs-extra');
-const path = remote.require('path');
 
 const avj = new Ajv();
 

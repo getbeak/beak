@@ -4,13 +4,11 @@ import { ipcDialogService } from '@beak/app/lib/ipc';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { VariableGroups } from '@beak/common/types/beak-project';
 import { PayloadAction } from '@reduxjs/toolkit';
+import path from 'path-browserify';
 import { call, put, select, take } from 'redux-saga/effects';
 
 import { ApplicationState } from '../..';
 import * as actions from '../actions';
-
-const remote = window.require('@electron/remote');
-const path = remote.require('path');
 
 interface Emitter {
 	type: 'ready' | 'add' | 'change' | 'unlink';

@@ -1,4 +1,5 @@
 import { RequestPreference, RequestPreferenceMainTab } from '@beak/common/dist/types/beak-hub';
+import path from 'path-browserify';
 
 import { readJsonAndValidate } from '../fs';
 import BeakHub from '.';
@@ -6,7 +7,6 @@ import { requestPreference } from './schemas';
 
 const remote = window.require('@electron/remote');
 const fs = remote.require('fs-extra');
-const path = remote.require('path');
 
 export default class BeakRequestPreferences {
 	private requestPreferencePath: string;

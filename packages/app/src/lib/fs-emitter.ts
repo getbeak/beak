@@ -1,9 +1,9 @@
 import { WatchOptions } from 'chokidar';
+import path from 'path-browserify';
 import { eventChannel } from 'redux-saga';
 
 const remote = window.require('@electron/remote');
 const chokidar = remote.require('chokidar');
-const path = remote.require('path');
 const fs = remote.require('fs-extra');
 
 export default function createFsEmitter(path: string, options?: WatchOptions) {

@@ -1,10 +1,8 @@
 import { ProjectFile } from '@beak/common/types/beak-project';
+import path from 'path-browserify';
 
 import { readJsonAndValidate } from '../fs';
 import { projectSchema } from './schemas';
-
-const remote = window.require('@electron/remote');
-const path = remote.require('path');
 
 export async function readProjectFile(projectPath: string) {
 	const projectFilePath = path.join(projectPath, 'project.json');

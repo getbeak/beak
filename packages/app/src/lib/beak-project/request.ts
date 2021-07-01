@@ -1,12 +1,12 @@
 import { RequestNode, RequestNodeFile } from '@beak/common/types/beak-project';
 import ksuid from '@cuvva/ksuid';
+import path from 'path-browserify';
 
 import { readJsonAndValidate } from '../fs';
 import { requestSchema } from './schemas';
 import { generateSafeNewPath } from './utils';
 
 const remote = window.require('@electron/remote');
-const path = remote.require('path');
 const fs = remote.require('fs-extra');
 
 export async function createRequestNode(directory: string, name?: string, template?: RequestNodeFile) {

@@ -1,5 +1,6 @@
 import { UserPreferences } from '@beak/common/dist/types/beak-hub';
 import { TabItem } from '@beak/common/types/beak-project';
+import path from 'path-browserify';
 
 import { readJsonAndValidate } from '../fs';
 import BeakHub from '.';
@@ -7,7 +8,6 @@ import { userPreferences } from './schemas';
 
 const remote = window.require('@electron/remote');
 const fs = remote.require('fs-extra');
-const path = remote.require('path');
 
 let beakUserPreferences: BeakUserPreferences;
 

@@ -7,15 +7,13 @@ import actions, { alertInsert } from '@beak/app/src/store/project/actions';
 import { FolderNode, ProjectFile, RequestNode, Tree } from '@beak/common/types/beak-project';
 import ksuid from '@cuvva/ksuid';
 import { PayloadAction } from '@reduxjs/toolkit';
+import path from 'path-browserify';
 import { EventChannel } from 'redux-saga';
 import { call, put, select, take } from 'redux-saga/effects';
 
 import { ApplicationState } from '../..';
 import { startVariableGroups } from '../../variable-groups/actions';
 import { LatestWrite } from '../types';
-
-const remote = window.require('@electron/remote');
-const path = remote.require('path');
 
 interface Event {
 	type: 'ready' | 'add' | 'addDir' | 'change' | 'unlink' | 'unlinkDir';
