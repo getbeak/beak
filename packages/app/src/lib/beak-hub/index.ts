@@ -1,4 +1,4 @@
-const path = window.require('@electron/remote').require('path');
+import path from 'path-browserify';
 
 export default class BeakHub {
 	private projectPath: string;

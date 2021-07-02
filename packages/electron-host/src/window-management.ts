@@ -1,7 +1,8 @@
-import { BrowserWindow, BrowserWindowConstructorOptions } from 'electron';
+import { app, BrowserWindow, BrowserWindowConstructorOptions } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
 
+import { closeWatchersOnWindow } from './ipc-layer/fs-watcher-service';
 import WindowStateManager from './lib/window-state-manager';
 import { staticPath } from './utils/static-path';
 
@@ -39,6 +40,8 @@ function generateLoadUrl(
 	}
 
 	loadUrl.searchParams.set('container', container);
+	loadUrl.searchParams.set('version', app.getVersion());
+	loadUrl.searchParams.set('platform', process.platform);
 	loadUrl.searchParams.set('windowId', String(windowId));
 
 	return loadUrl.toString();
@@ -55,6 +58,7 @@ function createWindow(
 			enableRemoteModule: true,
 			nodeIntegration: true,
 			contextIsolation: false,
+			// preload: path.resolve(app.getAppPath(), 'preload.js'),
 		},
 		show: false,
 		...windowOpts,
@@ -69,6 +73,12 @@ function createWindow(
 	});
 	window.on('close', () => {
 		delete windowStack[window.id];
+	});
+
+	window.webContents.on('did-start-loading', () => {
+		// When a window loads, make sure any watchers from the previous session are closed
+		// This only really affects things like FS watchers, which can persist after a reload
+		closeWatchersOnWindow(window.webContents.id);
 	});
 
 	windowStack[window.id] = window;

@@ -2,22 +2,28 @@ import { WatchOptions } from 'chokidar';
 import path from 'path-browserify';
 import { eventChannel } from 'redux-saga';
 
-import { ipcFsService } from './ipc';
-
-const remote = window.require('@electron/remote');
-const chokidar = remote.require('chokidar');
+import { ipcFsService, ipcFsWatcherService } from './ipc';
 
 export default function createFsEmitter(path: string, options?: WatchOptions) {
+	const sessionIdentifier = ipcFsWatcherService.generateSessionIdentifier();
+
 	const channel = eventChannel(emitter => {
-		const watcher = chokidar
-			.watch(path, { ...options, ignoreInitial: true })
-			.on('all', (event, path) => emitter({ type: event, path }))
-			.on('error', console.error);
+		ipcFsWatcherService.registerWatcherEvent(sessionIdentifier, async (_event, payload) => {
+			emitter({ type: payload.eventName, path: payload.path });
+		});
+
+		ipcFsWatcherService.registerWatcherError(sessionIdentifier, async (_event, payload) =>
+			console.error(payload),
+		);
 
 		return () => {
-			watcher.close();
+			ipcFsWatcherService.stopWatching(sessionIdentifier);
+			ipcFsWatcherService.unregisterWatcherError(sessionIdentifier);
+			ipcFsWatcherService.unregisterWatcherEvent(sessionIdentifier);
 		};
 	});
+
+	ipcFsWatcherService.startWatching(sessionIdentifier, path, { ...options, ignoreInitial: true });
 
 	return channel;
 }

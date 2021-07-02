@@ -6,6 +6,7 @@ import './encryption-service';
 import './explorer-service';
 import './flight-service';
 import './fs-service';
+import './fs-watcher-service';
 import './nest-service';
 import './notification-service';
 import './project-service';

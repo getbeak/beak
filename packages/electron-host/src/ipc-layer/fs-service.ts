@@ -60,7 +60,7 @@ service.registerReadDir(async (_event, payload: ReadDirReq) => {
 	}));
 });
 
-async function ensureWithinProject(projectFilePath: string, inputPath: string) {
+export async function ensureWithinProject(projectFilePath: string, inputPath: string) {
 	const exists = fs.pathExists(projectFilePath);
 
 	if (!exists)
@@ -74,7 +74,8 @@ async function ensureWithinProject(projectFilePath: string, inputPath: string) {
 	if (!project.id || !project.version || !project.name)
 		throw new Squawk('path_project_invalid', { projectFilePath });
 
-	const relative = path.relative(projectFilePath, inputPath);
+	const projectDir = path.join(projectFilePath, '..');
+	const relative = path.relative(projectDir, inputPath);
 	const isWithinProject = relative && !relative.startsWith('..') && !path.isAbsolute(relative);
 
 	if (!isWithinProject)

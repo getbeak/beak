@@ -10,7 +10,6 @@ import Welcome from './containers/Welcome';
 import { GlobalStyle } from './design-system';
 import Arbiter from './features/arbiter/components/Arbiter';
 import { setGlobal } from './globals';
-import { ipcAppService } from './lib/ipc';
 import { configureStore } from './store';
 
 function getComponent(container: string | null) {
@@ -35,11 +34,7 @@ function getComponent(container: string | null) {
 const FauxRouter: React.FunctionComponent = () => {
 	const params = new URLSearchParams(window.location.search);
 	const container = params.get('container');
-	const windowId = params.get('windowId');
 	const component = getComponent(container);
-
-	setGlobal('windowId', windowId);
-	ipcAppService.getVersion().then(version => setGlobal('version', version));
 
 	return (
 		<Provider store={configureStore()}>
@@ -56,5 +51,11 @@ const FauxRouter: React.FunctionComponent = () => {
 		</Provider>
 	);
 };
+
+const params = new URLSearchParams(window.location.search);
+
+setGlobal('windowId', params.get('windowId'));
+setGlobal('version', params.get('version'));
+setGlobal('platform', params.get('platform'));
 
 ReactDOM.render(<FauxRouter />, document.getElementById('root'));

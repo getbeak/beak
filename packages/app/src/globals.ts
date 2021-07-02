@@ -1,7 +1,5 @@
 import UAParser from 'ua-parser-js';
 
-const process = window.require('@electron/remote').require('process');
-
 interface Globals {
 	platform: null | NodeJS.Platform;
 	windowId: null | string;
@@ -11,7 +9,7 @@ interface Globals {
 
 const globals: Globals = {
 	windowId: null,
-	platform: process.platform,
+	platform: null,
 	version: null,
 	os: generateOS(),
 };
@@ -38,11 +36,11 @@ export function getPlatform() {
 	if (global === 'darwin')
 		return 'darwin';
 
-	if (global === 'linux')
-		return 'linux';
+	if (global === 'win32')
+		return 'windows';
 
 	// Fallback
-	return 'windows';
+	return 'linux';
 }
 
 export function isDarwin() {
