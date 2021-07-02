@@ -2,11 +2,9 @@ import { RequestPreference, RequestPreferenceMainTab } from '@beak/common/dist/t
 import path from 'path-browserify';
 
 import { readJsonAndValidate } from '../fs';
+import { ipcFsService } from '../ipc';
 import BeakHub from '.';
 import { requestPreference } from './schemas';
-
-const remote = window.require('@electron/remote');
-const fs = remote.require('fs-extra');
 
 export default class BeakRequestPreferences {
 	private requestPreferencePath: string;
@@ -21,7 +19,7 @@ export default class BeakRequestPreferences {
 	}
 
 	async load() {
-		if (!await fs.pathExists(this.requestPreferencePath)) {
+		if (!await ipcFsService.pathExists(this.requestPreferencePath)) {
 			this.preferences = this.defaultPreferences();
 
 			return;
@@ -43,8 +41,8 @@ export default class BeakRequestPreferences {
 	}
 
 	async write() {
-		await fs.ensureFile(this.requestPreferencePath);
-		await fs.writeJson(this.requestPreferencePath, this.preferences, { spaces: '\t' });
+		await ipcFsService.ensureFile(this.requestPreferencePath);
+		await ipcFsService.writeJson(this.requestPreferencePath, this.preferences, { spaces: '\t' });
 	}
 
 	getPreferences() {

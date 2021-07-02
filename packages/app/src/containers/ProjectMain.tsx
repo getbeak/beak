@@ -19,6 +19,7 @@ import { isDarwin } from '../globals';
 import useTitleBar from '../hooks/use-title-bar';
 import BeakHub from '../lib/beak-hub';
 import BeakUserPreferences from '../lib/beak-hub/user-preferences';
+import { ipcFsService } from '../lib/ipc';
 import { requestFlight } from '../store/flight/actions';
 import { populateTabs, startProject, tabSelected } from '../store/project/actions';
 
@@ -37,6 +38,7 @@ const ProjectMain: React.FunctionComponent = () => {
 	const loaded = project.loaded && variableGroups.loaded;
 
 	useEffect(() => {
+		ipcFsService.setProjectFilePath(projectFilePath);
 		dispatch(startProject(projectFilePath));
 	}, [projectFilePath]);
 

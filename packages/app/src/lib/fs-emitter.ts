@@ -2,9 +2,10 @@ import { WatchOptions } from 'chokidar';
 import path from 'path-browserify';
 import { eventChannel } from 'redux-saga';
 
+import { ipcFsService } from './ipc';
+
 const remote = window.require('@electron/remote');
 const chokidar = remote.require('chokidar');
-const fs = remote.require('fs-extra');
 
 export default function createFsEmitter(path: string, options?: WatchOptions) {
 	const channel = eventChannel(emitter => {
@@ -36,13 +37,13 @@ export async function scanDirectoryRecursively(dir: string) {
 }
 
 async function* scanDirectoryRecursivelyIter(dir: string): AsyncGenerator<ScanResult, void, void> {
-	const dirents = await fs.readdir(dir, { withFileTypes: true });
+	const dirents = await ipcFsService.readDir(dir, { withFileTypes: true });
 
 	for (const dirent of dirents) {
 		const res = path.resolve(dir, dirent.name);
 		const extension = path.extname(dirent.name);
 
-		if (dirent.isDirectory()) {
+		if (dirent.isDirectory) {
 			yield { path: res, isDirectory: true };
 
 			yield* scanDirectoryRecursivelyIter(res);

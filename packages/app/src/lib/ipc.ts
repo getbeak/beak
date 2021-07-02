@@ -5,6 +5,7 @@ import { IpcDialogServiceRenderer } from '@beak/common/ipc/dialog';
 import { IpcEncryptionServiceRenderer } from '@beak/common/ipc/encryption';
 import { IpcExplorerServiceRenderer } from '@beak/common/ipc/explorer';
 import { IpcFlightServiceRenderer } from '@beak/common/ipc/flight';
+import { IpcFsServiceRenderer } from '@beak/common/ipc/fs';
 import { IpcNestServiceRenderer } from '@beak/common/ipc/nest';
 import { IpcNotificationServiceRenderer } from '@beak/common/ipc/notification';
 import { IpcProjectServiceRenderer } from '@beak/common/ipc/project';
@@ -19,6 +20,7 @@ const ipcDialogService = new IpcDialogServiceRenderer(ipcRenderer);
 const ipcEncryptionService = new IpcEncryptionServiceRenderer(ipcRenderer);
 const ipcExplorerService = new IpcExplorerServiceRenderer(ipcRenderer);
 const ipcFlightService = new IpcFlightServiceRenderer(ipcRenderer);
+const ipcFsService = new IpcFsServiceRenderer(ipcRenderer);
 const ipcNestService = new IpcNestServiceRenderer(ipcRenderer);
 const ipcNotificationService = new IpcNotificationServiceRenderer(ipcRenderer);
 const ipcProjectService = new IpcProjectServiceRenderer(ipcRenderer);
@@ -32,6 +34,7 @@ export {
 	ipcEncryptionService,
 	ipcExplorerService,
 	ipcFlightService,
+	ipcFsService,
 	ipcNestService,
 	ipcNotificationService,
 	ipcProjectService,

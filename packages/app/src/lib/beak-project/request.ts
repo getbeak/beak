@@ -3,11 +3,9 @@ import ksuid from '@cuvva/ksuid';
 import path from 'path-browserify';
 
 import { readJsonAndValidate } from '../fs';
+import { ipcFsService } from '../ipc';
 import { requestSchema } from './schemas';
 import { generateSafeNewPath } from './utils';
-
-const remote = window.require('@electron/remote');
-const fs = remote.require('fs-extra');
 
 export async function createRequestNode(directory: string, name?: string, template?: RequestNodeFile) {
 	const { fullPath } = await generateSafeNewPath(name || 'Example request', directory, '.json');
@@ -26,7 +24,7 @@ export async function createRequestNode(directory: string, name?: string, templa
 		},
 	};
 
-	await fs.writeJson(fullPath, node, { spaces: '\t' });
+	await ipcFsService.writeJson(fullPath, node, { spaces: '\t' });
 
 	return node.id;
 }
@@ -52,11 +50,11 @@ export async function writeRequestNode(request: RequestNode) {
 		...request.info,
 	};
 
-	await fs.writeJson(request.filePath, node, { spaces: '\t' });
+	await ipcFsService.writeJson(request.filePath, node, { spaces: '\t' });
 }
 
 export async function removeRequestNode(filePath: string) {
-	await fs.remove(filePath);
+	await ipcFsService.remove(filePath);
 }
 
 export async function renameRequestNode(newName: string, requestNode: RequestNode) {
@@ -64,10 +62,10 @@ export async function renameRequestNode(newName: string, requestNode: RequestNod
 	const newFilePath = path.join(directory, `${newName}.json`);
 	const oldFilePath = requestNode.filePath;
 
-	if (await fs.pathExists(newFilePath))
+	if (await ipcFsService.pathExists(newFilePath))
 		throw new Error('Request name already exists');
 
-	await fs.move(oldFilePath, newFilePath);
+	await ipcFsService.move(oldFilePath, newFilePath);
 }
 
 export async function duplicateRequestNode(request: RequestNode) {
@@ -82,7 +80,7 @@ export async function duplicateRequestNode(request: RequestNode) {
 		id: ksuid.generate('request').toString(),
 	};
 
-	await fs.writeJson(fullPath, node, { spaces: '\t' });
+	await ipcFsService.writeJson(fullPath, node, { spaces: '\t' });
 
 	return node.id;
 }

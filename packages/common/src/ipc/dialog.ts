@@ -11,7 +11,6 @@ export const DialogMessages = {
 	ShowMessageBox: 'show_message_box',
 };
 
-
 export interface ShowMessageBoxReq extends MessageBoxOptions { }
 export interface ShowMessageBoxRes extends MessageBoxReturnValue { }
 

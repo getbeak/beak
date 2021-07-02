@@ -1,14 +1,13 @@
 import path from 'path-browserify';
 
-const remote = window.require('@electron/remote');
-const fs = remote.require('fs-extra');
+import { ipcFsService } from '../ipc';
 
 export async function generateSafeNewPath(name: string, directory: string, extension?: string) {
 	function createPath(name: string) {
 		return path.join(directory, `${name}${extension ?? ''}`);
 	}
 
-	if (!await fs.pathExists(createPath(name)))
+	if (!await ipcFsService.pathExists(createPath(name)))
 		return { name: `${name}${extension ?? ''}`, fullPath: createPath(name) };
 
 	let useableName = name;
@@ -26,7 +25,7 @@ export async function generateSafeNewPath(name: string, directory: string, exten
 		const full = createPath(`${useableName} (${index})`);
 
 		// eslint-disable-next-line no-await-in-loop
-		if (!await fs.pathExists(full)) {
+		if (!await ipcFsService.pathExists(full)) {
 			return {
 				name: `${useableName} (${index})${extension ?? ''}`,
 				fullPath: full,

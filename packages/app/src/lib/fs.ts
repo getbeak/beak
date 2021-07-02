@@ -2,13 +2,12 @@ import Squawk from '@beak/common/utils/squawk';
 import Ajv, { SchemaObject } from 'ajv';
 import path from 'path-browserify';
 
-const remote = window.require('@electron/remote');
-const fs = remote.require('fs-extra');
+import { ipcFsService } from './ipc';
 
 const avj = new Ajv();
 
 export async function readJsonAndValidate<T>(filePath: string, schema: SchemaObject) {
-	const requestFile = await fs.readJson(filePath) as T;
+	const requestFile = await ipcFsService.readJson<T>(filePath);
 	const extension = path.extname(filePath);
 	const name = path.basename(filePath, extension);
 

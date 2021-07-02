@@ -3,11 +3,9 @@ import { TabItem } from '@beak/common/types/beak-project';
 import path from 'path-browserify';
 
 import { readJsonAndValidate } from '../fs';
+import { ipcFsService } from '../ipc';
 import BeakHub from '.';
 import { userPreferences } from './schemas';
-
-const remote = window.require('@electron/remote');
-const fs = remote.require('fs-extra');
 
 let beakUserPreferences: BeakUserPreferences;
 
@@ -24,7 +22,7 @@ export default class BeakUserPreferences {
 	}
 
 	async load() {
-		if (!await fs.pathExists(this.userPreferencePath)) {
+		if (!await ipcFsService.pathExists(this.userPreferencePath)) {
 			this.preferences = this.defaultPreferences();
 
 			return;
@@ -46,8 +44,8 @@ export default class BeakUserPreferences {
 	}
 
 	async write() {
-		await fs.ensureFile(this.userPreferencePath);
-		await fs.writeJson(this.userPreferencePath, this.preferences, { spaces: '\t' });
+		await ipcFsService.ensureFile(this.userPreferencePath);
+		await ipcFsService.writeJson(this.userPreferencePath, this.preferences, { spaces: '\t' });
 	}
 
 	getPreferences() {
