@@ -3,7 +3,7 @@ const CopyPlugin = require('copy-webpack-plugin');
 const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 const path = require('path');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
-const HtmlWebpackPlugin = require('html-webpack-plugin')
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 /* eslint-enable @typescript-eslint/no-var-requires */
 
 const environment = process.env.NODE_ENV;
@@ -11,6 +11,7 @@ const MONACO_DIR = path.resolve(__dirname, '../../node_modules/monaco-editor');
 
 module.exports = {
 	target: 'electron-renderer',
+	// target: 'web',
 	entry: './src/index.tsx',
 	resolve: {
 		extensions: ['.ts', '.tsx', '.js'],

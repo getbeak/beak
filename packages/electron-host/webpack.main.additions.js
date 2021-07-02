@@ -1,5 +1,6 @@
 /* eslint-disable no-param-reassign, @typescript-eslint/no-var-requires */
 
+const CopyPlugin = require('copy-webpack-plugin');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 
 module.exports = {
@@ -19,4 +20,9 @@ module.exports = {
 			},
 		}],
 	},
+	plugins: [
+		new CopyPlugin([
+			{ from: 'src/preload.js', to: 'preload.js' },
+		]),
+	],
 };
