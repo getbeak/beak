@@ -81,6 +81,14 @@ async function createOrFocusDefaultWindow() {
 	if (!auth)
 		return createOnboardingWindow();
 
+	const openWindow = Object.values(windowStack)[0];
+
+	if (openWindow) {
+		openWindow.focus();
+
+		return openWindow.id;
+	}
+
 	return createWelcomeWindow();
 }
 
