@@ -45,6 +45,12 @@ const macHelp: MenuItemConstructorOptions = {
 	role: 'help',
 	submenu: [
 		{
+			label: 'Feedback',
+			click: async () => {
+				await shell.openExternal('https://www.notion.so/beakapp/8e3f72a1103548c7a149de1485effda9?v=33ae478ec0524a57bc2a9ae0421ed63a');
+			},
+		},
+		{
 			label: 'Documentation',
 			click: async () => {
 				await shell.openExternal('https://docs.getbeak.app');
@@ -61,6 +67,12 @@ const macHelp: MenuItemConstructorOptions = {
 const nonMacHelp: MenuItemConstructorOptions = {
 	role: 'help',
 	submenu: [
+		{
+			label: 'Feedback',
+			click: async () => {
+				await shell.openExternal('https://www.notion.so/beakapp/8e3f72a1103548c7a149de1485effda9?v=33ae478ec0524a57bc2a9ae0421ed63a');
+			},
+		},
 		{
 			label: 'Documentation',
 			click: async () => {
