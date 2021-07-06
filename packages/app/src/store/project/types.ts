@@ -224,7 +224,7 @@ export interface RequestBodyUrlEncodedEditorRemoveItemPayload extends RequestIdP
 
 export interface RequestOptionFollowRedirects extends RequestIdPayload { followRedirects: boolean }
 
-export type Alert = AlertMissingEncryption;
+export type Alert = AlertMissingEncryption | AlertHttpBodyNotAllowed;
 
 export interface AlertBase {
 	type: string;
@@ -237,6 +237,10 @@ export interface AlertDependencies {
 
 export interface AlertMissingEncryption extends AlertBase {
 	type: 'missing_encryption';
+}
+
+export interface AlertHttpBodyNotAllowed extends AlertBase {
+	type: 'http_body_not_allowed';
 }
 
 export interface AlertInsertPayload {

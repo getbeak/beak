@@ -40,7 +40,18 @@ const AlertSwitch: React.FunctionComponent<AlertSwitchProps> = ({ alert }) => {
 				</React.Fragment>
 			);
 
+		case 'http_body_not_allowed':
+			return (
+				<React.Fragment>
+					<AlertItem
+						title={'Invalid HTTP request'}
+						description={'The request has a body, but the selected verb does not support bodies'}
+					/>
+				</React.Fragment>
+			);
+
 		default:
+			// @ts-expect-error
 			return <AlertItem title={'Unknown alert'} description={`Alert renderer missing for ${alert.type}`} />;
 	}
 };
