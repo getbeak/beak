@@ -1,10 +1,12 @@
 import { IpcMain, IpcRenderer } from 'electron';
 
+import { NewsItem } from '../types/nest';
 import { IpcServiceMain, IpcServiceRenderer, Listener } from './ipc';
 
 export const NestMessages = {
 	SendMagicLink: 'send_magic_link',
 	HandleMagicLink: 'handle_magic_link',
+	ListNewsItems: 'list_news_items',
 };
 
 interface HandleMagicLinkReq {
@@ -25,6 +27,10 @@ export class IpcNestServiceRenderer extends IpcServiceRenderer {
 	async handleMagicLink(payload: HandleMagicLinkReq) {
 		return this.invoke(NestMessages.HandleMagicLink, payload);
 	}
+
+	async listNewsItems(clientId?: string) {
+		return this.invoke<NewsItem[]>(NestMessages.ListNewsItems, clientId);
+	}
 }
 
 export class IpcNestServiceMain extends IpcServiceMain {
@@ -38,5 +44,9 @@ export class IpcNestServiceMain extends IpcServiceMain {
 
 	registerHandleMagicLink(fn: Listener<HandleMagicLinkReq>) {
 		this.registerListener(NestMessages.HandleMagicLink, fn);
+	}
+
+	registerListNewsItems(fn: Listener<string | undefined, NewsItem[]>) {
+		this.registerListener(NestMessages.ListNewsItems, fn);
 	}
 }

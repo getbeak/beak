@@ -29,3 +29,4 @@ service.registerHandleMagicLink(async (_event, payload) => {
 	createWelcomeWindow();
 });
 
+service.registerListNewsItems(async (_event, clientId) => await nestClient.listNewsItems(clientId));

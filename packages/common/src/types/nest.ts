@@ -51,3 +51,29 @@ export interface GetSubscriptionStatusRequest {
 export interface GetSubscriptionStatusResponse {
 	subscription: string;
 }
+
+export interface ListNewsItemsRequest {
+	clientId: string;
+}
+
+export interface NewsItem {
+	id: string;
+	primary: NewsItemType;
+	fallback: null | NewsItemType;
+}
+
+export type NewsItemType = NewsItemGenericBanner;
+
+export interface NewsItemGenericBanner {
+	code: 'generic_banner';
+	dismissible: boolean;
+	payload: {
+		emoji: string;
+		title: string;
+		body: string;
+		action: {
+			url: string;
+			cta: string;
+		} | null;
+	};
+}

@@ -1,4 +1,4 @@
-import { AuthenticateUserResponse } from '@beak/common/types/nest';
+import { AuthenticateUserResponse, NewsItem } from '@beak/common/types/nest';
 import QueryablePromise from '@beak/common/utils/promises';
 import Squawk from '@beak/common/utils/squawk';
 import crpc, { Client } from 'crpc';
@@ -151,6 +151,12 @@ class NestClient {
 		);
 
 		this.setAuth(response);
+	}
+
+	async listNewsItems(clientId?: string) {
+		return await this.rpc<NewsItem[]>('2020-12-14/list_news_items', {
+			clientId: clientId ?? getClientId(),
+		});
 	}
 }
 
