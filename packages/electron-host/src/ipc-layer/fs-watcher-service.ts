@@ -24,10 +24,20 @@ service.registerStartWatching(async (event, payload: StartWatchingReq) => {
 	const watcher = chokidar
 		.watch(payload.filePath, options)
 		.on('all', (eventName, path) => {
-			service.sendWatcherEvent(sender, payload.sessionIdentifier, { eventName, path });
+			const destroyed = checkForDestruction(() => {
+				service.sendWatcherEvent(sender, payload.sessionIdentifier, { eventName, path });
+			});
+
+			if (destroyed)
+				watcher.close();
 		})
 		.on('error', error => {
-			service.sendWatcherError(sender, payload.sessionIdentifier, error);
+			const destroyed = checkForDestruction(() => {
+				service.sendWatcherError(sender, payload.sessionIdentifier, error);
+			});
+
+			if (destroyed)
+				watcher.close();
 		});
 
 	watchers[payload.sessionIdentifier] = watcher;
@@ -41,6 +51,21 @@ service.registerStartWatching(async (event, payload: StartWatchingReq) => {
 service.registerStopWatching(async (_event, sessionIdentifier: string) => {
 	watchers[sessionIdentifier]?.close();
 });
+
+// If the window has been closed then the WebContents sender will have been destroyed, in
+// this case we need to catch the error, then tell the fs watcher to close.
+function checkForDestruction(fn: () => void) {
+	try {
+		fn();
+	} catch (error) {
+		if (error.message !== 'Object has been destroyed')
+			throw error;
+
+		return true;
+	}
+
+	return false;
+}
 
 export function closeWatchersOnWindow(windowContentsId: number) {
 	const sessionIdentifiers = windowContentsMapping[windowContentsId.toString()];
