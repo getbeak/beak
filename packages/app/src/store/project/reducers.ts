@@ -369,7 +369,11 @@ const projectReducer = createReducer(initialState, builder => {
 
 			const removeIdents = TypedObject.keys(state.alerts)
 				.map(i => {
-					const alert = state.alerts[i]!;
+					const alert = state.alerts[i];
+
+					if (!alert)
+						return null;
+
 					const dependencies = alert.dependencies;
 
 					if (!dependencies)
