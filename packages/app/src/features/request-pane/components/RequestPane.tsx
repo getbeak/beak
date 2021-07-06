@@ -3,7 +3,7 @@ import BeakRequestPreferences from '@beak/app/lib/beak-hub/request-preferences';
 import { alertClear, alertInsert, alertRemoveDependents } from '@beak/app/store/project/actions';
 import { RequestNode } from '@beak/common/types/beak-project';
 import ksuid from '@cuvva/ksuid';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { ReflexContainer, ReflexElement } from 'react-reflex';
 import styled from 'styled-components';
@@ -17,6 +17,7 @@ import Modifiers from './organisms/Modifiers';
 const allowedBodyVerbs = ['GET', 'HEAD', 'DELETE'];
 
 const RequestPane: React.FunctionComponent = () => {
+	const mounted = useRef(false);
 	const [preferences, setPreferences] = useState<BeakRequestPreferences>();
 	const { tree, selectedTabPayload } = useSelector(s => s.global.project);
 	const selectedNode = tree[selectedTabPayload!] as RequestNode;
@@ -24,17 +25,30 @@ const RequestPane: React.FunctionComponent = () => {
 	const dispatch = useDispatch();
 
 	useEffect(() => {
+		mounted.current = true;
+
+		return () => {
+			mounted.current = false;
+		};
+	}, []);
+
+	useEffect(() => {
 		if (!selectedTabPayload || !selectedNode)
 			return;
 
 		const reqPref = new BeakRequestPreferences(hub!, selectedNode.id);
 
-		reqPref.load().then(() => setPreferences(reqPref));
-	}, [selectedTabPayload, selectedNode]);
+		reqPref.load().then(() => {
+			if (!mounted.current)
+				return;
+
+			setPreferences(reqPref);
+		});
+	}, [selectedTabPayload, selectedNode.id]);
 
 	useEffect(() => {
 		if (selectedNode.type !== 'request')
-			return;
+			return () => { /* */ };
 
 		const info = selectedNode.info;
 		const hasBody = info.body.type !== 'text' || info.body.payload !== '';
@@ -51,8 +65,8 @@ const RequestPane: React.FunctionComponent = () => {
 			}));
 		}
 
-		return () => void dispatch(alertRemoveDependents({ requestId: selectedNode.id }));
-	}, [selectedNode]);
+		return () => dispatch(alertRemoveDependents({ requestId: selectedNode.id }));
+	}, [selectedNode.id, selectedNode.info]);
 
 	// TODO(afr): Maybe some sort of purgatory state here
 	if (!selectedTabPayload)
