@@ -1,8 +1,10 @@
 import BeakHubContext from '@beak/app/contexts/beak-hub-context';
 import BeakRequestPreferences from '@beak/app/lib/beak-hub/request-preferences';
+import { alertClear, alertInsert, alertRemoveDependents } from '@beak/app/store/project/actions';
 import { RequestNode } from '@beak/common/types/beak-project';
+import ksuid from '@cuvva/ksuid';
 import React, { useContext, useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { ReflexContainer, ReflexElement } from 'react-reflex';
 import styled from 'styled-components';
 
@@ -12,11 +14,14 @@ import RequestOutput from './molecules/RequestOutput';
 import Header from './organisms/Header';
 import Modifiers from './organisms/Modifiers';
 
+const allowedBodyVerbs = ['GET', 'HEAD', 'DELETE'];
+
 const RequestPane: React.FunctionComponent = () => {
 	const [preferences, setPreferences] = useState<BeakRequestPreferences>();
 	const { tree, selectedTabPayload } = useSelector(s => s.global.project);
-	const selectedNode = tree[selectedTabPayload!];
+	const selectedNode = tree[selectedTabPayload!] as RequestNode;
 	const hub = useContext(BeakHubContext);
+	const dispatch = useDispatch();
 
 	useEffect(() => {
 		if (!selectedTabPayload || !selectedNode)
@@ -27,6 +32,28 @@ const RequestPane: React.FunctionComponent = () => {
 		reqPref.load().then(() => setPreferences(reqPref));
 	}, [selectedTabPayload, selectedNode]);
 
+	useEffect(() => {
+		if (selectedNode.type !== 'request')
+			return;
+
+		const info = selectedNode.info;
+		const hasBody = info.body.type !== 'text' || info.body.payload !== '';
+
+		if (allowedBodyVerbs.includes(info.verb.toUpperCase()) && hasBody) {
+			dispatch(alertInsert({
+				ident: ksuid.generate('alert').toString(),
+				alert: {
+					type: 'http_body_not_allowed',
+					dependencies: {
+						requestId: selectedNode.id,
+					},
+				},
+			}));
+		}
+
+		return () => void dispatch(alertRemoveDependents({ requestId: selectedNode.id }));
+	}, [selectedNode]);
+
 	// TODO(afr): Maybe some sort of purgatory state here
 	if (!selectedTabPayload)
 		return <Container />;
@@ -36,20 +63,18 @@ const RequestPane: React.FunctionComponent = () => {
 
 	// TODO(afr): Handle this state
 	if (selectedTabPayload && !selectedNode)
-		return <span>{'id does not exist'}</span>;
-
-	const typedSelectedNode = selectedNode as RequestNode;
+		return <span>{'TODO: id does not exist'}</span>;
 
 	return (
 		<RequestPreferencesContext.Provider value={preferences}>
 			<Container>
-				<Header node={typedSelectedNode} />
+				<Header node={selectedNode} />
 				<ReflexContainer orientation={'horizontal'}>
 					<ReflexElement
 						flex={8}
 						minSize={400}
 					>
-						<Modifiers node={typedSelectedNode} />
+						<Modifiers node={selectedNode} />
 					</ReflexElement>
 
 					<ReflexSplitter orientation={'horizontal'} />
@@ -59,7 +84,7 @@ const RequestPane: React.FunctionComponent = () => {
 						minSize={150}
 						style={{ overflowY: 'hidden' }}
 					>
-						<RequestOutput selectedNode={typedSelectedNode} />
+						<RequestOutput selectedNode={selectedNode} />
 					</ReflexElement>
 				</ReflexContainer>
 			</Container>
