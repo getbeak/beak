@@ -1,4 +1,7 @@
-import React from 'react';
+import NewsBannerContainer from '@beak/app/features/news-banner/components/NewsBannerContainer';
+import { ipcNestService } from '@beak/app/lib/ipc';
+import { NewsItem } from '@beak/common/types/nest';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 import { WelcomeViewType } from '../../../../containers/Welcome';
@@ -15,6 +18,8 @@ const WelcomeView: React.FunctionComponent<WelcomeViewProps> = ({ setView }) => 
 	<React.Fragment>
 		<ViewTitle>{'Welcome to Beak!'}</ViewTitle>
 		<ViewIntroLine>{'The feathery cross-platform API crafting tool'}</ViewIntroLine>
+
+		<NewsBannerContainer />
 
 		<Grid>
 			<OpenRecentColumn />
