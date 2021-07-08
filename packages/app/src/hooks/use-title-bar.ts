@@ -1,16 +1,17 @@
 import { Color, Titlebar } from 'custom-electron-titlebar';
-import { useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { useTheme } from 'styled-components';
 
-import { getGlobal } from '../globals';
+import WindowSessionContext from '../contexts/window-session-context';
 
 export default function useTitleBar() {
 	const theme = useTheme();
 	const titleBar = useRef<Titlebar>();
 	const [title, setTitle] = useState(window.document.title);
+	const windowSession = useContext(WindowSessionContext);
 
 	useEffect(() => {
-		if (getGlobal('platform') === 'darwin')
+		if (windowSession.isDarwin())
 			return void 0;
 
 		titleBar.current = new Titlebar({
@@ -33,12 +34,12 @@ export default function useTitleBar() {
 		return () => {
 			observer.disconnect();
 		};
-	}, []);
+	}, [windowSession.platform]);
 
 	useEffect(() => {
-		if (getGlobal('platform') === 'darwin' || !titleBar.current)
+		if (windowSession.isDarwin() || !titleBar.current)
 			return;
 
 		titleBar.current.updateTitle(title);
-	}, [title]);
+	}, [windowSession.platform, title]);
 }

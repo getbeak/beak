@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { useDispatch, useSelector } from 'react-redux';
@@ -10,12 +10,12 @@ import ReflexStyles from '../components/atoms/ReflexStyles';
 import ProgressIndicator from '../components/molecules/ProgressIndicator';
 import BeakHubContext from '../contexts/beak-hub-context';
 import BeakUserPreferencesContext from '../contexts/beak-user-preferences-context';
+import WindowSessionContext from '../contexts/window-session-context';
 import ActionBar from '../features/action-bar/components/ActionBar';
 import Omnibar from '../features/omni-bar/components/Omnibar';
 import ProjectPane from '../features/project-pane/components/ProjectPane';
 import StatusBar from '../features/status-bar/components/StatusBar';
 import TabView from '../features/tabs/components/TabView';
-import { isDarwin } from '../globals';
 import useTitleBar from '../hooks/use-title-bar';
 import BeakHub from '../lib/beak-hub';
 import BeakUserPreferences from '../lib/beak-hub/user-preferences';
@@ -33,6 +33,7 @@ const ProjectMain: React.FunctionComponent = () => {
 	const variableGroups = useSelector(s => s.global.variableGroups);
 	const { selectedTabPayload, tabs } = useSelector(s => s.global.project);
 	const selectedTab = tabs.find(t => t.payload === selectedTabPayload);
+	const windowSession = useContext(WindowSessionContext);
 
 	const hub = useRef<BeakHub | null>(null);
 	const loaded = project.loaded && variableGroups.loaded;
@@ -81,7 +82,8 @@ const ProjectMain: React.FunctionComponent = () => {
 		if (!selectedTab || event.key !== 'Return')
 			return;
 
-		const isAct = (isDarwin() && event.metaKey) || (!isDarwin() && event.ctrlKey);
+		const isDarwin = windowSession.isDarwin();
+		const isAct = (isDarwin && event.metaKey) || (!isDarwin && event.ctrlKey);
 
 		if (isAct)
 			dispatch(requestFlight());

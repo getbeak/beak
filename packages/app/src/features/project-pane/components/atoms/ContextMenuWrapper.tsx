@@ -1,9 +1,9 @@
 import ContextMenu from '@beak/app/components/atoms/ContextMenu';
-import { isDarwin } from '@beak/app/globals';
+import WindowSessionContext from '@beak/app/contexts/window-session-context';
 import { ipcExplorerService } from '@beak/app/lib/ipc';
 import { actions } from '@beak/app/store/project';
 import { clipboard, MenuItemConstructorOptions } from 'electron';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 interface ContextMenuWrapperProps {
@@ -18,6 +18,7 @@ const ContextMenuWrapper: React.FunctionComponent<ContextMenuWrapperProps> = pro
 	const projectPath = useSelector(s => s.global.project.projectPath)!;
 	const node = useSelector(s => s.global.project.tree[nodeId]);
 	const [menuItems, setMenuItems] = useState<MenuItemConstructorOptions[]>([]);
+	const windowSession = useContext(WindowSessionContext);
 
 	useEffect(() => {
 		if (!node)
@@ -40,7 +41,7 @@ const ContextMenuWrapper: React.FunctionComponent<ContextMenuWrapperProps> = pro
 				dispatch(actions.createNewFolder({ highlightedNodeId: node.id }));
 			},
 		}, {
-			label: `Reveal in ${isDarwin() ? 'Finder' : 'Explorer'}`,
+			label: `Reveal in ${windowSession.isDarwin() ? 'Finder' : 'Explorer'}`,
 			click: () => {
 				ipcExplorerService.revealFile(node.filePath);
 			},

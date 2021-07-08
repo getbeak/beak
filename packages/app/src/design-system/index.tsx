@@ -1,7 +1,10 @@
 import { createGlobalStyle } from 'styled-components';
 
-import { getGlobal } from '../globals';
-const GlobalStyle = createGlobalStyle`
+interface GlobalStyleProps {
+	$darwin: boolean;
+}
+
+const GlobalStyle = createGlobalStyle<GlobalStyleProps>`
 	* {
 		-webkit-font-smoothing: subpixel-antialiased;
 	}
@@ -10,7 +13,7 @@ const GlobalStyle = createGlobalStyle`
 		font-family: ${p => p.theme.fonts.default};
 
 		// This is needed for Vibrancy
-		background-color: ${p => getGlobal('platform') === 'darwin' ? 'transparent' : p.theme.ui.background};
+		background-color: ${p => p.$darwin ? 'transparent' : p.theme.ui.background};
 
 		color: ${p => p.theme.ui.textOnAction};
 		margin: 0;

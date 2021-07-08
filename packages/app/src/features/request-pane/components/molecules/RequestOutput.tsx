@@ -1,14 +1,15 @@
+import WindowSessionContext from '@beak/app/contexts/window-session-context';
 import { convertKeyValueToString } from '@beak/app/features/basic-table-editor/parsers';
 import { convertToRealJson } from '@beak/app/features/json-editor/parsers';
 import { parseValueParts } from '@beak/app/features/variable-input/parser';
 import { Context } from '@beak/app/features/variable-input/realtime-values/types';
-import { getGlobal } from '@beak/app/globals';
 import { createDefaultOptions } from '@beak/app/utils/monaco';
 import { convertRequestToUrl } from '@beak/app/utils/uri';
 import { requestBodyContentType } from '@beak/common/helpers/request';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { RequestBody, RequestNode, RequestOverview, ToggleKeyValue } from '@beak/common/types/beak-project';
-import React, { useEffect, useState } from 'react';
+import { getGlobal } from '@electron/remote';
+import React, { useContext, useEffect, useState } from 'react';
 import MonacoEditor from 'react-monaco-editor';
 import { useSelector } from 'react-redux';
 
@@ -60,6 +61,7 @@ function createBodySection(verb: string, body: RequestBody) {
 }
 
 export async function createBasicHttpOutput(overview: RequestOverview, context: Context) {
+	const windowSession = useContext(WindowSessionContext);
 	const url = await convertRequestToUrl(context, overview);
 	const { headers, verb, body } = overview;
 	const firstLine = [
@@ -91,7 +93,7 @@ export async function createBasicHttpOutput(overview: RequestOverview, context: 
 		out.push('Accept: */*');
 
 	if (!hasHeader('user-agent', headers))
-		out.push(`User-Agent: Beak/${getGlobal('version') ?? ''} (${getGlobal('os')})`);
+		out.push(`User-Agent: Beak/${windowSession.version ?? ''} (${windowSession.os})`);
 
 	if (headers) {
 		out.push(...await Promise.all(

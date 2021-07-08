@@ -1,4 +1,4 @@
-import { getPlatform } from '@beak/app/globals';
+import { instance as windowSessionInstance } from '@beak/app/contexts/window-session-context';
 
 import { PlatformAgnosticDefinitions, PlatformSpecificDefinitions } from './types';
 
@@ -81,11 +81,11 @@ export function checkShortcut(shortcutKey: Shortcuts, event: React.KeyboardEvent
 		if (platformDefinition.type === 'agnostic')
 			return platformDefinition;
 
-		return platformDefinition[getPlatform()];
+		return platformDefinition[windowSessionInstance.getPlatform()];
 	})();
 
 	if (shortcutDefinition.ctrlOrMeta) {
-		const useMeta = getPlatform() === 'darwin';
+		const useMeta = windowSessionInstance.getPlatform() === 'darwin';
 		const useCtrl = !useMeta;
 
 		/* eslint-disable operator-linebreak */

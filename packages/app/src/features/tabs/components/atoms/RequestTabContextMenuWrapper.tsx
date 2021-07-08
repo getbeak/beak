@@ -1,10 +1,10 @@
 import ContextMenu from '@beak/app/components/atoms/ContextMenu';
-import { isDarwin } from '@beak/app/globals';
+import WindowSessionContext from '@beak/app/contexts/window-session-context';
 import { ipcExplorerService } from '@beak/app/lib/ipc';
 import { actions } from '@beak/app/store/project';
 import { TabItem } from '@beak/common/types/beak-project';
 import { clipboard, MenuItemConstructorOptions } from 'electron';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 interface RequestTabContextMenuWrapperProps {
@@ -18,6 +18,7 @@ const RequestTabContextMenuWrapper: React.FunctionComponent<RequestTabContextMen
 	const node = useSelector(s => s.global.project.tree[tab.payload]);
 	const { tabs, selectedTabPayload, projectPath } = useSelector(s => s.global.project)!;
 	const [menuItems, setMenuItems] = useState<MenuItemConstructorOptions[]>([]);
+	const windowSession = useContext(WindowSessionContext);
 
 	useEffect(() => {
 		if (!node)
@@ -85,7 +86,7 @@ const RequestTabContextMenuWrapper: React.FunctionComponent<RequestTabContextMen
 			{ type: 'separator' },
 
 			{
-				label: `Reveal in ${isDarwin() ? 'Finder' : 'Explorer'}`,
+				label: `Reveal in ${windowSession.isDarwin() ? 'Finder' : 'Explorer'}`,
 				enabled: isRequestTab,
 				click: () => {
 					ipcExplorerService.revealFile(node.filePath);

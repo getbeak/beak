@@ -1,6 +1,6 @@
-import { isDarwin } from '@beak/app/globals';
+import WindowSessionContext from '@beak/app/contexts/window-session-context';
 import { ipcExplorerService } from '@beak/app/lib/ipc';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 import EnterMagicState, { MagicState } from './organisms/EnterMagicState';
@@ -14,6 +14,7 @@ const OnboardingHome: React.FunctionComponent = () => {
 	const [email, setEmail] = useState('');
 	const [state, setState] = useState<State>('request_magic_link');
 	const [inboundState, setInboundState] = useState<MagicState | undefined>(void 0);
+	const windowSession = useContext(WindowSessionContext);
 
 	useEffect(() => {
 		function listener(_event: unknown, payload: MagicState) {
@@ -35,7 +36,7 @@ const OnboardingHome: React.FunctionComponent = () => {
 			<DragBar />
 
 			<Container>
-				<Title>{'Welcome to the Beak Beta!'}</Title>
+				<Title $darwin={windowSession.isDarwin()}>{'Welcome to the Beak Beta!'}</Title>
 				<SubTitle>
 					{'To sign in please enter the email address enrolled in the Beta Beta. '}
 					{'We\'ll send you a magic link you can use to sign in. If you aren\'t in the Beta yet, you can '}
@@ -86,10 +87,10 @@ const Container = styled.div`
 	z-index: 2;
 `;
 
-const Title = styled.h1`
+const Title = styled.h1<{ $darwin?: boolean }>`
 	margin: 0;
 	margin-bottom: 5px;
-	${isDarwin() && 'margin-top: 15px;'}
+	${p => p.$darwin && 'margin-top: 15px;'}
 	font-size: 28px;
 	font-weight: 300;
 `;

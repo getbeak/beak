@@ -7,9 +7,9 @@ import About from './containers/About';
 import Onboarding from './containers/Onboarding';
 import ProjectMain from './containers/ProjectMain';
 import Welcome from './containers/Welcome';
+import WindowSessionContext, { instance } from './contexts/window-session-context';
 import { GlobalStyle } from './design-system';
 import Arbiter from './features/arbiter/components/Arbiter';
-import { setGlobal } from './globals';
 import { configureStore } from './store';
 
 function getComponent(container: string | null) {
@@ -39,23 +39,19 @@ const FauxRouter: React.FunctionComponent = () => {
 	return (
 		<Provider store={configureStore()}>
 			<base href={'./'} />
-			<DesignSystemProvider themeKey={'dark'}>
-				<GlobalStyle />
-				{container === 'onboarding' && component}
-				{container !== 'onboarding' && (
-					<Arbiter>
-						{component}
-					</Arbiter>
-				)}
-			</DesignSystemProvider>
+			<WindowSessionContext.Provider value={instance}>
+				<DesignSystemProvider themeKey={'dark'}>
+					<GlobalStyle $darwin={instance.isDarwin()} />
+					{container === 'onboarding' && component}
+					{container !== 'onboarding' && (
+						<Arbiter>
+							{component}
+						</Arbiter>
+					)}
+				</DesignSystemProvider>
+			</WindowSessionContext.Provider>
 		</Provider>
 	);
 };
-
-const params = new URLSearchParams(window.location.search);
-
-setGlobal('windowId', params.get('windowId'));
-setGlobal('version', params.get('version'));
-setGlobal('platform', params.get('platform'));
 
 ReactDOM.render(<FauxRouter />, document.getElementById('root'));

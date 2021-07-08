@@ -1,8 +1,8 @@
+import { instance as windowSessionInstance } from '@beak/app/contexts/window-session-context';
 import { convertKeyValueToString } from '@beak/app/features/basic-table-editor/parsers';
 import { convertToRealJson } from '@beak/app/features/json-editor/parsers';
 import { parseValueParts } from '@beak/app/features/variable-input/parser';
 import { Context } from '@beak/app/features/variable-input/realtime-values/types';
-import { getGlobal } from '@beak/app/globals';
 import { convertRequestToUrl } from '@beak/app/utils/uri';
 import {
 	RequestBody,
@@ -59,7 +59,7 @@ async function prepareRequest(overview: RequestOverview, context: Context): Prom
 	if (!hasHeader('user-agent', headers)) {
 		headers[ksuid.generate('header').toString()] = {
 			name: 'User-Agent',
-			value: [`Beak/${getGlobal('version') ?? ''} (${getGlobal('os')})`],
+			value: [`Beak/${windowSessionInstance.version ?? ''} (${windowSessionInstance.os})`],
 			enabled: true,
 		};
 	}
