@@ -1,4 +1,4 @@
-import WindowSessionContext from '@beak/app/contexts/window-session-context';
+import WindowSessionContext, { WindowSession } from '@beak/app/contexts/window-session-context';
 import { convertKeyValueToString } from '@beak/app/features/basic-table-editor/parsers';
 import { convertToRealJson } from '@beak/app/features/json-editor/parsers';
 import { parseValueParts } from '@beak/app/features/variable-input/parser';
@@ -8,7 +8,6 @@ import { convertRequestToUrl } from '@beak/app/utils/uri';
 import { requestBodyContentType } from '@beak/common/helpers/request';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { RequestBody, RequestNode, RequestOverview, ToggleKeyValue } from '@beak/common/types/beak-project';
-import { getGlobal } from '@electron/remote';
 import React, { useContext, useEffect, useState } from 'react';
 import MonacoEditor from 'react-monaco-editor';
 import { useSelector } from 'react-redux';
@@ -21,13 +20,15 @@ export interface RequestOutputProps {
 
 const RequestOutput: React.FunctionComponent<RequestOutputProps> = props => {
 	const { selectedGroups, variableGroups } = useSelector(s => s.global.variableGroups);
+	const windowSession = useContext(WindowSessionContext);
 	const projectPath = useSelector(s => s.global.project.projectPath)!;
 	const [output, setOutput] = useState('');
 	const context = { projectPath, selectedGroups, variableGroups };
 
 	useEffect(() => {
-		createBasicHttpOutput(props.selectedNode.info, context).then(setOutput);
-	}, [props.selectedNode.info, selectedGroups, variableGroups]);
+		createBasicHttpOutput(props.selectedNode.info, context, windowSession)
+			.then(setOutput);
+	}, [props.selectedNode, selectedGroups, variableGroups]);
 
 	return (
 		<React.Fragment>
@@ -60,8 +61,7 @@ function createBodySection(verb: string, body: RequestBody) {
 	}
 }
 
-export async function createBasicHttpOutput(overview: RequestOverview, context: Context) {
-	const windowSession = useContext(WindowSessionContext);
+export async function createBasicHttpOutput(overview: RequestOverview, context: Context, windowSession: WindowSession) {
 	const url = await convertRequestToUrl(context, overview);
 	const { headers, verb, body } = overview;
 	const firstLine = [

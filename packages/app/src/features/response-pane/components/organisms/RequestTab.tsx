@@ -1,6 +1,7 @@
+import WindowSessionContext from '@beak/app/contexts/window-session-context';
 import { Flight } from '@beak/app/store/flight/types';
 import { createDefaultOptions } from '@beak/app/utils/monaco';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import MonacoEditor from 'react-monaco-editor';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
@@ -21,11 +22,12 @@ const RequestTab: React.FunctionComponent<RequestTabProps> = props => {
 	const [output, setOutput] = useState('');
 	const [tab, setTab] = useState<Tab>('raw');
 	const { selectedGroups, variableGroups } = useSelector(s => s.global.variableGroups);
+	const windowSession = useContext(WindowSessionContext);
 	const projectPath = useSelector(s => s.global.project.projectPath!);
 	const context = { projectPath, selectedGroups, variableGroups };
 
 	useEffect(() => {
-		createBasicHttpOutput(flight.request, context).then(setOutput);
+		createBasicHttpOutput(flight.request, context, windowSession).then(setOutput);
 	}, [flight.request, selectedGroups, variableGroups]);
 
 	return (
