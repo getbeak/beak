@@ -15,6 +15,9 @@ export async function parseValueParts(ctx: Context, parts: ValueParts) {
 
 		const rtv = getRealtimeValue(p.type);
 
+		if (!rtv)
+			return '[Unknown realtime value]';
+
 		return await rtv.getValue(ctx, p.payload);
 	}));
 
