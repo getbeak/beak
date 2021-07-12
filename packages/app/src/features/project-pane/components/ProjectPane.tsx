@@ -1,8 +1,10 @@
+import WindowSessionContext from '@beak/app/contexts/window-session-context';
 import { toVibrancyAlpha } from '@beak/app/design-system/utils';
 import { actions } from '@beak/app/store/project';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useState } from 'react';
+import { useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled, { useTheme } from 'styled-components';
 
@@ -21,6 +23,7 @@ const ProjectPane: React.FunctionComponent = () => {
 	const dispatch = useDispatch();
 	const theme = useTheme();
 	const project = useSelector(s => s.global.project);
+	const windowSession = useContext(WindowSessionContext);
 	const [collapser, setCollapser] = useState<Collapser>({
 		project: false,
 		variableGroup: false,
@@ -35,7 +38,7 @@ const ProjectPane: React.FunctionComponent = () => {
 	}
 
 	return (
-		<Container>
+		<Container $darwin={windowSession.isDarwin()}>
 			<TitleBar />
 			<Header>{project.name!}</Header>
 			<SectionHeader
@@ -80,12 +83,11 @@ const ProjectPane: React.FunctionComponent = () => {
 	);
 };
 
-const Container = styled.div`
+const Container = styled.div<{ $darwin: boolean }>`
 	display: flex;
 	flex-direction: column;
 
-	background: ${p => p.theme.ui.background};
-	background: ${p => toVibrancyAlpha(p.theme.ui.background, 0.6)};
+	background: ${p => p.$darwin ? 'transparent' : p.theme.ui.background};
 
 	height: 100%;
 `;

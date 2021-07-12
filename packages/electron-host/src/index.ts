@@ -1,7 +1,7 @@
 /* eslint-disable global-require */
 import './ipc-layer';
 
-import { app } from 'electron';
+import { app, nativeTheme } from 'electron';
 import electronDebug from 'electron-debug';
 import { autoUpdater } from 'electron-updater';
 
@@ -50,6 +50,8 @@ app.on('activate', () => {
 });
 
 app.on('ready', () => {
+	nativeTheme.themeSource = 'dark';
+
 	arbiter.start();
 	createOrFocusDefaultWindow();
 
