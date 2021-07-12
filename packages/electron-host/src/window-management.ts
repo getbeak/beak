@@ -144,6 +144,7 @@ export function createProjectMainWindow(projectFilePath: string) {
 		minWidth: 760,
 		title: 'Loading... - Beak',
 		titleBarStyle: 'hiddenInset',
+		visualEffectState: 'active',
 	};
 
 	// Hopefully vibrancy comes to windows soon
