@@ -37,7 +37,7 @@ const NewsBannerContainer: React.FunctionComponent = () => {
 
 				switch (renderItem.code) {
 					case 'generic_banner':
-						return <GenericBanner item={renderItem} />;
+						return <GenericBanner key={n.id} item={renderItem} />;
 
 					default:
 						return null;
