@@ -43,7 +43,13 @@ const projectReducer = createReducer(initialState, builder => {
 			state.selectedTabPayload = tab?.payload ?? void 0;
 		})
 		.addCase(actions.closeSelectedTab, (state, { payload }) => {
+			const openIndex = state.tabs.findIndex(r => r.payload === payload);
+			const newIndex = openIndex - 1;
+
 			state.tabs = state.tabs.filter(r => r.payload !== payload);
+
+			if (newIndex >= 0 && state.tabs[newIndex])
+				state.selectedTabPayload = state.tabs[newIndex].payload;
 		})
 		.addCase(actions.closeOtherSelectedTabs, (state, { payload }) => {
 			const tab = state.tabs.find(t => t.payload === payload);
