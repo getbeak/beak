@@ -9,9 +9,13 @@ import persistentStore from './persistent-store';
 
 class Arbiter {
 	start() {
-		this.check().catch(logger.error);
+		this.check().catch(error => logger.error('arbiter: preview user check failed', error));
 
-		setInterval(() => this.check().catch(logger.error), 1800000); // 30 minutes
+		setInterval(() => {
+			this.check().catch(error =>
+				logger.error('arbiter: preview user check failed', error),
+			);
+		}, 1800000); // 30 minutes
 	}
 
 	getStatus() {
@@ -37,6 +41,8 @@ class Arbiter {
 		} catch (error) {
 			const squawk = Squawk.coerce(error);
 			const expired = checkExpired(status.lastSuccessfulCheck);
+
+			logger.warn('arbiter: preview user request failed', error, squawk);
 
 			status = {
 				lastSuccessfulCheck: status.lastSuccessfulCheck,
