@@ -4,6 +4,8 @@ import { applyMiddleware, combineReducers, createStore, Store } from 'redux';
 import createSagaMiddleware from 'redux-saga';
 import { all, fork } from 'redux-saga/effects';
 
+import * as omniBarStore from '../features/omni-bar/store';
+import { State as OmniBarState } from '../features/omni-bar/store/types';
 import * as arbiterStore from './arbiter';
 import { State as ArbiterState } from './arbiter/types';
 import * as flightStore from './flight';
@@ -14,6 +16,9 @@ import * as variableGroupsStore from './variable-groups';
 import { State as VariableGroupState } from './variable-groups/types';
 
 export interface ApplicationState {
+	features: {
+		omniBar: OmniBarState;
+	};
 	global: {
 		arbiter: ArbiterState;
 		flight: FlightState;
@@ -24,6 +29,9 @@ export interface ApplicationState {
 
 function createRootReducer() {
 	return combineReducers<ApplicationState>({
+		features: combineReducers({
+			omniBar: omniBarStore.reducer,
+		}),
 		global: combineReducers({
 			arbiter: arbiterStore.reducers,
 			flight: flightStore.reducers,
@@ -44,6 +52,9 @@ function* rootSaga() {
 
 function createInitialState(): ApplicationState {
 	return {
+		features: {
+			omniBar: omniBarStore.types.initialState,
+		},
 		global: {
 			arbiter: arbiterStore.types.initialState,
 			flight: flightStore.types.initialState,

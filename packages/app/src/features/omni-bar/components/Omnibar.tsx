@@ -1,17 +1,17 @@
 import { toVibrancyAlpha } from '@beak/app/design-system/utils';
 import { checkShortcut } from '@beak/app/lib/keyboard-shortcuts';
 import React, { useEffect, useRef, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 
+import { actions } from '../store';
 import FinderView from './organism/FinderView';
 
-type Mode = 'finder' | 'commands';
-
 const Omnibar: React.FunctionComponent = () => {
-	const [show, setShow] = useState(false);
-	const [mode, setMode] = useState<Mode>('finder');
+	const { open, mode } = useSelector(s => s.features.omniBar);
 	const [content, setContent] = useState('');
 	const inputRef = useRef<HTMLInputElement | null>(null);
+	const dispatch = useDispatch();
 
 	useEffect(() => {
 		window.addEventListener('keydown', onKeyDown);
@@ -22,19 +22,17 @@ const Omnibar: React.FunctionComponent = () => {
 	}, []);
 
 	useEffect(() => {
-		if (show)
+		if (open)
 			inputRef?.current?.focus();
-	}, [show, inputRef]);
+	}, [open, inputRef]);
 
 	function onKeyDown(event: KeyboardEvent) {
 		switch (true) {
 			case checkShortcut('omni-bar.launch.finder', event):
-				if (show) {
-					setShow(false);
-				} else {
-					setShow(true);
-					setMode('finder');
-				}
+				if (open)
+					dispatch(actions.hideOmniBar());
+				else
+					dispatch(actions.showOmniBar({ mode: 'search' }));
 
 				break;
 
@@ -52,21 +50,21 @@ const Omnibar: React.FunctionComponent = () => {
 
 	function reset() {
 		setContent('');
-		setShow(false);
+		dispatch(actions.hideOmniBar());
 	}
 
 	function getPlaceholder() {
-		if (mode === 'finder')
+		if (mode === 'search')
 			return 'Search requests by name, host, or path';
 
 		return 'command selector isn\'t ready yet xoxo';
 	}
 
-	if (!show)
+	if (!open)
 		return null;
 
 	return (
-		<Container onClick={() => setShow(false)}>
+		<Container onClick={() => dispatch(actions.hideOmniBar())}>
 			<BarOuter onClick={event => void event.stopPropagation()}>
 				<Bar>
 					<BarInput
@@ -78,7 +76,7 @@ const Omnibar: React.FunctionComponent = () => {
 						value={content}
 						onChange={e => setContent(e.currentTarget.value)}
 					/>
-					{mode === 'finder' && <FinderView content={content} reset={reset} />}
+					{mode === 'search' && <FinderView content={content} reset={reset} />}
 					{mode === 'commands' && <span>{'todo'}</span>}
 				</Bar>
 			</BarOuter>

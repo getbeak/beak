@@ -1,6 +1,7 @@
-import { actions } from '@beak/app/store/flight';
-import { TypedObject } from '@beak/common/dist/helpers/typescript';
-import { Nodes } from '@beak/common/dist/types/beak-project';
+import { actions as omniBarActions } from '@beak/app/features/omni-bar/store';
+import { actions as flightActions } from '@beak/app/store/flight';
+import { TypedObject } from '@beak/common/helpers/typescript';
+import { Nodes } from '@beak/common/types/beak-project';
 import {
 	faCaretLeft,
 	faCaretRight,
@@ -44,7 +45,7 @@ const ActionBar: React.FunctionComponent = () => {
 			<abbr title={'Go to previous item in flight history'}>
 				<ActionBarButton
 					disabled={!requirements?.canGoBack}
-					onClick={() => dispatch(actions.previousFlightHistory({ requestId: selectedTabPayload! }))}
+					onClick={() => dispatch(flightActions.previousFlightHistory({ requestId: selectedTabPayload! }))}
 				>
 					<FontAwesomeIcon
 						color={theme.ui.textMinor}
@@ -56,7 +57,7 @@ const ActionBar: React.FunctionComponent = () => {
 			<abbr title={'Go to next item in flight history'}>
 				<ActionBarButton
 					disabled={!requirements?.canGoForward}
-					onClick={() => dispatch(actions.nextFlightHistory({ requestId: selectedTabPayload! }))}
+					onClick={() => dispatch(flightActions.nextFlightHistory({ requestId: selectedTabPayload! }))}
 				>
 					<FontAwesomeIcon
 						color={theme.ui.textMinor}
@@ -70,7 +71,7 @@ const ActionBar: React.FunctionComponent = () => {
 				<ActionBarAlertButton />
 			</abbr>
 			<abbr title={'Go bird watching'}>
-				<ActionBarButton>
+				<ActionBarButton onClick={() => dispatch(omniBarActions.showOmniBar({ mode: 'search' }))}>
 					<FontAwesomeIcon
 						color={theme.ui.textMinor}
 						size={'1x'}
