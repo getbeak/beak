@@ -52,7 +52,7 @@ const definitions: Record<Shortcuts, PlatformSpecificDefinitions | PlatformAgnos
 	'project-explorer.folder.right': { type: 'agnostic', key: 'ArrowRight' },
 
 	'omni-bar.launch.commands': { type: 'agnostic', ctrlOrMeta: true, shift: true, key: 'p' },
-	'omni-bar.launch.finder': { type: 'agnostic', ctrlOrMeta: true, key: 'p' },
+	'omni-bar.launch.finder': { type: 'agnostic', ctrlOrMeta: true, key: ['p', 'k'] },
 
 	'omni-bar.finder.up': { type: 'agnostic', key: 'ArrowUp' },
 	'omni-bar.finder.down': { type: 'agnostic', key: 'ArrowDown' },
@@ -93,7 +93,7 @@ export function checkShortcut(shortcutKey: Shortcuts, event: React.KeyboardEvent
 			((useMeta && metaKey) || (useCtrl && ctrlKey)) &&
 			Boolean(shortcutDefinition.alt) === altKey &&
 			Boolean(shortcutDefinition.shift) === shiftKey &&
-			shortcutDefinition.key === key
+			(typeof shortcutDefinition.key === 'string' ? shortcutDefinition.key === key : shortcutDefinition.key.includes(key))
 		);
 		/* eslint-enable operator-linebreak */
 	}
@@ -104,7 +104,7 @@ export function checkShortcut(shortcutKey: Shortcuts, event: React.KeyboardEvent
 		Boolean(shortcutDefinition.ctrl) === ctrlKey &&
 		Boolean(shortcutDefinition.meta) === metaKey &&
 		Boolean(shortcutDefinition.shift) === shiftKey &&
-		shortcutDefinition.key === key
+		(typeof shortcutDefinition.key === 'string' ? shortcutDefinition.key === key : shortcutDefinition.key.includes(key))
 	);
 	/* eslint-enable operator-linebreak */
 }

@@ -4,7 +4,7 @@ export interface ShortcutDefinition {
 	ctrlOrMeta?: boolean;
 	alt?: boolean;
 	shift?: boolean;
-	key: string;
+	key: string | string[];
 }
 
 export interface PlatformSpecificDefinitions {
