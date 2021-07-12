@@ -6,7 +6,7 @@ import * as path from 'path';
 
 import { addRecentProject } from '../lib/beak-hub';
 import createProject from '../lib/beak-project';
-import { closeWindow, createProjectMainWindow, windowStack } from '../window-management';
+import { closeWindow, createProjectMainWindow, tryCloseWelcomeWindow, windowStack } from '../window-management';
 
 const service = new IpcProjectServiceMain(ipcMain);
 
@@ -21,6 +21,7 @@ service.registerOpenFolder(async (event, projectPath) => {
 	});
 
 	closeWindow((event as IpcMainInvokeEvent).sender.id);
+	tryCloseWelcomeWindow();
 	createProjectMainWindow(projectFilePath);
 });
 
@@ -59,6 +60,7 @@ service.registerOpenProject(async event => {
 	});
 
 	closeWindow((event as IpcMainInvokeEvent).sender.id);
+	tryCloseWelcomeWindow();
 	createProjectMainWindow(projectFilePath);
 });
 
@@ -96,6 +98,7 @@ service.registerCreateProject(async (event, payload) => {
 		});
 
 		closeWindow((event as IpcMainInvokeEvent).sender.id);
+		tryCloseWelcomeWindow();
 		createProjectMainWindow(projectFilePath);
 	} catch (error) {
 		if (error.code === 'project folder already exists') {

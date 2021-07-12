@@ -86,6 +86,23 @@ function createWindow(
 	return window;
 }
 
+export function tryCloseWelcomeWindow() {
+	const windowId = stackMap.welcome;
+
+	if (windowId === void 0)
+		return;
+
+	const window = windowStack[windowId];
+
+	if (!window)
+		return;
+
+	window.close();
+
+	delete windowStack[windowId];
+	delete stackMap.welcome;
+}
+
 export function closeWindow(windowId: number) {
 	const window = windowStack[windowId];
 
