@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const { notarize } = require('electron-notarize');
-const AdmZip = require('adm-zip');
 const path = require('path');
 
 exports.default = async function notarizing(context) {
@@ -19,10 +18,4 @@ exports.default = async function notarizing(context) {
 		appleIdPassword: process.env.APPLE_ID_PASSWORD,
 		ascProvider: process.env.ASC_PROVIDER,
 	});
-
-	const archive = new AdmZip();
-	const zipFilePath = path.join(appOutDir, `${appName}.zip`);
-
-	archive.addLocalFolder(appFilePath);
-	archive.writeZip(zipFilePath);
 };
