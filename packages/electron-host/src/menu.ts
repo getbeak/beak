@@ -5,11 +5,18 @@ import { createAboutWindow } from './window-management';
 
 const isMac = process.platform === 'darwin';
 
+function createUpdateMenuItem(): MenuItemConstructorOptions {
+	return {
+		label: 'Check for Updates',
+		click: () => autoUpdater.checkForUpdatesAndNotify(),
+	};
+}
+
 const macAppMenu: MenuItemConstructorOptions = {
 	label: 'Beak',
 	submenu: [
 		{ role: 'about', click: () => createAboutWindow() },
-		{ label: 'Check for updates...', click: () => autoUpdater.checkForUpdatesAndNotify() },
+		createUpdateMenuItem(),
 		{ type: 'separator' },
 		{ role: 'services' },
 		{ type: 'separator' },
@@ -85,7 +92,7 @@ const nonMacHelp: MenuItemConstructorOptions = {
 				await shell.openExternal('https://getbeak.app');
 			},
 		},
-		{ label: 'Check for updates...', click: () => autoUpdater.checkForUpdatesAndNotify() },
+		createUpdateMenuItem(),
 		{ role: 'about', click: () => createAboutWindow() },
 	],
 };
