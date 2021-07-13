@@ -1,5 +1,6 @@
 /* eslint-disable global-require */
 import './ipc-layer';
+import './updater';
 
 import { app, nativeTheme } from 'electron';
 import electronDebug from 'electron-debug';
@@ -55,7 +56,7 @@ app.on('ready', () => {
 	arbiter.start();
 	createOrFocusDefaultWindow();
 
-	autoUpdater.checkForUpdatesAndNotify();
+	autoUpdater.checkForUpdates();
 
 	if (appIsPackaged)
 		return;
