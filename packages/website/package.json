@@ -34,7 +34,7 @@
     "copy-webpack-plugin": "^5.1.2",
     "css-loader": "^5.0.0",
     "file-loader": "^6.2.0",
-    "html-webpack-plugin": "4",
+    "html-webpack-plugin": "5",
     "js-yaml": "^4.1.0",
     "react-helmet": "^6.1.0",
     "react-redux": "^7.2.4",
