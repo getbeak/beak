@@ -30,8 +30,8 @@ jobs:
       - name: Install modules
         run: yarn install --frozen-lockfile --cache-folder /tmp/yarncache
 
-      - name: Build and package
-        if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v')
+      - name: Build and package (release)
+        if: startsWith(github.ref, 'refs/tags/v')
         env:
           CSC_LINK: ${{ secrets.CSC_LINK }}
           CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
@@ -42,8 +42,8 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           BUILD_NUMBER: ${{ steps.short-sha.outputs.sha }}
         run: yarn package
-      - name: Build and package
-        if: github.ref != 'refs/heads/master'
+      - name: Build (non-release)
+        if: startsWith(github.ref, 'refs/tags/v') == false
         run: yarn build
 
       - name: Upload website to S3
