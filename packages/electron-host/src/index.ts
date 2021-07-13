@@ -54,9 +54,8 @@ app.on('ready', () => {
 	nativeTheme.themeSource = 'dark';
 
 	arbiter.start();
+	autoUpdater.checkForUpdatesAndNotify();
 	createOrFocusDefaultWindow();
-
-	autoUpdater.checkForUpdates();
 
 	if (appIsPackaged)
 		return;

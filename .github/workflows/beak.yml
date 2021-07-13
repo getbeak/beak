@@ -31,7 +31,7 @@ jobs:
         run: yarn install --frozen-lockfile --cache-folder /tmp/yarncache
 
       - name: Build and package
-        if: github.ref == 'refs/heads/master'
+        if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v')
         env:
           CSC_LINK: ${{ secrets.CSC_LINK }}
           CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}

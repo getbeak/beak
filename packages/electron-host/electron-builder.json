@@ -38,9 +38,16 @@
     "gatekeeperAssess": false,
     "entitlements": "build/entitlements.mac.plist",
     "entitlementsInherit": "build/entitlements.mac.plist",
+    "extendInfo": {
+      "NSUserNotificationAlertStyle": "alert"
+    },
     "target": [
       {
         "target": "dmg",
+        "arch": ["x64", "arm64"]
+      },
+      {
+        "target": "zip",
         "arch": ["x64", "arm64"]
       }
     ]

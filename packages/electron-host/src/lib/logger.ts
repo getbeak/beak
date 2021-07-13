@@ -14,7 +14,7 @@ logger.attachTransport({
 	warn: logToFileSystem,
 	error: logToFileSystem,
 	fatal: logToFileSystem,
-}, 'warn');
+}, 'info');
 
 function logToFileSystem(obj: ILogObject) {
 	const now = new Date();

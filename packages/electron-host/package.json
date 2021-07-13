@@ -14,7 +14,7 @@
     "build": "electron-webpack",
     "electron": "electron dist/main/main.js",
     "prepackage": "rm -rf ./dist-electron",
-    "package": "electron-builder -mwl --publish always",
+    "package": "electron-builder -mwl --publish onTag",
     "package:simple": "electron-builder",
     "start": "electron-webpack dev",
     "test": "echo Skipped."
@@ -39,7 +39,7 @@
     "@types/uuid": "^8.3.0",
     "copyfiles": "^2.4.1",
     "electron": "13.1.4",
-    "electron-builder": "^22.11.7",
+    "electron-builder": "22.11.8",
     "electron-debug": "^3.2.0",
     "electron-devtools-installer": "^3.2.0",
     "electron-notarize": "^1.0.0",
