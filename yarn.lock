@@ -914,9 +914,9 @@
     to-fast-properties "^2.0.0"
 
 "@cuvva/ksuid@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@cuvva/ksuid/-/ksuid-1.0.0.tgz#da4f5a01211735920525320f77cf9269f5ba26cb"
-  integrity sha512-JaAwyJNBeH5DTXlMG99TwqtHtIG/bvCY8xGjfTGteHcVFcNmhTZXHpleA4krGdOHwDI9jn1khOeqQvovnTF47Q==
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@cuvva/ksuid/-/ksuid-1.0.1.tgz#b258543f3bb67e7039fc5048efa37094e1e6ad21"
+  integrity sha512-q2w019XSUNEroiZ/8+/iXhagdNSv4pqih5HVyGgYi5+7uz5nJNMvirAdAaW4LiiDsAF8WAwNsDaLLp0NsgS7qw==
   dependencies:
     base-x "^3.0.5"
 
