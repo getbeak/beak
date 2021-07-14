@@ -153,7 +153,6 @@ function createTemplate() {
 	template.push({
 		label: 'View',
 		submenu: [
-			{ role: 'reload' },
 			{ role: 'forceReload' },
 			{ role: 'toggleDevTools' },
 			{ type: 'separator' },
