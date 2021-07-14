@@ -9987,10 +9987,10 @@ react-measure@^2.0.2:
     prop-types "^15.6.2"
     resize-observer-polyfill "^1.5.0"
 
-react-monaco-editor@^0.41.1:
-  version "0.41.1"
-  resolved "https://registry.yarnpkg.com/react-monaco-editor/-/react-monaco-editor-0.41.1.tgz#64baf18b294822b5607ba5352cdd9bb902ac63e5"
-  integrity sha512-axXoPL1F5AL6mSB43fQCbkxYZ+XKSA860JsRA24G4KW/2EkIMwMZ2tutgVwuQk0+rigKAw3tLU9l3DvORPgZfA==
+react-monaco-editor@^0.43.0:
+  version "0.43.0"
+  resolved "https://registry.yarnpkg.com/react-monaco-editor/-/react-monaco-editor-0.43.0.tgz#495578470db7b27ab306af813b31f206a6bf9d1c"
+  integrity sha512-2PXSDwOzjUDlwdsK8psrmezSB2lPnjLQ/SRNwqoRF2+TAB2n4Q+Bs1wGlWOZbU8WI7s6Wnni0+3PdT9nSPtzRA==
   dependencies:
     monaco-editor "*"
     prop-types "^15.7.2"
