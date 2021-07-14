@@ -31,8 +31,13 @@ const RequestItem: React.FunctionComponent<RequestItemProps> = props => {
 
 	let mostRecentFlight = null;
 
-	if (flight?.history)
-		mostRecentFlight = TypedObject.values(flight.history)[0]?.response?.status;
+	if (flight?.history) {
+		const flightHistory = TypedObject.values(flight.history);
+		const lastIndex = flightHistory.length - 1;
+
+		if (lastIndex > -1)
+			mostRecentFlight = flightHistory[lastIndex]?.response?.status;
+	}
 
 	useEffect(() => {
 		if (!rename) {
@@ -129,7 +134,6 @@ const RequestItem: React.FunctionComponent<RequestItemProps> = props => {
 						onKeyDown={e => {
 							if (!['Escape', 'Enter'].includes(e.key))
 								return;
-
 
 							if (e.key === 'Escape')
 								dispatch(actions.requestRenameCancelled({ requestId: node.id }));
