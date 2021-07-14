@@ -8,23 +8,23 @@
 
 <h2 style="border-bottom: none" align="center">Beak</h1>
 
-<p align="center">
-	Snazzy cross-platform API development and research tool. Firstly in C#/XAML, now in Typescript/Electron. Vote opens for next rewrite soon, lol.
-</p>
+<h3 align="center">
+	The feathery cross-platform API crafting tool.
+</h3>
 
 ![Project view](assets/home.png)
-<p align="center">still a little rough around the edges 🤷‍♀️</p>
 
-## Getting started
+Beak is a simple, extensible, and powerful API creation and management tool. Built using Electron, React, and Redux but striving for native levels of performance.
 
-1. Clone the git repo
-1. Run `yarn`
-1. Run `yarn start`
-1. ???
-1. profit
+Beak includes:
+- Powerful feature set for creating APIs
+- Realtime values for dynamic variable replacement
+- Un-opinionated project syncing, just use the version control of your choice
+- Beautiful design language
+- And of course, fully cross platform
 
-## Common issues
+For help getting started, visit the [Beak docs](https://docs.getbeak.app).
 
-### A new `BrowserWindow` is instantiated but no window is created?
+## Download
 
-If you've been fucking with `chrome-sandbox`, trying to get it working through WSL, it'll end up totally fucked. I've added a quick workaround for this, just run `yarn unfuck` in the root of the repo and it'll clean up everything for you.
+Visit [https://getbeak.app/#downloads](https://getbeak.app/#downloads). to download Beak for Mac, Windows, and Linux.
