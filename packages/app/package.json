@@ -59,7 +59,6 @@
     "monaco-editor-webpack-plugin": "^2.0.0",
     "react-column-resizer": "^1.1.9",
     "react-helmet": "^6.1.0",
-    "react-hotkeys-hook": "^3.3.2",
     "react-monaco-editor": "^0.41.1",
     "react-redux": "^7.2.4",
     "react-reflex": "^4.0.1",

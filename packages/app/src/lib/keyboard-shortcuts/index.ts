@@ -27,7 +27,13 @@ type Shortcuts =
 	'tab-bar.all.close';
 
 const definitions: Record<Shortcuts, PlatformSpecificDefinitions | PlatformAgnosticDefinitions> = {
-	'global.execute-request': { type: 'agnostic', ctrlOrMeta: true, key: 'Enter' },
+	'global.execute-request': {
+		type: 'specific',
+
+		windows: { ctrl: true, key: 'Enter' },
+		linux: { ctrl: true, key: 'Enter' },
+		darwin: { meta: true, key: ['Enter', 'R'] },
+	},
 
 	'project-explorer.request.up': { type: 'agnostic', key: 'ArrowUp' },
 	'project-explorer.request.down': { type: 'agnostic', key: 'ArrowDown' },

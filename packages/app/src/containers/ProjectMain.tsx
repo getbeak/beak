@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { Helmet } from 'react-helmet';
-import { useHotkeys } from 'react-hotkeys-hook';
 import { useDispatch, useSelector } from 'react-redux';
 import { ReflexContainer, ReflexElement } from 'react-reflex';
 import styled from 'styled-components';
@@ -20,6 +19,7 @@ import useTitleBar from '../hooks/use-title-bar';
 import BeakHub from '../lib/beak-hub';
 import BeakUserPreferences from '../lib/beak-hub/user-preferences';
 import { ipcFsService, ipcFsWatcherService } from '../lib/ipc';
+import { checkShortcut } from '../lib/keyboard-shortcuts';
 import { requestFlight } from '../store/flight/actions';
 import { populateTabs, startProject, tabSelected } from '../store/project/actions';
 
@@ -50,6 +50,26 @@ const ProjectMain: React.FunctionComponent = () => {
 
 		return () => window.removeEventListener('keydown', onKeyDown);
 	}, []);
+
+	useEffect(() => {
+		if (!loaded || !setup)
+			return;
+
+		window.addEventListener('keydown', event => {
+			switch (true) {
+				case checkShortcut('global.execute-request', event):
+					event.stopPropagation();
+					dispatch(requestFlight());
+
+					break;
+
+				default:
+					return;
+			}
+
+			event.preventDefault();
+		});
+	}, [loaded, setup]);
 
 	useEffect(() => {
 		if (!loaded || setup)
@@ -88,13 +108,6 @@ const ProjectMain: React.FunctionComponent = () => {
 		if (isAct)
 			dispatch(requestFlight());
 	}
-
-	useHotkeys('command+enter,ctrl+enter', () => {
-		if (selectedTab?.type !== 'request')
-			return;
-
-		dispatch(requestFlight());
-	}, [tabs, selectedTab]);
 
 	useTitleBar();
 
