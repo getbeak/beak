@@ -13,11 +13,7 @@
     "compile": "tsc -b tsconfig.json",
     "start": "tsc -b tsconfig.json -w"
   },
-  "dependencies": {
-    "url-parse": "^1.5.1"
-  },
   "devDependencies": {
-    "@types/url-parse": "^1.4.3",
     "electron": "13.1.6"
   }
 }
