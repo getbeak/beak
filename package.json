@@ -39,7 +39,6 @@
     "test": "lerna run test --parallel",
     "lint": "eslint -c .eslintrc --ext .tsx --ext .ts './packages/'",
     "unfuck": "lerna clean && yarn --force",
-
     "postinstall": "node ./node_module_overrides/index.js"
   },
   "devDependencies": {
@@ -60,6 +59,7 @@
     "@types/react-dom": "^17.0.8",
     "chokidar": "^3.5.2",
     "html-webpack-plugin": "4",
+    "keytar": "^7.7.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "tslog": "^3.2.0"

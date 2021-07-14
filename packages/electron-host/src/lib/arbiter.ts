@@ -23,7 +23,7 @@ class Arbiter {
 	}
 
 	async check() {
-		const auth = nestClient.getAuth();
+		const auth = await nestClient.getAuth();
 		let status = this.getStatus();
 
 		if (!auth)
@@ -58,7 +58,8 @@ class Arbiter {
 
 				// Any error that we do know about
 				case squawk.code !== 'unknown': {
-					nestClient.setAuth(null);
+					await nestClient.setAuth(null);
+
 					status.status = false;
 
 					logger.error('Known but unknown error in arbiter fetching', squawk);

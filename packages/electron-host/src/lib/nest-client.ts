@@ -3,7 +3,9 @@ import QueryablePromise from '@beak/common/utils/promises';
 import Squawk from '@beak/common/utils/squawk';
 import crpc, { Client } from 'crpc';
 import crypto from 'crypto';
+import keytar from 'keytar';
 
+import logger from './logger';
 import persistentStore from './persistent-store';
 
 class NestClient {
@@ -14,11 +16,23 @@ class NestClient {
 		this.client = crpc(baseUrl);
 	}
 
-	getAuth() {
-		return persistentStore.get('auth');
+	async getAuth(): Promise<AuthenticateUserResponse | null> {
+		const auth = await keytar.getPassword('beak', 'auth');
+
+		if (!auth)
+			return null;
+
+		try {
+			return JSON.parse(auth);
+		} catch (error) {
+			logger.warn('parsing secure auth failed', error);
+
+			return null;
+		}
 	}
 
-	setAuth(auth: AuthenticateUserResponse | null) {
+	async setAuth(auth: AuthenticateUserResponse | null) {
+		await keytar.setPassword('beak', 'auth', JSON.stringify(auth));
 		persistentStore.set('auth', auth);
 	}
 
@@ -26,14 +40,14 @@ class NestClient {
 		const fn = (auth: AuthenticateUserResponse | null) => this.client<T>(path, body, generateOptions(auth));
 
 		try {
-			return await fn(this.getAuth());
+			return await fn(await this.getAuth());
 		} catch (error) {
 			if (error.code !== 'unauthorized')
 				throw error;
 
 			await this.refresh();
 
-			return await fn(this.getAuth());
+			return await fn(await this.getAuth());
 		}
 	}
 
@@ -103,15 +117,15 @@ class NestClient {
 		});
 
 		persistentStore.reset('magicStates');
-		this.setAuth(authentication);
 
+		await this.setAuth(authentication);
 		await this.ensureAlphaUser();
 
 		return authentication;
 	}
 
 	async ensureAlphaUser() {
-		const auth = this.getAuth();
+		const auth = await this.getAuth();
 
 		if (!auth)
 			throw new Squawk('unauthenticated');
@@ -137,7 +151,7 @@ class NestClient {
 	}
 
 	private async authenticate(grantType: 'refresh_token') {
-		const auth = this.getAuth() ?? { clientId: '', refreshToken: '' };
+		const auth = (await this.getAuth()) ?? { clientId: '', refreshToken: '' };
 
 		const payload = {
 			clientId: auth.clientId,
@@ -150,7 +164,7 @@ class NestClient {
 			payload,
 		);
 
-		this.setAuth(response);
+		await this.setAuth(response);
 	}
 
 	async listNewsItems(clientId?: string) {
