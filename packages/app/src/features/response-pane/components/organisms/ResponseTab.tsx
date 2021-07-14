@@ -3,7 +3,7 @@ import { Flight } from '@beak/app/store/flight/types';
 import { createDefaultOptions } from '@beak/app/utils/monaco';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import mime from 'mime-types';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import MonacoEditor from 'react-monaco-editor';
 import styled from 'styled-components';
 
@@ -24,6 +24,11 @@ const ResponseTab: React.FunctionComponent<ResponseTabProps> = props => {
 	const hasErrored = Boolean(error);
 	const enrichable = canEnrich(flight);
 	const [tab, setTab] = useState<Tab>(enrichable ? 'enriched' : 'raw');
+
+	useEffect(() => {
+		if (tab === 'enriched' && !enrichable)
+			setTab('raw');
+	}, [tab, enrichable]);
 
 	return (
 		<Container>
