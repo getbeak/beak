@@ -124,7 +124,7 @@ const BodyTab: React.FunctionComponent<BodyTabProps> = props => {
 				<TabSpacer />
 			</TabBar>
 
-			<TabBody>
+			<TabBody $allowVerticalScroll={body.type !== 'text'}>
 				{body.type === 'text' && (
 					<MonacoEditor
 						height={'100%'}
@@ -180,10 +180,10 @@ const Container = styled.div`
 	height: 100%;
 `;
 
-const TabBody = styled.div`
+const TabBody = styled.div<{ $allowVerticalScroll: boolean }>`
 	flex-grow: 2;
 
-	overflow-y: hidden;
+	overflow-y: ${p => p.$allowVerticalScroll ? 'auto' : 'hidden'};
 	height: 100%;
 `;
 
