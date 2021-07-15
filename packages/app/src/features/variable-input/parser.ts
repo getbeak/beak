@@ -11,7 +11,7 @@ export async function parseValueParts(ctx: Context, parts: ValueParts) {
 			return p;
 
 		if (typeof p !== 'object')
-			throw new Error('Unknown part type');
+			return `[Unknown value part ${p}:(${typeof p})]`;
 
 		const rtv = getRealtimeValue(p.type);
 

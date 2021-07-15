@@ -254,7 +254,7 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, 
 						return <span key={p}>{p}</span>;
 
 					if (typeof p !== 'object')
-						throw new Error('unknown part');
+						return `[Unknown value part ${p}:(${typeof p})]`;
 
 					const impl = getRealtimeValue(p.type);
 
