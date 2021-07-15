@@ -65,6 +65,16 @@ export function convertToEntryJson(json: JsonTypes, parentId: string | null = nu
 
 	switch (true) {
 		case typeof json === 'number':
+			out[id] = {
+				id,
+				name,
+				enabled: true,
+				parentId,
+				type: typeof json,
+				value: [json!.toString(10)],
+			} as Entries;
+			break;
+
 		case typeof json === 'string':
 			out[id] = {
 				id,
