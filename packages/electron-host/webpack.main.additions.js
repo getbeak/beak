@@ -1,5 +1,6 @@
 /* eslint-disable no-param-reassign, @typescript-eslint/no-var-requires */
 
+const path = require('path');
 const CopyPlugin = require('copy-webpack-plugin');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 
@@ -17,6 +18,12 @@ module.exports = {
 			loader: 'ts-loader',
 			options: {
 				projectReferences: true,
+			},
+		}, {
+			test: /\.node$/,
+			loader: 'native-ext-loader',
+			options: {
+				basePath: ['dist', 'main'],
 			},
 		}],
 	},

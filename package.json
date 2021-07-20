@@ -32,8 +32,6 @@
     "electron": "lerna run electron --scope @beak/electron-host",
     "prepackage": "yarn build",
     "package": "lerna run package --stream --scope @beak/electron-host",
-    "prepackage:simple": "yarn build",
-    "package:simple": "lerna run package:simple --stream --scope @beak/electron-host",
     "start": "lerna exec --parallel --concurrency 1 --stream --scope '@beak/{app,electron-host}' yarn start",
     "start-web": "lerna exec --parallel --concurrency 1 --stream --scope '@beak/website' yarn start",
     "test": "lerna run test --parallel",
@@ -60,6 +58,7 @@
     "chokidar": "^3.5.2",
     "html-webpack-plugin": "4",
     "keytar": "^7.7.0",
+    "native-ext-loader": "^2.3.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "tslog": "^3.2.0"

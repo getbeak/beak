@@ -4,9 +4,12 @@ import Squawk from '@beak/common/utils/squawk';
 import crpc, { Client } from 'crpc';
 import crypto from 'crypto';
 import keytar from 'keytar';
+import os from 'os';
 
 import logger from './logger';
 import persistentStore from './persistent-store';
+
+const authDataKey = 'app.getbeak.beak.auth';
 
 class NestClient {
 	private client: Client;
@@ -17,7 +20,15 @@ class NestClient {
 	}
 
 	async getAuth(): Promise<AuthenticateUserResponse | null> {
-		const auth = await keytar.getPassword('beak', 'auth');
+		let auth: string | null = null;
+
+		try {
+			auth = await keytar.getPassword(os.userInfo().username, authDataKey);
+		} catch (error) {
+			logger.error('Unable to get authentication credentials', error);
+
+			return null;
+		}
 
 		if (!auth)
 			return null;
@@ -32,8 +43,11 @@ class NestClient {
 	}
 
 	async setAuth(auth: AuthenticateUserResponse | null) {
-		await keytar.setPassword('beak', 'auth', JSON.stringify(auth));
-		persistentStore.set('auth', auth);
+		try {
+			await keytar.setPassword(os.userInfo().username, authDataKey, JSON.stringify(auth));
+		} catch (error) {
+			logger.error('Unable to set authentication credentials', error);
+		}
 	}
 
 	async rpc<T>(path: string, body: unknown) {
