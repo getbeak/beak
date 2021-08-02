@@ -8178,10 +8178,15 @@ monaco-editor-webpack-plugin@^2.0.0:
   dependencies:
     loader-utils "^2.0.0"
 
-monaco-editor@*, monaco-editor@^0.21.2:
+monaco-editor@^0.21.2:
   version "0.21.2"
   resolved "https://registry.yarnpkg.com/monaco-editor/-/monaco-editor-0.21.2.tgz#37054e63e480d51a2dd17d609dcfb192304d5605"
   integrity sha512-jS51RLuzMaoJpYbu7F6TPuWpnWTLD4kjRW0+AZzcryvbxrTwhNy1KC9yboyKpgMTahpUbDUsuQULoo0GV1EPqg==
+
+monaco-editor@^0.26.1:
+  version "0.26.1"
+  resolved "https://registry.yarnpkg.com/monaco-editor/-/monaco-editor-0.26.1.tgz#62bb5f658bc95379f8abb64b147632bd1c019d73"
+  integrity sha512-mm45nUrBDk0DgZKgbD7+bhDOtcAFNGPJJRAdS6Su1kTGl6XEgC7U3xOmDUW/0RrLf+jlvCGaqLvD4p2VjwuwwQ==
 
 move-concurrently@^1.0.1:
   version "1.0.1"
@@ -9676,12 +9681,12 @@ react-measure@^2.0.2:
     prop-types "^15.6.2"
     resize-observer-polyfill "^1.5.0"
 
-react-monaco-editor@^0.41.1:
-  version "0.41.1"
-  resolved "https://registry.yarnpkg.com/react-monaco-editor/-/react-monaco-editor-0.41.1.tgz#64baf18b294822b5607ba5352cdd9bb902ac63e5"
-  integrity sha512-axXoPL1F5AL6mSB43fQCbkxYZ+XKSA860JsRA24G4KW/2EkIMwMZ2tutgVwuQk0+rigKAw3tLU9l3DvORPgZfA==
+react-monaco-editor@^0.44.0:
+  version "0.44.0"
+  resolved "https://registry.yarnpkg.com/react-monaco-editor/-/react-monaco-editor-0.44.0.tgz#9f966fd00b6c30e8be8873a3fbc86f14a0da2ba4"
+  integrity sha512-GPheXTIpBXpwv857H7/jA8HX5yae4TJ7vFwDJ5iTvy05LxIQTsD3oofXznXGi66lVA93ST/G7wRptEf4CJ9dOg==
   dependencies:
-    monaco-editor "*"
+    monaco-editor "^0.26.1"
     prop-types "^15.7.2"
 
 react-redux@^7.2.4:
