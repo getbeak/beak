@@ -56,7 +56,7 @@
     "lodash.set": "^4.3.2",
     "mime-types": "^2.1.31",
     "monaco-editor": "^0.21.2",
-    "monaco-editor-webpack-plugin": "^2.0.0",
+    "monaco-editor-webpack-plugin": "^4.1.2",
     "react-column-resizer": "^1.1.9",
     "react-helmet": "^6.1.0",
     "react-monaco-editor": "^0.41.1",
