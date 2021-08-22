@@ -21,7 +21,7 @@ module.exports = {
 	output: {
 		path: path.join(__dirname, 'dist'),
 		publicPath: '/',
-		filename: '[name].[contenthash].js',
+		filename: '[name].[hash].js',
 	},
 	module: {
 		rules: [{

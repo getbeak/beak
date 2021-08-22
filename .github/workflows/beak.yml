@@ -22,13 +22,13 @@ jobs:
       - name: Cache dependencies
         uses: actions/cache@v2.1.4
         with:
-          path: /tmp/yarncache
+          path: node_modules/
           key: v1-yarn-cache-${{ hashFiles('yarn.lock') }} }}
           restore-keys: |
             v1-yarn-cache-
 
       - name: Install modules
-        run: yarn install --frozen-lockfile --cache-folder /tmp/yarncache
+        run: yarn install --frozen-lockfile
 
       - name: Build and package (release)
         if: startsWith(github.ref, 'refs/tags/v')
