@@ -14,7 +14,7 @@
     "build": "electron-webpack",
     "electron": "electron dist/main/main.js",
     "prepackage": "rm -rf ./dist-electron",
-    "package": "electron-builder -mwl --publish always",
+    "package": "electron-builder -m",
     "package:simple": "electron-builder",
     "start": "electron-webpack dev",
     "test": "echo Skipped."
