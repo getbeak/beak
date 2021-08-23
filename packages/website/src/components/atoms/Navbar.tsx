@@ -1,4 +1,5 @@
 
+import { NavLink } from 'react-router-dom';
 import styled from 'styled-components';
 
 import Container from './Container';
@@ -38,7 +39,7 @@ export const NavItems = styled.div`
 	justify-content: space-evenly;
 `;
 
-export const NavItem = styled.a`
+export const NavItem = styled(NavLink)`
 	padding: 5px 10px;
 	margin: 0 8px;
 

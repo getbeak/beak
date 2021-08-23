@@ -14,6 +14,7 @@ const history = createBrowserHistory();
 const store = configureStore(history);
 
 const Home = lazy(() => import('./features/home/components/Home'));
+const Pricing = lazy(() => import('./features/pricing/components/Pricing'));
 
 const EntryPoint: React.FunctionComponent = () => (
 	<Provider store={store}>
@@ -28,7 +29,7 @@ const EntryPoint: React.FunctionComponent = () => (
 								<Home />
 							</Route>
 							<Route exact path={'/pricing'}>
-								{'todo'}
+								<Pricing />
 							</Route>
 							<Route exact path={'/purchase/complete'}>
 								{'todo'}

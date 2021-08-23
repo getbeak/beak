@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 
 const CtaButton = styled.a`
+	display: block;
 	border-radius: 5px;
 	color: ${p => p.theme.ui.textOnAction};
 	background: ${p => p.theme.ui.primaryFill};
@@ -10,7 +11,6 @@ const CtaButton = styled.a`
 
 	text-decoration: none;
 
-	opacity: 0.9;
 	transition: box-shadow .2s ease;
 
 	&:hover {

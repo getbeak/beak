@@ -1,4 +1,5 @@
 import React from 'react';
+import Helmet from 'react-helmet';
 import styled from 'styled-components';
 
 import Container from '../../../components/atoms/Container';
@@ -11,6 +12,9 @@ import SneakPeak from './molecules/SneakPeak';
 
 const Home: React.FunctionComponent = () => (
 	<React.Fragment>
+		<Helmet defer={false}>
+			<title>{'Beak :: The feathery cross platform API crafting tool'}</title>
+		</Helmet>
 		<Header>
 			<Container>
 				<Title>
