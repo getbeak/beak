@@ -20,7 +20,7 @@ const QuestionsAndAnswers: React.FunctionComponent = () => (
 					<Answer>
 						{'Beak is a subscription. You\'ll have access to Beak and all it\'s features for as long as '}
 						{'your subscription is active. If you cancel, you\'ll continue to have access up until the '}
-						{'of your most recently paid cycle.'}
+						{'end of your most recently paid cycle.'}
 					</Answer>
 				</Card>
 				<Card>
