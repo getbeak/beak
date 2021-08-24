@@ -50,6 +50,7 @@ const PricingCard: React.FunctionComponent = () => (
 export default PricingCard;
 
 const Card = styled.div`
+	position: relative;
 	margin: 0 auto;
 	background: ${p => p.theme.ui.secondarySurface};
 `;

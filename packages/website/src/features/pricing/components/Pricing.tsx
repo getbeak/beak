@@ -27,13 +27,13 @@ const Pricing: React.FunctionComponent = () => (
 export default Pricing;
 
 const Header = styled.div`
-	padding-top: 125px;
+	padding-top: 80px;
 	padding-bottom: 80px;
 
 	background: ${p => p.theme.ui.background};
 
 	@media (max-width: 850px) {
-		padding-top: 50px;
+		padding-top: 40px;
 		padding-bottom: 40px;
 	}
 `;
