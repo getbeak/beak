@@ -8,8 +8,6 @@ import RequestMagicLink from './organisms/RequestMagicLink';
 
 type State = 'request_magic_link' | 'enter_magic_state';
 
-const { ipcRenderer } = window.require('electron');
-
 const OnboardingHome: React.FunctionComponent = () => {
 	const [email, setEmail] = useState('');
 	const [state, setState] = useState<State>('request_magic_link');
@@ -24,10 +22,10 @@ const OnboardingHome: React.FunctionComponent = () => {
 			setInboundState({ code, state });
 		}
 
-		ipcRenderer.on('inbound_magic_link', listener);
+		window.secureBridge.ipc.on('inbound_magic_link', listener);
 
 		return () => {
-			ipcRenderer.off('inbound_magic_link', listener);
+			window.secureBridge.ipc.off('inbound_magic_link', listener);
 		};
 	}, []);
 

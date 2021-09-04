@@ -10,8 +10,7 @@ const environment = process.env.NODE_ENV;
 const MONACO_DIR = path.resolve(__dirname, '../../node_modules/monaco-editor');
 
 module.exports = {
-	target: 'electron-renderer',
-	// target: 'web',
+	target: 'web',
 	entry: './src/index.tsx',
 	resolve: {
 		extensions: ['.ts', '.tsx', '.js'],
@@ -63,6 +62,9 @@ module.exports = {
 		port: 3000,
 	},
 	devtool: environment === 'development' ? 'eval-cheap-source-map' : void 0,
+	externals: {
+		// 'electron': 'electron',
+	},
 	optimization: {
 		splitChunks: {
 			chunks: 'all',

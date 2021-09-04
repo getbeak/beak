@@ -1,14 +1,14 @@
-import { IpcMain, IpcRenderer } from 'electron';
+import type { IpcMain } from 'electron';
 
 import { RecentLocalProject } from '../types/beak-hub';
-import { IpcServiceMain, IpcServiceRenderer, Listener } from './ipc';
+import { IpcServiceMain, IpcServiceRenderer, Listener, PartialIpcRenderer } from './ipc';
 
 export const BeakHubMessages = {
 	ListRecentProjects: 'list_recent_projects',
 };
 
 export class IpcBeakHubServiceRenderer extends IpcServiceRenderer {
-	constructor(ipc: IpcRenderer) {
+	constructor(ipc: PartialIpcRenderer) {
 		super('beak_hub', ipc);
 	}
 

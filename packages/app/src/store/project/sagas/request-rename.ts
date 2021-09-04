@@ -25,7 +25,7 @@ export default function* workerRequestRename({ payload }: PayloadAction<RequestR
 		yield call(renameRequestNode, activeRename.name, node);
 		yield put(actions.requestRenameResolved({ requestId: payload.requestId }));
 	} catch (error) {
-		if (error.message !== 'Request name already exists')
+		if (error instanceof Error && error.message !== 'Request name already exists')
 			throw error;
 
 		yield call([ipcDialogService, ipcDialogService.showMessageBox], {

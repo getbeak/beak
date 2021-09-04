@@ -5,7 +5,7 @@ import {
 	MessageBoxReturnValue,
 } from 'electron';
 
-import { IpcServiceMain, IpcServiceRenderer, Listener } from './ipc';
+import { IpcServiceMain, IpcServiceRenderer, Listener, PartialIpcRenderer } from './ipc';
 
 export const DialogMessages = {
 	ShowMessageBox: 'show_message_box',
@@ -15,7 +15,7 @@ export interface ShowMessageBoxReq extends MessageBoxOptions { }
 export interface ShowMessageBoxRes extends MessageBoxReturnValue { }
 
 export class IpcDialogServiceRenderer extends IpcServiceRenderer {
-	constructor(ipc: IpcRenderer) {
+	constructor(ipc: PartialIpcRenderer) {
 		super('dialog', ipc);
 	}
 

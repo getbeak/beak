@@ -1,4 +1,4 @@
-import {
+import type {
 	IpcMain,
 	IpcMainInvokeEvent,
 	IpcRenderer,
@@ -19,6 +19,11 @@ export interface Response<T> {
 
 export type IpcEvent = IpcMainInvokeEvent | IpcRendererEvent;
 export type Listener<TP = any, TR = void | any> = (event: IpcEvent, payload: TP) => Promise<TR>;
+
+export interface PartialIpcRenderer {
+	on: (channel: string, listening: (event: IpcRendererEvent, ...args: any[]) => void) => void;
+	invoke: IpcRenderer['invoke'];
+}
 
 export interface IpcMessage {
 	code: string;
@@ -47,9 +52,9 @@ class IpcServiceBase<T> {
 }
 
 export class IpcServiceRenderer extends IpcServiceBase<IpcRendererEvent> {
-	protected ipc: IpcRenderer;
+	protected ipc: PartialIpcRenderer;
 
-	constructor(channel: string, ipc: IpcRenderer) {
+	constructor(channel: string, ipc: PartialIpcRenderer) {
 		super(channel);
 
 		this.ipc = ipc;

@@ -3,6 +3,7 @@ import { ipcMain } from 'electron';
 
 import arbiter from '../lib/arbiter';
 import nestClient from '../lib/nest-client';
+import persistentStore from '../lib/persistent-store';
 import { createWelcomeWindow, stackMap, windowStack } from '../window-management';
 
 const service = new IpcNestServiceMain(ipcMain);
@@ -26,6 +27,7 @@ service.registerHandleMagicLink(async (_event, payload) => {
 		onboardingWindow?.close();
 	}
 
+	persistentStore.set('passedOnboarding', false);
 	createWelcomeWindow();
 });
 

@@ -1,5 +1,6 @@
 import { IpcProjectServiceMain } from '@beak/common/ipc/project';
 import { ProjectFile } from '@beak/common/types/beak-project';
+import Squawk from '@beak/common/utils/squawk';
 import { dialog, ipcMain, IpcMainInvokeEvent } from 'electron';
 import * as fs from 'fs-extra';
 import * as path from 'path';
@@ -101,20 +102,22 @@ service.registerCreateProject(async (event, payload) => {
 		tryCloseWelcomeWindow();
 		createProjectMainWindow(projectFilePath);
 	} catch (error) {
-		if (error.code === 'project folder already exists') {
+		const sqk = Squawk.coerce(error);
+
+		if (sqk.code === 'project folder already exists') {
 			await dialog.showMessageBox(window, {
 				type: 'warning',
 				title: 'Already exists',
 				message: 'A project with that name already exists',
 			});
-		} else if (error.code === 'project directory not empty') {
+		} else if (sqk.code === 'project directory not empty') {
 			await dialog.showMessageBox(window, {
 				type: 'error',
 				title: 'Not empty!',
 				message: 'That project folder already has files in it',
 			});
 		} else {
-			throw error;
+			throw sqk;
 		}
 	}
 });

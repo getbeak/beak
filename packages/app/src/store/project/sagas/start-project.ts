@@ -41,23 +41,25 @@ export default function* workerStartProject({ payload }: PayloadAction<string>) 
 		yield put(startVariableGroups(projectPath));
 		yield initialImport(projectTreePath);
 	} catch (error) {
-		if (error.message === 'Unsupported project version') {
-			yield call([ipcDialogService, ipcDialogService.showMessageBox], {
-				type: 'error',
-				title: 'Unsupported project version',
-				message: 'The project you opened is no longer supported by Beak',
-				detail: 'Message @beakapp on twitter for support.',
-			});
-		} else {
-			yield call([ipcDialogService, ipcDialogService.showMessageBox], {
-				type: 'error',
-				title: 'Project failed to open',
-				message: 'There was a problem loading the Beak project. ',
-				detail: [
-					error.message,
-					error.stack,
-				].join('\n'),
-			});
+		if (error instanceof Error) {
+			if (error.message === 'Unsupported project version') {
+				yield call([ipcDialogService, ipcDialogService.showMessageBox], {
+					type: 'error',
+					title: 'Unsupported project version',
+					message: 'The project you opened is no longer supported by Beak',
+					detail: 'Message @beakapp on twitter for support.',
+				});
+			} else {
+				yield call([ipcDialogService, ipcDialogService.showMessageBox], {
+					type: 'error',
+					title: 'Project failed to open',
+					message: 'There was a problem loading the Beak project. ',
+					detail: [
+						error.message,
+						error.stack,
+					].join('\n'),
+				});
+			}
 		}
 
 		yield call([ipcWindowService, ipcWindowService.closeSelfWindow]);
@@ -93,6 +95,9 @@ export default function* workerStartProject({ payload }: PayloadAction<string>) 
 			else
 				yield handleRequest(result);
 		} catch (error) {
+			if (!(error instanceof Error))
+				return;
+
 			yield call([ipcDialogService, ipcDialogService.showMessageBox], {
 				type: 'error',
 				title: 'Project data error',

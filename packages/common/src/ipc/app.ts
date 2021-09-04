@@ -1,9 +1,6 @@
-import {
-	IpcMain,
-	IpcRenderer,
-} from 'electron';
+import type { IpcMain } from 'electron';
 
-import { IpcServiceMain, IpcServiceRenderer, Listener } from './ipc';
+import { IpcServiceMain, IpcServiceRenderer, Listener, PartialIpcRenderer } from './ipc';
 
 const AppMessages = {
 	GetVersion: 'get_version',
@@ -11,7 +8,7 @@ const AppMessages = {
 };
 
 export class IpcAppServiceRenderer extends IpcServiceRenderer {
-	constructor(ipc: IpcRenderer) {
+	constructor(ipc: PartialIpcRenderer) {
 		super('app', ipc);
 	}
 

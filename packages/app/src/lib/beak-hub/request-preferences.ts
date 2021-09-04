@@ -5,6 +5,7 @@ import { readJsonAndValidate } from '../fs';
 import { ipcFsService } from '../ipc';
 import BeakHub from '.';
 import { requestPreference } from './schemas';
+import Squawk from '@beak/common/utils/squawk';
 
 export default class BeakRequestPreferences {
 	private requestPreferencePath: string;
@@ -33,7 +34,7 @@ export default class BeakRequestPreferences {
 
 			this.preferences = preferenceFile.file;
 		} catch (error) {
-			if (error.code !== 'schema_invalid')
+			if (Squawk.coerce(error).code !== 'schema_invalid')
 				throw error;
 
 			this.preferences = this.defaultPreferences();

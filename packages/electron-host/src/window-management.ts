@@ -55,10 +55,11 @@ function createWindow(
 	const windowStateManager = new WindowStateManager(container, windowOpts);
 	const window = new BrowserWindow({
 		webPreferences: {
+			// @ts-expect-error
 			enableRemoteModule: true,
-			nodeIntegration: true,
-			contextIsolation: false,
-			// preload: path.resolve(app.getAppPath(), 'preload.js'),
+			// nodeIntegration: true,
+			contextIsolation: true,
+			preload: path.join(app.getAppPath(), 'preload.js'),
 		},
 		show: false,
 		...windowOpts,

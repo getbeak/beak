@@ -1,14 +1,14 @@
-import { IpcMain, IpcRenderer } from 'electron';
+import type { IpcMain } from 'electron';
 
 import { ArbiterStatus } from '../types/arbiter';
-import { IpcServiceMain, IpcServiceRenderer, Listener } from './ipc';
+import { IpcServiceMain, IpcServiceRenderer, Listener, PartialIpcRenderer } from './ipc';
 
 export const ArbiterMessages = {
 	GetStatus: 'get_status',
 };
 
 export class IpcArbiterServiceRenderer extends IpcServiceRenderer {
-	constructor(ipc: IpcRenderer) {
+	constructor(ipc: PartialIpcRenderer) {
 		super('arbiter', ipc);
 	}
 

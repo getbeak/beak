@@ -58,7 +58,7 @@ function checkForDestruction(fn: () => void) {
 	try {
 		fn();
 	} catch (error) {
-		if (error.message !== 'Object has been destroyed')
+		if (error instanceof Error && error.message !== 'Object has been destroyed')
 			throw error;
 
 		return true;

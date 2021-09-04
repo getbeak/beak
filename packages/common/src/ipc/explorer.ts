@@ -1,9 +1,6 @@
-import {
-	IpcMain,
-	IpcRenderer,
-} from 'electron';
+import type { IpcMain } from 'electron';
 
-import { IpcServiceMain, IpcServiceRenderer, Listener } from './ipc';
+import { IpcServiceMain, IpcServiceRenderer, Listener, PartialIpcRenderer } from './ipc';
 
 export const ExplorerMessages = {
 	RevealFile: 'reveal_file',
@@ -11,7 +8,7 @@ export const ExplorerMessages = {
 };
 
 export class IpcExplorerServiceRenderer extends IpcServiceRenderer {
-	constructor(ipc: IpcRenderer) {
+	constructor(ipc: PartialIpcRenderer) {
 		super('explorer', ipc);
 	}
 

@@ -1,10 +1,7 @@
-import {
-	IpcMain,
-	IpcRenderer,
-} from 'electron';
+import type { IpcMain } from 'electron';
 import { ReadOptions, WriteOptions } from 'fs-extra';
 
-import { IpcServiceMain, IpcServiceRenderer, Listener } from './ipc';
+import { IpcServiceMain, IpcServiceRenderer, Listener, PartialIpcRenderer } from './ipc';
 
 export const FsMessages = {
 	ReadDir: 'read_dir',
@@ -57,7 +54,7 @@ export interface DirectoryEntry {
 export class IpcFsServiceRenderer extends IpcServiceRenderer {
 	private projectFilePath?: string;
 
-	constructor(ipc: IpcRenderer) {
+	constructor(ipc: PartialIpcRenderer) {
 		super('fs', ipc);
 	}
 

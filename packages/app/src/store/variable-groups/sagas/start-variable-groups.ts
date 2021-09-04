@@ -56,6 +56,9 @@ export default function* workerStartVariableGroups({ payload }: PayloadAction<st
 
 				yield put(actions.updateVg({ name, file }));
 			} catch (error) {
+				if (!(error instanceof Error))
+					return;
+
 				yield call([ipcDialogService, ipcDialogService.showMessageBox], {
 					type: 'error',
 					title: 'Project data error',
@@ -72,6 +75,9 @@ export default function* workerStartVariableGroups({ payload }: PayloadAction<st
 
 				yield put(actions.removeVg(vgName));
 			} catch (error) {
+				if (!(error instanceof Error))
+					return;
+
 				yield call([ipcDialogService, ipcDialogService.showMessageBox], {
 					type: 'error',
 					title: 'Project data error',

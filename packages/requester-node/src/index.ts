@@ -43,7 +43,7 @@ export async function startRequester(options: RequesterOptions) {
 	try {
 		response = await runRequest(request);
 	} catch (error) {
-		failed({ error });
+		failed({ error: error as Error });
 
 		return;
 	}
@@ -64,13 +64,15 @@ export async function startRequester(options: RequesterOptions) {
 		return;
 	}
 
-	for await (const chunk of response.body) {
-		hasBody = true;
+	if (response.body !== null) {
+		for await (const chunk of response.body) {
+			hasBody = true;
 
-		heartbeat({
-			stage: 'reading_body',
-			payload: { buffer: chunk as Buffer, timestamp: Date.now() },
-		});
+			heartbeat({
+				stage: 'reading_body',
+				payload: { buffer: chunk as Buffer, timestamp: Date.now() },
+			});
+		}
 	}
 
 	complete({

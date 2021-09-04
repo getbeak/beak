@@ -17,6 +17,7 @@ import {
 	createWelcomeWindow,
 	windowStack,
 } from './window-management';
+import persistentStore from './lib/persistent-store';
 
 Sentry.init({
 	dsn: 'https://5118444e09d74b03a320d0e604aa68ff@o988021.ingest.sentry.io/5945114',
@@ -84,6 +85,13 @@ app.on('open-url', (_event, url) => {
 });
 
 async function createOrFocusDefaultWindow() {
+	console.log(persistentStore.get('passedOnboarding'));
+
+	return createOnboardingWindow();
+
+	if (!persistentStore.get('passedOnboarding'))
+		return createOnboardingWindow();
+
 	const auth = await nestClient.getAuth();
 
 	if (!auth)

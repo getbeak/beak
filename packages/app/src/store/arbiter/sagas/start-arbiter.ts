@@ -6,8 +6,6 @@ import { call, put, take } from 'redux-saga/effects';
 
 import { actions } from '..';
 
-const { ipcRenderer } = window.require('electron');
-
 interface Transport {
 	code: string;
 	payload: ArbiterStatus;
@@ -19,7 +17,7 @@ export default createTakeLatestSagaSet(actions.startArbiter, function* startArbi
 	yield put(actions.updateStatus(status));
 
 	const channel = eventChannel(emitter => {
-		ipcRenderer.on('arbiter_broadcast', (_event, args) => {
+		window.secureBridge.ipc.on('arbiter_broadcast', (_event, args) => {
 			emitter(args);
 		});
 

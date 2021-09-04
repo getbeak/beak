@@ -35,11 +35,11 @@ export default class Squawk extends Error {
 		return (error instanceof Squawk);
 	}
 
-	static coerce(error: Error) {
-		if (Squawk.isSquawk(error))
+	static coerce(error: unknown) {
+		if (error instanceof Error && Squawk.isSquawk(error))
 			return error as Squawk;
 
-		const possibleSquawk = error as unknown as PossibleSquawk;
+		const possibleSquawk = error as PossibleSquawk;
 
 		let newError: Squawk;
 

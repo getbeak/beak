@@ -11,6 +11,8 @@ export interface Store {
 
 	arbiter: ArbiterStatus;
 	magicStates: MagicStates;
+
+	passedOnboarding: boolean;
 }
 
 const persistentStore = new ElectronStore<Store>({
@@ -25,6 +27,7 @@ const persistentStore = new ElectronStore<Store>({
 			status: false,
 		},
 		magicStates: {},
+		passedOnboarding: false,
 	},
 });
 

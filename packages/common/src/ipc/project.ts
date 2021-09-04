@@ -1,6 +1,6 @@
-import { IpcMain, IpcRenderer } from 'electron';
+import type { IpcMain } from 'electron';
 
-import { IpcServiceMain, IpcServiceRenderer, Listener } from './ipc';
+import { IpcServiceMain, IpcServiceRenderer, Listener, PartialIpcRenderer } from './ipc';
 
 export const ProjectMessages = {
 	OpenFolder: 'open_folder',
@@ -13,7 +13,7 @@ export interface CreateProjectReq {
 }
 
 export class IpcProjectServiceRenderer extends IpcServiceRenderer {
-	constructor(ipc: IpcRenderer) {
+	constructor(ipc: PartialIpcRenderer) {
 		super('project', ipc);
 	}
 

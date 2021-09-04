@@ -1,7 +1,6 @@
-import { MenuItemConstructorOptions, remote } from 'electron';
+import type { MenuItemConstructorOptions } from 'electron';
+import { Menu } from '@electron/remote';
 import React, { useEffect } from 'react';
-
-const { Menu } = remote;
 
 interface ContextMenuProps {
 	target: HTMLElement | undefined;

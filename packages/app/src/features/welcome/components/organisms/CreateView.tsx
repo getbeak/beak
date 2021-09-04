@@ -1,7 +1,6 @@
 import Input, { InputInvalidText } from '@beak/app/components/atoms/Input';
 import Label from '@beak/app/components/atoms/Label';
 import { ipcProjectService } from '@beak/app/lib/ipc';
-import { sync } from 'command-exists';
 import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import validFilename from 'valid-filename';
@@ -16,7 +15,6 @@ export interface CreateViewProps {
 }
 
 const CreateView: React.FunctionComponent<CreateViewProps> = ({ setView }) => {
-	const [detectedGit, setDetectedGit] = useState<boolean | undefined>(() => detectGit());
 	const [name, setName] = useState('');
 	const projNameInput = useRef<HTMLInputElement>(null);
 	const [validProjectName, setValidProjectName] = useState(true);
@@ -43,20 +41,6 @@ const CreateView: React.FunctionComponent<CreateViewProps> = ({ setView }) => {
 			<ViewTitle>{'Let\'s get going 🌶'}</ViewTitle>
 			<ViewIntroLine>{'You should be good to go in just a sec...'}</ViewIntroLine>
 
-			{!detectedGit && (
-				<Alert>
-					<strong>{'Git was not detected!'}</strong><br />
-					<span>
-						{'It seems Beak couldn\'t detect an installation of Git. Git is '}
-						{'required to create Beak projects. Please install Git and '}
-						{'click re check.'}
-					</span>
-					<RecheckButtonContainer>
-						<Button onClick={() => setDetectedGit(detectGit())}>{'Re-check'}</Button>
-					</RecheckButtonContainer>
-				</Alert>
-			)}
-
 			<Label>{'Let\'s give your project a cool name'}</Label>
 			<Input
 				ref={projNameInput}
@@ -73,7 +57,7 @@ const CreateView: React.FunctionComponent<CreateViewProps> = ({ setView }) => {
 
 			<ActionsWrapper>
 				<Button
-					disabled={!name || !detectedGit || !validProjectName}
+					disabled={!name || !validProjectName}
 					onClick={() => {
 						ipcProjectService.createProject({ projectName: name });
 					}}
@@ -92,30 +76,11 @@ const CreateView: React.FunctionComponent<CreateViewProps> = ({ setView }) => {
 	);
 };
 
-function detectGit() {
-	return sync('git');
-}
-
 const Wrapper = styled.div`
 	position: relative;
 	top: 0; bottom: 0; left: 0; right: 0;
 	width: calc(100vw - 60px);
 	height: calc(100vh - 80px);
-`;
-
-const Alert = styled.div`
-	border-radius: 4px;
-	border: 2px solid ${p => p.theme.ui.destructiveAction}AA;
-	background: ${p => p.theme.ui.destructiveAction}33;
-
-	padding: 10px 10px;
-	margin-bottom: 15px;
-`;
-
-const RecheckButtonContainer = styled.div`
-	display: flex;
-	margin-top: 10px;
-	width: 100%;
 `;
 
 const ActionsWrapper = styled.div`

@@ -56,8 +56,10 @@ class NestClient {
 		try {
 			return await fn(await this.getAuth());
 		} catch (error) {
-			if (error.code !== 'unauthorized')
-				throw error;
+			const sqk = Squawk.coerce(error);
+
+			if (sqk.code !== 'unauthorized')
+				throw sqk;
 
 			await this.refresh();
 

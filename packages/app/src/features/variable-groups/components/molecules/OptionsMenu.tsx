@@ -2,12 +2,11 @@ import { ipcDialogService } from '@beak/app/lib/ipc';
 import { insertNewGroup, insertNewVariableGroup, removeGroup, removeItem, removeVg } from '@beak/app/store/variable-groups/actions';
 import { faEllipsisV } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { MenuItemConstructorOptions, remote } from 'electron';
+import type { MenuItemConstructorOptions } from 'electron';
+import { Menu } from '@electron/remote';
 import React from 'react';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
-
-const { Menu } = remote;
 
 interface OptionsMenuProps {
 	type: 'variable-group' | 'group' | 'item';

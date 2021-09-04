@@ -2,7 +2,7 @@ import ContextMenu from '@beak/app/components/atoms/ContextMenu';
 import WindowSessionContext from '@beak/app/contexts/window-session-context';
 import { ipcExplorerService } from '@beak/app/lib/ipc';
 import { actions } from '@beak/app/store/project';
-import { clipboard, MenuItemConstructorOptions } from 'electron';
+import type { MenuItemConstructorOptions } from 'electron';
 import React, { useContext, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -58,7 +58,7 @@ const ContextMenuWrapper: React.FunctionComponent<ContextMenuWrapperProps> = pro
 		{
 			label: 'Copy path',
 			click: () => {
-				clipboard.writeText(node.filePath);
+				navigator.clipboard.writeText(node.filePath);
 			},
 		},
 		{
@@ -67,7 +67,7 @@ const ContextMenuWrapper: React.FunctionComponent<ContextMenuWrapperProps> = pro
 				// Is there a better way to do this lol
 				const relativePath = node.filePath.substring(projectPath.length + 1);
 
-				clipboard.writeText(relativePath);
+				navigator.clipboard.writeText(relativePath);
 			},
 		},
 

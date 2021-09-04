@@ -2,7 +2,7 @@ import * as ksuid from '@cuvva/ksuid';
 import { WatchOptions } from 'chokidar';
 import { IpcMain, IpcRenderer, WebContents } from 'electron';
 
-import { IpcServiceMain, IpcServiceRenderer, Listener } from './ipc';
+import { IpcServiceMain, IpcServiceRenderer, Listener, PartialIpcRenderer } from './ipc';
 
 export const FsWatcherMessages = {
 	StartWatching: 'start_watching',
@@ -26,7 +26,7 @@ export interface WatcherEvent {
 export class IpcFsWatcherServiceRenderer extends IpcServiceRenderer {
 	private projectFilePath?: string;
 
-	constructor(ipc: IpcRenderer) {
+	constructor(ipc: PartialIpcRenderer) {
 		super('fs_watcher', ipc);
 	}
 
