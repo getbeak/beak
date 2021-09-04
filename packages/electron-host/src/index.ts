@@ -2,6 +2,7 @@
 import './ipc-layer';
 import './updater';
 
+import * as Sentry from '@sentry/electron';
 import { app, nativeTheme } from 'electron';
 import electronDebug from 'electron-debug';
 import { autoUpdater } from 'electron-updater';
@@ -16,6 +17,11 @@ import {
 	createWelcomeWindow,
 	windowStack,
 } from './window-management';
+
+Sentry.init({
+	dsn: 'https://5118444e09d74b03a320d0e604aa68ff@o988021.ingest.sentry.io/5945114',
+	appName: 'Beak (electron-host)',
+});
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require('@electron/remote/main').initialize();

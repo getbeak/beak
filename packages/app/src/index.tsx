@@ -1,4 +1,5 @@
 import { DesignSystemProvider } from '@beak/design-system';
+import * as Sentry from '@sentry/electron';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
@@ -53,5 +54,10 @@ const FauxRouter: React.FunctionComponent = () => {
 		</Provider>
 	);
 };
+
+Sentry.init({
+	dsn: 'https://5118444e09d74b03a320d0e604aa68ff@o988021.ingest.sentry.io/5945114',
+	appName: 'Beak (renderer)',
+});
 
 ReactDOM.render(<FauxRouter />, document.getElementById('root'));
