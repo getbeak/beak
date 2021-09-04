@@ -1,8 +1,12 @@
 /* eslint-disable no-param-reassign, @typescript-eslint/no-var-requires */
 
-const path = require('path');
 const CopyPlugin = require('copy-webpack-plugin');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
+
+const production = process.env.NODE_ENV === 'production';
+const productionNativeModuleOptions = {
+	basePath: ['dist', 'main'],
+};
 
 module.exports = {
 	target: 'electron-main',
@@ -22,9 +26,7 @@ module.exports = {
 		}, {
 			test: /\.node$/,
 			loader: 'native-ext-loader',
-			options: {
-				basePath: ['dist', 'main'],
-			},
+			options: production ? productionNativeModuleOptions : void 0,
 		}],
 	},
 	plugins: [

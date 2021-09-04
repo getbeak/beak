@@ -26,14 +26,14 @@
     "@types/react-dom": "^17.0.8"
   },
   "scripts": {
-    "build": "lerna run build --stream",
-    "build-web": "lerna run build --stream --scope @beak/website",
+    "build": "NODE_ENV=production lerna run build --stream",
+    "build-web": "NODE_ENV=production lerna run build --stream --scope @beak/website",
     "preelectron": "yarn build",
     "electron": "lerna run electron --scope @beak/electron-host",
     "prepackage": "yarn build",
     "package": "lerna run package --stream --scope @beak/electron-host",
-    "start": "lerna exec --parallel --concurrency 1 --stream --scope '@beak/{app,electron-host}' yarn start",
-    "start-web": "lerna exec --parallel --concurrency 1 --stream --scope '@beak/website' yarn start",
+    "start": "NODE_ENV=development lerna exec --parallel --concurrency 1 --stream --scope '@beak/{app,electron-host}' yarn start",
+    "start-web": "NODE_ENV=developmentlerna exec --parallel --concurrency 1 --stream --scope '@beak/website' yarn start",
     "test": "lerna run test --parallel",
     "lint": "eslint -c .eslintrc --ext .tsx --ext .ts './packages/'",
     "unfuck": "lerna clean && yarn --force",
