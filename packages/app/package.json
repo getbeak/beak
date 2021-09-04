@@ -30,7 +30,7 @@
     "@types/command-exists": "^1.2.0",
     "@types/crpc": "^0.2.1",
     "@types/fs-extra": "^9.0.12",
-    "@types/jest": "^26.0.24",
+    "@types/jest": "^27.0.1",
     "@types/lodash.clonedeep": "^4.5.6",
     "@types/lodash.get": "^4.4.6",
     "@types/lodash.set": "^4.3.6",
@@ -69,7 +69,7 @@
     "tsconfig-paths-webpack-plugin": "^3.3.0",
     "ua-parser-js": "^0.7.28",
     "url-loader": "^4.1.1",
-    "valid-filename": "^3.1.0",
+    "valid-filename": "^4.0.0",
     "webpack": "^4.46.0",
     "webpack-cli": "^3.3.12",
     "webpack-dev-server": "^3.11.0"
