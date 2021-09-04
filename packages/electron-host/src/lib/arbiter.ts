@@ -75,7 +75,7 @@ class Arbiter {
 		persistentStore.set('arbiter', status);
 
 		if (status.status === false) {
-			persistentStore.set('auth', null);
+			nestClient.setAuth(null);
 
 			const onboardingWindowId = createOnboardingWindow();
 

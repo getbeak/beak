@@ -8,7 +8,7 @@ import electronDebug from 'electron-debug';
 import { autoUpdater } from 'electron-updater';
 
 import arbiter from './lib/arbiter';
-import persistentStore from './lib/persistent-store';
+import nestClient from './lib/nest-client';
 import { parseAppUrl } from './lib/protocol';
 import createMenu from './menu';
 import { appIsPackaged } from './utils/static-path';
@@ -84,7 +84,7 @@ app.on('open-url', (_event, url) => {
 });
 
 async function createOrFocusDefaultWindow() {
-	const auth = persistentStore.get('auth');
+	const auth = await nestClient.getAuth();
 
 	if (!auth)
 		return createOnboardingWindow();
