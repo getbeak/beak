@@ -352,8 +352,9 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, 
 						}
 
 						const newParts = [...parts];
+						const existingPart = newParts[rtvEditorContext.partIndex] as RealtimeValuePart;
 
-						(newParts[rtvEditorContext.partIndex] as RealtimeValuePart).payload = item;
+						(newParts[rtvEditorContext.partIndex] as RealtimeValuePart) = { ...existingPart, payload: item };
 
 						updateParts(newParts, { immediateWrite: true });
 					}}
