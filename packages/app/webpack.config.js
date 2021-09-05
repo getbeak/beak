@@ -45,6 +45,13 @@ module.exports = {
 		new HtmlWebpackPlugin({
 			template: path.join(__dirname, 'public', 'index.html'),
 			filename: 'index.html',
+			environment,
+			meta: environment !== 'development' && {
+				csp: {
+					httpEquiv: 'Content-Security-Policy',
+					content: `default-src 'self'; connect-src 'none'`,
+				},
+			},
 		}),
 		new CopyPlugin([
 			{ from: 'public' },
@@ -61,10 +68,10 @@ module.exports = {
 		open: false,
 		port: 3000,
 	},
-	devtool: environment === 'development' ? 'eval-cheap-source-map' : void 0,
 	externals: {
-		// 'electron': 'electron',
+		electron: "electron",
 	},
+	devtool: environment === 'development' ? 'eval-cheap-source-map' : void 0,
 	optimization: {
 		splitChunks: {
 			chunks: 'all',
