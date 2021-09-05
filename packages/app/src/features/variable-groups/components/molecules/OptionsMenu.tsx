@@ -1,12 +1,12 @@
-import { ipcDialogService } from '@beak/app/lib/ipc';
+import { ipcContextMenuService, ipcDialogService } from '@beak/app/lib/ipc';
 import { insertNewGroup, insertNewVariableGroup, removeGroup, removeItem, removeVg } from '@beak/app/store/variable-groups/actions';
 import { faEllipsisV } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import type { MenuItemConstructorOptions } from 'electron';
-import { Menu } from '@electron/remote';
 import React from 'react';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
+import ksuid from '@cuvva/ksuid';
 
 interface OptionsMenuProps {
 	type: 'variable-group' | 'group' | 'item';
@@ -18,18 +18,20 @@ interface OptionsMenuProps {
 const OptionsMenu: React.FunctionComponent<OptionsMenuProps> = ({ type, id, inTab, variableGroup }) => {
 	const dispatch = useDispatch();
 
-	function showContextMenu(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
+	async function showContextMenu(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
 		event.stopPropagation();
 		event.preventDefault();
 
-		const menu = (() => {
+		const menuItems = (() => {
 			if (type === 'variable-group') {
-				return Menu.buildFromTemplate([{
+				return [{
+					id: ksuid.generate('ctxmenuitem').toString(),
 					label: 'Create a new variable group',
 					click: () => {
 						dispatch(insertNewVariableGroup({ name: 'Variable group' }));
 					},
 				}, {
+					id: ksuid.generate('ctxmenuitem').toString(),
 					label: 'Remove this variable group',
 					click: async () => {
 						const result = await ipcDialogService.showMessageBox({
@@ -47,16 +49,18 @@ const OptionsMenu: React.FunctionComponent<OptionsMenuProps> = ({ type, id, inTa
 
 						dispatch(removeVg(variableGroup));
 					},
-				}] as MenuItemConstructorOptions[]);
+				}] as MenuItemConstructorOptions[];
 			}
 
 			if (type === 'group') {
-				return Menu.buildFromTemplate([{
+				return [{
+					id: ksuid.generate('ctxmenuitem').toString(),
 					label: 'Create a new group',
 					click: () => {
 						dispatch(insertNewGroup({ variableGroup, group: '' }));
 					},
 				}, {
+					id: ksuid.generate('ctxmenuitem').toString(),
 					label: 'Remove this group',
 					click: async () => {
 						const result = await ipcDialogService.showMessageBox({
@@ -75,17 +79,21 @@ const OptionsMenu: React.FunctionComponent<OptionsMenuProps> = ({ type, id, inTa
 						dispatch(removeGroup({ variableGroup, id: id! }));
 					},
 				}, {
+					id: ksuid.generate('ctxmenuitem').toString(),
 					type: 'separator',
 				}, {
+					id: ksuid.generate('ctxmenuitem').toString(),
 					label: 'Shift to the left',
 					enabled: false,
 				}, {
+					id: ksuid.generate('ctxmenuitem').toString(),
 					label: 'Shift to the right',
 					enabled: false,
-				}] as MenuItemConstructorOptions[]);
+				}] as MenuItemConstructorOptions[];
 			}
 
-			return Menu.buildFromTemplate([{
+			return [{
+				id: ksuid.generate('ctxmenuitem').toString(),
 				label: 'Remove this item',
 				click: async () => {
 					const result = await ipcDialogService.showMessageBox({
@@ -104,18 +112,43 @@ const OptionsMenu: React.FunctionComponent<OptionsMenuProps> = ({ type, id, inTa
 					dispatch(removeItem({ variableGroup, id: id! }));
 				},
 			}, {
+				id: ksuid.generate('ctxmenuitem').toString(),
 				type: 'separator',
 			}, {
+				id: ksuid.generate('ctxmenuitem').toString(),
 				label: 'Shift up one',
 				enabled: false,
 			}, {
+				id: ksuid.generate('ctxmenuitem').toString(),
 				label: 'Shift down one',
 				enabled: false,
-			}] as MenuItemConstructorOptions[]);
+			}] as MenuItemConstructorOptions[];
 		})();
 
-		menu.popup();
+		const id = ksuid.generate('ctxmenu').toString();
+
+		ipcContextMenuService.registerItemClickEvent(async (_event, payload) => {
+			if (payload.id !== id)
+				return;
+
+			const menuItem = menuItems.find(m => m.id === payload.menuItemId);
+
+			// @ts-expect-error
+			menuItem?.click?.();
+		});
+
+		await ipcContextMenuService.openContextMenu({
+			id,
+			menuItems: menuItems.map(m => ({
+				id: m.id!,
+				label: m.label,
+				enabled: m.enabled,
+				type: m.type,
+			})),
+		});
 	}
+
+	return null;
 
 	return (
 		<Wrapper onClick={e => showContextMenu(e)}>

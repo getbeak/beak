@@ -5,6 +5,7 @@ import { actions } from '@beak/app/store/project';
 import type { MenuItemConstructorOptions } from 'electron';
 import React, { useContext, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import ksuid from '@cuvva/ksuid';
 
 interface ContextMenuWrapperProps {
 	nodeId: string;
@@ -25,43 +26,49 @@ const ContextMenuWrapper: React.FunctionComponent<ContextMenuWrapperProps> = pro
 			return;
 
 		setMenuItems([{
+			id: ksuid.generate('ctxmenuitem').toString(),
 			label: 'New request',
 			click: () => {
 				dispatch(actions.createNewRequest({ highlightedNodeId: node.id }));
 			},
 		}, {
+			id: ksuid.generate('ctxmenuitem').toString(),
 			label: 'Duplicate request',
 			enabled: mode === 'request',
 			click: () => {
 				dispatch(actions.duplicateRequest({ requestId: nodeId }));
 			},
 		}, {
+			id: ksuid.generate('ctxmenuitem').toString(),
 			label: 'New folder',
 			click: () => {
 				dispatch(actions.createNewFolder({ highlightedNodeId: node.id }));
 			},
 		}, {
+			id: ksuid.generate('ctxmenuitem').toString(),
 			label: `Reveal in ${windowSession.isDarwin() ? 'Finder' : 'Explorer'}`,
 			click: () => {
 				ipcExplorerService.revealFile(node.filePath);
 			},
 		},
 
-		{ type: 'separator' },
+		{ id: ksuid.generate('ctxmenuitem').toString(), type: 'separator' },
 
-		{ label: 'Copy', enabled: false },
-		{ label: 'Cut', enabled: false },
-		{ label: 'Paste', enabled: false },
+		{ id: ksuid.generate('ctxmenuitem').toString(), label: 'Copy', enabled: false },
+		{ id: ksuid.generate('ctxmenuitem').toString(), label: 'Cut', enabled: false },
+		{ id: ksuid.generate('ctxmenuitem').toString(), label: 'Paste', enabled: false },
 
-		{ type: 'separator' },
+		{ id: ksuid.generate('ctxmenuitem').toString(), type: 'separator' },
 
 		{
+			id: ksuid.generate('ctxmenuitem').toString(),
 			label: 'Copy path',
 			click: () => {
 				navigator.clipboard.writeText(node.filePath);
 			},
 		},
 		{
+			id: ksuid.generate('ctxmenuitem').toString(),
 			label: 'Copy relative path',
 			click: () => {
 				// Is there a better way to do this lol
@@ -71,15 +78,17 @@ const ContextMenuWrapper: React.FunctionComponent<ContextMenuWrapperProps> = pro
 			},
 		},
 
-		{ type: 'separator' },
+		{ id: ksuid.generate('ctxmenuitem').toString(), type: 'separator' },
 
 		{
+			id: ksuid.generate('ctxmenuitem').toString(),
 			label: 'Rename',
 			enabled: mode === 'request',
 			click: () => {
 				dispatch(actions.requestRenameStarted({ requestId: nodeId }));
 			},
 		}, {
+			id: ksuid.generate('ctxmenuitem').toString(),
 			label: 'Delete',
 			click: () => {
 				dispatch(actions.removeNodeFromDisk({ requestId: node.id, withConfirmation: true }));

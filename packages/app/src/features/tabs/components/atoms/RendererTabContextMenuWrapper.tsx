@@ -4,6 +4,7 @@ import { TabItem } from '@beak/common/types/beak-project';
 import type { MenuItemConstructorOptions } from 'electron';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import ksuid from '@cuvva/ksuid';
 
 interface RendererTabContextMenuWrapperProps {
 	tab: TabItem;
@@ -23,18 +24,21 @@ const RendererTabContextMenuWrapper: React.FunctionComponent<RendererTabContextM
 
 		setMenuItems([
 			{
+				id: ksuid.generate('ctxmenuitem').toString(),
 				label: 'Close',
 				click: () => {
 					dispatch(actions.closeSelectedTab(tab.payload));
 				},
 			},
 			{
+				id: ksuid.generate('ctxmenuitem').toString(),
 				label: 'Close Others',
 				click: () => {
 					dispatch(actions.closeOtherSelectedTabs(tab.payload));
 				},
 			},
 			{
+				id: ksuid.generate('ctxmenuitem').toString(),
 				label: 'Close to the Right',
 				enabled: !endTab,
 				click: () => {
@@ -42,6 +46,7 @@ const RendererTabContextMenuWrapper: React.FunctionComponent<RendererTabContextM
 				},
 			},
 			{
+				id: ksuid.generate('ctxmenuitem').toString(),
 				label: 'Close to the Left',
 				enabled: !startTab,
 				click: () => {
@@ -49,6 +54,7 @@ const RendererTabContextMenuWrapper: React.FunctionComponent<RendererTabContextM
 				},
 			},
 			{
+				id: ksuid.generate('ctxmenuitem').toString(),
 				label: 'Close All',
 				click: () => {
 					dispatch(actions.closeAllSelectedTabs());

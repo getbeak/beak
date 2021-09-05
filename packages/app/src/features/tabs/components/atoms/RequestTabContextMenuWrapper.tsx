@@ -6,6 +6,7 @@ import { TabItem } from '@beak/common/types/beak-project';
 import type { MenuItemConstructorOptions } from 'electron';
 import React, { useContext, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import ksuid from '@cuvva/ksuid';
 
 interface RequestTabContextMenuWrapperProps {
 	tab: TabItem;
@@ -31,18 +32,21 @@ const RequestTabContextMenuWrapper: React.FunctionComponent<RequestTabContextMen
 
 		setMenuItems([
 			{
+				id: ksuid.generate('ctxmenuitem').toString(),
 				label: 'Close',
 				click: () => {
 					dispatch(actions.closeSelectedTab(node.id));
 				},
 			},
 			{
+				id: ksuid.generate('ctxmenuitem').toString(),
 				label: 'Close Others',
 				click: () => {
 					dispatch(actions.closeOtherSelectedTabs(node.id));
 				},
 			},
 			{
+				id: ksuid.generate('ctxmenuitem').toString(),
 				label: 'Close to the Right',
 				enabled: !endTab,
 				click: () => {
@@ -50,6 +54,7 @@ const RequestTabContextMenuWrapper: React.FunctionComponent<RequestTabContextMen
 				},
 			},
 			{
+				id: ksuid.generate('ctxmenuitem').toString(),
 				label: 'Close to the Left',
 				enabled: !startTab,
 				click: () => {
@@ -57,15 +62,17 @@ const RequestTabContextMenuWrapper: React.FunctionComponent<RequestTabContextMen
 				},
 			},
 			{
+				id: ksuid.generate('ctxmenuitem').toString(),
 				label: 'Close All',
 				click: () => {
 					dispatch(actions.closeAllSelectedTabs());
 				},
 			},
 
-			{ type: 'separator' },
+			{ id: ksuid.generate('ctxmenuitem').toString(), type: 'separator' },
 
 			{
+				id: ksuid.generate('ctxmenuitem').toString(),
 				label: 'Copy path',
 				enabled: isRequestTab,
 				click: () => {
@@ -73,6 +80,7 @@ const RequestTabContextMenuWrapper: React.FunctionComponent<RequestTabContextMen
 				},
 			},
 			{
+				id: ksuid.generate('ctxmenuitem').toString(),
 				label: 'Copy relative path',
 				enabled: isRequestTab,
 				click: () => {
@@ -83,9 +91,10 @@ const RequestTabContextMenuWrapper: React.FunctionComponent<RequestTabContextMen
 				},
 			},
 
-			{ type: 'separator' },
+			{ id: ksuid.generate('ctxmenuitem').toString(), type: 'separator' },
 
 			{
+				id: ksuid.generate('ctxmenuitem').toString(),
 				label: `Reveal in ${windowSession.isDarwin() ? 'Finder' : 'Explorer'}`,
 				enabled: isRequestTab,
 				click: () => {

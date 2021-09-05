@@ -1,6 +1,6 @@
 // @ts-ignore
-import { composeWithDevTools } from 'electron-redux-devtools';
-import { applyMiddleware, combineReducers, createStore, Store } from 'redux';
+import { composeWithDevTools } from 'redux-devtools-extension';
+import { applyMiddleware, combineReducers, compose, createStore, Store } from 'redux';
 import createSagaMiddleware from 'redux-saga';
 import { all, fork } from 'redux-saga/effects';
 

@@ -33,7 +33,7 @@ app.setAsDefaultProtocolClient('beak-app');
 const instanceLock = app.requestSingleInstanceLock();
 
 if (instanceLock) {
-	app.on('second-instance', (_event, argv, _wd) => {
+	app.on('second-instance', (_event, argv) => {
 		if (process.platform !== 'darwin') {
 			const url = argv.find(a => a.startsWith('beak-app://'));
 
@@ -85,10 +85,6 @@ app.on('open-url', (_event, url) => {
 });
 
 async function createOrFocusDefaultWindow() {
-	console.log(persistentStore.get('passedOnboarding'));
-
-	return createOnboardingWindow();
-
 	if (!persistentStore.get('passedOnboarding'))
 		return createOnboardingWindow();
 

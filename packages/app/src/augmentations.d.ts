@@ -17,6 +17,12 @@ declare global {
 	}
 }
 
+declare module 'electron' {
+	interface MenuItemConstructorOptions {
+		click: () => void;
+	}
+}
+
 declare module 'react-redux' {
 	interface DefaultRootState extends ApplicationState {}
 }

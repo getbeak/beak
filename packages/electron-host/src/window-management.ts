@@ -57,7 +57,6 @@ function createWindow(
 		webPreferences: {
 			// @ts-expect-error
 			enableRemoteModule: true,
-			// nodeIntegration: true,
 			contextIsolation: true,
 			preload: path.join(app.getAppPath(), 'preload.js'),
 		},

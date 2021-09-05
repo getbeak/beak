@@ -1,6 +1,7 @@
 import type { MenuItemConstructorOptions } from 'electron';
-import { Menu } from '@electron/remote';
 import React, { useEffect } from 'react';
+import ksuid from '@cuvva/ksuid';
+import { ipcContextMenuService } from '@beak/app/lib/ipc';
 
 interface ContextMenuProps {
 	target: HTMLElement | undefined;
@@ -14,10 +15,28 @@ const ContextMenu: React.FunctionComponent<ContextMenuProps> = props => {
 		if (!target)
 			return void 0;
 
-		const menu = Menu.buildFromTemplate(menuItems);
+		const id = ksuid.generate('ctxmenu').toString();
 
-		function showContextMenu() {
-			menu.popup();
+		async function showContextMenu() {
+			ipcContextMenuService.registerItemClickEvent(async (_event, payload) => {
+				if (payload.id !== id)
+					return;
+
+				const menuItem = menuItems.find(m => m.id === payload.menuItemId);
+
+				// @ts-expect-error
+				menuItem?.click?.();
+			});
+
+			await ipcContextMenuService.openContextMenu({
+				id,
+				menuItems: menuItems.map(m => ({
+					id: m.id!,
+					label: m.label,
+					enabled: m.enabled,
+					type: m.type,
+				})),
+			});
 		}
 
 		target.addEventListener('contextmenu', showContextMenu);
