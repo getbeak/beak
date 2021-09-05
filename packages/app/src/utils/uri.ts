@@ -1,8 +1,8 @@
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { RequestOverview } from '@beak/common/types/beak-project';
 
-import { parseValueParts } from '../features/variable-input/parser';
-import { Context } from '../features/variable-input/realtime-values/types';
+import { parseValueParts } from '../features/realtime-values/parser';
+import { Context } from '../features/realtime-values/types';
 
 interface Options {
 	includeQuery: boolean;
