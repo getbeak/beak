@@ -45,6 +45,13 @@ jobs:
 
       - name: Build (non-release)
         if: startsWith(github.ref, 'refs/tags/v') == false
+        env:
+          CSC_LINK: ${{ secrets.CSC_LINK }}
+          CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_ID_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
+          ASC_PROVIDER: ${{ secrets.ASC_PROVIDER }}
+          BUILD_NUMBER: ${{ steps.short-sha.outputs.sha }}
         run: yarn package
       - name: Delete un-necessary artifacts
         if: startsWith(github.ref, 'refs/tags/v') == false
