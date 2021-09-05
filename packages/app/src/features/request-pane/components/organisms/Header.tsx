@@ -1,5 +1,5 @@
 import VariableInput from '@beak/app/features/variable-input/components/molecules/VariableInput';
-import { parseValueParts } from '@beak/app/features/variable-input/parser';
+import { parseValueParts } from '@beak/app/features/realtime-values/parser';
 import { RequestNode, ValueParts } from '@beak/common/types/beak-project';
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';

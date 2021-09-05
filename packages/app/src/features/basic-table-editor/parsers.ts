@@ -2,8 +2,8 @@ import { TypedObject } from '@beak/common/helpers/typescript';
 import { ToggleKeyValue } from '@beak/common/types/beak-project';
 import ksuid from '@cuvva/ksuid';
 
-import { parseValueParts } from '../variable-input/parser';
-import { Context } from '../variable-input/realtime-values/types';
+import { parseValueParts } from '../realtime-values/parser';
+import { Context } from '../realtime-values/types';
 
 const queryStringRegex = /[a-z0-9%=+-[\]]+/;
 

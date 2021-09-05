@@ -1,8 +1,8 @@
 import WindowSessionContext, { WindowSession } from '@beak/app/contexts/window-session-context';
 import { convertKeyValueToString } from '@beak/app/features/basic-table-editor/parsers';
 import { convertToRealJson } from '@beak/app/features/json-editor/parsers';
-import { parseValueParts } from '@beak/app/features/variable-input/parser';
-import { Context } from '@beak/app/features/variable-input/realtime-values/types';
+import { parseValueParts } from '@beak/app/features/realtime-values/parser';
+import { Context } from '@beak/app/features/realtime-values/types';
 import { createDefaultOptions } from '@beak/app/utils/monaco';
 import { convertRequestToUrl } from '@beak/app/utils/uri';
 import { requestBodyContentType } from '@beak/common/helpers/request';

@@ -13,6 +13,7 @@ export default {
 
 	name: 'Timestamp',
 	description: 'Render a timestamp in a certain format',
+	sensitive: false,
 
 	initValuePart: async () => ({
 		type,

@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 
-import { RealtimeValue, UISection } from '../../variable-input/realtime-values/types';
+import { RealtimeValue, UISection } from '../../realtime-values/types';
 
 interface RealtimeValueEditorProps {
 	realtimeValue: RealtimeValue<any, any>;

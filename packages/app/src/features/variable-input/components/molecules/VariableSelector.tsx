@@ -6,9 +6,9 @@ import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import * as uuid from 'uuid';
 
-import { getRealtimeValues } from '../../realtime-values';
-import { RealtimeValue } from '../../realtime-values/types';
-import { createFauxValue } from '../../realtime-values/values/variable-group-item';
+import { getRealtimeValues } from '../../../realtime-values';
+import { RealtimeValue } from '../../../realtime-values/types';
+import { createFauxValue } from '../../../realtime-values/values/variable-group-item';
 
 export interface VariableSelectorProps {
 	parent: HTMLElement;

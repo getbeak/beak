@@ -7,9 +7,9 @@ import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import * as uuid from 'uuid';
 
-import { getRealtimeValue } from '../../realtime-values';
-import { RealtimeValue } from '../../realtime-values/types';
-import { getVariableGroupItemName } from '../../realtime-values/values/variable-group-item';
+import { getRealtimeValue } from '../../../realtime-values';
+import { RealtimeValue } from '../../../realtime-values/types';
+import { getVariableGroupItemName } from '../../../realtime-values/values/variable-group-item';
 import VariableSelector from './VariableSelector';
 
 interface Position {

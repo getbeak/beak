@@ -1,4 +1,4 @@
-import { Context } from '@beak/app/features/variable-input/realtime-values/types';
+import { Context } from '@beak/app/features/realtime-values/types';
 import { convertRequestToUrl } from '@beak/app/utils/uri';
 import { RequestOverview } from '@beak/common/types/beak-project';
 import React, { useEffect, useState } from 'react';

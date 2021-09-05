@@ -10,6 +10,7 @@ export default {
 
 	name: 'Nonce',
 	description: 'Generates a cryptographically random string',
+	sensitive: false,
 
 	initValuePart: async () => ({
 		type,

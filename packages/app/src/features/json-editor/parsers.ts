@@ -2,8 +2,8 @@ import { TypedObject } from '@beak/common/helpers/typescript';
 import { Entries, EntryMap, NamedEntries } from '@beak/common/types/beak-json-editor';
 import ksuid from '@cuvva/ksuid';
 
-import { parseValueParts } from '../variable-input/parser';
-import { Context } from '../variable-input/realtime-values/types';
+import { parseValueParts } from '../realtime-values/parser';
+import { Context } from '../realtime-values/types';
 
 type JsonTypes = null | string | number | boolean | Record<string, unknown> | unknown[];
 

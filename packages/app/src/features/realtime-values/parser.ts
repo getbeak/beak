@@ -2,8 +2,8 @@ import { generateValueIdent } from '@beak/app/lib/beak-variable-group/utils';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { ValueParts } from '@beak/common/types/beak-project';
 
-import { getRealtimeValue } from './realtime-values';
-import { Context } from './realtime-values/types';
+import { getRealtimeValue } from '.';
+import { Context } from './types';
 
 export async function parseValueParts(ctx: Context, parts: ValueParts) {
 	const out = await Promise.all(parts.map(async p => {

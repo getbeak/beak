@@ -14,6 +14,7 @@ export default {
 
 	name: 'Secure',
 	description: 'A value protected by Beak project encryption',
+	sensitive: true,
 
 	initValuePart: async () => {
 		const iv = await ipcEncryptionService.generateIv();
