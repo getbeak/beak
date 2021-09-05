@@ -71,7 +71,7 @@ module.exports = {
 	externals: {
 		electron: "electron",
 	},
-	devtool: environment === 'development' ? 'eval-cheap-source-map' : void 0,
+	devtool: environment === 'development' ? 'eval-source-map' : 'source-map',
 	optimization: {
 		splitChunks: {
 			chunks: 'all',

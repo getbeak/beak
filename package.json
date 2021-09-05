@@ -54,6 +54,8 @@
     "@cuvva/ksuid": "^1.0.0",
     "@electron/remote": "^1.2.0",
     "@sentry/electron": "^2.5.3",
+    "@sentry/react": "^6.12.0",
+    "@sentry/webpack-plugin": "^1.17.1",
     "@types/react": "^17.0.11",
     "@types/react-dom": "^17.0.8",
     "@types/react-router": "^5.1.16",

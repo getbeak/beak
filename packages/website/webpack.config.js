@@ -53,5 +53,5 @@ module.exports = {
 			chunks: 'all',
 		},
 	},
-	devtool: environment === 'development' ? 'eval-cheap-source-map' : void 0,
+	devtool: environment === 'development' ? 'eval-source-map' : 'source-map',
 };
