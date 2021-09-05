@@ -57,6 +57,7 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/v') == false
         run: |
           rm -rf ./packages/electron-host/dist-electron/.icon-ico
+          rm -rf ./packages/electron-host/dist-electron/.icon-icns
           rm -rf ./packages/electron-host/dist-electron/mac
           rm -rf ./packages/electron-host/dist-electron/mac-arm64
           rm -rf ./packages/electron-host/dist-electron/win-unpacked
