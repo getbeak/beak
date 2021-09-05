@@ -27,15 +27,19 @@
   },
   "scripts": {
     "build": "NODE_ENV=production lerna run build --stream",
-    "build-web": "NODE_ENV=production lerna run build --stream --scope @beak/website",
-    "preelectron": "yarn build",
-    "electron": "lerna run electron --scope @beak/electron-host",
+    "build:website": "NODE_ENV=production lerna run build --stream --scope @beak/website",
+  
     "prepackage": "yarn build",
+    "prepackage:release": "yarn build",
     "package": "lerna run package --stream --scope @beak/electron-host",
+    "package:release": "lerna run package:release --stream --scope @beak/electron-host",
+  
     "start": "NODE_ENV=development lerna exec --parallel --concurrency 1 --stream --scope '@beak/{app,electron-host}' yarn start",
-    "start-web": "NODE_ENV=developmentlerna exec --parallel --concurrency 1 --stream --scope '@beak/website' yarn start",
+    "start:website": "NODE_ENV=developmentlerna exec --parallel --concurrency 1 --stream --scope '@beak/website' yarn start",
+
     "test": "lerna run test --parallel",
     "lint": "eslint -c .eslintrc --ext .tsx --ext .ts './packages/'",
+
     "unfuck": "lerna clean && yarn --force",
     "postinstall": "node ./node_module_overrides/index.js"
   },

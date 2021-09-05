@@ -41,10 +41,26 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           BUILD_NUMBER: ${{ steps.short-sha.outputs.sha }}
-        run: yarn package
+        run: yarn package:release
+
       - name: Build (non-release)
         if: startsWith(github.ref, 'refs/tags/v') == false
-        run: yarn build
+        run: yarn package
+      - name: Delete un-necessary artifacts
+        if: startsWith(github.ref, 'refs/tags/v') == false
+        run: |
+          rm -rf ./packages/electron-host/dist-electron/mac
+          rm -rf ./packages/electron-host/dist-electron/mac-arm64
+          rm -rf ./packages/electron-host/dist-electron/.icon-icns
+      - name: Upload non-release artifacts to S3
+        if: startsWith(github.ref, 'refs/tags/v') == false
+        uses: shallwefootball/upload-s3-action@v1.1.2
+        with:
+          aws_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY}}
+          aws_bucket: ${{ secrets.AWS_S3_BUILDS_BUCKET }}
+          source_dir: 'packages/electron-host/dist-electron/'
+          destination_dir: 'commits/${{ github.sha }}/'
 
       - name: Upload website to S3
         uses: shallwefootball/upload-s3-action@v1.1.2
