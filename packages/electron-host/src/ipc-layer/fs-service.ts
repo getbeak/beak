@@ -1,4 +1,13 @@
-import { IpcFsServiceMain, MoveReq, ReadDirReq, ReadJsonReq, SimplePath, WriteJsonReq } from '@beak/common/ipc/fs';
+import {
+	IpcFsServiceMain,
+	MoveReq,
+	ReadDirReq,
+	ReadJsonReq,
+	ReadTextReq,
+	SimplePath,
+	WriteJsonReq,
+	WriteTextReq,
+} from '@beak/common/ipc/fs';
 import Squawk from '@beak/common/utils/squawk';
 import { ipcMain } from 'electron';
 import fs from 'fs-extra';
@@ -16,6 +25,19 @@ service.registerWriteJson(async (_event, payload: WriteJsonReq) => {
 	await ensureWithinProject(payload.projectFilePath, payload.filePath);
 
 	return await fs.writeJson(payload.filePath, payload.content, payload.options);
+});
+
+service.registerReadText(async (_event, payload: ReadTextReq) => {
+	await ensureWithinProject(payload.projectFilePath, payload.filePath);
+
+	return await fs.readFile(payload.filePath, { encoding: 'utf-8' });
+});
+
+service.registerWriteText(async (_event, payload: WriteTextReq) => {
+	await ensureWithinProject(payload.projectFilePath, payload.filePath);
+	await fs.ensureFile(payload.filePath);
+
+	return await fs.writeFile(payload.filePath, payload.content, { encoding: 'utf-8' });
 });
 
 service.registerPathExists(async (_event, payload: SimplePath) => {

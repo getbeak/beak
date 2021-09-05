@@ -6,9 +6,11 @@ import { IpcServiceMain, IpcServiceRenderer, Listener, PartialIpcRenderer } from
 export const FsMessages = {
 	ReadDir: 'read_dir',
 	ReadJson: 'read_json',
+	WriteJson: 'write_json',
+	ReadText: 'read_text',
+	WriteText: 'write_text',
 	PathExists: 'path_exists',
 	EnsureFile: 'ensure_file',
-	WriteJson: 'write_json',
 	Remove: 'remove',
 	EnsureDir: 'ensure_dir',
 	Move: 'move',
@@ -27,6 +29,15 @@ export interface WriteJsonReq extends FsBase {
 	filePath: string;
 	content: any;
 	options?: WriteOptions;
+}
+
+export interface ReadTextReq extends FsBase {
+	filePath: string;
+}
+
+export interface WriteTextReq extends FsBase {
+	filePath: string;
+	content: string;
 }
 
 export interface SimplePath extends FsBase {
@@ -75,6 +86,21 @@ export class IpcFsServiceRenderer extends IpcServiceRenderer {
 			filePath,
 			content,
 			options,
+			projectFilePath: this.projectFilePath,
+		});
+	}
+
+	async readText(filePath: string) {
+		return this.invoke<string>(FsMessages.ReadText, {
+			filePath,
+			projectFilePath: this.projectFilePath,
+		});
+	}
+
+	async writeText(filePath: string, content: string) {
+		return this.invoke(FsMessages.WriteText, {
+			filePath,
+			content,
 			projectFilePath: this.projectFilePath,
 		});
 	}
@@ -135,6 +161,14 @@ export class IpcFsServiceMain extends IpcServiceMain {
 
 	registerWriteJson(fn: Listener<WriteJsonReq>) {
 		this.registerListener(FsMessages.WriteJson, fn);
+	}
+
+	registerReadText(fn: Listener<ReadTextReq, any>) {
+		this.registerListener(FsMessages.ReadText, fn);
+	}
+
+	registerWriteText(fn: Listener<WriteTextReq>) {
+		this.registerListener(FsMessages.WriteText, fn);
 	}
 
 	registerPathExists(fn: Listener<SimplePath, boolean>) {
