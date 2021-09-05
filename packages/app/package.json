@@ -45,7 +45,6 @@
     "copy-webpack-plugin": "^5.1.2",
     "crpc": "^0.2.2",
     "css-loader": "^5.0.0",
-    "custom-electron-titlebar": "^3.2.7",
     "date-fns": "^2.22.1",
     "electron-redux-devtools": "^0.3.4",
     "file-loader": "^6.2.0",

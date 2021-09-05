@@ -24,9 +24,6 @@ Sentry.init({
 	appName: 'Beak (electron-host)',
 });
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-require('@electron/remote/main').initialize();
-
 createMenu();
 app.setAsDefaultProtocolClient('beak-app');
 
