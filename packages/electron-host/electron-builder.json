@@ -62,10 +62,18 @@
       {
         "target": "nsis",
         "arch": ["x64", "ia32"]
+      },
+      {
+        "target": "zip",
+        "arch": ["x64", "ia32"]
       }
     ]
   },
   "linux": {
-    "target": "AppImage"
+    "target": [{
+      "target": "AppImage"
+    }, {
+      "target": "zip"
+    }]
   }
 }
