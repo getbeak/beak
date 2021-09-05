@@ -27,7 +27,7 @@ service.registerHandleMagicLink(async (_event, payload) => {
 		onboardingWindow?.close();
 	}
 
-	persistentStore.set('passedOnboarding', false);
+	persistentStore.set('passedOnboarding', true);
 	createWelcomeWindow();
 });
 
