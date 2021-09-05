@@ -87,7 +87,7 @@ export interface VariableGroup {
 
 export type ValueParts = (string | RealtimeValuePart)[];
 
-export type RealtimeValuePart = VariableGroupItemRtv | NonceRtv | SecureRtv | TimestampRtv;
+export type RealtimeValuePart = VariableGroupItemRtv | NonceRtv | SecureRtv | PrivateRtv | TimestampRtv;
 
 export interface VariableGroupItemRtv {
 	type: 'variable_group_item';
@@ -106,6 +106,14 @@ export interface SecureRtv {
 	payload: {
 		iv: string;
 		datum: string;
+	};
+}
+
+export interface PrivateRtv {
+	type: 'private';
+	payload: {
+		iv: string;
+		identifier: string;
 	};
 }
 
