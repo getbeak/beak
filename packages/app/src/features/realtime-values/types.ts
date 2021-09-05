@@ -8,6 +8,7 @@ export interface RealtimeValue<
 
 	name: string;
 	description: string;
+	sensitive: boolean;
 
 	initValuePart: (ctx: Context) => Promise<RealtimeValuePart>;
 	createValuePart: (ctx: Context, item: T) => RealtimeValuePart;
