@@ -56,9 +56,12 @@ jobs:
       - name: Delete un-necessary artifacts
         if: startsWith(github.ref, 'refs/tags/v') == false
         run: |
+          rm -rf ./packages/electron-host/dist-electron/.icon-ico
           rm -rf ./packages/electron-host/dist-electron/mac
           rm -rf ./packages/electron-host/dist-electron/mac-arm64
-          rm -rf ./packages/electron-host/dist-electron/.icon-icns
+          rm -rf ./packages/electron-host/dist-electron/win-unpacked
+          rm -rf ./packages/electron-host/dist-electron/win-ia32-unpacked
+          rm -rf ./packages/electron-host/dist-electron/linux-unpacked
       - name: Upload non-release artifacts to S3
         if: startsWith(github.ref, 'refs/tags/v') == false
         uses: shallwefootball/upload-s3-action@v1.1.2
