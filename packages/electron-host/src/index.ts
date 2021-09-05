@@ -2,7 +2,7 @@
 import './ipc-layer';
 import './updater';
 
-import * as Sentry from '@sentry/electron';
+import { init } from '@sentry/electron/dist/main';
 import { app, nativeTheme } from 'electron';
 import electronDebug from 'electron-debug';
 import { autoUpdater } from 'electron-updater';
@@ -19,7 +19,7 @@ import {
 } from './window-management';
 import persistentStore from './lib/persistent-store';
 
-Sentry.init({
+init({
 	dsn: 'https://5118444e09d74b03a320d0e604aa68ff@o988021.ingest.sentry.io/5945114',
 	appName: 'Beak (electron-host)',
 });
