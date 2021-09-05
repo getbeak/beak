@@ -158,9 +158,9 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, 
 	function showVariableSelector(newParts: ValueParts) {
 		const sel = window.getSelection()!;
 		const range = sel.getRangeAt(0);
-		const elem = range.startContainer! as HTMLElement;
+		const elem = range.startContainer! as HTMLElement | Node;
 
-		const rect = elem.parentElement!.getBoundingClientRect();
+		const rect = range.getBoundingClientRect();
 		const contentLength = (elem.textContent ?? '').length;
 		const caretOffset = range.startOffset;
 		const positionOffset = caretOffset / contentLength;
