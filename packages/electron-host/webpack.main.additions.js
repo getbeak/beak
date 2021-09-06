@@ -44,6 +44,7 @@ if (buildEnvironment === 'ci') {
 	config.plugins.push(new SentryPlugin({
 		authToken: process.env.SENTRY_ELECTRON_APP_API_KEY,
 		release: process.env.RELEASE_IDENTIFIER,
+		project: 'electron-app',
 		include: path.join(__dirname, 'dist'),
 	}));
 }
