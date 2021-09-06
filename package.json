@@ -37,7 +37,7 @@
     "test": "lerna run test --parallel",
     "lint": "eslint -c .eslintrc --ext .tsx --ext .ts './packages/'",
     "unfuck": "lerna clean && yarn --force",
-    "postinstall": "node ./node_module_overrides/index.js"
+    "postinstall": "node ./node-module-overrides/index.js"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^4.28.1",
