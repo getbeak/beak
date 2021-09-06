@@ -1,13 +1,15 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const CopyPlugin = require('copy-webpack-plugin');
-const path = require('path');
-const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const path = require('path');
+const SentryPlugin = require('@sentry/webpack-plugin');
+const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 /* eslint-enable @typescript-eslint/no-var-requires */
 
 const environment = process.env.NODE_ENV;
+const buildEnvironment = process.env.BUILD_ENVIRONMENT;
 
-module.exports = {
+const config = {
 	entry: './src/index.tsx',
 	resolve: {
 		extensions: ['.ts', '.tsx', '.js'],
@@ -55,3 +57,15 @@ module.exports = {
 	},
 	devtool: environment === 'development' ? 'eval-source-map' : 'source-map',
 };
+
+if (buildEnvironment === 'ci') {
+	config.plugins.push(new SentryPlugin({
+		authToken: process.env.SENTRY_WEBSITE_API_KEY,
+		release: process.env.RELEASE_IDENTIFIER,
+		project: 'website',
+		org: 'beak',
+		include: path.join(__dirname, 'dist'),
+	}));
+}
+
+module.exports = config;

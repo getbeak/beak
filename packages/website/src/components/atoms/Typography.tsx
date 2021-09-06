@@ -8,7 +8,7 @@ export const Title = styled.div`
 
 export const TitleSubtle = styled(Title)`
 	font-size: 20px;
-	line-height: 14px;
+	line-height: 24px;
 	color: ${p => p.theme.ui.textMinor};
 `;
 
