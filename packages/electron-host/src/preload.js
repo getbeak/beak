@@ -1,6 +1,7 @@
-// eslint-disable-next-line @typescript-eslint/no-var-requires
+/* eslint-disable @typescript-eslint/no-var-requires */
 const { contextBridge, ipcRenderer } = require('electron');
 const { init } = require('@sentry/electron/dist/renderer');
+/* eslint-enable @typescript-eslint/no-var-requires */
 
 // Sentry
 init({

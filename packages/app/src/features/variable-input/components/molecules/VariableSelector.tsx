@@ -25,12 +25,6 @@ export interface VariableSelectorProps {
 	};
 }
 
-interface Item {
-	varibleGroupName: string;
-	itemId: string;
-	itemName: string;
-}
-
 const VariableSelector: React.FunctionComponent<VariableSelectorProps> = props => {
 	const {
 		onClose,
