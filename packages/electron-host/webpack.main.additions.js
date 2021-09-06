@@ -1,5 +1,6 @@
 /* eslint-disable no-param-reassign, @typescript-eslint/no-var-requires */
 
+const path = require('path');
 const SentryPlugin = require('@sentry/webpack-plugin');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const webpack = require('webpack');
