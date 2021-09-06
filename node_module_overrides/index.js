@@ -7,12 +7,12 @@ const process = require('process');
 const overrideDefs = {
 	// Needed until fix for this issue is published to NPM
 	// https://github.com/electron-userland/electron-builder/issues/4299
-	'app-builder-lib': {
-		parentPackage: 'electron-host',
-		moduleName: 'app-builder-lib',
-		moduleOverridePath: 'out/targets/ArchiveTarget.js',
-		file: 'ArchiveTarget',
-	},
+	// 'app-builder-lib': {
+	// 	parentPackage: 'electron-host',
+	// 	moduleName: 'app-builder-lib',
+	// 	moduleOverridePath: 'out/targets/ArchiveTarget.js',
+	// 	file: 'ArchiveTarget',
+	// },
 };
 
 function main() {
