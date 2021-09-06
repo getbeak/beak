@@ -11,7 +11,7 @@ exports.default = async function afterPack(context) {
 	const arch = architectures[context.arch];
 	const platform = context.packager.platform.nodeName;
 	const tempDirPath = path.join(os.tmpdir(), Date.now().toString());
-	const asarPath = path.join(context.appOutDir, 'Beak.app', 'Contents', 'Resources', 'app.asar');
+	const asarPath = generateAsarPath(platform, context.appOutDir);
 	const nativeKeytarDir = path.join(__dirname, '..', '..', '..', 'native', 'keytar');
 	const nativeKeytarPath = path.join(nativeKeytarDir, generateKeytarFilename(arch, platform));
 	const asarKeytarPath = path.join(tempDirPath, 'dist', 'main', 'keytar.node');
@@ -23,8 +23,22 @@ exports.default = async function afterPack(context) {
 
 	await asar.createPackage(tempDirPath, asarPath);
 
-	console.log(`Injected platform specific keytar for ${platform}-${arch}`);
+	console.log(`  • postpackaging   native keytar injected platform=${platform} arch=${arch}`);
 };
+
+function generateAsarPath(platform, appOutDir) {
+	switch (platform) {
+		case 'darwin':
+			return path.join(appOutDir, 'Beak.app', 'Contents', 'Resources', 'app.asar');
+
+		case 'linux':
+		case 'win32':
+			return path.join(appOutDir, 'resources', 'app.asar');
+
+		default:
+			throw new Error(`Unknown platform ${platform}`);
+	}
+}
 
 function generateKeytarFilename(arch, platform) {
 	switch (platform) {
