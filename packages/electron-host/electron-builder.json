@@ -55,7 +55,6 @@
   "dmg": {
     "sign": false
   },
-  "afterSign": "scripts/notarize.js",
 
   "win": {
     "target": [
@@ -75,5 +74,8 @@
     }, {
       "target": "zip"
     }]
-  }
+  },
+
+  "afterSign": "scripts/notarize.js",
+  "afterPack": "scripts/after-pack.js"
 }
