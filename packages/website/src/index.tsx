@@ -27,7 +27,7 @@ const EntryPoint: React.FunctionComponent = () => (
 				<GlobalStyle />
 				<AppContainer>
 					<Sentry.ErrorBoundary fallback={<ErrorFallback />}>
-						<Suspense fallback={<div>{'Loading...'}</div>}>
+						<Suspense fallback={<div />}>
 							<Switch>
 								<Route exact path={'/'}>
 									<Home />
