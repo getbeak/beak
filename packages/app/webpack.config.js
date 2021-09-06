@@ -16,7 +16,7 @@ const config = {
 	target: 'web',
 	entry: './src/index.tsx',
 	resolve: {
-		extensions: ['.ts', '.tsx'],
+		extensions: ['.ts', '.tsx', '.js'],
 		plugins: [
 			new TsconfigPathsPlugin(),
 		],
