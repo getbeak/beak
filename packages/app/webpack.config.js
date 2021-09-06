@@ -1,19 +1,22 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const CopyPlugin = require('copy-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 const path = require('path');
+const SentryPlugin = require('@sentry/webpack-plugin');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+const webpack = require('webpack');
 /* eslint-enable @typescript-eslint/no-var-requires */
 
 const environment = process.env.NODE_ENV;
+const buildEnvironment = process.env.BUILD_ENVIRONMENT;
 const MONACO_DIR = path.resolve(__dirname, '../../node_modules/monaco-editor');
 
-module.exports = {
+const config = {
 	target: 'web',
 	entry: './src/index.tsx',
 	resolve: {
-		extensions: ['.ts', '.tsx', '.js'],
+		extensions: ['.ts', '.tsx'],
 		plugins: [
 			new TsconfigPathsPlugin(),
 		],
@@ -22,7 +25,6 @@ module.exports = {
 		path: path.join(__dirname, 'dist'),
 		publicPath: './',
 		filename: 'bundle.min.js',
-		// clean: true,
 	},
 	module: {
 		rules: [{
@@ -45,7 +47,6 @@ module.exports = {
 		new HtmlWebpackPlugin({
 			template: path.join(__dirname, 'public', 'index.html'),
 			filename: 'index.html',
-			environment,
 			meta: environment !== 'development' && {
 				csp: {
 					httpEquiv: 'Content-Security-Policy',
@@ -61,6 +62,10 @@ module.exports = {
 			languages: ['json', 'javascript', 'typescript'],
 			themes: ['vs-dark', 'vs-light'],
 		}),
+		new webpack.EnvironmentPlugin({
+			BUILD_ENVIRONMENT: process.env.BUILD_ENVIRONMENT,
+			RELEASE_IDENTIFIER: process.env.RELEASE_IDENTIFIER,
+		}),
 	],
 	devServer: {
 		contentBase: path.join(__dirname, 'public'),
@@ -69,7 +74,7 @@ module.exports = {
 		port: 3000,
 	},
 	externals: {
-		electron: "electron",
+		electron: 'electron',
 	},
 	devtool: environment === 'development' ? 'eval-source-map' : 'source-map',
 	optimization: {
@@ -78,3 +83,13 @@ module.exports = {
 		},
 	},
 };
+
+if (buildEnvironment === 'ci') {
+	config.plugins.push(new SentryPlugin({
+		authToken: process.env.SENTRY_ELECTRON_APP_API_KEY,
+		release: process.env.RELEASE_IDENTIFIER,
+		include: path.join(__dirname, 'dist'),
+	}));
+}
+
+module.exports = config;
