@@ -9,6 +9,7 @@ import { autoUpdater } from 'electron-updater';
 
 import arbiter from './lib/arbiter';
 import nestClient from './lib/nest-client';
+import persistentStore from './lib/persistent-store';
 import { parseAppUrl } from './lib/protocol';
 import createMenu from './menu';
 import { appIsPackaged } from './utils/static-path';
@@ -17,11 +18,12 @@ import {
 	createWelcomeWindow,
 	windowStack,
 } from './window-management';
-import persistentStore from './lib/persistent-store';
 
 init({
 	dsn: 'https://5118444e09d74b03a320d0e604aa68ff@o988021.ingest.sentry.io/5945114',
-	appName: 'Beak (electron-host)',
+	appName: 'Main process',
+	environment: process.env.ENVIRONMENT,
+	release: process.env.RELEASE_IDENTIFIER,
 });
 
 createMenu();

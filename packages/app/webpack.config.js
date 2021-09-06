@@ -65,6 +65,7 @@ const config = {
 		new webpack.EnvironmentPlugin({
 			BUILD_ENVIRONMENT: process.env.BUILD_ENVIRONMENT,
 			RELEASE_IDENTIFIER: process.env.RELEASE_IDENTIFIER,
+			ENVIRONMENT: process.env.NODE_ENV,
 		}),
 	],
 	devServer: {
