@@ -90,6 +90,7 @@ if (buildEnvironment === 'ci') {
 		authToken: process.env.SENTRY_ELECTRON_APP_API_KEY,
 		release: process.env.RELEASE_IDENTIFIER,
 		project: 'electron-app',
+		org: 'beak',
 		include: path.join(__dirname, 'dist'),
 	}));
 }
