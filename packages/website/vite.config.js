@@ -46,3 +46,10 @@ module.exports = {
 		},
 	},
 };
+
+function writeDefinition(value) {
+	if (value === void 0)
+		return value;
+
+	return `'${value}'`;
+}

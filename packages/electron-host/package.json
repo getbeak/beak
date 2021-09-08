@@ -10,7 +10,7 @@
   "homepage": "https://getbeak.app",
   "scripts": {
     "clean": "rm -rf ./dist && rm -rf tsconfig.tsbuildinfo",
-    "prebuild": "copyfiles -u 3 \"../app/dist/**/*\" dist-react/",
+    "prebuild": "rm -rf ./dist-react/ && copyfiles -u 3 \"../app/dist/**/*\" ./dist-react/",
     "build": "electron-esbuild build",
     "prepackage": "rm -rf ./dist-electron",
     "prepackage:release": "rm -rf ./dist-electron",

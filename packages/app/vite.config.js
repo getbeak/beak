@@ -13,6 +13,7 @@ module.exports = {
 	mode: environment,
 	jsx: 'react',
 	root: './src',
+	base: './',
 	publicDir: '../public',
 	resolve: {
 		alias: {
@@ -46,3 +47,10 @@ module.exports = {
 		},
 	},
 };
+
+function writeDefinition(value) {
+	if (value === void 0)
+		return value;
+
+	return `'${value}'`;
+}
