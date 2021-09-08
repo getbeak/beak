@@ -17,6 +17,7 @@
     "package": "electron-builder -mwl --publish never",
     "package:release": "electron-builder -mwl --publish always",
     "start": "electron-esbuild dev",
+    "typecheck": "tsc --noEmit",
     "test": "echo Skipped."
   },
   "main": "./dist/main/main.js",

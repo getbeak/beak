@@ -11,6 +11,7 @@
     "build": "yarn clean && yarn compile",
     "clean": "rm -rf ./dist && rm -rf tsconfig.tsbuildinfo",
     "compile": "tsc -b tsconfig.json",
+    "typecheck": "tsc --noEmit",
     "start": "tsc -b tsconfig.json -w"
   },
   "devDependencies": {

@@ -6,6 +6,7 @@
   "scripts": {
     "build": "NODE_ENV=production vite build",
     "start": "NODE_ENV=development vite",
+    "typecheck": "tsc --noEmit",
     "test": "echo Skipped for now."
   },
   "browserslist": {
