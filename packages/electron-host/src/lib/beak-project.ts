@@ -1,4 +1,4 @@
-import { TypedObject } from '@beak/common/src/helpers/typescript';
+import { TypedObject } from '@beak/common/helpers/typescript';
 import { ProjectFile, RequestNodeFile, VariableGroup } from '@beak/common/types/beak-project';
 import * as ksuid from '@cuvva/ksuid';
 import * as fs from 'fs-extra';
