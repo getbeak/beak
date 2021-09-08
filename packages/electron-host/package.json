@@ -19,6 +19,7 @@
     "start": "electron-esbuild dev",
     "test": "echo Skipped."
   },
+  "main": "./dist/main/main.js",
   "dependencies": {
     "asar": "^3.0.3",
     "date-fns": "^2.22.1",
