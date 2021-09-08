@@ -5,8 +5,6 @@
     "outDir": "./dist",
     "baseUrl": ".",
 
-    "disableSourceOfProjectReferenceRedirect": true,
-
     "declaration": true,
     "strict": true,
     "target": "ES2018",

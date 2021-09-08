@@ -70,7 +70,7 @@ const ResponseTab: React.FunctionComponent<ResponseTabProps> = props => {
 							/>
 						)}
 						{error && (
-							<MonacoEditor
+							<Editor
 								height={'100%'}
 								width={'100%'}
 								language={'plaintext'}

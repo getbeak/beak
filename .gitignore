@@ -8,7 +8,7 @@ node_modules/
 # Environment
 .vscode/
 
-# TS/Webpack/React/Electron transpiling nonsense
+# TS/React/Electron transpiling nonsense
 dist-electron/
 dist/
 dist-ts/
