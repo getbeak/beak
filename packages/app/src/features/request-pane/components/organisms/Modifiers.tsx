@@ -1,6 +1,6 @@
 import BasicTableEditor from '@beak/app/features/basic-table-editor/components/BasicTableEditor';
 import actions from '@beak/app/store/project/actions';
-import { RequestPreferenceMainTab } from '@beak/common/dist/types/beak-hub';
+import { RequestPreferenceMainTab } from '@beak/common/types/beak-hub';
 import { RequestNode } from '@beak/common/types/beak-project';
 import React, { useContext, useState } from 'react';
 import { useDispatch } from 'react-redux';

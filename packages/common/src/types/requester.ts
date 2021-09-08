@@ -15,7 +15,8 @@ export interface FlightRequestPayload {
 }
 
 /* eslint-disable @typescript-eslint/indent */
-export type FlightHeartbeatPayload = FlightHeartbeatFetchResponse |
+export type FlightHeartbeatPayload =
+	FlightHeartbeatFetchResponse |
 	FlightHeartbeatParsingResponse |
 	FlightHeartbeatReadingBody;
 /* eslint-enable @typescript-eslint/indent */
@@ -39,7 +40,7 @@ export interface FlightHeartbeatReadingBody {
 	stage: 'reading_body';
 	payload: {
 		timestamp: number;
-		buffer: Buffer;
+		buffer: Uint8Array;
 	};
 }
 

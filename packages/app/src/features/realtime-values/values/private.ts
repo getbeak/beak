@@ -1,7 +1,7 @@
-import path from 'path';
 import { ipcEncryptionService, ipcFsService } from '@beak/app/lib/ipc';
 import { PrivateRtv } from '@beak/common/types/beak-project';
 import ksuid from '@cuvva/ksuid';
+import path from 'path-browserify';
 
 import { RealtimeValue } from '../types';
 

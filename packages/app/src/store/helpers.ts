@@ -1,6 +1,6 @@
 createReducer/* eslint-disable no-param-reassign */
 
-import { TypedObject } from '@beak/common/dist/helpers/typescript';
+import { TypedObject } from '@beak/common/helpers/typescript';
 import { AnyAction, createReducer } from '@reduxjs/toolkit';
 
 function matcher(action: AnyAction, type: string) {

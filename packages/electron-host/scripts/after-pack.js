@@ -14,7 +14,7 @@ exports.default = async function afterPack(context) {
 	const asarPath = generateAsarPath(platform, context.appOutDir);
 	const nativeKeytarDir = path.join(__dirname, '..', '..', '..', 'native', 'keytar');
 	const nativeKeytarPath = path.join(nativeKeytarDir, generateKeytarFilename(arch, platform));
-	const asarKeytarPath = path.join(tempDirPath, 'dist', 'main', 'keytar.node');
+	const asarKeytarPath = path.join(tempDirPath, 'keytar.node');
 
 	fs.mkdirSync(tempDirPath);
 	asar.extractAll(asarPath, tempDirPath);

@@ -8,8 +8,8 @@ import { RequestBodyTypeChangedPayload } from '@beak/app/store/project/types';
 import { createDefaultOptions } from '@beak/app/utils/monaco';
 import { RequestBodyType, RequestNode, ValueParts } from '@beak/common/types/beak-project';
 import ksuid from '@cuvva/ksuid';
+import Editor from '@monaco-editor/react';
 import React from 'react';
-import MonacoEditor from 'react-monaco-editor';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 
@@ -126,14 +126,14 @@ const BodyTab: React.FunctionComponent<BodyTabProps> = props => {
 
 			<TabBody $allowVerticalScroll={body.type !== 'text'}>
 				{body.type === 'text' && (
-					<MonacoEditor
+					<Editor
 						height={'100%'}
 						width={'100%'}
 						language={'plaintext'}
 						theme={'vs-dark'}
 						value={body.payload}
 						options={createDefaultOptions()}
-						onChange={text => dispatch(requestBodyTextChanged({ requestId: node.id, text }))}
+						onChange={text => dispatch(requestBodyTextChanged({ requestId: node.id, text: text || '' }))}
 					/>
 				)}
 				{body.type === 'json' && <JsonEditor requestId={node.id} value={body.payload} />}

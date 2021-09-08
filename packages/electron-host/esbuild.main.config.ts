@@ -20,10 +20,10 @@ const nativeNodeModulesPlugin = {
 		// path from esbuild of the ".node" file in the output directory.
 		build.onLoad({ filter: /.*/, namespace: 'node-file' }, args => ({
 			contents: `
-			import path from ${JSON.stringify(args.path)}
-			try { module.exports = require(path) }
-			catch {}
-		`,
+import path from ${JSON.stringify(args.path)}
+try { module.exports = require(path) }
+catch {}
+`.trimStart(),
 		}));
 
 		// If a ".node" file is imported within a module in the "node-file" namespace, put
@@ -47,7 +47,7 @@ const environment = process.env.NODE_ENV;
 
 export default {
 	platform: 'node',
-	target: 'node14.16.0', // electron version target
+	target: 'node14.16.0', // TODO(afr): electron version target
 	bundle: true,
 	entryPoints: [
 		path.resolve('src/main.ts'),

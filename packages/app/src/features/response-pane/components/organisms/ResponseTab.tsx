@@ -2,9 +2,9 @@ import binaryStore from '@beak/app/lib/binary-store';
 import { Flight } from '@beak/app/store/flight/types';
 import { createDefaultOptions } from '@beak/app/utils/monaco';
 import { TypedObject } from '@beak/common/helpers/typescript';
+import Editor from '@monaco-editor/react';
 import mime from 'mime-types';
 import React, { useEffect, useState } from 'react';
-import MonacoEditor from 'react-monaco-editor';
 import styled from 'styled-components';
 
 import TabBar from '../../../../components/atoms/TabBar';
@@ -57,7 +57,7 @@ const ResponseTab: React.FunctionComponent<ResponseTabProps> = props => {
 				{tab === 'raw' && (
 					<React.Fragment>
 						{response && (
-							<MonacoEditor
+							<Editor
 								height={'100%'}
 								width={'100%'}
 								language={'javascript'}

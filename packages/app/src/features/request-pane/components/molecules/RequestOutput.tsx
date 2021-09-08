@@ -8,8 +8,8 @@ import { convertRequestToUrl } from '@beak/app/utils/uri';
 import { requestBodyContentType } from '@beak/common/helpers/request';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { RequestBody, RequestNode, RequestOverview, ToggleKeyValue } from '@beak/common/types/beak-project';
+import Editor from '@monaco-editor/react';
 import React, { useContext, useEffect, useState } from 'react';
-import MonacoEditor from 'react-monaco-editor';
 import { useSelector } from 'react-redux';
 
 const bodyFreeVerbs = ['get', 'head'];
@@ -32,7 +32,7 @@ const RequestOutput: React.FunctionComponent<RequestOutputProps> = props => {
 
 	return (
 		<React.Fragment>
-			<MonacoEditor
+			<Editor
 				height={'100%'}
 				width={'100%'}
 				language={'javascript'}

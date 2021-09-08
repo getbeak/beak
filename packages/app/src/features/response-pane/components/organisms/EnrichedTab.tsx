@@ -1,9 +1,9 @@
 import binaryStore from '@beak/app/lib/binary-store';
 import { Flight } from '@beak/app/store/flight/types';
 import { createDefaultOptions } from '@beak/app/utils/monaco';
+import Editor from '@monaco-editor/react';
 import mime from 'mime-types';
 import React from 'react';
-import MonacoEditor from 'react-monaco-editor';
 
 export interface EnrichedTabProps {
 	flight: Flight;
@@ -17,7 +17,7 @@ const EnrichedTab: React.FunctionComponent<EnrichedTabProps> = props => {
 		return null;
 
 	return (
-		<MonacoEditor
+		<Editor
 			height={'100%'}
 			width={'100%'}
 			language={enriched.extension}

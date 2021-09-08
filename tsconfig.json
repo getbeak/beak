@@ -1,8 +1,11 @@
 {
   "compilerOptions": {
     "composite": true,
+    "incremental": true,
     "outDir": "./dist",
     "baseUrl": ".",
+
+    "disableSourceOfProjectReferenceRedirect": true,
 
     "declaration": true,
     "strict": true,

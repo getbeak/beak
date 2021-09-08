@@ -1,4 +1,4 @@
-import { RequestPreference, RequestPreferenceMainTab } from '@beak/common/dist/types/beak-hub';
+import { RequestPreference, RequestPreferenceMainTab } from '@beak/common/types/beak-hub';
 import path from 'path-browserify';
 
 import { readJsonAndValidate } from '../fs';

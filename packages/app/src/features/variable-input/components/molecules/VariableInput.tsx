@@ -1,6 +1,6 @@
 import RealtimeValueEditor from '@beak/app/features/realtime-value-editor/components/RealtimeValueEditor';
 import useDebounce from '@beak/app/hooks/use-debounce';
-import { RealtimeValuePart, ValueParts } from '@beak/common/dist/types/beak-project';
+import { RealtimeValuePart, ValueParts } from '@beak/common/types/beak-project';
 import React, { useEffect, useRef, useState } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { useSelector } from 'react-redux';

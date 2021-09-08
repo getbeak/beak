@@ -1,6 +1,6 @@
 import * as ksuid from '@cuvva/ksuid';
-import { WatchOptions } from 'chokidar';
-import { IpcMain, IpcRenderer, WebContents } from 'electron';
+import type { WatchOptions } from 'chokidar';
+import { IpcMain, WebContents } from 'electron';
 
 import { IpcServiceMain, IpcServiceRenderer, Listener, PartialIpcRenderer } from './ipc';
 

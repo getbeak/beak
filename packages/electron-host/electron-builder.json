@@ -3,7 +3,8 @@
   "productName": "Beak",
   "copyright": "Copyright © 2020 Alexander Forbes-Reed",
   "extraMetadata": {
-    "name": "Beak"
+    "name": "Beak",
+    "main": "main.js"
   },
 
   "protocols": [
@@ -14,7 +15,8 @@
   ],
 
   "files": [
-    "**/*"
+    { "from": ".", "filter": ["package.json"]},
+    { "from": "dist/main" }
   ],
   "extraFiles": [
     { "from": "dist-react/", "to": "Resources/static/", "filter": "**/*" }

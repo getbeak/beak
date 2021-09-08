@@ -5,7 +5,7 @@ import {
 	RequestNode,
 	RequestOverview,
 	ResponseOverview,
-} from '@beak/common/dist/types/beak-project';
+} from '@beak/common/types/beak-project';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { FlightMessages } from '@beak/common/ipc/flight';
 import { statusToColour } from '@beak/design-system/helpers';

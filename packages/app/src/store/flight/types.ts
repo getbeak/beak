@@ -69,7 +69,7 @@ export interface FlightInProgress extends Flight {
 	contentLength?: number;
 	bodyTransferred?: number;
 	bodyTransferPercentage?: number;
-	body?: Buffer;
+	body?: Uint8Array;
 }
 
 export interface FlightHistoryChangePayload {

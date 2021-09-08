@@ -1,4 +1,4 @@
-import { ValueParts, VariableGroup, VariableGroups } from '@beak/common/dist/types/beak-project';
+import { ValueParts, VariableGroup, VariableGroups } from '@beak/common/types/beak-project';
 
 export const ActionTypes = {
 	START_VARIABLE_GROUPS: '@beak/global/variable-groups/START_VARIABLE_GROUPS',

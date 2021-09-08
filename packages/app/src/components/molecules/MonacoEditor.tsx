@@ -1,6 +1,6 @@
 import { createDefaultOptions } from '@beak/app/utils/monaco';
+import Editor from '@monaco-editor/react';
 import React from 'react';
-import ReactMonacoEditor from 'react-monaco-editor';
 
 interface MonacoEditorProps {
 	language: string;
@@ -12,7 +12,7 @@ const MonacoEditor: React.FunctionComponent<MonacoEditorProps> = props => {
 	const { language, readOnly, value } = props;
 
 	return (
-		<ReactMonacoEditor
+		<Editor
 			height={'100%'}
 			width={'100%'}
 			language={language}

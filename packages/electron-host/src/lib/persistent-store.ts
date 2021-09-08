@@ -1,4 +1,4 @@
-import { RecentLocalProject } from '@beak/common/dist/types/beak-hub';
+import { RecentLocalProject } from '@beak/common/types/beak-hub';
 import { ArbiterStatus } from '@beak/common/types/arbiter';
 import { MagicStates } from '@beak/common/types/nest';
 import ElectronStore from 'electron-store';

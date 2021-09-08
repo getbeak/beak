@@ -1,5 +1,3 @@
-import { PartialIpcRenderer } from '@beak/common/ipc/ipc';
-
 import { IpcAppServiceRenderer } from '@beak/common/ipc/app';
 import { IpcArbiterServiceRenderer } from '@beak/common/ipc/arbiter';
 import { IpcBeakHubServiceRenderer } from '@beak/common/ipc/beak-hub';
@@ -10,6 +8,7 @@ import { IpcExplorerServiceRenderer } from '@beak/common/ipc/explorer';
 import { IpcFlightServiceRenderer } from '@beak/common/ipc/flight';
 import { IpcFsServiceRenderer } from '@beak/common/ipc/fs';
 import { IpcFsWatcherServiceRenderer } from '@beak/common/ipc/fs-watcher';
+import { PartialIpcRenderer } from '@beak/common/ipc/ipc';
 import { IpcNestServiceRenderer } from '@beak/common/ipc/nest';
 import { IpcNotificationServiceRenderer } from '@beak/common/ipc/notification';
 import { IpcProjectServiceRenderer } from '@beak/common/ipc/project';

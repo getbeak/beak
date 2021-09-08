@@ -1,6 +1,6 @@
-import { editor } from 'monaco-editor/esm/vs/editor/editor.api';
+import type { EditorProps } from '@monaco-editor/react';
 
-export function createDefaultOptions(): editor.IStandaloneEditorConstructionOptions {
+export function createDefaultOptions(): EditorProps['options'] {
 	return {
 		automaticLayout: true,
 		minimap: { enabled: false },

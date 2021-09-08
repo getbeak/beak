@@ -4,8 +4,8 @@
   "homepage": "./",
   "private": true,
   "scripts": {
-    "start": "NODE_ENV=development webpack-dev-server --mode development --hot",
-    "build": "webpack --mode production",
+    "build": "NODE_ENV=production vite build",
+    "start": "NODE_ENV=development vite",
     "test": "echo Skipped for now."
   },
   "browserslist": {
@@ -17,8 +17,8 @@
     ]
   },
   "dependencies": {
-    "@beak/common": "^0.0.0",
-    "@beak/design-system": "^0.0.0",
+    "@beak/common": "*",
+    "@beak/design-system": "*",
     "path-browserify": "^1.0.1"
   },
   "devDependencies": {
@@ -54,11 +54,8 @@
     "lodash.get": "^4.4.2",
     "lodash.set": "^4.3.2",
     "mime-types": "^2.1.31",
-    "monaco-editor": "^0.21.2",
-    "monaco-editor-webpack-plugin": "^2.0.0",
     "react-column-resizer": "^1.1.9",
     "react-helmet": "^6.1.0",
-    "react-monaco-editor": "^0.41.1",
     "react-redux": "^7.2.4",
     "react-reflex": "^4.0.1",
     "redux-devtools-extension": "^2.13.8",

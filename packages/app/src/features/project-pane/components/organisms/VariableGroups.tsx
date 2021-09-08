@@ -1,5 +1,5 @@
 import { actions } from '@beak/app/store/variable-groups';
-import { TypedObject } from '@beak/common/dist/helpers/typescript';
+import { TypedObject } from '@beak/common/helpers/typescript';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';

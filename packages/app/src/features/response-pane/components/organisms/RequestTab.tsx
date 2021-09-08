@@ -1,8 +1,8 @@
 import WindowSessionContext from '@beak/app/contexts/window-session-context';
 import { Flight } from '@beak/app/store/flight/types';
 import { createDefaultOptions } from '@beak/app/utils/monaco';
+import Editor from '@monaco-editor/react';
 import React, { useContext, useEffect, useState } from 'react';
-import MonacoEditor from 'react-monaco-editor';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 
@@ -47,7 +47,7 @@ const RequestTab: React.FunctionComponent<RequestTabProps> = props => {
 			<TabBody>
 				{tab === 'raw' && (
 					<React.Fragment>
-						<MonacoEditor
+						<Editor
 							height={'100%'}
 							width={'100%'}
 							language={'javascript'}

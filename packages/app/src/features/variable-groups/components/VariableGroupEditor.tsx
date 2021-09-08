@@ -5,7 +5,7 @@ import TabSpacer from '@beak/app/components/atoms/TabSpacer';
 import { generateValueIdent } from '@beak/app/lib/beak-variable-group/utils';
 import { actions } from '@beak/app/store/variable-groups';
 import { insertNewItem } from '@beak/app/store/variable-groups/actions';
-import { TypedObject } from '@beak/common/dist/helpers/typescript';
+import { TypedObject } from '@beak/common/helpers/typescript';
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled, { css } from 'styled-components';

@@ -1,6 +1,6 @@
 import { renameRequestNode } from '@beak/app/lib/beak-project/request';
 import { ipcDialogService } from '@beak/app/lib/ipc';
-import { RequestNode } from '@beak/common/dist/types/beak-project';
+import { RequestNode } from '@beak/common/types/beak-project';
 import { PayloadAction } from '@reduxjs/toolkit';
 import { call, put, select } from 'redux-saga/effects';
 

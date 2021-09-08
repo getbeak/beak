@@ -3,7 +3,7 @@ import { readProjectFile } from '@beak/app/lib/beak-project/project';
 import { readRequestNode } from '@beak/app/lib/beak-project/request';
 import createFsEmitter, { scanDirectoryRecursively, ScanResult } from '@beak/app/lib/fs-emitter';
 import { ipcDialogService, ipcEncryptionService, ipcWindowService } from '@beak/app/lib/ipc';
-import actions, { alertInsert } from '@beak/app/src/store/project/actions';
+import actions, { alertInsert } from '@beak/app/store/project/actions';
 import { FolderNode, ProjectFile, RequestNode, Tree } from '@beak/common/types/beak-project';
 import ksuid from '@cuvva/ksuid';
 import { PayloadAction } from '@reduxjs/toolkit';

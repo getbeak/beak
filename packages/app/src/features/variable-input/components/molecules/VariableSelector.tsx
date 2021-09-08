@@ -1,5 +1,5 @@
 import { movePosition } from '@beak/app/utils/arrays';
-import { TypedObject } from '@beak/common/dist/helpers/typescript';
+import { TypedObject } from '@beak/common/helpers/typescript';
 import { RealtimeValuePart } from '@beak/common/types/beak-project';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';

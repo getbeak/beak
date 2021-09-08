@@ -10,7 +10,7 @@ import {
 	RequestNode,
 	RequestOverview,
 	ToggleKeyValue,
-} from '@beak/common/dist/types/beak-project';
+} from '@beak/common/types/beak-project';
 import { requestBodyContentType } from '@beak/common/helpers/request';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import ksuid from '@cuvva/ksuid';

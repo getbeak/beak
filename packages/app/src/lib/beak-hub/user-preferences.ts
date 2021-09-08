@@ -1,4 +1,4 @@
-import { UserPreferences } from '@beak/common/dist/types/beak-hub';
+import { UserPreferences } from '@beak/common/types/beak-hub';
 import { TabItem } from '@beak/common/types/beak-project';
 import path from 'path-browserify';
 

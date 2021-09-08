@@ -1,8 +1,8 @@
 class BinaryStore {
-	private _store: Record<string, Buffer> = {};
+	private _store: Record<string, Uint8Array> = {};
 
-	create(key: string, buf?: Buffer) {
-		this._store[key] = buf || Buffer.alloc(0);
+	create(key: string, buf?: Uint8Array) {
+		this._store[key] = buf || new Uint8Array(0);
 	}
 
 	exists(key: string) {
@@ -13,11 +13,11 @@ class BinaryStore {
 		return this._store[key];
 	}
 
-	set(key: string, buf: Buffer) {
+	set(key: string, buf: Uint8Array) {
 		this._store[key] = buf;
 	}
 
-	append(key: string, buf: Buffer) {
+	append(key: string, buf: Uint8Array) {
 		if (!this.exists(key))
 			throw new Error(`binary store for ${key} doesn't exist`);
 
@@ -33,7 +33,7 @@ class BinaryStore {
 		newBuf.set(oldBuf);
 		newBuf.set(buf, oldBuf.length);
 
-		this.set(key, newBuf as Buffer);
+		this.set(key, newBuf as Uint8Array);
 	}
 
 	remove(key: string) {

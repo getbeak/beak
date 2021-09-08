@@ -1,6 +1,6 @@
 import { toVibrancyAlpha } from '@beak/app/design-system/utils';
 import { checkShortcut } from '@beak/app/lib/keyboard-shortcuts';
-import { TypedObject } from '@beak/common/dist/helpers/typescript';
+import { TypedObject } from '@beak/common/helpers/typescript';
 import { RequestNode } from '@beak/common/types/beak-project';
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';

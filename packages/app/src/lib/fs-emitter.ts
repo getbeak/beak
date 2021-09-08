@@ -1,4 +1,4 @@
-import { WatchOptions } from 'chokidar';
+import type { WatchOptions } from 'chokidar';
 import path from 'path-browserify';
 import { eventChannel } from 'redux-saga';
 
