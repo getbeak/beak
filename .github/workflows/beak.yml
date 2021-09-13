@@ -34,8 +34,9 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/v')
         env:
           BUILD_ENVIRONMENT: ci
-          RELEASE_IDENTIFIER: ${{ github.sha }}
+          COMMIT_IDENTIFIER: ${{ github.sha }}
           BUILD_NUMBER: ${{ steps.short-sha.outputs.sha }}
+          VERSION_RELEASE: 'qui'
           SENTRY_ELECTRON_APP_API_KEY: ${{ secrets.SENTRY_ELECTRON_APP_API_KEY }}
           SENTRY_WEBSITE_API_KEY: ${{ secrets.SENTRY_WEBSITE_API_KEY }}
           CSC_LINK: ${{ secrets.CSC_LINK }}
@@ -51,7 +52,7 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/v') == false
         env:
           BUILD_ENVIRONMENT: ci
-          RELEASE_IDENTIFIER: ${{ github.sha }}
+          COMMIT_IDENTIFIER: ${{ github.sha }}
           BUILD_NUMBER: ${{ steps.short-sha.outputs.sha }}
           SENTRY_ELECTRON_APP_API_KEY: ${{ secrets.SENTRY_ELECTRON_APP_API_KEY }}
           SENTRY_WEBSITE_API_KEY: ${{ secrets.SENTRY_WEBSITE_API_KEY }}

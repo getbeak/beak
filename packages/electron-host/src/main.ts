@@ -21,7 +21,7 @@ import {
 
 init({
 	dsn: 'https://5118444e09d74b03a320d0e604aa68ff@o988021.ingest.sentry.io/5945114',
-	appName: 'Main process',
+	appName: 'Main',
 	environment: process.env.ENVIRONMENT,
 	release: process.env.RELEASE_IDENTIFIER,
 });

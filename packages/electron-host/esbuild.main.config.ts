@@ -1,6 +1,9 @@
 import { BuildOptions, PluginBuild } from 'esbuild';
 import path from 'path';
 
+// @ts-ignore
+import packageJson from './package.json';
+
 // import { node } from './electron-dep-versions';
 
 // Thank you Evan
@@ -44,22 +47,29 @@ catch {}
 };
 
 const environment = process.env.NODE_ENV;
+const versionRelease = Boolean(process.env.VERSION_RELEASE);
+const versionIdentifier = packageJson.version;
+const commitIdentifier = process.env.COMMIT_IDENTIFIER;
+const releaseIdentifier = versionRelease ? `@beak/app@${versionIdentifier}` : commitIdentifier;
 
 export default {
 	platform: 'node',
 	target: 'node14.16.0', // TODO(afr): electron version target
 	bundle: true,
+	minify: environment === 'development' ? false : 'terser',
 	entryPoints: [
 		path.resolve('src/main.ts'),
 		path.resolve('src/preload.ts'),
 	],
-	plugins: [nativeNodeModulesPlugin],
+	plugins: [
+		nativeNodeModulesPlugin,
+	],
 	define: {
 		'process.env.BUILD_ENVIRONMENT': writeDefinition(process.env.BUILD_ENVIRONMENT),
-		'process.env.RELEASE_IDENTIFIER': writeDefinition(process.env.RELEASE_IDENTIFIER),
+		'process.env.RELEASE_IDENTIFIER': writeDefinition(releaseIdentifier),
 		'process.env.ENVIRONMENT': writeDefinition(environment),
 	},
-	sourcemap: 'external',
+	sourcemap: true,
 	assetNames: '[name]',
 } as BuildOptions;
 
