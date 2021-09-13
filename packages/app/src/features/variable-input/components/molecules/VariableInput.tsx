@@ -21,6 +21,9 @@ export interface VariableInputProps {
 	disabled?: boolean;
 	parts: ValueParts;
 	onChange: (parts: ValueParts) => void;
+
+	// This is a hack to force the component to reset it's local state. It shouldn't really be used, unless it should be
+	forceResetHack?: number;
 }
 
 interface RtvEditorContext {
@@ -30,11 +33,12 @@ interface RtvEditorContext {
 	partIndex: number;
 }
 
-const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, parts, onChange }) => {
+const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, parts, forceResetHack, onChange }) => {
 	const [selectorPosition, setSelectorPosition] = useState<Position | null>(null);
 	const [rtvEditorContext, setRtvEditorContext] = useState<RtvEditorContext | null>(null);
 	const ref = useRef<HTMLDivElement>(null);
 	const lastKnownWriteRef = useRef(0);
+	const lastKnownForceReset = useRef(0);
 
 	const valueRef = useRef<ValueParts>([]);
 	const [localValue, setLocalValue] = useState<ValueParts>([]);
@@ -52,6 +56,18 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, 
 		valueRef.current = parts;
 		setLocalValue(parts);
 	}, [parts]);
+
+	useEffect(() => {
+		if (!forceResetHack)
+			return;
+
+		if (forceResetHack === lastKnownForceReset.current)
+			return;
+
+		valueRef.current = parts;
+		lastKnownForceReset.current = forceResetHack;
+		setLocalValue(parts);
+	}, [forceResetHack, parts]);
 
 	useDebounce(() => {
 		lastKnownWriteRef.current = Date.now();

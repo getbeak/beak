@@ -1,5 +1,5 @@
-import VariableInput from '@beak/app/features/variable-input/components/molecules/VariableInput';
 import { parseValueParts } from '@beak/app/features/realtime-values/parser';
+import VariableInput from '@beak/app/features/variable-input/components/molecules/VariableInput';
 import { RequestNode, ValueParts } from '@beak/common/types/beak-project';
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -20,6 +20,7 @@ const Header: React.FunctionComponent<HeaderProps> = props => {
 	const { node } = props;
 	const verb = node.info.verb;
 	const secretSelect = useRef<HTMLSpanElement>(null);
+	const [forceResetNonce, setForceResetNonce] = useState<undefined | number>();
 
 	useEffect(() => {
 		if (secretSelect.current)
@@ -33,9 +34,15 @@ const Header: React.FunctionComponent<HeaderProps> = props => {
 	async function handleUrlChange(parts: ValueParts) {
 		const context = { projectPath, selectedGroups, variableGroups };
 		const value = await parseValueParts(context, parts);
-		const parsed = new URL(value);
+		let sanitisedParts = [...parts];
+		let parsed: URL | undefined;
 
-		if (parsed.search) {
+		try {
+			parsed = new URL(value);
+		} catch { /* Doesn't matter if it fails to parse, just carry on */ }
+
+		// If it can be parsed, and there is a query string, strip it out and move to correct part of request info
+		if (parsed?.search) {
 			parsed.searchParams.forEach((value, name) => {
 				dispatch(requestQueryAdded({
 					requestId: node.id,
@@ -43,11 +50,24 @@ const Header: React.FunctionComponent<HeaderProps> = props => {
 					value: [value],
 				}));
 			});
+
+			// We want to remove the query string from the URL, ofc
+			const searchIndex = parts.findIndex(p => typeof p === 'string' && p.includes('?'));
+			const searchPartIndex = (parts[searchIndex] as string).indexOf('?');
+
+			sanitisedParts = parts.slice(0, searchIndex);
+			sanitisedParts.push((parts[searchIndex] as string).slice(0, searchPartIndex));
+
+			setForceResetNonce(Date.now());
+
+			// Move focus to query string editor
+			// (change tab, move focus too maybe?)
+			// TODO(afr): Write this code
 		}
 
 		dispatch(requestUriUpdated({
 			requestId: node.id,
-			url: parts,
+			url: sanitisedParts,
 		}));
 	}
 
@@ -81,6 +101,7 @@ const Header: React.FunctionComponent<HeaderProps> = props => {
 			<OmniBar>
 				<VariableInput
 					parts={node.info.url}
+					forceResetHack={forceResetNonce}
 					onChange={e => handleUrlChange(e)}
 				/>
 			</OmniBar>
