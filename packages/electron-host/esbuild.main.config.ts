@@ -1,4 +1,5 @@
-import { BuildOptions, PluginBuild } from 'esbuild';
+import SentryCli from '@sentry/cli';
+import type { BuildOptions, PluginBuild } from 'esbuild';
 import path from 'path';
 
 // @ts-ignore
@@ -6,9 +7,15 @@ import packageJson from './package.json';
 
 // import { node } from './electron-dep-versions';
 
+const environment = process.env.NODE_ENV;
+const versionRelease = Boolean(process.env.VERSION_RELEASE);
+const versionIdentifier = packageJson.version;
+const commitIdentifier = process.env.COMMIT_IDENTIFIER;
+const releaseIdentifier = versionRelease ? `@beak/app@${versionIdentifier}` : commitIdentifier;
+
+
 // Thank you Evan
 // https://github.com/evanw/esbuild/issues/1051#issuecomment-806325487
-
 const nativeNodeModulesPlugin = {
 	name: 'native-node-modules',
 	setup(build: PluginBuild) {
@@ -46,11 +53,42 @@ catch {}
 	},
 };
 
-const environment = process.env.NODE_ENV;
-const versionRelease = Boolean(process.env.VERSION_RELEASE);
-const versionIdentifier = packageJson.version;
-const commitIdentifier = process.env.COMMIT_IDENTIFIER;
-const releaseIdentifier = versionRelease ? `@beak/app@${versionIdentifier}` : commitIdentifier;
+const sentrySourceMapsPlugin = {
+	name: 'sentry-source-maps',
+	setup: (build: PluginBuild) => {
+		// Needs to be set again, electron-esbuild overrides it. stupid.
+		// eslint-disable-next-line no-param-reassign
+		build.initialOptions.sourcemap = true;
+
+		build.onEnd(async () => {
+			if (process.env.BUILD_ENVIRONMENT !== 'ci') {
+				// Don't do anything if not in CI
+
+				return;
+			}
+
+			const cli = new SentryCli(null, {
+				authToken: process.env.SENTRY_ELECTRON_APP_API_KEY,
+				org: 'beak',
+				project: 'electron-app',
+			});
+
+			await cli.releases.new(releaseIdentifier!);
+			await cli.releases.uploadSourceMaps(releaseIdentifier!, {
+				include: ['./dist'],
+				urlPrefix: '~/',
+			});
+			await cli.releases.setCommits(releaseIdentifier!, { auto: true });
+			await cli.releases.newDeploy(releaseIdentifier!, {
+				env: environment!,
+				url: `https://github.com/getbeak/beak/tree/${commitIdentifier}`,
+			});
+
+			await cli.releases.finalize(releaseIdentifier!);
+		});
+	},
+
+};
 
 export default {
 	platform: 'node',
@@ -63,6 +101,7 @@ export default {
 	],
 	plugins: [
 		nativeNodeModulesPlugin,
+		sentrySourceMapsPlugin,
 	],
 	define: {
 		'process.env.BUILD_ENVIRONMENT': writeDefinition(process.env.BUILD_ENVIRONMENT),
