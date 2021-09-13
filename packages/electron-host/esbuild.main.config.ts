@@ -5,8 +5,6 @@ import path from 'path';
 // @ts-ignore
 import packageJson from './package.json';
 
-// import { node } from './electron-dep-versions';
-
 const environment = process.env.NODE_ENV;
 const versionRelease = Boolean(process.env.VERSION_RELEASE);
 const versionIdentifier = packageJson.version;

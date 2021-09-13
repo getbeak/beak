@@ -2,6 +2,7 @@
 
 const path = require('path');
 const reactRefresh = require('@vitejs/plugin-react-refresh');
+const viteSentryPlugin = require('vite-plugin-sentry');
 
 const environment = process.env.NODE_ENV;
 const commitIdentifier = process.env.COMMIT_IDENTIFIER;
@@ -25,6 +26,24 @@ module.exports = {
 	},
 	plugins: [
 		reactRefresh({ include: '**/*.tsx' }),
+		viteSentryPlugin({
+			authToken: process.env.SENTRY_WEBSITE_API_KEY,
+			dryRun: process.env.BUILD_ENVIRONMENT !== 'ci',
+			org: 'beak',
+			project: 'website',
+			release: releaseIdentifier,
+			deploy: {
+				env: environment,
+				url: `https://github.com/getbeak/beak/tree/${commitIdentifier}`,
+			},
+			sourceMaps: {
+				include: ['./dist'],
+				urlPrefix: '~/',
+			},
+			setCommits: {
+				auto: true,
+			},
+		}),
 	],
 	build: {
 		target: 'modules',
