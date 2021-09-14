@@ -3752,9 +3752,9 @@ electron-redux-devtools@^0.3.4:
   integrity sha1-IcLq/XOSSMZBTx00bmhHsJgVUOE=
 
 electron-releases@^3.783.0:
-  version "3.790.0"
-  resolved "https://registry.yarnpkg.com/electron-releases/-/electron-releases-3.790.0.tgz#2f97451ac4d19b3ebae2a75373652d53001ad53e"
-  integrity sha512-D0Wh/n0md56epriGsTEUa7Gz1fxynhlXsGgnoFibpm+nIKOuJzoBKGkzAZc0LGF3mWVJpyPiQYp+QUlR9tbNHw==
+  version "3.792.0"
+  resolved "https://registry.yarnpkg.com/electron-releases/-/electron-releases-3.792.0.tgz#7186993d21c0dff3862caa1426694142e06b3a1a"
+  integrity sha512-c+5rrU9r7RT0kxbIFKnw9ufyeuCbI4LaSUZaCcWSuiIjqFzaLZo2xgRFGLp10N2CXqYUWb5KzQM0cI2RSpW6Lw==
 
 electron-store@^8.0.0:
   version "8.0.0"
