@@ -1,5 +1,6 @@
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { RequestOverview } from '@beak/common/types/beak-project';
+import URL from 'url-parse';
 
 import { parseValueParts } from '../features/realtime-values/parser';
 import { Context } from '../features/realtime-values/types';
@@ -22,11 +23,11 @@ export async function convertRequestToUrl(
 	};
 
 	if (options.includeQuery && info.query) {
+		url.set('query', { });
+
 		for (const query of TypedObject.values(info.query).filter(q => q.enabled)) {
-			url.searchParams.set(
-				query.name,
-				await parseValueParts(context, query.value),
-			);
+			// eslint-disable-next-line no-await-in-loop
+			url.query[query.name] = await parseValueParts(context, query.value);
 		}
 	}
 

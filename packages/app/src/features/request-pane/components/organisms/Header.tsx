@@ -1,12 +1,15 @@
 import { parseValueParts } from '@beak/app/features/realtime-values/parser';
 import VariableInput from '@beak/app/features/variable-input/components/molecules/VariableInput';
+import { convertRequestToUrl } from '@beak/app/utils/uri';
 import { RequestNode, ValueParts } from '@beak/common/types/beak-project';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
+import URL from 'url-parse';
 
 import { requestFlight } from '../../../../store/flight/actions';
 import { requestQueryAdded, requestUriUpdated } from '../../../../store/project/actions';
+import RequestPreferencesContext from '../../contexts/request-preferences-context';
 
 export interface HeaderProps {
 	node: RequestNode;
@@ -21,6 +24,7 @@ const Header: React.FunctionComponent<HeaderProps> = props => {
 	const verb = node.info.verb;
 	const secretSelect = useRef<HTMLSpanElement>(null);
 	const [forceResetNonce, setForceResetNonce] = useState<undefined | number>();
+	const requestPref = useContext(RequestPreferencesContext);
 
 	useEffect(() => {
 		if (secretSelect.current)
@@ -35,22 +39,22 @@ const Header: React.FunctionComponent<HeaderProps> = props => {
 		const context = { projectPath, selectedGroups, variableGroups };
 		const value = await parseValueParts(context, parts);
 		let sanitisedParts = [...parts];
-		let parsed: URL | undefined;
+		const parsed = new URL(value, true);
 
-		try {
-			parsed = new URL(value);
-		} catch { /* Doesn't matter if it fails to parse, just carry on */ }
+		console.log(parsed);
 
 		// If it can be parsed, and there is a query string, strip it out and move to correct part of request info
-		if (parsed?.search) {
-			parsed.searchParams.forEach((value, name) => {
+		if (Object.keys(parsed.query).length) {
+			Object.keys(parsed.query).forEach(key => {
 				dispatch(requestQueryAdded({
 					requestId: node.id,
-					name,
-					value: [value],
+					name: key,
+					value: [parsed.query[key]!],
 				}));
 			});
+		}
 
+		if (value.includes('?')) {
 			// We want to remove the query string from the URL, ofc
 			const searchIndex = parts.findIndex(p => typeof p === 'string' && p.includes('?'));
 			const searchPartIndex = (parts[searchIndex] as string).indexOf('?');
@@ -58,11 +62,11 @@ const Header: React.FunctionComponent<HeaderProps> = props => {
 			sanitisedParts = parts.slice(0, searchIndex);
 			sanitisedParts.push((parts[searchIndex] as string).slice(0, searchPartIndex));
 
-			setForceResetNonce(Date.now());
+			// ofc
+			window.setTimeout(() => setForceResetNonce(Date.now()), 0);
 
 			// Move focus to query string editor
-			// (change tab, move focus too maybe?)
-			// TODO(afr): Write this code
+			// TODO(afr): Switch to URL query tab, and select input
 		}
 
 		dispatch(requestUriUpdated({

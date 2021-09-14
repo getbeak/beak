@@ -209,8 +209,15 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, 
 		const delta = (event.nativeEvent as InputEvent).data;
 		const newParts = Array.from(ref.current!.childNodes)
 			.map(n => {
-				if (n.nodeName === '#text' || n.nodeName === 'SPAN')
-					return n.textContent || '';
+				if (n.nodeName === '#text' || n.nodeName === 'SPAN') {
+					const originalTextContent = n.textContent || '';
+					const textContext = originalTextContent.replaceAll('?', '');
+
+					// eslint-disable-next-line no-param-reassign
+					n.textContent = textContext;
+
+					return originalTextContent;
+				}
 
 				if (n.nodeName !== 'DIV')
 					return null;
@@ -242,7 +249,7 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, 
 			return;
 		}
 
-		// Scrub if the variable selector isn't open
+		// If the variable selector is closed, exit
 		if (selectorPosition === null || partIndex === void 0 || queryOffset === void 0)
 			return;
 
@@ -391,5 +398,12 @@ const Input = styled.article`
 		white-space:nowrap;
 	}
 `;
+
+function resolveSpan(node: Node) {
+	if (node.nodeName === 'SPAN')
+		return node;
+	
+	return node.parentNode!;
+}
 
 export default VariableInput;
