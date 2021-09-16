@@ -20,6 +20,7 @@ interface Position {
 export interface VariableInputProps {
 	disabled?: boolean;
 	parts: ValueParts;
+	placeholder?: string;
 
 	onChange: (parts: ValueParts) => void;
 	onUrlQueryStringDetection?: () => void;
@@ -36,7 +37,7 @@ interface RtvEditorContext {
 }
 
 const VariableInput: React.FunctionComponent<VariableInputProps> = props => {
-	const { disabled, parts, forceResetHack, onChange } = props;
+	const { disabled, placeholder, parts, forceResetHack, onChange } = props;
 
 	const [selectorPosition, setSelectorPosition] = useState<Position | null>(null);
 	const [rtvEditorContext, setRtvEditorContext] = useState<RtvEditorContext | null>(null);
@@ -332,7 +333,7 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = props => {
 	}
 
 	return (
-		<React.Fragment>
+		<Wrapper>
 			<Input
 				contentEditable={!disabled}
 				spellCheck={false}
@@ -354,6 +355,7 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = props => {
 				onPaste={handlePaste}
 				dangerouslySetInnerHTML={{ __html: renderParts(valueRef.current) }}
 			/>
+			{localValue.length === 0 && placeholder && <Placeholder>{placeholder}</Placeholder>}
 			{(ref.current && selectorPosition) && (
 				<VariableSelector
 					onDone={insertVariable}
@@ -387,15 +389,28 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = props => {
 						const newParts = [...parts];
 						const existingPart = newParts[rtvEditorContext.partIndex] as RealtimeValuePart;
 
-						(newParts[rtvEditorContext.partIndex] as RealtimeValuePart) = { ...existingPart, payload: item };
+						(newParts[rtvEditorContext.partIndex] as RealtimeValuePart) = {
+							...existingPart,
+							payload: item,
+						};
 
 						updateParts(newParts, { immediateWrite: true });
 					}}
 				/>
 			)}
-		</React.Fragment>
+		</Wrapper>
 	);
 };
+
+const Wrapper = styled.div`
+	position: relative;
+`;
+
+const Placeholder = styled.div`
+	position: absolute;
+	top: 7px; left: 7px;
+	color: ${p => p.theme.ui.textMinor};
+`;
 
 const Input = styled.article`
 	font-size: 12px;
@@ -408,12 +423,5 @@ const Input = styled.article`
 		white-space:nowrap;
 	}
 `;
-
-function resolveSpan(node: Node) {
-	if (node.nodeName === 'SPAN')
-		return node;
-	
-	return node.parentNode!;
-}
 
 export default VariableInput;

@@ -26,7 +26,7 @@ export const BodyNameCell = styled(BodyCell)`
 	border-left: none;
 `;
 export const BodyValueCell = styled(BodyCell)`
-	> article {
+	> div > article {
 		width: calc(100% - 12px);
 		border: none;
 		background: none;

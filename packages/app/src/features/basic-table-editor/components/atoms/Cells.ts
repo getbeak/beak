@@ -20,7 +20,7 @@ export const BodyPrimaryCell = styled(BodyCell)`
 export const BodyInputWrapper = styled(BodyCell)`
 	flex-grow: 1;
 
-	> article, > input[type=text] {
+	> div > article, > input[type=text] {
 		width: calc(100% - 10px);
 		height: calc(100% - 5px);
 		border: none;

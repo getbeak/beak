@@ -105,6 +105,7 @@ const Header: React.FunctionComponent<HeaderProps> = props => {
 			<OmniBar>
 				<VariableInput
 					parts={node.info.url}
+					placeholder={window.location.host}
 					forceResetHack={forceResetNonce}
 					onChange={e => handleUrlChange(e)}
 					onUrlQueryStringDetection={urlQueryStringDetected}
@@ -175,7 +176,7 @@ const VerbPickerSizer = styled.span`
 const OmniBar = styled.div`
 	flex: 1 1 auto;
 
-	> article {
+	> div > article {
 		padding: 6px 6px;
 		margin-right: 10px;
 		border-radius: 4px;
