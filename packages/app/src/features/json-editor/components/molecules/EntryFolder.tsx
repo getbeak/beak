@@ -1,5 +1,7 @@
-import RequestPreferencesContext from '@beak/app/features/request-pane/contexts/request-preferences-context';
+import SelectedNodeContext from '@beak/app/features/request-pane/contexts/selected-node';
+import { requestPreferenceSetJsonExpand } from '@beak/app/store/preferences/actions';
 import React, { useContext } from 'react';
+import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 
 interface EntryFolderProps {
@@ -11,11 +13,12 @@ interface EntryFolderProps {
 
 const EntryFolder: React.FunctionComponent<EntryFolderProps> = props => {
 	const { expanded, id, onChange } = props;
-	const reqPref = useContext(RequestPreferencesContext);
+	const dispatch = useDispatch();
+	const node = useContext(SelectedNodeContext);
 
 	return (
 		<Wrapper onClick={() => {
-			reqPref?.setJsonEditorExpand(id, !expanded);
+			dispatch(requestPreferenceSetJsonExpand({ id: node.id, jsonId: id, expanded: !expanded }));
 			onChange(!expanded);
 		}}>
 			<Chevron expanded={Boolean(expanded)} />

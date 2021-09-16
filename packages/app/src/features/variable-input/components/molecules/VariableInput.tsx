@@ -20,7 +20,9 @@ interface Position {
 export interface VariableInputProps {
 	disabled?: boolean;
 	parts: ValueParts;
+
 	onChange: (parts: ValueParts) => void;
+	onUrlQueryStringDetection?: () => void;
 
 	// This is a hack to force the component to reset it's local state. It shouldn't really be used, unless it should be
 	forceResetHack?: number;
@@ -33,7 +35,9 @@ interface RtvEditorContext {
 	partIndex: number;
 }
 
-const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, parts, forceResetHack, onChange }) => {
+const VariableInput: React.FunctionComponent<VariableInputProps> = props => {
+	const { disabled, parts, forceResetHack, onChange } = props;
+
 	const [selectorPosition, setSelectorPosition] = useState<Position | null>(null);
 	const [rtvEditorContext, setRtvEditorContext] = useState<RtvEditorContext | null>(null);
 	const ref = useRef<HTMLDivElement>(null);
@@ -211,10 +215,16 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = ({ disabled, 
 			.map(n => {
 				if (n.nodeName === '#text' || n.nodeName === 'SPAN') {
 					const originalTextContent = n.textContent || '';
-					const textContext = originalTextContent.replaceAll('?', '');
 
-					// eslint-disable-next-line no-param-reassign
-					n.textContent = textContext;
+					if (props.onUrlQueryStringDetection && originalTextContent.includes('?')) {
+						const textContext = originalTextContent.replaceAll('?', '');
+
+						// eslint-disable-next-line no-param-reassign
+						n.textContent = textContext;
+
+						props.onUrlQueryStringDetection();
+						ref.current?.blur();
+					}
 
 					return originalTextContent;
 				}

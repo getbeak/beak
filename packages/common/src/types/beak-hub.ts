@@ -15,7 +15,7 @@ export interface RequestPreference {
 	mainTab: RequestPreferenceMainTab;
 
 	jsonEditor?: {
-		expands: Record<string, boolean>;
+		expanded: Record<string, boolean>;
 	};
 }
 

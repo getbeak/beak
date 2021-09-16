@@ -1,6 +1,5 @@
-// @ts-ignore
+import { applyMiddleware, combineReducers, createStore, Store } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
-import { applyMiddleware, combineReducers, compose, createStore, Store } from 'redux';
 import createSagaMiddleware from 'redux-saga';
 import { all, fork } from 'redux-saga/effects';
 
@@ -10,6 +9,8 @@ import * as arbiterStore from './arbiter';
 import { State as ArbiterState } from './arbiter/types';
 import * as flightStore from './flight';
 import { State as FlightState } from './flight/types';
+import * as preferencesStore from './preferences';
+import { State as PreferencesState } from './preferences/types';
 import * as projectStore from './project';
 import { State as ProjectState } from './project/types';
 import * as variableGroupsStore from './variable-groups';
@@ -22,6 +23,7 @@ export interface ApplicationState {
 	global: {
 		arbiter: ArbiterState;
 		flight: FlightState;
+		preferences: PreferencesState;
 		project: ProjectState;
 		variableGroups: VariableGroupState;
 	};
@@ -35,6 +37,7 @@ function createRootReducer() {
 		global: combineReducers({
 			arbiter: arbiterStore.reducers,
 			flight: flightStore.reducers,
+			preferences: preferencesStore.reducers,
 			project: projectStore.reducers,
 			variableGroups: variableGroupsStore.reducers,
 		}),
@@ -45,6 +48,7 @@ function* rootSaga() {
 	yield all([
 		fork(arbiterStore.sagas),
 		fork(flightStore.sagas),
+		fork(preferencesStore.sagas),
 		fork(projectStore.sagas),
 		fork(variableGroupsStore.sagas),
 	]);
@@ -58,6 +62,7 @@ function createInitialState(): ApplicationState {
 		global: {
 			arbiter: arbiterStore.types.initialState,
 			flight: flightStore.types.initialState,
+			preferences: preferencesStore.types.initialState,
 			project: projectStore.types.initialState,
 			variableGroups: variableGroupsStore.types.initialState,
 		},

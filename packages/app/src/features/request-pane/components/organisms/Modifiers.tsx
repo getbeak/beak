@@ -1,15 +1,15 @@
 import BasicTableEditor from '@beak/app/features/basic-table-editor/components/BasicTableEditor';
+import { requestPreferenceSetMainTab } from '@beak/app/store/preferences/actions';
 import actions from '@beak/app/store/project/actions';
 import { RequestPreferenceMainTab } from '@beak/common/types/beak-hub';
 import { RequestNode } from '@beak/common/types/beak-project';
-import React, { useContext, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 
 import TabBar from '../../../../components/atoms/TabBar';
 import TabItem from '../../../../components/atoms/TabItem';
 import TabSpacer from '../../../../components/atoms/TabSpacer';
-import RequestPreferencesContext from '../../contexts/request-preferences-context';
 import BodyTab from './BodyTab';
 import OptionsView from './OptionsView';
 
@@ -19,14 +19,12 @@ export interface ModifiersProps {
 
 const Modifiers: React.FunctionComponent<ModifiersProps> = props => {
 	const dispatch = useDispatch();
-	const reqPref = useContext(RequestPreferencesContext)!;
 	const { node } = props;
-	const [tab, setTabInner] = useState<RequestPreferenceMainTab>(reqPref.getPreferences().mainTab);
+	const preferences = useSelector(s => s.global.preferences.requestPreferences[node.id])!;
+	const tab = preferences.mainTab;
 
 	function setTab(tab: RequestPreferenceMainTab) {
-		setTabInner(tab);
-
-		reqPref.setMainTab(tab);
+		dispatch(requestPreferenceSetMainTab({ id: node.id, tab }));
 	}
 
 	return (

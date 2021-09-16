@@ -1,9 +1,9 @@
 import DebouncedInput from '@beak/app/components/atoms/DebouncedInput';
-import RequestPreferencesContext from '@beak/app/features/request-pane/contexts/request-preferences-context';
+import SelectedNodeContext from '@beak/app/features/request-pane/contexts/selected-node';
 import { actions } from '@beak/app/store/project';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { ArrayEntry, NamedArrayEntry } from '@beak/common/types/beak-json-editor';
-import { RequestBodyJson, RequestNode } from '@beak/common/types/beak-project';
+import { RequestBodyJson } from '@beak/common/types/beak-project';
 import React, { useContext, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -30,12 +30,11 @@ const JsonArrayEntry: React.FunctionComponent<JsonArrayEntryProps> = props => {
 	const dispatch = useDispatch();
 	const { depth, requestId, nameOverride, value } = props;
 	const { id } = value;
-	const reqPref = useContext(RequestPreferencesContext);
-	const [expanded, setExpanded] = useState(reqPref!.getPreferences().jsonEditor?.expands[id] !== false);
+	const node = useContext(SelectedNodeContext);
+	const preferences = useSelector(s => s.global.preferences.requestPreferences[requestId]);
+	const [expanded, setExpanded] = useState(preferences.jsonEditor?.expanded[id] !== false);
 
-	const entries = useSelector(s =>
-		((s.global.project.tree[requestId] as RequestNode).info.body as RequestBodyJson).payload,
-	);
+	const entries = (node.info.body as RequestBodyJson).payload;
 	const children = TypedObject.values(entries).filter(e => e.parentId === id);
 
 	return (

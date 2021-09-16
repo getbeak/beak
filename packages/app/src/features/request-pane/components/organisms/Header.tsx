@@ -1,15 +1,14 @@
 import { parseValueParts } from '@beak/app/features/realtime-values/parser';
 import VariableInput from '@beak/app/features/variable-input/components/molecules/VariableInput';
-import { convertRequestToUrl } from '@beak/app/utils/uri';
+import { requestPreferenceSetMainTab } from '@beak/app/store/preferences/actions';
 import { RequestNode, ValueParts } from '@beak/common/types/beak-project';
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import URL from 'url-parse';
 
 import { requestFlight } from '../../../../store/flight/actions';
 import { requestQueryAdded, requestUriUpdated } from '../../../../store/project/actions';
-import RequestPreferencesContext from '../../contexts/request-preferences-context';
 
 export interface HeaderProps {
 	node: RequestNode;
@@ -24,7 +23,6 @@ const Header: React.FunctionComponent<HeaderProps> = props => {
 	const verb = node.info.verb;
 	const secretSelect = useRef<HTMLSpanElement>(null);
 	const [forceResetNonce, setForceResetNonce] = useState<undefined | number>();
-	const requestPref = useContext(RequestPreferencesContext);
 
 	useEffect(() => {
 		if (secretSelect.current)
@@ -35,13 +33,15 @@ const Header: React.FunctionComponent<HeaderProps> = props => {
 		dispatch(requestFlight());
 	}
 
+	function urlQueryStringDetected() {
+		dispatch(requestPreferenceSetMainTab({ id: node.id, tab: 'url_query' }));
+	}
+
 	async function handleUrlChange(parts: ValueParts) {
 		const context = { projectPath, selectedGroups, variableGroups };
 		const value = await parseValueParts(context, parts);
 		let sanitisedParts = [...parts];
 		const parsed = new URL(value, true);
-
-		console.log(parsed);
 
 		// If it can be parsed, and there is a query string, strip it out and move to correct part of request info
 		if (Object.keys(parsed.query).length) {
@@ -62,11 +62,11 @@ const Header: React.FunctionComponent<HeaderProps> = props => {
 			sanitisedParts = parts.slice(0, searchIndex);
 			sanitisedParts.push((parts[searchIndex] as string).slice(0, searchPartIndex));
 
-			// ofc
+			// Another event-loop hack
 			window.setTimeout(() => setForceResetNonce(Date.now()), 0);
 
 			// Move focus to query string editor
-			// TODO(afr): Switch to URL query tab, and select input
+			dispatch(requestPreferenceSetMainTab({ id: node.id, tab: 'url_query' }));
 		}
 
 		dispatch(requestUriUpdated({
@@ -107,6 +107,7 @@ const Header: React.FunctionComponent<HeaderProps> = props => {
 					parts={node.info.url}
 					forceResetHack={forceResetNonce}
 					onChange={e => handleUrlChange(e)}
+					onUrlQueryStringDetection={urlQueryStringDetected}
 				/>
 			</OmniBar>
 

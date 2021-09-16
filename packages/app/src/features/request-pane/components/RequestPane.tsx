@@ -1,15 +1,14 @@
-import BeakHubContext from '@beak/app/contexts/beak-hub-context';
-import BeakRequestPreferences from '@beak/app/lib/beak-hub/request-preferences';
-import { alertClear, alertInsert, alertRemoveDependents } from '@beak/app/store/project/actions';
+import { loadRequestPreferences } from '@beak/app/store/preferences/actions';
+import { alertInsert, alertRemoveDependents } from '@beak/app/store/project/actions';
 import { RequestNode } from '@beak/common/types/beak-project';
 import ksuid from '@cuvva/ksuid';
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { ReflexContainer, ReflexElement } from 'react-reflex';
 import styled from 'styled-components';
 
 import ReflexSplitter from '../../../components/atoms/ReflexSplitter';
-import RequestPreferencesContext from '../contexts/request-preferences-context';
+import SelectedNodeContext from '../contexts/selected-node';
 import RequestOutput from './molecules/RequestOutput';
 import Header from './organisms/Header';
 import Modifiers from './organisms/Modifiers';
@@ -17,12 +16,11 @@ import Modifiers from './organisms/Modifiers';
 const allowedBodyVerbs = ['GET', 'HEAD', 'DELETE'];
 
 const RequestPane: React.FunctionComponent = () => {
+	const dispatch = useDispatch();
 	const mounted = useRef(false);
-	const [preferences, setPreferences] = useState<BeakRequestPreferences>();
 	const { tree, selectedTabPayload } = useSelector(s => s.global.project);
 	const selectedNode = tree[selectedTabPayload!] as RequestNode;
-	const hub = useContext(BeakHubContext);
-	const dispatch = useDispatch();
+	const preferences = useSelector(s => s.global.preferences.requestPreferences[selectedNode.id]);
 
 	useEffect(() => {
 		mounted.current = true;
@@ -33,18 +31,8 @@ const RequestPane: React.FunctionComponent = () => {
 	}, []);
 
 	useEffect(() => {
-		if (!selectedTabPayload || !selectedNode)
-			return;
-
-		const reqPref = new BeakRequestPreferences(hub!, selectedNode.id);
-
-		reqPref.load().then(() => {
-			if (!mounted.current)
-				return;
-
-			setPreferences(reqPref);
-		});
-	}, [selectedTabPayload, selectedNode.id]);
+		dispatch(loadRequestPreferences({ id: selectedNode.id }));
+	}, [selectedNode.id]);
 
 	useEffect(() => {
 		if (selectedNode.type !== 'request')
@@ -80,7 +68,7 @@ const RequestPane: React.FunctionComponent = () => {
 		return <span>{'TODO: id does not exist'}</span>;
 
 	return (
-		<RequestPreferencesContext.Provider value={preferences}>
+		<SelectedNodeContext.Provider value={selectedNode}>
 			<Container>
 				<Header node={selectedNode} />
 				<ReflexContainer orientation={'horizontal'}>
@@ -102,7 +90,7 @@ const RequestPane: React.FunctionComponent = () => {
 					</ReflexElement>
 				</ReflexContainer>
 			</Container>
-		</RequestPreferencesContext.Provider>
+		</SelectedNodeContext.Provider>
 	);
 };
 
