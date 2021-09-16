@@ -3,7 +3,7 @@ import { requestPreferenceSetMainTab } from '@beak/app/store/preferences/actions
 import actions from '@beak/app/store/project/actions';
 import { RequestPreferenceMainTab } from '@beak/common/types/beak-hub';
 import { RequestNode } from '@beak/common/types/beak-project';
-import React, { useState } from 'react';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 
@@ -20,7 +20,7 @@ export interface ModifiersProps {
 const Modifiers: React.FunctionComponent<ModifiersProps> = props => {
 	const dispatch = useDispatch();
 	const { node } = props;
-	const preferences = useSelector(s => s.global.preferences.requestPreferences[node.id])!;
+	const preferences = useSelector(s => s.global.preferences.requests[node.id])!;
 	const tab = preferences.mainTab;
 
 	function setTab(tab: RequestPreferenceMainTab) {

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { useDispatch, useSelector } from 'react-redux';
 import { ReflexContainer, ReflexElement } from 'react-reflex';
@@ -7,8 +7,6 @@ import styled from 'styled-components';
 import ReflexSplitter from '../components/atoms/ReflexSplitter';
 import ReflexStyles from '../components/atoms/ReflexStyles';
 import ProgressIndicator from '../components/molecules/ProgressIndicator';
-import BeakHubContext from '../contexts/beak-hub-context';
-import BeakUserPreferencesContext from '../contexts/beak-user-preferences-context';
 import WindowSessionContext from '../contexts/window-session-context';
 import ActionBar from '../features/action-bar/components/ActionBar';
 import Omnibar from '../features/omni-bar/components/Omnibar';
@@ -16,12 +14,10 @@ import ProjectPane from '../features/project-pane/components/ProjectPane';
 import StatusBar from '../features/status-bar/components/StatusBar';
 import TabView from '../features/tabs/components/TabView';
 import useTitleBar from '../hooks/use-title-bar';
-import BeakHub from '../lib/beak-hub';
-import BeakUserPreferences from '../lib/beak-hub/user-preferences';
 import { ipcFsService, ipcFsWatcherService } from '../lib/ipc';
 import { checkShortcut } from '../lib/keyboard-shortcuts';
 import { requestFlight } from '../store/flight/actions';
-import { populateTabs, startProject, tabSelected } from '../store/project/actions';
+import { loadTabPreferences, startProject } from '../store/project/actions';
 
 const ProjectMain: React.FunctionComponent = () => {
 	const dispatch = useDispatch();
@@ -35,7 +31,6 @@ const ProjectMain: React.FunctionComponent = () => {
 	const selectedTab = tabs.find(t => t.payload === selectedTabPayload);
 	const windowSession = useContext(WindowSessionContext);
 
-	const hub = useRef<BeakHub | null>(null);
 	const loaded = project.loaded && variableGroups.loaded;
 
 	useEffect(() => {
@@ -75,25 +70,8 @@ const ProjectMain: React.FunctionComponent = () => {
 		if (!loaded || setup)
 			return;
 
-		hub.current = new BeakHub(project.projectPath!);
-
-		const instance = BeakUserPreferences.setupInstance(hub.current);
-
-		instance.load()
-			.then(() => {
-				const { tabs, selectedTabPayload } = instance!.getPreferences();
-
-				dispatch(populateTabs(tabs));
-
-				if (tabs.length !== 0 && selectedTabPayload) {
-					const selectedTab = tabs.find(t => t.payload === selectedTabPayload);
-
-					if (selectedTab)
-						dispatch(tabSelected(selectedTab));
-				}
-
-				setSetup(true);
-			});
+		dispatch(loadTabPreferences());
+		window.setTimeout(() => setSetup(true), 300);
 
 		setTitle(`${project.name} - Beak`);
 	}, [setup, project, project.name, loaded]);
@@ -113,46 +91,42 @@ const ProjectMain: React.FunctionComponent = () => {
 
 	return (
 		<React.Fragment>
-			<BeakHubContext.Provider value={hub.current!}>
-				<BeakUserPreferencesContext.Provider value={BeakUserPreferences.getInstance()}>
-					<Helmet defer={false}>
-						<title>{title}</title>
-					</Helmet>
-					<ProgressIndicator />
-					<Container>
-						<ReflexStyles />
-						{setup && loaded && (
-							<React.Fragment>
-								<ReflexContainer orientation={'vertical'}>
-									<ReflexElement
-										flex={20}
-										minSize={200}
-									>
-										<ProjectPane />
-									</ReflexElement>
+			<Helmet defer={false}>
+				<title>{title}</title>
+			</Helmet>
+			<ProgressIndicator />
+			<Container>
+				<ReflexStyles />
+				{setup && loaded && (
+					<React.Fragment>
+						<ReflexContainer orientation={'vertical'}>
+							<ReflexElement
+								flex={20}
+								minSize={200}
+							>
+								<ProjectPane />
+							</ReflexElement>
 
-									<ReflexSplitter
-										hideVisualIndicator
-										orientation={'vertical'}
-									/>
+							<ReflexSplitter
+								hideVisualIndicator
+								orientation={'vertical'}
+							/>
 
-									<ReflexElement
-										flex={80}
-										style={{ overflowY: 'hidden' }}
-									>
-										<ActionBar />
+							<ReflexElement
+								flex={80}
+								style={{ overflowY: 'hidden' }}
+							>
+								<ActionBar />
 
-										<TabView tabs={tabs} selectedTab={selectedTab} />
-									</ReflexElement>
-								</ReflexContainer>
-								<Omnibar />
-							</React.Fragment>
-						)}
-					</Container>
-					<StatusBar />
-					{(!loaded || !setup) && <LoadingMask />}
-				</BeakUserPreferencesContext.Provider>
-			</BeakHubContext.Provider>
+								<TabView tabs={tabs} selectedTab={selectedTab} />
+							</ReflexElement>
+						</ReflexContainer>
+						<Omnibar />
+					</React.Fragment>
+				)}
+			</Container>
+			<StatusBar />
+			{(!loaded || !setup) && <LoadingMask />}
 		</React.Fragment>
 	);
 };

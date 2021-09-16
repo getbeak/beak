@@ -31,7 +31,7 @@ const JsonArrayEntry: React.FunctionComponent<JsonArrayEntryProps> = props => {
 	const { depth, requestId, nameOverride, value } = props;
 	const { id } = value;
 	const node = useContext(SelectedNodeContext);
-	const preferences = useSelector(s => s.global.preferences.requestPreferences[requestId]);
+	const preferences = useSelector(s => s.global.preferences.requests[requestId]);
 	const [expanded, setExpanded] = useState(preferences.jsonEditor?.expanded[id] !== false);
 
 	const entries = (node.info.body as RequestBodyJson).payload;

@@ -19,7 +19,7 @@ export interface RequestPreference {
 	};
 }
 
-export interface UserPreferences {
+export interface TabPreferences {
 	selectedTabPayload?: string;
 
 	tabs: TabItem[];

@@ -6,6 +6,7 @@ export const ActionTypes = {
 	INSERT_PROJECT_INFO: '@beak/global/project/INSERT_PROJECT_INFO',
 	PROJECT_OPENED: '@beak/global/project/PROJECT_OPENED',
 
+	LOAD_TAB_PREFERENCES: '@beak/global/project/LOAD_TAB_PREFERENCES',
 	TAB_SELECTED: '@beak/global/project/TAB_SELECTED',
 	CLOSE_SELECTED_TAB: '@beak/global/project/CLOSE_SELECTED_TAB',
 	CLOSE_OTHER_SELECTED_TABS: '@beak/global/project/CLOSE_OTHER_SELECTED_TABS',

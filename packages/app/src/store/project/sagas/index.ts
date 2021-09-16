@@ -8,6 +8,7 @@ import {
 	workerCreateNewRequest as createNewRequest,
 } from './create-things';
 import duplicateRequest from './duplicate-request';
+import loadTabPreferences from './load-tab-preferences';
 import removeNodeFromDisk from './remove-node-from-disk';
 import requestRename from './request-rename';
 import startProject from './start-project';
@@ -50,6 +51,10 @@ export default function* projectSaga() {
 	yield all([
 		fork(function* catchNodeUpdatesWatcher() {
 			yield takeEvery(nodeUpdateWatcherActions, catchNodeUpdates);
+		}),
+
+		fork(function* loadTabPreferencesWatcher() {
+			yield takeEvery(ActionTypes.LOAD_TAB_PREFERENCES, loadTabPreferences);
 		}),
 		fork(function* catchTabUpdatesWatcher() {
 			yield takeEvery(tabUpdateWatcherActions, catchTabUpdates);

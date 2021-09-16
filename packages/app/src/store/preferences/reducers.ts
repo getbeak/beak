@@ -5,7 +5,7 @@ import { combineReducers, createReducer } from '@reduxjs/toolkit';
 import * as actions from './actions';
 import { initialState } from './types';
 
-const requestPreferencesReducer = createReducer(initialState.requestPreferences, builder => {
+const requestPreferencesReducer = createReducer(initialState.requests, builder => {
 	builder
 		.addCase(actions.requestPreferencesLoaded, (state, { payload }) => {
 			state[payload.id] = payload.preferences;
@@ -24,5 +24,5 @@ const requestPreferencesReducer = createReducer(initialState.requestPreferences,
 });
 
 export default combineReducers({
-	requestPreferences: requestPreferencesReducer,
+	requests: requestPreferencesReducer,
 });

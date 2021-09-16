@@ -1,17 +1,25 @@
-import BeakUserPreferences from '@beak/app/lib/beak-hub/user-preferences';
+import { ipcFsService } from '@beak/app/lib/ipc';
+import { TabPreferences } from '@beak/common/types/beak-hub';
+import { TabItem } from '@beak/common/types/beak-project';
+import path from 'path-browserify';
 import { call, select } from 'redux-saga/effects';
 
 import { ApplicationState } from '../..';
-import { State } from '../types';
 
 export default function* catchTabUpdatesWorker() {
-	const project: State = yield select((s: ApplicationState) => s.global.project);
-	const { tabs, selectedTabPayload } = project;
+	const projectPath: string = yield select((s: ApplicationState) => s.global.project.projectPath);
+	const tabs: TabItem[] = yield select((s: ApplicationState) => s.global.project.tabs);
+	const selectedTab: string | undefined = yield select((s: ApplicationState) => s.global.project.selectedTabPayload);
+	const tabPreferences: TabPreferences = {
+		tabs,
+		selectedTabPayload: selectedTab,
+	};
 
-	const userPrefs = BeakUserPreferences.getInstance();
+	yield call(writeRequestPreferences, tabPreferences, projectPath);
+}
 
-	if (!userPrefs)
-		return;
+async function writeRequestPreferences(preferences: TabPreferences, projectPath: string) {
+	const preferencesPath = path.join(projectPath, '.beak', 'preferences', 'tabs.json');
 
-	yield call([userPrefs, userPrefs.setTabPreferences], tabs, selectedTabPayload);
+	await ipcFsService.writeJson(preferencesPath, preferences);
 }

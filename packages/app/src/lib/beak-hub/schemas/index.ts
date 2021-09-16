@@ -1,7 +1,7 @@
 import requestPreference from './request-preference.json';
-import userPreferences from './user-preferences.json';
+import tabPreferences from './tab-preferences.json';
 
 export {
 	requestPreference,
-	userPreferences,
+	tabPreferences,
 };

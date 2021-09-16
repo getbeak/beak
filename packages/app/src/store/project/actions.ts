@@ -41,6 +41,7 @@ export const startProject = createAction<string>(AT.START_PROJECT);
 export const insertProjectInfo = createAction<ProjectInfoPayload>(AT.INSERT_PROJECT_INFO);
 export const projectOpened = createAction<ProjectOpenedPayload>(AT.PROJECT_OPENED);
 
+export const loadTabPreferences = createAction(AT.LOAD_TAB_PREFERENCES);
 export const tabSelected = createAction<TabItem>(AT.TAB_SELECTED);
 export const closeSelectedTab = createAction<string>(AT.CLOSE_SELECTED_TAB);
 export const closeOtherSelectedTabs = createAction<string>(AT.CLOSE_OTHER_SELECTED_TABS);
@@ -133,6 +134,7 @@ export default {
 	insertProjectInfo,
 	projectOpened,
 
+	loadTabPreferences,
 	tabSelected,
 	closeSelectedTab,
 	closeOtherSelectedTabs,

@@ -20,7 +20,7 @@ const RequestPane: React.FunctionComponent = () => {
 	const mounted = useRef(false);
 	const { tree, selectedTabPayload } = useSelector(s => s.global.project);
 	const selectedNode = tree[selectedTabPayload!] as RequestNode;
-	const preferences = useSelector(s => s.global.preferences.requestPreferences[selectedNode.id]);
+	const preferences = useSelector(s => s.global.preferences.requests[selectedNode.id]);
 
 	useEffect(() => {
 		mounted.current = true;
