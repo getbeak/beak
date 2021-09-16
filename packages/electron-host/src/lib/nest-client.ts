@@ -25,6 +25,13 @@ class NestClient {
 		try {
 			auth = await keytar.getPassword(os.userInfo().username, authDataKey);
 		} catch (error) {
+			// This happens if the app doesn't have permission to access the secure credential file
+			if (error instanceof Error && error.message === 'UNIX[No such file or directory]') {
+				logger.warn('Unable to get access credential file', error);
+
+				return null;
+			}
+
 			logger.error('Unable to get authentication credentials', error);
 
 			return null;
