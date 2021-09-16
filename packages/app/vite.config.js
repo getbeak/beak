@@ -11,7 +11,7 @@ const environment = process.env.NODE_ENV;
 const versionRelease = Boolean(process.env.VERSION_RELEASE);
 const versionIdentifier = packageJson.version;
 const commitIdentifier = process.env.COMMIT_IDENTIFIER;
-const releaseIdentifier = versionRelease ? `@beak/app@${versionIdentifier}` : commitIdentifier;
+const releaseIdentifier = versionRelease ? `beak-app@${versionIdentifier}` : commitIdentifier;
 
 /**
  * @type {import('vite').UserConfig}

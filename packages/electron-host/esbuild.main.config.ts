@@ -9,8 +9,7 @@ const environment = process.env.NODE_ENV;
 const versionRelease = Boolean(process.env.VERSION_RELEASE);
 const versionIdentifier = packageJson.version;
 const commitIdentifier = process.env.COMMIT_IDENTIFIER;
-const releaseIdentifier = versionRelease ? `@beak/app@${versionIdentifier}` : commitIdentifier;
-
+const releaseIdentifier = versionRelease ? `beak-app@${versionIdentifier}` : commitIdentifier;
 
 // Thank you Evan
 // https://github.com/evanw/esbuild/issues/1051#issuecomment-806325487
