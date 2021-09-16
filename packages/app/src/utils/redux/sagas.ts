@@ -4,6 +4,7 @@ import { TypedActionCreator } from './action-types';
 
 export function createTakeEverySagaSet<ActionCreator extends TypedActionCreator>(
 	actionCreator: ActionCreator,
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	worker: (action: ReturnType<ActionCreator>) => Generator<unknown, unknown, any>,
 ) {
 	return fork(function* watcher() {
@@ -13,6 +14,7 @@ export function createTakeEverySagaSet<ActionCreator extends TypedActionCreator>
 
 export function createTakeLatestSagaSet<ActionCreator extends TypedActionCreator>(
 	actionCreator: ActionCreator,
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	worker: (action: ReturnType<ActionCreator>) => Generator<unknown, unknown, any>,
 ) {
 	return fork(function* watcher() {
