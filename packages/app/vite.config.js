@@ -13,6 +13,8 @@ const versionIdentifier = packageJson.version;
 const commitIdentifier = process.env.COMMIT_IDENTIFIER;
 const releaseIdentifier = versionRelease ? `beak-app@${versionIdentifier}` : commitIdentifier;
 
+const sourcePath = environment === 'development' ? 'src' : 'dist';
+
 /**
  * @type {import('vite').UserConfig}
  * @see https://vitejs.dev/config/
@@ -26,8 +28,8 @@ module.exports = {
 	resolve: {
 		alias: {
 			'@beak/app': path.join(__dirname, './src'),
-			'@beak/common': path.join(__dirname, '../common/src'),
-			'@beak/design-system': path.join(__dirname, '../design-system/src'),
+			'@beak/common': path.join(__dirname, `../common/${sourcePath}`),
+			'@beak/design-system': path.join(__dirname, `../design-system/${sourcePath}`),
 		},
 	},
 	plugins: [

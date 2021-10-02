@@ -11,12 +11,12 @@
   "scripts": {
     "clean": "rm -rf ./dist && rm -rf tsconfig.tsbuildinfo",
     "prebuild": "rm -rf ./dist-react/ && copyfiles -u 3 \"../app/dist/**/*\" ./dist-react/",
-    "build": "electron-esbuild build",
+    "build": "cross-env NODE_ENV=production electron-esbuild build",
     "prepackage": "rm -rf ./dist-electron",
     "prepackage:release": "rm -rf ./dist-electron",
     "package": "electron-builder -mwl --publish never",
     "package:release": "electron-builder -mwl --publish always",
-    "start": "electron-esbuild dev",
+    "start": "cross-env NODE_ENV=development electron-esbuild dev",
     "typecheck": "tsc --noEmit",
     "test": "echo Skipped."
   },

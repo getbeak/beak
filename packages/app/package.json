@@ -4,8 +4,8 @@
   "homepage": "./",
   "private": true,
   "scripts": {
-    "build": "NODE_ENV=production vite build",
-    "start": "NODE_ENV=development vite",
+    "build": "cross-env NODE_ENV=production vite build",
+    "start": "cross-env NODE_ENV=development vite",
     "typecheck": "tsc --noEmit",
     "test": "echo Skipped for now."
   },
@@ -19,8 +19,7 @@
   },
   "dependencies": {
     "@beak/common": "*",
-    "@beak/design-system": "*",
-    "path-browserify": "^1.0.1"
+    "@beak/design-system": "*"
   },
   "devDependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.35",
@@ -52,6 +51,7 @@
     "lodash.get": "^4.4.2",
     "lodash.set": "^4.3.2",
     "mime-types": "^2.1.31",
+    "path-browserify": "^1.0.1",
     "react-column-resizer": "^1.1.9",
     "react-helmet": "^6.1.0",
     "react-redux": "^7.2.4",
