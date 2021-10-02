@@ -131,6 +131,12 @@ export function createWelcomeWindow() {
 		title: 'Welcome to Beak!',
 	};
 
+	// On Linux and Windows we want total control of the frame
+	if (process.platform !== 'darwin') {
+		windowOpts.frame = false;
+		windowOpts.autoHideMenuBar = false;
+	}
+
 	const window = createWindow(windowOpts, 'welcome');
 
 	stackMap.welcome = window.id;
@@ -167,8 +173,10 @@ export function createProjectMainWindow(projectFilePath: string) {
 		windowOpts.vibrancy = 'under-window';
 
 	// On Linux and Windows we want total control of the frame
-	if (process.platform !== 'darwin')
+	if (process.platform !== 'darwin') {
 		windowOpts.frame = false;
+		windowOpts.autoHideMenuBar = false;
+	}
 
 	const window = createWindow(windowOpts, 'project-main', { projectFilePath });
 
@@ -191,7 +199,7 @@ export function createOnboardingWindow() {
 		height: 350,
 		width: 650,
 		resizable: false,
-		autoHideMenuBar: true,
+		autoHideMenuBar: false,
 		titleBarStyle: 'hiddenInset',
 		title: 'Welcome to the Beak Beta!',
 	};

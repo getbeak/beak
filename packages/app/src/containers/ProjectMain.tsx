@@ -13,7 +13,6 @@ import Omnibar from '../features/omni-bar/components/Omnibar';
 import ProjectPane from '../features/project-pane/components/ProjectPane';
 import StatusBar from '../features/status-bar/components/StatusBar';
 import TabView from '../features/tabs/components/TabView';
-import useTitleBar from '../hooks/use-title-bar';
 import { ipcFsService, ipcFsWatcherService } from '../lib/ipc';
 import { checkShortcut } from '../lib/keyboard-shortcuts';
 import { requestFlight } from '../store/flight/actions';
@@ -86,8 +85,6 @@ const ProjectMain: React.FunctionComponent = () => {
 		if (isAct)
 			dispatch(requestFlight());
 	}
-
-	useTitleBar();
 
 	return (
 		<React.Fragment>

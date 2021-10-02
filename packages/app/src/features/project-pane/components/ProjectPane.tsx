@@ -1,10 +1,8 @@
 import WindowSessionContext from '@beak/app/contexts/window-session-context';
-import { toVibrancyAlpha } from '@beak/app/design-system/utils';
 import { actions } from '@beak/app/store/project';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React, { useState } from 'react';
-import { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled, { useTheme } from 'styled-components';
 

@@ -62,35 +62,6 @@ const GlobalStyle = createGlobalStyle<GlobalStyleProps>`
 			background-color: ${p => p.theme.ui.secondaryAction};
 		}
 	}
-
-	.titlebar {
-		.menubar {
-			.action-item {
-				.action-label {
-					color: ${p => p.theme.ui.textOnSurfaceBackground};
-					font-size: 14px;
-				}
-
-				> .action-menu-item {
-					height: 1.7rem;
-
-					> .menu-item-icon {
-						display: none;
-					}
-				}
-
-				&.focused {
-					background-color: ${p => p.theme.ui.secondaryAction};
-				}
-			}
-		}
-
-		.window-title {
-			font-size: 12px;
-			font-weight: 500;
-			color: ${p => p.theme.ui.textOnSurfaceBackground};
-		}
-	}
 `;
 
 export {
