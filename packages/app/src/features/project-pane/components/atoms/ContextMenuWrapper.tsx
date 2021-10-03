@@ -80,9 +80,8 @@ const ContextMenuWrapper: React.FunctionComponent<ContextMenuWrapperProps> = pro
 		{
 			id: ksuid.generate('ctxmenuitem').toString(),
 			label: 'Rename',
-			enabled: mode === 'request',
 			click: () => {
-				dispatch(actions.requestRenameStarted({ requestId: nodeId }));
+				dispatch(actions.renameStarted({ requestId: nodeId, type: mode }));
 			},
 		}, {
 			id: ksuid.generate('ctxmenuitem').toString(),
