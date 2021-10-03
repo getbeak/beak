@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Helmet from 'react-helmet';
+import { useLocation } from 'react-router';
 import styled from 'styled-components';
 
 import Container from '../../../components/atoms/Container';
@@ -10,58 +11,74 @@ import FeatureHighlight from './molecules/FeatureHighlight';
 import FeatureOverview from './molecules/FeatureOverview';
 import SneakPeak from './molecules/SneakPeak';
 
-const Home: React.FunctionComponent = () => (
-	<React.Fragment>
-		<Helmet defer={false}>
-			<title>{'Beak :: The feathery cross platform API crafting tool'}</title>
-		</Helmet>
-		<Header>
-			<Container>
-				<Title>
-					{'The '}
-					<span>{'feathery'}</span>{' '}
-					{'cross-platform API crafting tool'}
-				</Title>
-				<SubTitle>
-					{'Beak makes building 🛠, spying 🕵️‍♀️, and collaborating 👪 on API '}
-					{'development fast, frictionless, and dare we say... fun'}
-				</SubTitle>
+const Home: React.FunctionComponent = () => {
+	const location = useLocation();
 
-				<BetaRegistration />
+	useEffect(() => {
+		if (!location.hash)
+			return;
 
-				<SneakPeak />
-			</Container>
-		</Header>
-		<Main>
-			<FeatureOverview />
-			<Downloader />
-			<BeakOverview />
+		// Hack to handle first page render
+		window.setTimeout(() => {
+			const element = document.getElementById(location.hash.slice(1));
 
-			<FeatureHighlight
-				flipped
-				title={'Multi-tasking'}
-				description={'Tabs allow you to switch context quickly, without losing your train of thought. We\'re past iOS 1...'}
-				asset={'feature-multitasking'}
-			/>
-			<FeatureHighlight
-				title={'Enhanced discovery'}
-				description={'Open up the the Omni Bar to search through your project. Spend less time digging through lists and more time hacking.'}
-				asset={'feature-omni'}
-			/>
-			<FeatureHighlight
-				flipped
-				title={'Intuitive, secure collaboration'}
-				description={'None of your project ever touches our servers, and projects are just simple directories. Use your existing workflow, for example Git, with Beak for minimal distruption.'}
-				asset={'feature-git'}
-			/>
-			<FeatureHighlight
-				title={'Powerful variable replacement'}
-				description={'Beak allows you to place inline variables which can have dynamic content, and be changed in real time.'}
-				asset={'feature-variable-editor'}
-			/>
-		</Main>
-	</React.Fragment>
-);
+			element?.scrollIntoView({ behavior: 'smooth' });
+		}, 200);
+	}, [location.hash]);
+
+	return (
+		<React.Fragment>
+			<Helmet defer={false}>
+				<title>{'Beak :: The feathery cross platform API crafting tool'}</title>
+			</Helmet>
+			<Header>
+				<Container>
+					<Title>
+						{'The '}
+						<span>{'feathery'}</span>{' '}
+						{'cross-platform API crafting tool'}
+					</Title>
+					<SubTitle>
+						{'Beak makes building 🛠, spying 🕵️‍♀️, and collaborating 👪 on API '}
+						{'development fast, frictionless, and dare we say... fun'}
+					</SubTitle>
+
+					<BetaRegistration />
+
+					<SneakPeak />
+				</Container>
+			</Header>
+			<Main>
+				<FeatureOverview />
+				<Downloader />
+				<BeakOverview />
+
+				<FeatureHighlight
+					flipped
+					title={'Multi-tasking'}
+					description={'Tabs allow you to switch context quickly, without losing your train of thought. We\'re past iOS 1...'}
+					asset={'feature-multitasking'}
+				/>
+				<FeatureHighlight
+					title={'Enhanced discovery'}
+					description={'Open up the the Omni Bar to search through your project. Spend less time digging through lists and more time hacking.'}
+					asset={'feature-omni'}
+				/>
+				<FeatureHighlight
+					flipped
+					title={'Intuitive, secure collaboration'}
+					description={'None of your project ever touches our servers, and projects are just simple directories. Use your existing workflow, for example Git, with Beak for minimal distruption.'}
+					asset={'feature-git'}
+				/>
+				<FeatureHighlight
+					title={'Powerful variable replacement'}
+					description={'Beak allows you to place inline variables which can have dynamic content, and be changed in real time.'}
+					asset={'feature-variable-editor'}
+				/>
+			</Main>
+		</React.Fragment>
+	);
+}
 
 const Header = styled.div`
 	padding-top: 125px;
