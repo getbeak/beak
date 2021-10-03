@@ -36,9 +36,9 @@ export default {
 		payload: item,
 	}),
 
-	getValue: async (ctx, item) => {
+	getValue: async (_ctx, item) => {
 		// Get from private store
-		const datumPath = createPath(ctx.projectPath, item.identifier);
+		const datumPath = createPath(item.identifier);
 		const exists = await ipcFsService.pathExists(datumPath);
 		const datum = exists ? await ipcFsService.readText(datumPath) : null;
 
@@ -48,7 +48,6 @@ export default {
 		const decrypted = await ipcEncryptionService.decryptString({
 			iv: item.iv,
 			payload: datum,
-			projectFolder: ctx.projectPath,
 		});
 
 		return decrypted;
@@ -61,9 +60,9 @@ export default {
 			stateBinding: 'value',
 		}],
 
-		load: async (ctx, item) => {
+		load: async (_ctx, item) => {
 			// Get from private store
-			const datumPath = createPath(ctx.projectPath, item.identifier);
+			const datumPath = createPath(item.identifier);
 			const exists = await ipcFsService.pathExists(datumPath);
 			const datum = exists ? await ipcFsService.readText(datumPath) : null;
 
@@ -73,29 +72,27 @@ export default {
 			const decrypted = await ipcEncryptionService.decryptString({
 				iv: item.iv,
 				payload: datum,
-				projectFolder: ctx.projectPath,
 			});
 
 			return { value: decrypted };
 		},
 
-		save: async (ctx, item, state) => {
+		save: async (_ctx, item, state) => {
 			// We want to generate a new IV every time
 			const iv = await ipcEncryptionService.generateIv();
 			const datum = await ipcEncryptionService.encryptString({
 				iv,
 				payload: state.value,
-				projectFolder: ctx.projectPath,
 			});
 
 			// Write to private store
-			await ipcFsService.writeText(createPath(ctx.projectPath, item.identifier), datum);
+			await ipcFsService.writeText(createPath(item.identifier), datum);
 
 			return { iv, identifier: item.identifier };
 		},
 	},
 } as RealtimeValue<PrivateRtv['payload'], EditorState>;
 
-function createPath(projectPath: string, identifier: string) {
-	return path.join(projectPath, '.beak', 'realtime-values', 'private', `${identifier}`);
+function createPath(identifier: string) {
+	return path.join('.beak', 'realtime-values', 'private', `${identifier}`);
 }

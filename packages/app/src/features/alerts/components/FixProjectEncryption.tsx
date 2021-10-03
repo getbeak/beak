@@ -6,7 +6,6 @@ import Label from '@beak/app/components/atoms/Label';
 import Dialog from '@beak/app/components/molecules/Dialog';
 import { ipcEncryptionService } from '@beak/app/lib/ipc';
 import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 
 const base64regex = /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/;
@@ -19,7 +18,6 @@ const FixProjectEncryption: React.FunctionComponent<FixProjectEncryptionProps> =
 	const [key, setKey] = useState('');
 	const [error, setError] = useState('');
 	const [disable, setDisable] = useState(false);
-	const projectPath = useSelector(s => s.global.project.projectPath)!;
 
 	function submit() {
 		if (key === '' || disable)
@@ -34,7 +32,7 @@ const FixProjectEncryption: React.FunctionComponent<FixProjectEncryptionProps> =
 		setDisable(true);
 
 		ipcEncryptionService
-			.submitKey({ key, projectFolder: projectPath })
+			.submitKey({ key })
 			.catch(() => setError('Unknown error saving encryption key'))
 			.then(() => props.onClose(true))
 			.finally(() => setDisable(false));

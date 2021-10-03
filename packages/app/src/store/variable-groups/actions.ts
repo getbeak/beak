@@ -11,11 +11,9 @@ import {
 	UpdateEntityPayload,
 	UpdateValuePayload,
 	UpdateVgPayload,
-	VariableGroupsInfoPayload,
 } from './types';
 
-export const startVariableGroups = createAction<string>(AT.START_VARIABLE_GROUPS);
-export const variableGroupsInfo = createAction<VariableGroupsInfoPayload>(AT.VARIABLE_GROUPS_INFO);
+export const startVariableGroups = createAction(AT.START_VARIABLE_GROUPS);
 export const variableGroupsOpened = createAction<VariableGroups>(AT.VARIABLE_GROUPS_OPENED);
 
 export const updateVg = createAction<UpdateVgPayload>(AT.UPDATE_VG);
@@ -38,7 +36,6 @@ export const changeSelectedGroup = createAction<ChangeSelectedGroupPayload>(AT.C
 
 export default {
 	startVariableGroups,
-	variableGroupsInfo,
 	variableGroupsOpened,
 
 	updateVg,

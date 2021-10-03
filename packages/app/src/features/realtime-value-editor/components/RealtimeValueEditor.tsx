@@ -16,12 +16,11 @@ interface RealtimeValueEditorProps {
 const RealtimeValueEditor: React.FunctionComponent<RealtimeValueEditorProps> = props => {
 	const [state, setState] = useState<Record<string, string>>({});
 	const [ready, setReady] = useState(false);
-	const projectPath = useSelector(s => s.global.project.projectPath)!;
 	const { selectedGroups, variableGroups } = useSelector(s => s.global.variableGroups);
 	const { realtimeValue, item, parent } = props;
 	const editor = realtimeValue.editor!;
 	const { load, save, ui } = editor;
-	const context = { projectPath, selectedGroups, variableGroups };
+	const context = { selectedGroups, variableGroups };
 
 	useEffect(() => {
 		load(context, item).then(state => {

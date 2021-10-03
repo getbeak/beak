@@ -15,7 +15,6 @@ export interface StartWatchingReq {
 	filePath: string;
 	options: WatchOptions;
 	sessionIdentifier: string;
-	projectFilePath: string;
 }
 
 export interface WatcherEvent {
@@ -24,8 +23,6 @@ export interface WatcherEvent {
 }
 
 export class IpcFsWatcherServiceRenderer extends IpcServiceRenderer {
-	private projectFilePath?: string;
-
 	constructor(ipc: PartialIpcRenderer) {
 		super('fs_watcher', ipc);
 	}
@@ -34,16 +31,11 @@ export class IpcFsWatcherServiceRenderer extends IpcServiceRenderer {
 		return ksuid.generate('fswatch').toString();
 	}
 
-	setProjectFilePath(projectFilePath: string) {
-		this.projectFilePath = projectFilePath;
-	}
-
 	async startWatching(sessionIdentifier: string, filePath: string, options: WatchOptions) {
 		await this.invoke(FsWatcherMessages.StartWatching, {
 			filePath,
 			options,
 			sessionIdentifier,
-			projectFilePath: this.projectFilePath,
 		});
 	}
 

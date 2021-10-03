@@ -34,9 +34,8 @@ const VariableSelector: React.FunctionComponent<VariableSelectorProps> = props =
 
 	const activeRef = useRef<HTMLDivElement>();
 	const { selectedGroups, variableGroups } = useSelector(s => s.global.variableGroups);
-	const projectPath = useSelector(s => s.global.project.projectPath)!;
 	const [active, setActive] = useState<number>(0);
-	const context = { projectPath, selectedGroups, variableGroups };
+	const context = { selectedGroups, variableGroups };
 
 	const items: RealtimeValue<any>[] = useMemo(() => ([
 		...getRealtimeValues(),

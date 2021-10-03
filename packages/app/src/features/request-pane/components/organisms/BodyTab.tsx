@@ -24,8 +24,7 @@ export interface BodyTabProps {
 const BodyTab: React.FunctionComponent<BodyTabProps> = props => {
 	const dispatch = useDispatch();
 	const { selectedGroups, variableGroups } = useSelector(s => s.global.variableGroups);
-	const projectPath = useSelector(s => s.global.project.projectPath!);
-	const context = { projectPath, selectedGroups, variableGroups };
+	const context = { selectedGroups, variableGroups };
 	const { node } = props;
 	const { body } = node.info;
 

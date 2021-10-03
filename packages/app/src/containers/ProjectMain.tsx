@@ -13,7 +13,6 @@ import Omnibar from '../features/omni-bar/components/Omnibar';
 import ProjectPane from '../features/project-pane/components/ProjectPane';
 import StatusBar from '../features/status-bar/components/StatusBar';
 import TabView from '../features/tabs/components/TabView';
-import { ipcFsService, ipcFsWatcherService } from '../lib/ipc';
 import { checkShortcut } from '../lib/keyboard-shortcuts';
 import { requestFlight } from '../store/flight/actions';
 import { loadTabPreferences, startProject } from '../store/project/actions';
@@ -22,8 +21,6 @@ const ProjectMain: React.FunctionComponent = () => {
 	const dispatch = useDispatch();
 	const [title, setTitle] = useState('Loading... - Beak');
 	const [setup, setSetup] = useState(false);
-	const params = new URLSearchParams(window.location.search);
-	const projectFilePath = decodeURIComponent(params.get('projectFilePath') as string);
 	const project = useSelector(s => s.global.project);
 	const variableGroups = useSelector(s => s.global.variableGroups);
 	const { selectedTabPayload, tabs } = useSelector(s => s.global.project);
@@ -33,11 +30,8 @@ const ProjectMain: React.FunctionComponent = () => {
 	const loaded = project.loaded && variableGroups.loaded;
 
 	useEffect(() => {
-		ipcFsService.setProjectFilePath(projectFilePath);
-		ipcFsWatcherService.setProjectFilePath(projectFilePath);
-
-		dispatch(startProject(projectFilePath));
-	}, [projectFilePath]);
+		dispatch(startProject());
+	}, []);
 
 	useEffect(() => {
 		window.addEventListener('keydown', onKeyDown);

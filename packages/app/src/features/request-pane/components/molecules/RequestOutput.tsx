@@ -21,9 +21,8 @@ export interface RequestOutputProps {
 const RequestOutput: React.FunctionComponent<RequestOutputProps> = props => {
 	const { selectedGroups, variableGroups } = useSelector(s => s.global.variableGroups);
 	const windowSession = useContext(WindowSessionContext);
-	const projectPath = useSelector(s => s.global.project.projectPath)!;
 	const [output, setOutput] = useState('');
-	const context = { projectPath, selectedGroups, variableGroups };
+	const context = { selectedGroups, variableGroups };
 
 	useEffect(() => {
 		createBasicHttpOutput(props.selectedNode.info, context, windowSession)

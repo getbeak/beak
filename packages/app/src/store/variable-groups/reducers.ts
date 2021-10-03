@@ -9,12 +9,8 @@ import { initialState } from './types';
 
 const variableGroupsReducer = createReducer(initialState, builder => {
 	builder
-		.addCase(actions.startVariableGroups, (state, action) => {
+		.addCase(actions.startVariableGroups, state => {
 			state.loaded = false;
-			state.projectPath = action.payload;
-		})
-		.addCase(actions.variableGroupsInfo, (state, { payload }) => {
-			state.variableGroupsPath = payload.variableGroupsPath;
 		})
 		.addCase(actions.variableGroupsOpened, (state, { payload }) => {
 			state.variableGroups = payload;

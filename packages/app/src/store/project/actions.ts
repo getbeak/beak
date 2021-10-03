@@ -37,7 +37,7 @@ import {
 	WriteDebouncePayload,
 } from './types';
 
-export const startProject = createAction<string>(AT.START_PROJECT);
+export const startProject = createAction(AT.START_PROJECT);
 export const insertProjectInfo = createAction<ProjectInfoPayload>(AT.INSERT_PROJECT_INFO);
 export const projectOpened = createAction<ProjectOpenedPayload>(AT.PROJECT_OPENED);
 

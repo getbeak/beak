@@ -3,10 +3,10 @@ import WindowSessionContext from '@beak/app/contexts/window-session-context';
 import { ipcExplorerService } from '@beak/app/lib/ipc';
 import { actions } from '@beak/app/store/project';
 import { TabItem } from '@beak/common/types/beak-project';
+import ksuid from '@cuvva/ksuid';
 import type { MenuItemConstructorOptions } from 'electron';
 import React, { useContext, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import ksuid from '@cuvva/ksuid';
 
 interface RequestTabContextMenuWrapperProps {
 	tab: TabItem;
@@ -17,7 +17,7 @@ const RequestTabContextMenuWrapper: React.FunctionComponent<RequestTabContextMen
 	const dispatch = useDispatch();
 	const { tab, target, children } = props;
 	const node = useSelector(s => s.global.project.tree[tab.payload]);
-	const { tabs, selectedTabPayload, projectPath } = useSelector(s => s.global.project)!;
+	const { tabs, selectedTabPayload } = useSelector(s => s.global.project)!;
 	const [menuItems, setMenuItems] = useState<MenuItemConstructorOptions[]>([]);
 	const windowSession = useContext(WindowSessionContext);
 
@@ -76,6 +76,7 @@ const RequestTabContextMenuWrapper: React.FunctionComponent<RequestTabContextMen
 				label: 'Copy path',
 				enabled: isRequestTab,
 				click: () => {
+					// TODO(afr): Add project path
 					navigator.clipboard.writeText(node.filePath);
 				},
 			},
@@ -84,10 +85,7 @@ const RequestTabContextMenuWrapper: React.FunctionComponent<RequestTabContextMen
 				label: 'Copy relative path',
 				enabled: isRequestTab,
 				click: () => {
-					// Is there a better way to do this lol
-					const relativePath = node.filePath.substring(projectPath!.length + 1);
-
-					navigator.clipboard.writeText(relativePath);
+					navigator.clipboard.writeText(node.filePath);
 				},
 			},
 

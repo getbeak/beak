@@ -26,7 +26,6 @@ export interface RealtimeValue<
 export type UISection<T> = TextInput<T> | NumberInput<T> | CheckboxInput<T> | OptionsInput<T>;
 
 export interface Context {
-	projectPath: string;
 	selectedGroups: Record<string, string>;
 	variableGroups: VariableGroups;
 }

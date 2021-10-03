@@ -2,10 +2,10 @@ import ContextMenu from '@beak/app/components/atoms/ContextMenu';
 import WindowSessionContext from '@beak/app/contexts/window-session-context';
 import { ipcExplorerService } from '@beak/app/lib/ipc';
 import { actions } from '@beak/app/store/project';
+import ksuid from '@cuvva/ksuid';
 import type { MenuItemConstructorOptions } from 'electron';
 import React, { useContext, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import ksuid from '@cuvva/ksuid';
 
 interface ContextMenuWrapperProps {
 	nodeId: string;
@@ -16,7 +16,6 @@ interface ContextMenuWrapperProps {
 const ContextMenuWrapper: React.FunctionComponent<ContextMenuWrapperProps> = props => {
 	const dispatch = useDispatch();
 	const { nodeId, mode, target, children } = props;
-	const projectPath = useSelector(s => s.global.project.projectPath)!;
 	const node = useSelector(s => s.global.project.tree[nodeId]);
 	const [menuItems, setMenuItems] = useState<MenuItemConstructorOptions[]>([]);
 	const windowSession = useContext(WindowSessionContext);
@@ -64,6 +63,7 @@ const ContextMenuWrapper: React.FunctionComponent<ContextMenuWrapperProps> = pro
 			id: ksuid.generate('ctxmenuitem').toString(),
 			label: 'Copy path',
 			click: () => {
+				// TODO(afr): Get project path
 				navigator.clipboard.writeText(node.filePath);
 			},
 		},
@@ -71,10 +71,7 @@ const ContextMenuWrapper: React.FunctionComponent<ContextMenuWrapperProps> = pro
 			id: ksuid.generate('ctxmenuitem').toString(),
 			label: 'Copy relative path',
 			click: () => {
-				// Is there a better way to do this lol
-				const relativePath = node.filePath.substring(projectPath.length + 1);
-
-				navigator.clipboard.writeText(relativePath);
+				navigator.clipboard.writeText(node.filePath);
 			},
 		},
 

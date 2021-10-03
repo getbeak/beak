@@ -16,40 +16,36 @@ export const FsMessages = {
 	Move: 'move',
 };
 
-export interface FsBase {
-	projectFilePath: string;
-}
-
-export interface ReadJsonReq extends FsBase {
+export interface ReadJsonReq {
 	filePath: string;
 	options?: ReadOptions;
 }
 
-export interface WriteJsonReq extends FsBase {
+export interface WriteJsonReq {
 	filePath: string;
-	content: any;
+	content: unknown;
 	options?: WriteOptions;
 }
 
-export interface ReadTextReq extends FsBase {
+export interface ReadTextReq {
 	filePath: string;
 }
 
-export interface WriteTextReq extends FsBase {
+export interface WriteTextReq {
 	filePath: string;
 	content: string;
 }
 
-export interface SimplePath extends FsBase {
+export interface SimplePath {
 	filePath: string;
 }
 
-export interface MoveReq extends FsBase {
+export interface MoveReq {
 	srcPath: string;
 	dstPath: string;
 }
 
-export interface ReadDirReq extends FsBase {
+export interface ReadDirReq {
 	filePath: string;
 	options: {
 		encoding?: string | null;
@@ -63,90 +59,48 @@ export interface DirectoryEntry {
 }
 
 export class IpcFsServiceRenderer extends IpcServiceRenderer {
-	private projectFilePath?: string;
-
 	constructor(ipc: PartialIpcRenderer) {
 		super('fs', ipc);
 	}
 
-	setProjectFilePath(projectFilePath: string) {
-		this.projectFilePath = projectFilePath;
-	}
-
 	async readJson<T>(filePath: string, options?: ReadOptions) {
-		return this.invoke<T>(FsMessages.ReadJson, {
-			filePath,
-			options,
-			projectFilePath: this.projectFilePath,
-		});
+		return this.invoke<T>(FsMessages.ReadJson, { filePath, options });
 	}
 
-	async writeJson(filePath: string, content: any, options?: WriteOptions) {
-		return this.invoke(FsMessages.WriteJson, {
-			filePath,
-			content,
-			options,
-			projectFilePath: this.projectFilePath,
-		});
+	async writeJson(filePath: string, content: unknown, options?: WriteOptions) {
+		return this.invoke(FsMessages.WriteJson, { filePath, content, options });
 	}
 
 	async readText(filePath: string) {
-		return this.invoke<string>(FsMessages.ReadText, {
-			filePath,
-			projectFilePath: this.projectFilePath,
-		});
+		return this.invoke<string>(FsMessages.ReadText, { filePath });
 	}
 
 	async writeText(filePath: string, content: string) {
-		return this.invoke(FsMessages.WriteText, {
-			filePath,
-			content,
-			projectFilePath: this.projectFilePath,
-		});
+		return this.invoke(FsMessages.WriteText, { filePath, content });
 	}
 
 	async pathExists(filePath: string) {
-		return this.invoke<boolean>(FsMessages.PathExists, {
-			filePath,
-			projectFilePath: this.projectFilePath,
-		});
+		return this.invoke<boolean>(FsMessages.PathExists, { filePath });
 	}
 
 	async ensureFile(filePath: string) {
-		return this.invoke(FsMessages.EnsureFile, {
-			filePath,
-			projectFilePath: this.projectFilePath,
-		});
+		return this.invoke(FsMessages.EnsureFile, { filePath });
 	}
 
 	async ensureDir(filePath: string) {
-		return this.invoke(FsMessages.EnsureDir, {
-			filePath,
-			projectFilePath: this.projectFilePath,
-		});
+		return this.invoke(FsMessages.EnsureDir, { filePath });
 	}
 
 	async remove(filePath: string) {
-		return this.invoke(FsMessages.Remove, {
-			filePath,
-			projectFilePath: this.projectFilePath,
-		});
+		return this.invoke(FsMessages.Remove, { filePath });
 	}
 
 	async move(srcPath: string, dstPath: string) {
-		return this.invoke(FsMessages.Move, {
-			srcPath,
-			dstPath,
-			projectFilePath: this.projectFilePath,
-		});
+		return this.invoke(FsMessages.Move, { srcPath, dstPath });
 	}
 
 	async readDir(filePath: string, options?: ReadDirReq['options']) {
-		return this.invoke<DirectoryEntry[]>(FsMessages.ReadDir, {
-			filePath,
-			options,
-			projectFilePath: this.projectFilePath,
-		});
+		return this.invoke<DirectoryEntry[]>(FsMessages.ReadDir, { filePath, options });
 	}
 }
 

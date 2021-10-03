@@ -4,6 +4,7 @@ import { ipcMain, IpcMainInvokeEvent } from 'electron';
 import { FSWatcher } from 'original-fs';
 
 import { ensureWithinProject } from './fs-service';
+import { getProjectWindowMapping, removeProjectPathPrefix } from './fs-shared';
 
 const watchers: Record<string, FSWatcher> = {};
 const windowContentsMapping: Record<string, string[]> = {};
@@ -11,7 +12,7 @@ const windowContentsMapping: Record<string, string[]> = {};
 const service = new IpcFsWatcherServiceMain(ipcMain);
 
 service.registerStartWatching(async (event, payload: StartWatchingReq) => {
-	await ensureWithinProject(payload.projectFilePath, payload.filePath);
+	const filePath = await ensureWithinProject(getProjectWindowMapping(event), payload.filePath);
 
 	const sender = (event as IpcMainInvokeEvent).sender;
 	const senderIdStr = sender.id.toString();
@@ -22,10 +23,18 @@ service.registerStartWatching(async (event, payload: StartWatchingReq) => {
 	};
 
 	const watcher = chokidar
-		.watch(payload.filePath, options)
+		.watch(filePath, options)
 		.on('all', (eventName, path) => {
+			console.log({
+				path,
+				replaced: removeProjectPathPrefix(event, path),
+			});
+
 			const destroyed = checkForDestruction(() => {
-				service.sendWatcherEvent(sender, payload.sessionIdentifier, { eventName, path });
+				service.sendWatcherEvent(sender, payload.sessionIdentifier, {
+					eventName,
+					path: removeProjectPathPrefix(event, path),
+				});
 			});
 
 			if (destroyed)
@@ -57,14 +66,14 @@ service.registerStopWatching(async (_event, sessionIdentifier: string) => {
 function checkForDestruction(fn: () => void) {
 	try {
 		fn();
+
+		return false;
 	} catch (error) {
 		if (error instanceof Error && error.message !== 'Object has been destroyed')
 			throw error;
 
 		return true;
 	}
-
-	return false;
 }
 
 export function closeWatchersOnWindow(windowContentsId: number) {

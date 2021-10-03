@@ -46,7 +46,7 @@ async function* scanDirectoryRecursivelyIter(dir: string): AsyncGenerator<ScanRe
 	const dirents = await ipcFsService.readDir(dir, { withFileTypes: true });
 
 	for (const dirent of dirents) {
-		const res = path.resolve(dir, dirent.name);
+		const res = path.join(dir, dirent.name);
 		const extension = path.extname(dirent.name);
 
 		if (dirent.isDirectory) {

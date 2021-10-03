@@ -75,8 +75,6 @@ export interface State {
 	loaded: boolean;
 
 	name?: string;
-	projectPath?: string;
-	projectTreePath?: string;
 	tree: Tree;
 
 	selectedTabPayload?: string;
@@ -101,8 +99,6 @@ export const initialState: State = {
 
 export interface ProjectInfoPayload {
 	name: string;
-	projectPath: string;
-	treePath: string;
 }
 
 export interface ProjectOpenedPayload { tree: Tree }

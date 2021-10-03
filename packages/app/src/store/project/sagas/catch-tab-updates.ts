@@ -7,7 +7,6 @@ import { call, select } from 'redux-saga/effects';
 import { ApplicationState } from '../..';
 
 export default function* catchTabUpdatesWorker() {
-	const projectPath: string = yield select((s: ApplicationState) => s.global.project.projectPath);
 	const tabs: TabItem[] = yield select((s: ApplicationState) => s.global.project.tabs);
 	const selectedTab: string | undefined = yield select((s: ApplicationState) => s.global.project.selectedTabPayload);
 	const tabPreferences: TabPreferences = {
@@ -15,11 +14,11 @@ export default function* catchTabUpdatesWorker() {
 		selectedTabPayload: selectedTab,
 	};
 
-	yield call(writeRequestPreferences, tabPreferences, projectPath);
+	yield call(writeTabPreferences, tabPreferences);
 }
 
-async function writeRequestPreferences(preferences: TabPreferences, projectPath: string) {
-	const preferencesPath = path.join(projectPath, '.beak', 'preferences', 'tabs.json');
+async function writeTabPreferences(preferences: TabPreferences) {
+	const preferencesPath = path.join('.beak', 'preferences', 'tabs.json');
 
 	await ipcFsService.writeJson(preferencesPath, preferences);
 }

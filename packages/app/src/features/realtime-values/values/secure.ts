@@ -37,7 +37,6 @@ export default {
 		const decrypted = await ipcEncryptionService.decryptString({
 			iv: item.iv,
 			payload: item.datum,
-			projectFolder: ctx.projectPath,
 		});
 
 		return decrypted;
@@ -54,7 +53,6 @@ export default {
 			const decrypted = await ipcEncryptionService.decryptString({
 				iv: item.iv,
 				payload: item.datum,
-				projectFolder: ctx.projectPath,
 			});
 
 			return { value: decrypted };
@@ -66,7 +64,6 @@ export default {
 			const datum = await ipcEncryptionService.encryptString({
 				iv,
 				payload: state.value,
-				projectFolder: ctx.projectPath,
 			});
 
 			return { iv, datum };

@@ -12,19 +12,16 @@ export const EncryptionMessages = {
 
 export interface EncryptStringReq {
 	payload: string;
-	projectFolder: string;
 	iv: string;
 }
 
 export interface DecryptStringReq {
 	payload: string;
-	projectFolder: string;
 	iv: string;
 }
 
 export interface SubmitKeyReq {
 	key: string;
-	projectFolder: string;
 }
 
 export class IpcEncryptionServiceRenderer extends IpcServiceRenderer {
@@ -32,8 +29,8 @@ export class IpcEncryptionServiceRenderer extends IpcServiceRenderer {
 		super('encryption', ipc);
 	}
 
-	async checkStatus(projectPath: string) {
-		return this.invoke<boolean>(EncryptionMessages.CheckStatus, projectPath);
+	async checkStatus() {
+		return this.invoke<boolean>(EncryptionMessages.CheckStatus);
 	}
 
 	async submitKey(payload: SubmitKeyReq) {

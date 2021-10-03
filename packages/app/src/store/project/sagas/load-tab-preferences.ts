@@ -11,8 +11,7 @@ import { ApplicationState } from '../..';
 import { populateTabs, tabSelected } from '../actions';
 
 export default function* workerLoadTabPreferences() {
-	const projectPath: string = yield select((s: ApplicationState) => s.global.project.projectPath);
-	const tabPreferences: TabPreferences = yield call(loadUserPreferences, projectPath);
+	const tabPreferences: TabPreferences = yield call(loadTabPreferences);
 
 	if (tabPreferences) {
 		const selectedTab = tabPreferences.tabs.find(t => t.payload === tabPreferences.selectedTabPayload);
@@ -32,8 +31,8 @@ export default function* workerLoadTabPreferences() {
 		yield put(tabSelected({ type: 'request', payload: requestNode.id, temporary: false }));
 }
 
-async function loadUserPreferences(projectPath: string) {
-	const preferencesPath = path.join(projectPath, '.beak', 'preferences', 'tabs.json');
+async function loadTabPreferences() {
+	const preferencesPath = path.join('.beak', 'preferences', 'tabs.json');
 
 	if (!await ipcFsService.pathExists(preferencesPath))
 		return null;

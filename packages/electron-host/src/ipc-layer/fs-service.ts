@@ -13,74 +13,84 @@ import { ipcMain } from 'electron';
 import fs from 'fs-extra';
 import path from 'path';
 
+import { getProjectWindowMapping, removeProjectPathPrefix } from './fs-shared';
+
 const service = new IpcFsServiceMain(ipcMain);
 
-service.registerReadJson(async (_event, payload: ReadJsonReq) => {
-	await ensureWithinProject(payload.projectFilePath, payload.filePath);
+service.registerReadJson(async (event, payload: ReadJsonReq) => {
+	const filePath = await ensureWithinProject(getProjectWindowMapping(event), payload.filePath);
 
-	return await fs.readJson(payload.filePath, payload.options);
+	return await fs.readJson(filePath, { ...payload.options });
 });
 
-service.registerWriteJson(async (_event, payload: WriteJsonReq) => {
-	await ensureWithinProject(payload.projectFilePath, payload.filePath);
+service.registerWriteJson(async (event, payload: WriteJsonReq) => {
+	const filePath = await ensureWithinProject(getProjectWindowMapping(event), payload.filePath);
 
-	return await fs.writeJson(payload.filePath, payload.content, payload.options);
+	await ensureParentDirectoryExists(filePath);
+
+	return await fs.writeJson(filePath, payload.content, payload.options);
 });
 
-service.registerReadText(async (_event, payload: ReadTextReq) => {
-	await ensureWithinProject(payload.projectFilePath, payload.filePath);
+service.registerReadText(async (event, payload: ReadTextReq) => {
+	const filePath = await ensureWithinProject(getProjectWindowMapping(event), payload.filePath);
 
-	return await fs.readFile(payload.filePath, { encoding: 'utf-8' });
+	return await fs.readFile(filePath, { encoding: 'utf-8' });
 });
 
-service.registerWriteText(async (_event, payload: WriteTextReq) => {
-	await ensureWithinProject(payload.projectFilePath, payload.filePath);
-	await fs.ensureFile(payload.filePath);
+service.registerWriteText(async (event, payload: WriteTextReq) => {
+	const filePath = await ensureWithinProject(getProjectWindowMapping(event), payload.filePath);
 
-	return await fs.writeFile(payload.filePath, payload.content, { encoding: 'utf-8' });
+	await ensureParentDirectoryExists(filePath);
+
+	return await fs.writeFile(filePath, payload.content, { encoding: 'utf-8' });
 });
 
-service.registerPathExists(async (_event, payload: SimplePath) => {
-	await ensureWithinProject(payload.projectFilePath, payload.filePath);
+service.registerPathExists(async (event, payload: SimplePath) => {
+	const filePath = await ensureWithinProject(getProjectWindowMapping(event), payload.filePath);
 
-	return await fs.pathExists(payload.filePath);
+	return await fs.pathExists(filePath);
 });
 
-service.registerEnsureFile(async (_event, payload: SimplePath) => {
-	await ensureWithinProject(payload.projectFilePath, payload.filePath);
+service.registerEnsureFile(async (event, payload: SimplePath) => {
+	const filePath = await ensureWithinProject(getProjectWindowMapping(event), payload.filePath);
 
-	return await fs.ensureFile(payload.filePath);
+	return await fs.ensureFile(filePath);
 });
 
-service.registerEnsureDir(async (_event, payload: SimplePath) => {
-	await ensureWithinProject(payload.projectFilePath, payload.filePath);
+service.registerEnsureDir(async (event, payload: SimplePath) => {
+	const filePath = await ensureWithinProject(getProjectWindowMapping(event), payload.filePath);
 
-	return await fs.ensureDir(payload.filePath);
+	return await fs.ensureDir(filePath);
 });
 
-service.registerRemove(async (_event, payload: SimplePath) => {
-	await ensureWithinProject(payload.projectFilePath, payload.filePath);
+service.registerRemove(async (event, payload: SimplePath) => {
+	const filePath = await ensureWithinProject(getProjectWindowMapping(event), payload.filePath);
 
-	return await fs.remove(payload.filePath);
+	return await fs.remove(filePath);
 });
 
-service.registerMove(async (_event, payload: MoveReq) => {
-	await ensureWithinProject(payload.projectFilePath, payload.srcPath);
-	await ensureWithinProject(payload.projectFilePath, payload.dstPath);
+service.registerMove(async (event, payload: MoveReq) => {
+	const srcPath = await ensureWithinProject(getProjectWindowMapping(event), payload.srcPath);
+	const dstPath = await ensureWithinProject(getProjectWindowMapping(event), payload.dstPath);
 
-	return await fs.move(payload.srcPath, payload.dstPath);
+	return await fs.move(srcPath, dstPath);
 });
 
-service.registerReadDir(async (_event, payload: ReadDirReq) => {
-	await ensureWithinProject(payload.projectFilePath, payload.filePath);
+service.registerReadDir(async (event, payload: ReadDirReq) => {
+	const filePath = await ensureWithinProject(getProjectWindowMapping(event), payload.filePath);
+	const directoryEntries = await fs.readdir(filePath, payload.options || void 0);
 
-	const dirEnts = await fs.readdir(payload.filePath, payload.options || void 0);
-
-	return dirEnts.map(d => ({
-		name: d.name,
+	return directoryEntries.map(d => ({
+		name: removeProjectPathPrefix(event, d.name),
 		isDirectory: d.isDirectory(),
 	}));
 });
+
+async function ensureParentDirectoryExists(filePath: string) {
+	const parentDirectory = path.join(filePath, '..');
+
+	await fs.ensureDir(parentDirectory);
+}
 
 export async function ensureWithinProject(projectFilePath: string, inputPath: string) {
 	const exists = fs.pathExists(projectFilePath);
@@ -97,9 +107,19 @@ export async function ensureWithinProject(projectFilePath: string, inputPath: st
 		throw new Squawk('path_project_invalid', { projectFilePath });
 
 	const projectDir = path.join(projectFilePath, '..');
-	const relative = path.relative(projectDir, inputPath);
-	const isWithinProject = relative && !relative.startsWith('..') && !path.isAbsolute(relative);
+
+	// console.log({
+	// 	projectDir,
+	// 	inputPath,
+	// 	join: path.join(projectDir, inputPath),
+	// 	resolve: path.resolve(path.join(projectDir, inputPath)),
+	// });
+
+	const resolved = path.resolve(path.join(projectDir, inputPath));
+	const isWithinProject = resolved.startsWith(projectDir) && path.isAbsolute(resolved);
 
 	if (!isWithinProject)
 		throw new Squawk('path_not_within_project', { projectFilePath });
+
+	return resolved;
 }

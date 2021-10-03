@@ -2,7 +2,6 @@ import { ValueParts, VariableGroup, VariableGroups } from '@beak/common/types/be
 
 export const ActionTypes = {
 	START_VARIABLE_GROUPS: '@beak/global/variable-groups/START_VARIABLE_GROUPS',
-	VARIABLE_GROUPS_INFO: '@beak/global/variable-groups/VARIABLE_GROUPS_INFO',
 	VARIABLE_GROUPS_OPENED: '@beak/global/variable-groups/VARIABLE_GROUPS_OPENED',
 
 	UPDATE_VG: '@beak/global/variable-groups/UPDATE_VG',
@@ -28,8 +27,6 @@ export const ActionTypes = {
 export interface State {
 	loaded: boolean;
 
-	projectPath?: string;
-	variableGroupsPath?: string;
 	variableGroups: VariableGroups;
 
 	selectedGroups: Record<string, string>;
@@ -52,10 +49,6 @@ export const initialState: State = {
 export interface UpdateVgPayload {
 	name: string;
 	file: VariableGroup;
-}
-
-export interface VariableGroupsInfoPayload {
-	variableGroupsPath: string;
 }
 
 export interface UpdateEntityPayload {

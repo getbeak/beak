@@ -9,17 +9,16 @@ import { RequestPreferencePayload } from '../types';
 
 export default function* catchLoadPreferences({ payload }: PayloadAction<RequestPreferencePayload>) {
 	const { id } = payload;
-	const projectPath: string = yield select((s: ApplicationState) => s.global.project.projectPath);
 	const preferences: RequestPreference = yield select((s: ApplicationState) => s.global.preferences.requests[id]);
 
 	if (!preferences)
 		return;
 
-	yield call(writeRequestPreferences, preferences, projectPath, id);
+	yield call(writeRequestPreferences, preferences, id);
 }
 
-async function writeRequestPreferences(preferences: RequestPreference, projectPath: string, id: string) {
-	const preferencesPath = path.join(projectPath, '.beak', 'preferences', 'requests', `${id}.json`);
+async function writeRequestPreferences(preferences: RequestPreference, id: string) {
+	const preferencesPath = path.join('.beak', 'preferences', 'requests', `${id}.json`);
 
 	await ipcFsService.writeJson(preferencesPath, preferences);
 }

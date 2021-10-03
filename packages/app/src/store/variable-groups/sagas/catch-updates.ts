@@ -1,6 +1,6 @@
 import { removeVariableGroup, writeVariableGroup } from '@beak/app/lib/beak-variable-group';
-import { VariableGroups } from '@beak/common/types/beak-project';
 import { TypedObject } from '@beak/common/helpers/typescript';
+import { VariableGroups } from '@beak/common/types/beak-project';
 import { PayloadAction } from '@reduxjs/toolkit';
 import { call, delay, put, select } from 'redux-saga/effects';
 import * as uuid from 'uuid';
@@ -13,12 +13,9 @@ export default function* workerCatchUpdates({ type, payload }: PayloadAction<unk
 	const variableGroups: VariableGroups = yield select(
 		(s: ApplicationState) => s.global.variableGroups.variableGroups,
 	);
-	const variableGroupsPath: string = yield select(
-		(s: ApplicationState) => s.global.variableGroups.variableGroupsPath!,
-	);
 
 	if (type === ActionTypes.REMOVE_VG) {
-		yield call(removeVariableGroup, (payload as string), variableGroupsPath);
+		yield call(removeVariableGroup, (payload as string));
 
 		return;
 	}
@@ -35,9 +32,9 @@ export default function* workerCatchUpdates({ type, payload }: PayloadAction<unk
 		return;
 
 	yield put(actions.setLatestWrite(Date.now()));
-	yield call(writeVariableGroups, variableGroupsPath, variableGroups);
+	yield call(writeVariableGroups, variableGroups);
 }
 
-async function writeVariableGroups(path: string, vgs: VariableGroups) {
-	await Promise.all(TypedObject.keys(vgs).map(name => writeVariableGroup(name, vgs[name], path)));
+async function writeVariableGroups(vgs: VariableGroups) {
+	await Promise.all(TypedObject.keys(vgs).map(name => writeVariableGroup(name, vgs[name])));
 }

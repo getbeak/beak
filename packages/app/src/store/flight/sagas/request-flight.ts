@@ -4,6 +4,8 @@ import { convertToRealJson } from '@beak/app/features/json-editor/parsers';
 import { parseValueParts } from '@beak/app/features/realtime-values/parser';
 import { Context } from '@beak/app/features/realtime-values/types';
 import { convertRequestToUrl } from '@beak/app/utils/uri';
+import { requestBodyContentType } from '@beak/common/helpers/request';
+import { TypedObject } from '@beak/common/helpers/typescript';
 import {
 	RequestBody,
 	RequestBodyText,
@@ -11,8 +13,6 @@ import {
 	RequestOverview,
 	ToggleKeyValue,
 } from '@beak/common/types/beak-project';
-import { requestBodyContentType } from '@beak/common/helpers/request';
-import { TypedObject } from '@beak/common/helpers/typescript';
 import ksuid from '@cuvva/ksuid';
 import { call, put, select } from 'redux-saga/effects';
 
@@ -27,11 +27,10 @@ export default function* requestFlightWorker() {
 	const flightId = ksuid.generate('flight').toString();
 
 	const flight: State = yield select((s: ApplicationState) => s.global.flight);
-	const projectPath: string = yield select((s: ApplicationState) => s.global.project.projectPath);
 	const node: RequestNode = yield select((s: ApplicationState) => s.global.project.tree![requestId]);
 	const vgState: VGState = yield select((s: ApplicationState) => s.global.variableGroups);
 	const { selectedGroups, variableGroups } = vgState;
-	const context = { projectPath, selectedGroups, variableGroups };
+	const context = { selectedGroups, variableGroups };
 	const preparedRequest: RequestOverview = yield call(prepareRequest, node.info, context);
 
 	if (!node)

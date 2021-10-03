@@ -6,7 +6,6 @@ import { ipcDialogService, ipcEncryptionService, ipcWindowService } from '@beak/
 import actions, { alertInsert } from '@beak/app/store/project/actions';
 import { FolderNode, ProjectFile, RequestNode, Tree } from '@beak/common/types/beak-project';
 import ksuid from '@cuvva/ksuid';
-import { PayloadAction } from '@reduxjs/toolkit';
 import path from 'path-browserify';
 import { EventChannel } from 'redux-saga';
 import { call, put, select, take } from 'redux-saga/effects';
@@ -20,26 +19,18 @@ interface Event {
 	path: string;
 }
 
-export default function* workerStartProject({ payload }: PayloadAction<string>) {
-	const projectFilePath = payload;
-	const projectPath = path.join(projectFilePath, '..');
-	const projectTreePath = path.join(projectPath, 'tree');
-
+export default function* workerStartProject() {
 	let project: ProjectFile;
 	let channel: EventChannel<unknown>;
 
 	try {
 		// TODO(afr): Listen to this file too
-		project = yield call(readProjectFile, projectPath);
-		channel = createFsEmitter(projectTreePath, { followSymlinks: false });
+		project = yield call(readProjectFile);
+		channel = createFsEmitter('tree', { followSymlinks: false });
 
-		yield put(actions.insertProjectInfo({
-			projectPath,
-			treePath: projectTreePath,
-			name: project.name,
-		}));
-		yield put(startVariableGroups(projectPath));
-		yield initialImport(projectTreePath);
+		yield put(actions.insertProjectInfo({ name: project.name }));
+		yield put(startVariableGroups());
+		yield initialImport('tree');
 	} catch (error) {
 		if (error instanceof Error) {
 			if (error.message === 'Unsupported project version') {
@@ -68,7 +59,7 @@ export default function* workerStartProject({ payload }: PayloadAction<string>) 
 	}
 
 	// Check encryption status
-	const encryptionStatus: boolean = yield call([ipcEncryptionService, ipcEncryptionService.checkStatus], projectPath);
+	const encryptionStatus: boolean = yield call([ipcEncryptionService, ipcEncryptionService.checkStatus]);
 
 	if (!encryptionStatus) {
 		yield put(alertInsert({
@@ -191,6 +182,8 @@ function* handleRequest(event: Event) {
 				return;
 		}
 	}
+
+	console.log(event);
 
 	switch (event.type) {
 		case 'change':

@@ -9,14 +9,14 @@ export async function readVariableGroup(vgFilePath: string) {
 	return await readJsonAndValidate<VariableGroup>(vgFilePath, variableGroupSchema);
 }
 
-export async function writeVariableGroup(name: string, variableGroup: VariableGroup, vgFilePath: string) {
-	const filePath = path.join(vgFilePath, `${name}.json`);
+export async function writeVariableGroup(name: string, variableGroup: VariableGroup) {
+	const filePath = path.join('variable-groups', `${name}.json`);
 
 	await ipcFsService.writeJson(filePath, variableGroup, { spaces: '\t' });
 }
 
-export async function removeVariableGroup(name: string, vgFilePath: string) {
-	const filePath = path.join(vgFilePath, `${name}.json`);
+export async function removeVariableGroup(name: string) {
+	const filePath = path.join('variable-groups', `${name}.json`);
 
 	await ipcFsService.remove(filePath);
 }

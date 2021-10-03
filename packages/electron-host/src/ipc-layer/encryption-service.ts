@@ -1,5 +1,7 @@
 import { IpcEncryptionServiceMain } from '@beak/common/ipc/encryption';
+import { IpcEvent } from '@beak/common/ipc/ipc';
 import { ipcMain } from 'electron';
+import path from 'path';
 
 import {
 	decryptString,
@@ -8,21 +10,27 @@ import {
 	readProjectEncryptionKey,
 	writeProjectEncryptionKey,
 } from '../lib/aes';
+import { getProjectWindowMapping } from './fs-shared';
 
 const service = new IpcEncryptionServiceMain(ipcMain);
 
-service.registerCheckStatus(async (_event, projectFolder) => {
+service.registerCheckStatus(async event => {
+	const projectFolder = getProjectFolder(event);
 	const key = await readProjectEncryptionKey(projectFolder);
 
 	return key !== null;
 });
 
-service.registerSubmitKey(async (_event, { key, projectFolder }) =>
-	await writeProjectEncryptionKey(key, projectFolder));
+service.registerSubmitKey(async (event, { key }) => {
+	const projectFolder = getProjectFolder(event);
+
+	return await writeProjectEncryptionKey(key, projectFolder);
+});
 
 service.registerGenerateIv(async () => generateIv());
 
-service.registerEncryptString(async (_event, { iv, payload, projectFolder }) => {
+service.registerEncryptString(async (event, { iv, payload }) => {
+	const projectFolder = getProjectFolder(event);
 	const key = await readProjectEncryptionKey(projectFolder);
 
 	if (key === null)
@@ -31,7 +39,8 @@ service.registerEncryptString(async (_event, { iv, payload, projectFolder }) => 
 	return await encryptString(payload, key, iv);
 });
 
-service.registerDecryptString(async (_event, { iv, payload, projectFolder }) => {
+service.registerDecryptString(async (event, { iv, payload }) => {
+	const projectFolder = getProjectFolder(event);
 	const key = await readProjectEncryptionKey(projectFolder);
 
 	if (key === null)
@@ -39,3 +48,9 @@ service.registerDecryptString(async (_event, { iv, payload, projectFolder }) => 
 
 	return await decryptString(payload, key, iv);
 });
+
+function getProjectFolder(event: IpcEvent) {
+	const projectFilePath = getProjectWindowMapping(event);
+
+	return path.join(projectFilePath, '..');
+}

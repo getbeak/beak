@@ -3,7 +3,6 @@ import createFsEmitter, { scanDirectoryRecursively, ScanResult } from '@beak/app
 import { ipcDialogService } from '@beak/app/lib/ipc';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { VariableGroups } from '@beak/common/types/beak-project';
-import { PayloadAction } from '@reduxjs/toolkit';
 import path from 'path-browserify';
 import { call, put, select, take } from 'redux-saga/effects';
 
@@ -15,13 +14,10 @@ interface Emitter {
 	path: string;
 }
 
-export default function* workerStartVariableGroups({ payload }: PayloadAction<string>) {
-	const projectPath = payload;
-	const vgPath = path.join(projectPath, 'variable-groups');
-	const channel = createFsEmitter(vgPath, { depth: 0, followSymlinks: false });
+export default function* workerStartVariableGroups() {
+	const channel = createFsEmitter('variable-groups', { depth: 0, followSymlinks: false });
 
-	yield put(actions.variableGroupsInfo({ variableGroupsPath: vgPath }));
-	yield initialImport(vgPath);
+	yield initialImport('variable-groups');
 
 	while (true) {
 		const result: Emitter = yield take(channel);

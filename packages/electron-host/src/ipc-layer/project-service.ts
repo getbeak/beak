@@ -8,6 +8,7 @@ import * as path from 'path';
 import { addRecentProject } from '../lib/beak-hub';
 import createProject from '../lib/beak-project';
 import { closeWindow, createProjectMainWindow, tryCloseWelcomeWindow, windowStack } from '../window-management';
+import { setProjectWindowMapping } from './fs-shared';
 
 const service = new IpcProjectServiceMain(ipcMain);
 
@@ -23,7 +24,10 @@ service.registerOpenFolder(async (event, projectPath) => {
 
 	closeWindow((event as IpcMainInvokeEvent).sender.id);
 	tryCloseWelcomeWindow();
-	createProjectMainWindow(projectFilePath);
+
+	const projectWindowId = createProjectMainWindow(projectFilePath);
+
+	setProjectWindowMapping(projectWindowId, projectFilePath);
 });
 
 service.registerOpenProject(async event => {
@@ -62,7 +66,10 @@ service.registerOpenProject(async event => {
 
 	closeWindow((event as IpcMainInvokeEvent).sender.id);
 	tryCloseWelcomeWindow();
-	createProjectMainWindow(projectFilePath);
+
+	const projectWindowId = createProjectMainWindow(projectFilePath);
+
+	setProjectWindowMapping(projectWindowId, projectFilePath);
 });
 
 service.registerCreateProject(async (event, payload) => {
@@ -100,7 +107,10 @@ service.registerCreateProject(async (event, payload) => {
 
 		closeWindow((event as IpcMainInvokeEvent).sender.id);
 		tryCloseWelcomeWindow();
-		createProjectMainWindow(projectFilePath);
+
+		const projectWindowId = createProjectMainWindow(projectFilePath);
+
+		setProjectWindowMapping(projectWindowId, projectFilePath);
 	} catch (error) {
 		const sqk = Squawk.coerce(error);
 
