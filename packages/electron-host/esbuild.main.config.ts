@@ -107,6 +107,7 @@ export default {
 	},
 	sourcemap: true,
 	assetNames: '[name]',
+	external: ['node:fs'],
 } as BuildOptions;
 
 function writeDefinition(value: string | undefined) {
