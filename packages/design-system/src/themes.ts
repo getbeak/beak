@@ -19,9 +19,9 @@ const darkTheme: UIColors = {
 	secondaryBackground: '#161824',
 	blankBackground: '#1A1E2D',
 
-	surface: '#282D40',
+	surface: '#181d25',
 	surfaceHighlight: '#1b1e2b',
-	secondarySurface: '#3A3F55',
+	secondarySurface: '#242941',
 
 	backgroundBorderSeparator: '#4a4651',
 	surfaceBorderSeparator: '#1A1E2D',
