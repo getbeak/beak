@@ -168,6 +168,7 @@ export function createProjectMainWindow(projectFilePath: string) {
 	// Hopefully vibrancy comes to windows soon
 	if (process.platform === 'darwin') {
 		windowOpts.frame = false;
+		windowOpts.transparent = true;
 		windowOpts.vibrancy = 'under-window';
 	}
 
