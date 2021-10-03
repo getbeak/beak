@@ -12,6 +12,17 @@ export async function createFolderNode(directory: string, name?: string) {
 	return fullPath;
 }
 
+export async function renameFolderNode(newName: string, folderNode: FolderNode) {
+	const directory = path.dirname(folderNode.filePath);
+	const newFilePath = path.join(directory, newName);
+	const oldFilePath = folderNode.filePath;
+
+	if (await ipcFsService.pathExists(newFilePath))
+		throw new Error('Folder already exists');
+
+	await ipcFsService.move(oldFilePath, newFilePath);
+}
+
 export async function readFolderNode(filePath: string) {
 	const node: FolderNode = {
 		type: 'folder',

@@ -72,11 +72,11 @@ export const removeNodeFromDisk = createAction<RemoveNodeFromDiskPayload>(AT.REM
 export const createNewRequest = createAction<CreateNewThing>(AT.CREATE_NEW_REQUEST);
 export const createNewFolder = createAction<CreateNewThing>(AT.CREATE_NEW_FOLDER);
 
-export const requestRenameStarted = createAction<RequestRenameStarted>(AT.REQUEST_RENAME_STARTED);
-export const requestRenameUpdated = createAction<RequestRenameUpdated>(AT.REQUEST_RENAME_UPDATED);
-export const requestRenameCancelled = createAction<RequestRenameCancelled>(AT.REQUEST_RENAME_CANCELLED);
-export const requestRenameSubmitted = createAction<RequestRenameSubmitted>(AT.REQUEST_RENAME_SUBMITTED);
-export const requestRenameResolved = createAction<RequestRenameResolved>(AT.REQUEST_RENAME_RESOLVED);
+export const renameStarted = createAction<RequestRenameStarted>(AT.RENAME_STARTED);
+export const renameUpdated = createAction<RequestRenameUpdated>(AT.RENAME_UPDATED);
+export const renameCancelled = createAction<RequestRenameCancelled>(AT.RENAME_CANCELLED);
+export const renameSubmitted = createAction<RequestRenameSubmitted>(AT.RENAME_SUBMITTED);
+export const renameResolved = createAction<RequestRenameResolved>(AT.RENAME_RESOLVED);
 
 export const setLatestWrite = createAction<LatestWrite>(AT.SET_LATEST_WRITE);
 export const setWriteDebounce = createAction<WriteDebouncePayload>(AT.SET_WRITE_DEBOUNCE);
@@ -165,11 +165,11 @@ export default {
 	createNewRequest,
 	createNewFolder,
 
-	requestRenameStarted,
-	requestRenameUpdated,
-	requestRenameCancelled,
-	requestRenameSubmitted,
-	requestRenameResolved,
+	renameStarted,
+	renameUpdated,
+	renameCancelled,
+	renameSubmitted,
+	renameResolved,
 
 	setLatestWrite,
 	setWriteDebounce,

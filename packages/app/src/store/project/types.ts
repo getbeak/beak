@@ -37,11 +37,11 @@ export const ActionTypes = {
 	CREATE_NEW_REQUEST: '@beak/global/project/CREATE_NEW_REQUEST',
 	CREATE_NEW_FOLDER: '@beak/global/project/CREATE_NEW_FOLDER',
 
-	REQUEST_RENAME_STARTED: '@beak/global/project/REQUEST_RENAME_STARTED',
-	REQUEST_RENAME_UPDATED: '@beak/global/project/REQUEST_RENAME_UPDATED',
-	REQUEST_RENAME_CANCELLED: '@beak/global/project/REQUEST_RENAME_CANCELLED',
-	REQUEST_RENAME_SUBMITTED: '@beak/global/project/REQUEST_RENAME_SUBMITTED',
-	REQUEST_RENAME_RESOLVED: '@beak/global/project/REQUEST_RENAME_RESOLVED',
+	RENAME_STARTED: '@beak/global/project/RENAME_STARTED',
+	RENAME_UPDATED: '@beak/global/project/RENAME_UPDATED',
+	RENAME_CANCELLED: '@beak/global/project/RENAME_CANCELLED',
+	RENAME_SUBMITTED: '@beak/global/project/RENAME_SUBMITTED',
+	RENAME_RESOLVED: '@beak/global/project/RENAME_RESOLVED',
 
 	SET_LATEST_WRITE: '@beak/global/project/SET_LATEST_WRITE',
 	SET_WRITE_DEBOUNCE: '@beak/global/project/SET_WRITE_DEBOUNCE',
@@ -126,7 +126,9 @@ export interface ToggleableItemRemovedPayload extends RequestIdPayload {
 	identifier: string;
 }
 
-export interface RequestRenameStarted extends RequestIdPayload { }
+export interface RequestRenameStarted extends RequestIdPayload {
+	type: 'request' | 'folder';
+}
 export interface RequestRenameCancelled extends RequestIdPayload { }
 export interface RequestRenameSubmitted extends RequestIdPayload { }
 export interface RequestRenameResolved extends RequestIdPayload { }
@@ -144,7 +146,8 @@ export interface CreateNewThing {
 }
 
 export interface ActiveRename {
-	requestId: string;
+	type: 'request' | 'folder';
+	id: string;
 	name: string;
 }
 

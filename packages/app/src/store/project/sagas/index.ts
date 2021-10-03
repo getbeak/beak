@@ -9,8 +9,8 @@ import {
 } from './create-things';
 import duplicateRequest from './duplicate-request';
 import loadTabPreferences from './load-tab-preferences';
+import nodeRename from './node-rename';
 import removeNodeFromDisk from './remove-node-from-disk';
-import requestRename from './request-rename';
 import startProject from './start-project';
 
 const nodeUpdateWatcherActions = [
@@ -72,8 +72,8 @@ export default function* projectSaga() {
 		fork(function* removeNodeFromDiskWatcher() {
 			yield takeEvery(ActionTypes.REMOVE_NODE_FROM_DISK, removeNodeFromDisk);
 		}),
-		fork(function* requestRenameWatcher() {
-			yield takeLatest(ActionTypes.REQUEST_RENAME_SUBMITTED, requestRename);
+		fork(function* nodeRenameWatcher() {
+			yield takeLatest(ActionTypes.RENAME_SUBMITTED, nodeRename);
 		}),
 		fork(function* startProjectWatcher() {
 			yield takeEvery(ActionTypes.START_PROJECT, startProject);

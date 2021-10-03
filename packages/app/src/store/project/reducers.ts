@@ -6,7 +6,7 @@ import {
 	NamedStringEntry,
 	ValueEntries,
 } from '@beak/common/types/beak-json-editor';
-import { FolderNode, RequestBodyJson, RequestBodyUrlEncodedForm, RequestNode, Tree } from '@beak/common/types/beak-project';
+import { FolderNode, RequestBodyJson, RequestBodyUrlEncodedForm, RequestNode } from '@beak/common/types/beak-project';
 import ksuid from '@cuvva/ksuid';
 import { createReducer } from '@reduxjs/toolkit';
 
@@ -192,28 +192,31 @@ const projectReducer = createReducer(initialState, builder => {
 			state.tree = rest;
 		})
 
-		.addCase(actions.requestRenameStarted, (state, action) => {
-			const node = state.tree[action.payload.requestId] as RequestNode;
+		.addCase(actions.renameStarted, (state, action) => {
+			const { type, requestId } = action.payload;
+
+			const node = state.tree[requestId];
 
 			state.activeRename = {
-				requestId: action.payload.requestId,
+				id: requestId,
 				name: node.name,
+				type,
 			};
 		})
-		.addCase(actions.requestRenameUpdated, (state, action) => {
+		.addCase(actions.renameUpdated, (state, action) => {
 			const { requestId, name } = action.payload;
 
-			if (state.activeRename?.requestId !== requestId)
+			if (state.activeRename?.id !== requestId)
 				return;
 
 			state.activeRename.name = name;
 		})
-		.addCase(actions.requestRenameCancelled, (state, action) => {
-			if (state.activeRename?.requestId === action.payload.requestId)
+		.addCase(actions.renameCancelled, (state, action) => {
+			if (state.activeRename?.id === action.payload.requestId)
 				state.activeRename = void 0;
 		})
-		.addCase(actions.requestRenameResolved, (state, action) => {
-			if (state.activeRename?.requestId === action.payload.requestId)
+		.addCase(actions.renameResolved, (state, action) => {
+			if (state.activeRename?.id === action.payload.requestId)
 				state.activeRename = void 0;
 		})
 

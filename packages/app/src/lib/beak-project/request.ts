@@ -63,7 +63,7 @@ export async function renameRequestNode(newName: string, requestNode: RequestNod
 	const oldFilePath = requestNode.filePath;
 
 	if (await ipcFsService.pathExists(newFilePath))
-		throw new Error('Request name already exists');
+		throw new Error('Request already exists');
 
 	await ipcFsService.move(oldFilePath, newFilePath);
 }

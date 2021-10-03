@@ -15,6 +15,7 @@ type Shortcuts =
 	'project-explorer.folder.down' |
 	'project-explorer.folder.left' |
 	'project-explorer.folder.right' |
+	'project-explorer.folder.rename' |
 
 	'omni-bar.launch.commands' |
 	'omni-bar.launch.finder' |
@@ -56,6 +57,12 @@ const definitions: Record<Shortcuts, PlatformSpecificDefinitions | PlatformAgnos
 	'project-explorer.folder.down': { type: 'agnostic', key: 'ArrowDown' },
 	'project-explorer.folder.left': { type: 'agnostic', key: 'ArrowLeft' },
 	'project-explorer.folder.right': { type: 'agnostic', key: 'ArrowRight' },
+	'project-explorer.folder.rename': {
+		type: 'specific',
+		windows: { key: 'F2' },
+		linux: { key: 'F2' },
+		darwin: { key: 'Enter' },
+	},
 
 	'omni-bar.launch.commands': { type: 'agnostic', ctrlOrMeta: true, shift: true, key: 'p' },
 	'omni-bar.launch.finder': { type: 'agnostic', ctrlOrMeta: true, key: ['p', 'k'] },

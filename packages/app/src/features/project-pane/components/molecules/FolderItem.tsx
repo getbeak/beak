@@ -3,10 +3,12 @@ import { checkShortcut } from '@beak/app/lib/keyboard-shortcuts';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { FolderNode } from '@beak/common/types/beak-project';
 import React, { useRef, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 
+import actions from '../../../../store/project/actions';
 import ContextMenuWrapper from '../atoms/ContextMenuWrapper';
+import Renamer from './Renamer';
 import Switch from './Switch';
 
 export interface FolderItemProps {
@@ -15,10 +17,13 @@ export interface FolderItemProps {
 }
 
 const FolderItem: React.FunctionComponent<FolderItemProps> = props => {
+	const dispatch = useDispatch();
 	const { depth } = props;
 	const [expanded, setExpanded] = useState(true);
 	const element = useRef<HTMLDivElement>();
 	const [target, setTarget] = useState<HTMLElement>();
+
+	const rename = useSelector(s => s.global.project.activeRename);
 	const node = useSelector(s => s.global.project.tree![props.id]) as FolderNode;
 	const nodes = useSelector(s => s.global.project.tree!);
 	const childNodes = TypedObject.values(nodes)
@@ -35,6 +40,9 @@ const FolderItem: React.FunctionComponent<FolderItemProps> = props => {
 				}}
 				tabIndex={0}
 				onKeyDown={event => {
+					if (rename?.id === node.id)
+						return;
+
 					switch (true) {
 						case checkShortcut('project-explorer.folder.left', event):
 							if (expanded)
@@ -64,6 +72,11 @@ const FolderItem: React.FunctionComponent<FolderItemProps> = props => {
 
 							break;
 
+						case checkShortcut('project-explorer.folder.rename', event):
+							dispatch(actions.renameStarted({ requestId: node.id, type: 'folder' }));
+
+							break;
+
 						default:
 							return;
 					}
@@ -73,7 +86,9 @@ const FolderItem: React.FunctionComponent<FolderItemProps> = props => {
 				onClick={() => setExpanded(!expanded)}
 			>
 				<Chevron expanded={expanded} />
-				{node.name}
+				<Renamer node={node} parentRef={element}>
+					{node.name}
+				</Renamer>
 			</Wrapper>
 
 			{expanded && childNodes.filter(n => n.type === 'folder').map(n => (
@@ -98,6 +113,7 @@ const FolderItem: React.FunctionComponent<FolderItemProps> = props => {
 };
 
 const Wrapper = styled.div<{ depth: number }>`
+	display: flex;
 	padding: 3px 0;
 	padding-left: ${props => (props.depth * 8) + 21}px;
 	color: ${props => props.theme.ui.textMinor};
@@ -120,6 +136,7 @@ const Chevron = styled.div<{ expanded: boolean }>`
 	border-bottom: 1px solid ${props => props.theme.ui.textOnSurfaceBackground};
 	width: 5px;
 	height: 5px;
+	margin-top: 6px;
 	margin-right: 5px;
 	margin-left: -5px;
 	transform: rotate(${props => props.expanded ? '45deg' : '-45deg'});
