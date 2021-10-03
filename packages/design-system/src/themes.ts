@@ -4,7 +4,7 @@ const darkTheme: UIColors = {
 	primaryFill: '#d45d80',
 	secondaryFill: '#333399',
 	tertiaryFill: '#33CC99',
-	surfaceFill: '#1A1E2D',
+	surfaceFill: '#2a2f43',
 	blankFill: '#fff',
 	alertFill: '#FC3233',
 
