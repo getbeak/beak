@@ -1,10 +1,11 @@
 import { removeFolderNode } from '@beak/app/lib/beak-project/folder';
 import { removeRequestNode } from '@beak/app/lib/beak-project/request';
 import { ipcDialogService } from '@beak/app/lib/ipc';
+import { TypedObject } from '@beak/common/helpers/typescript';
 import { ShowMessageBoxRes } from '@beak/common/ipc/dialog';
-import { Nodes } from '@beak/common/types/beak-project';
+import { Nodes, RequestNode, Tree } from '@beak/common/types/beak-project';
 import { PayloadAction } from '@reduxjs/toolkit';
-import { call, put, select } from 'redux-saga/effects';
+import { call, delay, put, select } from 'redux-saga/effects';
 
 import { ApplicationState } from '../..';
 import actions from '../actions';
@@ -34,4 +35,19 @@ export default function* workerRemoveNodeFromDisk({ payload }: PayloadAction<Rem
 		yield call(removeRequestNode, node.filePath);
 
 	yield put(actions.removeNodeFromStore(requestId));
+
+	// Wait for FS changes to have happened and to be reported
+	// This is for folder deletions, instead of simple request ones
+	yield delay(300);
+
+	const selectedTab: string | undefined = yield select((s: ApplicationState) => s.global.project.selectedTabPayload);
+
+	if (!selectedTab)
+		return;
+
+	const tree: Tree = yield select((s: ApplicationState) => s.global.project.tree);
+	const requests = TypedObject.values(tree).filter(t => t.type === 'request') as RequestNode[];
+
+	if (!requests.find(r => r.id === selectedTab))
+		yield put(actions.closeSelectedTab(selectedTab));
 }
