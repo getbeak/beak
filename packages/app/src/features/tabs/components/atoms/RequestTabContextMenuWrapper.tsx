@@ -75,18 +75,13 @@ const RequestTabContextMenuWrapper: React.FunctionComponent<RequestTabContextMen
 				id: ksuid.generate('ctxmenuitem').toString(),
 				label: 'Copy path',
 				enabled: isRequestTab,
-				click: () => {
-					// TODO(afr): Add project path
-					navigator.clipboard.writeText(node.filePath);
-				},
+				click: () => ipcExplorerService.copyFullNodePath(node.filePath),
 			},
 			{
 				id: ksuid.generate('ctxmenuitem').toString(),
 				label: 'Copy relative path',
 				enabled: isRequestTab,
-				click: () => {
-					navigator.clipboard.writeText(node.filePath);
-				},
+				click: () => navigator.clipboard.writeText(node.filePath),
 			},
 
 			{ id: ksuid.generate('ctxmenuitem').toString(), type: 'separator' },
