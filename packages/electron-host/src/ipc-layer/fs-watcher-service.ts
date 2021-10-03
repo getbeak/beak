@@ -25,11 +25,6 @@ service.registerStartWatching(async (event, payload: StartWatchingReq) => {
 	const watcher = chokidar
 		.watch(filePath, options)
 		.on('all', (eventName, path) => {
-			console.log({
-				path,
-				replaced: removeProjectPathPrefix(event, path),
-			});
-
 			const destroyed = checkForDestruction(() => {
 				service.sendWatcherEvent(sender, payload.sessionIdentifier, {
 					eventName,

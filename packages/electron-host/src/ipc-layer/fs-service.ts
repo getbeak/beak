@@ -107,14 +107,6 @@ export async function ensureWithinProject(projectFilePath: string, inputPath: st
 		throw new Squawk('path_project_invalid', { projectFilePath });
 
 	const projectDir = path.join(projectFilePath, '..');
-
-	// console.log({
-	// 	projectDir,
-	// 	inputPath,
-	// 	join: path.join(projectDir, inputPath),
-	// 	resolve: path.resolve(path.join(projectDir, inputPath)),
-	// });
-
 	const resolved = path.resolve(path.join(projectDir, inputPath));
 	const isWithinProject = resolved.startsWith(projectDir) && path.isAbsolute(resolved);
 

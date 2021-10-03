@@ -46,7 +46,7 @@ async function loadTabPreferences() {
 		return preferenceFile.file;
 	} catch (error) {
 		if (Squawk.coerce(error).code !== 'schema_invalid')
-			throw error;
+			console.error(error);
 
 		return null;
 	}
