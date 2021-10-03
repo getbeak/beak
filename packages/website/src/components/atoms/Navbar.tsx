@@ -4,7 +4,7 @@ import styled from 'styled-components';
 
 import Container from './Container';
 
-export const NavBrand = styled.div`
+export const NavBrand = styled.a`
 	display: flex;
 	flex-direction: row;
 
@@ -15,6 +15,9 @@ export const NavBrand = styled.div`
 	font-weight: 600;
 	font-size: 22px;
 	line-height: 24px;
+
+	color: ${p => p.theme.ui.textOnAction};
+	text-decoration: none;
 `;
 
 export const NavLogo = styled.div`
@@ -39,7 +42,22 @@ export const NavItems = styled.div`
 	justify-content: space-evenly;
 `;
 
-export const NavItem = styled(NavLink)`
+export const NavItemLocal = styled(NavLink)`
+	padding: 5px 10px;
+	margin: 0 8px;
+
+	font-size: 14px;
+	text-decoration: none;
+	color: ${p => p.theme.ui.textMinor};
+
+	transition: color .2s ease;
+
+	&:hover {
+		color: ${p => p.theme.ui.textOnSurfaceBackground};
+	}
+`;
+
+export const NavItemExternal = styled.a`
 	padding: 5px 10px;
 	margin: 0 8px;
 

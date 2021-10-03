@@ -3,7 +3,7 @@ import React from 'react';
 import Container from '../components/atoms/Container';
 import Footer from '../components/atoms/Footer';
 import FooterLogo from '../components/atoms/FooterLogo';
-import Navbar, { NavBrand, NavItem, NavItems, NavLogo } from '../components/atoms/Navbar';
+import Navbar, { NavBrand, NavItemExternal, NavItemLocal, NavItems, NavLogo } from '../components/atoms/Navbar';
 import useSmoothHashScroll from '../hooks/use-smooth-hash-scroll';
 
 const AppContainer: React.FunctionComponent = ({ children }) => {
@@ -13,38 +13,38 @@ const AppContainer: React.FunctionComponent = ({ children }) => {
 		<React.Fragment>
 			<Navbar>
 				<Container>
-					<NavBrand>
+					<NavBrand href={'/'}>
 						<NavLogo />
 						{'Beak'}
 					</NavBrand>
 					<NavItems>
-						<NavItem to={'#features'}>
+						<NavItemLocal to={'#features'}>
 							{'Features'}
-						</NavItem>
-						{/* <NavItem to={'/pricing'}>
+						</NavItemLocal>
+						{/* <NavItemLocal to={'/pricing'}>
 							{'Pricing'}
-						</NavItem> */}
-						<NavItem
+						</NavItemLocal> */}
+						<NavItemExternal
 							target={'_blank'}
 							rel={'noopener noreferrer nofollow'}
-							to={'https://docs.getbeak.app'}
+							href={'https://docs.getbeak.app'}
 						>
 							{'Docs'}
-						</NavItem>
-						<NavItem
+						</NavItemExternal>
+						<NavItemExternal
 							target={'_blank'}
 							rel={'noopener noreferrer nofollow'}
-							to={'https://blog.getbeak.app'}
+							href={'https://blog.getbeak.app'}
 						>
 							{'Blog'}
-						</NavItem>
-						<NavItem
+						</NavItemExternal>
+						<NavItemExternal
 							target={'_blank'}
 							rel={'noopener noreferrer nofollow'}
-							to={'https://twitter.com/beakapp'}
+							href={'https://twitter.com/beakapp'}
 						>
 							{'Twitter'}
-						</NavItem>
+						</NavItemExternal>
 					</NavItems>
 				</Container>
 			</Navbar>
