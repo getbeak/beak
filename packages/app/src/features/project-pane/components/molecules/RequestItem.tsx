@@ -4,11 +4,17 @@ import { TypedObject } from '@beak/common/helpers/typescript';
 import { RequestNode } from '@beak/common/types/beak-project';
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
+import validFilename from 'valid-filename';
 
 import actions from '../../../../store/project/actions';
 import ContextMenuWrapper from '../atoms/ContextMenuWrapper';
 import RequestStatusBlob from '../atoms/RequestStatusBlob';
+
+const errors = {
+	noName: 'A request name must be provided.',
+	notValid: 'The request name given is not valid.',
+};
 
 export interface RequestItemProps {
 	depth: number;
@@ -19,6 +25,7 @@ export interface RequestItemProps {
 const RequestItem: React.FunctionComponent<RequestItemProps> = props => {
 	const dispatch = useDispatch();
 	const [editing, setEditing] = useState(false);
+	const [error, setError] = useState<string | undefined>(void 0);
 	const renameInputRef = useRef<HTMLInputElement>(null);
 	const wrapperRef = useRef<HTMLDivElement>();
 	const [target, setTarget] = useState<HTMLElement>();
@@ -41,13 +48,13 @@ const RequestItem: React.FunctionComponent<RequestItemProps> = props => {
 
 	useEffect(() => {
 		if (!rename) {
-			setEditing(false);
+			reset();
 
 			return;
 		}
 
 		if (rename.requestId !== node.id) {
-			setEditing(false);
+			reset();
 			wrapperRef?.current?.focus();
 
 			return;
@@ -58,6 +65,29 @@ const RequestItem: React.FunctionComponent<RequestItemProps> = props => {
 		else
 			setEditing(true);
 	}, [rename?.requestId, editing]);
+
+	function reset() {
+		setEditing(false);
+		setError(void 0);
+	}
+
+	function updateEditValue(value: string) {
+		dispatch(actions.requestRenameUpdated({ requestId: node.id, name: value }));
+
+		switch (true) {
+			case value === '':
+				setError(errors.noName);
+				break;
+
+			case !validFilename(value):
+				setError(errors.notValid);
+				break;
+
+			default:
+				setError(void 0);
+				break;
+		}
+	}
 
 	return (
 		<ContextMenuWrapper mode={'request'} nodeId={props.id} target={target}>
@@ -126,27 +156,34 @@ const RequestItem: React.FunctionComponent<RequestItemProps> = props => {
 					</Name>
 				)}
 				{editing && rename && (
-					<RenameInput
-						ref={renameInputRef}
-						type={'text'}
-						value={rename.name}
-						onBlur={() => dispatch(actions.requestRenameCancelled({ requestId: node.id }))}
-						onKeyDown={e => {
-							if (!['Escape', 'Enter'].includes(e.key))
-								return;
+					<RenameContainer>
+						<RenameInput
+							ref={renameInputRef}
+							type={'text'}
+							value={rename.name}
+							$error={Boolean(error)}
+							onBlur={() => dispatch(actions.requestRenameCancelled({ requestId: node.id }))}
+							onKeyDown={e => {
+								if (!['Escape', 'Enter'].includes(e.key))
+									return;
 
-							if (e.key === 'Escape')
-								dispatch(actions.requestRenameCancelled({ requestId: node.id }));
-							else if (e.key === 'Enter') // TODO(afr): Validation here
-								dispatch(actions.requestRenameSubmitted({ requestId: node.id }));
+								if (e.key === 'Escape')
+									dispatch(actions.requestRenameCancelled({ requestId: node.id }));
 
-							// Return focus to the element behind the input!
-							window.setTimeout(() => wrapperRef.current?.focus(), 1);
-						}}
-						onChange={e => {
-							dispatch(actions.requestRenameUpdated({ requestId: node.id, name: e.currentTarget.value }));
-						}}
-					/>
+								if (e.key === 'Enter') {
+									if (error !== void 0)
+										return;
+
+									dispatch(actions.requestRenameSubmitted({ requestId: node.id }));
+								}
+
+								// Return focus to the element behind the input!
+								window.setTimeout(() => wrapperRef.current?.focus(), 1);
+							}}
+							onChange={e => updateEditValue(e.currentTarget.value)}
+						/>
+						{error && <RenameError>{error}</RenameError>}
+					</RenameContainer>
 				)}
 
 				{mostRecentFlight && <RequestStatusBlob $status={mostRecentFlight} />}
@@ -189,14 +226,34 @@ const Name = styled.abbr`
 	text-decoration: none;
 `;
 
-const RenameInput = styled.input`
+const RenameContainer = styled.div`
+	position: relative;
+	flex-grow: 2;
+`;
+
+const RenameInput = styled.input<{ $error: boolean }>`
 	border: 1px solid ${p => p.theme.ui.primaryFill};
-	border-right: 0;
 	background-color: ${p => p.theme.ui.background};
 	color: ${p => p.theme.ui.textOnSurfaceBackground};
 	width: calc(100% - 4px);
 
 	font-size: 13px;
+
+	box-shadow: none !important;
+	${p => p.$error && css`border-color: ${p.theme.ui.destructiveAction} !important;`}
+`;
+
+const RenameError = styled.div`
+	position: absolute;
+	top: 19px;
+	left: 0; right: 0;
+	background: ${p => p.theme.ui.background};
+	border: 1px solid ${p => p.theme.ui.destructiveAction};
+	border-top: none;
+	color: ${p => p.theme.ui.textOnSurfaceBackground};
+
+	padding: 4px 2px;
+	font-size: 12px;
 `;
 
 export default RequestItem;
