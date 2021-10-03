@@ -31,6 +31,7 @@ const ProjectMain: React.FunctionComponent = () => {
 
 	useEffect(() => {
 		dispatch(startProject());
+		dispatch(loadTabPreferences());
 	}, []);
 
 	useEffect(() => {
@@ -63,7 +64,6 @@ const ProjectMain: React.FunctionComponent = () => {
 		if (!loaded || setup)
 			return;
 
-		dispatch(loadTabPreferences());
 		window.setTimeout(() => setSetup(true), 300);
 
 		setTitle(`${project.name} - Beak`);
