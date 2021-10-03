@@ -1092,19 +1092,19 @@
     lodash "^4.17.15"
     tmp-promise "^3.0.2"
 
-"@monaco-editor/loader@^1.1.1":
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/@monaco-editor/loader/-/loader-1.1.1.tgz#37db648c81a86946d0febd391de00df9c28a0a3d"
-  integrity sha512-mkT4r4xDjIyOG9o9M6rJDSzEIeonwF80sYErxEvAAL4LncFVdcbNli8Qv6NDqF6nyv6sunuKkDzo4iFjxPL+uQ==
+"@monaco-editor/loader@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@monaco-editor/loader/-/loader-1.2.0.tgz#373fad69973384624e3d9b60eefd786461a76acd"
+  integrity sha512-cJVCG/T/KxXgzYnjKqyAgsKDbH9mGLjcXxN6AmwumBwa2rVFkwvGcUj1RJtD0ko4XqLqJxwqsN/Z/KURB5f1OQ==
   dependencies:
     state-local "^1.0.6"
 
-"@monaco-editor/react@^4.2.2":
-  version "4.2.2"
-  resolved "https://registry.yarnpkg.com/@monaco-editor/react/-/react-4.2.2.tgz#636e5b8eb9519ef62f475f9a4a50f62ee0c493a8"
-  integrity sha512-yDDct+f/mZ946tJEXudvmMC8zXDygkELNujpJGjqJ0gS3WePZmS/IwBBsuJ8JyKQQC3Dy/+Ivg1sSpW+UvCv9g==
+"@monaco-editor/react@^4.3.1":
+  version "4.3.1"
+  resolved "https://registry.yarnpkg.com/@monaco-editor/react/-/react-4.3.1.tgz#d65bcbf174c39b6d4e7fec43d0cddda82b70a12a"
+  integrity sha512-f+0BK1PP/W5I50hHHmwf11+Ea92E5H1VZXs+wvKplWUWOfyMa1VVwqkJrXjRvbcqHL+XdIGYWhWNdi4McEvnZg==
   dependencies:
-    "@monaco-editor/loader" "^1.1.1"
+    "@monaco-editor/loader" "^1.2.0"
     prop-types "^15.7.2"
 
 "@nodelib/fs.scandir@2.1.5":
@@ -1793,10 +1793,19 @@
     "@types/history" "*"
     "@types/react" "*"
 
-"@types/react@*", "@types/react@^17.0.11", "@types/react@^17.0.27":
+"@types/react@*", "@types/react@^17.0.11":
   version "17.0.21"
   resolved "https://registry.yarnpkg.com/@types/react/-/react-17.0.21.tgz#069c43177cd419afaab5ce26bb4e9056549f7ea6"
   integrity sha512-GzzXCpOthOjXvrAUFQwU/svyxu658cwu00Q9ugujS4qc1zXgLFaO0kS2SLOaMWLt2Jik781yuHCWB7UcYdGAeQ==
+  dependencies:
+    "@types/prop-types" "*"
+    "@types/scheduler" "*"
+    csstype "^3.0.2"
+
+"@types/react@^17.0.27":
+  version "17.0.27"
+  resolved "https://registry.yarnpkg.com/@types/react/-/react-17.0.27.tgz#6498ed9b3ad117e818deb5525fa1946c09f2e0e6"
+  integrity sha512-zgiJwtsggVGtr53MndV7jfiUESTqrbxOcBvwfe6KS/9bzaVPCTDieTWnFNecVNx6EAaapg5xsLLWFfHHR437AA==
   dependencies:
     "@types/prop-types" "*"
     "@types/scheduler" "*"
