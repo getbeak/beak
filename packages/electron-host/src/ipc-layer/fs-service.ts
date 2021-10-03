@@ -13,7 +13,7 @@ import { ipcMain } from 'electron';
 import fs from 'fs-extra';
 import path from 'path';
 
-import { getProjectWindowMapping, removeProjectPathPrefix } from './fs-shared';
+import { getProjectWindowMapping } from './fs-shared';
 
 const service = new IpcFsServiceMain(ipcMain);
 
@@ -81,7 +81,7 @@ service.registerReadDir(async (event, payload: ReadDirReq) => {
 	const directoryEntries = await fs.readdir(filePath, payload.options || void 0);
 
 	return directoryEntries.map(d => ({
-		name: removeProjectPathPrefix(event, d.name),
+		name: d.name,
 		isDirectory: d.isDirectory(),
 	}));
 });

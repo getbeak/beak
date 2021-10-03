@@ -183,8 +183,6 @@ function* handleRequest(event: Event) {
 		}
 	}
 
-	console.log(event);
-
 	switch (event.type) {
 		case 'change':
 		case 'add': {

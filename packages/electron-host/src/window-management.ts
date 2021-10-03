@@ -166,8 +166,10 @@ export function createProjectMainWindow(projectFilePath: string) {
 	};
 
 	// Hopefully vibrancy comes to windows soon
-	if (process.platform === 'darwin')
+	if (process.platform === 'darwin') {
+		windowOpts.frame = false;
 		windowOpts.vibrancy = 'under-window';
+	}
 
 	// On Linux and Windows we want total control of the frame
 	if (process.platform !== 'darwin')

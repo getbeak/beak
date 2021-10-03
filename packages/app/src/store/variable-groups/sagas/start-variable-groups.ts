@@ -90,9 +90,8 @@ export default function* workerStartVariableGroups() {
 
 function* initialImport(vgPath: string) {
 	const items: ScanResult[] = yield scanDirectoryRecursively(vgPath);
-	const variableGroups: VariableGroups = yield call(readVariableGroups, items
-		.filter(i => !i.isDirectory).map(i => i.path),
-	);
+	const files = items.filter(i => !i.isDirectory).map(i => i.path);
+	const variableGroups: VariableGroups = yield call(readVariableGroups, files);
 
 	for (const vgk of TypedObject.keys(variableGroups)) {
 		const vg = variableGroups[vgk];

@@ -19,7 +19,5 @@ export function removeProjectPathPrefix(event: IpcEvent, filePath: string) {
 	const projectFilePath = getProjectWindowMapping(event);
 	const projectPath = path.join(projectFilePath, '..');
 
-	console.log(filePath.slice(projectPath.length + 1));
-
 	return filePath.slice(projectPath.length + 1);
 }
