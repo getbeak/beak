@@ -5,7 +5,7 @@ export function createDefaultOptions(): EditorProps['options'] {
 		automaticLayout: true,
 		minimap: { enabled: false },
 		fontFamily: '"Fira Code", Source Code Pro, Menlo, Monaco, "Courier New", monospace',
-		fontSize: 10,
+		fontSize: 11,
 		scrollbar: {
 			verticalScrollbarSize: 10,
 			horizontalScrollbarSize: 10,

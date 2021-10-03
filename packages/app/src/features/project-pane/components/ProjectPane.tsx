@@ -8,6 +8,7 @@ import styled, { useTheme } from 'styled-components';
 
 import Header from './atoms/Header';
 import SectionHeader from './atoms/SectionHeader';
+import Git from './organisms/Git';
 import TreeView from './organisms/TreeView';
 import VariableGroups from './organisms/VariableGroups';
 
@@ -45,6 +46,7 @@ const ProjectPane: React.FunctionComponent = () => {
 			>
 				{'Project'}
 			</SectionHeader>
+			<Git collapsed={collapser.project} />
 			<SectionHeader
 				collapsed={collapser.variableGroup}
 				onClick={() => toggleCollapser('variableGroup')}

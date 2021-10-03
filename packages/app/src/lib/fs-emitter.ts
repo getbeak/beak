@@ -33,16 +33,19 @@ export interface ScanResult {
 	isDirectory: boolean;
 }
 
-export async function scanDirectoryRecursively(dir: string) {
+export async function scanDirectoryRecursively(dir: string, allowAllFiles?: boolean) {
 	const items: ScanResult[] = [];
 
-	for await (const item of scanDirectoryRecursivelyIter(dir))
+	for await (const item of scanDirectoryRecursivelyIter(dir, allowAllFiles))
 		items.push(item);
 
 	return items;
 }
 
-async function* scanDirectoryRecursivelyIter(dir: string): AsyncGenerator<ScanResult, void, void> {
+async function* scanDirectoryRecursivelyIter(
+	dir: string,
+	allowAllFiles?: boolean,
+): AsyncGenerator<ScanResult, void, void> {
 	const dirents = await ipcFsService.readDir(dir, { withFileTypes: true });
 
 	for (const dirent of dirents) {
@@ -52,8 +55,8 @@ async function* scanDirectoryRecursivelyIter(dir: string): AsyncGenerator<ScanRe
 		if (dirent.isDirectory) {
 			yield { path: res, isDirectory: true };
 
-			yield* scanDirectoryRecursivelyIter(res);
-		} else if (extension === '.json') {
+			yield* scanDirectoryRecursivelyIter(res, allowAllFiles);
+		} else if (allowAllFiles || extension === '.json') {
 			yield { path: res, isDirectory: false };
 		}
 	}

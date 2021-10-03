@@ -15,6 +15,7 @@ import StatusBar from '../features/status-bar/components/StatusBar';
 import TabView from '../features/tabs/components/TabView';
 import { checkShortcut } from '../lib/keyboard-shortcuts';
 import { requestFlight } from '../store/flight/actions';
+import { startGit } from '../store/git/actions';
 import { loadTabPreferences, startProject } from '../store/project/actions';
 
 const ProjectMain: React.FunctionComponent = () => {
@@ -31,6 +32,7 @@ const ProjectMain: React.FunctionComponent = () => {
 
 	useEffect(() => {
 		dispatch(startProject());
+		dispatch(startGit());
 		dispatch(loadTabPreferences());
 	}, []);
 
