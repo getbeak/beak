@@ -3,6 +3,7 @@ import React from 'react';
 import { createPortal } from 'react-dom';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
+import * as uuid from 'uuid';
 
 import AlertSwitch from './AlertSwitch';
 
@@ -28,7 +29,7 @@ const AlertsPopover: React.FunctionComponent<AlertsPopoverProps> = props => {
 
 				{hasAlerts && TypedObject.values(alerts)
 					.filter(Boolean)
-					.map(alert => (<AlertSwitch alert={alert!} />))}
+					.map(alert => (<AlertSwitch key={uuid.v4()} alert={alert!} />))}
 			</Wrapper>
 		</Container>,
 		document.getElementById('action-alerts-popover')!,
