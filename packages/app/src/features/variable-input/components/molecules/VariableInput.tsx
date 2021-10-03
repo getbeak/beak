@@ -328,8 +328,9 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = props => {
 		event.preventDefault();
 
 		const plainText = event.clipboardData.getData('text/plain');
+		const sanitised = plainText.replace(/[\r\n]+/g, '');
 
-		document.execCommand('insertText', false, plainText);
+		document.execCommand('insertText', false, sanitised);
 	}
 
 	return (
