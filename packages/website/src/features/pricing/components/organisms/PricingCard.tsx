@@ -40,12 +40,19 @@ const PricingCard: React.FunctionComponent = () => (
 			</PointList>
 		</CardBody>
 		<CardFooter>
-			<CtaButton target={'_blank'} href={'https://buy.stripe.com/test_14k6p83Vl0MX7h6bII'}>
+			<CtaButton target={'_blank'} href={getPurchaseLink()}>
 				{'Buy now'}
 			</CtaButton>
 		</CardFooter>
 	</Card>
 );
+
+function getPurchaseLink() {
+	if (window.location.host === 'getbeak.app')
+		return '#';
+
+	return 'https://buy.stripe.com/test_14k6p83Vl0MX7h6bII';
+}
 
 export default PricingCard;
 
