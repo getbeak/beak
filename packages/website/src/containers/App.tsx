@@ -21,9 +21,11 @@ const AppContainer: React.FunctionComponent = ({ children }) => {
 						<NavItemLocal to={'#features'}>
 							{'Features'}
 						</NavItemLocal>
-						{/* <NavItemLocal to={'/pricing'}>
-							{'Pricing'}
-						</NavItemLocal> */}
+						{window.location.host === 'nonprod-getbeak.app' && (
+							<NavItemLocal to={'/pricing'}>
+								{'Pricing'}
+							</NavItemLocal>
+						)}
 						<NavItemExternal
 							target={'_blank'}
 							rel={'noopener noreferrer nofollow'}

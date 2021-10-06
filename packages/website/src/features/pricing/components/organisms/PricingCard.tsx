@@ -49,9 +49,9 @@ const PricingCard: React.FunctionComponent = () => (
 
 function getPurchaseLink() {
 	if (window.location.host === 'getbeak.app')
-		return '#';
+		return 'https://buy.stripe.com/eVa8xY80KedAdWw7ss';
 
-	return 'https://buy.stripe.com/test_14k6p83Vl0MX7h6bII';
+	return 'https://buy.stripe.com/test_14k6p84Zp2V56d27st';
 }
 
 export default PricingCard;
