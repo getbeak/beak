@@ -3668,10 +3668,10 @@ electron-devtools-installer@^3.2.0:
     tslib "^2.1.0"
     unzip-crx-3 "^0.2.0"
 
-electron-esbuild@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/electron-esbuild/-/electron-esbuild-2.0.0.tgz#0698f03a6dd3ab9a2ab8417e5a6e4458d9d34aad"
-  integrity sha512-BrJuzmtuRCeOTPY7lZd3YvE2GSrXfCWIp81OQcjBdkHJTEqWSAJPt0W/4MGpp8CH79OuR4YOLOTvO0YG3BsPSw==
+electron-esbuild@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/electron-esbuild/-/electron-esbuild-3.0.0.tgz#6c44353f5bf452d9e0a50ac92b383b987de89ffc"
+  integrity sha512-BY09YFdoEOasKCUmwSgGppNw4oa6iNj9x/tDZQgzioNwsQq7MvAkBPZRmxAbmSjqYkAdsd7n7ay7QXi1PPshYg==
   dependencies:
     chokidar "^3.5.2"
     compression "^1.7.4"
@@ -3679,10 +3679,10 @@ electron-esbuild@^2.0.0:
     debounce-fn "^4.0.0"
     deepmerge "^4.2.2"
     dependency-tree-81 "^8.1.2"
-    esbuild "^0.12.15"
+    esbuild "^0.13.1"
     has "^1.0.3"
     http-proxy "^1.18.1"
-    joi "^17.4.1"
+    joi "^17.4.2"
     js-yaml "^4.1.0"
     livereload "^0.9.1"
     meow "^9.0.0"
@@ -3978,12 +3978,7 @@ esbuild-windows-arm64@0.13.4:
   resolved "https://registry.yarnpkg.com/esbuild-windows-arm64/-/esbuild-windows-arm64-0.13.4.tgz#fb239532f07b764d158f4cc787178ef4c6fadb5c"
   integrity sha512-vA6GLvptgftRcDcWngD5cMlL4f4LbL8JjU2UMT9yJ0MT5ra6hdZNFWnOeOoEtY4GtJ6OjZ0i+81sTqhAB0fMkg==
 
-esbuild@^0.12.15:
-  version "0.12.28"
-  resolved "https://registry.yarnpkg.com/esbuild/-/esbuild-0.12.28.tgz#84da0d2a0d0dee181281545271e0d65cf6fab1ef"
-  integrity sha512-pZ0FrWZXlvQOATlp14lRSk1N9GkeJ3vLIwOcUoo3ICQn9WNR4rWoNi81pbn6sC1iYUy7QPqNzI3+AEzokwyVcA==
-
-esbuild@^0.13.2, esbuild@^0.13.3:
+esbuild@^0.13.1, esbuild@^0.13.2, esbuild@^0.13.3:
   version "0.13.4"
   resolved "https://registry.yarnpkg.com/esbuild/-/esbuild-0.13.4.tgz#ce2deb56c4fb360938311cbfc67f8e467bb6841b"
   integrity sha512-wMA5eUwpavTBiNl+It6j8OQuKVh69l6z4DKDLzoTIqC+gChnPpcmqdA8WNHptUHRnfyML+mKEQPlW7Mybj8gHg==
@@ -5527,7 +5522,7 @@ jest-get-type@^27.0.6:
   resolved "https://registry.yarnpkg.com/jest-get-type/-/jest-get-type-27.0.6.tgz#0eb5c7f755854279ce9b68a9f1a4122f69047cfe"
   integrity sha512-XTkK5exIeUbbveehcSR8w0bhH+c0yloW/Wpl+9vZrjzztCPWrxhHwkIFpZzCt71oRBsgxmuUfxEqOYoZI2macg==
 
-joi@^17.4.1:
+joi@^17.4.2:
   version "17.4.2"
   resolved "https://registry.yarnpkg.com/joi/-/joi-17.4.2.tgz#02f4eb5cf88e515e614830239379dcbbe28ce7f7"
   integrity sha512-Lm56PP+n0+Z2A2rfRvsfWVDXGEWjXxatPopkQ8qQ5mxCEhwHG+Ettgg5o98FFaxilOxozoa14cFhrE/hOzh/Nw==
