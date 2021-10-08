@@ -11,6 +11,7 @@ import { IpcFsWatcherServiceRenderer } from '@beak/common/ipc/fs-watcher';
 import { PartialIpcRenderer } from '@beak/common/ipc/ipc';
 import { IpcNestServiceRenderer } from '@beak/common/ipc/nest';
 import { IpcNotificationServiceRenderer } from '@beak/common/ipc/notification';
+import { IpcPreferencesServiceRenderer } from '@beak/common/ipc/preferences';
 import { IpcProjectServiceRenderer } from '@beak/common/ipc/project';
 import { IpcWindowServiceRenderer } from '@beak/common/ipc/window';
 
@@ -31,5 +32,6 @@ export const ipcFsService = new IpcFsServiceRenderer(partialIpcRenderer);
 export const ipcFsWatcherService = new IpcFsWatcherServiceRenderer(partialIpcRenderer);
 export const ipcNestService = new IpcNestServiceRenderer(partialIpcRenderer);
 export const ipcNotificationService = new IpcNotificationServiceRenderer(partialIpcRenderer);
+export const ipcPreferencesService = new IpcPreferencesServiceRenderer(partialIpcRenderer);
 export const ipcProjectService = new IpcProjectServiceRenderer(partialIpcRenderer);
 export const ipcWindowService = new IpcWindowServiceRenderer(partialIpcRenderer);
