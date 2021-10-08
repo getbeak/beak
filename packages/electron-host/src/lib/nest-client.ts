@@ -15,8 +15,12 @@ class NestClient {
 	private client: Client;
 	private authRefreshPromise?: QueryablePromise<unknown>;
 
-	constructor(baseUrl: string) {
-		this.client = crpc(baseUrl);
+	constructor() {
+		const environment = persistentStore.get('environment');
+		const environmentPrefix = environment === 'nonprod' ? 'nonprod-' : '';
+		const nestUrl = `https://nest.${environmentPrefix}getbeak.app/1/`;
+
+		this.client = crpc(nestUrl);
 	}
 
 	async getAuth(): Promise<AuthenticateUserResponse | null> {
@@ -225,6 +229,6 @@ function convertToWebSafe(str: string) {
 		.replace(/[=]+$/, '');
 }
 
-const nestClient = new NestClient('https://nest.getbeak.app/1/');
+const nestClient = new NestClient();
 
 export default nestClient;

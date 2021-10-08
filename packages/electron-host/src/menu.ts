@@ -1,7 +1,7 @@
 import { Menu, MenuItemConstructorOptions, shell } from 'electron';
 import { autoUpdater } from 'electron-updater';
 
-import { createAboutWindow } from './window-management';
+import { createPreferencesWindow } from './window-management';
 
 const isMac = process.platform === 'darwin';
 
@@ -15,7 +15,12 @@ function createUpdateMenuItem(): MenuItemConstructorOptions {
 const macAppMenu: MenuItemConstructorOptions = {
 	label: 'Beak',
 	submenu: [
-		{ role: 'about', click: () => createAboutWindow() },
+		{ role: 'about' },
+		{ type: 'separator' },
+		{
+			label: 'Preferences...',
+			click: () => createPreferencesWindow(),
+		},
 		createUpdateMenuItem(),
 		{ type: 'separator' },
 		{ role: 'services' },
@@ -92,8 +97,14 @@ const nonMacHelp: MenuItemConstructorOptions = {
 				await shell.openExternal('https://getbeak.app');
 			},
 		},
+		{ type: 'separator' },
+		{
+			label: 'Preferences...',
+			click: () => createPreferencesWindow(),
+		},
+		{ type: 'separator' },
 		createUpdateMenuItem(),
-		{ role: 'about', click: () => createAboutWindow() },
+		{ role: 'about' },
 	],
 };
 

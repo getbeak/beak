@@ -6,7 +6,7 @@ import { closeWatchersOnWindow } from './ipc-layer/fs-watcher-service';
 import WindowStateManager from './lib/window-state-manager';
 import { staticPath } from './utils/static-path';
 
-type Container = 'about' | 'project-main' | 'welcome' | 'onboarding';
+type Container = 'project-main' | 'welcome' | 'onboarding' | 'preferences';
 
 export const windowStack: Record<number, BrowserWindow> = {};
 export const stackMap: Record<string, number> = { };
@@ -141,17 +141,35 @@ export function createWelcomeWindow() {
 	return window.id;
 }
 
-export function createAboutWindow() {
+export function createPreferencesWindow() {
+	const existing = stackMap.preferences;
+
+	if (existing && windowStack[existing]) {
+		if (windowStack[existing].isMinimized())
+			windowStack[existing].restore();
+
+		windowStack[existing].focus();
+
+		return existing;
+	}
+
 	const windowOpts: BrowserWindowConstructorOptions = {
-		height: 500,
-		width: 450,
-		titleBarStyle: 'hiddenInset',
-		maximizable: false,
+		height: 550,
+		width: 900,
 		resizable: false,
-		title: 'About Beak',
+		title: 'Beak preferences',
+		autoHideMenuBar: true,
+		transparent: true,
 	};
 
-	createWindow(windowOpts, 'about');
+	if (process.platform === 'darwin')
+		windowOpts.frame = false;
+
+	const window = createWindow(windowOpts, 'preferences');
+
+	stackMap.preferences = window.id;
+
+	return window.id;
 }
 
 export function createProjectMainWindow(projectFilePath: string) {

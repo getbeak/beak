@@ -3,8 +3,8 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 
-import About from './containers/About';
 import Onboarding from './containers/Onboarding';
+import Preferences from './containers/Preferences';
 import ProjectMain from './containers/ProjectMain';
 import Welcome from './containers/Welcome';
 import WindowSessionContext, { instance } from './contexts/window-session-context';
@@ -17,14 +17,14 @@ function getComponent(container: string | null) {
 		case 'welcome':
 			return <Welcome />;
 
-		case 'about':
-			return <About />;
-
 		case 'project-main':
 			return <ProjectMain />;
 
 		case 'onboarding':
 			return <Onboarding />;
+
+		case 'preferences':
+			return <Preferences />;
 
 		default:
 			return <span>{'unknown'}</span>;
