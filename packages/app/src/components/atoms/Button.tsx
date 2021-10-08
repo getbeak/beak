@@ -30,6 +30,21 @@ const secondaryCss = css`
 	}
 `;
 
+const destructiveCss = css`
+	background: ${props => props.theme.ui.background};
+	border: 2px solid ${props => props.theme.ui.destructiveAction};
+
+	&:not(:disabled) {
+		&:hover {
+			background: ${props => props.theme.ui.destructiveAction};
+		}
+
+		&:focus {
+			border-color: ${props => props.theme.ui.destructiveAction};
+		}
+	}
+`;
+
 const mdCss = css`
 	padding: 5px 10px;
 	font-size: 14px;
@@ -41,7 +56,7 @@ const smCss = css`
 `;
 
 export interface ButtonProps {
-	colour?: 'primary' | 'secondary';
+	colour?: 'primary' | 'secondary' | 'destructive';
 	size?: 'md' | 'sm';
 }
 
@@ -71,6 +86,8 @@ const Button = styled.button<ButtonProps>`
 			return primaryCss;
 		if (!colour || colour === 'secondary')
 			return secondaryCss;
+		if (colour === 'destructive')
+			return destructiveCss;
 
 		return '';
 	}}
