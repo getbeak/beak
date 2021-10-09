@@ -7,6 +7,7 @@ import WindowSessionContext from '../contexts/window-session-context';
 import { toVibrancyAlpha } from '../design-system/utils';
 import AccountItem from '../features/preferences/components/molecules/AccountItem';
 import EngineeringPane from '../features/preferences/components/organisms/EngineeringPane';
+import ExtensionsPane from '../features/preferences/components/organisms/ExtensionsPane';
 import GeneralPane from '../features/preferences/components/organisms/GeneralPane';
 
 const About: React.FunctionComponent = () => {
@@ -16,7 +17,6 @@ const About: React.FunctionComponent = () => {
 	return (
 		<Wrapper>
 			<Sidebar $darwin={windowSession.isDarwin()}>
-				{'test'}
 				<SidebarSpacer />
 				<AccountItem />
 				<SidebarSpacer />
@@ -46,14 +46,14 @@ const About: React.FunctionComponent = () => {
 						icon={faUserShield}
 						color={tab === 'engineering' ? 'white' : 'pink'}
 					/>
-					<span>{'Engineering'}</span>
+					<span>{'Shhh...'}</span>
 				</SidebarItem>
 			</Sidebar>
 			<Border />
 			<Panel>
 				{tab === 'general' && <GeneralPane />}
 				{tab === 'subscription' && <div />}
-				{tab === 'extensions' && <div />}
+				{tab === 'extensions' && <ExtensionsPane />}
 				{tab === 'engineering' && <EngineeringPane />}
 			</Panel>
 		</Wrapper>

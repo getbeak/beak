@@ -13,7 +13,7 @@ const EngineeringPane: React.FunctionComponent = () => {
 	}, []);
 
 	return (
-		<Pane title={'Engineering'}>
+		<Pane title={'Shhh...'}>
 			<ItemGroup>
 				<ItemLabel>{'Environment:'}</ItemLabel>
 				<select
