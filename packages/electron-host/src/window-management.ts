@@ -160,6 +160,9 @@ export function createPreferencesWindow() {
 		title: 'Beak preferences',
 		autoHideMenuBar: true,
 		transparent: true,
+		titleBarStyle: 'hiddenInset',
+		visualEffectState: 'active',
+		vibrancy: 'under-window',
 	};
 
 	if (process.platform === 'darwin')
