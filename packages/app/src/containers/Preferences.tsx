@@ -1,7 +1,7 @@
 import { faBoxes, faMoneyCheck, faUserShield,faWindowRestore } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useContext, useState } from 'react';
-import styled, { css } from 'styled-components';
+import styled, { css, useTheme } from 'styled-components';
 
 import WindowSessionContext from '../contexts/window-session-context';
 import { toVibrancyAlpha } from '../design-system/utils';
@@ -9,10 +9,13 @@ import AccountItem from '../features/preferences/components/molecules/AccountIte
 import EngineeringPane from '../features/preferences/components/organisms/EngineeringPane';
 import ExtensionsPane from '../features/preferences/components/organisms/ExtensionsPane';
 import GeneralPane from '../features/preferences/components/organisms/GeneralPane';
+import SubscriptionPane from '../features/preferences/components/organisms/SubscriptionPane';
 
 const About: React.FunctionComponent = () => {
 	const windowSession = useContext(WindowSessionContext);
 	const [tab, setTab] = useState('general');
+	const theme = useTheme();
+	const { blankFill, primaryFill } = theme.ui;
 
 	return (
 		<Wrapper>
@@ -23,28 +26,28 @@ const About: React.FunctionComponent = () => {
 				<SidebarItem $active={tab === 'general'} onClick={() => setTab('general')}>
 					<FontAwesomeIcon
 						icon={faWindowRestore}
-						color={tab === 'general' ? 'white' : 'pink'}
+						color={tab === 'general' ? blankFill : primaryFill}
 					/>
 					<span>{'General'}</span>
 				</SidebarItem>
 				<SidebarItem $active={tab === 'subscription'} onClick={() => setTab('subscription')}>
 					<FontAwesomeIcon
 						icon={faMoneyCheck}
-						color={tab === 'subscription' ? 'white' : 'pink'}
+						color={tab === 'subscription' ? blankFill : primaryFill}
 					/>
 					<span>{'Subscription'}</span>
 				</SidebarItem>
 				<SidebarItem $active={tab === 'extensions'} onClick={() => setTab('extensions')}>
 					<FontAwesomeIcon
 						icon={faBoxes}
-						color={tab === 'extensions' ? 'white' : 'pink'}
+						color={tab === 'extensions' ? blankFill : primaryFill}
 					/>
 					<span>{'Extensions'}</span>
 				</SidebarItem>
 				<SidebarItem $active={tab === 'engineering'} onClick={() => setTab('engineering')}>
 					<FontAwesomeIcon
 						icon={faUserShield}
-						color={tab === 'engineering' ? 'white' : 'pink'}
+						color={tab === 'engineering' ? blankFill : primaryFill}
 					/>
 					<span>{'Shhh...'}</span>
 				</SidebarItem>
@@ -52,7 +55,7 @@ const About: React.FunctionComponent = () => {
 			<Border />
 			<Panel>
 				{tab === 'general' && <GeneralPane />}
-				{tab === 'subscription' && <div />}
+				{tab === 'subscription' && <SubscriptionPane />}
 				{tab === 'extensions' && <ExtensionsPane />}
 				{tab === 'engineering' && <EngineeringPane />}
 			</Panel>

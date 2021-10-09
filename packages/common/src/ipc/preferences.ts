@@ -23,6 +23,14 @@ export class IpcPreferencesServiceRenderer extends IpcServiceRenderer {
 	async switchEnvironment(environment: string) {
 		return this.invoke(PreferencesMessages.SwitchEnvironment, environment);
 	}
+
+	async resetConfig() {
+		return this.invoke(PreferencesMessages.ResetConfig);
+	}
+
+	async signOut() {
+		return this.invoke(PreferencesMessages.SignOut);
+	}
 }
 
 export class IpcPreferencesServiceMain extends IpcServiceMain {
@@ -36,5 +44,13 @@ export class IpcPreferencesServiceMain extends IpcServiceMain {
 
 	registerSwitchEnvironment(fn: Listener<string>) {
 		this.registerListener(PreferencesMessages.SwitchEnvironment, fn);
+	}
+
+	registerResetConfig(fn: Listener<void>) {
+		this.registerListener(PreferencesMessages.ResetConfig, fn);
+	}
+
+	registerSignOut(fn: Listener<void>) {
+		this.registerListener(PreferencesMessages.SignOut, fn);
 	}
 }

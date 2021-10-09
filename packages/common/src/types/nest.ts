@@ -49,7 +49,10 @@ export interface GetSubscriptionStatusRequest {
 }
 
 export interface GetSubscriptionStatusResponse {
-	subscription: string;
+	status: string;
+	startDate: string;
+	endDate: string;
+	billingPortalUrl: string | null;
 }
 
 export interface ListNewsItemsRequest {

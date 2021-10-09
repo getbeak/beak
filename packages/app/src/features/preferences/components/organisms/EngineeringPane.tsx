@@ -1,8 +1,8 @@
 import Button from '@beak/app/components/atoms/Button';
 import { ipcPreferencesService } from '@beak/app/lib/ipc';
 import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
 
+import { ItemGroup, ItemLabel, ItemSpacer } from '../atoms/item';
 import Pane from '../molecules/Pane';
 
 const EngineeringPane: React.FunctionComponent = () => {
@@ -19,7 +19,10 @@ const EngineeringPane: React.FunctionComponent = () => {
 				<select
 					disabled={environment === void 0}
 					value={environment}
-					onChange={e => setEnvironment(e.target.value)}
+					onChange={e => {
+						setEnvironment(e.target.value);
+						ipcPreferencesService.switchEnvironment(e.target.value);
+					}}
 				>
 					<option value={'prod'}>{'Production'}</option>
 					<option value={'nonprod'}>{'Non-production'}</option>
@@ -28,26 +31,19 @@ const EngineeringPane: React.FunctionComponent = () => {
 
 			<ItemGroup>
 				<ItemLabel>{'Actions:'}</ItemLabel>
-				<Button>{'Reset config & cache'}</Button>
+				<Button onClick={() => ipcPreferencesService.resetConfig()}>
+					{'Reset config & cache'}
+				</Button>
 				<ItemSpacer />
-				<Button colour={'destructive'}>{'Sign out'}</Button>
+				<Button
+					colour={'destructive'}
+					onClick={() => ipcPreferencesService.signOut()}
+				>
+					{'Sign out'}
+				</Button>
 			</ItemGroup>
 		</Pane>
 	);
 };
-
-const ItemGroup = styled.div`
-	margin-bottom: 15px;
-`;
-
-const ItemLabel = styled.div`
-	font-size: 14px;
-	color: ${p => p.theme.ui.textMinor};
-	margin-bottom: 5px;
-`;
-
-const ItemSpacer = styled.div`
-	height: 5px;
-`;
 
 export default EngineeringPane;

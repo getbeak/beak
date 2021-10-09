@@ -16,7 +16,8 @@ const Pane: React.FunctionComponent<PaneProps> = ({ title, children }) => (
 
 const Wrapper = styled.div`
 	padding: 50px 40px;
-	height: calc(100% - 100px);
+	padding-bottom: 0;
+	height: calc(100% - 50px);
 	-webkit-app-region: drag;
 `;
 

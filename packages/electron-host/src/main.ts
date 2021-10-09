@@ -15,6 +15,7 @@ import createMenu from './menu';
 import { appIsPackaged } from './utils/static-path';
 import {
 	createOnboardingWindow,
+	createPreferencesWindow,
 	createWelcomeWindow,
 	windowStack,
 } from './window-management';
@@ -84,6 +85,8 @@ app.on('open-url', (_event, url) => {
 });
 
 async function createOrFocusDefaultWindow() {
+	// return createPreferencesWindow();
+
 	if (!persistentStore.get('passedOnboarding'))
 		return createOnboardingWindow();
 

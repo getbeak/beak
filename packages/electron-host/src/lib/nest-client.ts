@@ -1,4 +1,4 @@
-import { AuthenticateUserResponse, NewsItem } from '@beak/common/types/nest';
+import { AuthenticateUserResponse, GetSubscriptionStatusResponse, NewsItem } from '@beak/common/types/nest';
 import QueryablePromise from '@beak/common/utils/promises';
 import Squawk from '@beak/common/utils/squawk';
 import crpc, { Client } from 'crpc';
@@ -163,6 +163,17 @@ class NestClient {
 
 		if (response.subscription !== 'beak_alpha')
 			throw new Squawk('user_not_beta_enrolled');
+	}
+
+	async getSubscriptionStatus() {
+		const auth = await this.getAuth();
+
+		if (!auth)
+			throw new Squawk('not_authenticated');
+
+		return await this.rpc<GetSubscriptionStatusResponse>('2021-10-06/get_subscription_status', {
+			userId: auth.userId,
+		});
 	}
 
 	private async refresh() {

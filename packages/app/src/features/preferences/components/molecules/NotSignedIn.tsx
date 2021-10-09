@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 import styled, { useTheme } from 'styled-components';
 
-const AccountItem: React.FunctionComponent = () => {
+const NotSignedIn: React.FunctionComponent = () => {
 	const theme = useTheme();
 
 	return (
@@ -28,4 +28,4 @@ const Wrapper = styled.div`
 	color: ${p => p.theme.ui.textMinor};
 `;
 
-export default AccountItem;
+export default NotSignedIn;

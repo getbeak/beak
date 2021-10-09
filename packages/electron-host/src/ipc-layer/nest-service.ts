@@ -32,3 +32,4 @@ service.registerHandleMagicLink(async (_event, payload) => {
 });
 
 service.registerListNewsItems(async (_event, clientId) => await nestClient.listNewsItems(clientId));
+service.registerGetSubscriptionState(async () => await nestClient.getSubscriptionStatus());
