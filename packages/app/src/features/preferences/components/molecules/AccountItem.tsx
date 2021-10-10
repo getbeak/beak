@@ -32,22 +32,36 @@ const AccountItem: React.FunctionComponent = () => {
 		<Wrapper>
 			<FontAwesomeIcon
 				icon={faUserCircle}
-				size={'1x'}
+				size={'3x'}
 				color={theme.ui.primaryFill}
 			/>
-			<AccountEmail title={primaryEmail}>
-				{primaryEmail}
-			</AccountEmail>
+			<Account>
+				<AccountTop>{'Beak'}</AccountTop>
+				<AccountEmail title={primaryEmail}>
+					{primaryEmail}
+				</AccountEmail>
+			</Account>
 		</Wrapper>
 	);
 };
 
 const Wrapper = styled.div`
+	display: flex;
+	align-items: center;
 	border-radius: 10px;
-	font-size: 14px;
 	padding: 10px;
 	background: ${p => toHexAlpha(p.theme.ui.surface, 0.25)};
 	color: ${p => p.theme.ui.textMinor};
+`;
+
+const Account = styled.div`
+	margin-left: 10px;
+`;
+
+const AccountTop = styled.div`
+	font-size: 16px;
+	font-weight: 500;
+	color: ${p => p.theme.ui.textOnSurfaceBackground};
 `;
 
 const AccountEmail = styled.abbr`
@@ -56,6 +70,7 @@ const AccountEmail = styled.abbr`
 	word-wrap: break-word;
 	white-space: nowrap;
 	text-overflow: ellipsis;
+	font-size: 12px;
 `;
 
 export default AccountItem;
