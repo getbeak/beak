@@ -5,6 +5,7 @@ import React, { useEffect, useState } from 'react';
 
 import NotSignedIn from '../molecules/NotSignedIn';
 import Pane from '../molecules/Pane';
+import SubscriptionInformation from '../molecules/SubscriptionInformation';
 
 const SubscriptionPane: React.FunctionComponent = () => {
 	const [response, setResponse] = useState<GetSubscriptionStatusResponse | null>(null);
@@ -23,7 +24,7 @@ const SubscriptionPane: React.FunctionComponent = () => {
 	return (
 		<Pane title={'Subscription'}>
 			{fetching && 'Loading...'}
-			{response && 'Has sub'}
+			{response && <SubscriptionInformation subscription={response} />}
 			{error && (
 				<React.Fragment>
 					{notSignedIn && <NotSignedIn />}
