@@ -56,8 +56,8 @@ class Arbiter {
 				case squawk.code === 'ENOTFOUND':
 					break;
 
-				// Any error that we do know about
-				case squawk.code !== 'unknown': {
+				// If the token information is invalid, clear local auth
+				case squawk.code === 'unauthorized': {
 					await nestClient.setAuth(null);
 
 					status.status = false;
@@ -68,6 +68,8 @@ class Arbiter {
 				}
 
 				default:
+					logger.error('Unknown error checking subscription status', error);
+
 					break;
 			}
 		}

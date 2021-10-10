@@ -15,7 +15,6 @@ import createMenu from './menu';
 import { appIsPackaged } from './utils/static-path';
 import {
 	createOnboardingWindow,
-	createPreferencesWindow,
 	createWelcomeWindow,
 	windowStack,
 } from './window-management';
