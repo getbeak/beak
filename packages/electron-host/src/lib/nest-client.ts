@@ -151,23 +151,18 @@ class NestClient {
 		persistentStore.reset('magicStates');
 
 		await this.setAuth(authentication);
-		await this.ensureAlphaUser();
+		await this.ensureActiveSubscription();
 
 		return authentication;
 	}
 
-	async ensureAlphaUser() {
-		const auth = await this.getAuth();
+	async ensureActiveSubscription() {
+		const subscription = await this.getSubscriptionStatus();
 
-		if (!auth)
-			throw new Squawk('unauthenticated');
+		if (['active', 'incomplete'].includes(subscription.status))
+			return;
 
-		const response = await this.rpc<{ subscription: string }>('2020-12-14/get_subscription_status', {
-			userId: auth.userId,
-		});
-
-		if (response.subscription !== 'beak_alpha')
-			throw new Squawk('user_not_beta_enrolled');
+		throw new Squawk('subscription_not_active');
 	}
 
 	async getSubscriptionStatus() {

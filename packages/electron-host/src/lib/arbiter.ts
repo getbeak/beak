@@ -30,7 +30,7 @@ class Arbiter {
 			return;
 
 		try {
-			await nestClient.ensureAlphaUser();
+			await nestClient.ensureActiveSubscription();
 
 			status = {
 				lastSuccessfulCheck: new Date().toISOString(),

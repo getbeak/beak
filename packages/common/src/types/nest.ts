@@ -1,4 +1,5 @@
 export type GrantType = 'authorization_code' | 'refresh_token' | 'access_token';
+export type CancelType = 'immediate' | 'period_end';
 
 export interface MagicStates {
 	[state: string]: MagicState;
@@ -50,9 +51,12 @@ export interface GetSubscriptionStatusRequest {
 
 export interface GetSubscriptionStatusResponse {
 	status: string;
-	startDate: string;
-	endDate: string;
 	billingPortalUrl: string | null;
+	startDate: string;
+	endDate: string | null;
+	cancelAt: string | null;
+	cancelType: CancelType | null;
+	cancelledAt: string | null;
 }
 
 export interface GetUserRequest {
