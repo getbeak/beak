@@ -2,7 +2,7 @@ import { TypedObject } from '@beak/common/helpers/typescript';
 import Squawk from '@beak/common/utils/squawk';
 import { differenceInDays } from 'date-fns';
 
-import { createOnboardingWindow, windowStack } from '../window-management';
+import { createPortalWindow, windowStack } from '../window-management';
 import logger from './logger';
 import nestClient from './nest-client';
 import persistentStore from './persistent-store';
@@ -79,14 +79,14 @@ class Arbiter {
 		if (status.status === false) {
 			nestClient.setAuth(null);
 
-			const onboardingWindowId = createOnboardingWindow();
+			const portalWindowId = createPortalWindow();
 
 			TypedObject.values(windowStack).forEach(window => {
-				if (window.id !== onboardingWindowId)
+				if (window.id !== portalWindowId)
 					window.close();
 			});
 
-			windowStack[onboardingWindowId].focus();
+			windowStack[portalWindowId].focus();
 		} else {
 			TypedObject.values(windowStack).forEach(window => {
 				if (!window)

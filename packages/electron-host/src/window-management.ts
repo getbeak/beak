@@ -6,7 +6,7 @@ import { closeWatchersOnWindow } from './ipc-layer/fs-watcher-service';
 import WindowStateManager from './lib/window-state-manager';
 import { staticPath } from './utils/static-path';
 
-type Container = 'project-main' | 'welcome' | 'onboarding' | 'preferences';
+type Container = 'project-main' | 'welcome' | 'onboarding' | 'preferences' | 'portal';
 
 export const windowStack: Record<number, BrowserWindow> = {};
 export const stackMap: Record<string, number> = { };
@@ -204,8 +204,8 @@ export function createProjectMainWindow(projectFilePath: string) {
 	return window.id;
 }
 
-export function createOnboardingWindow() {
-	const existing = stackMap.onboarding;
+export function createPortalWindow() {
+	const existing = stackMap.portal;
 
 	if (existing && windowStack[existing]) {
 		if (windowStack[existing].isMinimized())
@@ -217,17 +217,23 @@ export function createOnboardingWindow() {
 	}
 
 	const windowOpts: BrowserWindowConstructorOptions = {
-		height: 350,
-		width: 650,
+		height: 400,
+		width: 800,
 		resizable: false,
-		autoHideMenuBar: false,
+		title: 'Welcome to Beak',
+		autoHideMenuBar: true,
+		transparent: true,
 		titleBarStyle: 'hiddenInset',
-		title: 'Welcome to the Beak Beta!',
+		visualEffectState: 'active',
+		vibrancy: 'under-window',
 	};
 
-	const window = createWindow(windowOpts, 'onboarding');
+	if (process.platform === 'darwin')
+		windowOpts.frame = false;
 
-	stackMap.onboarding = window.id;
+	const window = createWindow(windowOpts, 'portal');
+
+	stackMap.portal = window.id;
 
 	return window.id;
 }

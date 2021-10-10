@@ -14,7 +14,7 @@ import { parseAppUrl } from './lib/protocol';
 import createMenu from './menu';
 import { appIsPackaged } from './utils/static-path';
 import {
-	createOnboardingWindow,
+	createPortalWindow,
 	createWelcomeWindow,
 	windowStack,
 } from './window-management';
@@ -87,12 +87,12 @@ async function createOrFocusDefaultWindow() {
 	// return createPreferencesWindow();
 
 	if (!persistentStore.get('passedOnboarding'))
-		return createOnboardingWindow();
+		return createPortalWindow();
 
 	const auth = await nestClient.getAuth();
 
 	if (!auth)
-		return createOnboardingWindow();
+		return createPortalWindow();
 
 	const openWindow = Object.values(windowStack)[0];
 
@@ -112,7 +112,7 @@ function handleOpenUrl(url: string) {
 		return false;
 
 	const { code, state } = magicInfo;
-	const windowId = createOnboardingWindow();
+	const windowId = createPortalWindow();
 	const window = windowStack[windowId];
 
 	window?.webContents.send('inbound_magic_link', { code, state });

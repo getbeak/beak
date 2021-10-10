@@ -27,11 +27,13 @@ export default class WindowStateManager {
 	private window: BrowserWindow | undefined;
 	private state: WindowState;
 	private stateChangeTimer: NodeJS.Timeout | undefined;
+	private windowOptions: BrowserWindowConstructorOptions;
 
 	constructor(windowKey: string, windowOptions: BrowserWindowConstructorOptions) {
 		const existingState = persistentStore.get('windowStates')[windowKey];
 
 		this.windowKey = windowKey;
+		this.windowOptions = windowOptions;
 
 		if (existingState) {
 			this.state = existingState;
@@ -65,7 +67,9 @@ export default class WindowStateManager {
 			this.window.setFullScreen(true);
 
 		this.window.setPosition(this.state.x, this.state.y);
-		this.window.setSize(this.state.width, this.state.height);
+
+		if (this.windowOptions.resizable)
+			this.window.setSize(this.state.width, this.state.height);
 
 		this.window.on('resize', () => this.stateChangedHandler());
 		this.window.on('move', () => this.stateChangedHandler());

@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 
 import Onboarding from './containers/Onboarding';
+import Portal from './containers/Portal';
 import Preferences from './containers/Preferences';
 import ProjectMain from './containers/ProjectMain';
 import Welcome from './containers/Welcome';
@@ -25,6 +26,9 @@ function getComponent(container: string | null) {
 
 		case 'preferences':
 			return <Preferences />;
+
+		case 'portal':
+			return <Portal />;
 
 		default:
 			return <span>{'unknown'}</span>;

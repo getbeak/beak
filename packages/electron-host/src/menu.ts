@@ -19,6 +19,7 @@ const macAppMenu: MenuItemConstructorOptions = {
 		{ type: 'separator' },
 		{
 			label: 'Preferences...',
+			accelerator: isMac ? 'Cmd+,' : 'Ctrl+,',
 			click: () => createPreferencesWindow(),
 		},
 		createUpdateMenuItem(),
