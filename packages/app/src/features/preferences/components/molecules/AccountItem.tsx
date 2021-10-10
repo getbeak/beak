@@ -1,5 +1,4 @@
 import { ipcNestService } from '@beak/app/lib/ipc';
-import { GetUserResponse } from '@beak/common/types/nest';
 import { toHexAlpha } from '@beak/design-system/utils';
 import { faUserCircle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
