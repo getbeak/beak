@@ -55,6 +55,24 @@ export interface GetSubscriptionStatusResponse {
 	billingPortalUrl: string | null;
 }
 
+export interface GetUserRequest {
+	userId: string;
+}
+
+export interface GetUserResponse {
+	id: string;
+	createdAt: string;
+	identifiers: {
+		id: string;
+		identifierType: string;
+		identifierValue: string;
+		createdAt: string;
+		updatedAt: string | null;
+		verifiedAt: string | null;
+		removedAt: string | null;
+	}[];
+}
+
 export interface ListNewsItemsRequest {
 	clientId: string;
 }

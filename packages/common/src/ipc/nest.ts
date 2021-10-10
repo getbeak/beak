@@ -1,6 +1,6 @@
 import type { IpcMain } from 'electron';
 
-import { GetSubscriptionStatusResponse, NewsItem } from '../types/nest';
+import { GetSubscriptionStatusResponse, GetUserResponse, NewsItem } from '../types/nest';
 import { IpcServiceMain, IpcServiceRenderer, Listener, PartialIpcRenderer } from './ipc';
 
 export const NestMessages = {
@@ -8,6 +8,7 @@ export const NestMessages = {
 	HandleMagicLink: 'handle_magic_link',
 	ListNewsItems: 'list_news_items',
 	GetSubscriptionState: 'get_subscription_state',
+	GetUser: 'get_user',
 };
 
 interface HandleMagicLinkReq {
@@ -36,6 +37,10 @@ export class IpcNestServiceRenderer extends IpcServiceRenderer {
 	async getSubscriptionState() {
 		return this.invoke<GetSubscriptionStatusResponse>(NestMessages.GetSubscriptionState);
 	}
+
+	async getUser() {
+		return this.invoke<GetUserResponse>(NestMessages.GetUser);
+	}
 }
 
 export class IpcNestServiceMain extends IpcServiceMain {
@@ -57,5 +62,9 @@ export class IpcNestServiceMain extends IpcServiceMain {
 
 	registerGetSubscriptionState(fn: Listener<void, GetSubscriptionStatusResponse>) {
 		this.registerListener(NestMessages.GetSubscriptionState, fn);
+	}
+
+	registerGetUser(fn: Listener<void, GetUserResponse>) {
+		this.registerListener(NestMessages.GetUser, fn);
 	}
 }
