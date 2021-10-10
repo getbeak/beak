@@ -27,6 +27,7 @@ const Title = styled.div`
 `;
 
 const Container = styled.div`
+	background: transparent;
 	-webkit-app-region: no-drag;
 	margin-top: 20px;
 `;
