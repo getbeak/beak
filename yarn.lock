@@ -2140,10 +2140,10 @@ app-builder-bin@3.7.1:
   resolved "https://registry.yarnpkg.com/app-builder-bin/-/app-builder-bin-3.7.1.tgz#cb0825c5e12efc85b196ac3ed9c89f076c61040e"
   integrity sha512-ql93vEUq6WsstGXD+SBLSIQw6SNnhbDEM0swzgugytMxLp3rT24Ag/jcC80ZHxiPRTdew1niuR7P3/FCrDqIjw==
 
-app-builder-lib@22.14.2:
-  version "22.14.2"
-  resolved "https://registry.yarnpkg.com/app-builder-lib/-/app-builder-lib-22.14.2.tgz#08230f928b3dccc0ae090be6ef90ef8eb5e393f2"
-  integrity sha512-5zsvmsWinjBsvnF0Iys17B/pxVSXdbL7J9dkC7ODpey4zKkizBey8Sh/ru55hz2/ykkQFUZjqw0Bb68FNspx0Q==
+app-builder-lib@22.14.4:
+  version "22.14.4"
+  resolved "https://registry.yarnpkg.com/app-builder-lib/-/app-builder-lib-22.14.4.tgz#0e8ac4f84e3f7cb7e901e194ccc7e3204207655d"
+  integrity sha512-xuzuNe8Bbpdyr6rW82tWlpZASaaVj1GXTTRUq4JRk2YpobimRP47gfJQ8HFs8zCSgEQYhv4ki2Pl+5Rzpvp+8g==
   dependencies:
     "7zip-bin" "~5.1.1"
     "@develar/schema-utils" "~2.6.5"
@@ -3527,12 +3527,12 @@ dir-glob@^3.0.1:
   dependencies:
     path-type "^4.0.0"
 
-dmg-builder@22.14.2:
-  version "22.14.2"
-  resolved "https://registry.yarnpkg.com/dmg-builder/-/dmg-builder-22.14.2.tgz#dd0b775f0911428a0d2f025c44d136436b17ed19"
-  integrity sha512-CdsEuB6E6TYucl2tfM6x/UzSpFSPF3paAAV12zQgYHNoB492kJYgpzuNXinqbvToqSU+6JHQzE9RiBvCXCtg7w==
+dmg-builder@22.14.4:
+  version "22.14.4"
+  resolved "https://registry.yarnpkg.com/dmg-builder/-/dmg-builder-22.14.4.tgz#569238fc347183cb94e6393413497acf960ba2ce"
+  integrity sha512-LmpRku01Dfes364qf/4lvA3tSRZdf3z7bwOvtkVy/e/LZhs5edHl0aPrjnI+GRNtEVyj+QWqqH90mBjuXpJCvA==
   dependencies:
-    app-builder-lib "22.14.2"
+    app-builder-lib "22.14.4"
     builder-util "22.14.0"
     builder-util-runtime "8.9.0"
     fs-extra "^10.0.0"
@@ -3632,17 +3632,17 @@ ejs@^3.1.6:
   dependencies:
     jake "^10.6.1"
 
-electron-builder@22.14.2:
-  version "22.14.2"
-  resolved "https://registry.yarnpkg.com/electron-builder/-/electron-builder-22.14.2.tgz#45ba3baf308d98e25e98e2a27b0c2e96e12c47b7"
-  integrity sha512-TBr4TTjTKyH2yLwNULQrzHXCW2F0ZjYkzeauXRMZE8TV1MiV4Aa5HUnByTipq8Rl5UkN+f6eWHvpYN08fS83uQ==
+electron-builder@22.14.4:
+  version "22.14.4"
+  resolved "https://registry.yarnpkg.com/electron-builder/-/electron-builder-22.14.4.tgz#f421ffac0e5795d82bc55e523343f71fbb85409a"
+  integrity sha512-VkTfNJRKnbUwUBeuizzTOl6oPgY0fL+AzxlA0+LTpUqsAidND7akMJGq/fzGOuyVFWbY6hYIvVPYf/4GbHv62A==
   dependencies:
     "@types/yargs" "^17.0.1"
-    app-builder-lib "22.14.2"
+    app-builder-lib "22.14.4"
     builder-util "22.14.0"
     builder-util-runtime "8.9.0"
     chalk "^4.1.1"
-    dmg-builder "22.14.2"
+    dmg-builder "22.14.4"
     fs-extra "^10.0.0"
     is-ci "^3.0.0"
     lazy-val "^1.0.5"
