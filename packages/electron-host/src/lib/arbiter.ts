@@ -56,6 +56,11 @@ class Arbiter {
 				case squawk.code === 'ENOTFOUND':
 					break;
 
+				// If there is no active subscription, flag for reset
+				case squawk.code === 'no_active_subscription':
+					status.status = false;
+					break;
+
 				// If the token information is invalid, clear local auth
 				case squawk.code === 'unauthorized': {
 					await nestClient.setAuth(null);
