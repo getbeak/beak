@@ -91,7 +91,7 @@ export default {
 	platform: 'node',
 	target: 'node14.16.0', // TODO(afr): electron version target
 	bundle: true,
-	minify: environment === 'development' ? false : 'terser',
+	minify: environment !== 'development',
 	entryPoints: [
 		path.resolve('src/main.ts'),
 		path.resolve('src/preload.ts'),
