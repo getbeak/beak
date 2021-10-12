@@ -84,8 +84,6 @@ app.on('open-url', (_event, url) => {
 });
 
 async function createOrFocusDefaultWindow() {
-	// return createPreferencesWindow();
-
 	if (!persistentStore.get('passedOnboarding'))
 		return createPortalWindow();
 
