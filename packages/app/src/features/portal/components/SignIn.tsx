@@ -58,7 +58,7 @@ const Logo = styled.div`
 	margin: 0 auto;
 	margin-bottom: 5px;
 
-	background-image: url('/images/logo-tile.png');
+	background-image: url('./images/logo-tile.png');
 	background-position: center;
 	background-size: contain;
 `;
