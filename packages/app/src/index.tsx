@@ -3,7 +3,6 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 
-import Onboarding from './containers/Onboarding';
 import Portal from './containers/Portal';
 import Preferences from './containers/Preferences';
 import ProjectMain from './containers/ProjectMain';
@@ -20,9 +19,6 @@ function getComponent(container: string | null) {
 
 		case 'project-main':
 			return <ProjectMain />;
-
-		case 'onboarding':
-			return <Onboarding />;
 
 		case 'preferences':
 			return <Preferences />;
@@ -46,8 +42,8 @@ const FauxRouter: React.FunctionComponent = () => {
 			<WindowSessionContext.Provider value={instance}>
 				<DesignSystemProvider themeKey={'dark'}>
 					<GlobalStyle $darwin={instance.isDarwin()} />
-					{container === 'onboarding' && component}
-					{container !== 'onboarding' && (
+					{container === 'portal' && component}
+					{container !== 'portal' && (
 						<Arbiter>
 							{component}
 						</Arbiter>

@@ -5,18 +5,15 @@ import { toVibrancyAlpha } from '../design-system/utils';
 import Purchase from '../features/portal/components/Purchase';
 import SignIn from '../features/portal/components/SignIn';
 
-const Portal: React.FunctionComponent = () => {
-	return (
-		<Wrapper>
-			<Accent />
-
-			<Container>
-				<SignIn />
-				<Purchase />
-			</Container>
-		</Wrapper>
-	);
-};
+const Portal: React.FunctionComponent = () => (
+	<Wrapper>
+		<Accent />
+		<Container>
+			<SignIn />
+			<Purchase />
+		</Container>
+	</Wrapper>
+);
 
 const Wrapper = styled.div`
 	position: relative;
@@ -40,6 +37,7 @@ const Container = styled.div`
 	display: grid;
 	grid-template-columns: repeat(2, .5fr);
 	grid-template-rows: 1fr;
+	gap: 50px;
 	width: calc(100% - 100px); height: calc(100% - 100px);
 	margin: 50px;
 `;

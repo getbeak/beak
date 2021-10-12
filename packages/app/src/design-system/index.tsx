@@ -23,7 +23,7 @@ const GlobalStyle = createGlobalStyle<GlobalStyleProps>`
 		-webkit-user-select: none;
 	}
 
-	input[type=text], article[contenteditable=true] {
+	input[type=text], input[type=email], article[contenteditable=true] {
 		&:focus {
 			outline: 0;
 			border-color: ${p => p.theme.ui.primaryFill};

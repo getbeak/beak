@@ -16,15 +16,15 @@ service.registerHandleMagicLink(async (_event, payload) => {
 	await nestClient.handleMagicLink(payload.code, payload.state);
 	await arbiter.check();
 
-	if (!payload.fromOnboarding)
+	if (!payload.fromPortal)
 		return;
 
-	const onboardingWindowId = stackMap.onboarding;
+	const portalWindowId = stackMap.portal;
 
-	if (onboardingWindowId !== void 0) {
-		const onboardingWindow = windowStack[onboardingWindowId];
+	if (portalWindowId !== void 0) {
+		const portalWindow = windowStack[portalWindowId];
 
-		onboardingWindow?.close();
+		portalWindow?.close();
 	}
 
 	persistentStore.set('passedOnboarding', true);
@@ -34,3 +34,4 @@ service.registerHandleMagicLink(async (_event, payload) => {
 service.registerListNewsItems(async (_event, clientId) => await nestClient.listNewsItems(clientId));
 service.registerGetSubscriptionState(async () => await nestClient.getSubscriptionStatus());
 service.registerGetUser(async () => await nestClient.getUser());
+service.registerHasAuth(async () => Boolean(await nestClient.getAuth()));

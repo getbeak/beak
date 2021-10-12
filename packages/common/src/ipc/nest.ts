@@ -9,12 +9,13 @@ export const NestMessages = {
 	ListNewsItems: 'list_news_items',
 	GetSubscriptionState: 'get_subscription_state',
 	GetUser: 'get_user',
+	HasAuth: 'has_auth',
 };
 
 interface HandleMagicLinkReq {
 	code: string;
 	state: string;
-	fromOnboarding?: boolean;
+	fromPortal?: boolean;
 }
 
 export class IpcNestServiceRenderer extends IpcServiceRenderer {
@@ -41,6 +42,10 @@ export class IpcNestServiceRenderer extends IpcServiceRenderer {
 	async getUser() {
 		return this.invoke<GetUserResponse>(NestMessages.GetUser);
 	}
+
+	async hasAuth() {
+		return this.invoke<boolean>(NestMessages.HasAuth);
+	}
 }
 
 export class IpcNestServiceMain extends IpcServiceMain {
@@ -66,5 +71,9 @@ export class IpcNestServiceMain extends IpcServiceMain {
 
 	registerGetUser(fn: Listener<void, GetUserResponse>) {
 		this.registerListener(NestMessages.GetUser, fn);
+	}
+
+	registerHasAuth(fn: Listener<void, boolean>) {
+		this.registerListener(NestMessages.HasAuth, fn);
 	}
 }

@@ -6,7 +6,7 @@ import { closeWatchersOnWindow } from './ipc-layer/fs-watcher-service';
 import WindowStateManager from './lib/window-state-manager';
 import { staticPath } from './utils/static-path';
 
-type Container = 'project-main' | 'welcome' | 'onboarding' | 'preferences' | 'portal';
+type Container = 'project-main' | 'welcome' | 'preferences' | 'portal';
 
 export const windowStack: Record<number, BrowserWindow> = {};
 export const stackMap: Record<string, number> = { };

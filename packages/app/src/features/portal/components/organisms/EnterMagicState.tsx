@@ -8,7 +8,6 @@ import styled from 'styled-components';
 import FormError from '../../../../components/atoms/FormError';
 import FormInput from '../../../../components/atoms/FormInput';
 import Input from '../../../../components/atoms/Input';
-import ActionsWrapper from '../atoms/ActionsWrapper';
 
 export interface MagicState {
 	code: string;
@@ -27,6 +26,18 @@ const EnterMagicState: React.FunctionComponent<EnterMagicStateProps> = props => 
 	const [error, setError] = useState<Squawk | undefined>(void 0);
 	const [manualState, setManualState] = useState<string | undefined>(void 0);
 	const manualInputRef = useRef<HTMLInputElement>(null);
+	const [resend, setResend] = useState(20);
+	const [canResend, setCanResend] = useState(false);
+
+	useEffect(() => {
+		if (resend >= 1) {
+			window.setTimeout(() => setResend(resend - 1), 1000);
+
+			return;
+		}
+
+		setCanResend(true);
+	}, [resend]);
 
 	useEffect(() => {
 		if (!inboundState)
@@ -50,13 +61,10 @@ const EnterMagicState: React.FunctionComponent<EnterMagicStateProps> = props => 
 		const state = params.get('state');
 		const valid = Boolean(code && state);
 
-		if (!valid) {
+		if (valid)
+			handleMagicState(code!, state!);
+		else
 			setError(new Squawk('invalid_manual_state'));
-
-			return;
-		}
-
-		handleMagicState(code!, state!);
 	}
 
 	function handleMagicState(code: string, state: string) {
@@ -66,16 +74,10 @@ const EnterMagicState: React.FunctionComponent<EnterMagicStateProps> = props => 
 		setWorking(true);
 
 		ipcNestService
-			.handleMagicLink({ code, state, fromOnboarding: true })
-			.then(() => {
-				setError(void 0);
-			})
-			.catch(error => {
-				setError(error);
-			})
-			.finally(() => {
-				setWorking(false);
-			});
+			.handleMagicLink({ code, state, fromPortal: true })
+			.then(() => setError(void 0))
+			.catch(setError)
+			.finally(() => setWorking(false));
 	}
 
 	return (
@@ -121,17 +123,12 @@ const EnterMagicState: React.FunctionComponent<EnterMagicStateProps> = props => 
 				</React.Fragment>
 			)}
 
-			{error && (
-				<FormError>
-					{`There was a problem with that magic link (${error.code})`}
-				</FormError>
-			)}
+			{error && <FormError>{getErrorMessage(error)}</FormError>}
 
-			<ActionsWrapper>
-				<Button onClick={() => reset()}>
-					{'Request new magic link'}
-				</Button>
-			</ActionsWrapper>
+			<ManualButton disabled={!canResend} onClick={() => reset()}>
+				{canResend && 'Request new magic link'}
+				{!canResend && `Request new magic link (${resend}s)`}
+			</ManualButton>
 		</React.Fragment>
 	);
 };
@@ -148,6 +145,17 @@ const HelpButton = styled.span`
 
 const ManualButton = styled(Button)`
 	margin-top: 5px;
+	width: 100%;
 `;
+
+function getErrorMessage(error: Squawk) {
+	switch (error.code) {
+		case 'no_active_subscription':
+			return 'You don\'t have an active Beak subsciption.';
+
+		default:
+			return `There was a problem with that magic link (${error.code})`;
+	}
+}
 
 export default EnterMagicState;
