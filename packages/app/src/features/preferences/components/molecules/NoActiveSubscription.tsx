@@ -1,9 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
 
-const NotSignedIn: React.FunctionComponent = () => (
+const NoActiveSubscription: React.FunctionComponent = () => (
 	<Title>
-		{'Please sign into your account to view your subscription plan'}
+		{'Please visit https://getbeak.app to purchase a subscription'}
 	</Title>
 );
 
@@ -13,4 +13,4 @@ const Title = styled.div`
 	color: ${p => p.theme.ui.textMinor};
 `;
 
-export default NotSignedIn;
+export default NoActiveSubscription;

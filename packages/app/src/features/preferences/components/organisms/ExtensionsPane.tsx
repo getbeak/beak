@@ -5,21 +5,13 @@ import styled from 'styled-components';
 
 import Pane from '../molecules/Pane';
 
-const EngineeringPane: React.FunctionComponent = () => {
-	const [environment, setEnvironment] = useState<string | undefined>(void 0);
-
-	useEffect(() => {
-		ipcPreferencesService.getEnvironment().then(setEnvironment);
-	}, []);
-
-	return (
-		<Pane title={'Extensions'}>
-			<Title>
-				{'Extensions are coming soon, check back later 👀'}
-			</Title>
-		</Pane>
-	);
-};
+const EngineeringPane: React.FunctionComponent = () => (
+	<Pane title={'Extensions'}>
+		<Title>
+			{'Extensions are coming soon, check back later 👀'}
+		</Title>
+	</Pane>
+);
 
 const Title = styled.div`
 	font-size: 14px;

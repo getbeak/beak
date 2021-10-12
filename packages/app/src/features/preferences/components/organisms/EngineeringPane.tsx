@@ -1,5 +1,5 @@
 import Button from '@beak/app/components/atoms/Button';
-import { ipcPreferencesService } from '@beak/app/lib/ipc';
+import { ipcNestService, ipcPreferencesService } from '@beak/app/lib/ipc';
 import React, { useEffect, useState } from 'react';
 
 import { ItemGroup, ItemLabel, ItemSpacer } from '../atoms/item';
@@ -7,9 +7,11 @@ import Pane from '../molecules/Pane';
 
 const EngineeringPane: React.FunctionComponent = () => {
 	const [environment, setEnvironment] = useState<string | undefined>(void 0);
+	const [hasAuth, setHasAuth] = useState(false);
 
 	useEffect(() => {
 		ipcPreferencesService.getEnvironment().then(setEnvironment);
+		ipcNestService.hasAuth().then(setHasAuth);
 	}, []);
 
 	return (
@@ -34,13 +36,17 @@ const EngineeringPane: React.FunctionComponent = () => {
 				<Button onClick={() => ipcPreferencesService.resetConfig()}>
 					{'Reset config & cache'}
 				</Button>
-				<ItemSpacer />
-				<Button
-					colour={'destructive'}
-					onClick={() => ipcPreferencesService.signOut()}
-				>
-					{'Sign out'}
-				</Button>
+				{hasAuth && (
+					<React.Fragment>
+						<ItemSpacer />
+						<Button
+							colour={'destructive'}
+							onClick={() => ipcPreferencesService.signOut()}
+						>
+							{'Sign out'}
+						</Button>
+					</React.Fragment>
+				)}
 			</ItemGroup>
 		</Pane>
 	);

@@ -71,6 +71,7 @@ const AccountEmail = styled.abbr`
 	white-space: nowrap;
 	text-overflow: ellipsis;
 	font-size: 12px;
+	text-decoration: none;
 `;
 
 export default AccountItem;

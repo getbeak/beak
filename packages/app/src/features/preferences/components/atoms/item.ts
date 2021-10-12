@@ -11,6 +11,12 @@ export const ItemLabel = styled.div`
 	margin-bottom: 5px;
 `;
 
+export const ItemInfo = styled.div`
+	font-size: 14px;
+	color: ${p => p.theme.ui.textMinorMuted};
+	margin-bottom: 5px;
+`;
+
 export const ItemSpacer = styled.div`
 	height: 5px;
 `;

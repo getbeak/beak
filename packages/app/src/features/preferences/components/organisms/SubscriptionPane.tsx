@@ -3,6 +3,7 @@ import { GetSubscriptionStatusResponse } from '@beak/common/types/nest';
 import Squawk from '@beak/common/utils/squawk';
 import React, { useEffect, useState } from 'react';
 
+import NoActiveSubscription from '../molecules/NoActiveSubscription';
 import NotSignedIn from '../molecules/NotSignedIn';
 import Pane from '../molecules/Pane';
 import SubscriptionInformation from '../molecules/SubscriptionInformation';
@@ -14,6 +15,7 @@ const SubscriptionPane: React.FunctionComponent = () => {
 
 	// States
 	const notSignedIn = error?.code === 'not_authenticated';
+	const noActiveSubscription = error?.code === 'no_active_subscription';
 
 	useEffect(() => {
 		ipcNestService.getSubscriptionState()
@@ -28,7 +30,8 @@ const SubscriptionPane: React.FunctionComponent = () => {
 			{error && (
 				<React.Fragment>
 					{notSignedIn && <NotSignedIn />}
-					{!notSignedIn && `Unknown error (${error.code})`}
+					{noActiveSubscription && <NoActiveSubscription />}
+					{!noActiveSubscription && !notSignedIn && `Unable to load subscription information (${error.code})`}
 				</React.Fragment>
 			)}
 		</Pane>
