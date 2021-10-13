@@ -6,7 +6,7 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 
 import { addRecentProject } from '../lib/beak-hub';
-import createProject from '../lib/beak-project';
+import createProject, { openProjectDialog } from '../lib/beak-project';
 import { closeWindow, createProjectMainWindow, tryCloseWelcomeWindow, windowStack } from '../window-management';
 import { setProjectWindowMapping } from './fs-shared';
 
@@ -32,44 +32,11 @@ service.registerOpenFolder(async (event, projectPath) => {
 
 service.registerOpenProject(async event => {
 	const window = windowStack[(event as IpcMainInvokeEvent).sender.id]!;
-	const result = await dialog.showOpenDialog(window, {
-		title: 'Open a Beak project',
-		buttonLabel: 'Open',
-		properties: ['openFile'],
-		filters: [
-			{ name: 'Beak project', extensions: ['json'] },
-		],
-	});
 
-	if (result.canceled)
-		return;
-
-	if (result.filePaths.length !== 1) {
-		await dialog.showMessageBox(window, {
-			type: 'error',
-			title: 'That shouldn\'t happen',
-			message: 'You managed to select more than 1 file... pls don\'t do that.',
-		});
-
-		return;
-	}
-
-	const projectFilePath = result.filePaths[0];
-	const projectFile = await fs.readJson(projectFilePath) as ProjectFile;
-	const projectPath = path.join(projectFilePath, '..');
-
-	await addRecentProject({
-		name: projectFile.name,
-		path: projectPath,
-		type: 'local',
-	});
+	await openProjectDialog(window);
 
 	closeWindow((event as IpcMainInvokeEvent).sender.id);
 	tryCloseWelcomeWindow();
-
-	const projectWindowId = createProjectMainWindow(projectFilePath);
-
-	setProjectWindowMapping(projectWindowId, projectFilePath);
 });
 
 service.registerCreateProject(async (event, payload) => {

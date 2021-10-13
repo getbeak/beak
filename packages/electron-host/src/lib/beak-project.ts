@@ -1,16 +1,63 @@
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { ProjectFile, RequestNodeFile, VariableGroup } from '@beak/common/types/beak-project';
 import * as ksuid from '@cuvva/ksuid';
+import { app, BrowserWindow, dialog, MessageBoxOptions, OpenDialogOptions } from 'electron';
 import * as fs from 'fs-extra';
 import git from 'isomorphic-git';
 import * as path from 'path';
 
+import { setProjectWindowMapping } from '../ipc-layer/fs-shared';
+import { createProjectMainWindow } from '../window-management';
 import { encryptionAlgoVersions, generateKey } from './aes';
 import { addRecentProject } from './beak-hub';
 
 export interface CreationOptions {
 	name: string;
 	rootPath: string;
+}
+
+export async function openProjectDialog(browserWindow?: BrowserWindow) {
+	const openDialogOptions: OpenDialogOptions = {
+		title: 'Open a Beak project',
+		buttonLabel: 'Open',
+		properties: ['openFile'],
+		filters: [
+			{ name: 'Beak project', extensions: ['json'] },
+		],
+	};
+
+	const openDialog = dialog.showOpenDialog;
+	const result = await (browserWindow ? openDialog(browserWindow, openDialogOptions) : openDialog(openDialogOptions));
+
+	if (result.canceled)
+		return;
+
+	if (result.filePaths.length !== 1) {
+		const showMessageBox = dialog.showMessageBox;
+		const showMessageOptions: MessageBoxOptions = {
+			type: 'error',
+			title: 'That shouldn\'t happen',
+			message: 'You managed to select more than 1 file... pls don\'t do that.',
+		};
+
+		await (browserWindow ? showMessageBox(browserWindow, showMessageOptions) : showMessageBox(showMessageOptions));
+
+		return;
+	}
+
+	const projectFilePath = result.filePaths[0];
+	const projectFile = await fs.readJson(projectFilePath) as ProjectFile;
+	const projectPath = path.join(projectFilePath, '..');
+
+	await addRecentProject({
+		name: projectFile.name,
+		path: projectPath,
+		type: 'local',
+	});
+
+	const projectWindowId = createProjectMainWindow(projectFilePath);
+
+	setProjectWindowMapping(projectWindowId, projectFilePath);
 }
 
 export default async function createProject(options: CreationOptions) {

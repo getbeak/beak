@@ -1,4 +1,5 @@
 import { RecentLocalProject } from '@beak/common/types/beak-hub';
+import { app } from 'electron';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 
@@ -39,6 +40,8 @@ export async function listRecentProjects(): Promise<RecentLocalProject[]> {
 export async function addRecentProject(recent: Omit<RecentLocalProject, 'exists' | 'accessTime'>) {
 	const recents = await listRecentProjects();
 	const filteredRecents = recents.filter(r => r.path !== recent.path);
+
+	app.addRecentDocument(recent.path);
 
 	persistentStore.set('recents', [recent, ...filteredRecents].map(r => ({
 		type: r.type,
