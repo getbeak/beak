@@ -13,6 +13,7 @@ import Omnibar from '../features/omni-bar/components/Omnibar';
 import ProjectPane from '../features/project-pane/components/ProjectPane';
 import StatusBar from '../features/status-bar/components/StatusBar';
 import TabView from '../features/tabs/components/TabView';
+import { useApplicationMenuEventListener } from '../hooks/use-application-menu-event-listener';
 import { checkShortcut } from '../lib/keyboard-shortcuts';
 import { requestFlight } from '../store/flight/actions';
 import { startGit } from '../store/git/actions';
@@ -29,6 +30,8 @@ const ProjectMain: React.FunctionComponent = () => {
 	const windowSession = useContext(WindowSessionContext);
 
 	const loaded = project.loaded && variableGroups.loaded;
+
+	useApplicationMenuEventListener();
 
 	useEffect(() => {
 		dispatch(startProject());

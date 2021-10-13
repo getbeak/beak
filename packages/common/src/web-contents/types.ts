@@ -1,3 +1,7 @@
+export interface MenuEventPayload {
+	code: MenuEventCode;
+}
+
 export type MenuEventCode =
 	'new_request' |
 	'new_folder' |

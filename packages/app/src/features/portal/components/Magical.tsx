@@ -19,10 +19,6 @@ const Magical: React.FunctionComponent<MagicalProps> = ({ email, revertFromMagic
 		}
 
 		window.secureBridge.ipc.on('inbound_magic_link', listener);
-
-		return () => {
-			window.secureBridge.ipc.off('inbound_magic_link', listener);
-		};
 	}, []);
 
 	return (
