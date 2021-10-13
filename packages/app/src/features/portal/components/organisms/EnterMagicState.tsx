@@ -125,10 +125,12 @@ const EnterMagicState: React.FunctionComponent<EnterMagicStateProps> = props => 
 
 			{error && <FormError>{getErrorMessage(error)}</FormError>}
 
-			<ManualButton disabled={!canResend} onClick={() => reset()}>
-				{canResend && 'Request new magic link'}
-				{!canResend && `Request new magic link (${resend}s)`}
-			</ManualButton>
+			{!working && (
+				<ManualButton disabled={!canResend} onClick={() => reset()}>
+					{canResend && 'Request new magic link'}
+					{!canResend && `Request new magic link (${resend}s)`}
+				</ManualButton>
+			)}
 		</React.Fragment>
 	);
 };
