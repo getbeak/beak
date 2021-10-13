@@ -71,18 +71,8 @@ const definitions: Record<Shortcuts, PlatformSpecificDefinitions | PlatformAgnos
 	'omni-bar.finder.down': { type: 'agnostic', key: 'ArrowDown' },
 	'omni-bar.finder.open': { type: 'agnostic', key: 'Enter' },
 
-	'tab-bar.all.next': {
-		type: 'specific',
-		windows: { ctrl: true, key: 'Tab' },
-		linux: { ctrl: true, key: 'Tab' },
-		darwin: { meta: true, alt: true, key: 'ArrowRight' },
-	},
-	'tab-bar.all.previous': {
-		type: 'specific',
-		windows: { ctrl: true, shift: true, key: 'Tab' },
-		linux: { ctrl: true, shift: true, key: 'Tab' },
-		darwin: { meta: true, alt: true, key: 'ArrowLeft' },
-	},
+	'tab-bar.all.next': { type: 'agnostic', ctrl: true, key: 'Tab' },
+	'tab-bar.all.previous': { type: 'agnostic', ctrl: true, shift: true, key: 'Tab' },
 	'tab-bar.all.close': { type: 'agnostic', ctrlOrMeta: true, key: 'w' },
 };
 
