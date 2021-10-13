@@ -11,7 +11,7 @@ import arbiter from './lib/arbiter';
 import nestClient from './lib/nest-client';
 import persistentStore from './lib/persistent-store';
 import { parseAppUrl } from './lib/protocol';
-import createMenu from './menu';
+import { createAndSetMenu } from './utils/menu';
 import { appIsPackaged } from './utils/static-path';
 import {
 	createPortalWindow,
@@ -26,7 +26,6 @@ init({
 	release: process.env.RELEASE_IDENTIFIER,
 });
 
-createMenu();
 app.setAsDefaultProtocolClient('beak-app');
 
 const instanceLock = app.requestSingleInstanceLock();
@@ -59,6 +58,7 @@ app.on('activate', () => {
 app.on('ready', () => {
 	nativeTheme.themeSource = 'dark';
 
+	createAndSetMenu();
 	arbiter.start();
 	autoUpdater.checkForUpdatesAndNotify();
 	createOrFocusDefaultWindow();
@@ -81,6 +81,11 @@ app.on('ready', () => {
 app.on('open-url', (_event, url) => {
 	if (!handleOpenUrl(url))
 		createOrFocusDefaultWindow();
+});
+
+app.on('browser-window-focus', (_event, window) => {
+	// Set the correct menu for the browser window
+	createAndSetMenu(window);
 });
 
 async function createOrFocusDefaultWindow() {

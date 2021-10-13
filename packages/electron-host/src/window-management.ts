@@ -6,9 +6,10 @@ import { closeWatchersOnWindow } from './ipc-layer/fs-watcher-service';
 import WindowStateManager from './lib/window-state-manager';
 import { staticPath } from './utils/static-path';
 
-type Container = 'project-main' | 'welcome' | 'preferences' | 'portal';
+export type Container = 'project-main' | 'welcome' | 'preferences' | 'portal';
 
 export const windowStack: Record<number, BrowserWindow> = {};
+export const windowType: Record<number, Container> = {};
 export const stackMap: Record<string, number> = { };
 
 const DEV_URL = 'http://localhost:3000';
@@ -80,6 +81,7 @@ function createWindow(
 	});
 
 	windowStack[window.id] = window;
+	windowType[window.id] = container;
 
 	return window;
 }
