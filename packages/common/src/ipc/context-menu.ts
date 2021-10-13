@@ -1,4 +1,4 @@
-import type { IpcMain, IpcRenderer, MenuItemConstructorOptions, WebContents } from 'electron';
+import type { IpcMain, MenuItemConstructorOptions, WebContents } from 'electron';
 
 import { IpcServiceMain, IpcServiceRenderer, Listener, PartialIpcRenderer } from './ipc';
 
@@ -7,7 +7,7 @@ export const ContextMenuMessages = {
 	ItemClickEvent: 'item_click_event',
 };
 
-interface MenuItem extends Pick<MenuItemConstructorOptions, 'label' | 'type' | 'enabled'> {
+interface MenuItem extends Pick<MenuItemConstructorOptions, 'label' | 'type' | 'enabled' | 'accelerator'> {
 	id: string;
 }
 

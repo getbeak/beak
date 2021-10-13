@@ -6,14 +6,19 @@ import { getProjectWindowMapping } from './fs-shared';
 
 const service = new IpcExplorerServiceMain(ipcMain);
 
-service.registerRevealFile(async (_event, payload: string) => {
-	shell.showItemInFolder(payload);
-});
-
 service.registerRevealFile(async (event, payload: string) => {
 	const projectPath = getProjectWindowMapping(event);
 
-	clipboard.writeText(path.join(projectPath, payload));
+	console.log(projectPath);
+	console.log(path.join(projectPath, payload));
+
+	shell.showItemInFolder(path.join(projectPath, '..', payload));
+});
+
+service.registerCopyFullNodePath(async (event, payload: string) => {
+	const projectPath = getProjectWindowMapping(event);
+
+	clipboard.writeText(path.join(projectPath, '..', payload));
 });
 
 service.registerLaunchUrl(async (_event, url: string) => {

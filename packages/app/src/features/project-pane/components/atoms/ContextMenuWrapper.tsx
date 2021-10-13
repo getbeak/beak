@@ -19,6 +19,7 @@ const ContextMenuWrapper: React.FunctionComponent<ContextMenuWrapperProps> = pro
 	const node = useSelector(s => s.global.project.tree[nodeId]);
 	const [menuItems, setMenuItems] = useState<MenuItemConstructorOptions[]>([]);
 	const windowSession = useContext(WindowSessionContext);
+	const darwin = windowSession.isDarwin();
 
 	useEffect(() => {
 		if (!node)
@@ -45,7 +46,7 @@ const ContextMenuWrapper: React.FunctionComponent<ContextMenuWrapperProps> = pro
 			},
 		}, {
 			id: ksuid.generate('ctxmenuitem').toString(),
-			label: `Reveal in ${windowSession.isDarwin() ? 'Finder' : 'Explorer'}`,
+			label: `Reveal in ${darwin ? 'Finder' : 'Explorer'}`,
 			click: () => {
 				ipcExplorerService.revealFile(node.filePath);
 			},
