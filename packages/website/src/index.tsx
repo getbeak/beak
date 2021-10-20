@@ -6,7 +6,7 @@ import { createBrowserHistory } from 'history';
 import React, { lazy, Suspense } from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
-import { Route, Switch } from 'react-router';
+import { Redirect, Route, Switch } from 'react-router';
 
 import AppContainer from './containers/App';
 import { GlobalStyle } from './design-system';
@@ -37,15 +37,20 @@ const EntryPoint: React.FunctionComponent = () => (
 								<Route exact path={'/pricing'}>
 									<Pricing />
 								</Route>
-								<Route exact path={'/privacy'}>
+								<Route exact path={'/legal/privacy'}>
 									<Privacy />
 								</Route>
-								<Route exact path={'/terms'}>
+								<Route exact path={'/legal/terms'}>
 									<Terms />
 								</Route>
 								<Route exact path={'/purchase/complete'}>
 									{'welcome!!'}
 								</Route>
+
+								<Redirect exact from={'/privacy'} to={'/legal/privacy'} />
+								<Redirect exact from={'/terms'} to={'/legal/terms'} />
+
+								{/* 404 */}
 								<Route>
 									{'y u here'}
 								</Route>
