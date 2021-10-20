@@ -21,7 +21,8 @@ const RequestTab: React.FunctionComponent<RequestTabProps> = props => {
 	const { flight } = props;
 	const [output, setOutput] = useState('');
 	const [tab, setTab] = useState<Tab>('raw');
-	const { selectedGroups, variableGroups } = useSelector(s => s.global.variableGroups);
+	const { variableGroups } = useSelector(s => s.global.variableGroups);
+	const selectedGroups = useSelector(s => s.global.preferences.editor.selectedVariableGroups);
 	const windowSession = useContext(WindowSessionContext);
 	const context = { selectedGroups, variableGroups };
 

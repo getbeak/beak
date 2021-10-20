@@ -19,6 +19,10 @@ export interface RequestPreference {
 	};
 }
 
+export interface EditorPreferences {
+	selectedVariableGroups: Record<string, string>;
+}
+
 export interface TabPreferences {
 	selectedTabPayload?: string;
 

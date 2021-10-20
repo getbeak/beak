@@ -119,12 +119,6 @@ const variableGroupsReducer = createReducer(initialState, builder => {
 			delete state.variableGroups![variableGroup].items[id];
 		})
 
-		.addCase(actions.changeSelectedGroup, (state, action) => {
-			const { group, variableGroup } = action.payload;
-
-			state.selectedGroups[variableGroup] = group;
-		})
-
 		.addCase(actions.setLatestWrite, (state, { payload }) => {
 			state.latestWrite = payload;
 		})

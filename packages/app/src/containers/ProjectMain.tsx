@@ -17,6 +17,7 @@ import { useApplicationMenuEventListener } from '../hooks/use-application-menu-e
 import { checkShortcut } from '../lib/keyboard-shortcuts';
 import { requestFlight } from '../store/flight/actions';
 import { startGit } from '../store/git/actions';
+import { loadEditorPreferences } from '../store/preferences/actions';
 import { loadTabPreferences, startProject } from '../store/project/actions';
 
 const ProjectMain: React.FunctionComponent = () => {
@@ -34,6 +35,7 @@ const ProjectMain: React.FunctionComponent = () => {
 	useApplicationMenuEventListener();
 
 	useEffect(() => {
+		dispatch(loadEditorPreferences());
 		dispatch(startProject());
 		dispatch(startGit());
 		dispatch(loadTabPreferences());

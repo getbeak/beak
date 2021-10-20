@@ -17,7 +17,8 @@ export interface HeaderProps {
 const Header: React.FunctionComponent<HeaderProps> = props => {
 	const dispatch = useDispatch();
 	const [verbPickerWidth, setVerbPickerWidth] = useState<string>('auto');
-	const { selectedGroups, variableGroups } = useSelector(s => s.global.variableGroups);
+	const { variableGroups } = useSelector(s => s.global.variableGroups);
+	const selectedGroups = useSelector(s => s.global.preferences.editor.selectedVariableGroups);
 	const { node } = props;
 	const verb = node.info.verb;
 	const secretSelect = useRef<HTMLSpanElement>(null);

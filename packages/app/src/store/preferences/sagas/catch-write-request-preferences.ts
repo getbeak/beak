@@ -7,7 +7,7 @@ import { call, select } from 'redux-saga/effects';
 import { ApplicationState } from '../..';
 import { RequestPreferencePayload } from '../types';
 
-export default function* catchLoadPreferences({ payload }: PayloadAction<RequestPreferencePayload>) {
+export default function* catchWriteRequestPreferences({ payload }: PayloadAction<RequestPreferencePayload>) {
 	const { id } = payload;
 	const preferences: RequestPreference = yield select((s: ApplicationState) => s.global.preferences.requests[id]);
 

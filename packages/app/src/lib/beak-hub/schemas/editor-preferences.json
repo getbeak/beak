@@ -1,0 +1,17 @@
+{
+	"type": "object",
+	"additionalProperties": false,
+
+	"properties": {
+		"selectedVariableGroups": {
+			"type": "object",
+
+			"patternProperties": {
+				".+": {
+					"type": "string",
+					"minLength": 1
+				}
+			}
+		}
+	}
+}

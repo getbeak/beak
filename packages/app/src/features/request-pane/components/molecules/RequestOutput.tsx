@@ -19,7 +19,8 @@ export interface RequestOutputProps {
 }
 
 const RequestOutput: React.FunctionComponent<RequestOutputProps> = props => {
-	const { selectedGroups, variableGroups } = useSelector(s => s.global.variableGroups);
+	const { variableGroups } = useSelector(s => s.global.variableGroups);
+	const selectedGroups = useSelector(s => s.global.preferences.editor.selectedVariableGroups);
 	const windowSession = useContext(WindowSessionContext);
 	const [output, setOutput] = useState('');
 	const context = { selectedGroups, variableGroups };

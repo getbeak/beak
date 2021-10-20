@@ -33,7 +33,8 @@ const VariableSelector: React.FunctionComponent<VariableSelectorProps> = props =
 	} = props;
 
 	const activeRef = useRef<HTMLDivElement>();
-	const { selectedGroups, variableGroups } = useSelector(s => s.global.variableGroups);
+	const { variableGroups } = useSelector(s => s.global.variableGroups);
+	const selectedGroups = useSelector(s => s.global.preferences.editor.selectedVariableGroups);
 	const [active, setActive] = useState<number>(0);
 	const context = { selectedGroups, variableGroups };
 

@@ -1,4 +1,4 @@
-import { actions } from '@beak/app/store/variable-groups';
+import { editorPreferencesSetSelectedVariableGroup } from '@beak/app/store/preferences/actions';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -10,7 +10,8 @@ export interface VariableGroupsProps {
 
 const VariableGroups: React.FunctionComponent<VariableGroupsProps> = ({ collapsed }) => {
 	const dispatch = useDispatch();
-	const { variableGroups, selectedGroups } = useSelector(s => s.global.variableGroups)!;
+	const { variableGroups } = useSelector(s => s.global.variableGroups)!;
+	const selectedGroups = useSelector(s => s.global.preferences.editor.selectedVariableGroups);
 
 	return (
 		<Container collapsed={collapsed}>
@@ -29,9 +30,9 @@ const VariableGroups: React.FunctionComponent<VariableGroupsProps> = ({ collapse
 							<select
 								value={value}
 								onChange={e => {
-									dispatch(actions.changeSelectedGroup({
+									dispatch(editorPreferencesSetSelectedVariableGroup({
 										variableGroup: k,
-										group: e.target.value,
+										groupId: e.target.value,
 									}));
 								}}
 							>

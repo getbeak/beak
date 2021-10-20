@@ -18,7 +18,8 @@ export interface FinderViewProps {
 const FinderView: React.FunctionComponent<FinderViewProps> = ({ content, reset }) => {
 	const dispatch = useDispatch();
 	const tree = useSelector(s => s.global.project.tree) || {};
-	const { selectedGroups, variableGroups } = useSelector(s => s.global.variableGroups);
+	const { variableGroups } = useSelector(s => s.global.variableGroups);
+	const selectedGroups = useSelector(s => s.global.preferences.editor.selectedVariableGroups);
 	const flattened = TypedObject.values(tree).filter(t => t.type === 'request') as RequestNode[];
 	const [matches, setMatches] = useState<string[]>([]);
 	const [active, setActive] = useState<number>(-1);

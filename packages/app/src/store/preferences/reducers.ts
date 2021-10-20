@@ -1,28 +1,35 @@
 /* eslint-disable no-param-reassign */
 
-import { combineReducers, createReducer } from '@reduxjs/toolkit';
+import { createReducer } from '@reduxjs/toolkit';
 
 import * as actions from './actions';
 import { initialState } from './types';
 
-const requestPreferencesReducer = createReducer(initialState.requests, builder => {
+const reducer = createReducer(initialState, builder => {
 	builder
 		.addCase(actions.requestPreferencesLoaded, (state, { payload }) => {
-			state[payload.id] = payload.preferences;
+			state.requests[payload.id] = payload.preferences;
 		})
 		.addCase(actions.requestPreferenceSetMainTab, (state, { payload }) => {
-			state[payload.id].mainTab = payload.tab;
+			state.requests[payload.id].mainTab = payload.tab;
 		})
 		.addCase(actions.requestPreferenceSetJsonExpand, (state, { payload }) => {
-			state[payload.id].jsonEditor = {
+			state.requests[payload.id].jsonEditor = {
 				expanded: {
-					...state[payload.id].jsonEditor?.expanded,
+					...state.requests[payload.id].jsonEditor?.expanded,
 					[payload.jsonId]: payload.expanded,
 				},
 			};
+		})
+
+		.addCase(actions.editorPreferencesLoaded, (state, { payload }) => {
+			state.editor = payload;
+		})
+		.addCase(actions.editorPreferencesSetSelectedVariableGroup, (state, { payload }) => {
+			const { variableGroup, groupId } = payload;
+
+			state.editor.selectedVariableGroups[variableGroup] = groupId;
 		});
 });
 
-export default combineReducers({
-	requests: requestPreferencesReducer,
-});
+export default reducer;

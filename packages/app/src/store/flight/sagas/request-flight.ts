@@ -29,7 +29,11 @@ export default function* requestFlightWorker() {
 	const flight: State = yield select((s: ApplicationState) => s.global.flight);
 	const node: RequestNode = yield select((s: ApplicationState) => s.global.project.tree![requestId]);
 	const vgState: VGState = yield select((s: ApplicationState) => s.global.variableGroups);
-	const { selectedGroups, variableGroups } = vgState;
+	const selectedGroups: Record<string, string> = yield select(
+		(s: ApplicationState) => s.global.preferences.editor.selectedVariableGroups,
+	);
+
+	const { variableGroups } = vgState;
 	const context = { selectedGroups, variableGroups };
 	const preparedRequest: RequestOverview = yield call(prepareRequest, node.info, context);
 

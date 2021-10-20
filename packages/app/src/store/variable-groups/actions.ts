@@ -3,7 +3,6 @@ import { createAction } from '@reduxjs/toolkit';
 
 import {
 	ActionTypes as AT,
-	ChangeSelectedGroupPayload,
 	IdPayload,
 	InsertNewGroupPayload,
 	InsertNewItemPayload,
@@ -32,8 +31,6 @@ export const removeItem = createAction<IdPayload>(AT.REMOVE_ITEM);
 export const setLatestWrite = createAction<number>(AT.SET_LATEST_WRITE);
 export const setWriteDebounce = createAction<string>(AT.SET_WRITE_DEBOUNCE);
 
-export const changeSelectedGroup = createAction<ChangeSelectedGroupPayload>(AT.CHANGE_SELECTED_GROUP_ITEM);
-
 export default {
 	startVariableGroups,
 	variableGroupsOpened,
@@ -50,8 +47,6 @@ export default {
 	insertNewItem,
 	removeGroup,
 	removeItem,
-
-	changeSelectedGroup,
 
 	setLatestWrite,
 	setWriteDebounce,

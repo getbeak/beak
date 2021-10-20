@@ -2,11 +2,13 @@ import { readVariableGroup } from '@beak/app/lib/beak-variable-group';
 import createFsEmitter, { scanDirectoryRecursively, ScanResult } from '@beak/app/lib/fs-emitter';
 import { ipcDialogService } from '@beak/app/lib/ipc';
 import { TypedObject } from '@beak/common/helpers/typescript';
+import { EditorPreferences } from '@beak/common/types/beak-hub';
 import { VariableGroups } from '@beak/common/types/beak-project';
 import path from 'path-browserify';
 import { call, put, select, take } from 'redux-saga/effects';
 
 import { ApplicationState } from '../..';
+import { editorPreferencesSetSelectedVariableGroup } from '../../preferences/actions';
 import * as actions from '../actions';
 
 interface Emitter {
@@ -92,14 +94,19 @@ function* initialImport(vgPath: string) {
 	const items: ScanResult[] = yield scanDirectoryRecursively(vgPath);
 	const files = items.filter(i => !i.isDirectory).map(i => i.path);
 	const variableGroups: VariableGroups = yield call(readVariableGroups, files);
+	const editorPreferences: EditorPreferences = yield select((s: ApplicationState) => s.global.preferences.editor);
+
+	console.log(editorPreferences.selectedVariableGroups['Environment']);
 
 	for (const vgk of TypedObject.keys(variableGroups)) {
 		const vg = variableGroups[vgk];
 
-		yield put(actions.changeSelectedGroup({
-			variableGroup: vgk,
-			group: TypedObject.keys(vg.groups)[0],
-		}));
+		if (editorPreferences.selectedVariableGroups[vgk] === void 0) {
+			yield put(editorPreferencesSetSelectedVariableGroup({
+				variableGroup: vgk,
+				groupId: TypedObject.keys(vg.groups)[0],
+			}));
+		}
 	}
 
 	yield put(actions.variableGroupsOpened(variableGroups));

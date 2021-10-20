@@ -11,7 +11,8 @@ export interface HeaderProps {
 }
 
 const Header: React.FunctionComponent<HeaderProps> = props => {
-	const { selectedGroups, variableGroups } = useSelector(s => s.global.variableGroups);
+	const { variableGroups } = useSelector(s => s.global.variableGroups);
+	const selectedGroups = useSelector(s => s.global.preferences.editor.selectedVariableGroups);
 	const { error, request, response } = props.selectedFlight;
 	const context = { selectedGroups, variableGroups };
 	const [url, setUrl] = useState('');

@@ -16,17 +16,20 @@ interface RealtimeValueEditorProps {
 const RealtimeValueEditor: React.FunctionComponent<RealtimeValueEditorProps> = props => {
 	const [state, setState] = useState<Record<string, string>>({});
 	const [ready, setReady] = useState(false);
-	const { selectedGroups, variableGroups } = useSelector(s => s.global.variableGroups);
+	const { variableGroups } = useSelector(s => s.global.variableGroups);
+	const selectedGroups = useSelector(s => s.global.preferences.editor.selectedVariableGroups);
 	const { realtimeValue, item, parent } = props;
 	const editor = realtimeValue.editor!;
 	const { load, save, ui } = editor;
 	const context = { selectedGroups, variableGroups };
 
 	useEffect(() => {
-		load(context, item).then(state => {
-			setState(state);
-			setReady(true);
-		}).catch(console.error);
+		load(context, item)
+			.then(state => {
+				setState(state);
+				setReady(true);
+			})
+			.catch(console.error);
 	}, []);
 
 	if (!ready)

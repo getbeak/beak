@@ -18,8 +18,6 @@ export const ActionTypes = {
 	REMOVE_GROUP: '@beak/global/variable-groups/REMOVE_GROUP',
 	REMOVE_ITEM: '@beak/global/variable-groups/REMOVE_ITEM',
 
-	CHANGE_SELECTED_GROUP_ITEM: '@beak/global/variable-groups/CHANGE_SELECTED_GROUP_ITEM',
-
 	SET_LATEST_WRITE: '@beak/global/variable-groups/SET_LATEST_WRITE',
 	SET_WRITE_DEBOUNCE: '@beak/global/variable-groups/SET_WRITE_DEBOUNCE',
 };
@@ -29,8 +27,6 @@ export interface State {
 
 	variableGroups: VariableGroups;
 
-	selectedGroups: Record<string, string>;
-
 	latestWrite?: number;
 	writeDebouncer: string;
 }
@@ -39,8 +35,6 @@ export const initialState: State = {
 	loaded: false,
 
 	variableGroups: {},
-
-	selectedGroups: {},
 
 	latestWrite: 0,
 	writeDebouncer: '',
@@ -78,11 +72,6 @@ export interface InsertNewItemPayload {
 export interface IdPayload {
 	variableGroup: string;
 	id: string;
-}
-
-export interface ChangeSelectedGroupPayload {
-	variableGroup: string;
-	group: string;
 }
 
 export default {
