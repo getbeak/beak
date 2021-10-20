@@ -18,6 +18,8 @@ const store = configureStore(history);
 
 const Home = lazy(() => import('./features/home/components/Home'));
 const Pricing = lazy(() => import('./features/pricing/components/Pricing'));
+const Privacy = lazy(() => import('./features/legal/components/Privacy'));
+const Terms = lazy(() => import('./features/legal/components/Terms'));
 
 const EntryPoint: React.FunctionComponent = () => (
 	<Provider store={store}>
@@ -35,11 +37,17 @@ const EntryPoint: React.FunctionComponent = () => (
 								<Route exact path={'/pricing'}>
 									<Pricing />
 								</Route>
+								<Route exact path={'/privacy'}>
+									<Privacy />
+								</Route>
+								<Route exact path={'/terms'}>
+									<Terms />
+								</Route>
 								<Route exact path={'/purchase/complete'}>
-									{'todo'}
+									{'welcome!!'}
 								</Route>
 								<Route>
-									{'404'}
+									{'y u here'}
 								</Route>
 							</Switch>
 						</Suspense>

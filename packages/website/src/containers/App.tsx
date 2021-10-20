@@ -18,10 +18,10 @@ const AppContainer: React.FunctionComponent = ({ children }) => {
 						{'Beak'}
 					</NavBrand>
 					<NavItems>
-						<NavItemLocal to={'#features'}>
+						<NavItemLocal to={'/#features'}>
 							{'Features'}
 						</NavItemLocal>
-						{window.location.host === 'nonprod-getbeak.app' && (
+						{window.location.host !== 'getbeak.app' && (
 							<NavItemLocal to={'/pricing'}>
 								{'Pricing'}
 							</NavItemLocal>
