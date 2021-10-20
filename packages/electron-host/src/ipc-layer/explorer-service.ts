@@ -9,9 +9,6 @@ const service = new IpcExplorerServiceMain(ipcMain);
 service.registerRevealFile(async (event, payload: string) => {
 	const projectPath = getProjectWindowMapping(event);
 
-	console.log(projectPath);
-	console.log(path.join(projectPath, payload));
-
 	shell.showItemInFolder(path.join(projectPath, '..', payload));
 });
 

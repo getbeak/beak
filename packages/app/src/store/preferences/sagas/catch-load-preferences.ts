@@ -76,8 +76,6 @@ async function loadEditorPreferences() {
 		if (Squawk.coerce(error).code !== 'schema_invalid')
 			throw error;
 
-		console.log(error);
-
 		return defaultPreferences;
 	}
 }

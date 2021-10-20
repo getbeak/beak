@@ -96,8 +96,6 @@ function* initialImport(vgPath: string) {
 	const variableGroups: VariableGroups = yield call(readVariableGroups, files);
 	const editorPreferences: EditorPreferences = yield select((s: ApplicationState) => s.global.preferences.editor);
 
-	console.log(editorPreferences.selectedVariableGroups['Environment']);
-
 	for (const vgk of TypedObject.keys(variableGroups)) {
 		const vg = variableGroups[vgk];
 
