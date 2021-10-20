@@ -9,7 +9,7 @@ import {
 	WriteTextReq,
 } from '@beak/common/ipc/fs';
 import Squawk from '@beak/common/utils/squawk';
-import { ipcMain } from 'electron';
+import { ipcMain, shell } from 'electron';
 import fs from 'fs-extra';
 import path from 'path';
 
@@ -66,7 +66,7 @@ service.registerEnsureDir(async (event, payload: SimplePath) => {
 service.registerRemove(async (event, payload: SimplePath) => {
 	const filePath = await ensureWithinProject(getProjectWindowMapping(event), payload.filePath);
 
-	return await fs.remove(filePath);
+	return await shell.trashItem(filePath);
 });
 
 service.registerMove(async (event, payload: MoveReq) => {
