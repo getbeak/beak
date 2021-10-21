@@ -1,9 +1,8 @@
 import React from 'react';
 
 import Container from '../components/atoms/Container';
-import Footer from '../components/atoms/Footer';
-import FooterLogo from '../components/atoms/FooterLogo';
 import Navbar, { NavBrand, NavItemExternal, NavItemLocal, NavItems, NavLogo } from '../components/atoms/Navbar';
+import Footer from '../features/footer/components/Footer';
 import useSmoothHashScroll from '../hooks/use-smooth-hash-scroll';
 
 const AppContainer: React.FunctionComponent = ({ children }) => {
@@ -53,14 +52,9 @@ const AppContainer: React.FunctionComponent = ({ children }) => {
 
 			{children}
 
-			<Footer>
-				<Container>
-					<span>{'Made with ❤️ in the UK'}</span>
-					<FooterLogo />
-				</Container>
-			</Footer>
+			<Footer />
 		</React.Fragment>
 	);
-}
+};
 
 export default AppContainer;
