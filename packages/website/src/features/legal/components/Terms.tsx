@@ -7,6 +7,7 @@ import styled from 'styled-components';
 
 import { LastUpdated } from './atoms/LegalTypograpgy';
 import { LegalSubTitle, LegalTitle } from './molecules/LegalTitle';
+
 const Terms: React.FunctionComponent = () => (
 	<React.Fragment>
 		<Helmet defer={false}>
