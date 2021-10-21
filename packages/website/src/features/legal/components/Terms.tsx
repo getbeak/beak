@@ -5,7 +5,7 @@ import Helmet from 'react-helmet';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 
-import { LastUpdated } from './atoms/LegalTypograpgy';
+import { LastUpdated, LegalTlDr } from './atoms/LegalTypograpgy';
 import { LegalSubTitle, LegalTitle } from './molecules/LegalTitle';
 
 const Terms: React.FunctionComponent = () => (
@@ -39,6 +39,10 @@ const Terms: React.FunctionComponent = () => (
 			<LegalTitle id={'introduction'}>
 				{'1. Introduction'}
 			</LegalTitle>
+
+			<LegalTlDr>
+				{'tl;dr pls don\'t sue'}
+			</LegalTlDr>
 		</SmallContainer>
 	</React.Fragment>
 );

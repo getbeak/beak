@@ -4,8 +4,8 @@ import React from 'react';
 import Helmet from 'react-helmet';
 import styled from 'styled-components';
 
-import { LastUpdated } from './atoms/LegalTypograpgy';
-import { LegalTitle } from './molecules/LegalTitle';
+import { LastUpdated, LegalTlDr } from './atoms/LegalTypograpgy';
+import { LegalSubTitle, LegalTitle } from './molecules/LegalTitle';
 
 const Privacy: React.FunctionComponent = () => (
 	<React.Fragment>
@@ -35,13 +35,37 @@ const Privacy: React.FunctionComponent = () => (
 				{'View history'}
 			</a>
 
-			<LegalTitle id={'introduction'}>
-				{'1. Introduction'}
+			<LegalTitle id={'whomst'}>
+				{'1. Who we are'}
 			</LegalTitle>
 
-			<LegalTitle id={'binding-agreement'}>
-				{'2. Binding agreement'}
+			<LegalTitle id={'personal-data'}>
+				{'2. Your personal data'}
 			</LegalTitle>
+
+			<LegalTitle id={'information-collection'}>
+				{'3. Other information we collect'}
+			</LegalTitle>
+
+			<LegalTitle id={'sharing-isnt-caring'}>
+				{'4. Sharing data with other parties'}
+			</LegalTitle>
+
+			<LegalTitle id={'where-info-goes'}>
+				{'5. Where your information goes'}
+			</LegalTitle>
+
+			<LegalTitle id={'your-rights'}>
+				{'6. Your rights and controlling your personal information'}
+			</LegalTitle>
+
+			<LegalTitle id={'changes'}>
+				{'7. Changes to our policy'}
+			</LegalTitle>
+
+			<LegalTlDr>
+				{'tl;dr we ethical babes'}
+			</LegalTlDr>
 		</SmallContainer>
 	</React.Fragment>
 );
