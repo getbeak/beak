@@ -8,6 +8,7 @@ import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import { Redirect, Route, Switch } from 'react-router';
 
+import Scroller from './components/atoms/Scroller';
 import AppContainer from './containers/App';
 import { GlobalStyle } from './design-system';
 import ErrorFallback from './features/errors/components/ErrorFallback';
@@ -29,6 +30,7 @@ const EntryPoint: React.FunctionComponent = () => (
 				<GlobalStyle />
 				<AppContainer>
 					<Sentry.ErrorBoundary fallback={<ErrorFallback />}>
+						<Scroller />
 						<Suspense fallback={<div />}>
 							<Switch>
 								<Route exact path={'/'}>
