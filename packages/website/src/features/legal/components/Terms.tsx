@@ -2,8 +2,11 @@ import { SmallContainer } from '@beak/website/components/atoms/Container';
 import { SubTitle, Title, TitleSubtle } from '@beak/website/components/atoms/Typography';
 import React from 'react';
 import Helmet from 'react-helmet';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 
+import { LastUpdated } from './atoms/LegalTypograpgy';
+import { LegalSubTitle, LegalTitle } from './molecules/LegalTitle';
 const Terms: React.FunctionComponent = () => (
 	<React.Fragment>
 		<Helmet defer={false}>
@@ -16,6 +19,26 @@ const Terms: React.FunctionComponent = () => (
 				<SubTitle>{'You know you want to read them'}</SubTitle>
 			</SmallContainer>
 		</Header>
+		<SmallContainer>
+			<LastUpdated>
+				{'Last updated: '}
+				<b>
+					{'October 20, 2021'}
+				</b>
+			</LastUpdated>
+
+			<a
+				target={'_blank'}
+				rel={'noopener noreferrer nofollow'}
+				href={'https://github.com/getbeak/beak/commits/master/packages/website/src/features/legal/components/Terms.tsx'}
+			>
+				{'View history'}
+			</a>
+
+			<LegalTitle id={'introduction'}>
+				{'1. Introduction'}
+			</LegalTitle>
+		</SmallContainer>
 	</React.Fragment>
 );
 

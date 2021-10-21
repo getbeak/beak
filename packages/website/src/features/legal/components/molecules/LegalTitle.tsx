@@ -5,15 +5,16 @@ import { Link } from 'react-router-dom';
 import styled, { useTheme } from 'styled-components';
 
 interface LegalTitleProps {
+	element: 'h2' | 'h3';
 	id: string;
 }
 
-const LegalTitle: React.FunctionComponent<LegalTitleProps> = ({ id, children }) => {
+const LegalTitleItem: React.FunctionComponent<LegalTitleProps> = ({ element, id, children }) => {
 	const theme = useTheme();
 	const url = `${window.location.pathname}#${id}`;
 
 	return (
-		<Wrapper id={id}>
+		<Wrapper id={id} as={element}>
 			{children}
 
 			<Clicker to={url}>
@@ -36,8 +37,7 @@ const Clicker = styled(Link)`
 	transition: opacity .2s ease;
 `;
 
-const Wrapper = styled.h2`
-	font-size: 25px;
+const Wrapper = styled.div`
 	font-weight: 600;
 
 	&:hover {
@@ -47,4 +47,10 @@ const Wrapper = styled.h2`
 	}
 `;
 
-export default LegalTitle;
+export const LegalTitle: React.FunctionComponent<Omit<LegalTitleProps, 'element'>> = ({ id, children }) => (
+	<LegalTitleItem element={'h2'} id={id}>{children}</LegalTitleItem>
+);
+
+export const LegalSubTitle: React.FunctionComponent<Omit<LegalTitleProps, 'element'>> = ({ id, children }) => (
+	<LegalTitleItem element={'h3'} id={id}>{children}</LegalTitleItem>
+);
