@@ -7,9 +7,9 @@ export interface GitProps {
 }
 
 const Git: React.FunctionComponent<GitProps> = ({ collapsed }) => {
-	const { loaded, branches, selectedBranch } = useSelector(s => s.global.git)!;
+	const { branches, selectedBranch } = useSelector(s => s.global.git)!;
 
-	if (!loaded)
+	if (branches.length === 0)
 		return null;
 
 	return (
@@ -25,7 +25,7 @@ const Git: React.FunctionComponent<GitProps> = ({ collapsed }) => {
 						onChange={() => { /* no-op */ }}
 					>
 						{branches.map(b => (
-							<option disabled key={b.name} value={b.name}>{b.name}</option>
+							<option disabled={selectedBranch !== b.name} key={b.name} value={b.name}>{b.name}</option>
 						))}
 					</select>
 				</Selector>

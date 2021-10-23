@@ -6,11 +6,7 @@ import { initialState } from './types';
 
 const gitReducer = createReducer(initialState, builder => {
 	builder
-		.addCase(actions.startGit, state => {
-			state.loaded = false;
-		})
 		.addCase(actions.gitOpened, (state, { payload }) => {
-			state.loaded = true;
 			state.branches = payload.branches;
 			state.selectedBranch = payload.selectedBranch;
 		})

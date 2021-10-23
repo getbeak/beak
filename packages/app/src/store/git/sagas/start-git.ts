@@ -54,6 +54,11 @@ export default function* workerStartGit() {
 }
 
 function* initialImport() {
+	const hasGit: boolean = yield call([ipcFsService, ipcFsService.pathExists], '.git');
+
+	if (!hasGit)
+		return;
+
 	const items: ScanResult[] = yield scanDirectoryRecursively('.git', true);
 	const files = items.filter(i => !i.isDirectory).map(i => i.path);
 	const heads = files.filter(f => f.startsWith(headPrefixFs)).map(f => f.slice(headPrefixFs.length + 1));

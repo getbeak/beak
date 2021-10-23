@@ -8,13 +8,11 @@ export const ActionTypes = {
 };
 
 export interface State {
-	loaded: boolean;
 	branches: Branch[];
 	selectedBranch: string | undefined;
 }
 
 export const initialState: State = {
-	loaded: false,
 	branches: [],
 	selectedBranch: void 0,
 };
