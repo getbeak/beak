@@ -39,6 +39,7 @@
     "postinstall": "node ./node-module-overrides/index.js"
   },
   "devDependencies": {
+    "@types/sanitize-html": "^2.5.0",
     "@typescript-eslint/eslint-plugin": "^5.0.0",
     "@typescript-eslint/parser": "^5.0.0",
     "eslint": "^8.0.0",
@@ -48,6 +49,7 @@
     "eslint-plugin-simple-import-sort": "^7.0.0",
     "lerna": "^4.0.0",
     "react-spring": "^9.3.0",
+    "sanitize-html": "^2.5.2",
     "typescript": "^4.4.4"
   },
   "dependencies": {
