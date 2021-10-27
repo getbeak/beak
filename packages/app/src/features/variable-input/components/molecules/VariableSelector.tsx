@@ -1,6 +1,7 @@
 import { movePosition } from '@beak/app/utils/arrays';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { RealtimeValuePart } from '@beak/common/types/beak-project';
+import Fuse from 'fuse.js';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
@@ -20,12 +21,12 @@ export interface VariableSelectorProps {
 	editableElement: HTMLDivElement;
 	sel: NormalizedSelection;
 	query: string;
-	onDone: (value: RealtimeValuePart) => void;
 	onClose: () => void;
+	onDone: (value: RealtimeValuePart) => void;
 }
 
 const VariableSelector: React.FunctionComponent<VariableSelectorProps> = props => {
-	const { editableElement, sel, onClose, onDone } = props;
+	const { editableElement, sel, query, onClose, onDone } = props;
 	const { variableGroups } = useSelector(s => s.global.variableGroups);
 	const selectedGroups = useSelector(s => s.global.preferences.editor.selectedVariableGroups);
 
@@ -34,18 +35,34 @@ const VariableSelector: React.FunctionComponent<VariableSelectorProps> = props =
 	const [active, setActive] = useState<number>(0);
 	const context = { selectedGroups, variableGroups };
 
-	const items: RealtimeValue<any>[] = useMemo(() => ([
-		...getRealtimeValues(),
+	const items: RealtimeValue<any>[] = useMemo(() => {
+		const all = [
+			...getRealtimeValues(),
 
-		// Variable groups act a little differently
-		...TypedObject.keys(variableGroups)
-			.map(vgKey => {
-				const vg = variableGroups[vgKey];
+			// Variable groups act a little differently
+			...TypedObject.keys(variableGroups)
+				.map(vgKey => {
+					const vg = variableGroups[vgKey];
 
-				return TypedObject.keys(vg.items).map(i => createFauxValue({ itemId: i }, variableGroups));
-			})
-			.flat(),
-	]), [variableGroups]);
+					return TypedObject.keys(vg.items).map(i => createFauxValue({ itemId: i }, variableGroups));
+				})
+				.flat(),
+		];
+
+		if (!query)
+			return all;
+
+		const fuse = new Fuse(all, {
+			includeScore: true,
+			keys: [
+				'name',
+				'type',
+				'description',
+			],
+		});
+
+		return fuse.search(query).map(r => r.item);
+	}, [variableGroups, query]);
 
 	useEffect(() => {
 		const elem = editableElement.children[sel.partIndex];
