@@ -145,38 +145,29 @@ const RealtimeValueEditor: React.FunctionComponent<RealtimeValueEditorProps> = p
 
 	return (
 		<Container onClick={() => close(null)}>
-			<EventCatcher onClick={() => close(null)}>
-				<Wrapper
-					$top={boundingRect.top + parent.clientHeight + 5}
-					$left={boundingRect.left - (300 / 2)}
-					onClick={event => void event.stopPropagation()}
-				>
-					{ui.map(section => renderUiSection(section))}
+			<Wrapper
+				$top={boundingRect.top + parent.clientHeight + 25}
+				$left={boundingRect.left - (300 / 2)}
+				onClick={event => void event.stopPropagation()}
+			>
+				{ui.map(section => renderUiSection(section))}
 
-					<ButtonContainer>
-						<Button onClick={() => {
-							save(context, item, state).then(updatedItem => close(updatedItem));
-						}}>
-							{'Save'}
-						</Button>
-					</ButtonContainer>
-				</Wrapper>
-			</EventCatcher>
+				<ButtonContainer>
+					<Button onClick={() => {
+						save(context, item, state).then(updatedItem => close(updatedItem));
+					}}>
+						{'Save'}
+					</Button>
+				</ButtonContainer>
+			</Wrapper>
 		</Container>
 	);
 };
 
 const Container = styled.div`
-	position: absolute;
-	top: 0; bottom: 0; left: 0; right: 0;
-`;
-
-const EventCatcher = styled.div`
-	position: relative;
-	background: transparent;
-	width: 100vw;
-	height: 100vh;
 	z-index: 101;
+	position: fixed;
+	top: 0; bottom: 0; left: 0; right: 0;
 `;
 
 const Wrapper = styled.div<{ $top: number; $left: number }>`
