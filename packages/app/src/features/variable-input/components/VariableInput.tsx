@@ -242,6 +242,7 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = props => {
 		const { offset, partIndex } = queryStartSelection;
 		const queryLength = query.length;
 		const mode = determineInsertionMode(valueParts, variableSelectionState, queryLength);
+		const partSelectionIndex = mode === 'append' ? partIndex + 1 : partIndex;
 
 		if (['prepend', 'append'].includes(mode)) {
 			let finalPartIndex = partIndex;
@@ -280,6 +281,14 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = props => {
 		closeSelector();
 		reportChange();
 		forceRerender();
+
+		window.requestAnimationFrame(() => {
+			trySetSelection(editableRef.current, {
+				partIndex: partSelectionIndex,
+				isTextNode: false,
+				offset: 0,
+			});
+		});
 	}
 
 	function closeSelector() {
