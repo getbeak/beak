@@ -9,32 +9,28 @@ import * as uuid from 'uuid';
 import { getRealtimeValues } from '../../../realtime-values';
 import { RealtimeValue } from '../../../realtime-values/types';
 import { createFauxValue } from '../../../realtime-values/values/variable-group-item';
+import { NormalizedSelection } from '../../utils/browser-selection';
+
+interface Position {
+	top: number;
+	left: number;
+}
 
 export interface VariableSelectorProps {
-	parent: HTMLElement;
+	editableElement: HTMLDivElement;
+	sel: NormalizedSelection;
 	query: string;
 	onDone: (value: RealtimeValuePart) => void;
 	onClose: () => void;
-	position: {
-		top: number;
-		left: number;
-	};
-	keyPassthrough?: {
-		code: string;
-		invalidator: string;
-	};
 }
 
 const VariableSelector: React.FunctionComponent<VariableSelectorProps> = props => {
-	const {
-		onClose,
-		onDone,
-		position,
-	} = props;
-
-	const activeRef = useRef<HTMLDivElement>();
+	const { editableElement, sel, onClose, onDone } = props;
 	const { variableGroups } = useSelector(s => s.global.variableGroups);
 	const selectedGroups = useSelector(s => s.global.preferences.editor.selectedVariableGroups);
+
+	const activeRef = useRef<HTMLDivElement>();
+	const [position, setPosition] = useState<Position | null>(null);
 	const [active, setActive] = useState<number>(0);
 	const context = { selectedGroups, variableGroups };
 
@@ -52,8 +48,23 @@ const VariableSelector: React.FunctionComponent<VariableSelectorProps> = props =
 	]), [variableGroups]);
 
 	useEffect(() => {
+		const elem = editableElement.children[sel.partIndex];
+		const rect = elem.getBoundingClientRect();
+
+		const contentLength = (elem.textContent ?? '').length;
+		const positionOffset = sel.offset / contentLength;
+		const width = rect.width;
+		const offsetDelta = width * positionOffset;
+
+		setPosition({
+			left: rect.left + offsetDelta,
+			top: rect.top + rect.height + 5,
+		});
+	}, []);
+
+	useEffect(() => {
 		// This actually exists
-		// @ts-ignore
+		// @ts-expect-error
 		activeRef.current?.scrollIntoViewIfNeeded();
 	}, [activeRef, active]);
 
@@ -85,9 +96,7 @@ const VariableSelector: React.FunctionComponent<VariableSelectorProps> = props =
 					if (!item)
 						return;
 
-					// fucking love a promise
 					item.initValuePart(context).then(onDone);
-
 					break;
 				}
 
@@ -107,21 +116,23 @@ const VariableSelector: React.FunctionComponent<VariableSelectorProps> = props =
 		return () => window.removeEventListener('keydown', onKeyDown);
 	}, [active, items]);
 
+	if (!position)
+		return null;
+
 	return (
-		<Container onClick={() => onClose()}>
-			<Wrapper
-				top={position.top}
-				left={position.left}
-				onClick={event => void event.stopPropagation()}
-			>
+		<Container onClick={event => {
+			event.stopPropagation();
+			onClose();
+		}}>
+			<Wrapper $top={position.top} $left={position.left}>
 				<ItemContainer>
 					{items.map((i, idx) => (
 						<Item
+							$active={active === idx}
 							ref={(i: HTMLDivElement) => {
 								if (active === idx)
 									activeRef.current = i;
 							}}
-							active={active === idx}
 							key={uuid.v4()}
 							tabIndex={0}
 							onClick={() => setActive(idx)}
@@ -133,9 +144,7 @@ const VariableSelector: React.FunctionComponent<VariableSelectorProps> = props =
 						</Item>
 					))}
 				</ItemContainer>
-				<Description>
-					{items[active]?.description}
-				</Description>
+				<Description>{items[active]?.description}</Description>
 			</Wrapper>
 		</Container>
 	);
@@ -147,12 +156,12 @@ const Container = styled.div`
 	top: 0; bottom: 0; left: 0; right: 0;
 `;
 
-const Wrapper = styled.div<{ top: number; left: number }>`
+const Wrapper = styled.div<{ $top: number; $left: number }>`
 	display: flex;
-	height: 120px; width: 325px;
+	height: 160px; width: 375px;
 	flex-direction: column;
-	margin-top: ${p => p.top}px;
-	margin-left: ${p => p.left}px;
+	margin-top: ${p => p.$top}px;
+	margin-left: ${p => p.$left}px;
 
 	border: 1px solid ${p => p.theme.ui.backgroundBorderSeparator};
 	background: ${p => p.theme.ui.surface};
@@ -166,7 +175,7 @@ const ItemContainer = styled.div`
 	overflow-y: auto;
 `;
 
-const Item = styled.div<{ active: boolean }>`
+const Item = styled.div<{ $active: boolean }>`
 	padding: 2px 4px;
 	cursor: pointer;
 	color: ${p => p.theme.ui.textOnAction};
@@ -177,14 +186,15 @@ const Item = styled.div<{ active: boolean }>`
 		outline: none;
 	}
 
-	${p => p.active ? `background-color: ${p.theme.ui.primaryFill};'` : ''}
+	${p => p.$active ? `background-color: ${p.theme.ui.primaryFill};'` : ''}
 `;
 
 const Description = styled.div`
 	border-top: 1px solid ${p => p.theme.ui.backgroundBorderSeparator};
 	background: ${p => p.theme.ui.background};
 
-	padding: 3px 4px;
+	padding: 5px;
+	min-height: 30px;
 `;
 
 export default VariableSelector;

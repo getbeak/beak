@@ -4,7 +4,7 @@ import { ToggleKeyValue, ValueParts } from '@beak/common/types/beak-project';
 import React from 'react';
 import styled from 'styled-components';
 
-import VariableInput from '../../variable-input/components/molecules/VariableInput';
+import VariableInput from '../../variable-input/components/VariableInput';
 import {
 	BodyAction,
 	BodyInputValueCell,

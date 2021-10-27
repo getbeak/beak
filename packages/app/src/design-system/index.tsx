@@ -34,8 +34,8 @@ const GlobalStyle = createGlobalStyle<GlobalStyleProps>`
 
 	.bvs-blob {
 		display: inline-block;
+		margin: 0;
 		padding: 1px 3px;
-		margin-left: 1px; margin-right: 0;
 		border-radius: 4px;
 		font-size: 11px;
 		line-height: 12px;

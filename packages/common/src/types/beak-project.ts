@@ -85,7 +85,8 @@ export interface VariableGroup {
 	values: Record<string, ValueParts>;
 }
 
-export type ValueParts = (string | RealtimeValuePart)[];
+export type ValuePart = string | RealtimeValuePart;
+export type ValueParts = ValuePart[];
 
 export type RealtimeValuePart = VariableGroupItemRtv | NonceRtv | SecureRtv | PrivateRtv | TimestampRtv;
 

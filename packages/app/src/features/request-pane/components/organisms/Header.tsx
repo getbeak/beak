@@ -1,5 +1,5 @@
 import { parseValueParts } from '@beak/app/features/realtime-values/parser';
-import VariableInput from '@beak/app/features/variable-input/components/molecules/VariableInput';
+import VariableInput from '@beak/app/features/variable-input/components/VariableInput';
 import { requestPreferenceSetMainTab } from '@beak/app/store/preferences/actions';
 import { RequestNode, ValueParts } from '@beak/common/types/beak-project';
 import React, { useEffect, useRef, useState } from 'react';
@@ -106,7 +106,7 @@ const Header: React.FunctionComponent<HeaderProps> = props => {
 				<VariableInput
 					parts={node.info.url}
 					placeholder={window.location.host}
-					forceResetHack={forceResetNonce}
+					// forceResetHack={forceResetNonce}
 					onChange={e => handleUrlChange(e)}
 					onUrlQueryStringDetection={urlQueryStringDetected}
 				/>

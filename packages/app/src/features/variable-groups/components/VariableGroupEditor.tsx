@@ -10,7 +10,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled, { css } from 'styled-components';
 
-import VariableInput from '../../variable-input/components/molecules/VariableInput';
+import VariableInput from '../../variable-input/components/VariableInput';
 import { BodyNameCell, BodyValueCell, HeaderGroupNameCell, HeaderNameCell } from './atoms/Cells';
 import { Body, Header, Row } from './atoms/Structure';
 import CreateNewSplash from './molecules/CreateNewSplash';
