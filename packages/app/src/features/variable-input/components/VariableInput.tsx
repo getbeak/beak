@@ -97,7 +97,12 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = props => {
 		if (typeof part !== 'string')
 			return;
 
-		setQuery(part.substring(variableSelectionState.queryStartSelection.offset));
+		const query = part.substring(variableSelectionState.queryStartSelection.offset)
+
+		if (query === '')
+			closeSelector();
+		else
+			setQuery(query);
 	}
 
 	function handleKeyDown(event: React.KeyboardEvent<HTMLElement>) {
