@@ -16,11 +16,11 @@ interface RtvEditorContext {
 
 interface RealtimeValueEditorProps {
 	editable: HTMLDivElement;
-	onClose: (item: any | null) => void;
+	onSave: (partIndex: number, type: string, item: any) => void;
 }
 
 const RealtimeValueEditor: React.FunctionComponent<RealtimeValueEditorProps> = props => {
-	const { editable, onClose } = props;
+	const { editable, onSave } = props;
 
 	const [editorContext, setEditorContext] = useState<RtvEditorContext>();
 	const { variableGroups } = useSelector(s => s.global.variableGroups);
@@ -79,8 +79,10 @@ const RealtimeValueEditor: React.FunctionComponent<RealtimeValueEditorProps> = p
 	}
 
 	function close(item: any | null) {
+		if (editorContext && item)
+			onSave(editorContext.partIndex, editorContext.realtimeValue.type, item);
+
 		setEditorContext(void 0);
-		onClose(item);
 	}
 
 	function renderUiSection(section: UISection<any>) {

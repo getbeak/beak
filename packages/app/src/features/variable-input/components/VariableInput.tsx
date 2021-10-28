@@ -1,5 +1,6 @@
 import RealtimeValueEditor from '@beak/app/features/realtime-value-editor/components/RealtimeValueEditor';
 import useForceReRender from '@beak/app/hooks/use-force-rerender';
+import { requestBodyUrlEncodedEditorValueChange } from '@beak/app/store/project/actions';
 import { RealtimeValuePart, ValueParts } from '@beak/common/types/beak-project';
 import React, { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -229,10 +230,12 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = props => {
 		if (showSelector)
 			return;
 
-		unmanagedStateRef.current.lastUpstreamReport = Date.now();
-		unmanagedStateRef.current.lastSelectionPosition = normalizeSelection(unmanagedStateRef.current.lastSelectionPosition);
+		const { lastSelectionPosition, valueParts } = unmanagedStateRef.current;
 
-		onChange(unmanagedStateRef.current.valueParts);
+		unmanagedStateRef.current.lastUpstreamReport = Date.now();
+		unmanagedStateRef.current.lastSelectionPosition = normalizeSelection(lastSelectionPosition);
+
+		onChange(valueParts);
 	}
 
 	function openSelector() {
@@ -310,6 +313,30 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = props => {
 		}, 0);
 	}
 
+	function variableEditSaved(partIndex: number, type: string, item: any) {
+		const valueParts = unmanagedStateRef.current.valueParts;
+		const part = unmanagedStateRef.current.valueParts[partIndex];
+
+		if (typeof part !== 'object' || part.type !== type) {
+			console.error(`Part ordering change mid edit, cannot continue. expected ${type}`);
+
+			return;
+		}
+
+		const newParts = [...valueParts];
+		const existingPart = newParts[partIndex] as RealtimeValuePart;
+
+		(newParts[partIndex] as RealtimeValuePart) = {
+			...existingPart,
+			payload: item,
+		};
+
+		unmanagedStateRef.current.valueParts = newParts;
+
+		reportChange();
+		forceRerender();
+	}
+
 	function closeSelector() {
 		setShowSelector(false);
 		setQuery('');
@@ -355,7 +382,7 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = props => {
 			{editableRef.current && (
 				<RealtimeValueEditor
 					editable={editableRef.current}
-					onClose={() => { /* */ }}
+					onSave={variableEditSaved}
 				/>
 			)}
 		</Wrapper>
