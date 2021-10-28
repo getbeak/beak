@@ -14,7 +14,9 @@ const LegalTitleItem: React.FunctionComponent<LegalTitleProps> = ({ element, id,
 	const url = `${window.location.pathname}#${id}`;
 
 	return (
-		<Wrapper id={id} as={element}>
+		<Wrapper as={element}>
+			<AnchorPoint id={id} />
+
 			{children}
 
 			<Clicker to={url}>
@@ -28,6 +30,12 @@ const LegalTitleItem: React.FunctionComponent<LegalTitleProps> = ({ element, id,
 	);
 };
 
+const AnchorPoint = styled.div`
+	position: absolute;
+	top: -100px;
+	visibility: hidden;
+`;
+
 const Clicker = styled(Link)`
 	display: inline-block;
 	margin-left: 8px;
@@ -38,6 +46,7 @@ const Clicker = styled(Link)`
 `;
 
 const Wrapper = styled.div`
+	position: relative;
 	font-weight: 600;
 
 	&:hover {
