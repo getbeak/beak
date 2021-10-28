@@ -66,6 +66,10 @@ const VariableSelector: React.FunctionComponent<VariableSelectorProps> = props =
 
 	useEffect(() => {
 		const elem = editableElement.children[sel.partIndex];
+
+		if (!elem)
+			return;
+
 		const rect = elem.getBoundingClientRect();
 
 		const contentLength = (elem.textContent ?? '').length;
@@ -77,7 +81,7 @@ const VariableSelector: React.FunctionComponent<VariableSelectorProps> = props =
 			left: rect.left + offsetDelta,
 			top: rect.top + rect.height + 5,
 		});
-	}, []);
+	}, [editableElement]);
 
 	useEffect(() => {
 		// This actually exists

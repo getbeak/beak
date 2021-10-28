@@ -44,6 +44,11 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = props => {
 		valueParts: [],
 	});
 
+	trySetSelection(editableRef.current, unmanagedStateRef.current.lastSelectionPosition);
+	window.setTimeout(() => {
+		trySetSelection(editableRef.current, unmanagedStateRef.current.lastSelectionPosition);
+	}, 10);
+
 	useEffect(() => {
 		if (!showSelector)
 			return;
@@ -52,6 +57,9 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = props => {
 	}, [showSelector]);
 
 	useEffect(() => {
+		if (!query)
+			return;
+
 		trySetSelection(editableRef.current, unmanagedStateRef.current.lastSelectionPosition);
 	}, [query]);
 
@@ -182,7 +190,7 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = props => {
 		});
 
 		unmanagedStateRef.current.valueParts = reconcilledParts;
-		unmanagedStateRef.current.lastSelectionPosition = normalizeSelection();
+		unmanagedStateRef.current.lastSelectionPosition = normalizeSelection(unmanagedStateRef.current.lastSelectionPosition);
 
 		placeholderRef.current!.style.display = reconcilledParts.length === 0 ? 'block' : 'none';
 
@@ -212,7 +220,7 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = props => {
 			return;
 
 		unmanagedStateRef.current.lastUpstreamReport = Date.now();
-		unmanagedStateRef.current.lastSelectionPosition = normalizeSelection();
+		unmanagedStateRef.current.lastSelectionPosition = normalizeSelection(unmanagedStateRef.current.lastSelectionPosition);
 
 		onChange(unmanagedStateRef.current.valueParts);
 	}
@@ -220,14 +228,14 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = props => {
 	function openSelector() {
 		setShowSelector(true);
 
-		const selection = normalizeSelection();
+		const selection = normalizeSelection(unmanagedStateRef.current.lastSelectionPosition);
 		const part = unmanagedStateRef.current.valueParts[selection.partIndex];
 
 		if (typeof part !== 'string')
 			return;
 
 		unmanagedStateRef.current.variableSelectionState = {
-			queryStartSelection: normalizeSelection(),
+			queryStartSelection: normalizeSelection(selection),
 			queryTrailingLength: part.length - selection.offset,
 		};
 	}
@@ -242,7 +250,7 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = props => {
 		const { offset, partIndex } = queryStartSelection;
 		const queryLength = query.length;
 		const mode = determineInsertionMode(valueParts, variableSelectionState, queryLength);
-		const partSelectionIndex = mode === 'append' ? partIndex + 1 : partIndex;
+		const newPartSelectionIndex = mode === 'append' ? partIndex + 2 : partIndex + 1;
 
 		if (['prepend', 'append'].includes(mode)) {
 			let finalPartIndex = partIndex;
@@ -275,20 +283,21 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = props => {
 			return;
 		}
 
-		unmanagedStateRef.current.lastSelectionPosition = queryStartSelection;
+		const newSelectionPosition = {
+			partIndex: newPartSelectionIndex,
+			isTextNode: false,
+			offset: 0,
+		};
 
-		trySetSelection(editableRef.current, queryStartSelection);
+		unmanagedStateRef.current.lastSelectionPosition = newSelectionPosition;
+
 		closeSelector();
 		reportChange();
 		forceRerender();
 
-		window.requestAnimationFrame(() => {
-			trySetSelection(editableRef.current, {
-				partIndex: partSelectionIndex,
-				isTextNode: false,
-				offset: 0,
-			});
-		});
+		window.setTimeout(() => {
+			trySetSelection(editableRef.current, newSelectionPosition);
+		}, 0);
 	}
 
 	function closeSelector() {

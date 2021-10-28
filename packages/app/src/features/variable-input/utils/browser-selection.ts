@@ -4,10 +4,22 @@ export interface NormalizedSelection {
 	offset: number;
 }
 
-export function normalizeSelection(): NormalizedSelection {
+export function normalizeSelection(existing?: NormalizedSelection): NormalizedSelection {
 	const sel = window.getSelection();
+
+	if (!sel || sel.rangeCount === 0) {
+		return existing ?? {
+			isTextNode: false,
+			partIndex: 0,
+			offset: 0,
+		};
+	}
+
 	const range = sel!.getRangeAt(0);
 	const startPoint = range.commonAncestorContainer;
+
+	if (existing && startPoint.nodeName === 'ARTICLE')
+		return existing;
 
 	let subject: Node = startPoint;
 
@@ -20,11 +32,13 @@ export function normalizeSelection(): NormalizedSelection {
 	// Get the index of the child we're inside
 	const partIndex = Array.prototype.indexOf.call(subject.parentNode!.children, subject);
 
-	return {
+	const out = {
 		isTextNode,
 		partIndex,
 		offset: range.startOffset,
 	};
+
+	return out;
 }
 
 export function setSelection(elem: HTMLElement, selection: NormalizedSelection) {
@@ -35,10 +49,14 @@ export function setSelection(elem: HTMLElement, selection: NormalizedSelection) 
 	if (!node)
 		return;
 
-	if (selection.isTextNode)
+	if (selection.isTextNode) {
 		range.setStart(node.childNodes[0], selection.offset);
-	else
-		range.setStart(node, selection.offset);
+	} else {
+		const childrenLength = elem.childNodes.length;
+		const finalIndex = childrenLength === 2 && selection.partIndex === 1 ? 1 : selection.partIndex + 1;
+
+		range.setStart(elem.childNodes[finalIndex], 0);
+	}
 
 	sel?.removeAllRanges();
 	sel?.addRange(range);
