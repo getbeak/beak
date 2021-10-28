@@ -1,9 +1,10 @@
 import RealtimeValueEditor from '@beak/app/features/realtime-value-editor/components/RealtimeValueEditor';
 import useForceReRender from '@beak/app/hooks/use-force-rerender';
-import { requestBodyUrlEncodedEditorValueChange } from '@beak/app/store/project/actions';
+import { checkShortcut } from '@beak/app/lib/keyboard-shortcuts';
+import { requestFlight } from '@beak/app/store/flight/actions';
 import { RealtimeValuePart, ValueParts } from '@beak/common/types/beak-project';
 import React, { useEffect, useRef, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 
 import { getRealtimeValue } from '../../realtime-values';
@@ -32,6 +33,7 @@ export interface VariableInputProps {
 
 const VariableInput: React.FunctionComponent<VariableInputProps> = props => {
 	const { disabled, placeholder, parts: incomingParts, onChange } = props;
+	const dispatch = useDispatch();
 	const { variableGroups } = useSelector(s => s.global.variableGroups);
 
 	const forceRerender = useForceReRender();
@@ -125,6 +127,15 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = props => {
 
 		if (event.key === 'Escape')
 			closeSelector();
+
+		// If a flight is about to happen, make sure the data is correct!
+		if (checkShortcut('global.execute-request', event)) {
+			event.stopPropagation();
+			reportChange();
+
+			// Wait for the reported change to hit
+			window.setTimeout(() => dispatch(requestFlight()), 0);
+		}
 	}
 
 	function handleBlur() {
@@ -222,7 +233,7 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = props => {
 		if (debounceHandler)
 			window.clearTimeout(debounceHandler);
 
-		unmanagedStateRef.current.debounceHandler = window.setTimeout(reportChange, 300);
+		unmanagedStateRef.current.debounceHandler = window.setTimeout(reportChange, 600);
 	}
 
 	function reportChange() {
@@ -230,7 +241,11 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = props => {
 		if (showSelector)
 			return;
 
-		const { lastSelectionPosition, valueParts } = unmanagedStateRef.current;
+		const { debounceHandler, lastSelectionPosition, valueParts } = unmanagedStateRef.current;
+
+		// Make sure we aren't double reporting!
+		if (debounceHandler)
+			window.clearTimeout(debounceHandler);
 
 		unmanagedStateRef.current.lastUpstreamReport = Date.now();
 		unmanagedStateRef.current.lastSelectionPosition = normalizeSelection(lastSelectionPosition);
