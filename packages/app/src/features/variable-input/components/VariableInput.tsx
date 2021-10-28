@@ -34,7 +34,7 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = props => {
 	const { variableGroups } = useSelector(s => s.global.variableGroups);
 
 	const forceRerender = useForceReRender();
-	const [showSelector, setShowSelector] = useState(false);
+	const [showSelector, setShowSelector] = useState(() => false);
 	const [query, setQuery] = useState('');
 
 	const editableRef = useRef<HTMLDivElement | null>(null);
@@ -43,6 +43,9 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = props => {
 		lastUpstreamReport: 0,
 		valueParts: [],
 	});
+
+	if (showSelector && !unmanagedStateRef.current.variableSelectionState)
+		setShowSelector(false);
 
 	trySetSelection(editableRef.current, unmanagedStateRef.current.lastSelectionPosition);
 	window.setTimeout(() => {
@@ -123,6 +126,11 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = props => {
 			closeSelector();
 	}
 
+	function handleBlur() {
+		closeSelector();
+		reportChange();
+	}
+
 	function reconcile() {
 		if (!editableRef.current)
 			return;
@@ -189,8 +197,10 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = props => {
 			return;
 		});
 
+		const { lastSelectionPosition } = unmanagedStateRef.current;
+
 		unmanagedStateRef.current.valueParts = reconcilledParts;
-		unmanagedStateRef.current.lastSelectionPosition = normalizeSelection(unmanagedStateRef.current.lastSelectionPosition);
+		unmanagedStateRef.current.lastSelectionPosition = normalizeSelection(lastSelectionPosition);
 
 		placeholderRef.current!.style.display = reconcilledParts.length === 0 ? 'block' : 'none';
 
@@ -303,6 +313,7 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = props => {
 	function closeSelector() {
 		setShowSelector(false);
 		setQuery('');
+
 		unmanagedStateRef.current.variableSelectionState = void 0;
 	}
 
@@ -314,7 +325,7 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = props => {
 				ref={editableRef}
 				suppressContentEditableWarning
 				onInput={handleChange}
-				onBlur={reportChange}
+				onBlur={handleBlur}
 				onKeyDown={handleKeyDown}
 				onPaste={handlePaste}
 				dangerouslySetInnerHTML={{
