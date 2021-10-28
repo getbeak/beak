@@ -58,8 +58,10 @@ export function setSelection(elem: HTMLElement, selection: NormalizedSelection) 
 		range.setStart(elem.childNodes[finalIndex], 0);
 	}
 
-	sel?.removeAllRanges();
-	sel?.addRange(range);
+	window.setTimeout(() => {
+		sel?.removeAllRanges();
+		sel?.addRange(range);
+	}, 0);
 }
 
 export function trySetSelection(
