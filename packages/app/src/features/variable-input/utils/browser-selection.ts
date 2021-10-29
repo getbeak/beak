@@ -49,6 +49,9 @@ export function setSelection(elem: HTMLElement, selection: NormalizedSelection) 
 	if (!node)
 		return;
 
+	if (range.startOffset !== range.endOffset)
+		return;
+
 	if (selection.isTextNode) {
 		range.setStart(node.childNodes[0], selection.offset);
 	} else {
