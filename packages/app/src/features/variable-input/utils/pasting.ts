@@ -23,8 +23,6 @@ const sanitizerOptions: IOptions = {
 			case 'div': {
 				const attributeSet = new Set(Object.keys(frame.attribs));
 
-				console.log(attributeSet);
-
 				// Check element has all required attributes
 				for (const r of requiredDivAttributes)
 					if (!attributeSet.has(r)) return true;
@@ -53,8 +51,6 @@ export function handlePaste(event: React.ClipboardEvent<HTMLElement>) {
 
 	if (htmlText) {
 		const sanitized = sanitizeHtml(htmlText, sanitizerOptions);
-
-		console.log(sanitized);
 
 		document.execCommand('insertHtml', false, sanitized);
 	} else if (plainText) {
