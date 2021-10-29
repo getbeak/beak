@@ -24,6 +24,7 @@ export default function renderValueParts(parts: ValueParts, variableGroups: Vari
 					return null;
 				}
 
+				const editable = Boolean(impl.editor);
 				const name = (() => {
 					if (p.type === 'variable_group_item')
 						return getVariableGroupItemName(p.payload, variableGroups);
@@ -35,8 +36,8 @@ export default function renderValueParts(parts: ValueParts, variableGroups: Vari
 					<div
 						className={'bvs-blob'}
 						contentEditable={false}
-						data-content={name}
 						data-index={idx}
+						data-editable={editable}
 						data-type={p.type}
 						data-payload={p.payload ? JSON.stringify(p.payload) : void 0}
 						key={uuid.v4()}

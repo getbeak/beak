@@ -46,6 +46,10 @@ const GlobalStyle = createGlobalStyle<GlobalStyleProps>`
 		> strong {
 			font-weight: 600;
 		}
+
+		&[data-editable] {
+			cursor: default;
+		}
 	}
 
 	::-webkit-scrollbar {
