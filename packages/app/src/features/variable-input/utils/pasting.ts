@@ -1,6 +1,16 @@
 import sanitizeHtml, { IOptions } from 'sanitize-html';
 
-const requiredDivAttributes = new Set(['class', 'contentditable', 'data-index', 'data-type', 'data-payload']);
+const requiredDivAttributes = new Set([
+	'class',
+	'data-index',
+	'data-type',
+]);
+const allowedDivAttributes = new Set([
+	...Array.from(requiredDivAttributes),
+	'contenteditable',
+	'data-editable',
+	'data-payload',
+]);
 const sanitizerOptions: IOptions = {
 	allowedTags: ['div', 'span'],
 	allowedAttributes: {
@@ -8,18 +18,20 @@ const sanitizerOptions: IOptions = {
 		span: [],
 	},
 	exclusiveFilter: frame => {
+		// Remove if true
 		switch (frame.tag) {
 			case 'div': {
 				const attributeSet = new Set(Object.keys(frame.attribs));
 
-				if (attributeSet.size !== requiredDivAttributes.size)
-					return true;
-
 				console.log(attributeSet);
-				console.log(requiredDivAttributes);
 
+				// Check element has all required attributes
 				for (const r of requiredDivAttributes)
 					if (!attributeSet.has(r)) return true;
+
+				// Check element doesn't have any verboten attributes
+				for (const r of attributeSet)
+					if (!allowedDivAttributes.has(r)) return true;
 
 				return false;
 			}
@@ -28,7 +40,7 @@ const sanitizerOptions: IOptions = {
 				return Object.keys(frame.attribs).length !== 0;
 
 			default:
-				return false;
+				return true;
 		}
 	},
 };
@@ -41,6 +53,8 @@ export function handlePaste(event: React.ClipboardEvent<HTMLElement>) {
 
 	if (htmlText) {
 		const sanitized = sanitizeHtml(htmlText, sanitizerOptions);
+
+		console.log(sanitized);
 
 		document.execCommand('insertHtml', false, sanitized);
 	} else if (plainText) {
