@@ -35,6 +35,7 @@ const sanitizerOptions: IOptions = {
 			}
 
 			case 'span':
+			case 'strong':
 				return Object.keys(frame.attribs).length !== 0;
 
 			default:
