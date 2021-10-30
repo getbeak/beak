@@ -20,6 +20,7 @@ export default function generateEditMenu(ctx: Context): MenuItemConstructorOptio
 				accelerator: 'CmdOrCtrl+Enter',
 				click: async () => sendMenuItemClick(ctx, 'execute_request'),
 			},
+			{ type: 'separator' },
 		],
 	};
 
