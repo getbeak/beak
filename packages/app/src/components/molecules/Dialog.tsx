@@ -27,11 +27,9 @@ const Dialog: React.FunctionComponent<DialogProps> = props => {
 		dialogStack++;
 
 		return () => {
-			const container = document.getElementById(dialogContainerId);
 			const element = document.getElementById(identifier!);
 
-			container!.removeChild(element!);
-
+			element?.remove();
 			dialogStack--;
 		};
 	}, []);
