@@ -1,4 +1,5 @@
 import { ipcProjectService } from '@beak/app/lib/ipc';
+import { faEgg, faFolderOpen } from '@fortawesome/free-solid-svg-icons';
 import React from 'react';
 import styled from 'styled-components';
 
@@ -17,23 +18,17 @@ const GetStartedColumn: React.FunctionComponent<GetStartedColumnProps> = ({ setV
 		<GetStartedButton
 			title={'Create a new project'}
 			description={'Creates a new local project'}
+			icon={faEgg}
 			onClick={() => setView('create-local')}
 		/>
 
 		<GetStartedButton
 			title={'Open an existing project'}
 			description={'Opens an existing local project'}
-
-			onClick={() => {
-				ipcProjectService.openProject();
-			}}
+			icon={faFolderOpen}
+			onClick={() => ipcProjectService.openProject()}
 		/>
 
-		{/* <GetStartedButton
-			disabled
-			title={'Create a team project'}
-			description={'Creates a new cloud-based team project'}
-		/> */}
 	</Wrapper>
 );
 

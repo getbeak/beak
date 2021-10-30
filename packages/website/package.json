@@ -25,7 +25,7 @@
     "@fortawesome/free-brands-svg-icons": "^5.15.3",
     "@fortawesome/free-regular-svg-icons": "^5.15.3",
     "@fortawesome/free-solid-svg-icons": "^5.15.3",
-    "@fortawesome/react-fontawesome": "^0.1.14",
+    "@fortawesome/react-fontawesome": "^0.1.16",
     "@reduxjs/toolkit": "^1.6.0",
     "@types/js-yaml": "^4.0.2",
     "@types/react-helmet": "^6.1.3",

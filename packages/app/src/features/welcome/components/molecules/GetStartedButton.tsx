@@ -1,3 +1,5 @@
+import { IconDefinition } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 import styled from 'styled-components';
 
@@ -6,19 +8,26 @@ type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement>;
 export interface GetStartedButtonProps extends ButtonProps {
 	title: string;
 	description: string;
+	icon: IconDefinition;
 }
 
 const GetStartedButton: React.FunctionComponent<GetStartedButtonProps> = props => {
 	const {
 		title,
 		description,
+		icon,
 		...passProps
 	} = props;
 
 	return (
 		<Button {...passProps}>
 			<Container>
-				<Icon />
+				<Icon>
+					<FontAwesomeIcon
+						icon={icon}
+						size={'2x'}
+					/>
+				</Icon>
 				<TextParts>
 					<Title>{title}</Title>
 					<Description>{description}</Description>
@@ -67,13 +76,11 @@ const Container = styled.div`
 `;
 
 const Icon = styled.div`
+	display: flex;
 	width: 40px;
-	height: auto;
 
-	background-image: url('./images/tswift-square.jpg');
-	background-position: center;
-	background-repeat: no-repeat;
-	background-size: contain;
+	align-items: center;
+	justify-content: center;
 `;
 
 const TextParts = styled.div`
