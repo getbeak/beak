@@ -2,6 +2,7 @@ import { Tree } from '@beak/common/types/beak-project';
 import React, { useRef } from 'react';
 import styled from 'styled-components';
 
+import ContextMenuWrapper from '../atoms/ContextMenuWrapper';
 import FolderItem from '../molecules/FolderItem';
 import RequestItem from '../molecules/RequestItem';
 
@@ -22,18 +23,20 @@ const TreeView: React.FunctionComponent<TreeViewProps> = ({ collapsed, tree }) =
 			tabIndex={-1}
 			ref={container}
 		>
-			{items.filter(i => i.type === 'folder').map(n => (
-				<FolderItem depth={0} key={n.filePath} id={n.filePath} />
-			))}
+			<ContextMenuWrapper mode={'root'} target={container.current!}>
+				{items.filter(i => i.type === 'folder').map(n => (
+					<FolderItem depth={0} key={n.filePath} id={n.filePath} />
+				))}
 
-			{items.filter(i => i.type === 'request').map(n => (
-				<RequestItem
-					depth={0}
-					key={n.filePath}
-					id={n.id}
-					parentNode={null}
-				/>
-			))}
+				{items.filter(i => i.type === 'request').map(n => (
+					<RequestItem
+						depth={0}
+						key={n.filePath}
+						id={n.id}
+						parentNode={null}
+					/>
+				))}
+			</ContextMenuWrapper>
 		</Container>
 	);
 };

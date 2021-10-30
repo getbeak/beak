@@ -141,7 +141,7 @@ export interface RemoveNodeFromDiskPayload extends RequestIdPayload {
 }
 
 export interface CreateNewThing {
-	highlightedNodeId: string;
+	highlightedNodeId: string | undefined;
 	name?: string;
 }
 

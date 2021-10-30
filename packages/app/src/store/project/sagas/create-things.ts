@@ -10,23 +10,24 @@ import actions from '../actions';
 import { ActionTypes, CreateNewThing } from '../types';
 
 export function* workerCreateNewFolder({ payload }: PayloadAction<CreateNewThing>) {
+	// @ts-expect-error
 	const parentNode: Nodes = yield select((s: ApplicationState) => s.global.project.tree[payload.highlightedNodeId]);
+	let directory = 'tree/';
 
-	if (!parentNode)
-		return;
-
-	const directory = parentNode.type === 'folder' ? parentNode.filePath : path.dirname(parentNode.filePath);
+	if (parentNode)
+		directory = parentNode.type === 'folder' ? parentNode.filePath : path.dirname(parentNode.filePath);
 
 	yield call(createFolderNode, directory, payload.name);
 }
 
 export function* workerCreateNewRequest({ payload }: PayloadAction<CreateNewThing>) {
+	// @ts-expect-error
 	const parentNode: Nodes = yield select((s: ApplicationState) => s.global.project.tree[payload.highlightedNodeId]);
+	let directory = 'tree/';
 
-	if (!parentNode)
-		return;
+	if (parentNode)
+		directory = parentNode.type === 'folder' ? parentNode.filePath : path.dirname(parentNode.filePath);
 
-	const directory = parentNode.type === 'folder' ? parentNode.filePath : path.dirname(parentNode.filePath);
 	const nodeId: string = yield call(createRequestNode, directory, payload.name);
 
 	yield race([
