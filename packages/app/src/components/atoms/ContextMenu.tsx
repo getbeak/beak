@@ -1,7 +1,7 @@
+import { ipcContextMenuService } from '@beak/app/lib/ipc';
+import ksuid from '@cuvva/ksuid';
 import type { MenuItemConstructorOptions } from 'electron';
 import React, { useEffect } from 'react';
-import ksuid from '@cuvva/ksuid';
-import { ipcContextMenuService } from '@beak/app/lib/ipc';
 
 interface ContextMenuProps {
 	target: HTMLElement | undefined;
@@ -32,9 +32,10 @@ const ContextMenu: React.FunctionComponent<ContextMenuProps> = props => {
 				id,
 				menuItems: menuItems.map(m => ({
 					id: m.id!,
+					type: m.type,
 					label: m.label,
 					enabled: m.enabled,
-					type: m.type,
+					accelerator: m.accelerator,
 				})),
 			});
 		}
