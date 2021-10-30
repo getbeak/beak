@@ -50,7 +50,7 @@ const definitions: Record<Shortcuts, PlatformSpecificDefinitions | PlatformAgnos
 
 		windows: { key: 'Enter' },
 		linux: { key: 'Enter' },
-		darwin: { key: 'ArrowRight' },
+		darwin: { meta: true, key: 'ArrowDown' },
 	},
 
 	'project-explorer.folder.up': { type: 'agnostic', key: 'ArrowUp' },
