@@ -12,4 +12,5 @@ export type MenuEventCode =
 	'select_next_tab' |
 	'select_previous_tab' |
 
-	'execute_request';
+	'execute_request' |
+	'view_project_encryption';

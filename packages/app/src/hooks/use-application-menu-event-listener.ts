@@ -2,6 +2,7 @@ import { MenuEventPayload } from '@beak/common/web-contents/types';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 
+import { showEncryptionView } from '../features/encryption/store/actions';
 import { requestFlight } from '../store/flight/actions';
 import { closeAllSelectedTabs } from '../store/project/actions';
 
@@ -20,6 +21,11 @@ export function useApplicationMenuEventListener() {
 
 				case 'execute_request': {
 					dispatch(requestFlight());
+					break;
+				}
+
+				case 'view_project_encryption': {
+					dispatch(showEncryptionView());
 					break;
 				}
 

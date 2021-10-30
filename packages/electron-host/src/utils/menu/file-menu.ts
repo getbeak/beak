@@ -34,6 +34,12 @@ export default function generateFileMenu(ctx: Context): MenuItemConstructorOptio
 		}, {
 			type: 'separator',
 		}, {
+			label: 'View project encryption',
+			enabled: isProjectEditor(ctx),
+			click: async () => sendMenuItemClick(ctx, 'view_project_encryption'),
+		}, {
+			type: 'separator',
+		}, {
 			role: ctx.isDarwin ? 'close' : 'quit',
 		}],
 	};

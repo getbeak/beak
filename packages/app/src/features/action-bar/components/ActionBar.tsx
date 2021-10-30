@@ -5,7 +5,7 @@ import { Nodes } from '@beak/common/types/beak-project';
 import {
 	faCaretLeft,
 	faCaretRight,
-	faKiwiBird,
+	faLock,
 	faRing,
 	faSearch,
 } from '@fortawesome/free-solid-svg-icons';
@@ -14,6 +14,7 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled, { useTheme } from 'styled-components';
 
+import { showEncryptionView } from '../../encryption/store/actions';
 import ActionBarButton from './atoms/ActionBarButton';
 import ActionBarSeperator from './atoms/ActionBarSeperator';
 import ActionBarAlertButton from './molecules/ActionBarAlertButton';
@@ -34,11 +35,11 @@ const ActionBar: React.FunctionComponent = () => {
 					icon={faRing}
 				/>
 			</ActionBarButton>
-			<ActionBarButton disabled>
+			<ActionBarButton onClick={() => dispatch(showEncryptionView())}>
 				<FontAwesomeIcon
 					color={theme.ui.textMinor}
 					size={'1x'}
-					icon={faKiwiBird}
+					icon={faLock}
 				/>
 			</ActionBarButton>
 			<ActionBarSeperator />
