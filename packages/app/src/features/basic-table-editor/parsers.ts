@@ -9,9 +9,14 @@ const queryStringRegex = /[a-z0-9%=+-[\]]+/;
 
 export async function convertKeyValueToString(context: Context, items: Record<string, ToggleKeyValue>) {
 	const params = new URLSearchParams();
+	const eligible = TypedObject.values(items).filter(i => i.enabled);
+	const resolved = await Promise.all(eligible.map(async e => ({
+		name: e.name,
+		value: await parseValueParts(context, e.value),
+	})));
 
-	for (const { name, value } of TypedObject.values(items).filter(i => i.enabled))
-		params.set(name, await parseValueParts(context, value));
+	for (const resolve of resolved)
+		params.set(resolve.name, resolve.value);
 
 	return params.toString();
 }
