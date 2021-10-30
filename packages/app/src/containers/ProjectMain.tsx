@@ -9,6 +9,7 @@ import ReflexStyles from '../components/atoms/ReflexStyles';
 import ProgressIndicator from '../components/molecules/ProgressIndicator';
 import WindowSessionContext from '../contexts/window-session-context';
 import ActionBar from '../features/action-bar/components/ActionBar';
+import ProjectEncryption from '../features/encryption/components/ProjectEncryption';
 import Omnibar from '../features/omni-bar/components/Omnibar';
 import ProjectPane from '../features/project-pane/components/ProjectPane';
 import StatusBar from '../features/status-bar/components/StatusBar';
@@ -124,6 +125,9 @@ const ProjectMain: React.FunctionComponent = () => {
 				)}
 			</Container>
 			<StatusBar />
+
+			<ProjectEncryption />
+
 			{(!loaded || !setup) && <LoadingMask />}
 		</React.Fragment>
 	);

@@ -1,4 +1,4 @@
-import FixProjectEncryption from '@beak/app/features/alerts/components/FixProjectEncryption';
+import FixProjectEncryption from '@beak/app/features/encryption/components/FixProjectEncryption';
 import { alertRemoveType } from '@beak/app/store/project/actions';
 import { Alert } from '@beak/app/store/project/types';
 import React, { useState } from 'react';
@@ -42,12 +42,10 @@ const AlertSwitch: React.FunctionComponent<AlertSwitchProps> = ({ alert }) => {
 
 		case 'http_body_not_allowed':
 			return (
-				<React.Fragment>
-					<AlertItem
-						title={'Invalid HTTP request'}
-						description={'The request has a body, but the selected verb does not support bodies'}
-					/>
-				</React.Fragment>
+				<AlertItem
+					title={'Invalid HTTP request'}
+					description={'The request has a body, but the selected verb does not support bodies'}
+				/>
 			);
 
 		default:

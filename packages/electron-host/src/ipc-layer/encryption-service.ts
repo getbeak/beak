@@ -1,6 +1,6 @@
 import { IpcEncryptionServiceMain } from '@beak/common/ipc/encryption';
 import { IpcEvent } from '@beak/common/ipc/ipc';
-import { ipcMain } from 'electron';
+import { clipboard, ipcMain } from 'electron';
 import path from 'path';
 
 import {
@@ -47,6 +47,14 @@ service.registerDecryptString(async (event, { iv, payload }) => {
 		return '[Encryption key missing]';
 
 	return await decryptString(payload, key, iv);
+});
+
+service.registerCopyEncryptionKey(async event => {
+	const projectFolder = getProjectFolder(event);
+	const key = await readProjectEncryptionKey(projectFolder);
+
+	if (key)
+		clipboard.writeText(key);
 });
 
 function getProjectFolder(event: IpcEvent) {

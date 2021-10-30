@@ -3,6 +3,8 @@ import { composeWithDevTools } from 'redux-devtools-extension';
 import createSagaMiddleware from 'redux-saga';
 import { all, fork } from 'redux-saga/effects';
 
+import * as encryptionStore from '../features/encryption/store';
+import { State as EncryptionState } from '../features/encryption/store/types';
 import * as omniBarStore from '../features/omni-bar/store';
 import { State as OmniBarState } from '../features/omni-bar/store/types';
 import * as arbiterStore from './arbiter';
@@ -20,6 +22,7 @@ import { State as VariableGroupState } from './variable-groups/types';
 
 export interface ApplicationState {
 	features: {
+		encryption: EncryptionState;
 		omniBar: OmniBarState;
 	};
 	global: {
@@ -35,6 +38,7 @@ export interface ApplicationState {
 function createRootReducer() {
 	return combineReducers<ApplicationState>({
 		features: combineReducers({
+			encryption: encryptionStore.reducer,
 			omniBar: omniBarStore.reducer,
 		}),
 		global: combineReducers({
@@ -62,6 +66,7 @@ function* rootSaga() {
 function createInitialState(): ApplicationState {
 	return {
 		features: {
+			encryption: encryptionStore.types.initialState,
 			omniBar: omniBarStore.types.initialState,
 		},
 		global: {

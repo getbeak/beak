@@ -8,6 +8,7 @@ export const EncryptionMessages = {
 	GenerateIv: 'generate_iv',
 	EncryptString: 'encrypt_string',
 	DecryptString: 'decrypt_string',
+	CopyEncryptionKey: 'copy_encryption_key',
 };
 
 export interface EncryptStringReq {
@@ -48,6 +49,10 @@ export class IpcEncryptionServiceRenderer extends IpcServiceRenderer {
 	async decryptString(payload: DecryptStringReq) {
 		return this.invoke<string>(EncryptionMessages.DecryptString, payload);
 	}
+
+	async copyEncryptionKey() {
+		return this.invoke(EncryptionMessages.CopyEncryptionKey);
+	}
 }
 
 export class IpcEncryptionServiceMain extends IpcServiceMain {
@@ -73,5 +78,9 @@ export class IpcEncryptionServiceMain extends IpcServiceMain {
 
 	registerDecryptString(fn: Listener<DecryptStringReq, string>) {
 		this.registerListener(EncryptionMessages.DecryptString, fn);
+	}
+
+	registerCopyEncryptionKey(fn: Listener<void, void>) {
+		this.registerListener(EncryptionMessages.CopyEncryptionKey, fn);
 	}
 }
