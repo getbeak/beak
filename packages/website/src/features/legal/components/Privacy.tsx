@@ -64,7 +64,13 @@ const Privacy: React.FunctionComponent = () => (
 			</LegalTitle>
 
 			<LegalTlDr>
-				{'tl;dr we ethical babes'}
+				<SilentAnchor
+					target={'_target'}
+					rel={'noopener noreferrer nofollow'}
+					href={'https://www.youtube.com/watch?v=lLqdd16b7vw'}
+				>
+					{'tl;dr we ethical babes'}
+				</SilentAnchor>
 			</LegalTlDr>
 		</SmallContainer>
 	</React.Fragment>
@@ -81,5 +87,14 @@ const Header = styled.div`
 	@media (max-width: 850px) {
 		padding-top: 40px;
 		padding-bottom: 40px;
+	}
+`;
+
+const SilentAnchor = styled.a`
+	color: ${p => p.theme.ui.textOnSurfaceBackground};
+	text-decoration: none;
+
+	&:hover, &:active {
+		color: ${p => p.theme.ui.textOnSurfaceBackground};
 	}
 `;
