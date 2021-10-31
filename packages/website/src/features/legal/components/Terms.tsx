@@ -17,7 +17,7 @@ const Terms: React.FunctionComponent = () => (
 			<SmallContainer>
 				<TitleSubtle>{'Legal'}</TitleSubtle>
 				<Title>{'Terms'}</Title>
-				<SubTitle>{'You know you want to read them'}</SubTitle>
+				<SubTitle>{'You know you want to read them...'}</SubTitle>
 			</SmallContainer>
 		</Header>
 		<SmallContainer>

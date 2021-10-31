@@ -16,7 +16,7 @@ const Privacy: React.FunctionComponent = () => (
 			<SmallContainer>
 				<TitleSubtle>{'Legal'}</TitleSubtle>
 				<Title>{'Privacy'}</Title>
-				<SubTitle>{'You know you should read them'}</SubTitle>
+				<SubTitle>{'You know you should read them...'}</SubTitle>
 			</SmallContainer>
 		</Header>
 		<SmallContainer>
