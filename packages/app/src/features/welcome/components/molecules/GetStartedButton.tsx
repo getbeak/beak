@@ -1,7 +1,9 @@
+import { UIColors } from '@beak/design-system/types';
+import { toHexAlpha } from '@beak/design-system/utils';
 import { IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
-import styled from 'styled-components';
+import styled, { useTheme } from 'styled-components';
 
 type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement>;
 
@@ -9,15 +11,20 @@ export interface GetStartedButtonProps extends ButtonProps {
 	title: string;
 	description: string;
 	icon: IconDefinition;
+	iconColor?: keyof UIColors;
 }
 
 const GetStartedButton: React.FunctionComponent<GetStartedButtonProps> = props => {
+	const theme = useTheme();
 	const {
 		title,
 		description,
 		icon,
+		iconColor,
 		...passProps
 	} = props;
+
+	const color = iconColor ? theme.ui[iconColor] : void 0;
 
 	return (
 		<Button {...passProps}>
@@ -25,6 +32,7 @@ const GetStartedButton: React.FunctionComponent<GetStartedButtonProps> = props =
 				<Icon>
 					<FontAwesomeIcon
 						icon={icon}
+						color={color}
 						size={'2x'}
 					/>
 				</Icon>
@@ -40,7 +48,9 @@ const GetStartedButton: React.FunctionComponent<GetStartedButtonProps> = props =
 const Button = styled.button`
 	display: block;
 	width: 100%;
-	background: ${props => props.theme.ui.secondarySurface};
+	background: ${props => toHexAlpha(props.theme.ui.secondarySurface, 0.7)};
+	backdrop-filter: blur(5px);
+	border-radius: 5px;
 	color: ${props => props.theme.ui.textOnAction};
 	border: none;
 	cursor: pointer;
@@ -60,13 +70,9 @@ const Button = styled.button`
 			background: ${props => props.theme.ui.surfaceHighlight};
 		}
 
-		&:focus {
-			outline: 1px solid ${props => props.theme.ui.surfaceBorderSeparator};
-		}
-
 		&:active {
 			background: ${props => props.theme.ui.background};
-			transform: scale(0.99);
+			transform: scale(0.98);
 		}
 	}
 `;

@@ -1,5 +1,5 @@
-import { ipcProjectService } from '@beak/app/lib/ipc';
-import { faEgg, faFolderOpen } from '@fortawesome/free-solid-svg-icons';
+import { ipcExplorerService, ipcProjectService } from '@beak/app/lib/ipc';
+import { faBook, faEgg, faEnvelopeOpen, faFolderOpen } from '@fortawesome/free-solid-svg-icons';
 import React from 'react';
 import styled from 'styled-components';
 
@@ -14,14 +14,12 @@ export interface GetStartedColumnProps {
 const GetStartedColumn: React.FunctionComponent<GetStartedColumnProps> = ({ setView }) => (
 	<Wrapper>
 		<ColumnTitle>{'Get started'}</ColumnTitle>
-
 		<GetStartedButton
 			title={'Create a new project'}
 			description={'Creates a new local project'}
 			icon={faEgg}
 			onClick={() => setView('create-local')}
 		/>
-
 		<GetStartedButton
 			title={'Open an existing project'}
 			description={'Opens an existing local project'}
@@ -29,6 +27,21 @@ const GetStartedColumn: React.FunctionComponent<GetStartedColumnProps> = ({ setV
 			onClick={() => ipcProjectService.openProject()}
 		/>
 
+		<ColumnTitle>{'Useful things'}</ColumnTitle>
+		<GetStartedButton
+			title={'Get support'}
+			description={'help pls'}
+			icon={faEnvelopeOpen}
+			iconColor={'primaryFill'}
+			onClick={() => ipcExplorerService.launchUrl('mailto:support@getbeak.app')}
+		/>
+		<GetStartedButton
+			title={'Visit documentation'}
+			description={'lrn more'}
+			icon={faBook}
+			iconColor={'primaryFill'}
+			onClick={() => ipcExplorerService.launchUrl('https://docs.getbeak.app')}
+		/>
 	</Wrapper>
 );
 
