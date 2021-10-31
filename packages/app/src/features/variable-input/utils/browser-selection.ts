@@ -61,10 +61,11 @@ export function setSelection(elem: HTMLElement, selection: NormalizedSelection) 
 		range.setStart(elem.childNodes[finalIndex], 0);
 	}
 
-	window.setTimeout(() => {
+	// eslint-disable-next-line no-new
+	new Promise(() => {
 		sel?.removeAllRanges();
 		sel?.addRange(range);
-	}, 0);
+	});
 }
 
 export function trySetSelection(

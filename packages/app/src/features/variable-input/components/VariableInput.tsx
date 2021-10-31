@@ -111,7 +111,7 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = props => {
 		if (typeof part !== 'string')
 			return;
 
-		const query = part.substring(variableSelectionState.queryStartSelection.offset)
+		const query = part.substring(variableSelectionState.queryStartSelection.offset);
 
 		if (query === '')
 			closeSelector();
@@ -323,9 +323,10 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = props => {
 		reportChange();
 		forceRerender();
 
-		window.setTimeout(() => {
+		// eslint-disable-next-line no-new
+		new Promise(() => {
 			trySetSelection(editableRef.current, newSelectionPosition);
-		}, 0);
+		});
 	}
 
 	function variableEditSaved(partIndex: number, type: string, item: any) {
