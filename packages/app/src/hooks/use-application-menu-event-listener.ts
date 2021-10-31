@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 
 import { showEncryptionView } from '../features/encryption/store/actions';
 import { requestFlight } from '../store/flight/actions';
-import { closeAllSelectedTabs } from '../store/project/actions';
+import { closeAllSelectedTabs, createNewFolder, createNewRequest } from '../store/project/actions';
 
 export function useApplicationMenuEventListener() {
 	const dispatch = useDispatch();
@@ -14,20 +14,23 @@ export function useApplicationMenuEventListener() {
 			const { code } = payload;
 
 			switch (code) {
-				case 'close_all_tabs': {
+				case 'new_folder':
+					dispatch(createNewFolder({ highlightedNodeId: void 0 }));
+					break;
+				case 'new_request':
+					dispatch(createNewRequest({ highlightedNodeId: void 0 }));
+					break;
+
+				case 'close_all_tabs':
 					dispatch(closeAllSelectedTabs());
 					break;
-				}
 
-				case 'execute_request': {
+				case 'execute_request':
 					dispatch(requestFlight());
 					break;
-				}
-
-				case 'view_project_encryption': {
+				case 'view_project_encryption':
 					dispatch(showEncryptionView());
 					break;
-				}
 
 				default:
 					console.warn('Unknown menu item event', payload);
