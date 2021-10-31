@@ -17,15 +17,9 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v2-beta
         with:
-          node-version: '14'
-
-      - name: Cache dependencies
-        uses: actions/cache@v2.1.4
-        with:
-          path: node_modules/
-          key: v1-yarn-cache-${{ hashFiles('yarn.lock') }} }}
-          restore-keys: |
-            v1-yarn-cache-
+          node-version: '16'
+          cache: 'yarn'
+          cache-dependency-path: yarn.lock
 
       - name: Install modules
         run: yarn install --frozen-lockfile
