@@ -160,6 +160,9 @@ function getErrorMessage(error: Squawk) {
 		case 'no_active_subscription':
 			return 'You don\'t have an active Beak subsciption.';
 
+		case 'token_expired':
+			return 'Your magic link expired. Please request a new one.';
+
 		default:
 			return `There was a problem with that magic link (${error.code})`;
 	}
