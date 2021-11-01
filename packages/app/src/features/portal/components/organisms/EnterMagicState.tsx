@@ -83,12 +83,16 @@ const EnterMagicState: React.FunctionComponent<EnterMagicStateProps> = props => 
 	return (
 		<React.Fragment>
 			{!working && (
-				<Paragraph>
-					{'Your magic link is on the way to '}
-					<b>{email}</b>{'. '}
-					{'Clicking the link in the email will finish signing you into Beak. '}
-					<HelpButton onClick={() => showManualState()}>{'Having trouble with the link?'}</HelpButton>
-				</Paragraph>
+				<React.Fragment>
+					<Paragraph $center>
+						{'Your magic link is on the way to'}<br />
+						<b>{email}</b>
+					</Paragraph>
+					<Paragraph>
+						{'Clicking the link in the email will finish signing you into Beak. '}
+						<HelpButton onClick={() => showManualState()}>{'Having trouble with the link?'}</HelpButton>
+					</Paragraph>
+				</React.Fragment>
 			)}
 
 			{working && (
@@ -135,9 +139,10 @@ const EnterMagicState: React.FunctionComponent<EnterMagicStateProps> = props => 
 	);
 };
 
-const Paragraph = styled.p`
+const Paragraph = styled.p<{ $center?: boolean }>`
 	font-size: 14px;
 	color: ${p => p.theme.ui.textOnSurfaceBackground};
+	text-align: ${p => p.$center ? 'center' : 'inherit'};
 `;
 
 const HelpButton = styled.span`
