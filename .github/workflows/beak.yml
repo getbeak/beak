@@ -18,7 +18,7 @@ jobs:
         uses: actions/setup-node@v2-beta
         with:
           node-version: '16'
-          cache: 'yarn'
+          # cache: 'yarn'
           # cache-dependency-path: yarn.lock
 
       - name: Install modules

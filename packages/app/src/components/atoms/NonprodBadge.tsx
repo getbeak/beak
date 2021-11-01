@@ -36,7 +36,8 @@ const Badge = styled.div`
 	position: fixed;
 
 	top: 40px; left: 0; right: 0;
-	padding: 4px 0;
+	padding: 6px 0;
+	font-size: 14px;
 	text-align: center;
 	cursor: pointer;
 
