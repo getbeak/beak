@@ -10,7 +10,6 @@ import styled, { useTheme } from 'styled-components';
 import Container from '../../../components/atoms/Container';
 import { SubTitle, Title } from '../../../components/atoms/Typography';
 import useDownloadLinks from '../hooks/use-download-links';
-import BetaBadge from './atoms/BetaBadge';
 
 const Downloader: React.FunctionComponent = () => {
 	const theme = useTheme();
@@ -25,7 +24,6 @@ const Downloader: React.FunctionComponent = () => {
 
 			<Container>
 				<BadgedTitle>
-					<BetaBadge>{'Beta'}</BetaBadge>
 					{'Download'}
 				</BadgedTitle>
 				<SubTitle>{'Grab the freshest build of Beak for whatever device you own'}</SubTitle>

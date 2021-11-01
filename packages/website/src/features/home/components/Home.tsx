@@ -1,14 +1,13 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import Helmet from 'react-helmet';
-import { useLocation } from 'react-router';
 import styled from 'styled-components';
 
 import Container from '../../../components/atoms/Container';
-import BetaRegistration from '../../beta-registration/components/BetaRegistration';
 import Downloader from '../../downloader/components/Downloader';
 import BeakOverview from './molecules/BeakOverview';
 import FeatureHighlight from './molecules/FeatureHighlight';
 import FeatureOverview from './molecules/FeatureOverview';
+import HeaderCta from './molecules/HeaderCta';
 import SneakPeak from './molecules/SneakPeak';
 
 const Home: React.FunctionComponent = () => (
@@ -28,7 +27,7 @@ const Home: React.FunctionComponent = () => (
 					{'development fast, frictionless, and dare we say... fun'}
 				</SubTitle>
 
-				<BetaRegistration />
+				<HeaderCta />
 
 				<SneakPeak />
 			</Container>
@@ -65,7 +64,8 @@ const Home: React.FunctionComponent = () => (
 );
 
 const Header = styled.div`
-	padding-top: 125px;
+	/* padding-top: 125px; */
+	padding-top: 50px;
 	text-align: center;
 
 	background: ${p => p.theme.ui.background};
@@ -79,8 +79,8 @@ const Title = styled.h1`
 	margin: 0 auto;
 	max-width: 510px;
 	font-weight: 800;
-	font-size: min(8vw, 60px);
-	line-height: min(8.75vw, 75px);
+	font-size: min(8vw, 55px);
+	line-height: min(8.75vw, 70px);
 
 	> span {
 		color: ${p => p.theme.ui.textHighlight};
@@ -95,8 +95,8 @@ const SubTitle = styled.h2`
 
 	font-weight: 100;
 
-	font-size: min(4vw, 20px);
-	line-height: min(5.25vw, 35px);
+	font-size: min(4vw, 18px);
+	line-height: min(5.25vw, 30px);
 
 	color: ${p => p.theme.ui.textMinorMuted};
 `;

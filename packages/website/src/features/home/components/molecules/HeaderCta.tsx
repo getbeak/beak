@@ -1,11 +1,12 @@
-import CtaButton from '@beak/website/src/components/atoms/Buttons';
 import React from 'react';
 import styled from 'styled-components';
 
+import CtaButton from '../../../../components/atoms/Buttons';
+
 const HeaderCta: React.FunctionComponent = () => (
 	<Wrapper>
-		<CtaButton href={'#stripe'}>{'Buy Beak for $19'}</CtaButton>
-		<CtaButton href={'#downloads'}>{'Download the free trial'}</CtaButton>
+		<CtaButton href={'/pricing'} $style={'primary'}>{'View pricing'}</CtaButton>
+		<CtaButton href={'/#downloads'} $style={'secondary'}>{'Download'}</CtaButton>
 	</Wrapper>
 );
 
