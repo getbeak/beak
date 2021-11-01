@@ -3,6 +3,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 
+import NonprodBadge from './components/atoms/NonprodBadge';
 import Portal from './containers/Portal';
 import Preferences from './containers/Preferences';
 import ProjectMain from './containers/ProjectMain';
@@ -48,6 +49,7 @@ const FauxRouter: React.FunctionComponent = () => {
 							{component}
 						</Arbiter>
 					)}
+					<NonprodBadge />
 				</DesignSystemProvider>
 			</WindowSessionContext.Provider>
 		</Provider>
