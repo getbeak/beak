@@ -23,6 +23,11 @@ const FooterContainer = styled(SmallContainer)`
 	display: flex;
 	padding: 90px 0;
 	justify-content: space-between;
+
+	@media (max-width: 676px) {
+		flex-direction: column;
+		padding: 50px 0;
+	}
 `;
 
 export default Footer;

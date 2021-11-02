@@ -1,4 +1,3 @@
-import FooterLogo from '@beak/website/components/atoms/FooterLogo';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
@@ -48,6 +47,12 @@ const LinkContainer = styled.div`
 	display: grid;
 	grid-template-columns: repeat(3, 1fr);
 	gap: 50px;
+
+	@media (max-width: 676px) {
+		margin-top: 35px;
+		gap: 35px;
+		grid-template-columns: 1fr;
+	}
 `;
 
 const LinkColumn = styled.div``;

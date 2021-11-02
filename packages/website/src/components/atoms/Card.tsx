@@ -2,7 +2,7 @@ import styled from 'styled-components';
 
 export const CardGrid = styled.div`
 	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+	grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
 	column-gap: 40px;
 	row-gap: 30px;
 `;
@@ -24,9 +24,7 @@ export const CardTitle = styled.div`
 	font-weight: 600;
 `;
 
-export const CardMedia = styled.div`
-
-`;
+export const CardMedia = styled.div``;
 
 export const CardBody = styled.div`
 	margin-top: 10px;
