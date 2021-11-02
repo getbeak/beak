@@ -5,7 +5,19 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 import styled from 'styled-components';
 
-const PricingCard: React.FunctionComponent = () => (
+type Version = 'primary' | 'secondary' | 'tertiary';
+
+const versions: Record<Version, unknown> = {
+	primary: {},
+	secondary: {},
+	tertiary: {},
+};
+
+interface PricingCardProps {
+	version: Version;
+}
+
+const PricingCard: React.FunctionComponent<PricingCardProps> = ({ version }) => (
 	<Card>
 		<CardHeader>
 			{'Everything'}
@@ -40,7 +52,11 @@ const PricingCard: React.FunctionComponent = () => (
 			</PointList>
 		</CardBody>
 		<CardFooter>
-			<CtaButton target={'_blank'} href={getPurchaseLink()}>
+			<CtaButton
+				$style={version === 'primary' ? 'primary' : 'tertiary'}
+				target={'_blank'}
+				href={getPurchaseLink()}
+			>
 				{'Buy now'}
 			</CtaButton>
 		</CardFooter>
@@ -108,6 +124,7 @@ const PointList = styled.ul`
 
 		> svg {
 			margin-top: 3px;
+			top: auto !important;
 		}
 	}
 `;

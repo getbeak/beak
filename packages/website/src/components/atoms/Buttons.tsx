@@ -1,7 +1,7 @@
 import styled, { css } from 'styled-components';
 
 interface CtaButtonProps {
-	$style: 'primary' | 'secondary';
+	$style: 'primary' | 'secondary' | 'tertiary';
 }
 
 const CtaButton = styled.a<CtaButtonProps>`
@@ -24,6 +24,13 @@ const CtaButton = styled.a<CtaButtonProps>`
 
 		&:hover {
 			box-shadow: 0 0 20px 6px ${p.theme.ui.surfaceFill}99;
+		}
+	`}
+	${p => p.$style === 'tertiary' && css`
+		background: ${p.theme.ui.secondaryBackground};
+
+		&:hover {
+			box-shadow: 0 0 20px 6px ${p.theme.ui.secondaryBackground}99;
 		}
 	`}
 

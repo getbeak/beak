@@ -36,11 +36,11 @@ const PricingCards: React.FunctionComponent = () => (
 			<Mask />
 			<Cards>
 				<TinyCard>
-					<PricingCard />
+					<PricingCard version={'secondary'} />
 				</TinyCard>
-				<PricingCard />
+				<PricingCard version={'primary'} />
 				<TinyCard>
-					<PricingCard />
+					<PricingCard version={'tertiary'} />
 				</TinyCard>
 			</Cards>
 		</Container>
