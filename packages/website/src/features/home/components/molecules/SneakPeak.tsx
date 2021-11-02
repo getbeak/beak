@@ -1,31 +1,6 @@
+import { pulse } from '@beak/website/design-system/keyframes';
 import React from 'react';
-import styled, { keyframes } from 'styled-components';
-
-const pulse = keyframes`
-	0% {
-		transform: scale(1);
-		opacity: 1
-	}
-
-	25% {
-		transform: scale(1.2);
-	}
-
-	50% {
-		transform: scale(0.9);
-		opacity: 0.8;
-	}
-
-	75% {
-		transform: scale(1.3);
-	}
-
-	100% {
-		transform: scale(1);
-		opacity: 1;
-	}
-}
-`;
+import styled from 'styled-components';
 
 const SneakPeak: React.FunctionComponent = () => (
 	<Wrapper>
@@ -43,7 +18,7 @@ const Wrapper = styled.div`
 	grid-template: 1fr / 1fr;
 	place-items: center;
 
-	margin-top: min(10vw, 75px);
+	margin-top: min(10vw, 50px);
 
 	> * {
 		grid-column: 1 / 1;
@@ -54,11 +29,13 @@ const Wrapper = styled.div`
 const Gradient = styled.div`
 	z-index: 1;
 	width: 100%;
+	max-width: 100%;
 	height: 500px;
 
+	transform: scale(0.8);
 	animation: ${pulse} 20s infinite;
 
-	filter: blur(130px);
+	filter: blur(180px);
 	background: conic-gradient(
 		from 0 at 45% 65%,
 		#d45d80AA 0deg,
@@ -72,16 +49,16 @@ const Gradient = styled.div`
 	}
 `;
 
-const AppPicture = styled.picture`
-	z-index: 2;
-	max-width: 100%;
-	object-fit: contain;
-`;
-
 const AppImage = styled.img`
 	z-index: 2;
-	max-width: 100%;
+	max-width: 90%;
 	object-fit: contain;
+
+	@media (max-width: 676px) {
+		max-width: 100%;
+	}
 `;
+
+const AppPicture = styled(AppImage).attrs({ as: 'picture' })``;
 
 export default SneakPeak;

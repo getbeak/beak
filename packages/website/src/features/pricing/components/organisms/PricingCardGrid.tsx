@@ -1,34 +1,9 @@
 import { SmallContainer } from '@beak/website/components/atoms/Container';
+import { pulse } from '@beak/website/design-system/keyframes';
 import React from 'react';
-import styled, { keyframes } from 'styled-components';
+import styled from 'styled-components';
 
 import PricingCard from './PricingCard';
-
-const pulse = keyframes`
-	0% {
-		transform: scale(1);
-		opacity: 1
-	}
-
-	25% {
-		transform: scale(1.2);
-	}
-
-	50% {
-		transform: scale(0.9);
-		opacity: 0.8;
-	}
-
-	75% {
-		transform: scale(1.3);
-	}
-
-	100% {
-		transform: scale(1);
-		opacity: 1;
-	}
-}
-`;
 
 const PricingCards: React.FunctionComponent = () => (
 	<Wrapper>
@@ -56,6 +31,7 @@ const Container = styled(SmallContainer)`
 const Wrapper = styled.div`
 	padding: 80px 0;
 
+	overflow: hidden;
 	background: ${p => p.theme.ui.surface};
 
 	@media (max-width: 850px) {
@@ -66,10 +42,12 @@ const Wrapper = styled.div`
 const Mask = styled.div`
 	position: absolute;
 	top: 60px; bottom: 60px; left: 0; right: 0;
+	z-index: 1;
 
+	transform: scale(0.8);
 	animation: ${pulse} 20s infinite;
 
-	filter: blur(100px);
+	filter: blur(130px);
 	background: conic-gradient(
 		from 0 at 45% 65%,
 		#d45d80AA 0deg,
@@ -82,7 +60,7 @@ const Mask = styled.div`
 const Cards = styled.div`
 	position: relative;
 	display: flex;
-	/* gap: 20px; */
+	z-index: 2;
 `;
 
 const TinyCard = styled.div`
