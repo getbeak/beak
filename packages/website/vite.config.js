@@ -54,11 +54,6 @@ module.exports = {
 		minify: environment === 'development' ? false : 'terser',
 		rollupOptions: {
 			external: ['electron'],
-			output: {
-				entryFileNames: '[name].[format].min.js',
-				chunkFileNames: '[name].[format].min.js',
-				assetFileNames: '[name].[ext]',
-			},
 		},
 		define: {
 			'process.env.BUILD_ENVIRONMENT': writeDefinition(process.env.BUILD_ENVIRONMENT),
