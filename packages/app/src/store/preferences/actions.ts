@@ -20,7 +20,6 @@ export const loadEditorPreferences = createAction(AT.LOAD_EDITOR_PREFERENCES);
 export const editorPreferencesLoaded = createAction<EditorPreferences>(AT.EDITOR_PREFERENCES_LOADED);
 export const editorPreferencesSetSelectedVariableGroup = createAction<EditorPreferencesSetSelectedVariableGroupPayload>(AT.EDITOR_PREFERENCES_SET_SELECTED_VARIABLE_GROUP);
 
-
 export default {
 	loadRequestPreferences,
 	requestPreferencesLoaded,

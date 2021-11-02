@@ -1,12 +1,18 @@
 import { ipcContextMenuService, ipcDialogService } from '@beak/app/lib/ipc';
-import { insertNewGroup, insertNewVariableGroup, removeGroup, removeItem, removeVg } from '@beak/app/store/variable-groups/actions';
+import {
+	insertNewGroup,
+	insertNewVariableGroup,
+	removeGroup,
+	removeItem,
+	removeVg,
+} from '@beak/app/store/variable-groups/actions';
+import ksuid from '@cuvva/ksuid';
 import { faEllipsisV } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import type { MenuItemConstructorOptions } from 'electron';
 import React from 'react';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
-import ksuid from '@cuvva/ksuid';
 
 interface OptionsMenuProps {
 	type: 'variable-group' | 'group' | 'item';
@@ -147,8 +153,6 @@ const OptionsMenu: React.FunctionComponent<OptionsMenuProps> = ({ type, id, inTa
 			})),
 		});
 	}
-
-	return null;
 
 	return (
 		<Wrapper onClick={e => showContextMenu(e)}>

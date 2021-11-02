@@ -55,6 +55,7 @@ const RealtimeValueEditor: React.FunctionComponent<RealtimeValueEditorProps> = p
 					partIndex,
 					state,
 				}))
+				// eslint-disable-next-line no-console
 				.catch(console.error);
 		};
 

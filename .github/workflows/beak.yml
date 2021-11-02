@@ -15,7 +15,7 @@ jobs:
           length: 6
 
       - name: Setup Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v2.4.1
         with:
           node-version: '16'
           cache: 'yarn'
@@ -23,6 +23,11 @@ jobs:
 
       - name: Install modules
         run: yarn install --frozen-lockfile
+
+      - name: Lint and typecheck
+        run: |
+          yarn lint
+          yarn typecheck
 
       - name: Build and package (release)
         if: startsWith(github.ref, 'refs/tags/v')
@@ -58,11 +63,6 @@ jobs:
           ASC_PROVIDER: ${{ secrets.ASC_PROVIDER }}
           USE_HARD_LINKS: false
         run: yarn package
-
-      - name: Lint and typecheck
-        run: |
-          # yarn lint
-          yarn typecheck
 
       - name: Delete un-necessary artifacts
         if: startsWith(github.ref, 'refs/tags/v') == false

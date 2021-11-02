@@ -193,6 +193,7 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = props => {
 			const impl = getRealtimeValue(type);
 
 			if (!impl) {
+				// eslint-disable-next-line no-console
 				console.error(`Unknown RTV ${type}`);
 				anonomlyDetected = true;
 
@@ -334,6 +335,7 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = props => {
 		const part = unmanagedStateRef.current.valueParts[partIndex];
 
 		if (typeof part !== 'object' || part.type !== type) {
+			// eslint-disable-next-line no-console
 			console.error(`Part ordering change mid edit, cannot continue. expected ${type}`);
 
 			return;

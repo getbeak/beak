@@ -1,13 +1,13 @@
 import binaryStore from '@beak/app/lib/binary-store';
 import { ipcFlightService, ipcNotificationService } from '@beak/app/lib/ipc';
 import { getStatusReasonPhrase } from '@beak/app/utils/http';
+import { TypedObject } from '@beak/common/helpers/typescript';
+import { FlightMessages } from '@beak/common/ipc/flight';
 import {
 	RequestNode,
 	RequestOverview,
 	ResponseOverview,
 } from '@beak/common/types/beak-project';
-import { TypedObject } from '@beak/common/helpers/typescript';
-import { FlightMessages } from '@beak/common/ipc/flight';
 import { statusToColour } from '@beak/design-system/helpers';
 import ksuid from '@cuvva/ksuid';
 import { PayloadAction } from '@reduxjs/toolkit';

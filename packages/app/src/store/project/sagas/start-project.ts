@@ -163,6 +163,7 @@ function* handleFolder(event: Event) {
 			break;
 
 		default:
+			// eslint-disable-next-line no-console
 			console.warn('Unknown listener type for folder:', event.type);
 
 			break;
@@ -199,6 +200,7 @@ function* handleRequest(event: Event) {
 			break;
 
 		default:
+			// eslint-disable-next-line no-console
 			console.warn('Unknown listener type for folder:', event.type);
 
 			break;

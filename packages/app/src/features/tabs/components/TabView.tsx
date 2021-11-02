@@ -29,10 +29,10 @@ const TabView: React.FunctionComponent<TabViewProps> = ({ selectedTab, tabs }) =
 
 				break;
 
-			// case checkShortcut('tab-bar.all.close-others', event):
-			// 	dispatch(actions.closeOtherSelectedTabs(selectedTab.payload));
-			//
-			// 	break;
+				// case checkShortcut('tab-bar.all.close-others', event):
+				// 	dispatch(actions.closeOtherSelectedTabs(selectedTab.payload));
+				//
+				// 	break;
 
 			case checkShortcut('tab-bar.all.previous', event):
 			case checkShortcut('tab-bar.all.next', event): {

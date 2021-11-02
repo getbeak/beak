@@ -4,7 +4,10 @@
 	"parserOptions": {
 		"ecmaVersion": 2018,
 		"sourceType": "module",
-		"project": "./tsconfig.json",
+		"project": [
+			"tsconfig.json",
+			"./packages/*/tsconfig.json"
+		],
 
 		"ecmaFeatures": {
 			"impliedStrict": true,
@@ -147,8 +150,8 @@
 		"no-unneeded-ternary": 1,
 		"no-unsafe-finally": 1,
 		"no-unused-expressions": 1,
-		"no-unused-vars": "off",
-		"no-use-before-define": [1, { "functions": false }],
+		"no-unused-vars": 0,
+		"no-use-before-define": 0,
 		"no-useless-call": 1,
 		"no-useless-catch": 0,
 		"no-useless-computed-key": 1,
@@ -177,7 +180,7 @@
 		"prefer-spread": 1,
 		"prefer-template": 1,
 		"quote-props": [1, "consistent-as-needed"],
-		"quotes": [1, "single"],
+		"quotes": [1, "single", { "avoidEscape": true, "allowTemplateLiterals": true }],
 		"radix": 1,
 		"require-yield": 1,
 		"semi": [1, "always"],
@@ -249,7 +252,7 @@
 		"@typescript-eslint/triple-slash-reference": [1, { "path": "never", "types": "never", "lib": "never" }],
 		"@typescript-eslint/no-unused-vars": "off",
 		"@typescript-eslint/no-unused-vars-experimental": "off",
-		"@typescript-eslint/no-use-before-define": [1, { "functions": false }],
+		"@typescript-eslint/no-use-before-define": "off",
 		"@typescript-eslint/no-var-requires": "error",
 		"@typescript-eslint/restrict-plus-operands": "error",
 		"@typescript-eslint/type-annotation-spacing": "error"

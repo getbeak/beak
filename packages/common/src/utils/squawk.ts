@@ -1,4 +1,5 @@
-type Meta = Record<string, any>;
+type Meta = Record<string, unknown>;
+
 interface PossibleSquawk {
 	code: string;
 	reasons?: Squawk[];
@@ -57,7 +58,7 @@ export default class Squawk extends Error {
 	}
 }
 
-function defineNonSerializable(obj: any, property: string, value: any) {
+function defineNonSerializable(obj: unknown, property: string, value: unknown) {
 	Object.defineProperty(obj, property, {
 		value,
 		writable: false,

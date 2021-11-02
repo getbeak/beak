@@ -19,6 +19,7 @@ export default function renderValueParts(parts: ValueParts, variableGroups: Vari
 				const impl = getRealtimeValue(p.type);
 
 				if (!impl) {
+					// eslint-disable-next-line no-console
 					console.error(`Unknown RTV ${p} ${typeof p} ${p.type}`);
 
 					return null;

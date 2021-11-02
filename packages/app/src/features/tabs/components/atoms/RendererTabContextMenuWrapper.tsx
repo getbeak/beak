@@ -1,10 +1,10 @@
 import ContextMenu from '@beak/app/components/atoms/ContextMenu';
 import { actions } from '@beak/app/store/project';
 import { TabItem } from '@beak/common/types/beak-project';
+import ksuid from '@cuvva/ksuid';
 import type { MenuItemConstructorOptions } from 'electron';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import ksuid from '@cuvva/ksuid';
 
 interface RendererTabContextMenuWrapperProps {
 	tab: TabItem;

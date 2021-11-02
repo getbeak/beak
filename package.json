@@ -34,7 +34,7 @@
     "start": "lerna exec --parallel --concurrency 1 --stream --scope '@beak/{app,electron-host}' yarn start",
     "start:website": "lerna exec --parallel --concurrency 1 --stream --scope '@beak/website' yarn start",
     "test": "lerna run test --parallel",
-    "lint": "eslint -c .eslintrc --ext .tsx --ext .ts './packages/'",
+    "lint": "eslint --ext .tsx --ext .ts './packages/'",
     "unfuck": "lerna clean && yarn --force",
     "postinstall": "node ./node-module-overrides/index.js"
   },

@@ -1,4 +1,4 @@
-import { faBoxes, faMoneyCheck, faUserShield,faWindowRestore } from '@fortawesome/free-solid-svg-icons';
+import { faBoxes, faMoneyCheck, faUserShield, faWindowRestore } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useContext, useState } from 'react';
 import styled, { css, useTheme } from 'styled-components';

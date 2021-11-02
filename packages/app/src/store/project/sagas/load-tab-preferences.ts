@@ -46,6 +46,7 @@ async function loadTabPreferences() {
 		return preferenceFile.file;
 	} catch (error) {
 		if (Squawk.coerce(error).code !== 'schema_invalid')
+			// eslint-disable-next-line no-console
 			console.error(error);
 
 		return null;

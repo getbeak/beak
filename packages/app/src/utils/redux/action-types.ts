@@ -1,7 +1,7 @@
 import { Action } from '@reduxjs/toolkit';
 
 export interface TypedActionCreator {
-	(...args: any[]): Action<string>;
+	(...args: unknown[]): Action<string>;
 	type: string;
 }
 

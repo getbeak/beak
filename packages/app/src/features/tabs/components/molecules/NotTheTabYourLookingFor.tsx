@@ -40,7 +40,7 @@ const NotTheTabYourLookingFor: React.FunctionComponent = () => {
 			</Button>
 		</Wrapper>
 	);
-}
+};
 
 const Wrapper = styled.div`
 	height: 100%;
