@@ -8,7 +8,6 @@ import {
 	RequestOverview,
 	ResponseOverview,
 } from '@beak/common/types/beak-project';
-import { statusToColour } from '@beak/design-system/helpers';
 import ksuid from '@cuvva/ksuid';
 import { PayloadAction } from '@reduxjs/toolkit';
 import { END, eventChannel } from 'redux-saga';
