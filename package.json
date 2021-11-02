@@ -26,7 +26,7 @@
   "scripts": {
     "build": "lerna run build --stream",
     "build:website": "lerna run build --stream --scope @beak/website",
-    "typecheck": "lerna exec --parallel --concurrency 1 --stream yarn typecheck",
+    "typecheck": "lerna exec --stream yarn typecheck",
     "prepackage": "yarn build",
     "prepackage:release": "yarn build",
     "package": "lerna run package --stream --scope @beak/electron-host",

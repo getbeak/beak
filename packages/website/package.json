@@ -6,7 +6,7 @@
   "scripts": {
     "build": "cross-env NODE_ENV=production vite build",
     "start": "cross-env NODE_ENV=development vite",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc",
     "test": "echo Skipped for now."
   },
   "browserslist": {

@@ -1,4 +1,4 @@
-type Meta = Record<string, unknown>;
+type Meta = Record<string, any>;
 
 interface PossibleSquawk {
 	code: string;
