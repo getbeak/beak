@@ -41,8 +41,8 @@ const Privacy: React.FunctionComponent = () => (
 			<p>
 				{'We\'re Flamingo Corp Limited (Flamingo Corp, we, our, us). If you have any questions about your '}
 				{'data that aren\'t covered by this privacy policy, you can reach out to us at '}
-				<a href={'mailto:privacy@getbeak.app'}>{'privacy@getbeak.app'}</a>{', or tweet us publically/direct '}
-				{'message us privactly on Twitter '}
+				<a href={'mailto:privacy@getbeak.app'}>{'privacy@getbeak.app'}</a>{', or tweet us publicly/direct '}
+				{'message us privately on Twitter '}
 				<a href={'https://twitter.com/beakapp'}>{'@beakapp'}</a>{'.'}
 			</p>
 
@@ -51,7 +51,7 @@ const Privacy: React.FunctionComponent = () => (
 			</LegalTitle>
 			<p>
 				{'To use Beak, we may ask for some personal information, such as Name or email address in order to '}
-				{'identify your account. We use various third-party services to run and manage Beak\'s infastructure. '}
+				{'identify your account. We use various third-party services to run and manage Beak\'s infrastructure. '}
 				{'Below is a detailed breakdown of which third parties we use, and what each one stores.'}
 			</p>
 			<LegalSubTitle id={'third-parties'}>
@@ -89,7 +89,7 @@ const Privacy: React.FunctionComponent = () => (
 				</strong>
 				<br />
 				{'Information about your Beak account, such as email address, subscription information, etc. is all '}
-				{'stored securley inside MongoDB Cloud.'}
+				{'stored securely inside MongoDB Cloud.'}
 			</p>
 			<p>
 				<strong>
@@ -113,7 +113,7 @@ const Privacy: React.FunctionComponent = () => (
 				{'however be accessed and processed by staff members outside the EEA.'}
 			</p>
 			<p>
-				{'Third parties that we send your data too are legally obliged to comply with data proection laws. '}
+				{'Third parties that we send your data too are legally obliged to comply with data protection laws. '}
 				{'When we send your data outside of the EEA, we will ensure that it will be protected by appropriate '}
 				{'safeguards, for example by using standard data protection clauses approved by the European '}
 				{'Commission, or the use of binding corporate rules or other legally accepted means.'}
