@@ -106,13 +106,58 @@ const Terms: React.FunctionComponent = () => (
 			<LegalTitle id={'subs-pays-refs'}>
 				{'3. Subscriptions, payments, and refunds'}
 			</LegalTitle>
+			<LegalSubTitle id={'pricing'}>
+				{'a. Pricing'}
+			</LegalSubTitle>
 			<p>
+				{'Unless you are using the Beta license of Beak, access to Beak requires the purchase of a '}
+				{'subscription. Our pricing and subscription information, and limits are available at '}
+				<Link to={'/pricing'}>{`https://${window.location.hostname}.app/pricing`}</Link>{'.'}
+			</p>
+			<p>
+				{'If you purchase a subscription, the price will remain constant until the end of the selected '}
+				{'subscription term. However, if we change pricing during the subscription term, the new price '}
+				{'will be used for the next payment term.'}
+			</p>
 
+			<LegalSubTitle id={'payment-terms'}>
+				{'b. Payment and recurring payments'}
+			</LegalSubTitle>
+			<p>
+				{'If you purchase a subscription, you will be charged the then-current rate immediately, and then '}
+				{'each year thereafter. Subscription pricing is detailed on our pricing page '}
+				<Link to={'/pricing'}>{`https://${window.location.hostname}.app/pricing`}</Link>{'. '}
+			</p>
+			<p>
+				{'By agreeing to these terms and purchasing a subscription, you acknowledge that your subscription '}
+				{'payments will recur based on the payment terms you accepted. Our payment processor will '}
+				{'automatically charge you in accordance with the term of your subscription (ie; each year).'}
+			</p>
+
+			<LegalSubTitle id={'cancel-refund'}>
+				{'c. Cancellations and refunds'}
+			</LegalSubTitle>
+			<p>
+				{'You may cancel your subscription at any time, but please note that you will not receive a refund '}
+				{'unless via the terms mentioned above. The cancellation will come into effect at the end of the '}
+				{'current payment term. To cancel you can either access your Stripe billing portal from the '}
+				{'Subscription section of the Beak preferences window, or via email '}
+				<a href={'mailto:support@getbeak.app'}>{'support@getbeak.app'}</a>{'.'}
 			</p>
 
 			<LegalTitle id={'software-provided'}>
 				{'4. Software Provided "As Is"'}
 			</LegalTitle>
+			<p>
+				{'Except as represented in this agreement, this service is provided ​"as is". Other than as provided '}
+				{'in this agreement, we makes no other warranties, express or implied, and hereby disclaims all '}
+				{'implied warranties, including any warranty of merchantability and warranty of fitness for a '}
+				{'particular purpose.'}
+			</p>
+			<p>
+				{'You may reach out and ask questions about the software via Email. We do not guarantee the '}
+				{'continuous, uninterrupted and error-free usage of the service.'}
+			</p>
 
 			<LegalTitle id={'copyright'}>
 				{'5. Copyright'}
