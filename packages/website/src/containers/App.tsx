@@ -51,13 +51,13 @@ const AppContainer: React.FunctionComponent = ({ children }) => {
 						>
 							{'Docs'}
 						</NavItemExternal>
-						<NavItemExternal
+						{/* <NavItemExternal
 							target={'_blank'}
 							rel={'noopener noreferrer nofollow'}
 							href={'https://blog.getbeak.app'}
 						>
 							{'Blog'}
-						</NavItemExternal>
+						</NavItemExternal> */}
 						<NavItemExternal
 							target={'_blank'}
 							rel={'noopener noreferrer nofollow'}
