@@ -1,11 +1,22 @@
-import React from 'react';
+import { faBars } from '@fortawesome/free-solid-svg-icons/faBars';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React, { useState } from 'react';
 
 import Container from '../components/atoms/Container';
-import Navbar, { NavBrand, NavItemExternal, NavItemLocal, NavItems, NavLogo } from '../components/atoms/Navbar';
+import Navbar, {
+	NavBrand,
+	NavDropdown,
+	NavItemExternal,
+	NavItemLocal,
+	NavItems,
+	NavLogo,
+} from '../components/atoms/Navbar';
 import Footer from '../features/footer/components/Footer';
 import useSmoothHashScroll from '../hooks/use-smooth-hash-scroll';
 
 const AppContainer: React.FunctionComponent = ({ children }) => {
+	const [expandNav, setExpandNav] = useState(false);
+
 	useSmoothHashScroll();
 
 	return (
@@ -16,7 +27,15 @@ const AppContainer: React.FunctionComponent = ({ children }) => {
 						<NavLogo />
 						{'Beak'}
 					</NavBrand>
-					<NavItems>
+					<NavItems
+						$expand={expandNav}
+						onMouseDown={event => {
+							if ((event.target as HTMLDivElement).nodeName !== 'A')
+								return;
+
+							setExpandNav(false);
+						}}
+					>
 						<NavItemLocal to={'/#features'}>
 							{'Features'}
 						</NavItemLocal>
@@ -47,6 +66,9 @@ const AppContainer: React.FunctionComponent = ({ children }) => {
 							{'Twitter'}
 						</NavItemExternal>
 					</NavItems>
+					<NavDropdown onClick={() => setExpandNav(!expandNav)}>
+						<FontAwesomeIcon icon={faBars} />
+					</NavDropdown>
 				</Container>
 			</Navbar>
 

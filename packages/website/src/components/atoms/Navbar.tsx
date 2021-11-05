@@ -1,6 +1,6 @@
 
 import { NavLink } from 'react-router-dom';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
 import Container from './Container';
 
@@ -28,18 +28,6 @@ export const NavLogo = styled.div`
 	width: 43px;
 	height: 26px;
 	margin-right: 15px;
-`;
-
-export const NavItems = styled.div`
-	grid-column: 2;
-	grid-row: 1;
-
-	margin: 0 auto;
-
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	justify-content: space-evenly;
 `;
 
 export const NavItemLocal = styled(NavLink)`
@@ -72,6 +60,84 @@ export const NavItemExternal = styled.a`
 	}
 `;
 
+export const NavItems = styled.div<{ $expand: boolean }>`
+	grid-column: 2;
+	grid-row: 1;
+
+	margin: 0 auto;
+
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-evenly;
+
+	@media (max-width: 676px) {
+		display: block;
+		pointer-events: none;
+		opacity: 0;
+
+		transform: rotateX(-30deg);
+		transform-origin: 0 0;
+		transform-style: preserve-3d;
+
+		${p => p.$expand && css`
+			pointer-events: all;
+			opacity: 1;
+
+			transform: rotateX(0deg);
+		`}
+
+		position: absolute;
+		top: 77px; left: 0; right: 0;
+		flex-direction: column;
+
+		padding: 0 20px;
+		padding-top: 20px;
+		padding-bottom: 10px;
+		border-bottom: 1px solid ${p => p.theme.ui.backgroundBorderSeparator};
+
+		background: ${p => p.theme.ui.secondaryBackground};
+		box-shadow: 0px 16px 20px 0px ${p => p.theme.ui.surfaceBorderSeparator}CC;
+		backdrop-filter: blur(20px);
+
+		transition: all ease .3s;
+		transition-property: opacity transform;
+
+		> ${NavItemLocal}, > ${NavItemExternal} {
+			display: block;
+			background: ${p => p.theme.ui.background};
+			color: ${p => p.theme.ui.textOnSurfaceBackground};
+			margin-bottom: 10px;
+			padding: 10px;
+
+			font-weight: 700;
+			text-align: center;
+
+			border-radius: 10px;
+
+			&:hover {
+				color: ${p => p.theme.ui.textMinor};
+			}
+		}
+	}
+`;
+
+export const NavDropdown = styled.button`
+	background: ${p => p.theme.ui.textOnSurfaceBackground};
+	border: none;
+	color: ${p => p.theme.ui.background};
+	border-radius: 4px;
+	cursor: pointer;
+
+	text-align: center;
+	width: 40px; height: 40px;
+
+	> svg {
+		margin-top: 2px;
+		height: 1.2em !important;
+	}
+`;
+
 const Navbar = styled.nav`
 	position: sticky;
 	top: 0;
@@ -88,16 +154,20 @@ const Navbar = styled.nav`
 		display: grid;
 		grid-template-columns: 120px 1fr 120px;
 		grid-template-rows: 1fr;
+
+		> ${NavDropdown} {
+			display: none;
+		}
 	}
 
 	@media (max-width: 676px) {
-		${NavItems} {
-			display: none;
-		}
-
 		> ${Container} {
 			display: flex;
-			justify-content: center;
+			justify-content: space-between;
+
+			> ${NavDropdown} {
+				display: inline-block;
+			}
 		}
 	}
 `;
