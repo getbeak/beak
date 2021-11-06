@@ -64,7 +64,6 @@ const Home: React.FunctionComponent = () => (
 );
 
 const Header = styled.div`
-	/* padding-top: 125px; */
 	padding-top: 50px;
 	text-align: center;
 
