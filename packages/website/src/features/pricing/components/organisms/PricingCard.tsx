@@ -7,10 +7,43 @@ import styled from 'styled-components';
 
 type Version = 'primary' | 'secondary' | 'tertiary';
 
-const versions: Record<Version, unknown> = {
-	primary: {},
-	secondary: {},
-	tertiary: {},
+interface VersionInformation {
+	title: string;
+	body: string;
+	items: [string, string, string, string];
+}
+
+const versions: Record<Version, VersionInformation> = {
+	primary: {
+		title: 'Everything',
+		body: 'Leave no stone unturned. This tier comes with it all, no foot-stool required',
+		items: [
+			'Requests',
+			'Responses',
+			'Realtime values',
+			'Literally everything',
+		],
+	},
+	secondary: {
+		title: 'All of it',
+		body: 'Leave no stone unturned. This tier comes with it all, no foot-stool required',
+		items: [
+			'Requests',
+			'Responses',
+			'Realtime values',
+			'Literally everything',
+		],
+	},
+	tertiary: {
+		title: 'Also everything',
+		body: 'Leave no stone unturned. This tier comes with it all, no foot-stool required',
+		items: [
+			'Requests',
+			'Responses',
+			'Realtime values',
+			'Literally everything',
+		],
+	},
 };
 
 interface PricingCardProps {
@@ -20,7 +53,7 @@ interface PricingCardProps {
 const PricingCard: React.FunctionComponent<PricingCardProps> = ({ version }) => (
 	<Card>
 		<CardHeader>
-			{'Everything'}
+			{versions[version].title}
 		</CardHeader>
 		<CardPricing>
 			<Price>
@@ -30,24 +63,24 @@ const PricingCard: React.FunctionComponent<PricingCardProps> = ({ version }) => 
 		</CardPricing>
 		<CardBody>
 			<BodyBold>
-				{'Leave no stone unturned. This tier comes with it all, no foot-stool required.'}
+				{versions[version].body}
 			</BodyBold>
 			<PointList>
 				<li>
 					<FontAwesomeIcon icon={faFeather} listItem />
-					{'Requests'}
+					{versions[version].items[0]}
 				</li>
 				<li>
 					<FontAwesomeIcon icon={faFeather} listItem />
-					{'Responses'}
+					{versions[version].items[1]}
 				</li>
 				<li>
 					<FontAwesomeIcon icon={faFeather} listItem />
-					{'Realtime values'}
+					{versions[version].items[2]}
 				</li>
 				<li>
 					<FontAwesomeIcon icon={faFeather} listItem />
-					{'Literally everything'}
+					{versions[version].items[3]}
 				</li>
 			</PointList>
 		</CardBody>

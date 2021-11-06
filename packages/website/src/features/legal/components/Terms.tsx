@@ -145,6 +145,11 @@ const Terms: React.FunctionComponent = () => (
 				<a href={'mailto:support@getbeak.app'}>{'support@getbeak.app'}</a>{'.'}
 			</p>
 
+			<p>
+				{'If you are unhappy with Beak, you are entitled to a full refund if requested within 7 days of '}
+				{'purchasing your Subscription.'}
+			</p>
+
 			<LegalTitle id={'software-provided'}>
 				{'4. Software Provided "As Is"'}
 			</LegalTitle>

@@ -15,8 +15,8 @@ const Pricing: React.FunctionComponent = () => (
 		<Header>
 			<SmallContainer>
 				<TitleSubtle>{'Pricing'}</TitleSubtle>
-				<Title>{'One pricing tier to rule them all.'}</Title>
-				<SubTitle>{'Beak isn\'t ready yet, you shouldn\'t be here'}</SubTitle>
+				<Title>{'One pricing tier to rule them all'}</Title>
+				<SubTitle>{'No complicated plans or locked features... One price for it all'}</SubTitle>
 			</SmallContainer>
 		</Header>
 		<PricingCardGrid />

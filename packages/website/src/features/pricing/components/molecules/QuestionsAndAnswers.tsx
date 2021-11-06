@@ -26,7 +26,7 @@ const QuestionsAndAnswers: React.FunctionComponent = () => (
 				<Card>
 					<Question>{'Refund policy'}</Question>
 					<Answer>
-						{'If you purchase Beak and decide within 30 days that you hate it, you can get a full refund '}
+						{'If you purchase Beak and decide within 7 days that you hate it, you can get a full refund '}
 						{'no questions asked. Just reach out and we\'ll cancel your subscription and issue the refund '}
 						{'right away.'}
 					</Answer>
