@@ -47,8 +47,6 @@ const NewsBannerContainer: React.FunctionComponent = () => {
 	);
 };
 
-const Container = styled.div`
-	padding-bottom: 20px;
-`;
+const Container = styled.div``;
 
 export default NewsBannerContainer;

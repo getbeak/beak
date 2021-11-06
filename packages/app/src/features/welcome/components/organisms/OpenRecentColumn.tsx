@@ -1,4 +1,6 @@
+import NewsBannerContainer from '@beak/app/features/news-banner/components/NewsBannerContainer';
 import { ipcBeakHubService, ipcProjectService } from '@beak/app/lib/ipc';
+import { sortIso8601 } from '@beak/app/utils/sort';
 import { RecentLocalProject } from '@beak/common/types/beak-hub';
 import { sentenceCase } from 'change-case';
 import React, { useEffect, useState } from 'react';
@@ -50,31 +52,34 @@ const OpenRecentColumn: React.FunctionComponent = () => {
 
 	return (
 		<Wrapper>
+			<NewsBannerContainer />
+
 			<ColumnTitle>{'Open recent'}</ColumnTitle>
-
 			<ScrollViewer>
-				{noRecents && 'No recent projects, why not make one?'}
-				{categories.filter(k => recents[k].length > 0).map(k => (
-					<Collapse
-						key={k}
-						startOpen={true}
-						title={sentenceCase(k)}
-					>
-						{recents[k].map(m => (
-							<RecentEntry
-								key={`${m.name}-${m.path}`}
-								modifiedDate={m.accessTime}
-								name={m.name}
-								path={m.path}
-								type={m.type}
+				<ScrollViewerInner tabIndex={-1}>
+					{noRecents && 'No recent projects, create one to get started'}
+					{categories.filter(k => recents[k].length > 0).map((k, i) => (
+						<Collapse
+							key={k}
+							startOpen={true}
+							title={sentenceCase(k)}
+						>
+							{recents[k].sort(sortIso8601(r => r.accessTime, 'desc')).map(m => (
+								<RecentEntry
+									key={`${m.name}-${m.path}`}
+									modifiedDate={m.accessTime}
+									name={m.name}
+									path={m.path}
+									type={m.type}
 
-								onClick={() => {
-									ipcProjectService.openFolder(m.path);
-								}}
-							/>
-						))}
-					</Collapse>
-				))}
+									onClick={() => {
+										ipcProjectService.openFolder(m.path);
+									}}
+								/>
+							))}
+						</Collapse>
+					))}
+				</ScrollViewerInner>
 			</ScrollViewer>
 		</Wrapper>
 	);
@@ -98,14 +103,20 @@ function checkIfNoRecents(recents: Recents) {
 	return !hasToday && !hasWeek && !hasMonth && !hasOlder;
 }
 
-const Wrapper = styled.div``;
+const Wrapper = styled.div`
+	flex-basis: 60%;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+`;
 
 const ScrollViewer = styled.div`
-	height: 100%;
-
-	overflow: scroll;
+	flex: 1 1 auto;
 	overflow-y: scroll;
-	overflow-x: hidden;
+`;
+
+const ScrollViewerInner = styled.div`
+
 `;
 
 export default OpenRecentColumn;

@@ -65,8 +65,9 @@ const DragBar = styled.div`
 
 const Container = styled.div`
 	position: relative;
-	padding: 40px 30px;
-	padding-top: 20px;
+	padding: 0 30px;
+	padding-top: 40px;
+	height: calc(100vh - 40px);
 
 	z-index: 2;
 `;

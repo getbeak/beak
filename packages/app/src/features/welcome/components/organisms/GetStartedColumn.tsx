@@ -36,7 +36,7 @@ const GetStartedColumn: React.FunctionComponent<GetStartedColumnProps> = ({ setV
 			onClick={() => ipcExplorerService.launchUrl('mailto:support@getbeak.app')}
 		/>
 		<GetStartedButton
-			title={'Visit documentation'}
+			title={'View documentation'}
 			description={'lrn more'}
 			icon={faBook}
 			iconColor={'primaryFill'}
@@ -45,6 +45,8 @@ const GetStartedColumn: React.FunctionComponent<GetStartedColumnProps> = ({ setV
 	</Wrapper>
 );
 
-const Wrapper = styled.div``;
+const Wrapper = styled.div`
+	flex-basis: 40%;
+`;
 
 export default GetStartedColumn;

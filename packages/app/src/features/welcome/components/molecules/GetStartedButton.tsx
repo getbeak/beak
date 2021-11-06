@@ -47,7 +47,7 @@ const GetStartedButton: React.FunctionComponent<GetStartedButtonProps> = props =
 
 const Button = styled.button`
 	display: block;
-	width: 100%;
+	width: calc(100% - 20px);
 	background: ${props => toHexAlpha(props.theme.ui.secondarySurface, 0.7)};
 	backdrop-filter: blur(5px);
 	border-radius: 5px;

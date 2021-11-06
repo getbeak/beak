@@ -126,7 +126,7 @@ export function createWelcomeWindow() {
 	}
 
 	const windowOpts: BrowserWindowConstructorOptions = {
-		height: 550,
+		height: 500,
 		width: 900,
 		resizable: false,
 		title: 'Welcome to Beak!',
