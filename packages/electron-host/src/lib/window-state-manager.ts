@@ -70,6 +70,8 @@ export default class WindowStateManager {
 
 		if (this.windowOptions.resizable)
 			this.window.setSize(this.state.width, this.state.height);
+		else
+			this.window.setSize(this.windowOptions.width!, this.windowOptions.height!);
 
 		this.window.on('resize', () => this.stateChangedHandler());
 		this.window.on('move', () => this.stateChangedHandler());
