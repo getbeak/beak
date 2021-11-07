@@ -133,6 +133,8 @@ export type VariableGroups = Record<string, VariableGroup>;
 export type TabItem = RequestTabItem | RendererTabItem;
 
 export interface TabBase {
+	type: string;
+	payload: unknown;
 	temporary: boolean;
 }
 

@@ -1,4 +1,4 @@
-import { Nodes, TabItem } from '@beak/common/types/beak-project';
+import { Nodes } from '@beak/common/types/beak-project';
 import { createAction } from '@reduxjs/toolkit';
 
 import {
@@ -40,16 +40,6 @@ import {
 export const startProject = createAction(AT.START_PROJECT);
 export const insertProjectInfo = createAction<ProjectInfoPayload>(AT.INSERT_PROJECT_INFO);
 export const projectOpened = createAction<ProjectOpenedPayload>(AT.PROJECT_OPENED);
-
-export const loadTabPreferences = createAction(AT.LOAD_TAB_PREFERENCES);
-export const tabSelected = createAction<TabItem>(AT.TAB_SELECTED);
-export const closeSelectedTab = createAction<string>(AT.CLOSE_SELECTED_TAB);
-export const closeOtherSelectedTabs = createAction<string>(AT.CLOSE_OTHER_SELECTED_TABS);
-export const closeSelectedTabsToRight = createAction<string>(AT.CLOSE_SELECTED_TABS_TO_RIGHT);
-export const closeSelectedTabsToLeft = createAction<string>(AT.CLOSE_SELECTED_TABS_TO_LEFT);
-export const closeAllSelectedTabs = createAction(AT.CLOSE_ALL_SELECTED_TABS);
-export const setTabAsPermanent = createAction<string>(AT.SET_TAB_AS_PERMANENT);
-export const populateTabs = createAction<TabItem[]>(AT.POPULATE_TABS);
 
 export const requestUriUpdated = createAction<RequestUriUpdatedPayload>(AT.REQUEST_URI_UPDATED);
 
@@ -133,16 +123,6 @@ export default {
 	startProject,
 	insertProjectInfo,
 	projectOpened,
-
-	loadTabPreferences,
-	tabSelected,
-	closeSelectedTab,
-	closeOtherSelectedTabs,
-	closeSelectedTabsToRight,
-	closeSelectedTabsToLeft,
-	closeAllSelectedTabs,
-	setTabAsPermanent,
-	populateTabs,
 
 	requestUriUpdated,
 

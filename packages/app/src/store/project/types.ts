@@ -1,20 +1,10 @@
 import { EntryMap, EntryType } from '@beak/common/types/beak-json-editor';
-import { TabItem, ToggleKeyValue, Tree, ValueParts } from '@beak/common/types/beak-project';
+import { ToggleKeyValue, Tree, ValueParts } from '@beak/common/types/beak-project';
 
 export const ActionTypes = {
 	START_PROJECT: '@beak/global/project/START_PROJECT',
 	INSERT_PROJECT_INFO: '@beak/global/project/INSERT_PROJECT_INFO',
 	PROJECT_OPENED: '@beak/global/project/PROJECT_OPENED',
-
-	LOAD_TAB_PREFERENCES: '@beak/global/project/LOAD_TAB_PREFERENCES',
-	TAB_SELECTED: '@beak/global/project/TAB_SELECTED',
-	CLOSE_SELECTED_TAB: '@beak/global/project/CLOSE_SELECTED_TAB',
-	CLOSE_OTHER_SELECTED_TABS: '@beak/global/project/CLOSE_OTHER_SELECTED_TABS',
-	CLOSE_SELECTED_TABS_TO_RIGHT: '@beak/global/project/CLOSE_SELECTED_TABS_TO_RIGHT',
-	CLOSE_SELECTED_TABS_TO_LEFT: '@beak/global/project/CLOSE_SELECTED_TABS_TO_LEFT',
-	CLOSE_ALL_SELECTED_TABS: '@beak/global/project/CLOSE_ALL_SELECTED_TABS',
-	SET_TAB_AS_PERMANENT: '@beak/global/project/SET_TAB_AS_PERMANENT',
-	POPULATE_TABS: '@beak/global/project/POPULATE_TABS',
 
 	REQUEST_URI_UPDATED: '@beak/global/project/REQUEST_URI_UPDATED',
 
@@ -77,9 +67,6 @@ export interface State {
 	name?: string;
 	tree: Tree;
 
-	selectedTabPayload?: string;
-	tabs: TabItem[];
-
 	activeRename?: ActiveRename;
 	latestWrite?: LatestWrite;
 	writeDebouncer: Record<string, string>;
@@ -91,7 +78,6 @@ export const initialState: State = {
 	loaded: false,
 
 	tree: {},
-	tabs: [],
 
 	writeDebouncer: {},
 	alerts: {},

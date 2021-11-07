@@ -7,6 +7,8 @@ import * as encryptionStore from '../features/encryption/store';
 import { State as EncryptionState } from '../features/encryption/store/types';
 import * as omniBarStore from '../features/omni-bar/store';
 import { State as OmniBarState } from '../features/omni-bar/store/types';
+import * as tabsStore from '../features/tabs/store';
+import { State as TabsState } from '../features/tabs/store/types';
 import * as arbiterStore from './arbiter';
 import { State as ArbiterState } from './arbiter/types';
 import * as flightStore from './flight';
@@ -24,6 +26,7 @@ export interface ApplicationState {
 	features: {
 		encryption: EncryptionState;
 		omniBar: OmniBarState;
+		tabs: TabsState;
 	};
 	global: {
 		arbiter: ArbiterState;
@@ -40,6 +43,7 @@ function createRootReducer() {
 		features: combineReducers({
 			encryption: encryptionStore.reducer,
 			omniBar: omniBarStore.reducer,
+			tabs: tabsStore.reducer,
 		}),
 		global: combineReducers({
 			arbiter: arbiterStore.reducers,
@@ -56,6 +60,7 @@ function* rootSaga() {
 	yield all([
 		fork(arbiterStore.sagas),
 		fork(flightStore.sagas),
+		fork(tabsStore.sagas),
 		fork(gitStore.sagas),
 		fork(preferencesStore.sagas),
 		fork(projectStore.sagas),
@@ -68,6 +73,7 @@ function createInitialState(): ApplicationState {
 		features: {
 			encryption: encryptionStore.types.initialState,
 			omniBar: omniBarStore.types.initialState,
+			tabs: tabsStore.types.initialState,
 		},
 		global: {
 			arbiter: arbiterStore.types.initialState,
