@@ -11,7 +11,32 @@ const tabsReducer = createReducer(initialState, builder => {
 		.addCase(actions.tabStateLoaded, (_state, { payload }) => payload)
 
 		.addCase(actions.changeTab, (state, { payload }) => {
+			if (!state.activeTabs.find(t => t.payload === payload.payload))
+				state.activeTabs.push(payload);
+
 			state.selectedTab = payload.payload;
+		})
+		.addCase(actions.changeTabNext, (state, { payload }) => {
+			const targetTab = getTargetTab(state, payload);
+
+			if (!targetTab)
+				return;
+
+			const targetIndex = state.activeTabs.findIndex(t => t.payload === targetTab.payload);
+			const nextIndex = movePosition(state.activeTabs, targetIndex, 'forward');
+
+			state.selectedTab = state.activeTabs[nextIndex].payload;
+		})
+		.addCase(actions.changeTabPrevious, (state, { payload }) => {
+			const targetTab = getTargetTab(state, payload);
+
+			if (!targetTab)
+				return;
+
+			const targetIndex = state.activeTabs.findIndex(t => t.payload === targetTab.payload);
+			const nextIndex = movePosition(state.activeTabs, targetIndex, 'backward');
+
+			state.selectedTab = state.activeTabs[nextIndex].payload;
 		})
 		.addCase(actions.makeTabPermanent, (state, { payload }) => {
 			const targetTab = getTargetTab(state, payload);
@@ -87,19 +112,20 @@ const tabsReducer = createReducer(initialState, builder => {
 				return;
 
 			state.activeTabs = [targetTab];
+		})
+
+		.addCase(actions.reconciliationComplete, (state, { payload }) => {
+			state.lastReconcile = payload;
 		});
 });
 
-function getTargetTab(state: State, tab: TabItem | void) {
-	if (!tab)
-		return tab;
-
-	const selectedTab = state.selectedTab;
+function getTargetTab(state: State, tab: string | undefined) {
+	const selectedTab = tab ?? state.selectedTab;
 
 	if (!selectedTab)
 		return void 0;
 
-	return state.activeTabs.find(t => t.payload === tab.payload);
+	return state.activeTabs.find(t => t.payload === tab);
 }
 
 function updateRecentlyClosed(state: State, ...tabs: TabItem[]) {

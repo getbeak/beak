@@ -5,6 +5,8 @@ export const ActionTypes = {
 	TAB_STATE_LOADED: '@beak/features/tabs/TAB_STATE_LOADED',
 
 	CHANGE_TAB: '@beak/features/tabs/CHANGE_TAB',
+	CHANGE_TAB_NEXT: '@beak/features/tabs/CHANGE_TAB_NEXT',
+	CHANGE_TAB_PREVIOUS: '@beak/features/tabs/CHANGE_TAB_PREVIOUS',
 	MAKE_TAB_PERMANENT: '@beak/features/tabs/MAKE_TAB_PERMANENT',
 
 	CLOSE_TAB: '@beak/features/tabs/CLOSE_TAB',
@@ -12,6 +14,9 @@ export const ActionTypes = {
 	CLOSE_TABS_LEFT: '@beak/features/tabs/CLOSE_TABS_LEFT',
 	CLOSE_TABS_RIGHT: '@beak/features/tabs/CLOSE_TABS_RIGHT',
 	CLOSE_TABS_ALL: '@beak/features/tabs/CLOSE_TABS_ALL',
+
+	ATTEMPT_RECONCILIATION: '@beak/features/tabs/ATTEMPT_RECONCILIATION',
+	RECONCILIATION_COMPLETE: '@beak/features/tabs/RECONCILIATION_COMPLETE',
 };
 
 export interface State {
