@@ -2,13 +2,11 @@ import { all, fork, takeEvery, takeLatest } from 'redux-saga/effects';
 
 import { ActionTypes } from '../types';
 import catchNodeUpdates from './catch-node-updates';
-import catchTabUpdates from './catch-tab-updates';
 import {
 	workerCreateNewFolder as createNewFolder,
 	workerCreateNewRequest as createNewRequest,
 } from './create-things';
 import duplicateRequest from './duplicate-request';
-import loadTabPreferences from './load-tab-preferences';
 import nodeRename from './node-rename';
 import removeNodeFromDisk from './remove-node-from-disk';
 import startProject from './start-project';
@@ -37,27 +35,10 @@ const nodeUpdateWatcherActions = [
 	ActionTypes.REQUEST_OPTION_FOLLOW_REDIRECTS,
 ];
 
-const tabUpdateWatcherActions = [
-	ActionTypes.TAB_SELECTED,
-	ActionTypes.CLOSE_SELECTED_TAB,
-	ActionTypes.CLOSE_OTHER_SELECTED_TABS,
-	ActionTypes.CLOSE_SELECTED_TABS_TO_RIGHT,
-	ActionTypes.CLOSE_SELECTED_TABS_TO_LEFT,
-	ActionTypes.CLOSE_ALL_SELECTED_TABS,
-	ActionTypes.SET_TAB_AS_PERMANENT,
-];
-
 export default function* projectSaga() {
 	yield all([
 		fork(function* catchNodeUpdatesWatcher() {
 			yield takeEvery(nodeUpdateWatcherActions, catchNodeUpdates);
-		}),
-
-		fork(function* loadTabPreferencesWatcher() {
-			yield takeEvery(ActionTypes.LOAD_TAB_PREFERENCES, loadTabPreferences);
-		}),
-		fork(function* catchTabUpdatesWatcher() {
-			yield takeEvery(tabUpdateWatcherActions, catchTabUpdates);
 		}),
 
 		fork(function* createNewFolderWatcher() {

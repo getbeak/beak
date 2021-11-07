@@ -1,10 +1,11 @@
 import ContextMenu from '@beak/app/components/atoms/ContextMenu';
-import { actions } from '@beak/app/store/project';
 import { TabItem } from '@beak/common/types/beak-project';
 import ksuid from '@cuvva/ksuid';
 import type { MenuItemConstructorOptions } from 'electron';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+
+import { closeTab, closeTabsAll, closeTabsLeft, closeTabsOther, closeTabsRight } from '../../store/actions';
 
 interface RendererTabContextMenuWrapperProps {
 	tab: TabItem;
@@ -14,27 +15,27 @@ interface RendererTabContextMenuWrapperProps {
 const RendererTabContextMenuWrapper: React.FunctionComponent<RendererTabContextMenuWrapperProps> = props => {
 	const dispatch = useDispatch();
 	const { tab, target, children } = props;
-	const { tabs, selectedTabPayload } = useSelector(s => s.global.project)!;
+	const { activeTabs } = useSelector(s => s.features.tabs)!;
 	const [menuItems, setMenuItems] = useState<MenuItemConstructorOptions[]>([]);
 
 	useEffect(() => {
-		const selectedIndex = tabs.findIndex(t => t.payload === tab.payload);
+		const selectedIndex = activeTabs.findIndex(t => t.payload === tab.payload);
 		const startTab = selectedIndex <= 0;
-		const endTab = selectedIndex === tabs.length - 1;
+		const endTab = selectedIndex === activeTabs.length - 1;
 
 		setMenuItems([
 			{
 				id: ksuid.generate('ctxmenuitem').toString(),
 				label: 'Close',
 				click: () => {
-					dispatch(actions.closeSelectedTab(tab.payload));
+					dispatch(closeTab(tab.payload));
 				},
 			},
 			{
 				id: ksuid.generate('ctxmenuitem').toString(),
 				label: 'Close Others',
 				click: () => {
-					dispatch(actions.closeOtherSelectedTabs(tab.payload));
+					dispatch(closeTabsOther(tab.payload));
 				},
 			},
 			{
@@ -42,7 +43,7 @@ const RendererTabContextMenuWrapper: React.FunctionComponent<RendererTabContextM
 				label: 'Close to the Right',
 				enabled: !endTab,
 				click: () => {
-					dispatch(actions.closeSelectedTabsToRight(tab.payload));
+					dispatch(closeTabsRight(tab.payload));
 				},
 			},
 			{
@@ -50,20 +51,20 @@ const RendererTabContextMenuWrapper: React.FunctionComponent<RendererTabContextM
 				label: 'Close to the Left',
 				enabled: !startTab,
 				click: () => {
-					dispatch(actions.closeSelectedTabsToLeft(tab.payload));
+					dispatch(closeTabsLeft(tab.payload));
 				},
 			},
 			{
 				id: ksuid.generate('ctxmenuitem').toString(),
 				label: 'Close All',
 				click: () => {
-					dispatch(actions.closeAllSelectedTabs());
+					dispatch(closeTabsAll());
 				},
 			},
 
 			{ type: 'separator' },
 		]);
-	}, [tab, selectedTabPayload, tabs]);
+	}, [tab, activeTabs]);
 
 	return (
 		<ContextMenu menuItems={menuItems} target={target}>

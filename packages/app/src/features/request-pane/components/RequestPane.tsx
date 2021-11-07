@@ -18,8 +18,9 @@ const allowedBodyVerbs = ['GET', 'HEAD', 'DELETE'];
 const RequestPane: React.FunctionComponent = () => {
 	const dispatch = useDispatch();
 	const mounted = useRef(false);
-	const { tree, selectedTabPayload } = useSelector(s => s.global.project);
-	const selectedNode = tree[selectedTabPayload!] as RequestNode;
+	const { tree } = useSelector(s => s.global.project);
+	const selectedTab = useSelector(s => s.features.tabs.selectedTab);
+	const selectedNode = tree[selectedTab!] as RequestNode;
 	const preferences = useSelector(s => s.global.preferences.requests[selectedNode.id]);
 
 	useEffect(() => {
@@ -57,14 +58,14 @@ const RequestPane: React.FunctionComponent = () => {
 	}, [selectedNode.id, selectedNode.info]);
 
 	// TODO(afr): Maybe some sort of purgatory state here
-	if (!selectedTabPayload)
+	if (!selectedTab)
 		return <Container />;
 
 	if (!preferences)
 		return <Container />;
 
 	// TODO(afr): Handle this state
-	if (selectedTabPayload && !selectedNode)
+	if (selectedTab && !selectedNode)
 		return <span>{'TODO: id does not exist'}</span>;
 
 	return (

@@ -22,7 +22,7 @@ import ActionBarAlertButton from './molecules/ActionBarAlertButton';
 const ActionBar: React.FunctionComponent = () => {
 	const theme = useTheme();
 	const dispatch = useDispatch();
-	const selectedTabPayload = useSelector(s => s.global.project.selectedTabPayload);
+	const selectedTabPayload = useSelector(s => s.features.tabs.selectedTab);
 	const request = useSelector(s => s.global.project.tree![selectedTabPayload ?? 'non_existent']);
 	const requirements = gatherRequirements(selectedTabPayload, request);
 

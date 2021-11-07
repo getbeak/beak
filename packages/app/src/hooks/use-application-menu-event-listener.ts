@@ -3,8 +3,15 @@ import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 
 import { showEncryptionView } from '../features/encryption/store/actions';
+import {
+	changeTabNext,
+	changeTabPrevious,
+	closeTab,
+	closeTabsAll,
+	closeTabsOther,
+} from '../features/tabs/store/actions';
 import { requestFlight } from '../store/flight/actions';
-import { closeAllSelectedTabs, createNewFolder, createNewRequest } from '../store/project/actions';
+import { createNewFolder, createNewRequest } from '../store/project/actions';
 
 export function useApplicationMenuEventListener() {
 	const dispatch = useDispatch();
@@ -22,7 +29,19 @@ export function useApplicationMenuEventListener() {
 					break;
 
 				case 'close_all_tabs':
-					dispatch(closeAllSelectedTabs());
+					dispatch(closeTabsAll());
+					break;
+				case 'close_other_tabs':
+					dispatch(closeTabsOther());
+					break;
+				case 'close_tab':
+					dispatch(closeTab());
+					break;
+				case 'select_next_tab':
+					dispatch(changeTabNext());
+					break;
+				case 'select_previous_tab':
+					dispatch(changeTabPrevious());
 					break;
 
 				case 'execute_request':

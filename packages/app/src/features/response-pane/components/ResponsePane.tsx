@@ -7,11 +7,12 @@ import PendingSlash from './molecules/PendingSplash';
 import Inspector from './organisms/Inspector';
 
 const ResponsePane: React.FunctionComponent = () => {
-	const { tree, selectedTabPayload } = useSelector(s => s.global.project);
+	const { tree } = useSelector(s => s.global.project);
+	const selectedTab = useSelector(s => s.features.tabs.selectedTab);
 	const flightHistories = useSelector(s => s.global.flight.flightHistory);
-	const selectedNode = tree![selectedTabPayload || 'non_existent'];
+	const selectedNode = tree![selectedTab || 'non_existent'];
 
-	if (!selectedTabPayload) {
+	if (!selectedTab) {
 		return (
 			<Container>
 				<PendingSlash />
@@ -19,7 +20,7 @@ const ResponsePane: React.FunctionComponent = () => {
 		);
 	}
 
-	if (selectedTabPayload && !selectedNode) {
+	if (selectedTab && !selectedNode) {
 		return (
 			<Container>
 				<span>{'id does not exist'}</span>
@@ -27,7 +28,7 @@ const ResponsePane: React.FunctionComponent = () => {
 		);
 	}
 
-	const flightHistory = flightHistories[selectedTabPayload];
+	const flightHistory = flightHistories[selectedTab];
 
 	if (!flightHistory) {
 		return (

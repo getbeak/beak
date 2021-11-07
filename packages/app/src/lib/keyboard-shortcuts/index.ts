@@ -25,7 +25,8 @@ type Shortcuts =
 
 	'tab-bar.all.next' |
 	'tab-bar.all.previous' |
-	'tab-bar.all.close';
+	'tab-bar.all.close' |
+	'tab-bar.all.close-others';
 
 const definitions: Record<Shortcuts, PlatformSpecificDefinitions | PlatformAgnosticDefinitions> = {
 	'global.execute-request': {
@@ -74,6 +75,7 @@ const definitions: Record<Shortcuts, PlatformSpecificDefinitions | PlatformAgnos
 	'tab-bar.all.next': { type: 'agnostic', ctrl: true, key: 'Tab' },
 	'tab-bar.all.previous': { type: 'agnostic', ctrl: true, shift: true, key: 'Tab' },
 	'tab-bar.all.close': { type: 'agnostic', ctrlOrMeta: true, key: 'w' },
+	'tab-bar.all.close-others': { type: 'agnostic', ctrlOrMeta: true, alt: true, key: 'T' },
 };
 
 export function checkShortcut(shortcutKey: Shortcuts, event: React.KeyboardEvent | KeyboardEvent) {

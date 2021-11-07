@@ -1,12 +1,11 @@
 import { checkShortcut } from '@beak/app/lib/keyboard-shortcuts';
-import { actions } from '@beak/app/store/project';
-import { movePosition } from '@beak/app/utils/arrays';
 import { TabItem } from '@beak/common/types/beak-project';
 import React from 'react';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 
 import TB from '../../../components/atoms/TabBar';
+import { changeTabNext, changeTabPrevious, closeTab, closeTabsOther } from '../store/actions';
 import RendererTab from './molecules/RendererTab';
 import RequestTab from './molecules/RequestTab';
 import Router from './Router';
@@ -25,29 +24,20 @@ const TabView: React.FunctionComponent<TabViewProps> = ({ selectedTab, tabs }) =
 
 		switch (true) {
 			case checkShortcut('tab-bar.all.close', event):
-				dispatch(actions.closeSelectedTab(selectedTab.payload));
+				dispatch(closeTab());
 
 				break;
 
-				// case checkShortcut('tab-bar.all.close-others', event):
-				// 	dispatch(actions.closeOtherSelectedTabs(selectedTab.payload));
-				//
-				// 	break;
+			case checkShortcut('tab-bar.all.close-others', event):
+				dispatch(closeTabsOther());
+				break;
 
 			case checkShortcut('tab-bar.all.previous', event):
-			case checkShortcut('tab-bar.all.next', event): {
-				const activeIndex = tabs.findIndex(i => i.payload === selectedTab.payload);
-				let newIndex = activeIndex;
-
-				if (event.key === 'ArrowLeft')
-					newIndex = movePosition(tabs, activeIndex, 'backward');
-				else if (event.key === 'ArrowRight')
-					newIndex = movePosition(tabs, activeIndex, 'forward');
-
-				dispatch(actions.tabSelected(tabs[newIndex]));
-
+				dispatch(changeTabPrevious());
 				break;
-			}
+			case checkShortcut('tab-bar.all.next', event):
+				dispatch(changeTabNext());
+				break;
 
 			default:
 				return;

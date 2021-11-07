@@ -23,7 +23,7 @@ import { State } from '../types';
 
 export default function* requestFlightWorker() {
 	const binaryStoreKey = ksuid.generate('binstore').toString();
-	const requestId: string = yield select((s: ApplicationState) => s.global.project.selectedTabPayload);
+	const requestId: string = yield select((s: ApplicationState) => s.features.tabs.selectedTab);
 	const flightId = ksuid.generate('flight').toString();
 
 	const flight: State = yield select((s: ApplicationState) => s.global.flight);

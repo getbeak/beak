@@ -1,10 +1,11 @@
 import Button from '@beak/app/components/atoms/Button';
-import { tabSelected } from '@beak/app/store/project/actions';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { RequestNode } from '@beak/common/types/beak-project';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
+
+import { changeTab } from '../../store/actions';
 
 const NotTheTabYourLookingFor: React.FunctionComponent = () => {
 	const tree = useSelector(s => s.global.project.tree);
@@ -14,7 +15,7 @@ const NotTheTabYourLookingFor: React.FunctionComponent = () => {
 		const requests = TypedObject.values(tree).filter(n => n.type === 'request') as RequestNode[];
 
 		if (requests.length === 0) {
-			dispatch(tabSelected({
+			dispatch(changeTab({
 				type: 'renderer',
 				payload: 'variable_group_editor',
 				temporary: false,
@@ -23,7 +24,7 @@ const NotTheTabYourLookingFor: React.FunctionComponent = () => {
 			return;
 		}
 
-		dispatch(tabSelected({
+		dispatch(changeTab({
 			type: 'request',
 			payload: requests[Math.floor(Math.random() * requests.length)].id,
 			temporary: false,

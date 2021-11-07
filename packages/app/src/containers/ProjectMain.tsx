@@ -19,7 +19,7 @@ import { checkShortcut } from '../lib/keyboard-shortcuts';
 import { requestFlight } from '../store/flight/actions';
 import { startGit } from '../store/git/actions';
 import { loadEditorPreferences } from '../store/preferences/actions';
-import { loadTabPreferences, startProject } from '../store/project/actions';
+import { startProject } from '../store/project/actions';
 
 const ProjectMain: React.FunctionComponent = () => {
 	const dispatch = useDispatch();
@@ -27,11 +27,11 @@ const ProjectMain: React.FunctionComponent = () => {
 	const [setup, setSetup] = useState(false);
 	const project = useSelector(s => s.global.project);
 	const variableGroups = useSelector(s => s.global.variableGroups);
-	const { selectedTabPayload, tabs } = useSelector(s => s.global.project);
-	const selectedTab = tabs.find(t => t.payload === selectedTabPayload);
+	const tabs = useSelector(s => s.features.tabs);
+	const activeTab = tabs.activeTabs.find(t => t.payload === tabs.selectedTab);
 	const windowSession = useContext(WindowSessionContext);
 
-	const loaded = project.loaded && variableGroups.loaded;
+	const loaded = project.loaded && variableGroups.loaded && tabs.loaded;
 
 	useApplicationMenuEventListener();
 
@@ -39,7 +39,6 @@ const ProjectMain: React.FunctionComponent = () => {
 		dispatch(loadEditorPreferences());
 		dispatch(startProject());
 		dispatch(startGit());
-		dispatch(loadTabPreferences());
 	}, []);
 
 	useEffect(() => {
@@ -78,7 +77,7 @@ const ProjectMain: React.FunctionComponent = () => {
 	}, [setup, project, project.name, loaded]);
 
 	function onKeyDown(event: KeyboardEvent) {
-		if (!selectedTab || event.key !== 'Return')
+		if (!tabs.selectedTab || event.key !== 'Return')
 			return;
 
 		const isDarwin = windowSession.isDarwin();
@@ -117,7 +116,7 @@ const ProjectMain: React.FunctionComponent = () => {
 							>
 								<ActionBar />
 
-								<TabView tabs={tabs} selectedTab={selectedTab} />
+								<TabView tabs={tabs.activeTabs} selectedTab={activeTab} />
 							</ReflexElement>
 						</ReflexContainer>
 						<Omnibar />

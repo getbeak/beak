@@ -1,8 +1,8 @@
-import { tabSelected } from '@beak/app/store/project/actions';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 
+import { changeTab } from '../../tabs/store/actions';
 import StatusBarContainer from './atoms/StatusBarContainer';
 
 const StatusBar: React.FunctionComponent = () => {
@@ -23,7 +23,7 @@ const StatusBar: React.FunctionComponent = () => {
 		if (!currentFlight)
 			return;
 
-		dispatch(tabSelected({
+		dispatch(changeTab({
 			type: 'request',
 			payload: currentFlight.requestId,
 			temporary: true,

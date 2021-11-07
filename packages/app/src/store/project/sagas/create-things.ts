@@ -1,3 +1,4 @@
+import { changeTab } from '@beak/app/features/tabs/store/actions';
 import { createFolderNode } from '@beak/app/lib/beak-project/folder';
 import { createRequestNode } from '@beak/app/lib/beak-project/request';
 import { Nodes } from '@beak/common/types/beak-project';
@@ -34,5 +35,5 @@ export function* workerCreateNewRequest({ payload }: PayloadAction<CreateNewThin
 		delay(250),
 		take(ActionTypes.INSERT_REQUEST_NODE),
 	]);
-	yield put(actions.tabSelected({ type: 'request', payload: nodeId, temporary: true }));
+	yield put(changeTab({ type: 'request', payload: nodeId, temporary: true }));
 }

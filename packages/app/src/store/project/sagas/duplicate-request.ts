@@ -1,10 +1,10 @@
+import { changeTab } from '@beak/app/features/tabs/store/actions';
 import { duplicateRequestNode } from '@beak/app/lib/beak-project/request';
 import { Nodes } from '@beak/common/types/beak-project';
 import { PayloadAction } from '@reduxjs/toolkit';
 import { call, delay, put, race, select, take } from 'redux-saga/effects';
 
 import { ApplicationState } from '../..';
-import actions from '../actions';
 import { ActionTypes, DuplicateRequestPayload } from '../types';
 
 export default function* workerDuplicateRequest({ payload }: PayloadAction<DuplicateRequestPayload>) {
@@ -20,7 +20,7 @@ export default function* workerDuplicateRequest({ payload }: PayloadAction<Dupli
 		take(ActionTypes.INSERT_REQUEST_NODE),
 	]);
 
-	yield put(actions.tabSelected({
+	yield put(changeTab({
 		type: 'request',
 		payload: newNodeId,
 		temporary: true,

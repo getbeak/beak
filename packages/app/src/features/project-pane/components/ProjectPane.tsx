@@ -1,11 +1,11 @@
 import WindowSessionContext from '@beak/app/contexts/window-session-context';
-import { actions } from '@beak/app/store/project';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useContext, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled, { useTheme } from 'styled-components';
 
+import { changeTab } from '../../tabs/store/actions';
 import Header from './atoms/Header';
 import SectionHeader from './atoms/SectionHeader';
 import Git from './organisms/Git';
@@ -60,7 +60,7 @@ const ProjectPane: React.FunctionComponent = () => {
 					onClick={e => {
 						e.stopPropagation();
 
-						dispatch(actions.tabSelected({
+						dispatch(changeTab({
 							type: 'renderer',
 							payload: 'variable_group_editor',
 							temporary: false,

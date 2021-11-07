@@ -1,5 +1,5 @@
+import { changeTab } from '@beak/app/features/tabs/store/actions';
 import { checkShortcut } from '@beak/app/lib/keyboard-shortcuts';
-import { tabSelected } from '@beak/app/store/project/actions';
 import { movePosition } from '@beak/app/utils/arrays';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { RequestNode } from '@beak/common/types/beak-project';
@@ -52,7 +52,7 @@ const FinderView: React.FunctionComponent<FinderViewProps> = ({ content, reset }
 						break;
 
 					reset();
-					dispatch(tabSelected({
+					dispatch(changeTab({
 						type: 'request',
 						payload: matches[active],
 						temporary: true,
@@ -94,7 +94,7 @@ const FinderView: React.FunctionComponent<FinderViewProps> = ({ content, reset }
 						tabIndex={0}
 						onClick={() => {
 							reset();
-							dispatch(tabSelected({
+							dispatch(changeTab({
 								type: 'request',
 								payload: k,
 								temporary: true,

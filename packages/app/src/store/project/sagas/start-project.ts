@@ -1,3 +1,4 @@
+import { loadTabState } from '@beak/app/features/tabs/store/actions';
 import { readFolderNode } from '@beak/app/lib/beak-project/folder';
 import { readProjectFile } from '@beak/app/lib/beak-project/project';
 import { readRequestNode } from '@beak/app/lib/beak-project/request';
@@ -31,6 +32,7 @@ export default function* workerStartProject() {
 		yield put(actions.insertProjectInfo({ name: project.name }));
 		yield put(startVariableGroups());
 		yield initialImport('tree');
+		yield put(loadTabState());
 	} catch (error) {
 		if (error instanceof Error) {
 			if (error.message === 'Unsupported project version') {

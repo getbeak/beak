@@ -1,3 +1,4 @@
+import { closeTab } from '@beak/app/features/tabs/store/actions';
 import { removeFolderNode } from '@beak/app/lib/beak-project/folder';
 import { removeRequestNode } from '@beak/app/lib/beak-project/request';
 import { ipcDialogService } from '@beak/app/lib/ipc';
@@ -40,7 +41,7 @@ export default function* workerRemoveNodeFromDisk({ payload }: PayloadAction<Rem
 	// This is for folder deletions, instead of simple request ones
 	yield delay(300);
 
-	const selectedTab: string | undefined = yield select((s: ApplicationState) => s.global.project.selectedTabPayload);
+	const selectedTab: string | undefined = yield select((s: ApplicationState) => s.features.tabs.selectedTab);
 
 	if (!selectedTab)
 		return;
@@ -49,5 +50,5 @@ export default function* workerRemoveNodeFromDisk({ payload }: PayloadAction<Rem
 	const requests = TypedObject.values(tree).filter(t => t.type === 'request') as RequestNode[];
 
 	if (!requests.find(r => r.id === selectedTab))
-		yield put(actions.closeSelectedTab(selectedTab));
+		yield put(closeTab(selectedTab));
 }

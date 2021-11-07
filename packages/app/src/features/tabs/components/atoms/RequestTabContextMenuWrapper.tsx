@@ -1,12 +1,13 @@
 import ContextMenu from '@beak/app/components/atoms/ContextMenu';
 import WindowSessionContext from '@beak/app/contexts/window-session-context';
 import { ipcExplorerService } from '@beak/app/lib/ipc';
-import { actions } from '@beak/app/store/project';
 import { TabItem } from '@beak/common/types/beak-project';
 import ksuid from '@cuvva/ksuid';
 import type { MenuItemConstructorOptions } from 'electron';
 import React, { useContext, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+
+import { closeTab, closeTabsAll, closeTabsLeft, closeTabsOther, closeTabsRight } from '../../store/actions';
 
 interface RequestTabContextMenuWrapperProps {
 	tab: TabItem;
@@ -17,7 +18,7 @@ const RequestTabContextMenuWrapper: React.FunctionComponent<RequestTabContextMen
 	const dispatch = useDispatch();
 	const { tab, target, children } = props;
 	const node = useSelector(s => s.global.project.tree[tab.payload]);
-	const { tabs, selectedTabPayload } = useSelector(s => s.global.project)!;
+	const { activeTabs } = useSelector(s => s.features.tabs)!;
 	const [menuItems, setMenuItems] = useState<MenuItemConstructorOptions[]>([]);
 	const windowSession = useContext(WindowSessionContext);
 
@@ -26,23 +27,23 @@ const RequestTabContextMenuWrapper: React.FunctionComponent<RequestTabContextMen
 			return;
 
 		const isRequestTab = tab.type === 'request';
-		const selectedIndex = tabs.findIndex(t => t.payload === node.id);
+		const selectedIndex = activeTabs.findIndex(t => t.payload === node.id);
 		const startTab = selectedIndex <= 0;
-		const endTab = selectedIndex === tabs.length - 1;
+		const endTab = selectedIndex === activeTabs.length - 1;
 
 		setMenuItems([
 			{
 				id: ksuid.generate('ctxmenuitem').toString(),
 				label: 'Close',
 				click: () => {
-					dispatch(actions.closeSelectedTab(node.id));
+					dispatch(closeTab(node.id));
 				},
 			},
 			{
 				id: ksuid.generate('ctxmenuitem').toString(),
 				label: 'Close Others',
 				click: () => {
-					dispatch(actions.closeOtherSelectedTabs(node.id));
+					dispatch(closeTabsOther(node.id));
 				},
 			},
 			{
@@ -50,7 +51,7 @@ const RequestTabContextMenuWrapper: React.FunctionComponent<RequestTabContextMen
 				label: 'Close to the Right',
 				enabled: !endTab,
 				click: () => {
-					dispatch(actions.closeSelectedTabsToRight(node.id));
+					dispatch(closeTabsRight(node.id));
 				},
 			},
 			{
@@ -58,14 +59,14 @@ const RequestTabContextMenuWrapper: React.FunctionComponent<RequestTabContextMen
 				label: 'Close to the Left',
 				enabled: !startTab,
 				click: () => {
-					dispatch(actions.closeSelectedTabsToLeft(node.id));
+					dispatch(closeTabsLeft(node.id));
 				},
 			},
 			{
 				id: ksuid.generate('ctxmenuitem').toString(),
 				label: 'Close All',
 				click: () => {
-					dispatch(actions.closeAllSelectedTabs());
+					dispatch(closeTabsAll());
 				},
 			},
 
@@ -95,7 +96,7 @@ const RequestTabContextMenuWrapper: React.FunctionComponent<RequestTabContextMen
 				},
 			},
 		]);
-	}, [tab, node, selectedTabPayload, tabs]);
+	}, [tab, node, activeTabs]);
 
 	return (
 		<ContextMenu menuItems={menuItems} target={target}>

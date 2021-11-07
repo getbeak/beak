@@ -1,4 +1,5 @@
 import { toVibrancyAlpha } from '@beak/app/design-system/utils';
+import { changeTab, makeTabPermanent } from '@beak/app/features/tabs/store/actions';
 import { checkShortcut } from '@beak/app/lib/keyboard-shortcuts';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { RequestNode } from '@beak/common/types/beak-project';
@@ -24,7 +25,7 @@ const RequestItem: React.FunctionComponent<RequestItemProps> = props => {
 
 	const rename = useSelector(s => s.global.project.activeRename);
 	const node = useSelector(s => s.global.project.tree![props.id]) as RequestNode;
-	const selectedTabPayload = useSelector(s => s.global.project.selectedTabPayload);
+	const selectedTabPayload = useSelector(s => s.features.tabs.selectedTab);
 	const flight = useSelector(s => s.global.flight.flightHistory[node.id]);
 	const active = selectedTabPayload === props.id;
 
@@ -49,12 +50,12 @@ const RequestItem: React.FunctionComponent<RequestItemProps> = props => {
 					setTarget(i);
 				}}
 				tabIndex={0}
-				onClick={() => dispatch(actions.tabSelected({
+				onClick={() => dispatch(changeTab({
 					type: 'request',
 					temporary: true,
 					payload: node.id,
 				}))}
-				onDoubleClick={() => dispatch(actions.setTabAsPermanent(node.id))}
+				onDoubleClick={() => dispatch(makeTabPermanent(node.id))}
 				onKeyDown={(event: React.KeyboardEvent<HTMLDivElement>) => {
 					if (rename?.id === node.id)
 						return;
@@ -79,7 +80,7 @@ const RequestItem: React.FunctionComponent<RequestItemProps> = props => {
 							break;
 
 						case checkShortcut('project-explorer.request.open', event):
-							dispatch(actions.tabSelected({
+							dispatch(changeTab({
 								type: 'request',
 								temporary: true,
 								payload: node.id,
