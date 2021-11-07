@@ -26,7 +26,7 @@ export default createTakeEverySagaSet(actions.loadTabState, function* worker(act
 		return;
 	}
 
-	const tree: Tree = yield select((s: ApplicationState) => s.global.project.tree)
+	const tree: Tree = yield select((s: ApplicationState) => s.global.project.tree);
 	const request = Object.values(tree).find(n => n.type === 'request');
 
 	yield put(actions.tabStateLoaded({

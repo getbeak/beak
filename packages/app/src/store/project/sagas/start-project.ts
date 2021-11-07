@@ -1,4 +1,4 @@
-import { loadTabState } from '@beak/app/features/tabs/store/actions';
+import { closeTab, loadTabState } from '@beak/app/features/tabs/store/actions';
 import { readFolderNode } from '@beak/app/lib/beak-project/folder';
 import { readProjectFile } from '@beak/app/lib/beak-project/project';
 import { readRequestNode } from '@beak/app/lib/beak-project/request';
@@ -173,6 +173,8 @@ function* handleFolder(event: Event) {
 }
 
 function* handleRequest(event: Event) {
+	const tree: Tree = yield select((s: ApplicationState) => s.global.project.tree);
+
 	// Protection to only read changes if they haven't been recently written by Beak
 	if (event.type === 'change') {
 		const lastWrite: LatestWrite = yield select((s: ApplicationState) => s.global.project.latestWrite);
@@ -196,10 +198,16 @@ function* handleRequest(event: Event) {
 			break;
 		}
 
-		case 'unlink':
+		case 'unlink': {
+			const node = Object.values(tree).find(n => n.filePath === event.path);
+
+			if (node)
+				yield put(closeTab(node.id));
+
 			yield put(actions.removeNodeFromStoreByPath(event.path));
 
 			break;
+		}
 
 		default:
 			// eslint-disable-next-line no-console

@@ -11,10 +11,15 @@ const tabsReducer = createReducer(initialState, builder => {
 		.addCase(actions.tabStateLoaded, (_state, { payload }) => payload)
 
 		.addCase(actions.changeTab, (state, { payload }) => {
-			if (!state.activeTabs.find(t => t.payload === payload.payload))
+			const existingIndex = state.activeTabs.findIndex(t => t.payload === payload.payload);
+
+			if (existingIndex === -1)
 				state.activeTabs.push(payload);
+			else
+				state.activeTabs[existingIndex].temporary = false;
 
 			state.selectedTab = payload.payload;
+			state.activeTabs = state.activeTabs.filter(t => t.payload === payload.payload || !t.temporary);
 		})
 		.addCase(actions.changeTabNext, (state, { payload }) => {
 			const targetTab = getTargetTab(state, payload);
@@ -90,6 +95,7 @@ const tabsReducer = createReducer(initialState, builder => {
 				return;
 
 			state.activeTabs.splice(0, targetIndex);
+			state.selectedTab = targetTab.payload;
 		})
 		.addCase(actions.closeTabsRight, (state, { payload }) => {
 			const targetTab = getTargetTab(state, payload);
@@ -104,6 +110,7 @@ const tabsReducer = createReducer(initialState, builder => {
 				return;
 
 			state.activeTabs.splice(targetIndex + 1, tabCount - targetIndex - 1);
+			state.selectedTab = targetTab.payload;
 		})
 		.addCase(actions.closeTabsOther, (state, { payload }) => {
 			const targetTab = getTargetTab(state, payload);
@@ -112,6 +119,7 @@ const tabsReducer = createReducer(initialState, builder => {
 				return;
 
 			state.activeTabs = [targetTab];
+			state.selectedTab = targetTab.payload;
 		})
 
 		.addCase(actions.reconciliationComplete, (state, { payload }) => {
