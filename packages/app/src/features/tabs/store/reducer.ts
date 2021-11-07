@@ -13,13 +13,12 @@ const tabsReducer = createReducer(initialState, builder => {
 		.addCase(actions.changeTab, (state, { payload }) => {
 			const existingIndex = state.activeTabs.findIndex(t => t.payload === payload.payload);
 
-			if (existingIndex === -1)
+			if (existingIndex === -1) {
+				state.activeTabs = state.activeTabs.filter(t => !t.temporary);
 				state.activeTabs.push(payload);
-			else
-				state.activeTabs[existingIndex].temporary = false;
+			}
 
 			state.selectedTab = payload.payload;
-			state.activeTabs = state.activeTabs.filter(t => t.payload === payload.payload || !t.temporary);
 		})
 		.addCase(actions.changeTabNext, (state, { payload }) => {
 			const targetTab = getTargetTab(state, payload);
