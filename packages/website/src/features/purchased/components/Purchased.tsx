@@ -1,7 +1,10 @@
 import { Card, CardBody, CardGrid, CardIcons, CardTitle } from '@beak/website/components/atoms/Card';
 import { SmallContainer } from '@beak/website/components/atoms/Container';
 import { SubTitle, Title, TitleSubtle } from '@beak/website/components/atoms/Typography';
-import { faSuperpowers } from '@fortawesome/free-brands-svg-icons/faSuperpowers';
+import { faBookOpen } from '@fortawesome/free-solid-svg-icons/faBookOpen';
+import { faHatWizard } from '@fortawesome/free-solid-svg-icons/faHatWizard';
+import { faLifeRing } from '@fortawesome/free-solid-svg-icons/faLifeRing';
+import { faPersonSnowboarding } from '@fortawesome/free-solid-svg-icons/faPersonSnowboarding';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 import Helmet from 'react-helmet';
@@ -30,7 +33,7 @@ const Purchased: React.FunctionComponent = () => {
 							<CardIcons>
 								<FontAwesomeIcon
 									color={theme.ui.primaryFill}
-									icon={faSuperpowers}
+									icon={faPersonSnowboarding}
 									size={'2x'}
 								/>
 							</CardIcons>
@@ -48,7 +51,7 @@ const Purchased: React.FunctionComponent = () => {
 							<CardIcons>
 								<FontAwesomeIcon
 									color={theme.ui.primaryFill}
-									icon={faSuperpowers}
+									icon={faHatWizard}
 									size={'2x'}
 								/>
 							</CardIcons>
@@ -72,7 +75,7 @@ const Purchased: React.FunctionComponent = () => {
 							<CardIcons>
 								<FontAwesomeIcon
 									color={theme.ui.primaryFill}
-									icon={faSuperpowers}
+									icon={faBookOpen}
 									size={'2x'}
 								/>
 							</CardIcons>
@@ -97,7 +100,7 @@ const Purchased: React.FunctionComponent = () => {
 							<CardIcons>
 								<FontAwesomeIcon
 									color={theme.ui.primaryFill}
-									icon={faSuperpowers}
+									icon={faLifeRing}
 									size={'2x'}
 								/>
 							</CardIcons>
