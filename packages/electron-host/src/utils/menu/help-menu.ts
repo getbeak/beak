@@ -1,5 +1,6 @@
 import { createPreferencesWindow } from '@beak/electron-host/window-management';
-import { MenuItemConstructorOptions, shell } from 'electron';
+import { app, MenuItemConstructorOptions, shell } from 'electron';
+import path from 'path';
 
 import { Context } from '.';
 import { createUpdateMenuItem } from './shared';
@@ -12,9 +13,9 @@ export default function generateHelpMenu(ctx: Context): MenuItemConstructorOptio
 
 	if (ctx.isDarwin) {
 		const darwinTemplate: MenuItemConstructorOptions[] = [{
-			label: 'Feedback',
+			label: 'Show logs',
 			click: async () => {
-				await shell.openExternal('https://www.notion.so/beakapp/8e3f72a1103548c7a149de1485effda9?v=33ae478ec0524a57bc2a9ae0421ed63a');
+				await shell.openPath(path.join(app.getPath('userData'), 'logs', 'main'));
 			},
 		},
 		{
@@ -34,9 +35,9 @@ export default function generateHelpMenu(ctx: Context): MenuItemConstructorOptio
 	} else {
 		const nonDarwinTemplate: MenuItemConstructorOptions[] = [
 			{
-				label: 'Feedback',
+				label: 'Show logs',
 				click: async () => {
-					await shell.openExternal('https://www.notion.so/beakapp/8e3f72a1103548c7a149de1485effda9?v=33ae478ec0524a57bc2a9ae0421ed63a');
+					await shell.openPath(path.join(app.getPath('userData'), 'logs', 'main'));
 				},
 			},
 			{
