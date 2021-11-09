@@ -28,13 +28,6 @@ const ActionBar: React.FunctionComponent = () => {
 
 	return (
 		<Wrapper>
-			<ActionBarButton disabled>
-				<FontAwesomeIcon
-					color={theme.ui.textMinor}
-					size={'1x'}
-					icon={faRing}
-				/>
-			</ActionBarButton>
 			<ActionBarButton onClick={() => dispatch(showEncryptionView())}>
 				<FontAwesomeIcon
 					color={theme.ui.textMinor}
