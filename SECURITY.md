@@ -10,4 +10,4 @@ Once Beak hit's public beta, we'll start proper support for Beak.
 
 ## Reporting a Vulnerability
 
-Again, when Beak is ready I'll beef this up, but for now if you see anything please message us on Twitter ([@getbeak](https://twitter.com/@getbeak)), or via email [info@getbeak.app](mailto:info@getbeak.app).
+Again, when Beak is ready I'll beef this up, but for now if you see anything please message us on Twitter ([@beakapp](https://twitter.com/@beakapp)), or via email [security@getbeak.app](mailto:security@getbeak.app).

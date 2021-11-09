@@ -35,7 +35,7 @@ const FooterLinks: React.FunctionComponent = () => (
 			<ExternalLinkItem
 				target={'_blank'}
 				rel={'noopener noreferrer nofollow'}
-				href={'https://twitter.com/getbeak'}
+				href={'https://twitter.com/beakapp'}
 			>
 				{'Twitter'}
 			</ExternalLinkItem>
