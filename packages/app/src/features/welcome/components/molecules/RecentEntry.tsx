@@ -1,3 +1,5 @@
+import { faDiagramProject } from '@fortawesome/free-solid-svg-icons/faDiagramProject';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { format, parseISO } from 'date-fns';
 import React from 'react';
 import styled from 'styled-components';
@@ -15,7 +17,12 @@ const RecentEntry: React.FunctionComponent<RecentEntryProps> = props => {
 
 	return (
 		<Wrapper onClick={() => props.onClick()}>
-			<Icon />
+			<Icon>
+				<FontAwesomeIcon
+					size={'1x'}
+					icon={faDiagramProject}
+				/>
+			</Icon>
 			<TextWrapper>
 				<Name>{props.name}</Name>
 				<Path>{props.path}</Path>
@@ -43,12 +50,8 @@ const Wrapper = styled.div`
 
 const Icon = styled.div`
 	width: 40px;
-	height: auto;
-
-	background-image: url('./images/tswift-square.jpg');
-	background-position: center;
-	background-repeat: no-repeat;
-	background-size: contain;
+	text-align: center;
+	line-height: 35px;
 `;
 
 const TextWrapper = styled.div`
@@ -66,10 +69,6 @@ const Path = styled.span`
 	display: block;
 	font-size: 12px;
 	color: ${props => props.theme.ui.textMinor};
-	
-	/* white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis; */
 `;
 
 const ModifiedDate = styled.div`
