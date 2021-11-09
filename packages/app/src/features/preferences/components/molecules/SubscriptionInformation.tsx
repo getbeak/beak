@@ -26,11 +26,9 @@ const SubscriptionInformation: React.FunctionComponent<SubscriptionInformationPr
 			</AboutSection>
 			<PricingSection>
 				<PricingPrice>{'$25.00'}</PricingPrice>
-				<PricingTime>{' / month'}</PricingTime>
+				<PricingTime>{' / year'}</PricingTime>
 			</PricingSection>
 		</Container>
-
-		{/* <textarea>{subscription.billingPortalUrl}</textarea> */}
 	</React.Fragment>
 );
 
