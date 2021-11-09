@@ -1,4 +1,3 @@
-import { createPreferencesWindow } from '@beak/electron-host/window-management';
 import { app, MenuItemConstructorOptions, shell } from 'electron';
 import path from 'path';
 
@@ -51,11 +50,6 @@ export default function generateHelpMenu(ctx: Context): MenuItemConstructorOptio
 				click: async () => {
 					await shell.openExternal('https://getbeak.app');
 				},
-			},
-			{ type: 'separator' },
-			{
-				label: 'Preferences...',
-				click: () => createPreferencesWindow(),
 			},
 			{ type: 'separator' },
 			createUpdateMenuItem(),
