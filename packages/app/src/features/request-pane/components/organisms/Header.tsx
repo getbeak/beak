@@ -16,18 +16,11 @@ export interface HeaderProps {
 
 const Header: React.FunctionComponent<HeaderProps> = props => {
 	const dispatch = useDispatch();
-	const [verbPickerWidth, setVerbPickerWidth] = useState<string>('auto');
 	const { variableGroups } = useSelector(s => s.global.variableGroups);
 	const selectedGroups = useSelector(s => s.global.preferences.editor.selectedVariableGroups);
 	const { node } = props;
 	const verb = node.info.verb;
-	const secretSelect = useRef<HTMLSpanElement>(null);
 	const [forceResetNonce, setForceResetNonce] = useState<undefined | number>();
-
-	useEffect(() => {
-		if (secretSelect.current)
-			setVerbPickerWidth(`${secretSelect.current.offsetWidth}px`);
-	}, [secretSelect.current, secretSelect.current?.offsetWidth, setVerbPickerWidth]);
 
 	function dispatchFlightRequest() {
 		dispatch(requestFlight());
@@ -78,10 +71,10 @@ const Header: React.FunctionComponent<HeaderProps> = props => {
 	return (
 		<Container>
 			<VerbContainer>
-				{/* NOTE(afr): Still not super happy with this hack */}
-				<VerbPickerSizer ref={secretSelect}>{verb}</VerbPickerSizer>
-				<VerbPicker
-					style={{ width: verbPickerWidth }}
+				<VerbPickerRenderer>
+					<option value={verb}>{verb}</option>
+				</VerbPickerRenderer>
+				<VerbPickerHidden
 					value={verb}
 					onChange={e => {
 						dispatch(requestUriUpdated({
@@ -99,7 +92,7 @@ const Header: React.FunctionComponent<HeaderProps> = props => {
 					<option value={'options'}>{'OPTIONS'}</option>
 					<option disabled>{'____________'}</option>
 					<option value={'custom'} disabled>{'Custom'}</option>
-				</VerbPicker>
+				</VerbPickerHidden>
 			</VerbContainer>
 
 			<OmniBar>
@@ -130,11 +123,7 @@ const Container = styled.div`
 	max-width: calc(100% - 20px);
 `;
 
-const VerbContainer = styled.div`
-	flex: 0 0 auto;
-`;
-
-const VerbPicker = styled.select`
+const VerbPickerRenderer = styled.select`
 	-webkit-appearance: none;
 	-moz-appearance: none;
 	text-indent: 1px;
@@ -147,7 +136,7 @@ const VerbPicker = styled.select`
 	border: 1px solid ${props => props.theme.ui.backgroundBorderSeparator};
 	background: ${props => props.theme.ui.surface};
 	color: ${props => props.theme.ui.primaryFill};
-
+	text-transform: uppercase;
 	font-weight: 800;
 
 	&:hover, &:focus {
@@ -156,20 +145,18 @@ const VerbPicker = styled.select`
 	}
 `;
 
-const VerbPickerSizer = styled.span`
+const VerbPickerHidden = styled(VerbPickerRenderer)`
 	position: absolute;
-	top: 100000;
-	left: 1000000;
-	visibility: hidden;
-	font-size: 13.3333px;
-	font-weight: 800;
-	padding: 4px 7px;
-	text-transform: uppercase;
-	border: 1px;
-	text-indent: 1px;
+	left: 0;
+	opacity: 0.0000001; /* lol */
+`;
 
-	&:last-child {
-		margin: 0 20px;
+const VerbContainer = styled.div`
+	position: relative;
+	flex: 0 0 auto;
+
+	&:hover > ${VerbPickerRenderer} {
+		border: 1px solid ${props => props.theme.ui.primaryFill};
 	}
 `;
 
