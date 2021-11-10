@@ -40,6 +40,7 @@ const Container = styled.div<{ collapsed: boolean }>`
 
 	overflow-y: scroll;
 	max-height: 120px;
+	min-height: 26px;
 
 	${p => p.collapsed ? 'flex: 0; padding: 0;' : ''}
 `;
