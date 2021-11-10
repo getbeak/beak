@@ -135,6 +135,8 @@ export function createWelcomeWindow() {
 
 	if (process.platform === 'darwin')
 		windowOpts.frame = false;
+	if (process.platform !== 'darwin')
+		windowOpts.height = 550;
 
 	const window = createWindow(windowOpts, 'welcome');
 
