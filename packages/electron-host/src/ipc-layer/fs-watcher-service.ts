@@ -4,7 +4,7 @@ import { ipcMain, IpcMainInvokeEvent } from 'electron';
 import { FSWatcher } from 'original-fs';
 
 import { ensureWithinProject } from './fs-service';
-import { getProjectWindowMapping, removeProjectPathPrefix } from './fs-shared';
+import { getProjectWindowMapping, platformNormalizePath, removeProjectPathPrefix } from './fs-shared';
 
 const watchers: Record<string, FSWatcher> = {};
 const windowContentsMapping: Record<string, string[]> = {};
@@ -28,7 +28,7 @@ service.registerStartWatching(async (event, payload: StartWatchingReq) => {
 			const destroyed = checkForDestruction(() => {
 				service.sendWatcherEvent(sender, payload.sessionIdentifier, {
 					eventName,
-					path: removeProjectPathPrefix(event, path),
+					path: platformNormalizePath(removeProjectPathPrefix(event, path)),
 				});
 			});
 

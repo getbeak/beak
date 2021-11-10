@@ -21,3 +21,7 @@ export function removeProjectPathPrefix(event: IpcEvent, filePath: string) {
 
 	return filePath.slice(projectPath.length + 1);
 }
+
+export function platformNormalizePath(filePath: string) {
+	return filePath.replace(/\\/g, '/');
+}
