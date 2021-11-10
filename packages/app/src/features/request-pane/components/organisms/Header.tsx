@@ -126,7 +126,6 @@ const Container = styled.div`
 const VerbPickerRenderer = styled.select`
 	-webkit-appearance: none;
 	-moz-appearance: none;
-	text-indent: 1px;
 	text-overflow: '';
 
 	padding: 6px 6px;
