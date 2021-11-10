@@ -17,7 +17,10 @@ const ContextMenu: React.FunctionComponent<ContextMenuProps> = props => {
 
 		const id = ksuid.generate('ctxmenu').toString();
 
-		async function showContextMenu() {
+		function showContextMenu(event: MouseEvent) {
+			event.preventDefault();
+			event.stopPropagation();
+
 			ipcContextMenuService.registerItemClickEvent(async (_event, payload) => {
 				if (payload.id !== id)
 					return;
@@ -28,7 +31,7 @@ const ContextMenu: React.FunctionComponent<ContextMenuProps> = props => {
 				menuItem?.click?.();
 			});
 
-			await ipcContextMenuService.openContextMenu({
+			ipcContextMenuService.openContextMenu({
 				id,
 				menuItems: menuItems.map(m => ({
 					id: m.id!,
