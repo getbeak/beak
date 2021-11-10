@@ -106,7 +106,7 @@ const Container = styled.div`
 const TabBody = styled.div`
 	flex-grow: 2;
 
-	overflow-y: auto;
+	overflow-y: overlay;
 	height: 100%;
 `;
 

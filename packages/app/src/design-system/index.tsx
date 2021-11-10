@@ -1,3 +1,4 @@
+import { toHexAlpha } from '@beak/design-system/utils';
 import { createGlobalStyle } from 'styled-components';
 
 interface GlobalStyleProps {
@@ -53,14 +54,15 @@ const GlobalStyle = createGlobalStyle<GlobalStyleProps>`
 	}
 
 	::-webkit-scrollbar {
-		width: 7px;
-		height: 7px;
+		width: 6px;
+		height: 6px;
 	}
 	::-webkit-scrollbar-track {
 		background: transparent;
 	}
 	::-webkit-scrollbar-thumb {
-		background-color: ${p => p.theme.ui.secondaryAction}33;
+		background-color: ${p => toHexAlpha(p.theme.ui.secondaryAction, 0.1)};
+		transition: background .1s ease;
 
 		&:hover {
 			background-color: ${p => p.theme.ui.secondaryAction};

@@ -28,7 +28,10 @@ const FolderItem: React.FunctionComponent<FolderItemProps> = props => {
 	const nodes = useSelector(s => s.global.project.tree!);
 	const childNodes = TypedObject.values(nodes)
 		.filter(n => n.parent === node.filePath)
-		.sort((a, b) => a.name.localeCompare(b.name));
+		.sort((a, b) => a.name.localeCompare(b.name, void 0, {
+			numeric: true,
+			sensitivity: 'base',
+		}));
 
 	return (
 		<ContextMenuWrapper mode={'folder'} nodeId={node.filePath} target={target}>

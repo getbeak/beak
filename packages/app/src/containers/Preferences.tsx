@@ -73,7 +73,7 @@ const Wrapper = styled.div`
 const Sidebar = styled.div<{ $darwin: boolean }>`
 	padding: 20px 10px;
 	height: 100%;
-	overflow-y: auto;
+	overflow-y: overlay;
 	-webkit-app-region: drag;
 
 	${p => p.$darwin && css`

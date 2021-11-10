@@ -43,7 +43,7 @@ const TreeView: React.FunctionComponent<TreeViewProps> = ({ collapsed, tree }) =
 
 const Container = styled.div<{ collapsed: boolean }>`
 	flex-grow: 2;
-	overflow-y: auto;
+	overflow-y: overlay;
 
 	${p => p.collapsed ? 'flex: 0' : ''}
 

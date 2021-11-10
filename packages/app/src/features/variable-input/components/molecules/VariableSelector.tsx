@@ -193,7 +193,7 @@ const Wrapper = styled.div<{ $top: number; $left: number }>`
 const ItemContainer = styled.div`
 	flex-grow: 2;
 
-	overflow-y: auto;
+	overflow-y: overlay;
 `;
 
 const Item = styled.div<{ $active: boolean }>`
