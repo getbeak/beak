@@ -1831,9 +1831,9 @@
   integrity sha512-rZ5drC/jWjrArrS8BR6SIr4cWpW09RNTYt9AMZo3Jwwif+iacXAqgVjm0B0Bv/S1jhDXKHqRVNCbACkJ89RAnQ==
 
 "@types/react-dom@^17.0.10", "@types/react-dom@^17.0.8":
-  version "17.0.10"
-  resolved "https://registry.yarnpkg.com/@types/react-dom/-/react-dom-17.0.10.tgz#d6972ec018d23cf22b99597f1289343d99ea9d9d"
-  integrity sha512-8oz3NAUId2z/zQdFI09IMhQPNgIbiP8Lslhv39DIDamr846/0spjZK0vnrMak0iB8EKb9QFTTIdg2Wj2zH5a3g==
+  version "17.0.11"
+  resolved "https://registry.yarnpkg.com/@types/react-dom/-/react-dom-17.0.11.tgz#e1eadc3c5e86bdb5f7684e00274ae228e7bcc466"
+  integrity sha512-f96K3k+24RaLGVu/Y2Ng3e1EbZ8/cVJvypZWd7cy0ofCBaf2lcM46xNhycMZ2xGwbBjRql7hOlZ+e2WlJ5MH3Q==
   dependencies:
     "@types/react" "*"
 
@@ -1872,9 +1872,9 @@
     "@types/react" "*"
 
 "@types/react@*", "@types/react@^17.0.27", "@types/react@^17.0.33":
-  version "17.0.33"
-  resolved "https://registry.yarnpkg.com/@types/react/-/react-17.0.33.tgz#e01ae3de7613dac1094569880bb3792732203ad5"
-  integrity sha512-pLWntxXpDPaU+RTAuSGWGSEL2FRTNyRQOjSWDke/rxRg14ncsZvx8AKWMWZqvc1UOaJIAoObdZhAWvRaHFi5rw==
+  version "17.0.34"
+  resolved "https://registry.yarnpkg.com/@types/react/-/react-17.0.34.tgz#797b66d359b692e3f19991b6b07e4b0c706c0102"
+  integrity sha512-46FEGrMjc2+8XhHXILr+3+/sTe3OfzSPU9YGKILLrUYbQ1CLQC9Daqo1KzENGXAWwrFwiY0l4ZbF20gRvgpWTg==
   dependencies:
     "@types/prop-types" "*"
     "@types/scheduler" "*"
@@ -3847,9 +3847,9 @@ electron-redux-devtools@^0.3.4:
   integrity sha1-IcLq/XOSSMZBTx00bmhHsJgVUOE=
 
 electron-releases@^3.846.0:
-  version "3.846.0"
-  resolved "https://registry.yarnpkg.com/electron-releases/-/electron-releases-3.846.0.tgz#81dbabc97bae297137339a3c88e699f62f33f086"
-  integrity sha512-vQ29W4isXq0xHnZlkdrauFkZWX2ECirAMZiTP97bZatuOMSXmWM5BdJpxPyMDHWdatf5Rtl/J7stIX/EnG36vA==
+  version "3.853.0"
+  resolved "https://registry.yarnpkg.com/electron-releases/-/electron-releases-3.853.0.tgz#9d8b5013477f9c3330bb7fd79f7d6fc6b0bcd14c"
+  integrity sha512-ckOdGOwdiZKbE12oC5khh9qQInUJx4x1xoHKW/1e2mD/c8e2XjapJy0TG3tg+GonQRyj5bQyJZFTYurJ9evvvA==
 
 electron-store@^8.0.0:
   version "8.0.1"
