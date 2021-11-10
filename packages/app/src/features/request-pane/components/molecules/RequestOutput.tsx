@@ -3,6 +3,7 @@ import { convertKeyValueToString } from '@beak/app/features/basic-table-editor/p
 import { convertToRealJson } from '@beak/app/features/json-editor/parsers';
 import { parseValueParts } from '@beak/app/features/realtime-values/parser';
 import { Context } from '@beak/app/features/realtime-values/types';
+import useComponentMounted from '@beak/app/hooks/use-component-mounted';
 import { createDefaultOptions } from '@beak/app/utils/monaco';
 import { convertRequestToUrl } from '@beak/app/utils/uri';
 import { requestBodyContentType } from '@beak/common/helpers/request';
@@ -24,10 +25,16 @@ const RequestOutput: React.FunctionComponent<RequestOutputProps> = props => {
 	const windowSession = useContext(WindowSessionContext);
 	const [output, setOutput] = useState('');
 	const context = { selectedGroups, variableGroups };
+	const mounted = useComponentMounted();
 
 	useEffect(() => {
 		createBasicHttpOutput(props.selectedNode.info, context, windowSession)
-			.then(setOutput);
+			.then(response => {
+				if (!mounted)
+					return;
+
+				setOutput(response);
+			});
 	}, [props.selectedNode, selectedGroups, variableGroups]);
 
 	return (
