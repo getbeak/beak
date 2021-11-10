@@ -1,10 +1,10 @@
+import { toHexAlpha } from '@beak/design-system/utils';
 import { faBoxes, faMoneyCheck, faUserShield, faWindowRestore } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useContext, useState } from 'react';
 import styled, { css, useTheme } from 'styled-components';
 
 import WindowSessionContext from '../contexts/window-session-context';
-import { toVibrancyAlpha } from '../design-system/utils';
 import AccountItem from '../features/preferences/components/molecules/AccountItem';
 import EngineeringPane from '../features/preferences/components/organisms/EngineeringPane';
 import ExtensionsPane from '../features/preferences/components/organisms/ExtensionsPane';
@@ -98,7 +98,7 @@ const SidebarItem = styled.div<{ $active?: boolean }>`
 	border-radius: 10px;
 	margin-bottom: 6px;
 
-	${p => p.$active && `background: ${toVibrancyAlpha(p.theme.ui.primaryFill, 0.75)};`}
+	${p => p.$active && `background: ${toHexAlpha(p.theme.ui.primaryFill, 0.75)};`}
 
 	&:last-of-type {
 		margin-bottom: 0;
@@ -106,7 +106,7 @@ const SidebarItem = styled.div<{ $active?: boolean }>`
 
 	&:hover {
 		cursor: pointer;
-		background: ${p => !p.$active && toVibrancyAlpha(p.theme.ui.primaryFill, 0.5)}
+		background: ${p => !p.$active && toHexAlpha(p.theme.ui.primaryFill, 0.5)}
 	}
 
 	> svg {
