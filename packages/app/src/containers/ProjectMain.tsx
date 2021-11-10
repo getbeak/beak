@@ -7,6 +7,7 @@ import styled from 'styled-components';
 import ReflexSplitter from '../components/atoms/ReflexSplitter';
 import ReflexStyles from '../components/atoms/ReflexStyles';
 import ProgressIndicator from '../components/molecules/ProgressIndicator';
+import ProjectLoading from '../components/molecules/ProjectLoading';
 import WindowSessionContext from '../contexts/window-session-context';
 import ActionBar from '../features/action-bar/components/ActionBar';
 import ProjectEncryption from '../features/encryption/components/ProjectEncryption';
@@ -127,7 +128,7 @@ const ProjectMain: React.FunctionComponent = () => {
 
 			<ProjectEncryption />
 
-			{(!loaded || !setup) && <LoadingMask />}
+			{(!loaded || !setup) && <ProjectLoading />}
 		</React.Fragment>
 	);
 };
@@ -138,19 +139,6 @@ const Container = styled.div`
 	bottom: 24px;
 	left: 0;
 	right: 0;
-`;
-
-const LoadingMask = styled.div`
-	position: absolute;
-	top: 0;
-	bottom: 0;
-	left: 0;
-	right: 0;
-
-	background-color: ${props => props.theme.ui.surface};
-	opacity: 0.6;
-
-	z-index: 1000;
 `;
 
 export default ProjectMain;
