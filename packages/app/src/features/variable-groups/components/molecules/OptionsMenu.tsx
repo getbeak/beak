@@ -165,6 +165,7 @@ const OptionsMenu: React.FunctionComponent<OptionsMenuProps> = ({ type, id, inTa
 
 const Wrapper = styled.div`
 	cursor: pointer;
+	display: inline-block;
 `;
 
 const InnerWrapper = styled.div<{ inTab?: boolean }>`

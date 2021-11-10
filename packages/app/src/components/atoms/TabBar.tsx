@@ -10,8 +10,21 @@ const TabBar = styled.div<TabBarProps>`
 	align-items: flex-end;
 
 	justify-content: ${props => props.centered ? 'center' : 'initial'};
+	overflow-x: overlay;
 
-	width: 100%;
+	min-width: 100%;
+
+	&::-webkit-scrollbar {
+		height: 0;
+
+		transition: height .1s ease;
+	}
+
+	&:hover {
+		&::-webkit-scrollbar {
+			height: 3px;
+		}
+	}
 `;
 
 export default TabBar;

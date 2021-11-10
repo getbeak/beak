@@ -53,8 +53,8 @@ const GlobalStyle = createGlobalStyle<GlobalStyleProps>`
 	}
 
 	::-webkit-scrollbar {
-		width: 10px;
-		height: 10px;
+		width: 7px;
+		height: 7px;
 	}
 	::-webkit-scrollbar-track {
 		background: transparent;

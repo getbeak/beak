@@ -6,18 +6,13 @@ export interface TabItemProps {
 }
 
 const TabItem = styled.div<TabItemProps>`
-	display: flex;
-	flex-direction: row;
-
 	border-bottom: 1px solid ${props => props.theme.ui.backgroundBorderSeparator};
 
 	font-size: 13px;
 	color: ${props => props.theme.ui.textMinor};
 	padding: 8px 12px;
 	cursor: pointer;
-	text-overflow: ellipsis;
-	word-wrap: initial;
-	overflow: hidden;
+	white-space: nowrap;
 
 	${p => {
 		if (p.size !== 'sm')
