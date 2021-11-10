@@ -15,7 +15,10 @@ const TreeView: React.FunctionComponent<TreeViewProps> = ({ collapsed, tree }) =
 	const container = useRef<HTMLDivElement>(null);
 	const items = Object.values(tree)
 		.filter(t => t.parent === 'tree')
-		.sort((a, b) => a.name.localeCompare(b.name));
+		.sort((a, b) => a.name.localeCompare(b.name, void 0, {
+			numeric: true,
+			sensitivity: 'base',
+		}));
 
 	return (
 		<Container
