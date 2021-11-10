@@ -215,7 +215,8 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = props => {
 		unmanagedStateRef.current.valueParts = reconcilledParts;
 		unmanagedStateRef.current.lastSelectionPosition = normalizeSelection(lastSelectionPosition);
 
-		placeholderRef.current!.style.display = reconcilledParts.length === 0 ? 'block' : 'none';
+		if (placeholderRef.current)
+			placeholderRef.current.style.display = reconcilledParts.length === 0 ? 'block' : 'none';
 
 		// This means something really weird has happened, such as an unknown element getting into our DOM state. If
 		// that happens we just tell React to re-render and override with the state that we know about
