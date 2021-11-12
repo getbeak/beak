@@ -50,9 +50,9 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = props => {
 	if (showSelector && !unmanagedStateRef.current.variableSelectionState)
 		setShowSelector(false);
 
-	trySetSelection(editableRef.current, unmanagedStateRef.current.lastSelectionPosition);
 	window.setTimeout(() => {
-		trySetSelection(editableRef.current, unmanagedStateRef.current.lastSelectionPosition);
+		if (document.activeElement === editableRef.current)
+			trySetSelection(editableRef.current, unmanagedStateRef.current.lastSelectionPosition);
 	}, 10);
 
 	useEffect(() => {
