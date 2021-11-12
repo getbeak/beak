@@ -8,6 +8,7 @@ import electronDebug from 'electron-debug';
 import { autoUpdater } from 'electron-updater';
 
 import arbiter from './lib/arbiter';
+import { tryOpenProjectFolder } from './lib/beak-project';
 import nestClient from './lib/nest-client';
 import persistentStore from './lib/persistent-store';
 import { parseAppUrl } from './lib/protocol';
@@ -76,6 +77,10 @@ app.on('ready', () => {
 	electronDebug();
 	installExtension(REDUX_DEVTOOLS);
 	installExtension(REACT_DEVELOPER_TOOLS);
+});
+
+app.on('open-file', async (_event, filePath) => {
+	await tryOpenProjectFolder(filePath);
 });
 
 app.on('open-url', (_event, url) => {
