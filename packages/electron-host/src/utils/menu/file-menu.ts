@@ -1,5 +1,5 @@
 import { openProjectDialog } from '@beak/electron-host/lib/beak-project';
-import { createPreferencesWindow } from '@beak/electron-host/window-management';
+import { createPreferencesWindow, createWelcomeWindow } from '@beak/electron-host/window-management';
 import { MenuItemConstructorOptions } from 'electron';
 
 import { Context } from '.';
@@ -18,6 +18,9 @@ export default function generateFileMenu(ctx: Context): MenuItemConstructorOptio
 			accelerator: 'CmdOrCtrl+Alt+N',
 			enabled: isProjectEditor(ctx),
 			click: async () => sendMenuItemClick(ctx, 'new_folder'),
+		}, {
+			label: 'New Window...',
+			click: async () => createWelcomeWindow(),
 		}, {
 			type: 'separator',
 		}, {
