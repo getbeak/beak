@@ -11,6 +11,7 @@ import TabBar from '../../../../components/atoms/TabBar';
 import TabItem from '../../../../components/atoms/TabItem';
 import TabSpacer from '../../../../components/atoms/TabSpacer';
 import EnrichedTab from './EnrichedTab';
+import ErrorView from './ErrorView';
 
 type Tab = 'raw' | 'enriched';
 
@@ -70,17 +71,7 @@ const ResponseTab: React.FunctionComponent<ResponseTabProps> = props => {
 							/>
 						)}
 						{error && (
-							<Editor
-								height={'100%'}
-								width={'100%'}
-								language={'plaintext'}
-								theme={'vs-dark'}
-								value={[error.name, error.message, error.stack].filter(Boolean).join('\n')}
-								options={{
-									...createDefaultOptions(),
-									readOnly: true,
-								}}
-							/>
+							<ErrorView error={error} />
 						)}
 					</React.Fragment>
 				)}
