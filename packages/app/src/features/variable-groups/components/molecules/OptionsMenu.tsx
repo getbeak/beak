@@ -131,10 +131,10 @@ const OptionsMenu: React.FunctionComponent<OptionsMenuProps> = ({ type, id, inTa
 			}] as MenuItemConstructorOptions[];
 		})();
 
-		const id = ksuid.generate('ctxmenu').toString();
+		const ctxId = ksuid.generate('ctxmenu').toString();
 
 		ipcContextMenuService.registerItemClickEvent(async (_event, payload) => {
-			if (payload.id !== id)
+			if (payload.id !== ctxId)
 				return;
 
 			const menuItem = menuItems.find(m => m.id === payload.menuItemId);
@@ -144,7 +144,7 @@ const OptionsMenu: React.FunctionComponent<OptionsMenuProps> = ({ type, id, inTa
 		});
 
 		await ipcContextMenuService.openContextMenu({
-			id,
+			id: ctxId,
 			menuItems: menuItems.map(m => ({
 				id: m.id!,
 				label: m.label,
