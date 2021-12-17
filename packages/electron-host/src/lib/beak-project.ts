@@ -67,7 +67,9 @@ export async function openProjectDialog(browserWindow?: BrowserWindow) {
 		return;
 	}
 
-	await tryOpenProjectFolder(result.filePaths[0]);
+	const projectFolder = path.parse(result.filePaths[0]).dir;
+
+	await tryOpenProjectFolder(projectFolder);
 }
 
 export default async function createProject(options: CreationOptions) {
