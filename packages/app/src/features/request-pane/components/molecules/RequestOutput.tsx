@@ -113,8 +113,8 @@ export async function createBasicHttpOutput(overview: RequestOverview, context: 
 	const bodyOut = createBodySection(verb, body);
 
 	if (bodyOut !== null) {
-		const hasContentTypeHeader = TypedObject.keys(headers)
-			.map(h => h.toLocaleLowerCase())
+		const hasContentTypeHeader = TypedObject.values(headers)
+			.map(h => h.name.toLocaleLowerCase())
 			.find(h => h === 'content-type');
 
 		if (!hasContentTypeHeader) {
