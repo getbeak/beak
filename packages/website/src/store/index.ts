@@ -1,13 +1,10 @@
-import { connectRouter, routerMiddleware } from 'connected-react-router';
 import type { History } from 'history';
 import { applyMiddleware, combineReducers, compose, createStore } from 'redux';
 
 export interface ApplicationState { }
 
 function createRootReducer(history: History) {
-	return combineReducers<ApplicationState>({
-		router: connectRouter(history),
-	});
+	return combineReducers<ApplicationState>({ });
 }
 
 function createInitialState(): ApplicationState {
@@ -20,7 +17,7 @@ export function configureStore(history: History) {
 	const store = createStore(
 		createRootReducer(history),
 		initialState,
-		compose(applyMiddleware(routerMiddleware(history))),
+		// compose(applyMiddleware(middleware(history))),
 	);
 
 	return store;

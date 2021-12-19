@@ -1,12 +1,11 @@
 import { DesignSystemProvider } from '@beak/design-system';
 import * as Sentry from '@sentry/react';
 import { Integrations } from '@sentry/tracing';
-import { ConnectedRouter } from 'connected-react-router';
 import { createBrowserHistory } from 'history';
 import React, { lazy, Suspense } from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
-import { Redirect, Route, Switch } from 'react-router';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 
 import Scroller from './components/atoms/Scroller';
 import AppContainer from './containers/App';
@@ -25,47 +24,32 @@ const Terms = lazy(() => import('./features/legal/components/Terms'));
 
 const EntryPoint: React.FunctionComponent = () => (
 	<Provider store={store}>
-		<ConnectedRouter history={history}>
-			<base href={'./'} />
-			<DesignSystemProvider themeKey={'dark'}>
-				<GlobalStyle />
+		<base href={'./'} />
+		<DesignSystemProvider themeKey={'dark'}>
+			<GlobalStyle />
+			<BrowserRouter>
 				<AppContainer>
 					<Sentry.ErrorBoundary fallback={<ErrorFallback />}>
 						<Scroller />
 						<Suspense fallback={<div />}>
-							<Switch>
-								<Route exact path={'/'}>
-									<Home />
-								</Route>
-								<Route exact path={'/pricing'}>
-									<Pricing />
-								</Route>
-								<Route exact path={'/legal/privacy'}>
-									<Privacy />
-								</Route>
-								<Route exact path={'/purchased'}>
-									<Purchased />
-								</Route>
-								<Route exact path={'/legal/terms'}>
-									<Terms />
-								</Route>
-								<Route exact path={'/purchase/complete'}>
-									{'welcome!!'}
-								</Route>
+							<Routes>
+								<Route path={'/'} element={<Home />} />
+								<Route path={'/pricing'} element={<Pricing />} />
+								<Route path={'/legal/privacy'} element={<Privacy />} />
+								<Route path={'/purchased'} element={<Purchased />} />
+								<Route path={'/legal/terms'} element={<Terms />} />
+								<Route path={'/purchase/complete'} element={'welcome!!'} />
 
-								<Redirect exact from={'/privacy'} to={'/legal/privacy'} />
-								<Redirect exact from={'/terms'} to={'/legal/terms'} />
+								<Route path={'/privacy'} element={<Navigate to={'/legal/privacy'} replace />} />
+								<Route path={'/terms'} element={<Navigate to={'/legal/terms'} replace />} />
 
-								{/* 404 */}
-								<Route>
-									{'y u here'}
-								</Route>
-							</Switch>
+								<Route element={'y u here'} />
+							</Routes>
 						</Suspense>
 					</Sentry.ErrorBoundary>
 				</AppContainer>
-			</DesignSystemProvider>
-		</ConnectedRouter>
+			</BrowserRouter>
+		</DesignSystemProvider>
 	</Provider>
 );
 
