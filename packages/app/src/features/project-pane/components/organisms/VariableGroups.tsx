@@ -4,17 +4,13 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 
-export interface VariableGroupsProps {
-	collapsed: boolean;
-}
-
-const VariableGroups: React.FunctionComponent<VariableGroupsProps> = ({ collapsed }) => {
+const VariableGroups: React.FunctionComponent = () => {
 	const dispatch = useDispatch();
 	const { variableGroups } = useSelector(s => s.global.variableGroups)!;
 	const selectedGroups = useSelector(s => s.global.preferences.editor.selectedVariableGroups);
 
 	return (
-		<Container collapsed={collapsed}>
+		<Container>
 			{TypedObject.keys(variableGroups!).map(k => {
 				const groups = variableGroups![k].groups;
 				const groupKeys = TypedObject.keys(groups);
@@ -48,15 +44,13 @@ const VariableGroups: React.FunctionComponent<VariableGroupsProps> = ({ collapse
 	);
 };
 
-const Container = styled.div<{ collapsed: boolean }>`
+const Container = styled.div`
 	padding: 4px 14px;
 	padding-right: 3px;
 
 	overflow-y: scroll;
 	max-height: 120px;
 	min-height: 26px;
-
-	${p => p.collapsed ? 'flex: 0; padding: 0;' : ''}
 `;
 
 const Item = styled.div`

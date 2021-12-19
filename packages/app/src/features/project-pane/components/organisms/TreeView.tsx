@@ -7,11 +7,10 @@ import FolderItem from '../molecules/FolderItem';
 import RequestItem from '../molecules/RequestItem';
 
 export interface TreeViewProps {
-	collapsed: boolean;
 	tree: Tree;
 }
 
-const TreeView: React.FunctionComponent<TreeViewProps> = ({ collapsed, tree }) => {
+const TreeView: React.FunctionComponent<TreeViewProps> = ({ tree }) => {
 	const container = useRef<HTMLDivElement>(null);
 	const items = Object.values(tree)
 		.filter(t => t.parent === 'tree')
@@ -21,11 +20,7 @@ const TreeView: React.FunctionComponent<TreeViewProps> = ({ collapsed, tree }) =
 		}));
 
 	return (
-		<Container
-			collapsed={collapsed}
-			tabIndex={-1}
-			ref={container}
-		>
+		<Container tabIndex={-1} ref={container}>
 			<ContextMenuWrapper mode={'root'} target={container.current!}>
 				{items.filter(i => i.type === 'folder').map(n => (
 					<FolderItem depth={0} key={n.filePath} id={n.filePath} />
@@ -44,11 +39,9 @@ const TreeView: React.FunctionComponent<TreeViewProps> = ({ collapsed, tree }) =
 	);
 };
 
-const Container = styled.div<{ collapsed: boolean }>`
+const Container = styled.div`
 	flex-grow: 2;
 	overflow-y: overlay;
-
-	${p => p.collapsed ? 'flex: 0' : ''}
 
 	&:focus {
 		outline: none;

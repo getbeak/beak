@@ -46,7 +46,7 @@ const ProjectPane: React.FunctionComponent = () => {
 			>
 				{'Project'}
 			</SectionHeader>
-			<Git collapsed={collapser.project} />
+			{collapser.project !== true && <Git />}
 			<SectionHeader
 				collapsed={collapser.variableGroup}
 				onClick={() => toggleCollapser('variableGroup')}
@@ -68,17 +68,14 @@ const ProjectPane: React.FunctionComponent = () => {
 					}}
 				/>
 			</SectionHeader>
-			<VariableGroups collapsed={collapser.variableGroup} />
+			{collapser.variableGroup !== true && <VariableGroups />}
 			<SectionHeader
 				collapsed={collapser.explorer}
 				onClick={() => toggleCollapser('explorer')}
 			>
 				{'Explorer'}
 			</SectionHeader>
-			<TreeView
-				collapsed={collapser.explorer}
-				tree={project.tree!}
-			/>
+			{collapser.explorer !== true && <TreeView tree={project.tree!} />}
 		</Container>
 	);
 };

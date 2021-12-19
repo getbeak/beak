@@ -2,18 +2,14 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 
-export interface GitProps {
-	collapsed: boolean;
-}
-
-const Git: React.FunctionComponent<GitProps> = ({ collapsed }) => {
+const Git: React.FunctionComponent = () => {
 	const { branches, selectedBranch } = useSelector(s => s.global.git)!;
 
 	if (branches.length === 0)
 		return null;
 
 	return (
-		<Container collapsed={collapsed}>
+		<Container>
 			<Item>
 				<GroupName>
 					{'Branch'}
@@ -34,15 +30,13 @@ const Git: React.FunctionComponent<GitProps> = ({ collapsed }) => {
 	);
 };
 
-const Container = styled.div<{ collapsed: boolean }>`
+const Container = styled.div`
 	padding: 4px 14px;
 	padding-right: 3px;
 
 	overflow-y: scroll;
 	max-height: 120px;
 	min-height: 26px;
-
-	${p => p.collapsed ? 'flex: 0; padding: 0;' : ''}
 `;
 
 const Item = styled.div`
