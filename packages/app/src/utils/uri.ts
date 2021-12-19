@@ -16,19 +16,24 @@ export async function convertRequestToUrl(
 	opts?: Partial<Options>,
 ) {
 	const value = await parseValueParts(context, info.url);
-	const url = new URL(value);
+	const url = new URL(value, true);
 	const options = {
 		includeQuery: true,
 		...opts,
 	};
 
+	url.set('query', void 0);
+
 	if (options.includeQuery && info.query) {
-		url.set('query', { });
+		const outQuery: Record<string, string> = {};
 
 		for (const query of TypedObject.values(info.query).filter(q => q.enabled)) {
 			// eslint-disable-next-line no-await-in-loop
-			url.query[query.name] = await parseValueParts(context, query.value);
+			outQuery[query.name] = await parseValueParts(context, query.value);
 		}
+
+		// @ts-expect-error
+		url.set('query', outQuery);
 	}
 
 	return url;
