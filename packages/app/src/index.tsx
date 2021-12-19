@@ -12,6 +12,9 @@ import WindowSessionContext, { instance } from './contexts/window-session-contex
 import { GlobalStyle } from './design-system';
 import Arbiter from './features/arbiter/components/Arbiter';
 import { configureStore } from './store';
+import { setupMonaco } from './utils/monaco';
+
+setupMonaco();
 
 function getComponent(container: string | null) {
 	switch (container) {

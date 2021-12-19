@@ -50,7 +50,7 @@ const RequestTab: React.FunctionComponent<RequestTabProps> = props => {
 						<Editor
 							height={'100%'}
 							width={'100%'}
-							language={'javascript'}
+							language={'http'}
 							theme={'vs-dark'}
 							value={output}
 							options={{
