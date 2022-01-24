@@ -1890,9 +1890,9 @@
   integrity sha512-N1rW+njavs70y2cApeIw1vLMYXRwfBy+7trgavGuuTfOd7j1Yh7QTRc/yqsPl6ncokt72ZXuxEU0PiCp9bSwNQ==
 
 "@types/url-parse@^1.4.5":
-  version "1.4.5"
-  resolved "https://registry.yarnpkg.com/@types/url-parse/-/url-parse-1.4.5.tgz#bda0b813cc8f79d767dc8ca645fdabc238c6ae77"
-  integrity sha512-8Wje3itJpk/FX+QItca9vjNLjGx5jlEYBw/CpMi03Fphk2DSVeZDUqWTE81BeCI5Bl6Z+zmA1O9L/8e3ZUSeLg==
+  version "1.4.7"
+  resolved "https://registry.yarnpkg.com/@types/url-parse/-/url-parse-1.4.7.tgz#39319654febe7ae778e40cd0c373b1646a3fcf47"
+  integrity sha512-EGfNfKmF21obwe37d2YFNcLYG67EifYO2B7Zl+N1uVjutZPQ8gSGOOozOu7KQEP8mqSl3X/wG5THZ/OLMotb1Q==
 
 "@types/uuid@^8.3.3":
   version "8.3.3"
