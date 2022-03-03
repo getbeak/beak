@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 
+import { toVibrancyAlpha } from '../design-system/utils';
 import CreateView from '../features/welcome/components/organisms/CreateView';
 import WelcomeView from '../features/welcome/components/organisms/WelcomeView';
 
@@ -24,7 +25,7 @@ const Welcome: React.FunctionComponent = () => {
 };
 
 const Wrapper = styled.div`
-	background: ${props => props.theme.ui.background};
+	background: ${p => toVibrancyAlpha(p.theme.ui.background, 0)};
 	height: 100vh;
 `;
 
@@ -37,7 +38,7 @@ const BrandIndicatorTop = styled.div`
 	transform: rotate(45deg);
 	z-index: 1;
 
-	background: ${props => props.theme.ui.primaryFill};
+	background: ${p => p.theme.ui.primaryFill};
 `;
 
 const BrandIndicatorBottom = styled.div`
@@ -51,7 +52,7 @@ const BrandIndicatorBottom = styled.div`
 
 	transition: opacity .5s linear;
 
-	background: ${props => props.theme.ui.primaryFill};
+	background: ${p => p.theme.ui.primaryFill};
 `;
 
 const DragBar = styled.div`

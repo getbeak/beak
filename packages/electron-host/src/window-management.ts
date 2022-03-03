@@ -131,7 +131,13 @@ export function createWelcomeWindow() {
 		resizable: false,
 		title: 'Welcome to Beak!',
 		autoHideMenuBar: true,
+		transparent: true,
+		visualEffectState: 'active',
+		vibrancy: 'under-window',
 	};
+
+	if (process.platform === 'darwin')
+		windowOpts.frame = false;
 
 	if (process.platform === 'darwin')
 		windowOpts.frame = false;
