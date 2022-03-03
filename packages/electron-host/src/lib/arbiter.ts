@@ -12,9 +12,7 @@ class Arbiter {
 		this.check().catch(error => logger.error('arbiter: preview user check failed', error));
 
 		setInterval(() => {
-			this.check().catch(error =>
-				logger.error('arbiter: preview user check failed', error),
-			);
+			this.check().catch(error => logger.error('arbiter: preview user check failed', error));
 		}, 1800000); // 30 minutes
 	}
 
@@ -77,6 +75,13 @@ class Arbiter {
 
 					break;
 			}
+		} finally {
+			TypedObject.values(windowStack).forEach(window => {
+				if (!window)
+					return;
+
+				window.webContents.send('arbiter_broadcast', { code: 'status_update', payload: status });
+			});
 		}
 
 		persistentStore.set('arbiter', status);
@@ -92,13 +97,6 @@ class Arbiter {
 			});
 
 			windowStack[portalWindowId].focus();
-		} else {
-			TypedObject.values(windowStack).forEach(window => {
-				if (!window)
-					return;
-
-				window.webContents.send('arbiter_broadcast', { code: 'status_update', payload: status });
-			});
 		}
 	}
 }
