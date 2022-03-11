@@ -65,6 +65,9 @@ const VariableSelector: React.FunctionComponent<VariableSelectorProps> = props =
 	}, [variableGroups, query]);
 
 	useEffect(() => {
+		if (!sel)
+			return;
+
 		const node = editableElement.childNodes[sel.partIndex];
 
 		if (!node)
@@ -85,7 +88,7 @@ const VariableSelector: React.FunctionComponent<VariableSelectorProps> = props =
 			left: rect.left + offsetDelta,
 			top: rect.top + rect.height + 5,
 		});
-	}, [editableElement]);
+	}, [Boolean(sel), editableElement]);
 
 	useEffect(() => {
 		// This actually exists

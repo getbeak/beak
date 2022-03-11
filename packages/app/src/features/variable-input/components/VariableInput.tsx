@@ -416,18 +416,7 @@ const Placeholder = styled.div<{ $shown: boolean }>`
 	position: absolute;
 	top: 7px; left: 7px;
 	color: ${p => p.theme.ui.textMinor};
-`;
-
-const Input = styled.article`
-	font-size: 12px;
-	border: 1px solid ${p => p.theme.ui.backgroundBorderSeparator};
-	white-space: nowrap;
-	overflow: hidden;
-
-	> * {
-		display:inline;
-		white-space:nowrap;
-	}
+	pointer-events: none;
 `;
 
 export default VariableInput;

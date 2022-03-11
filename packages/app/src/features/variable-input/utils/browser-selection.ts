@@ -22,15 +22,26 @@ export function normalizeSelection(existing?: NormalizedSelection): NormalizedSe
 		return existing;
 
 	let subject: Node = startPoint;
-
+	let container: Node = startPoint;
 	const isTextNode = subject.nodeName === '#text';
 
-	// Move to the parent span if we're selecting a text node
-	if (isTextNode)
-		subject = subject.parentNode!;
+	if (isTextNode) {
+		// Try to move to the parent span if we're selecting a text node
+		if (subject.parentNode!.nodeName === 'SPAN')
+			subject = subject.parentNode!;
+
+		// Keep reverse-traversing the dom until we find the article node
+		// eslint-disable-next-line no-constant-condition
+		while (true) {
+			container = container.parentNode!;
+
+			if (container.nodeName === 'ARTICLE')
+				break;
+		}
+	}
 
 	// Get the index of the child we're inside
-	const partIndex = Array.prototype.indexOf.call(subject.parentNode!.children, subject);
+	const partIndex = Array.prototype.indexOf.call(container!.childNodes, subject);
 
 	const out = {
 		isTextNode,
