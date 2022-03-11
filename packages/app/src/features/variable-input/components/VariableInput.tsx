@@ -329,8 +329,12 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = props => {
 		unmanagedStateRef.current.lastSelectionPosition = newSelectionPosition;
 
 		closeSelector();
-		reportChange();
-		internalPartUpdate();
+
+		// eslint-disable-next-line no-new
+		new Promise(() => {
+			reportChange();
+			internalPartUpdate();
+		});
 	}
 
 	function variableEditSaved(partIndex: number, type: string, item: any) {
@@ -354,8 +358,11 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = props => {
 
 		unmanagedStateRef.current.valueParts = newParts;
 
-		reportChange();
-		forceRerender();
+		// eslint-disable-next-line no-new
+		new Promise(() => {
+			reportChange();
+			forceRerender();
+		});
 	}
 
 	function internalPartUpdate() {
