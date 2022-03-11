@@ -13,6 +13,7 @@ import { handlePaste } from '../utils/pasting';
 import renderValueParts from '../utils/render-value-parts';
 import { determineInsertionMode, VariableSelectionState } from '../utils/variables';
 import VariableSelector from './molecules/VariableSelector';
+import UnmanagedInput from './organisms/UnmanagedInput';
 
 interface UnmanagedState {
 	valueParts: ValueParts;
@@ -44,30 +45,34 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = props => {
 	const placeholderRef = useRef<HTMLDivElement | null>(null);
 	const unmanagedStateRef = useRef<UnmanagedState>({
 		lastUpstreamReport: 0,
-		valueParts: [],
+		valueParts: incomingParts,
 	});
 
-	if (showSelector && !unmanagedStateRef.current.variableSelectionState)
-		setShowSelector(false);
-
-	window.setTimeout(() => {
-		if (document.activeElement === editableRef.current)
-			trySetSelection(editableRef.current, unmanagedStateRef.current.lastSelectionPosition);
-	}, 10);
-
+	// Setup ref
 	useEffect(() => {
-		if (!showSelector)
+		if (!editableRef.current)
 			return;
 
-		trySetSelection(editableRef.current, unmanagedStateRef.current.lastSelectionPosition);
-	}, [showSelector]);
+		const elem = editableRef.current;
+
+		elem.innerHTML = renderValueParts(
+			unmanagedStateRef.current.valueParts,
+			variableGroups,
+		);
+
+		elem.addEventListener('input', handleChange);
+		elem.addEventListener('keydown', handleKeyDown);
+		elem.addEventListener('blur', handleBlur);
+		elem.addEventListener('paste', handlePaste);
+	}, []);
 
 	useEffect(() => {
-		if (!query)
+		if (!editableRef.current)
 			return;
 
-		trySetSelection(editableRef.current, unmanagedStateRef.current.lastSelectionPosition);
-	}, [query]);
+		// Pretend it's an input, as it technically is
+		(editableRef.current as HTMLInputElement).disabled = Boolean(disabled);
+	}, [disabled]);
 
 	useEffect(() => {
 		// Update unmanaged state if the change comes in more than 100ms after our last known write
@@ -80,17 +85,19 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = props => {
 		if (document.activeElement !== editableRef.current)
 			return;
 
-		trySetSelection(editableRef.current, unmanagedStateRef.current.lastSelectionPosition);
+		// trySetSelection(editableRef.current, unmanagedStateRef.current.lastSelectionPosition);
 	}, [incomingParts]);
 
-	function handleChange(event: React.FormEvent<HTMLDivElement>) {
+	function handleChange(naiveEvent: Event) {
+		const event = naiveEvent as InputEvent;
+
+		// https://rawgit.com/w3c/input-events/v1/index.html#overview
+		const delta = event.data;
+
 		event.stopPropagation();
 		event.preventDefault();
 
 		reconcile();
-
-		// https://rawgit.com/w3c/input-events/v1/index.html#overview
-		const delta = (event.nativeEvent as InputEvent).data;
 
 		if (!showSelector) {
 			if (delta === '{')
@@ -119,7 +126,7 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = props => {
 			setQuery(query);
 	}
 
-	function handleKeyDown(event: React.KeyboardEvent<HTMLElement>) {
+	function handleKeyDown(event: KeyboardEvent) {
 		if (!['Escape', 'Enter', 'ArrowUp', 'ArrowDown'].includes(event.key))
 			return;
 
@@ -323,12 +330,7 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = props => {
 
 		closeSelector();
 		reportChange();
-		forceRerender();
-
-		// eslint-disable-next-line no-new
-		new Promise(() => {
-			trySetSelection(editableRef.current, newSelectionPosition);
-		});
+		internalPartUpdate();
 	}
 
 	function variableEditSaved(partIndex: number, type: string, item: any) {
@@ -356,6 +358,18 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = props => {
 		forceRerender();
 	}
 
+	function internalPartUpdate() {
+		editableRef.current!.innerHTML = renderValueParts(
+			unmanagedStateRef.current.valueParts,
+			variableGroups,
+		);
+
+		// eslint-disable-next-line no-new
+		new Promise(() => {
+			trySetSelection(editableRef.current, unmanagedStateRef.current.lastSelectionPosition);
+		});
+	}
+
 	function closeSelector() {
 		setShowSelector(false);
 		setQuery('');
@@ -365,22 +379,7 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = props => {
 
 	return (
 		<Wrapper>
-			<Input
-				contentEditable={!disabled}
-				spellCheck={false}
-				ref={editableRef}
-				suppressContentEditableWarning
-				onInput={handleChange}
-				onBlur={handleBlur}
-				onKeyDown={handleKeyDown}
-				onPaste={handlePaste}
-				dangerouslySetInnerHTML={{
-					__html: renderValueParts(
-						unmanagedStateRef.current.valueParts,
-						variableGroups,
-					),
-				}}
-			/>
+			<UnmanagedInput innerRef={editableRef} />
 			{placeholder && (
 				<Placeholder
 					ref={placeholderRef}

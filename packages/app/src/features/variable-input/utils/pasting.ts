@@ -44,8 +44,11 @@ const sanitizerOptions: IOptions = {
 	},
 };
 
-export function handlePaste(event: React.ClipboardEvent<HTMLElement>) {
+export function handlePaste(event: ClipboardEvent) {
 	event.preventDefault();
+
+	if (!event.clipboardData)
+		return;
 
 	const plainText = event.clipboardData.getData('text/plain');
 	const htmlText = event.clipboardData.getData('text/html');

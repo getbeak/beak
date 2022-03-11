@@ -65,14 +65,18 @@ const VariableSelector: React.FunctionComponent<VariableSelectorProps> = props =
 	}, [variableGroups, query]);
 
 	useEffect(() => {
-		const elem = editableElement.children[sel.partIndex];
+		const node = editableElement.childNodes[sel.partIndex];
 
-		if (!elem)
+		if (!node)
 			return;
 
-		const rect = elem.getBoundingClientRect();
+		const range = new Range();
 
-		const contentLength = (elem.textContent ?? '').length;
+		range.selectNode(node);
+
+		const rect = range.getBoundingClientRect();
+
+		const contentLength = (node.textContent ?? '').length;
 		const positionOffset = sel.offset / contentLength;
 		const width = rect.width;
 		const offsetDelta = width * positionOffset;
