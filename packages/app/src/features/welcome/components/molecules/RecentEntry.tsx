@@ -14,6 +14,8 @@ export interface RecentEntryProps {
 
 const RecentEntry: React.FunctionComponent<RecentEntryProps> = props => {
 	const date = parseISO(props.modifiedDate);
+	const pathIsGoingToBeAnAsshole = props.path.startsWith('/');
+	const path = pathIsGoingToBeAnAsshole ? props.path.substring(1) : props.path;
 
 	return (
 		<Wrapper onClick={() => props.onClick()}>
@@ -24,8 +26,11 @@ const RecentEntry: React.FunctionComponent<RecentEntryProps> = props => {
 				/>
 			</Icon>
 			<TextWrapper>
-				<Name>{props.name}</Name>
-				<Path>{props.path}</Path>
+				{/* The "&lrm;" char is a requirement of using RTL to trim the end vs start of the string */}
+				<Name>{props.name}&lrm;</Name>
+				<Path $asshole={pathIsGoingToBeAnAsshole}>
+					{path}
+				</Path>
 			</TextWrapper>
 			<ModifiedDate>{format(date, 'MM/dd/yyyy')}</ModifiedDate>
 		</Wrapper>
@@ -34,7 +39,9 @@ const RecentEntry: React.FunctionComponent<RecentEntryProps> = props => {
 
 const Wrapper = styled.div`
 	padding: 10px;
-	display: flex;
+	display: grid;
+	grid-template-columns: 40px minmax(0, 1fr) auto;
+	gap: 10px;
 	transition: transform .1s ease;
 
 	&:hover {
@@ -54,21 +61,35 @@ const Icon = styled.div`
 	line-height: 35px;
 `;
 
-const TextWrapper = styled.div`
-	flex-grow: 2;
-	margin-left: 10px;
-`;
+const TextWrapper = styled.div``;
 
 const Name = styled.span`
 	display: block;
 	font-size: 16px;
 	font-weight: 500;
+
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	direction: rtl;
+	text-align: left;
 `;
 
-const Path = styled.span`
+const Path = styled.span<{ $asshole: boolean }>`
 	display: block;
 	font-size: 12px;
 	color: ${props => props.theme.ui.textMinor};
+
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	direction: rtl;
+	text-align: left;
+
+	&:after {
+		display: inline-block;
+		content: '${p => p.$asshole ? '/' : ''}';
+	}
 `;
 
 const ModifiedDate = styled.div`
