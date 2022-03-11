@@ -74,10 +74,12 @@ const BodyTab: React.FunctionComponent<BodyTabProps> = props => {
 		// Changing from lang specific editor to text
 		if (newType === 'text') {
 			if (body.type === 'json') {
+				const normalised = JSON.stringify(await convertToRealJson(context, body.payload), null, '\t');
+
 				dispatch(actions.requestBodyTypeChanged({
 					requestId: node.id,
 					type: 'text',
-					payload: JSON.stringify(await convertToRealJson(context, body.payload), null, '\t'),
+					payload: normalised === '""' ? '' : normalised,
 				}));
 
 				return;

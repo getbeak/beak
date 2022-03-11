@@ -1,5 +1,5 @@
 import { TypedObject } from '@beak/common/helpers/typescript';
-import { Entries, EntryMap, NamedEntries } from '@beak/common/types/beak-json-editor';
+import { Entries, EntryMap, NamedEntries, StringEntry } from '@beak/common/types/beak-json-editor';
 import ksuid from '@cuvva/ksuid';
 
 import { parseValueParts } from '../realtime-values/parser';
@@ -147,6 +147,16 @@ export function convertToEntryJson(json: JsonTypes, parentId: string | null = nu
 
 		default:
 			break;
+	}
+
+	// Handle edge case where the root string value is '""'
+	const keys = Object.keys(out);
+
+	if (keys.length === 1 && out[keys[0]].type === 'string') {
+		const entry = (out[keys[0]] as StringEntry);
+
+		if (entry.value[0] === '""')
+			entry.value[0] = '';
 	}
 
 	return out;
