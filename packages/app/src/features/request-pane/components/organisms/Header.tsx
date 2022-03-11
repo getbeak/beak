@@ -2,7 +2,7 @@ import { parseValueParts } from '@beak/app/features/realtime-values/parser';
 import VariableInput from '@beak/app/features/variable-input/components/VariableInput';
 import { requestPreferenceSetMainTab } from '@beak/app/store/preferences/actions';
 import { RequestNode, ValueParts } from '@beak/common/types/beak-project';
-import React, { useEffect, useRef, useState } from 'react';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import URL from 'url-parse';
@@ -20,7 +20,6 @@ const Header: React.FunctionComponent<HeaderProps> = props => {
 	const selectedGroups = useSelector(s => s.global.preferences.editor.selectedVariableGroups);
 	const { node } = props;
 	const verb = node.info.verb;
-	const [forceResetNonce, setForceResetNonce] = useState<undefined | number>();
 
 	function dispatchFlightRequest() {
 		dispatch(requestFlight());
@@ -54,9 +53,6 @@ const Header: React.FunctionComponent<HeaderProps> = props => {
 
 			sanitisedParts = parts.slice(0, searchIndex);
 			sanitisedParts.push((parts[searchIndex] as string).slice(0, searchPartIndex));
-
-			// Another event-loop hack
-			window.setTimeout(() => setForceResetNonce(Date.now()), 0);
 
 			// Move focus to query string editor
 			dispatch(requestPreferenceSetMainTab({ id: node.id, tab: 'url_query' }));
@@ -99,7 +95,6 @@ const Header: React.FunctionComponent<HeaderProps> = props => {
 				<VariableInput
 					parts={node.info.url}
 					placeholder={window.location.host}
-					// forceResetHack={forceResetNonce}
 					onChange={e => handleUrlChange(e)}
 					onUrlQueryStringDetection={urlQueryStringDetected}
 				/>
@@ -113,7 +108,8 @@ const Header: React.FunctionComponent<HeaderProps> = props => {
 };
 
 const Container = styled.div`
-	display: flex;
+	display: grid;
+	grid-template-columns: auto minmax(0, 1fr) auto;
 	justify-content: space-between;
 	align-items: center;
 
