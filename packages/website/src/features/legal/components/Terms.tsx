@@ -65,9 +65,10 @@ const Terms: React.FunctionComponent = () => (
 				{'2. Software licenses'}
 			</LegalTitle>
 			<p>
-				{'Flamingo Corp may, at its sole discretion, grant you either a Beta license (subscription) or a '}
-				{'commercial license. The Beta license terms are applicable if you are participating in any of the '}
-				{'active Beak Beta programmes.'}
+				{'Flamingo Corp may, at its sole discretion, grant you either a Beta license (subscription), a '}
+				{'commercial license, or a Trial license. The Beta license terms are applicable if you are '}
+				{'participating in any of the active Beak Beta programmes. The Trial license terms are only '}
+				{'applicable if you have subscribed to a Trial version of the Beak Subscription.'}
 			</p>
 
 			<LegalSubTitle id={'commercial-license'}>
@@ -103,6 +104,23 @@ const Terms: React.FunctionComponent = () => (
 				{'either using your existing, or purchasing a new, commercial license.'}
 			</p>
 
+			<LegalSubTitle id={'trial-license'}>
+				{'b. Trial license'}
+			</LegalSubTitle>
+			<p>
+				{'Flamingo Corp grants you a non-exclusive, non-transferable license to use Beak on a time limited '}
+				{'period, and only in accordance with the terms of service set from here on out. You agree not to '}
+				{'transfer, assign, rent, lease, or otherwise lend Beak to any other person or entity (legal or not), '}
+				{'and accept that any attempt to do so in any way will result in your license becoming null and void. '}
+				{'Beak may be used in full for the period of 14 calendar days from the time you start your trial '}
+				{'period. Upon lapsing of the trial period all Beak functionality will automatically be disabled.'}
+			</p>
+			<p>
+				{'Flamingo Corp may, at any time, extend the duration of the trial period. In such an event, we shall '}
+				{'inform you via email. If you wish to continue using Beak after the trial period has elapsed, you '}
+				{'will have to purchase a commercial license.'}
+			</p>
+
 			<LegalTitle id={'subs-pays-refs'}>
 				{'3. Subscriptions, payments, and refunds'}
 			</LegalTitle>
@@ -110,7 +128,7 @@ const Terms: React.FunctionComponent = () => (
 				{'a. Pricing'}
 			</LegalSubTitle>
 			<p>
-				{'Unless you are using the Beta license of Beak, access to Beak requires the purchase of a '}
+				{'Unless you are using the Beta or Trial license of Beak, access to Beak requires the purchase of a '}
 				{'subscription. Our pricing and subscription information, and limits are available at '}
 				<Link to={'/pricing'}>{`https://${window.location.hostname}.app/pricing`}</Link>{'.'}
 			</p>
