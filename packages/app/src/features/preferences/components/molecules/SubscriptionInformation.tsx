@@ -12,8 +12,6 @@ export interface SubscriptionInformationProps {
 const SubscriptionInformation: React.FunctionComponent<SubscriptionInformationProps> = ({ subscription }) => {
 	const trial = subscription.status === 'trialing';
 
-	console.log(subscription);
-
 	return (
 		<React.Fragment>
 			<Container>
