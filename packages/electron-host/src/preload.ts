@@ -16,6 +16,7 @@ contextBridge.exposeInMainWorld('secureBridge', {
 	ipc: {
 		invoke: async (channel: string, payload: unknown) => ipcRenderer.invoke(channel, payload),
 		on: (channel: string, listener: Listener) => ipcRenderer.on(channel, listener),
+		off: (channel: string, listener: Listener) => ipcRenderer.off(channel, listener),
 		removeListener: (channel: string, listener: Listener) => ipcRenderer.removeListener(channel, listener),
 	},
 });
