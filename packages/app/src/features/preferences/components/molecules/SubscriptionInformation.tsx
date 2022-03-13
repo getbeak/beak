@@ -1,6 +1,7 @@
 import Button from '@beak/app/components/atoms/Button';
 import { ipcExplorerService } from '@beak/app/lib/ipc';
 import { GetSubscriptionStatusResponse } from '@beak/common/types/nest';
+import { formatDistance, subDays } from 'date-fns';
 import React from 'react';
 import styled from 'styled-components';
 
@@ -8,29 +9,53 @@ export interface SubscriptionInformationProps {
 	subscription: GetSubscriptionStatusResponse;
 }
 
-const SubscriptionInformation: React.FunctionComponent<SubscriptionInformationProps> = ({ subscription }) => (
-	<React.Fragment>
-		<Container>
-			<LogoSection>
-				<LogoOuter />
-			</LogoSection>
-			<AboutSection>
-				<Title>{'Beak subscription'}</Title>
-				<SubTitle>{'Your current Beak subscription'}</SubTitle>
+const SubscriptionInformation: React.FunctionComponent<SubscriptionInformationProps> = ({ subscription }) => {
+	const trial = subscription.status === 'trialing';
 
-				{subscription.billingPortalUrl && (
-					<Button onClick={() => ipcExplorerService.launchUrl(subscription.billingPortalUrl!)}>
-						{'Visit billing portal'}
-					</Button>
+	console.log(subscription);
+
+	return (
+		<React.Fragment>
+			<Container>
+				<LogoSection>
+					<LogoOuter />
+				</LogoSection>
+				<AboutSection>
+					{trial && (
+						<React.Fragment>
+							<Title>{'Beak subscription trial'}</Title>
+							<SubTitle>{'Your Beak subscription trial'}</SubTitle>
+						</React.Fragment>
+					)}
+					{!trial && (
+						<React.Fragment>
+							<Title>{'Beak subscription'}</Title>
+							<SubTitle>{'Your current Beak subscription'}</SubTitle>
+						</React.Fragment>
+					)}
+
+					{subscription.billingPortalUrl && (
+						<Button onClick={() => ipcExplorerService.launchUrl(subscription.billingPortalUrl!)}>
+							{'Visit billing portal'}
+						</Button>
+					)}
+				</AboutSection>
+				{!trial && (
+					<SubscriptionMetaSection>
+						<MetaTitle>{'$25.00'}</MetaTitle>
+						<MetaBody>{' / year'}</MetaBody>
+					</SubscriptionMetaSection>
 				)}
-			</AboutSection>
-			<PricingSection>
-				<PricingPrice>{'$25.00'}</PricingPrice>
-				<PricingTime>{' / year'}</PricingTime>
-			</PricingSection>
-		</Container>
-	</React.Fragment>
-);
+				{trial && (
+					<SubscriptionMetaSection>
+						<MetaTitle>{'Trial ends'}</MetaTitle><br />
+						<MetaBody>{formatDistance(new Date(subscription.endDate!), new Date(), { addSuffix: true })}</MetaBody>
+					</SubscriptionMetaSection>
+				)}
+			</Container>
+		</React.Fragment>
+	);
+};
 
 const Container = styled.div`
 	display: grid;
@@ -72,18 +97,18 @@ const SubTitle = styled.div`
 	color: ${p => p.theme.ui.textMinor};
 `;
 
-const PricingSection = styled.div`
+const SubscriptionMetaSection = styled.div`
 	grid-column: 3;
 
 	text-align: right;
 `;
 
-const PricingPrice = styled.span`
+const MetaTitle = styled.span`
 	font-weight: 600;
 	font-size: 18px;
 	color: ${p => p.theme.ui.textOnSurfaceBackground};
 `;
-const PricingTime = styled.span`
+const MetaBody = styled.span`
 	color: ${p => p.theme.ui.textMinor};
 	font-size: 13px;
 `;

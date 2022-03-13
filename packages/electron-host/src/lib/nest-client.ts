@@ -134,10 +134,8 @@ class NestClient {
 				identifierValue: email,
 				device: {
 					platform: getPlatform(),
-					// beakId: persistentStore.get('beakId'),
-					// fingerprint: (await getFingerprint()).toString('base64url'),
-					beakId: new Date().toString(),
-					fingerprint: new Date().toString(),
+					beakId: persistentStore.get('beakId'),
+					fingerprint: (await getFingerprint()).toString('base64url'),
 				},
 			});
 		} catch (error) {

@@ -56,6 +56,7 @@ const Wrapper = styled.div`
 
 const Account = styled.div`
 	margin-left: 10px;
+	overflow: hidden;
 `;
 
 const AccountTop = styled.div`
