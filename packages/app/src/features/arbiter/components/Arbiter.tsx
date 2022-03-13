@@ -34,7 +34,7 @@ const Arbiter: React.FunctionComponent = ({ children }) => {
 
 			default:
 			case daysUntilLock <= 0:
-				return 'soon';
+				return 'today';
 		}
 	}
 
