@@ -8,19 +8,15 @@ import styled from 'styled-components';
 import FormError from '../../../../components/atoms/FormError';
 import FormInput from '../../../../components/atoms/FormInput';
 import Input from '../../../../components/atoms/Input';
+import { MagicState } from './EnterMagicState';
 
-export interface MagicState {
-	code: string;
-	state: string;
-}
-
-interface EnterMagicStateProps {
+interface EnterTrialMagicStateProps {
 	email: string;
 	reset: () => void;
 	inboundState?: MagicState;
 }
 
-const EnterMagicState: React.FunctionComponent<EnterMagicStateProps> = props => {
+const EnterTrialMagicState: React.FunctionComponent<EnterTrialMagicStateProps> = props => {
 	const { email, reset, inboundState } = props;
 	const [working, setWorking] = useState<boolean>(false);
 	const [error, setError] = useState<Squawk | undefined>(void 0);
@@ -74,7 +70,7 @@ const EnterMagicState: React.FunctionComponent<EnterMagicStateProps> = props => 
 		setWorking(true);
 
 		ipcNestService
-			.handleMagicLink({ code, state, fromPortal: true })
+			.handleMagicLink({ code, state, fromPortal: true, fromTrial: true })
 			.then(() => setError(void 0))
 			.catch(setError)
 			.finally(() => setWorking(false));
@@ -82,23 +78,26 @@ const EnterMagicState: React.FunctionComponent<EnterMagicStateProps> = props => 
 
 	return (
 		<React.Fragment>
-			{!working && (
+			{manualState === void 0 && (
 				<React.Fragment>
-					<Paragraph $center>
-						{'Your magic link is on the way to'}<br />
-						<b>{email}</b>
-					</Paragraph>
-					<Paragraph>
-						{'Clicking the link in the email will finish signing you into Beak. '}
-						<HelpButton onClick={() => showManualState()}>{'Having trouble with the link?'}</HelpButton>
-					</Paragraph>
-				</React.Fragment>
-			)}
+					{!working && (
+						<React.Fragment>
+							<Text>
+								{'Your magic link is on the way to '}<b>{email}</b>{'.'}
+							</Text>
+							<Text>
+								{'Clicking the link in the email will finish signing you into your Beak trial. '}
+								<HelpButton onClick={() => showManualState()}>{'Having trouble with the link?'}</HelpButton>
+							</Text>
+						</React.Fragment>
+					)}
 
-			{working && (
-				<Paragraph>
-					{'Working away on your magic link, make a wish 🪄 '}
-				</Paragraph>
+					{working && (
+						<Text>
+							{'Working away on your magic link, make a wish 🪄 '}
+						</Text>
+					)}
+				</React.Fragment>
 			)}
 
 			{manualState !== void 0 && (
@@ -139,10 +138,10 @@ const EnterMagicState: React.FunctionComponent<EnterMagicStateProps> = props => 
 	);
 };
 
-const Paragraph = styled.p<{ $center?: boolean }>`
+const Text = styled.div`
 	font-size: 14px;
+	margin: 5px 0;
 	color: ${p => p.theme.ui.textOnSurfaceBackground};
-	text-align: ${p => p.$center ? 'center' : 'inherit'};
 `;
 
 const HelpButton = styled.span`
@@ -168,4 +167,4 @@ function getErrorMessage(error: Squawk) {
 	}
 }
 
-export default EnterMagicState;
+export default EnterTrialMagicState;

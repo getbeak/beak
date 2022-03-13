@@ -5,7 +5,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
-const Purchase: React.FunctionComponent = () => {
+interface PurchaseProps {
+	onChangeToTrial: () => void;
+}
+
+const Purchase: React.FunctionComponent<PurchaseProps> = ({ onChangeToTrial }) => {
 	const [buyUrl, setBuyUrl] = useState('https://buy.stripe.com/eVa8xY80KedAdWw7ss');
 	const [pricingUrl, setPricingUrl] = useState('https://getbeak.app/pricing');
 
@@ -30,13 +34,14 @@ const Purchase: React.FunctionComponent = () => {
 			</SubTitle>
 
 			<ActionContainer>
-				<Button onClick={() => ipcExplorerService.launchUrl(pricingUrl)}>{'View pricing page'}</Button>
+				{/* <Button onClick={() => ipcExplorerService.launchUrl(pricingUrl)}>{'View pricing page'}</Button> */}
 				<Button
 					color={'primary'}
 					onClick={() => ipcExplorerService.launchUrl(buyUrl)}
 				>
 					{'Buy'}
 				</Button>
+				<Button onClick={() => onChangeToTrial()}>{'Start trial'}</Button>
 			</ActionContainer>
 		</Wrapper>
 	);

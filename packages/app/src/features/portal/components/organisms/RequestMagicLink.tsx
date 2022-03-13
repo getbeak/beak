@@ -20,7 +20,7 @@ const RequestMagicLink: React.FunctionComponent<RequestMagicLinkProps> = props =
 	const [error, setError] = useState<Squawk | null>(null);
 	const inputRef = useRef<HTMLInputElement | null>(null);
 
-	useEffect(() => inputRef.current?.focus(), []);
+	useEffect(() => inputRef.current?.select(), []);
 
 	function sendMagicLink() {
 		if (email === '' || working)
@@ -34,6 +34,7 @@ const RequestMagicLink: React.FunctionComponent<RequestMagicLinkProps> = props =
 
 		setError(null);
 		setWorking(true);
+
 		ipcNestService.sendMagicLink(email)
 			.then(() => onMagicLinkSent())
 			.catch(error => setError(Squawk.coerce(error)))
