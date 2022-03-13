@@ -10,6 +10,7 @@ import crpc, { Client } from 'crpc';
 import crypto from 'crypto';
 import keytar from 'keytar';
 import os from 'os';
+import { getFingerprint } from 'hw-fingerprint';
 
 import logger from './logger';
 import persistentStore from './persistent-store';
@@ -88,29 +89,7 @@ class NestClient {
 	}
 
 	async sendMagicLink(email: string) {
-		const randomState = crypto.randomBytes(32);
-		const randomVerifier = crypto.randomBytes(32);
-
-		const state = convertToWebSafe(randomState.toString('base64'));
-		const codeVerifier = convertToWebSafe(randomVerifier.toString('base64'));
-
-		// Hash the code verifier, then make it web-safe base64
-		const codeChallengeHash = crypto.createHash('sha256')
-			.update(codeVerifier, 'ascii')
-			.digest('base64');
-
-		const codeChallenge = convertToWebSafe(codeChallengeHash);
-
-		// Create, insert, and store magic states to local storage
-		persistentStore.set('magicStates', {
-			...persistentStore.get('magicStates'),
-			[state]: {
-				state,
-				codeVerifier,
-				codeChallenge,
-				redirectUri: 'https://magic.getbeak.app/',
-			},
-		});
+		const { codeChallenge, state } = generateMagicState();
 
 		try {
 			await this.rpcNoAuth('2020-12-14/send_magic_link', {
@@ -121,6 +100,45 @@ class NestClient {
 				codeChallenge,
 				identifierType: 'email',
 				identifierValue: email,
+				device: {
+					platform: getPlatform(),
+					beakId: persistentStore.get('beakId'),
+					fingerprint: (await getFingerprint()).toString('base64url'),
+				},
+			});
+		} catch (error) {
+			const squawk = Squawk.coerce(error);
+			const message = (squawk.meta?.message ?? '') as string;
+
+			if (['Missing final \'@domain\'', 'Domain starts with dot'].includes(message))
+				throw new Squawk('invalid_email', void 0, [squawk]);
+
+			throw error;
+		}
+	}
+
+	async createTrialAndMagicLink(email: string) {
+		const { codeChallenge, state } = generateMagicState();
+
+		console.log((await getFingerprint()).toString('base64url'));
+		console.log(persistentStore.get('beakId'));
+
+		try {
+			await this.rpcNoAuth('2021-10-06/create_trial_and_magic_link', {
+				clientId: getClientId(),
+				redirectUri: 'https://magic.getbeak.app/',
+				state,
+				codeChallengeMethod: 'S256',
+				codeChallenge,
+				identifierType: 'email',
+				identifierValue: email,
+				device: {
+					platform: getPlatform(),
+					// beakId: persistentStore.get('beakId'),
+					// fingerprint: (await getFingerprint()).toString('base64url'),
+					beakId: new Date().toString(),
+					fingerprint: new Date().toString(),
+				},
 			});
 		} catch (error) {
 			const squawk = Squawk.coerce(error);
@@ -159,7 +177,7 @@ class NestClient {
 	async ensureActiveSubscription() {
 		const subscription = await this.getSubscriptionStatus();
 
-		if (['active', 'incomplete'].includes(subscription.status))
+		if (['active', 'incomplete', 'trialing', 'past_due'].includes(subscription.status))
 			return;
 
 		throw new Squawk('subscription_not_active');
@@ -223,18 +241,60 @@ class NestClient {
 	}
 }
 
-function getClientId() {
+function getPlatform() {
 	switch (process.platform) {
 		case 'darwin':
-			return 'client_000000C2kdCzNlbL1BqR5FeMatItU';
+			return 'mac';
 
 		case 'win32':
+			return 'windows';
+
+		case 'linux':
+		default:
+			return 'linux';
+	}
+}
+
+function getClientId() {
+	switch (getPlatform()) {
+		case 'mac':
+			return 'client_000000C2kdCzNlbL1BqR5FeMatItU';
+
+		case 'windows':
 			return 'client_000000CAixkP7YVb0cH1zvNfE5mYi';
 
 		case 'linux':
 		default:
 			return 'client_000000CAixjPMTECPznenOM8rKRxQ';
 	}
+}
+
+function generateMagicState(redirectUri = 'https://magic.getbeak.app/') {
+	const randomState = crypto.randomBytes(32);
+	const randomVerifier = crypto.randomBytes(32);
+
+	const state = convertToWebSafe(randomState.toString('base64'));
+	const codeVerifier = convertToWebSafe(randomVerifier.toString('base64'));
+
+	// Hash the code verifier, then make it web-safe base64
+	const codeChallengeHash = crypto.createHash('sha256')
+		.update(codeVerifier, 'ascii')
+		.digest('base64');
+
+	const codeChallenge = convertToWebSafe(codeChallengeHash);
+
+	// Create, insert, and store magic states to local storage
+	persistentStore.set('magicStates', {
+		...persistentStore.get('magicStates'),
+		[state]: {
+			state,
+			codeVerifier,
+			codeChallenge,
+			redirectUri,
+		},
+	});
+
+	return { codeChallenge, state };
 }
 
 function generateOptions(auth: AuthenticateUserResponse | null) {

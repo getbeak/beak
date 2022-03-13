@@ -5,6 +5,7 @@ import { IpcServiceMain, IpcServiceRenderer, Listener, PartialIpcRenderer } from
 
 export const NestMessages = {
 	SendMagicLink: 'send_magic_link',
+	CreateTrialAndMagicLink: 'create_trial_and_magic_link',
 	HandleMagicLink: 'handle_magic_link',
 	ListNewsItems: 'list_news_items',
 	GetSubscriptionState: 'get_subscription_state',
@@ -16,6 +17,7 @@ interface HandleMagicLinkReq {
 	code: string;
 	state: string;
 	fromPortal?: boolean;
+	fromTrial?: boolean;
 }
 
 export class IpcNestServiceRenderer extends IpcServiceRenderer {
@@ -25,6 +27,10 @@ export class IpcNestServiceRenderer extends IpcServiceRenderer {
 
 	async sendMagicLink(email: string) {
 		return this.invoke(NestMessages.SendMagicLink, email);
+	}
+
+	async createTrialAndMagicLink(email: string) {
+		return this.invoke(NestMessages.CreateTrialAndMagicLink, email);
 	}
 
 	async handleMagicLink(payload: HandleMagicLinkReq) {
@@ -55,6 +61,10 @@ export class IpcNestServiceMain extends IpcServiceMain {
 
 	registerSendMagicLink(fn: Listener<string>) {
 		this.registerListener(NestMessages.SendMagicLink, fn);
+	}
+
+	registerCreateTrialAndMagicLink(fn: Listener<string>) {
+		this.registerListener(NestMessages.CreateTrialAndMagicLink, fn);
 	}
 
 	registerHandleMagicLink(fn: Listener<HandleMagicLinkReq>) {

@@ -33,6 +33,11 @@ export interface AuthenticateUserRequest {
 	redirectUri?: string;
 	code: string;
 	codeVerifier?: string;
+	device: {
+		platform: 'mac' | 'windows' | 'linux';
+		beakId: string;
+		fingerprint: string;
+	};
 }
 
 export interface AuthenticateUserResponse {

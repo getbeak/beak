@@ -12,6 +12,10 @@ service.registerSendMagicLink(async (_event, email) => {
 	await nestClient.sendMagicLink(email);
 });
 
+service.registerCreateTrialAndMagicLink(async (_event, email) => {
+	await nestClient.createTrialAndMagicLink(email);
+});
+
 service.registerHandleMagicLink(async (_event, payload) => {
 	await nestClient.handleMagicLink(payload.code, payload.state);
 	await arbiter.check();
