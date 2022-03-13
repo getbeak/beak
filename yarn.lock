@@ -5170,6 +5170,13 @@ humanize-ms@^1.2.1:
   dependencies:
     ms "^2.0.0"
 
+hw-fingerprint@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/hw-fingerprint/-/hw-fingerprint-2.1.0.tgz#3e443315212b16d298655ad259f1d7c3000694f2"
+  integrity sha512-pQh4dx8GcSDckkzBg8S8y3topSBaHFE4MIdmpZvz9wEsL29oIcNvAxW7+T8nN0j6WdU/RrlwhMGFzg3oFSxUUQ==
+  dependencies:
+    systeminformation "^5.9.9"
+
 iconv-corefoundation@^1.1.6:
   version "1.1.6"
   resolved "https://registry.yarnpkg.com/iconv-corefoundation/-/iconv-corefoundation-1.1.6.tgz#27c135470237f6f8d13462fa1f5eaf250523c29a"
@@ -8650,6 +8657,11 @@ supports-color@^7.1.0:
   integrity sha512-qpCAvRl9stuOHveKsn7HncJRvv501qIacKzQlO/+Lwxc9+0q2wLyv4Dfvt80/DPn2pqOBsJdDiogXGR9+OvwRw==
   dependencies:
     has-flag "^4.0.0"
+
+systeminformation@^5.9.9:
+  version "5.11.8"
+  resolved "https://registry.yarnpkg.com/systeminformation/-/systeminformation-5.11.8.tgz#fd6244cd13e5fcb863e6dde9cb02edb4a5a3115b"
+  integrity sha512-u30rM0KwGKiJof44Ak25WeSh9661NU2GshXpHPpv/zGXvvSGI5eALjpVJ3EYnIroceToWzy9+xkuMfjHIx6OiQ==
 
 tapable@^2.2.0:
   version "2.2.0"
