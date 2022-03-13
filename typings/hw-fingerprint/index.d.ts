@@ -1,3 +1,3 @@
 declare module 'hw-fingerprint' {
-	export function getFingerprint(): Buffer;
+	export function getFingerprint(): Promise<Buffer>;
 }
