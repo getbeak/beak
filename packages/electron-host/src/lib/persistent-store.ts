@@ -1,8 +1,8 @@
 import { ArbiterStatus } from '@beak/common/types/arbiter';
 import { RecentLocalProject } from '@beak/common/types/beak-hub';
 import { MagicStates } from '@beak/common/types/nest';
-import ElectronStore from 'electron-store';
 import crypto from 'crypto';
+import ElectronStore from 'electron-store';
 
 import { WindowState } from './window-state-manager';
 

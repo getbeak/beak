@@ -8,9 +8,9 @@ import QueryablePromise from '@beak/common/utils/promises';
 import Squawk from '@beak/common/utils/squawk';
 import crpc, { Client } from 'crpc';
 import crypto from 'crypto';
+import { getFingerprint } from 'hw-fingerprint';
 import keytar from 'keytar';
 import os from 'os';
-import { getFingerprint } from 'hw-fingerprint';
 
 import logger from './logger';
 import persistentStore from './persistent-store';
