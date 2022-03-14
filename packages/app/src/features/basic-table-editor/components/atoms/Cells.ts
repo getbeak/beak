@@ -31,10 +31,6 @@ export const BodyInputWrapper = styled(BodyCell)`
 		font-size: 12px;
 
 		color: ${props => props.theme.ui.textMinor};
-
-		&:focus {
-			box-shadow: none !important;
-		}
 	}
 
 	> input:disabled {

@@ -219,9 +219,6 @@ const inputCss = css<{ center?: boolean }>`
 
 	&:disabled { user-select: none; }
 	&:focus {
-		/* forgive me for the importants */
-		box-shadow: none !important;
-		border: 1px solid ${p => p.theme.ui.primaryFill} !important;
 	}
 `;
 

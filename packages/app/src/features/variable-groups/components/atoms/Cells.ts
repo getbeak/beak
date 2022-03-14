@@ -36,9 +36,5 @@ export const BodyValueCell = styled(BodyCell)`
 		font-size: 12px;
 
 		color: ${props => props.theme.ui.textMinor};
-
-		&:focus {
-			box-shadow: none !important;
-		}
 	}
 `;

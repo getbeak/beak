@@ -1,3 +1,4 @@
+import { toHexAlpha } from '@beak/design-system/utils';
 import { faDiagramProject } from '@fortawesome/free-solid-svg-icons/faDiagramProject';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { format, parseISO } from 'date-fns';
@@ -43,14 +44,15 @@ const Wrapper = styled.div`
 	grid-template-columns: 40px minmax(0, 1fr) auto;
 	gap: 10px;
 	transition: transform .1s ease;
+	border-radius: 5px;
 
 	&:hover {
-		background: ${props => props.theme.ui.secondarySurface};
+		background: ${props => props.theme.ui.surfaceHighlight};
 		cursor: pointer;
 	}
 
 	&:active {
-		background: ${props => props.theme.ui.background};
+		background: ${props => props.theme.ui.surfaceHighlight};
 		transform: scale(0.99);
 	}
 `;
