@@ -291,7 +291,7 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = props => {
 		if (debounceHandler)
 			window.clearTimeout(debounceHandler);
 
-		unmanagedStateRef.current.debounceHandler = window.setTimeout(reportChange, 600);
+		unmanagedStateRef.current.debounceHandler = window.setTimeout(reportChange, 50);
 	}
 
 	function reportChange() {
