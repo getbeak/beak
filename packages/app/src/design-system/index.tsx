@@ -42,14 +42,13 @@ const GlobalStyle = createGlobalStyle<GlobalStyleProps>`
 		line-height: 12px;
 		background: ${p => p.theme.ui.primaryFill};
 		color: ${p => p.theme.ui.textOnAction};
-		cursor: pointer;
 
 		> strong {
 			font-weight: 600;
 		}
 
-		&[data-editable] {
-			cursor: default;
+		&[data-editable='true'] {
+			cursor: pointer;
 		}
 	}
 

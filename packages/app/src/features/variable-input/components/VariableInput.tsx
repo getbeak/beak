@@ -395,7 +395,7 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = props => {
 		// eslint-disable-next-line no-new
 		new Promise(() => {
 			reportChange();
-			forceRerender();
+			internalPartUpdate();
 		});
 	}
 
