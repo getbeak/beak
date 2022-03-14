@@ -86,11 +86,11 @@ const RealtimeValueEditor: React.FunctionComponent<RealtimeValueEditorProps> = p
 		setEditorContext(void 0);
 	}
 
-	function renderUiSection(section: UISection<any>) {
+	function renderUiSection(section: UISection<unknown>) {
 		switch (section.type) {
 			case 'string_input':
 				return (
-					<FormGroup>
+					<FormGroup key={`${section.stateBinding}`}>
 						{section.label && <Label>{section.label}</Label>}
 						<Input
 							beakSize={'sm'}
@@ -105,7 +105,7 @@ const RealtimeValueEditor: React.FunctionComponent<RealtimeValueEditorProps> = p
 
 			case 'number_input':
 				return (
-					<FormGroup>
+					<FormGroup key={`${section.stateBinding}`}>
 						{section.label && <Label>{section.label}</Label>}
 						<Input
 							beakSize={'sm'}
@@ -120,7 +120,7 @@ const RealtimeValueEditor: React.FunctionComponent<RealtimeValueEditorProps> = p
 
 			case 'options_input':
 				return (
-					<FormGroup>
+					<FormGroup key={`${section.stateBinding}`}>
 						{section.label && <Label>{section.label}</Label>}
 						<Select
 							beakSize={'sm'}
