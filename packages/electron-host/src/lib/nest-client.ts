@@ -120,9 +120,6 @@ class NestClient {
 	async createTrialAndMagicLink(email: string) {
 		const { codeChallenge, state } = generateMagicState();
 
-		console.log((await getFingerprint()).toString('base64url'));
-		console.log(persistentStore.get('beakId'));
-
 		try {
 			await this.rpcNoAuth('2021-10-06/create_trial_and_magic_link', {
 				clientId: getClientId(),
