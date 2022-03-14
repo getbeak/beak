@@ -42,7 +42,7 @@
     "@types/fs-extra": "^9.0.13",
     "@types/uuid": "^8.3.4",
     "copyfiles": "^2.4.1",
-    "electron": "16.0.5",
+    "electron": "17.1.2",
     "electron-builder": "22.14.5",
     "electron-debug": "^3.2.0",
     "electron-devtools-installer": "^3.2.0",
