@@ -90,7 +90,7 @@ const Container = styled.div<{ $darwin: boolean }>`
 `;
 
 const TitleBar = styled.div`
-	height: 40px;
+	height: 39px;
 	-webkit-app-region: drag;
 `;
 
