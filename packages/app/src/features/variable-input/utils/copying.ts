@@ -50,7 +50,7 @@ export function detectRelevantCopiedValueParts(valueParts: ValueParts) {
 
 	// If something is wrong, do nothing
 	if (startIndex === -1 || endIndex === -1)
-		return;
+		return null;
 
 	const relevantParts = valueParts.slice(startIndex, endIndex + 1);
 	const samePart = startIndex === endIndex;
