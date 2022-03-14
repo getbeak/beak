@@ -47,7 +47,9 @@ const SubscriptionInformation: React.FunctionComponent<SubscriptionInformationPr
 				{trial && (
 					<SubscriptionMetaSection>
 						<MetaTitle>{'Trial ends'}</MetaTitle><br />
-						<MetaBody>{formatDistance(new Date(subscription.endDate!), new Date(), { addSuffix: true })}</MetaBody>
+						<MetaBody>
+							{formatDistance(new Date(subscription.endDate!), new Date(), { addSuffix: true })}
+						</MetaBody>
 					</SubscriptionMetaSection>
 				)}
 			</Container>

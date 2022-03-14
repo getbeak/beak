@@ -32,7 +32,6 @@ export async function convertRequestToUrl(
 			outQuery[query.name] = await parseValueParts(context, query.value);
 		}
 
-		// @ts-expect-error
 		url.set('query', outQuery);
 	}
 

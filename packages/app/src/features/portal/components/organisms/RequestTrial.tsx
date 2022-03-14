@@ -51,7 +51,7 @@ const RequestTrial: React.FunctionComponent<RequestTrialProps> = props => {
 						}).then(() => onChangeToDefault());
 
 						break;
-					
+
 					case 'trial_already_used':
 						ipcDialogService.showMessageBox({
 							title: 'You\'re already used the trial',
