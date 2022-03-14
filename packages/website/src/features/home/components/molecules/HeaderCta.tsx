@@ -6,7 +6,7 @@ import CtaButton from '../../../../components/atoms/Buttons';
 const HeaderCta: React.FunctionComponent = () => (
 	<Wrapper>
 		<CtaButton href={'/pricing'} $style={'primary'}>{'Get Beak for $25'}</CtaButton>
-		<CtaButton href={'/#downloads'} $style={'secondary'}>{'Download'}</CtaButton>
+		<CtaButton href={'/#downloads'} $style={'secondary'}>{'Download free trial'}</CtaButton>
 	</Wrapper>
 );
 
