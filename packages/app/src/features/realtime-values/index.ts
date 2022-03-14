@@ -5,6 +5,7 @@ import nonceRtv from './values/nonce';
 import privateRtv from './values/private';
 import secureRtv from './values/secure';
 import timestampRtv from './values/timestamp';
+import uuidRtv from './values/uuid';
 import variableGroupItemRtv from './values/variable-group-item';
 
 const realtimeImplementations: Record<string, RealtimeValue<any, any>> = {
@@ -12,6 +13,7 @@ const realtimeImplementations: Record<string, RealtimeValue<any, any>> = {
 	[privateRtv.type]: privateRtv,
 	[secureRtv.type]: secureRtv,
 	[timestampRtv.type]: timestampRtv,
+	[uuidRtv.type]: uuidRtv,
 
 	// Special case!
 	[variableGroupItemRtv.type]: variableGroupItemRtv,
