@@ -28,7 +28,7 @@ const GlobalStyle = createGlobalStyle<GlobalStyleProps>`
 		&:focus {
 			outline: 0;
 			border-color: ${p => p.theme.ui.primaryFill};
-			box-shadow: 0 0 0 3px ${p => p.theme.ui.primaryFill}AA;
+			box-shadow: 0 0 0 3px ${p => p.theme.ui.primaryFill}77;
 			background: ${p => p.theme.ui.surfaceHighlight};
 			border-radius: 4px;
 		}
