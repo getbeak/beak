@@ -132,7 +132,6 @@ function* detectAndHandleRedirect(request: RequestOverview, response: ResponseOv
 	const newRequest = {
 		...request,
 		url: [resolvedUrl],
-
 	};
 
 	if (response.status === 303)

@@ -8,7 +8,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 
 import { getRealtimeValue } from '../../realtime-values';
+import { parseValueParts } from '../../realtime-values/parser';
 import { NormalizedSelection, normalizeSelection, trySetSelection } from '../utils/browser-selection';
+import { detectRelevantCopiedValueParts } from '../utils/copying';
 import { handlePaste } from '../utils/pasting';
 import renderValueParts from '../utils/render-value-parts';
 import { determineInsertionMode, VariableSelectionState } from '../utils/variables';
@@ -35,11 +37,13 @@ export interface VariableInputProps {
 const VariableInput: React.FunctionComponent<VariableInputProps> = props => {
 	const { disabled, placeholder, parts: incomingParts, onChange } = props;
 	const dispatch = useDispatch();
-	const { variableGroups } = useSelector(s => s.global.variableGroups);
 
 	const forceRerender = useForceReRender();
 	const [showSelector, setShowSelector] = useState(() => false);
 	const [query, setQuery] = useState('');
+
+	const { variableGroups } = useSelector(s => s.global.variableGroups);
+	const selectedGroups = useSelector(s => s.global.preferences.editor.selectedVariableGroups);
 
 	const editableRef = useRef<HTMLDivElement | null>(null);
 	const placeholderRef = useRef<HTMLDivElement | null>(null);
@@ -62,6 +66,7 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = props => {
 
 		elem.addEventListener('input', handleChange);
 		elem.addEventListener('keydown', handleKeyDown);
+		elem.addEventListener('copy', handleCopy);
 		elem.addEventListener('blur', handleBlur);
 		elem.addEventListener('paste', handlePaste);
 	}, []);
@@ -81,11 +86,6 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = props => {
 
 			forceRerender();
 		}
-
-		if (document.activeElement !== editableRef.current)
-			return;
-
-		// trySetSelection(editableRef.current, unmanagedStateRef.current.lastSelectionPosition);
 	}, [incomingParts]);
 
 	function handleChange(naiveEvent: Event) {
@@ -108,7 +108,7 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = props => {
 
 		const { variableSelectionState, valueParts } = unmanagedStateRef.current;
 
-		// Santiy check, but by now the selector will be open
+		// Sanity check, but by now the selector will be open
 		if (!variableSelectionState)
 			return;
 
@@ -124,6 +124,30 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = props => {
 			closeSelector();
 		else
 			setQuery(query);
+	}
+
+	async function handleCopy(event: ClipboardEvent) {
+		const { anomalyDetected, valueParts } = parseDomState();
+
+		if (anomalyDetected || valueParts.length === 0)
+			return;
+
+		const relevantParts = detectRelevantCopiedValueParts(valueParts);
+
+		if (relevantParts === null)
+			return;
+
+		const context = { selectedGroups, variableGroups };
+		const parsed = await parseValueParts(context, relevantParts);
+		const clipboard = await navigator.clipboard.read();
+		const html = await clipboard[0].getType('text/html');
+
+		navigator.clipboard.write([new ClipboardItem({
+			'text/plain': new Blob([parsed], { type: 'text/plain' }),
+			'text/html': html,
+		})]);
+
+		event.preventDefault();
 	}
 
 	function handleKeyDown(event: KeyboardEvent) {
@@ -150,16 +174,16 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = props => {
 		reportChange();
 	}
 
-	function reconcile() {
+	function parseDomState() {
 		if (!editableRef.current)
-			return;
+			return { anomalyDetected: false, valueParts: [] };
 
-		const reconcilledParts: ValueParts = [];
+		const reconciledParts: ValueParts = [];
 		const children = editableRef.current.childNodes;
 
 		// If we detect some invalid state, we just ask React to re-render to clear out any
 		// unsafe/unknown code for us
-		let anonomlyDetected = false;
+		let anomalyDetected = false;
 
 		Array.from(children).forEach(n => {
 			// Detect simple text content
@@ -179,7 +203,7 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = props => {
 				}
 
 				if (originalTextContent)
-					reconcilledParts.push(originalTextContent);
+					reconciledParts.push(originalTextContent);
 
 				return;
 			}
@@ -188,9 +212,9 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = props => {
 			if (children.length === 1 && n.nodeName === 'BR')
 				return;
 
-			// Detect unallowed div content
+			// Detect un-allowed div content
 			if (n.nodeName !== 'DIV') {
-				anonomlyDetected = true;
+				anomalyDetected = true;
 
 				return;
 			}
@@ -202,14 +226,14 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = props => {
 			if (!impl) {
 				// eslint-disable-next-line no-console
 				console.error(`Unknown RTV ${type}`);
-				anonomlyDetected = true;
+				anomalyDetected = true;
 
 				return;
 			}
 
 			const purePayload = elem.dataset.payload;
 
-			reconcilledParts.push({
+			reconciledParts.push({
 				type,
 				payload: purePayload ? JSON.parse(purePayload) : void 0,
 			} as RealtimeValuePart);
@@ -217,17 +241,25 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = props => {
 			return;
 		});
 
+		return { anomalyDetected, valueParts: reconciledParts };
+	}
+
+	function reconcile() {
+		if (!editableRef.current)
+			return;
+
+		const { anomalyDetected, valueParts } = parseDomState();
 		const { lastSelectionPosition } = unmanagedStateRef.current;
 
-		unmanagedStateRef.current.valueParts = reconcilledParts;
+		unmanagedStateRef.current.valueParts = valueParts;
 		unmanagedStateRef.current.lastSelectionPosition = normalizeSelection(lastSelectionPosition);
 
 		if (placeholderRef.current)
-			placeholderRef.current.style.display = reconcilledParts.length === 0 ? 'block' : 'none';
+			placeholderRef.current.style.display = valueParts.length === 0 ? 'block' : 'none';
 
 		// This means something really weird has happened, such as an unknown element getting into our DOM state. If
 		// that happens we just tell React to re-render and override with the state that we know about
-		if (anonomlyDetected) {
+		if (anomalyDetected) {
 			unmanagedStateRef.current.lastSelectionPosition = void 0;
 
 			forceRerender();
@@ -288,32 +320,33 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = props => {
 		const queryLength = query.length;
 		const mode = determineInsertionMode(valueParts, variableSelectionState, queryLength);
 		const newPartSelectionIndex = mode === 'append' ? partIndex + 2 : partIndex + 1;
+		const mutatedValueParts = [...valueParts];
 
 		if (['prepend', 'append'].includes(mode)) {
 			let finalPartIndex = partIndex;
 
 			if (mode === 'prepend') {
 				finalPartIndex += 1;
-				unmanagedStateRef.current.valueParts.splice(partIndex, 0, variable);
+				mutatedValueParts.splice(partIndex, 0, variable);
 			} else { // append
-				unmanagedStateRef.current.valueParts.splice(partIndex + 1, 0, variable);
+				mutatedValueParts.splice(partIndex + 1, 0, variable);
 			}
 
-			const part = (valueParts[finalPartIndex] as string);
+			const part = (mutatedValueParts[finalPartIndex] as string);
 			const partWithoutQuery = [
 				part.substring(0, offset - 1),
 				part.substr(part.length - queryTrailingLength),
 			].join('');
 
-			unmanagedStateRef.current.valueParts[finalPartIndex] = partWithoutQuery;
+			mutatedValueParts[finalPartIndex] = partWithoutQuery;
 		} else if (mode === 'inject') {
-			const part = (valueParts[partIndex] as string);
+			const part = (mutatedValueParts[partIndex] as string);
 			const pre = part.substring(0, offset - 1);
 			const post = part.substr(part.length - queryTrailingLength);
 
-			unmanagedStateRef.current.valueParts[partIndex] = pre;
-			unmanagedStateRef.current.valueParts.splice(partIndex + 1, 0, variable);
-			unmanagedStateRef.current.valueParts.splice(partIndex + 2, 0, post);
+			mutatedValueParts[partIndex] = pre;
+			mutatedValueParts.splice(partIndex + 1, 0, variable);
+			mutatedValueParts.splice(partIndex + 2, 0, post);
 		} else {
 			closeSelector();
 
@@ -327,6 +360,7 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = props => {
 		};
 
 		unmanagedStateRef.current.lastSelectionPosition = newSelectionPosition;
+		unmanagedStateRef.current.valueParts = mutatedValueParts;
 
 		closeSelector();
 
