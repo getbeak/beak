@@ -72,6 +72,18 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = props => {
 	}, []);
 
 	useEffect(() => {
+		const elem = editableRef.current;
+
+		if (!elem) return;
+
+		elem.addEventListener('input', handleChange);
+		elem.addEventListener('keydown', handleKeyDown);
+		elem.addEventListener('copy', handleCopy);
+		elem.addEventListener('blur', handleBlur);
+		elem.addEventListener('paste', handlePaste);
+	}, [showSelector, query, variableGroups, selectedGroups]);
+
+	useEffect(() => {
 		if (!editableRef.current)
 			return;
 
@@ -115,12 +127,17 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = props => {
 		// Selector is open, so update query
 		const part = valueParts[variableSelectionState.queryStartSelection.partIndex];
 
-		if (typeof part !== 'string')
-			return;
+		if (typeof part !== 'string') {
+			if (showSelector)
+				closeSelector();
 
+			return;
+		}
+
+		const queryWithOpener = part.substring(variableSelectionState.queryStartSelection.offset - 1);
 		const query = part.substring(variableSelectionState.queryStartSelection.offset);
 
-		if (query === '')
+		if (queryWithOpener === '')
 			closeSelector();
 		else
 			setQuery(query);
