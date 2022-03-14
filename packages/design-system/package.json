@@ -15,7 +15,7 @@
     "start": "tsc -b tsconfig.json -w"
   },
   "devDependencies": {
-    "@types/styled-components": "^5.1.18",
+    "@types/styled-components": "^5.1.24",
     "styled-components": "^5.3.3"
   }
 }
