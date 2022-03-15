@@ -1,6 +1,6 @@
 import { checkShortcut } from '@beak/app/lib/keyboard-shortcuts';
 import { TabItem } from '@beak/common/types/beak-project';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 
@@ -18,7 +18,13 @@ interface TabViewProps {
 const TabView: React.FunctionComponent<TabViewProps> = ({ selectedTab, tabs }) => {
 	const dispatch = useDispatch();
 
-	function onKeyDown(event: React.KeyboardEvent<HTMLDivElement>) {
+	useEffect(() => {
+		document.addEventListener('keydown', onKeyDown);
+
+		return () => document.removeEventListener('keydown', onKeyDown);
+	}, [selectedTab]);
+
+	function onKeyDown(event: KeyboardEvent) {
 		if (!selectedTab)
 			return;
 
@@ -61,7 +67,7 @@ const TabView: React.FunctionComponent<TabViewProps> = ({ selectedTab, tabs }) =
 				})}
 			</TabBar>
 
-			<ShortcutContainer onKeyDown={onKeyDown}>
+			<ShortcutContainer>
 				<Router selectedTab={selectedTab} />
 			</ShortcutContainer>
 		</React.Fragment>
