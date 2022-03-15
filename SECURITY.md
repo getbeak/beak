@@ -1,13 +1,15 @@
-# Security Policy
+# Security policy
 
-## Supported Versions
-
-Once Beak hit's public beta, we'll start proper support for Beak.
+## Supported versions
 
 | Version        | Supported          |
 | -------------- | ------------------ |
-| 1.0.0-beta.x   | :x: |
+| 1.0.x          | ✅ |
+
+## Unsupported versions
+
+All alpha, beta, and release candidate builds do not have full security support, however if you detect something please report it below.
 
 ## Reporting a Vulnerability
 
-Again, when Beak is ready I'll beef this up, but for now if you see anything please message us on Twitter ([@beakapp](https://twitter.com/@beakapp)), or via email [security@getbeak.app](mailto:security@getbeak.app).
+If you discover any security vulnerabilities with the Beak software, Beak API (nest), or any other part of Beak, please report it responsibly on Twitter ([@beakapp](https://twitter.com/@beakapp)), or via email [security@getbeak.app](mailto:security@getbeak.app).
