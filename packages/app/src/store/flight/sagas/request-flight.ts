@@ -9,9 +9,9 @@ import { TypedObject } from '@beak/common/helpers/typescript';
 import {
 	RequestBody,
 	RequestBodyText,
-	RequestNode,
 	RequestOverview,
 	ToggleKeyValue,
+	ValidRequestNode,
 } from '@beak/common/types/beak-project';
 import ksuid from '@cuvva/ksuid';
 import { call, put, select } from 'redux-saga/effects';
@@ -27,7 +27,7 @@ export default function* requestFlightWorker() {
 	const flightId = ksuid.generate('flight').toString();
 
 	const flight: State = yield select((s: ApplicationState) => s.global.flight);
-	const node: RequestNode = yield select((s: ApplicationState) => s.global.project.tree![requestId]);
+	const node: ValidRequestNode = yield select((s: ApplicationState) => s.global.project.tree![requestId]);
 	const vgState: VGState = yield select((s: ApplicationState) => s.global.variableGroups);
 	const selectedGroups: Record<string, string> = yield select(
 		(s: ApplicationState) => s.global.preferences.editor.selectedVariableGroups,

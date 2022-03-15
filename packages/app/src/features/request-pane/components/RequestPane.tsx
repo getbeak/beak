@@ -1,6 +1,6 @@
 import { loadRequestPreferences } from '@beak/app/store/preferences/actions';
 import { alertInsert, alertRemoveDependents } from '@beak/app/store/project/actions';
-import { RequestNode } from '@beak/common/types/beak-project';
+import { ValidRequestNode } from '@beak/common/types/beak-project';
 import ksuid from '@cuvva/ksuid';
 import React, { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -20,7 +20,7 @@ const RequestPane: React.FunctionComponent = () => {
 	const mounted = useRef(false);
 	const { tree } = useSelector(s => s.global.project);
 	const selectedTab = useSelector(s => s.features.tabs.selectedTab);
-	const selectedNode = tree[selectedTab!] as RequestNode;
+	const selectedNode = tree[selectedTab!] as ValidRequestNode;
 	const preferences = useSelector(s => s.global.preferences.requests[selectedNode.id]);
 
 	useEffect(() => {

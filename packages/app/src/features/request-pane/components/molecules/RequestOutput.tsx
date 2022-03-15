@@ -8,7 +8,7 @@ import { createDefaultOptions } from '@beak/app/utils/monaco';
 import { convertRequestToUrl } from '@beak/app/utils/uri';
 import { requestBodyContentType } from '@beak/common/helpers/request';
 import { TypedObject } from '@beak/common/helpers/typescript';
-import { RequestBody, RequestNode, RequestOverview, ToggleKeyValue } from '@beak/common/types/beak-project';
+import { RequestBody, ValidRequestNode, RequestOverview, ToggleKeyValue } from '@beak/common/types/beak-project';
 import Editor from '@monaco-editor/react';
 import React, { useContext, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -16,7 +16,7 @@ import { useSelector } from 'react-redux';
 const bodyFreeVerbs = ['get', 'head'];
 
 export interface RequestOutputProps {
-	selectedNode: RequestNode;
+	selectedNode: ValidRequestNode;
 }
 
 const RequestOutput: React.FunctionComponent<RequestOutputProps> = props => {

@@ -6,7 +6,7 @@ import { ipcDialogService } from '@beak/app/lib/ipc';
 import actions, { requestBodyTextChanged } from '@beak/app/store/project/actions';
 import { RequestBodyTypeChangedPayload } from '@beak/app/store/project/types';
 import { createDefaultOptions } from '@beak/app/utils/monaco';
-import { RequestBodyType, RequestNode, ValueParts } from '@beak/common/types/beak-project';
+import { RequestBodyType, ValidRequestNode, ValueParts } from '@beak/common/types/beak-project';
 import ksuid from '@cuvva/ksuid';
 import Editor from '@monaco-editor/react';
 import React from 'react';
@@ -18,7 +18,7 @@ import TabItem from '../../../../components/atoms/TabItem';
 import TabSpacer from '../../../../components/atoms/TabSpacer';
 
 export interface BodyTabProps {
-	node: RequestNode;
+	node: ValidRequestNode;
 }
 
 const BodyTab: React.FunctionComponent<BodyTabProps> = props => {

@@ -1,11 +1,11 @@
 import { actions } from '@beak/app/store/project';
-import { RequestNode } from '@beak/common/types/beak-project';
+import { ValidRequestNode } from '@beak/common/types/beak-project';
 import React from 'react';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 
 export interface OptionsViewProps {
-	node: RequestNode;
+	node: ValidRequestNode;
 }
 
 const OptionsView: React.FunctionComponent<OptionsViewProps> = props => {

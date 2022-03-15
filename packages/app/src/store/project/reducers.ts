@@ -6,7 +6,7 @@ import {
 	NamedStringEntry,
 	ValueEntries,
 } from '@beak/common/types/beak-json-editor';
-import { FolderNode, RequestBodyJson, RequestBodyUrlEncodedForm, RequestNode } from '@beak/common/types/beak-project';
+import { FolderNode, RequestBodyJson, RequestBodyUrlEncodedForm, ValidRequestNode } from '@beak/common/types/beak-project';
 import ksuid from '@cuvva/ksuid';
 import { createReducer } from '@reduxjs/toolkit';
 
@@ -28,7 +28,7 @@ const projectReducer = createReducer(initialState, builder => {
 
 		.addCase(actions.requestUriUpdated, (state, action) => {
 			const { payload } = action;
-			const node = state.tree[action.payload.requestId] as RequestNode;
+			const node = state.tree[action.payload.requestId] as ValidRequestNode;
 
 			if (payload.verb !== void 0)
 				node.info.verb = payload.verb;
@@ -38,7 +38,7 @@ const projectReducer = createReducer(initialState, builder => {
 
 		.addCase(actions.requestQueryAdded, (state, action) => {
 			const { payload } = action;
-			const node = state.tree[payload.requestId] as RequestNode;
+			const node = state.tree[payload.requestId] as ValidRequestNode;
 
 			node.info.query[ksuid.generate('query').toString()] = {
 				name: payload.name || '',
@@ -48,7 +48,7 @@ const projectReducer = createReducer(initialState, builder => {
 		})
 		.addCase(actions.requestQueryUpdated, (state, action) => {
 			const { payload } = action;
-			const node = state.tree[payload.requestId] as RequestNode;
+			const node = state.tree[payload.requestId] as ValidRequestNode;
 			const existingItem = node.info.query[payload.identifier];
 
 			if (payload.name !== void 0)
@@ -59,14 +59,14 @@ const projectReducer = createReducer(initialState, builder => {
 				existingItem.enabled = payload.enabled;
 		})
 		.addCase(actions.requestQueryRemoved, (state, action) => {
-			const node = state.tree[action.payload.requestId] as RequestNode;
+			const node = state.tree[action.payload.requestId] as ValidRequestNode;
 
 			delete node.info.query[action.payload.identifier];
 		})
 
 		.addCase(actions.requestHeaderAdded, (state, action) => {
 			const { payload } = action;
-			const node = state.tree[payload.requestId] as RequestNode;
+			const node = state.tree[payload.requestId] as ValidRequestNode;
 
 			node.info.headers[ksuid.generate('header').toString()] = {
 				name: payload.name || '',
@@ -76,7 +76,7 @@ const projectReducer = createReducer(initialState, builder => {
 		})
 		.addCase(actions.requestHeaderUpdated, (state, action) => {
 			const { payload } = action;
-			const node = state.tree[payload.requestId] as RequestNode;
+			const node = state.tree[payload.requestId] as ValidRequestNode;
 			const existingItem = node.info.headers[payload.identifier];
 
 			if (payload.name !== void 0)
@@ -87,13 +87,13 @@ const projectReducer = createReducer(initialState, builder => {
 				existingItem.enabled = payload.enabled;
 		})
 		.addCase(actions.requestHeaderRemoved, (state, action) => {
-			const node = state.tree[action.payload.requestId] as RequestNode;
+			const node = state.tree[action.payload.requestId] as ValidRequestNode;
 
 			delete node.info.headers[action.payload.identifier];
 		})
 
 		.addCase(actions.insertRequestNode, (state, action) => {
-			const node = action.payload as RequestNode;
+			const node = action.payload as ValidRequestNode;
 
 			state.tree[node.id] = node;
 		})
@@ -158,34 +158,34 @@ const projectReducer = createReducer(initialState, builder => {
 
 		.addCase(actions.requestBodyTypeChanged, (state, { payload }) => {
 			const { requestId, type } = payload;
-			const node = state.tree[requestId] as RequestNode;
+			const node = state.tree[requestId] as ValidRequestNode;
 			const body = node.info.body;
 
 			body.type = type;
 			body.payload = payload.payload;
 		})
 		.addCase(actions.requestBodyTextChanged, (state, action) => {
-			const node = state.tree[action.payload.requestId] as RequestNode;
+			const node = state.tree[action.payload.requestId] as ValidRequestNode;
 
 			node.info.body.payload = action.payload.text;
 		})
 		.addCase(actions.requestBodyJsonEditorNameChange, (state, { payload }) => {
 			const { id, name, requestId } = payload;
-			const node = state.tree[requestId] as RequestNode;
+			const node = state.tree[requestId] as ValidRequestNode;
 			const body = node.info.body as RequestBodyJson;
 
 			(body.payload[id] as NamedEntries).name = name;
 		})
 		.addCase(actions.requestBodyJsonEditorValueChange, (state, { payload }) => {
 			const { id, value, requestId } = payload;
-			const node = state.tree[requestId] as RequestNode;
+			const node = state.tree[requestId] as ValidRequestNode;
 			const body = node.info.body as RequestBodyJson;
 
 			(body.payload[id] as ValueEntries).value = value;
 		})
 		.addCase(actions.requestBodyJsonEditorTypeChange, (state, { payload }) => {
 			const { id, type, requestId } = payload;
-			const node = state.tree[requestId] as RequestNode;
+			const node = state.tree[requestId] as ValidRequestNode;
 			const body = node.info.body as RequestBodyJson;
 			const entry = body.payload[id];
 
@@ -207,14 +207,14 @@ const projectReducer = createReducer(initialState, builder => {
 		})
 		.addCase(actions.requestBodyJsonEditorEnabledChange, (state, { payload }) => {
 			const { id, enabled, requestId } = payload;
-			const node = state.tree[requestId] as RequestNode;
+			const node = state.tree[requestId] as ValidRequestNode;
 			const body = node.info.body as RequestBodyJson;
 
 			body.payload[id].enabled = enabled;
 		})
 		.addCase(actions.requestBodyJsonEditorAddEntry, (state, { payload }) => {
 			const { id, requestId } = payload;
-			const node = state.tree[requestId] as RequestNode;
+			const node = state.tree[requestId] as ValidRequestNode;
 			const body = node.info.body as RequestBodyJson;
 			const entry = body.payload[id];
 			const isRoot = entry.parentId === null;
@@ -236,7 +236,7 @@ const projectReducer = createReducer(initialState, builder => {
 		})
 		.addCase(actions.requestBodyJsonEditorRemoveEntry, (state, { payload }) => {
 			const { id, requestId } = payload;
-			const node = state.tree[requestId] as RequestNode;
+			const node = state.tree[requestId] as ValidRequestNode;
 			const body = node.info.body as RequestBodyJson;
 
 			delete body.payload[id];
@@ -246,28 +246,28 @@ const projectReducer = createReducer(initialState, builder => {
 
 		.addCase(actions.requestBodyUrlEncodedEditorNameChange, (state, { payload }) => {
 			const { requestId, id, name } = payload;
-			const node = state.tree[requestId] as RequestNode;
+			const node = state.tree[requestId] as ValidRequestNode;
 			const body = node.info.body as RequestBodyUrlEncodedForm;
 
 			body.payload[id].name = name;
 		})
 		.addCase(actions.requestBodyUrlEncodedEditorValueChange, (state, { payload }) => {
 			const { requestId, id, value } = payload;
-			const node = state.tree[requestId] as RequestNode;
+			const node = state.tree[requestId] as ValidRequestNode;
 			const body = node.info.body as RequestBodyUrlEncodedForm;
 
 			body.payload[id].value = value;
 		})
 		.addCase(actions.requestBodyUrlEncodedEditorEnabledChange, (state, { payload }) => {
 			const { requestId, id, enabled } = payload;
-			const node = state.tree[requestId] as RequestNode;
+			const node = state.tree[requestId] as ValidRequestNode;
 			const body = node.info.body as RequestBodyUrlEncodedForm;
 
 			body.payload[id].enabled = enabled;
 		})
 		.addCase(actions.requestBodyUrlEncodedEditorAddItem, (state, { payload }) => {
 			const { requestId } = payload;
-			const node = state.tree[requestId] as RequestNode;
+			const node = state.tree[requestId] as ValidRequestNode;
 			const body = node.info.body as RequestBodyUrlEncodedForm;
 			const id = ksuid.generate('urlencodeditem').toString();
 
@@ -279,7 +279,7 @@ const projectReducer = createReducer(initialState, builder => {
 		})
 		.addCase(actions.requestBodyUrlEncodedEditorRemoveItem, (state, { payload }) => {
 			const { requestId, id } = payload;
-			const node = state.tree[requestId] as RequestNode;
+			const node = state.tree[requestId] as ValidRequestNode;
 			const body = node.info.body as RequestBodyUrlEncodedForm;
 
 			delete body.payload[id];
@@ -287,7 +287,7 @@ const projectReducer = createReducer(initialState, builder => {
 
 		.addCase(actions.requestOptionFollowRedirects, (state, { payload }) => {
 			const { requestId, followRedirects } = payload;
-			const node = state.tree[requestId] as RequestNode;
+			const node = state.tree[requestId] as ValidRequestNode;
 
 			node.info.options.followRedirects = followRedirects;
 		})

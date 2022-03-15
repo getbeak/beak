@@ -124,8 +124,8 @@ const ProjectMain: React.FunctionComponent = () => {
 					</React.Fragment>
 				)}
 			</Container>
-			<StatusBar />
 
+			<StatusBar />
 			<ProjectEncryption />
 
 			{(!loaded || !setup) && <ProjectLoading />}

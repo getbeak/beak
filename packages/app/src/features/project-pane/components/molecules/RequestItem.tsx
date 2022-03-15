@@ -2,7 +2,7 @@ import { toVibrancyAlpha } from '@beak/app/design-system/utils';
 import { changeTab, makeTabPermanent } from '@beak/app/features/tabs/store/actions';
 import { checkShortcut } from '@beak/app/lib/keyboard-shortcuts';
 import { TypedObject } from '@beak/common/helpers/typescript';
-import { RequestNode } from '@beak/common/types/beak-project';
+import { ValidRequestNode } from '@beak/common/types/beak-project';
 import React, { useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
@@ -24,7 +24,7 @@ const RequestItem: React.FunctionComponent<RequestItemProps> = props => {
 	const [target, setTarget] = useState<HTMLElement>();
 
 	const rename = useSelector(s => s.global.project.activeRename);
-	const node = useSelector(s => s.global.project.tree![props.id]) as RequestNode;
+	const node = useSelector(s => s.global.project.tree![props.id]) as ValidRequestNode;
 	const selectedTabPayload = useSelector(s => s.features.tabs.selectedTab);
 	const flight = useSelector(s => s.global.flight.flightHistory[node.id]);
 	const active = selectedTabPayload === props.id;

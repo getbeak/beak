@@ -29,22 +29,42 @@ export async function createRequestNode(directory: string, name?: string, templa
 	return node.id;
 }
 
-export async function readRequestNode(requestFilePath: string) {
-	const { file, filePath, name } = await readJsonAndValidate<RequestNodeFile>(requestFilePath, requestSchema);
+export async function readRequestNode(requestFilePath: string): Promise<RequestNode> {
+	const {
+		file,
+		filePath,
+		name,
+		error,
+	} = await readJsonAndValidate<RequestNodeFile>(requestFilePath, requestSchema, true);
 
-	const node: RequestNode = {
+	if (error) {
+		return {
+			type: 'request',
+			filePath,
+			parent: path.join(filePath, '..'),
+			name,
+			id: file.id,
+			mode: 'failed',
+			error,
+		};
+	}
+
+	return {
 		type: 'request',
 		filePath,
 		parent: path.join(filePath, '..'),
 		name,
 		id: file.id,
+		mode: 'valid',
 		info: { ...file },
 	};
-
-	return node;
 }
 
 export async function writeRequestNode(request: RequestNode) {
+	// Don't write invalid files!
+	if (request.mode === 'failed')
+		return;
+
 	const node: RequestNodeFile = {
 		id: request.id,
 		...request.info,
@@ -68,11 +88,15 @@ export async function renameRequestNode(newName: string, requestNode: RequestNod
 	await ipcFsService.move(oldFilePath, newFilePath);
 }
 
-export async function duplicateRequestNode(request: RequestNode) {
+export async function duplicateRequestNode(request: RequestNode): Promise<string | null> {
 	const oldPath = request.filePath;
 	const extension = path.extname(oldPath);
 	const name = path.basename(oldPath, extension);
 	const directory = path.join(oldPath, '..');
+
+	// Don't allow duplicating invalid nodes!
+	if (request.mode === 'failed')
+		return null;
 
 	const { fullPath } = await generateSafeNewPath(name, directory, extension);
 	const node: RequestNodeFile = {

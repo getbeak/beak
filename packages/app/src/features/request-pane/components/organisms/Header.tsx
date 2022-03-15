@@ -1,7 +1,7 @@
 import { parseValueParts } from '@beak/app/features/realtime-values/parser';
 import VariableInput from '@beak/app/features/variable-input/components/VariableInput';
 import { requestPreferenceSetMainTab } from '@beak/app/store/preferences/actions';
-import { RequestNode, ValueParts } from '@beak/common/types/beak-project';
+import { ValidRequestNode, ValueParts } from '@beak/common/types/beak-project';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
@@ -11,7 +11,7 @@ import { requestFlight } from '../../../../store/flight/actions';
 import { requestQueryAdded, requestUriUpdated } from '../../../../store/project/actions';
 
 export interface HeaderProps {
-	node: RequestNode;
+	node: ValidRequestNode;
 }
 
 const Header: React.FunctionComponent<HeaderProps> = props => {

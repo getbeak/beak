@@ -1,9 +1,10 @@
 import ReflexSplitter from '@beak/app/components/atoms/ReflexSplitter';
-import { TabItem } from '@beak/common/types/beak-project';
+import { RequestNode, TabItem } from '@beak/common/types/beak-project';
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { ReflexContainer, ReflexElement } from 'react-reflex';
 
+import BrokenRequest from '../../broken-request/components/BrokenRequest';
 import RequestPane from '../../request-pane/components/RequestPane';
 import ResponsePane from '../../response-pane/components/ResponsePane';
 import VariableGroupEditor from '../../variable-groups/components/VariableGroupEditor';
@@ -14,14 +15,25 @@ interface RouterProps {
 }
 
 const Router: React.FunctionComponent<RouterProps> = ({ selectedTab }) => {
-	const selectedRequest = useSelector(s => s.global.project.tree[selectedTab?.payload || '']);
+	const selectedItem = useSelector(s => s.global.project.tree[selectedTab?.payload || '']);
 
 	if (!selectedTab)
 		return <NotTheTabYourLookingFor />;
 
 	if (selectedTab.type === 'request') {
+		const selectedRequest = selectedItem as RequestNode;
+
 		if (!selectedRequest)
 			return <NotTheTabYourLookingFor />;
+
+		if (selectedRequest.mode === 'failed') {
+			return (
+				<BrokenRequest
+					filePath={selectedRequest.filePath}
+					error={selectedRequest.error}
+				/>
+			);
+		}
 
 		return (
 			<ReflexContainer orientation={'vertical'}>

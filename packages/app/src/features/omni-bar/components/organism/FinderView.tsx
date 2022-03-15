@@ -2,7 +2,7 @@ import { changeTab } from '@beak/app/features/tabs/store/actions';
 import { checkShortcut } from '@beak/app/lib/keyboard-shortcuts';
 import { movePosition } from '@beak/app/utils/arrays';
 import { TypedObject } from '@beak/common/helpers/typescript';
-import { RequestNode } from '@beak/common/types/beak-project';
+import { ValidRequestNode } from '@beak/common/types/beak-project';
 import Fuse from 'fuse.js';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -20,7 +20,7 @@ const FinderView: React.FunctionComponent<FinderViewProps> = ({ content, reset }
 	const tree = useSelector(s => s.global.project.tree) || {};
 	const { variableGroups } = useSelector(s => s.global.variableGroups);
 	const selectedGroups = useSelector(s => s.global.preferences.editor.selectedVariableGroups);
-	const flattened = TypedObject.values(tree).filter(t => t.type === 'request') as RequestNode[];
+	const flattened = TypedObject.values(tree).filter(t => t.type === 'request') as ValidRequestNode[];
 	const [matches, setMatches] = useState<string[]>([]);
 	const [active, setActive] = useState<number>(-1);
 	const context = { selectedGroups, variableGroups };
@@ -85,7 +85,7 @@ const FinderView: React.FunctionComponent<FinderViewProps> = ({ content, reset }
 		<Container tabIndex={0}>
 			{matches?.map((k, i) => {
 				const match = tree[k];
-				const reqNode = match as RequestNode;
+				const reqNode = match as ValidRequestNode;
 
 				return (
 					<Item

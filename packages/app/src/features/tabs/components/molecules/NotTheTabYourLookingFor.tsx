@@ -1,6 +1,6 @@
 import Button from '@beak/app/components/atoms/Button';
 import { TypedObject } from '@beak/common/helpers/typescript';
-import { RequestNode } from '@beak/common/types/beak-project';
+import { ValidRequestNode } from '@beak/common/types/beak-project';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
@@ -12,7 +12,7 @@ const NotTheTabYourLookingFor: React.FunctionComponent = () => {
 	const dispatch = useDispatch();
 
 	function spinThatWheel() {
-		const requests = TypedObject.values(tree).filter(n => n.type === 'request') as RequestNode[];
+		const requests = TypedObject.values(tree).filter(n => n.type === 'request') as ValidRequestNode[];
 
 		if (requests.length === 0) {
 			dispatch(changeTab({

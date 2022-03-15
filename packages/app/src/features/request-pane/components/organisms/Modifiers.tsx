@@ -2,7 +2,7 @@ import BasicTableEditor from '@beak/app/features/basic-table-editor/components/B
 import { requestPreferenceSetMainTab } from '@beak/app/store/preferences/actions';
 import actions from '@beak/app/store/project/actions';
 import { RequestPreferenceMainTab } from '@beak/common/types/beak-hub';
-import { RequestNode } from '@beak/common/types/beak-project';
+import { ValidRequestNode } from '@beak/common/types/beak-project';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
@@ -14,7 +14,7 @@ import BodyTab from './BodyTab';
 import OptionsView from './OptionsView';
 
 export interface ModifiersProps {
-	node: RequestNode;
+	node: ValidRequestNode;
 }
 
 const Modifiers: React.FunctionComponent<ModifiersProps> = props => {

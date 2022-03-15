@@ -1,3 +1,4 @@
+import Squawk from '../utils/squawk';
 import { EntryMap } from './beak-json-editor';
 
 export interface ProjectFile {
@@ -29,9 +30,18 @@ export interface FolderNode extends Node {
 	type: 'folder';
 }
 
-export interface RequestNode extends Node {
+export type RequestNode = ValidRequestNode | FailedRequestNode;
+
+export interface ValidRequestNode extends Node {
 	type: 'request';
+	mode: 'valid';
 	info: RequestOverview;
+}
+
+export interface FailedRequestNode extends Node {
+	type: 'request';
+	mode: 'failed';
+	error: Squawk;
 }
 
 export interface ToggleKeyValue {
