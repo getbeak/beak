@@ -32,7 +32,7 @@ const Header: React.FunctionComponent<HeaderProps> = props => {
 	async function handleUrlChange(parts: ValueParts) {
 		const context = { selectedGroups, variableGroups };
 		const value = await parseValueParts(context, parts);
-		let sanitisedParts = [...parts];
+		let sanitizedParts = [...parts];
 		const parsed = new URL(value, true);
 
 		// If it can be parsed, and there is a query string, strip it out and move to correct part of request info
@@ -51,8 +51,8 @@ const Header: React.FunctionComponent<HeaderProps> = props => {
 			const searchIndex = parts.findIndex(p => typeof p === 'string' && p.includes('?'));
 			const searchPartIndex = (parts[searchIndex] as string).indexOf('?');
 
-			sanitisedParts = parts.slice(0, searchIndex);
-			sanitisedParts.push((parts[searchIndex] as string).slice(0, searchPartIndex));
+			sanitizedParts = parts.slice(0, searchIndex);
+			sanitizedParts.push((parts[searchIndex] as string).slice(0, searchPartIndex));
 
 			// Move focus to query string editor
 			dispatch(requestPreferenceSetMainTab({ id: node.id, tab: 'url_query' }));
@@ -60,7 +60,7 @@ const Header: React.FunctionComponent<HeaderProps> = props => {
 
 		dispatch(requestUriUpdated({
 			requestId: node.id,
-			url: sanitisedParts,
+			url: sanitizedParts,
 		}));
 	}
 
