@@ -57,9 +57,28 @@
 				},
 
 				"enabled": { "type": "boolean" },
-				"name": { "type": "string" },
-				"value": { "$ref": "#/definitions/valueParts" }
-			}
+				"name": { "type": "string" }
+			},
+
+			"allOf": [
+				{
+					"if": {
+						"properties": {
+							"type": { "const": "null" }
+						}
+					},
+					"then": {
+						"properties": {
+							"value": { "type": "null" }
+						}
+					},
+					"else": {
+						"properties": {
+							"value": { "$ref": "#/definitions/valueParts" }
+						}
+					}
+				}
+			]
 		},
 		"keyValuePair": {
 			"type": "object",
