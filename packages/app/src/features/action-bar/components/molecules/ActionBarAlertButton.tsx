@@ -15,6 +15,9 @@ const ActionBarAlertButton: React.FunctionComponent = () => {
 	const hasAlerts = TypedObject.values(alerts).filter(Boolean).length > 0;
 	const parentRef = useRef() as React.MutableRefObject<HTMLButtonElement>;
 
+	if (!hasAlerts)
+		return null;
+
 	return (
 		<React.Fragment>
 			<ActionBarButton ref={parentRef}>
