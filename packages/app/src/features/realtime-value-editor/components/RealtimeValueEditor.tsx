@@ -1,5 +1,5 @@
 import Input, { Select } from '@beak/app/components/atoms/Input';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 
@@ -21,11 +21,17 @@ interface RealtimeValueEditorProps {
 
 const RealtimeValueEditor: React.FunctionComponent<RealtimeValueEditorProps> = props => {
 	const { editable, onSave } = props;
+	const initialInputRef = useRef<HTMLElement | null>(null);
 
 	const [editorContext, setEditorContext] = useState<RtvEditorContext>();
 	const { variableGroups } = useSelector(s => s.global.variableGroups);
 	const selectedGroups = useSelector(s => s.global.preferences.editor.selectedVariableGroups);
 	const context = { selectedGroups, variableGroups };
+
+	useEffect(() => {
+		if (editorContext)
+			initialInputRef.current?.focus();
+	}, [editorContext]);
 
 	useEffect(() => {
 		const onClick = (event: MouseEvent) => {
@@ -64,7 +70,7 @@ const RealtimeValueEditor: React.FunctionComponent<RealtimeValueEditorProps> = p
 		return () => {
 			editable.removeEventListener('click', onClick);
 		};
-	}, []);
+	}, [editorContext]);
 
 	function updateState(delta: Record<string, string>) {
 		if (!editorContext)
@@ -86,13 +92,14 @@ const RealtimeValueEditor: React.FunctionComponent<RealtimeValueEditorProps> = p
 		setEditorContext(void 0);
 	}
 
-	function renderUiSection(section: UISection<unknown>) {
+	function renderUiSection(section: UISection<unknown>, first: boolean) {
 		switch (section.type) {
 			case 'string_input':
 				return (
 					<FormGroup key={`${section.stateBinding}`}>
 						{section.label && <Label>{section.label}</Label>}
 						<Input
+							ref={i => trySetInitialRef(first, i, initialInputRef)}
 							beakSize={'sm'}
 							type={'text'}
 							value={state[section.stateBinding as string] || ''}
@@ -108,6 +115,7 @@ const RealtimeValueEditor: React.FunctionComponent<RealtimeValueEditorProps> = p
 					<FormGroup key={`${section.stateBinding}`}>
 						{section.label && <Label>{section.label}</Label>}
 						<Input
+							ref={i => trySetInitialRef(first, i, initialInputRef)}
 							beakSize={'sm'}
 							type={'number'}
 							value={state[section.stateBinding as string] || ''}
@@ -123,6 +131,7 @@ const RealtimeValueEditor: React.FunctionComponent<RealtimeValueEditorProps> = p
 					<FormGroup key={`${section.stateBinding}`}>
 						{section.label && <Label>{section.label}</Label>}
 						<Select
+							ref={i => trySetInitialRef(first, i, initialInputRef)}
 							beakSize={'sm'}
 							value={state[section.stateBinding as string] || ''}
 							onChange={e => updateState({
@@ -153,7 +162,7 @@ const RealtimeValueEditor: React.FunctionComponent<RealtimeValueEditorProps> = p
 				$left={boundingRect.left - (300 / 2)}
 				onClick={event => void event.stopPropagation()}
 			>
-				{ui.map(section => renderUiSection(section))}
+				{ui.map((section, i) => renderUiSection(section, i === 0))}
 
 				<ButtonContainer>
 					<Button onClick={() => {
@@ -166,6 +175,18 @@ const RealtimeValueEditor: React.FunctionComponent<RealtimeValueEditorProps> = p
 		</Container>
 	);
 };
+
+function trySetInitialRef(
+	first: boolean,
+	instance: HTMLElement | null,
+	ref: React.MutableRefObject<HTMLElement | null>,
+) {
+	if (!first)
+		return;
+
+	// eslint-disable-next-line no-param-reassign
+	ref.current = instance;
+}
 
 const Container = styled.div`
 	z-index: 101;
