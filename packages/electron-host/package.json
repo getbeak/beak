@@ -1,7 +1,7 @@
 {
   "name": "@beak/electron-host",
   "description": "A feathery cross-platform API crafting tool",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "private": true,
   "author": {
     "name": "Alexander Forbes-Reed (0xdeafcafe)",
