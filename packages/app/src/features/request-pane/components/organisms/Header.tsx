@@ -93,6 +93,7 @@ const Header: React.FunctionComponent<HeaderProps> = props => {
 
 			<OmniBar>
 				<VariableInput
+					requestId={node.id}
 					parts={node.info.url}
 					placeholder={window.location.host}
 					onChange={e => handleUrlChange(e)}

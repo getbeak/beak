@@ -26,8 +26,9 @@ interface UnmanagedState {
 }
 
 export interface VariableInputProps {
-	placeholder?: string;
 	disabled?: boolean;
+	placeholder?: string;
+	requestId?: string;
 	parts: ValueParts;
 
 	onChange: (parts: ValueParts) => void;
@@ -35,7 +36,7 @@ export interface VariableInputProps {
 }
 
 const VariableInput: React.FunctionComponent<VariableInputProps> = props => {
-	const { disabled, placeholder, parts: incomingParts, onChange } = props;
+	const { disabled, requestId, placeholder, parts: incomingParts, onChange } = props;
 	const dispatch = useDispatch();
 
 	const forceRerender = useForceReRender();
@@ -59,29 +60,36 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = props => {
 
 		const elem = editableRef.current;
 
+		unmanagedStateRef.current = {
+			lastUpstreamReport: 0,
+			valueParts: incomingParts,
+		};
+
 		elem.innerHTML = renderValueParts(
 			unmanagedStateRef.current.valueParts,
 			variableGroups,
 		);
-
-		elem.addEventListener('input', handleChange);
-		elem.addEventListener('keydown', handleKeyDown);
-		elem.addEventListener('copy', handleCopy);
-		elem.addEventListener('blur', handleBlur);
-		elem.addEventListener('paste', handlePaste);
-	}, []);
+	}, [requestId]);
 
 	useEffect(() => {
 		const elem = editableRef.current;
 
-		if (!elem) return;
+		if (!elem) return () => { /* */ };
 
 		elem.addEventListener('input', handleChange);
 		elem.addEventListener('keydown', handleKeyDown);
 		elem.addEventListener('copy', handleCopy);
 		elem.addEventListener('blur', handleBlur);
 		elem.addEventListener('paste', handlePaste);
-	}, [showSelector, query, variableGroups, selectedGroups]);
+
+		return () => {
+			elem.removeEventListener('input', handleChange);
+			elem.removeEventListener('keydown', handleKeyDown);
+			elem.removeEventListener('copy', handleCopy);
+			elem.removeEventListener('blur', handleBlur);
+			elem.removeEventListener('paste', handlePaste);
+		};
+	}, [requestId, showSelector, query, variableGroups, selectedGroups]);
 
 	useEffect(() => {
 		if (!editableRef.current)
@@ -89,7 +97,7 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = props => {
 
 		// Pretend it's an input, as it technically is
 		(editableRef.current as HTMLInputElement).disabled = Boolean(disabled);
-	}, [disabled]);
+	}, [requestId, disabled]);
 
 	useEffect(() => {
 		// Update unmanaged state if the change comes in more than 100ms after our last known write
