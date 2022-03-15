@@ -9,6 +9,12 @@ const FooterLinks: React.FunctionComponent = () => (
 			<LinkItem to={'/#features'}>{'Features'}</LinkItem>
 			<LinkItem to={'/pricing'}>{'Pricing'}</LinkItem>
 			<ExternalLinkItem
+				rel={'noopener noreferrer nofollow'}
+				href={'https://status.getbeak.app/'}
+			>
+				{'Status'}
+			</ExternalLinkItem>
+			<ExternalLinkItem
 				target={'_blank'}
 				rel={'noopener noreferrer nofollow'}
 				href={'https://docs.getbeak.app/'}
