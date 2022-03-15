@@ -202,6 +202,8 @@ const projectReducer = createReducer(initialState, builder => {
 				(entry as ValueEntries).value = true;
 			else if (type === 'null')
 				(entry as ValueEntries).value = null;
+			else
+				(entry as ValueEntries).value = [];
 		})
 		.addCase(actions.requestBodyJsonEditorEnabledChange, (state, { payload }) => {
 			const { id, enabled, requestId } = payload;
