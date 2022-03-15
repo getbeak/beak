@@ -132,7 +132,7 @@ function getTargetTab(state: State, tab: string | undefined) {
 	if (!selectedTab)
 		return void 0;
 
-	return state.activeTabs.find(t => t.payload === tab);
+	return state.activeTabs.find(t => t.payload === selectedTab);
 }
 
 function updateRecentlyClosed(state: State, ...tabs: TabItem[]) {
