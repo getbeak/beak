@@ -22,6 +22,10 @@ export function detectRelevantCopiedValueParts(valueParts: ValueParts) {
 	}
 
 	const root = findParentNode(startNode, 'ARTICLE');
+
+	if (!root)
+		return null;
+
 	const rootChildren = root.childNodes;
 
 	let startIndex = -1;
@@ -34,6 +38,9 @@ export function detectRelevantCopiedValueParts(valueParts: ValueParts) {
 		} else if (n.nodeName === 'SPAN') {
 			const textNode = findChildNode(n, '#text');
 
+			if (!textNode)
+				return null;
+
 			if (startNode === textNode)
 				startIndex = i;
 		}
@@ -42,6 +49,9 @@ export function detectRelevantCopiedValueParts(valueParts: ValueParts) {
 			endIndex = i;
 		} else if (n.nodeName === 'SPAN') {
 			const textNode = findChildNode(n, '#text');
+
+			if (!textNode)
+				return null;
 
 			if (endNode === textNode)
 				endIndex = i;
@@ -72,6 +82,9 @@ function findParentNode(node: Node, nodeName: string) {
 
 	// eslint-disable-next-line no-constant-condition
 	while (true) {
+		if (!currentNode)
+			return null;
+
 		if (currentNode.nodeName === nodeName)
 			return currentNode;
 
@@ -84,9 +97,12 @@ function findChildNode(node: Node, nodeName: string) {
 
 	// eslint-disable-next-line no-constant-condition
 	while (true) {
+		if (!currentNode)
+			return null;
+
 		if (currentNode.nodeName === nodeName)
 			return currentNode;
 
-		currentNode = currentNode.childNodes[0]!;
+		currentNode = currentNode.childNodes[0];
 	}
 }
