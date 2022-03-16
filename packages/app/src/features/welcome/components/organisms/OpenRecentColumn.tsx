@@ -23,7 +23,7 @@ const OpenRecentColumn: React.FunctionComponent = () => {
 			const newRecents = { ...defaultRecents() };
 			const now = new Date().getTime() / 1000;
 
-			recents.filter(r => r.exists)
+			recents
 				.sort((a, b) => {
 					const aD = new Date(a.accessTime).getTime();
 					const bD = new Date(b.accessTime).getTime();

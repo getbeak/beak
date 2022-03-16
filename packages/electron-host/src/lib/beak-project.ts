@@ -22,7 +22,17 @@ export async function tryOpenProjectFolder(projectFolderPath: string) {
 	if (!await fs.pathExists(projectFilePath))
 		return;
 
-	const projectFile = await fs.readJson(projectFilePath) as ProjectFile;
+	const projectFile = await fs.readJson(projectFilePath, { throws: false }) as ProjectFile | null;
+
+	if (!projectFile) {
+		await dialog.showMessageBox({
+			title: 'Unable to load project',
+			message: 'The project file you tried to open could not be found',
+			type: 'error',
+		});
+
+		return;
+	}
 
 	if (!projectFile.name)
 		return;

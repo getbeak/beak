@@ -6,7 +6,6 @@ export interface RecentLocalProject {
 	name: string;
 	path: string;
 	accessTime: string;
-	exists: boolean;
 }
 
 export type RequestPreferenceMainTab = 'headers' | 'url_query' | 'body' | 'options';

@@ -14,18 +14,17 @@ export async function listRecentProjects(): Promise<RecentLocalProject[]> {
 	const recents = persistentStore.get('recents');
 
 	const promises = recents.map(async r => {
-		const exists = await fs.pathExists(r.path);
-		const projectFile = path.join(r.path, 'project.json');
+		const projectFilePath = path.join(r.path, 'project.json');
+		const projectFileExists = await fs.pathExists(projectFilePath);
 
-		if (!exists)
+		if (!projectFileExists)
 			return null;
 
-		const pfStat = await fs.stat(projectFile);
+		const pfStat = await fs.stat(projectFilePath);
 		const accessTime = pfStat.atime.toISOString();
 
 		return {
 			...r,
-			exists,
 			accessTime,
 		};
 	});
