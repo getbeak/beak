@@ -129,8 +129,13 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = props => {
 		const { variableSelectionState, valueParts } = unmanagedStateRef.current;
 
 		// Sanity check, but by now the selector will be open
-		if (!variableSelectionState)
+		if (!variableSelectionState) {
+			// Ensure the selector is closed if there is no state too
+			if (showSelector)
+				closeSelector();
+
 			return;
+		}
 
 		// Selector is open, so update query
 		const part = valueParts[variableSelectionState.queryStartSelection.partIndex];
@@ -227,8 +232,7 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = props => {
 					editableRef.current?.blur();
 				}
 
-				if (originalTextContent)
-					reconciledParts.push(originalTextContent);
+				reconciledParts.push(originalTextContent);
 
 				return;
 			}
