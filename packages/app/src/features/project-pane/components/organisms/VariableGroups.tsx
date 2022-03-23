@@ -48,6 +48,7 @@ const Container = styled.div`
 	padding: 4px 14px;
 	padding-right: 3px;
 
+	flex-shrink: 0;
 	overflow-y: scroll;
 	max-height: 120px;
 	min-height: 26px;
@@ -57,7 +58,11 @@ const Item = styled.div`
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	margin: 2px 0;
+	margin: 4px 0;
+
+	&:first-child {
+		margin-top: 0;
+	}
 `;
 
 const GroupName = styled.span`

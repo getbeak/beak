@@ -86,11 +86,13 @@ const Container = styled.div<{ $darwin: boolean }>`
 
 	background: ${p => p.$darwin ? 'transparent' : p.theme.ui.background};
 
-	height: 100%;
+	height: calc(100vh - 24px);
+	overflow-y: hidden;
 `;
 
 const TitleBar = styled.div`
 	height: 39px;
+	flex-shrink: 0;
 	-webkit-app-region: drag;
 `;
 

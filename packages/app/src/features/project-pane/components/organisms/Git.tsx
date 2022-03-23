@@ -34,6 +34,7 @@ const Container = styled.div`
 	padding: 4px 14px;
 	padding-right: 3px;
 
+	flex-shrink: 0;
 	overflow-y: scroll;
 	max-height: 120px;
 	min-height: 26px;
