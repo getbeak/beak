@@ -2,11 +2,17 @@
 
 import { TypedObject } from '@beak/common/helpers/typescript';
 import {
+	EntryMap,
 	NamedEntries,
 	NamedStringEntry,
 	ValueEntries,
 } from '@beak/common/types/beak-json-editor';
-import { FolderNode, RequestBodyJson, RequestBodyUrlEncodedForm, ValidRequestNode } from '@beak/common/types/beak-project';
+import {
+	FolderNode,
+	RequestBodyJson,
+	RequestBodyUrlEncodedForm,
+	ValidRequestNode,
+} from '@beak/common/types/beak-project';
 import ksuid from '@cuvva/ksuid';
 import { createReducer } from '@reduxjs/toolkit';
 
@@ -174,12 +180,18 @@ const projectReducer = createReducer(initialState, builder => {
 			const node = state.tree[requestId] as ValidRequestNode;
 			const body = node.info.body as RequestBodyJson;
 
+			if (!body.payload[id])
+				return;
+
 			(body.payload[id] as NamedEntries).name = name;
 		})
 		.addCase(actions.requestBodyJsonEditorValueChange, (state, { payload }) => {
 			const { id, value, requestId } = payload;
 			const node = state.tree[requestId] as ValidRequestNode;
 			const body = node.info.body as RequestBodyJson;
+
+			if (!body.payload[id])
+				return;
 
 			(body.payload[id] as ValueEntries).value = value;
 		})
@@ -188,6 +200,9 @@ const projectReducer = createReducer(initialState, builder => {
 			const node = state.tree[requestId] as ValidRequestNode;
 			const body = node.info.body as RequestBodyJson;
 			const entry = body.payload[id];
+
+			if (!entry)
+				return;
 
 			entry.type = type;
 
@@ -204,11 +219,17 @@ const projectReducer = createReducer(initialState, builder => {
 				(entry as ValueEntries).value = null;
 			else
 				(entry as ValueEntries).value = [];
+
+			// Cleanup orphaned entries
+			body.payload = removeOrphanedJsonEntries(body.payload);
 		})
 		.addCase(actions.requestBodyJsonEditorEnabledChange, (state, { payload }) => {
 			const { id, enabled, requestId } = payload;
 			const node = state.tree[requestId] as ValidRequestNode;
 			const body = node.info.body as RequestBodyJson;
+
+			if (!body.payload[id])
+				return;
 
 			body.payload[id].enabled = enabled;
 		})
@@ -220,6 +241,9 @@ const projectReducer = createReducer(initialState, builder => {
 			const isRoot = entry.parentId === null;
 			const allowsChildren = ['array', 'object'].includes(entry.type);
 			const newId = ksuid.generate('jsonentry').toString();
+
+			if (!entry)
+				return;
 
 			// Don't allow non-child friendly root entries to have children
 			if (!allowsChildren && isRoot)
@@ -241,7 +265,8 @@ const projectReducer = createReducer(initialState, builder => {
 
 			delete body.payload[id];
 
-			// TODO(afr): Cleanup unlinked entries
+			// Cleanup orphaned entries
+			body.payload = removeOrphanedJsonEntries(body.payload);
 		})
 
 		.addCase(actions.requestBodyUrlEncodedEditorNameChange, (state, { payload }) => {
@@ -342,5 +367,26 @@ const projectReducer = createReducer(initialState, builder => {
 			state.alerts = { };
 		});
 });
+
+function removeOrphanedJsonEntries(body: EntryMap) {
+	const allRelevantIds = TypedObject.keys(body).reduce<string[]>((acc, k) => {
+		const entry = body[k];
+
+		if (entry && ['array', 'object'].includes(entry.type))
+			return [...acc, k];
+
+		return acc;
+	}, []);
+
+	// Only return entries where the parent id exists, and the parent is an object/array (or root!)
+	return TypedObject.keys(body).reduce<EntryMap>((acc, k) => {
+		const entry = body[k];
+
+		if (entry.parentId === null || allRelevantIds.includes(entry.parentId))
+			return { ...acc, [k]: entry };
+
+		return acc;
+	}, {});
+}
 
 export default projectReducer;
