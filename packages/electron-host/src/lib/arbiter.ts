@@ -24,11 +24,17 @@ class Arbiter {
 		const auth = await nestClient.getAuth();
 		let status = this.getStatus();
 
+		logger.info('arbiter: checking status');
+
 		if (!auth)
 			return;
 
 		try {
+			logger.info('arbiter: ensuring active subscription');
+
 			await nestClient.ensureActiveSubscription();
+
+			logger.info('arbiter: ensured active subscription');
 
 			status = {
 				lastSuccessfulCheck: new Date().toISOString(),
@@ -40,7 +46,7 @@ class Arbiter {
 			const squawk = Squawk.coerce(error);
 			const expired = checkExpired(status.lastSuccessfulCheck);
 
-			logger.warn('arbiter: preview user request failed', error, squawk);
+			logger.warn('arbiter: ensure subscription has failed', error, squawk);
 
 			status = {
 				lastSuccessfulCheck: status.lastSuccessfulCheck,
