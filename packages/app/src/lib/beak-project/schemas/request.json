@@ -63,6 +63,7 @@
 			"allOf": [
 				{
 					"if": {
+						"required": ["type"],
 						"properties": {
 							"type": { "const": "null" }
 						}
@@ -71,10 +72,70 @@
 						"properties": {
 							"value": { "type": "null" }
 						}
+					}
+				},
+				{
+					"if": {
+						"required": ["type"],
+						"properties": {
+							"type": { "const": "boolean" }
+						}
 					},
-					"else": {
+					"then": {
+						"properties": {
+							"value": { "type": "boolean" }
+						}
+					}
+				},
+				{
+					"if": {
+						"required": ["type"],
+						"properties": {
+							"type": { "const": "string" }
+						}
+					},
+					"then": {
 						"properties": {
 							"value": { "$ref": "#/definitions/valueParts" }
+						}
+					}
+				},
+				{
+					"if": {
+						"required": ["type"],
+						"properties": {
+							"type": { "const": "number" }
+						}
+					},
+					"then": {
+						"properties": {
+							"value": { "$ref": "#/definitions/valueParts" }
+						}
+					}
+				},
+				{
+					"if": {
+						"required": ["type"],
+						"properties": {
+							"type": { "const": "array" }
+						}
+					},
+					"then": {
+						"properties": {
+							"value": false
+						}
+					}
+				},
+				{
+					"if": {
+						"required": ["type"],
+						"properties": {
+							"type": { "const": "object" }
+						}
+					},
+					"then": {
+						"properties": {
+							"value": false
 						}
 					}
 				}
