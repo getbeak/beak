@@ -1,5 +1,5 @@
-import type { IpcRendererEvent } from 'electron';
 import { Store } from 'react-redux';
+import type { IpcRendererEvent } from 'electron';
 
 import { ApplicationState } from './store';
 

@@ -1,7 +1,7 @@
+import React from 'react';
 import { createDefaultOptions } from '@beak/app/utils/monaco';
 import Squawk from '@beak/common/utils/squawk';
 import Editor from '@monaco-editor/react';
-import React from 'react';
 import styled from 'styled-components';
 
 interface ErrorRendererProps {

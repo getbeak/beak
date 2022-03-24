@@ -1,7 +1,7 @@
-import SelectedNodeContext from '@beak/app/features/request-pane/contexts/selected-node';
-import { requestPreferenceSetJsonExpand } from '@beak/app/store/preferences/actions';
 import React, { useContext } from 'react';
 import { useDispatch } from 'react-redux';
+import SelectedNodeContext from '@beak/app/features/request-pane/contexts/selected-node';
+import { requestPreferenceSetJsonExpand } from '@beak/app/store/preferences/actions';
 import styled from 'styled-components';
 
 interface EntryFolderProps {

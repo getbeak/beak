@@ -1,8 +1,8 @@
+import React from 'react';
 import { SmallContainer } from '@beak/website/components/atoms/Container';
 import { BodyRegular, Title, TitleSubtle } from '@beak/website/components/atoms/Typography';
 import { faBug } from '@fortawesome/free-solid-svg-icons/faBug';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React from 'react';
 import styled from 'styled-components';
 
 const ErrorFallback: React.FunctionComponent = () => (
@@ -16,12 +16,12 @@ const ErrorFallback: React.FunctionComponent = () => (
 				{'This is awkward... something broke'}
 			</Title>
 			<TitleSubtle>
-				{`Wait a minute, how did this happen? We're smarter than this...`}
+				{'Wait a minute, how did this happen? We\'re smarter than this...'}
 			</TitleSubtle>
 
 			<Body>
 				<BodyRegular>
-					{`The error you're encountering has been reported. Please try again or a little bit later if you `}
+					{'The error you\'re encountering has been reported. Please try again or a little bit later if you '}
 					{'keep encountering it.'}
 				</BodyRegular>
 			</Body>

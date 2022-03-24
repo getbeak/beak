@@ -1,5 +1,5 @@
-import { Tree } from '@beak/common/types/beak-project';
 import React, { useRef } from 'react';
+import { Tree } from '@beak/common/types/beak-project';
 import styled from 'styled-components';
 
 import ContextMenuWrapper from '../atoms/ContextMenuWrapper';

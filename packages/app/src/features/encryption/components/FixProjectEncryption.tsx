@@ -1,3 +1,4 @@
+import React, { useState } from 'react';
 import Button from '@beak/app/components/atoms/Button';
 import FormError from '@beak/app/components/atoms/FormError';
 import FormInput from '@beak/app/components/atoms/FormInput';
@@ -5,7 +6,6 @@ import Input from '@beak/app/components/atoms/Input';
 import Label from '@beak/app/components/atoms/Label';
 import Dialog from '@beak/app/components/molecules/Dialog';
 import { ipcEncryptionService } from '@beak/app/lib/ipc';
-import React, { useState } from 'react';
 import styled from 'styled-components';
 
 const base64regex = /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/;

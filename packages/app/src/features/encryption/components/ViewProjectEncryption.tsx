@@ -1,7 +1,7 @@
+import React from 'react';
 import Button from '@beak/app/components/atoms/Button';
 import Dialog from '@beak/app/components/molecules/Dialog';
 import { ipcEncryptionService } from '@beak/app/lib/ipc';
-import React from 'react';
 import styled from 'styled-components';
 
 interface ViewProjectEncryptionProps {

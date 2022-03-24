@@ -1,3 +1,5 @@
+import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { actions as omniBarActions } from '@beak/app/features/omni-bar/store';
 import { actions as flightActions } from '@beak/app/store/flight';
 import { TypedObject } from '@beak/common/helpers/typescript';
@@ -6,12 +8,9 @@ import {
 	faCaretLeft,
 	faCaretRight,
 	faLock,
-	faRing,
 	faSearch,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import styled, { useTheme } from 'styled-components';
 
 import { showEncryptionView } from '../../encryption/store/actions';

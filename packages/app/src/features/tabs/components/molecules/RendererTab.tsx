@@ -1,6 +1,6 @@
-import { RendererTabItem } from '@beak/common/types/beak-project';
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { RendererTabItem } from '@beak/common/types/beak-project';
 
 import TabItem from '../../../../components/atoms/TabItem';
 import { changeTab, makeTabPermanent } from '../../store/actions';
@@ -20,7 +20,7 @@ const RendererTab: React.FunctionComponent<RendererTabProps> = ({ tab }) => {
 			<TabItem
 				active={selectedTabPayload === tab.payload}
 				key={tab.payload}
-				ref={(i: HTMLDivElement) => setTarget(i)}
+				ref={i => setTarget(i!)}
 				onClick={() => dispatch(changeTab(tab))}
 				onDoubleClick={() => {
 					if (!tab.temporary)

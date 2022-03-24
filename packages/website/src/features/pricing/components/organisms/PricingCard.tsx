@@ -1,8 +1,8 @@
+import React from 'react';
 import CtaButton from '@beak/website/components/atoms/Buttons';
 import { BodyBold } from '@beak/website/components/atoms/Typography';
 import { faFeather } from '@fortawesome/free-solid-svg-icons/faFeather';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React from 'react';
 import styled from 'styled-components';
 
 type Version = 'primary' | 'secondary' | 'tertiary';

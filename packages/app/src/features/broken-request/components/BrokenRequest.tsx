@@ -1,5 +1,5 @@
-import Squawk from '@beak/common/utils/squawk';
 import React from 'react';
+import Squawk from '@beak/common/utils/squawk';
 
 import GenericError from './molecules/GenericError';
 import SchemaInvalidError from './molecules/SchemaInvalidError';

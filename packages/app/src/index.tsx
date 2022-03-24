@@ -1,7 +1,7 @@
-import { DesignSystemProvider } from '@beak/design-system';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
+import { DesignSystemProvider } from '@beak/design-system';
 
 import NonprodBadge from './components/atoms/NonprodBadge';
 import Portal from './containers/Portal';

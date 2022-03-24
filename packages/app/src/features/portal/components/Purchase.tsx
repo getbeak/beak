@@ -1,8 +1,8 @@
+import React, { useEffect, useState } from 'react';
 import Button from '@beak/app/components/atoms/Button';
 import { ipcExplorerService, ipcPreferencesService } from '@beak/app/lib/ipc';
 import { faTags } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 interface PurchaseProps {

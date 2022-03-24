@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 
 interface UnmanagedInputProps {
-	innerRef: React.Ref<HTMLDivElement>;
+	innerRef: React.MutableRefObject<HTMLDivElement | null>;
 }
 
 export default class UnmanagedInput extends React.Component<UnmanagedInputProps> {

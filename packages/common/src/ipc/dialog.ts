@@ -1,6 +1,5 @@
 import {
 	IpcMain,
-	IpcRenderer,
 	MessageBoxOptions,
 	MessageBoxReturnValue,
 } from 'electron';

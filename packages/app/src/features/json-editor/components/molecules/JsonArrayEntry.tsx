@@ -1,11 +1,11 @@
+import React, { useContext, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import DebouncedInput from '@beak/app/components/atoms/DebouncedInput';
 import SelectedNodeContext from '@beak/app/features/request-pane/contexts/selected-node';
 import { actions } from '@beak/app/store/project';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { ArrayEntry, NamedArrayEntry } from '@beak/common/types/beak-json-editor';
 import { RequestBodyJson } from '@beak/common/types/beak-project';
-import React, { useContext, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 
 import {
 	BodyAction,

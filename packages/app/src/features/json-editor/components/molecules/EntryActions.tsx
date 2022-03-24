@@ -1,9 +1,9 @@
+import React from 'react';
+import { useDispatch } from 'react-redux';
 import ActionIconButton from '@beak/app/components/molecules/ActionIconButton';
 import actions from '@beak/app/store/project/actions';
 import { Entries } from '@beak/common/types/beak-json-editor';
 import { faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
-import React from 'react';
-import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 
 interface EntryActionsProps {

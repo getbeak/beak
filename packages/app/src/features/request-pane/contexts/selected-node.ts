@@ -1,5 +1,5 @@
-import { ValidRequestNode } from '@beak/common/types/beak-project';
 import React from 'react';
+import { ValidRequestNode } from '@beak/common/types/beak-project';
 
 // @ts-expect-error
 const SelectedNodeContext = React.createContext<ValidRequestNode>(null);

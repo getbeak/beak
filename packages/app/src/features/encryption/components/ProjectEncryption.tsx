@@ -1,6 +1,6 @@
-import { ipcEncryptionService } from '@beak/app/lib/ipc';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { ipcEncryptionService } from '@beak/app/lib/ipc';
 
 import { hideEncryptionView } from '../store/actions';
 import FixProjectEncryption from './FixProjectEncryption';

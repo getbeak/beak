@@ -1,7 +1,7 @@
-import Button from '@beak/app/components/atoms/Button';
-import { insertNewGroup, insertNewVariableGroup } from '@beak/app/store/variable-groups/actions';
 import React from 'react';
 import { useDispatch } from 'react-redux';
+import Button from '@beak/app/components/atoms/Button';
+import { insertNewGroup, insertNewVariableGroup } from '@beak/app/store/variable-groups/actions';
 import styled from 'styled-components';
 
 interface CreateNewSplashProps {

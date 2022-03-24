@@ -1,4 +1,4 @@
-import { IpcMain, IpcRenderer, WebContents } from 'electron';
+import { IpcMain, WebContents } from 'electron';
 
 import { FlightCompletePayload, FlightFailedPayload, FlightHeartbeatPayload, FlightRequestPayload } from '../types/requester';
 import { IpcServiceMain, IpcServiceRenderer, Listener, PartialIpcRenderer } from './ipc';

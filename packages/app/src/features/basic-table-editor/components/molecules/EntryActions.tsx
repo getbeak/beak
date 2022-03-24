@@ -1,6 +1,6 @@
+import React from 'react';
 import ActionIconButton from '@beak/app/components/molecules/ActionIconButton';
 import { faMinus } from '@fortawesome/free-solid-svg-icons';
-import React from 'react';
 import styled from 'styled-components';
 
 interface EntryActionsProps {

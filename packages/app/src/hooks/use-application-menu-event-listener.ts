@@ -1,6 +1,6 @@
-import { MenuEventPayload } from '@beak/common/web-contents/types';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
+import { MenuEventPayload } from '@beak/common/web-contents/types';
 
 import { showEncryptionView } from '../features/encryption/store/actions';
 import {

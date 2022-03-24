@@ -1,8 +1,8 @@
-import { SmallContainer } from '@beak/website/components/atoms/Container';
-import { SubTitle, Title, TitleSubtle } from '@beak/website/components/atoms/Typography';
 import React from 'react';
 import Helmet from 'react-helmet';
 import { Link } from 'react-router-dom';
+import { SmallContainer } from '@beak/website/components/atoms/Container';
+import { SubTitle, Title, TitleSubtle } from '@beak/website/components/atoms/Typography';
 import styled from 'styled-components';
 
 import { LastUpdated, LegalTlDr } from './atoms/LegalTypograpgy';
@@ -217,8 +217,8 @@ const Terms: React.FunctionComponent = () => (
 			</LegalTitle>
 			<p>
 				{'The laws of England and Wales apply to our service. Anu disputes are intended to be heard by the '}
-				{`Courts of England and Wales. However we do recognise you're free to choose the laws and `}
-				{`jurisdiction of Scotland, or Northern Ireland, if you're a resident there and wish to do so.`}
+				{'Courts of England and Wales. However we do recognise you\'re free to choose the laws and '}
+				{'jurisdiction of Scotland, or Northern Ireland, if you\'re a resident there and wish to do so.'}
 			</p>
 
 			<LegalTlDr>

@@ -3,4 +3,3 @@ export function calculatePercentage(partialValue: number, totalValue: number, ro
 
 	return round ? Math.round(percent) : percent;
 }
-

@@ -1,8 +1,8 @@
+import React, { useEffect, useRef, useState } from 'react';
 import Button from '@beak/app/components/atoms/Button';
 import Input from '@beak/app/components/atoms/Input';
 import { ipcNestService } from '@beak/app/lib/ipc';
 import Squawk from '@beak/common/utils/squawk';
-import React, { useEffect, useRef, useState } from 'react';
 
 import { ActionContainer, Error, SubTitle } from '../atoms/typography';
 

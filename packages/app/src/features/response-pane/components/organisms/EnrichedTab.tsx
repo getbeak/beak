@@ -1,9 +1,9 @@
+import React from 'react';
 import binaryStore from '@beak/app/lib/binary-store';
 import { Flight } from '@beak/app/store/flight/types';
 import { createDefaultOptions } from '@beak/app/utils/monaco';
 import Editor from '@monaco-editor/react';
 import mime from 'mime-types';
-import React from 'react';
 
 export interface EnrichedTabProps {
 	flight: Flight;

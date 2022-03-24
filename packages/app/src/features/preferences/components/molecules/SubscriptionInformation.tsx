@@ -1,8 +1,8 @@
+import React from 'react';
 import Button from '@beak/app/components/atoms/Button';
 import { ipcExplorerService } from '@beak/app/lib/ipc';
 import { GetSubscriptionStatusResponse } from '@beak/common/types/nest';
-import { formatDistance, subDays } from 'date-fns';
-import React from 'react';
+import { formatDistance } from 'date-fns';
 import styled from 'styled-components';
 
 export interface SubscriptionInformationProps {

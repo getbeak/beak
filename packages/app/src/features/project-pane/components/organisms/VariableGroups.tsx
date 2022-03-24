@@ -1,7 +1,7 @@
-import { editorPreferencesSetSelectedVariableGroup } from '@beak/app/store/preferences/actions';
-import { TypedObject } from '@beak/common/helpers/typescript';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { editorPreferencesSetSelectedVariableGroup } from '@beak/app/store/preferences/actions';
+import { TypedObject } from '@beak/common/helpers/typescript';
 import styled from 'styled-components';
 
 const VariableGroups: React.FunctionComponent = () => {

@@ -1,7 +1,7 @@
-import { faLink } from '@fortawesome/free-solid-svg-icons/faLink';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { faLink } from '@fortawesome/free-solid-svg-icons/faLink';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import styled, { useTheme } from 'styled-components';
 
 interface LegalTitleProps {

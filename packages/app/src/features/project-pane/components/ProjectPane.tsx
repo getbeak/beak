@@ -1,8 +1,8 @@
+import React, { useContext, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import WindowSessionContext from '@beak/app/contexts/window-session-context';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React, { useContext, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import styled, { useTheme } from 'styled-components';
 
 import { changeTab } from '../../tabs/store/actions';

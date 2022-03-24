@@ -1,9 +1,9 @@
+import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { Flight } from '@beak/app/store/flight/types';
 import { getStatusReasonPhrase } from '@beak/app/utils/http';
 import { convertRequestToUrl } from '@beak/app/utils/uri';
 import { statusToColour } from '@beak/design-system/helpers';
-import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 
 export interface HeaderProps {

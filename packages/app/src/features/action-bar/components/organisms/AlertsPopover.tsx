@@ -1,7 +1,7 @@
-import { TypedObject } from '@beak/common/helpers/typescript';
 import React from 'react';
 import { createPortal } from 'react-dom';
 import { useSelector } from 'react-redux';
+import { TypedObject } from '@beak/common/helpers/typescript';
 import styled from 'styled-components';
 import * as uuid from 'uuid';
 

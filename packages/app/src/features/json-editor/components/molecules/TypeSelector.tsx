@@ -1,3 +1,5 @@
+import React, { useRef } from 'react';
+import { useDispatch } from 'react-redux';
 import actions from '@beak/app/store/project/actions';
 import { EntryType } from '@beak/common/types/beak-json-editor';
 import {
@@ -10,8 +12,6 @@ import {
 	faStream,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React, { useRef } from 'react';
-import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 
 interface TypeSelectorProps {

@@ -1,6 +1,6 @@
+import React from 'react';
 import { SmallContainer } from '@beak/website/components/atoms/Container';
 import { pulse } from '@beak/website/design-system/keyframes';
-import React from 'react';
 import styled from 'styled-components';
 
 import PricingCard from './PricingCard';

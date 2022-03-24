@@ -1,6 +1,6 @@
+import React, { useState } from 'react';
 import { faBars } from '@fortawesome/free-solid-svg-icons/faBars';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React, { useState } from 'react';
 
 import Container from '../components/atoms/Container';
 import Navbar, {

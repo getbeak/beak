@@ -1,12 +1,11 @@
 /* eslint-disable global-require */
-import './ipc-layer';
-import './updater';
-
 import { init } from '@sentry/electron/dist/main';
 import { app, nativeTheme } from 'electron';
 import electronDebug from 'electron-debug';
 import { autoUpdater } from 'electron-updater';
 
+import './ipc-layer';
+import './updater';
 import arbiter from './lib/arbiter';
 import { tryOpenProjectFolder } from './lib/beak-project';
 import nestClient from './lib/nest-client';

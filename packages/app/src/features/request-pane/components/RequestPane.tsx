@@ -1,10 +1,10 @@
+import React, { useEffect, useRef } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { ReflexContainer, ReflexElement } from 'react-reflex';
 import { loadRequestPreferences } from '@beak/app/store/preferences/actions';
 import { alertInsert, alertRemoveDependents } from '@beak/app/store/project/actions';
 import { ValidRequestNode } from '@beak/common/types/beak-project';
 import ksuid from '@cuvva/ksuid';
-import React, { useEffect, useRef } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { ReflexContainer, ReflexElement } from 'react-reflex';
 import styled from 'styled-components';
 
 import ReflexSplitter from '../../../components/atoms/ReflexSplitter';

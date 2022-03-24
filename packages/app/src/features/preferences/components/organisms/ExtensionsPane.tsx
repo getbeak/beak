@@ -1,6 +1,4 @@
-import Button from '@beak/app/components/atoms/Button';
-import { ipcPreferencesService } from '@beak/app/lib/ipc';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 
 import Pane from '../molecules/Pane';

@@ -1,8 +1,8 @@
+import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import FixProjectEncryption from '@beak/app/features/encryption/components/FixProjectEncryption';
 import { alertRemoveType } from '@beak/app/store/project/actions';
 import { Alert } from '@beak/app/store/project/types';
-import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
 
 import AlertItem from '../molecules/AlertItem';
 

@@ -1,6 +1,6 @@
-import { ValueParts, VariableGroups } from '@beak/common/types/beak-project';
 import React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
+import { ValueParts, VariableGroups } from '@beak/common/types/beak-project';
 import * as uuid from 'uuid';
 
 import { getRealtimeValue } from '../../realtime-values';

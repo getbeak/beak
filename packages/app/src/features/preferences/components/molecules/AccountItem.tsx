@@ -1,8 +1,8 @@
+import React, { useEffect, useState } from 'react';
 import { ipcNestService } from '@beak/app/lib/ipc';
 import { toHexAlpha } from '@beak/design-system/utils';
 import { faUserCircle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React, { useEffect, useState } from 'react';
 import styled, { useTheme } from 'styled-components';
 
 const AccountItem: React.FunctionComponent = () => {

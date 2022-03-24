@@ -1,8 +1,8 @@
-import ReflexSplitter from '@beak/app/components/atoms/ReflexSplitter';
-import { RequestNode, TabItem } from '@beak/common/types/beak-project';
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { ReflexContainer, ReflexElement } from 'react-reflex';
+import ReflexSplitter from '@beak/app/components/atoms/ReflexSplitter';
+import { RequestNode, TabItem } from '@beak/common/types/beak-project';
 
 import BrokenRequest from '../../broken-request/components/BrokenRequest';
 import RequestPane from '../../request-pane/components/RequestPane';

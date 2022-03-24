@@ -1,6 +1,6 @@
+import React, { useEffect, useState } from 'react';
 import Button from '@beak/app/components/atoms/Button';
 import { ipcNestService, ipcPreferencesService } from '@beak/app/lib/ipc';
-import React, { useEffect, useState } from 'react';
 
 import { ItemGroup, ItemLabel, ItemSpacer } from '../atoms/item';
 import Pane from '../molecules/Pane';

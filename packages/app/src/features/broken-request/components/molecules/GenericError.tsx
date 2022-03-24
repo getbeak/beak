@@ -1,7 +1,7 @@
+import React from 'react';
 import Button from '@beak/app/components/atoms/Button';
 import { ipcExplorerService } from '@beak/app/lib/ipc';
 import Squawk from '@beak/common/utils/squawk';
-import React from 'react';
 
 import { Body, Header, Wrapper } from '../atoms';
 import ErrorRenderer from './ErrorRenderer';

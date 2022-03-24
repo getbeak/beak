@@ -1,6 +1,6 @@
+import React, { useEffect, useState } from 'react';
 import { ipcPreferencesService } from '@beak/app/lib/ipc';
 import { toHexAlpha } from '@beak/design-system/utils';
-import React, { useEffect, useState } from 'react';
 import styled, { DefaultTheme, keyframes } from 'styled-components';
 
 const pulse = (theme: DefaultTheme) => keyframes`

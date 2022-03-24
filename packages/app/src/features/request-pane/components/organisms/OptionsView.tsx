@@ -1,7 +1,7 @@
-import { actions } from '@beak/app/store/project';
-import { ValidRequestNode } from '@beak/common/types/beak-project';
 import React from 'react';
 import { useDispatch } from 'react-redux';
+import { actions } from '@beak/app/store/project';
+import { ValidRequestNode } from '@beak/common/types/beak-project';
 import styled from 'styled-components';
 
 export interface OptionsViewProps {

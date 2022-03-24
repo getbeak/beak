@@ -1,11 +1,11 @@
-import { DesignSystemProvider } from '@beak/design-system';
-import * as Sentry from '@sentry/react';
-import { Integrations } from '@sentry/tracing';
-import { createBrowserHistory } from 'history';
 import React, { lazy, Suspense } from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { DesignSystemProvider } from '@beak/design-system';
+import * as Sentry from '@sentry/react';
+import { Integrations } from '@sentry/tracing';
+import { createBrowserHistory } from 'history';
 
 import Scroller from './components/atoms/Scroller';
 import AppContainer from './containers/App';

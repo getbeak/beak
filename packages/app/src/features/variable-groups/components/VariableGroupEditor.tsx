@@ -1,3 +1,5 @@
+import React, { useEffect, useRef, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import DebouncedInput from '@beak/app/components/atoms/DebouncedInput';
 import TabBar from '@beak/app/components/atoms/TabBar';
 import TabItem from '@beak/app/components/atoms/TabItem';
@@ -6,8 +8,6 @@ import { generateValueIdent } from '@beak/app/lib/beak-variable-group/utils';
 import { actions } from '@beak/app/store/variable-groups';
 import { insertNewItem } from '@beak/app/store/variable-groups/actions';
 import { TypedObject } from '@beak/common/helpers/typescript';
-import React, { useEffect, useRef, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import styled, { css } from 'styled-components';
 
 import VariableInput from '../../variable-input/components/VariableInput';

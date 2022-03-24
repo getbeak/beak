@@ -1,5 +1,5 @@
-import FooterLogo from '@beak/website/components/atoms/FooterLogo';
 import React from 'react';
+import FooterLogo from '@beak/website/components/atoms/FooterLogo';
 import styled from 'styled-components';
 
 const FooterBrand: React.FunctionComponent = () => (

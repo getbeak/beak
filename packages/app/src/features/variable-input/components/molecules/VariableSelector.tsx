@@ -1,9 +1,9 @@
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { movePosition } from '@beak/app/utils/arrays';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { RealtimeValuePart } from '@beak/common/types/beak-project';
 import Fuse from 'fuse.js';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import * as uuid from 'uuid';
 
@@ -30,7 +30,7 @@ const VariableSelector: React.FunctionComponent<VariableSelectorProps> = props =
 	const { variableGroups } = useSelector(s => s.global.variableGroups);
 	const selectedGroups = useSelector(s => s.global.preferences.editor.selectedVariableGroups);
 
-	const activeRef = useRef<HTMLDivElement>();
+	const activeRef = useRef<HTMLDivElement | null>(null);
 	const [position, setPosition] = useState<Position | null>(null);
 	const [active, setActive] = useState<number>(0);
 	const context = { selectedGroups, variableGroups };
@@ -157,7 +157,7 @@ const VariableSelector: React.FunctionComponent<VariableSelectorProps> = props =
 					{items.map((i, idx) => (
 						<Item
 							$active={active === idx}
-							ref={(i: HTMLDivElement) => {
+							ref={i => {
 								if (active === idx)
 									activeRef.current = i;
 							}}

@@ -1,5 +1,5 @@
-import { SmallContainer } from '@beak/website/components/atoms/Container';
 import React from 'react';
+import { SmallContainer } from '@beak/website/components/atoms/Container';
 import styled from 'styled-components';
 
 import FooterBrand from './organisms/FooterBrand';

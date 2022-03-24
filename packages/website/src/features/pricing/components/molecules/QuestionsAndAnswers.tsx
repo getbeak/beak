@@ -1,6 +1,6 @@
+import React from 'react';
 import { SmallContainer } from '@beak/website/components/atoms/Container';
 import { BodyBold, BodyRegular, Title } from '@beak/website/components/atoms/Typography';
-import React from 'react';
 import styled from 'styled-components';
 
 const QuestionsAndAnswers: React.FunctionComponent = () => (

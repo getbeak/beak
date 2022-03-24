@@ -1,7 +1,7 @@
-import { checkShortcut } from '@beak/app/lib/keyboard-shortcuts';
-import { TabItem } from '@beak/common/types/beak-project';
 import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
+import { checkShortcut } from '@beak/app/lib/keyboard-shortcuts';
+import { TabItem } from '@beak/common/types/beak-project';
 import styled from 'styled-components';
 
 import TB from '../../../components/atoms/TabBar';

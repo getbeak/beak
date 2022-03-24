@@ -1,5 +1,5 @@
 import type { History } from 'history';
-import { applyMiddleware, combineReducers, compose, createStore } from 'redux';
+import { combineReducers, createStore } from 'redux';
 
 export interface ApplicationState { }
 

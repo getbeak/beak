@@ -1,6 +1,6 @@
-import { differenceInDays } from 'date-fns';
 import React from 'react';
 import { useSelector } from 'react-redux';
+import { differenceInDays } from 'date-fns';
 import styled, { keyframes } from 'styled-components';
 
 const pulse = keyframes`

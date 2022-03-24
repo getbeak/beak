@@ -1,6 +1,6 @@
-import actions from '@beak/app/store/project/actions';
 import React from 'react';
 import { useDispatch } from 'react-redux';
+import actions from '@beak/app/store/project/actions';
 import styled from 'styled-components';
 
 interface EntryTogglerProps {

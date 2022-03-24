@@ -1,7 +1,7 @@
-import { SmallContainer } from '@beak/website/components/atoms/Container';
-import { SubTitle, Title, TitleSubtle } from '@beak/website/components/atoms/Typography';
 import React from 'react';
 import Helmet from 'react-helmet';
+import { SmallContainer } from '@beak/website/components/atoms/Container';
+import { SubTitle, Title, TitleSubtle } from '@beak/website/components/atoms/Typography';
 import styled from 'styled-components';
 
 import { LastUpdated, LegalTlDr } from './atoms/LegalTypograpgy';

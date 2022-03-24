@@ -1,3 +1,4 @@
+import React from 'react';
 import Container from '@beak/website/components/atoms/Container';
 import { faSuperpowers } from '@fortawesome/free-brands-svg-icons/faSuperpowers';
 import { faFileCode } from '@fortawesome/free-regular-svg-icons/faFileCode';
@@ -6,7 +7,6 @@ import { faLanguage } from '@fortawesome/free-solid-svg-icons/faLanguage';
 import { faPalette } from '@fortawesome/free-solid-svg-icons/faPalette';
 import { faPeopleCarry } from '@fortawesome/free-solid-svg-icons/faPeopleCarry';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React from 'react';
 import styled, { useTheme } from 'styled-components';
 
 import { Card, CardBody, CardGrid, CardIcons, CardTitle } from '../../../../components/atoms/Card';

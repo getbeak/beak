@@ -1,7 +1,7 @@
+import React, { useEffect } from 'react';
 import { ipcContextMenuService } from '@beak/app/lib/ipc';
 import ksuid from '@cuvva/ksuid';
 import type { MenuItemConstructorOptions } from 'electron';
-import React, { useEffect } from 'react';
 
 interface ContextMenuProps {
 	target: HTMLElement | undefined;

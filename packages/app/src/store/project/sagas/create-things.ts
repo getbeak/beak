@@ -7,7 +7,6 @@ import path from 'path-browserify';
 import { call, delay, put, race, select, take } from 'redux-saga/effects';
 
 import { ApplicationState } from '../..';
-import actions from '../actions';
 import { ActionTypes, CreateNewThing } from '../types';
 
 export function* workerCreateNewFolder({ payload }: PayloadAction<CreateNewThing>) {

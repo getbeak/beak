@@ -1,3 +1,5 @@
+import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import BasicTableEditor from '@beak/app/features/basic-table-editor/components/BasicTableEditor';
 import { convertKeyValueToString, convertStringToKeyValue } from '@beak/app/features/basic-table-editor/parsers';
 import JsonEditor from '@beak/app/features/json-editor/components/JsonEditor';
@@ -9,8 +11,6 @@ import { createDefaultOptions } from '@beak/app/utils/monaco';
 import { RequestBodyType, ValidRequestNode, ValueParts } from '@beak/common/types/beak-project';
 import ksuid from '@cuvva/ksuid';
 import Editor from '@monaco-editor/react';
-import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 
 import TabBar from '../../../../components/atoms/TabBar';

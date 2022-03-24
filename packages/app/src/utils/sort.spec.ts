@@ -37,5 +37,5 @@ describe('sortIso8601', () => {
 		const sortedData = testData.sort(sortIso8601(c => c, 'desc'));
 
 		expect(sortedData).toStrictEqual(expectedData);
-	})
+	});
 });

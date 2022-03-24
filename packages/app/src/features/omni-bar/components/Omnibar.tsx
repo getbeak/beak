@@ -1,7 +1,7 @@
-import { toVibrancyAlpha } from '@beak/app/design-system/utils';
-import { checkShortcut } from '@beak/app/lib/keyboard-shortcuts';
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { toVibrancyAlpha } from '@beak/app/design-system/utils';
+import { checkShortcut } from '@beak/app/lib/keyboard-shortcuts';
 import styled from 'styled-components';
 
 import { actions } from '../store';

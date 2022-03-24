@@ -1,9 +1,9 @@
+import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { parseValueParts } from '@beak/app/features/realtime-values/parser';
 import VariableInput from '@beak/app/features/variable-input/components/VariableInput';
 import { requestPreferenceSetMainTab } from '@beak/app/store/preferences/actions';
 import { ValidRequestNode, ValueParts } from '@beak/common/types/beak-project';
-import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import URL from 'url-parse';
 

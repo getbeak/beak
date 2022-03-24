@@ -1,9 +1,9 @@
+import React, { useEffect, useState } from 'react';
 import NewsBannerContainer from '@beak/app/features/news-banner/components/NewsBannerContainer';
 import { ipcBeakHubService, ipcProjectService } from '@beak/app/lib/ipc';
 import { sortIso8601 } from '@beak/app/utils/sort';
 import { RecentLocalProject } from '@beak/common/types/beak-hub';
 import { sentenceCase } from 'change-case';
-import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 import ColumnTitle from '../atoms/ColumnTitle';

@@ -1,8 +1,8 @@
+import React from 'react';
+import { useDispatch } from 'react-redux';
 import DebouncedInput from '@beak/app/components/atoms/DebouncedInput';
 import { actions } from '@beak/app/store/project';
 import { NamedNullEntry, NullEntry } from '@beak/common/types/beak-json-editor';
-import React from 'react';
-import { useDispatch } from 'react-redux';
 
 import {
 	BodyAction,

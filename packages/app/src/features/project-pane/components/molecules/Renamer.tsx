@@ -1,6 +1,6 @@
-import { Nodes } from '@beak/common/types/beak-project';
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { Nodes } from '@beak/common/types/beak-project';
 import styled, { css } from 'styled-components';
 import validFilename from 'valid-filename';
 
@@ -13,7 +13,7 @@ const errors = {
 
 interface RenamerProps {
 	node: Nodes;
-	parentRef: React.MutableRefObject<HTMLElement | undefined>;
+	parentRef: React.MutableRefObject<HTMLElement | null>;
 }
 
 const Renamer: React.FunctionComponent<RenamerProps> = props => {

@@ -1,10 +1,10 @@
+import React, { useRef, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { toVibrancyAlpha } from '@beak/app/design-system/utils';
 import { changeTab, makeTabPermanent } from '@beak/app/features/tabs/store/actions';
 import { checkShortcut } from '@beak/app/lib/keyboard-shortcuts';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { ValidRequestNode } from '@beak/common/types/beak-project';
-import React, { useRef, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 
 import actions from '../../../../store/project/actions';
@@ -20,7 +20,7 @@ export interface RequestItemProps {
 
 const RequestItem: React.FunctionComponent<RequestItemProps> = props => {
 	const dispatch = useDispatch();
-	const wrapperRef = useRef<HTMLDivElement>();
+	const wrapperRef = useRef<HTMLDivElement | null>(null);
 	const [target, setTarget] = useState<HTMLElement>();
 
 	const rename = useSelector(s => s.global.project.activeRename);
@@ -44,10 +44,10 @@ const RequestItem: React.FunctionComponent<RequestItemProps> = props => {
 			<Wrapper
 				active={active}
 				depth={props.depth}
-				ref={(i: HTMLDivElement) => {
+				ref={i => {
 					wrapperRef.current = i;
 
-					setTarget(i);
+					setTarget(i!);
 				}}
 				tabIndex={0}
 				onClick={() => dispatch(changeTab({

@@ -1,3 +1,5 @@
+import React from 'react';
+import { useDispatch } from 'react-redux';
 import { ipcContextMenuService, ipcDialogService } from '@beak/app/lib/ipc';
 import {
 	insertNewGroup,
@@ -10,8 +12,6 @@ import ksuid from '@cuvva/ksuid';
 import { faEllipsisV } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import type { MenuItemConstructorOptions } from 'electron';
-import React from 'react';
-import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 
 interface OptionsMenuProps {

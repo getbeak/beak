@@ -1,8 +1,8 @@
+import React, { useRef, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React, { useRef, useState } from 'react';
-import { useSelector } from 'react-redux';
 import { useTheme } from 'styled-components';
 
 import ActionBarButton from '../atoms/ActionBarButton';

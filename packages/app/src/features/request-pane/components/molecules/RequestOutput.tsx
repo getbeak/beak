@@ -1,3 +1,5 @@
+import React, { useContext, useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import WindowSessionContext, { WindowSession } from '@beak/app/contexts/window-session-context';
 import { convertKeyValueToString } from '@beak/app/features/basic-table-editor/parsers';
 import { convertToRealJson } from '@beak/app/features/json-editor/parsers';
@@ -10,8 +12,6 @@ import { requestBodyContentType } from '@beak/common/helpers/request';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { RequestBody, RequestOverview, ToggleKeyValue, ValidRequestNode } from '@beak/common/types/beak-project';
 import Editor from '@monaco-editor/react';
-import React, { useContext, useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
 
 const bodyFreeVerbs = ['get', 'head'];
 

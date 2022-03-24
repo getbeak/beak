@@ -1,10 +1,10 @@
+import React from 'react';
 import ScrollTarget from '@beak/website/components/atoms/ScrollTarget';
 import { faApple } from '@fortawesome/free-brands-svg-icons/faApple';
 import { faLinux } from '@fortawesome/free-brands-svg-icons/faLinux';
 import { faWindows } from '@fortawesome/free-brands-svg-icons/faWindows';
 import { faDownload } from '@fortawesome/free-solid-svg-icons/faDownload';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React from 'react';
 import styled, { useTheme } from 'styled-components';
 
 import Container from '../../../components/atoms/Container';

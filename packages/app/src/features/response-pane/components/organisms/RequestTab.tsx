@@ -1,9 +1,9 @@
+import React, { useContext, useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import WindowSessionContext from '@beak/app/contexts/window-session-context';
 import { Flight } from '@beak/app/store/flight/types';
 import { createDefaultOptions } from '@beak/app/utils/monaco';
 import Editor from '@monaco-editor/react';
-import React, { useContext, useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 
 import TabBar from '../../../../components/atoms/TabBar';

@@ -1,10 +1,10 @@
+import React, { useEffect, useState } from 'react';
 import binaryStore from '@beak/app/lib/binary-store';
 import { Flight } from '@beak/app/store/flight/types';
 import { createDefaultOptions } from '@beak/app/utils/monaco';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import Editor from '@monaco-editor/react';
 import mime from 'mime-types';
-import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 import TabBar from '../../../../components/atoms/TabBar';

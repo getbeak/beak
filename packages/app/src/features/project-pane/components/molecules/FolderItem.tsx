@@ -1,9 +1,9 @@
+import React, { useRef, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { toVibrancyAlpha } from '@beak/app/design-system/utils';
 import { checkShortcut } from '@beak/app/lib/keyboard-shortcuts';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { FolderNode } from '@beak/common/types/beak-project';
-import React, { useRef, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 
 import actions from '../../../../store/project/actions';
@@ -20,8 +20,8 @@ const FolderItem: React.FunctionComponent<FolderItemProps> = props => {
 	const dispatch = useDispatch();
 	const { depth } = props;
 	const [expanded, setExpanded] = useState(true);
-	const element = useRef<HTMLDivElement>();
-	const [target, setTarget] = useState<HTMLElement>();
+	const element = useRef<HTMLDivElement | null>(null);
+	const [target, setTarget] = useState<HTMLDivElement>();
 
 	const rename = useSelector(s => s.global.project.activeRename);
 	const node = useSelector(s => s.global.project.tree![props.id]) as FolderNode;
@@ -37,9 +37,9 @@ const FolderItem: React.FunctionComponent<FolderItemProps> = props => {
 		<ContextMenuWrapper mode={'folder'} nodeId={node.filePath} target={target}>
 			<Wrapper
 				depth={depth}
-				ref={(i: HTMLDivElement) => {
-					element.current = i;
-					setTarget(i);
+				ref={i => {
+					element.current = i!;
+					setTarget(i!);
 				}}
 				tabIndex={0}
 				onKeyDown={event => {
