@@ -9,6 +9,14 @@ const FooterLinks: React.FunctionComponent = () => (
 			<LinkItem to={'/#features'}>{'Features'}</LinkItem>
 			<LinkItem to={'/pricing'}>{'Pricing'}</LinkItem>
 			<ExternalLinkItem
+				target={'_blank'}
+				rel={'noopener noreferrer nofollow'}
+				href={'https://docs.getbeak.app/'}
+			>
+				{'Docs'}
+			</ExternalLinkItem>
+			<ExternalLinkItem
+				target={'_blank'}
 				rel={'noopener noreferrer nofollow'}
 				href={'https://status.getbeak.app/'}
 			>
@@ -17,9 +25,9 @@ const FooterLinks: React.FunctionComponent = () => (
 			<ExternalLinkItem
 				target={'_blank'}
 				rel={'noopener noreferrer nofollow'}
-				href={'https://docs.getbeak.app/'}
+				href={'https://climate.stripe.com/x4snkJ'}
 			>
-				{'Docs'}
+				{'Climate contribution'}
 			</ExternalLinkItem>
 		</LinkColumn>
 
