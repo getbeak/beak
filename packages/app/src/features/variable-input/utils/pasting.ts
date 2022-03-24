@@ -54,10 +54,16 @@ export function handlePaste(event: ClipboardEvent) {
 	const htmlText = event.clipboardData.getData('text/html');
 
 	if (htmlText) {
-		const sanitized = sanitizeHtml(htmlText, sanitizerOptions);
+		const sanitized = sanitizeHtml(htmlText, sanitizerOptions).replace(/[\r\n]+/g, '');
 
-		document.execCommand('insertHtml', false, sanitized);
-	} else if (plainText) {
+		if (sanitized) {
+			document.execCommand('insertHtml', false, sanitized);
+
+			return;
+		}
+	}
+
+	if (plainText) {
 		const sanitized = plainText.replace(/[\r\n]+/g, '');
 
 		document.execCommand('insertText', false, sanitized);
