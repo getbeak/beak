@@ -11,7 +11,7 @@ import { call, put, select } from 'redux-saga/effects';
 import { tabPreferences } from '../../../../lib/beak-hub/schemas';
 import actions from '../actions';
 
-export default createTakeEverySagaSet(actions.loadTabState, function* worker(action) {
+export default createTakeEverySagaSet(actions.loadTabState, function* worker() {
 	const tabState: TabPreferences | null = yield call(loadTabStateFile);
 
 	if (tabState !== null) {

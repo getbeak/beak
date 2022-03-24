@@ -30,7 +30,7 @@ export interface IpcMessage {
 	payload: unknown;
 }
 
-class IpcServiceBase<T> {
+class IpcServiceBase {
 	protected channel: string;
 	protected listeners: Record<string, Listener | undefined> = {};
 
@@ -51,7 +51,7 @@ class IpcServiceBase<T> {
 	}
 }
 
-export class IpcServiceRenderer extends IpcServiceBase<IpcRendererEvent> {
+export class IpcServiceRenderer extends IpcServiceBase {
 	protected ipc: PartialIpcRenderer;
 
 	constructor(channel: string, ipc: PartialIpcRenderer) {
@@ -86,7 +86,7 @@ export class IpcServiceRenderer extends IpcServiceBase<IpcRendererEvent> {
 	}
 }
 
-export class IpcServiceMain extends IpcServiceBase<IpcMainInvokeEvent> {
+export class IpcServiceMain extends IpcServiceBase {
 	protected ipc: IpcMain;
 
 	constructor(channel: string, ipc: IpcMain) {

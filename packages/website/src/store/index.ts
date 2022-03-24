@@ -3,7 +3,7 @@ import { combineReducers, createStore } from 'redux';
 
 export interface ApplicationState { }
 
-function createRootReducer(history: History) {
+function createRootReducer(_history: History) {
 	return combineReducers<ApplicationState>({ });
 }
 

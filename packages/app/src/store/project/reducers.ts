@@ -110,6 +110,7 @@ const projectReducer = createReducer(initialState, builder => {
 		})
 
 		.addCase(actions.removeNodeFromStore, (state, { payload }) => {
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 			const { [payload]: remove, ...rest } = state.tree;
 
 			state.tree = rest;
@@ -120,6 +121,7 @@ const projectReducer = createReducer(initialState, builder => {
 			if (!node)
 				return;
 
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 			const { [node?.id]: remove, ...rest } = state.tree;
 
 			state.tree = rest;

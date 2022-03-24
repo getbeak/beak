@@ -23,6 +23,7 @@ const variableGroupsReducer = createReducer(initialState, builder => {
 			state.variableGroups[name] = file;
 		})
 		.addCase(actions.removeVg, (state, { payload }) => {
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 			const { [payload]: remove, ...rest } = state.variableGroups;
 
 			state.variableGroups = rest;

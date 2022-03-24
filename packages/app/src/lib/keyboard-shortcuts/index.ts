@@ -1,3 +1,4 @@
+import React from 'react';
 import { instance as windowSessionInstance } from '@beak/app/contexts/window-session-context';
 
 import { PlatformAgnosticDefinitions, PlatformSpecificDefinitions } from './types';

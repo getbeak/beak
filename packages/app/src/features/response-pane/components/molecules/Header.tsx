@@ -84,8 +84,8 @@ const Abbr = styled.abbr`
 
 const StatusSection = styled(Section)<{ $status: number }>`
 	background-color: ${p => p.theme.ui.background};
-	border-color: ${p => statusToColour(p.$status)};
-	color: ${p => statusToColour(p.$status)};
+	border-color: ${p => statusToColour(p.theme, p.$status)};
+	color: ${p => statusToColour(p.theme, p.$status)};
 
 	white-space: nowrap;
 `;

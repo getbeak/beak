@@ -11,7 +11,7 @@ interface PurchaseProps {
 
 const Purchase: React.FunctionComponent<PurchaseProps> = ({ onChangeToTrial }) => {
 	const [buyUrl, setBuyUrl] = useState('https://buy.stripe.com/eVa8xY80KedAdWw7ss');
-	const [pricingUrl, setPricingUrl] = useState('https://getbeak.app/pricing');
+	const [, setPricingUrl] = useState('https://getbeak.app/pricing');
 
 	useEffect(() => {
 		getPurchaseInformation().then(({ buyUrl, pricingUrl }) => {

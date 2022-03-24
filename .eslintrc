@@ -1,7 +1,7 @@
 {
 	"extends": [
 		"eslint:recommended",
-		"plugin:react-hooks/recommended",
+		"plugin:react-hooks/recommended"
 	],
 	"parser": "@typescript-eslint/parser",
 	"parserOptions": {
@@ -31,7 +31,8 @@
 		"node": true,
 		"es6": true,
 		"browser": true,
-		"shared-node-browser": true
+		"shared-node-browser": true,
+		"jest": true
 	},
 
 	"settings": {
@@ -41,7 +42,8 @@
 	},
 
 	"globals": {
-		"process": false
+		"process": false,
+		"NodeJS": true
 	},
 
 	"rules": {
@@ -64,7 +66,6 @@
 		"consistent-this": [1, "that"],
 		"curly": [1, "multi-or-nest", "consistent"],
 		"default-case": 1,
-		"deprecation/deprecation": "warn",
 		"dot-notation": [1, { "allowPattern": "^[a-z]+(_[a-z]+)+$" }],
 		"eol-last": ["error", "always"],
 		"eqeqeq": [1, "allow-null"],
@@ -223,14 +224,6 @@
 		"@typescript-eslint/member-naming": "off",
 		"@typescript-eslint/naming-convention": ["error",
 			{
-				"selector": "default",
-				"format": ["camelCase"],
-				"filter": {
-					"regex": "^UNSAFE_",
-					"match": false
-				}
-			},
-			{
 				"selector": "variable",
 				"format": ["camelCase", "UPPER_CASE", "PascalCase"]
 			},
@@ -263,14 +256,13 @@
 		"@typescript-eslint/no-namespace": "error",
 		"@typescript-eslint/no-parameter-properties": "error",
 		"@typescript-eslint/triple-slash-reference": [1, { "path": "never", "types": "never", "lib": "never" }],
-		"@typescript-eslint/no-unused-vars": "off",
-		"@typescript-eslint/no-unused-vars-experimental": "error",
+		"@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
 		"@typescript-eslint/no-use-before-define": "off", // NOTE(afr): Un-useful rule for how we write components
 		"@typescript-eslint/no-var-requires": "error",
 		"@typescript-eslint/quotes": ["error", "single", { "avoidEscape": true }],
 		"@typescript-eslint/restrict-plus-operands": "error",
 		"@typescript-eslint/type-annotation-spacing": "error",
 
-		"react-hooks/exhaustive-deps": "error"
+		"react-hooks/exhaustive-deps": 0 // NOTE(afr): Disabling this for now
 	}
 }

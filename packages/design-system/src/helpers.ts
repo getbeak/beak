@@ -1,8 +1,6 @@
-import { useTheme } from 'styled-components';
+import { DefaultTheme } from 'styled-components';
 
-export function statusToColour(status: number) {
-	const theme = useTheme();
-
+export function statusToColour(theme: DefaultTheme, status: number) {
 	switch (true) {
 		case status >= 100 && status < 200:
 			return theme.ui.textMinor;

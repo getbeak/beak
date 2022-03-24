@@ -58,7 +58,7 @@ const OpenRecentColumn: React.FunctionComponent = () => {
 			<ScrollViewer>
 				<ScrollViewerInner tabIndex={-1}>
 					{noRecents && 'No recent projects, create one to get started'}
-					{categories.filter(k => recents[k].length > 0).map((k, i) => (
+					{categories.filter(k => recents[k].length > 0).map(k => (
 						<Collapse
 							key={k}
 							startOpen={true}

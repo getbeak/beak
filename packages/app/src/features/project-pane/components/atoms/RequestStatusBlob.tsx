@@ -14,7 +14,7 @@ const RequestStatusBlob = styled.div<RequestStatusBlobProps>`
 	margin-top: 4px;
 	margin-right: 5px;
 
-	background-color: ${p => statusToColour(p.$status)};
+	background-color: ${p => statusToColour(p.theme, p.$status)};
 `;
 
 export default RequestStatusBlob;

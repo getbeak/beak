@@ -10,7 +10,7 @@ const omniBarReducer = createReducer(initialState, builder => {
 			state.open = true;
 			state.mode = payload.mode;
 		})
-		.addCase(actions.hideOmniBar, (state, { payload }) => {
+		.addCase(actions.hideOmniBar, state => {
 			state.open = false;
 			state.mode = void 0;
 		});

@@ -15,7 +15,7 @@ import styled, { useTheme } from 'styled-components';
 
 import { showEncryptionView } from '../../encryption/store/actions';
 import ActionBarButton from './atoms/ActionBarButton';
-import ActionBarSeperator from './atoms/ActionBarSeperator';
+import ActionBarSeparator from './atoms/ActionBarSeparator';
 import ActionBarAlertButton from './molecules/ActionBarAlertButton';
 
 const ActionBar: React.FunctionComponent = () => {
@@ -23,7 +23,7 @@ const ActionBar: React.FunctionComponent = () => {
 	const dispatch = useDispatch();
 	const selectedTabPayload = useSelector(s => s.features.tabs.selectedTab);
 	const request = useSelector(s => s.global.project.tree![selectedTabPayload ?? 'non_existent']);
-	const requirements = gatherRequirements(selectedTabPayload, request);
+	const requirements = useRequirements(selectedTabPayload, request);
 
 	return (
 		<Wrapper>
@@ -34,7 +34,7 @@ const ActionBar: React.FunctionComponent = () => {
 					icon={faLock}
 				/>
 			</ActionBarButton>
-			<ActionBarSeperator />
+			<ActionBarSeparator />
 			<abbr title={'Go to previous item in flight history'}>
 				<ActionBarButton
 					disabled={!requirements?.canGoBack}
@@ -59,7 +59,7 @@ const ActionBar: React.FunctionComponent = () => {
 					/>
 				</ActionBarButton>
 			</abbr>
-			<ActionBarSeperator />
+			<ActionBarSeparator />
 			<abbr title={'Shows possible errors with your project'}>
 				<ActionBarAlertButton />
 			</abbr>
@@ -76,7 +76,7 @@ const ActionBar: React.FunctionComponent = () => {
 	);
 };
 
-function gatherRequirements(selectedRequestId: string | undefined, request: Nodes | undefined) {
+function useRequirements(selectedRequestId: string | undefined, request: Nodes | undefined) {
 	const flight = useSelector(s => s.global.flight.flightHistory[selectedRequestId ?? 'non_existent']);
 
 	if (!request)
