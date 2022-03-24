@@ -1,5 +1,8 @@
 {
-	"extends": "eslint:recommended",
+	"extends": [
+		"eslint:recommended",
+		"plugin:react-hooks/recommended",
+	],
 	"parser": "@typescript-eslint/parser",
 	"parserOptions": {
 		"ecmaVersion": 2018,
@@ -17,9 +20,10 @@
 
 	"plugins": [
 		"@typescript-eslint",
-		"react-hooks",
 		"react",
-		"simple-import-sort"
+		"simple-import-sort",
+		"jest",
+		"unused-imports"
 	],
 
 
@@ -41,6 +45,7 @@
 	},
 
 	"rules": {
+			
 		"accessor-pairs": 1,
 		"array-bracket-spacing": 1,
 		"array-callback-return": 1,
@@ -55,12 +60,13 @@
 		"comma-spacing": 1,
 		"comma-style": 1,
 		"computed-property-spacing": 1,
-		"consistent-return": 1,
+		"consistent-return": "error",
 		"consistent-this": [1, "that"],
 		"curly": [1, "multi-or-nest", "consistent"],
 		"default-case": 1,
+		"deprecation/deprecation": "warn",
 		"dot-notation": [1, { "allowPattern": "^[a-z]+(_[a-z]+)+$" }],
-		"eol-last": 1,
+		"eol-last": ["error", "always"],
 		"eqeqeq": [1, "allow-null"],
 		"func-names": 1,
 		"func-style": [1, "declaration", { "allowArrowFunctions": true }],
@@ -70,18 +76,18 @@
 		"handle-callback-err": 1,
 		"id-blacklist": [1, "err", "cb", "data"],
 		"indent": "off",
-		"jsx-quotes": 1,
+		"jsx-quotes": ["error", "prefer-single"],
 		"key-spacing": 1,
 		"keyword-spacing": 1,
 		"linebreak-style": 1,
 		"lines-around-comment": 1,
 		"max-depth": 1,
-		"max-len": ["warn", {
-			"ignoreUrls": true,
+		"max-len": ["error", {
 			"code": 120,
 			"ignoreStrings": true,
 			"ignoreTemplateLiterals": true,
-			"ignoreTrailingComments": true
+			"ignoreTrailingComments": true,
+			"ignoreUrls": true
 		}],
 		"max-nested-callbacks": [1, 3],
 		"max-statements-per-line": 1,
@@ -94,7 +100,7 @@
 		"no-caller": 1,
 		"no-catch-shadow": 1,
 		"no-confusing-arrow": 0,
-		"no-console": 1,
+		"no-console": "error",
 		"no-div-regex": 1,
 		"no-duplicate-imports": 1,
 		"no-else-return": 1,
@@ -118,7 +124,7 @@
 		"no-mixed-spaces-and-tabs": 1,
 		"no-multi-spaces": 1,
 		"no-multi-str": 1,
-		"no-multiple-empty-lines": [1, { "max": 1 }],
+		"no-multiple-empty-lines": ["error", { "max": 1, "maxEOF": 0, "maxBOF": 0 }],
 		"no-native-reassign": 1,
 		"no-negated-condition": 1,
 		"no-nested-ternary": 1,
@@ -128,10 +134,10 @@
 		"no-new-wrappers": 1,
 		"no-new": 1,
 		"no-octal-escape": 1,
-		"no-param-reassign": [1, { "props": true }],
+		"no-param-reassign": ["error", { "props": true, "ignorePropertyModificationsFor": ["state"] }],
 		"no-path-concat": 1,
-		"no-plusplus": 0,
-		"no-process-env": 0,
+		"no-plusplus": [1, { "allowForLoopAfterthoughts": true }],
+		"no-process-env": 1,
 		"no-process-exit": 1,
 		"no-proto": 1,
 		"no-return-assign": 1,
@@ -143,15 +149,14 @@
 		"no-sync": 1,
 		"no-throw-literal": 1,
 		"no-trailing-spaces": 1,
-		"no-undef": "off",
 		"no-undef-init": 1,
 		"no-undefined": 1,
 		"no-unmodified-loop-condition": 1,
 		"no-unneeded-ternary": 1,
 		"no-unsafe-finally": 1,
 		"no-unused-expressions": 1,
-		"no-unused-vars": 0,
-		"no-use-before-define": 0,
+		"no-unused-vars": "off",
+		"no-use-before-define": 0, // we rely on typescript-eslint own rule for this
 		"no-useless-call": 1,
 		"no-useless-catch": 0,
 		"no-useless-computed-key": 1,
@@ -170,9 +175,9 @@
 		"padded-blocks": [1, "never"],
 		"padding-line-between-statements": [
 			"error",
+			{ "blankLine": "always", "prev": "*", "next": "return" },
 			{ "blankLine": "always", "prev": ["const", "let", "var"], "next": "*"},
-			{ "blankLine": "any", "prev": ["const", "let", "var"], "next": ["const", "let", "var"]},
-			{ "blankLine": "always", "prev": "*", "next": "return" }
+			{ "blankLine": "any", "prev": ["const", "let", "var"], "next": ["const", "let", "var"]}
 		],
 		"prefer-arrow-callback": 1,
 		"prefer-const": 1,
@@ -180,17 +185,18 @@
 		"prefer-spread": 1,
 		"prefer-template": 1,
 		"quote-props": [1, "consistent-as-needed"],
-		"quotes": [1, "single", { "avoidEscape": true, "allowTemplateLiterals": true }],
+		"quotes": "off",
 		"radix": 1,
 		"require-yield": 1,
 		"semi": [1, "always"],
+		"simple-import-sort/imports": ["error", { "groups": [["^react", "^@?\\w"]] }],
 		"sort-imports": 0,
 		"space-before-blocks": 1,
 		"space-before-function-paren": [1, {"anonymous": "always", "named": "never"}],
 		"space-in-parens": 1,
 		"space-infix-ops": 1,
 		"space-unary-ops": 1,
-		"spaced-comment": 1,
+		"spaced-comment": "error",
 		"template-curly-spacing": 1,
 		"vars-on-top": 1,
 		"wrap-iife": 1,
@@ -198,23 +204,21 @@
 		"yield-star-spacing": 1,
 		"yoda": 1,
 
-		"react/jsx-uses-react": 2,
-		"react/jsx-uses-vars": 2,
+		"react/jsx-curly-brace-presence": ["error", "always"],
+		"react/jsx-tag-spacing": 1,
+		"react/jsx-uses-react": 1,
+		"react/jsx-uses-vars": 1,
 		"react/no-multi-comp": 0,
-		"react/prop-types": 0,
 		"react/no-unsafe": [1, { "checkAliases": true }],
+		"react/prop-types": 0,
 
-		"simple-import-sort/imports": "error",
-		"simple-import-sort/exports": "error",
+		"unused-imports/no-unused-imports": "error",
 
 		"@typescript-eslint/adjacent-overload-signatures": "error",
 		"@typescript-eslint/array-type": "error",
 		"@typescript-eslint/ban-types": "error",
 		"@typescript-eslint/consistent-type-assertions": "error",
-		"@typescript-eslint/indent": [
-			1,
-			"tab", { "SwitchCase": 1 }
-		],
+		"@typescript-eslint/indent": [1, "tab", { "SwitchCase": 1 }],
 		"@typescript-eslint/member-delimiter-style": "error",
 		"@typescript-eslint/member-naming": "off",
 		"@typescript-eslint/naming-convention": ["error",
@@ -226,7 +230,10 @@
 					"match": false
 				}
 			},
-			{ "selector": "variable", "format": ["camelCase", "UPPER_CASE", "PascalCase"] },
+			{
+				"selector": "variable",
+				"format": ["camelCase", "UPPER_CASE", "PascalCase"]
+			},
 			{
 				"selector": "parameter",
 				"format": [],
@@ -241,6 +248,12 @@
 				"selector": "function",
 				"format": ["camelCase", "PascalCase"]
 			},
+			{
+				"selector": "method",
+				"format": ["camelCase"],
+				"modifiers": ["private"],
+				"leadingUnderscore": "allow"
+			},
 			{ "selector": "typeLike", "format": ["PascalCase"] }
 		],
 		"@typescript-eslint/no-array-constructor": "error",
@@ -251,10 +264,13 @@
 		"@typescript-eslint/no-parameter-properties": "error",
 		"@typescript-eslint/triple-slash-reference": [1, { "path": "never", "types": "never", "lib": "never" }],
 		"@typescript-eslint/no-unused-vars": "off",
-		"@typescript-eslint/no-unused-vars-experimental": "off",
-		"@typescript-eslint/no-use-before-define": "off",
+		"@typescript-eslint/no-unused-vars-experimental": "error",
+		"@typescript-eslint/no-use-before-define": "off", // NOTE(afr): Un-useful rule for how we write components
 		"@typescript-eslint/no-var-requires": "error",
+		"@typescript-eslint/quotes": ["error", "single", { "avoidEscape": true }],
 		"@typescript-eslint/restrict-plus-operands": "error",
-		"@typescript-eslint/type-annotation-spacing": "error"
+		"@typescript-eslint/type-annotation-spacing": "error",
+
+		"react-hooks/exhaustive-deps": "error"
 	}
 }
