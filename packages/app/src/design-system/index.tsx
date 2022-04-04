@@ -68,6 +68,9 @@ const GlobalStyle = createGlobalStyle<GlobalStyleProps>`
 			background-color: ${p => p.theme.ui.secondaryAction};
 		}
 	}
+	::-webkit-scrollbar-corner {
+		background: transparent;
+	}
 `;
 
 export {
