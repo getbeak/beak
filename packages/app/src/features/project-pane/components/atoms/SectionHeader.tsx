@@ -1,9 +1,9 @@
 import styled from 'styled-components';
 
 const SectionHeader = styled.div<{ collapsed: boolean }>`
-	border-top: 1px solid ${props => props.theme.ui.backgroundBorderSeparator};
+	/* border-top: 1px solid ${props => props.theme.ui.backgroundBorderSeparator}; */
 	text-transform: uppercase;
-	padding: 6px 14px;
+	padding: 6px 5px;
 	font-size: 11px;
 	font-weight: 600;
 

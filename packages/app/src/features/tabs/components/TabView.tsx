@@ -75,7 +75,7 @@ const TabView: React.FunctionComponent<TabViewProps> = ({ selectedTab, tabs }) =
 };
 
 const ShortcutContainer = styled.div`
-	height: calc(100% - 34px);
+	height: calc(100% - 72px);
 `;
 
 const TabBar = styled(TB)`

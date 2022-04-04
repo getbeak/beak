@@ -12,7 +12,7 @@ import WindowSessionContext from '../contexts/window-session-context';
 import ActionBar from '../features/action-bar/components/ActionBar';
 import ProjectEncryption from '../features/encryption/components/ProjectEncryption';
 import Omnibar from '../features/omni-bar/components/Omnibar';
-import ProjectPane from '../features/project-pane/components/ProjectPane';
+import Sidebar from '../features/sidebar/components/Sidebar';
 import StatusBar from '../features/status-bar/components/StatusBar';
 import TabView from '../features/tabs/components/TabView';
 import { useApplicationMenuEventListener } from '../hooks/use-application-menu-event-listener';
@@ -26,6 +26,7 @@ const ProjectMain: React.FunctionComponent = () => {
 	const dispatch = useDispatch();
 	const [title, setTitle] = useState('Loading... - Beak');
 	const [setup, setSetup] = useState(false);
+	const [collapsedSidebar, setCollapsedSidebar] = useState(false);
 	const project = useSelector(s => s.global.project);
 	const variableGroups = useSelector(s => s.global.variableGroups);
 	const tabs = useSelector(s => s.features.tabs);
@@ -101,9 +102,13 @@ const ProjectMain: React.FunctionComponent = () => {
 						<ReflexContainer orientation={'vertical'}>
 							<ReflexElement
 								flex={20}
-								minSize={200}
+								size={collapsedSidebar ? 250 : void 0}
+								minSize={collapsedSidebar ? 40 : 200}
+								maxSize={collapsedSidebar ? 40 : void 0}
 							>
-								<ProjectPane />
+								<Sidebar onSidebarCollapseChanged={collapsed => {
+									setCollapsedSidebar(collapsed);
+								}} />
 							</ReflexElement>
 
 							<ReflexSplitter
@@ -116,7 +121,6 @@ const ProjectMain: React.FunctionComponent = () => {
 								style={{ overflowY: 'hidden' }}
 							>
 								<ActionBar />
-
 								<TabView tabs={tabs.activeTabs} selectedTab={activeTab} />
 							</ReflexElement>
 						</ReflexContainer>

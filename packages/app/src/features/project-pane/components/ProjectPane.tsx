@@ -38,8 +38,7 @@ const ProjectPane: React.FunctionComponent = () => {
 
 	return (
 		<Container $darwin={windowSession.isDarwin()}>
-			<TitleBar />
-			<Header>{project.name!}</Header>
+			{/* <Header>{project.name!}</Header> */}
 			<SectionHeader
 				collapsed={collapser.project}
 				onClick={() => toggleCollapser('project')}
@@ -86,14 +85,8 @@ const Container = styled.div<{ $darwin: boolean }>`
 
 	background: ${p => p.$darwin ? 'transparent' : p.theme.ui.background};
 
-	height: calc(100vh - 24px);
+	height: 100%;
 	overflow-y: hidden;
-`;
-
-const TitleBar = styled.div`
-	height: 39px;
-	flex-shrink: 0;
-	-webkit-app-region: drag;
 `;
 
 export default ProjectPane;

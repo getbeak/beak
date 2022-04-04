@@ -60,7 +60,7 @@ const Container = styled.div`
 	display: flex;
 	flex-direction: column;
 	background-color: ${props => props.theme.ui.surface};
-	height: calc(100% - 39px);
+	height: 100%;
 	width: 100%;
 `;
 

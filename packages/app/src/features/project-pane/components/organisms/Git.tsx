@@ -31,7 +31,7 @@ const Git: React.FunctionComponent = () => {
 };
 
 const Container = styled.div`
-	padding: 4px 14px;
+	padding: 4px 5px;
 	padding-right: 3px;
 
 	flex-shrink: 0;

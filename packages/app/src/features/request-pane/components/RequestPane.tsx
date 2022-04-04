@@ -99,7 +99,7 @@ const Container = styled.div`
 	display: flex;
 	flex-direction: column;
 
-	height: calc(100% - 39px);
+	height: 100%;
 	width: 100%;
 
 	background-color: ${props => props.theme.ui.surface};
