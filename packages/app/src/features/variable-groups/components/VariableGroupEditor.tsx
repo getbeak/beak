@@ -201,6 +201,7 @@ const Container = styled.div`
 `;
 
 const TabBody = styled.div`
+	position: relative;
 	flex-grow: 2;
 
 	overflow-y: overlay;

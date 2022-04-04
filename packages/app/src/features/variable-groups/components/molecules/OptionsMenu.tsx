@@ -84,17 +84,6 @@ const OptionsMenu: React.FunctionComponent<OptionsMenuProps> = ({ type, id, inTa
 
 						dispatch(removeGroup({ variableGroup, id: id! }));
 					},
-				}, {
-					id: ksuid.generate('ctxmenuitem').toString(),
-					type: 'separator',
-				}, {
-					id: ksuid.generate('ctxmenuitem').toString(),
-					label: 'Shift to the left',
-					enabled: false,
-				}, {
-					id: ksuid.generate('ctxmenuitem').toString(),
-					label: 'Shift to the right',
-					enabled: false,
 				}] as MenuItemConstructorOptions[];
 			}
 
@@ -117,17 +106,6 @@ const OptionsMenu: React.FunctionComponent<OptionsMenuProps> = ({ type, id, inTa
 
 					dispatch(removeItem({ variableGroup, id: id! }));
 				},
-			}, {
-				id: ksuid.generate('ctxmenuitem').toString(),
-				type: 'separator',
-			}, {
-				id: ksuid.generate('ctxmenuitem').toString(),
-				label: 'Shift up one',
-				enabled: false,
-			}, {
-				id: ksuid.generate('ctxmenuitem').toString(),
-				label: 'Shift down one',
-				enabled: false,
 			}] as MenuItemConstructorOptions[];
 		})();
 
