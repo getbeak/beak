@@ -4,6 +4,12 @@ export const Cell = styled.div`
 	border-bottom: 1px solid ${p => p.theme.ui.backgroundBorderSeparator};
 `;
 
+export const CellAction = styled.div`
+	display: inline-block;
+	padding: 0 4px;
+	cursor: pointer;
+`;
+
 export const HeaderCell = styled(Cell)`
 	color: ${p => p.theme.ui.textOnSurfaceBackground};
 	border-left: 1px solid ${p => p.theme.ui.backgroundBorderSeparator};
@@ -19,7 +25,6 @@ export const HeaderGroupNameCell = styled(HeaderCell)`
 	display: flex;
 	flex-direction: row;
 `;
-export const HeaderAction = styled(HeaderCell)``;
 
 export const BodyCell = styled(Cell)`
 	border-left: 1px solid ${p => p.theme.ui.backgroundBorderSeparator};
