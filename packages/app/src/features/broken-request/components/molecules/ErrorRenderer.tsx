@@ -41,9 +41,9 @@ const EditorContainer = styled.div`
 
 const EditorHeader = styled.div`
 	text-align: left;
-	padding: 5px 8px;
+	padding: 6px 4px;
 
-	font-size: 14px;
+	font-size: 11px;
 	font-weight: 600;
 	color: ${p => p.theme.ui.textMinor};
 	text-transform: uppercase;
