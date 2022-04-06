@@ -1,5 +1,6 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
+import SidebarPaneBody from '@beak/app/features/sidebar/components/SidebarPaneBody';
 import styled from 'styled-components';
 
 const Git: React.FunctionComponent = () => {
@@ -30,12 +31,7 @@ const Git: React.FunctionComponent = () => {
 	);
 };
 
-const Container = styled.div`
-	padding: 4px 5px;
-	padding-right: 3px;
-
-	flex-shrink: 0;
-	overflow-y: scroll;
+const Container = styled(SidebarPaneBody)`
 	max-height: 120px;
 	min-height: 26px;
 `;

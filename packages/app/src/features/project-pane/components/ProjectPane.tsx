@@ -1,92 +1,28 @@
-import React, { useContext, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import WindowSessionContext from '@beak/app/contexts/window-session-context';
-import { faBars } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import styled, { useTheme } from 'styled-components';
+import React from 'react';
+import { useSelector } from 'react-redux';
 
-import { changeTab } from '../../tabs/store/actions';
-import Header from './atoms/Header';
-import SectionHeader from './atoms/SectionHeader';
+import SidebarPane from '../../sidebar/components/SidebarPane';
+import SidebarPaneSection from '../../sidebar/components/SidebarPaneSection';
 import Git from './organisms/Git';
 import TreeView from './organisms/TreeView';
 import VariableGroups from './organisms/VariableGroups';
 
-interface Collapser {
-	project: boolean;
-	variableGroup: boolean;
-	explorer: boolean;
-}
-
 const ProjectPane: React.FunctionComponent = () => {
-	const dispatch = useDispatch();
-	const theme = useTheme();
 	const project = useSelector(s => s.global.project);
-	const windowSession = useContext(WindowSessionContext);
-	const [collapser, setCollapser] = useState<Collapser>({
-		project: false,
-		variableGroup: false,
-		explorer: false,
-	});
-
-	function toggleCollapser(key: keyof Collapser) {
-		setCollapser({
-			...collapser,
-			[key]: !collapser[key],
-		});
-	}
 
 	return (
-		<Container $darwin={windowSession.isDarwin()}>
-			{/* <Header>{project.name!}</Header> */}
-			<SectionHeader
-				collapsed={collapser.project}
-				onClick={() => toggleCollapser('project')}
-			>
-				{'Project'}
-			</SectionHeader>
-			{collapser.project !== true && <Git />}
-			<SectionHeader
-				collapsed={collapser.variableGroup}
-				onClick={() => toggleCollapser('variableGroup')}
-			>
-				{'Variable groups'}
-
-				<FontAwesomeIcon
-					icon={faBars}
-					color={theme.ui.textOnSurfaceBackground}
-					size={'1x'}
-					onClick={e => {
-						e.stopPropagation();
-
-						dispatch(changeTab({
-							type: 'renderer',
-							payload: 'variable_group_editor',
-							temporary: false,
-						}));
-					}}
-				/>
-			</SectionHeader>
-			{collapser.variableGroup !== true && <VariableGroups />}
-			<SectionHeader
-				collapsed={collapser.explorer}
-				onClick={() => toggleCollapser('explorer')}
-			>
-				{'Explorer'}
-			</SectionHeader>
-			{collapser.explorer !== true && <TreeView tree={project.tree!} />}
-		</Container>
+		<SidebarPane>
+			<SidebarPaneSection title={'Project'} collapseKey={'beak.project.project'}>
+				<Git />
+			</SidebarPaneSection>
+			<SidebarPaneSection title={'Variable groups'} collapseKey={'beak.project.variable-groups'}>
+				<VariableGroups />
+			</SidebarPaneSection>
+			<SidebarPaneSection title={'Explorer'} collapseKey={'beak.project.explorer'}>
+				<TreeView tree={project.tree!} />
+			</SidebarPaneSection>
+		</SidebarPane>
 	);
 };
-
-const Container = styled.div<{ $darwin: boolean }>`
-	display: flex;
-	flex-direction: column;
-
-	background: ${p => p.$darwin ? 'transparent' : p.theme.ui.background};
-
-	height: 100%;
-	overflow-y: hidden;
-`;
 
 export default ProjectPane;
