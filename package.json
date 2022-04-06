@@ -33,11 +33,11 @@
     "package:release": "lerna run package:release --stream --scope @beak/electron-host",
     "start": "lerna exec --parallel --concurrency 1 --stream --scope '@beak/{app,electron-host}' yarn start",
     "start:website": "lerna exec --parallel --concurrency 1 --stream --scope '@beak/website' yarn start",
-    "test-temp": "lerna run test --parallel",
     "test": "jest",
     "lint": "eslint --ext .tsx --ext .ts './packages/'",
     "unfuck": "lerna clean && yarn --force",
-    "postinstall": "node ./node-module-overrides/index.js"
+    "postinstall": "node ./node-module-overrides/index.js",
+    "release-safety": "yarn typecheck && yarn lint && yarn build"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.16.11",
