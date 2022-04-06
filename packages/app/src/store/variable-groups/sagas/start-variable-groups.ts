@@ -1,3 +1,4 @@
+import { attemptReconciliation } from '@beak/app/features/tabs/store/actions';
 import { readVariableGroup } from '@beak/app/lib/beak-variable-group';
 import createFsEmitter, { scanDirectoryRecursively, ScanResult } from '@beak/app/lib/fs-emitter';
 import { ipcDialogService } from '@beak/app/lib/ipc';
@@ -72,6 +73,7 @@ export default function* workerStartVariableGroups() {
 				const vgName = path.basename(result.path, path.extname(result.path));
 
 				yield put(actions.removeVg(vgName));
+				yield put(attemptReconciliation());
 			} catch (error) {
 				if (!(error instanceof Error))
 					return;

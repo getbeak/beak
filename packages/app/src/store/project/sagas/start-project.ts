@@ -1,4 +1,4 @@
-import { closeTab, loadTabState } from '@beak/app/features/tabs/store/actions';
+import { attemptReconciliation, closeTab, loadTabState } from '@beak/app/features/tabs/store/actions';
 import { readFolderNode } from '@beak/app/lib/beak-project/folder';
 import { readProjectFile } from '@beak/app/lib/beak-project/project';
 import { readRequestNode } from '@beak/app/lib/beak-project/request';
@@ -161,6 +161,7 @@ function* handleFolder(event: Event) {
 
 		case 'unlinkDir':
 			yield put(actions.removeNodeFromStoreByPath(event.path));
+			yield put(attemptReconciliation());
 
 			break;
 
@@ -205,6 +206,7 @@ function* handleRequest(event: Event) {
 				yield put(closeTab(node.id));
 
 			yield put(actions.removeNodeFromStoreByPath(event.path));
+			yield put(attemptReconciliation());
 
 			break;
 		}

@@ -7,7 +7,6 @@ import { insertNewGroup, insertNewItem, removeGroup, removeItem } from '@beak/ap
 import { TypedObject } from '@beak/common/helpers/typescript';
 import styled, { css } from 'styled-components';
 
-import { closeTab } from '../../tabs/store/actions';
 import VariableInput from '../../variable-input/components/VariableInput';
 import { BodyNameCell, BodyValueCell, HeaderGroupNameCell, HeaderNameCell } from './atoms/Cells';
 import { Body, Header, Row } from './atoms/Structure';
@@ -60,11 +59,8 @@ const VariableGroupEditor: React.FunctionComponent<VariableGroupEditorProps> = (
 	const groupKeys = variableGroup && TypedObject.keys(variableGroup.groups);
 	const itemKeys = variableGroup && TypedObject.keys(variableGroup.items);
 
-	if (!variableGroup) {
-		dispatch(closeTab(variableGroupName));
-
+	if (!variableGroup)
 		return null;
-	}
 
 	return (
 		<Container>

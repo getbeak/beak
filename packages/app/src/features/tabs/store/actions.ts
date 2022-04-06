@@ -18,7 +18,7 @@ export const closeTabsRight = createAction<string | undefined>(ActionTypes.CLOSE
 export const closeTabsAll = createAction<string | undefined>(ActionTypes.CLOSE_TABS_ALL);
 
 export const attemptReconciliation = createAction(ActionTypes.ATTEMPT_RECONCILIATION);
-export const reconciliationComplete = createAction<number>(ActionTypes.RECONCILIATION_COMPLETE);
+export const reconciliationComplete = createAction(ActionTypes.RECONCILIATION_COMPLETE);
 
 export default {
 	loadTabState,
@@ -32,4 +32,7 @@ export default {
 	closeTabsLeft,
 	closeTabsRight,
 	closeTabsAll,
+
+	attemptReconciliation,
+	reconciliationComplete,
 };

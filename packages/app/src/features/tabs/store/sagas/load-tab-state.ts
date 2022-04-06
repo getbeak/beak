@@ -23,6 +23,7 @@ export default createTakeEverySagaSet(actions.loadTabState, function* worker() {
 				lastReconcile: 0,
 				loaded: true,
 			}));
+			yield put(actions.attemptReconciliation());
 
 			return;
 		}

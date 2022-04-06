@@ -1,3 +1,4 @@
+import { attemptReconciliation } from '@beak/app/features/tabs/store/actions';
 import { removeVariableGroup, writeVariableGroup } from '@beak/app/lib/beak-variable-group';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { VariableGroups } from '@beak/common/types/beak-project';
@@ -15,7 +16,11 @@ export default function* workerCatchUpdates({ type, payload }: PayloadAction<unk
 	);
 
 	if (type === ActionTypes.REMOVE_VG) {
-		yield call(removeVariableGroup, (payload as string));
+		try {
+			yield call(removeVariableGroup, (payload as string));
+		} catch { /* Don't care if this fails */ }
+
+		yield put(attemptReconciliation());
 
 		return;
 	}
@@ -33,6 +38,7 @@ export default function* workerCatchUpdates({ type, payload }: PayloadAction<unk
 
 	yield put(actions.setLatestWrite(Date.now()));
 	yield call(writeVariableGroups, variableGroups);
+	yield
 }
 
 async function writeVariableGroups(vgs: VariableGroups) {

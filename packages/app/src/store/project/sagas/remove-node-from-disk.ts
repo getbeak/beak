@@ -1,4 +1,4 @@
-import { closeTab } from '@beak/app/features/tabs/store/actions';
+import { attemptReconciliation, closeTab } from '@beak/app/features/tabs/store/actions';
 import { removeFolderNode } from '@beak/app/lib/beak-project/folder';
 import { removeRequestNode } from '@beak/app/lib/beak-project/request';
 import { ipcDialogService } from '@beak/app/lib/ipc';
@@ -36,6 +36,7 @@ export default function* workerRemoveNodeFromDisk({ payload }: PayloadAction<Rem
 		yield call(removeRequestNode, node.filePath);
 
 	yield put(actions.removeNodeFromStore(requestId));
+	yield put(attemptReconciliation());
 
 	// Wait for FS changes to have happened and to be reported
 	// This is for folder deletions, instead of simple request ones

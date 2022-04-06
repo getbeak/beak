@@ -121,8 +121,8 @@ const tabsReducer = createReducer(initialState, builder => {
 			state.selectedTab = targetTab.payload;
 		})
 
-		.addCase(actions.reconciliationComplete, (state, { payload }) => {
-			state.lastReconcile = payload;
+		.addCase(actions.reconciliationComplete, state => {
+			state.lastReconcile = Date.now();
 		});
 });
 

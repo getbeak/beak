@@ -1,6 +1,7 @@
 import { all, fork, takeEvery } from 'redux-saga/effects';
 
 import { ActionTypes } from '../types';
+import attemptReconciliation from './attempt-reconciliation';
 import catchChanges from './catch-changes';
 import loadTabState from './load-tab-state';
 
@@ -18,6 +19,7 @@ const tabChangeActions = [
 
 export default function* projectSaga() {
 	yield all([
+		attemptReconciliation,
 		loadTabState,
 		fork(function* catchLoadPreferencesWatcher() {
 			yield takeEvery(tabChangeActions, catchChanges);
