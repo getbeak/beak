@@ -19,7 +19,9 @@ const Sidebar: React.FunctionComponent<SidebarProps> = props => {
 	const { onSidebarCollapseChanged } = props;
 	const windowSession = useContext(WindowSessionContext);
 
-	const [variant, setVariant] = useState<SidebarVariant>('project');
+	// TODO(afr): Remove this
+	// const [variant, setVariant] = useState<SidebarVariant>('project');
+	const [variant, setVariant] = useState<SidebarVariant>('variables');
 	const [collapsed, setCollapsed] = useState(false);
 	const variantIndex = sidebarVariants.indexOf(variant);
 
