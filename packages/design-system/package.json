@@ -16,6 +16,6 @@
   },
   "devDependencies": {
     "@types/styled-components": "^5.1.24",
-    "styled-components": "^5.3.3"
+    "styled-components": "^5.3.5"
   }
 }
