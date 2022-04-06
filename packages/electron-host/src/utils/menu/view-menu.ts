@@ -30,6 +30,12 @@ export default function generateViewMenu(ctx: Context): MenuItemConstructorOptio
 				enabled: isProjectEditor(ctx),
 				click: async () => sendMenuItemClick(ctx, 'select_previous_tab'),
 			},
+			{ type: 'separator' }, {
+				label: 'Toggle Sidebar',
+				accelerator: 'CmdOrCtrl+B',
+				enabled: isProjectEditor(ctx),
+				click: async () => sendMenuItemClick(ctx, 'toggle_sidebar'),
+			},
 			{ type: 'separator' },
 			{ role: 'forceReload' },
 			{ role: 'toggleDevTools' },

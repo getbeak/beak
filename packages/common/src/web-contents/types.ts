@@ -6,6 +6,8 @@ export type MenuEventCode =
 	'new_request' |
 	'new_folder' |
 
+	'toggle_sidebar' |
+
 	'close_tab' |
 	'close_all_tabs' |
 	'close_other_tabs' |

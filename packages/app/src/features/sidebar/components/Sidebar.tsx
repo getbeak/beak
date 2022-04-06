@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import WindowSessionContext from '@beak/app/contexts/window-session-context';
 import { checkShortcut } from '@beak/app/lib/keyboard-shortcuts';
+import { MenuEventPayload } from '@beak/common/web-contents/types';
 import { faFolderTree } from '@fortawesome/free-solid-svg-icons/faFolderTree';
 import { faKeyboard } from '@fortawesome/free-solid-svg-icons/faKeyboard';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -46,9 +47,22 @@ const Sidebar: React.FunctionComponent<SidebarProps> = props => {
 			event.preventDefault();
 		};
 
+		function listener(_event: unknown, payload: MenuEventPayload) {
+			const { code } = payload;
+
+			if (code !== 'toggle_sidebar')
+				return;
+
+			setCollapsedProxy(!collapsed);
+		}
+
+		window.secureBridge.ipc.on('menu:menu_item_click', listener);
 		window.addEventListener('keydown', onKeyDown);
 
-		return () => window.removeEventListener('keydown', onKeyDown);
+		return () => {
+			window.secureBridge.ipc.off('menu:menu_item_click', listener);
+			window.removeEventListener('keydown', onKeyDown);
+		};
 	}, [collapsed]);
 
 	function usefulSetVariant(newVariant: SidebarVariant) {
@@ -62,6 +76,7 @@ const Sidebar: React.FunctionComponent<SidebarProps> = props => {
 
 	return (
 		<Container $darwin={windowSession.isDarwin()}>
+			<DragBar />
 			<SidebarMenu>
 				<SidebarMenuHighlighter hidden={collapsed} index={variantIndex} />
 
@@ -99,11 +114,19 @@ const Container = styled.div<{ $darwin: boolean }>`
 	display: grid;
 	grid-template-columns: 40px 1fr;
 	height: calc(100% - 72px);
-	margin-top: 71px;
+	padding-top: 71px;
 	background: ${p => p.$darwin ? 'transparent' : p.theme.ui.background};
 `;
 
+const DragBar = styled.div`
+	position: absolute;
+	top: 0; left: 0; right: 0;
+	height: 71px;
+	-webkit-app-region: drag;
+`;
+
 const SidebarMenu = styled.div`
+	position: relative;
 	width: 40px;
 `;
 

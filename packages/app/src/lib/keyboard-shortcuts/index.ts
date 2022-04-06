@@ -6,6 +6,8 @@ import { PlatformAgnosticDefinitions, PlatformSpecificDefinitions } from './type
 type Shortcuts =
 	'global.execute-request' |
 
+	'sidebar.toggle-view' |
+
 	'project-explorer.request.up' |
 	'project-explorer.request.down' |
 	'project-explorer.request.left' |
@@ -35,8 +37,10 @@ const definitions: Record<Shortcuts, PlatformSpecificDefinitions | PlatformAgnos
 
 		windows: { ctrl: true, key: 'Enter' },
 		linux: { ctrl: true, key: 'Enter' },
-		darwin: { meta: true, key: ['Enter', 'R'] },
+		darwin: { meta: true, key: ['Enter', 'r'] },
 	},
+
+	'sidebar.toggle-view': { type: 'agnostic', ctrlOrMeta: true, key: 'b' },
 
 	'project-explorer.request.up': { type: 'agnostic', key: 'ArrowUp' },
 	'project-explorer.request.down': { type: 'agnostic', key: 'ArrowDown' },
