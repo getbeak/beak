@@ -1,7 +1,6 @@
 import React from 'react';
-import { IconDefinition } from '@fortawesome/free-solid-svg-icons';
+import { faTable, IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import { faFolderTree } from '@fortawesome/free-solid-svg-icons/faFolderTree';
-import { faKeyboard } from '@fortawesome/free-solid-svg-icons/faKeyboard';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import styled, { useTheme } from 'styled-components';
 
@@ -9,7 +8,7 @@ export type SidebarVariant = 'project' | 'variables';
 
 const icons: Record<SidebarVariant, IconDefinition> = {
 	project: faFolderTree,
-	variables: faKeyboard,
+	variables: faTable,
 };
 
 interface SidebarMenuItemProps {

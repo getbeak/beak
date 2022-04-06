@@ -2,12 +2,10 @@ import React, { useContext, useEffect, useState } from 'react';
 import WindowSessionContext from '@beak/app/contexts/window-session-context';
 import { checkShortcut } from '@beak/app/lib/keyboard-shortcuts';
 import { MenuEventPayload } from '@beak/common/web-contents/types';
-import { faFolderTree } from '@fortawesome/free-solid-svg-icons/faFolderTree';
-import { faKeyboard } from '@fortawesome/free-solid-svg-icons/faKeyboard';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import styled, { useTheme } from 'styled-components';
+import styled from 'styled-components';
 
 import ProjectPane from '../../project-pane/components/ProjectPane';
+import VariablesPane from '../../variables/components/VariablesPane';
 import SidebarMenuHighlighter from './molecules/SidebarMenuHighlighter';
 import SidebarMenuItem, { SidebarVariant } from './molecules/SidebarMenuItem';
 
@@ -19,7 +17,6 @@ interface SidebarProps {
 
 const Sidebar: React.FunctionComponent<SidebarProps> = props => {
 	const { onSidebarCollapseChanged } = props;
-	const theme = useTheme();
 	const windowSession = useContext(WindowSessionContext);
 
 	const [variant, setVariant] = useState<SidebarVariant>('project');
@@ -84,27 +81,16 @@ const Sidebar: React.FunctionComponent<SidebarProps> = props => {
 					item={'project'}
 					selectedItem={variant}
 					onClick={usefulSetVariant}
-				>
-					<FontAwesomeIcon
-						icon={faFolderTree}
-						color={theme.ui.blankFill}
-						fontSize={'14px'}
-					/>
-				</SidebarMenuItem>
+				/>
 				<SidebarMenuItem
 					item={'variables'}
 					selectedItem={variant}
 					onClick={usefulSetVariant}
-				>
-					<FontAwesomeIcon
-						icon={faKeyboard}
-						color={theme.ui.blankFill}
-						fontSize={'14px'}
-					/>
-				</SidebarMenuItem>
+				/>
 			</SidebarMenu>
 
 			{variant === 'project' && <ProjectPane />}
+			{variant === 'variables' && <VariablesPane />}
 		</Container>
 	);
 };
