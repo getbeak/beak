@@ -1,11 +1,12 @@
 import { ReflexSplitter as RS, ReflexSplitterProps as RSP } from 'react-reflex';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
 // TODO(afr): Get rid of importants when css import is removed
 
 export interface ReflexSplitterProps extends RSP {
 	orientation: 'horizontal' | 'vertical';
 	hideVisualIndicator?: boolean;
+	$disabled?: boolean;
 }
 
 const ReflexSplitter = styled(RS) <ReflexSplitterProps>`
@@ -19,6 +20,16 @@ const ReflexSplitter = styled(RS) <ReflexSplitterProps>`
 		background-color: ${props => props.theme.ui.primaryFill} !important;
 		box-shadow: 0px 0px 0px 1px ${props => props.theme.ui.primaryFill} !important;
 	}
+
+	${p => p.$disabled && css`
+		pointer-events: none !important;
+		cursor: default !important;
+
+		&:hover {
+			background-color: inherit !important;
+			box-shadow: inherit !important;
+		}
+	`}
 `;
 
 export default ReflexSplitter;

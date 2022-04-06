@@ -2,16 +2,18 @@ import React from 'react';
 import styled from 'styled-components';
 
 interface SidebarMenuHighlighterProps {
-	currentIndex: number;
+	index: number;
+	hidden: boolean;
 }
 
 const SidebarMenuHighlighter: React.FunctionComponent<SidebarMenuHighlighterProps> = props => (
-	<Container>
-		<HighlightBar $index={props.currentIndex} />
+	<Container $hidden={props.hidden}>
+		<HighlightBar $index={props.index} />
 	</Container>
 );
 
-const Container = styled.div`
+const Container = styled.div<{ $hidden: boolean }>`
+	display: ${p => p.$hidden ? 'none' : 'block'};
 	position: absolute;
 	top: 0; bottom: 0; left: 0;
 `;

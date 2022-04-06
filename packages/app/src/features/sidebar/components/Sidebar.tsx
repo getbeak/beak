@@ -1,5 +1,6 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import WindowSessionContext from '@beak/app/contexts/window-session-context';
+import { checkShortcut } from '@beak/app/lib/keyboard-shortcuts';
 import { faFolderTree } from '@fortawesome/free-solid-svg-icons/faFolderTree';
 import { faKeyboard } from '@fortawesome/free-solid-svg-icons/faKeyboard';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -19,23 +20,50 @@ const Sidebar: React.FunctionComponent<SidebarProps> = props => {
 	const { onSidebarCollapseChanged } = props;
 	const theme = useTheme();
 	const windowSession = useContext(WindowSessionContext);
-	const [variant, setVariant] = useState<SidebarVariant | null>('project');
-	const variantIndex = (sidebarVariants as unknown[]).indexOf(variant);
+
+	const [variant, setVariant] = useState<SidebarVariant>('project');
+	const [collapsed, setCollapsed] = useState(false);
+	const variantIndex = sidebarVariants.indexOf(variant);
+
+	function setCollapsedProxy(value: boolean) {
+		setCollapsed(value);
+		onSidebarCollapseChanged(value);
+	}
+
+	useEffect(() => {
+		const onKeyDown = (event: KeyboardEvent) => {
+			switch (true) {
+				case checkShortcut('sidebar.toggle-view', event):
+					event.stopPropagation();
+					setCollapsedProxy(!collapsed);
+
+					break;
+
+				default:
+					return;
+			}
+
+			event.preventDefault();
+		};
+
+		window.addEventListener('keydown', onKeyDown);
+
+		return () => window.removeEventListener('keydown', onKeyDown);
+	}, [collapsed]);
 
 	function usefulSetVariant(newVariant: SidebarVariant) {
 		if (variant === newVariant) {
-			setVariant(null);
-			onSidebarCollapseChanged(true);
+			setCollapsedProxy(!collapsed);
 		} else {
 			setVariant(newVariant);
-			onSidebarCollapseChanged(false);
+			setCollapsedProxy(false);
 		}
 	}
 
 	return (
 		<Container $darwin={windowSession.isDarwin()}>
 			<SidebarMenu>
-				<SidebarMenuHighlighter currentIndex={variantIndex} />
+				<SidebarMenuHighlighter hidden={collapsed} index={variantIndex} />
 
 				<SidebarMenuItem
 					item={'project'}

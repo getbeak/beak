@@ -1,14 +1,14 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { useDispatch, useSelector } from 'react-redux';
-import { ReflexContainer, ReflexElement } from 'react-reflex';
+import { ReflexContainer } from 'react-reflex';
 import styled from 'styled-components';
 
+import ReflexElement from '../components/atoms/ReflexElement';
 import ReflexSplitter from '../components/atoms/ReflexSplitter';
 import ReflexStyles from '../components/atoms/ReflexStyles';
 import ProgressIndicator from '../components/molecules/ProgressIndicator';
 import ProjectLoading from '../components/molecules/ProjectLoading';
-import WindowSessionContext from '../contexts/window-session-context';
 import ActionBar from '../features/action-bar/components/ActionBar';
 import ProjectEncryption from '../features/encryption/components/ProjectEncryption';
 import Omnibar from '../features/omni-bar/components/Omnibar';
@@ -31,7 +31,6 @@ const ProjectMain: React.FunctionComponent = () => {
 	const variableGroups = useSelector(s => s.global.variableGroups);
 	const tabs = useSelector(s => s.features.tabs);
 	const activeTab = tabs.activeTabs.find(t => t.payload === tabs.selectedTab);
-	const windowSession = useContext(WindowSessionContext);
 
 	const loaded = project.loaded && variableGroups.loaded && tabs.loaded;
 
@@ -41,12 +40,6 @@ const ProjectMain: React.FunctionComponent = () => {
 		dispatch(loadEditorPreferences());
 		dispatch(startProject());
 		dispatch(startGit());
-	}, []);
-
-	useEffect(() => {
-		window.addEventListener('keydown', onKeyDown);
-
-		return () => window.removeEventListener('keydown', onKeyDown);
 	}, []);
 
 	useEffect(() => {
@@ -78,17 +71,6 @@ const ProjectMain: React.FunctionComponent = () => {
 		setTitle(`${project.name} - Beak`);
 	}, [setup, project, project.name, loaded]);
 
-	function onKeyDown(event: KeyboardEvent) {
-		if (!tabs.selectedTab || event.key !== 'Return')
-			return;
-
-		const isDarwin = windowSession.isDarwin();
-		const isAct = (isDarwin && event.metaKey) || (!isDarwin && event.ctrlKey);
-
-		if (isAct)
-			dispatch(requestFlight());
-	}
-
 	return (
 		<React.Fragment>
 			<Helmet defer={false}>
@@ -102,9 +84,9 @@ const ProjectMain: React.FunctionComponent = () => {
 						<ReflexContainer orientation={'vertical'}>
 							<ReflexElement
 								flex={20}
-								size={collapsedSidebar ? 250 : void 0}
-								minSize={collapsedSidebar ? 40 : 200}
-								maxSize={collapsedSidebar ? 40 : void 0}
+								minSize={250}
+								maxSize={void 0}
+								$forcedWidth={collapsedSidebar ? 40 : void 0}
 							>
 								<Sidebar onSidebarCollapseChanged={collapsed => {
 									setCollapsedSidebar(collapsed);
@@ -112,6 +94,7 @@ const ProjectMain: React.FunctionComponent = () => {
 							</ReflexElement>
 
 							<ReflexSplitter
+								$disabled={collapsedSidebar}
 								hideVisualIndicator
 								orientation={'vertical'}
 							/>

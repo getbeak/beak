@@ -118,7 +118,7 @@ const FolderItem: React.FunctionComponent<FolderItemProps> = props => {
 const Wrapper = styled.div<{ depth: number }>`
 	display: flex;
 	padding: 3px 0;
-	padding-left: ${props => (props.depth * 8) + 21}px;
+	padding-left: ${props => (props.depth * 8) + 11}px;
 	color: ${props => props.theme.ui.textMinor};
 	cursor: pointer;
 	font-size: 13px;

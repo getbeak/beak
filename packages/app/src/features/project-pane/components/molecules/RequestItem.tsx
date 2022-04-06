@@ -120,7 +120,7 @@ interface WrapperProps {
 const Wrapper = styled.div<WrapperProps>`
 	display: flex;
 	padding: 4px 0;
-	padding-left: ${props => (props.depth * 8) + 19}px;
+	padding-left: ${props => (props.depth * 8) + 7}px;
 	cursor: pointer;
 	font-size: 13px;
 	line-height: 18px;
