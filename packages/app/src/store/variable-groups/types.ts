@@ -20,6 +20,12 @@ export const ActionTypes = {
 
 	SET_LATEST_WRITE: '@beak/global/variable-groups/SET_LATEST_WRITE',
 	SET_WRITE_DEBOUNCE: '@beak/global/variable-groups/SET_WRITE_DEBOUNCE',
+
+	RENAME_STARTED: '@beak/global/variable-groups/RENAME_STARTED',
+	RENAME_UPDATED: '@beak/global/variable-groups/RENAME_UPDATED',
+	RENAME_CANCELLED: '@beak/global/variable-groups/RENAME_CANCELLED',
+	RENAME_SUBMITTED: '@beak/global/variable-groups/RENAME_SUBMITTED',
+	RENAME_RESOLVED: '@beak/global/variable-groups/RENAME_RESOLVED',
 };
 
 export interface State {
@@ -27,6 +33,7 @@ export interface State {
 
 	variableGroups: VariableGroups;
 
+	activeRename?: ActiveRename;
 	latestWrite?: number;
 	writeDebouncer: string;
 }
@@ -39,6 +46,11 @@ export const initialState: State = {
 	latestWrite: 0,
 	writeDebouncer: '',
 };
+
+export interface ActiveRename {
+	variableGroupName: string;
+	updatedName: string;
+}
 
 export interface UpdateVgPayload {
 	name: string;
@@ -73,6 +85,16 @@ export interface IdPayload {
 	variableGroup: string;
 	id: string;
 }
+
+export interface VariableGroupNamePayload {
+	variableGroupName: string;
+}
+
+export interface VariableGroupRenameStarted extends VariableGroupNamePayload { }
+export interface VariableGroupRenameCancelled extends VariableGroupNamePayload { }
+export interface VariableGroupRenameSubmitted extends VariableGroupNamePayload { }
+export interface VariableGroupRenameResolved extends VariableGroupNamePayload { }
+export interface VariableGroupRenameUpdated extends VariableGroupNamePayload { updatedName: string }
 
 export default {
 	ActionTypes,

@@ -1,8 +1,9 @@
-import { all, fork, takeEvery } from 'redux-saga/effects';
+import { all, fork, takeEvery, takeLatest } from 'redux-saga/effects';
 
 import { ActionTypes } from '../types';
 import catchUpdates from './catch-updates';
 import startVariableGroups from './start-variable-groups';
+import variableGroupRename from './variable-group-rename';
 
 const updateWatcherActions = [
 	ActionTypes.UPDATE_GROUP_NAME,
@@ -23,6 +24,9 @@ export default function* variableGroupsSaga() {
 		}),
 		fork(function* catchNodeUpdatesWatcher() {
 			yield takeEvery(updateWatcherActions, catchUpdates);
+		}),
+		fork(function* variableGroupRenameWatcher() {
+			yield takeLatest(ActionTypes.RENAME_SUBMITTED, variableGroupRename);
 		}),
 	]);
 }

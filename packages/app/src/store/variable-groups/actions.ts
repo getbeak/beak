@@ -10,6 +10,11 @@ import {
 	UpdateEntityPayload,
 	UpdateValuePayload,
 	UpdateVgPayload,
+	VariableGroupRenameCancelled,
+	VariableGroupRenameResolved,
+	VariableGroupRenameStarted,
+	VariableGroupRenameSubmitted,
+	VariableGroupRenameUpdated,
 } from './types';
 
 export const startVariableGroups = createAction(AT.START_VARIABLE_GROUPS);
@@ -31,6 +36,12 @@ export const removeItem = createAction<IdPayload>(AT.REMOVE_ITEM);
 export const setLatestWrite = createAction<number>(AT.SET_LATEST_WRITE);
 export const setWriteDebounce = createAction<string>(AT.SET_WRITE_DEBOUNCE);
 
+export const renameStarted = createAction<VariableGroupRenameStarted>(AT.RENAME_STARTED);
+export const renameUpdated = createAction<VariableGroupRenameUpdated>(AT.RENAME_UPDATED);
+export const renameCancelled = createAction<VariableGroupRenameCancelled>(AT.RENAME_CANCELLED);
+export const renameSubmitted = createAction<VariableGroupRenameSubmitted>(AT.RENAME_SUBMITTED);
+export const renameResolved = createAction<VariableGroupRenameResolved>(AT.RENAME_RESOLVED);
+
 export default {
 	startVariableGroups,
 	variableGroupsOpened,
@@ -50,4 +61,10 @@ export default {
 
 	setLatestWrite,
 	setWriteDebounce,
+
+	renameStarted,
+	renameUpdated,
+	renameCancelled,
+	renameSubmitted,
+	renameResolved,
 };

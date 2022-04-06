@@ -125,6 +125,31 @@ const variableGroupsReducer = createReducer(initialState, builder => {
 		})
 		.addCase(actions.setWriteDebounce, (state, { payload }) => {
 			state.writeDebouncer = payload;
+		})
+
+		.addCase(actions.renameStarted, (state, action) => {
+			const { variableGroupName } = action.payload;
+
+			state.activeRename = {
+				variableGroupName,
+				updatedName: variableGroupName,
+			};
+		})
+		.addCase(actions.renameUpdated, (state, action) => {
+			const { variableGroupName, updatedName } = action.payload;
+
+			if (state.activeRename?.variableGroupName !== variableGroupName)
+				return;
+
+			state.activeRename.updatedName = updatedName;
+		})
+		.addCase(actions.renameCancelled, (state, action) => {
+			if (state.activeRename?.variableGroupName === action.payload.variableGroupName)
+				state.activeRename = void 0;
+		})
+		.addCase(actions.renameResolved, (state, action) => {
+			if (state.activeRename?.variableGroupName === action.payload.variableGroupName)
+				state.activeRename = void 0;
 		});
 });
 
