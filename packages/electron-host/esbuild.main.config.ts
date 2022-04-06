@@ -3,7 +3,7 @@ import type { BuildOptions, PluginBuild } from 'esbuild';
 import path from 'path';
 
 // @ts-ignore
-import packageJson from './package.json' assert { type: 'json' };
+import packageJson from './package.json';
 
 const environment = process.env.NODE_ENV;
 const versionRelease = Boolean(process.env.VERSION_RELEASE);

@@ -14,16 +14,6 @@ const NotTheTabYourLookingFor: React.FunctionComponent = () => {
 	function spinThatWheel() {
 		const requests = TypedObject.values(tree).filter(n => n.type === 'request') as ValidRequestNode[];
 
-		if (requests.length === 0) {
-			dispatch(changeTab({
-				type: 'renderer',
-				payload: 'variable_group_editor',
-				temporary: false,
-			}));
-
-			return;
-		}
-
 		dispatch(changeTab({
 			type: 'request',
 			payload: requests[Math.floor(Math.random() * requests.length)].id,
