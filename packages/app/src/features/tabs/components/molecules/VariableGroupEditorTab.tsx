@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { RendererTabItem } from '@beak/common/types/beak-project';
+import { VariableGroupEditorTabItem } from '@beak/common/types/beak-project';
 
 import TabItem from '../../../../components/atoms/TabItem';
 import { changeTab, makeTabPermanent } from '../../store/actions';
-import TabContextMenuWrapper from '../atoms/RendererTabContextMenuWrapper';
+import TabContextMenuWrapper from '../atoms/GenericTabContextMenuWrapper';
 
-interface RendererTabProps {
-	tab: RendererTabItem;
+interface VariableGroupEditorTabProps {
+	tab: VariableGroupEditorTabItem;
 }
 
-const RendererTab: React.FunctionComponent<RendererTabProps> = ({ tab }) => {
+const VariableGroupEditorTab: React.FunctionComponent<VariableGroupEditorTabProps> = ({ tab }) => {
 	const dispatch = useDispatch();
 	const selectedTabPayload = useSelector(s => s.features.tabs.selectedTab);
 	const [target, setTarget] = useState<HTMLElement>();
@@ -36,14 +36,8 @@ const RendererTab: React.FunctionComponent<RendererTabProps> = ({ tab }) => {
 	);
 };
 
-function rendererToName(tab: RendererTabItem) {
-	switch (tab.payload) {
-		case 'variable_group_editor':
-			return 'Variable Group Editor';
-
-		default:
-			return 'Unknown renderer';
-	}
+function rendererToName(tab: VariableGroupEditorTabItem) {
+	return `Variable group (${tab.payload})`;
 }
 
-export default RendererTab;
+export default VariableGroupEditorTab;

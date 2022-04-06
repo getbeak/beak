@@ -146,8 +146,8 @@ export type Nodes = FolderNode | RequestNode;
 export type Tree = Record<string, Nodes>;
 export type VariableGroups = Record<string, VariableGroup>;
 
-// NOTE(afr): Adding a new tab item? Don't forget to update user-preferences schema too!
-export type TabItem = RequestTabItem | RendererTabItem;
+// NOTE(afr): Adding a new tab item? Don't forget to update tab-preferences schema too!
+export type TabItem = RequestTabItem | VariableGroupEditorTabItem;
 
 export interface TabBase {
 	type: string;
@@ -160,7 +160,7 @@ export interface RequestTabItem extends TabBase {
 	payload: string;
 }
 
-export interface RendererTabItem extends TabBase {
-	type: 'renderer';
-	payload: 'variable_group_editor';
+export interface VariableGroupEditorTabItem extends TabBase {
+	type: 'variable_group_editor';
+	payload: string;
 }

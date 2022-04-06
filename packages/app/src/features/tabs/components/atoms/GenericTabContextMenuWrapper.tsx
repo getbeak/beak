@@ -7,12 +7,12 @@ import type { MenuItemConstructorOptions } from 'electron';
 
 import { closeTab, closeTabsAll, closeTabsLeft, closeTabsOther, closeTabsRight } from '../../store/actions';
 
-interface RendererTabContextMenuWrapperProps {
+interface GenericTabContextMenuWrapperProps {
 	tab: TabItem;
 	target: HTMLElement | undefined;
 }
 
-const RendererTabContextMenuWrapper: React.FunctionComponent<RendererTabContextMenuWrapperProps> = props => {
+const GenericTabContextMenuWrapper: React.FunctionComponent<GenericTabContextMenuWrapperProps> = props => {
 	const dispatch = useDispatch();
 	const { tab, target, children } = props;
 	const { activeTabs } = useSelector(s => s.features.tabs)!;
@@ -73,4 +73,4 @@ const RendererTabContextMenuWrapper: React.FunctionComponent<RendererTabContextM
 	);
 };
 
-export default RendererTabContextMenuWrapper;
+export default GenericTabContextMenuWrapper;

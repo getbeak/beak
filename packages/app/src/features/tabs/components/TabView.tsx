@@ -6,8 +6,8 @@ import styled from 'styled-components';
 
 import TB from '../../../components/atoms/TabBar';
 import { changeTabNext, changeTabPrevious, closeTab, closeTabsOther } from '../store/actions';
-import RendererTab from './molecules/RendererTab';
 import RequestTab from './molecules/RequestTab';
+import VariableGroupEditorTab from './molecules/VariableGroupEditorTab';
 import Router from './Router';
 
 interface TabViewProps {
@@ -60,8 +60,8 @@ const TabView: React.FunctionComponent<TabViewProps> = ({ selectedTab, tabs }) =
 					if (t.type === 'request')
 						return <RequestTab key={t.payload} tab={t} />;
 
-					if (t.type === 'renderer')
-						return <RendererTab key={t.payload} tab={t} />;
+					if (t.type === 'variable_group_editor')
+						return <VariableGroupEditorTab key={t.payload} tab={t} />;
 
 					return null;
 				})}

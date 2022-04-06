@@ -27,7 +27,7 @@
 			}
 		},
 
-		"rendererTab": {
+		"variableGroupEditorTab": {
 			"type": "object",
 			"additionalProperties": false,
 
@@ -38,8 +38,11 @@
 			],
 
 			"properties": {
-				"type": { "const": "renderer" },
-				"payload": { "const": "variable_group_editor" },
+				"type": { "const": "variable_group_editor" },
+				"payload": {
+					"type": "string",
+					"minLength": 1
+				},
 				"temporary": { "type": "boolean" }
 			}
 		}
@@ -57,7 +60,7 @@
 			"items": {
 				"oneOf": [
 					{ "$ref": "#/definitions/requestTab" },
-					{ "$ref": "#/definitions/rendererTab" }
+					{ "$ref": "#/definitions/variableGroupEditorTab" }
 				]
 			}
 		}

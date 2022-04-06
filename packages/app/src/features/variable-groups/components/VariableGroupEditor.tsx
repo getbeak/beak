@@ -1,31 +1,26 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import DebouncedInput from '@beak/app/components/atoms/DebouncedInput';
-import TabBar from '@beak/app/components/atoms/TabBar';
-import TabItem from '@beak/app/components/atoms/TabItem';
-import TabSpacer from '@beak/app/components/atoms/TabSpacer';
 import { generateValueIdent } from '@beak/app/lib/beak-variable-group/utils';
-import { ipcDialogService } from '@beak/app/lib/ipc';
 import { actions } from '@beak/app/store/variable-groups';
-import { insertNewGroup, insertNewItem, removeGroup, removeItem, removeVg } from '@beak/app/store/variable-groups/actions';
+import { insertNewGroup, insertNewItem, removeGroup, removeItem } from '@beak/app/store/variable-groups/actions';
 import { TypedObject } from '@beak/common/helpers/typescript';
-import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import styled, { css } from 'styled-components';
 
 import VariableInput from '../../variable-input/components/VariableInput';
 import { BodyNameCell, BodyValueCell, HeaderGroupNameCell, HeaderNameCell } from './atoms/Cells';
-import { Body, Header, HeaderAction, Row } from './atoms/Structure';
+import { Body, Header, Row } from './atoms/Structure';
 import CellDeletionAction from './molecules/CellDeletionAction';
 import CreateNewSplash from './molecules/CreateNewSplash';
 
-const VariableGroupEditor: React.FunctionComponent = () => {
+interface VariableGroupEditorProps {
+	variableGroupName: string;
+}
+
+const VariableGroupEditor: React.FunctionComponent<VariableGroupEditorProps> = ({ variableGroupName }) => {
 	const dispatch = useDispatch();
 	const variableGroups = useSelector(s => s.global.variableGroups);
-	const vg = variableGroups.variableGroups;
-	const tabs = TypedObject.keys(vg);
-	const [tab, setTab] = useState(tabs[0]);
-	const variableGroup = vg[tab];
+	const variableGroup = variableGroups.variableGroups[variableGroupName];
 
 	const [newItem, setNewItem] = useState<string | undefined>(void 0);
 	const newItemRef = useRef<HTMLInputElement>(null);
@@ -34,15 +29,10 @@ const VariableGroupEditor: React.FunctionComponent = () => {
 	const newGroupRef = useRef<HTMLInputElement>(null);
 
 	useEffect(() => {
-		if (!tabs.includes(tab))
-			setTab(tabs[0]);
-	}, [tabs, tab, setTab]);
-
-	useEffect(() => {
 		if (!newItem)
 			return;
 
-		if (!TypedObject.values(vg[tab].items).includes(newItem))
+		if (!TypedObject.values(variableGroup.items).includes(newItem))
 			return;
 
 		if (newItemRef?.current === null)
@@ -50,13 +40,13 @@ const VariableGroupEditor: React.FunctionComponent = () => {
 
 		newItemRef.current.focus();
 		setNewItem(void 0);
-	}, [newItem, setNewItem, vg[tab]?.items, newItemRef]);
+	}, [newItem, setNewItem, variableGroup?.items, newItemRef]);
 
 	useEffect(() => {
 		if (!newGroup)
 			return;
 
-		if (!TypedObject.values(vg[tab].groups).includes(newGroup))
+		if (!TypedObject.values(variableGroup.groups).includes(newGroup))
 			return;
 
 		if (newGroupRef?.current === null)
@@ -64,190 +54,151 @@ const VariableGroupEditor: React.FunctionComponent = () => {
 
 		newGroupRef.current.focus();
 		setNewGroup(void 0);
-	}, [newGroup, setNewGroup, vg[tab]?.groups, newGroupRef]);
-
-	if (tabs.length === 0) {
-		return (
-			<Container>
-				<CreateNewSplash type={'variable-group'} />
-			</Container>
-		);
-	}
+	}, [newGroup, setNewGroup, variableGroup?.groups, newGroupRef]);
 
 	const groupKeys = variableGroup && TypedObject.keys(variableGroup.groups);
 	const itemKeys = variableGroup && TypedObject.keys(variableGroup.items);
 
+	if (!variableGroup)
+		return <p>{'not found'}</p>;
+
 	return (
 		<Container>
-			<TabBar centered>
-				<TabSpacer />
-				{tabs.map(t => (
-					<TabItem
-						active={tab === t}
-						key={t}
-						onClick={() => setTab(t)}
-					>
-						{t}
+			{variableGroup && groupKeys.length === 0 && (
+				<CreateNewSplash type={'group'} variableGroup={variableGroupName} />
+			)}
 
-						<HeaderAction>
-							<FontAwesomeIcon
-								icon={faTrashAlt}
-								color={'white'}
-								fontSize={'10px'}
-								onClick={async () => {
-									const result = await ipcDialogService.showMessageBox({
-										title: 'Are you sure?',
-										message: `Are you sure you want to remove ${t}?`,
-										detail: 'This action cannot be undone from inside Beak',
-										type: 'warning',
-										buttons: ['Remove', 'Cancel'],
-										defaultId: 1,
-										cancelId: 1,
-									});
-
-									if (result.response === 1)
-										return;
-
-									dispatch(removeVg(t));
-								}}
-							/>
-						</HeaderAction>
-					</TabItem>
-				))}
-				<TabSpacer />
-			</TabBar>
-
-			<TabBody>
-				{variableGroup && groupKeys.length === 0 && (
-					<CreateNewSplash type={'group'} variableGroup={tab} />
-				)}
-
-				{variableGroup && groupKeys.length > 0 && (
-					<React.Fragment>
-						<Header>
-							<Row $cols={groupKeys.length}>
-								<HeaderNameCell>
-									<EmptyInput $center disabled value={'Name'} />
-								</HeaderNameCell>
-								{variableGroup && groupKeys.map(k => (
-									<HeaderGroupNameCell key={k}>
-										<StyledDebounce
-											innerRef={variableGroup.groups[k] === newGroup ? newGroupRef : null}
-											$center
-											type={'text'}
-											value={variableGroup.groups[k]}
-											onChange={v => {
-												dispatch(actions.updateGroupName({
-													variableGroup: tab,
-													ident: k,
-													updated: v,
-												}));
-											}}
-										/>
-
-										<CellDeletionAction
-											name={variableGroup.groups[k]}
-											onConfirmedDeletion={() => dispatch(removeGroup({
-												id: k,
-												variableGroup: tab,
-											}))}
-										/>
-									</HeaderGroupNameCell>
-								))}
-								<HeaderGroupNameCell>
-									<EmptyInput
-										placeholder={'New group...'}
+			{variableGroup && groupKeys.length > 0 && (
+				<React.Fragment>
+					<Header>
+						<Row $cols={groupKeys.length}>
+							<HeaderNameCell>
+								<EmptyInput $center disabled value={'Name'} />
+							</HeaderNameCell>
+							{variableGroup && groupKeys.map(k => (
+								<HeaderGroupNameCell key={k}>
+									<StyledDebounce
+										innerRef={variableGroup.groups[k] === newGroup ? newGroupRef : null}
+										$center
 										type={'text'}
-										value={''}
-										onChange={e => {
-											setNewGroup(e.target.value);
-											dispatch(insertNewGroup({ variableGroup: tab, group: e.target.value }));
+										value={variableGroup.groups[k]}
+										onChange={v => {
+											dispatch(actions.updateGroupName({
+												variableGroup: variableGroupName,
+												ident: k,
+												updated: v,
+											}));
 										}}
 									/>
+
+									<CellDeletionAction
+										name={variableGroup.groups[k]}
+										onConfirmedDeletion={() => dispatch(removeGroup({
+											id: k,
+											variableGroup: variableGroupName,
+										}))}
+									/>
 								</HeaderGroupNameCell>
-							</Row>
-						</Header>
-
-						<Body>
-							{variableGroup && itemKeys.map(ik => (
-								<Row key={ik} $cols={groupKeys.length}>
-									<BodyNameCell>
-										<StyledDebounce
-											innerRef={variableGroup.items[ik] === newItem ? newItemRef : null}
-											type={'text'}
-											value={variableGroup.items[ik]}
-											onChange={value => {
-												dispatch(actions.updateItemName({
-													variableGroup: tab,
-													ident: ik,
-													updated: value,
-												}));
-											}}
-										/>
-
-										<CellDeletionAction
-											name={variableGroup.items[ik]}
-											onConfirmedDeletion={() => dispatch(removeItem({
-												id: ik,
-												variableGroup: tab,
-											}))}
-										/>
-									</BodyNameCell>
-
-									{groupKeys.map(gk => {
-										const key = generateValueIdent(gk, ik);
-										const value = variableGroup.values[key];
-
-										return (
-											<BodyValueCell key={gk}>
-												<VariableInput
-													parts={value || ['']}
-													onChange={parts => {
-														dispatch(actions.updateValue({
-															variableGroup: tab,
-															groupId: gk,
-															itemId: ik,
-															updated: parts,
-														}));
-													}}
-												/>
-											</BodyValueCell>
-										);
-									})}
-
-									<BodyValueCell>
-										<EmptyInput disabled />
-									</BodyValueCell>
-								</Row>
 							))}
+							<HeaderGroupNameCell>
+								<EmptyInput
+									placeholder={'New group...'}
+									type={'text'}
+									value={''}
+									onChange={e => {
+										setNewGroup(e.target.value);
+										dispatch(insertNewGroup({
+											variableGroup: variableGroupName,
+											group: e.target.value,
+										}));
+									}}
+								/>
+							</HeaderGroupNameCell>
+						</Row>
+					</Header>
 
-							<Row $cols={groupKeys.length}>
+					<Body>
+						{variableGroup && itemKeys.map(ik => (
+							<Row key={ik} $cols={groupKeys.length}>
 								<BodyNameCell>
-									<EmptyInput
-										placeholder={'New item...'}
+									<StyledDebounce
+										innerRef={variableGroup.items[ik] === newItem ? newItemRef : null}
 										type={'text'}
-										value={''}
-										onChange={e => {
-											setNewItem(e.target.value);
-											dispatch(insertNewItem({ variableGroup: tab, name: e.target.value }));
+										value={variableGroup.items[ik]}
+										onChange={value => {
+											dispatch(actions.updateItemName({
+												variableGroup: variableGroupName,
+												ident: ik,
+												updated: value,
+											}));
 										}}
+									/>
+
+									<CellDeletionAction
+										name={variableGroup.items[ik]}
+										onConfirmedDeletion={() => dispatch(removeItem({
+											id: ik,
+											variableGroup: variableGroupName,
+										}))}
 									/>
 								</BodyNameCell>
 
-								{variableGroup && groupKeys.map(k => (
-									<BodyValueCell key={k}>
-										<EmptyInput disabled />
-									</BodyValueCell>
-								))}
+								{groupKeys.map(gk => {
+									const key = generateValueIdent(gk, ik);
+									const value = variableGroup.values[key];
+
+									return (
+										<BodyValueCell key={gk}>
+											<VariableInput
+												parts={value || ['']}
+												onChange={parts => {
+													dispatch(actions.updateValue({
+														variableGroup: variableGroupName,
+														groupId: gk,
+														itemId: ik,
+														updated: parts,
+													}));
+												}}
+											/>
+										</BodyValueCell>
+									);
+								})}
 
 								<BodyValueCell>
 									<EmptyInput disabled />
 								</BodyValueCell>
 							</Row>
-						</Body>
-					</React.Fragment>
-				)}
-			</TabBody>
+						))}
+
+						<Row $cols={groupKeys.length}>
+							<BodyNameCell>
+								<EmptyInput
+									placeholder={'New item...'}
+									type={'text'}
+									value={''}
+									onChange={e => {
+										setNewItem(e.target.value);
+										dispatch(insertNewItem({
+											variableGroup: variableGroupName,
+											name: e.target.value,
+										}));
+									}}
+								/>
+							</BodyNameCell>
+
+							{variableGroup && groupKeys.map(k => (
+								<BodyValueCell key={k}>
+									<EmptyInput disabled />
+								</BodyValueCell>
+							))}
+
+							<BodyValueCell>
+								<EmptyInput disabled />
+							</BodyValueCell>
+						</Row>
+					</Body>
+				</React.Fragment>
+			)}
 		</Container>
 	);
 };
@@ -255,20 +206,12 @@ const VariableGroupEditor: React.FunctionComponent = () => {
 const Container = styled.div`
 	display: flex;
 	flex-direction: column;
-	overflow: hidden;
+	overflow: overlay;
 
 	background-color: ${props => props.theme.ui.surface};
 
 	height: 100%;
 	width: 100%;
-`;
-
-const TabBody = styled.div`
-	position: relative;
-	flex-grow: 2;
-
-	overflow-y: overlay;
-	height: 100%;
 `;
 
 const inputCss = css<{ $center?: boolean }>`

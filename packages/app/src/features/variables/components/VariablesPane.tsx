@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 
 import SidebarPane from '../../sidebar/components/SidebarPane';
 import SidebarPaneSection from '../../sidebar/components/SidebarPaneSection';
+import VariableGroups from './organisms/VariableGroups';
 
 const VariablesPane: React.FunctionComponent = () => {
 	useSelector(s => s.global.project);
@@ -10,7 +11,7 @@ const VariablesPane: React.FunctionComponent = () => {
 	return (
 		<SidebarPane>
 			<SidebarPaneSection title={'Variable groups'} collapseKey={'beak.variables.variable-groups'}>
-				<p>{'test'}</p>
+				<VariableGroups />
 			</SidebarPaneSection>
 		</SidebarPane>
 	);

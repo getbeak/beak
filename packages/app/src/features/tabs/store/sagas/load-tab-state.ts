@@ -12,18 +12,24 @@ import { tabPreferences } from '../../../../lib/beak-hub/schemas';
 import actions from '../actions';
 
 export default createTakeEverySagaSet(actions.loadTabState, function* worker() {
-	const tabState: TabPreferences | null = yield call(loadTabStateFile);
+	try {
+		const tabState: TabPreferences | null = yield call(loadTabStateFile);
 
-	if (tabState !== null) {
-		yield put(actions.tabStateLoaded({
-			selectedTab: tabState.selectedTabPayload,
-			activeTabs: tabState.tabs,
-			recentlyClosedTabs: [],
-			lastReconcile: 0,
-			loaded: true,
-		}));
+		if (tabState !== null) {
+			yield put(actions.tabStateLoaded({
+				selectedTab: tabState.selectedTabPayload,
+				activeTabs: tabState.tabs,
+				recentlyClosedTabs: [],
+				lastReconcile: 0,
+				loaded: true,
+			}));
 
-		return;
+			return;
+		}
+	} catch (error) {
+		// On error, just fall back to default state and log the error
+		// eslint-disable-next-line no-console
+		console.error(error);
 	}
 
 	const tree: Tree = yield select((s: ApplicationState) => s.global.project.tree);

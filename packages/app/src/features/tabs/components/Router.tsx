@@ -54,9 +54,12 @@ const Router: React.FunctionComponent<RouterProps> = ({ selectedTab }) => {
 		);
 	}
 
-	switch (selectedTab.payload) {
-		case 'variable_group_editor':
-			return <VariableGroupEditor />;
+	switch (selectedTab.type) {
+		case 'variable_group_editor': {
+			const variableGroupName = selectedTab.payload;
+
+			return <VariableGroupEditor variableGroupName={variableGroupName} />;
+		}
 
 		default: return <span>{'Unknown renderer'}</span>;
 	}
