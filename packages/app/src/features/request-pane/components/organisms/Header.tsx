@@ -95,7 +95,7 @@ const Header: React.FunctionComponent<HeaderProps> = props => {
 				<VariableInput
 					requestId={node.id}
 					parts={node.info.url}
-					placeholder={window.location.host}
+					placeholder={'httpbin.org'}
 					onChange={e => handleUrlChange(e)}
 					onUrlQueryStringDetection={urlQueryStringDetected}
 				/>

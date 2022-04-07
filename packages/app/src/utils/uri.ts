@@ -22,6 +22,11 @@ export async function convertRequestToUrl(
 		...opts,
 	};
 
+	if (url.protocol === 'file:') {
+		url.set('protocol', 'https:');
+		url.set('host', 'httpbin.org');
+	}
+
 	url.set('query', void 0);
 
 	if (options.includeQuery && info.query) {
