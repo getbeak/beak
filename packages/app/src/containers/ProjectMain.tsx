@@ -83,7 +83,7 @@ const ProjectMain: React.FunctionComponent = () => {
 					<React.Fragment>
 						<ReflexContainer orientation={'vertical'}>
 							<ReflexElement
-								flex={20}
+								flex={15}
 								minSize={250}
 								maxSize={void 0}
 								$forcedWidth={collapsedSidebar ? 40 : void 0}

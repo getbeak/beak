@@ -1,4 +1,5 @@
 import React, { useRef } from 'react';
+import useSectionBody from '@beak/app/features/sidebar/hooks/use-section-body';
 import { Tree } from '@beak/common/types/beak-project';
 import styled from 'styled-components';
 
@@ -18,6 +19,8 @@ const TreeView: React.FunctionComponent<TreeViewProps> = ({ tree }) => {
 			numeric: true,
 			sensitivity: 'base',
 		}));
+
+	useSectionBody({ flexGrow: 2 });
 
 	return (
 		<Container tabIndex={-1} ref={container}>
@@ -40,8 +43,7 @@ const TreeView: React.FunctionComponent<TreeViewProps> = ({ tree }) => {
 };
 
 const Container = styled.div`
-	flex-grow: 2;
-	overflow-y: overlay;
+	height: 100%;
 
 	&:focus {
 		outline: none;

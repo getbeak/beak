@@ -1,5 +1,6 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import useSectionBody from '@beak/app/features/sidebar/hooks/use-section-body';
 import { editorPreferencesSetSelectedVariableGroup } from '@beak/app/store/preferences/actions';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import styled from 'styled-components';
@@ -8,6 +9,12 @@ const VariableGroups: React.FunctionComponent = () => {
 	const dispatch = useDispatch();
 	const { variableGroups } = useSelector(s => s.global.variableGroups)!;
 	const selectedGroups = useSelector(s => s.global.preferences.editor.selectedVariableGroups);
+
+	useSectionBody({
+		maxHeight: '120px',
+		minHeight: '26px',
+		flexShrink: 0,
+	});
 
 	return (
 		<Container>
@@ -47,9 +54,8 @@ const VariableGroups: React.FunctionComponent = () => {
 const Container = styled.div`
 	padding: 4px 5px;
 	padding-right: 3px;
+	padding-bottom: 0;
 
-	flex-shrink: 0;
-	overflow-y: scroll;
 	max-height: 120px;
 	min-height: 26px;
 `;

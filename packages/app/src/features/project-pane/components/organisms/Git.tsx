@@ -1,10 +1,16 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import SidebarPaneBody from '@beak/app/features/sidebar/components/SidebarPaneBody';
+import useSectionBody from '@beak/app/features/sidebar/hooks/use-section-body';
 import styled from 'styled-components';
 
 const Git: React.FunctionComponent = () => {
 	const { branches, selectedBranch } = useSelector(s => s.global.git)!;
+
+	useSectionBody({
+		maxHeight: '120px',
+		minHeight: '26px',
+		flexShrink: 0,
+	});
 
 	if (branches.length === 0)
 		return null;
@@ -31,7 +37,11 @@ const Git: React.FunctionComponent = () => {
 	);
 };
 
-const Container = styled(SidebarPaneBody)`
+const Container = styled.div`
+	padding: 4px 5px;
+	padding-right: 3px;
+	padding-bottom: 0;
+
 	max-height: 120px;
 	min-height: 26px;
 `;
