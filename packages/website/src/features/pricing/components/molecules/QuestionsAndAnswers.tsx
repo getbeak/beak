@@ -1,8 +1,8 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { SmallContainer } from '@beak/website/components/atoms/Container';
 import { BodyBold, BodyRegular, Title } from '@beak/website/components/atoms/Typography';
 import styled from 'styled-components';
-import { Link } from 'react-router-dom';
 
 const QuestionsAndAnswers: React.FunctionComponent = () => (
 	<Wrapper>
