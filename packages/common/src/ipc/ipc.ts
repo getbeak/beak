@@ -66,6 +66,7 @@ export class IpcServiceRenderer extends IpcServiceBase {
 		const { response, error } = y;
 
 		if (error) {
+			// eslint-disable-next-line no-console
 			console.error(error);
 
 			throw Squawk.coerce(error);

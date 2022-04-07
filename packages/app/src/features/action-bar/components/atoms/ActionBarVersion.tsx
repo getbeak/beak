@@ -9,7 +9,7 @@ const ActionBarVersion: React.FunctionComponent = () => {
 	const parsed = parseSemver(context.version);
 
 	if (parsed.major ?? 0 > 10)
-		return <Label>{'Local'}</Label>;
+		return <Label>{'local'}</Label>;
 
 	if (!parsed.prerelease)
 		return null;
