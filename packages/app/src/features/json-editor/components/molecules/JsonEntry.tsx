@@ -46,5 +46,5 @@ export function detectName(depth: number, entry: Entries) {
 	if ((entry as NamedEntries).name !== void 0)
 		return (entry as NamedEntries).name;
 
-	return '<Unknown>';
+	return '';
 }
