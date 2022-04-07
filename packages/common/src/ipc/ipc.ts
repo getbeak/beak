@@ -65,10 +65,11 @@ export class IpcServiceRenderer extends IpcServiceBase {
 		const y = await this.ipc.invoke(this.channel, { code, payload });
 		const { response, error } = y;
 
-		console.log(error);
+		if (error) {
+			console.error(error);
 
-		if (error)
 			throw Squawk.coerce(error);
+		}
 
 		return response as T;
 	}

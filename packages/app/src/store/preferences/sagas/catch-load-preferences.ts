@@ -106,11 +106,8 @@ async function loadSidebarPreferences() {
 
 		return preferenceFile.file;
 	} catch (error) {
-		if (Squawk.coerce(error).code !== 'schema_invalid') {
-			console.error(error);
-
+		if (Squawk.coerce(error).code !== 'schema_invalid')
 			throw error;
-		}
 
 		return defaultPreferences;
 	}
