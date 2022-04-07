@@ -13,7 +13,6 @@ import ActionBar from '../features/action-bar/components/ActionBar';
 import ProjectEncryption from '../features/encryption/components/ProjectEncryption';
 import Omnibar from '../features/omni-bar/components/Omnibar';
 import Sidebar from '../features/sidebar/components/Sidebar';
-import StatusBar from '../features/status-bar/components/StatusBar';
 import TabView from '../features/tabs/components/TabView';
 import { useApplicationMenuEventListener } from '../hooks/use-application-menu-event-listener';
 import { checkShortcut } from '../lib/keyboard-shortcuts';
@@ -113,7 +112,6 @@ const ProjectMain: React.FunctionComponent = () => {
 				)}
 			</Container>
 
-			<StatusBar />
 			<ProjectEncryption />
 
 			{(!loaded || !setup) && <ProjectLoading />}
@@ -123,10 +121,7 @@ const ProjectMain: React.FunctionComponent = () => {
 
 const Container = styled.div`
 	position: absolute;
-	top: 0;
-	bottom: 24px;
-	left: 0;
-	right: 0;
+	top: 0; bottom: 0; left: 0; right: 0;
 `;
 
 export default ProjectMain;
