@@ -1,20 +1,24 @@
 import React, { useContext } from 'react';
 import WindowSessionContext from '@beak/app/contexts/window-session-context';
 import { toHexAlpha } from '@beak/design-system/utils';
-import { parseSemver } from '@sentry/react/node_modules/@sentry/utils';
+import semverParse from 'semver/functions/parse';
 import styled from 'styled-components';
 
 const ActionBarVersion: React.FunctionComponent = () => {
 	const context = useContext(WindowSessionContext);
-	const parsed = parseSemver(context.version);
+	const parsed = semverParse(context.version);
 
-	if (parsed.major ?? 0 > 10)
-		return <Label>{'local'}</Label>;
-
-	if (!parsed.prerelease)
+	if (!parsed)
 		return null;
 
-	return <Label>{parsed.prerelease}</Label>;
+	// Hack for local version being that of electron (We'll never be higher...)
+	if (parsed.major > 10)
+		return <Label>{'local'}</Label>;
+
+	if (parsed.prerelease.length === 0)
+		return null;
+
+	return <Label>{parsed.prerelease[0]}</Label>;
 };
 
 const Label = styled.div`
