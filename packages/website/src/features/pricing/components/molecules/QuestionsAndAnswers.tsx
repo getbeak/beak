@@ -2,6 +2,7 @@ import React from 'react';
 import { SmallContainer } from '@beak/website/components/atoms/Container';
 import { BodyBold, BodyRegular, Title } from '@beak/website/components/atoms/Typography';
 import styled from 'styled-components';
+import { Link } from 'react-router-dom';
 
 const QuestionsAndAnswers: React.FunctionComponent = () => (
 	<Wrapper>
@@ -46,8 +47,9 @@ const QuestionsAndAnswers: React.FunctionComponent = () => (
 				<Card>
 					<Question>{'Trial period'}</Question>
 					<Answer>
-						{'Sadly Beak doesn\'t currently have a trial period, however we\'re working hard on getting one '}
-						{'ready. Pardon our dust.'}
+						{'Beak comes with fully featured Trial mode. '}
+						<Link to={'/#downloads'}>{'Download'}</Link>{' Beak to start your trial where you\'ll get '}
+						{'access to all of Beak\'s features for 14 days!'}
 					</Answer>
 				</Card>
 			</Table>
