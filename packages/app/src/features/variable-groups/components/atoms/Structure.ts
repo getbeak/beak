@@ -1,5 +1,7 @@
 import styled from 'styled-components';
 
+import { Cell } from './Cells';
+
 export const Row = styled.div<{ $cols: number }>`
 	display: grid;
 	grid-template-columns: minmax(120px, .9fr) repeat(${p => p.$cols}, minmax(140px, 1fr)) minmax(120px, .9fr);
@@ -14,7 +16,7 @@ export const Header = styled.div`
 	background-color: ${props => props.theme.ui.surface};
 	min-width: 100%;
 
-	> ${Row} {
+	${Cell} {
 		background-color: ${props => props.theme.ui.surface};
 	}
 `;
