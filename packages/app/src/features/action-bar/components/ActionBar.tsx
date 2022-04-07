@@ -18,6 +18,7 @@ import ActionBarButton from './atoms/ActionBarButton';
 import ActionBarSeparator from './atoms/ActionBarSeparator';
 import ActionBarVersion from './atoms/ActionBarVersion';
 import ActionBarAlertButton from './molecules/ActionBarAlertButton';
+import ActionBarFlightStatus from './molecules/ActionBarFlightStatus';
 
 const ActionBar: React.FunctionComponent = () => {
 	const theme = useTheme();
@@ -49,6 +50,7 @@ const ActionBar: React.FunctionComponent = () => {
 					/>
 				</ActionBarButton>
 			</abbr>
+			<ActionBarFlightStatus />
 			<abbr title={'Go to next item in flight history'}>
 				<ActionBarButton
 					disabled={!requirements?.canGoForward}

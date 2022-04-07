@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { Flight } from '@beak/app/store/flight/types';
 import { getStatusReasonPhrase } from '@beak/app/utils/http';
 import { convertRequestToUrl } from '@beak/app/utils/uri';
-import { statusToColour } from '@beak/design-system/helpers';
+import { statusToColor } from '@beak/design-system/helpers';
 import styled from 'styled-components';
 
 export interface HeaderProps {
@@ -84,8 +84,8 @@ const Abbr = styled.abbr`
 
 const StatusSection = styled(Section)<{ $status: number }>`
 	background-color: ${p => p.theme.ui.background};
-	border-color: ${p => statusToColour(p.theme, p.$status)};
-	color: ${p => statusToColour(p.theme, p.$status)};
+	border-color: ${p => statusToColor(p.theme, p.$status)};
+	color: ${p => statusToColor(p.theme, p.$status)};
 
 	white-space: nowrap;
 `;

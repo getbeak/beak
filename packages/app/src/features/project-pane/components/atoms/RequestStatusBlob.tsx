@@ -1,4 +1,4 @@
-import { statusToColour } from '@beak/design-system/helpers';
+import { statusToColor } from '@beak/design-system/helpers';
 import styled from 'styled-components';
 
 export interface RequestStatusBlobProps {
@@ -14,7 +14,7 @@ const RequestStatusBlob = styled.div<RequestStatusBlobProps>`
 	margin-top: 4px;
 	margin-right: 5px;
 
-	background-color: ${p => statusToColour(p.theme, p.$status)};
+	background-color: ${p => statusToColor(p.theme, p.$status)};
 `;
 
 export default RequestStatusBlob;

@@ -1,6 +1,6 @@
 import { DefaultTheme } from 'styled-components';
 
-export function statusToColour(theme: DefaultTheme, status: number) {
+export function statusToColor(theme: DefaultTheme, status: number) {
 	switch (true) {
 		case status >= 100 && status < 200:
 			return theme.ui.textMinor;
