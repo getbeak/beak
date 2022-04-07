@@ -16,6 +16,7 @@ import styled, { useTheme } from 'styled-components';
 import { showEncryptionView } from '../../encryption/store/actions';
 import ActionBarButton from './atoms/ActionBarButton';
 import ActionBarSeparator from './atoms/ActionBarSeparator';
+import ActionBarVersion from './atoms/ActionBarVersion';
 import ActionBarAlertButton from './molecules/ActionBarAlertButton';
 
 const ActionBar: React.FunctionComponent = () => {
@@ -27,6 +28,7 @@ const ActionBar: React.FunctionComponent = () => {
 
 	return (
 		<Wrapper>
+			<ActionBarVersion />
 			<ActionBarButton onClick={() => dispatch(showEncryptionView())}>
 				<FontAwesomeIcon
 					color={theme.ui.textMinor}
