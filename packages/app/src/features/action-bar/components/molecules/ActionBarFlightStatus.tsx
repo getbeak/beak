@@ -41,6 +41,7 @@ const ActionBarFlightStatus: React.FunctionComponent = () => {
 				<abbr title={'Flight failed'}>
 					<FontAwesomeIcon
 						icon={faCircleXmark}
+						color={theme.ui.destructiveAction}
 						size={'1x'}
 					/>
 				</abbr>
