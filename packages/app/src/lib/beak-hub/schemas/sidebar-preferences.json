@@ -1,0 +1,23 @@
+{
+	"type": "object",
+	"additionalProperties": false,
+
+	"required": [
+		"selected",
+		"collapsed"
+	],
+
+	"properties": {
+		"selected": {
+			"type": "string",
+			"enum": ["project", "variables"]
+		},
+
+		"collapsed": {
+			"type": "object",
+			"additionalProperties" : {
+				"type" : "boolean"
+			}
+		}
+	}
+}

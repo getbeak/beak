@@ -4,10 +4,12 @@ import { ActionTypes } from '../types';
 import catchLoadPreferences from './catch-load-preferences';
 import catchWriteEditorPreferences from './catch-write-editor-preferences';
 import catchWriteRequestPreferences from './catch-write-request-preferences';
+import catchWriteSidebarPreferences from './catch-write-sidebar-preferences';
 
 const loadPreferencesActions = [
 	ActionTypes.LOAD_REQUEST_PREFERENCES,
 	ActionTypes.LOAD_EDITOR_PREFERENCES,
+	ActionTypes.LOAD_SIDEBAR_PREFERENCES,
 ];
 
 const writeRequestPreferencesActions = [
@@ -17,6 +19,11 @@ const writeRequestPreferencesActions = [
 
 const writeEditorPreferencesActions = [
 	ActionTypes.EDITOR_PREFERENCES_SET_SELECTED_VARIABLE_GROUP,
+];
+
+const writeSidebarPreferencesActions = [
+	ActionTypes.SIDEBAR_PREFERENCE_SET_SELECTED,
+	ActionTypes.SIDEBAR_PREFERENCE_SET_COLLAPSE,
 ];
 
 export default function* projectSaga() {
@@ -29,6 +36,9 @@ export default function* projectSaga() {
 		}),
 		fork(function* catchWriteRequestPreferencesWatcher() {
 			yield takeLatest(writeEditorPreferencesActions, catchWriteEditorPreferences);
+		}),
+		fork(function* catchWriteSidebarPreferencesWatcher() {
+			yield takeLatest(writeSidebarPreferencesActions, catchWriteSidebarPreferences);
 		}),
 	]);
 }

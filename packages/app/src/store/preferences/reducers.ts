@@ -29,6 +29,16 @@ const reducer = createReducer(initialState, builder => {
 			const { variableGroup, groupId } = payload;
 
 			state.editor.selectedVariableGroups[variableGroup] = groupId;
+		})
+
+		.addCase(actions.sidebarPreferencesLoaded, (state, { payload }) => {
+			state.sidebar = payload;
+		})
+		.addCase(actions.sidebarPreferenceSetSelected, (state, { payload }) => {
+			state.sidebar.selected = payload;
+		})
+		.addCase(actions.sidebarPreferenceSetCollapse, (state, { payload }) => {
+			state.sidebar.collapsed[payload.key] = payload.collapsed;
 		});
 });
 

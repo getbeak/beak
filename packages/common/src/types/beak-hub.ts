@@ -22,6 +22,13 @@ export interface EditorPreferences {
 	selectedVariableGroups: Record<string, string>;
 }
 
+export type SidebarVariant = 'project' | 'variables';
+
+export interface SidebarPreferences {
+	selected: SidebarVariant;
+	collapsed: Record<string, boolean>;
+}
+
 export interface TabPreferences {
 	selectedTabPayload?: string;
 

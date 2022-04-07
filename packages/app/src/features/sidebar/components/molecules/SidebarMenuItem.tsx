@@ -1,10 +1,9 @@
 import React from 'react';
+import { SidebarVariant } from '@beak/common/types/beak-hub';
 import { faTable, IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import { faFolderTree } from '@fortawesome/free-solid-svg-icons/faFolderTree';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import styled, { useTheme } from 'styled-components';
-
-export type SidebarVariant = 'project' | 'variables';
 
 const icons: Record<SidebarVariant, IconDefinition> = {
 	project: faFolderTree,

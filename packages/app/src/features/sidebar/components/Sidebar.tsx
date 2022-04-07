@@ -1,13 +1,16 @@
 import React, { useContext, useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import WindowSessionContext from '@beak/app/contexts/window-session-context';
 import { checkShortcut } from '@beak/app/lib/keyboard-shortcuts';
+import { sidebarPreferenceSetSelected } from '@beak/app/store/preferences/actions';
+import { SidebarVariant } from '@beak/common/types/beak-hub';
 import { MenuEventPayload } from '@beak/common/web-contents/types';
 import styled from 'styled-components';
 
 import ProjectPane from '../../project-pane/components/ProjectPane';
 import VariablesPane from '../../variables/components/VariablesPane';
 import SidebarMenuHighlighter from './molecules/SidebarMenuHighlighter';
-import SidebarMenuItem, { SidebarVariant } from './molecules/SidebarMenuItem';
+import SidebarMenuItem from './molecules/SidebarMenuItem';
 
 const sidebarVariants: SidebarVariant[] = ['project', 'variables'];
 
@@ -18,12 +21,11 @@ interface SidebarProps {
 const Sidebar: React.FunctionComponent<SidebarProps> = props => {
 	const { onSidebarCollapseChanged } = props;
 	const windowSession = useContext(WindowSessionContext);
+	const selectedSidebar = useSelector(s => s.global.preferences.sidebar.selected);
+	const dispatch = useDispatch();
 
-	// TODO(afr): Remove this
-	// const [variant, setVariant] = useState<SidebarVariant>('project');
-	const [variant, setVariant] = useState<SidebarVariant>('variables');
 	const [collapsed, setCollapsed] = useState(false);
-	const variantIndex = sidebarVariants.indexOf(variant);
+	const variantIndex = sidebarVariants.indexOf(selectedSidebar);
 
 	function setCollapsedProxy(value: boolean) {
 		setCollapsed(value);
@@ -65,10 +67,10 @@ const Sidebar: React.FunctionComponent<SidebarProps> = props => {
 	}, [collapsed]);
 
 	function usefulSetVariant(newVariant: SidebarVariant) {
-		if (variant === newVariant) {
+		if (selectedSidebar === newVariant) {
 			setCollapsedProxy(!collapsed);
 		} else {
-			setVariant(newVariant);
+			dispatch(sidebarPreferenceSetSelected(newVariant));
 			setCollapsedProxy(false);
 		}
 	}
@@ -81,18 +83,18 @@ const Sidebar: React.FunctionComponent<SidebarProps> = props => {
 
 				<SidebarMenuItem
 					item={'project'}
-					selectedItem={variant}
+					selectedItem={selectedSidebar}
 					onClick={usefulSetVariant}
 				/>
 				<SidebarMenuItem
 					item={'variables'}
-					selectedItem={variant}
+					selectedItem={selectedSidebar}
 					onClick={usefulSetVariant}
 				/>
 			</SidebarMenu>
 
-			{variant === 'project' && <ProjectPane />}
-			{variant === 'variables' && <VariablesPane />}
+			{selectedSidebar === 'project' && <ProjectPane />}
+			{selectedSidebar === 'variables' && <VariablesPane />}
 		</Container>
 	);
 };

@@ -1,12 +1,12 @@
 import { readJsonAndValidate } from '@beak/app/lib/fs';
 import { ipcFsService } from '@beak/app/lib/ipc';
-import { EditorPreferences, RequestPreference } from '@beak/common/types/beak-hub';
+import { EditorPreferences, RequestPreference, SidebarPreferences } from '@beak/common/types/beak-hub';
 import Squawk from '@beak/common/utils/squawk';
 import { PayloadAction } from '@reduxjs/toolkit';
 import path from 'path-browserify';
 import { call, put } from 'redux-saga/effects';
 
-import { editorPreferences, requestPreference } from '../../../lib/beak-hub/schemas';
+import { editorPreferences, requestPreference, sidebarPreferences } from '../../../lib/beak-hub/schemas';
 import actions from '../actions';
 import { ActionTypes, RequestPreferencePayload } from '../types';
 
@@ -25,6 +25,14 @@ export default function* catchLoadPreferences({ type, payload }: PayloadAction<u
 			const preferences: EditorPreferences = yield call(loadEditorPreferences);
 
 			yield put(actions.editorPreferencesLoaded(preferences));
+
+			return;
+		}
+
+		case ActionTypes.LOAD_SIDEBAR_PREFERENCES: {
+			const preferences: SidebarPreferences = yield call(loadSidebarPreferences);
+
+			yield put(actions.sidebarPreferencesLoaded(preferences));
 
 			return;
 		}
@@ -75,6 +83,34 @@ async function loadEditorPreferences() {
 	} catch (error) {
 		if (Squawk.coerce(error).code !== 'schema_invalid')
 			throw error;
+
+		return defaultPreferences;
+	}
+}
+
+async function loadSidebarPreferences() {
+	const preferencesPath = path.join('.beak', 'preferences', 'sidebar.json');
+	const defaultPreferences: SidebarPreferences = {
+		selected: 'project',
+		collapsed: {},
+	};
+
+	if (!await ipcFsService.pathExists(preferencesPath))
+		return defaultPreferences;
+
+	try {
+		const preferenceFile = await readJsonAndValidate<SidebarPreferences>(
+			preferencesPath,
+			sidebarPreferences,
+		);
+
+		return preferenceFile.file;
+	} catch (error) {
+		if (Squawk.coerce(error).code !== 'schema_invalid') {
+			console.error(error);
+
+			throw error;
+		}
 
 		return defaultPreferences;
 	}

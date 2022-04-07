@@ -1,4 +1,9 @@
-import { EditorPreferences, RequestPreference, RequestPreferenceMainTab } from '@beak/common/types/beak-hub';
+import {
+	EditorPreferences,
+	RequestPreference,
+	RequestPreferenceMainTab,
+	SidebarPreferences,
+} from '@beak/common/types/beak-hub';
 
 export const ActionTypes = {
 	LOAD_REQUEST_PREFERENCES: '@beak/global/preferences/LOAD_REQUEST_PREFERENCES',
@@ -9,17 +14,27 @@ export const ActionTypes = {
 	LOAD_EDITOR_PREFERENCES: '@beak/global/preferences/LOAD_EDITOR_PREFERENCES',
 	EDITOR_PREFERENCES_LOADED: '@beak/global/preferences/EDITOR_PREFERENCES_LOADED',
 	EDITOR_PREFERENCES_SET_SELECTED_VARIABLE_GROUP: '@beak/global/preferences/EDITOR_PREFERENCES_SET_SELECTED_VARIABLE_GROUP',
+
+	LOAD_SIDEBAR_PREFERENCES: '@beak/global/preferences/LOAD_SIDEBAR_PREFERENCES',
+	SIDEBAR_PREFERENCES_LOADED: '@beak/global/preferences/SIDEBAR_PREFERENCES_LOADED',
+	SIDEBAR_PREFERENCE_SET_SELECTED: '@beak/global/preferences/SIDEBAR_PREFERENCE_SET_SELECTED',
+	SIDEBAR_PREFERENCE_SET_COLLAPSE: '@beak/global/preferences/SIDEBAR_PREFERENCE_SET_COLLAPSE',
 };
 
 export interface State {
 	requests: Record<string, RequestPreference>;
 	editor: EditorPreferences;
+	sidebar: SidebarPreferences;
 }
 
 export const initialState: State = {
 	requests: {},
 	editor: {
 		selectedVariableGroups: {},
+	},
+	sidebar: {
+		selected: 'project',
+		collapsed: { },
 	},
 };
 
@@ -34,6 +49,11 @@ export type RequestPreferencesSetJsonExpandPayload = RequestPreferencePayload<{
 export interface EditorPreferencesSetSelectedVariableGroupPayload {
 	variableGroup: string;
 	groupId: string;
+}
+
+export interface SidebarCollapsePayload {
+	key: string;
+	collapsed: boolean;
 }
 
 export default {

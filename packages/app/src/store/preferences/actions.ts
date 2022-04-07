@@ -1,5 +1,5 @@
 /* eslint-disable max-len */
-import { EditorPreferences } from '@beak/common/types/beak-hub';
+import { EditorPreferences, SidebarPreferences, SidebarVariant } from '@beak/common/types/beak-hub';
 import { createAction } from '@reduxjs/toolkit';
 
 import {
@@ -9,6 +9,7 @@ import {
 	RequestPreferencesLoadedPayload,
 	RequestPreferencesSetJsonExpandPayload,
 	RequestPreferencesSetMainTabPayload,
+	SidebarCollapsePayload,
 } from './types';
 
 export const loadRequestPreferences = createAction<RequestPreferencePayload>(AT.LOAD_REQUEST_PREFERENCES);
@@ -20,6 +21,11 @@ export const loadEditorPreferences = createAction(AT.LOAD_EDITOR_PREFERENCES);
 export const editorPreferencesLoaded = createAction<EditorPreferences>(AT.EDITOR_PREFERENCES_LOADED);
 export const editorPreferencesSetSelectedVariableGroup = createAction<EditorPreferencesSetSelectedVariableGroupPayload>(AT.EDITOR_PREFERENCES_SET_SELECTED_VARIABLE_GROUP);
 
+export const loadSidebarPreferences = createAction(AT.LOAD_SIDEBAR_PREFERENCES);
+export const sidebarPreferencesLoaded = createAction<SidebarPreferences>(AT.SIDEBAR_PREFERENCES_LOADED);
+export const sidebarPreferenceSetSelected = createAction<SidebarVariant>(AT.SIDEBAR_PREFERENCE_SET_SELECTED);
+export const sidebarPreferenceSetCollapse = createAction<SidebarCollapsePayload>(AT.SIDEBAR_PREFERENCE_SET_COLLAPSE);
+
 export default {
 	loadRequestPreferences,
 	requestPreferencesLoaded,
@@ -29,4 +35,9 @@ export default {
 	loadEditorPreferences,
 	editorPreferencesLoaded,
 	editorPreferencesSetSelectedVariableGroup,
+
+	loadSidebarPreferences,
+	sidebarPreferencesLoaded,
+	sidebarPreferenceSetSelected,
+	sidebarPreferenceSetCollapse,
 };

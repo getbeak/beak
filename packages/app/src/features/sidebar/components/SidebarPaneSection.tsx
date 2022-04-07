@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { sidebarPreferenceSetCollapse } from '@beak/app/store/preferences/actions';
 import type { MenuItemConstructorOptions } from 'electron';
 
 import SectionHeader from './molecules/SectionHeader';
@@ -10,18 +12,22 @@ interface SidebarPaneSectionProps {
 }
 
 const SidebarPaneSection: React.FunctionComponent<SidebarPaneSectionProps> = props => {
-	const { actions, title, children } = props;
-	const [expanded, setExpanded] = useState(true);
+	const { actions, title, collapseKey, children } = props;
+	const collapsed = useSelector(s => s.global.preferences.sidebar.collapsed[collapseKey]);
+	const dispatch = useDispatch();
 
 	return (
 		<React.Fragment>
 			<SectionHeader
 				actions={actions}
-				onClick={() => setExpanded(!expanded)}
+				onClick={() => dispatch(sidebarPreferenceSetCollapse({
+					key: collapseKey,
+					collapsed: !collapsed,
+				}))}
 			>
 				{title}
 			</SectionHeader>
-			{expanded && children}
+			{!collapsed && children}
 		</React.Fragment>
 	);
 };
