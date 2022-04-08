@@ -6,15 +6,26 @@ import { editorPreferencesSetSelectedVariableGroup } from '@beak/app/store/prefe
 import { TypedObject } from '@beak/common/helpers/typescript';
 import styled from 'styled-components';
 
+import NoVariableGroups from '../molecules/NoVariableGroups';
+
 const VariableGroups: React.FunctionComponent = () => {
 	const dispatch = useDispatch();
 	const { variableGroups } = useSelector(s => s.global.variableGroups)!;
 	const selectedGroups = useSelector(s => s.global.preferences.editor.selectedVariableGroups);
+	const empty = Object.keys(variableGroups).length === 0;
 
 	useSectionBody({
 		maxHeight: '120px',
 		flexShrink: 0,
 	});
+
+	if (empty) {
+		return (
+			<Container>
+				<NoVariableGroups />
+			</Container>
+		);
+	}
 
 	return (
 		<Container>

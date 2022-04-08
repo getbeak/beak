@@ -3,6 +3,8 @@ import { useSelector } from 'react-redux';
 import useSectionBody from '@beak/app/features/sidebar/hooks/use-section-body';
 import styled from 'styled-components';
 
+import NoProjectInformation from '../molecules/NoProjectInformation';
+
 const Git: React.FunctionComponent = () => {
 	const { branches, selectedBranch } = useSelector(s => s.global.git)!;
 
@@ -11,8 +13,13 @@ const Git: React.FunctionComponent = () => {
 		flexShrink: 0,
 	});
 
-	if (branches.length === 0)
-		return null;
+	if (branches.length === 0) {
+		return (
+			<Container>
+				<NoProjectInformation />
+			</Container>
+		);
+	}
 
 	return (
 		<Container>
