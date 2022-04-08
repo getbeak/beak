@@ -18,7 +18,7 @@ import { useApplicationMenuEventListener } from '../hooks/use-application-menu-e
 import { checkShortcut } from '../lib/keyboard-shortcuts';
 import { requestFlight } from '../store/flight/actions';
 import { startGit } from '../store/git/actions';
-import { loadEditorPreferences, loadSidebarPreferences } from '../store/preferences/actions';
+import { loadEditorPreferences, loadProjectPanePreferences, loadSidebarPreferences } from '../store/preferences/actions';
 import { startProject } from '../store/project/actions';
 
 const ProjectMain: React.FunctionComponent = () => {
@@ -38,6 +38,7 @@ const ProjectMain: React.FunctionComponent = () => {
 	useEffect(() => {
 		dispatch(loadEditorPreferences());
 		dispatch(loadSidebarPreferences());
+		dispatch(loadProjectPanePreferences());
 		dispatch(startProject());
 		dispatch(startGit());
 	}, []);

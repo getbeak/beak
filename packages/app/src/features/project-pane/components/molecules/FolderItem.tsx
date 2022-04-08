@@ -2,6 +2,7 @@ import React, { useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { toVibrancyAlpha } from '@beak/app/design-system/utils';
 import { checkShortcut } from '@beak/app/lib/keyboard-shortcuts';
+import { projectPanePreferenceSetCollapse } from '@beak/app/store/preferences/actions';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { FolderNode } from '@beak/common/types/beak-project';
 import styled from 'styled-components';
@@ -19,7 +20,7 @@ export interface FolderItemProps {
 const FolderItem: React.FunctionComponent<FolderItemProps> = props => {
 	const dispatch = useDispatch();
 	const { depth } = props;
-	const [expanded, setExpanded] = useState(true);
+	const collapsed = useSelector(s => s.global.preferences.projectPane.collapsed[props.id]);
 	const element = useRef<HTMLDivElement | null>(null);
 	const [target, setTarget] = useState<HTMLDivElement>();
 
@@ -48,16 +49,16 @@ const FolderItem: React.FunctionComponent<FolderItemProps> = props => {
 
 					switch (true) {
 						case checkShortcut('project-explorer.folder.left', event):
-							if (expanded)
-								setExpanded(false);
+							if (!collapsed)
+								dispatch(projectPanePreferenceSetCollapse({ key: props.id, collapsed: true }));
 							else if (element.current)
 								element.current.parentElement?.focus();
 
 							break;
 
 						case checkShortcut('project-explorer.folder.right', event):
-							if (!expanded)
-								setExpanded(true);
+							if (collapsed)
+								dispatch(projectPanePreferenceSetCollapse({ key: props.id, collapsed: false }));
 							else if (element.current?.nextElementSibling)
 								(element.current.nextElementSibling as HTMLElement).focus();
 
@@ -91,15 +92,17 @@ const FolderItem: React.FunctionComponent<FolderItemProps> = props => {
 
 					event.preventDefault();
 				}}
-				onClick={() => setExpanded(!expanded)}
+				onClick={() => {
+					dispatch(projectPanePreferenceSetCollapse({ key: props.id, collapsed: !collapsed }));
+				}}
 			>
-				<Chevron expanded={expanded} />
+				<Chevron expanded={!collapsed} />
 				<Renamer node={node} parentRef={element}>
 					{node.name}
 				</Renamer>
 			</Wrapper>
 
-			{expanded && childNodes.filter(n => n.type === 'folder').map(n => (
+			{!collapsed && childNodes.filter(n => n.type === 'folder').map(n => (
 				<Switch
 					depth={depth + 1}
 					key={n.filePath}
@@ -108,7 +111,7 @@ const FolderItem: React.FunctionComponent<FolderItemProps> = props => {
 				/>
 			))}
 
-			{expanded && childNodes.filter(n => n.type === 'request').map(n => (
+			{!collapsed && childNodes.filter(n => n.type === 'request').map(n => (
 				<Switch
 					depth={depth + 1}
 					key={n.id}

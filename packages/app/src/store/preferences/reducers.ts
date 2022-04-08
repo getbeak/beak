@@ -39,6 +39,13 @@ const reducer = createReducer(initialState, builder => {
 		})
 		.addCase(actions.sidebarPreferenceSetCollapse, (state, { payload }) => {
 			state.sidebar.collapsed[payload.key] = payload.collapsed;
+		})
+
+		.addCase(actions.projectPanePreferencesLoaded, (state, { payload }) => {
+			state.projectPane = payload;
+		})
+		.addCase(actions.projectPanePreferenceSetCollapse, (state, { payload }) => {
+			state.projectPane.collapsed[payload.key] = payload.collapsed;
 		});
 });
 

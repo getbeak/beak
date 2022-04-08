@@ -1,10 +1,11 @@
 /* eslint-disable max-len */
-import { EditorPreferences, SidebarPreferences, SidebarVariant } from '@beak/common/types/beak-hub';
+import { EditorPreferences, ProjectPanePreferences, SidebarPreferences, SidebarVariant } from '@beak/common/types/beak-hub';
 import { createAction } from '@reduxjs/toolkit';
 
 import {
 	ActionTypes as AT,
 	EditorPreferencesSetSelectedVariableGroupPayload,
+	ProjectPaneCollapsePayload,
 	RequestPreferencePayload,
 	RequestPreferencesLoadedPayload,
 	RequestPreferencesSetJsonExpandPayload,
@@ -26,6 +27,10 @@ export const sidebarPreferencesLoaded = createAction<SidebarPreferences>(AT.SIDE
 export const sidebarPreferenceSetSelected = createAction<SidebarVariant>(AT.SIDEBAR_PREFERENCE_SET_SELECTED);
 export const sidebarPreferenceSetCollapse = createAction<SidebarCollapsePayload>(AT.SIDEBAR_PREFERENCE_SET_COLLAPSE);
 
+export const loadProjectPanePreferences = createAction(AT.LOAD_PROJECT_PANE_PREFERENCES);
+export const projectPanePreferencesLoaded = createAction<ProjectPanePreferences>(AT.PROJECT_PANE_PREFERENCES_LOADED);
+export const projectPanePreferenceSetCollapse = createAction<ProjectPaneCollapsePayload>(AT.PROJECT_PANE_PREFERENCE_SET_COLLAPSE);
+
 export default {
 	loadRequestPreferences,
 	requestPreferencesLoaded,
@@ -40,4 +45,8 @@ export default {
 	sidebarPreferencesLoaded,
 	sidebarPreferenceSetSelected,
 	sidebarPreferenceSetCollapse,
+
+	loadProjectPanePreferences,
+	projectPanePreferencesLoaded,
+	projectPanePreferenceSetCollapse,
 };

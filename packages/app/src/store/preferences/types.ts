@@ -1,5 +1,6 @@
 import {
 	EditorPreferences,
+	ProjectPanePreferences,
 	RequestPreference,
 	RequestPreferenceMainTab,
 	SidebarPreferences,
@@ -19,12 +20,17 @@ export const ActionTypes = {
 	SIDEBAR_PREFERENCES_LOADED: '@beak/global/preferences/SIDEBAR_PREFERENCES_LOADED',
 	SIDEBAR_PREFERENCE_SET_SELECTED: '@beak/global/preferences/SIDEBAR_PREFERENCE_SET_SELECTED',
 	SIDEBAR_PREFERENCE_SET_COLLAPSE: '@beak/global/preferences/SIDEBAR_PREFERENCE_SET_COLLAPSE',
+
+	LOAD_PROJECT_PANE_PREFERENCES: '@beak/global/preferences/LOAD_PROJECT_PANE_PREFERENCES',
+	PROJECT_PANE_PREFERENCES_LOADED: '@beak/global/preferences/PROJECT_PANE_PREFERENCES_LOADED',
+	PROJECT_PANE_PREFERENCE_SET_COLLAPSE: '@beak/global/preferences/PROJECT_PANE_PREFERENCE_SET_COLLAPSE',
 };
 
 export interface State {
 	requests: Record<string, RequestPreference>;
 	editor: EditorPreferences;
 	sidebar: SidebarPreferences;
+	projectPane: ProjectPanePreferences;
 }
 
 export const initialState: State = {
@@ -34,6 +40,9 @@ export const initialState: State = {
 	},
 	sidebar: {
 		selected: 'project',
+		collapsed: { },
+	},
+	projectPane: {
 		collapsed: { },
 	},
 };
@@ -52,6 +61,11 @@ export interface EditorPreferencesSetSelectedVariableGroupPayload {
 }
 
 export interface SidebarCollapsePayload {
+	key: string;
+	collapsed: boolean;
+}
+
+export interface ProjectPaneCollapsePayload {
 	key: string;
 	collapsed: boolean;
 }

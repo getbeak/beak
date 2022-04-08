@@ -1,0 +1,17 @@
+{
+	"type": "object",
+	"additionalProperties": false,
+
+	"required": [
+		"collapsed"
+	],
+
+	"properties": {
+		"collapsed": {
+			"type": "object",
+			"additionalProperties" : {
+				"type" : "boolean"
+			}
+		}
+	}
+}

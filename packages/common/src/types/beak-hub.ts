@@ -29,6 +29,10 @@ export interface SidebarPreferences {
 	collapsed: Record<string, boolean>;
 }
 
+export interface ProjectPanePreferences {
+	collapsed: Record<string, boolean>;
+}
+
 export interface TabPreferences {
 	selectedTabPayload?: string;
 

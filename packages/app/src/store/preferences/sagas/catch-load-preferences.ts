@@ -1,12 +1,17 @@
 import { readJsonAndValidate } from '@beak/app/lib/fs';
 import { ipcFsService } from '@beak/app/lib/ipc';
-import { EditorPreferences, RequestPreference, SidebarPreferences } from '@beak/common/types/beak-hub';
+import { EditorPreferences, ProjectPanePreferences, RequestPreference, SidebarPreferences } from '@beak/common/types/beak-hub';
 import Squawk from '@beak/common/utils/squawk';
 import { PayloadAction } from '@reduxjs/toolkit';
 import path from 'path-browserify';
 import { call, put } from 'redux-saga/effects';
 
-import { editorPreferences, requestPreference, sidebarPreferences } from '../../../lib/beak-hub/schemas';
+import {
+	editorPreferences,
+	projectPanePreferences,
+	requestPreference,
+	sidebarPreferences,
+} from '../../../lib/beak-hub/schemas';
 import actions from '../actions';
 import { ActionTypes, RequestPreferencePayload } from '../types';
 
@@ -33,6 +38,14 @@ export default function* catchLoadPreferences({ type, payload }: PayloadAction<u
 			const preferences: SidebarPreferences = yield call(loadSidebarPreferences);
 
 			yield put(actions.sidebarPreferencesLoaded(preferences));
+
+			return;
+		}
+
+		case ActionTypes.LOAD_PROJECT_PANE_PREFERENCES: {
+			const preferences: ProjectPanePreferences = yield call(loadProjectPanePreferences);
+
+			yield put(actions.projectPanePreferencesLoaded(preferences));
 
 			return;
 		}
@@ -102,6 +115,30 @@ async function loadSidebarPreferences() {
 		const preferenceFile = await readJsonAndValidate<SidebarPreferences>(
 			preferencesPath,
 			sidebarPreferences,
+		);
+
+		return preferenceFile.file;
+	} catch (error) {
+		if (Squawk.coerce(error).code !== 'schema_invalid')
+			throw error;
+
+		return defaultPreferences;
+	}
+}
+
+async function loadProjectPanePreferences() {
+	const preferencesPath = path.join('.beak', 'preferences', 'project-pane.json');
+	const defaultPreferences: ProjectPanePreferences = {
+		collapsed: {},
+	};
+
+	if (!await ipcFsService.pathExists(preferencesPath))
+		return defaultPreferences;
+
+	try {
+		const preferenceFile = await readJsonAndValidate<ProjectPanePreferences>(
+			preferencesPath,
+			projectPanePreferences,
 		);
 
 		return preferenceFile.file;
