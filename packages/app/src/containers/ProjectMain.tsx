@@ -25,7 +25,7 @@ const ProjectMain: React.FunctionComponent = () => {
 	const dispatch = useDispatch();
 	const [title, setTitle] = useState('Loading... - Beak');
 	const [setup, setSetup] = useState(false);
-	const [collapsedSidebar, setCollapsedSidebar] = useState(false);
+	const collapsedSidebar = useSelector(s => s.global.preferences.sidebar.collapsed.sidebar);
 	const project = useSelector(s => s.global.project);
 	const variableGroups = useSelector(s => s.global.variableGroups);
 	const tabs = useSelector(s => s.features.tabs);
@@ -86,11 +86,9 @@ const ProjectMain: React.FunctionComponent = () => {
 								flex={15}
 								minSize={250}
 								maxSize={void 0}
-								$forcedWidth={collapsedSidebar ? 40 : void 0}
+								$forcedWidth={collapsedSidebar ? 42 : void 0}
 							>
-								<Sidebar onSidebarCollapseChanged={collapsed => {
-									setCollapsedSidebar(collapsed);
-								}} />
+								<Sidebar />
 							</ReflexElement>
 
 							<ReflexSplitter

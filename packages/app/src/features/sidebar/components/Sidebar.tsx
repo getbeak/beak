@@ -1,11 +1,11 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import WindowSessionContext from '@beak/app/contexts/window-session-context';
 import { checkShortcut } from '@beak/app/lib/keyboard-shortcuts';
-import { sidebarPreferenceSetSelected } from '@beak/app/store/preferences/actions';
+import { sidebarPreferenceSetCollapse, sidebarPreferenceSetSelected } from '@beak/app/store/preferences/actions';
 import { SidebarVariant } from '@beak/common/types/beak-hub';
 import { MenuEventPayload } from '@beak/common/web-contents/types';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
 import ProjectPane from '../../project-pane/components/ProjectPane';
 import VariablesPane from '../../variables/components/VariablesPane';
@@ -14,30 +14,20 @@ import SidebarMenuItem from './molecules/SidebarMenuItem';
 
 const sidebarVariants: SidebarVariant[] = ['project', 'variables'];
 
-interface SidebarProps {
-	onSidebarCollapseChanged: (collapsed: boolean) => void;
-}
-
-const Sidebar: React.FunctionComponent<SidebarProps> = props => {
-	const { onSidebarCollapseChanged } = props;
+const Sidebar: React.FunctionComponent = () => {
 	const windowSession = useContext(WindowSessionContext);
 	const selectedSidebar = useSelector(s => s.global.preferences.sidebar.selected);
+	const sidebarCollapsed = useSelector(s => s.global.preferences.sidebar.collapsed.sidebar);
 	const dispatch = useDispatch();
 
-	const [collapsed, setCollapsed] = useState(false);
 	const variantIndex = sidebarVariants.indexOf(selectedSidebar);
-
-	function setCollapsedProxy(value: boolean) {
-		setCollapsed(value);
-		onSidebarCollapseChanged(value);
-	}
 
 	useEffect(() => {
 		const onKeyDown = (event: KeyboardEvent) => {
 			switch (true) {
 				case checkShortcut('sidebar.toggle-view', event):
 					event.stopPropagation();
-					setCollapsedProxy(!collapsed);
+					dispatch(sidebarPreferenceSetCollapse({ key: 'sidebar', collapsed: !sidebarCollapsed }));
 
 					break;
 
@@ -54,7 +44,7 @@ const Sidebar: React.FunctionComponent<SidebarProps> = props => {
 			if (code !== 'toggle_sidebar')
 				return;
 
-			setCollapsedProxy(!collapsed);
+			dispatch(sidebarPreferenceSetCollapse({ key: 'sidebar', collapsed: !sidebarCollapsed }));
 		}
 
 		window.secureBridge.ipc.on('menu:menu_item_click', listener);
@@ -64,22 +54,22 @@ const Sidebar: React.FunctionComponent<SidebarProps> = props => {
 			window.secureBridge.ipc.off('menu:menu_item_click', listener);
 			window.removeEventListener('keydown', onKeyDown);
 		};
-	}, [collapsed]);
+	}, [dispatch, sidebarCollapsed]);
 
 	function usefulSetVariant(newVariant: SidebarVariant) {
 		if (selectedSidebar === newVariant) {
-			setCollapsedProxy(!collapsed);
+			dispatch(sidebarPreferenceSetCollapse({ key: 'sidebar', collapsed: !sidebarCollapsed }));
 		} else {
 			dispatch(sidebarPreferenceSetSelected(newVariant));
-			setCollapsedProxy(false);
+			dispatch(sidebarPreferenceSetCollapse({ key: 'sidebar', collapsed: false }));
 		}
 	}
 
 	return (
 		<Container $darwin={windowSession.isDarwin()}>
-			<DragBar />
-			<SidebarMenu>
-				<SidebarMenuHighlighter hidden={collapsed} index={variantIndex} />
+			<DragBar $collapsed={sidebarCollapsed} />
+			<SidebarMenu $collapsed={sidebarCollapsed}>
+				<SidebarMenuHighlighter hidden={sidebarCollapsed} index={variantIndex} />
 
 				<SidebarMenuItem
 					item={'project'}
@@ -104,20 +94,28 @@ const Container = styled.div<{ $darwin: boolean }>`
 	display: grid;
 	grid-template-columns: 40px 1fr;
 	height: calc(100% - 72px);
-	padding-top: 71px;
+	padding-top: 72px;
 	background: ${p => p.$darwin ? 'transparent' : p.theme.ui.background};
+	overflow: hidden;
 `;
 
-const DragBar = styled.div`
+const DragBar = styled.div<{ $collapsed: boolean }>`
 	position: absolute;
 	top: 0; left: 0; right: 0;
-	height: 71px;
+	height: 72px;
 	-webkit-app-region: drag;
+
+	${p => p.$collapsed && css`
+		background: ${p => p.theme.ui.secondarySurface};
+		border-bottom: 1px solid ${p => p.theme.ui.backgroundBorderSeparator};
+	`}
 `;
 
-const SidebarMenu = styled.div`
+const SidebarMenu = styled.div<{ $collapsed: boolean }>`
 	position: relative;
 	width: 40px;
+
+	${p => p.$collapsed && css`border-right: 2px solid ${p.theme.ui.backgroundBorderSeparator};`}
 `;
 
 export default Sidebar;

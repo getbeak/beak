@@ -94,7 +94,7 @@ interface WrapperProps {
 const Wrapper = styled.div<WrapperProps>`
 	display: flex;
 	padding: 4px 0;
-	padding-left: 7px;
+	padding-left: 5px;
 	cursor: pointer;
 	font-size: 13px;
 	line-height: 18px;
@@ -108,6 +108,10 @@ const Wrapper = styled.div<WrapperProps>`
 	&:focus {
 		outline: none;
 		background-color: ${props => toVibrancyAlpha(props.theme.ui.secondarySurface, 0.7)};
+	}
+	
+	&:first-of-type {
+		margin-top: 2px;
 	}
 `;
 

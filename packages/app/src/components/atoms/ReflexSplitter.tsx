@@ -9,7 +9,7 @@ export interface ReflexSplitterProps extends RSP {
 	$disabled?: boolean;
 }
 
-const ReflexSplitter = styled(RS) <ReflexSplitterProps>`
+const ReflexSplitter = styled(RS)<ReflexSplitterProps>`
 	width: ${props => props.orientation === 'vertical' ? '2px' : 'auto'} !important;
 	height: ${props => props.orientation === 'horizontal' ? '2px' : 'auto'} !important;
 	background-color: ${props => props.theme.ui.backgroundBorderSeparator} !important;
@@ -22,6 +22,7 @@ const ReflexSplitter = styled(RS) <ReflexSplitterProps>`
 	}
 
 	${p => p.$disabled && css`
+		display: none;
 		pointer-events: none !important;
 		cursor: default !important;
 
