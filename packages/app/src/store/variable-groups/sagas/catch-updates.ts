@@ -1,5 +1,6 @@
 import { attemptReconciliation } from '@beak/app/features/tabs/store/actions';
 import { removeVariableGroup, writeVariableGroup } from '@beak/app/lib/beak-variable-group';
+import { ipcFsService } from '@beak/app/lib/ipc';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { VariableGroups } from '@beak/common/types/beak-project';
 import { PayloadAction } from '@reduxjs/toolkit';
@@ -37,7 +38,11 @@ export default function* workerCatchUpdates({ type, payload }: PayloadAction<unk
 		return;
 
 	yield put(actions.setLatestWrite(Date.now()));
-	yield call(writeVariableGroups, variableGroups);
+
+	const exists: boolean = yield call([ipcFsService, ipcFsService.pathExists], `variable-groups/${payload}.json`);
+
+	if (exists)
+		yield call(writeVariableGroups, variableGroups);
 }
 
 async function writeVariableGroups(vgs: VariableGroups) {
