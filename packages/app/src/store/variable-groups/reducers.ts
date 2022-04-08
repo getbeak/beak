@@ -18,31 +18,31 @@ const variableGroupsReducer = createReducer(initialState, builder => {
 		})
 
 		.addCase(actions.updateVg, (state, { payload }) => {
-			const { name, file } = payload;
+			const { variableGroupName, file } = payload;
 
-			state.variableGroups[name] = file;
+			state.variableGroups[variableGroupName] = file;
 		})
 		.addCase(actions.removeVg, (state, { payload }) => {
 			// eslint-disable-next-line @typescript-eslint/no-unused-vars
-			const { [payload]: remove, ...rest } = state.variableGroups;
+			const { [payload.variableGroupName]: remove, ...rest } = state.variableGroups;
 
 			state.variableGroups = rest;
 		})
 
 		.addCase(actions.updateGroupName, (state, action) => {
-			const { ident, updated, variableGroup } = action.payload;
+			const { ident, updated, variableGroupName } = action.payload;
 
-			state.variableGroups![variableGroup].groups[ident] = updated;
+			state.variableGroups![variableGroupName].groups[ident] = updated;
 		})
 		.addCase(actions.updateItemName, (state, action) => {
-			const { ident, updated, variableGroup } = action.payload;
+			const { ident, updated, variableGroupName } = action.payload;
 
-			state.variableGroups![variableGroup].items[ident] = updated;
+			state.variableGroups![variableGroupName].items[ident] = updated;
 		})
 		.addCase(actions.updateValue, (state, action) => {
-			const { groupId, itemId, updated, variableGroup } = action.payload;
+			const { groupId, itemId, updated, variableGroupName } = action.payload;
 			const ident = generateValueIdent(groupId, itemId);
-			const vg = state.variableGroups![variableGroup];
+			const vg = state.variableGroups![variableGroupName];
 			const exists = ident !== void 0 && vg.values[ident];
 			const empty = updated.length === 0 || (updated.length === 1 && updated[0] === '');
 
@@ -73,51 +73,51 @@ const variableGroupsReducer = createReducer(initialState, builder => {
 				return;
 			}
 
-			const { name } = action.payload;
+			const { variableGroupName } = action.payload;
 			const groupId = ksuid.generate('group').toString();
 			const itemId = ksuid.generate('item').toString();
 
-			state.variableGroups![name] = {
+			state.variableGroups![variableGroupName] = {
 				groups: { [groupId]: 'Group' },
 				items: { [itemId]: 'Item' },
 				values: { },
 			};
 		})
 		.addCase(actions.insertNewGroup, (state, action) => {
-			const { group, variableGroup } = action.payload;
+			const { group, variableGroupName } = action.payload;
 
-			state.variableGroups![variableGroup].groups[ksuid.generate('group').toString()] = group;
+			state.variableGroups![variableGroupName].groups[ksuid.generate('group').toString()] = group;
 		})
 		.addCase(actions.insertNewItem, (state, action) => {
-			const { name, variableGroup } = action.payload;
+			const { name, variableGroupName } = action.payload;
 
-			state.variableGroups![variableGroup].items[ksuid.generate('item').toString()] = name;
+			state.variableGroups![variableGroupName].items[ksuid.generate('item').toString()] = name;
 		})
 		.addCase(actions.removeGroup, (state, action) => {
-			const { id, variableGroup } = action.payload;
+			const { id, variableGroupName } = action.payload;
 
 			TypedObject
-				.keys(state.variableGroups[variableGroup].values)
+				.keys(state.variableGroups[variableGroupName].values)
 				.filter(k => k.startsWith(id))
 				.forEach(k => {
 					// @ts-expect-error
-					state.variableGroups[variableGroup].values[k] = void 0;
+					state.variableGroups[variableGroupName].values[k] = void 0;
 				});
 
-			delete state.variableGroups![variableGroup].groups[id];
+			delete state.variableGroups![variableGroupName].groups[id];
 		})
 		.addCase(actions.removeItem, (state, action) => {
-			const { id, variableGroup } = action.payload;
+			const { id, variableGroupName } = action.payload;
 
 			TypedObject
-				.keys(state.variableGroups[variableGroup].values)
+				.keys(state.variableGroups[variableGroupName].values)
 				.filter(k => k.endsWith(id))
 				.forEach(k => {
 					// @ts-expect-error
-					state.variableGroups[variableGroup].values[k] = void 0;
+					state.variableGroups[variableGroupName].values[k] = void 0;
 				});
 
-			delete state.variableGroups![variableGroup].items[id];
+			delete state.variableGroups![variableGroupName].items[id];
 		})
 
 		.addCase(actions.setLatestWrite, (state, { payload }) => {

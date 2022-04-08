@@ -53,7 +53,7 @@ export default function* workerStartVariableGroups() {
 			try {
 				const { file, name } = yield call(readVariableGroup, result.path);
 
-				yield put(actions.updateVg({ name, file }));
+				yield put(actions.updateVg({ variableGroupName: name, file }));
 			} catch (error) {
 				if (!(error instanceof Error))
 					return;
@@ -70,9 +70,9 @@ export default function* workerStartVariableGroups() {
 			}
 		} else if (result.type === 'unlink') {
 			try {
-				const vgName = path.basename(result.path, path.extname(result.path));
+				const variableGroupName = path.basename(result.path, path.extname(result.path));
 
-				yield put(actions.removeVg(vgName));
+				yield put(actions.removeVg({ variableGroupName }));
 				yield put(attemptReconciliation());
 			} catch (error) {
 				if (!(error instanceof Error))

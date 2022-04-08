@@ -1,12 +1,12 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
 import Button from '@beak/app/components/atoms/Button';
-import { insertNewGroup, insertNewVariableGroup } from '@beak/app/store/variable-groups/actions';
+import { insertNewGroup } from '@beak/app/store/variable-groups/actions';
 import styled from 'styled-components';
 
 interface CreateNewSplashProps {
-	type: 'group' | 'variable-group';
-	variableGroup?: string;
+	type: 'group';
+	variableGroup: string;
 }
 
 const CreateNewSplash: React.FunctionComponent<CreateNewSplashProps> = ({ type, variableGroup }) => {
@@ -15,15 +15,12 @@ const CreateNewSplash: React.FunctionComponent<CreateNewSplashProps> = ({ type, 
 	return (
 		<Wrapper>
 			<Header>
-				{type === 'group' && 'Looks like you have no groups in here?'}
-				{type === 'variable-group' && 'Looks like you have no variable groups?'}
+				{'Looks like you have no groups in here?'}
 			</Header>
 			<Button
 				onClick={() => {
 					if (type === 'group')
-						dispatch(insertNewGroup({ variableGroup: variableGroup!, group: '' }));
-					else if (type === 'variable-group')
-						dispatch(insertNewVariableGroup(null));
+						dispatch(insertNewGroup({ variableGroupName: variableGroup!, group: '' }));
 				}}
 			>
 				{'Let\'s create one!'}

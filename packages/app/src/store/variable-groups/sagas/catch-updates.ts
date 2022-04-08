@@ -1,7 +1,6 @@
 import { attemptReconciliation } from '@beak/app/features/tabs/store/actions';
 import { removeVariableGroup, writeVariableGroup } from '@beak/app/lib/beak-variable-group';
 import { ipcFsService } from '@beak/app/lib/ipc';
-import { TypedObject } from '@beak/common/helpers/typescript';
 import { VariableGroups } from '@beak/common/types/beak-project';
 import { PayloadAction } from '@reduxjs/toolkit';
 import { call, delay, put, select } from 'redux-saga/effects';
@@ -11,17 +10,27 @@ import { ApplicationState } from '../..';
 import { actions } from '..';
 import { ActionTypes } from '../types';
 
-export default function* workerCatchUpdates({ type, payload }: PayloadAction<unknown>) {
+interface CommonPayload {
+	variableGroupName: string;
+}
+
+export default function* workerCatchUpdates({ type, payload }: PayloadAction<CommonPayload>) {
 	const variableGroups: VariableGroups = yield select(
 		(s: ApplicationState) => s.global.variableGroups.variableGroups,
 	);
 
 	if (type === ActionTypes.REMOVE_VG) {
 		try {
-			yield call(removeVariableGroup, (payload as string));
+			yield call(removeVariableGroup, payload.variableGroupName);
 		} catch { /* Don't care if this fails */ }
 
 		yield put(attemptReconciliation());
+
+		return;
+	}
+
+	if (type === ActionTypes.INSERT_NEW_VARIABLE_GROUP) {
+		yield call(writeVariableGroup, payload.variableGroupName, variableGroups[payload.variableGroupName]);
 
 		return;
 	}
@@ -39,12 +48,14 @@ export default function* workerCatchUpdates({ type, payload }: PayloadAction<unk
 
 	yield put(actions.setLatestWrite(Date.now()));
 
-	const exists: boolean = yield call([ipcFsService, ipcFsService.pathExists], `variable-groups/${payload}.json`);
+	const exists: boolean = yield call(
+		[ipcFsService, ipcFsService.pathExists],
+		`variable-groups/${payload.variableGroupName}.json`,
+	);
 
-	if (exists)
-		yield call(writeVariableGroups, variableGroups);
-}
+	// If it doesn't exist that means it's been deleted, so we shouldn't write!
+	if (!exists)
+		return;
 
-async function writeVariableGroups(vgs: VariableGroups) {
-	await Promise.all(TypedObject.keys(vgs).map(name => writeVariableGroup(name, vgs[name])));
+	yield call(writeVariableGroup, payload.variableGroupName, variableGroups[payload.variableGroupName]);
 }

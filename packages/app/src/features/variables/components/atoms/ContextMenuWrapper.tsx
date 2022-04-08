@@ -33,7 +33,7 @@ const ContextMenuWrapper: React.FunctionComponent<ContextMenuWrapperProps> = pro
 			id: ksuid.generate('ctxmenuitem').toString(),
 			label: 'New variable group',
 			click: () => {
-				dispatch(actions.insertNewVariableGroup({ name: 'New variable group' }));
+				dispatch(actions.insertNewVariableGroup({ variableGroupName: 'New variable group' }));
 				dispatch(changeTab({ type: 'variable_group_editor', payload: 'New variable group', temporary: false }));
 			},
 		}, {
@@ -87,7 +87,7 @@ const ContextMenuWrapper: React.FunctionComponent<ContextMenuWrapperProps> = pro
 				if (result.response === 1)
 					return;
 
-				dispatch(actions.removeVg(variableGroupName));
+				dispatch(actions.removeVg({ variableGroupName }));
 			},
 		}]);
 	}, [variableGroupName, node]);

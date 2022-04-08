@@ -84,7 +84,7 @@ const VariableGroupEditor: React.FunctionComponent<VariableGroupEditorProps> = (
 										value={variableGroup.groups[k]}
 										onChange={v => {
 											dispatch(actions.updateGroupName({
-												variableGroup: variableGroupName,
+												variableGroupName,
 												ident: k,
 												updated: v,
 											}));
@@ -95,7 +95,7 @@ const VariableGroupEditor: React.FunctionComponent<VariableGroupEditorProps> = (
 										name={variableGroup.groups[k]}
 										onConfirmedDeletion={() => dispatch(removeGroup({
 											id: k,
-											variableGroup: variableGroupName,
+											variableGroupName,
 										}))}
 									/>
 								</HeaderGroupNameCell>
@@ -108,7 +108,7 @@ const VariableGroupEditor: React.FunctionComponent<VariableGroupEditorProps> = (
 									onChange={e => {
 										setNewGroup(e.target.value);
 										dispatch(insertNewGroup({
-											variableGroup: variableGroupName,
+											variableGroupName,
 											group: e.target.value,
 										}));
 									}}
@@ -127,7 +127,7 @@ const VariableGroupEditor: React.FunctionComponent<VariableGroupEditorProps> = (
 										value={variableGroup.items[ik]}
 										onChange={value => {
 											dispatch(actions.updateItemName({
-												variableGroup: variableGroupName,
+												variableGroupName,
 												ident: ik,
 												updated: value,
 											}));
@@ -138,7 +138,7 @@ const VariableGroupEditor: React.FunctionComponent<VariableGroupEditorProps> = (
 										name={variableGroup.items[ik]}
 										onConfirmedDeletion={() => dispatch(removeItem({
 											id: ik,
-											variableGroup: variableGroupName,
+											variableGroupName,
 										}))}
 									/>
 								</BodyNameCell>
@@ -153,7 +153,7 @@ const VariableGroupEditor: React.FunctionComponent<VariableGroupEditorProps> = (
 												parts={value || ['']}
 												onChange={parts => {
 													dispatch(actions.updateValue({
-														variableGroup: variableGroupName,
+														variableGroupName,
 														groupId: gk,
 														itemId: ik,
 														updated: parts,
@@ -179,7 +179,7 @@ const VariableGroupEditor: React.FunctionComponent<VariableGroupEditorProps> = (
 									onChange={e => {
 										setNewItem(e.target.value);
 										dispatch(insertNewItem({
-											variableGroup: variableGroupName,
+											variableGroupName,
 											name: e.target.value,
 										}));
 									}}

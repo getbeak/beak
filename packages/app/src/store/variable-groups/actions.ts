@@ -7,6 +7,7 @@ import {
 	InsertNewGroupPayload,
 	InsertNewItemPayload,
 	InsertNewVariableGroupPayload,
+	RemoveVgPayload,
 	UpdateEntityPayload,
 	UpdateValuePayload,
 	UpdateVgPayload,
@@ -21,7 +22,7 @@ export const startVariableGroups = createAction(AT.START_VARIABLE_GROUPS);
 export const variableGroupsOpened = createAction<VariableGroups>(AT.VARIABLE_GROUPS_OPENED);
 
 export const updateVg = createAction<UpdateVgPayload>(AT.UPDATE_VG);
-export const removeVg = createAction<string>(AT.REMOVE_VG);
+export const removeVg = createAction<RemoveVgPayload>(AT.REMOVE_VG);
 
 export const updateGroupName = createAction<UpdateEntityPayload>(AT.UPDATE_GROUP_NAME);
 export const updateItemName = createAction<UpdateEntityPayload>(AT.UPDATE_ITEM_NAME);

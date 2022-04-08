@@ -53,12 +53,16 @@ export interface ActiveRename {
 }
 
 export interface UpdateVgPayload {
-	name: string;
+	variableGroupName: string;
 	file: VariableGroup;
 }
 
+export interface RemoveVgPayload {
+	variableGroupName: string;
+}
+
 export interface UpdateEntityPayload {
-	variableGroup: string;
+	variableGroupName: string;
 	ident: string;
 	updated: string;
 }
@@ -69,20 +73,20 @@ export interface UpdateValuePayload extends Omit<UpdateEntityPayload, 'ident' | 
 	updated: ValueParts;
 }
 
-export type InsertNewVariableGroupPayload = { name: string } | null;
+export type InsertNewVariableGroupPayload = { variableGroupName: string } | null;
 
 export interface InsertNewGroupPayload {
-	variableGroup: string;
+	variableGroupName: string;
 	group: string;
 }
 
 export interface InsertNewItemPayload {
-	variableGroup: string;
+	variableGroupName: string;
 	name: string;
 }
 
 export interface IdPayload {
-	variableGroup: string;
+	variableGroupName: string;
 	id: string;
 }
 
