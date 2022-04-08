@@ -39,6 +39,7 @@ const ContextMenuWrapper: React.FunctionComponent<ContextMenuWrapperProps> = pro
 		}, {
 			id: ksuid.generate('ctxmenuitem').toString(),
 			label: 'Duplicate request',
+			accelerator: 'CmdOrCtrl+D',
 			enabled: mode === 'request',
 			click: () => {
 				dispatch(actions.duplicateRequest({ requestId: nodeId! }));
@@ -96,6 +97,7 @@ const ContextMenuWrapper: React.FunctionComponent<ContextMenuWrapperProps> = pro
 		}, {
 			id: ksuid.generate('ctxmenuitem').toString(),
 			label: 'Delete',
+			accelerator: 'CmdOrCtrl+Backspace',
 			enabled: notRoot,
 			click: () => {
 				dispatch(actions.removeNodeFromDisk({ requestId: node.id, withConfirmation: true }));

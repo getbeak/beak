@@ -80,6 +80,11 @@ const FolderItem: React.FunctionComponent<FolderItemProps> = props => {
 
 							break;
 
+						case checkShortcut('project-explorer.folder.delete', event):
+							dispatch(actions.removeNodeFromDisk({ requestId: node.id, withConfirmation: true }));
+
+							break;
+
 						default:
 							return;
 					}

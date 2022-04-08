@@ -13,12 +13,15 @@ type Shortcuts =
 	'project-explorer.request.left' |
 	'project-explorer.request.open' |
 	'project-explorer.request.rename' |
+	'project-explorer.request.delete' |
+	'project-explorer.request.duplicate' |
 
 	'project-explorer.folder.up' |
 	'project-explorer.folder.down' |
 	'project-explorer.folder.left' |
 	'project-explorer.folder.right' |
 	'project-explorer.folder.rename' |
+	'project-explorer.folder.delete' |
 
 	'omni-bar.launch.commands' |
 	'omni-bar.launch.finder' |
@@ -45,12 +48,6 @@ const definitions: Record<Shortcuts, PlatformSpecificDefinitions | PlatformAgnos
 	'project-explorer.request.up': { type: 'agnostic', key: 'ArrowUp' },
 	'project-explorer.request.down': { type: 'agnostic', key: 'ArrowDown' },
 	'project-explorer.request.left': { type: 'agnostic', key: 'ArrowLeft' },
-	'project-explorer.request.rename': {
-		type: 'specific',
-		windows: { key: 'F2' },
-		linux: { key: 'F2' },
-		darwin: { key: 'Enter' },
-	},
 	'project-explorer.request.open': {
 		type: 'specific',
 
@@ -58,11 +55,20 @@ const definitions: Record<Shortcuts, PlatformSpecificDefinitions | PlatformAgnos
 		linux: { key: 'Enter' },
 		darwin: { meta: true, key: 'ArrowDown' },
 	},
+	'project-explorer.request.rename': {
+		type: 'specific',
+		windows: { key: 'F2' },
+		linux: { key: 'F2' },
+		darwin: { key: 'Enter' },
+	},
+	'project-explorer.request.delete': { type: 'agnostic', ctrlOrMeta: true, key: 'Backspace' },
+	'project-explorer.request.duplicate': { type: 'agnostic', ctrlOrMeta: true, key: 'd' },
 
 	'project-explorer.folder.up': { type: 'agnostic', key: 'ArrowUp' },
 	'project-explorer.folder.down': { type: 'agnostic', key: 'ArrowDown' },
 	'project-explorer.folder.left': { type: 'agnostic', key: 'ArrowLeft' },
 	'project-explorer.folder.right': { type: 'agnostic', key: 'ArrowRight' },
+	'project-explorer.folder.delete': { type: 'agnostic', ctrlOrMeta: true, key: 'Backspace' },
 	'project-explorer.folder.rename': {
 		type: 'specific',
 		windows: { key: 'F2' },

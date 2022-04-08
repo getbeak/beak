@@ -88,8 +88,18 @@ const RequestItem: React.FunctionComponent<RequestItemProps> = props => {
 
 							break;
 
+						case checkShortcut('project-explorer.request.delete', event):
+							dispatch(actions.removeNodeFromDisk({ requestId: node.id, withConfirmation: true }));
+
+							break;
+
 						case checkShortcut('project-explorer.request.rename', event):
 							dispatch(actions.renameStarted({ requestId: node.id, type: 'request' }));
+
+							break;
+
+						case checkShortcut('project-explorer.request.duplicate', event):
+							dispatch(actions.duplicateRequest({ requestId: node.id }));
 
 							break;
 
