@@ -13,7 +13,6 @@ const VariableGroups: React.FunctionComponent = () => {
 
 	useSectionBody({
 		maxHeight: '120px',
-		minHeight: '26px',
 		flexShrink: 0,
 	});
 
