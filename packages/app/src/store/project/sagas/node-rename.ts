@@ -13,7 +13,7 @@ export default function* workerRequestRename({ payload }: PayloadAction<RequestR
 	const activeRename: ActiveRename = yield select((s: ApplicationState) => s.global.project.activeRename);
 	const node: Nodes = yield select((s: ApplicationState) => s.global.project.tree![payload.requestId]);
 
-	if (activeRename.id !== payload.requestId)
+	if (!activeRename || activeRename.id !== payload.requestId)
 		return;
 
 	if (activeRename.name === node.name) {

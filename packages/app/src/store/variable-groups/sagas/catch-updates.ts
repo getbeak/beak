@@ -38,7 +38,6 @@ export default function* workerCatchUpdates({ type, payload }: PayloadAction<unk
 
 	yield put(actions.setLatestWrite(Date.now()));
 	yield call(writeVariableGroups, variableGroups);
-	yield
 }
 
 async function writeVariableGroups(vgs: VariableGroups) {

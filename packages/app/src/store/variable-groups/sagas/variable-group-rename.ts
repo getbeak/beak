@@ -8,10 +8,10 @@ import actions from '../actions';
 import { ActiveRename, VariableGroupRenameSubmitted } from '../types';
 
 export default function* workerRequestRename({ payload }: PayloadAction<VariableGroupRenameSubmitted>) {
-	const activeRename: ActiveRename = yield select((s: ApplicationState) => s.global.project.activeRename);
+	const activeRename: ActiveRename = yield select((s: ApplicationState) => s.global.variableGroups.activeRename);
 	const { variableGroupName } = payload;
 
-	if (activeRename.variableGroupName !== variableGroupName)
+	if (!activeRename || activeRename.variableGroupName !== variableGroupName)
 		return;
 
 	if (activeRename.updatedName === activeRename.variableGroupName) {
