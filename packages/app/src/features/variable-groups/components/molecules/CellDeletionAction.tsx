@@ -11,27 +11,26 @@ interface CellDeletionActionProps {
 }
 
 const CellDeletionAction: React.FunctionComponent<CellDeletionActionProps> = props => (
-	<CellAction>
+	<CellAction onClick={async () => {
+		const result = await ipcDialogService.showMessageBox({
+			title: 'Are you sure?',
+			message: `Are you sure you want to remove ${props.name}?`,
+			detail: 'This action cannot be undone from inside Beak',
+			type: 'warning',
+			buttons: ['Remove', 'Cancel'],
+			defaultId: 1,
+			cancelId: 1,
+		});
+
+		if (result.response === 1)
+			return;
+
+		props.onConfirmedDeletion();
+	}}>
 		<FontAwesomeIcon
 			icon={faTrashAlt}
 			color={'white'}
 			fontSize={'10px'}
-			onClick={async () => {
-				const result = await ipcDialogService.showMessageBox({
-					title: 'Are you sure?',
-					message: `Are you sure you want to remove ${props.name}?`,
-					detail: 'This action cannot be undone from inside Beak',
-					type: 'warning',
-					buttons: ['Remove', 'Cancel'],
-					defaultId: 1,
-					cancelId: 1,
-				});
-
-				if (result.response === 1)
-					return;
-
-				props.onConfirmedDeletion();
-			}}
 		/>
 	</CellAction>
 );
