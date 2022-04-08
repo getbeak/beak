@@ -4,7 +4,9 @@ import { parseValueParts } from '@beak/app/features/realtime-values/parser';
 import VariableInput from '@beak/app/features/variable-input/components/VariableInput';
 import { requestPreferenceSetMainTab } from '@beak/app/store/preferences/actions';
 import { ValidRequestNode, ValueParts } from '@beak/common/types/beak-project';
-import styled from 'styled-components';
+import { faSpinner } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import styled, { useTheme } from 'styled-components';
 import URL from 'url-parse';
 
 import { requestFlight } from '../../../../store/flight/actions';
@@ -16,8 +18,11 @@ export interface HeaderProps {
 
 const Header: React.FunctionComponent<HeaderProps> = props => {
 	const dispatch = useDispatch();
+	const theme = useTheme();
 	const { variableGroups } = useSelector(s => s.global.variableGroups);
 	const selectedGroups = useSelector(s => s.global.preferences.editor.selectedVariableGroups);
+	const currentFlight = useSelector(s => s.global.flight.currentFlight);
+	const flighting = currentFlight && currentFlight.flighting && currentFlight.requestId === props.node.id;
 	const { node } = props;
 	const verb = node.info.verb;
 
@@ -102,7 +107,15 @@ const Header: React.FunctionComponent<HeaderProps> = props => {
 			</OmniBar>
 
 			<DispatchButton onClick={() => dispatchFlightRequest()}>
-				{'GO'}
+				{flighting && (
+					<FontAwesomeIcon
+						icon={faSpinner}
+						color={theme.ui.goAction}
+						spin
+						fontSize={'13px'}
+					/>
+				)}
+				{!flighting && 'GO'}
 			</DispatchButton>
 		</Container>
 	);
@@ -178,6 +191,7 @@ const OmniBar = styled.div`
 
 const DispatchButton = styled.button`
 	flex: 0 0 auto;
+	width: 35px;
 	padding: 6px 6px;
 	padding-top: 7px;
 	border-radius: 4px;
