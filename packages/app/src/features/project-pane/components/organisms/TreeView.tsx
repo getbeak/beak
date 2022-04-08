@@ -23,8 +23,8 @@ const TreeView: React.FunctionComponent<TreeViewProps> = ({ tree }) => {
 	useSectionBody({ flexGrow: 2 });
 
 	return (
-		<Container tabIndex={-1} ref={container}>
-			<ContextMenuWrapper mode={'root'} target={container.current!}>
+		<ContextMenuWrapper mode={'root'} target={container.current!}>
+			<Container tabIndex={-1} ref={container}>
 				{items.filter(i => i.type === 'folder').map(n => (
 					<FolderItem depth={0} key={n.filePath} id={n.filePath} />
 				))}
@@ -37,8 +37,8 @@ const TreeView: React.FunctionComponent<TreeViewProps> = ({ tree }) => {
 						parentNode={null}
 					/>
 				))}
-			</ContextMenuWrapper>
-		</Container>
+			</Container>
+		</ContextMenuWrapper>
 	);
 };
 
