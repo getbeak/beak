@@ -85,7 +85,6 @@ const ProjectMain: React.FunctionComponent = () => {
 							<ReflexElement
 								flex={15}
 								minSize={250}
-								maxSize={void 0}
 								$forcedWidth={collapsedSidebar ? 42 : void 0}
 							>
 								<Sidebar />
