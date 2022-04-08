@@ -73,7 +73,6 @@ interface SectionBodyProps {
 }
 
 const SectionBody = styled.div<SectionBodyProps>`
-	/* transform-origin: top center; */
 	transition:
 		height .3s ease,
 		min-height .3s ease,
