@@ -8,18 +8,18 @@ import TreeView from './organisms/TreeView';
 import VariableGroups from './organisms/VariableGroups';
 
 const ProjectPane: React.FunctionComponent = () => {
-	const project = useSelector(s => s.global.project);
+	const { tree, name } = useSelector(s => s.global.project);
 
 	return (
 		<SidebarPane>
-			<SidebarPaneSection title={'Project'} collapseKey={'beak.project.project'}>
+			<SidebarPaneSection title={`Project :: ${name!}`} collapseKey={'beak.project.project'}>
 				<Git />
 			</SidebarPaneSection>
 			<SidebarPaneSection title={'Variable groups'} collapseKey={'beak.project.variable-groups'}>
 				<VariableGroups />
 			</SidebarPaneSection>
 			<SidebarPaneSection title={'Explorer'} collapseKey={'beak.project.explorer'}>
-				<TreeView tree={project.tree!} />
+				<TreeView tree={tree!} />
 			</SidebarPaneSection>
 		</SidebarPane>
 	);

@@ -15,7 +15,9 @@ const SectionHeader: React.FunctionComponent<SectionHeaderProps> = props => {
 
 	return (
 		<Container onClick={onClick}>
-			{children}
+			<Header>
+				{children}
+			</Header>
 			{actions && actions.length > 0 && (
 				<Actions onClick={event => {
 					event.preventDefault();
@@ -43,6 +45,12 @@ const Container = styled.div`
 	font-weight: 600;
 
 	cursor: pointer;
+`;
+
+const Header = styled.div`
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	overflow: hidden;
 `;
 
 const Actions = styled.div`
