@@ -68,6 +68,7 @@ const Sidebar: React.FunctionComponent = () => {
 	return (
 		<Container $darwin={windowSession.isDarwin()}>
 			<DragBar $collapsed={sidebarCollapsed} />
+			{sidebarCollapsed && <CollapsedLogo />}
 			<SidebarMenu $collapsed={sidebarCollapsed}>
 				<SidebarMenuHighlighter hidden={sidebarCollapsed} index={variantIndex} />
 
@@ -102,13 +103,26 @@ const Container = styled.div<{ $darwin: boolean }>`
 const DragBar = styled.div<{ $collapsed: boolean }>`
 	position: absolute;
 	top: 0; left: 0; right: 0;
-	height: 72px;
+	height: 71px;
 	-webkit-app-region: drag;
 
 	${p => p.$collapsed && css`
 		background: ${p => p.theme.ui.secondarySurface};
 		border-bottom: 1px solid ${p => p.theme.ui.backgroundBorderSeparator};
 	`}
+`;
+
+const CollapsedLogo = styled.div`
+	position: absolute;
+	top: 0; left: 0; right: 0;
+	height: 71px;
+
+	background: url('./images/logo.svg');
+	background-position: center 85%;
+	background-size: 20px;
+	background-repeat: no-repeat;
+	transform: scaleX(-1);
+	/* filter: brightness(0) invert(1); */
 `;
 
 const SidebarMenu = styled.div<{ $collapsed: boolean }>`
