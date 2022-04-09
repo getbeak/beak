@@ -8,12 +8,14 @@ import VariableGroupItem from '../molecules/VariableGroupItem';
 const VariableGroups: React.FunctionComponent = () => {
 	const variableGroups = useSelector(s => s.global.variableGroups.variableGroups);
 	const container = useRef<HTMLDivElement>(null);
+	const variableGroupKeys = TypedObject.keys(variableGroups);
+	const empty = variableGroupKeys.length === 0;
 
 	return (
 		<Container tabIndex={-1} ref={container}>
-			{TypedObject.keys(variableGroups).map(v => (
-				<VariableGroupItem key={v} variableGroupName={v} />
-			))}
+			{empty && <EmptyWarning>{'It\'s looking empty in here...'}</EmptyWarning>}
+
+			{variableGroupKeys.map(v => <VariableGroupItem key={v} variableGroupName={v} />)}
 		</Container>
 	);
 };
@@ -25,6 +27,12 @@ const Container = styled.div`
 	&:focus {
 		outline: none;
 	}
+`;
+
+const EmptyWarning = styled.div`
+	color: ${p => p.theme.ui.textMinor};
+	margin-left: 5px;
+	font-size: 13px;
 `;
 
 export default VariableGroups;
