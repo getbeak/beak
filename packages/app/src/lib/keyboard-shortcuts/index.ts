@@ -3,7 +3,7 @@ import { instance as windowSessionInstance } from '@beak/app/contexts/window-ses
 
 import { PlatformAgnosticDefinitions, PlatformSpecificDefinitions } from './types';
 
-type Shortcuts =
+export type Shortcuts =
 	'global.execute-request' |
 
 	'sidebar.toggle-view' |
@@ -32,9 +32,11 @@ type Shortcuts =
 	'tab-bar.all.next' |
 	'tab-bar.all.previous' |
 	'tab-bar.all.close' |
-	'tab-bar.all.close-others';
+	'tab-bar.all.close-others' |
 
-const definitions: Record<Shortcuts, PlatformSpecificDefinitions | PlatformAgnosticDefinitions> = {
+	'menu-bar.file.new-request';
+
+export const shortcutDefinitions: Record<Shortcuts, PlatformSpecificDefinitions | PlatformAgnosticDefinitions> = {
 	'global.execute-request': {
 		type: 'specific',
 
@@ -87,11 +89,13 @@ const definitions: Record<Shortcuts, PlatformSpecificDefinitions | PlatformAgnos
 	'tab-bar.all.previous': { type: 'agnostic', ctrl: true, shift: true, key: 'Tab' },
 	'tab-bar.all.close': { type: 'agnostic', ctrlOrMeta: true, key: 'w' },
 	'tab-bar.all.close-others': { type: 'agnostic', ctrlOrMeta: true, alt: true, key: 'T' },
+
+	'menu-bar.file.new-request': { type: 'agnostic', ctrlOrMeta: true, shift: true, key: 'N' },
 };
 
 export function checkShortcut(shortcutKey: Shortcuts, event: React.KeyboardEvent | KeyboardEvent) {
 	const { altKey, ctrlKey, metaKey, shiftKey, key } = event;
-	const platformDefinition = definitions[shortcutKey];
+	const platformDefinition = shortcutDefinitions[shortcutKey];
 
 	const shortcutDefinition = (() => {
 		if (platformDefinition.type === 'agnostic')
@@ -125,4 +129,4 @@ export function checkShortcut(shortcutKey: Shortcuts, event: React.KeyboardEvent
 	/* eslint-enable operator-linebreak */
 }
 
-export default definitions;
+export default shortcutDefinitions;

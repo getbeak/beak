@@ -1,9 +1,9 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
+import PendingSlash from '@beak/app/components/molecules/PendingSplash';
 import styled from 'styled-components';
 
 import Header from './molecules/Header';
-import PendingSlash from './molecules/PendingSplash';
 import Inspector from './organisms/Inspector';
 
 const ResponsePane: React.FunctionComponent = () => {

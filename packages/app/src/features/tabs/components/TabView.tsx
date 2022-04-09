@@ -54,7 +54,7 @@ const TabView: React.FunctionComponent<TabViewProps> = ({ selectedTab, tabs }) =
 	}
 
 	return (
-		<React.Fragment>
+		<Container>
 			<TabBar>
 				{tabs.map(t => {
 					if (t.type === 'request')
@@ -70,9 +70,14 @@ const TabView: React.FunctionComponent<TabViewProps> = ({ selectedTab, tabs }) =
 			<ShortcutContainer>
 				<Router selectedTab={selectedTab} />
 			</ShortcutContainer>
-		</React.Fragment>
+		</Container>
 	);
 };
+
+const Container = styled.div`
+	height: 100%;
+	background-color: ${props => props.theme.ui.secondarySurface};
+`;
 
 const ShortcutContainer = styled.div`
 	height: calc(100% - 72px);
