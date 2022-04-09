@@ -131,13 +131,15 @@ const Wrapper = styled.div<{ depth: number }>`
 	cursor: pointer;
 	font-size: 13px;
 	line-height: 18px;
+	border-top-left-radius: 4px;
+	border-bottom-left-radius: 4px;
 
 	&:hover {
 		color: ${props => props.theme.ui.textOnSurfaceBackground};
 	}
 	&:focus {
 		outline: none;
-		background-color: ${props => toVibrancyAlpha(props.theme.ui.secondarySurface, 0.7)};
+		background-color: ${props => toVibrancyAlpha(props.theme.ui.secondarySurface, 0.8)};
 	}
 `;
 

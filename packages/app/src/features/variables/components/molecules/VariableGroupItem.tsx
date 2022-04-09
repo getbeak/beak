@@ -98,16 +98,18 @@ const Wrapper = styled.div<WrapperProps>`
 	cursor: pointer;
 	font-size: 13px;
 	line-height: 18px;
+	border-top-left-radius: 4px;
+	border-bottom-left-radius: 4px;
 
-	color: ${props => props.theme.ui.textMinor};
-	background-color: ${props => props.$active ? toVibrancyAlpha(props.theme.ui.surface, 0.7) : 'transparent'};
+	color: ${p => p.$active ? p.theme.ui.textOnSurfaceBackground : p.theme.ui.textMinor};
+	background-color: ${props => props.$active ? toVibrancyAlpha(props.theme.ui.surface, 0.8) : 'transparent'};
 
 	&:hover {
-		color: ${props => props.theme.ui.textOnSurfaceBackground};
+		color: ${p => p.theme.ui.textOnSurfaceBackground};
 	}
 	&:focus {
 		outline: none;
-		background-color: ${props => toVibrancyAlpha(props.theme.ui.secondarySurface, 0.7)};
+		background-color: ${props => toVibrancyAlpha(props.theme.ui.secondarySurface, 0.8)};
 	}
 	
 	&:first-of-type {
