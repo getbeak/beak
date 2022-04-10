@@ -53,8 +53,8 @@ const ResponsePane: React.FunctionComponent = () => {
 	return (
 		<Container>
 			<ShareButton onClick={async () => {
-				const search = new URLSearchParams({ requestId: id! });
-				const url = `https://share.getbeak.app/projects/${encodeURIComponent(selectedTab!)}?${search.toString()}`;
+				const search = new URLSearchParams({ requestId: selectedTab! });
+				const url = `https://share.getbeak.app/projects/${encodeURIComponent(id!)}?${search.toString()}`;
 
 				await navigator.clipboard.writeText(url);
 			}}>
