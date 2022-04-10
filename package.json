@@ -26,15 +26,21 @@
   "scripts": {
     "build": "lerna run build --stream",
     "build:website": "lerna run build --stream --scope @beak/website",
-    "typecheck": "lerna exec --stream yarn typecheck",
+    "build:share": "lerna run build --stream --scope @beak/share",
+
     "prepackage": "yarn build",
     "prepackage:release": "yarn build",
     "package": "lerna run package --stream --scope @beak/electron-host",
     "package:release": "lerna run package:release --stream --scope @beak/electron-host",
+
     "start": "lerna exec --parallel --concurrency 1 --stream --scope '@beak/{app,electron-host}' yarn start",
     "start:website": "lerna exec --parallel --concurrency 1 --stream --scope '@beak/website' yarn start",
+    "start:share": "lerna exec --parallel --concurrency 1 --stream --scope '@beak/share' yarn start",
+
     "test": "jest",
     "lint": "eslint --ext .tsx --ext .ts './packages/'",
+    "typecheck": "lerna exec --stream yarn typecheck",
+
     "unfuck": "lerna clean && yarn --force",
     "postinstall": "node ./node-module-overrides/index.js",
     "release-safety": "yarn typecheck && yarn lint && yarn build"
