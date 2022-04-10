@@ -33,8 +33,8 @@ const PendingSlash: React.FunctionComponent = () => (
 							{' '}
 							<NonCommandKeys>
 								{Array.isArray(definition.key) && definition.key.map(k => (
-									<React.Fragment>
-										<Kbd key={k}>{renderKey(k)}</Kbd>
+									<React.Fragment key={k}>
+										<Kbd>{renderKey(k)}</Kbd>
 										<KbdOption>{'|'}</KbdOption>
 									</React.Fragment>
 								))}
