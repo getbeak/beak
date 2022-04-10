@@ -49,6 +49,7 @@ const Header: React.FunctionComponent<HeaderProps> = props => {
 };
 
 const UrlHeaderWrapper = styled.div`
+	position: relative;
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
