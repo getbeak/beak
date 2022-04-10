@@ -28,7 +28,9 @@ async function handleProject(url: URL) {
 
 		if (window && !window.isDestroyed()) {
 			window.focus();
-			notifyToLoadRequest(window, requestId);
+
+			if (requestId)
+				window.webContents.send('reveal_request', { requestId });
 
 			return true;
 		}
@@ -53,14 +55,13 @@ async function handleProject(url: URL) {
 	if (!windowId)
 		return false;
 
-	notifyToLoadRequest(BrowserWindow.fromId(windowId)!, requestId);
+	if (requestId) {
+		const window = BrowserWindow.fromId(windowId);
+
+		await new Promise(resolve => setTimeout(resolve, 1500));
+
+		window?.webContents.send('reveal_request', { requestId });
+	}
 
 	return true;
-}
-
-function notifyToLoadRequest(window: BrowserWindow | undefined, requestId: string | undefined) {
-	if (!window || !requestId)
-		return;
-
-	window.webContents.send('reveal_request', { requestId });
 }

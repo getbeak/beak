@@ -119,6 +119,8 @@ export const alertRemoveDependents = createAction<AlertDependencies>(AT.ALERTS_R
 export const alertRemoveType = createAction<string>(AT.ALERTS_REMOVE_TYPE);
 export const alertClear = createAction(AT.ALERTS_CLEAR);
 
+export const revealRequestExternal = createAction<string>(AT.REVEAL_REQUEST_EXTERNAL);
+
 export default {
 	startProject,
 	insertProjectInfo,
@@ -177,4 +179,6 @@ export default {
 	alertRemoveDependents,
 	alertRemoveType,
 	alertClear,
+
+	revealRequestExternal,
 };

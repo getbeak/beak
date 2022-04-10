@@ -59,6 +59,8 @@ export const ActionTypes = {
 	ALERTS_REMOVE_DEPENDENTS: '@beak/global/project/ALERTS_REMOVE_DEPENDENTS',
 	ALERTS_REMOVE_TYPE: '@beak/global/project/ALERTS_REMOVE_TYPE',
 	ALERTS_CLEAR: '@beak/global/project/ALERTS_CLEAR',
+
+	REVEAL_REQUEST_EXTERNAL: '@beak/global/project/REVEAL_REQUEST_EXTERNAL',
 };
 
 export interface State {

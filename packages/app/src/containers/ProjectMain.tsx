@@ -19,7 +19,7 @@ import { checkShortcut } from '../lib/keyboard-shortcuts';
 import { requestFlight } from '../store/flight/actions';
 import { startGit } from '../store/git/actions';
 import { loadEditorPreferences, loadProjectPanePreferences, loadSidebarPreferences } from '../store/preferences/actions';
-import { startProject } from '../store/project/actions';
+import { revealRequestExternal, startProject } from '../store/project/actions';
 
 const ProjectMain: React.FunctionComponent = () => {
 	const dispatch = useDispatch();
@@ -41,6 +41,12 @@ const ProjectMain: React.FunctionComponent = () => {
 		dispatch(loadProjectPanePreferences());
 		dispatch(startProject());
 		dispatch(startGit());
+
+		window.secureBridge.ipc.on('reveal_request', (_event, payload) => {
+			const typed = payload as { requestId: string };
+
+			dispatch(revealRequestExternal(typed.requestId));
+		});
 	}, []);
 
 	useEffect(() => {

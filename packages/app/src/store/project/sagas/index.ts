@@ -9,6 +9,7 @@ import {
 import duplicateRequest from './duplicate-request';
 import nodeRename from './node-rename';
 import removeNodeFromDisk from './remove-node-from-disk';
+import revealRequest from './reveal-request';
 import startProject from './start-project';
 
 const nodeUpdateWatcherActions = [
@@ -55,6 +56,9 @@ export default function* projectSaga() {
 		}),
 		fork(function* nodeRenameWatcher() {
 			yield takeLatest(ActionTypes.RENAME_SUBMITTED, nodeRename);
+		}),
+		fork(function* revealRequestExternalWatcher() {
+			yield takeEvery(ActionTypes.REVEAL_REQUEST_EXTERNAL, revealRequest);
 		}),
 		fork(function* startProjectWatcher() {
 			yield takeEvery(ActionTypes.START_PROJECT, startProject);
