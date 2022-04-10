@@ -19,6 +19,7 @@ const ContextMenuWrapper: React.FunctionComponent<ContextMenuWrapperProps> = pro
 
 	// @ts-expect-error
 	const node = useSelector(s => s.global.project.tree[nodeId]);
+	const id = useSelector(s => s.global.project.id)!;
 	const [menuItems, setMenuItems] = useState<MenuItemConstructorOptions[]>([]);
 	const windowSession = useContext(WindowSessionContext);
 	const darwin = windowSession.isDarwin();
@@ -57,6 +58,20 @@ const ContextMenuWrapper: React.FunctionComponent<ContextMenuWrapperProps> = pro
 			enabled: notRoot,
 			click: () => {
 				ipcExplorerService.revealFile(node.filePath);
+			},
+		},
+
+		{ id: ksuid.generate('ctxmenuitem').toString(), type: 'separator' },
+
+		{
+			id: ksuid.generate('ctxmenuitem').toString(),
+			label: 'Copy request share link',
+			enabled: mode === 'request',
+			click: async () => {
+				const search = new URLSearchParams({ requestId: nodeId! });
+				const url = `https://share.getbeak.app/projects/${encodeURIComponent(id!)}?${search.toString()}`;
+
+				await navigator.clipboard.writeText(url);
 			},
 		},
 
