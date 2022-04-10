@@ -14,6 +14,6 @@ export default function useBeakProjectUrl() {
 		final.set('projectId', projectId ?? '');
 		final.set('requestId', requestId ?? '');
 
-		return `beak-app://launch?${final.toString()}`;
+		return `beak-app://launch/project?${final.toString()}`;
 	}, [search]);
 }
