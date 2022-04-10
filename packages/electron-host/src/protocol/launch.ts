@@ -40,11 +40,10 @@ async function handleProject(url: URL) {
 	const projectPath = persistentStore.get('projectMappings')[projectId];
 
 	if (!projectPath) {
-		// TODO(afr): Write some real copy for this
 		await dialog.showMessageBox({
 			type: 'info',
-			title: 'Unable to load project',
-			message: 'Project not found locally',
+			title: 'Unable to open project',
+			message: 'The share link you clicked was for a project you don\'t have on your machine.',
 		});
 
 		return false;
