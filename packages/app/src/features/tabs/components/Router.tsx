@@ -1,6 +1,7 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { ReflexContainer, ReflexElement } from 'react-reflex';
+import { ReflexContainer } from 'react-reflex';
+import ReflexElement from '@beak/app/components/atoms/ReflexElement';
 import ReflexSplitter from '@beak/app/components/atoms/ReflexSplitter';
 import PendingSlash from '@beak/app/components/molecules/PendingSplash';
 import { RequestNode, TabItem } from '@beak/common/types/beak-project';

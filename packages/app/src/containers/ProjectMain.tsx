@@ -105,6 +105,7 @@ const ProjectMain: React.FunctionComponent = () => {
 
 							<ReflexElement
 								flex={80}
+								minSize={902}
 								style={{ overflowY: 'hidden' }}
 							>
 								<ActionBar />
