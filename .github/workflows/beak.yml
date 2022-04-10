@@ -95,6 +95,7 @@ jobs:
           source_dir: 'packages/website/dist/'
           destination_dir: ''
       - name: Upload share to S3
+        if: "startsWith(github.event.head_commit.message, '[web-prod] ')"
         uses: shallwefootball/upload-s3-action@v1.1.2
         with:
           aws_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
