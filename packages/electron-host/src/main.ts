@@ -10,7 +10,7 @@ import arbiter from './lib/arbiter';
 import { tryOpenProjectFolder } from './lib/beak-project';
 import nestClient from './lib/nest-client';
 import persistentStore from './lib/persistent-store';
-import { parseAppUrl } from './lib/protocol';
+import handleUrlEvent from './protocol';
 import { createAndSetMenu } from './utils/menu';
 import { appIsPackaged } from './utils/static-path';
 import {
@@ -31,11 +31,11 @@ app.setAsDefaultProtocolClient('beak-app');
 const instanceLock = app.requestSingleInstanceLock();
 
 if (instanceLock) {
-	app.on('second-instance', (_event, argv) => {
+	app.on('second-instance', async (_event, argv) => {
 		if (process.platform !== 'darwin') {
 			const url = argv.find(a => a.startsWith('beak-app://'));
 
-			if (url && handleOpenUrl(url))
+			if (url && await handleUrlEvent(url))
 				return;
 		}
 
@@ -82,8 +82,10 @@ app.on('open-file', async (_event, filePath) => {
 	await tryOpenProjectFolder(filePath);
 });
 
-app.on('open-url', (_event, url) => {
-	if (!handleOpenUrl(url))
+app.on('open-url', async (_event, url) => {
+	const handled = await handleUrlEvent(url);
+
+	if (!handled)
 		createOrFocusDefaultWindow();
 });
 
@@ -110,19 +112,4 @@ async function createOrFocusDefaultWindow() {
 	}
 
 	return createWelcomeWindow();
-}
-
-function handleOpenUrl(url: string) {
-	const magicInfo = parseAppUrl(url);
-
-	if (!magicInfo)
-		return false;
-
-	const { code, state } = magicInfo;
-	const windowId = createPortalWindow();
-	const window = windowStack[windowId];
-
-	window?.webContents.send('inbound_magic_link', { code, state });
-
-	return true;
 }
