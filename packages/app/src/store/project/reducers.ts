@@ -26,6 +26,7 @@ const projectReducer = createReducer(initialState, builder => {
 		})
 		.addCase(actions.insertProjectInfo, (state, { payload }) => {
 			state.name = payload.name;
+			state.id = payload.id;
 		})
 		.addCase(actions.projectOpened, (state, { payload }) => {
 			state.tree = payload.tree;

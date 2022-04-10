@@ -64,6 +64,7 @@ export const ActionTypes = {
 export interface State {
 	loaded: boolean;
 
+	id?: string;
 	name?: string;
 	tree: Tree;
 
@@ -85,6 +86,7 @@ export const initialState: State = {
 
 export interface ProjectInfoPayload {
 	name: string;
+	id: string;
 }
 
 export interface ProjectOpenedPayload { tree: Tree }

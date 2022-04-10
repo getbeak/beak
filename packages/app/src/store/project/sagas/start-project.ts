@@ -29,7 +29,7 @@ export default function* workerStartProject() {
 		project = yield call(readProjectFile);
 		channel = createFsEmitter('tree', { followSymlinks: false });
 
-		yield put(actions.insertProjectInfo({ name: project.name }));
+		yield put(actions.insertProjectInfo({ id: project.id, name: project.name }));
 		yield put(startVariableGroups());
 		yield initialImport('tree');
 		yield put(loadTabState());
