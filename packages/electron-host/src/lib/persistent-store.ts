@@ -18,6 +18,7 @@ export interface Store {
 	magicStates: MagicStates;
 
 	passedOnboarding: boolean;
+	projectMappings: Record<string, string>;
 }
 
 const persistentStore = new ElectronStore<Store>({
@@ -35,6 +36,7 @@ const persistentStore = new ElectronStore<Store>({
 		},
 		magicStates: {},
 		passedOnboarding: false,
+		projectMappings: {},
 	},
 });
 

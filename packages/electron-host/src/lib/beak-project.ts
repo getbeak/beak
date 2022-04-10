@@ -10,6 +10,9 @@ import { setProjectWindowMapping } from '../ipc-layer/fs-shared';
 import { createProjectMainWindow } from '../window-management';
 import { encryptionAlgoVersions, generateKey } from './aes';
 import { addRecentProject } from './beak-hub';
+import persistentStore from './persistent-store';
+
+export const windowProjectIdMapping: Record<string, number> = { };
 
 export interface CreationOptions {
 	name: string;
@@ -20,7 +23,7 @@ export async function tryOpenProjectFolder(projectFolderPath: string) {
 	const projectFilePath = path.join(projectFolderPath, 'project.json');
 
 	if (!await fs.pathExists(projectFilePath))
-		return;
+		return null;
 
 	const projectFile = await fs.readJson(projectFilePath, { throws: false }) as ProjectFile | null;
 
@@ -31,12 +34,15 @@ export async function tryOpenProjectFolder(projectFolderPath: string) {
 			type: 'error',
 		});
 
-		return;
+		return null;
 	}
 
 	if (!projectFile.name)
-		return;
+		return null;
 
+	const projectMappings = persistentStore.get('projectMappings');
+
+	persistentStore.set('projectMappings', { ...projectMappings, [projectFile.id]: projectFolderPath });
 	await addRecentProject({
 		name: projectFile.name,
 		path: projectFolderPath,
@@ -46,6 +52,9 @@ export async function tryOpenProjectFolder(projectFolderPath: string) {
 	const projectWindowId = createProjectMainWindow(projectFilePath);
 
 	setProjectWindowMapping(projectWindowId, projectFilePath);
+	windowProjectIdMapping[projectFile.id] = projectWindowId;
+
+	return projectWindowId;
 }
 
 export async function openProjectDialog(browserWindow?: BrowserWindow) {
@@ -113,7 +122,7 @@ export default async function createProject(options: CreationOptions) {
 			[ksuid.generate('group').toString()]: 'Local',
 		},
 		items: {
-			[ksuid.generate('item').toString()]: 'env_identifer',
+			[ksuid.generate('item').toString()]: 'env_identifier',
 		},
 		values: {},
 	};
@@ -193,6 +202,7 @@ function createGitIgnore() {
 		'# Platform files',
 		'.DS_Store',
 		'Thumbs.db',
+		'',
 	].join('\n');
 }
 
