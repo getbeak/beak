@@ -21,7 +21,7 @@ async function handleProject(url: URL) {
 		return false;
 
 	// Check if the project already has a window open
-	const existingWindowId = windowProjectIdMapping[parseInt(projectId, 10)];
+	const existingWindowId = windowProjectIdMapping[projectId];
 
 	if (existingWindowId) {
 		const window = windowStack[existingWindowId];

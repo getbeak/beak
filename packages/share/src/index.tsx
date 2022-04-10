@@ -22,7 +22,7 @@ const EntryPoint: React.FunctionComponent = () => (
 					<Sentry.ErrorBoundary fallback={<ErrorFallback />}>
 						<Suspense fallback={<div />}>
 							<Routes>
-								<Route path={'/project/:projectId'} element={<ShareProject />} />
+								<Route path={'/projects/:projectId'} element={<ShareProject />} />
 
 								<Route path={'*'} element={<Redirect />} />
 							</Routes>

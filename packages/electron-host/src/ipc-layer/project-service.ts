@@ -6,7 +6,7 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 
 import { addRecentProject } from '../lib/beak-hub';
-import createProject, { openProjectDialog } from '../lib/beak-project';
+import createProject, { openProjectDialog, tryOpenProjectFolder } from '../lib/beak-project';
 import { closeWindow, createProjectMainWindow, tryCloseWelcomeWindow, windowStack } from '../window-management';
 import { setProjectWindowMapping } from './fs-shared';
 
@@ -24,10 +24,7 @@ service.registerOpenFolder(async (event, projectPath) => {
 
 	closeWindow((event as IpcMainInvokeEvent).sender.id);
 	tryCloseWelcomeWindow();
-
-	const projectWindowId = createProjectMainWindow(projectFilePath);
-
-	setProjectWindowMapping(projectWindowId, projectFilePath);
+	tryOpenProjectFolder(projectPath);
 });
 
 service.registerOpenProject(async event => {
