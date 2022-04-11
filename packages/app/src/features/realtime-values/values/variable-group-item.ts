@@ -26,7 +26,7 @@ export default {
 		ctx,
 		getValueString(ctx, item.itemId) || [],
 	),
-} as RealtimeValue<VariableGroupItemRtv['payload']>;
+} as RealtimeValue<VariableGroupItemRtv>;
 
 export function createFauxValue(item: VariableGroupItemRtv['payload'], variableGroups: VariableGroups) {
 	return {
@@ -48,7 +48,7 @@ export function createFauxValue(item: VariableGroupItemRtv['payload'], variableG
 		getValue: () => {
 			throw new Error('Not supported, this should not happen.');
 		},
-	} as RealtimeValue<VariableGroupItemRtv['payload']>;
+	} as RealtimeValue<VariableGroupItemRtv>;
 }
 
 export function getVariableGroupItemName(item: VariableGroupItemRtv['payload'], variableGroups: VariableGroups) {

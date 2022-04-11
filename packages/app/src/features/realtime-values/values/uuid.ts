@@ -58,4 +58,4 @@ export default {
 		load: async (_ctx, item) => ({ version: item.version }),
 		save: async (_ctx, _item, state) => ({ version: state.version }),
 	},
-} as RealtimeValue<UuidRtv['payload'], EditorState>;
+} as RealtimeValue<UuidRtv, EditorState>;

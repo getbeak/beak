@@ -1,8 +1,8 @@
 import { RealtimeValuePart, VariableGroups } from '@beak/common/types/beak-project';
 
 export interface RealtimeValue<
-	T extends Record<string, unknown> | void = void,
-	TS extends void | any = void
+	T extends RealtimeValuePart,
+	TS extends void | any = void,
 > {
 	type: string;
 
@@ -10,16 +10,16 @@ export interface RealtimeValue<
 	description: string;
 	sensitive: boolean;
 
-	initValuePart: (ctx: Context) => Promise<RealtimeValuePart>;
-	createValuePart: (ctx: Context, item: T) => RealtimeValuePart;
+	initValuePart: (ctx: Context) => Promise<T>;
+	createValuePart: (ctx: Context, payload: T['payload']) => T;
 
-	getValue: (ctx: Context, item: T) => Promise<string>;
+	getValue: (ctx: Context, payload: T['payload']) => Promise<string>;
 
 	editor?: {
 		ui: UISection<TS>[];
 
-		load: (ctx: Context, item: T) => Promise<TS>;
-		save: (ctx: Context, item: T, state: TS) => Promise<T>;
+		load: (ctx: Context, payload: T['payload']) => Promise<TS>;
+		save: (ctx: Context, payload: T['payload'], state: TS) => Promise<T['payload']>;
 	};
 }
 

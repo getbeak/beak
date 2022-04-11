@@ -33,7 +33,7 @@ export default {
 		payload: item,
 	}),
 
-	getValue: async (ctx, item) => {
+	getValue: async (_ctx, item) => {
 		const decrypted = await ipcEncryptionService.decryptString({
 			iv: item.iv,
 			payload: item.datum,
@@ -58,7 +58,7 @@ export default {
 			return { value: decrypted };
 		},
 
-		save: async (ctx, _item, state) => {
+		save: async (_ctx, _item, state) => {
 			// We want to generate a new IV every time
 			const iv = await ipcEncryptionService.generateIv();
 			const datum = await ipcEncryptionService.encryptString({
@@ -69,4 +69,4 @@ export default {
 			return { iv, datum };
 		},
 	},
-} as RealtimeValue<SecureRtv['payload'], EditorState>;
+} as RealtimeValue<SecureRtv, EditorState>;

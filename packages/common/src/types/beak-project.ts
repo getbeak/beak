@@ -98,7 +98,15 @@ export interface VariableGroup {
 export type ValuePart = string | RealtimeValuePart;
 export type ValueParts = ValuePart[];
 
-export type RealtimeValuePart = VariableGroupItemRtv | NonceRtv | SecureRtv | PrivateRtv | TimestampRtv | UuidRtv;
+/* eslint-disable @typescript-eslint/indent */
+export type RealtimeValuePart = VariableGroupItemRtv |
+	NonceRtv |
+	SecureRtv |
+	PrivateRtv |
+	TimestampRtv |
+	UuidRtv |
+	DigestRtv;
+/* eslint-enable @typescript-eslint/indent */
 
 export interface VariableGroupItemRtv {
 	type: 'variable_group_item';
@@ -110,6 +118,15 @@ export interface VariableGroupItemRtv {
 export interface NonceRtv {
 	type: 'nonce';
 	payload: void;
+}
+
+export interface DigestRtv {
+	type: 'digest';
+	payload: {
+		input: string;
+		algorithm: 'SHA-1' | 'SHA-256' | 'SHA-384' | 'SHA-512';
+		hmac?: string;
+	};
 }
 
 export interface UuidRtv {

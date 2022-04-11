@@ -65,4 +65,4 @@ export default {
 		load: async (_ctx, item) => ({ type: item.type }),
 		save: async (_ctx, _item, state) => ({ type: state.type }),
 	},
-} as RealtimeValue<TimestampRtv['payload'], EditorState>;
+} as RealtimeValue<TimestampRtv, EditorState>;

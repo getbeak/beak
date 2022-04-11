@@ -29,4 +29,4 @@ export default {
 
 		return toWebSafeBase64(array);
 	},
-} as RealtimeValue<NonceRtv['payload']>;
+} as RealtimeValue<NonceRtv>;

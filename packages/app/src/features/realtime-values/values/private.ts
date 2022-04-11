@@ -91,7 +91,7 @@ export default {
 			return { iv, identifier: item.identifier };
 		},
 	},
-} as RealtimeValue<PrivateRtv['payload'], EditorState>;
+} as RealtimeValue<PrivateRtv, EditorState>;
 
 function createPath(identifier: string) {
 	return path.join('.beak', 'realtime-values', 'private', `${identifier}`);
