@@ -1,4 +1,5 @@
-import { RealtimeValuePart, VariableGroups } from '@beak/common/types/beak-project';
+import { VariableGroups } from '@beak/common/types/beak-project';
+import { RealtimeValuePart } from '@beak/common/types/realtime-values';
 
 export interface RealtimeValue<
 	T extends RealtimeValuePart,

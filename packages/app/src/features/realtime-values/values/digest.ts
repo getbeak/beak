@@ -1,5 +1,5 @@
 import { arrayBufferToHexString } from '@beak/app/utils/encoding';
-import { DigestRtv } from '@beak/common/types/beak-project';
+import { DigestRtv } from '@beak/common/types/realtime-values';
 
 import { RealtimeValue } from '../types';
 

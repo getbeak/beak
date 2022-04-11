@@ -1,5 +1,6 @@
 import Squawk from '../utils/squawk';
 import { EntryMap } from './beak-json-editor';
+import { RealtimeValuePart } from './realtime-values';
 
 export interface ProjectFile {
 	id: string;
@@ -97,68 +98,6 @@ export interface VariableGroup {
 
 export type ValuePart = string | RealtimeValuePart;
 export type ValueParts = ValuePart[];
-
-/* eslint-disable @typescript-eslint/indent */
-export type RealtimeValuePart = VariableGroupItemRtv |
-	NonceRtv |
-	SecureRtv |
-	PrivateRtv |
-	TimestampRtv |
-	UuidRtv |
-	DigestRtv;
-/* eslint-enable @typescript-eslint/indent */
-
-export interface VariableGroupItemRtv {
-	type: 'variable_group_item';
-	payload: {
-		itemId: string;
-	};
-}
-
-export interface NonceRtv {
-	type: 'nonce';
-	payload: void;
-}
-
-export interface DigestRtv {
-	type: 'digest';
-	payload: {
-		input: string;
-		algorithm: 'SHA-1' | 'SHA-256' | 'SHA-384' | 'SHA-512';
-		hmac?: string;
-	};
-}
-
-export interface UuidRtv {
-	type: 'uuid';
-	payload: {
-		version: 'v1' | 'v4';
-	};
-}
-
-export interface SecureRtv {
-	type: 'secure';
-	payload: {
-		iv: string;
-		datum: string;
-	};
-}
-
-export interface PrivateRtv {
-	type: 'private';
-	payload: {
-		iv: string;
-		identifier: string;
-	};
-}
-
-export interface TimestampRtv {
-	type: 'timestamp';
-	payload: {
-		delta?: number;
-		type: string;
-	};
-}
 
 export type Nodes = FolderNode | RequestNode;
 export type Tree = Record<string, Nodes>;

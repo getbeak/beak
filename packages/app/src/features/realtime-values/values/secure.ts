@@ -1,5 +1,5 @@
 import { ipcEncryptionService } from '@beak/app/lib/ipc';
-import { SecureRtv } from '@beak/common/types/beak-project';
+import { SecureRtv } from '@beak/common/types/realtime-values';
 
 import { RealtimeValue } from '../types';
 

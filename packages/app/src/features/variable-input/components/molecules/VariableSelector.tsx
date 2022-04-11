@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { movePosition } from '@beak/app/utils/arrays';
 import { TypedObject } from '@beak/common/helpers/typescript';
-import { RealtimeValuePart } from '@beak/common/types/beak-project';
+import { RealtimeValuePart } from '@beak/common/types/realtime-values';
 import Fuse from 'fuse.js';
 import styled from 'styled-components';
 import * as uuid from 'uuid';

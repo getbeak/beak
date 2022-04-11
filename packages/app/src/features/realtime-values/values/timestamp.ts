@@ -1,4 +1,4 @@
-import { TimestampRtv } from '@beak/common/types/beak-project';
+import { TimestampRtv } from '@beak/common/types/realtime-values';
 import { add } from 'date-fns';
 
 import { RealtimeValue } from '../types';

@@ -4,7 +4,8 @@ import RealtimeValueEditor from '@beak/app/features/realtime-value-editor/compon
 import useForceReRender from '@beak/app/hooks/use-force-rerender';
 import { checkShortcut } from '@beak/app/lib/keyboard-shortcuts';
 import { requestFlight } from '@beak/app/store/flight/actions';
-import { RealtimeValuePart, ValueParts } from '@beak/common/types/beak-project';
+import { ValueParts } from '@beak/common/types/beak-project';
+import { RealtimeValuePart } from '@beak/common/types/realtime-values';
 import styled from 'styled-components';
 
 import { getRealtimeValue } from '../../realtime-values';
