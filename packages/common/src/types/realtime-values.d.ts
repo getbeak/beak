@@ -1,6 +1,9 @@
 /* eslint-disable @typescript-eslint/indent */
 export type RealtimeValuePart =
 	Base64EncodedRtv |
+	CharacterCarriageReturn |
+	CharacterNewline |
+	CharacterTab |
 	DigestRtv |
 	NonceRtv |
 	PrivateRtv |
@@ -20,6 +23,10 @@ export interface Base64EncodedRtv {
 		removePadding: boolean;
 	};
 }
+
+export interface CharacterCarriageReturn { type: 'character_carriage_return'; payload: void }
+export interface CharacterNewline { type: 'character_newline'; payload: void }
+export interface CharacterTab { type: 'character_tab'; payload: void }
 
 export interface DigestRtv {
 	type: 'digest';
