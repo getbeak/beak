@@ -4,14 +4,14 @@ import Input, { Select } from '@beak/app/components/atoms/Input';
 import styled from 'styled-components';
 
 import { getRealtimeValue } from '../../realtime-values';
-import { RealtimeValue, UISection } from '../../realtime-values/types';
+import { RealtimeValue } from '../../realtime-values/types';
 
 interface RtvEditorContext {
 	realtimeValue: RealtimeValue<any, any>;
 	item: any;
 	parent: HTMLDivElement;
 	partIndex: number;
-	state: Record<string, string>;
+	state: Record<string, unknown>;
 }
 
 interface RealtimeValueEditorProps {
@@ -31,7 +31,7 @@ const RealtimeValueEditor: React.FunctionComponent<RealtimeValueEditorProps> = p
 	useEffect(() => {
 		if (editorContext)
 			initialInputRef.current?.focus();
-	}, [editorContext]);
+	}, [Boolean(editorContext)]);
 
 	useEffect(() => {
 		const onClick = (event: MouseEvent) => {
@@ -72,7 +72,7 @@ const RealtimeValueEditor: React.FunctionComponent<RealtimeValueEditorProps> = p
 		};
 	}, [editorContext]);
 
-	function updateState(delta: Record<string, string>) {
+	function updateState(delta: Record<string, unknown>) {
 		if (!editorContext)
 			return;
 
@@ -92,62 +92,6 @@ const RealtimeValueEditor: React.FunctionComponent<RealtimeValueEditorProps> = p
 		setEditorContext(void 0);
 	}
 
-	function renderUiSection(section: UISection<unknown>, first: boolean) {
-		switch (section.type) {
-			case 'string_input':
-				return (
-					<FormGroup key={`${section.stateBinding}`}>
-						{section.label && <Label>{section.label}</Label>}
-						<Input
-							ref={i => trySetInitialRef(first, i, initialInputRef)}
-							beakSize={'sm'}
-							type={'text'}
-							value={state[section.stateBinding as string] || ''}
-							onChange={e => updateState({
-								[section.stateBinding]: e.currentTarget.value,
-							})}
-						/>
-					</FormGroup>
-				);
-
-			case 'number_input':
-				return (
-					<FormGroup key={`${section.stateBinding}`}>
-						{section.label && <Label>{section.label}</Label>}
-						<Input
-							ref={i => trySetInitialRef(first, i, initialInputRef)}
-							beakSize={'sm'}
-							type={'number'}
-							value={state[section.stateBinding as string] || ''}
-							onChange={e => updateState({
-								[section.stateBinding]: e.currentTarget.value,
-							})}
-						/>
-					</FormGroup>
-				);
-
-			case 'options_input':
-				return (
-					<FormGroup key={`${section.stateBinding}`}>
-						{section.label && <Label>{section.label}</Label>}
-						<Select
-							ref={i => trySetInitialRef(first, i, initialInputRef)}
-							beakSize={'sm'}
-							value={state[section.stateBinding as string] || ''}
-							onChange={e => updateState({
-								[section.stateBinding]: e.currentTarget.value,
-							})}
-						>
-							{section.options.map(o => <option key={o.key} value={o.key}>{o.label}</option>)}
-						</Select>
-					</FormGroup>
-				);
-
-			default:
-				return null;
-		}
-	}
-
 	if (!editorContext)
 		return null;
 
@@ -162,7 +106,64 @@ const RealtimeValueEditor: React.FunctionComponent<RealtimeValueEditorProps> = p
 				$left={boundingRect.left - (300 / 2)}
 				onClick={event => void event.stopPropagation()}
 			>
-				{ui.map((section, i) => renderUiSection(section, i === 0))}
+				{ui.map((section, i) => {
+					const first = i === 0;
+					const stateBinding = section.stateBinding as string;
+
+					switch (section.type) {
+						case 'string_input':
+							return (
+								<FormGroup key={`${stateBinding}`}>
+									{section.label && <Label>{section.label}</Label>}
+									<Input
+										ref={i => trySetInitialRef(first, i, initialInputRef)}
+										beakSize={'sm'}
+										type={'text'}
+										value={state[stateBinding] as string || ''}
+										onChange={e => updateState({
+											[stateBinding]: e.currentTarget.value,
+										})}
+									/>
+								</FormGroup>
+							);
+
+						case 'number_input':
+							return (
+								<FormGroup key={`${stateBinding}`}>
+									{section.label && <Label>{section.label}</Label>}
+									<Input
+										ref={i => trySetInitialRef(first, i, initialInputRef)}
+										beakSize={'sm'}
+										type={'number'}
+										value={(state[stateBinding] as number).toString(10)}
+										onChange={e => updateState({
+											[stateBinding]: parseInt(e.currentTarget.value, 10),
+										})}
+									/>
+								</FormGroup>
+							);
+
+						case 'options_input':
+							return (
+								<FormGroup key={`${stateBinding}`}>
+									{section.label && <Label>{section.label}</Label>}
+									<Select
+										ref={i => trySetInitialRef(first, i, initialInputRef)}
+										beakSize={'sm'}
+										value={state[stateBinding] as string ?? ''}
+										onChange={e => updateState({
+											[stateBinding]: e.currentTarget.value,
+										})}
+									>
+										{section.options.map(o => <option key={o.key} value={o.key}>{o.label}</option>)}
+									</Select>
+								</FormGroup>
+							);
+
+						default:
+							return null;
+					}
+				})}
 
 				<ButtonContainer>
 					<Button onClick={() => {

@@ -155,6 +155,7 @@ export interface PrivateRtv {
 export interface TimestampRtv {
 	type: 'timestamp';
 	payload: {
+		delta?: number;
 		type: string;
 	};
 }
