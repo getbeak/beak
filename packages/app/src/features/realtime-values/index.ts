@@ -1,6 +1,7 @@
 import { TypedObject } from '@beak/common/helpers/typescript';
 
 import { RealtimeValue } from './types';
+import base64EncodeRtv from './values/base64-encode';
 import digestRtv from './values/digest';
 import nonceRtv from './values/nonce';
 import privateRtv from './values/private';
@@ -10,6 +11,7 @@ import uuidRtv from './values/uuid';
 import variableGroupItemRtv from './values/variable-group-item';
 
 const realtimeImplementations: Record<string, RealtimeValue<any, any>> = {
+	[base64EncodeRtv.type]: base64EncodeRtv,
 	[digestRtv.type]: digestRtv,
 	[nonceRtv.type]: nonceRtv,
 	[privateRtv.type]: privateRtv,
