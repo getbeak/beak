@@ -25,7 +25,7 @@
 				"jsonEditor": {
 					"type": "object",
 					"additionalProperties": false,
-		
+
 					"required": ["expands"],
 		
 					"properties": {
@@ -45,7 +45,8 @@
 			"additionalProperties": false,
 
 			"required": [
-				"mainTab"
+				"mainTab",
+				"subTab"
 			],
 
 			"properties": {
