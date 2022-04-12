@@ -11,17 +11,21 @@ interface SidebarPaneSectionProps {
 	actions?: MenuItemConstructorOptions[];
 	title: string;
 	collapseKey: string;
+	disableCollapse?: boolean;
 }
 
 const SidebarPaneSection: React.FunctionComponent<SidebarPaneSectionProps> = props => {
 	const dispatch = useDispatch();
-	const { actions, title, collapseKey, children } = props;
+	const { actions, title, collapseKey, disableCollapse, children } = props;
 	const [bodyOptions, setBodyOptions] = useState<SectionBodyOptions>({});
 
 	const collapsed = useSelector(s => s.global.preferences.sidebar.collapsed[collapseKey]);
 	const [uiCollapsed, setUiCollapsed] = useState(collapsed);
 
 	function setCollapsedProxy() {
+		if (disableCollapse)
+			return;
+
 		const collapsing = !collapsed;
 
 		setUiCollapsed(collapsing);

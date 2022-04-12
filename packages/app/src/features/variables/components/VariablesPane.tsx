@@ -16,12 +16,17 @@ const VariablesPane: React.FunctionComponent = () => {
 			<SidebarPaneSection
 				title={'Variable groups'}
 				collapseKey={'beak.variables.variable-groups'}
+				disableCollapse
 				actions={[{
 					id: ksuid.generate('ctxmenuitem').toString(),
 					label: 'New variable group',
 					click: () => {
 						dispatch(actions.insertNewVariableGroup({ variableGroupName: 'New variable group' }));
-						dispatch(changeTab({ type: 'variable_group_editor', payload: 'New variable group', temporary: false }));
+						dispatch(changeTab({
+							type: 'variable_group_editor',
+							payload: 'New variable group',
+							temporary: false,
+						}));
 					},
 				}]}
 			>
