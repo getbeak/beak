@@ -17,7 +17,7 @@ const flightReducer = createReducer(initialState, builder => {
 
 			switch (payload.stage) {
 				case 'fetch_response':
-					state.currentFlight!.start = payload.payload.timestamp;
+					state.currentFlight!.timing.requestStart = payload.payload.timestamp;
 					state.currentFlight!.lastUpdate = payload.payload.timestamp;
 
 					return;
@@ -27,6 +27,7 @@ const flightReducer = createReducer(initialState, builder => {
 					state.currentFlight!.bodyTransferred = 0;
 					state.currentFlight!.bodyTransferPercentage = 0;
 					state.currentFlight!.lastUpdate = payload.payload.timestamp;
+					state.currentFlight!.timing.headersEnd = payload.payload.timestamp;
 
 					return;
 
@@ -37,6 +38,7 @@ const flightReducer = createReducer(initialState, builder => {
 					state.currentFlight!.bodyTransferred = bodyTransferred;
 					state.currentFlight!.bodyTransferPercentage = bodyTransferPercentage;
 					state.currentFlight!.lastUpdate = payload.payload.timestamp;
+					state.currentFlight!.timing.responseEnd = payload.payload.timestamp;
 
 					return;
 				}
@@ -46,11 +48,13 @@ const flightReducer = createReducer(initialState, builder => {
 			}
 		})
 		.addCase(actions.completeFlight, (state, action) => {
-			const { flightId, requestId, response } = action.payload;
+			const { flightId, requestId, response, timestamp } = action.payload;
 			const binaryStoreKey = state.currentFlight!.binaryStoreKey;
 
 			state.currentFlight!.response = response;
 			state.currentFlight!.flighting = false;
+			state.currentFlight!.timing.responseEnd = timestamp;
+			state.currentFlight!.timing.beakEnd = Date.now();
 
 			if (!state.flightHistory[requestId]) {
 				state.flightHistory[requestId] = {
@@ -66,6 +70,7 @@ const flightReducer = createReducer(initialState, builder => {
 				request: state.currentFlight!.request,
 				response,
 				binaryStoreKey,
+				timing: state.currentFlight!.timing,
 			};
 		})
 		.addCase(actions.flightFailure, (state, action) => {
@@ -89,6 +94,7 @@ const flightReducer = createReducer(initialState, builder => {
 				request: state.currentFlight!.request,
 				error,
 				binaryStoreKey,
+				timing: state.currentFlight!.timing,
 			};
 		})
 		.addCase(actions.beginFlightRequest, (state, action) => {
@@ -99,6 +105,7 @@ const flightReducer = createReducer(initialState, builder => {
 				request: action.payload.request,
 				binaryStoreKey: action.payload.binaryStoreKey,
 				flighting: true,
+				timing: { beakStart: Date.now() },
 			};
 		})
 

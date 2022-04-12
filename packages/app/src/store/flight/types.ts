@@ -42,6 +42,7 @@ export interface CompleteFlightPayload {
 	requestId: string;
 	flightId: string;
 	response: ResponseOverview;
+	timestamp: number;
 }
 
 export interface FlightFailurePayload {
@@ -56,14 +57,26 @@ export interface Flight {
 	request: RequestOverview;
 	response?: ResponseOverview;
 	error?: Error;
+	timing: {
+		beakStart: number;
+		requestStart?: number;
+		headersEnd?: number;
+		responseEnd?: number;
+		beakEnd?: number;
+	};
 	binaryStoreKey: string;
 }
 
 export interface FlightInProgress extends Flight {
 	flighting: boolean;
-	start?: number;
 	lastUpdate?: number;
-	finish?: number;
+	timing: {
+		beakStart: number;
+		requestStart?: number;
+		headersEnd?: number;
+		responseEnd?: number;
+		beakEnd?: number;
+	};
 
 	binaryStoreKey: string;
 	contentLength?: number;

@@ -47,7 +47,12 @@ export default function* requestFlightWorker({ payload }: PayloadAction<BeginFli
 		ipcFlightService.registerFlightComplete(async (_event, payload) => {
 			response = payload.overview;
 
-			emitter(actions.completeFlight({ flightId, requestId, response: payload.overview }));
+			emitter(actions.completeFlight({
+				flightId,
+				requestId,
+				response: payload.overview,
+				timestamp: payload.timestamp,
+			}));
 			emitter(END);
 		});
 

@@ -3,6 +3,7 @@ import { convertKeyValueToString } from '@beak/app/features/basic-table-editor/p
 import { convertToRealJson } from '@beak/app/features/json-editor/parsers';
 import { parseValueParts } from '@beak/app/features/realtime-values/parser';
 import { Context } from '@beak/app/features/realtime-values/types';
+import { ipcDialogService } from '@beak/app/lib/ipc';
 import { convertRequestToUrl } from '@beak/app/utils/uri';
 import { requestBodyContentType } from '@beak/common/helpers/request';
 import { TypedObject } from '@beak/common/helpers/typescript';
@@ -41,7 +42,12 @@ export default function* requestFlightWorker() {
 		return;
 
 	if (flight.currentFlight?.flighting) {
-		// TODO(afr): Ask user if they want to cancel existing, or cancel new
+		// TODO(afr): Ask user if they want to cancel existing?
+		yield call([ipcDialogService, ipcDialogService.showMessageBox], {
+			title: 'Request already in flight',
+			message: 'You already have a request currently in flight. You won\'t be able to run a new request until it has finished.',
+			type: 'warning',
+		});
 
 		return;
 	}
