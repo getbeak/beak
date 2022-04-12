@@ -1,6 +1,11 @@
-import React from 'react';
+import { useState } from 'react';
 
-// https://stackoverflow.com/questions/53215285/how-can-i-force-a-component-to-re-render-with-hooks-in-react/58606536#58606536
-export default function useForceReRender(): () => void {
-	return React.useReducer(() => ({}), {})[1] as () => void;
+export default function useForceReRender(): [number, () => void] {
+	const [latestForceRerender, setLatestForceRerender] = useState(0);
+
+	function forceRerender() {
+		setLatestForceRerender(Date.now());
+	}
+
+	return [latestForceRerender, forceRerender];
 }

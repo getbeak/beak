@@ -40,7 +40,7 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = props => {
 	const { disabled, requestId, placeholder, parts: incomingParts, onChange } = props;
 	const dispatch = useDispatch();
 
-	const forceRerender = useForceReRender();
+	const [latestForceRerender, forceRerender] = useForceReRender();
 	const [showSelector, setShowSelector] = useState(() => false);
 	const [query, setQuery] = useState('');
 
@@ -70,7 +70,7 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = props => {
 			unmanagedStateRef.current.valueParts,
 			variableGroups,
 		);
-	}, [requestId]);
+	}, [requestId, readOnly, latestForceRerender]);
 
 	useEffect(() => {
 		const elem = editableRef.current;
@@ -107,7 +107,7 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = props => {
 
 			forceRerender();
 		}
-	}, [incomingParts]);
+	}, [JSON.stringify(incomingParts)]);
 
 	function handleChange(naiveEvent: Event) {
 		const event = naiveEvent as InputEvent;
