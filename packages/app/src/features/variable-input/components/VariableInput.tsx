@@ -31,13 +31,14 @@ export interface VariableInputProps {
 	placeholder?: string;
 	requestId?: string;
 	parts: ValueParts;
+	readOnly?: boolean;
 
 	onChange: (parts: ValueParts) => void;
 	onUrlQueryStringDetection?: () => void;
 }
 
 const VariableInput: React.FunctionComponent<VariableInputProps> = props => {
-	const { disabled, requestId, placeholder, parts: incomingParts, onChange } = props;
+	const { disabled, requestId, placeholder, parts: incomingParts, onChange, readOnly } = props;
 	const dispatch = useDispatch();
 
 	const [latestForceRerender, forceRerender] = useForceReRender();
@@ -65,6 +66,9 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = props => {
 			lastUpstreamReport: 0,
 			valueParts: incomingParts,
 		};
+
+		if (readOnly)
+			elem.contentEditable = 'false';
 
 		elem.innerHTML = renderValueParts(
 			unmanagedStateRef.current.valueParts,
