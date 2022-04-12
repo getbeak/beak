@@ -9,12 +9,19 @@ export interface RecentLocalProject {
 }
 
 export type RequestPreferenceMainTab = 'headers' | 'url_query' | 'body' | 'options';
+export type ResponsePreferenceMainTab = 'overview' | 'request' | 'response';
 
 export interface RequestPreference {
-	mainTab: RequestPreferenceMainTab;
+	request: {
+		mainTab: RequestPreferenceMainTab;
 
-	jsonEditor?: {
-		expanded: Record<string, boolean>;
+		jsonEditor?: {
+			expanded: Record<string, boolean>;
+		};
+	};
+	response: {
+		mainTab: ResponsePreferenceMainTab;
+		subTab: Partial<Record<ResponsePreferenceMainTab, undefined | string>>;
 	};
 }
 

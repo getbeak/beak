@@ -10,16 +10,22 @@ const reducer = createReducer(initialState, builder => {
 		.addCase(actions.requestPreferencesLoaded, (state, { payload }) => {
 			state.requests[payload.id] = payload.preferences;
 		})
-		.addCase(actions.requestPreferenceSetMainTab, (state, { payload }) => {
-			state.requests[payload.id].mainTab = payload.tab;
+		.addCase(actions.requestPreferenceSetReqMainTab, (state, { payload }) => {
+			state.requests[payload.id].request.mainTab = payload.tab;
 		})
-		.addCase(actions.requestPreferenceSetJsonExpand, (state, { payload }) => {
-			state.requests[payload.id].jsonEditor = {
+		.addCase(actions.requestPreferenceSetReqJsonExpand, (state, { payload }) => {
+			state.requests[payload.id].request.jsonEditor = {
 				expanded: {
-					...state.requests[payload.id].jsonEditor?.expanded,
+					...state.requests[payload.id].request.jsonEditor?.expanded,
 					[payload.jsonId]: payload.expanded,
 				},
 			};
+		})
+		.addCase(actions.requestPreferenceSetResMainTab, (state, { payload }) => {
+			state.requests[payload.id].response.mainTab = payload.tab;
+		})
+		.addCase(actions.requestPreferenceSetResSubTab, (state, { payload }) => {
+			state.requests[payload.id].response.subTab[payload.tab] = payload.subTab;
 		})
 
 		.addCase(actions.editorPreferencesLoaded, (state, { payload }) => {

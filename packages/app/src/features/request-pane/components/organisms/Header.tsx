@@ -2,7 +2,7 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { parseValueParts } from '@beak/app/features/realtime-values/parser';
 import VariableInput from '@beak/app/features/variable-input/components/VariableInput';
-import { requestPreferenceSetMainTab } from '@beak/app/store/preferences/actions';
+import { requestPreferenceSetReqMainTab } from '@beak/app/store/preferences/actions';
 import { ValidRequestNode, ValueParts } from '@beak/common/types/beak-project';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -31,7 +31,7 @@ const Header: React.FunctionComponent<HeaderProps> = props => {
 	}
 
 	function urlQueryStringDetected() {
-		dispatch(requestPreferenceSetMainTab({ id: node.id, tab: 'url_query' }));
+		dispatch(requestPreferenceSetReqMainTab({ id: node.id, tab: 'url_query' }));
 	}
 
 	async function handleUrlChange(parts: ValueParts) {
@@ -60,7 +60,7 @@ const Header: React.FunctionComponent<HeaderProps> = props => {
 			sanitizedParts.push((parts[searchIndex] as string).slice(0, searchPartIndex));
 
 			// Move focus to query string editor
-			dispatch(requestPreferenceSetMainTab({ id: node.id, tab: 'url_query' }));
+			dispatch(requestPreferenceSetReqMainTab({ id: node.id, tab: 'url_query' }));
 		}
 
 		dispatch(requestUriUpdated({

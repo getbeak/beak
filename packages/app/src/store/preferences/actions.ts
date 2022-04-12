@@ -8,15 +8,19 @@ import {
 	ProjectPaneCollapsePayload,
 	RequestPreferencePayload,
 	RequestPreferencesLoadedPayload,
-	RequestPreferencesSetJsonExpandPayload,
-	RequestPreferencesSetMainTabPayload,
+	RequestPreferencesSetReqJsonExpandPayload,
+	RequestPreferencesSetReqMainTabPayload,
+	RequestPreferencesSetResMainTabPayload,
+	RequestPreferencesSetResSubTabPayload,
 	SidebarCollapsePayload,
 } from './types';
 
 export const loadRequestPreferences = createAction<RequestPreferencePayload>(AT.LOAD_REQUEST_PREFERENCES);
 export const requestPreferencesLoaded = createAction<RequestPreferencesLoadedPayload>(AT.REQUEST_PREFERENCES_LOADED);
-export const requestPreferenceSetMainTab = createAction<RequestPreferencesSetMainTabPayload>(AT.REQUEST_PREFERENCE_SET_MAIN_TAB);
-export const requestPreferenceSetJsonExpand = createAction<RequestPreferencesSetJsonExpandPayload>(AT.REQUEST_PREFERENCE_SET_JSON_EXPAND);
+export const requestPreferenceSetReqMainTab = createAction<RequestPreferencesSetReqMainTabPayload>(AT.REQUEST_PREFERENCE_SET_REQ_MAIN_TAB);
+export const requestPreferenceSetReqJsonExpand = createAction<RequestPreferencesSetReqJsonExpandPayload>(AT.REQUEST_PREFERENCE_SET_REQ_JSON_EXPAND);
+export const requestPreferenceSetResMainTab = createAction<RequestPreferencesSetResMainTabPayload>(AT.REQUEST_PREFERENCE_SET_RES_MAIN_TAB);
+export const requestPreferenceSetResSubTab = createAction<RequestPreferencesSetResSubTabPayload>(AT.REQUEST_PREFERENCE_SET_RES_SUB_TAB);
 
 export const loadEditorPreferences = createAction(AT.LOAD_EDITOR_PREFERENCES);
 export const editorPreferencesLoaded = createAction<EditorPreferences>(AT.EDITOR_PREFERENCES_LOADED);
@@ -34,8 +38,10 @@ export const projectPanePreferenceSetCollapse = createAction<ProjectPaneCollapse
 export default {
 	loadRequestPreferences,
 	requestPreferencesLoaded,
-	requestPreferenceSetMainTab,
-	requestPreferenceSetJsonExpand,
+	requestPreferenceSetReqMainTab,
+	requestPreferenceSetReqJsonExpand,
+	requestPreferenceSetResMainTab,
+	requestPreferenceSetResSubTab,
 
 	loadEditorPreferences,
 	editorPreferencesLoaded,

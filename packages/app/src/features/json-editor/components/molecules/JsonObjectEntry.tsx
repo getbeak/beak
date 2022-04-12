@@ -32,7 +32,7 @@ const JsonObjectEntry: React.FunctionComponent<JsonObjectEntryProps> = props => 
 	const dispatch = useDispatch();
 	const node = useContext(SelectedNodeContext);
 	const preferences = useSelector(s => s.global.preferences.requests[requestId]);
-	const [expanded, setExpanded] = useState(preferences.jsonEditor?.expanded[id] !== false);
+	const [expanded, setExpanded] = useState(preferences.request.jsonEditor?.expanded[id] !== false);
 
 	const entries = (node.info.body as RequestBodyJson).payload;
 	const children = TypedObject.values(entries).filter(e => e.parentId === id);

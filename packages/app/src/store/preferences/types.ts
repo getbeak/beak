@@ -3,14 +3,17 @@ import {
 	ProjectPanePreferences,
 	RequestPreference,
 	RequestPreferenceMainTab,
+	ResponsePreferenceMainTab,
 	SidebarPreferences,
 } from '@beak/common/types/beak-hub';
 
 export const ActionTypes = {
 	LOAD_REQUEST_PREFERENCES: '@beak/global/preferences/LOAD_REQUEST_PREFERENCES',
 	REQUEST_PREFERENCES_LOADED: '@beak/global/preferences/REQUEST_PREFERENCES_LOADED',
-	REQUEST_PREFERENCE_SET_MAIN_TAB: '@beak/global/preferences/REQUEST_PREFERENCE_SET_MAIN_TAB',
-	REQUEST_PREFERENCE_SET_JSON_EXPAND: '@beak/global/preferences/REQUEST_PREFERENCE_SET_JSON_EXPAND',
+	REQUEST_PREFERENCE_SET_REQ_MAIN_TAB: '@beak/global/preferences/REQUEST_PREFERENCE_SET_REQ_MAIN_TAB',
+	REQUEST_PREFERENCE_SET_REQ_JSON_EXPAND: '@beak/global/preferences/REQUEST_PREFERENCE_SET_REQ_JSON_EXPAND',
+	REQUEST_PREFERENCE_SET_RES_MAIN_TAB: '@beak/global/preferences/REQUEST_PREFERENCE_SET_RES_MAIN_TAB',
+	REQUEST_PREFERENCE_SET_RES_SUB_TAB: '@beak/global/preferences/REQUEST_PREFERENCE_SET_RES_SUB_TAB',
 
 	LOAD_EDITOR_PREFERENCES: '@beak/global/preferences/LOAD_EDITOR_PREFERENCES',
 	EDITOR_PREFERENCES_LOADED: '@beak/global/preferences/EDITOR_PREFERENCES_LOADED',
@@ -49,10 +52,15 @@ export const initialState: State = {
 
 export type RequestPreferencePayload<T = void> = T extends void ? { id: string } : { id: string } & T;
 export type RequestPreferencesLoadedPayload = RequestPreferencePayload<{ preferences: RequestPreference }>;
-export type RequestPreferencesSetMainTabPayload = RequestPreferencePayload<{ tab: RequestPreferenceMainTab }>;
-export type RequestPreferencesSetJsonExpandPayload = RequestPreferencePayload<{
+export type RequestPreferencesSetReqMainTabPayload = RequestPreferencePayload<{ tab: RequestPreferenceMainTab }>;
+export type RequestPreferencesSetReqJsonExpandPayload = RequestPreferencePayload<{
 	jsonId: string;
 	expanded: boolean;
+}>;
+export type RequestPreferencesSetResMainTabPayload = RequestPreferencePayload<{ tab: ResponsePreferenceMainTab }>;
+export type RequestPreferencesSetResSubTabPayload = RequestPreferencePayload<{
+	tab: ResponsePreferenceMainTab;
+	subTab: string;
 }>;
 
 export interface EditorPreferencesSetSelectedVariableGroupPayload {

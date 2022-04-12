@@ -15,8 +15,10 @@ const loadPreferencesActions = [
 ];
 
 const writeRequestPreferencesActions = [
-	ActionTypes.REQUEST_PREFERENCE_SET_JSON_EXPAND,
-	ActionTypes.REQUEST_PREFERENCE_SET_MAIN_TAB,
+	ActionTypes.REQUEST_PREFERENCE_SET_REQ_MAIN_TAB,
+	ActionTypes.REQUEST_PREFERENCE_SET_REQ_JSON_EXPAND,
+	ActionTypes.REQUEST_PREFERENCE_SET_RES_MAIN_TAB,
+	ActionTypes.REQUEST_PREFERENCE_SET_RES_SUB_TAB,
 ];
 
 const writeEditorPreferencesActions = [

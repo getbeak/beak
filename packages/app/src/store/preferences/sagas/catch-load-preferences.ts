@@ -57,7 +57,15 @@ export default function* catchLoadPreferences({ type, payload }: PayloadAction<u
 
 async function loadRequestPreferences(id: string) {
 	const preferencesPath = path.join('.beak', 'preferences', 'requests', `${id}.json`);
-	const defaultPreferences: RequestPreference = { mainTab: 'headers' };
+	const defaultPreferences: RequestPreference = {
+		request: {
+			mainTab: 'headers',
+		},
+		response: {
+			mainTab: 'response',
+			subTab: {},
+		},
+	};
 
 	if (!await ipcFsService.pathExists(preferencesPath))
 		return defaultPreferences;

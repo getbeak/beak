@@ -69,6 +69,7 @@ const BasicTableEditor: React.FunctionComponent<BasicTableEditorProps> = props =
 								<BodyInputWrapper>
 									<VariableInput
 										parts={item.value}
+										readOnly={readOnly}
 										onChange={parts => updateItem?.('value', k, parts)}
 									/>
 								</BodyInputWrapper>

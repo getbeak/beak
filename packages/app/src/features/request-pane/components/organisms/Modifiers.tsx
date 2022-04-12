@@ -1,7 +1,7 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import BasicTableEditor from '@beak/app/features/basic-table-editor/components/BasicTableEditor';
-import { requestPreferenceSetMainTab } from '@beak/app/store/preferences/actions';
+import { requestPreferenceSetReqMainTab } from '@beak/app/store/preferences/actions';
 import actions from '@beak/app/store/project/actions';
 import { RequestPreferenceMainTab } from '@beak/common/types/beak-hub';
 import { ValidRequestNode } from '@beak/common/types/beak-project';
@@ -21,10 +21,10 @@ const Modifiers: React.FunctionComponent<ModifiersProps> = props => {
 	const dispatch = useDispatch();
 	const { node } = props;
 	const preferences = useSelector(s => s.global.preferences.requests[node.id])!;
-	const tab = preferences.mainTab;
+	const tab = preferences.request.mainTab;
 
 	function setTab(tab: RequestPreferenceMainTab) {
-		dispatch(requestPreferenceSetMainTab({ id: node.id, tab }));
+		dispatch(requestPreferenceSetReqMainTab({ id: node.id, tab }));
 	}
 
 	return (

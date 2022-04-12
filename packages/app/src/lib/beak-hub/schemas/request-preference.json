@@ -3,26 +3,62 @@
 	"additionalProperties": false,
 
 	"required": [
-		"mainTab"
+		"request",
+		"response"
 	],
 
 	"properties": {
-		"mainTab": {
-			"type": "string",
-			"minLength": 1
-		},
-		
-		"jsonEditor": {
+		"request": {
 			"type": "object",
 			"additionalProperties": false,
 
-			"required": ["expands"],
+			"required": [
+				"mainTab"
+			],
 
 			"properties": {
-				"expands": {
+				"mainTab": {
+					"type": "string",
+					"enum": ["headers", "url_query", "body", "options"]
+				},
+				
+				"jsonEditor": {
+					"type": "object",
+					"additionalProperties": false,
+		
+					"required": ["expands"],
+		
+					"properties": {
+						"expands": {
+							"type": "object",
+							"additionalProperties" : {
+								"type" : "boolean"
+							}
+						}
+					}
+				}
+			}
+		},
+
+		"response": {
+			"type": "object",
+			"additionalProperties": false,
+
+			"required": [
+				"mainTab"
+			],
+
+			"properties": {
+				"mainTab": {
+					"type": "string",
+					"enum": ["overview", "request", "response"]
+				},
+
+				"subTab": {
 					"type": "object",
 					"additionalProperties" : {
-						"type" : "boolean"
+						"type" : "string",
+						"minLength": 1
 					}
 				}
 			}
