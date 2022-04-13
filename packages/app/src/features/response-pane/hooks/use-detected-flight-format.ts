@@ -1,6 +1,9 @@
 import { useMemo } from 'react';
 import { Flight } from '@beak/app/store/flight/types';
 
+// This is shit
+// Use: mime.extension
+
 export default function useDetectedFlightFormat(flight: Flight, mode: 'request' | 'response') {
 	return useMemo(() => {
 		if (mode === 'request') {
