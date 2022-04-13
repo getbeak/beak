@@ -12,9 +12,10 @@ import TabBar from '../../../../components/atoms/TabBar';
 import TabItem from '../../../../components/atoms/TabItem';
 import TabSpacer from '../../../../components/atoms/TabSpacer';
 import { createBasicHttpOutput } from '../../../request-pane/components/molecules/RequestOutput';
+import PrettyViewer from './PrettyViewer';
 
 type Tab = typeof tabs[number];
-const tabs = ['headers', 'raw'] as const;
+const tabs = ['headers', 'pretty', 'raw'] as const;
 
 export interface RequestTabProps {
 	flight: Flight;
@@ -35,7 +36,7 @@ const RequestTab: React.FunctionComponent<RequestTabProps> = props => {
 	useEffect(() => {
 		if (!tab || !tabs.includes(tab))
 			dispatch(requestPreferenceSetResSubTab({ id: requestId, tab: 'request', subTab: 'raw' }));
-	}, [tab]);
+	}, [tab, flight.flightId]);
 
 	function setTab(tab: Tab) {
 		dispatch(requestPreferenceSetResSubTab({ id: requestId, tab: 'request', subTab: tab }));
@@ -57,6 +58,13 @@ const RequestTab: React.FunctionComponent<RequestTabProps> = props => {
 					{'Headers'}
 				</TabItem>
 				<TabItem
+					active={tab === 'pretty'}
+					size={'sm'}
+					onClick={() => setTab('pretty')}
+				>
+					{'Pretty'}
+				</TabItem>
+				<TabItem
 					active={tab === 'raw'}
 					size={'sm'}
 					onClick={() => setTab('raw')}
@@ -72,6 +80,9 @@ const RequestTab: React.FunctionComponent<RequestTabProps> = props => {
 						items={flight.request.headers}
 						readOnly
 					/>
+				)}
+				{tab === 'pretty' && (
+					<PrettyViewer flight={flight} mode={'request'} />
 				)}
 				{tab === 'raw' && (
 					<React.Fragment>
