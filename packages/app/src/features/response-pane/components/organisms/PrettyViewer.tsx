@@ -11,6 +11,7 @@ import xmlFormatter from 'xml-formatter';
 import useDetectedFlightFormat from '../../hooks/use-detected-flight-format';
 import useFlightBodyInfo from '../../hooks/use-flight-body-info';
 import PrettyRenderSelection from '../molecules/PrettyRenderSelection';
+import PrettyViewIneligible from '../molecules/PrettyViewIneligible';
 
 interface PrettyViewerProps {
 	flight: Flight;
@@ -25,9 +26,8 @@ const PrettyViewer: React.FunctionComponent<PrettyViewerProps> = ({ flight, mode
 	const detectedFormat = useDetectedFlightFormat(flight, mode);
 	const selectedLanguage = preferences.language ?? detectedFormat;
 
-	// TODO(afr): Show error state here
 	if (eligibility !== 'eligible')
-		return null;
+		return <PrettyViewIneligible eligibility={eligibility} />;
 
 	return (
 		<Container>
