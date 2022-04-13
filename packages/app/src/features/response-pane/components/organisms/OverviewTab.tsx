@@ -55,9 +55,6 @@ function calculateDuration(start: number | undefined, end: number | undefined) {
 }
 
 const Container = styled.div`
-	display: flex;
-	flex-direction: column;
-	overflow: hidden;
 	height: 100%;
 `;
 
