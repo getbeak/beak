@@ -29,9 +29,9 @@ const PrettyViewer: React.FunctionComponent<PrettyViewerProps> = ({ flight, mode
 		<Container>
 			<PrettyRenderSelection
 				autoDetect={showAutoDetect}
-				selectedLanguage={detectedFormat}
+				selectedLanguage={selectedLanguage}
 				onAutoDetectToggle={() => setShowAutoDetect(!showAutoDetect)}
-				onSelectedLanguageChange={setSelectedLanguage}
+				onSelectedLanguageChange={lang => setSelectedLanguage(lang)}
 			/>
 			{showAutoDetect && renderFormat(flight, detectedFormat, body)}
 			{!showAutoDetect && renderFormat(flight, selectedLanguage, body)}

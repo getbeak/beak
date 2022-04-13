@@ -1,4 +1,5 @@
 import React from 'react';
+import { Select } from '@beak/app/components/atoms/Input';
 import styled from 'styled-components';
 
 interface PrettyRenderSelectionProps {
@@ -13,12 +14,14 @@ const PrettyRenderSelection: React.FunctionComponent<PrettyRenderSelectionProps>
 
 	return (
 		<Container>
-			<label>
-				{'Auto detect?'}
+			<Label>
+				{'Auto detect: '}
 				<input type={'checkbox'} checked={autoDetect} onChange={onAutoDetectToggle} />
-			</label>
-			<select
+			</Label>
+			<Spacer />
+			<Select
 				disabled={autoDetect}
+				beakSize={'sm'}
 				value={selectedLanguage ?? 'text/plain'}
 				onChange={e => onSelectedLanguageChange(e.currentTarget.value)}
 			>
@@ -34,17 +37,37 @@ const PrettyRenderSelection: React.FunctionComponent<PrettyRenderSelectionProps>
 				<option disabled>{'Video'}</option>
 				<option disabled>{'_________'}</option>
 				<option disabled>{'Web'}</option>
-			</select>
+			</Select>
 		</Container>
 	);
 };
 
 const Container = styled.div`
-	padding: 5px;
+	display: flex;
+	align-items: stretch;
+	padding: 5px 10px;
+
 	background: ${p => p.theme.ui.surface};
-	border-bottom: 2px solid ${p => p.theme.ui.backgroundBorderSeparator};
+	border: 1px solid ${p => p.theme.ui.backgroundBorderSeparator};
+	border-left-width: 0;
+	border-right-width: 0;
 
 	font-size: 14px;
+`;
+
+const Label = styled.div`
+	display: inline-flex;
+	white-space: nowrap;
+	font-size: 12px;
+	align-items: center;
+`;
+
+const Spacer = styled.div`
+	margin: 3px;
+	margin-left: 8px;
+	margin-right: 11px;
+	width: 1px;
+	background: ${p => p.theme.ui.backgroundBorderSeparator};
 `;
 
 export default PrettyRenderSelection;
