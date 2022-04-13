@@ -10,7 +10,7 @@ export const Row = styled.div`
 
 export const Header = styled.div`
 	> ${Row} {
-		margin-top: 6.5px;
+		margin-top: 7px;
 	}
 `;
 

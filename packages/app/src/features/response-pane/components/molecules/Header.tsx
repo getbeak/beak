@@ -55,7 +55,7 @@ const UrlHeaderWrapper = styled.div`
 	align-items: center;
 
 	margin: 25px auto;
-	margin-bottom: 26px;
+	margin-bottom: 26.5px;
 	padding: 0 10px;
 	font-size: 13px;
 	max-width: calc(100% - 20px);

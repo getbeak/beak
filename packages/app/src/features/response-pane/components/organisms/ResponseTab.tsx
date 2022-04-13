@@ -28,7 +28,7 @@ const ResponseTab: React.FunctionComponent<ResponseTabProps> = props => {
 	const dispatch = useDispatch();
 	const { error, response, requestId } = flight;
 	const hasErrored = Boolean(error);
-	const tab = useSelector(s => s.global.preferences.requests[requestId].response.subTab.response) as Tab | undefined;
+	const tab = useSelector(s => s.global.preferences.requests[requestId]?.response.subTab.response) as Tab | undefined;
 
 	function convertHeaderFormat() {
 		return Object.keys(flight.response!.headers)
@@ -44,8 +44,14 @@ const ResponseTab: React.FunctionComponent<ResponseTabProps> = props => {
 
 	// Ensure we have a valid tab
 	useEffect(() => {
-		if (!tab || !tabs.includes(tab))
+		if (hasErrored) {
 			dispatch(requestPreferenceSetResSubTab({ id: requestId, tab: 'response', subTab: 'raw' }));
+
+			return;
+		}
+
+		if (!tab || !tabs.includes(tab))
+			dispatch(requestPreferenceSetResSubTab({ id: requestId, tab: 'response', subTab: 'pretty' }));
 	}, [tab, flight.flightId]);
 
 	function setTab(tab: Tab) {
