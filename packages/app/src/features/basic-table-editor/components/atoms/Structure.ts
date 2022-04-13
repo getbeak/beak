@@ -8,6 +8,10 @@ export const Row = styled.div`
 	border-bottom: 1px solid ${p => p.theme.ui.backgroundBorderSeparator};
 `;
 
-export const Header = styled.div``;
+export const Header = styled.div`
+	> ${Row} {
+		margin-top: 6.5px;
+	}
+`;
 
 export const Body = styled.div``;
