@@ -64,6 +64,16 @@ async function loadRequestPreferences(id: string) {
 		response: {
 			mainTab: 'response',
 			subTab: {},
+			pretty: {
+				request: {
+					autoDetect: true,
+					language: null,
+				},
+				response: {
+					autoDetect: true,
+					language: null,
+				},
+			},
 		},
 	};
 

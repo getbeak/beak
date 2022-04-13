@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Flight } from '@beak/app/store/flight/types';
+import actions from '@beak/app/store/preferences/actions';
 import { attemptJsonStringFormat } from '@beak/app/utils/json';
 import { createDefaultOptions } from '@beak/app/utils/monaco';
 import Editor from '@monaco-editor/react';
@@ -16,10 +18,12 @@ interface PrettyViewerProps {
 }
 
 const PrettyViewer: React.FunctionComponent<PrettyViewerProps> = ({ flight, mode }) => {
+	const dispatch = useDispatch();
+	const requestId = flight.requestId;
+	const preferences = useSelector(s => s.global.preferences.requests[requestId].response.pretty[mode]);
 	const [eligibility, body] = useFlightBodyInfo(flight, mode);
 	const detectedFormat = useDetectedFlightFormat(flight, mode);
-	const [showAutoDetect, setShowAutoDetect] = useState(true);
-	const [selectedLanguage, setSelectedLanguage] = useState<string | null>(detectedFormat);
+	const selectedLanguage = preferences.language ?? detectedFormat;
 
 	// TODO(afr): Show error state here
 	if (eligibility !== 'eligible')
@@ -28,18 +32,26 @@ const PrettyViewer: React.FunctionComponent<PrettyViewerProps> = ({ flight, mode
 	return (
 		<Container>
 			<PrettyRenderSelection
-				autoDetect={showAutoDetect}
+				autoDetect={preferences.autoDetect}
 				selectedLanguage={selectedLanguage}
-				onAutoDetectToggle={() => setShowAutoDetect(!showAutoDetect)}
-				onSelectedLanguageChange={lang => setSelectedLanguage(lang)}
+				onAutoDetectToggle={() => dispatch(actions.requestPreferenceSetResPrettyAutoDetect({
+					id: requestId,
+					mode,
+					autoDetect: !preferences.autoDetect,
+				}))}
+				onSelectedLanguageChange={lang => dispatch(actions.requestPreferenceSetResPrettyLanguage({
+					id: requestId,
+					mode,
+					language: lang,
+				}))}
 			/>
-			{showAutoDetect && renderFormat(flight, detectedFormat, body)}
-			{!showAutoDetect && renderFormat(flight, selectedLanguage, body)}
+			{preferences.autoDetect && renderFormat(detectedFormat, body)}
+			{!preferences.autoDetect && renderFormat(selectedLanguage, body)}
 		</Container>
 	);
 };
 
-function renderFormat(flight: Flight, detectedFormat: string | null, body: Uint8Array) {
+function renderFormat(detectedFormat: string | null, body: Uint8Array) {
 	switch (detectedFormat) {
 		case 'application/json': {
 			const json = new TextDecoder().decode(body);
@@ -114,8 +126,23 @@ function renderFormat(flight: Flight, detectedFormat: string | null, body: Uint8
 		}
 
 		case null:
-		default:
-			return 'unknown';
+		default: {
+			const text = new TextDecoder().decode(body);
+
+			return (
+				<Editor
+					height={'100%'}
+					width={'100%'}
+					language={'text'}
+					theme={'vs-dark'}
+					value={text}
+					options={{
+						...createDefaultOptions(),
+						readOnly: true,
+					}}
+				/>
+			);
+		}
 	}
 }
 

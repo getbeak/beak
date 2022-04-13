@@ -46,7 +46,8 @@
 
 			"required": [
 				"mainTab",
-				"subTab"
+				"subTab",
+				"pretty"
 			],
 
 			"properties": {
@@ -60,6 +61,30 @@
 					"additionalProperties" : {
 						"type" : "string",
 						"minLength": 1
+					}
+				},
+				
+				"pretty": {
+					"type": "object",
+					"additionalProperties" : {
+						"type": "object",
+						"additionalProperties": false,
+
+						"required": [
+							"autoDetect",
+							"language"
+						],
+
+						"properties": {
+							"autoDetect": {
+								"type": "boolean"
+							},
+
+							"language": {
+								"type": ["string", "null"],
+								"minLength": 1
+							}
+						}
 					}
 				}
 			}
