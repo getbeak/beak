@@ -7,6 +7,7 @@ import { convertToEntryJson, convertToRealJson } from '@beak/app/features/json-e
 import { ipcDialogService } from '@beak/app/lib/ipc';
 import actions, { requestBodyTextChanged } from '@beak/app/store/project/actions';
 import { RequestBodyTypeChangedPayload } from '@beak/app/store/project/types';
+import { attemptTextToJson } from '@beak/app/utils/json';
 import { createDefaultOptions } from '@beak/app/utils/monaco';
 import { RequestBodyType, ValidRequestNode, ValueParts } from '@beak/common/types/beak-project';
 import ksuid from '@cuvva/ksuid';
@@ -188,14 +189,6 @@ const TabBody = styled.div<{ $allowVerticalScroll: boolean }>`
 	overflow-y: ${p => p.$allowVerticalScroll ? 'auto' : 'hidden'};
 	height: 100%;
 `;
-
-function attemptTextToJson(input: string) {
-	try {
-		return JSON.parse(input);
-	} catch {
-		return JSON.stringify(input);
-	}
-}
 
 function createEmptyBodyPayload(requestId: string, type: RequestBodyType): RequestBodyTypeChangedPayload {
 	switch (type) {

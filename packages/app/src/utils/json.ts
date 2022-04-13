@@ -5,3 +5,11 @@ export function attemptJsonStringFormat(json: string) {
 		return json;
 	}
 }
+
+export function attemptTextToJson(input: string) {
+	try {
+		return JSON.parse(input);
+	} catch {
+		return JSON.stringify(input);
+	}
+}
