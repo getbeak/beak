@@ -1,7 +1,16 @@
 name: Beak
 
-on: [push, pull_request]
-  
+on:
+  push:
+    branches:
+     - master
+     - develop
+    tags:
+      - v*
+  pull_request:
+    branches:
+      - '*'
+
 jobs:
   build-deploy:
     name: Build, Package, and Deploy
