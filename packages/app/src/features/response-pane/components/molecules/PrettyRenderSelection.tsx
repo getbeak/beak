@@ -25,13 +25,14 @@ const PrettyRenderSelection: React.FunctionComponent<PrettyRenderSelectionProps>
 				value={selectedLanguage ?? 'text/plain'}
 				onChange={e => onSelectedLanguageChange(e.currentTarget.value)}
 			>
-				<option value={'text/plain'}>{'Text'}</option>
+				{/* These values use the mime-type extension */}
+				<option value={'txt'}>{'Text'}</option>
 				<option disabled>{'_________'}</option>
-				<option value={'application/json'}>{'JSON'}</option>
-				<option disabled value={'application/json+viewer'}>{'JSON viewer'}</option>
-				<option value={'application/xml'}>{'XML'}</option>
-				<option value={'text/html'}>{'HTML'}</option>
-				<option value={'text/css'}>{'CSS'}</option>
+				<option value={'json'}>{'JSON'}</option>
+				<option disabled value={'json+viewer'}>{'JSON viewer'}</option>
+				<option value={'xml'}>{'XML'}</option>
+				<option value={'html'}>{'HTML'}</option>
+				<option value={'css'}>{'CSS'}</option>
 				<option disabled>{'_________'}</option>
 				<option disabled>{'Image'}</option>
 				<option disabled>{'Video'}</option>
