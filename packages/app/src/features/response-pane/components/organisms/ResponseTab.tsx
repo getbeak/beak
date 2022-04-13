@@ -13,7 +13,7 @@ import styled from 'styled-components';
 import TabBar from '../../../../components/atoms/TabBar';
 import TabItem from '../../../../components/atoms/TabItem';
 import TabSpacer from '../../../../components/atoms/TabSpacer';
-import ErrorView from './ErrorView';
+import ErrorView from '../molecules/ErrorView';
 import PrettyViewer from './PrettyViewer';
 
 type Tab = typeof tabs[number];
