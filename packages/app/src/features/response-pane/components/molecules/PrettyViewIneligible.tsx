@@ -1,5 +1,5 @@
 import React from 'react';
-import { faBorderNone } from '@fortawesome/free-solid-svg-icons';
+import { faPersonCircleQuestion } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import styled from 'styled-components';
 
@@ -11,7 +11,7 @@ const reasons: Record<NotEligible, Reason> = {
 		description: 'The internal request body is in an invalid format. Report this as a bug.',
 	},
 	request_no_body: {
-		title: 'This request had no body',
+		title: 'This request had no body (to love)',
 		description: 'The request had no body, so you don\'t need to be looking here',
 	},
 	response_no_body: {
@@ -36,7 +36,7 @@ const PrettyViewIneligible: React.FunctionComponent<PrettyViewIneligibleProps> =
 		<Container>
 			<ErrorInformation>
 				<FontAwesomeIcon
-					icon={faBorderNone}
+					icon={faPersonCircleQuestion}
 					opacity={0.4}
 					size={'4x'}
 				/>
