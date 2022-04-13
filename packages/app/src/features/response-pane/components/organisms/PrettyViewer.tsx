@@ -33,6 +33,7 @@ const PrettyViewer: React.FunctionComponent<PrettyViewerProps> = ({ flight, mode
 		<Container>
 			<PrettyRenderSelection
 				autoDetect={preferences.autoDetect}
+				detectedLanguage={detectedFormat}
 				selectedLanguage={selectedLanguage}
 				onAutoDetectToggle={() => dispatch(actions.requestPreferenceSetResPrettyAutoDetect({
 					id: requestId,
@@ -53,7 +54,7 @@ const PrettyViewer: React.FunctionComponent<PrettyViewerProps> = ({ flight, mode
 
 function renderFormat(detectedFormat: string | null, body: Uint8Array) {
 	switch (detectedFormat) {
-		case 'application/json': {
+		case 'json': {
 			const json = new TextDecoder().decode(body);
 
 			return (
@@ -71,7 +72,7 @@ function renderFormat(detectedFormat: string | null, body: Uint8Array) {
 			);
 		}
 
-		case 'application/xml': {
+		case 'xml': {
 			const xml = new TextDecoder().decode(body);
 
 			return (
@@ -89,7 +90,7 @@ function renderFormat(detectedFormat: string | null, body: Uint8Array) {
 			);
 		}
 
-		case 'text/html': {
+		case 'html': {
 			const html = new TextDecoder().decode(body);
 
 			return (
@@ -107,7 +108,7 @@ function renderFormat(detectedFormat: string | null, body: Uint8Array) {
 			);
 		}
 
-		case 'text/css': {
+		case 'css': {
 			const css = new TextDecoder().decode(body);
 
 			return (
@@ -155,7 +156,7 @@ function tryFormatXml(xml: string) {
 }
 
 const Container = styled.div`
-	height: calc(100% - 26px);
+	height: calc(100% - 35px);
 `;
 
 export default React.memo(

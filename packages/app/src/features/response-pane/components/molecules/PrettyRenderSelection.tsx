@@ -2,15 +2,18 @@ import React from 'react';
 import { Select } from '@beak/app/components/atoms/Input';
 import styled from 'styled-components';
 
+const knownLanguages = ['json', 'xml', 'txt', 'html', 'css'];
+
 interface PrettyRenderSelectionProps {
 	autoDetect: boolean;
+	detectedLanguage: string | null;
 	selectedLanguage: string | null;
 	onAutoDetectToggle: () => void;
 	onSelectedLanguageChange: (lang: string) => void;
 }
 
 const PrettyRenderSelection: React.FunctionComponent<PrettyRenderSelectionProps> = props => {
-	const { autoDetect, selectedLanguage, onAutoDetectToggle, onSelectedLanguageChange } = props;
+	const { autoDetect, detectedLanguage, selectedLanguage, onAutoDetectToggle, onSelectedLanguageChange } = props;
 
 	return (
 		<Container>
@@ -22,10 +25,11 @@ const PrettyRenderSelection: React.FunctionComponent<PrettyRenderSelectionProps>
 			<Select
 				disabled={autoDetect}
 				beakSize={'sm'}
-				value={selectedLanguage ?? 'text/plain'}
+				value={autoDetect ? 'auto_detect' : (selectedLanguage ?? 'text/plain')}
 				onChange={e => onSelectedLanguageChange(e.currentTarget.value)}
 			>
 				{/* These values use the mime-type extension */}
+				<option value={'auto_detect'} hidden>{`Auto detect (${renderAutoDetectedLanguage(detectedLanguage)})`}</option>
 				<option value={'txt'}>{'Text'}</option>
 				<option disabled>{'_________'}</option>
 				<option value={'json'}>{'JSON'}</option>
@@ -43,15 +47,20 @@ const PrettyRenderSelection: React.FunctionComponent<PrettyRenderSelectionProps>
 	);
 };
 
+function renderAutoDetectedLanguage(lang: string | null) {
+	if (lang === null)
+		return 'Text';
+
+	return knownLanguages.includes(lang) ? lang.toLocaleUpperCase() : 'Text';
+}
+
 const Container = styled.div`
 	display: flex;
 	align-items: stretch;
 	padding: 5px 10px;
 
 	background: ${p => p.theme.ui.surface};
-	border: 1px solid ${p => p.theme.ui.backgroundBorderSeparator};
-	border-left-width: 0;
-	border-right-width: 0;
+	border-bottom: 1px solid ${p => p.theme.ui.backgroundBorderSeparator};
 
 	font-size: 14px;
 `;
