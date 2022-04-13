@@ -1,20 +1,20 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import BasicTableEditor from '@beak/app/features/basic-table-editor/components/BasicTableEditor';
 import binaryStore from '@beak/app/lib/binary-store';
 import { Flight } from '@beak/app/store/flight/types';
 import { requestPreferenceSetResSubTab } from '@beak/app/store/preferences/actions';
 import { createDefaultOptions } from '@beak/app/utils/monaco';
 import { TypedObject } from '@beak/common/helpers/typescript';
+import ksuid from '@cuvva/ksuid';
 import Editor from '@monaco-editor/react';
 import styled from 'styled-components';
-import ksuid from '@cuvva/ksuid';
 
 import TabBar from '../../../../components/atoms/TabBar';
 import TabItem from '../../../../components/atoms/TabItem';
 import TabSpacer from '../../../../components/atoms/TabSpacer';
 import ErrorView from './ErrorView';
 import PrettyViewer from './PrettyViewer';
-import BasicTableEditor from '@beak/app/features/basic-table-editor/components/BasicTableEditor';
 
 type Tab = typeof tabs[number];
 const tabs = ['headers', 'pretty', 'raw'] as const;
@@ -34,7 +34,7 @@ const ResponseTab: React.FunctionComponent<ResponseTabProps> = props => {
 		return Object.keys(flight.response!.headers)
 			.reduce((acc, val) => ({
 				...acc,
-				[ksuid.generate('x').toString()]: {
+				[ksuid.generate('header').toString()]: {
 					name: val,
 					value: [flight.response!.headers[val]],
 					enabled: true,

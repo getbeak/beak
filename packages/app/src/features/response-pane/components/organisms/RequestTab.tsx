@@ -76,10 +76,7 @@ const RequestTab: React.FunctionComponent<RequestTabProps> = props => {
 
 			<TabBody>
 				{tab === 'headers' && (
-					<BasicTableEditor
-						items={flight.request.headers}
-						readOnly
-					/>
+					<BasicTableEditor items={flight.request.headers} readOnly />
 				)}
 				{tab === 'pretty' && (
 					<PrettyViewer flight={flight} mode={'request'} />
