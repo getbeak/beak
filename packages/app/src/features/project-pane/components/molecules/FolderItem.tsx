@@ -5,6 +5,8 @@ import { checkShortcut } from '@beak/app/lib/keyboard-shortcuts';
 import { projectPanePreferenceSetCollapse } from '@beak/app/store/preferences/actions';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { FolderNode } from '@beak/common/types/beak-project';
+import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import styled from 'styled-components';
 
 import actions from '../../../../store/project/actions';
@@ -96,7 +98,9 @@ const FolderItem: React.FunctionComponent<FolderItemProps> = props => {
 					dispatch(projectPanePreferenceSetCollapse({ key: props.id, collapsed: !collapsed }));
 				}}
 			>
-				<Chevron expanded={!collapsed} />
+				<Chevron $collapsed={collapsed}>
+					<FontAwesomeIcon icon={faChevronRight} />
+				</Chevron>
 				<Renamer node={node} parentRef={element}>
 					{node.name}
 				</Renamer>
@@ -126,8 +130,9 @@ const FolderItem: React.FunctionComponent<FolderItemProps> = props => {
 const Wrapper = styled.div<{ depth: number }>`
 	display: flex;
 	padding: 3px 0;
-	padding-left: ${props => (props.depth * 8) + 11}px;
+	padding-left: ${props => (props.depth * 8) + 7}px;
 	color: ${props => props.theme.ui.textMinor};
+	align-items: center;
 	cursor: pointer;
 	font-size: 13px;
 	line-height: 18px;
@@ -143,19 +148,20 @@ const Wrapper = styled.div<{ depth: number }>`
 	}
 `;
 
-const Chevron = styled.div<{ expanded: boolean }>`
+const Chevron = styled.div<{ $collapsed: boolean }>`
 	display: inline-block;
-	border-right: 1px solid ${props => props.theme.ui.textOnSurfaceBackground};
-	border-bottom: 1px solid ${props => props.theme.ui.textOnSurfaceBackground};
-	width: 5px;
-	height: 5px;
-	margin-top: 6px;
-	margin-right: 5px;
-	margin-left: -5px;
-	transform: rotate(${props => props.expanded ? '45deg' : '-45deg'});
-	transform-origin: 50%;
+	margin-right: 2px;
+	width: 10px;
 
-	margin-bottom: ${props => props.expanded ? '2px' : '1px'};
+	font-size: 9px;
+	line-height: 9px;
+	color: ${p => p.theme.ui.textMinor};
+
+	> svg {
+		transition: transform .2s ease;
+		transform-origin: center center;
+		transform: rotate(${p => p.$collapsed ? '0deg' : '90deg'});
+	}
 `;
 
 export default FolderItem;
