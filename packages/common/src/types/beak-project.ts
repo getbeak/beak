@@ -8,15 +8,13 @@ export interface ProjectFile {
 	version: string;
 }
 
-export interface RequestNodeFile extends RequestOverview {
-	id: string;
+export interface ProjectEncryption {
+	algorithm: 'aes-256-ctr';
+	key: string;
 }
 
-export interface SupersecretFile {
-	encryption: {
-		algo: 'aes-256-ctr';
-		key: string;
-	};
+export interface RequestNodeFile extends RequestOverview {
+	id: string;
 }
 
 export interface Node {

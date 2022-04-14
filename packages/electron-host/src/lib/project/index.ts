@@ -1,16 +1,17 @@
 import { TypedObject } from '@beak/common/helpers/typescript';
-import { ProjectFile, RequestNodeFile, VariableGroup } from '@beak/common/types/beak-project';
+import { ProjectEncryption, ProjectFile, RequestNodeFile, VariableGroup } from '@beak/common/types/beak-project';
 import * as ksuid from '@cuvva/ksuid';
 import { BrowserWindow, dialog, MessageBoxOptions, OpenDialogOptions } from 'electron';
 import * as fs from 'fs-extra';
 import git from 'isomorphic-git';
 import * as path from 'path';
 
-import { setProjectWindowMapping } from '../ipc-layer/fs-shared';
-import { createProjectMainWindow } from '../window-management';
-import { encryptionAlgoVersions, generateKey } from './aes';
-import { addRecentProject } from './beak-hub';
-import persistentStore from './persistent-store';
+import { setProjectWindowMapping } from '../../ipc-layer/fs-shared';
+import { createProjectMainWindow } from '../../window-management';
+import { encryptionAlgoVersions, generateKey } from '../aes';
+import { addRecentProject } from '../beak-hub';
+import { setProjectEncryption } from '../credential-vault';
+import persistentStore from '../persistent-store';
 
 export const windowProjectIdMapping: Record<string, number> = { };
 
@@ -148,13 +149,13 @@ export default async function createProject(options: CreationOptions) {
 	await fs.writeJson(path.join(projectPath, '.beak', 'supersecret.json'), {
 		encryption: {
 			algo: encryptionAlgoVersions['2020-01-25'],
-			key: await generateKey(),
 		},
 	}, { spaces: '\t' });
 	await fs.writeFile(path.join(projectPath, 'README.md'), createReadme(name));
 
-	const projectFilePath = await createProjectFile(projectPath, name);
+	const [projectFile, projectFilePath] = await createProjectFile(projectPath, name);
 
+	await createProjectEncryption(projectFile.id);
 	await initRepoAndCommit(projectPath);
 	await addRecentProject({
 		name,
@@ -172,7 +173,16 @@ async function ensureDirEmpty(path: string) {
 		throw new Error('project directory not empty');
 }
 
-async function createProjectFile(projectPath: string, name: string) {
+async function createProjectEncryption(projectId: string) {
+	const encryption: ProjectEncryption = {
+		algorithm: encryptionAlgoVersions['2020-01-25'],
+		key: await generateKey(),
+	};
+
+	await setProjectEncryption(projectId, JSON.stringify(encryption));
+}
+
+async function createProjectFile(projectPath: string, name: string): Promise<[ProjectFile, string]> {
 	const projectFilePath = path.join(projectPath, 'project.json');
 	const file: ProjectFile = {
 		id: ksuid.generate('project').toString(),
@@ -182,7 +192,7 @@ async function createProjectFile(projectPath: string, name: string) {
 
 	await fs.writeJson(projectFilePath, file, { spaces: '\t' });
 
-	return projectFilePath;
+	return [file, projectFilePath];
 }
 
 function createReadme(name: string) {
@@ -215,6 +225,7 @@ async function initRepoAndCommit(projectPath: string) {
 		await git.add({ fs, dir: projectPath, filepath: relativePath });
 	}
 
+	// TODO(afr): Make this from the current git config?
 	await git.commit({
 		fs,
 		dir: projectPath,
