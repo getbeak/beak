@@ -66,8 +66,8 @@ const CollapsedIndicator = styled.div<{ $collapsed?: boolean }>`
 	padding-left: 2px;
 	width: 10px;
 
-	font-size: 11px;
-	line-height: 11px;
+	font-size: 9px;
+	line-height: 9px;
 	color: ${p => p.theme.ui.textMinor};
 
 	> svg {
