@@ -12,6 +12,7 @@ import { encryptionAlgoVersions, generateKey } from '../aes';
 import { addRecentProject } from '../beak-hub';
 import { setProjectEncryption } from '../credential-vault';
 import persistentStore from '../persistent-store';
+import { checkAndHandleMigrations } from './migrations';
 
 export const windowProjectIdMapping: Record<string, number> = { };
 
@@ -40,6 +41,9 @@ export async function tryOpenProjectFolder(projectFolderPath: string) {
 
 	if (!projectFile.name)
 		return null;
+
+	// Time to migrate for the winter
+	await checkAndHandleMigrations(projectFile, projectFolderPath);
 
 	const projectMappings = persistentStore.get('projectMappings');
 
@@ -187,7 +191,7 @@ async function createProjectFile(projectPath: string, name: string): Promise<[Pr
 	const file: ProjectFile = {
 		id: ksuid.generate('project').toString(),
 		name,
-		version: '0.2.0',
+		version: '0.2.1',
 	};
 
 	await fs.writeJson(projectFilePath, file, { spaces: '\t' });
