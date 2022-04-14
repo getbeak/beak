@@ -3,7 +3,20 @@ import os from 'os';
 
 export const credentialKeys = {
 	auth: 'app.getbeak.beak.auth',
+	projectEncryptionPrefix: 'app.getbeak.beak.project',
 } as const;
+
+export async function getProjectEncryption(projectId: string) {
+	const key = [credentialKeys.projectEncryptionPrefix, projectId].join('.');
+
+	return await getValue(key);
+}
+
+export async function setProjectEncryption(projectId: string, encryption: string) {
+	const key = [credentialKeys.projectEncryptionPrefix, projectId].join('.');
+
+	await setKeyValue(key, encryption);
+}
 
 export async function getBeakAuth() {
 	return await getValue(credentialKeys.auth);
