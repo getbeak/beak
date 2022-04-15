@@ -1,4 +1,4 @@
-import { openProjectDialog } from '@beak/electron-host/lib/beak-project';
+import { openProjectDialog } from '@beak/electron-host/lib/project';
 import { createPreferencesWindow, createWelcomeWindow } from '@beak/electron-host/window-management';
 import { MenuItemConstructorOptions } from 'electron';
 

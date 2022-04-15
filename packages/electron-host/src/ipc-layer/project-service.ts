@@ -6,7 +6,7 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 
 import { addRecentProject } from '../lib/beak-hub';
-import createProject, { openProjectDialog, tryOpenProjectFolder } from '../lib/beak-project';
+import createProject, { openProjectDialog, tryOpenProjectFolder } from '../lib/project';
 import { closeWindow, createProjectMainWindow, tryCloseWelcomeWindow, windowStack } from '../window-management';
 import { setProjectWindowMapping } from './fs-shared';
 

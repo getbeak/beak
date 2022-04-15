@@ -35,18 +35,25 @@ export default function* workerStartProject() {
 		yield put(loadTabState());
 	} catch (error) {
 		if (error instanceof Error) {
-			if (error.message === 'Unsupported project version') {
+			if (error.message === 'Legacy project detected') {
 				yield call([ipcDialogService, ipcDialogService.showMessageBox], {
-					type: 'error',
+					type: 'warning',
 					title: 'Unsupported project version',
-					message: 'The project you opened is no longer supported by Beak',
+					message: 'The project you opened is no longer supported by Beak, it should have been automatically updated.',
+					detail: 'Message @beakapp on twitter for support.',
+				});
+			} else if (error.message === 'Future project detected') {
+				yield call([ipcDialogService, ipcDialogService.showMessageBox], {
+					type: 'warning',
+					title: 'Unsupported project version',
+					message: 'The project you opened can\'t be opened by this version of Beak. Please check for updates and try again.',
 					detail: 'Message @beakapp on twitter for support.',
 				});
 			} else {
 				yield call([ipcDialogService, ipcDialogService.showMessageBox], {
 					type: 'error',
 					title: 'Project failed to open',
-					message: 'There was a problem loading the Beak project. ',
+					message: 'There was a problem loading the Beak project.',
 					detail: [
 						error.message,
 						error.stack,

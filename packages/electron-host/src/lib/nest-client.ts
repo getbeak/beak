@@ -9,13 +9,10 @@ import Squawk from '@beak/common/utils/squawk';
 import crpc, { Client } from 'crpc';
 import crypto from 'crypto';
 import { getFingerprint } from 'hw-fingerprint';
-import keytar from 'keytar';
-import os from 'os';
 
+import { getBeakAuth, setBeakAuth } from './credential-vault';
 import logger from './logger';
 import persistentStore from './persistent-store';
-
-const authDataKey = 'app.getbeak.beak.auth';
 
 class NestClient {
 	private client: Client;
@@ -33,7 +30,7 @@ class NestClient {
 		let auth: string | null = null;
 
 		try {
-			auth = await keytar.getPassword(os.userInfo().username, authDataKey);
+			auth = await getBeakAuth();
 		} catch (error) {
 			// This happens if the app doesn't have permission to access the secure credential file
 			if (error instanceof Error && error.message === 'UNIX[No such file or directory]') {
@@ -61,7 +58,7 @@ class NestClient {
 
 	async setAuth(auth: AuthenticateUserResponse | null) {
 		try {
-			await keytar.setPassword(os.userInfo().username, authDataKey, JSON.stringify(auth));
+			await setBeakAuth(JSON.stringify(auth));
 		} catch (error) {
 			logger.error('Unable to set authentication credentials', error);
 		}

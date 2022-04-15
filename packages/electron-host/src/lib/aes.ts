@@ -1,13 +1,19 @@
-import { SupersecretFile } from '@beak/common/types/beak-project';
+import {
+	ProjectEncryption,
+	ProjectFile,
+} from '@beak/common/types/beak-project';
 import crypto, { Cipher, Decipher } from 'crypto';
 import fs from 'fs-extra';
 import path from 'path';
 import { promisify } from 'util';
 
+import { getProjectEncryption, setProjectEncryption } from './credential-vault';
+import logger from './logger';
+
 const aesAlgo = 'aes-256-ctr'; // 256 bit counter, very nice :borat:
 const scrypt = promisify(crypto.scrypt);
 
-export const encryptionAlgoVersions: Record<string, string> = {
+export const encryptionAlgoVersions: Record<string, typeof aesAlgo> = {
 	'2020-01-25': aesAlgo,
 };
 
@@ -63,27 +69,55 @@ export async function decryptString(payload: string, key: string, iv: string) {
 }
 
 export async function readProjectEncryptionKey(projectPath: string) {
-	const supersecretFile = path.join(projectPath, '.beak', 'supersecret.json');
+	// TODO(afr): This should probably be cached one day... but not today
+	const projectFile = path.join(projectPath, 'project.json');
 
 	// eslint-disable-next-line no-sync
-	if (!fs.existsSync(supersecretFile))
+	if (!fs.existsSync(projectFile))
 		return null;
 
-	const file = await fs.readJson(supersecretFile) as SupersecretFile;
+	const file = await fs.readJson(projectFile) as ProjectFile;
+	const projectId = file.id;
 
-	return file.encryption.key;
+	if (!projectId)
+		return null;
+
+	const encryption = await getProjectEncryption(projectId);
+
+	if (!encryption)
+		return null;
+
+	try {
+		const parsed = JSON.parse(encryption) as ProjectEncryption;
+
+		return parsed.key;
+	} catch (error) {
+		logger.error('aes: unable to parse project encryption data', error);
+
+		return null;
+	}
 }
 
 export async function writeProjectEncryptionKey(key: string, projectPath: string) {
-	const supersecretFilePath = path.join(projectPath, '.beak', 'supersecret.json');
-	const supersecretFile: SupersecretFile = {
-		encryption: {
-			algo: aesAlgo,
-			key,
-		},
+	// TODO(afr): This should probably be cached one day... but not today
+	const projectFile = path.join(projectPath, 'project.json');
+
+	// eslint-disable-next-line no-sync
+	if (!fs.existsSync(projectFile))
+		return false;
+
+	const file = await fs.readJson(projectFile) as ProjectFile;
+	const projectId = file.id;
+
+	if (!projectId)
+		return false;
+
+	const encryption: ProjectEncryption = {
+		algorithm: aesAlgo,
+		key,
 	};
 
-	await fs.writeJson(supersecretFilePath, supersecretFile, { spaces: '\t' });
+	await setProjectEncryption(projectId, JSON.stringify(encryption));
 
 	return true;
 }
