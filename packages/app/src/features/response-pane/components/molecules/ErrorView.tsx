@@ -1,5 +1,5 @@
 import React from 'react';
-import { faTriangleExclamation } from '@fortawesome/free-solid-svg-icons';
+import { faCloudBolt } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import styled from 'styled-components';
 
@@ -11,7 +11,7 @@ const ErrorView: React.FunctionComponent<ErrorViewProps> = ({ error }) => (
 	<Wrapper>
 		<Content>
 			<FontAwesomeIcon
-				icon={faTriangleExclamation}
+				icon={faCloudBolt}
 				opacity={0.4}
 				size={'4x'}
 			/>
@@ -39,15 +39,14 @@ const Content = styled.div`
 `;
 
 const Title = styled.div`
-	font-size: 25px;
-	margin-top: 15px;
-	color: ${p => p.theme.ui.textMinor};
-	opacity: 0.6;
+	font-size: 23px;
+	margin: 10px 0;
+	font-weight: 300;
+	color: ${p => p.theme.ui.textOnSurfaceBackground};
 `;
 
 const ErrorMessage = styled.div`
-	margin-top: 15px;
-	font-size: 16px;
+	font-size: 13px;
 	color: ${p => p.theme.ui.textMinor};
 `;
 

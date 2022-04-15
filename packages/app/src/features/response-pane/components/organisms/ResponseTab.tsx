@@ -1,19 +1,23 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import BasicTableEditor from '@beak/app/features/basic-table-editor/components/BasicTableEditor';
 import binaryStore from '@beak/app/lib/binary-store';
 import { Flight } from '@beak/app/store/flight/types';
+import { requestPreferenceSetResSubTab } from '@beak/app/store/preferences/actions';
 import { createDefaultOptions } from '@beak/app/utils/monaco';
 import { TypedObject } from '@beak/common/helpers/typescript';
+import ksuid from '@cuvva/ksuid';
 import Editor from '@monaco-editor/react';
-import mime from 'mime-types';
 import styled from 'styled-components';
 
 import TabBar from '../../../../components/atoms/TabBar';
 import TabItem from '../../../../components/atoms/TabItem';
 import TabSpacer from '../../../../components/atoms/TabSpacer';
-import EnrichedTab from './EnrichedTab';
-import ErrorView from './ErrorView';
+import ErrorView from '../molecules/ErrorView';
+import PrettyViewer from './PrettyViewer';
 
-type Tab = 'raw' | 'enriched';
+type Tab = typeof tabs[number];
+const tabs = ['headers', 'pretty', 'raw'] as const;
 
 export interface ResponseTabProps {
 	flight: Flight;
@@ -21,20 +25,61 @@ export interface ResponseTabProps {
 
 const ResponseTab: React.FunctionComponent<ResponseTabProps> = props => {
 	const { flight } = props;
-	const { error, response } = flight;
+	const dispatch = useDispatch();
+	const { error, response, requestId } = flight;
 	const hasErrored = Boolean(error);
-	const enrichable = canEnrich(flight);
-	const [tab, setTab] = useState<Tab>(enrichable ? 'enriched' : 'raw');
+	const tab = useSelector(s => s.global.preferences.requests[requestId]?.response.subTab.response) as Tab | undefined;
 
+	function convertHeaderFormat() {
+		return Object.keys(flight.response!.headers)
+			.reduce((acc, val) => ({
+				...acc,
+				[ksuid.generate('header').toString()]: {
+					name: val,
+					value: [flight.response!.headers[val]],
+					enabled: true,
+				},
+			}), {});
+	}
+
+	// Ensure we have a valid tab
 	useEffect(() => {
-		if (tab === 'enriched' && !enrichable)
-			setTab('raw');
-	}, [tab, enrichable]);
+		if (hasErrored) {
+			dispatch(requestPreferenceSetResSubTab({ id: requestId, tab: 'response', subTab: 'raw' }));
+
+			return;
+		}
+
+		if (!tab || !tabs.includes(tab))
+			dispatch(requestPreferenceSetResSubTab({ id: requestId, tab: 'response', subTab: 'pretty' }));
+	}, [tab, flight.flightId]);
+
+	function setTab(tab: Tab) {
+		dispatch(requestPreferenceSetResSubTab({ id: requestId, tab: 'response', subTab: tab }));
+	}
 
 	return (
 		<Container>
 			<TabBar centered>
 				<TabSpacer />
+				{!hasErrored && (
+					<React.Fragment>
+						<TabItem
+							active={tab === 'headers'}
+							size={'sm'}
+							onClick={() => setTab('headers')}
+						>
+							{'Headers'}
+						</TabItem>
+						<TabItem
+							active={tab === 'pretty'}
+							size={'sm'}
+							onClick={() => setTab('pretty')}
+						>
+							{'Pretty'}
+						</TabItem>
+					</React.Fragment>
+				)}
 				<TabItem
 					active={tab === 'raw'}
 					size={'sm'}
@@ -42,19 +87,19 @@ const ResponseTab: React.FunctionComponent<ResponseTabProps> = props => {
 				>
 					{hasErrored ? 'Error' : 'Raw'}
 				</TabItem>
-				{enrichable && (
-					<TabItem
-						active={tab === 'enriched'}
-						size={'sm'}
-						onClick={() => setTab('enriched')}
-					>
-						{'Enriched'}
-					</TabItem>
-				)}
 				<TabSpacer />
 			</TabBar>
 
 			<TabBody>
+				{tab === 'headers' && (
+					<BasicTableEditor
+						items={convertHeaderFormat()}
+						readOnly
+					/>
+				)}
+				{tab === 'pretty' && (
+					<PrettyViewer flight={flight} mode={'response'} />
+				)}
 				{tab === 'raw' && (
 					<React.Fragment>
 						{response && (
@@ -70,13 +115,8 @@ const ResponseTab: React.FunctionComponent<ResponseTabProps> = props => {
 								}}
 							/>
 						)}
-						{error && (
-							<ErrorView error={error} />
-						)}
+						{error && <ErrorView error={error} />}
 					</React.Fragment>
-				)}
-				{enrichable && tab === 'enriched' && (
-					<EnrichedTab flight={flight} />
 				)}
 			</TabBody>
 		</Container>
@@ -119,16 +159,6 @@ function createHttpResponseMessage(flight: Flight) {
 	}
 
 	return lines.join('\n');
-}
-
-function canEnrich(flight: Flight) {
-	if (!flight.response?.hasBody)
-		return false;
-
-	const contentType = flight.response!.headers['content-type'];
-	const extension = mime.extension(contentType);
-
-	return extension === 'json';
 }
 
 export default ResponseTab;

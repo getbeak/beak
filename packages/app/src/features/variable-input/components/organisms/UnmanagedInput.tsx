@@ -27,6 +27,7 @@ const Input = styled.article`
 	border: 1px solid ${p => p.theme.ui.backgroundBorderSeparator};
 	white-space: nowrap;
 	overflow: hidden;
+	user-select: text;
 
 	> * {
 		display:inline;

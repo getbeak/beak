@@ -7,3 +7,7 @@ export function getStatusReasonPhrase(status: number) {
 		return '';
 	}
 }
+
+export function requestAllowsBody(verb: string) {
+	return !['get', 'head'].includes(verb.toLowerCase());
+}
