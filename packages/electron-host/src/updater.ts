@@ -4,11 +4,16 @@ import { autoUpdater, UpdateInfo } from 'electron-updater';
 import logger from './lib/logger';
 import { createAndSetMenu } from './utils/menu';
 
+let pendingUpdate: UpdateInfo | null = null;
+
 autoUpdater.logger = logger;
 autoUpdater.autoDownload = true;
+autoUpdater.autoInstallOnAppQuit = true;
 
 // We only want to show the user this when the update is ready to go
 autoUpdater.on('update-downloaded', async (event: UpdateInfo) => {
+	pendingUpdate = event;
+
 	// Update menu to say update is ready
 	createAndSetMenu();
 
@@ -25,3 +30,7 @@ autoUpdater.on('update-downloaded', async (event: UpdateInfo) => {
 	if (response === 1)
 		autoUpdater.quitAndInstall();
 });
+
+export function getPendingUpdate() {
+	return pendingUpdate;
+}
