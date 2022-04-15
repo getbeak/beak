@@ -36,7 +36,6 @@ export default function useFlightStatus(): FlightStatus {
 		return { status: 'pending' };
 	}, [
 		currentFlight?.flightId,
-		currentFlight?.finish,
 		currentFlight?.flighting,
 		currentFlight?.lastUpdate,
 	]);

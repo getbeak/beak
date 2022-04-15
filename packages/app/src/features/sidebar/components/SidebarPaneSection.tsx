@@ -49,6 +49,8 @@ const SidebarPaneSection: React.FunctionComponent<SidebarPaneSectionProps> = pro
 		<React.Fragment>
 			<SectionHeader
 				actions={actions}
+				collapsed={uiCollapsed}
+				disableCollapse={disableCollapse}
 				onClick={setCollapsedProxy}
 			>
 				{title}
