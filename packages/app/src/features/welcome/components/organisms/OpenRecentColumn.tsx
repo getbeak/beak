@@ -55,7 +55,7 @@ const OpenRecentColumn: React.FunctionComponent = () => {
 			<NewsBannerContainer />
 
 			<ColumnTitle>{'Open recent'}</ColumnTitle>
-			<ScrollViewer>
+			<ScrollViewer tabIndex={-1}>
 				<ScrollViewerInner tabIndex={-1}>
 					{noRecents && 'No recent projects, create one to get started'}
 					{categories.filter(k => recents[k].length > 0).map(k => (

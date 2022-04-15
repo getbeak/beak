@@ -18,7 +18,14 @@ const RecentEntry: React.FunctionComponent<RecentEntryProps> = props => {
 	const path = pathIsGoingToBeAnAsshole ? props.path.substring(1) : props.path;
 
 	return (
-		<Wrapper onClick={() => props.onClick()}>
+		<Wrapper
+			onClick={() => props.onClick()}
+			onKeyDown={event => {
+				if (event.key === 'Enter')
+					props.onClick();
+			}}
+			tabIndex={0}
+		>
 			<Icon>
 				<FontAwesomeIcon
 					size={'1x'}
@@ -50,9 +57,10 @@ const Wrapper = styled.div`
 		cursor: pointer;
 	}
 
-	&:active {
+	&:active, &:focus {
 		background: ${props => props.theme.ui.surfaceHighlight};
 		transform: scale(0.99);
+		outline: 0;
 	}
 `;
 

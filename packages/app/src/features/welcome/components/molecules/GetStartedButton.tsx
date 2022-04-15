@@ -70,9 +70,10 @@ const Button = styled.button`
 			background: ${props => props.theme.ui.surfaceHighlight};
 		}
 
-		&:active {
+		&:active, &:focus {
 			background: ${props => props.theme.ui.background};
 			transform: scale(0.98);
+			outline: 0;
 		}
 	}
 `;
