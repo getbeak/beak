@@ -60,7 +60,7 @@ app.on('ready', () => {
 
 	createAndSetMenu();
 	arbiter.start();
-	autoUpdater.checkForUpdatesAndNotify();
+	autoUpdater.checkForUpdates();
 	createOrFocusDefaultWindow();
 
 	if (appIsPackaged)
