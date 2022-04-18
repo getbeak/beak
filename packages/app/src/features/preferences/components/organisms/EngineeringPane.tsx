@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Button from '@beak/app/components/atoms/Button';
+import { Select } from '@beak/app/components/atoms/Input';
 import { ipcNestService, ipcPreferencesService } from '@beak/app/lib/ipc';
 
 import { ItemGroup, ItemLabel, ItemSpacer } from '../atoms/item';
@@ -18,7 +19,7 @@ const EngineeringPane: React.FunctionComponent = () => {
 		<Pane title={'Shhh...'}>
 			<ItemGroup>
 				<ItemLabel>{'Environment:'}</ItemLabel>
-				<select
+				<Select
 					disabled={environment === void 0}
 					value={environment}
 					onChange={e => {
@@ -28,7 +29,7 @@ const EngineeringPane: React.FunctionComponent = () => {
 				>
 					<option value={'prod'}>{'Production'}</option>
 					<option value={'nonprod'}>{'Non-production'}</option>
-				</select>
+				</Select>
 			</ItemGroup>
 
 			<ItemGroup>
