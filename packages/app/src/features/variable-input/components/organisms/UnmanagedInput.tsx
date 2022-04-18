@@ -33,4 +33,8 @@ const Input = styled.article`
 		display:inline;
 		white-space:nowrap;
 	}
+
+	br {
+		display: none;
+	}
 `;
