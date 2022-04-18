@@ -32,7 +32,7 @@ export default {
 
 	getValue: async (ctx, item) => {
 		// handle legacy
-		if (item.datum) {
+		if (item.datum !== void 0) {
 			return await ipcEncryptionService.decryptString({
 				iv: item.iv,
 				payload: item.datum,
@@ -55,7 +55,7 @@ export default {
 		}],
 
 		load: async (_ctx, item) => {
-			if (item.datum) {
+			if (item.datum !== void 0) {
 				const decrypted = await ipcEncryptionService.decryptString({
 					iv: item.iv,
 					payload: item.datum,
