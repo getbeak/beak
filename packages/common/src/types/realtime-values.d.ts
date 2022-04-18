@@ -1,3 +1,5 @@
+import { ValueParts } from './beak-project';
+
 /* eslint-disable @typescript-eslint/indent */
 export type RealtimeValuePart =
 	Base64EncodedRtv |
@@ -18,7 +20,7 @@ export type RealtimeValuePart =
 export interface Base64EncodedRtv {
 	type: 'base64_encoded';
 	payload: {
-		input: string;
+		input: ValueParts;
 		characterSet: 'base64' | 'websafe_base64';
 		removePadding: boolean;
 	};
@@ -31,7 +33,7 @@ export interface CharacterTab { type: 'character_tab'; payload: void }
 export interface DigestRtv {
 	type: 'digest';
 	payload: {
-		input: string;
+		input: ValueParts;
 		algorithm: 'SHA-1' | 'SHA-256' | 'SHA-384' | 'SHA-512';
 		hmac?: string;
 	};
@@ -54,7 +56,10 @@ export interface SecureRtv {
 	type: 'secure';
 	payload: {
 		iv: string;
-		datum: string;
+		cipherText: string;
+
+		/** @deprecated use cipherText now */
+		datum?: string;
 	};
 }
 

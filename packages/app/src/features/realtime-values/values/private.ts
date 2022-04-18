@@ -1,12 +1,14 @@
 import { ipcEncryptionService, ipcFsService } from '@beak/app/lib/ipc';
+import { ValueParts } from '@beak/common/types/beak-project';
 import { PrivateRtv } from '@beak/common/types/realtime-values';
 import ksuid from '@cuvva/ksuid';
 import path from 'path-browserify';
 
+import { parseValueParts } from '../parser';
 import { RealtimeValue } from '../types';
 
 interface EditorState {
-	value: string;
+	value: ValueParts;
 }
 
 const type = 'private';
@@ -31,21 +33,21 @@ export default {
 		};
 	},
 
-	getValue: async (_ctx, item) => {
+	getValue: async (ctx, item) => {
 		// Get from private store
-		const datumPath = createPath(item.identifier);
-		const exists = await ipcFsService.pathExists(datumPath);
-		const datum = exists ? await ipcFsService.readText(datumPath) : null;
+		const cipherTextPath = createPath(item.identifier);
+		const exists = await ipcFsService.pathExists(cipherTextPath);
+		const cipherText = exists ? await ipcFsService.readText(cipherTextPath) : null;
 
-		if (!datum)
+		if (!cipherText)
 			return '';
 
-		const decrypted = await ipcEncryptionService.decryptString({
+		const decrypted = await ipcEncryptionService.decryptObject<ValueParts>({
 			iv: item.iv,
-			payload: datum,
+			payload: cipherText,
 		});
 
-		return decrypted;
+		return await parseValueParts(ctx, decrypted);
 	},
 
 	editor: {
@@ -57,16 +59,16 @@ export default {
 
 		load: async (_ctx, item) => {
 			// Get from private store
-			const datumPath = createPath(item.identifier);
-			const exists = await ipcFsService.pathExists(datumPath);
-			const datum = exists ? await ipcFsService.readText(datumPath) : null;
+			const cipherTextPath = createPath(item.identifier);
+			const exists = await ipcFsService.pathExists(cipherTextPath);
+			const cipherText = exists ? await ipcFsService.readText(cipherTextPath) : null;
 
-			if (!datum)
-				return '';
+			if (!cipherText)
+				return { value: [] };
 
-			const decrypted = await ipcEncryptionService.decryptString({
+			const decrypted = await ipcEncryptionService.decryptObject<ValueParts>({
 				iv: item.iv,
-				payload: datum,
+				payload: cipherText,
 			});
 
 			return { value: decrypted };
@@ -75,13 +77,13 @@ export default {
 		save: async (_ctx, item, state) => {
 			// We want to generate a new IV every time
 			const iv = await ipcEncryptionService.generateIv();
-			const datum = await ipcEncryptionService.encryptString({
+			const cipherText = await ipcEncryptionService.encryptObject({
 				iv,
 				payload: state.value,
 			});
 
 			// Write to private store
-			await ipcFsService.writeText(createPath(item.identifier), datum);
+			await ipcFsService.writeText(createPath(item.identifier), cipherText);
 
 			return { iv, identifier: item.identifier };
 		},
