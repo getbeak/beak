@@ -29,8 +29,8 @@ export default {
 	}),
 
 	getValue: async (ctx, payload) => {
-		const legacy = Array.isArray(payload.input);
-		const input = legacy ? [payload.input as unknown as string] : payload.input;
+		const isArray = Array.isArray(payload.input);
+		const input = isArray ? payload.input : [payload.input as unknown as string];
 
 		const parsed = await parseValueParts(ctx, input);
 		let encoded = btoa(parsed);
@@ -67,11 +67,11 @@ export default {
 		}],
 
 		load: async (_ctx, item) => {
-			const legacy = Array.isArray(item.input);
+			const isArray = Array.isArray(item.input);
 
 			return {
 				characterSet: item.characterSet,
-				input: legacy ? [item.input] : item.input,
+				input: isArray ? item.input : [item.input],
 				removePadding: item.removePadding,
 			};
 		},

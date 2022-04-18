@@ -48,6 +48,7 @@ const Title = styled.div`
 const ErrorMessage = styled.div`
 	font-size: 13px;
 	color: ${p => p.theme.ui.textMinor};
+	overflow-wrap: anywhere;
 `;
 
 export default ErrorView;

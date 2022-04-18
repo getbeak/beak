@@ -30,8 +30,8 @@ export default {
 
 	getValue: async (ctx, payload) => {
 		const { algorithm, input, hmac } = payload;
-		const legacy = Array.isArray(input);
-		const parsed = await parseValueParts(ctx, legacy ? [input as unknown as string] : input);
+		const isArray = Array.isArray(input);
+		const parsed = await parseValueParts(ctx, isArray ? input : [input as unknown as string]);
 
 		const buf = new ArrayBuffer(parsed.length * 2);
 		const bufView = new Uint16Array(buf);

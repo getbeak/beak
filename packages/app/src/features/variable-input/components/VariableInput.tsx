@@ -37,7 +37,7 @@ export interface VariableInputProps {
 	onUrlQueryStringDetection?: () => void;
 }
 
-const VariableInput: React.FunctionComponent<VariableInputProps> = props => {
+const VariableInput = React.forwardRef<HTMLElement, VariableInputProps>((props, forwardedRef) => {
 	const { disabled, requestId, placeholder, parts: incomingParts, onChange, readOnly } = props;
 	const dispatch = useDispatch();
 
@@ -59,6 +59,9 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = props => {
 	useEffect(() => {
 		if (!editableRef.current)
 			return;
+
+		if (forwardedRef && typeof forwardedRef === 'function')
+			forwardedRef(editableRef.current);
 
 		const elem = editableRef.current;
 
@@ -480,7 +483,7 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = props => {
 			)}
 		</Wrapper>
 	);
-};
+});
 
 const Wrapper = styled.div`
 	position: relative;
