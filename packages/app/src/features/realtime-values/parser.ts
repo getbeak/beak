@@ -5,10 +5,13 @@ import { ValueParts } from '@beak/common/types/beak-project';
 import { getRealtimeValue } from '.';
 import { Context } from './types';
 
-export async function parseValueParts(ctx: Context, parts: ValueParts) {
+export async function parseValueParts(ctx: Context, parts: ValueParts): Promise<string> {
 	const out = await Promise.all(parts.map(async p => {
 		if (typeof p === 'string')
 			return p;
+
+		if (Array.isArray(p))
+			return await parseValueParts(ctx, p);
 
 		if (typeof p !== 'object')
 			return `[Unknown value part ${p}:(${typeof p})]`;
@@ -24,7 +27,7 @@ export async function parseValueParts(ctx: Context, parts: ValueParts) {
 	return out.join('');
 }
 
-export function getValueString(ctx: Context, itemId: string) {
+export function getValueParts(ctx: Context, itemId: string) {
 	return getValueObject(ctx, itemId);
 }
 
