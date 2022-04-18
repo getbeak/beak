@@ -26,10 +26,6 @@ export default {
 		},
 	}),
 
-	createValuePart: (_ctx, payload) => ({
-		type,
-		payload,
-	}),
 
 	getValue: async (_ctx, payload) => {
 		const buf = new ArrayBuffer(payload.input.length * 2);

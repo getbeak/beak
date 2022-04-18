@@ -31,11 +31,6 @@ export default {
 		};
 	},
 
-	createValuePart: (_ctx, item) => ({
-		type,
-		payload: item,
-	}),
-
 	getValue: async (_ctx, item) => {
 		// Get from private store
 		const datumPath = createPath(item.identifier);

@@ -18,11 +18,6 @@ export default {
 		throw new Error('Not supported, this should not happen.');
 	},
 
-	createValuePart: (_ctx, item) => ({
-		type,
-		payload: item,
-	}),
-
 	getValue: async (ctx, item) => await parseValueParts(
 		ctx,
 		getValueString(ctx, item.itemId) || [],
@@ -41,10 +36,6 @@ export function createFauxValue(item: VariableGroupItemRtv['payload'], variableG
 			type,
 			payload: item,
 		}),
-
-		createValuePart: () => {
-			throw new Error('Not supported, this should not happen.');
-		},
 
 		getValue: () => {
 			throw new Error('Not supported, this should not happen.');

@@ -28,10 +28,6 @@ export default {
 		};
 	},
 
-	createValuePart: (_ctx, item) => ({
-		type,
-		payload: item,
-	}),
 
 	getValue: async (_ctx, item) => {
 		const decrypted = await ipcEncryptionService.decryptString({

@@ -17,11 +17,6 @@ export default {
 		payload: void 0,
 	}),
 
-	createValuePart: () => ({
-		type,
-		payload: void 0,
-	}),
-
 	getValue: async () => {
 		const array = new Uint8Array(10);
 

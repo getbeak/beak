@@ -26,10 +26,6 @@ export default {
 		},
 	}),
 
-	createValuePart: (_ctx, payload) => ({
-		type,
-		payload,
-	}),
 
 	getValue: async (_ctx, payload) => {
 		let encoded = btoa(payload.input);

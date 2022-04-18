@@ -12,7 +12,6 @@ export interface RealtimeValue<
 	sensitive: boolean;
 
 	initValuePart: (ctx: Context) => Promise<T>;
-	createValuePart: (ctx: Context, payload: T['payload']) => T;
 
 	getValue: (ctx: Context, payload: T['payload']) => Promise<string>;
 
