@@ -229,6 +229,7 @@ const VariableInput = React.forwardRef<HTMLElement, VariableInputProps>((props, 
 				let originalTextContent = (n.textContent || '').replaceAll(/(?:[\u00a0]+)/g, '');
 
 				// Handle optional query string detection here
+				// TODO(afr): Pass query body back to parent component
 				if (props.onUrlQueryStringDetection && originalTextContent.includes('?')) {
 					const textContext = originalTextContent.replaceAll('?', '');
 
