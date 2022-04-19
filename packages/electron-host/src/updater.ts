@@ -5,7 +5,7 @@ import logger from './lib/logger';
 import persistentStore from './lib/persistent-store';
 import { createAndSetMenu } from './utils/menu';
 
-const latestReleaseNotes = 'https://beakapp.notion.site/Releases-eb40abfe505b45fb81bd5e7b08aced20';
+export const latestReleaseNotes = 'https://beakapp.notion.site/Releases-eb40abfe505b45fb81bd5e7b08aced20';
 let pendingUpdate: UpdateInfo | null = null;
 
 autoUpdater.logger = logger;
@@ -43,6 +43,8 @@ export async function attemptShowPostUpdateWelcome() {
 
 	if (version === latestKnownVersion)
 		return;
+
+	persistentStore.set('latestKnownVersion', version);
 
 	const { response } = await dialog.showMessageBox({
 		title: 'Beak has updated!',
