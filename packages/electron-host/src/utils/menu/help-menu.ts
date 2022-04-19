@@ -17,6 +17,13 @@ export default function generateHelpMenu(ctx: Context): MenuItemConstructorOptio
 				await shell.openPath(path.join(app.getPath('userData'), 'logs', 'main'));
 			},
 		},
+		{ type: 'separator' },
+		{
+			label: 'Join Slack community',
+			click: async () => {
+				await shell.openExternal('https://join.slack.com/t/beakapp/shared_invite/zt-17egog9mp-Zy5nAengWuJCdPud3Y1idA');
+			},
+		},
 		{
 			label: 'Documentation',
 			click: async () => {
