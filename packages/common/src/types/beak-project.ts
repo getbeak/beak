@@ -17,9 +17,11 @@ export interface RequestNodeFile extends RequestOverview {
 	id: string;
 }
 
+export type NodeType = 'folder' | 'request';
+
 export interface Node {
 	id: string;
-	type: 'folder' | 'request';
+	type: NodeType;
 	name: string;
 	filePath: string;
 	parent: string | null;

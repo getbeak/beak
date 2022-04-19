@@ -8,6 +8,7 @@ import {
 	CreateNewThing,
 	DuplicateRequestPayload,
 	LatestWrite,
+	MoveNodePayload,
 	ProjectInfoPayload,
 	ProjectOpenedPayload,
 	RemoveNodeFromDiskPayload,
@@ -54,6 +55,7 @@ export const requestHeaderRemoved = createAction<ToggleableItemRemovedPayload>(A
 export const duplicateRequest = createAction<DuplicateRequestPayload>(AT.DUPLICATE_REQUEST);
 export const insertRequestNode = createAction<Nodes>(AT.INSERT_REQUEST_NODE);
 export const insertFolderNode = createAction<Nodes>(AT.INSERT_FOLDER_NODE);
+export const moveNode = createAction<MoveNodePayload>(AT.MOVE_NODE);
 
 export const removeNodeFromStore = createAction<string>(AT.REMOVE_NODE_FROM_STORE);
 export const removeNodeFromStoreByPath = createAction<string>(AT.REMOVE_NODE_FROM_STORE_BY_PATH);
@@ -139,6 +141,7 @@ export default {
 	duplicateRequest,
 	insertRequestNode,
 	insertFolderNode,
+	moveNode,
 
 	removeNodeFromStore,
 	removeNodeFromStoreByPath,

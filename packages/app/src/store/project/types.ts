@@ -19,6 +19,7 @@ export const ActionTypes = {
 	DUPLICATE_REQUEST: '@beak/global/project/DUPLICATE_REQUEST',
 	INSERT_REQUEST_NODE: '@beak/global/project/INSERT_REQUEST_NODE',
 	INSERT_FOLDER_NODE: '@beak/global/project/INSERT_FOLDER_NODE',
+	MOVE_NODE: '@beak/global/project/MOVE_NODE',
 
 	REMOVE_NODE_FROM_STORE: '@beak/global/project/REMOVE_NODE_FROM_STORE',
 	REMOVE_NODE_FROM_STORE_BY_PATH: '@beak/global/project/REMOVE_NODE_FROM_STORE_BY_PATH',
@@ -125,6 +126,11 @@ export interface RequestRenameResolved extends RequestIdPayload { }
 export interface RequestRenameUpdated extends RequestIdPayload { name: string }
 
 export interface DuplicateRequestPayload extends RequestIdPayload { }
+
+export interface MoveNodePayload {
+	sourceNodeId: string;
+	destinationNodeId: string;
+}
 
 export interface RemoveNodeFromDiskPayload extends RequestIdPayload {
 	withConfirmation: boolean;
