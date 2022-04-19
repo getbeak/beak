@@ -13,8 +13,6 @@ export async function moveNodesOnDisk(sourceNode: Nodes, destinationNode: Nodes)
 	// dirt -> file :: dest->filename
 	// dirt -> dirt :: dest->foldername
 
-	console.log(sourcePath, sourceName, destinationPath);
-
 	await ipcFsService.move(sourcePath, destinationPath);
 }
 
