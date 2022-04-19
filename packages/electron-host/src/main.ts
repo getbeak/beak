@@ -18,6 +18,7 @@ import {
 	createWelcomeWindow,
 	windowStack,
 } from './window-management';
+import { attemptShowPostUpdateWelcome } from './updater';
 
 init({
 	dsn: 'https://5118444e09d74b03a320d0e604aa68ff@o988021.ingest.sentry.io/5945114',
@@ -62,6 +63,7 @@ app.on('ready', () => {
 	arbiter.start();
 	autoUpdater.checkForUpdates();
 	createOrFocusDefaultWindow();
+	attemptShowPostUpdateWelcome();
 
 	if (appIsPackaged)
 		return;
