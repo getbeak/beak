@@ -34,25 +34,6 @@ const GlobalStyle = createGlobalStyle<GlobalStyleProps>`
 		}
 	}
 
-	.bvs-blob {
-		display: inline-block;
-		margin: 0;
-		padding: 1px 3px;
-		border-radius: 4px;
-		font-size: 11px;
-		line-height: 12px;
-		background: ${p => p.theme.ui.primaryFill};
-		color: ${p => p.theme.ui.textOnAction};
-
-		> strong {
-			font-weight: 600;
-		}
-
-		&[data-editable='true'] {
-			cursor: pointer;
-		}
-	}
-
 	::-webkit-scrollbar {
 		width: 6px;
 		height: 6px;
