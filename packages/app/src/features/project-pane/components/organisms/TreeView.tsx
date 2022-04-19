@@ -1,4 +1,6 @@
 import React, { useRef } from 'react';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend'
 import useSectionBody from '@beak/app/features/sidebar/hooks/use-section-body';
 import { Tree } from '@beak/common/types/beak-project';
 import styled from 'styled-components';
@@ -23,22 +25,24 @@ const TreeView: React.FunctionComponent<TreeViewProps> = ({ tree }) => {
 	useSectionBody({ flexGrow: 2 });
 
 	return (
-		<ContextMenuWrapper mode={'root'} target={container.current!}>
-			<Container tabIndex={-1} ref={container}>
-				{items.filter(i => i.type === 'folder').map(n => (
-					<FolderItem depth={0} key={n.filePath} id={n.filePath} />
-				))}
+		<DndProvider backend={HTML5Backend}>
+			<ContextMenuWrapper mode={'root'} target={container.current!}>
+				<Container tabIndex={-1} ref={container}>
+					{items.filter(i => i.type === 'folder').map(n => (
+						<FolderItem depth={0} key={n.filePath} id={n.filePath} />
+					))}
 
-				{items.filter(i => i.type === 'request').map(n => (
-					<RequestItem
-						depth={0}
-						key={n.filePath}
-						id={n.id}
-						parentNode={null}
-					/>
-				))}
-			</Container>
-		</ContextMenuWrapper>
+					{items.filter(i => i.type === 'request').map(n => (
+						<RequestItem
+							depth={0}
+							key={n.filePath}
+							id={n.id}
+							parentNode={null}
+						/>
+					))}
+				</Container>
+			</ContextMenuWrapper>
+		</DndProvider>
 	);
 };
 
