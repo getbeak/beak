@@ -1,4 +1,4 @@
-import { VariableGroups } from '@beak/common/types/beak-project';
+import { ValueParts, VariableGroups } from '@beak/common/types/beak-project';
 import { RealtimeValuePart } from '@beak/common/types/realtime-values';
 
 export interface RealtimeValue<
@@ -12,9 +12,8 @@ export interface RealtimeValue<
 	sensitive: boolean;
 
 	initValuePart: (ctx: Context) => Promise<T>;
-	createValuePart: (ctx: Context, payload: T['payload']) => T;
 
-	getValue: (ctx: Context, payload: T['payload']) => Promise<string>;
+	getValue: (ctx: Context, payload: T['payload']) => Promise<string | ValueParts>;
 
 	editor?: {
 		ui: UISection<TS>[];

@@ -61,7 +61,9 @@ const VariableSelector: React.FunctionComponent<VariableSelectorProps> = props =
 			],
 		});
 
-		return fuse.search(query).map(r => r.item);
+		return fuse.search(query)
+			.map(r => r.item)
+			.sort();
 	}, [variableGroups, query]);
 
 	useEffect(() => {

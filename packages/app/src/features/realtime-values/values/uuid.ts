@@ -23,11 +23,6 @@ export default {
 		},
 	}),
 
-	createValuePart: (_ctx, item) => ({
-		type,
-		payload: item,
-	}),
-
 	getValue: async (_ctx, item) => {
 		switch (item.version) {
 			case 'v1':

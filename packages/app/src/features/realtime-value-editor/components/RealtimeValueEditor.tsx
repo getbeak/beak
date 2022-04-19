@@ -1,10 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import Input, { Select } from '@beak/app/components/atoms/Input';
+import { ValueParts } from '@beak/common/types/beak-project';
 import styled from 'styled-components';
 
 import { getRealtimeValue } from '../../realtime-values';
 import { RealtimeValue } from '../../realtime-values/types';
+import VariableInput from '../../variable-input/components/VariableInput';
 
 interface RtvEditorContext {
 	realtimeValue: RealtimeValue<any, any>;
@@ -102,7 +104,7 @@ const RealtimeValueEditor: React.FunctionComponent<RealtimeValueEditorProps> = p
 	return (
 		<Container onClick={() => close(null)}>
 			<Wrapper
-				$top={boundingRect.top + parent.clientHeight + 25}
+				$top={boundingRect.top + parent.clientHeight + 10}
 				$left={boundingRect.left - (300 / 2)}
 				onClick={event => void event.stopPropagation()}
 			>
@@ -115,13 +117,11 @@ const RealtimeValueEditor: React.FunctionComponent<RealtimeValueEditorProps> = p
 							return (
 								<FormGroup key={`${stateBinding}`}>
 									{section.label && <Label>{section.label}</Label>}
-									<Input
+									<VariableInput
 										ref={i => trySetInitialRef(first, i, initialInputRef)}
-										beakSize={'sm'}
-										type={'text'}
-										value={state[stateBinding] as string || ''}
+										parts={state[stateBinding] as ValueParts}
 										onChange={e => updateState({
-											[stateBinding]: e.currentTarget.value,
+											[stateBinding]: e,
 										})}
 									/>
 								</FormGroup>
@@ -209,6 +209,13 @@ const Wrapper = styled.div<{ $top: number; $left: number }>`
 
 const FormGroup = styled.div`
 	margin-bottom: 8px;
+
+	> div > article {
+		font-size: 13px;
+		padding: 3px 5px;
+		padding-bottom: 4px;
+		border-radius: 3px;
+	}
 `;
 
 const Label = styled.label`

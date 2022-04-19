@@ -1,10 +1,12 @@
 import { arrayBufferToHexString } from '@beak/app/utils/encoding';
+import { ValueParts } from '@beak/common/types/beak-project';
 import { DigestRtv } from '@beak/common/types/realtime-values';
 
+import { parseValueParts } from '../parser';
 import { RealtimeValue } from '../types';
 
 interface EditorState {
-	input: string;
+	input: ValueParts;
 	algorithm: DigestRtv['payload']['algorithm'];
 }
 
@@ -21,29 +23,28 @@ export default {
 		type,
 		payload: {
 			algorithm: 'SHA-256',
-			input: '',
+			input: [''],
 			hmac: void 0,
 		},
 	}),
 
-	createValuePart: (_ctx, payload) => ({
-		type,
-		payload,
-	}),
+	getValue: async (ctx, payload) => {
+		const { algorithm, input, hmac } = payload;
+		const isArray = Array.isArray(input);
+		const parsed = await parseValueParts(ctx, isArray ? input : [input as unknown as string]);
 
-	getValue: async (_ctx, payload) => {
-		const buf = new ArrayBuffer(payload.input.length * 2);
+		const buf = new ArrayBuffer(parsed.length * 2);
 		const bufView = new Uint16Array(buf);
 
-		for (let i = 0, strLen = payload.input.length; i < strLen; i++)
-			bufView[i] = payload.input.charCodeAt(i);
+		for (let i = 0, strLen = parsed.length; i < strLen; i++)
+			bufView[i] = parsed.charCodeAt(i);
 
-		if (payload.hmac) {
-			// return crypto.subtle.sign(payload.algorithm, key, buf);
+		if (hmac) {
+			// return crypto.subtle.sign(algorithm, key, buf);
 			return '';
 		}
 
-		const digest = await crypto.subtle.digest(payload.algorithm, buf);
+		const digest = await crypto.subtle.digest(algorithm, buf);
 
 		return arrayBufferToHexString(digest);
 	},

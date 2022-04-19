@@ -37,7 +37,7 @@ export interface VariableInputProps {
 	onUrlQueryStringDetection?: () => void;
 }
 
-const VariableInput: React.FunctionComponent<VariableInputProps> = props => {
+const VariableInput = React.forwardRef<HTMLElement, VariableInputProps>((props, forwardedRef) => {
 	const { disabled, requestId, placeholder, parts: incomingParts, onChange, readOnly } = props;
 	const dispatch = useDispatch();
 
@@ -59,6 +59,9 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = props => {
 	useEffect(() => {
 		if (!editableRef.current)
 			return;
+
+		if (forwardedRef && typeof forwardedRef === 'function')
+			forwardedRef(editableRef.current);
 
 		const elem = editableRef.current;
 
@@ -223,9 +226,10 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = props => {
 		Array.from(children).forEach(n => {
 			// Detect simple text content
 			if (n.nodeName === '#text' || n.nodeName === 'SPAN') {
-				let originalTextContent = n.textContent || '';
+				let originalTextContent = (n.textContent || '').replaceAll(/(?:[\u00a0]+)/g, '');
 
 				// Handle optional query string detection here
+				// TODO(afr): Pass query body back to parent component
 				if (props.onUrlQueryStringDetection && originalTextContent.includes('?')) {
 					const textContext = originalTextContent.replaceAll('?', '');
 
@@ -480,7 +484,7 @@ const VariableInput: React.FunctionComponent<VariableInputProps> = props => {
 			)}
 		</Wrapper>
 	);
-};
+});
 
 const Wrapper = styled.div`
 	position: relative;

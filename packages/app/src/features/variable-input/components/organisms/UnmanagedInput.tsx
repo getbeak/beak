@@ -27,10 +27,37 @@ const Input = styled.article`
 	border: 1px solid ${p => p.theme.ui.backgroundBorderSeparator};
 	white-space: nowrap;
 	overflow: hidden;
-	user-select: text;
+
+	&:disabled {
+		user-select: text;
+	}
+
+	.bvs-blob {
+		display: inline-block;
+		user-select: text;
+		margin: 0;
+		padding: 1px 3px;
+		border-radius: 4px;
+		font-size: 11px;
+		line-height: 12px;
+		background: ${p => p.theme.ui.primaryFill};
+		color: ${p => p.theme.ui.textOnAction};
+
+		> strong {
+			font-weight: 600;
+		}
+
+		&[data-editable='true'] {
+			cursor: pointer;
+		}
+	}
 
 	> * {
 		display:inline;
 		white-space:nowrap;
+	}
+
+	br {
+		display: none;
 	}
 `;

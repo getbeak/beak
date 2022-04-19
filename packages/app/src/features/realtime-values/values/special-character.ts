@@ -39,11 +39,6 @@ function createCharacter(type: keyof typeof characters): RealtimeValue<RealtimeV
 			payload: void 0,
 		}),
 
-		createValuePart: () => ({
-			type,
-			payload: void 0,
-		}),
-
 		getValue: async () => character.character,
 	};
 }

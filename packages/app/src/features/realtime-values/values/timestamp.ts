@@ -25,11 +25,6 @@ export default {
 		},
 	}),
 
-	createValuePart: (_ctx, item) => ({
-		type,
-		payload: item,
-	}),
-
 	getValue: async (_ctx, item) => {
 		const now = new Date();
 		const value = item.delta ? add(now, { seconds: item.delta }) : now;

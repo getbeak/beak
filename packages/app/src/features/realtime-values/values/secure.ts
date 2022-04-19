@@ -1,10 +1,12 @@
 import { ipcEncryptionService } from '@beak/app/lib/ipc';
+import { ValueParts } from '@beak/common/types/beak-project';
 import { SecureRtv } from '@beak/common/types/realtime-values';
 
+import { parseValueParts } from '../parser';
 import { RealtimeValue } from '../types';
 
 interface EditorState {
-	value: string;
+	value: ValueParts;
 }
 
 const type = 'secure';
@@ -23,23 +25,26 @@ export default {
 			type,
 			payload: {
 				iv,
-				datum: '',
+				cipherText: '',
 			},
 		};
 	},
 
-	createValuePart: (_ctx, item) => ({
-		type,
-		payload: item,
-	}),
+	getValue: async (ctx, item) => {
+		// handle legacy
+		if (item.datum !== void 0) {
+			return await ipcEncryptionService.decryptString({
+				iv: item.iv,
+				payload: item.datum,
+			});
+		}
 
-	getValue: async (_ctx, item) => {
-		const decrypted = await ipcEncryptionService.decryptString({
+		const decrypted = await ipcEncryptionService.decryptObject<ValueParts>({
 			iv: item.iv,
-			payload: item.datum,
+			payload: item.cipherText,
 		});
 
-		return decrypted;
+		return await parseValueParts(ctx, decrypted);
 	},
 
 	editor: {
@@ -49,10 +54,19 @@ export default {
 			stateBinding: 'value',
 		}],
 
-		load: async (ctx, item) => {
-			const decrypted = await ipcEncryptionService.decryptString({
+		load: async (_ctx, item) => {
+			if (item.datum !== void 0) {
+				const decrypted = await ipcEncryptionService.decryptString({
+					iv: item.iv,
+					payload: item.datum,
+				});
+
+				return { value: [decrypted] };
+			}
+
+			const decrypted = await ipcEncryptionService.decryptObject<ValueParts>({
 				iv: item.iv,
-				payload: item.datum,
+				payload: item.cipherText,
 			});
 
 			return { value: decrypted };
@@ -61,12 +75,12 @@ export default {
 		save: async (_ctx, _item, state) => {
 			// We want to generate a new IV every time
 			const iv = await ipcEncryptionService.generateIv();
-			const datum = await ipcEncryptionService.encryptString({
+			const cipherText = await ipcEncryptionService.encryptObject({
 				iv,
 				payload: state.value,
 			});
 
-			return { iv, datum };
+			return { iv, cipherText };
 		},
 	},
 } as RealtimeValue<SecureRtv, EditorState>;

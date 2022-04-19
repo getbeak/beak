@@ -1,9 +1,11 @@
+import { ValueParts } from '@beak/common/types/beak-project';
 import { Base64EncodedRtv } from '@beak/common/types/realtime-values';
 
+import { parseValueParts } from '../parser';
 import { RealtimeValue } from '../types';
 
 interface EditorState {
-	input: string;
+	input: ValueParts;
 	characterSet: Base64EncodedRtv['payload']['characterSet'];
 	removePadding: boolean;
 }
@@ -20,19 +22,18 @@ export default {
 	initValuePart: async () => ({
 		type,
 		payload: {
-			input: '',
+			input: [''],
 			characterSet: 'base64',
 			removePadding: false,
 		},
 	}),
 
-	createValuePart: (_ctx, payload) => ({
-		type,
-		payload,
-	}),
+	getValue: async (ctx, payload) => {
+		const isArray = Array.isArray(payload.input);
+		const input = isArray ? payload.input : [payload.input as unknown as string];
 
-	getValue: async (_ctx, payload) => {
-		let encoded = btoa(payload.input);
+		const parsed = await parseValueParts(ctx, input);
+		let encoded = btoa(parsed);
 
 		if (payload.characterSet === 'websafe_base64')
 			encoded = encoded.replaceAll('/', '_').replaceAll('+', '-');
@@ -56,7 +57,7 @@ export default {
 				key: 'base64',
 				label: 'Base64',
 			}, {
-				key: 'base64_websafe',
+				key: 'websafe_base64',
 				label: 'Websafe Base64',
 			}],
 		}, {
@@ -65,11 +66,15 @@ export default {
 			stateBinding: 'removePadding',
 		}],
 
-		load: async (_ctx, item) => ({
-			characterSet: item.characterSet,
-			input: item.input,
-			removePadding: item.removePadding,
-		}),
+		load: async (_ctx, item) => {
+			const isArray = Array.isArray(item.input);
+
+			return {
+				characterSet: item.characterSet,
+				input: isArray ? item.input : [item.input],
+				removePadding: item.removePadding,
+			};
+		},
 
 		save: async (_ctx, _item, state) => ({
 			characterSet: state.characterSet,

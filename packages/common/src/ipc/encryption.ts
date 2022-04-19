@@ -8,6 +8,8 @@ export const EncryptionMessages = {
 	GenerateIv: 'generate_iv',
 	EncryptString: 'encrypt_string',
 	DecryptString: 'decrypt_string',
+	EncryptObject: 'encrypt_object',
+	DecryptObject: 'decrypt_object',
 	CopyEncryptionKey: 'copy_encryption_key',
 };
 
@@ -17,6 +19,16 @@ export interface EncryptStringReq {
 }
 
 export interface DecryptStringReq {
+	payload: string;
+	iv: string;
+}
+
+export interface EncryptObjectReq {
+	payload: Record<string, unknown> | unknown[];
+	iv: string;
+}
+
+export interface DecryptObjectReq {
 	payload: string;
 	iv: string;
 }
@@ -50,6 +62,14 @@ export class IpcEncryptionServiceRenderer extends IpcServiceRenderer {
 		return this.invoke<string>(EncryptionMessages.DecryptString, payload);
 	}
 
+	async encryptObject(payload: EncryptObjectReq) {
+		return this.invoke<string>(EncryptionMessages.EncryptObject, payload);
+	}
+
+	async decryptObject<T>(payload: DecryptObjectReq) {
+		return this.invoke<T>(EncryptionMessages.DecryptObject, payload);
+	}
+
 	async copyEncryptionKey() {
 		return this.invoke(EncryptionMessages.CopyEncryptionKey);
 	}
@@ -78,6 +98,14 @@ export class IpcEncryptionServiceMain extends IpcServiceMain {
 
 	registerDecryptString(fn: Listener<DecryptStringReq, string>) {
 		this.registerListener(EncryptionMessages.DecryptString, fn);
+	}
+
+	registerEncryptObject(fn: Listener<EncryptObjectReq, string>) {
+		this.registerListener(EncryptionMessages.EncryptObject, fn);
+	}
+
+	registerDecryptObject(fn: Listener<DecryptObjectReq, unknown>) {
+		this.registerListener(EncryptionMessages.DecryptObject, fn);
 	}
 
 	registerCopyEncryptionKey(fn: Listener<void, void>) {
