@@ -1,13 +1,23 @@
 import { MenuEventCode } from '@beak/common/web-contents/types';
+import { getPendingUpdate } from '@beak/electron-host/updater';
 import { MenuItemConstructorOptions } from 'electron';
 import { autoUpdater } from 'electron-updater';
 
 import { Context } from '.';
 
 export function createUpdateMenuItem(): MenuItemConstructorOptions {
+	const pendingUpdate = getPendingUpdate();
+
+	if (pendingUpdate) {
+		return {
+			label: 'Install update...',
+			click: () => autoUpdater.quitAndInstall(),
+		};
+	}
+
 	return {
 		label: 'Check for Updates',
-		click: () => autoUpdater.checkForUpdatesAndNotify(),
+		click: () => autoUpdater.checkForUpdates(),
 	};
 }
 
