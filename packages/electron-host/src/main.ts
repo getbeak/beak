@@ -5,12 +5,12 @@ import electronDebug from 'electron-debug';
 import { autoUpdater } from 'electron-updater';
 
 import './ipc-layer';
-import './updater';
 import arbiter from './lib/arbiter';
 import nestClient from './lib/nest-client';
 import persistentStore from './lib/persistent-store';
 import { tryOpenProjectFolder } from './lib/project';
 import handleUrlEvent from './protocol';
+import { attemptShowPostUpdateWelcome } from './updater';
 import { createAndSetMenu } from './utils/menu';
 import { appIsPackaged } from './utils/static-path';
 import {
@@ -62,6 +62,7 @@ app.on('ready', () => {
 	arbiter.start();
 	autoUpdater.checkForUpdates();
 	createOrFocusDefaultWindow();
+	attemptShowPostUpdateWelcome();
 
 	if (appIsPackaged)
 		return;

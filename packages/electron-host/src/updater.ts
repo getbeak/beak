@@ -1,9 +1,11 @@
-import { dialog } from 'electron';
+import { app, dialog, shell } from 'electron';
 import { autoUpdater, UpdateInfo } from 'electron-updater';
 
 import logger from './lib/logger';
+import persistentStore from './lib/persistent-store';
 import { createAndSetMenu } from './utils/menu';
 
+export const latestReleaseNotesUrl = 'https://beakapp.notion.site/Releases-eb40abfe505b45fb81bd5e7b08aced20';
 let pendingUpdate: UpdateInfo | null = null;
 
 autoUpdater.logger = logger;
@@ -33,4 +35,28 @@ autoUpdater.on('update-downloaded', async (event: UpdateInfo) => {
 
 export function getPendingUpdate() {
 	return pendingUpdate;
+}
+
+export async function attemptShowPostUpdateWelcome() {
+	const version = app.getVersion();
+	const latestKnownVersion = persistentStore.get('latestKnownVersion');
+
+	if (version === latestKnownVersion)
+		return;
+
+	persistentStore.set('latestKnownVersion', version);
+
+	const { response } = await dialog.showMessageBox({
+		title: 'Beak has updated!',
+		message: `Beak has just updated to version ${version}!`,
+		detail: 'Would you like to look at the release notes?',
+		type: 'info',
+		buttons: ['Show release notes', 'Continue'],
+		defaultId: 1,
+	});
+
+	if (response === 1)
+		return;
+
+	shell.openExternal(latestReleaseNotesUrl);
 }

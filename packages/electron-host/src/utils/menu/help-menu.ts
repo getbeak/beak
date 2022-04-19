@@ -1,3 +1,4 @@
+import { latestReleaseNotesUrl } from '@beak/electron-host/updater';
 import { app, MenuItemConstructorOptions, shell } from 'electron';
 import path from 'path';
 
@@ -15,6 +16,12 @@ export default function generateHelpMenu(ctx: Context): MenuItemConstructorOptio
 			label: 'Show logs',
 			click: async () => {
 				await shell.openPath(path.join(app.getPath('userData'), 'logs', 'main'));
+			},
+		},
+		{
+			label: 'View release notes',
+			click: async () => {
+				await shell.openExternal(latestReleaseNotesUrl);
 			},
 		},
 		{ type: 'separator' },
