@@ -5,12 +5,12 @@ import electronDebug from 'electron-debug';
 import { autoUpdater } from 'electron-updater';
 
 import './ipc-layer';
-import './updater';
 import arbiter from './lib/arbiter';
 import nestClient from './lib/nest-client';
 import persistentStore from './lib/persistent-store';
 import { tryOpenProjectFolder } from './lib/project';
 import handleUrlEvent from './protocol';
+import { attemptShowPostUpdateWelcome } from './updater';
 import { createAndSetMenu } from './utils/menu';
 import { appIsPackaged } from './utils/static-path';
 import {
@@ -18,7 +18,6 @@ import {
 	createWelcomeWindow,
 	windowStack,
 } from './window-management';
-import { attemptShowPostUpdateWelcome } from './updater';
 
 init({
 	dsn: 'https://5118444e09d74b03a320d0e604aa68ff@o988021.ingest.sentry.io/5945114',
