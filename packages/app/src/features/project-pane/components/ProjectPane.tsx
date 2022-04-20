@@ -11,6 +11,7 @@ import VariableGroups from './organisms/VariableGroups';
 
 const ProjectPane: React.FunctionComponent = () => {
 	const { tree, name } = useSelector(s => s.global.project);
+	const selectedTabId = useSelector(s => s.features.tabs.selectedTab);
 	const dispatch = useDispatch();
 
 	return (
@@ -23,6 +24,7 @@ const ProjectPane: React.FunctionComponent = () => {
 			</SidebarPaneSection>
 			<SidebarPaneSection title={'Explorer'} collapseKey={'beak.project.explorer'}>
 				<TreeView
+					activeNodeId={selectedTabId}
 					tree={tree}
 					onDrop={(sourceNodeId, destinationNodeId) => actions.moveNodeOnDisk({
 						sourceNodeId,

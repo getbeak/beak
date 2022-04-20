@@ -5,6 +5,7 @@ import { projectPanePreferenceSetCollapse } from '@beak/app/store/preferences/ac
 import styled from 'styled-components';
 
 import { TreeViewAbstractionsContext } from '../../contexts/abstractions-context';
+import { TreeViewFocusContext } from '../../contexts/focus-context';
 import { useNodeDrag } from '../../hooks/drag-and-drop';
 import { TreeViewItem } from '../../types';
 
@@ -18,23 +19,25 @@ interface NodeItemProps {
 const NodeItem: React.FunctionComponent<NodeItemProps> = props => {
 	const { node, depth, collapsible, collapsed, children } = props;
 	const dispatch = useDispatch();
-	const context = useContext(TreeViewAbstractionsContext);
+	const absContext = useContext(TreeViewAbstractionsContext);
+	const focusContext = useContext(TreeViewFocusContext);
 
 	const [, dragRef] = useNodeDrag(node);
 
 	return (
 		<NodeItemContainer
+			$active={focusContext.activeNodeId === node.id}
 			$depth={depth}
 			tabIndex={0}
 			ref={dragRef}
 			onClick={event => {
 				if (event.detail > 1) {
-					context.onNodeDoubleClick?.(event, node);
+					absContext.onNodeDoubleClick?.(event, node);
 
 					return;
 				}
 
-				context.onNodeClick?.(event, node);
+				absContext.onNodeClick?.(event, node);
 
 				if (!collapsible)
 					return;
@@ -50,11 +53,15 @@ const NodeItem: React.FunctionComponent<NodeItemProps> = props => {
 	);
 };
 
-const NodeItemContainer = styled.div<{ $depth: number }>`
+interface NodeItemContainerProps {
+	$active: boolean;
+	$depth: number;
+}
+
+const NodeItemContainer = styled.div<NodeItemContainerProps>`
 	display: flex;
 	padding: 3px 0;
 	padding-left: ${p => (p.$depth * 8) + 7}px;
-	color: ${p => p.theme.ui.textMinor};
 	align-items: center;
 	cursor: pointer;
 	font-size: 13px;
@@ -62,12 +69,15 @@ const NodeItemContainer = styled.div<{ $depth: number }>`
 	border-top-left-radius: 4px;
 	border-bottom-left-radius: 4px;
 
+	color: ${p => p.$active ? p.theme.ui.textOnSurfaceBackground : p.theme.ui.textMinor};
+	background-color: ${p => p.$active ? toVibrancyAlpha(p.theme.ui.surface, 0.8) : 'transparent'};
+
 	&:hover {
 		color: ${p => p.theme.ui.textOnSurfaceBackground};
 	}
 	&:focus {
 		outline: none;
-		background-color: ${p => toVibrancyAlpha(p.theme.ui.secondarySurface, 0.8)};
+		background-color: ${p => toVibrancyAlpha(p.theme.ui.secondarySurface, 1)};
 	}
 `;
 

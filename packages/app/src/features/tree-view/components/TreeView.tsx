@@ -7,6 +7,7 @@ import styled from 'styled-components';
 
 import useSectionBody from '../../sidebar/hooks/use-section-body';
 import { TreeViewAbstractionsContext } from '../contexts/abstractions-context';
+import { TreeViewFocusContext } from '../contexts/focus-context';
 import { TreeViewNodesContext } from '../contexts/nodes-context';
 import { TreeViewFolderNode, TreeViewItem, TreeViewNode, TreeViewNodes } from '../types';
 import RootDropContainer from './molecules/RootDropContainer';
@@ -15,6 +16,7 @@ import Node from './organisms/Node';
 
 interface TreeViewProps {
 	tree: TreeViewNodes;
+	activeNodeId?: string;
 	startingDepth?: number;
 	onDrop?: (sourceNodeId: string, destinationNodeId: string) => PayloadAction<unknown>;
 	onNodeClick?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>, node: TreeViewItem) => void;
@@ -41,27 +43,31 @@ const TreeView: React.FunctionComponent<TreeViewProps> = props => {
 				onNodeClick: props.onNodeClick,
 				onNodeDoubleClick: props.onNodeDoubleClick,
 			}}>
-				<DndProvider backend={HTML5Backend}>
-					{/* Add back root context menu wrapper */}
-					<Container ref={container}>
-						<RootDropContainer>
-							{formattedNodes.filter(i => i.type === 'folder').map(i => (
-								<FolderNode
-									key={i.id}
-									depth={startingDepth}
-									node={i as TreeViewFolderNode}
-								/>
-							))}
-							{formattedNodes.filter(i => i.type !== 'folder').map(i => (
-								<Node
-									key={i.id}
-									depth={startingDepth}
-									node={i as TreeViewNode}
-								/>
-							))}
-						</RootDropContainer>
-					</Container>
-				</DndProvider>
+				<TreeViewFocusContext.Provider value={{
+					activeNodeId: props.activeNodeId,
+				}}>
+					<DndProvider backend={HTML5Backend}>
+						{/* Add back root context menu wrapper */}
+						<Container ref={container}>
+							<RootDropContainer>
+								{formattedNodes.filter(i => i.type === 'folder').map(i => (
+									<FolderNode
+										key={i.id}
+										depth={startingDepth}
+										node={i as TreeViewFolderNode}
+									/>
+								))}
+								{formattedNodes.filter(i => i.type !== 'folder').map(i => (
+									<Node
+										key={i.id}
+										depth={startingDepth}
+										node={i as TreeViewNode}
+									/>
+								))}
+							</RootDropContainer>
+						</Container>
+					</DndProvider>
+				</TreeViewFocusContext.Provider>
 			</TreeViewAbstractionsContext.Provider>
 		</TreeViewNodesContext.Provider>
 	);
