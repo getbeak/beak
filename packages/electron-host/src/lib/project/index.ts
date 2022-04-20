@@ -13,6 +13,7 @@ import { addRecentProject } from '../beak-hub';
 import { setProjectEncryption } from '../credential-vault';
 import persistentStore from '../persistent-store';
 import { checkAndHandleMigrations } from './migrations';
+import checkAndHandleSilentMigrations from './silent-migrations';
 
 export const windowProjectIdMapping: Record<string, number> = { };
 
@@ -44,6 +45,9 @@ export async function tryOpenProjectFolder(projectFolderPath: string) {
 
 	// Time to migrate for the winter
 	await checkAndHandleMigrations(projectFile, projectFolderPath);
+
+	// Time to migrate for the silent winter
+	await checkAndHandleSilentMigrations(projectFolderPath);
 
 	const projectMappings = persistentStore.get('projectMappings');
 
