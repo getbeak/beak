@@ -16,6 +16,7 @@ const Chevron: React.FunctionComponent<ChevronProps> = props => (
 
 const ChevronElement = styled.div<ChevronProps>`
 	display: inline-block;
+	${p => !p.$collapsible && 'display: none;'}
 	margin-right: 2px;
 	width: 10px;
 
@@ -24,8 +25,6 @@ const ChevronElement = styled.div<ChevronProps>`
 	color: ${p => p.theme.ui.textMinor};
 
 	> svg {
-		${p => !p.$collapsible && 'display: none;'}
-
 		transition: transform .2s ease;
 		transform-origin: center center;
 		transform: rotate(${p => p.$collapsed ? '0deg' : '90deg'});

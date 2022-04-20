@@ -7,9 +7,10 @@ import { TypedObject } from '@beak/common/helpers/typescript';
 import { FolderNode } from '@beak/common/types/beak-project';
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
 import actions from '../../../../store/project/actions';
+import { useNodeDrag, useNodeDrop } from '../../hooks/node-drag-drop';
 import ContextMenuWrapper from '../atoms/ContextMenuWrapper';
 import Renamer from './Renamer';
 import Switch from './Switch';
@@ -36,10 +37,17 @@ const FolderItem: React.FunctionComponent<FolderItemProps> = props => {
 			sensitivity: 'base',
 		}));
 
+	const [, drag] = useNodeDrag(node);
+	const [{ hovering, canDrop }, dropRef] = useNodeDrop(node);
+
+	drag(dropRef(element));
+
 	return (
 		<ContextMenuWrapper mode={'folder'} nodeId={node.filePath} target={target}>
 			<Wrapper
-				depth={depth}
+				$depth={depth}
+				$canDrop={canDrop}
+				$hovering={hovering}
 				ref={i => {
 					element.current = i!;
 					setTarget(i!);
@@ -54,7 +62,7 @@ const FolderItem: React.FunctionComponent<FolderItemProps> = props => {
 							if (!collapsed)
 								dispatch(projectPanePreferenceSetCollapse({ key: props.id, collapsed: true }));
 							else if (element.current)
-								element.current.parentElement?.focus();
+								element.current.parentElement?.parentElement?.focus();
 
 							break;
 
@@ -106,32 +114,47 @@ const FolderItem: React.FunctionComponent<FolderItemProps> = props => {
 				</Renamer>
 			</Wrapper>
 
-			{!collapsed && childNodes.filter(n => n.type === 'folder').map(n => (
-				<Switch
-					depth={depth + 1}
-					key={n.filePath}
-					id={n.filePath}
-					parentNode={element.current!}
-				/>
-			))}
+			<DropWrapper $canDrop={canDrop} $hovering={hovering} $depth={depth}>
+				{!collapsed && childNodes.filter(n => n.type === 'folder').map(n => (
+					<Switch
+						depth={depth + 1}
+						key={n.filePath}
+						id={n.filePath}
+						parentNode={element.current!}
+					/>
+				))}
 
-			{!collapsed && childNodes.filter(n => n.type === 'request').map(n => (
-				<Switch
-					depth={depth + 1}
-					key={n.id}
-					id={n.id}
-					parentNode={element.current!}
-				/>
-			))}
+				{!collapsed && childNodes.filter(n => n.type === 'request').map(n => (
+					<Switch
+						depth={depth + 1}
+						key={n.id}
+						id={n.id}
+						parentNode={element.current!}
+					/>
+				))}
+			</DropWrapper>
 		</ContextMenuWrapper>
 	);
 };
 
-const Wrapper = styled.div<{ depth: number }>`
+interface DropWrapperProps {
+	$hovering: boolean;
+	$canDrop: boolean;
+	$depth: number;
+}
+
+const DropWrapper = styled.div<DropWrapperProps>`
+	${p => p.$hovering && p.$canDrop && css`
+		outline: none;
+		background-color: pink;
+	`}
+`;
+
+const Wrapper = styled(DropWrapper)`
 	display: flex;
 	padding: 3px 0;
-	padding-left: ${props => (props.depth * 8) + 7}px;
-	color: ${props => props.theme.ui.textMinor};
+	padding-left: ${p => (p.$depth * 8) + 7}px;
+	color: ${p => p.theme.ui.textMinor};
 	align-items: center;
 	cursor: pointer;
 	font-size: 13px;
@@ -140,11 +163,11 @@ const Wrapper = styled.div<{ depth: number }>`
 	border-bottom-left-radius: 4px;
 
 	&:hover {
-		color: ${props => props.theme.ui.textOnSurfaceBackground};
+		color: ${p => p.theme.ui.textOnSurfaceBackground};
 	}
 	&:focus {
 		outline: none;
-		background-color: ${props => toVibrancyAlpha(props.theme.ui.secondarySurface, 0.8)};
+		background-color: ${p => toVibrancyAlpha(p.theme.ui.secondarySurface, 0.8)};
 	}
 `;
 

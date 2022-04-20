@@ -1,10 +1,10 @@
-export type TreeViewNode = TreeViewFolder | TreeViewItem;
+export type TreeViewItem = TreeViewFolderNode | TreeViewNode;
 
-export interface TreeViewItems {
-	[k: string]: TreeViewNode;
+export interface TreeViewNodes {
+	[k: string]: TreeViewItem;
 }
 
-export interface TreeViewFolder {
+export interface TreeViewFolderNode {
 	id: string;
 	type: 'folder';
 	filePath: string;
@@ -12,9 +12,9 @@ export interface TreeViewFolder {
 	parent: string | 'root' | null;
 }
 
-export interface TreeViewItem {
+export interface TreeViewNode {
 	id: string;
-	type: 'request';
+	type: string;
 	filePath: string;
 	name: string;
 	parent: string | 'root' | null;

@@ -1,23 +1,23 @@
 import React, { MutableRefObject } from 'react';
 import styled from 'styled-components';
 
-import { TreeViewItem } from '../../types';
+import { TreeViewNode } from '../../types';
 import NodeItem from '../molecules/NodeItem';
 import NodeName from '../molecules/NodeName';
 
 interface NodeProps {
 	depth: number;
-	item: TreeViewItem;
-	parentElement?: MutableRefObject<HTMLElement | null>;
+	node: TreeViewNode;
+	hierarchicalParentRef?: MutableRefObject<HTMLElement | null>;
 }
 
 const Node: React.FunctionComponent<NodeProps> = props => {
-	const { depth, item } = props;
+	const { depth, node } = props;
 
 	return (
 		<NodeWrapper>
-			<NodeItem id={item.id} depth={depth}>
-				<NodeName collapsed={false} name={item.name} />
+			<NodeItem node={node} depth={depth}>
+				<NodeName collapsed={false} name={node.name} />
 			</NodeItem>
 		</NodeWrapper>
 	);

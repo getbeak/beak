@@ -1,45 +1,59 @@
 import React, { MutableRefObject } from 'react';
 import { useSelector } from 'react-redux';
-import styled from 'styled-components';
+import { toHexAlpha } from '@beak/design-system/utils';
+import styled, { css } from 'styled-components';
 
+import { useNodeDrop } from '../../hooks/drag-and-drop';
 import useChildNodes from '../../hooks/use-child-nodes';
-import { TreeViewFolder } from '../../types';
+import { TreeViewFolderNode } from '../../types';
 import NodeItem from '../molecules/NodeItem';
 import NodeName from '../molecules/NodeName';
 import Node from './Node';
 
 interface FolderNodeProps {
 	depth: number;
-	item: TreeViewFolder;
-	parentElement?: MutableRefObject<HTMLElement | null>;
+	node: TreeViewFolderNode;
+	hierarchicalParentRef?: MutableRefObject<HTMLElement | null>;
 }
 
 const FolderNode: React.FunctionComponent<FolderNodeProps> = props => {
-	const { depth, item } = props;
-	const collapsed = useSelector(s => s.global.preferences.projectPane.collapsed[item.id]);
-	const { folderNodes, nodes } = useChildNodes(item.filePath);
+	const { depth, node } = props;
+	const collapsed = useSelector(s => s.global.preferences.projectPane.collapsed[node.id]);
+	const { folderNodes, nodes } = useChildNodes(node.filePath);
+	const [{ hovering, canDrop }, dropRef] = useNodeDrop(node);
 
 	return (
-		<FolderWrapper>
-			<NodeItem id={item.id} collapsed={collapsed} collapsible depth={depth}>
+		<FolderWrapper
+			$dropAccepted={canDrop}
+			$dropHovering={hovering}
+			ref={dropRef}
+		>
+			<NodeItem
+				node={node}
+				collapsed={collapsed}
+				collapsible
+				depth={depth}
+			>
 				<NodeName
 					collapsed={collapsed}
 					collapsible
-					name={item.name}
+					name={node.name}
 				/>
 			</NodeItem>
 			<FolderChildren>
 				{!collapsed && folderNodes.map(n => (
 					<FolderNode
+						key={n.id}
 						depth={depth + 1}
-						item={n}
+						node={n}
 						// parentElement={}
 					/>
 				))}
 				{!collapsed && nodes.map(n => (
 					<Node
+						key={n.id}
 						depth={depth + 1}
-						item={n}
+						node={n}
 						// parentElement={}
 					/>
 				))}
@@ -48,7 +62,18 @@ const FolderNode: React.FunctionComponent<FolderNodeProps> = props => {
 	);
 };
 
-const FolderWrapper = styled.div``;
+interface FolderWrapperProps {
+	$dropAccepted: boolean;
+	$dropHovering: boolean;
+}
+
+const FolderWrapper = styled.div<FolderWrapperProps>`
+	${p => p.$dropAccepted && p.$dropHovering && css`
+		border-radius: 4px;
+		background-color: ${toHexAlpha(p.theme.ui.primaryFill, 0.6)};
+	`}
+`;
+
 const FolderChildren = styled.div``;
 
 export default FolderNode;

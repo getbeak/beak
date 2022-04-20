@@ -1,16 +1,16 @@
 import { useContext } from 'react';
 import { TypedObject } from '@beak/common/helpers/typescript';
 
-import { TreeViewItemsContext } from '../contexts/items-context';
-import { TreeViewFolder, TreeViewItem } from '../types';
+import { TreeViewNodesContext } from '../contexts/nodes-context';
+import { TreeViewFolderNode, TreeViewNode } from '../types';
 
 interface ReturnType {
-	nodes: TreeViewItem[];
-	folderNodes: TreeViewFolder[];
+	nodes: TreeViewNode[];
+	folderNodes: TreeViewFolderNode[];
 }
 
 export default function useChildNodes(filePath: string): ReturnType {
-	const context = useContext(TreeViewItemsContext);
+	const context = useContext(TreeViewNodesContext);
 
 	if (!context) return { nodes: [], folderNodes: [] };
 
@@ -22,7 +22,7 @@ export default function useChildNodes(filePath: string): ReturnType {
 		}));
 
 	return {
-		nodes: childNodes.filter(n => n.type !== 'folder') as TreeViewItem[],
-		folderNodes: childNodes.filter(n => n.type === 'folder') as TreeViewFolder[],
+		nodes: childNodes.filter(n => n.type !== 'folder') as TreeViewNode[],
+		folderNodes: childNodes.filter(n => n.type === 'folder') as TreeViewFolderNode[],
 	};
 }

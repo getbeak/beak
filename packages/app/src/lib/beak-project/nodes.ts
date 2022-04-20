@@ -1,38 +1,45 @@
 import { Nodes } from '@beak/common/types/beak-project';
 import path from 'path-browserify';
 
-import { ipcFsService } from '../ipc';
+import { ipcDialogService, ipcFsService } from '../ipc';
 
-export async function moveNodesOnDisk(sourceNode: Nodes, destinationNode: Nodes) {
+export async function moveNodesOnDisk(sourceNode: Nodes, destinationNode: Nodes | null) {
 	const sourcePath = sourceNode.filePath;
-	const sourceName = getNodeName(sourceNode);
-	const destinationPath = generateDestinationPath(sourceName, destinationNode);
-
-	// file -> file :: dest->folder->filename
-	// file -> dirt :: dest->filename
-	// dirt -> file :: dest->filename
-	// dirt -> dirt :: dest->foldername
+	const sourceBasename = path.basename(sourcePath);
+	const destinationPath = path.join(getDestinationFolder(destinationNode), sourceBasename);
 
 	if (sourcePath === destinationPath)
 		return;
 
-	// TODO(afr): Handle mid-tree changes
+	if (await ipcFsService.pathExists(destinationPath)) {
+		const { response } = await ipcDialogService.showMessageBox({
+			type: 'warning',
+			title: 'Unable to move file or folder',
+			message: `A file or folder with the name '${sourceBasename}' already exists in the destination folder. Do you want to replace it?`,
+			detail: 'This action is irreversible inside Beak!',
+			buttons: ['Replace', 'Cancel'],
+			defaultId: 0,
+		});
+
+		if (response === 1)
+			return;
+	}
 
 	await ipcFsService.move(sourcePath, destinationPath);
 }
 
-function generateDestinationPath(sourceName: string, node: Nodes) {
+export function getDestinationFolder(node: Nodes | null) {
+	// Workaround for the root!
+	if (!node)
+		return 'tree';
+
 	if (node.type === 'folder')
-		return path.join(node.filePath, sourceName);
-
-	const directoryName = path.dirname(node.filePath);
-
-	return path.join(directoryName, sourceName);
+		return node.filePath;
+	
+	return node.parent!;
 }
 
 export function getNodeName(node: Nodes) {
-	if (node.type === 'folder')
-		return path.dirname(node.filePath);
 
 	return path.basename(node.filePath);
 }

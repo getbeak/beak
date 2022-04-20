@@ -8,6 +8,7 @@ import { ValidRequestNode } from '@beak/common/types/beak-project';
 import styled from 'styled-components';
 
 import actions from '../../../../store/project/actions';
+import { useNodeDrag } from '../../hooks/node-drag-drop';
 import ContextMenuWrapper from '../atoms/ContextMenuWrapper';
 import RequestStatusBlob from '../atoms/RequestStatusBlob';
 import Renamer from './Renamer';
@@ -28,8 +29,11 @@ const RequestItem: React.FunctionComponent<RequestItemProps> = props => {
 	const selectedTabPayload = useSelector(s => s.features.tabs.selectedTab);
 	const flight = useSelector(s => s.global.flight.flightHistory[node.id]);
 	const active = selectedTabPayload === props.id;
-
 	let mostRecentFlight = null;
+
+	const [, drag] = useNodeDrag(node);
+
+	drag(wrapperRef);
 
 	if (flight?.history) {
 		const flightHistory = TypedObject.values(flight.history);
@@ -42,8 +46,8 @@ const RequestItem: React.FunctionComponent<RequestItemProps> = props => {
 	return (
 		<ContextMenuWrapper mode={'request'} nodeId={props.id} target={target}>
 			<Wrapper
-				active={active}
-				depth={props.depth}
+				$active={active}
+				$depth={props.depth}
 				ref={i => {
 					wrapperRef.current = i;
 
@@ -123,22 +127,22 @@ const RequestItem: React.FunctionComponent<RequestItemProps> = props => {
 };
 
 interface WrapperProps {
-	active: boolean;
-	depth: number;
+	$active: boolean;
+	$depth: number;
 }
 
 const Wrapper = styled.div<WrapperProps>`
 	display: flex;
 	padding: 4px 0;
-	padding-left: ${props => (props.depth * 8) + 7}px;
+	padding-left: ${p => (p.$depth * 8) + 7}px;
 	cursor: pointer;
 	font-size: 13px;
 	line-height: 18px;
 	border-top-left-radius: 4px;
 	border-bottom-left-radius: 4px;
 
-	color: ${p => p.active ? p.theme.ui.textOnSurfaceBackground : p.theme.ui.textMinor};
-	background-color: ${p => p.active ? toVibrancyAlpha(p.theme.ui.surface, 0.8) : 'transparent'};
+	color: ${p => p.$active ? p.theme.ui.textOnSurfaceBackground : p.theme.ui.textMinor};
+	background-color: ${p => p.$active ? toVibrancyAlpha(p.theme.ui.surface, 0.8) : 'transparent'};
 
 	&:hover {
 		color: ${p => p.theme.ui.textOnSurfaceBackground};

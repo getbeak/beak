@@ -2,24 +2,29 @@ import React, { useRef } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { TypedObject } from '@beak/common/helpers/typescript';
+import { PayloadAction } from '@reduxjs/toolkit';
 import styled from 'styled-components';
 
 import useSectionBody from '../../sidebar/hooks/use-section-body';
-import { TreeViewItemsContext } from '../contexts/items-context';
-import { TreeViewFolder, TreeViewItem, TreeViewItems } from '../types';
+import { TreeViewAbstractionsContext } from '../contexts/abstractions-context';
+import { TreeViewNodesContext } from '../contexts/nodes-context';
+import { TreeViewFolderNode, TreeViewItem, TreeViewNode, TreeViewNodes } from '../types';
+import RootDropContainer from './molecules/RootDropContainer';
 import FolderNode from './organisms/FolderNode';
 import Node from './organisms/Node';
 
 interface TreeViewProps {
-	items: TreeViewItems;
+	tree: TreeViewNodes;
 	startingDepth?: number;
-	supportDragDrop?: boolean;
+	onDrop?: (sourceNodeId: string, destinationNodeId: string) => PayloadAction<unknown>;
+	onNodeClick?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>, node: TreeViewItem) => void;
+	onNodeDoubleClick?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>, node: TreeViewItem) => void;
 }
 
 const TreeView: React.FunctionComponent<TreeViewProps> = props => {
-	const { items, startingDepth = 0, supportDragDrop } = props;
+	const { tree, startingDepth = 0 } = props;
 	const container = useRef<HTMLDivElement>(null);
-	const formattedItems = TypedObject.values(items)
+	const formattedNodes = TypedObject.values(tree)
 		.filter(t => t.parent === 'tree')
 		.sort((a, b) => a.name.localeCompare(b.name, void 0, {
 			numeric: true,
@@ -30,45 +35,35 @@ const TreeView: React.FunctionComponent<TreeViewProps> = props => {
 	useSectionBody({ flexGrow: 2 });
 
 	return (
-		<TreeViewItemsContext.Provider value={items}>
-			<DndProvider backend={HTML5Backend}>
-				{/* Add back root context menu wrapper */}
-				<Container ref={container}>
-					{formattedItems.filter(i => i.type === 'folder').map(i => (
-						<FolderNode
-							key={i.id}
-							depth={startingDepth}
-							item={i as TreeViewFolder}
-						/>
-					))}
-					{formattedItems.filter(i => i.type !== 'folder').map(i => (
-						<Node
-							key={i.id}
-							depth={startingDepth}
-							item={i as TreeViewItem}
-						/>
-					))}
-				</Container>
-
-				{/* Reference */}
-				<div className={'root'}>
-					<div className={'folder-wrapper'}>
-						<div className={'node-item'}></div>
-						<div className={'folder-children'}>
-							<div className={'node-wrapper'}>
-								<div className={'node-item'}></div>
-							</div>
-							<div className={'node-wrapper'}>
-								<div className={'node-item'}></div>
-							</div>
-						</div>
-					</div>
-					<div className={'node-wrapper'}>
-						<div className={'node-item'}></div>
-					</div>
-				</div>
-			</DndProvider>
-		</TreeViewItemsContext.Provider>
+		<TreeViewNodesContext.Provider value={tree}>
+			<TreeViewAbstractionsContext.Provider value={{
+				onDrop: props.onDrop,
+				onNodeClick: props.onNodeClick,
+				onNodeDoubleClick: props.onNodeDoubleClick,
+			}}>
+				<DndProvider backend={HTML5Backend}>
+					{/* Add back root context menu wrapper */}
+					<Container ref={container}>
+						<RootDropContainer>
+							{formattedNodes.filter(i => i.type === 'folder').map(i => (
+								<FolderNode
+									key={i.id}
+									depth={startingDepth}
+									node={i as TreeViewFolderNode}
+								/>
+							))}
+							{formattedNodes.filter(i => i.type !== 'folder').map(i => (
+								<Node
+									key={i.id}
+									depth={startingDepth}
+									node={i as TreeViewNode}
+								/>
+							))}
+						</RootDropContainer>
+					</Container>
+				</DndProvider>
+			</TreeViewAbstractionsContext.Provider>
+		</TreeViewNodesContext.Provider>
 	);
 };
 
