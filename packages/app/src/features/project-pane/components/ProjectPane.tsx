@@ -12,6 +12,7 @@ import SidebarPaneSection from '../../sidebar/components/SidebarPaneSection';
 import { changeTab, makeTabPermanent } from '../../tabs/store/actions';
 import TreeView from '../../tree-view/components/TreeView';
 import { TreeViewItem } from '../../tree-view/types';
+import RequestFlightStatus from './molecules/RequestFlightStatus';
 import Git from './organisms/Git';
 import VariableGroups from './organisms/VariableGroups';
 
@@ -124,6 +125,9 @@ const ProjectPane: React.FunctionComponent = () => {
 			<SidebarPaneSection title={'Explorer'} collapseKey={'beak.project.explorer'}>
 				<TreeView
 					activeNodeId={selectedTabId}
+					nodeFlairRenderers={{
+						request: node => <RequestFlightStatus node={node} />,
+					}}
 					tree={tree}
 					onContextMenu={node => generateContextMenu(node)}
 					onDrop={(sourceNodeId, destinationNodeId) => actions.moveNodeOnDisk({

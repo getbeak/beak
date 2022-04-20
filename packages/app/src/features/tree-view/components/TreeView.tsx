@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { ReactElement, useRef } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { TypedObject } from '@beak/common/helpers/typescript';
@@ -17,6 +17,9 @@ import Node from './organisms/Node';
 
 interface TreeViewProps {
 	tree: TreeViewNodes;
+	nodeFlairRenderers?: {
+		[k: string]: (node: TreeViewItem) => ReactElement;
+	};
 	activeNodeId?: string;
 	startingDepth?: number;
 	onContextMenu?: (node: TreeViewItem) => MenuItemConstructorOptions[];
@@ -41,6 +44,7 @@ const TreeView: React.FunctionComponent<TreeViewProps> = props => {
 	return (
 		<TreeViewNodesContext.Provider value={tree}>
 			<TreeViewAbstractionsContext.Provider value={{
+				nodeFlairRenderers: props.nodeFlairRenderers,
 				onContextMenu: props.onContextMenu,
 				onDrop: props.onDrop,
 				onNodeClick: props.onNodeClick,

@@ -22,6 +22,8 @@ const NodeItem: React.FunctionComponent<NodeItemProps> = props => {
 	const dispatch = useDispatch();
 	const absContext = useContext(TreeViewAbstractionsContext);
 	const focusContext = useContext(TreeViewFocusContext);
+
+	const renderer = absContext.nodeFlairRenderers?.[node.type];
 	const element = useRef<HTMLDivElement | null>(null);
 	const [, dragRef] = useNodeDrag(node);
 
@@ -53,6 +55,9 @@ const NodeItem: React.FunctionComponent<NodeItemProps> = props => {
 				}}
 			>
 				{children}
+				<FlairRendererContainer>
+					{renderer?.(node)}
+				</FlairRendererContainer>
 			</NodeItemContainer>
 		</NodeContextMenu>
 	);
@@ -66,8 +71,10 @@ interface NodeItemContainerProps {
 const NodeItemContainer = styled.div<NodeItemContainerProps>`
 	display: flex;
 	padding: 4px 0;
+	padding-right: 5px;
 	padding-left: ${p => (p.$depth * 8) + 2}px;
 	align-items: center;
+	justify-content: space-between;
 	cursor: pointer;
 	font-size: 12px;
 	line-height: 15px;
@@ -84,6 +91,10 @@ const NodeItemContainer = styled.div<NodeItemContainerProps>`
 		outline: none;
 		background-color: ${p => toVibrancyAlpha(p.theme.ui.secondarySurface, 1)};
 	}
+`;
+
+const FlairRendererContainer = styled.div`
+	margin-left: auto;
 `;
 
 export default NodeItem;

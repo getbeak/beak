@@ -5,6 +5,10 @@ import type { MenuItemConstructorOptions } from 'electron';
 import { TreeViewItem } from '../types';
 
 interface Context {
+	nodeFlairRenderers?: {
+		[k: string]: (node: TreeViewItem) => React.ReactElement;
+	};
+
 	onContextMenu?: (node: TreeViewItem) => MenuItemConstructorOptions[];
 	onDrop?: (sourceNodeId: string, destinationNodeId: string) => PayloadAction<unknown>;
 	onNodeClick?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>, node: TreeViewItem) => void;
