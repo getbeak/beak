@@ -18,6 +18,7 @@ const ChevronElement = styled.div<ChevronProps>`
 	display: inline-block;
 	${p => !p.$collapsible && 'display: none;'}
 	margin-right: 2px;
+	margin-left: 5px;
 	width: 10px;
 
 	font-size: 9px;

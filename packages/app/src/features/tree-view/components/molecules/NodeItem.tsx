@@ -61,7 +61,7 @@ interface NodeItemContainerProps {
 const NodeItemContainer = styled.div<NodeItemContainerProps>`
 	display: flex;
 	padding: 4px 0;
-	padding-left: ${p => (p.$depth * 8) + 7}px;
+	padding-left: ${p => (p.$depth * 8) + 2}px;
 	align-items: center;
 	cursor: pointer;
 	font-size: 12px;
