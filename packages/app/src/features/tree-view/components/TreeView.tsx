@@ -3,6 +3,7 @@ import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { PayloadAction } from '@reduxjs/toolkit';
+import type { MenuItemConstructorOptions } from 'electron';
 import styled from 'styled-components';
 
 import useSectionBody from '../../sidebar/hooks/use-section-body';
@@ -18,6 +19,7 @@ interface TreeViewProps {
 	tree: TreeViewNodes;
 	activeNodeId?: string;
 	startingDepth?: number;
+	onContextMenu?: (node: TreeViewItem) => MenuItemConstructorOptions[];
 	onDrop?: (sourceNodeId: string, destinationNodeId: string) => PayloadAction<unknown>;
 	onNodeClick?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>, node: TreeViewItem) => void;
 	onNodeDoubleClick?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>, node: TreeViewItem) => void;
@@ -39,6 +41,7 @@ const TreeView: React.FunctionComponent<TreeViewProps> = props => {
 	return (
 		<TreeViewNodesContext.Provider value={tree}>
 			<TreeViewAbstractionsContext.Provider value={{
+				onContextMenu: props.onContextMenu,
 				onDrop: props.onDrop,
 				onNodeClick: props.onNodeClick,
 				onNodeDoubleClick: props.onNodeDoubleClick,

@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { toVibrancyAlpha } from '@beak/app/design-system/utils';
 import { projectPanePreferenceSetCollapse } from '@beak/app/store/preferences/actions';
@@ -8,6 +8,7 @@ import { TreeViewAbstractionsContext } from '../../contexts/abstractions-context
 import { TreeViewFocusContext } from '../../contexts/focus-context';
 import { useNodeDrag } from '../../hooks/drag-and-drop';
 import { TreeViewItem } from '../../types';
+import NodeContextMenu from './NodeContextMenu';
 
 interface NodeItemProps {
 	node: TreeViewItem;
@@ -21,35 +22,39 @@ const NodeItem: React.FunctionComponent<NodeItemProps> = props => {
 	const dispatch = useDispatch();
 	const absContext = useContext(TreeViewAbstractionsContext);
 	const focusContext = useContext(TreeViewFocusContext);
-
+	const element = useRef<HTMLDivElement | null>(null);
 	const [, dragRef] = useNodeDrag(node);
 
+	dragRef(element);
+
 	return (
-		<NodeItemContainer
-			$active={focusContext.activeNodeId === node.id}
-			$depth={depth}
-			tabIndex={0}
-			ref={dragRef}
-			onClick={event => {
-				if (event.detail > 1) {
-					absContext.onNodeDoubleClick?.(event, node);
+		<NodeContextMenu node={node} target={element}>
+			<NodeItemContainer
+				$active={focusContext.activeNodeId === node.id}
+				$depth={depth}
+				tabIndex={0}
+				ref={element}
+				onClick={event => {
+					if (event.detail === 2) {
+						absContext.onNodeDoubleClick?.(event, node);
 
-					return;
-				}
+						return;
+					}
 
-				absContext.onNodeClick?.(event, node);
+					absContext.onNodeClick?.(event, node);
 
-				if (!collapsible)
-					return;
+					if (!collapsible)
+						return;
 
-				dispatch(projectPanePreferenceSetCollapse({
-					key: node.id,
-					collapsed: !collapsed,
-				}));
-			}}
-		>
-			{children}
-		</NodeItemContainer>
+					dispatch(projectPanePreferenceSetCollapse({
+						key: node.id,
+						collapsed: !collapsed,
+					}));
+				}}
+			>
+				{children}
+			</NodeItemContainer>
+		</NodeContextMenu>
 	);
 };
 
