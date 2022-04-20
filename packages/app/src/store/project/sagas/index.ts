@@ -56,7 +56,7 @@ export default function* projectSaga() {
 			yield takeEvery(ActionTypes.REMOVE_NODE_FROM_DISK, removeNodeFromDisk);
 		}),
 		fork(function* moveNodeWatcher() {
-			yield takeLatest(ActionTypes.MOVE_NODE, moveNode);
+			yield takeLatest(ActionTypes.MOVE_NODE_ON_DISK, moveNode);
 		}),
 		fork(function* nodeRenameWatcher() {
 			yield takeLatest(ActionTypes.RENAME_SUBMITTED, nodeRename);

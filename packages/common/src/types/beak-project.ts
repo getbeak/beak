@@ -98,7 +98,6 @@ export interface VariableGroup {
 
 export type ValuePart = string | RealtimeValuePart;
 export type ValueParts = ValuePart[];
-
 export type Nodes = FolderNode | RequestNode;
 export type Tree = Record<string, Nodes>;
 export type VariableGroups = Record<string, VariableGroup>;
