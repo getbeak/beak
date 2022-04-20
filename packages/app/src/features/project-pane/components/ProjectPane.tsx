@@ -3,8 +3,8 @@ import { useSelector } from 'react-redux';
 
 import SidebarPane from '../../sidebar/components/SidebarPane';
 import SidebarPaneSection from '../../sidebar/components/SidebarPaneSection';
+import TreeView from '../../tree-view/components/TreeView';
 import Git from './organisms/Git';
-import TreeView from './organisms/TreeView';
 import VariableGroups from './organisms/VariableGroups';
 
 const ProjectPane: React.FunctionComponent = () => {
@@ -19,7 +19,7 @@ const ProjectPane: React.FunctionComponent = () => {
 				<VariableGroups />
 			</SidebarPaneSection>
 			<SidebarPaneSection title={'Explorer'} collapseKey={'beak.project.explorer'}>
-				<TreeView tree={tree!} />
+				<TreeView items={tree} />
 			</SidebarPaneSection>
 		</SidebarPane>
 	);
