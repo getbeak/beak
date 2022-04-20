@@ -6,12 +6,15 @@ import { call, select } from 'redux-saga/effects';
 import { ApplicationState } from '../..';
 import { MoveNodeOnDiskPayload } from '../types';
 
-export default function* workerMoveNode({ payload }: PayloadAction<MoveNodeOnDiskPayload>) {
+export default function* workerMoveNodeOnDisk({ payload }: PayloadAction<MoveNodeOnDiskPayload>) {
 	const tree: Tree = yield select((s: ApplicationState) => s.global.project.tree);
 	const sourceNode = tree[payload.sourceNodeId];
 	const destinationNode = tree[payload.destinationNodeId];
 
-	if (!sourceNode || !destinationNode)
+	if (!sourceNode)
+		return;
+
+	if (!destinationNode && payload.destinationNodeId !== 'root')
 		return;
 
 	yield call(moveNodesOnDisk, sourceNode, destinationNode);
