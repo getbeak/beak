@@ -247,11 +247,13 @@ const VariableInput = React.forwardRef<HTMLElement, VariableInputProps>((props, 
 			}
 
 			// Handle weird browser edge case
-			if (children.length === 1 && n.nodeName === 'BR')
+			if (n.nodeName === 'BR')
 				return;
 
 			// Detect un-allowed div content
 			if (n.nodeName !== 'DIV') {
+				// eslint-disable-next-line no-console
+				console.error(`Unknown node detected in variable input ${n.nodeName}`);
 				anomalyDetected = true;
 
 				return;
@@ -298,6 +300,9 @@ const VariableInput = React.forwardRef<HTMLElement, VariableInputProps>((props, 
 		// This means something really weird has happened, such as an unknown element getting into our DOM state. If
 		// that happens we just tell React to re-render and override with the state that we know about
 		if (anomalyDetected) {
+			// eslint-disable-next-line no-console
+			console.error('Anomaly detected while parsing dom state!');
+
 			unmanagedStateRef.current.lastSelectionPosition = void 0;
 
 			forceRerender();
