@@ -136,7 +136,6 @@ const projectReducer = createReducer(initialState, builder => {
 			state.activeRename = {
 				id: requestId,
 				name: node.name,
-				type: node.type,
 			};
 		})
 		.addCase(actions.renameUpdated, (state, action) => {
