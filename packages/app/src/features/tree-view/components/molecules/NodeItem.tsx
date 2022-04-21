@@ -1,4 +1,4 @@
-import React, { useContext, useRef } from 'react';
+import React, { useContext, useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { toVibrancyAlpha } from '@beak/app/design-system/utils';
 import { checkShortcut } from '@beak/app/lib/keyboard-shortcuts';
@@ -30,6 +30,11 @@ const NodeItem: React.FunctionComponent<NodeItemProps> = props => {
 	const [, dragRef] = useNodeDrag(node);
 
 	dragRef(element);
+
+	useEffect(() => {
+		if (focusContext.focusedNodeId === node.id)
+			element.current?.focus();
+	}, [focusContext.focusedNodeInvalidator]);
 
 	function handleOnKeyDown(event: React.KeyboardEvent<HTMLDivElement>) {
 		absContext.onNodeKeyDown?.(event, node);

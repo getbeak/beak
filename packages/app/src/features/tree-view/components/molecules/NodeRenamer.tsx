@@ -3,6 +3,7 @@ import styled, { css } from 'styled-components';
 import validFilename from 'valid-filename';
 
 import { TreeViewAbstractionsContext } from '../../contexts/abstractions-context';
+import { TreeViewFocusContext } from '../../contexts/focus-context';
 import { useActiveRename } from '../../hooks/use-active-rename';
 import { TreeViewItem } from '../../types';
 
@@ -19,6 +20,7 @@ interface NodeRenamerProps {
 const NodeRenamer: React.FunctionComponent<NodeRenamerProps> = props => {
 	const { node } = props;
 	const absContext = useContext(TreeViewAbstractionsContext);
+	const focusContext = useContext(TreeViewFocusContext);
 	const [activeRename, renaming] = useActiveRename(node);
 
 	const [error, setError] = useState<string | undefined>(void 0);
@@ -69,8 +71,8 @@ const NodeRenamer: React.FunctionComponent<NodeRenamerProps> = props => {
 						absContext.onRenameSubmitted?.(node);
 					}
 
-					// // Return focus to the element behind the input!
-					// window.setTimeout(() => parentRef.current?.focus(), 1);
+					// Return focus to the element behind the input!
+					focusContext.setFocusedNodeId(node.id);
 				}}
 				onChange={e => updateEditValue(e.currentTarget.value)}
 			/>

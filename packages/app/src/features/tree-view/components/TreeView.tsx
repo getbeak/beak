@@ -1,4 +1,4 @@
-import React, { ReactElement, useRef } from 'react';
+import React, { ReactElement, useRef, useState } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { ApplicationState } from '@beak/app/store';
@@ -11,6 +11,7 @@ import useSectionBody from '../../sidebar/hooks/use-section-body';
 import { TreeViewAbstractionsContext } from '../contexts/abstractions-context';
 import { TreeViewFocusContext } from '../contexts/focus-context';
 import { TreeViewNodesContext } from '../contexts/nodes-context';
+import useFocusedNodeSetup from '../hooks/use-focused-node-setup';
 import { TreeViewFolderNode, TreeViewItem, TreeViewNode, TreeViewNodes } from '../types';
 import RootDropContainer from './molecules/RootDropContainer';
 import FolderNode from './organisms/FolderNode';
@@ -18,11 +19,12 @@ import Node from './organisms/Node';
 
 interface TreeViewProps {
 	tree: TreeViewNodes;
+	activeNodeId?: string;
+	focusedNodeId?: string;
+
 	nodeFlairRenderers?: {
 		[k: string]: (node: TreeViewItem) => ReactElement;
 	};
-	activeNodeId?: string;
-	startingDepth?: number;
 
 	renameSelector?: (node: TreeViewItem, state: ApplicationState) => unknown;
 	onRenameStarted?: (node: TreeViewItem) => void;
@@ -38,14 +40,17 @@ interface TreeViewProps {
 }
 
 const TreeView: React.FunctionComponent<TreeViewProps> = props => {
-	const { tree, startingDepth = 0 } = props;
+	const { tree } = props;
 	const container = useRef<HTMLDivElement>(null);
+	const [focusedNodeId, focusedNodeInvalidator, setFocusedNodeId] = useFocusedNodeSetup(props.focusedNodeId);
 	const formattedNodes = TypedObject.values(tree)
 		.filter(t => t.parent === 'tree')
 		.sort((a, b) => a.name.localeCompare(b.name, void 0, {
 			numeric: true,
 			sensitivity: 'base',
 		}));
+
+	console.log(focusedNodeId);
 
 	// A tree view is probably inside a flex body, so let grooow
 	useSectionBody({ flexGrow: 2 });
@@ -69,6 +74,9 @@ const TreeView: React.FunctionComponent<TreeViewProps> = props => {
 			}}>
 				<TreeViewFocusContext.Provider value={{
 					activeNodeId: props.activeNodeId,
+					focusedNodeId,
+					focusedNodeInvalidator,
+					setFocusedNodeId,
 				}}>
 					<DndProvider backend={HTML5Backend}>
 						{/* Add back root context menu wrapper */}
@@ -77,14 +85,14 @@ const TreeView: React.FunctionComponent<TreeViewProps> = props => {
 								{formattedNodes.filter(i => i.type === 'folder').map(i => (
 									<FolderNode
 										key={i.id}
-										depth={startingDepth}
+										depth={0}
 										node={i as TreeViewFolderNode}
 									/>
 								))}
 								{formattedNodes.filter(i => i.type !== 'folder').map(i => (
 									<Node
 										key={i.id}
-										depth={startingDepth}
+										depth={0}
 										node={i as TreeViewNode}
 									/>
 								))}
