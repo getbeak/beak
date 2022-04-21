@@ -1,5 +1,6 @@
 import { app, dialog, shell } from 'electron';
 import { autoUpdater, UpdateInfo } from 'electron-updater';
+import { parse } from 'semver';
 
 import logger from './lib/logger';
 import persistentStore from './lib/persistent-store';
@@ -45,6 +46,11 @@ export async function attemptShowPostUpdateWelcome() {
 		return;
 
 	persistentStore.set('latestKnownVersion', version);
+
+	const parsedVersion = parse(version);
+
+	if (parsedVersion?.prerelease.length === 0)
+		return;
 
 	const { response } = await dialog.showMessageBox({
 		title: 'Beak has updated!',
