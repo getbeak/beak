@@ -162,9 +162,9 @@ const ProjectPane: React.FunctionComponent = () => {
 			</SidebarPaneSection>
 			<SidebarPaneSection title={'Explorer'} collapseKey={'beak.project.explorer'}>
 				<TreeView
+					tree={tree}
 					activeNodeId={selectedTabId}
 					nodeFlairRenderers={{ request: node => <RequestFlightStatus node={node} /> }}
-					tree={tree}
 					onContextMenu={generateContextMenu}
 					onDrop={(sourceNodeId, destinationNodeId) => actions.moveNodeOnDisk({
 						sourceNodeId,
