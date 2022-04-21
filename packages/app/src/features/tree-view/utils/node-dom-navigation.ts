@@ -17,7 +17,7 @@ export function selectPreviousLogicalNode(root: HTMLElement, selected: HTMLEleme
 function gatherFocusState(root: HTMLElement, selected: HTMLElement) {
 	const queryResult = root.querySelectorAll('[tabindex]');
 	const focusableNodes = Array.from(queryResult) as HTMLElement[];
-	const currentIndex = Array.from(focusableNodes).indexOf(selected);
+	const currentIndex = focusableNodes.indexOf(selected);
 
 	return { focusableNodes, currentIndex };
 }
