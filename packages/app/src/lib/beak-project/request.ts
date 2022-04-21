@@ -8,7 +8,7 @@ import { requestSchema } from './schemas';
 import { generateSafeNewPath } from './utils';
 
 export async function createRequestNode(directory: string, name?: string, template?: RequestNodeFile) {
-	const { fullPath } = await generateSafeNewPath(name || 'Example request', directory, '.json');
+	const { fullPath } = await generateSafeNewPath(name || 'New request', directory, '.json');
 	const node = template || {
 		id: ksuid.generate('request').toString(),
 		verb: 'get',

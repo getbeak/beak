@@ -100,7 +100,7 @@ const NodeItemContainer = styled.div<NodeItemContainerProps>`
 	display: flex;
 	padding: 4px 0;
 	padding-right: 5px;
-	padding-left: ${p => (p.$depth * 8) + 2}px;
+	padding-left: ${p => (p.$depth * 8) + 6}px;
 	align-items: center;
 	justify-content: space-between;
 	cursor: pointer;
