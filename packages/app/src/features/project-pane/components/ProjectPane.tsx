@@ -170,6 +170,13 @@ const ProjectPane: React.FunctionComponent = () => {
 						sourceNodeId,
 						destinationNodeId,
 					})}
+
+					renameSelector={(_node, state) => state.global.project.activeRename}
+					onRenameStarted={node => dispatch(actions.renameStarted({ requestId: node.id }))}
+					onRenameEnded={node => dispatch(actions.renameCancelled({ requestId: node.id }))}
+					onRenameUpdated={(node, name) => dispatch(actions.renameUpdated({ requestId: node.id, name }))}
+					onRenameSubmitted={node => dispatch(actions.renameSubmitted({ requestId: node.id }))}
+
 					onNodeClick={handleNodeClick}
 					onNodeDoubleClick={handleNodeDoubleClick}
 					onNodeKeyDown={handleNodeKeyDown}
