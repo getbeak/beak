@@ -23,39 +23,16 @@ const FolderNode: React.FunctionComponent<FolderNodeProps> = props => {
 	const [{ hovering, canDrop }, dropRef] = useNodeDrop(node);
 
 	return (
-		<FolderWrapper
-			$dropAccepted={canDrop}
-			$dropHovering={hovering}
-			ref={dropRef}
-		>
-			<NodeItem
-				node={node}
-				collapsed={collapsed}
-				collapsible
-				depth={depth}
-			>
-				<NodeName
-					node={node}
-					collapsed={collapsed}
-					collapsible
-				/>
+		<FolderWrapper $dropAccepted={canDrop} $dropHovering={hovering} ref={dropRef}>
+			<NodeItem node={node} collapsed={collapsed} collapsible depth={depth}>
+				<NodeName node={node} collapsed={collapsed} collapsible />
 			</NodeItem>
 			<FolderChildren>
 				{!collapsed && folderNodes.map(n => (
-					<FolderNode
-						key={n.id}
-						depth={depth + 1}
-						node={n}
-						// parentElement={}
-					/>
+					<FolderNode key={n.id} depth={depth + 1} node={n} />
 				))}
 				{!collapsed && nodes.map(n => (
-					<Node
-						key={n.id}
-						depth={depth + 1}
-						node={n}
-						// parentElement={}
-					/>
+					<Node key={n.id} depth={depth + 1} node={n} />
 				))}
 			</FolderChildren>
 		</FolderWrapper>
