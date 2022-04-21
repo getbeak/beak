@@ -1,3 +1,4 @@
+import { ActiveRename } from '@beak/app/features/tree-view/types';
 import { EntryMap, EntryType } from '@beak/common/types/beak-json-editor';
 import { ToggleKeyValue, Tree, ValueParts } from '@beak/common/types/beak-project';
 
@@ -23,6 +24,7 @@ export const ActionTypes = {
 	REMOVE_NODE_FROM_STORE: '@beak/global/project/REMOVE_NODE_FROM_STORE',
 	REMOVE_NODE_FROM_STORE_BY_PATH: '@beak/global/project/REMOVE_NODE_FROM_STORE_BY_PATH',
 	REMOVE_NODE_FROM_DISK: '@beak/global/project/REMOVE_NODE_FROM_DISK',
+	MOVE_NODE_ON_DISK: '@beak/global/project/MOVE_NODE_ON_DISK',
 
 	CREATE_NEW_REQUEST: '@beak/global/project/CREATE_NEW_REQUEST',
 	CREATE_NEW_FOLDER: '@beak/global/project/CREATE_NEW_FOLDER',
@@ -116,15 +118,18 @@ export interface ToggleableItemRemovedPayload extends RequestIdPayload {
 	identifier: string;
 }
 
-export interface RequestRenameStarted extends RequestIdPayload {
-	type: 'request' | 'folder';
-}
+export interface RequestRenameStarted extends RequestIdPayload { }
 export interface RequestRenameCancelled extends RequestIdPayload { }
 export interface RequestRenameSubmitted extends RequestIdPayload { }
 export interface RequestRenameResolved extends RequestIdPayload { }
 export interface RequestRenameUpdated extends RequestIdPayload { name: string }
 
 export interface DuplicateRequestPayload extends RequestIdPayload { }
+
+export interface MoveNodeOnDiskPayload {
+	sourceNodeId: string;
+	destinationNodeId: string;
+}
 
 export interface RemoveNodeFromDiskPayload extends RequestIdPayload {
 	withConfirmation: boolean;
@@ -133,12 +138,6 @@ export interface RemoveNodeFromDiskPayload extends RequestIdPayload {
 export interface CreateNewThing {
 	highlightedNodeId: string | undefined;
 	name?: string;
-}
-
-export interface ActiveRename {
-	type: 'request' | 'folder';
-	id: string;
-	name: string;
 }
 
 export interface LatestWrite {

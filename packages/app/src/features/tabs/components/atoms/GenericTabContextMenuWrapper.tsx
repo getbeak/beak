@@ -26,6 +26,7 @@ const GenericTabContextMenuWrapper: React.FunctionComponent<GenericTabContextMen
 		setMenuItems([
 			{
 				id: ksuid.generate('ctxmenuitem').toString(),
+				accelerator: 'CmdOrCtrl+W',
 				label: 'Close',
 				click: () => {
 					dispatch(closeTab(tab.payload));
@@ -33,7 +34,8 @@ const GenericTabContextMenuWrapper: React.FunctionComponent<GenericTabContextMen
 			},
 			{
 				id: ksuid.generate('ctxmenuitem').toString(),
-				label: 'Close Others',
+				accelerator: 'CmdOrCtrl+Alt+T',
+				label: 'Close others',
 				click: () => {
 					dispatch(closeTabsOther(tab.payload));
 				},

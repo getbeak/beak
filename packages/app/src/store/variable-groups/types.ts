@@ -1,3 +1,4 @@
+import { ActiveRename } from '@beak/app/features/tree-view/types';
 import { ValueParts, VariableGroup, VariableGroups } from '@beak/common/types/beak-project';
 
 export const ActionTypes = {
@@ -47,11 +48,6 @@ export const initialState: State = {
 	writeDebouncer: '',
 };
 
-export interface ActiveRename {
-	variableGroupName: string;
-	updatedName: string;
-}
-
 export interface UpdateVgPayload {
 	variableGroupName: string;
 	file: VariableGroup;
@@ -98,7 +94,7 @@ export interface VariableGroupRenameStarted extends VariableGroupNamePayload { }
 export interface VariableGroupRenameCancelled extends VariableGroupNamePayload { }
 export interface VariableGroupRenameSubmitted extends VariableGroupNamePayload { }
 export interface VariableGroupRenameResolved extends VariableGroupNamePayload { }
-export interface VariableGroupRenameUpdated extends VariableGroupNamePayload { updatedName: string }
+export interface VariableGroupRenameUpdated extends VariableGroupNamePayload { name: string }
 
 export default {
 	ActionTypes,

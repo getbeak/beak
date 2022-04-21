@@ -1,57 +1,38 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { Nodes } from '@beak/common/types/beak-project';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import styled, { css } from 'styled-components';
 import validFilename from 'valid-filename';
 
-import actions from '../../../../store/project/actions';
+import { TreeViewAbstractionsContext } from '../../contexts/abstractions-context';
+import { TreeViewFocusContext } from '../../contexts/focus-context';
+import { useActiveRename } from '../../hooks/use-active-rename';
+import { TreeViewItem } from '../../types';
 
 const errors = {
 	noName: 'A name must be provided.',
 	notValid: 'The name given is not valid.',
 };
 
-interface RenamerProps {
-	node: Nodes;
-	parentRef: React.MutableRefObject<HTMLElement | null>;
+interface NodeRenamerProps {
+	node: TreeViewItem;
+	// parentRef: React.MutableRefObject<HTMLElement | null>;
 }
 
-const Renamer: React.FunctionComponent<RenamerProps> = props => {
-	const dispatch = useDispatch();
-	const { node, parentRef } = props;
+const NodeRenamer: React.FunctionComponent<NodeRenamerProps> = props => {
+	const { node } = props;
+	const absContext = useContext(TreeViewAbstractionsContext);
+	const focusContext = useContext(TreeViewFocusContext);
+	const [activeRename, renaming] = useActiveRename(node);
 
-	const [editing, setEditing] = useState(false);
 	const [error, setError] = useState<string | undefined>(void 0);
 	const renameInputRef = useRef<HTMLInputElement>(null);
-	const rename = useSelector(s => s.global.project.activeRename);
 
-	useEffect(() => {
-		if (!rename) {
-			reset();
+	useEffect(() => renameInputRef.current?.focus(), [activeRename?.id]);
 
-			return;
-		}
-
-		if (rename.id !== node.id) {
-			reset();
-			parentRef?.current?.focus();
-
-			return;
-		}
-
-		if (editing)
-			renameInputRef?.current?.select();
-		else
-			setEditing(true);
-	}, [rename?.id, editing]);
-
-	function reset() {
-		setEditing(false);
-		setError(void 0);
-	}
+	if (!renaming)
+		return <React.Fragment>{node.name}</React.Fragment>;
 
 	function updateEditValue(value: string) {
-		dispatch(actions.renameUpdated({ requestId: node.id, name: value }));
+		absContext.onRenameUpdated?.(node, value);
 
 		switch (true) {
 			case value === '':
@@ -68,42 +49,39 @@ const Renamer: React.FunctionComponent<RenamerProps> = props => {
 		}
 	}
 
-	if (!editing || !rename)
-		return <React.Fragment>{props.children}</React.Fragment>;
-
 	return (
-		<RenameContainer>
+		<Renamer>
 			<RenameInput
 				ref={renameInputRef}
 				type={'text'}
-				value={rename.name}
+				value={activeRename!.name}
 				$error={Boolean(error)}
-				onBlur={() => dispatch(actions.renameCancelled({ requestId: node.id }))}
+				onBlur={() => absContext.onRenameEnded?.(node)}
 				onKeyDown={e => {
 					if (!['Escape', 'Enter'].includes(e.key))
 						return;
 
 					if (e.key === 'Escape')
-						dispatch(actions.renameCancelled({ requestId: node.id }));
+						absContext.onRenameEnded?.(node);
 
 					if (e.key === 'Enter') {
 						if (error !== void 0)
 							return;
 
-						dispatch(actions.renameSubmitted({ requestId: node.id }));
+						absContext.onRenameSubmitted?.(node);
 					}
 
 					// Return focus to the element behind the input!
-					window.setTimeout(() => parentRef.current?.focus(), 1);
+					focusContext.setFocusedNodeId(node.id);
 				}}
 				onChange={e => updateEditValue(e.currentTarget.value)}
 			/>
 			{error && <RenameError>{error}</RenameError>}
-		</RenameContainer>
+		</Renamer>
 	);
 };
 
-const RenameContainer = styled.div`
+const Renamer = styled.div`
 	position: relative;
 	flex-grow: 2;
 `;
@@ -114,7 +92,8 @@ const RenameInput = styled.input<{ $error: boolean }>`
 	color: ${p => p.theme.ui.textOnSurfaceBackground};
 	width: calc(100% - 4px);
 
-	font-size: 13px;
+	font-size: 12px;
+	line-height: 15px;
 
 	${p => p.$error && css`border-color: ${p.theme.ui.destructiveAction} !important;`}
 `;
@@ -132,4 +111,4 @@ const RenameError = styled.div`
 	font-size: 12px;
 `;
 
-export default Renamer;
+export default NodeRenamer;

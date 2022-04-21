@@ -34,6 +34,7 @@ const RequestTabContextMenuWrapper: React.FunctionComponent<RequestTabContextMen
 		setMenuItems([
 			{
 				id: ksuid.generate('ctxmenuitem').toString(),
+				accelerator: 'CmdOrCtrl+W',
 				label: 'Close',
 				click: () => {
 					dispatch(closeTab(node.id));
@@ -41,6 +42,7 @@ const RequestTabContextMenuWrapper: React.FunctionComponent<RequestTabContextMen
 			},
 			{
 				id: ksuid.generate('ctxmenuitem').toString(),
+				accelerator: 'CmdOrCtrl+Alt+T',
 				label: 'Close Others',
 				click: () => {
 					dispatch(closeTabsOther(node.id));

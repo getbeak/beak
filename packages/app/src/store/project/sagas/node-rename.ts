@@ -1,4 +1,5 @@
 import { changeTab } from '@beak/app/features/tabs/store/actions';
+import { ActiveRename } from '@beak/app/features/tree-view/types';
 import { renameFolderNode } from '@beak/app/lib/beak-project/folder';
 import { renameRequestNode } from '@beak/app/lib/beak-project/request';
 import { ipcDialogService } from '@beak/app/lib/ipc';
@@ -8,7 +9,7 @@ import { call, delay, put, select } from 'redux-saga/effects';
 
 import { ApplicationState } from '../..';
 import actions from '../actions';
-import { ActiveRename, RequestRenameSubmitted } from '../types';
+import { RequestRenameSubmitted } from '../types';
 
 export default function* workerRequestRename({ payload }: PayloadAction<RequestRenameSubmitted>) {
 	const activeRename: ActiveRename = yield select((s: ApplicationState) => s.global.project.activeRename);
@@ -23,7 +24,7 @@ export default function* workerRequestRename({ payload }: PayloadAction<RequestR
 		return;
 	}
 
-	if (activeRename.type === 'request') {
+	if (node.type === 'request') {
 		try {
 			yield call(renameRequestNode, activeRename.name, node as RequestNode);
 			yield put(actions.renameResolved({ requestId: payload.requestId }));
@@ -39,7 +40,7 @@ export default function* workerRequestRename({ payload }: PayloadAction<RequestR
 				type: 'info',
 			});
 		}
-	} else if (activeRename.type === 'folder') {
+	} else if (node.type === 'folder') {
 		try {
 			yield call(renameFolderNode, activeRename.name, node as FolderNode);
 			yield put(actions.renameResolved({ requestId: payload.requestId }));

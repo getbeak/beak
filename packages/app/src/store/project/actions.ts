@@ -8,6 +8,7 @@ import {
 	CreateNewThing,
 	DuplicateRequestPayload,
 	LatestWrite,
+	MoveNodeOnDiskPayload,
 	ProjectInfoPayload,
 	ProjectOpenedPayload,
 	RemoveNodeFromDiskPayload,
@@ -58,6 +59,7 @@ export const insertFolderNode = createAction<Nodes>(AT.INSERT_FOLDER_NODE);
 export const removeNodeFromStore = createAction<string>(AT.REMOVE_NODE_FROM_STORE);
 export const removeNodeFromStoreByPath = createAction<string>(AT.REMOVE_NODE_FROM_STORE_BY_PATH);
 export const removeNodeFromDisk = createAction<RemoveNodeFromDiskPayload>(AT.REMOVE_NODE_FROM_DISK);
+export const moveNodeOnDisk = createAction<MoveNodeOnDiskPayload>(AT.MOVE_NODE_ON_DISK);
 
 export const createNewRequest = createAction<CreateNewThing>(AT.CREATE_NEW_REQUEST);
 export const createNewFolder = createAction<CreateNewThing>(AT.CREATE_NEW_FOLDER);
@@ -143,6 +145,7 @@ export default {
 	removeNodeFromStore,
 	removeNodeFromStoreByPath,
 	removeNodeFromDisk,
+	moveNodeOnDisk,
 
 	createNewRequest,
 	createNewFolder,

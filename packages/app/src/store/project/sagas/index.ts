@@ -7,6 +7,7 @@ import {
 	workerCreateNewRequest as createNewRequest,
 } from './create-things';
 import duplicateRequest from './duplicate-request';
+import moveNodeOnDisk from './move-node-on-disk';
 import nodeRename from './node-rename';
 import removeNodeFromDisk from './remove-node-from-disk';
 import revealRequest from './reveal-request';
@@ -53,6 +54,9 @@ export default function* projectSaga() {
 		}),
 		fork(function* removeNodeFromDiskWatcher() {
 			yield takeEvery(ActionTypes.REMOVE_NODE_FROM_DISK, removeNodeFromDisk);
+		}),
+		fork(function* moveNodeOnDiskWatcher() {
+			yield takeLatest(ActionTypes.MOVE_NODE_ON_DISK, moveNodeOnDisk);
 		}),
 		fork(function* nodeRenameWatcher() {
 			yield takeLatest(ActionTypes.RENAME_SUBMITTED, nodeRename);

@@ -1,12 +1,11 @@
-import { attemptReconciliation, closeTab } from '@beak/app/features/tabs/store/actions';
+import { attemptReconciliation } from '@beak/app/features/tabs/store/actions';
 import { removeFolderNode } from '@beak/app/lib/beak-project/folder';
 import { removeRequestNode } from '@beak/app/lib/beak-project/request';
 import { ipcDialogService } from '@beak/app/lib/ipc';
-import { TypedObject } from '@beak/common/helpers/typescript';
 import { ShowMessageBoxRes } from '@beak/common/ipc/dialog';
-import { Nodes, RequestNode, Tree } from '@beak/common/types/beak-project';
+import { Nodes } from '@beak/common/types/beak-project';
 import { PayloadAction } from '@reduxjs/toolkit';
-import { call, delay, put, select } from 'redux-saga/effects';
+import { call, put, select } from 'redux-saga/effects';
 
 import { ApplicationState } from '../..';
 import actions from '../actions';
@@ -18,12 +17,12 @@ export default function* workerRemoveNodeFromDisk({ payload }: PayloadAction<Rem
 
 	if (withConfirmation) {
 		const response: ShowMessageBoxRes = yield call([ipcDialogService, ipcDialogService.showMessageBox], {
-			title: 'Removal confirmation',
-			message: 'Are you sure you want to remove this node?',
+			title: 'Deleting file or folder',
+			message: `You are about to delete '${node.name}' from your machine. Are you sure you want to continue?`,
+			detail: 'This action is irreversible inside Beak!',
 			type: 'warning',
 			buttons: ['Remove', 'Cancel'],
-			defaultId: 1,
-			cancelId: 1,
+			defaultId: 0,
 		});
 
 		if (response.response === 1)
@@ -36,20 +35,6 @@ export default function* workerRemoveNodeFromDisk({ payload }: PayloadAction<Rem
 		yield call(removeRequestNode, node.filePath);
 
 	yield put(actions.removeNodeFromStore(requestId));
+
 	yield put(attemptReconciliation());
-
-	// Wait for FS changes to have happened and to be reported
-	// This is for folder deletions, instead of simple request ones
-	yield delay(300);
-
-	const selectedTab: string | undefined = yield select((s: ApplicationState) => s.features.tabs.selectedTab);
-
-	if (!selectedTab)
-		return;
-
-	const tree: Tree = yield select((s: ApplicationState) => s.global.project.tree);
-	const requests = TypedObject.values(tree).filter(t => t.type === 'request') as RequestNode[];
-
-	if (!requests.find(r => r.id === selectedTab))
-		yield put(closeTab(selectedTab));
 }

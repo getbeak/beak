@@ -1,0 +1,43 @@
+import React from 'react';
+import { useSelector } from 'react-redux';
+import { TreeViewItem } from '@beak/app/features/tree-view/types';
+import { TypedObject } from '@beak/common/helpers/typescript';
+import { statusToColor } from '@beak/design-system/helpers';
+import styled from 'styled-components';
+
+interface RequestFlightStatusProps {
+	node: TreeViewItem;
+}
+
+const RequestFlightStatus: React.FunctionComponent<RequestFlightStatusProps> = ({ node }) => {
+	const flight = useSelector(s => s.global.flight.flightHistory[node.id]);
+	let mostRecentFlight: number | undefined;
+
+	if (flight?.history) {
+		const flightHistory = TypedObject.values(flight.history);
+		const lastIndex = flightHistory.length - 1;
+
+		if (lastIndex > -1)
+			mostRecentFlight = flightHistory[lastIndex]?.response?.status;
+	}
+
+	if (mostRecentFlight === void 0)
+		return null;
+
+	return <RequestStatusBlob $status={mostRecentFlight} />;
+};
+
+interface RequestStatusBlobProps {
+	$status: number;
+}
+
+const RequestStatusBlob = styled.div<RequestStatusBlobProps>`
+	width: 9px; height: 9px;
+
+	border: 1px solid ${props => props.theme.ui.surfaceBorderSeparator};
+	border-radius: 100%;
+
+	background-color: ${p => statusToColor(p.theme, p.$status)};
+`;
+
+export default RequestFlightStatus;

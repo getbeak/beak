@@ -17,9 +17,11 @@ export interface RequestNodeFile extends RequestOverview {
 	id: string;
 }
 
+export type NodeType = 'folder' | 'request';
+
 export interface Node {
 	id: string;
-	type: 'folder' | 'request';
+	type: NodeType;
 	name: string;
 	filePath: string;
 	parent: string | null;
@@ -96,7 +98,6 @@ export interface VariableGroup {
 
 export type ValuePart = string | RealtimeValuePart;
 export type ValueParts = ValuePart[];
-
 export type Nodes = FolderNode | RequestNode;
 export type Tree = Record<string, Nodes>;
 export type VariableGroups = Record<string, VariableGroup>;
