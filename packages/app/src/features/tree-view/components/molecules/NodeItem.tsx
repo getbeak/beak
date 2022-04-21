@@ -32,6 +32,8 @@ const NodeItem: React.FunctionComponent<NodeItemProps> = props => {
 	dragRef(element);
 
 	function handleOnKeyDown(event: React.KeyboardEvent<HTMLDivElement>) {
+		absContext.onNodeKeyDown?.(event, node);
+
 		if (renaming)
 			return;
 

@@ -20,6 +20,7 @@ interface Context {
 	onDrop?: (sourceNodeId: string, destinationNodeId: string) => PayloadAction<unknown>;
 	onNodeClick?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>, node: TreeViewItem) => void;
 	onNodeDoubleClick?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>, node: TreeViewItem) => void;
+	onNodeKeyDown?: (event: React.KeyboardEvent<HTMLDivElement>, node: TreeViewItem) => void;
 }
 
 export const TreeViewAbstractionsContext = createContext<Context>({ });

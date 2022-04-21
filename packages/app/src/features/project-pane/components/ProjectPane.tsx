@@ -2,8 +2,8 @@ import React, { useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import WindowSessionContext from '@beak/app/contexts/window-session-context';
 import { ipcExplorerService } from '@beak/app/lib/ipc';
+import { checkShortcut } from '@beak/app/lib/keyboard-shortcuts';
 import { actions } from '@beak/app/store/project';
-import { NodeType } from '@beak/common/types/beak-project';
 import ksuid from '@cuvva/ksuid';
 import type { MenuItemConstructorOptions } from 'electron';
 
@@ -101,7 +101,7 @@ const ProjectPane: React.FunctionComponent = () => {
 				if (node.id === 'root')
 					return;
 
-				dispatch(actions.renameStarted({ requestId: node.id, type: node.type as NodeType }));
+				dispatch(actions.renameStarted({ requestId: node.id }));
 			},
 		}, {
 			id: ksuid.generate('ctxmenuitem').toString(),
@@ -112,6 +112,44 @@ const ProjectPane: React.FunctionComponent = () => {
 				dispatch(actions.removeNodeFromDisk({ requestId: node.id, withConfirmation: true }));
 			},
 		}];
+	}
+
+	function handleNodeClick(_event: React.MouseEvent<HTMLDivElement>, node: TreeViewItem) {
+		if (node.type === 'folder')
+			return;
+
+		dispatch(changeTab({
+			type: 'request',
+			payload: node.id,
+			temporary: true,
+		}));
+	}
+
+	function handleNodeDoubleClick(_event: React.MouseEvent<HTMLDivElement>, node: TreeViewItem) {
+		if (node.type === 'folder')
+			return;
+
+		dispatch(makeTabPermanent(node.id));
+	}
+
+	function handleNodeKeyDown(event: React.KeyboardEvent<HTMLDivElement>, node: TreeViewItem) {
+		switch (true) {
+			case checkShortcut('project-explorer.request.open', event) && node.type !== 'folder':
+				dispatch(changeTab({ type: 'request', payload: node.id, temporary: false }));
+				break;
+
+			case checkShortcut('project-explorer.request.duplicate', event) && node.type !== 'folder':
+				dispatch(actions.duplicateRequest({ requestId: node.id }));
+				break;
+
+			case checkShortcut('project-explorer.item.delete', event):
+				dispatch(actions.removeNodeFromDisk({ requestId: node.id, withConfirmation: true }));
+				break;
+
+			default: return;
+		}
+
+		event.preventDefault();
 	}
 
 	return (
@@ -125,31 +163,16 @@ const ProjectPane: React.FunctionComponent = () => {
 			<SidebarPaneSection title={'Explorer'} collapseKey={'beak.project.explorer'}>
 				<TreeView
 					activeNodeId={selectedTabId}
-					nodeFlairRenderers={{
-						request: node => <RequestFlightStatus node={node} />,
-					}}
+					nodeFlairRenderers={{ request: node => <RequestFlightStatus node={node} /> }}
 					tree={tree}
-					onContextMenu={node => generateContextMenu(node)}
+					onContextMenu={generateContextMenu}
 					onDrop={(sourceNodeId, destinationNodeId) => actions.moveNodeOnDisk({
 						sourceNodeId,
 						destinationNodeId,
 					})}
-					onNodeClick={(_event, node) => {
-						if (node.type === 'folder')
-							return;
-
-						dispatch(changeTab({
-							type: 'request',
-							payload: node.id,
-							temporary: true,
-						}));
-					}}
-					onNodeDoubleClick={(_event, node) => {
-						if (node.type === 'folder')
-							return;
-
-						dispatch(makeTabPermanent(node.id));
-					}}
+					onNodeClick={handleNodeClick}
+					onNodeDoubleClick={handleNodeDoubleClick}
+					onNodeKeyDown={handleNodeKeyDown}
 				/>
 			</SidebarPaneSection>
 		</SidebarPane>

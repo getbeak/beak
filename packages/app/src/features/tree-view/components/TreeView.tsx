@@ -34,6 +34,7 @@ interface TreeViewProps {
 	onDrop?: (sourceNodeId: string, destinationNodeId: string) => PayloadAction<unknown>;
 	onNodeClick?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>, node: TreeViewItem) => void;
 	onNodeDoubleClick?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>, node: TreeViewItem) => void;
+	onNodeKeyDown?: (event: React.KeyboardEvent<HTMLDivElement>, node: TreeViewItem) => void;
 }
 
 const TreeView: React.FunctionComponent<TreeViewProps> = props => {
@@ -64,6 +65,7 @@ const TreeView: React.FunctionComponent<TreeViewProps> = props => {
 				onDrop: props.onDrop,
 				onNodeClick: props.onNodeClick,
 				onNodeDoubleClick: props.onNodeDoubleClick,
+				onNodeKeyDown: props.onNodeKeyDown,
 			}}>
 				<TreeViewFocusContext.Provider value={{
 					activeNodeId: props.activeNodeId,

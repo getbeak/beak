@@ -15,9 +15,8 @@ export type Shortcuts =
 	'tree-view.node.rename' |
 
 	'project-explorer.request.open' |
-	'project-explorer.request.delete' |
 	'project-explorer.request.duplicate' |
-	'project-explorer.folder.delete' |
+	'project-explorer.item.delete' |
 
 	'omni-bar.launch.commands' |
 	'omni-bar.launch.finder' |
@@ -61,9 +60,8 @@ export const shortcutDefinitions: Record<Shortcuts, PlatformSpecificDefinitions 
 		linux: { key: 'Enter' },
 		darwin: { meta: true, key: 'ArrowDown' },
 	},
-	'project-explorer.request.delete': { type: 'agnostic', ctrlOrMeta: true, key: 'Backspace' },
 	'project-explorer.request.duplicate': { type: 'agnostic', ctrlOrMeta: true, key: 'd' },
-	'project-explorer.folder.delete': { type: 'agnostic', ctrlOrMeta: true, key: 'Backspace' },
+	'project-explorer.item.delete': { type: 'agnostic', ctrlOrMeta: true, key: 'Backspace' },
 
 	'omni-bar.launch.commands': { type: 'agnostic', ctrlOrMeta: true, shift: true, key: 'p' },
 	'omni-bar.launch.finder': { type: 'agnostic', ctrlOrMeta: true, key: ['p', 'k'] },

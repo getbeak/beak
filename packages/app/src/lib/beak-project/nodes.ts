@@ -38,15 +38,3 @@ export function getDestinationFolder(node: Nodes | null) {
 	
 	return node.parent!;
 }
-
-export function getNodeName(node: Nodes) {
-
-	return path.basename(node.filePath);
-}
-
-export function getNodeDirectory(node: Nodes) {
-	if (node.type === 'folder')
-		return node.filePath;
-
-	return path.dirname(node.filePath);
-}
