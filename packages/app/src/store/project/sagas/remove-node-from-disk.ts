@@ -17,12 +17,12 @@ export default function* workerRemoveNodeFromDisk({ payload }: PayloadAction<Rem
 
 	if (withConfirmation) {
 		const response: ShowMessageBoxRes = yield call([ipcDialogService, ipcDialogService.showMessageBox], {
-			title: 'Removal confirmation',
-			message: 'Are you sure you want to remove this node?',
+			title: 'Deleting file or folder',
+			message: `You are about to delete '${node.name}' from your machine. Are you sure you want to continue?`,
+			detail: 'This action is irreversible inside Beak!',
 			type: 'warning',
 			buttons: ['Remove', 'Cancel'],
-			defaultId: 1,
-			cancelId: 1,
+			defaultId: 0,
 		});
 
 		if (response.response === 1)
