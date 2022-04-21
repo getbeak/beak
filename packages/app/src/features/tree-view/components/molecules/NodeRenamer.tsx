@@ -90,7 +90,8 @@ const RenameInput = styled.input<{ $error: boolean }>`
 	color: ${p => p.theme.ui.textOnSurfaceBackground};
 	width: calc(100% - 4px);
 
-	font-size: 13px;
+	font-size: 12px;
+	line-height: 15px;
 
 	${p => p.$error && css`border-color: ${p.theme.ui.destructiveAction} !important;`}
 `;

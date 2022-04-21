@@ -24,7 +24,7 @@ const NodeItem: React.FunctionComponent<NodeItemProps> = props => {
 	const dispatch = useDispatch();
 	const absContext = useContext(TreeViewAbstractionsContext);
 	const focusContext = useContext(TreeViewFocusContext);
-	const [activeRename] = useActiveRename(node);
+	const [, renaming] = useActiveRename(node);
 	const renderer = absContext.nodeFlairRenderers?.[node.type];
 	const element = useRef<HTMLDivElement | null>(null);
 	const [, dragRef] = useNodeDrag(node);
@@ -32,7 +32,7 @@ const NodeItem: React.FunctionComponent<NodeItemProps> = props => {
 	dragRef(element);
 
 	function handleOnKeyDown(event: React.KeyboardEvent<HTMLDivElement>) {
-		if (activeRename?.id === node.id)
+		if (renaming)
 			return;
 
 		switch (true) {
@@ -116,6 +116,7 @@ const NodeItemContainer = styled.div<NodeItemContainerProps>`
 
 const FlairRendererContainer = styled.div`
 	margin-left: auto;
+	padding-left: 8px;
 `;
 
 export default NodeItem;
