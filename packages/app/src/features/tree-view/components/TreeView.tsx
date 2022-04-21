@@ -1,4 +1,4 @@
-import React, { ReactElement, useRef, useState } from 'react';
+import React, { ReactElement, useRef } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { ApplicationState } from '@beak/app/store';
@@ -19,6 +19,7 @@ import Node from './organisms/Node';
 
 interface TreeViewProps {
 	tree: TreeViewNodes;
+	rootParentName: string;
 	activeNodeId?: string;
 	focusedNodeId?: string;
 
@@ -40,17 +41,15 @@ interface TreeViewProps {
 }
 
 const TreeView: React.FunctionComponent<TreeViewProps> = props => {
-	const { tree } = props;
+	const { tree, rootParentName } = props;
 	const container = useRef<HTMLDivElement>(null);
 	const [focusedNodeId, focusedNodeInvalidator, setFocusedNodeId] = useFocusedNodeSetup(props.focusedNodeId);
 	const formattedNodes = TypedObject.values(tree)
-		.filter(t => t.parent === 'tree')
+		.filter(t => t.parent === rootParentName)
 		.sort((a, b) => a.name.localeCompare(b.name, void 0, {
 			numeric: true,
 			sensitivity: 'base',
 		}));
-
-	console.log(focusedNodeId);
 
 	// A tree view is probably inside a flex body, so let grooow
 	useSectionBody({ flexGrow: 2 });

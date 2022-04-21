@@ -73,7 +73,7 @@ const ProjectPane: React.FunctionComponent = () => {
 
 		{ id: ksuid.generate('ctxmenuitem').toString(), label: 'Copy', enabled: false },
 		{ id: ksuid.generate('ctxmenuitem').toString(), label: 'Cut', enabled: false },
-		{ id: ksuid.generate('ctxmenuitem').toString(), label: 'Paste', enabled: false },	
+		{ id: ksuid.generate('ctxmenuitem').toString(), label: 'Paste', enabled: false },
 
 		{ id: ksuid.generate('ctxmenuitem').toString(), type: 'separator' },
 
@@ -163,9 +163,9 @@ const ProjectPane: React.FunctionComponent = () => {
 			<SidebarPaneSection title={'Explorer'} collapseKey={'beak.project.explorer'}>
 				<TreeView
 					tree={tree}
+					rootParentName={'tree'}
 					activeNodeId={selectedTabId}
 					nodeFlairRenderers={{ request: node => <RequestFlightStatus node={node} /> }}
-					onContextMenu={generateContextMenu}
 					onDrop={(sourceNodeId, destinationNodeId) => actions.moveNodeOnDisk({
 						sourceNodeId,
 						destinationNodeId,
@@ -177,6 +177,7 @@ const ProjectPane: React.FunctionComponent = () => {
 					onRenameUpdated={(node, name) => dispatch(actions.renameUpdated({ requestId: node.id, name }))}
 					onRenameSubmitted={node => dispatch(actions.renameSubmitted({ requestId: node.id }))}
 
+					onContextMenu={generateContextMenu}
 					onNodeClick={handleNodeClick}
 					onNodeDoubleClick={handleNodeDoubleClick}
 					onNodeKeyDown={handleNodeKeyDown}

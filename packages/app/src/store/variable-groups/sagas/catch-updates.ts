@@ -1,6 +1,7 @@
 import { attemptReconciliation } from '@beak/app/features/tabs/store/actions';
 import { removeVariableGroup, writeVariableGroup } from '@beak/app/lib/beak-variable-group';
-import { ipcFsService } from '@beak/app/lib/ipc';
+import { ipcDialogService, ipcFsService } from '@beak/app/lib/ipc';
+import { ShowMessageBoxRes } from '@beak/common/ipc/dialog';
 import { VariableGroups } from '@beak/common/types/beak-project';
 import { PayloadAction } from '@reduxjs/toolkit';
 import { call, delay, put, select } from 'redux-saga/effects';
@@ -20,6 +21,18 @@ export default function* workerCatchUpdates({ type, payload }: PayloadAction<Com
 	);
 
 	if (type === ActionTypes.REMOVE_VG) {
+		const response: ShowMessageBoxRes = yield call([ipcDialogService, ipcDialogService.showMessageBox], {
+			title: 'Deleting variable group',
+			message: `You are about to delete '${payload.variableGroupName}' from your machine. Are you sure you want to continue?`,
+			detail: 'This action is irreversible inside Beak!',
+			type: 'warning',
+			buttons: ['Remove', 'Cancel'],
+			defaultId: 0,
+		});
+
+		if (response.response === 1)
+			return;
+
 		try {
 			yield call(removeVariableGroup, payload.variableGroupName);
 		} catch { /* Don't care if this fails */ }
