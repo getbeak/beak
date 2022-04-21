@@ -72,6 +72,7 @@ const TreeView: React.FunctionComponent<TreeViewProps> = props => {
 				onNodeKeyDown: props.onNodeKeyDown,
 			}}>
 				<TreeViewFocusContext.Provider value={{
+					rootRef: container,
 					activeNodeId: props.activeNodeId,
 					focusedNodeId,
 					focusedNodeInvalidator,

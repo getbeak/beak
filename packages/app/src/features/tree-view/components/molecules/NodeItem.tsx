@@ -10,6 +10,7 @@ import { TreeViewFocusContext } from '../../contexts/focus-context';
 import { useNodeDrag } from '../../hooks/drag-and-drop';
 import { useActiveRename } from '../../hooks/use-active-rename';
 import { TreeViewItem } from '../../types';
+import { selectNextLogicalNode, selectPreviousLogicalNode } from '../../utils/node-dom-navigation';
 import NodeContextMenu from './NodeContextMenu';
 
 interface NodeItemProps {
@@ -46,6 +47,68 @@ const NodeItem: React.FunctionComponent<NodeItemProps> = props => {
 			case checkShortcut('tree-view.node.rename', event):
 				absContext.onRenameStarted?.(node);
 				break;
+
+			case checkShortcut('tree-view.node.left', event): {
+				if (node.type === 'folder' && !collapsed) {
+					dispatch(projectPanePreferenceSetCollapse({
+						key: node.id,
+						collapsed: !collapsed,
+					}));
+
+					return;
+				}
+
+				const selected = element.current;
+				const root = focusContext.rootRef.current;
+
+				if (!selected || !root)
+					return;
+
+				selectPreviousLogicalNode(root, selected);
+				break;
+			}
+
+			case checkShortcut('tree-view.node.right', event): {
+				if (node.type === 'folder' && collapsed) {
+					dispatch(projectPanePreferenceSetCollapse({
+						key: node.id,
+						collapsed: !collapsed,
+					}));
+
+					return;
+				}
+
+				const selected = element.current;
+				const root = focusContext.rootRef.current;
+
+				if (!selected || !root)
+					return;
+
+				selectNextLogicalNode(root, selected);
+				break;
+			}
+
+			case checkShortcut('tree-view.node.up', event): {
+				const selected = element.current;
+				const root = focusContext.rootRef.current;
+
+				if (!selected || !root)
+					return;
+
+				selectPreviousLogicalNode(root, selected);
+				break;
+			}
+
+			case checkShortcut('tree-view.node.down', event): {
+				const selected = element.current;
+				const root = focusContext.rootRef.current;
+
+				if (!selected || !root)
+					return;
+
+				selectNextLogicalNode(root, selected);
+				break;
+			}
 
 			default:
 				return;
