@@ -8,19 +8,15 @@ export type Shortcuts =
 
 	'sidebar.toggle-view' |
 
-	'project-explorer.request.up' |
-	'project-explorer.request.down' |
-	'project-explorer.request.left' |
+	'tree-view.node.up' |
+	'tree-view.node.down' |
+	'tree-view.node.left' |
+	'tree-view.node.right' |
+	'tree-view.node.rename' |
+
 	'project-explorer.request.open' |
-	'project-explorer.request.rename' |
 	'project-explorer.request.delete' |
 	'project-explorer.request.duplicate' |
-
-	'project-explorer.folder.up' |
-	'project-explorer.folder.down' |
-	'project-explorer.folder.left' |
-	'project-explorer.folder.right' |
-	'project-explorer.folder.rename' |
 	'project-explorer.folder.delete' |
 
 	'omni-bar.launch.commands' |
@@ -47,9 +43,17 @@ export const shortcutDefinitions: Record<Shortcuts, PlatformSpecificDefinitions 
 
 	'sidebar.toggle-view': { type: 'agnostic', ctrlOrMeta: true, key: 'b' },
 
-	'project-explorer.request.up': { type: 'agnostic', key: 'ArrowUp' },
-	'project-explorer.request.down': { type: 'agnostic', key: 'ArrowDown' },
-	'project-explorer.request.left': { type: 'agnostic', key: 'ArrowLeft' },
+	'tree-view.node.up': { type: 'agnostic', key: 'ArrowUp' },
+	'tree-view.node.down': { type: 'agnostic', key: 'ArrowDown' },
+	'tree-view.node.left': { type: 'agnostic', key: 'ArrowLeft' },
+	'tree-view.node.right': { type: 'agnostic', key: 'ArrowRight' },
+	'tree-view.node.rename': {
+		type: 'specific',
+		windows: { key: 'F2' },
+		linux: { key: 'F2' },
+		darwin: { key: 'Enter' },
+	},
+
 	'project-explorer.request.open': {
 		type: 'specific',
 
@@ -57,26 +61,9 @@ export const shortcutDefinitions: Record<Shortcuts, PlatformSpecificDefinitions 
 		linux: { key: 'Enter' },
 		darwin: { meta: true, key: 'ArrowDown' },
 	},
-	'project-explorer.request.rename': {
-		type: 'specific',
-		windows: { key: 'F2' },
-		linux: { key: 'F2' },
-		darwin: { key: 'Enter' },
-	},
 	'project-explorer.request.delete': { type: 'agnostic', ctrlOrMeta: true, key: 'Backspace' },
 	'project-explorer.request.duplicate': { type: 'agnostic', ctrlOrMeta: true, key: 'd' },
-
-	'project-explorer.folder.up': { type: 'agnostic', key: 'ArrowUp' },
-	'project-explorer.folder.down': { type: 'agnostic', key: 'ArrowDown' },
-	'project-explorer.folder.left': { type: 'agnostic', key: 'ArrowLeft' },
-	'project-explorer.folder.right': { type: 'agnostic', key: 'ArrowRight' },
 	'project-explorer.folder.delete': { type: 'agnostic', ctrlOrMeta: true, key: 'Backspace' },
-	'project-explorer.folder.rename': {
-		type: 'specific',
-		windows: { key: 'F2' },
-		linux: { key: 'F2' },
-		darwin: { key: 'Enter' },
-	},
 
 	'omni-bar.launch.commands': { type: 'agnostic', ctrlOrMeta: true, shift: true, key: 'p' },
 	'omni-bar.launch.finder': { type: 'agnostic', ctrlOrMeta: true, key: ['p', 'k'] },

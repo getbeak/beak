@@ -19,3 +19,8 @@ export interface TreeViewNode {
 	name: string;
 	parent: string | 'root' | null;
 }
+
+export interface ActiveRename {
+	id: string;
+	name: string;
+}

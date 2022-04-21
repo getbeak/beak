@@ -1,4 +1,5 @@
 import React, { createContext } from 'react';
+import { ApplicationState } from '@beak/app/store';
 import { PayloadAction } from '@reduxjs/toolkit';
 import type { MenuItemConstructorOptions } from 'electron';
 
@@ -8,6 +9,12 @@ interface Context {
 	nodeFlairRenderers?: {
 		[k: string]: (node: TreeViewItem) => React.ReactElement;
 	};
+
+	renameSelector?: (node: TreeViewItem, state: ApplicationState) => unknown;
+	onRenameStarted?: (node: TreeViewItem) => void;
+	onRenameUpdated?: (node: TreeViewItem, name: string) => void;
+	onRenameSubmitted?: (node: TreeViewItem) => void;
+	onRenameEnded?: (node: TreeViewItem) => void;
 
 	onContextMenu?: (node: TreeViewItem) => MenuItemConstructorOptions[];
 	onDrop?: (sourceNodeId: string, destinationNodeId: string) => PayloadAction<unknown>;

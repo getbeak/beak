@@ -17,7 +17,7 @@ const Node: React.FunctionComponent<NodeProps> = props => {
 	return (
 		<NodeWrapper>
 			<NodeItem node={node} depth={depth}>
-				<NodeName collapsed={false} name={node.name} />
+				<NodeName node={node} collapsed={false} />
 			</NodeItem>
 		</NodeWrapper>
 	);

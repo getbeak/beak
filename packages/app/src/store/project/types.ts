@@ -1,3 +1,4 @@
+import { ActiveRename } from '@beak/app/features/tree-view/types';
 import { EntryMap, EntryType } from '@beak/common/types/beak-json-editor';
 import { ToggleKeyValue, Tree, ValueParts } from '@beak/common/types/beak-project';
 
@@ -117,9 +118,7 @@ export interface ToggleableItemRemovedPayload extends RequestIdPayload {
 	identifier: string;
 }
 
-export interface RequestRenameStarted extends RequestIdPayload {
-	type: 'request' | 'folder';
-}
+export interface RequestRenameStarted extends RequestIdPayload { }
 export interface RequestRenameCancelled extends RequestIdPayload { }
 export interface RequestRenameSubmitted extends RequestIdPayload { }
 export interface RequestRenameResolved extends RequestIdPayload { }
@@ -139,12 +138,6 @@ export interface RemoveNodeFromDiskPayload extends RequestIdPayload {
 export interface CreateNewThing {
 	highlightedNodeId: string | undefined;
 	name?: string;
-}
-
-export interface ActiveRename {
-	type: 'request' | 'folder';
-	id: string;
-	name: string;
 }
 
 export interface LatestWrite {

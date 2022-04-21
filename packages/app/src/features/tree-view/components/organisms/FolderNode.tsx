@@ -35,9 +35,9 @@ const FolderNode: React.FunctionComponent<FolderNodeProps> = props => {
 				depth={depth}
 			>
 				<NodeName
+					node={node}
 					collapsed={collapsed}
 					collapsible
-					name={node.name}
 				/>
 			</NodeItem>
 			<FolderChildren>

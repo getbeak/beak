@@ -1,6 +1,7 @@
 import React, { ReactElement, useRef } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+import { ApplicationState } from '@beak/app/store';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { PayloadAction } from '@reduxjs/toolkit';
 import type { MenuItemConstructorOptions } from 'electron';
@@ -22,6 +23,13 @@ interface TreeViewProps {
 	};
 	activeNodeId?: string;
 	startingDepth?: number;
+
+	renameSelector?: (node: TreeViewItem, state: ApplicationState) => unknown;
+	onRenameStarted?: (node: TreeViewItem) => void;
+	onRenameUpdated?: (node: TreeViewItem, name: string) => void;
+	onRenameSubmitted?: (node: TreeViewItem) => void;
+	onRenameEnded?: (node: TreeViewItem) => void;
+
 	onContextMenu?: (node: TreeViewItem) => MenuItemConstructorOptions[];
 	onDrop?: (sourceNodeId: string, destinationNodeId: string) => PayloadAction<unknown>;
 	onNodeClick?: (event: React.MouseEvent<HTMLDivElement, MouseEvent>, node: TreeViewItem) => void;
@@ -45,6 +53,13 @@ const TreeView: React.FunctionComponent<TreeViewProps> = props => {
 		<TreeViewNodesContext.Provider value={tree}>
 			<TreeViewAbstractionsContext.Provider value={{
 				nodeFlairRenderers: props.nodeFlairRenderers,
+
+				renameSelector: props.renameSelector,
+				onRenameStarted: props.onRenameStarted,
+				onRenameUpdated: props.onRenameUpdated,
+				onRenameSubmitted: props.onRenameSubmitted,
+				onRenameEnded: props.onRenameEnded,
+
 				onContextMenu: props.onContextMenu,
 				onDrop: props.onDrop,
 				onNodeClick: props.onNodeClick,

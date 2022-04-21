@@ -1,30 +1,24 @@
 import React from 'react';
-import styled from 'styled-components';
 
+import { TreeViewItem } from '../../types';
 import Chevron from '../atoms/Chevron';
+import NodeRenamer from './NodeRenamer';
 
 interface NodeNameProps {
+	node: TreeViewItem;
 	collapsed?: boolean;
 	collapsible?: boolean;
-	name: string;
 }
 
 const NodeName: React.FunctionComponent<NodeNameProps> = props => {
-	const { collapsed, collapsible, name } = props;
+	const { collapsed, collapsible, node } = props;
 
 	return (
 		<React.Fragment>
 			<Chevron $collapsible={Boolean(collapsible)} $collapsed={Boolean(collapsed)} />
-			{/* <Renamer node={node} parentRef={element}>
-				{node.name}
-			</Renamer> */}
-			<Renamer>
-				{name}
-			</Renamer>
+			<NodeRenamer node={node} />
 		</React.Fragment>
 	);
 };
-
-const Renamer = styled.div``;
 
 export default NodeName;

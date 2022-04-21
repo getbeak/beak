@@ -1,12 +1,14 @@
 import React, { useContext, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { toVibrancyAlpha } from '@beak/app/design-system/utils';
+import { checkShortcut } from '@beak/app/lib/keyboard-shortcuts';
 import { projectPanePreferenceSetCollapse } from '@beak/app/store/preferences/actions';
 import styled from 'styled-components';
 
 import { TreeViewAbstractionsContext } from '../../contexts/abstractions-context';
 import { TreeViewFocusContext } from '../../contexts/focus-context';
 import { useNodeDrag } from '../../hooks/drag-and-drop';
+import { useActiveRename } from '../../hooks/use-active-rename';
 import { TreeViewItem } from '../../types';
 import NodeContextMenu from './NodeContextMenu';
 
@@ -22,12 +24,46 @@ const NodeItem: React.FunctionComponent<NodeItemProps> = props => {
 	const dispatch = useDispatch();
 	const absContext = useContext(TreeViewAbstractionsContext);
 	const focusContext = useContext(TreeViewFocusContext);
-
+	const [activeRename] = useActiveRename(node);
 	const renderer = absContext.nodeFlairRenderers?.[node.type];
 	const element = useRef<HTMLDivElement | null>(null);
 	const [, dragRef] = useNodeDrag(node);
 
 	dragRef(element);
+
+	function handleOnKeyDown(event: React.KeyboardEvent<HTMLDivElement>) {
+		if (activeRename?.id === node.id)
+			return;
+
+		switch (true) {
+			case checkShortcut('tree-view.node.rename', event):
+				absContext.onRenameStarted?.(node);
+				break;
+
+			default:
+				return;
+		}
+
+		event.preventDefault();
+	}
+
+	function handleOnClick(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
+		if (event.detail === 2) {
+			absContext.onNodeDoubleClick?.(event, node);
+
+			return;
+		}
+
+		absContext.onNodeClick?.(event, node);
+
+		if (!collapsible)
+			return;
+
+		dispatch(projectPanePreferenceSetCollapse({
+			key: node.id,
+			collapsed: !collapsed,
+		}));
+	}
 
 	return (
 		<NodeContextMenu node={node} target={element}>
@@ -36,23 +72,8 @@ const NodeItem: React.FunctionComponent<NodeItemProps> = props => {
 				$depth={depth}
 				tabIndex={0}
 				ref={element}
-				onClick={event => {
-					if (event.detail === 2) {
-						absContext.onNodeDoubleClick?.(event, node);
-
-						return;
-					}
-
-					absContext.onNodeClick?.(event, node);
-
-					if (!collapsible)
-						return;
-
-					dispatch(projectPanePreferenceSetCollapse({
-						key: node.id,
-						collapsed: !collapsed,
-					}));
-				}}
+				onKeyDown={handleOnKeyDown}
+				onClick={handleOnClick}
 			>
 				{children}
 				<FlairRendererContainer>
