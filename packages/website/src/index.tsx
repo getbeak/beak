@@ -29,6 +29,7 @@ const EntryPoint: React.FC<React.PropsWithChildren<unknown>> = () => (
 			<GlobalStyle />
 			<BrowserRouter>
 				<AppContainer>
+					{/* @ts-expect-error - Temporary Fix */}
 					<Sentry.ErrorBoundary fallback={<ErrorFallback />}>
 						<Scroller />
 						<Suspense fallback={<div />}>

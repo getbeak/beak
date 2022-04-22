@@ -89,7 +89,9 @@ const ProjectMain: React.FC<React.PropsWithChildren<unknown>> = () => {
 				<ReflexStyles />
 				{setup && loaded && (
 					<React.Fragment>
+						{/* @ts-expect-error - Temporary Fix */}
 						<ReflexContainer orientation={'vertical'}>
+							{/* @ts-expect-error - Temporary Fix */}
 							<ReflexElement
 								flex={15}
 								minSize={250}
@@ -104,6 +106,7 @@ const ProjectMain: React.FC<React.PropsWithChildren<unknown>> = () => {
 								orientation={'vertical'}
 							/>
 
+							{/* @ts-expect-error - Temporary Fix */}
 							<ReflexElement
 								flex={80}
 								minSize={902}

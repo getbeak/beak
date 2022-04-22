@@ -4,7 +4,6 @@ import type { BuildOptions, PluginBuild } from 'esbuild';
 import { createRequire } from 'module';
 import path from 'path';
 
-// @ts-expect-error
 const require = createRequire(import.meta.url);
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
