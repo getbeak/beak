@@ -1,5 +1,5 @@
 import React, { lazy, Suspense } from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { DesignSystemProvider } from '@beak/design-system';
@@ -60,4 +60,4 @@ Sentry.init({
 	tracesSampleRate: 1.0,
 });
 
-ReactDOM.render(<EntryPoint />, document.getElementById('root'));
+createRoot(document.getElementById('root')!).render(<EntryPoint />);
