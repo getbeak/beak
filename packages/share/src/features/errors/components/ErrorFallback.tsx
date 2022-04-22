@@ -5,7 +5,7 @@ import { faBug } from '@fortawesome/free-solid-svg-icons/faBug';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import styled from 'styled-components';
 
-const ErrorFallback: React.FunctionComponent = () => (
+const ErrorFallback: React.FunctionComponent<React.PropsWithChildren<unknown>> = () => (
 	<Header>
 		<Container>
 			<IconWrapper>

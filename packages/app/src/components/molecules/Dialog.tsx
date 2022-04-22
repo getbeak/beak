@@ -10,7 +10,7 @@ interface DialogProps {
 	onClose: () => void;
 }
 
-const Dialog: React.FunctionComponent<DialogProps> = props => {
+const Dialog: React.FunctionComponent<React.PropsWithChildren<DialogProps>> = props => {
 	const { children, onClose } = props;
 	const [identifier, setIdentifer] = useState<string>();
 	const stackIndex = useRef(dialogStack + 1);

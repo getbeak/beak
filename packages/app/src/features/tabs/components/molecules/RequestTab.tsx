@@ -10,7 +10,7 @@ interface RequestTabProps {
 	tab: RequestTabItem;
 }
 
-const RequestTab: React.FunctionComponent<RequestTabProps> = ({ tab }) => {
+const RequestTab: React.FunctionComponent<React.PropsWithChildren<RequestTabProps>> = ({ tab }) => {
 	const dispatch = useDispatch();
 	const node = useSelector(s => s.global.project.tree[tab.payload]);
 	const selectedTabPayload = useSelector(s => s.features.tabs.selectedTab);

@@ -8,7 +8,7 @@ import styled from 'styled-components';
 
 import NoVariableGroups from '../molecules/NoVariableGroups';
 
-const VariableGroups: React.FunctionComponent = () => {
+const VariableGroups: React.FunctionComponent<React.PropsWithChildren<unknown>> = () => {
 	const dispatch = useDispatch();
 	const { variableGroups } = useSelector(s => s.global.variableGroups)!;
 	const selectedGroups = useSelector(s => s.global.preferences.editor.selectedVariableGroups);

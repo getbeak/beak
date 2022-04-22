@@ -10,7 +10,7 @@ interface CellDeletionActionProps {
 	onConfirmedDeletion: () => void;
 }
 
-const CellDeletionAction: React.FunctionComponent<CellDeletionActionProps> = props => (
+const CellDeletionAction: React.FunctionComponent<React.PropsWithChildren<CellDeletionActionProps>> = props => (
 	<CellAction onClick={async () => {
 		const result = await ipcDialogService.showMessageBox({
 			title: 'Are you sure?',

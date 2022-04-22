@@ -18,7 +18,7 @@ interface PrettyViewerProps {
 	mode: 'request' | 'response';
 }
 
-const PrettyViewer: React.FunctionComponent<PrettyViewerProps> = ({ flight, mode }) => {
+const PrettyViewer: React.FunctionComponent<React.PropsWithChildren<PrettyViewerProps>> = ({ flight, mode }) => {
 	const dispatch = useDispatch();
 	const requestId = flight.requestId;
 	const preferences = useSelector(s => s.global.preferences.requests[requestId].response.pretty[mode]);

@@ -17,7 +17,7 @@ interface VariableGroupEditorProps {
 	variableGroupName: string;
 }
 
-const VariableGroupEditor: React.FunctionComponent<VariableGroupEditorProps> = ({ variableGroupName }) => {
+const VariableGroupEditor: React.FunctionComponent<React.PropsWithChildren<VariableGroupEditorProps>> = ({ variableGroupName }) => {
 	const dispatch = useDispatch();
 	const variableGroups = useSelector(s => s.global.variableGroups);
 	const variableGroup = variableGroups.variableGroups[variableGroupName];

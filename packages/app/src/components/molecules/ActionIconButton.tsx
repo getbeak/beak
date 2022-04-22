@@ -7,7 +7,7 @@ interface ActionIconButtonProps extends React.HTMLProps<HTMLButtonElement> {
 	icon: IconProp;
 }
 
-const ActionIconButton: React.FunctionComponent<ActionIconButtonProps> = props => {
+const ActionIconButton: React.FunctionComponent<React.PropsWithChildren<ActionIconButtonProps>> = props => {
 	const { icon, ...buttonProps } = props;
 
 	return (

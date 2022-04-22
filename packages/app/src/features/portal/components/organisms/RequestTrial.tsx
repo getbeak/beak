@@ -16,7 +16,7 @@ interface RequestTrialProps {
 	onMagicLinkSent: () => void;
 }
 
-const RequestTrial: React.FunctionComponent<RequestTrialProps> = props => {
+const RequestTrial: React.FunctionComponent<React.PropsWithChildren<RequestTrialProps>> = props => {
 	const { email, onChangeToDefault, onEmailChange, onMagicLinkSent } = props;
 	const [working, setWorking] = useState(false);
 	const [error, setError] = useState<Squawk | null>(null);

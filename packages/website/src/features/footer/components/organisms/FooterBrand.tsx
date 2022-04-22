@@ -2,7 +2,7 @@ import React from 'react';
 import FooterLogo from '@beak/website/components/atoms/FooterLogo';
 import styled from 'styled-components';
 
-const FooterBrand: React.FunctionComponent = () => (
+const FooterBrand: React.FunctionComponent<React.PropsWithChildren<unknown>> = () => (
 	<div>
 		<FooterLogo />
 		<Text>{'© 2021 Flamingo Corp Ltd.'}</Text>

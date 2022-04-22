@@ -14,7 +14,7 @@ export interface CreateViewProps {
 	setView: (view: WelcomeViewType) => void;
 }
 
-const CreateView: React.FunctionComponent<CreateViewProps> = ({ setView }) => {
+const CreateView: React.FunctionComponent<React.PropsWithChildren<CreateViewProps>> = ({ setView }) => {
 	const [name, setName] = useState('');
 	const projNameInput = useRef<HTMLInputElement>(null);
 	const [validProjectName, setValidProjectName] = useState(true);

@@ -14,7 +14,7 @@ interface SidebarPaneSectionProps {
 	disableCollapse?: boolean;
 }
 
-const SidebarPaneSection: React.FunctionComponent<SidebarPaneSectionProps> = props => {
+const SidebarPaneSection: React.FunctionComponent<React.PropsWithChildren<SidebarPaneSectionProps>> = props => {
 	const dispatch = useDispatch();
 	const { actions, title, collapseKey, disableCollapse, children } = props;
 	const [bodyOptions, setBodyOptions] = useState<SectionBodyOptions>({});

@@ -21,7 +21,7 @@ interface RealtimeValueEditorProps {
 	onSave: (partIndex: number, type: string, item: any) => void;
 }
 
-const RealtimeValueEditor: React.FunctionComponent<RealtimeValueEditorProps> = props => {
+const RealtimeValueEditor: React.FunctionComponent<React.PropsWithChildren<RealtimeValueEditorProps>> = props => {
 	const { editable, onSave } = props;
 	const initialInputRef = useRef<HTMLElement | null>(null);
 

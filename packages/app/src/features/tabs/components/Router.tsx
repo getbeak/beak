@@ -15,7 +15,7 @@ interface RouterProps {
 	selectedTab: TabItem | undefined;
 }
 
-const Router: React.FunctionComponent<RouterProps> = ({ selectedTab }) => {
+const Router: React.FunctionComponent<React.PropsWithChildren<RouterProps>> = ({ selectedTab }) => {
 	const selectedItem = useSelector(s => s.global.project.tree[selectedTab?.payload || '']);
 
 	if (!selectedTab)

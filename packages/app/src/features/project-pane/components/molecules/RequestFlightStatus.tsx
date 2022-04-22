@@ -9,7 +9,7 @@ interface RequestFlightStatusProps {
 	node: TreeViewItem;
 }
 
-const RequestFlightStatus: React.FunctionComponent<RequestFlightStatusProps> = ({ node }) => {
+const RequestFlightStatus: React.FunctionComponent<React.PropsWithChildren<RequestFlightStatusProps>> = ({ node }) => {
 	const flight = useSelector(s => s.global.flight.flightHistory[node.id]);
 	let mostRecentFlight: number | undefined;
 

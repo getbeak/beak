@@ -15,7 +15,7 @@ const pulse = keyframes`
 	}
 `;
 
-const Arbiter: React.FunctionComponent = ({ children }) => {
+const Arbiter: React.FunctionComponent<React.PropsWithChildren<unknown>> = ({ children }) => {
 	const arbiter = useSelector(s => s.global.arbiter.status);
 	const now = new Date();
 	const lastSuccessfulCheck = new Date(arbiter.lastSuccessfulCheck);

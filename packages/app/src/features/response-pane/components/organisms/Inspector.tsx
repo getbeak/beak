@@ -16,7 +16,7 @@ export interface InspectorProps {
 	flight: Flight;
 }
 
-const Inspector: React.FunctionComponent<InspectorProps> = props => {
+const Inspector: React.FunctionComponent<React.PropsWithChildren<InspectorProps>> = props => {
 	const dispatch = useDispatch();
 	// Don't need to fetch these as it's done by the request
 	const preferences = useSelector(s => s.global.preferences.requests[props.flight.requestId].response);

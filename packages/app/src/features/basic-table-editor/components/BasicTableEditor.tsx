@@ -29,7 +29,7 @@ interface BasicTableEditorProps {
 	removeItem?: (ident: string) => void;
 }
 
-const BasicTableEditor: React.FunctionComponent<BasicTableEditorProps> = props => {
+const BasicTableEditor: React.FunctionComponent<React.PropsWithChildren<BasicTableEditorProps>> = props => {
 	const { items, readOnly, disableItemToggle, addItem, updateItem, removeItem } = props;
 	const editable = !readOnly;
 	const showToggle = !disableItemToggle;

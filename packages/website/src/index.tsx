@@ -22,7 +22,7 @@ const Privacy = lazy(() => import('./features/legal/components/Privacy'));
 const Purchased = lazy(() => import('./features/purchased/components/Purchased'));
 const Terms = lazy(() => import('./features/legal/components/Terms'));
 
-const EntryPoint: React.FunctionComponent = () => (
+const EntryPoint: React.FunctionComponent<React.PropsWithChildren<unknown>> = () => (
 	<Provider store={store}>
 		<base href={'./'} />
 		<DesignSystemProvider themeKey={'dark'}>

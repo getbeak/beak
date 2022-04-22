@@ -5,7 +5,7 @@ import styled from 'styled-components';
 
 import InfoCard from './molecules/InfoCard';
 
-const ShareProject: React.FunctionComponent = () => (
+const ShareProject: React.FunctionComponent<React.PropsWithChildren<unknown>> = () => (
 	<SpacedContainer>
 		<Helmet defer={false}>
 			<title>{'Beak :: Someone has shared a project with you'}</title>

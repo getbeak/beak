@@ -5,7 +5,7 @@ interface PaneProps {
 	title: string;
 }
 
-const Pane: React.FunctionComponent<PaneProps> = ({ title, children }) => (
+const Pane: React.FunctionComponent<React.PropsWithChildren<PaneProps>> = ({ title, children }) => (
 	<Wrapper>
 		<Title>{title}</Title>
 		<Container>

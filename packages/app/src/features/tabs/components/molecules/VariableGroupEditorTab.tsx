@@ -10,7 +10,7 @@ interface VariableGroupEditorTabProps {
 	tab: VariableGroupEditorTabItem;
 }
 
-const VariableGroupEditorTab: React.FunctionComponent<VariableGroupEditorTabProps> = ({ tab }) => {
+const VariableGroupEditorTab: React.FunctionComponent<React.PropsWithChildren<VariableGroupEditorTabProps>> = ({ tab }) => {
 	const dispatch = useDispatch();
 	const selectedTabPayload = useSelector(s => s.features.tabs.selectedTab);
 	const [target, setTarget] = useState<HTMLElement>();

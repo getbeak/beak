@@ -13,7 +13,7 @@ interface FeatureHighlightProps {
 	flipped?: boolean;
 }
 
-const FeatureHighlight: React.FunctionComponent<FeatureHighlightProps> = props => {
+const FeatureHighlight: React.FunctionComponent<React.PropsWithChildren<FeatureHighlightProps>> = props => {
 	const { title, description, asset, flipped } = props;
 
 	return (

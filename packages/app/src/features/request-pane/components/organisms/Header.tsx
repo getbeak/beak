@@ -16,7 +16,7 @@ export interface HeaderProps {
 	node: ValidRequestNode;
 }
 
-const Header: React.FunctionComponent<HeaderProps> = props => {
+const Header: React.FunctionComponent<React.PropsWithChildren<HeaderProps>> = props => {
 	const dispatch = useDispatch();
 	const theme = useTheme();
 	const { variableGroups } = useSelector(s => s.global.variableGroups);

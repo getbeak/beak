@@ -17,7 +17,7 @@ export interface ModifiersProps {
 	node: ValidRequestNode;
 }
 
-const Modifiers: React.FunctionComponent<ModifiersProps> = props => {
+const Modifiers: React.FunctionComponent<React.PropsWithChildren<ModifiersProps>> = props => {
 	const dispatch = useDispatch();
 	const { node } = props;
 	const preferences = useSelector(s => s.global.preferences.requests[node.id])!;

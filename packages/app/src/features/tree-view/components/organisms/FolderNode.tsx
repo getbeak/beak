@@ -16,7 +16,7 @@ interface FolderNodeProps {
 	hierarchicalParentRef?: MutableRefObject<HTMLElement | null>;
 }
 
-const FolderNode: React.FunctionComponent<FolderNodeProps> = props => {
+const FolderNode: React.FunctionComponent<React.PropsWithChildren<FolderNodeProps>> = props => {
 	const { depth, node } = props;
 	const collapsed = useSelector(s => s.global.preferences.projectPane.collapsed[node.id]);
 	const { folderNodes, nodes } = useChildNodes(node.filePath);

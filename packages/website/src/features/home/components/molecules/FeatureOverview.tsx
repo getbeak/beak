@@ -11,7 +11,7 @@ import styled, { useTheme } from 'styled-components';
 
 import { Card, CardBody, CardGrid, CardIcons, CardTitle } from '../../../../components/atoms/Card';
 
-const FeatureOverview: React.FunctionComponent = () => {
+const FeatureOverview: React.FunctionComponent<React.PropsWithChildren<unknown>> = () => {
 	const theme = useTheme();
 	const hillVsSarah = Math.round(Math.random()) === 1 ? 'introduce' : 'bring home';
 

@@ -10,7 +10,7 @@ interface AlertSwitchProps {
 	alert: Alert;
 }
 
-const AlertSwitch: React.FunctionComponent<AlertSwitchProps> = ({ alert }) => {
+const AlertSwitch: React.FunctionComponent<React.PropsWithChildren<AlertSwitchProps>> = ({ alert }) => {
 	const [fixer, setFixer] = useState<undefined | 'encryption'>();
 	const dispatch = useDispatch();
 

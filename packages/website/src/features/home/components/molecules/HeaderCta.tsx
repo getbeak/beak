@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 import CtaButton from '../../../../components/atoms/Buttons';
 
-const HeaderCta: React.FunctionComponent = () => (
+const HeaderCta: React.FunctionComponent<React.PropsWithChildren<unknown>> = () => (
 	<Wrapper>
 		<CtaButton href={'/pricing'} $style={'primary'}>{'Get Beak for $25'}</CtaButton>
 		<CtaButton href={'/#downloads'} $style={'secondary'}>{'Download free trial'}</CtaButton>

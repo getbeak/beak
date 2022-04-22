@@ -11,7 +11,7 @@ interface AlertItemProps {
 	};
 }
 
-const AlertItem: React.FunctionComponent<AlertItemProps> = props => {
+const AlertItem: React.FunctionComponent<React.PropsWithChildren<AlertItemProps>> = props => {
 	const { title, description, action } = props;
 
 	return (

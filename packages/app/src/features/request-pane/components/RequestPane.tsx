@@ -15,7 +15,7 @@ import Modifiers from './organisms/Modifiers';
 
 const allowedBodyVerbs = ['GET', 'HEAD', 'DELETE'];
 
-const RequestPane: React.FunctionComponent = () => {
+const RequestPane: React.FunctionComponent<React.PropsWithChildren<unknown>> = () => {
 	const dispatch = useDispatch();
 	const mounted = useRef(false);
 	const { tree } = useSelector(s => s.global.project);

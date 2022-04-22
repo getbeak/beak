@@ -10,7 +10,7 @@ interface NodeNameProps {
 	collapsible?: boolean;
 }
 
-const NodeName: React.FunctionComponent<NodeNameProps> = props => {
+const NodeName: React.FunctionComponent<React.PropsWithChildren<NodeNameProps>> = props => {
 	const { collapsed, collapsible, node } = props;
 
 	return (

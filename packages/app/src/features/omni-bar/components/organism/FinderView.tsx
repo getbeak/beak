@@ -15,7 +15,7 @@ export interface FinderViewProps {
 	reset: () => void;
 }
 
-const FinderView: React.FunctionComponent<FinderViewProps> = ({ content, reset }) => {
+const FinderView: React.FunctionComponent<React.PropsWithChildren<FinderViewProps>> = ({ content, reset }) => {
 	const dispatch = useDispatch();
 	const tree = useSelector(s => s.global.project.tree) || {};
 	const { variableGroups } = useSelector(s => s.global.variableGroups);

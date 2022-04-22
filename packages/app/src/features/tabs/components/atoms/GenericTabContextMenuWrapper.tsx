@@ -12,7 +12,7 @@ interface GenericTabContextMenuWrapperProps {
 	target: HTMLElement | undefined;
 }
 
-const GenericTabContextMenuWrapper: React.FunctionComponent<GenericTabContextMenuWrapperProps> = props => {
+const GenericTabContextMenuWrapper: React.FunctionComponent<React.PropsWithChildren<GenericTabContextMenuWrapperProps>> = props => {
 	const dispatch = useDispatch();
 	const { tab, target, children } = props;
 	const { activeTabs } = useSelector(s => s.features.tabs)!;

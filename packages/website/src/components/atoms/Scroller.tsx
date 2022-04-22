@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
-const Scroller: React.FunctionComponent = () => {
+const Scroller: React.FunctionComponent<React.PropsWithChildren<unknown>> = () => {
 	const location = useLocation();
 
 	useEffect(() => {

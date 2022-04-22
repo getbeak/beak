@@ -7,7 +7,7 @@ import styled from 'styled-components';
 import { actions } from '../store';
 import FinderView from './organism/FinderView';
 
-const Omnibar: React.FunctionComponent = () => {
+const Omnibar: React.FunctionComponent<React.PropsWithChildren<unknown>> = () => {
 	const { open, mode } = useSelector(s => s.features.omniBar);
 	const [content, setContent] = useState('');
 	const inputRef = useRef<HTMLInputElement | null>(null);

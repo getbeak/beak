@@ -14,7 +14,7 @@ interface RequestTabContextMenuWrapperProps {
 	target: HTMLElement | undefined;
 }
 
-const RequestTabContextMenuWrapper: React.FunctionComponent<RequestTabContextMenuWrapperProps> = props => {
+const RequestTabContextMenuWrapper: React.FunctionComponent<React.PropsWithChildren<RequestTabContextMenuWrapperProps>> = props => {
 	const dispatch = useDispatch();
 	const { tab, target, children } = props;
 	const node = useSelector(s => s.global.project.tree[tab.payload]);

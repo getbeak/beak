@@ -5,7 +5,7 @@ interface SidebarPaneProps {
 
 }
 
-const SidebarPane: React.FunctionComponent<SidebarPaneProps> = ({ children }) => (
+const SidebarPane: React.FunctionComponent<React.PropsWithChildren<SidebarPaneProps>> = ({ children }) => (
 	<Container>
 		{children}
 	</Container>

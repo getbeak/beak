@@ -26,7 +26,7 @@ interface JsonArrayEntryProps extends JsonEntryProps {
 	value: ArrayEntry | NamedArrayEntry;
 }
 
-const JsonArrayEntry: React.FunctionComponent<JsonArrayEntryProps> = props => {
+const JsonArrayEntry: React.FunctionComponent<React.PropsWithChildren<JsonArrayEntryProps>> = props => {
 	const dispatch = useDispatch();
 	const { depth, requestId, nameOverride, value } = props;
 	const { id } = value;

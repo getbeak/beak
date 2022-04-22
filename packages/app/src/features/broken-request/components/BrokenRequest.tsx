@@ -9,7 +9,7 @@ interface BrokenRequestProps {
 	error: Squawk;
 }
 
-const BrokenRequest: React.FunctionComponent<BrokenRequestProps> = ({ filePath, error }) => {
+const BrokenRequest: React.FunctionComponent<React.PropsWithChildren<BrokenRequestProps>> = ({ filePath, error }) => {
 	switch (error.code) {
 		case 'schema_invalid': return <SchemaInvalidError filePath={filePath} error={error} />;
 		default: return <GenericError filePath={filePath} error={error} />;

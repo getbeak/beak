@@ -16,7 +16,7 @@ import RequestFlightStatus from './molecules/RequestFlightStatus';
 import Git from './organisms/Git';
 import VariableGroups from './organisms/VariableGroups';
 
-const ProjectPane: React.FunctionComponent = () => {
+const ProjectPane: React.FunctionComponent<React.PropsWithChildren<unknown>> = () => {
 	const { id, tree, name } = useSelector(s => s.global.project);
 	const selectedTabId = useSelector(s => s.features.tabs.selectedTab);
 	const windowSession = useContext(WindowSessionContext);

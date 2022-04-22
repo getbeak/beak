@@ -14,7 +14,7 @@ export interface GetStartedButtonProps extends ButtonProps {
 	iconColor?: keyof UIColors;
 }
 
-const GetStartedButton: React.FunctionComponent<GetStartedButtonProps> = props => {
+const GetStartedButton: React.FunctionComponent<React.PropsWithChildren<GetStartedButtonProps>> = props => {
 	const theme = useTheme();
 	const {
 		title,

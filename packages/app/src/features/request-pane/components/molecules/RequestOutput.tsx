@@ -19,7 +19,7 @@ export interface RequestOutputProps {
 	selectedNode: ValidRequestNode;
 }
 
-const RequestOutput: React.FunctionComponent<RequestOutputProps> = props => {
+const RequestOutput: React.FunctionComponent<React.PropsWithChildren<RequestOutputProps>> = props => {
 	const { variableGroups } = useSelector(s => s.global.variableGroups);
 	const selectedGroups = useSelector(s => s.global.preferences.editor.selectedVariableGroups);
 	const windowSession = useContext(WindowSessionContext);
@@ -103,10 +103,10 @@ export async function createBasicHttpOutput(overview: RequestOverview, context: 
 		out.push(`User-Agent: Beak/${windowSession.version ?? ''} (${windowSession.os})`);
 
 	if (headers) {
-		out.push(...await Promise.all(
+		out.push(...(await Promise.all(
 			TypedObject.values(headers)
 				.filter(h => h.enabled)
-				.map(async ({ name, value }) => `${name}: ${await parseValueParts(context, value)}`)),
+				.map(async ({ name, value }) => `${name}: ${await parseValueParts(context, value)}`))),
 		);
 	}
 

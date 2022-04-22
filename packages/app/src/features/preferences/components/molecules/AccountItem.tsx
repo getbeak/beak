@@ -5,7 +5,7 @@ import { faUserCircle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import styled, { useTheme } from 'styled-components';
 
-const AccountItem: React.FunctionComponent = () => {
+const AccountItem: React.FunctionComponent<React.PropsWithChildren<unknown>> = () => {
 	const theme = useTheme();
 	const [primaryEmail, setPrimaryEmail] = useState<string | null>(null);
 

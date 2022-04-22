@@ -23,7 +23,7 @@ export interface ResponseTabProps {
 	flight: Flight;
 }
 
-const ResponseTab: React.FunctionComponent<ResponseTabProps> = props => {
+const ResponseTab: React.FunctionComponent<React.PropsWithChildren<ResponseTabProps>> = props => {
 	const { flight } = props;
 	const dispatch = useDispatch();
 	const { error, response, requestId } = flight;

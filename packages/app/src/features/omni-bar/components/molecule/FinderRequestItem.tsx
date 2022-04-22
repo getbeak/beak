@@ -9,7 +9,7 @@ export interface FinderRequestItemProps {
 	info: RequestOverview;
 }
 
-const FinderRequestItem: React.FunctionComponent<FinderRequestItemProps> = ({ context, info }) => {
+const FinderRequestItem: React.FunctionComponent<React.PropsWithChildren<FinderRequestItemProps>> = ({ context, info }) => {
 	const [uri, setUri] = useState('');
 
 	useEffect(() => {

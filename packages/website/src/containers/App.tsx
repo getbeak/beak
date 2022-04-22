@@ -14,7 +14,7 @@ import Navbar, {
 import Footer from '../features/footer/components/Footer';
 import useSmoothHashScroll from '../hooks/use-smooth-hash-scroll';
 
-const AppContainer: React.FunctionComponent = ({ children }) => {
+const AppContainer: React.FunctionComponent<React.PropsWithChildren<unknown>> = ({ children }) => {
 	const [expandNav, setExpandNav] = useState(false);
 
 	useSmoothHashScroll();

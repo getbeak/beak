@@ -26,7 +26,7 @@ interface JsonObjectEntryProps extends JsonEntryProps {
 	value: ObjectEntry | NamedObjectEntry;
 }
 
-const JsonObjectEntry: React.FunctionComponent<JsonObjectEntryProps> = props => {
+const JsonObjectEntry: React.FunctionComponent<React.PropsWithChildren<JsonObjectEntryProps>> = props => {
 	const { depth, requestId, value, nameOverride } = props;
 	const { id } = value;
 	const dispatch = useDispatch();

@@ -6,7 +6,7 @@ import styled from 'styled-components';
 import Header from './molecules/Header';
 import Inspector from './organisms/Inspector';
 
-const ResponsePane: React.FunctionComponent = () => {
+const ResponsePane: React.FunctionComponent<React.PropsWithChildren<unknown>> = () => {
 	const { tree } = useSelector(s => s.global.project);
 	const selectedTab = useSelector(s => s.features.tabs.selectedTab);
 	const flightHistories = useSelector(s => s.global.flight.flightHistory);

@@ -14,7 +14,7 @@ function createDesignSystem(themeKey: Theme): DesignSystem {
 	};
 }
 
-const DesignSystemProvider: React.FunctionComponent<{ themeKey: Theme }> = ({ children, themeKey }) => (
+const DesignSystemProvider: React.FunctionComponent<React.PropsWithChildren<{ themeKey: Theme }>> = ({ children, themeKey }) => (
 	<ThemeProvider theme={createDesignSystem(themeKey)}>{children}</ThemeProvider>
 );
 

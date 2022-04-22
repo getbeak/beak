@@ -2,7 +2,7 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 
-const ProgressIndicator: React.FunctionComponent = () => {
+const ProgressIndicator: React.FunctionComponent<React.PropsWithChildren<unknown>> = () => {
 	const currentFlight = useSelector(s => s.global.flight.currentFlight);
 
 	return (

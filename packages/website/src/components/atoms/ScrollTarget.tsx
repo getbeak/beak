@@ -5,7 +5,7 @@ interface ScrollTargetProps {
 	target: string;
 }
 
-const ScrollTarget: React.FunctionComponent<ScrollTargetProps> = ({ target }) => (
+const ScrollTarget: React.FunctionComponent<React.PropsWithChildren<ScrollTargetProps>> = ({ target }) => (
 	<Wrapper>
 		<Target id={target} />
 	</Wrapper>

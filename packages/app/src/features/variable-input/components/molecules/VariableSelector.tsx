@@ -25,7 +25,7 @@ export interface VariableSelectorProps {
 	onDone: (value: RealtimeValuePart) => void;
 }
 
-const VariableSelector: React.FunctionComponent<VariableSelectorProps> = props => {
+const VariableSelector: React.FunctionComponent<React.PropsWithChildren<VariableSelectorProps>> = props => {
 	const { editableElement, sel, query, onClose, onDone } = props;
 	const { variableGroups } = useSelector(s => s.global.variableGroups);
 	const selectedGroups = useSelector(s => s.global.preferences.editor.selectedVariableGroups);

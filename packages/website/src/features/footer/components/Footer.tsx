@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import FooterBrand from './organisms/FooterBrand';
 import FooterLinks from './organisms/FooterLinks';
 
-const Footer: React.FunctionComponent = () => (
+const Footer: React.FunctionComponent<React.PropsWithChildren<unknown>> = () => (
 	<FooterWrapper>
 		<FooterContainer>
 			<FooterBrand />

@@ -8,7 +8,7 @@ interface ErrorRendererProps {
 	error: Squawk;
 }
 
-const ErrorRenderer: React.FunctionComponent<ErrorRendererProps> = ({ error }) => (
+const ErrorRenderer: React.FunctionComponent<React.PropsWithChildren<ErrorRendererProps>> = ({ error }) => (
 	<EditorContainer>
 		<EditorHeader>{'Error body'}</EditorHeader>
 		<Editor

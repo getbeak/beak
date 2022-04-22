@@ -5,7 +5,7 @@ import styled from 'styled-components';
 
 import NoProjectInformation from '../molecules/NoProjectInformation';
 
-const Git: React.FunctionComponent = () => {
+const Git: React.FunctionComponent<React.PropsWithChildren<unknown>> = () => {
 	const { branches, selectedBranch } = useSelector(s => s.global.git)!;
 
 	useSectionBody({

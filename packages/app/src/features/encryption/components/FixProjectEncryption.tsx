@@ -14,7 +14,7 @@ interface FixProjectEncryptionProps {
 	onClose: (resolved: boolean) => void;
 }
 
-const FixProjectEncryption: React.FunctionComponent<FixProjectEncryptionProps> = props => {
+const FixProjectEncryption: React.FunctionComponent<React.PropsWithChildren<FixProjectEncryptionProps>> = props => {
 	const [key, setKey] = useState('');
 	const [error, setError] = useState('');
 	const [disable, setDisable] = useState(false);

@@ -22,7 +22,7 @@ export interface BodyTabProps {
 	node: ValidRequestNode;
 }
 
-const BodyTab: React.FunctionComponent<BodyTabProps> = props => {
+const BodyTab: React.FunctionComponent<React.PropsWithChildren<BodyTabProps>> = props => {
 	const dispatch = useDispatch();
 	const { variableGroups } = useSelector(s => s.global.variableGroups);
 	const selectedGroups = useSelector(s => s.global.preferences.editor.selectedVariableGroups);

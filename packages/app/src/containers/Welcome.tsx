@@ -7,7 +7,7 @@ import WelcomeView from '../features/welcome/components/organisms/WelcomeView';
 
 export type WelcomeViewType = 'main' | 'create-local';
 
-const Welcome: React.FunctionComponent = () => {
+const Welcome: React.FunctionComponent<React.PropsWithChildren<unknown>> = () => {
 	const [view, setView] = useState<WelcomeViewType>('main');
 
 	return (

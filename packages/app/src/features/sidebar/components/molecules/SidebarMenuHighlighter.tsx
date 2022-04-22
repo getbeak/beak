@@ -6,7 +6,7 @@ interface SidebarMenuHighlighterProps {
 	hidden: boolean;
 }
 
-const SidebarMenuHighlighter: React.FunctionComponent<SidebarMenuHighlighterProps> = props => (
+const SidebarMenuHighlighter: React.FunctionComponent<React.PropsWithChildren<SidebarMenuHighlighterProps>> = props => (
 	<Container $hidden={props.hidden}>
 		<HighlightBar $index={props.index} />
 	</Container>

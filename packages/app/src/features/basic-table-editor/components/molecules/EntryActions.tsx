@@ -7,7 +7,7 @@ interface EntryActionsProps {
 	onRemove: () => void;
 }
 
-const EntryActions: React.FunctionComponent<EntryActionsProps> = ({ onRemove }) => (
+const EntryActions: React.FunctionComponent<React.PropsWithChildren<EntryActionsProps>> = ({ onRemove }) => (
 	<Wrapper>
 		<ActionIconButton
 			tabIndex={-1}

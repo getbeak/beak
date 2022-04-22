@@ -7,7 +7,7 @@ import styled from 'styled-components';
 
 import { changeTab } from '../../store/actions';
 
-const NotTheTabYourLookingFor: React.FunctionComponent = () => {
+const NotTheTabYourLookingFor: React.FunctionComponent<React.PropsWithChildren<unknown>> = () => {
 	const tree = useSelector(s => s.global.project.tree);
 	const dispatch = useDispatch();
 

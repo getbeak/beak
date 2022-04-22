@@ -8,7 +8,7 @@ import { useTheme } from 'styled-components';
 import ActionBarButton from '../atoms/ActionBarButton';
 import AlertsPopover from '../organisms/AlertsPopover';
 
-const ActionBarAlertButton: React.FunctionComponent = () => {
+const ActionBarAlertButton: React.FunctionComponent<React.PropsWithChildren<unknown>> = () => {
 	const theme = useTheme();
 	const [showPopover, setShowPopover] = useState(false);
 	const alerts = useSelector(s => s.global.project.alerts);

@@ -12,7 +12,7 @@ interface AlertsPopoverProps {
 	onClose: () => void;
 }
 
-const AlertsPopover: React.FunctionComponent<AlertsPopoverProps> = props => {
+const AlertsPopover: React.FunctionComponent<React.PropsWithChildren<AlertsPopoverProps>> = props => {
 	const { parent, onClose } = props;
 	const alerts = useSelector(s => s.global.project.alerts);
 	const hasAlerts = TypedObject.values(alerts).filter(Boolean).length > 0;

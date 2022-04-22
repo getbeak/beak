@@ -11,7 +11,7 @@ export interface OverviewTabProps {
 	flight: Flight;
 }
 
-const OverviewTab: React.FunctionComponent<OverviewTabProps> = props => {
+const OverviewTab: React.FunctionComponent<React.PropsWithChildren<OverviewTabProps>> = props => {
 	const { flight } = props;
 
 	const { requestStart, responseEnd } = flight.timing;

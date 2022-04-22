@@ -35,7 +35,7 @@ function getComponent(container: string | null) {
 	}
 }
 
-const FauxRouter: React.FunctionComponent = () => {
+const FauxRouter: React.FunctionComponent<React.PropsWithChildren<unknown>> = () => {
 	const params = new URLSearchParams(window.location.search);
 	const container = params.get('container');
 	const component = getComponent(container);

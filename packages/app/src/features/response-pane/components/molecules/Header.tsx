@@ -10,7 +10,7 @@ export interface HeaderProps {
 	selectedFlight: Flight;
 }
 
-const Header: React.FunctionComponent<HeaderProps> = props => {
+const Header: React.FunctionComponent<React.PropsWithChildren<HeaderProps>> = props => {
 	const { variableGroups } = useSelector(s => s.global.variableGroups);
 	const selectedGroups = useSelector(s => s.global.preferences.editor.selectedVariableGroups);
 	const { error, request, response } = props.selectedFlight;

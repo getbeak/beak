@@ -20,7 +20,7 @@ import ActionBarVersion from './atoms/ActionBarVersion';
 import ActionBarAlertButton from './molecules/ActionBarAlertButton';
 import ActionBarFlightStatus from './molecules/ActionBarFlightStatus';
 
-const ActionBar: React.FunctionComponent = () => {
+const ActionBar: React.FunctionComponent<React.PropsWithChildren<unknown>> = () => {
 	const theme = useTheme();
 	const dispatch = useDispatch();
 	const selectedTabPayload = useSelector(s => s.features.tabs.selectedTab);

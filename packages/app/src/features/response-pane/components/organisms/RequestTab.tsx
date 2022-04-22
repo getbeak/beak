@@ -21,7 +21,7 @@ export interface RequestTabProps {
 	flight: Flight;
 }
 
-const RequestTab: React.FunctionComponent<RequestTabProps> = props => {
+const RequestTab: React.FunctionComponent<React.PropsWithChildren<RequestTabProps>> = props => {
 	const { flight } = props;
 	const dispatch = useDispatch();
 	const requestId = flight.requestId;

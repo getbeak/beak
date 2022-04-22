@@ -16,7 +16,7 @@ export interface JsonEntryProps {
 	nameOverride?: string;
 }
 
-export const JsonEntry: React.FunctionComponent<JsonEntryProps> = props => {
+export const JsonEntry: React.FunctionComponent<React.PropsWithChildren<JsonEntryProps>> = props => {
 	const { depth, requestId, value, nameOverride } = props;
 
 	switch (value.type) {

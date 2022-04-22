@@ -14,7 +14,7 @@ import SidebarMenuItem from './molecules/SidebarMenuItem';
 
 const sidebarVariants: SidebarVariant[] = ['project', 'variables'];
 
-const Sidebar: React.FunctionComponent = () => {
+const Sidebar: React.FunctionComponent<React.PropsWithChildren<unknown>> = () => {
 	const windowSession = useContext(WindowSessionContext);
 	const selectedSidebar = useSelector(s => s.global.preferences.sidebar.selected);
 	const sidebarCollapsed = useSelector(s => s.global.preferences.sidebar.collapsed.sidebar);

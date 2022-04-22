@@ -10,7 +10,7 @@ import FeatureOverview from './molecules/FeatureOverview';
 import HeaderCta from './molecules/HeaderCta';
 import SneakPeak from './molecules/SneakPeak';
 
-const Home: React.FunctionComponent = () => (
+const Home: React.FunctionComponent<React.PropsWithChildren<unknown>> = () => (
 	<React.Fragment>
 		<Helmet defer={false}>
 			<title>{'Beak :: The feathery cross platform API crafting tool'}</title>

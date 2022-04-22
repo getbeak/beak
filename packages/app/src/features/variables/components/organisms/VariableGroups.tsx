@@ -13,7 +13,7 @@ import ksuid from '@cuvva/ksuid';
 import type { MenuItemConstructorOptions } from 'electron';
 import styled from 'styled-components';
 
-const VariableGroups: React.FunctionComponent = () => {
+const VariableGroups: React.FunctionComponent<React.PropsWithChildren<unknown>> = () => {
 	const dispatch = useDispatch();
 	const selectedTabId = useSelector(s => s.features.tabs.selectedTab);
 	const variableGroups = useSelector(s => s.global.variableGroups.variableGroups);

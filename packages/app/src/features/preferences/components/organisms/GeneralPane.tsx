@@ -4,7 +4,7 @@ import { SelectContainer, SelectItem, SelectItemPreview } from '../atoms/fancy-s
 import { ItemGroup, ItemInfo, ItemLabel } from '../atoms/item';
 import Pane from '../molecules/Pane';
 
-const GeneralPane: React.FunctionComponent = () => (
+const GeneralPane: React.FunctionComponent<React.PropsWithChildren<unknown>> = () => (
 	<Pane title={'General'}>
 		<ItemGroup>
 			<ItemLabel>{'Theme:'}</ItemLabel>
