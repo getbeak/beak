@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import Button from '@beak/app/components/atoms/Button';
 import SidebarSectionCard from '@beak/app/features/sidebar/components/SidebarSectionCard';
 import { sidebarPreferenceSetSelected } from '@beak/app/store/preferences/actions';
-import { insertNewVariableGroup } from '@beak/app/store/variable-groups/actions';
+import { createNewVariableGroup } from '@beak/app/store/variable-groups/actions';
 import styled from 'styled-components';
 
 const NoVariableGroups: React.FunctionComponent = () => {
@@ -11,7 +11,7 @@ const NoVariableGroups: React.FunctionComponent = () => {
 
 	function createVariableGroup() {
 		dispatch(sidebarPreferenceSetSelected('variables'));
-		dispatch(insertNewVariableGroup({ variableGroupName: 'New variable group' }));
+		dispatch(createNewVariableGroup({ }));
 	}
 
 	return (

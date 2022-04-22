@@ -6,6 +6,7 @@ import createFsEmitter, { scanDirectoryRecursively, ScanResult } from '@beak/app
 import { ipcDialogService, ipcEncryptionService, ipcWindowService } from '@beak/app/lib/ipc';
 import actions, { alertInsert } from '@beak/app/store/project/actions';
 import { FolderNode, ProjectFile, RequestNode, Tree } from '@beak/common/types/beak-project';
+import Squawk from '@beak/common/utils/squawk';
 import ksuid from '@cuvva/ksuid';
 import path from 'path-browserify';
 import { EventChannel } from 'redux-saga';
@@ -49,18 +50,20 @@ export default function* workerStartProject() {
 					message: 'The project you opened can\'t be opened by this version of Beak. Please check for updates and try again.',
 					detail: 'Message @beakapp on twitter for support.',
 				});
-			} else {
-				yield call([ipcDialogService, ipcDialogService.showMessageBox], {
-					type: 'error',
-					title: 'Project failed to open',
-					message: 'There was a problem loading the Beak project.',
-					detail: [
-						error.message,
-						error.stack,
-					].join('\n'),
-				});
 			}
 		}
+
+		const squawk = Squawk.coerce(error);
+
+		yield call([ipcDialogService, ipcDialogService.showMessageBox], {
+			type: 'error',
+			title: 'Project failed to open',
+			message: 'There was a problem loading the Beak project.',
+			detail: [
+				squawk.message,
+				squawk.stack,
+			].join('\n'),
+		});
 
 		yield call([ipcWindowService, ipcWindowService.closeSelfWindow]);
 

@@ -11,30 +11,37 @@ import { VariableGroupRenameSubmitted } from '../types';
 
 export default function* workerRequestRename({ payload }: PayloadAction<VariableGroupRenameSubmitted>) {
 	const activeRename: ActiveRename = yield select((s: ApplicationState) => s.global.variableGroups.activeRename);
-	const { variableGroupName } = payload;
+	const { id } = payload;
 
-	if (!activeRename || activeRename.id !== variableGroupName)
+	if (!activeRename || activeRename.id !== id)
 		return;
 
 	if (activeRename.name === activeRename.id) {
-		yield put(actions.renameResolved({ variableGroupName }));
+		yield put(actions.renameResolved({ id }));
 
 		return;
 	}
 
 	try {
-		yield call(renameVariableGroup, variableGroupName, activeRename.name);
-		yield put(actions.renameResolved({ variableGroupName }));
+		yield call(renameVariableGroup, id, activeRename.name);
+		yield put(actions.renameResolved({ id }));
 		yield delay(200);
 		yield put(changeTab({ type: 'variable_group_editor', temporary: false, payload: activeRename.name }));
 	} catch (error) {
-		if (error instanceof Error && error.message !== 'Variable group already exists')
-			throw error;
+		if (error instanceof Error && error.message === 'Folder already exists') {
+			yield call([ipcDialogService, ipcDialogService.showMessageBox], {
+				title: 'Already exists!',
+				message: 'The variable group name you specified already exists, please try something else.',
+				type: 'info',
+			});
+
+			return;
+		}
 
 		yield call([ipcDialogService, ipcDialogService.showMessageBox], {
-			title: 'Already exists!',
-			message: 'The variable group name you specified already exists, please try something else.',
-			type: 'info',
+			title: 'Rename unsuccessful',
+			message: 'There was an unknown error while attempting to rename this variable group',
+			type: 'error',
 		});
 	}
 }

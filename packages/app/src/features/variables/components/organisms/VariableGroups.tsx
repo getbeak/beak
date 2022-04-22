@@ -7,7 +7,7 @@ import { TreeViewItem, TreeViewNodes } from '@beak/app/features/tree-view/types'
 import { ipcExplorerService } from '@beak/app/lib/ipc';
 import { checkShortcut } from '@beak/app/lib/keyboard-shortcuts';
 import { actions } from '@beak/app/store/variable-groups';
-import { removeVg } from '@beak/app/store/variable-groups/actions';
+import { removeVariableGroupFromDisk } from '@beak/app/store/variable-groups/actions';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import ksuid from '@cuvva/ksuid';
 import type { MenuItemConstructorOptions } from 'electron';
@@ -40,7 +40,7 @@ const VariableGroups: React.FunctionComponent = () => {
 			id: ksuid.generate('ctxmenuitem').toString(),
 			label: 'New variable group',
 			click: () => {
-				dispatch(actions.insertNewVariableGroup({ variableGroupName: '' }));
+				dispatch(actions.createNewVariableGroup({ }));
 			},
 		}, {
 			id: ksuid.generate('ctxmenuitem').toString(),
@@ -83,7 +83,7 @@ const VariableGroups: React.FunctionComponent = () => {
 				if (node.id === 'root')
 					return;
 
-				dispatch(actions.renameStarted({ variableGroupName: node.id }));
+				dispatch(actions.renameStarted({ id: node.id }));
 			},
 		}, {
 			id: ksuid.generate('ctxmenuitem').toString(),
@@ -91,7 +91,7 @@ const VariableGroups: React.FunctionComponent = () => {
 			accelerator: 'CmdOrCtrl+Backspace',
 			enabled: node.id !== 'root',
 			click: () => {
-				dispatch(actions.removeVg({ variableGroupName: node.id }));
+				dispatch(actions.removeVariableGroupFromDisk({ id: node.id, withConfirmation: true }));
 			},
 		}];
 	}
@@ -101,7 +101,7 @@ const VariableGroups: React.FunctionComponent = () => {
 			return;
 
 		dispatch(changeTab({
-			type: 'request',
+			type: 'variable_group_editor',
 			payload: node.id,
 			temporary: true,
 		}));
@@ -117,11 +117,11 @@ const VariableGroups: React.FunctionComponent = () => {
 	function handleNodeKeyDown(event: React.KeyboardEvent<HTMLDivElement>, node: TreeViewItem) {
 		switch (true) {
 			case checkShortcut('variable-groups.variable-group.open', event) && node.type !== 'folder':
-				dispatch(changeTab({ type: 'request', payload: node.id, temporary: false }));
+				dispatch(changeTab({ type: 'variable_group_editor', payload: node.id, temporary: false }));
 				break;
 
 			case checkShortcut('variable-groups.variable-group.delete', event) && node.type !== 'folder':
-				dispatch(removeVg({ variableGroupName: node.id }));
+				dispatch(removeVariableGroupFromDisk({ id: node.id, withConfirmation: true }));
 				break;
 
 			default: return;
@@ -136,14 +136,15 @@ const VariableGroups: React.FunctionComponent = () => {
 
 			<TreeView
 				tree={tree}
+				activeNodeId={selectedTabId}
 				focusedNodeId={selectedTabId}
 				rootParentName={'variable-groups'}
 
 				renameSelector={(_node, state) => state.global.variableGroups.activeRename}
-				onRenameStarted={node => dispatch(actions.renameStarted({ variableGroupName: node.id }))}
-				onRenameEnded={node => dispatch(actions.renameCancelled({ variableGroupName: node.id }))}
-				onRenameUpdated={(node, name) => dispatch(actions.renameUpdated({ variableGroupName: node.id, name }))}
-				onRenameSubmitted={node => dispatch(actions.renameSubmitted({ variableGroupName: node.id }))}
+				onRenameStarted={node => dispatch(actions.renameStarted({ id: node.id }))}
+				onRenameEnded={node => dispatch(actions.renameCancelled({ id: node.id }))}
+				onRenameUpdated={(node, name) => dispatch(actions.renameUpdated({ id: node.id, name }))}
+				onRenameSubmitted={node => dispatch(actions.renameSubmitted({ id: node.id }))}
 
 				onContextMenu={generateContextMenu}
 				onNodeClick={handleNodeClick}

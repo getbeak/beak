@@ -1,41 +1,44 @@
-import { VariableGroups } from '@beak/common/types/beak-project';
+/* eslint-disable max-len */
+
 import { createAction } from '@reduxjs/toolkit';
 
 import {
 	ActionTypes as AT,
-	IdPayload,
+	CreateNewVariableGroupPayload,
 	InsertNewGroupPayload,
 	InsertNewItemPayload,
 	InsertNewVariableGroupPayload,
-	RemoveVgPayload,
-	UpdateEntityPayload,
+	RemoveGroupPayload,
+	RemoveItemPayload,
+	RemoveVariableGroupFromDiskPayload,
+	UpdateGroupNamePayload,
+	UpdateItemNamePayload,
 	UpdateValuePayload,
-	UpdateVgPayload,
 	VariableGroupRenameCancelled,
 	VariableGroupRenameResolved,
 	VariableGroupRenameStarted,
 	VariableGroupRenameSubmitted,
 	VariableGroupRenameUpdated,
+	VariableGroupsOpenedPayload,
 } from './types';
 
 export const startVariableGroups = createAction(AT.START_VARIABLE_GROUPS);
-export const variableGroupsOpened = createAction<VariableGroups>(AT.VARIABLE_GROUPS_OPENED);
+export const variableGroupsOpened = createAction<VariableGroupsOpenedPayload>(AT.VARIABLE_GROUPS_OPENED);
 
-export const updateVg = createAction<UpdateVgPayload>(AT.UPDATE_VG);
-export const removeVg = createAction<RemoveVgPayload>(AT.REMOVE_VG);
-
-export const updateGroupName = createAction<UpdateEntityPayload>(AT.UPDATE_GROUP_NAME);
-export const updateItemName = createAction<UpdateEntityPayload>(AT.UPDATE_ITEM_NAME);
-export const updateValue = createAction<UpdateValuePayload>(AT.UPDATE_VALUE);
-
+export const createNewVariableGroup = createAction<CreateNewVariableGroupPayload>(AT.CREATE_NEW_VARIABLE_GROUP);
 export const insertNewVariableGroup = createAction<InsertNewVariableGroupPayload>(AT.INSERT_NEW_VARIABLE_GROUP);
 export const insertNewGroup = createAction<InsertNewGroupPayload>(AT.INSERT_NEW_GROUP);
 export const insertNewItem = createAction<InsertNewItemPayload>(AT.INSERT_NEW_ITEM);
-export const removeGroup = createAction<IdPayload>(AT.REMOVE_GROUP);
-export const removeItem = createAction<IdPayload>(AT.REMOVE_ITEM);
 
-export const setLatestWrite = createAction<number>(AT.SET_LATEST_WRITE);
-export const setWriteDebounce = createAction<string>(AT.SET_WRITE_DEBOUNCE);
+export const updateGroupName = createAction<UpdateGroupNamePayload>(AT.UPDATE_GROUP_NAME);
+export const updateItemName = createAction<UpdateItemNamePayload>(AT.UPDATE_ITEM_NAME);
+export const updateValue = createAction<UpdateValuePayload>(AT.UPDATE_VALUE);
+
+export const removeVariableGroupFromStore = createAction<string>(AT.REMOVE_VARIABLE_GROUP_FROM_STORE);
+export const removeVariableGroupFromDisk = createAction<RemoveVariableGroupFromDiskPayload>(AT.REMOVE_VARIABLE_GROUP_FROM_DISK);
+
+export const removeGroup = createAction<RemoveGroupPayload>(AT.REMOVE_GROUP);
+export const removeItem = createAction<RemoveItemPayload>(AT.REMOVE_ITEM);
 
 export const renameStarted = createAction<VariableGroupRenameStarted>(AT.RENAME_STARTED);
 export const renameUpdated = createAction<VariableGroupRenameUpdated>(AT.RENAME_UPDATED);
@@ -43,29 +46,34 @@ export const renameCancelled = createAction<VariableGroupRenameCancelled>(AT.REN
 export const renameSubmitted = createAction<VariableGroupRenameSubmitted>(AT.RENAME_SUBMITTED);
 export const renameResolved = createAction<VariableGroupRenameResolved>(AT.RENAME_RESOLVED);
 
+export const setLatestWrite = createAction<number>(AT.SET_LATEST_WRITE);
+export const setWriteDebounce = createAction<string>(AT.SET_WRITE_DEBOUNCE);
+
 export default {
 	startVariableGroups,
 	variableGroupsOpened,
 
-	updateVg,
-	removeVg,
+	createNewVariableGroup,
+	insertNewVariableGroup,
+	insertNewGroup,
+	insertNewItem,
 
 	updateGroupName,
 	updateItemName,
 	updateValue,
 
-	insertNewVariableGroup,
-	insertNewGroup,
-	insertNewItem,
+	removeVariableGroupFromStore,
+	removeVariableGroupFromDisk,
+
 	removeGroup,
 	removeItem,
-
-	setLatestWrite,
-	setWriteDebounce,
 
 	renameStarted,
 	renameUpdated,
 	renameCancelled,
 	renameSubmitted,
 	renameResolved,
+
+	setLatestWrite,
+	setWriteDebounce,
 };

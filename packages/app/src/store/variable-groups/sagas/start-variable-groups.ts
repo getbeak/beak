@@ -53,7 +53,7 @@ export default function* workerStartVariableGroups() {
 			try {
 				const { file, name } = yield call(readVariableGroup, result.path);
 
-				yield put(actions.updateVg({ variableGroupName: name, file }));
+				yield put(actions.insertNewVariableGroup({ id: name, variableGroup: file }));
 			} catch (error) {
 				if (!(error instanceof Error))
 					return;
@@ -72,7 +72,7 @@ export default function* workerStartVariableGroups() {
 			try {
 				const variableGroupName = path.basename(result.path, path.extname(result.path));
 
-				yield put(actions.removeVg({ variableGroupName }));
+				yield put(actions.removeVariableGroupFromStore(variableGroupName));
 				yield put(attemptReconciliation());
 			} catch (error) {
 				if (!(error instanceof Error))
@@ -109,7 +109,7 @@ function* initialImport(vgPath: string) {
 		}
 	}
 
-	yield put(actions.variableGroupsOpened(variableGroups));
+	yield put(actions.variableGroupsOpened({ variableGroups }));
 }
 
 async function readVariableGroups(filePaths: string[]) {

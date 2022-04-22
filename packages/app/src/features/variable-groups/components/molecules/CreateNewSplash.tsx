@@ -20,7 +20,7 @@ const CreateNewSplash: React.FunctionComponent<CreateNewSplashProps> = ({ type, 
 			<Button
 				onClick={() => {
 					if (type === 'group')
-						dispatch(insertNewGroup({ variableGroupName: variableGroup!, group: '' }));
+						dispatch(insertNewGroup({ id: variableGroup!, groupName: '' }));
 				}}
 			>
 				{'Let\'s create one!'}
