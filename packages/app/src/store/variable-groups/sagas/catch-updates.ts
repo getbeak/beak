@@ -1,52 +1,22 @@
-import { attemptReconciliation } from '@beak/app/features/tabs/store/actions';
-import { removeVariableGroup, writeVariableGroup } from '@beak/app/lib/beak-variable-group';
-import { ipcDialogService, ipcFsService } from '@beak/app/lib/ipc';
-import { ShowMessageBoxRes } from '@beak/common/ipc/dialog';
-import { VariableGroups } from '@beak/common/types/beak-project';
+import { writeVariableGroup } from '@beak/app/lib/beak-variable-group';
+import { VariableGroup } from '@beak/common/types/beak-project';
 import { PayloadAction } from '@reduxjs/toolkit';
 import { call, delay, put, select } from 'redux-saga/effects';
 import * as uuid from 'uuid';
 
 import { ApplicationState } from '../..';
 import { actions } from '..';
-import { ActionTypes } from '../types';
+import { VariableGroupId } from '../types';
 
-interface CommonPayload {
-	variableGroupName: string;
-}
+export default function* workerCatchUpdates({ payload }: PayloadAction<VariableGroupId>) {
+	const { id } = payload;
 
-export default function* workerCatchUpdates({ type, payload }: PayloadAction<CommonPayload>) {
-	const variableGroups: VariableGroups = yield select(
-		(s: ApplicationState) => s.global.variableGroups.variableGroups,
+	const variableGroup: VariableGroup = yield select(
+		(s: ApplicationState) => s.global.variableGroups.variableGroups[id],
 	);
 
-	if (type === ActionTypes.REMOVE_VG) {
-		const response: ShowMessageBoxRes = yield call([ipcDialogService, ipcDialogService.showMessageBox], {
-			title: 'Deleting variable group',
-			message: `You are about to delete '${payload.variableGroupName}' from your machine. Are you sure you want to continue?`,
-			detail: 'This action is irreversible inside Beak!',
-			type: 'warning',
-			buttons: ['Remove', 'Cancel'],
-			defaultId: 0,
-		});
-
-		if (response.response === 1)
-			return;
-
-		try {
-			yield call(removeVariableGroup, payload.variableGroupName);
-		} catch { /* Don't care if this fails */ }
-
-		yield put(attemptReconciliation());
-
+	if (!variableGroup)
 		return;
-	}
-
-	if (type === ActionTypes.INSERT_NEW_VARIABLE_GROUP) {
-		yield call(writeVariableGroup, payload.variableGroupName, variableGroups[payload.variableGroupName]);
-
-		return;
-	}
 
 	const nonce = uuid.v4();
 
@@ -60,15 +30,5 @@ export default function* workerCatchUpdates({ type, payload }: PayloadAction<Com
 		return;
 
 	yield put(actions.setLatestWrite(Date.now()));
-
-	const exists: boolean = yield call(
-		[ipcFsService, ipcFsService.pathExists],
-		`variable-groups/${payload.variableGroupName}.json`,
-	);
-
-	// If it doesn't exist that means it's been deleted, so we shouldn't write!
-	if (!exists)
-		return;
-
-	yield call(writeVariableGroup, payload.variableGroupName, variableGroups[payload.variableGroupName]);
+	yield call(writeVariableGroup, id, variableGroup);
 }

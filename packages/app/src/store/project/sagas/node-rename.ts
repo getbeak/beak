@@ -31,13 +31,20 @@ export default function* workerRequestRename({ payload }: PayloadAction<RequestR
 			yield delay(200);
 			yield put(changeTab({ type: 'request', temporary: false, payload: node.id }));
 		} catch (error) {
-			if (error instanceof Error && error.message !== 'Request already exists')
-				throw error;
+			if (error instanceof Error && error.message === 'Folder already exists') {
+				yield call([ipcDialogService, ipcDialogService.showMessageBox], {
+					title: 'Already exists!',
+					message: 'The file name you specified already exists, please try something else.',
+					type: 'info',
+				});
+
+				return;
+			}
 
 			yield call([ipcDialogService, ipcDialogService.showMessageBox], {
-				title: 'Already exists!',
-				message: 'The request name you specified already exists, please try something else.',
-				type: 'info',
+				title: 'Rename unsuccessful',
+				message: 'There was an unknown error while attempting to rename this file',
+				type: 'error',
 			});
 		}
 	} else if (node.type === 'folder') {
@@ -45,13 +52,20 @@ export default function* workerRequestRename({ payload }: PayloadAction<RequestR
 			yield call(renameFolderNode, activeRename.name, node as FolderNode);
 			yield put(actions.renameResolved({ requestId: payload.requestId }));
 		} catch (error) {
-			if (error instanceof Error && error.message !== 'Folder already exists')
-				throw error;
+			if (error instanceof Error && error.message === 'Folder already exists') {
+				yield call([ipcDialogService, ipcDialogService.showMessageBox], {
+					title: 'Already exists!',
+					message: 'The folder name you specified already exists, please try something else.',
+					type: 'info',
+				});
+
+				return;
+			}
 
 			yield call([ipcDialogService, ipcDialogService.showMessageBox], {
-				title: 'Already exists!',
-				message: 'The folder name you specified already exists, please try something else.',
-				type: 'info',
+				title: 'Rename unsuccessful',
+				message: 'There was an unknown error while attempting to rename this folder',
+				type: 'error',
 			});
 		}
 	}
