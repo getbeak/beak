@@ -21,7 +21,7 @@ interface TypeSelectorProps {
 	onChange?: (entryType: EntryType) => void;
 }
 
-const TypeSelector: React.FunctionComponent<React.PropsWithChildren<TypeSelectorProps>> = props => {
+const TypeSelector: React.FC<React.PropsWithChildren<TypeSelectorProps>> = props => {
 	const { requestId, id, value, onChange } = props;
 	const selectRef = useRef<HTMLSelectElement>(null);
 	const icon = getIconFromType(value);

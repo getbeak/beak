@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { ipcEncryptionService } from '@beak/app/lib/ipc';
+import { useAppSelector } from '@beak/app/store/redux';
 
 import { hideEncryptionView } from '../store/actions';
 import FixProjectEncryption from './FixProjectEncryption';
@@ -8,9 +9,9 @@ import ViewProjectEncryption from './ViewProjectEncryption';
 
 type Status = 'has_key' | 'needs_key' | 'pending';
 
-const ProjectEncryption: React.FunctionComponent<React.PropsWithChildren<unknown>> = () => {
+const ProjectEncryption: React.FC<React.PropsWithChildren<unknown>> = () => {
 	const dispatch = useDispatch();
-	const open = useSelector(s => s.features.encryption.open);
+	const open = useAppSelector(s => s.features.encryption.open);
 	const [status, setStatus] = useState<Status>('pending');
 
 	useEffect(() => {

@@ -1,6 +1,7 @@
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { requestPreferenceSetResMainTab } from '@beak/app/store/preferences/actions';
+import { useAppSelector } from '@beak/app/store/redux';
 import { ResponsePreferenceMainTab } from '@beak/common/types/beak-hub';
 import styled from 'styled-components';
 
@@ -16,10 +17,10 @@ export interface InspectorProps {
 	flight: Flight;
 }
 
-const Inspector: React.FunctionComponent<React.PropsWithChildren<InspectorProps>> = props => {
+const Inspector: React.FC<React.PropsWithChildren<InspectorProps>> = props => {
 	const dispatch = useDispatch();
 	// Don't need to fetch these as it's done by the request
-	const preferences = useSelector(s => s.global.preferences.requests[props.flight.requestId].response);
+	const preferences = useAppSelector(s => s.global.preferences.requests[props.flight.requestId].response);
 
 	function setTab(tab: ResponsePreferenceMainTab) {
 		dispatch(requestPreferenceSetResMainTab({ id: props.flight.requestId, tab }));

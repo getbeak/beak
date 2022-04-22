@@ -9,7 +9,7 @@ interface PurchaseProps {
 	onChangeToTrial: () => void;
 }
 
-const Purchase: React.FunctionComponent<React.PropsWithChildren<PurchaseProps>> = ({ onChangeToTrial }) => {
+const Purchase: React.FC<React.PropsWithChildren<PurchaseProps>> = ({ onChangeToTrial }) => {
 	const [buyUrl, setBuyUrl] = useState('https://buy.stripe.com/eVa8xY80KedAdWw7ss');
 	const [, setPricingUrl] = useState('https://getbeak.app/pricing');
 

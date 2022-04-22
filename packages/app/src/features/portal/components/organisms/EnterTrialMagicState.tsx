@@ -16,7 +16,7 @@ interface EnterTrialMagicStateProps {
 	inboundState?: MagicState;
 }
 
-const EnterTrialMagicState: React.FunctionComponent<React.PropsWithChildren<EnterTrialMagicStateProps>> = props => {
+const EnterTrialMagicState: React.FC<React.PropsWithChildren<EnterTrialMagicStateProps>> = props => {
 	const { email, reset, inboundState } = props;
 	const [working, setWorking] = useState<boolean>(false);
 	const [error, setError] = useState<Squawk | undefined>(void 0);

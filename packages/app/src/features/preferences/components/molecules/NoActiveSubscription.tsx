@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
-const NoActiveSubscription: React.FunctionComponent<React.PropsWithChildren<unknown>> = () => (
+const NoActiveSubscription: React.FC<React.PropsWithChildren<unknown>> = () => (
 	<Title>
 		{'Please visit https://getbeak.app to purchase a subscription'}
 	</Title>

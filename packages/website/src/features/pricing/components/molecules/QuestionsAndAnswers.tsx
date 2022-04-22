@@ -4,7 +4,7 @@ import { SmallContainer } from '@beak/website/components/atoms/Container';
 import { BodyBold, BodyRegular, Title } from '@beak/website/components/atoms/Typography';
 import styled from 'styled-components';
 
-const QuestionsAndAnswers: React.FunctionComponent<React.PropsWithChildren<unknown>> = () => (
+const QuestionsAndAnswers: React.FC<React.PropsWithChildren<unknown>> = () => (
 	<Wrapper>
 		<SmallContainer>
 			<Title>{'Questions & answers'}</Title>

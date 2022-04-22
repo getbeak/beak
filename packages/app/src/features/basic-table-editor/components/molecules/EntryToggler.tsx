@@ -6,7 +6,7 @@ interface EntryTogglerProps {
 	onChange: (enabled: boolean) => void;
 }
 
-const EntryToggler: React.FunctionComponent<React.PropsWithChildren<EntryTogglerProps>> = ({ value, onChange }) => (
+const EntryToggler: React.FC<React.PropsWithChildren<EntryTogglerProps>> = ({ value, onChange }) => (
 	<Wrapper>
 		<Checkbox
 			type={'checkbox'}

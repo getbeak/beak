@@ -9,7 +9,7 @@ interface LegalTitleProps {
 	id: string;
 }
 
-const LegalTitleItem: React.FunctionComponent<React.PropsWithChildren<LegalTitleProps>> = ({ element, id, children }) => {
+const LegalTitleItem: React.FC<React.PropsWithChildren<LegalTitleProps>> = ({ element, id, children }) => {
 	const theme = useTheme();
 	const url = `${window.location.pathname}#${id}`;
 
@@ -56,10 +56,10 @@ const Wrapper = styled.div`
 	}
 `;
 
-export const LegalTitle: React.FunctionComponent<React.PropsWithChildren<Omit<LegalTitleProps, 'element'>>> = ({ id, children }) => (
+export const LegalTitle: React.FC<React.PropsWithChildren<Omit<LegalTitleProps, 'element'>>> = ({ id, children }) => (
 	<LegalTitleItem element={'h2'} id={id}>{children}</LegalTitleItem>
 );
 
-export const LegalSubTitle: React.FunctionComponent<React.PropsWithChildren<Omit<LegalTitleProps, 'element'>>> = ({ id, children }) => (
+export const LegalSubTitle: React.FC<React.PropsWithChildren<Omit<LegalTitleProps, 'element'>>> = ({ id, children }) => (
 	<LegalTitleItem element={'h3'} id={id}>{children}</LegalTitleItem>
 );

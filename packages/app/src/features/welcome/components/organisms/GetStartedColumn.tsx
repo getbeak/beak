@@ -11,7 +11,7 @@ export interface GetStartedColumnProps {
 	setView: (view: WelcomeViewType) => void;
 }
 
-const GetStartedColumn: React.FunctionComponent<React.PropsWithChildren<GetStartedColumnProps>> = ({ setView }) => (
+const GetStartedColumn: React.FC<React.PropsWithChildren<GetStartedColumnProps>> = ({ setView }) => (
 	<Wrapper>
 		<ColumnTitle>{'Get started'}</ColumnTitle>
 		<GetStartedButton

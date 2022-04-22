@@ -11,7 +11,7 @@ import ExtensionsPane from '../features/preferences/components/organisms/Extensi
 import GeneralPane from '../features/preferences/components/organisms/GeneralPane';
 import SubscriptionPane from '../features/preferences/components/organisms/SubscriptionPane';
 
-const About: React.FunctionComponent<React.PropsWithChildren<unknown>> = () => {
+const About: React.FC<React.PropsWithChildren<unknown>> = () => {
 	const windowSession = useContext(WindowSessionContext);
 	const [tab, setTab] = useState('general');
 	const theme = useTheme();

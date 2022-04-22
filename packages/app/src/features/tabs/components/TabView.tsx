@@ -15,7 +15,7 @@ interface TabViewProps {
 	selectedTab: TabItem | undefined;
 }
 
-const TabView: React.FunctionComponent<React.PropsWithChildren<TabViewProps>> = ({ selectedTab, tabs }) => {
+const TabView: React.FC<React.PropsWithChildren<TabViewProps>> = ({ selectedTab, tabs }) => {
 	const dispatch = useDispatch();
 
 	useEffect(() => {

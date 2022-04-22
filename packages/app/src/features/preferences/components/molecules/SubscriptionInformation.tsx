@@ -9,7 +9,7 @@ export interface SubscriptionInformationProps {
 	subscription: GetSubscriptionStatusResponse;
 }
 
-const SubscriptionInformation: React.FunctionComponent<React.PropsWithChildren<SubscriptionInformationProps>> = ({ subscription }) => {
+const SubscriptionInformation: React.FC<SubscriptionInformationProps> = ({ subscription }) => {
 	const trial = subscription.status === 'trialing';
 
 	return (

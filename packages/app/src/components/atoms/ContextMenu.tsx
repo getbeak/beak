@@ -8,7 +8,7 @@ interface ContextMenuProps {
 	menuItems: MenuItemConstructorOptions[];
 }
 
-const ContextMenu: React.FunctionComponent<React.PropsWithChildren<ContextMenuProps>> = props => {
+const ContextMenu: React.FC<React.PropsWithChildren<ContextMenuProps>> = props => {
 	const { children, menuItems, target } = props;
 
 	useEffect(() => {

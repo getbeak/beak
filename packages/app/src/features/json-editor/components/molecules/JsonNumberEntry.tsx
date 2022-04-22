@@ -24,7 +24,7 @@ interface JsonNumberEntryProps extends JsonEntryProps {
 	value: NumberEntry | NamedNumberEntry;
 }
 
-const JsonNumberEntry: React.FunctionComponent<React.PropsWithChildren<JsonNumberEntryProps>> = props => {
+const JsonNumberEntry: React.FC<React.PropsWithChildren<JsonNumberEntryProps>> = props => {
 	const { depth, requestId, value, nameOverride } = props;
 	const { id } = value;
 	const dispatch = useDispatch();

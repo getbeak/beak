@@ -3,7 +3,7 @@ import { faAtom } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import styled from 'styled-components';
 
-const ProjectLoading: React.FunctionComponent<React.PropsWithChildren<unknown>> = () => (
+const ProjectLoading: React.FC<React.PropsWithChildren<unknown>> = () => (
 	<Wrapper>
 		<TextContainer>
 			<LoadingTitle>

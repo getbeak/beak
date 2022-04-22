@@ -40,7 +40,7 @@ interface TreeViewProps {
 	onNodeKeyDown?: (event: React.KeyboardEvent<HTMLDivElement>, node: TreeViewItem) => void;
 }
 
-const TreeView: React.FunctionComponent<React.PropsWithChildren<TreeViewProps>> = props => {
+const TreeView: React.FC<React.PropsWithChildren<TreeViewProps>> = props => {
 	const { tree, rootParentName } = props;
 	const container = useRef<HTMLDivElement>(null);
 	const [focusedNodeId, focusedNodeInvalidator, setFocusedNodeId] = useFocusedNodeSetup(props.focusedNodeId);

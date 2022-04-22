@@ -11,7 +11,7 @@ export interface WelcomeViewProps {
 	setView: (view: WelcomeViewType) => void;
 }
 
-const WelcomeView: React.FunctionComponent<React.PropsWithChildren<WelcomeViewProps>> = ({ setView }) => (
+const WelcomeView: React.FC<React.PropsWithChildren<WelcomeViewProps>> = ({ setView }) => (
 	<Wrapper>
 		<ViewTitle>{'Welcome to Beak!'}</ViewTitle>
 		<ViewIntroLine>{'The feathery cross-platform API crafting tool'}</ViewIntroLine>

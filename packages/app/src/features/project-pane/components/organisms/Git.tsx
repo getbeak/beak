@@ -1,12 +1,12 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
 import useSectionBody from '@beak/app/features/sidebar/hooks/use-section-body';
+import { useAppSelector } from '@beak/app/store/redux';
 import styled from 'styled-components';
 
 import NoProjectInformation from '../molecules/NoProjectInformation';
 
-const Git: React.FunctionComponent<React.PropsWithChildren<unknown>> = () => {
-	const { branches, selectedBranch } = useSelector(s => s.global.git)!;
+const Git: React.FC<React.PropsWithChildren<unknown>> = () => {
+	const { branches, selectedBranch } = useAppSelector(s => s.global.git)!;
 
 	useSectionBody({
 		maxHeight: '120px',

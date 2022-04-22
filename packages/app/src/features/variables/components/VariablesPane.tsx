@@ -8,7 +8,7 @@ import SidebarPaneSection from '../../sidebar/components/SidebarPaneSection';
 import { changeTab } from '../../tabs/store/actions';
 import VariableGroups from './organisms/VariableGroups';
 
-const VariablesPane: React.FunctionComponent<React.PropsWithChildren<unknown>> = () => {
+const VariablesPane: React.FC<React.PropsWithChildren<unknown>> = () => {
 	const dispatch = useDispatch();
 
 	return (

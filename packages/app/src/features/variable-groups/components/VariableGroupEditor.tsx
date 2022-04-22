@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import DebouncedInput from '@beak/app/components/atoms/DebouncedInput';
 import { generateValueIdent } from '@beak/app/lib/beak-variable-group/utils';
+import { useAppSelector } from '@beak/app/store/redux';
 import { actions } from '@beak/app/store/variable-groups';
 import { insertNewGroup, insertNewItem, removeGroup, removeItem } from '@beak/app/store/variable-groups/actions';
 import { TypedObject } from '@beak/common/helpers/typescript';
@@ -17,9 +18,9 @@ interface VariableGroupEditorProps {
 	variableGroupName: string;
 }
 
-const VariableGroupEditor: React.FunctionComponent<React.PropsWithChildren<VariableGroupEditorProps>> = ({ variableGroupName }) => {
+const VariableGroupEditor: React.FC<React.PropsWithChildren<VariableGroupEditorProps>> = ({ variableGroupName }) => {
 	const dispatch = useDispatch();
-	const variableGroups = useSelector(s => s.global.variableGroups);
+	const variableGroups = useAppSelector(s => s.global.variableGroups);
 	const variableGroup = variableGroups.variableGroups[variableGroupName];
 
 	const [newItem, setNewItem] = useState<string | undefined>(void 0);

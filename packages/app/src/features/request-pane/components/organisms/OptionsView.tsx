@@ -8,7 +8,7 @@ export interface OptionsViewProps {
 	node: ValidRequestNode;
 }
 
-const OptionsView: React.FunctionComponent<React.PropsWithChildren<OptionsViewProps>> = props => {
+const OptionsView: React.FC<React.PropsWithChildren<OptionsViewProps>> = props => {
 	const { node } = props;
 	const options = node.info.options;
 	const dispatch = useDispatch();

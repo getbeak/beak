@@ -7,7 +7,7 @@ import styled from 'styled-components';
 import QuestionsAndAnswers from './molecules/QuestionsAndAnswers';
 import PricingCardGrid from './organisms/PricingCardGrid';
 
-const Pricing: React.FunctionComponent<React.PropsWithChildren<unknown>> = () => (
+const Pricing: React.FC<React.PropsWithChildren<unknown>> = () => (
 	<React.Fragment>
 		<Helmet defer={false}>
 			<title>{'Pricing :: Beak'}</title>

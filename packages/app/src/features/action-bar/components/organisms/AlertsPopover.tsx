@@ -1,6 +1,6 @@
 import React from 'react';
 import { createPortal } from 'react-dom';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '@beak/app/store/redux';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import styled from 'styled-components';
 import * as uuid from 'uuid';
@@ -12,9 +12,9 @@ interface AlertsPopoverProps {
 	onClose: () => void;
 }
 
-const AlertsPopover: React.FunctionComponent<React.PropsWithChildren<AlertsPopoverProps>> = props => {
+const AlertsPopover: React.FC<React.PropsWithChildren<AlertsPopoverProps>> = props => {
 	const { parent, onClose } = props;
-	const alerts = useSelector(s => s.global.project.alerts);
+	const alerts = useAppSelector(s => s.global.project.alerts);
 	const hasAlerts = TypedObject.values(alerts).filter(Boolean).length > 0;
 	const boundingRect = parent.getBoundingClientRect();
 

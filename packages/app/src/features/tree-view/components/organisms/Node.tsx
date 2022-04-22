@@ -11,7 +11,7 @@ interface NodeProps {
 	hierarchicalParentRef?: MutableRefObject<HTMLElement | null>;
 }
 
-const Node: React.FunctionComponent<React.PropsWithChildren<NodeProps>> = props => {
+const Node: React.FC<React.PropsWithChildren<NodeProps>> = props => {
 	const { depth, node } = props;
 
 	return (

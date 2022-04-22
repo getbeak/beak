@@ -4,7 +4,7 @@ import styled, { css } from 'styled-components';
 
 import { useNodeDrop } from '../../hooks/drag-and-drop';
 
-const RootDropContainer: React.FunctionComponent<React.PropsWithChildren<unknown>> = props => {
+const RootDropContainer: React.FC<React.PropsWithChildren<unknown>> = props => {
 	const [{ canDrop, hovering }, dropRef] = useNodeDrop({
 		id: 'root',
 		filePath: 'tree',

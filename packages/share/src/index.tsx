@@ -12,7 +12,7 @@ import ErrorFallback from './features/errors/components/ErrorFallback';
 
 const ShareProject = lazy(() => import('./features/share-project/components/ShareProject'));
 
-const EntryPoint: React.FunctionComponent<React.PropsWithChildren<unknown>> = () => (
+const EntryPoint: React.FC<React.PropsWithChildren<unknown>> = () => (
 	<React.Fragment>
 		<base href={'./'} />
 		<DesignSystemProvider themeKey={'dark'}>

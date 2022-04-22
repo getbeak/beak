@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import { useAppSelector } from '@beak/app/store/redux';
 import { RequestTabItem } from '@beak/common/types/beak-project';
 
 import TabItem from '../../../../components/atoms/TabItem';
@@ -10,10 +11,10 @@ interface RequestTabProps {
 	tab: RequestTabItem;
 }
 
-const RequestTab: React.FunctionComponent<React.PropsWithChildren<RequestTabProps>> = ({ tab }) => {
+const RequestTab: React.FC<React.PropsWithChildren<RequestTabProps>> = ({ tab }) => {
 	const dispatch = useDispatch();
-	const node = useSelector(s => s.global.project.tree[tab.payload]);
-	const selectedTabPayload = useSelector(s => s.features.tabs.selectedTab);
+	const node = useAppSelector(s => s.global.project.tree[tab.payload]);
+	const selectedTabPayload = useAppSelector(s => s.features.tabs.selectedTab);
 	const [target, setTarget] = useState<HTMLElement>();
 
 	if (!node)

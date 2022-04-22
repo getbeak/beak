@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import Container from '../../../../components/atoms/Container';
 import { SubTitle, Title } from '../../../../components/atoms/Typography';
 
-const BeakOverview: React.FunctionComponent<React.PropsWithChildren<unknown>> = () => (
+const BeakOverview: React.FC<React.PropsWithChildren<unknown>> = () => (
 	<Container>
 		<Wrapper>
 			<Title>{'Some cool product info'}</Title>

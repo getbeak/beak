@@ -17,7 +17,7 @@ interface NodeRenamerProps {
 	// parentRef: React.MutableRefObject<HTMLElement | null>;
 }
 
-const NodeRenamer: React.FunctionComponent<React.PropsWithChildren<NodeRenamerProps>> = props => {
+const NodeRenamer: React.FC<React.PropsWithChildren<NodeRenamerProps>> = props => {
 	const { node } = props;
 	const absContext = useContext(TreeViewAbstractionsContext);
 	const focusContext = useContext(TreeViewFocusContext);

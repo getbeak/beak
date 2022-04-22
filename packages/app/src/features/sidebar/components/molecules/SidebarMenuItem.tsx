@@ -16,7 +16,7 @@ interface SidebarMenuItemProps {
 	onClick: (variant: SidebarVariant) => void;
 }
 
-const SidebarMenuItem: React.FunctionComponent<React.PropsWithChildren<SidebarMenuItemProps>> = props => {
+const SidebarMenuItem: React.FC<React.PropsWithChildren<SidebarMenuItemProps>> = props => {
 	const theme = useTheme();
 	const { item, selectedItem, onClick } = props;
 	const active = item === selectedItem;

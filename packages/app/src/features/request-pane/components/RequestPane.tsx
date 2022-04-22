@@ -1,8 +1,9 @@
 import React, { useEffect, useRef } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { ReflexContainer, ReflexElement } from 'react-reflex';
 import { loadRequestPreferences } from '@beak/app/store/preferences/actions';
 import { alertInsert, alertRemoveDependents } from '@beak/app/store/project/actions';
+import { useAppSelector } from '@beak/app/store/redux';
 import { ValidRequestNode } from '@beak/common/types/beak-project';
 import ksuid from '@cuvva/ksuid';
 import styled from 'styled-components';
@@ -15,13 +16,13 @@ import Modifiers from './organisms/Modifiers';
 
 const allowedBodyVerbs = ['GET', 'HEAD', 'DELETE'];
 
-const RequestPane: React.FunctionComponent<React.PropsWithChildren<unknown>> = () => {
+const RequestPane: React.FC<React.PropsWithChildren<unknown>> = () => {
 	const dispatch = useDispatch();
 	const mounted = useRef(false);
-	const { tree } = useSelector(s => s.global.project);
-	const selectedTab = useSelector(s => s.features.tabs.selectedTab);
+	const { tree } = useAppSelector(s => s.global.project);
+	const selectedTab = useAppSelector(s => s.features.tabs.selectedTab);
 	const selectedNode = tree[selectedTab!] as ValidRequestNode;
-	const preferences = useSelector(s => s.global.preferences.requests[selectedNode.id]);
+	const preferences = useAppSelector(s => s.global.preferences.requests[selectedNode.id]);
 
 	useEffect(() => {
 		mounted.current = true;

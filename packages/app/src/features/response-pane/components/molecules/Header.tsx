@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
 import { Flight } from '@beak/app/store/flight/types';
+import { useAppSelector } from '@beak/app/store/redux';
 import { getStatusReasonPhrase } from '@beak/app/utils/http';
 import { convertRequestToUrl } from '@beak/app/utils/uri';
 import { statusToColor } from '@beak/design-system/helpers';
@@ -10,9 +10,9 @@ export interface HeaderProps {
 	selectedFlight: Flight;
 }
 
-const Header: React.FunctionComponent<React.PropsWithChildren<HeaderProps>> = props => {
-	const { variableGroups } = useSelector(s => s.global.variableGroups);
-	const selectedGroups = useSelector(s => s.global.preferences.editor.selectedVariableGroups);
+const Header: React.FC<React.PropsWithChildren<HeaderProps>> = props => {
+	const { variableGroups } = useAppSelector(s => s.global.variableGroups);
+	const selectedGroups = useAppSelector(s => s.global.preferences.editor.selectedVariableGroups);
 	const { error, request, response } = props.selectedFlight;
 	const context = { selectedGroups, variableGroups };
 	const [url, setUrl] = useState('');

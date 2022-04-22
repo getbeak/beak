@@ -4,7 +4,7 @@ import { SubTitle, Title } from '@beak/share/components/atoms/Typography';
 import useBeakProjectUrl from '@beak/share/hooks/use-beak-project-url';
 import styled from 'styled-components';
 
-const InfoCard: React.FunctionComponent<React.PropsWithChildren<unknown>> = () => {
+const InfoCard: React.FC<React.PropsWithChildren<unknown>> = () => {
 	const beakUrl = useBeakProjectUrl();
 
 	useEffect(() => {

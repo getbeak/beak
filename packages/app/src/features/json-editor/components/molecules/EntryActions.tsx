@@ -12,7 +12,7 @@ interface EntryActionsProps {
 	entry: Entries;
 }
 
-const EntryActions: React.FunctionComponent<React.PropsWithChildren<EntryActionsProps>> = props => {
+const EntryActions: React.FC<React.PropsWithChildren<EntryActionsProps>> = props => {
 	const { requestId, id, entry } = props;
 	const isRoot = entry.parentId === null;
 	const dispatch = useDispatch();

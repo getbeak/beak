@@ -6,7 +6,7 @@ import { ipcNestService, ipcPreferencesService } from '@beak/app/lib/ipc';
 import { ItemGroup, ItemLabel, ItemSpacer } from '../atoms/item';
 import Pane from '../molecules/Pane';
 
-const EngineeringPane: React.FunctionComponent<React.PropsWithChildren<unknown>> = () => {
+const EngineeringPane: React.FC<React.PropsWithChildren<unknown>> = () => {
 	const [environment, setEnvironment] = useState<string | undefined>(void 0);
 	const [hasAuth, setHasAuth] = useState(false);
 

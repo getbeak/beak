@@ -6,7 +6,7 @@ export interface CollapseProps {
 	title: string;
 }
 
-const Collapse: React.FunctionComponent<React.PropsWithChildren<CollapseProps>> = props => {
+const Collapse: React.FC<React.PropsWithChildren<CollapseProps>> = props => {
 	const { children, startOpen, title } = props;
 	const [show, setShow] = useState(startOpen);
 

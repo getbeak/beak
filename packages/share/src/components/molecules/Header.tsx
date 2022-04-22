@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
-const Header: React.FunctionComponent<React.PropsWithChildren<unknown>> = () => (
+const Header: React.FC<React.PropsWithChildren<unknown>> = () => (
 	<Container>
 		<Logo />
 		<Brand>{'Beak'}</Brand>

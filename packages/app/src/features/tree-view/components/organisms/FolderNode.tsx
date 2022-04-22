@@ -1,5 +1,5 @@
 import React, { MutableRefObject } from 'react';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '@beak/app/store/redux';
 import { toHexAlpha } from '@beak/design-system/utils';
 import styled, { css } from 'styled-components';
 
@@ -16,9 +16,9 @@ interface FolderNodeProps {
 	hierarchicalParentRef?: MutableRefObject<HTMLElement | null>;
 }
 
-const FolderNode: React.FunctionComponent<React.PropsWithChildren<FolderNodeProps>> = props => {
+const FolderNode: React.FC<React.PropsWithChildren<FolderNodeProps>> = props => {
 	const { depth, node } = props;
-	const collapsed = useSelector(s => s.global.preferences.projectPane.collapsed[node.id]);
+	const collapsed = useAppSelector(s => s.global.preferences.projectPane.collapsed[node.id]);
 	const { folderNodes, nodes } = useChildNodes(node.filePath);
 	const [{ hovering, canDrop }, dropRef] = useNodeDrop(node);
 

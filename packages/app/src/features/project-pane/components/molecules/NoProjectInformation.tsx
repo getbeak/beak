@@ -2,7 +2,7 @@ import React from 'react';
 import SidebarSectionCard from '@beak/app/features/sidebar/components/SidebarSectionCard';
 import styled from 'styled-components';
 
-const NoProjectInformation: React.FunctionComponent<React.PropsWithChildren<unknown>> = () => (
+const NoProjectInformation: React.FC<React.PropsWithChildren<unknown>> = () => (
 	<Container>
 		<SidebarSectionCard>
 			{'This project isn\'t tracked in Git'}

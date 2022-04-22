@@ -1,9 +1,9 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
 import { ReflexContainer } from 'react-reflex';
 import ReflexElement from '@beak/app/components/atoms/ReflexElement';
 import ReflexSplitter from '@beak/app/components/atoms/ReflexSplitter';
 import PendingSlash from '@beak/app/components/molecules/PendingSplash';
+import { useAppSelector } from '@beak/app/store/redux';
 import { RequestNode, TabItem } from '@beak/common/types/beak-project';
 
 import BrokenRequest from '../../broken-request/components/BrokenRequest';
@@ -15,8 +15,8 @@ interface RouterProps {
 	selectedTab: TabItem | undefined;
 }
 
-const Router: React.FunctionComponent<React.PropsWithChildren<RouterProps>> = ({ selectedTab }) => {
-	const selectedItem = useSelector(s => s.global.project.tree[selectedTab?.payload || '']);
+const Router: React.FC<React.PropsWithChildren<RouterProps>> = ({ selectedTab }) => {
+	const selectedItem = useAppSelector(s => s.global.project.tree[selectedTab?.payload || '']);
 
 	if (!selectedTab)
 		return <PendingSlash />;

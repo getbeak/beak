@@ -14,7 +14,7 @@ interface RequestMagicLinkProps {
 	onMagicLinkSent: () => void;
 }
 
-const RequestMagicLink: React.FunctionComponent<React.PropsWithChildren<RequestMagicLinkProps>> = props => {
+const RequestMagicLink: React.FC<React.PropsWithChildren<RequestMagicLinkProps>> = props => {
 	const { email, onEmailChange, onMagicLinkSent } = props;
 	const [working, setWorking] = useState(false);
 	const [error, setError] = useState<Squawk | null>(null);

@@ -7,7 +7,7 @@ interface ErrorViewProps {
 	error: Error;
 }
 
-const ErrorView: React.FunctionComponent<React.PropsWithChildren<ErrorViewProps>> = ({ error }) => (
+const ErrorView: React.FC<React.PropsWithChildren<ErrorViewProps>> = ({ error }) => (
 	<Wrapper>
 		<Content>
 			<FontAwesomeIcon

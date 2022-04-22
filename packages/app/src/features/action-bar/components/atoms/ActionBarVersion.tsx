@@ -4,7 +4,7 @@ import { toHexAlpha } from '@beak/design-system/utils';
 import semverParse from 'semver/functions/parse';
 import styled from 'styled-components';
 
-const ActionBarVersion: React.FunctionComponent<React.PropsWithChildren<unknown>> = () => {
+const ActionBarVersion: React.FC<React.PropsWithChildren<unknown>> = () => {
 	const context = useContext(WindowSessionContext);
 	const parsed = semverParse(context.version);
 

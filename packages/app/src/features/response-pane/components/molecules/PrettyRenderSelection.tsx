@@ -12,7 +12,7 @@ interface PrettyRenderSelectionProps {
 	onSelectedLanguageChange: (lang: string) => void;
 }
 
-const PrettyRenderSelection: React.FunctionComponent<React.PropsWithChildren<PrettyRenderSelectionProps>> = props => {
+const PrettyRenderSelection: React.FC<React.PropsWithChildren<PrettyRenderSelectionProps>> = props => {
 	const { autoDetect, detectedLanguage, selectedLanguage, onAutoDetectToggle, onSelectedLanguageChange } = props;
 
 	return (

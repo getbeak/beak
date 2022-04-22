@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 import Pane from '../molecules/Pane';
 
-const EngineeringPane: React.FunctionComponent<React.PropsWithChildren<unknown>> = () => (
+const EngineeringPane: React.FC<React.PropsWithChildren<unknown>> = () => (
 	<Pane title={'Extensions'}>
 		<Title>
 			{'Extensions are coming soon, check back later 👀'}

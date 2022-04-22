@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { changeTab } from '@beak/app/features/tabs/store/actions';
 import { checkShortcut } from '@beak/app/lib/keyboard-shortcuts';
+import { useAppSelector } from '@beak/app/store/redux';
 import { movePosition } from '@beak/app/utils/arrays';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { ValidRequestNode } from '@beak/common/types/beak-project';
@@ -15,11 +16,11 @@ export interface FinderViewProps {
 	reset: () => void;
 }
 
-const FinderView: React.FunctionComponent<React.PropsWithChildren<FinderViewProps>> = ({ content, reset }) => {
+const FinderView: React.FC<React.PropsWithChildren<FinderViewProps>> = ({ content, reset }) => {
 	const dispatch = useDispatch();
-	const tree = useSelector(s => s.global.project.tree) || {};
-	const { variableGroups } = useSelector(s => s.global.variableGroups);
-	const selectedGroups = useSelector(s => s.global.preferences.editor.selectedVariableGroups);
+	const tree = useAppSelector(s => s.global.project.tree) || {};
+	const { variableGroups } = useAppSelector(s => s.global.variableGroups);
+	const selectedGroups = useAppSelector(s => s.global.preferences.editor.selectedVariableGroups);
 	const flattened = TypedObject.values(tree).filter(t => t.type === 'request') as ValidRequestNode[];
 	const [matches, setMatches] = useState<string[]>([]);
 	const [active, setActive] = useState<number>(-1);

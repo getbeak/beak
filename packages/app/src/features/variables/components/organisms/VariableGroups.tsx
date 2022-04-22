@@ -1,11 +1,12 @@
 import React, { useContext } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import WindowSessionContext from '@beak/app/contexts/window-session-context';
 import { changeTab, makeTabPermanent } from '@beak/app/features/tabs/store/actions';
 import TreeView from '@beak/app/features/tree-view/components/TreeView';
 import { TreeViewItem, TreeViewNodes } from '@beak/app/features/tree-view/types';
 import { ipcExplorerService } from '@beak/app/lib/ipc';
 import { checkShortcut } from '@beak/app/lib/keyboard-shortcuts';
+import { useAppSelector } from '@beak/app/store/redux';
 import { actions } from '@beak/app/store/variable-groups';
 import { removeVariableGroupFromDisk } from '@beak/app/store/variable-groups/actions';
 import { TypedObject } from '@beak/common/helpers/typescript';
@@ -13,10 +14,10 @@ import ksuid from '@cuvva/ksuid';
 import type { MenuItemConstructorOptions } from 'electron';
 import styled from 'styled-components';
 
-const VariableGroups: React.FunctionComponent<React.PropsWithChildren<unknown>> = () => {
+const VariableGroups: React.FC<React.PropsWithChildren<unknown>> = () => {
 	const dispatch = useDispatch();
-	const selectedTabId = useSelector(s => s.features.tabs.selectedTab);
-	const variableGroups = useSelector(s => s.global.variableGroups.variableGroups);
+	const selectedTabId = useAppSelector(s => s.features.tabs.selectedTab);
+	const variableGroups = useAppSelector(s => s.global.variableGroups.variableGroups);
 	const variableGroupKeys = TypedObject.keys(variableGroups);
 
 	const windowSession = useContext(WindowSessionContext);

@@ -6,7 +6,7 @@ import { sidebarPreferenceSetSelected } from '@beak/app/store/preferences/action
 import { createNewVariableGroup } from '@beak/app/store/variable-groups/actions';
 import styled from 'styled-components';
 
-const NoVariableGroups: React.FunctionComponent<React.PropsWithChildren<unknown>> = () => {
+const NoVariableGroups: React.FC<React.PropsWithChildren<unknown>> = () => {
 	const dispatch = useDispatch();
 
 	function createVariableGroup() {

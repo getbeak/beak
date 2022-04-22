@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useSelector } from 'react-redux';
 import Input, { Select } from '@beak/app/components/atoms/Input';
+import { useAppSelector } from '@beak/app/store/redux';
 import { ValueParts } from '@beak/common/types/beak-project';
 import styled from 'styled-components';
 
@@ -21,13 +21,13 @@ interface RealtimeValueEditorProps {
 	onSave: (partIndex: number, type: string, item: any) => void;
 }
 
-const RealtimeValueEditor: React.FunctionComponent<React.PropsWithChildren<RealtimeValueEditorProps>> = props => {
+const RealtimeValueEditor: React.FC<React.PropsWithChildren<RealtimeValueEditorProps>> = props => {
 	const { editable, onSave } = props;
 	const initialInputRef = useRef<HTMLElement | null>(null);
 
 	const [editorContext, setEditorContext] = useState<RtvEditorContext>();
-	const { variableGroups } = useSelector(s => s.global.variableGroups);
-	const selectedGroups = useSelector(s => s.global.preferences.editor.selectedVariableGroups);
+	const { variableGroups } = useAppSelector(s => s.global.variableGroups);
+	const selectedGroups = useAppSelector(s => s.global.preferences.editor.selectedVariableGroups);
 	const context = { selectedGroups, variableGroups };
 
 	useEffect(() => {

@@ -8,7 +8,7 @@ interface ViewProjectEncryptionProps {
 	onClose: (resolved: boolean) => void;
 }
 
-const ViewProjectEncryption: React.FunctionComponent<React.PropsWithChildren<ViewProjectEncryptionProps>> = props => (
+const ViewProjectEncryption: React.FC<React.PropsWithChildren<ViewProjectEncryptionProps>> = props => (
 	<Dialog onClose={() => props.onClose(false)}>
 		<Container>
 			<Title>{'Project encryption'}</Title>

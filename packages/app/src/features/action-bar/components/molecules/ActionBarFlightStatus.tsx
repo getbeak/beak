@@ -6,7 +6,7 @@ import { useTheme } from 'styled-components';
 
 import useFlightStatus from '../../hooks/use-flight-status';
 
-const ActionBarFlightStatus: React.FunctionComponent<React.PropsWithChildren<unknown>> = () => {
+const ActionBarFlightStatus: React.FC<React.PropsWithChildren<unknown>> = () => {
 	const theme = useTheme();
 	const flightStatus = useFlightStatus();
 

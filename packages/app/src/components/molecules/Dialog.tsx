@@ -10,9 +10,9 @@ interface DialogProps {
 	onClose: () => void;
 }
 
-const Dialog: React.FunctionComponent<React.PropsWithChildren<DialogProps>> = props => {
+const Dialog: React.FC<React.PropsWithChildren<DialogProps>> = props => {
 	const { children, onClose } = props;
-	const [identifier, setIdentifer] = useState<string>();
+	const [identifier, setIdentifier] = useState<string>();
 	const stackIndex = useRef(dialogStack + 1);
 
 	useEffect(() => {
@@ -22,14 +22,17 @@ const Dialog: React.FunctionComponent<React.PropsWithChildren<DialogProps>> = pr
 
 		element.setAttribute('id', ident);
 		container!.appendChild(element);
-		setIdentifer(ident);
+		setIdentifier(ident);
 
+		// eslint-disable-next-line no-plusplus
 		dialogStack++;
 
 		return () => {
 			const element = document.getElementById(identifier!);
 
 			element?.remove();
+
+			// eslint-disable-next-line no-plusplus
 			dialogStack--;
 		};
 	}, []);

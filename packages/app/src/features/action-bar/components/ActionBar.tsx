@@ -1,7 +1,8 @@
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { actions as omniBarActions } from '@beak/app/features/omni-bar/store';
 import { actions as flightActions } from '@beak/app/store/flight';
+import { useAppSelector } from '@beak/app/store/redux';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { Nodes } from '@beak/common/types/beak-project';
 import {
@@ -20,11 +21,11 @@ import ActionBarVersion from './atoms/ActionBarVersion';
 import ActionBarAlertButton from './molecules/ActionBarAlertButton';
 import ActionBarFlightStatus from './molecules/ActionBarFlightStatus';
 
-const ActionBar: React.FunctionComponent<React.PropsWithChildren<unknown>> = () => {
+const ActionBar: React.FC<React.PropsWithChildren<unknown>> = () => {
 	const theme = useTheme();
 	const dispatch = useDispatch();
-	const selectedTabPayload = useSelector(s => s.features.tabs.selectedTab);
-	const request = useSelector(s => s.global.project.tree![selectedTabPayload ?? 'non_existent']);
+	const selectedTabPayload = useAppSelector(s => s.features.tabs.selectedTab);
+	const request = useAppSelector(s => s.global.project.tree![selectedTabPayload ?? 'non_existent']);
 	const requirements = useRequirements(selectedTabPayload, request);
 
 	return (
@@ -81,7 +82,7 @@ const ActionBar: React.FunctionComponent<React.PropsWithChildren<unknown>> = () 
 };
 
 function useRequirements(selectedRequestId: string | undefined, request: Nodes | undefined) {
-	const flight = useSelector(s => s.global.flight.flightHistory[selectedRequestId ?? 'non_existent']);
+	const flight = useAppSelector(s => s.global.flight.flightHistory[selectedRequestId ?? 'non_existent']);
 
 	if (!request)
 		return null;

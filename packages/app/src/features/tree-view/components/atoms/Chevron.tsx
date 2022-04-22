@@ -8,7 +8,7 @@ interface ChevronProps {
 	$collapsible: boolean;
 }
 
-const Chevron: React.FunctionComponent<React.PropsWithChildren<ChevronProps>> = props => (
+const Chevron: React.FC<React.PropsWithChildren<ChevronProps>> = props => (
 	<ChevronElement {...props}>
 		<FontAwesomeIcon icon={faChevronRight} />
 	</ChevronElement>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '@beak/app/store/redux';
 import { differenceInDays } from 'date-fns';
 import styled, { keyframes } from 'styled-components';
 
@@ -15,8 +15,8 @@ const pulse = keyframes`
 	}
 `;
 
-const Arbiter: React.FunctionComponent<React.PropsWithChildren<unknown>> = ({ children }) => {
-	const arbiter = useSelector(s => s.global.arbiter.status);
+const Arbiter: React.FC<React.PropsWithChildren<unknown>> = ({ children }) => {
+	const arbiter = useAppSelector(s => s.global.arbiter.status);
 	const now = new Date();
 	const lastSuccessfulCheck = new Date(arbiter.lastSuccessfulCheck);
 	const sinceLastCheck = differenceInDays(now, lastSuccessfulCheck);

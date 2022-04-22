@@ -2,7 +2,7 @@ import React from 'react';
 import { pulse } from '@beak/website/design-system/keyframes';
 import styled from 'styled-components';
 
-const SneakPeak: React.FunctionComponent<React.PropsWithChildren<unknown>> = () => (
+const SneakPeak: React.FC<React.PropsWithChildren<unknown>> = () => (
 	<Wrapper>
 		<Gradient />
 		<AppPicture>

@@ -13,7 +13,7 @@ const displayShortcuts: Partial<Record<Shortcuts, string>> = {
 	'sidebar.toggle-view': 'Toggle sidebar',
 };
 
-const PendingSlash: React.FunctionComponent<React.PropsWithChildren<unknown>> = () => (
+const PendingSlash: React.FC<React.PropsWithChildren<unknown>> = () => (
 	<Wrapper>
 		<FadedLogo />
 		<ShortcutContainer>

@@ -1,3 +1,5 @@
+/* eslint-disable no-process-env */
+
 import { init } from '@sentry/electron/dist/renderer';
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
 

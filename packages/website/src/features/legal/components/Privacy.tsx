@@ -7,7 +7,7 @@ import styled from 'styled-components';
 import { LastUpdated, LegalTlDr } from './atoms/LegalTypograpgy';
 import { LegalSubTitle, LegalTitle } from './molecules/LegalTitle';
 
-const Privacy: React.FunctionComponent<React.PropsWithChildren<unknown>> = () => (
+const Privacy: React.FC<React.PropsWithChildren<unknown>> = () => (
 	<React.Fragment>
 		<Helmet defer={false}>
 			<title>{'Privacy :: Beak'}</title>

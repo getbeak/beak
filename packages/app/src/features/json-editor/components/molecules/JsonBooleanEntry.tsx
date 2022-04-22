@@ -23,7 +23,7 @@ interface JsonBooleanEntryProps extends JsonEntryProps {
 	value: BooleanEntry | NamedBooleanEntry;
 }
 
-const JsonBooleanEntry: React.FunctionComponent<React.PropsWithChildren<JsonBooleanEntryProps>> = props => {
+const JsonBooleanEntry: React.FC<React.PropsWithChildren<JsonBooleanEntryProps>> = props => {
 	const { depth, requestId, value, nameOverride } = props;
 	const { id } = value;
 	const dispatch = useDispatch();
