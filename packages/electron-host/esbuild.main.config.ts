@@ -1,9 +1,14 @@
+/* eslint-disable no-process-env */
 import SentryCli from '@sentry/cli';
 import type { BuildOptions, PluginBuild } from 'esbuild';
+import { createRequire } from 'module';
 import path from 'path';
 
-// @ts-ignore
-import packageJson from './package.json';
+// @ts-expect-error
+const require = createRequire(import.meta.url);
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const packageJson = require('./package.json');
 
 const environment = process.env.NODE_ENV;
 const versionRelease = Boolean(process.env.VERSION_RELEASE);

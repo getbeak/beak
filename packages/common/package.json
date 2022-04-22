@@ -15,6 +15,6 @@
     "start": "tsc -b tsconfig.json -w"
   },
   "devDependencies": {
-    "electron": "17.1.2"
+    "electron": "18.1.0"
   }
 }
