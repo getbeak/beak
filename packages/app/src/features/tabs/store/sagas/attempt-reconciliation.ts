@@ -10,7 +10,7 @@ export default createTakeLatestSagaSet(actions.attemptReconciliation, function* 
 	// This is a dutty hack. This handles when a rename occurs (unlink->add), as we want to ensure that the add event
 	// has occurred, so we don't remove tabs that haven't really been deleted!
 	// TODO(afr): Once day, build a rename wrapper around chokidar
-	yield delay(350);
+	yield delay(100);
 
 	const tabs: TabItem[] = yield select((s: ApplicationState) => s.features.tabs.activeTabs);
 	const tree: Tree = yield select((s: ApplicationState) => s.global.project.tree);
