@@ -27,7 +27,7 @@
     "@fortawesome/free-solid-svg-icons": "^6.1.1",
     "@fortawesome/react-fontawesome": "^0.1.18",
     "@types/react-helmet": "^6.1.5",
-    "@types/react-redux": "^7.1.23",
+    "@types/react-redux": "^7.1.24",
     "react-helmet": "^6.1.0",
     "redux-devtools-extension": "^2.13.9"
   }
