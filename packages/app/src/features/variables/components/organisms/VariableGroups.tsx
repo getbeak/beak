@@ -101,7 +101,7 @@ const VariableGroups: React.FunctionComponent = () => {
 			return;
 
 		dispatch(changeTab({
-			type: 'request',
+			type: 'variable_group_editor',
 			payload: node.id,
 			temporary: true,
 		}));
@@ -117,7 +117,7 @@ const VariableGroups: React.FunctionComponent = () => {
 	function handleNodeKeyDown(event: React.KeyboardEvent<HTMLDivElement>, node: TreeViewItem) {
 		switch (true) {
 			case checkShortcut('variable-groups.variable-group.open', event) && node.type !== 'folder':
-				dispatch(changeTab({ type: 'request', payload: node.id, temporary: false }));
+				dispatch(changeTab({ type: 'variable_group_editor', payload: node.id, temporary: false }));
 				break;
 
 			case checkShortcut('variable-groups.variable-group.delete', event) && node.type !== 'folder':
