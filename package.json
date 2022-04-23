@@ -76,7 +76,7 @@
     "@cuvva/ksuid": "^1.0.2",
     "@monaco-editor/react": "^4.4.2",
     "@sentry/cli": "^1.73.2",
-    "@sentry/electron": "^2.5.4",
+    "@sentry/electron": "^3.0.7",
     "@sentry/react": "^6.19.6",
     "@sentry/tracing": "^6.19.6",
     "chokidar": "^3.5.3",
