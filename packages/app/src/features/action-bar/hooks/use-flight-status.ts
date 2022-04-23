@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '@beak/app/store/redux';
 
 interface PendingFlightStatus { status: 'pending' }
 interface ActiveFlightStatus { status: 'active'; flightId: string }
@@ -13,7 +13,7 @@ interface CompleteFlightStatus {
 type FlightStatus = PendingFlightStatus | ActiveFlightStatus | FailedFlightStatus | CompleteFlightStatus;
 
 export default function useFlightStatus(): FlightStatus {
-	const currentFlight = useSelector(s => s.global.flight.currentFlight);
+	const currentFlight = useAppSelector(s => s.global.flight.currentFlight);
 
 	return useMemo((): FlightStatus => {
 		if (!currentFlight)

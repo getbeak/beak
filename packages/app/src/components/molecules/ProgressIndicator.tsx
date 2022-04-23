@@ -1,9 +1,9 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '@beak/app/store/redux';
 import styled from 'styled-components';
 
-const ProgressIndicator: React.FunctionComponent = () => {
-	const currentFlight = useSelector(s => s.global.flight.currentFlight);
+const ProgressIndicator: React.FC<React.PropsWithChildren<unknown>> = () => {
+	const currentFlight = useAppSelector(s => s.global.flight.currentFlight);
 
 	return (
 		<Wrapper>

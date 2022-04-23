@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { ReflexContainer } from 'react-reflex';
+import { useAppSelector } from '@beak/app/store/redux';
 import styled from 'styled-components';
 
 import ReflexElement from '../components/atoms/ReflexElement';
@@ -21,14 +22,14 @@ import { startGit } from '../store/git/actions';
 import { loadEditorPreferences, loadProjectPanePreferences, loadSidebarPreferences } from '../store/preferences/actions';
 import { revealRequestExternal, startProject } from '../store/project/actions';
 
-const ProjectMain: React.FunctionComponent = () => {
+const ProjectMain: React.FC<React.PropsWithChildren<unknown>> = () => {
 	const dispatch = useDispatch();
 	const [title, setTitle] = useState('Loading... - Beak');
 	const [setup, setSetup] = useState(false);
-	const collapsedSidebar = useSelector(s => s.global.preferences.sidebar.collapsed.sidebar);
-	const project = useSelector(s => s.global.project);
-	const variableGroups = useSelector(s => s.global.variableGroups);
-	const tabs = useSelector(s => s.features.tabs);
+	const collapsedSidebar = useAppSelector(s => s.global.preferences.sidebar.collapsed.sidebar);
+	const project = useAppSelector(s => s.global.project);
+	const variableGroups = useAppSelector(s => s.global.variableGroups);
+	const tabs = useAppSelector(s => s.features.tabs);
 	const activeTab = tabs.activeTabs.find(t => t.payload === tabs.selectedTab);
 
 	const loaded = project.loaded && variableGroups.loaded && tabs.loaded;
@@ -88,7 +89,9 @@ const ProjectMain: React.FunctionComponent = () => {
 				<ReflexStyles />
 				{setup && loaded && (
 					<React.Fragment>
+						{/* @ts-expect-error - Temporary Fix */}
 						<ReflexContainer orientation={'vertical'}>
+							{/* @ts-expect-error - Temporary Fix */}
 							<ReflexElement
 								flex={15}
 								minSize={250}
@@ -103,6 +106,7 @@ const ProjectMain: React.FunctionComponent = () => {
 								orientation={'vertical'}
 							/>
 
+							{/* @ts-expect-error - Temporary Fix */}
 							<ReflexElement
 								flex={80}
 								minSize={902}

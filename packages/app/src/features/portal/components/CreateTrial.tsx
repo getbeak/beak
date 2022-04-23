@@ -14,7 +14,7 @@ interface CreateTrialProps {
 	onChangeToDefault: () => void;
 }
 
-const CreateTrial: React.FunctionComponent<CreateTrialProps> = ({ onChangeToDefault }) => {
+const CreateTrial: React.FC<React.PropsWithChildren<CreateTrialProps>> = ({ onChangeToDefault }) => {
 	const inputRef = useRef<HTMLInputElement>(null);
 	const [email, setEmail] = useState('');
 	const [variant, setVariant] = useState<Variant>('default');

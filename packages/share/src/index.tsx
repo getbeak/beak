@@ -1,5 +1,5 @@
 import React, { lazy, Suspense } from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { DesignSystemProvider } from '@beak/design-system';
 import * as Sentry from '@sentry/react';
@@ -12,13 +12,14 @@ import ErrorFallback from './features/errors/components/ErrorFallback';
 
 const ShareProject = lazy(() => import('./features/share-project/components/ShareProject'));
 
-const EntryPoint: React.FunctionComponent = () => (
+const EntryPoint: React.FC<React.PropsWithChildren<unknown>> = () => (
 	<React.Fragment>
 		<base href={'./'} />
 		<DesignSystemProvider themeKey={'dark'}>
 			<GlobalStyle />
 			<BrowserRouter>
 				<AppContainer>
+					{/* @ts-expect-error - Temporary Fix */}
 					<Sentry.ErrorBoundary fallback={<ErrorFallback />}>
 						<Suspense fallback={<div />}>
 							<Routes>
@@ -41,4 +42,4 @@ Sentry.init({
 	tracesSampleRate: 1.0,
 });
 
-ReactDOM.render(<EntryPoint />, document.getElementById('root'));
+createRoot(document.getElementById('root')!).render(<EntryPoint />);

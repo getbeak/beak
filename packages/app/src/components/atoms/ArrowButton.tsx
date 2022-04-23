@@ -8,7 +8,7 @@ interface ArrowButtonProps {
 	onClick: () => void;
 }
 
-const ArrowButton: React.FunctionComponent<ArrowButtonProps> = props => {
+const ArrowButton: React.FC<React.PropsWithChildren<ArrowButtonProps>> = props => {
 	const { direction = 'left', children, onClick } = props;
 	const theme = useTheme();
 

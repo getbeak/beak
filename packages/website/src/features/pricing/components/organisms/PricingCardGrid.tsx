@@ -5,7 +5,7 @@ import styled from 'styled-components';
 
 import PricingCard from './PricingCard';
 
-const PricingCards: React.FunctionComponent = () => (
+const PricingCards: React.FC<React.PropsWithChildren<unknown>> = () => (
 	<Wrapper>
 		<Container>
 			<Mask />

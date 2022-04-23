@@ -9,7 +9,7 @@ interface CreateNewSplashProps {
 	variableGroup: string;
 }
 
-const CreateNewSplash: React.FunctionComponent<CreateNewSplashProps> = ({ type, variableGroup }) => {
+const CreateNewSplash: React.FC<CreateNewSplashProps> = ({ type, variableGroup }) => {
 	const dispatch = useDispatch();
 
 	return (

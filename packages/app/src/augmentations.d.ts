@@ -22,7 +22,3 @@ declare module 'electron' {
 		click: () => void;
 	}
 }
-
-declare module 'react-redux' {
-	interface DefaultRootState extends ApplicationState {}
-}

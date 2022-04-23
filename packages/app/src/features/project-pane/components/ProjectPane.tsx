@@ -1,9 +1,10 @@
 import React, { useContext } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import WindowSessionContext from '@beak/app/contexts/window-session-context';
 import { ipcExplorerService } from '@beak/app/lib/ipc';
 import { checkShortcut } from '@beak/app/lib/keyboard-shortcuts';
 import { actions } from '@beak/app/store/project';
+import { useAppSelector } from '@beak/app/store/redux';
 import ksuid from '@cuvva/ksuid';
 import type { MenuItemConstructorOptions } from 'electron';
 
@@ -16,9 +17,9 @@ import RequestFlightStatus from './molecules/RequestFlightStatus';
 import Git from './organisms/Git';
 import VariableGroups from './organisms/VariableGroups';
 
-const ProjectPane: React.FunctionComponent = () => {
-	const { id, tree, name } = useSelector(s => s.global.project);
-	const selectedTabId = useSelector(s => s.features.tabs.selectedTab);
+const ProjectPane: React.FC<React.PropsWithChildren<unknown>> = () => {
+	const { id, tree, name } = useAppSelector(s => s.global.project);
+	const selectedTabId = useAppSelector(s => s.features.tabs.selectedTab);
 	const windowSession = useContext(WindowSessionContext);
 	const darwin = windowSession.isDarwin();
 	const dispatch = useDispatch();

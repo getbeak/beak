@@ -1,9 +1,10 @@
 import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import BasicTableEditor from '@beak/app/features/basic-table-editor/components/BasicTableEditor';
 import binaryStore from '@beak/app/lib/binary-store';
 import { Flight } from '@beak/app/store/flight/types';
 import { requestPreferenceSetResSubTab } from '@beak/app/store/preferences/actions';
+import { useAppSelector } from '@beak/app/store/redux';
 import { createDefaultOptions } from '@beak/app/utils/monaco';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import ksuid from '@cuvva/ksuid';
@@ -23,12 +24,14 @@ export interface ResponseTabProps {
 	flight: Flight;
 }
 
-const ResponseTab: React.FunctionComponent<ResponseTabProps> = props => {
+const ResponseTab: React.FC<React.PropsWithChildren<ResponseTabProps>> = props => {
 	const { flight } = props;
 	const dispatch = useDispatch();
 	const { error, response, requestId } = flight;
 	const hasErrored = Boolean(error);
-	const tab = useSelector(s => s.global.preferences.requests[requestId]?.response.subTab.response) as Tab | undefined;
+	const tab = useAppSelector(s =>
+		s.global.preferences.requests[requestId]?.response.subTab.response,
+	) as Tab | undefined;
 
 	function convertHeaderFormat() {
 		return Object.keys(flight.response!.headers)

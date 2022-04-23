@@ -1,17 +1,18 @@
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { SilentAbbr } from '@beak/app/components/atoms/Abbr';
 import useSectionBody from '@beak/app/features/sidebar/hooks/use-section-body';
 import { editorPreferencesSetSelectedVariableGroup } from '@beak/app/store/preferences/actions';
+import { useAppSelector } from '@beak/app/store/redux';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import styled from 'styled-components';
 
 import NoVariableGroups from '../molecules/NoVariableGroups';
 
-const VariableGroups: React.FunctionComponent = () => {
+const VariableGroups: React.FC<React.PropsWithChildren<unknown>> = () => {
 	const dispatch = useDispatch();
-	const { variableGroups } = useSelector(s => s.global.variableGroups)!;
-	const selectedGroups = useSelector(s => s.global.preferences.editor.selectedVariableGroups);
+	const { variableGroups } = useAppSelector(s => s.global.variableGroups)!;
+	const selectedGroups = useAppSelector(s => s.global.preferences.editor.selectedVariableGroups);
 	const empty = Object.keys(variableGroups).length === 0;
 
 	useSectionBody({

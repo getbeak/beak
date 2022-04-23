@@ -1,15 +1,15 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
 import PendingSlash from '@beak/app/components/molecules/PendingSplash';
+import { useAppSelector } from '@beak/app/store/redux';
 import styled from 'styled-components';
 
 import Header from './molecules/Header';
 import Inspector from './organisms/Inspector';
 
-const ResponsePane: React.FunctionComponent = () => {
-	const { tree } = useSelector(s => s.global.project);
-	const selectedTab = useSelector(s => s.features.tabs.selectedTab);
-	const flightHistories = useSelector(s => s.global.flight.flightHistory);
+const ResponsePane: React.FC<React.PropsWithChildren<unknown>> = () => {
+	const { tree } = useAppSelector(s => s.global.project);
+	const selectedTab = useAppSelector(s => s.features.tabs.selectedTab);
+	const flightHistories = useAppSelector(s => s.global.flight.flightHistory);
 	const selectedNode = tree![selectedTab || 'non_existent'];
 
 	if (!selectedTab) {

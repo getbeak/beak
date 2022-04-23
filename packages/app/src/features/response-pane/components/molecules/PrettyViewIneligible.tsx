@@ -29,7 +29,7 @@ interface PrettyViewIneligibleProps {
 	eligibility: NotEligible;
 }
 
-const PrettyViewIneligible: React.FunctionComponent<PrettyViewIneligibleProps> = ({ eligibility }) => {
+const PrettyViewIneligible: React.FC<PrettyViewIneligibleProps> = ({ eligibility }) => {
 	const reason = reasons[eligibility];
 
 	return (

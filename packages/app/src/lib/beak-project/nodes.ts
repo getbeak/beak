@@ -35,6 +35,6 @@ export function getDestinationFolder(node: Nodes | null) {
 
 	if (node.type === 'folder')
 		return node.filePath;
-	
+
 	return node.parent!;
 }

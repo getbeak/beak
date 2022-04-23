@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import { useAppSelector } from '@beak/app/store/redux';
 import { VariableGroupEditorTabItem } from '@beak/common/types/beak-project';
 
 import TabItem from '../../../../components/atoms/TabItem';
@@ -10,9 +11,9 @@ interface VariableGroupEditorTabProps {
 	tab: VariableGroupEditorTabItem;
 }
 
-const VariableGroupEditorTab: React.FunctionComponent<VariableGroupEditorTabProps> = ({ tab }) => {
+const VariableGroupEditorTab: React.FC<React.PropsWithChildren<VariableGroupEditorTabProps>> = ({ tab }) => {
 	const dispatch = useDispatch();
-	const selectedTabPayload = useSelector(s => s.features.tabs.selectedTab);
+	const selectedTabPayload = useAppSelector(s => s.features.tabs.selectedTab);
 	const [target, setTarget] = useState<HTMLElement>();
 
 	return (

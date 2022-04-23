@@ -1,5 +1,5 @@
 import React, { lazy, Suspense } from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { DesignSystemProvider } from '@beak/design-system';
@@ -22,13 +22,14 @@ const Privacy = lazy(() => import('./features/legal/components/Privacy'));
 const Purchased = lazy(() => import('./features/purchased/components/Purchased'));
 const Terms = lazy(() => import('./features/legal/components/Terms'));
 
-const EntryPoint: React.FunctionComponent = () => (
+const EntryPoint: React.FC<React.PropsWithChildren<unknown>> = () => (
 	<Provider store={store}>
 		<base href={'./'} />
 		<DesignSystemProvider themeKey={'dark'}>
 			<GlobalStyle />
 			<BrowserRouter>
 				<AppContainer>
+					{/* @ts-expect-error - Temporary Fix */}
 					<Sentry.ErrorBoundary fallback={<ErrorFallback />}>
 						<Scroller />
 						<Suspense fallback={<div />}>
@@ -60,4 +61,4 @@ Sentry.init({
 	tracesSampleRate: 1.0,
 });
 
-ReactDOM.render(<EntryPoint />, document.getElementById('root'));
+createRoot(document.getElementById('root')!).render(<EntryPoint />);

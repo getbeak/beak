@@ -6,7 +6,7 @@ import RequestMagicLink from './organisms/RequestMagicLink';
 
 type Mode = 'request_magic_link' | 'use_magic_link';
 
-const SignIn: React.FunctionComponent = () => {
+const SignIn: React.FC<React.PropsWithChildren<unknown>> = () => {
 	const [email, setEmail] = useState('');
 	const [mode, setMode] = useState<Mode>('request_magic_link');
 	const [inboundState, setInboundState] = useState<MagicState | undefined>(void 0);

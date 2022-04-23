@@ -8,7 +8,7 @@ interface DebouncedInputProps extends Omit<React.HTMLProps<HTMLInputElement>, 'o
 	value: string;
 }
 
-const DebouncedInput: React.FunctionComponent<DebouncedInputProps> = props => {
+const DebouncedInput: React.FC<React.PropsWithChildren<DebouncedInputProps>> = props => {
 	const { innerRef, onChange, ...rest } = props;
 	const ref = innerRef ?? null;
 	const [localValue, setLocalValue] = useState('');

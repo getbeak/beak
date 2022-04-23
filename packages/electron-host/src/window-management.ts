@@ -13,6 +13,7 @@ export const windowType: Record<number, Container> = {};
 export const stackMap: Record<string, number> = { };
 
 const DEV_URL = 'http://localhost:3000';
+// eslint-disable-next-line no-process-env
 const environment = process.env.NODE_ENV;
 
 function generateLoadUrl(

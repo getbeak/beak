@@ -11,7 +11,7 @@ import Container from '../../../components/atoms/Container';
 import { SubTitle, Title } from '../../../components/atoms/Typography';
 import useDownloadLinks from '../hooks/use-download-links';
 
-const Downloader: React.FunctionComponent = () => {
+const Downloader: React.FC<React.PropsWithChildren<unknown>> = () => {
 	const theme = useTheme();
 	const { downloads, getSiliconDownloadPath } = useDownloadLinks();
 

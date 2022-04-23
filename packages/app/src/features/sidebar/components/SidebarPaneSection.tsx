@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { sidebarPreferenceSetCollapse } from '@beak/app/store/preferences/actions';
+import { useAppSelector } from '@beak/app/store/redux';
 import type { MenuItemConstructorOptions } from 'electron';
 import styled, { css } from 'styled-components';
 
@@ -14,12 +15,12 @@ interface SidebarPaneSectionProps {
 	disableCollapse?: boolean;
 }
 
-const SidebarPaneSection: React.FunctionComponent<SidebarPaneSectionProps> = props => {
+const SidebarPaneSection: React.FC<React.PropsWithChildren<SidebarPaneSectionProps>> = props => {
 	const dispatch = useDispatch();
 	const { actions, title, collapseKey, disableCollapse, children } = props;
 	const [bodyOptions, setBodyOptions] = useState<SectionBodyOptions>({});
 
-	const collapsed = useSelector(s => s.global.preferences.sidebar.collapsed[collapseKey]);
+	const collapsed = useAppSelector(s => s.global.preferences.sidebar.collapsed[collapseKey]);
 	const [uiCollapsed, setUiCollapsed] = useState(collapsed);
 
 	function setCollapsedProxy() {

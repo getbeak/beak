@@ -10,7 +10,7 @@ interface NodeContextMenuProps {
 	target: React.MutableRefObject<HTMLDivElement | null>;
 }
 
-const NodeContextMenu: React.FunctionComponent<NodeContextMenuProps> = props => {
+const NodeContextMenu: React.FC<React.PropsWithChildren<NodeContextMenuProps>> = props => {
 	const { node, target, children } = props;
 	const [menuItems, setMenuItems] = useState<MenuItemConstructorOptions[]>([]);
 	const abs = useContext(TreeViewAbstractionsContext);

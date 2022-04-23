@@ -1,7 +1,8 @@
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { Flight } from '@beak/app/store/flight/types';
 import actions from '@beak/app/store/preferences/actions';
+import { useAppSelector } from '@beak/app/store/redux';
 import { attemptJsonStringFormat } from '@beak/app/utils/json';
 import { createDefaultOptions } from '@beak/app/utils/monaco';
 import Editor from '@monaco-editor/react';
@@ -18,10 +19,10 @@ interface PrettyViewerProps {
 	mode: 'request' | 'response';
 }
 
-const PrettyViewer: React.FunctionComponent<PrettyViewerProps> = ({ flight, mode }) => {
+const PrettyViewer: React.FC<React.PropsWithChildren<PrettyViewerProps>> = ({ flight, mode }) => {
 	const dispatch = useDispatch();
 	const requestId = flight.requestId;
-	const preferences = useSelector(s => s.global.preferences.requests[requestId].response.pretty[mode]);
+	const preferences = useAppSelector(s => s.global.preferences.requests[requestId].response.pretty[mode]);
 	const [eligibility, body] = useFlightBodyInfo(flight, mode);
 	const detectedFormat = useDetectedFlightFormat(flight, mode);
 	const selectedLanguage = preferences.language ?? detectedFormat;

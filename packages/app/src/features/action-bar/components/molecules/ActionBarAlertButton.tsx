@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '@beak/app/store/redux';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -8,10 +8,10 @@ import { useTheme } from 'styled-components';
 import ActionBarButton from '../atoms/ActionBarButton';
 import AlertsPopover from '../organisms/AlertsPopover';
 
-const ActionBarAlertButton: React.FunctionComponent = () => {
+const ActionBarAlertButton: React.FC<React.PropsWithChildren<unknown>> = () => {
 	const theme = useTheme();
 	const [showPopover, setShowPopover] = useState(false);
-	const alerts = useSelector(s => s.global.project.alerts);
+	const alerts = useAppSelector(s => s.global.project.alerts);
 	const hasAlerts = TypedObject.values(alerts).filter(Boolean).length > 0;
 	const parentRef = useRef() as React.MutableRefObject<HTMLButtonElement>;
 

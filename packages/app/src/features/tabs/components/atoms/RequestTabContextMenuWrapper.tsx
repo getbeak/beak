@@ -1,8 +1,9 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import ContextMenu from '@beak/app/components/atoms/ContextMenu';
 import WindowSessionContext from '@beak/app/contexts/window-session-context';
 import { ipcExplorerService } from '@beak/app/lib/ipc';
+import { useAppSelector } from '@beak/app/store/redux';
 import { TabItem } from '@beak/common/types/beak-project';
 import ksuid from '@cuvva/ksuid';
 import type { MenuItemConstructorOptions } from 'electron';
@@ -14,11 +15,12 @@ interface RequestTabContextMenuWrapperProps {
 	target: HTMLElement | undefined;
 }
 
-const RequestTabContextMenuWrapper: React.FunctionComponent<RequestTabContextMenuWrapperProps> = props => {
+// eslint-disable-next-line max-len
+const RequestTabContextMenuWrapper: React.FC<React.PropsWithChildren<RequestTabContextMenuWrapperProps>> = props => {
 	const dispatch = useDispatch();
 	const { tab, target, children } = props;
-	const node = useSelector(s => s.global.project.tree[tab.payload]);
-	const { activeTabs } = useSelector(s => s.features.tabs)!;
+	const node = useAppSelector(s => s.global.project.tree[tab.payload]);
+	const { activeTabs } = useAppSelector(s => s.features.tabs)!;
 	const [menuItems, setMenuItems] = useState<MenuItemConstructorOptions[]>([]);
 	const windowSession = useContext(WindowSessionContext);
 

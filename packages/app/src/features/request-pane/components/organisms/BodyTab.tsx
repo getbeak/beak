@@ -1,5 +1,5 @@
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import BasicTableEditor from '@beak/app/features/basic-table-editor/components/BasicTableEditor';
 import { convertKeyValueToString, convertStringToKeyValue } from '@beak/app/features/basic-table-editor/parsers';
 import JsonEditor from '@beak/app/features/json-editor/components/JsonEditor';
@@ -7,6 +7,7 @@ import { convertToEntryJson, convertToRealJson } from '@beak/app/features/json-e
 import { ipcDialogService } from '@beak/app/lib/ipc';
 import actions, { requestBodyTextChanged } from '@beak/app/store/project/actions';
 import { RequestBodyTypeChangedPayload } from '@beak/app/store/project/types';
+import { useAppSelector } from '@beak/app/store/redux';
 import { attemptTextToJson } from '@beak/app/utils/json';
 import { createDefaultOptions } from '@beak/app/utils/monaco';
 import { RequestBodyType, ValidRequestNode, ValueParts } from '@beak/common/types/beak-project';
@@ -22,10 +23,10 @@ export interface BodyTabProps {
 	node: ValidRequestNode;
 }
 
-const BodyTab: React.FunctionComponent<BodyTabProps> = props => {
+const BodyTab: React.FC<React.PropsWithChildren<BodyTabProps>> = props => {
 	const dispatch = useDispatch();
-	const { variableGroups } = useSelector(s => s.global.variableGroups);
-	const selectedGroups = useSelector(s => s.global.preferences.editor.selectedVariableGroups);
+	const { variableGroups } = useAppSelector(s => s.global.variableGroups);
+	const selectedGroups = useAppSelector(s => s.global.preferences.editor.selectedVariableGroups);
 	const context = { selectedGroups, variableGroups };
 	const { node } = props;
 	const { body } = node.info;

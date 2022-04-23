@@ -15,7 +15,7 @@ const pulse = (theme: DefaultTheme) => keyframes`
 	}
 `;
 
-const NonprodBadge: React.FunctionComponent = () => {
+const NonprodBadge: React.FC<React.PropsWithChildren<unknown>> = () => {
 	const [show, setShow] = useState(false);
 
 	useEffect(() => {

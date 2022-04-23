@@ -11,7 +11,7 @@ import { faPersonSnowboarding } from '@fortawesome/free-solid-svg-icons/faPerson
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import styled, { useTheme } from 'styled-components';
 
-const Purchased: React.FunctionComponent = () => {
+const Purchased: React.FC<React.PropsWithChildren<unknown>> = () => {
 	const theme = useTheme();
 
 	return (

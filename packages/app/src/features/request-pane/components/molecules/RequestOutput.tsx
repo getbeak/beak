@@ -1,11 +1,11 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
 import WindowSessionContext, { WindowSession } from '@beak/app/contexts/window-session-context';
 import { convertKeyValueToString } from '@beak/app/features/basic-table-editor/parsers';
 import { convertToRealJson } from '@beak/app/features/json-editor/parsers';
 import { parseValueParts } from '@beak/app/features/realtime-values/parser';
 import { Context } from '@beak/app/features/realtime-values/types';
 import useComponentMounted from '@beak/app/hooks/use-component-mounted';
+import { useAppSelector } from '@beak/app/store/redux';
 import { createDefaultOptions } from '@beak/app/utils/monaco';
 import { convertRequestToUrl } from '@beak/app/utils/uri';
 import { requestBodyContentType } from '@beak/common/helpers/request';
@@ -19,9 +19,9 @@ export interface RequestOutputProps {
 	selectedNode: ValidRequestNode;
 }
 
-const RequestOutput: React.FunctionComponent<RequestOutputProps> = props => {
-	const { variableGroups } = useSelector(s => s.global.variableGroups);
-	const selectedGroups = useSelector(s => s.global.preferences.editor.selectedVariableGroups);
+const RequestOutput: React.FC<React.PropsWithChildren<RequestOutputProps>> = props => {
+	const { variableGroups } = useAppSelector(s => s.global.variableGroups);
+	const selectedGroups = useAppSelector(s => s.global.preferences.editor.selectedVariableGroups);
 	const windowSession = useContext(WindowSessionContext);
 	const [output, setOutput] = useState('');
 	const context = { selectedGroups, variableGroups };
@@ -103,10 +103,10 @@ export async function createBasicHttpOutput(overview: RequestOverview, context: 
 		out.push(`User-Agent: Beak/${windowSession.version ?? ''} (${windowSession.os})`);
 
 	if (headers) {
-		out.push(...await Promise.all(
+		out.push(...(await Promise.all(
 			TypedObject.values(headers)
 				.filter(h => h.enabled)
-				.map(async ({ name, value }) => `${name}: ${await parseValueParts(context, value)}`)),
+				.map(async ({ name, value }) => `${name}: ${await parseValueParts(context, value)}`))),
 		);
 	}
 

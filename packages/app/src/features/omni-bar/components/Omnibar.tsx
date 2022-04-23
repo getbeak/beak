@@ -1,14 +1,15 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { toVibrancyAlpha } from '@beak/app/design-system/utils';
 import { checkShortcut } from '@beak/app/lib/keyboard-shortcuts';
+import { useAppSelector } from '@beak/app/store/redux';
 import styled from 'styled-components';
 
 import { actions } from '../store';
 import FinderView from './organism/FinderView';
 
-const Omnibar: React.FunctionComponent = () => {
-	const { open, mode } = useSelector(s => s.features.omniBar);
+const Omnibar: React.FC<React.PropsWithChildren<unknown>> = () => {
+	const { open, mode } = useAppSelector(s => s.features.omniBar);
 	const [content, setContent] = useState('');
 	const inputRef = useRef<HTMLInputElement | null>(null);
 	const dispatch = useDispatch();

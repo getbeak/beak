@@ -8,7 +8,7 @@ interface MagicalProps {
 	revertFromMagical: () => void;
 }
 
-const Magical: React.FunctionComponent<MagicalProps> = ({ email, revertFromMagical }) => {
+const Magical: React.FC<React.PropsWithChildren<MagicalProps>> = ({ email, revertFromMagical }) => {
 	const [inboundState, setInboundState] = useState<MagicState | undefined>(void 0);
 
 	useEffect(() => {

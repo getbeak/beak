@@ -11,7 +11,7 @@ interface SchemaInvalidErrorProps {
 	error: Squawk;
 }
 
-const SchemaInvalidError: React.FunctionComponent<SchemaInvalidErrorProps> = ({ filePath, error }) => (
+const SchemaInvalidError: React.FC<SchemaInvalidErrorProps> = ({ filePath, error }) => (
 	<Wrapper>
 		<Header>{'Request file validation has failed'}</Header>
 		<Body>{'The file for this request is corrupt. The error below should help you resolve the issue'}</Body>

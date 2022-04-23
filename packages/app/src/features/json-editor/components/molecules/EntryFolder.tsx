@@ -11,7 +11,7 @@ interface EntryFolderProps {
 	onChange: (expanded: boolean) => void;
 }
 
-const EntryFolder: React.FunctionComponent<EntryFolderProps> = props => {
+const EntryFolder: React.FC<React.PropsWithChildren<EntryFolderProps>> = props => {
 	const { expanded, id, onChange } = props;
 	const dispatch = useDispatch();
 	const node = useContext(SelectedNodeContext);
@@ -26,7 +26,7 @@ const EntryFolder: React.FunctionComponent<EntryFolderProps> = props => {
 	);
 };
 
-export const EntryFolderIrrelevant: React.FunctionComponent = () => (<Wrapper />);
+export const EntryFolderIrrelevant: React.FC<React.PropsWithChildren<unknown>> = () => (<Wrapper />);
 
 const Wrapper = styled.div`
 	margin-top: 1px;

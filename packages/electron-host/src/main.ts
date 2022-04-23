@@ -1,4 +1,4 @@
-/* eslint-disable global-require */
+/* eslint-disable global-require, no-process-env */
 import { init } from '@sentry/electron/dist/main';
 import { app, nativeTheme } from 'electron';
 import electronDebug from 'electron-debug';

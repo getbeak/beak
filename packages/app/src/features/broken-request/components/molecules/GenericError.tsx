@@ -11,7 +11,7 @@ interface GenericErrorProps {
 	error: Squawk;
 }
 
-const GenericError: React.FunctionComponent<GenericErrorProps> = ({ filePath, error }) => (
+const GenericError: React.FC<React.PropsWithChildren<GenericErrorProps>> = ({ filePath, error }) => (
 	<Wrapper>
 		<Header>{'Unable to load request file'}</Header>
 		<Body>{'There was an unknown error while trying to load this request'}</Body>

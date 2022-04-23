@@ -1,9 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import RealtimeValueEditor from '@beak/app/features/realtime-value-editor/components/RealtimeValueEditor';
 import useForceReRender from '@beak/app/hooks/use-force-rerender';
 import { checkShortcut } from '@beak/app/lib/keyboard-shortcuts';
 import { requestFlight } from '@beak/app/store/flight/actions';
+import { useAppSelector } from '@beak/app/store/redux';
 import { ValueParts } from '@beak/common/types/beak-project';
 import { RealtimeValuePart } from '@beak/common/types/realtime-values';
 import styled from 'styled-components';
@@ -45,8 +46,8 @@ const VariableInput = React.forwardRef<HTMLElement, VariableInputProps>((props, 
 	const [showSelector, setShowSelector] = useState(() => false);
 	const [query, setQuery] = useState('');
 
-	const { variableGroups } = useSelector(s => s.global.variableGroups);
-	const selectedGroups = useSelector(s => s.global.preferences.editor.selectedVariableGroups);
+	const { variableGroups } = useAppSelector(s => s.global.variableGroups);
+	const selectedGroups = useAppSelector(s => s.global.preferences.editor.selectedVariableGroups);
 
 	const editableRef = useRef<HTMLDivElement | null>(null);
 	const placeholderRef = useRef<HTMLDivElement | null>(null);

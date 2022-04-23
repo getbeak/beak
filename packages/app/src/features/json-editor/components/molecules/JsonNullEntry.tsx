@@ -24,7 +24,7 @@ interface JsonNullEntryProps extends JsonEntryProps {
 	value: NullEntry | NamedNullEntry;
 }
 
-const JsonNullEntry: React.FunctionComponent<JsonNullEntryProps> = props => {
+const JsonNullEntry: React.FC<React.PropsWithChildren<JsonNullEntryProps>> = props => {
 	const { depth, requestId, value, nameOverride } = props;
 	const { id } = value;
 	const dispatch = useDispatch();

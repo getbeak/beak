@@ -1,8 +1,9 @@
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { parseValueParts } from '@beak/app/features/realtime-values/parser';
 import VariableInput from '@beak/app/features/variable-input/components/VariableInput';
 import { requestPreferenceSetReqMainTab } from '@beak/app/store/preferences/actions';
+import { useAppSelector } from '@beak/app/store/redux';
 import { ValidRequestNode, ValueParts } from '@beak/common/types/beak-project';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -16,12 +17,12 @@ export interface HeaderProps {
 	node: ValidRequestNode;
 }
 
-const Header: React.FunctionComponent<HeaderProps> = props => {
+const Header: React.FC<React.PropsWithChildren<HeaderProps>> = props => {
 	const dispatch = useDispatch();
 	const theme = useTheme();
-	const { variableGroups } = useSelector(s => s.global.variableGroups);
-	const selectedGroups = useSelector(s => s.global.preferences.editor.selectedVariableGroups);
-	const currentFlight = useSelector(s => s.global.flight.currentFlight);
+	const { variableGroups } = useAppSelector(s => s.global.variableGroups);
+	const selectedGroups = useAppSelector(s => s.global.preferences.editor.selectedVariableGroups);
+	const currentFlight = useAppSelector(s => s.global.flight.currentFlight);
 	const flighting = currentFlight && currentFlight.flighting && currentFlight.requestId === props.node.id;
 	const { node } = props;
 	const verb = node.info.verb;

@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
-const NotSignedIn: React.FunctionComponent = () => (
+const NotSignedIn: React.FC<React.PropsWithChildren<unknown>> = () => (
 	<Title>
 		{'Please sign into your account to view your subscription plan'}
 	</Title>

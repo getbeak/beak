@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import ContextMenu from '@beak/app/components/atoms/ContextMenu';
+import { useAppSelector } from '@beak/app/store/redux';
 import { TabItem } from '@beak/common/types/beak-project';
 import ksuid from '@cuvva/ksuid';
 import type { MenuItemConstructorOptions } from 'electron';
@@ -12,10 +13,11 @@ interface GenericTabContextMenuWrapperProps {
 	target: HTMLElement | undefined;
 }
 
-const GenericTabContextMenuWrapper: React.FunctionComponent<GenericTabContextMenuWrapperProps> = props => {
+// eslint-disable-next-line max-len
+const GenericTabContextMenuWrapper: React.FC<React.PropsWithChildren<GenericTabContextMenuWrapperProps>> = props => {
 	const dispatch = useDispatch();
 	const { tab, target, children } = props;
-	const { activeTabs } = useSelector(s => s.features.tabs)!;
+	const { activeTabs } = useAppSelector(s => s.features.tabs)!;
 	const [menuItems, setMenuItems] = useState<MenuItemConstructorOptions[]>([]);
 
 	useEffect(() => {

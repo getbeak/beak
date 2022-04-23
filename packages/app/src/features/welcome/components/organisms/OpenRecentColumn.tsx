@@ -15,7 +15,7 @@ type Recents = Record<TimeCategory, RecentLocalProject[]>;
 
 const categories: TimeCategory[] = ['today', 'week', 'month', 'older'];
 
-const OpenRecentColumn: React.FunctionComponent = () => {
+const OpenRecentColumn: React.FC<React.PropsWithChildren<unknown>> = () => {
 	const [recents, setRecents] = useState<Recents>({ ...defaultRecents() });
 
 	useEffect(() => {

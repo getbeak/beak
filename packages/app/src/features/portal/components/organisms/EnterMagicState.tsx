@@ -20,7 +20,7 @@ interface EnterMagicStateProps {
 	inboundState?: MagicState;
 }
 
-const EnterMagicState: React.FunctionComponent<EnterMagicStateProps> = props => {
+const EnterMagicState: React.FC<React.PropsWithChildren<EnterMagicStateProps>> = props => {
 	const { email, reset, inboundState } = props;
 	const [working, setWorking] = useState<boolean>(false);
 	const [error, setError] = useState<Squawk | undefined>(void 0);

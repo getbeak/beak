@@ -8,7 +8,7 @@ import SignIn from '../features/portal/components/SignIn';
 
 type Variant = 'default' | 'trial_creation';
 
-const Portal: React.FunctionComponent = () => {
+const Portal: React.FC<React.PropsWithChildren<unknown>> = () => {
 	const [variant, setVariant] = useState<Variant>('default');
 
 	return (

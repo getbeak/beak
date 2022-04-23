@@ -1,9 +1,10 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import WindowSessionContext from '@beak/app/contexts/window-session-context';
 import BasicTableEditor from '@beak/app/features/basic-table-editor/components/BasicTableEditor';
 import { Flight } from '@beak/app/store/flight/types';
 import { requestPreferenceSetResSubTab } from '@beak/app/store/preferences/actions';
+import { useAppSelector } from '@beak/app/store/redux';
 import { createDefaultOptions } from '@beak/app/utils/monaco';
 import Editor from '@monaco-editor/react';
 import styled from 'styled-components';
@@ -21,14 +22,17 @@ export interface RequestTabProps {
 	flight: Flight;
 }
 
-const RequestTab: React.FunctionComponent<RequestTabProps> = props => {
+const RequestTab: React.FC<React.PropsWithChildren<RequestTabProps>> = props => {
 	const { flight } = props;
-	const dispatch = useDispatch();
 	const requestId = flight.requestId;
+	const dispatch = useDispatch();
 	const [output, setOutput] = useState('');
-	const tab = useSelector(s => s.global.preferences.requests[requestId].response.subTab.request) as Tab | undefined;
-	const { variableGroups } = useSelector(s => s.global.variableGroups);
-	const selectedGroups = useSelector(s => s.global.preferences.editor.selectedVariableGroups);
+	const { variableGroups } = useAppSelector(s => s.global.variableGroups);
+	const selectedGroups = useAppSelector(s => s.global.preferences.editor.selectedVariableGroups);
+	const tab = useAppSelector(
+		s => s.global.preferences.requests[requestId].response.subTab.request,
+	) as Tab | undefined;
+
 	const windowSession = useContext(WindowSessionContext);
 	const context = { selectedGroups, variableGroups };
 

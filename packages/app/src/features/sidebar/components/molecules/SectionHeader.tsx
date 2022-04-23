@@ -12,7 +12,7 @@ interface SectionHeaderProps {
 	onClick: () => void;
 }
 
-const SectionHeader: React.FunctionComponent<SectionHeaderProps> = props => {
+const SectionHeader: React.FC<React.PropsWithChildren<SectionHeaderProps>> = props => {
 	const { actions, children, collapsed, disableCollapse, onClick } = props;
 
 	return (

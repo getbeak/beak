@@ -6,7 +6,7 @@ interface AlertProps {
 	color: 'info';
 }
 
-const Alert: React.FunctionComponent<AlertProps> = ({ title, children }) => (
+const Alert: React.FC<React.PropsWithChildren<AlertProps>> = ({ title, children }) => (
 	<Wrapper>
 		<b>{title}</b><br />
 		{children}

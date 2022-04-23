@@ -50,7 +50,7 @@ interface PricingCardProps {
 	version: Version;
 }
 
-const PricingCard: React.FunctionComponent<PricingCardProps> = ({ version }) => (
+const PricingCard: React.FC<React.PropsWithChildren<PricingCardProps>> = ({ version }) => (
 	<Card>
 		<CardHeader>
 			{versions[version].title}

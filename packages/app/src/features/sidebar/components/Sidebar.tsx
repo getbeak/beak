@@ -1,8 +1,9 @@
 import React, { useContext, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import WindowSessionContext from '@beak/app/contexts/window-session-context';
 import { checkShortcut } from '@beak/app/lib/keyboard-shortcuts';
 import { sidebarPreferenceSetCollapse, sidebarPreferenceSetSelected } from '@beak/app/store/preferences/actions';
+import { useAppSelector } from '@beak/app/store/redux';
 import { SidebarVariant } from '@beak/common/types/beak-hub';
 import { MenuEventPayload } from '@beak/common/web-contents/types';
 import styled, { css } from 'styled-components';
@@ -14,10 +15,10 @@ import SidebarMenuItem from './molecules/SidebarMenuItem';
 
 const sidebarVariants: SidebarVariant[] = ['project', 'variables'];
 
-const Sidebar: React.FunctionComponent = () => {
+const Sidebar: React.FC<React.PropsWithChildren<unknown>> = () => {
 	const windowSession = useContext(WindowSessionContext);
-	const selectedSidebar = useSelector(s => s.global.preferences.sidebar.selected);
-	const sidebarCollapsed = useSelector(s => s.global.preferences.sidebar.collapsed.sidebar);
+	const selectedSidebar = useAppSelector(s => s.global.preferences.sidebar.selected);
+	const sidebarCollapsed = useAppSelector(s => s.global.preferences.sidebar.collapsed.sidebar);
 	const dispatch = useDispatch();
 
 	const variantIndex = sidebarVariants.indexOf(selectedSidebar);

@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
 import { DesignSystemProvider } from '@beak/design-system';
 
@@ -35,7 +35,7 @@ function getComponent(container: string | null) {
 	}
 }
 
-const FauxRouter: React.FunctionComponent = () => {
+const FauxRouter: React.FC<React.PropsWithChildren<unknown>> = () => {
 	const params = new URLSearchParams(window.location.search);
 	const container = params.get('container');
 	const component = getComponent(container);
@@ -59,4 +59,4 @@ const FauxRouter: React.FunctionComponent = () => {
 	);
 };
 
-ReactDOM.render(<FauxRouter />, document.getElementById('root'));
+createRoot(document.getElementById('root')!).render(<FauxRouter />);

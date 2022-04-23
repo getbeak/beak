@@ -12,7 +12,7 @@ export interface RecentEntryProps {
 	onClick: () => void;
 }
 
-const RecentEntry: React.FunctionComponent<RecentEntryProps> = props => {
+const RecentEntry: React.FC<React.PropsWithChildren<RecentEntryProps>> = props => {
 	const date = parseISO(props.modifiedDate);
 	const pathIsGoingToBeAnAsshole = props.path.startsWith('/');
 	const path = pathIsGoingToBeAnAsshole ? props.path.substring(1) : props.path;

@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useAppSelector } from '@beak/app/store/redux';
 import { movePosition } from '@beak/app/utils/arrays';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { RealtimeValuePart } from '@beak/common/types/realtime-values';
@@ -25,10 +25,10 @@ export interface VariableSelectorProps {
 	onDone: (value: RealtimeValuePart) => void;
 }
 
-const VariableSelector: React.FunctionComponent<VariableSelectorProps> = props => {
+const VariableSelector: React.FC<React.PropsWithChildren<VariableSelectorProps>> = props => {
 	const { editableElement, sel, query, onClose, onDone } = props;
-	const { variableGroups } = useSelector(s => s.global.variableGroups);
-	const selectedGroups = useSelector(s => s.global.preferences.editor.selectedVariableGroups);
+	const { variableGroups } = useAppSelector(s => s.global.variableGroups);
+	const selectedGroups = useAppSelector(s => s.global.preferences.editor.selectedVariableGroups);
 
 	const activeRef = useRef<HTMLDivElement | null>(null);
 	const [position, setPosition] = useState<Position | null>(null);

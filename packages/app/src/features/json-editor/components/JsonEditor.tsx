@@ -17,7 +17,7 @@ interface JsonEditorProps {
 	value: EntryMap;
 }
 
-const JsonEditor: React.FunctionComponent<JsonEditorProps> = ({ requestId, value }) => {
+const JsonEditor: React.FC<React.PropsWithChildren<JsonEditorProps>> = ({ requestId, value }) => {
 	const root = TypedObject.values(value).find(e => e.parentId === null);
 
 	return (

@@ -7,7 +7,7 @@ import GenericBanner from './molecules/GenericBanner';
 
 const supportedCodes = ['generic_banner'];
 
-const NewsBannerContainer: React.FunctionComponent = () => {
+const NewsBannerContainer: React.FC<React.PropsWithChildren<unknown>> = () => {
 	const [newsItems, setNewsItems] = useState<NewsItem[]>([]);
 
 	useEffect(() => {

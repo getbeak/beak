@@ -8,7 +8,7 @@ import NotSignedIn from '../molecules/NotSignedIn';
 import Pane from '../molecules/Pane';
 import SubscriptionInformation from '../molecules/SubscriptionInformation';
 
-const SubscriptionPane: React.FunctionComponent = () => {
+const SubscriptionPane: React.FC<React.PropsWithChildren<unknown>> = () => {
 	const [response, setResponse] = useState<GetSubscriptionStatusResponse | null>(null);
 	const [error, setError] = useState<Squawk | null>(null);
 	const fetching = response === null && error === null;

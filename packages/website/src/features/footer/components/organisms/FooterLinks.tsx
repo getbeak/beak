@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 
-const FooterLinks: React.FunctionComponent = () => (
+const FooterLinks: React.FC<React.PropsWithChildren<unknown>> = () => (
 	<LinkContainer>
 		<LinkColumn>
 			<LinkHeader>{'Beak'}</LinkHeader>

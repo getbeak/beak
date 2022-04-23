@@ -1,14 +1,15 @@
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import Button from '@beak/app/components/atoms/Button';
+import { useAppSelector } from '@beak/app/store/redux';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { ValidRequestNode } from '@beak/common/types/beak-project';
 import styled from 'styled-components';
 
 import { changeTab } from '../../store/actions';
 
-const NotTheTabYourLookingFor: React.FunctionComponent = () => {
-	const tree = useSelector(s => s.global.project.tree);
+const NotTheTabYourLookingFor: React.FC<React.PropsWithChildren<unknown>> = () => {
+	const tree = useAppSelector(s => s.global.project.tree);
 	const dispatch = useDispatch();
 
 	function spinThatWheel() {

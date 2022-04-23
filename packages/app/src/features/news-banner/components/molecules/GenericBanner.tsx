@@ -9,7 +9,7 @@ interface GenericBannerProps {
 	item: NewsItemGenericBanner;
 }
 
-const GenericBanner: React.FunctionComponent<GenericBannerProps> = ({ item }) => {
+const GenericBanner: React.FC<React.PropsWithChildren<GenericBannerProps>> = ({ item }) => {
 	const { action, body, emoji, title } = item.payload;
 	const theme = useTheme();
 

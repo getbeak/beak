@@ -10,7 +10,7 @@ interface EntryTogglerProps {
 	onChange?: (enabled: boolean) => void;
 }
 
-const EntryToggler: React.FunctionComponent<EntryTogglerProps> = props => {
+const EntryToggler: React.FC<React.PropsWithChildren<EntryTogglerProps>> = props => {
 	const { requestId, id, value, onChange } = props;
 	const dispatch = useDispatch();
 

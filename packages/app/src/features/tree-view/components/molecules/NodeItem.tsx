@@ -20,7 +20,7 @@ interface NodeItemProps {
 	collapsed?: boolean;
 }
 
-const NodeItem: React.FunctionComponent<NodeItemProps> = props => {
+const NodeItem: React.FC<React.PropsWithChildren<NodeItemProps>> = props => {
 	const { node, depth, collapsible, collapsed, children } = props;
 	const dispatch = useDispatch();
 	const absContext = useContext(TreeViewAbstractionsContext);
