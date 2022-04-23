@@ -1,5 +1,5 @@
 /* eslint-disable global-require, no-process-env */
-import { init } from '@sentry/electron/dist/main';
+import { init } from '@sentry/electron';
 import { app, nativeTheme } from 'electron';
 import electronDebug from 'electron-debug';
 import { autoUpdater } from 'electron-updater';
@@ -21,7 +21,6 @@ import {
 
 init({
 	dsn: 'https://5118444e09d74b03a320d0e604aa68ff@o988021.ingest.sentry.io/5945114',
-	appName: 'Main',
 	environment: process.env.ENVIRONMENT,
 	release: process.env.RELEASE_IDENTIFIER,
 });

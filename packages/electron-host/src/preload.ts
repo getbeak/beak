@@ -1,12 +1,11 @@
 /* eslint-disable no-process-env */
 
-import { init } from '@sentry/electron/dist/renderer';
+import { init } from '@sentry/electron';
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
 
 // Sentry
 init({
 	dsn: 'https://5118444e09d74b03a320d0e604aa68ff@o988021.ingest.sentry.io/5945114',
-	appName: 'Renderer',
 	environment: process.env.ENVIRONMENT,
 	release: process.env.RELEASE_IDENTIFIER,
 });
