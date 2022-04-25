@@ -20,7 +20,7 @@ const service = new IpcFsServiceMain(ipcMain);
 service.registerReadJson(async (event, payload: ReadJsonReq) => {
 	const filePath = await ensureWithinProject(getProjectWindowMapping(event), payload.filePath);
 
-	return await fs.readJson(filePath, { ...payload.options });
+	return await backoffJsonRead(filePath, payload.options);
 });
 
 service.registerWriteJson(async (event, payload: WriteJsonReq) => {
@@ -90,6 +90,25 @@ async function ensureParentDirectoryExists(filePath: string) {
 	const parentDirectory = path.join(filePath, '..');
 
 	await fs.ensureDir(parentDirectory);
+}
+
+// This is needed as a json file read may happen while the file is being stream-written
+async function backoffJsonRead(filePath: string, options?: fs.ReadOptions) {
+	let latestError: unknown = null;
+
+	/* eslint-disable no-await-in-loop */
+	for (let i = 0; i < 3; i++) {
+		try {
+			return await fs.readJson(filePath, options);
+		} catch (error) {
+			latestError = error;
+
+			await new Promise(resolve => window.setTimeout(resolve, 50));
+		}
+	}
+	/* eslint-enable no-await-in-loop */
+
+	throw latestError;
 }
 
 export async function ensureWithinProject(projectFilePath: string, inputPath: string) {
