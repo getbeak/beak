@@ -35,11 +35,15 @@ const EntryPoint: React.FC<React.PropsWithChildren<unknown>> = () => (
 	</React.Fragment>
 );
 
-Sentry.init({
-	dsn: 'https://f70de5e39405453594ebd9d7712d113a@o988021.ingest.sentry.io/6320237',
-	integrations: [new Integrations.BrowserTracing()],
+if (import.meta.env.MODE !== 'development') {
+	Sentry.init({
+		dsn: 'https://f70de5e39405453594ebd9d7712d113a@o988021.ingest.sentry.io/6320237',
+		integrations: [new Integrations.BrowserTracing()],
 
-	tracesSampleRate: 1.0,
-});
+		environment: import.meta.env.ENVIRONMENT,
+		release: import.meta.env.RELEASE_IDENTIFIER,
+		tracesSampleRate: 1.0,
+	});
+}
 
 createRoot(document.getElementById('root')!).render(<EntryPoint />);

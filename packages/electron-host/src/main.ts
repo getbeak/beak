@@ -19,11 +19,13 @@ import {
 	windowStack,
 } from './window-management';
 
-init({
-	dsn: 'https://5118444e09d74b03a320d0e604aa68ff@o988021.ingest.sentry.io/5945114',
-	environment: process.env.ENVIRONMENT,
-	release: process.env.RELEASE_IDENTIFIER,
-});
+if (process.env.NODE_ENV !== 'development') {
+	init({
+		dsn: 'https://5118444e09d74b03a320d0e604aa68ff@o988021.ingest.sentry.io/5945114',
+		environment: process.env.ENVIRONMENT,
+		release: process.env.RELEASE_IDENTIFIER,
+	});
+}
 
 app.setAsDefaultProtocolClient('beak-app');
 
