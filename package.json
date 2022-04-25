@@ -20,7 +20,7 @@
     "yarn": "^1.4.2"
   },
   "resolutions": {
-    "@types/react": "^18.0.6",
+    "@types/react": "^18.0.7",
     "@types/react-dom": "^18.0.2"
   },
   "scripts": {
