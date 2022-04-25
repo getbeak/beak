@@ -25,7 +25,7 @@
     "asar": "^3.0.3",
     "date-fns": "^2.28.0",
     "electron-esbuild": "^5.0.2",
-    "electron-releases": "^3.997.0",
+    "electron-releases": "^3.999.0",
     "electron-store": "^8.0.0",
     "electron-updater": "^5.0.1",
     "esbuild": "^0.14.38",
