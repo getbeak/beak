@@ -190,8 +190,8 @@ export function createProjectMainWindow(projectFilePath: string) {
 	const windowOpts: BrowserWindowConstructorOptions = {
 		height: 850,
 		width: 1400,
-		minHeight: 435,
-		minWidth: 760,
+		minHeight: 450,
+		minWidth: 1150,
 		title: 'Loading... - Beak',
 		titleBarStyle: 'hiddenInset',
 		visualEffectState: 'active',
