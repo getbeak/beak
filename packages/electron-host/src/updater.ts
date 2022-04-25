@@ -6,7 +6,7 @@ import logger from './lib/logger';
 import persistentStore from './lib/persistent-store';
 import { createAndSetMenu } from './utils/menu';
 
-export const latestReleaseNotesUrl = 'https://beakapp.notion.site/Releases-eb40abfe505b45fb81bd5e7b08aced20';
+export const latestReleaseNotesUrl = 'https://beakapp.notion.site/Releases-eb40abfe505b45fb81bd5e7b08aced20#604a72b151f049b7b0535adda308834e';
 let pendingUpdate: UpdateInfo | null = null;
 
 autoUpdater.logger = logger;
