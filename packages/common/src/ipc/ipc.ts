@@ -82,8 +82,12 @@ export class IpcServiceRenderer extends IpcServiceBase {
 
 			const listener = this.listeners[message.code];
 
-			if (!listener)
-				throw new Error(`No listener attached for ${message.code}`);
+			if (!listener) {
+				// eslint-disable-next-line no-console
+				console.warn(`renderer: no listener attached for event ${message.code}`, event, message.payload);
+
+				return;
+			}
 
 			listener(event, message.payload);
 		});
@@ -108,8 +112,12 @@ export class IpcServiceMain extends IpcServiceBase {
 
 				const listener = this.listeners[message.code];
 
-				if (!listener)
-					throw new Error(`No listener attached for ${message.code}`);
+				if (!listener) {
+					// eslint-disable-next-line no-console
+					console.warn(`main: no listener attached for event ${message.code}`, event, message.payload);
+
+					throw new Error(`No listener attached for event '${message.code}'`);
+				}
 
 				const response = await listener(event, message.payload);
 

@@ -93,7 +93,7 @@ const sentrySourceMapsPlugin = {
 
 export default {
 	platform: 'node',
-	target: 'node16.13.0', // TODO(afr): electron version target
+	target: 'node16.13.2', // TODO(afr): electron version target
 	bundle: true,
 	format: 'cjs',
 	minify: environment !== 'development',

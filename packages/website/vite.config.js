@@ -56,9 +56,9 @@ module.exports = {
 			external: ['electron'],
 		},
 		define: {
-			'process.env.BUILD_ENVIRONMENT': writeDefinition(process.env.BUILD_ENVIRONMENT),
-			'process.env.RELEASE_IDENTIFIER': writeDefinition(releaseIdentifier),
-			'process.env.ENVIRONMENT': writeDefinition(environment),
+			'import.meta.env.BUILD_ENVIRONMENT': writeDefinition(process.env.BUILD_ENVIRONMENT),
+			'import.meta.env.RELEASE_IDENTIFIER': writeDefinition(releaseIdentifier),
+			'import.meta.env.ENVIRONMENT': writeDefinition(environment),
 		},
 	},
 };

@@ -1,6 +1,7 @@
 import { Store } from 'react-redux';
 import type { IpcRendererEvent } from 'electron';
 
+import 'vite/client';
 import { ApplicationState } from './store';
 
 declare global {

@@ -54,11 +54,15 @@ const EntryPoint: React.FC<React.PropsWithChildren<unknown>> = () => (
 	</Provider>
 );
 
-Sentry.init({
-	dsn: 'https://8b49a1bc9c164490bbd0d7e564c92794@o988021.ingest.sentry.io/5948027',
-	integrations: [new Integrations.BrowserTracing()],
+if (import.meta.env.MODE !== 'development') {
+	Sentry.init({
+		dsn: 'https://8b49a1bc9c164490bbd0d7e564c92794@o988021.ingest.sentry.io/5948027',
+		integrations: [new Integrations.BrowserTracing()],
+		environment: import.meta.env.ENVIRONMENT,
+		release: import.meta.env.RELEASE_IDENTIFIER,
 
-	tracesSampleRate: 1.0,
-});
+		tracesSampleRate: 1.0,
+	});
+}
 
 createRoot(document.getElementById('root')!).render(<EntryPoint />);
