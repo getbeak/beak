@@ -16,9 +16,7 @@ export async function readProjectFile() {
 	if (semver.gt(file.version, latestSupported))
 		throw new Error('Future project detected');
 
-	// Fire and forget writing the file. This is a hack to handle recently opened projects
-	// on the Beak welcome screen.
-	ipcFsService.writeJson('project.json', file);
+	await ipcFsService.writeJson('project.json', file);
 
 	return file;
 }
