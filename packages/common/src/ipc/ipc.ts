@@ -116,7 +116,7 @@ export class IpcServiceMain extends IpcServiceBase {
 					// eslint-disable-next-line no-console
 					console.warn(`main: no listener attached for event ${message.code}`, event, message.payload);
 
-					return;
+					throw new Error(`No listener attached for event '${message.code}'`);
 				}
 
 				const response = await listener(event, message.payload);
