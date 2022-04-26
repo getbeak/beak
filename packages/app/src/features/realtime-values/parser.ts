@@ -1,6 +1,8 @@
+import variableGroupItem from '@beak/app/features/realtime-values/values/variable-group-item';
 import { generateValueIdent } from '@beak/app/lib/beak-variable-group/utils';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { ValueParts } from '@beak/common/types/beak-project';
+import { VariableGroupItemRtv } from '@beak/common/types/realtime-values';
 
 import { getRealtimeValue } from '.';
 import { Context } from './types';
@@ -22,24 +24,23 @@ export async function parseValueParts(
 		if (!rtv)
 			return '[Unknown realtime value]';
 
-		// Realtime values can in some situations references each other or themselves, so we need to be clever and
-		// detect recursive references.What we do is keep a set of each VG item id that we have seen so far, and if we
-		// hit the same once twice, then we simply exit out, preventing a loop.
-		const recursiveKey = rtv.getRecursiveKey?.(ctx, p.payload);
+		// Variable Group Item's are the only type of RTV that can currently reference each other or themselves, so we
+		// need to be clever and detect recursive references. What we do is keep a set of each VG item id that we have
+		// seen so far, and if we hit the same once twice, then we simply exit out, preventing a loop.
+		if (rtv.type === variableGroupItem.type) {
+			const { itemId } = p.payload as VariableGroupItemRtv['payload'];
 
-		if (recursiveKey) {
-			if (recursiveSet.has(recursiveKey))
+			if (recursiveSet.has(itemId))
 				return '';
 
-			recursiveSet.add(recursiveKey);
+			recursiveSet.add(itemId);
+
+			const variableGroupItemParts = await rtv.getValue(ctx, p.payload) as ValueParts;
+
+			return await parseValueParts(ctx, variableGroupItemParts, recursiveSet);
 		}
 
-		const value = await rtv.getValue(ctx, p.payload, recursiveSet);
-
-		if (Array.isArray(value))
-			return await parseValueParts(ctx, value, recursiveSet);
-
-		return value;
+		return await rtv.getValue(ctx, p.payload);
 	}));
 
 	return out.join('');

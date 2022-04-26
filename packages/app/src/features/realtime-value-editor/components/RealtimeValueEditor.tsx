@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Input, { Select } from '@beak/app/components/atoms/Input';
+import { useAppSelector } from '@beak/app/store/redux';
 import { ValueParts } from '@beak/common/types/beak-project';
 import styled from 'styled-components';
 
 import { getRealtimeValue } from '../../realtime-values';
-import useRealtimeValueContext from '../../realtime-values/hooks/use-realtime-value-context';
 import { RealtimeValue } from '../../realtime-values/types';
 import VariableInput from '../../variable-input/components/VariableInput';
 
@@ -17,16 +17,18 @@ interface RtvEditorContext {
 }
 
 interface RealtimeValueEditorProps {
-	requestId?: string;
 	editable: HTMLDivElement;
 	onSave: (partIndex: number, type: string, item: any) => void;
 }
 
 const RealtimeValueEditor: React.FC<React.PropsWithChildren<RealtimeValueEditorProps>> = props => {
-	const { editable, requestId, onSave } = props;
+	const { editable, onSave } = props;
 	const initialInputRef = useRef<HTMLElement | null>(null);
+
 	const [editorContext, setEditorContext] = useState<RtvEditorContext>();
-	const context = useRealtimeValueContext(requestId);
+	const { variableGroups } = useAppSelector(s => s.global.variableGroups);
+	const selectedGroups = useAppSelector(s => s.global.preferences.editor.selectedVariableGroups);
+	const context = { selectedGroups, variableGroups };
 
 	useEffect(() => {
 		if (editorContext)
@@ -111,7 +113,7 @@ const RealtimeValueEditor: React.FC<React.PropsWithChildren<RealtimeValueEditorP
 					const stateBinding = section.stateBinding as string;
 
 					switch (section.type) {
-						case 'value_parts_input':
+						case 'string_input':
 							return (
 								<FormGroup key={`${stateBinding}`}>
 									{section.label && <Label>{section.label}</Label>}
@@ -120,22 +122,6 @@ const RealtimeValueEditor: React.FC<React.PropsWithChildren<RealtimeValueEditorP
 										parts={state[stateBinding] as ValueParts}
 										onChange={e => updateState({
 											[stateBinding]: e,
-										})}
-									/>
-								</FormGroup>
-							);
-
-						case 'string_input':
-							return (
-								<FormGroup key={`${stateBinding}`}>
-									{section.label && <Label>{section.label}</Label>}
-									<Input
-										ref={i => trySetInitialRef(first, i, initialInputRef)}
-										beakSize={'sm'}
-										type={'text'}
-										value={state[stateBinding] as string || ''}
-										onChange={e => updateState({
-											[stateBinding]: e.currentTarget.value,
 										})}
 									/>
 								</FormGroup>

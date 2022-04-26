@@ -63,7 +63,6 @@ const Modifiers: React.FC<React.PropsWithChildren<ModifiersProps>> = props => {
 				{tab === 'headers' && (
 					<BasicTableEditor
 						items={node.info.headers}
-						requestId={node.id}
 						addItem={() => dispatch(actions.requestHeaderAdded({ requestId: node.id }))}
 						removeItem={id => dispatch(actions.requestHeaderRemoved({
 							requestId: node.id,
@@ -79,7 +78,6 @@ const Modifiers: React.FC<React.PropsWithChildren<ModifiersProps>> = props => {
 				{tab === 'url_query' && (
 					<BasicTableEditor
 						items={node.info.query}
-						requestId={node.id}
 						addItem={() => dispatch(actions.requestQueryAdded({ requestId: node.id }))}
 						removeItem={id => dispatch(actions.requestQueryRemoved({
 							requestId: node.id,

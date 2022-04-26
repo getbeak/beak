@@ -24,6 +24,4 @@ export default {
 
 		return toWebSafeBase64(array);
 	},
-
-	attributes: {},
 } as RealtimeValue<NonceRtv>;

@@ -34,6 +34,7 @@ const Input = styled.article`
 
 	.bvs-blob {
 		display: inline-block;
+		user-select: text;
 		margin: 0;
 		padding: 1px 3px;
 		border-radius: 4px;

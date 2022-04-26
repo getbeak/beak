@@ -4,10 +4,10 @@ import BasicTableEditor from '@beak/app/features/basic-table-editor/components/B
 import { convertKeyValueToString, convertStringToKeyValue } from '@beak/app/features/basic-table-editor/parsers';
 import JsonEditor from '@beak/app/features/json-editor/components/JsonEditor';
 import { convertToEntryJson, convertToRealJson } from '@beak/app/features/json-editor/parsers';
-import useRealtimeValueContext from '@beak/app/features/realtime-values/hooks/use-realtime-value-context';
 import { ipcDialogService } from '@beak/app/lib/ipc';
 import actions, { requestBodyTextChanged } from '@beak/app/store/project/actions';
 import { RequestBodyTypeChangedPayload } from '@beak/app/store/project/types';
+import { useAppSelector } from '@beak/app/store/redux';
 import { attemptTextToJson } from '@beak/app/utils/json';
 import { createDefaultOptions } from '@beak/app/utils/monaco';
 import { RequestBodyType, ValidRequestNode, ValueParts } from '@beak/common/types/beak-project';
@@ -25,7 +25,9 @@ export interface BodyTabProps {
 
 const BodyTab: React.FC<React.PropsWithChildren<BodyTabProps>> = props => {
 	const dispatch = useDispatch();
-	const context = useRealtimeValueContext();
+	const { variableGroups } = useAppSelector(s => s.global.variableGroups);
+	const selectedGroups = useAppSelector(s => s.global.preferences.editor.selectedVariableGroups);
+	const context = { selectedGroups, variableGroups };
 	const { node } = props;
 	const { body } = node.info;
 
@@ -135,14 +137,13 @@ const BodyTab: React.FC<React.PropsWithChildren<BodyTabProps>> = props => {
 						theme={'vs-dark'}
 						value={body.payload}
 						options={createDefaultOptions()}
-						onChange={text => dispatch(requestBodyTextChanged({ requestId: node.id, text: text ?? '' }))}
+						onChange={text => dispatch(requestBodyTextChanged({ requestId: node.id, text: text || '' }))}
 					/>
 				)}
 				{body.type === 'json' && <JsonEditor requestId={node.id} value={body.payload} />}
 				{body.type === 'url_encoded_form' && (
 					<BasicTableEditor
 						items={body.payload}
-						requestId={node.id}
 						addItem={() => dispatch(actions.requestBodyUrlEncodedEditorAddItem({ requestId: node.id }))}
 						removeItem={id => dispatch(actions.requestBodyUrlEncodedEditorRemoveItem({
 							requestId: node.id,

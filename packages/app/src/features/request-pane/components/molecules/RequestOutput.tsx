@@ -2,7 +2,6 @@ import React, { useContext, useEffect, useState } from 'react';
 import WindowSessionContext, { WindowSession } from '@beak/app/contexts/window-session-context';
 import { convertKeyValueToString } from '@beak/app/features/basic-table-editor/parsers';
 import { convertToRealJson } from '@beak/app/features/json-editor/parsers';
-import useRealtimeValueContext from '@beak/app/features/realtime-values/hooks/use-realtime-value-context';
 import { parseValueParts } from '@beak/app/features/realtime-values/parser';
 import { Context } from '@beak/app/features/realtime-values/types';
 import useComponentMounted from '@beak/app/hooks/use-component-mounted';
@@ -21,36 +20,37 @@ export interface RequestOutputProps {
 }
 
 const RequestOutput: React.FC<React.PropsWithChildren<RequestOutputProps>> = props => {
-	const node = props.selectedNode;
-	const variableGroups = useAppSelector(s => s.global.variableGroups.variableGroups);
+	const { variableGroups } = useAppSelector(s => s.global.variableGroups);
 	const selectedGroups = useAppSelector(s => s.global.preferences.editor.selectedVariableGroups);
 	const windowSession = useContext(WindowSessionContext);
 	const [output, setOutput] = useState('');
+	const context = { selectedGroups, variableGroups };
 	const mounted = useComponentMounted();
-	const context = useRealtimeValueContext(node.id);
 
 	useEffect(() => {
-		createBasicHttpOutput(node.info, context, windowSession)
+		createBasicHttpOutput(props.selectedNode.info, context, windowSession)
 			.then(response => {
 				if (!mounted)
 					return;
 
 				setOutput(response);
 			});
-	}, [node, selectedGroups, variableGroups]);
+	}, [props.selectedNode, selectedGroups, variableGroups]);
 
 	return (
-		<Editor
-			height={'100%'}
-			width={'100%'}
-			language={'http'}
-			theme={'vs-dark'}
-			value={output}
-			options={{
-				...createDefaultOptions(),
-				readOnly: true,
-			}}
-		/>
+		<React.Fragment>
+			<Editor
+				height={'100%'}
+				width={'100%'}
+				language={'http'}
+				theme={'vs-dark'}
+				value={output}
+				options={{
+					...createDefaultOptions(),
+					readOnly: true,
+				}}
+			/>
+		</React.Fragment>
 	);
 };
 

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import useRealtimeValueContext from '@beak/app/features/realtime-values/hooks/use-realtime-value-context';
 import { changeTab } from '@beak/app/features/tabs/store/actions';
 import { checkShortcut } from '@beak/app/lib/keyboard-shortcuts';
 import { useAppSelector } from '@beak/app/store/redux';
@@ -20,10 +19,12 @@ export interface FinderViewProps {
 const FinderView: React.FC<React.PropsWithChildren<FinderViewProps>> = ({ content, reset }) => {
 	const dispatch = useDispatch();
 	const tree = useAppSelector(s => s.global.project.tree) || {};
+	const { variableGroups } = useAppSelector(s => s.global.variableGroups);
+	const selectedGroups = useAppSelector(s => s.global.preferences.editor.selectedVariableGroups);
 	const flattened = TypedObject.values(tree).filter(t => t.type === 'request') as ValidRequestNode[];
 	const [matches, setMatches] = useState<string[]>([]);
 	const [active, setActive] = useState<number>(-1);
-	const context = useRealtimeValueContext();
+	const context = { selectedGroups, variableGroups };
 
 	const fuse = new Fuse(flattened, {
 		includeScore: true,
@@ -105,10 +106,7 @@ const FinderView: React.FC<React.PropsWithChildren<FinderViewProps>> = ({ conten
 						{match.type === 'request' && (
 							<React.Fragment>
 								{' - '}
-								<FinderRequestItem
-									context={{ ...context, currentRequestId: match.id }}
-									info={reqNode.info}
-								/>
+								<FinderRequestItem context={context} info={reqNode.info} />
 							</React.Fragment>
 						)}
 					</Item>
