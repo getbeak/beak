@@ -38,7 +38,7 @@ const VariableSelector: React.FC<React.PropsWithChildren<VariableSelectorProps>>
 
 	const items: RealtimeValue<any>[] = useMemo(() => {
 		const all = [
-			...getRealtimeValues(),
+			...getRealtimeValues(requestId),
 
 			// Variable groups act a little differently
 			...TypedObject.keys(variableGroups)

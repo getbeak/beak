@@ -37,8 +37,14 @@ export function getRealtimeValue(type: string) {
 	return realtimeImplementations[type];
 }
 
-export function getRealtimeValues() {
+export function getRealtimeValues(currentRequestId?: string) {
 	return TypedObject.values(realtimeImplementations)
 		// Remove the variable group item as it's a special case tbh
-		.filter(v => v.type !== variableGroupItemRtv.type);
+		.filter(v => v.type !== variableGroupItemRtv.type)
+		.filter(v => {
+			if (!v.attributes.requiresRequestId)
+				return true;
+
+			return currentRequestId;
+		});
 }
