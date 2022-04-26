@@ -5,6 +5,7 @@ import styled from 'styled-components';
 
 import { getRealtimeValue } from '../../realtime-values';
 import useRealtimeValueContext from '../../realtime-values/hooks/use-realtime-value-context';
+import { previewValue } from '../../realtime-values/parser';
 import { RealtimeValue } from '../../realtime-values/types';
 import VariableInput from '../../variable-input/components/VariableInput';
 import renderRequestSelectOptions from '../utils/render-request-select-options';
@@ -27,12 +28,20 @@ const RealtimeValueEditor: React.FC<React.PropsWithChildren<RealtimeValueEditorP
 	const { editable, requestId, onSave } = props;
 	const initialInputRef = useRef<HTMLElement | null>(null);
 	const [editorContext, setEditorContext] = useState<RtvEditorContext>();
+	const [preview, setPreview] = useState('');
 	const context = useRealtimeValueContext(requestId);
 
 	useEffect(() => {
 		if (editorContext)
 			initialInputRef.current?.focus();
 	}, [Boolean(editorContext)]);
+
+	useEffect(() => {
+		if (!editorContext)
+			return;
+
+		previewValue(context, editorContext?.realtimeValue, editorContext?.state).then(setPreview);
+	}, [editorContext]);
 
 	useEffect(() => {
 		const onClick = (event: MouseEvent) => {
@@ -198,6 +207,12 @@ const RealtimeValueEditor: React.FC<React.PropsWithChildren<RealtimeValueEditorP
 					}
 				})}
 
+				<PreviewContainer>
+					<PreviewHint>{'Preview'}</PreviewHint>
+
+					{preview}
+				</PreviewContainer>
+
 				<ButtonContainer>
 					<Button onClick={() => {
 						save(context, item, state).then(updatedItem => close(updatedItem));
@@ -256,6 +271,28 @@ const Label = styled.label`
 	margin-bottom: 4px;
 
 	font-size: 13px;
+`;
+
+const PreviewContainer = styled.div`
+	position: relative;
+	background: ${p => p.theme.ui.surfaceFill};
+	margin: 15px -12px;
+	margin-bottom: 10px;
+	padding: 10px 12px;
+	padding-top: 25px;
+
+	max-height: 200px;
+	overflow-y: overlay;
+	overflow-x: hidden;
+	overflow-wrap: break-word;
+`;
+
+const PreviewHint = styled.div`
+	position: absolute;
+	top: 5px;
+	left: 5px;
+	text-transform: uppercase;
+	font-size: 9px;
 `;
 
 const ButtonContainer = styled.div`
