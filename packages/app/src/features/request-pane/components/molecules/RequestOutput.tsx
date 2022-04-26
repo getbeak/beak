@@ -27,7 +27,6 @@ const RequestOutput: React.FC<React.PropsWithChildren<RequestOutputProps>> = pro
 	const windowSession = useContext(WindowSessionContext);
 	const [output, setOutput] = useState('');
 	const mounted = useComponentMounted();
-
 	const context = useRealtimeValueContext(node.id);
 
 	useEffect(() => {
