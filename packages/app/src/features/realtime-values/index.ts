@@ -6,6 +6,7 @@ import digestRtv from './values/digest';
 import nonceRtv from './values/nonce';
 import privateRtv from './values/private';
 import requestFolderRtv from './values/request-folder';
+import requestHeaderRtv from './values/request-header';
 import requestMethodRtv from './values/request-method';
 import requestNameRtv from './values/request-name';
 import secureRtv from './values/secure';
@@ -23,6 +24,7 @@ const realtimeImplementations: Record<string, RealtimeValue<any, any>> = {
 	[nonceRtv.type]: nonceRtv,
 	[privateRtv.type]: privateRtv,
 	[requestFolderRtv.type]: requestFolderRtv,
+	[requestHeaderRtv.type]: requestHeaderRtv,
 	[requestMethodRtv.type]: requestMethodRtv,
 	[requestNameRtv.type]: requestNameRtv,
 	[secureRtv.type]: secureRtv,

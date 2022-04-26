@@ -14,6 +14,9 @@ export interface RealtimeValue<
 
 	initValuePart: (ctx: Context) => Promise<T>;
 
+	/**
+	 * Get's a unique key representing this real-time value
+	 */
 	getRecursiveKey?: (ctx: Context, payload: T['payload']) => string;
 	getValue: (ctx: Context, payload: T['payload'], recursiveSet?: Set<string>) => Promise<string | ValueParts>;
 
