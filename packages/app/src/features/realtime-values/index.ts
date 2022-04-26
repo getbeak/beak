@@ -5,6 +5,9 @@ import base64EncodeRtv from './values/base64-encode';
 import digestRtv from './values/digest';
 import nonceRtv from './values/nonce';
 import privateRtv from './values/private';
+import requestFolderRtv from './values/request-folder';
+import requestMethodRtv from './values/request-method';
+import requestNameRtv from './values/request-name';
 import secureRtv from './values/secure';
 import { characterCarriageReturnRtv, characterNewlineRtv, characterTabRtv } from './values/special-character';
 import timestampRtv from './values/timestamp';
@@ -19,6 +22,9 @@ const realtimeImplementations: Record<string, RealtimeValue<any, any>> = {
 	[digestRtv.type]: digestRtv,
 	[nonceRtv.type]: nonceRtv,
 	[privateRtv.type]: privateRtv,
+	[requestFolderRtv.type]: requestFolderRtv,
+	[requestMethodRtv.type]: requestMethodRtv,
+	[requestNameRtv.type]: requestNameRtv,
 	[secureRtv.type]: secureRtv,
 	[timestampRtv.type]: timestampRtv,
 	[uuidRtv.type]: uuidRtv,
