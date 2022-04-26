@@ -66,6 +66,7 @@ const JsonStringEntry: React.FC<React.PropsWithChildren<JsonStringEntryProps>> =
 			<BodyInputValueCell>
 				<BodyInputWrapper>
 					<VariableInput
+						requestId={props.requestId}
 						parts={props.value.value}
 						onChange={parts => dispatch(actions.requestBodyJsonEditorValueChange({
 							id,

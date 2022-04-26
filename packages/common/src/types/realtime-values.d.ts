@@ -9,6 +9,10 @@ export type RealtimeValuePart =
 	DigestRtv |
 	NonceRtv |
 	PrivateRtv |
+	RequestHeaderRtv |
+	RequestFolderRtv |
+	RequestMethodRtv |
+	RequestNameRtv |
 	SecureRtv |
 	TimestampRtv |
 	UuidRtv |
@@ -50,6 +54,28 @@ export interface PrivateRtv {
 		iv: string;
 		identifier: string;
 	};
+}
+
+export interface RequestHeaderRtv {
+	type: 'request_header';
+	payload: {
+		headerName: ValueParts;
+	};
+}
+
+export interface RequestFolderRtv {
+	type: 'request_folder';
+	payload: void;
+}
+
+export interface RequestMethodRtv {
+	type: 'request_method';
+	payload: void;
+}
+
+export interface RequestNameRtv {
+	type: 'request_name';
+	payload: void;
 }
 
 export interface SecureRtv {

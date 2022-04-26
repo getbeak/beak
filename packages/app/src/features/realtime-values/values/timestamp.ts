@@ -44,6 +44,8 @@ export default {
 		}
 	},
 
+	attributes: {},
+
 	editor: {
 		ui: [{
 			type: 'options_input',

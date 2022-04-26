@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import useRealtimeValueContext from '@beak/app/features/realtime-values/hooks/use-realtime-value-context';
 import { useAppSelector } from '@beak/app/store/redux';
 import { movePosition } from '@beak/app/utils/arrays';
 import { TypedObject } from '@beak/common/helpers/typescript';
@@ -18,6 +19,7 @@ interface Position {
 }
 
 export interface VariableSelectorProps {
+	requestId?: string;
 	editableElement: HTMLDivElement;
 	sel: NormalizedSelection;
 	query: string;
@@ -26,18 +28,17 @@ export interface VariableSelectorProps {
 }
 
 const VariableSelector: React.FC<React.PropsWithChildren<VariableSelectorProps>> = props => {
-	const { editableElement, sel, query, onClose, onDone } = props;
+	const { editableElement, sel, query, requestId, onClose, onDone } = props;
 	const { variableGroups } = useAppSelector(s => s.global.variableGroups);
-	const selectedGroups = useAppSelector(s => s.global.preferences.editor.selectedVariableGroups);
 
 	const activeRef = useRef<HTMLDivElement | null>(null);
 	const [position, setPosition] = useState<Position | null>(null);
 	const [active, setActive] = useState<number>(0);
-	const context = { selectedGroups, variableGroups };
+	const context = useRealtimeValueContext(requestId);
 
 	const items: RealtimeValue<any>[] = useMemo(() => {
 		const all = [
-			...getRealtimeValues(),
+			...getRealtimeValues(requestId),
 
 			// Variable groups act a little differently
 			...TypedObject.keys(variableGroups)

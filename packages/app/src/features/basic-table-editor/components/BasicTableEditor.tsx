@@ -20,6 +20,7 @@ import EntryToggler from './molecules/EntryToggler';
 
 interface BasicTableEditorProps {
 	items: Record<string, ToggleKeyValue>;
+	requestId?: string;
 
 	readOnly?: boolean;
 	disableItemToggle?: boolean;
@@ -30,7 +31,7 @@ interface BasicTableEditorProps {
 }
 
 const BasicTableEditor: React.FC<React.PropsWithChildren<BasicTableEditorProps>> = props => {
-	const { items, readOnly, disableItemToggle, addItem, updateItem, removeItem } = props;
+	const { items, requestId, readOnly, disableItemToggle, addItem, updateItem, removeItem } = props;
 	const editable = !readOnly;
 	const showToggle = !disableItemToggle;
 
@@ -68,6 +69,7 @@ const BasicTableEditor: React.FC<React.PropsWithChildren<BasicTableEditorProps>>
 							<BodyInputValueCell>
 								<BodyInputWrapper>
 									<VariableInput
+										requestId={requestId}
 										parts={item.value}
 										readOnly={readOnly}
 										onChange={parts => updateItem?.('value', k, parts)}
