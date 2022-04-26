@@ -86,7 +86,7 @@ export interface ResponseBodyJsonRtv {
 	type: 'response_body_json';
 	payload: {
 		requestId: string;
-		jPath: ValueParts;
+		dotPath: ValueParts;
 	};
 }
 

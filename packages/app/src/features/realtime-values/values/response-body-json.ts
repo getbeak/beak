@@ -1,7 +1,7 @@
 import binaryStore from '@beak/app/lib/binary-store';
 import { attemptTextToJson } from '@beak/app/utils/json';
 import { ResponseBodyJsonRtv } from '@beak/common/types/realtime-values';
-import jsonPath from 'jsonpath';
+import get from 'lodash.get';
 
 import { parseValueParts } from '../parser';
 import { RealtimeValue } from '../types';
@@ -22,7 +22,7 @@ export default {
 		type,
 		payload: {
 			requestId: '',
-			jPath: ['$'],
+			dotPath: [''],
 		},
 	}),
 
@@ -40,11 +40,11 @@ export default {
 		if (!latestFlight.response.hasBody)
 			return '';
 
-		const jPath = await parseValueParts(ctx, payload.jPath, recursiveSet);
+		const dotPath = await parseValueParts(ctx, payload.dotPath, recursiveSet);
 		const binary = binaryStore.get(latestFlight.binaryStoreKey);
 		const json = new TextDecoder().decode(binary);
 		const parsed = attemptTextToJson(json);
-		const resolved = attemptJsonPathQuery(parsed, jPath);
+		const resolved = dotPath === '' ? parsed : get(parsed, dotPath, '');
 
 		if (!resolved)
 			return '';
@@ -66,29 +66,18 @@ export default {
 			stateBinding: 'requestId',
 		}, {
 			type: 'value_parts_input',
-			label: 'JPath inside body:',
-			stateBinding: 'jPath',
+			label: 'JSON dot path:',
+			stateBinding: 'dotPath',
 		}],
 
 		load: async (_ctx, item) => ({
 			requestId: item.requestId,
-			jPath: item.jPath,
+			dotPath: item.dotPath,
 		}),
 
 		save: async (_ctx, _item, state) => ({
 			requestId: state.requestId,
-			jPath: state.jPath,
+			dotPath: state.dotPath,
 		}),
 	},
 } as RealtimeValue<ResponseBodyJsonRtv, ResponseBodyJsonRtv['payload']>;
-
-function attemptJsonPathQuery(obj: unknown, query: string) {
-	try {
-		return jsonPath.query(obj, query, 1)[0];
-	} catch (error) {
-		// eslint-disable-next-line no-console
-		console.warn('Unable to query JSON object with query', error);
-
-		return '';
-	}
-}
