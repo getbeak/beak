@@ -53,7 +53,7 @@ export default {
 	attributes: {},
 
 	editor: {
-		ui: [{
+		createUi: () => [{
 			type: 'value_parts_input',
 			label: 'Enter the value you want to be private:',
 			stateBinding: 'value',

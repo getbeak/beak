@@ -7,6 +7,7 @@ import { getRealtimeValue } from '../../realtime-values';
 import useRealtimeValueContext from '../../realtime-values/hooks/use-realtime-value-context';
 import { RealtimeValue } from '../../realtime-values/types';
 import VariableInput from '../../variable-input/components/VariableInput';
+import renderRequestSelectOptions from '../utils/render-request-select-options';
 
 interface RtvEditorContext {
 	realtimeValue: RealtimeValue<any, any>;
@@ -97,7 +98,8 @@ const RealtimeValueEditor: React.FC<React.PropsWithChildren<RealtimeValueEditorP
 
 	const { item, state, parent, realtimeValue } = editorContext;
 	const boundingRect = parent.getBoundingClientRect();
-	const { save, ui } = realtimeValue.editor!;
+	const { save, createUi } = realtimeValue.editor!;
+	const ui = createUi(context);
 
 	return (
 		<Container onClick={() => close(null)}>
@@ -170,6 +172,23 @@ const RealtimeValueEditor: React.FC<React.PropsWithChildren<RealtimeValueEditorP
 										})}
 									>
 										{section.options.map(o => <option key={o.key} value={o.key}>{o.label}</option>)}
+									</Select>
+								</FormGroup>
+							);
+
+						case 'request_select_input':
+							return (
+								<FormGroup key={`${stateBinding}`}>
+									{section.label && <Label>{section.label}</Label>}
+									<Select
+										ref={i => trySetInitialRef(first, i, initialInputRef)}
+										beakSize={'sm'}
+										value={state[stateBinding] as string ?? ''}
+										onChange={e => updateState({
+											[stateBinding]: e.currentTarget.value,
+										})}
+									>
+										{renderRequestSelectOptions(context)}
 									</Select>
 								</FormGroup>
 							);
