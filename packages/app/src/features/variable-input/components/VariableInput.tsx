@@ -272,6 +272,8 @@ const VariableInput = React.forwardRef<HTMLElement, VariableInputProps>((props, 
 				return;
 			}
 
+			// TODO(afr): Detect if payload is corrected, if it is ignore and mark the
+			// entire realtime value as an anomaly
 			const purePayload = elem.dataset.payload;
 
 			reconciledParts.push({
