@@ -30,23 +30,18 @@ const PrettyRenderSelection: React.FC<React.PropsWithChildren<PrettyRenderSelect
 			>
 				{/* These values use the mime-type extension */}
 				<option value={'auto_detect'} hidden>{`Auto detect (${renderAutoDetectedLanguage(detectedLanguage)})`}</option>
-				<optgroup label={'Basic'}>
-					<option value={'txt'}>{'Text'}</option>
-				</optgroup>
-				<optgroup label={'Rich'}>
-					<option value={'json'}>{'JSON'}</option>
-					<option disabled value={'json+viewer'}>{'JSON viewer'}</option>
-					<option value={'xml'}>{'XML'}</option>
-					<option value={'html'}>{'HTML'}</option>
-					<option value={'css'}>{'CSS'}</option>
-				</optgroup>
-				<optgroup label={'Media'}>
-					<option disabled>{'Image'}</option>
-					<option disabled>{'Video'}</option>
-				</optgroup>
-				<optgroup label={'Other'}>
-					<option disabled>{'Web'}</option>
-				</optgroup>
+				<option value={'txt'}>{'Text'}</option>
+				<option disabled>{'_________'}</option>
+				<option value={'json'}>{'JSON'}</option>
+				<option disabled value={'json+viewer'}>{'JSON viewer'}</option>
+				<option value={'xml'}>{'XML'}</option>
+				<option value={'html'}>{'HTML'}</option>
+				<option value={'css'}>{'CSS'}</option>
+				<option disabled>{'_________'}</option>
+				<option disabled>{'Image'}</option>
+				<option disabled>{'Video'}</option>
+				<option disabled>{'_________'}</option>
+				<option disabled>{'Web'}</option>
 			</Select>
 		</Container>
 	);

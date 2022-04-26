@@ -12,16 +12,15 @@ import {
 	RequestBodyText,
 	RequestOverview,
 	ToggleKeyValue,
-	Tree,
 	ValidRequestNode,
-	VariableGroups,
 } from '@beak/common/types/beak-project';
 import ksuid from '@cuvva/ksuid';
 import { call, put, select } from 'redux-saga/effects';
 
 import { ApplicationState } from '../..';
+import { State as VGState } from '../../variable-groups/types';
 import * as actions from '../actions';
-import { FlightHistory, State } from '../types';
+import { State } from '../types';
 
 export default function* requestFlightWorker() {
 	const binaryStoreKey = ksuid.generate('binstore').toString();
@@ -30,28 +29,13 @@ export default function* requestFlightWorker() {
 
 	const flight: State = yield select((s: ApplicationState) => s.global.flight);
 	const node: ValidRequestNode = yield select((s: ApplicationState) => s.global.project.tree![requestId]);
-
-	const projectTree: Tree = yield select(
-		(s: ApplicationState) => s.global.project.tree,
-	);
-	const flightHistory: Record<string, FlightHistory> = yield select(
-		(s: ApplicationState) => s.global.flight.flightHistory,
-	);
-	const variableGroups: VariableGroups = yield select(
-		(s: ApplicationState) => s.global.variableGroups.variableGroups,
-	);
+	const vgState: VGState = yield select((s: ApplicationState) => s.global.variableGroups);
 	const selectedGroups: Record<string, string> = yield select(
 		(s: ApplicationState) => s.global.preferences.editor.selectedVariableGroups,
 	);
 
-	const context: Context = {
-		selectedGroups,
-		variableGroups,
-		flightHistory,
-		projectTree,
-		currentRequestId: requestId,
-	};
-
+	const { variableGroups } = vgState;
+	const context = { selectedGroups, variableGroups };
 	const preparedRequest: RequestOverview = yield call(prepareRequest, node.info, context);
 
 	if (!node)

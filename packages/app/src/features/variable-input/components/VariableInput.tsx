@@ -10,7 +10,6 @@ import { RealtimeValuePart } from '@beak/common/types/realtime-values';
 import styled from 'styled-components';
 
 import { getRealtimeValue } from '../../realtime-values';
-import useRealtimeValueContext from '../../realtime-values/hooks/use-realtime-value-context';
 import { parseValueParts } from '../../realtime-values/parser';
 import { NormalizedSelection, normalizeSelection, trySetSelection } from '../utils/browser-selection';
 import { detectRelevantCopiedValueParts } from '../utils/copying';
@@ -50,7 +49,6 @@ const VariableInput = React.forwardRef<HTMLElement, VariableInputProps>((props, 
 	const { variableGroups } = useAppSelector(s => s.global.variableGroups);
 	const selectedGroups = useAppSelector(s => s.global.preferences.editor.selectedVariableGroups);
 
-	const context = useRealtimeValueContext(props.requestId);
 	const editableRef = useRef<HTMLDivElement | null>(null);
 	const placeholderRef = useRef<HTMLDivElement | null>(null);
 	const unmanagedStateRef = useRef<UnmanagedState>({
@@ -178,6 +176,7 @@ const VariableInput = React.forwardRef<HTMLElement, VariableInputProps>((props, 
 		if (relevantParts === null)
 			return;
 
+		const context = { selectedGroups, variableGroups };
 		const parsed = await parseValueParts(context, relevantParts);
 		const clipboard = await navigator.clipboard.read();
 		const html = await clipboard[0].getType('text/html');
@@ -478,7 +477,6 @@ const VariableInput = React.forwardRef<HTMLElement, VariableInputProps>((props, 
 			)}
 			{showSelector && editableRef && (
 				<VariableSelector
-					requestId={props.requestId}
 					editableElement={editableRef.current!}
 					sel={unmanagedStateRef.current.lastSelectionPosition!}
 					query={query}
@@ -488,7 +486,6 @@ const VariableInput = React.forwardRef<HTMLElement, VariableInputProps>((props, 
 			)}
 			{editableRef.current && (
 				<RealtimeValueEditor
-					requestId={props.requestId}
 					editable={editableRef.current}
 					onSave={variableEditSaved}
 				/>

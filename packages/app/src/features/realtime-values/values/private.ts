@@ -33,7 +33,7 @@ export default {
 		};
 	},
 
-	getValue: async (ctx, item, recursiveSet) => {
+	getValue: async (ctx, item) => {
 		// Get from private store
 		const cipherTextPath = createPath(item.identifier);
 		const exists = await ipcFsService.pathExists(cipherTextPath);
@@ -47,14 +47,12 @@ export default {
 			payload: cipherText,
 		});
 
-		return await parseValueParts(ctx, decrypted, recursiveSet);
+		return await parseValueParts(ctx, decrypted);
 	},
-
-	attributes: {},
 
 	editor: {
 		ui: [{
-			type: 'value_parts_input',
+			type: 'string_input',
 			label: 'Enter the value you want to be private:',
 			stateBinding: 'value',
 		}],
