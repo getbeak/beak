@@ -18,6 +18,7 @@ export default {
 		throw new Error('Not supported, this should not happen.');
 	},
 
+	getRecursiveKey: (_ctx, item) => `${type}:${item.itemId}`,
 	getValue: async (ctx, item) => getValueParts(ctx, item.itemId) || [],
 
 	attributes: {},
@@ -36,6 +37,9 @@ export function createFauxValue(item: VariableGroupItemRtv['payload'], variableG
 			payload: item,
 		}),
 
+		getRecursiveKey: () => {
+			throw new Error('Not supported, this should not happen.');
+		},
 		getValue: () => {
 			throw new Error('Not supported, this should not happen.');
 		},

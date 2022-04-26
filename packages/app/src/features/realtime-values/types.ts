@@ -14,7 +14,8 @@ export interface RealtimeValue<
 
 	initValuePart: (ctx: Context) => Promise<T>;
 
-	getValue: (ctx: Context, payload: T['payload']) => Promise<string | ValueParts>;
+	getRecursiveKey?: (ctx: Context, payload: T['payload']) => string;
+	getValue: (ctx: Context, payload: T['payload'], recursiveSet?: Set<string>) => Promise<string | ValueParts>;
 
 	attributes: Attributes;
 
@@ -26,7 +27,7 @@ export interface RealtimeValue<
 	};
 }
 
-export type UISection<T> = TextInput<T> | NumberInput<T> | CheckboxInput<T> | OptionsInput<T>;
+export type UISection<T> = ValuePartInput<T> | TextInput<T> | NumberInput<T> | CheckboxInput<T> | OptionsInput<T>;
 
 export interface Attributes {
 	requiresRequestId?: boolean;
@@ -38,6 +39,12 @@ export interface Context {
 	projectTree: Tree;
 	flightHistory: Record<string, FlightHistory>;
 	currentRequestId?: string;
+}
+
+interface ValuePartInput<T> {
+	type: 'value_parts_input';
+	stateBinding: keyof T;
+	label?: string;
 }
 
 interface TextInput<T> {

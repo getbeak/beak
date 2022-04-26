@@ -111,7 +111,7 @@ const RealtimeValueEditor: React.FC<React.PropsWithChildren<RealtimeValueEditorP
 					const stateBinding = section.stateBinding as string;
 
 					switch (section.type) {
-						case 'string_input':
+						case 'value_parts_input':
 							return (
 								<FormGroup key={`${stateBinding}`}>
 									{section.label && <Label>{section.label}</Label>}
@@ -120,6 +120,22 @@ const RealtimeValueEditor: React.FC<React.PropsWithChildren<RealtimeValueEditorP
 										parts={state[stateBinding] as ValueParts}
 										onChange={e => updateState({
 											[stateBinding]: e,
+										})}
+									/>
+								</FormGroup>
+							);
+
+						case 'string_input':
+							return (
+								<FormGroup key={`${stateBinding}`}>
+									{section.label && <Label>{section.label}</Label>}
+									<Input
+										ref={i => trySetInitialRef(first, i, initialInputRef)}
+										beakSize={'sm'}
+										type={'text'}
+										value={state[stateBinding] as string || ''}
+										onChange={e => updateState({
+											[stateBinding]: e.currentTarget.value,
 										})}
 									/>
 								</FormGroup>

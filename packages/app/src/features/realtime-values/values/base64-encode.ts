@@ -28,11 +28,11 @@ export default {
 		},
 	}),
 
-	getValue: async (ctx, payload) => {
+	getValue: async (ctx, payload, recursiveSet) => {
 		const isArray = Array.isArray(payload.input);
 		const input = isArray ? payload.input : [payload.input as unknown as string];
 
-		const parsed = await parseValueParts(ctx, input);
+		const parsed = await parseValueParts(ctx, input, recursiveSet);
 		let encoded = btoa(parsed);
 
 		if (payload.characterSet === 'websafe_base64')
@@ -48,7 +48,7 @@ export default {
 
 	editor: {
 		ui: [{
-			type: 'string_input',
+			type: 'value_parts_input',
 			label: 'Enter the data to encode:',
 			stateBinding: 'input',
 		}, {
