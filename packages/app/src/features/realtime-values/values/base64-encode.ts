@@ -64,7 +64,7 @@ export default {
 			}],
 		}, {
 			type: 'checkbox_input',
-			label: 'xxx',
+			label: 'Remove padding:',
 			stateBinding: 'removePadding',
 		}],
 

@@ -158,6 +158,23 @@ const RealtimeValueEditor: React.FC<React.PropsWithChildren<RealtimeValueEditorP
 								</FormGroup>
 							);
 
+						case 'checkbox_input':
+							return (
+								<FormGroup key={`${stateBinding}`}>
+									{section.label && <Label>{section.label}</Label>}
+									<Input
+										ref={i => trySetInitialRef(first, i, initialInputRef)}
+										beakSize={'sm'}
+										$noStretch
+										type={'checkbox'}
+										checked={state[stateBinding] as boolean}
+										onChange={e => updateState({
+											[stateBinding]: e.currentTarget.checked,
+										})}
+									/>
+								</FormGroup>
+							);
+
 						case 'number_input':
 							return (
 								<FormGroup key={`${stateBinding}`}>

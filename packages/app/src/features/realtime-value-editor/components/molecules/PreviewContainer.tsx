@@ -15,12 +15,11 @@ const PreviewContainer: React.FC<PreviewContainerProps> = ({ text }) => (
 const Container = styled.div`
 	position: relative;
 	background: ${p => p.theme.ui.surfaceFill};
-	margin: 15px -12px;
-	margin-bottom: 10px;
+	margin: 10px -12px;
 	padding: 10px 12px;
 	padding-top: 25px;
 
-	max-height: 200px;
+	max-height: 100px;
 	overflow-y: overlay;
 	overflow-x: hidden;
 	overflow-wrap: break-word;
