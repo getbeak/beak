@@ -1,5 +1,5 @@
 import { FlightHistory } from '@beak/app/store/flight/types';
-import { Tree, ValueParts, VariableGroups } from '@beak/common/types/beak-project';
+import { Tree, VariableGroups } from '@beak/common/types/beak-project';
 import { RealtimeValuePart } from '@beak/common/types/realtime-values';
 
 export interface RealtimeValue<
@@ -18,7 +18,7 @@ export interface RealtimeValue<
 	 * Get's a unique key representing this real-time value
 	 */
 	getRecursiveKey?: (ctx: Context, payload: T['payload']) => string;
-	getValue: (ctx: Context, payload: T['payload'], recursiveSet?: Set<string>) => Promise<string | ValueParts>;
+	getValue: (ctx: Context, payload: T['payload'], recursiveSet?: Set<string>) => Promise<string>;
 
 	attributes: Attributes;
 

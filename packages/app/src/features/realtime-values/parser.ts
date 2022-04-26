@@ -1,20 +1,9 @@
 import { generateValueIdent } from '@beak/app/lib/beak-variable-group/utils';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { ValueParts } from '@beak/common/types/beak-project';
-import { RealtimeValuePart } from '@beak/common/types/realtime-values';
 
 import { getRealtimeValue } from '.';
-import { Context, RealtimeValue } from './types';
-
-export async function previewValue<T extends RealtimeValuePart>(
-	ctx: Context,
-	rtv: RealtimeValue<T>,
-	state: T['payload'],
-) {
-	const payload = await rtv.editor?.save(ctx, state, state);
-
-	return await rtv.getValue(ctx, payload);
-}
+import { Context } from './types';
 
 export async function parseValueParts(
 	ctx: Context,

@@ -1,14 +1,17 @@
 import React, { useEffect, useRef, useState } from 'react';
+import Button from '@beak/app/components/atoms/Button';
 import Input, { Select } from '@beak/app/components/atoms/Input';
 import { ValueParts } from '@beak/common/types/beak-project';
 import styled from 'styled-components';
 
 import { getRealtimeValue } from '../../realtime-values';
 import useRealtimeValueContext from '../../realtime-values/hooks/use-realtime-value-context';
-import { previewValue } from '../../realtime-values/parser';
+import { previewValue } from '../../realtime-values/preview';
 import { RealtimeValue } from '../../realtime-values/types';
 import VariableInput from '../../variable-input/components/VariableInput';
 import renderRequestSelectOptions from '../utils/render-request-select-options';
+import { FormGroup, Label } from './atoms/Form';
+import PreviewContainer from './molecules/PreviewContainer';
 
 interface RtvEditorContext {
 	realtimeValue: RealtimeValue<any, any>;
@@ -32,15 +35,18 @@ const RealtimeValueEditor: React.FC<React.PropsWithChildren<RealtimeValueEditorP
 	const context = useRealtimeValueContext(requestId);
 
 	useEffect(() => {
-		if (editorContext)
-			initialInputRef.current?.focus();
+		if (!editorContext || !initialInputRef.current)
+			return;
+
+		initialInputRef.current.focus();
 	}, [Boolean(editorContext)]);
 
 	useEffect(() => {
 		if (!editorContext)
 			return;
 
-		previewValue(context, editorContext?.realtimeValue, editorContext?.state).then(setPreview);
+		previewValue(context, editorContext.realtimeValue, editorContext.item, editorContext.state)
+			.then(setPreview);
 	}, [editorContext]);
 
 	useEffect(() => {
@@ -207,16 +213,14 @@ const RealtimeValueEditor: React.FC<React.PropsWithChildren<RealtimeValueEditorP
 					}
 				})}
 
-				<PreviewContainer>
-					<PreviewHint>{'Preview'}</PreviewHint>
-
-					{preview}
-				</PreviewContainer>
+				<PreviewContainer text={preview} />
 
 				<ButtonContainer>
-					<Button onClick={() => {
-						save(context, item, state).then(updatedItem => close(updatedItem));
-					}}>
+					<Button
+						size={'sm'}
+						colour={'primary'}
+						onClick={() => save(context, item, state).then(updatedItem => close(updatedItem))}
+					>
 						{'Save'}
 					</Button>
 				</ButtonContainer>
@@ -255,61 +259,9 @@ const Wrapper = styled.div<{ $top: number; $left: number }>`
 	z-index: 10000;
 `;
 
-const FormGroup = styled.div`
-	margin-bottom: 8px;
-
-	> div > article {
-		font-size: 13px;
-		padding: 3px 5px;
-		padding-bottom: 4px;
-		border-radius: 3px;
-	}
-`;
-
-const Label = styled.label`
-	display: block;
-	margin-bottom: 4px;
-
-	font-size: 13px;
-`;
-
-const PreviewContainer = styled.div`
-	position: relative;
-	background: ${p => p.theme.ui.surfaceFill};
-	margin: 15px -12px;
-	margin-bottom: 10px;
-	padding: 10px 12px;
-	padding-top: 25px;
-
-	max-height: 200px;
-	overflow-y: overlay;
-	overflow-x: hidden;
-	overflow-wrap: break-word;
-`;
-
-const PreviewHint = styled.div`
-	position: absolute;
-	top: 5px;
-	left: 5px;
-	text-transform: uppercase;
-	font-size: 9px;
-`;
-
 const ButtonContainer = styled.div`
 	display: flex;
 	flex-direction: row-reverse;
-`;
-
-const Button = styled.button`
-	background: none;
-	border: none;
-	font-weight: 600;
-	color: ${p => p.theme.ui.textOnAction};
-	cursor: pointer;
-
-	&:hover {
-		color: ${p => p.theme.ui.textOnFill};
-	}
 `;
 
 export default RealtimeValueEditor;
