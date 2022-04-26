@@ -9,6 +9,7 @@ import requestFolderRtv from './values/request-folder';
 import requestHeaderRtv from './values/request-header';
 import requestMethodRtv from './values/request-method';
 import requestNameRtv from './values/request-name';
+import responseHeaderRtv from './values/response-header';
 import responseStatusCodeRtv from './values/response-status-code';
 import secureRtv from './values/secure';
 import { characterCarriageReturnRtv, characterNewlineRtv, characterTabRtv } from './values/special-character';
@@ -28,6 +29,7 @@ const realtimeImplementations: Record<string, RealtimeValue<any, any>> = {
 	[requestHeaderRtv.type]: requestHeaderRtv,
 	[requestMethodRtv.type]: requestMethodRtv,
 	[requestNameRtv.type]: requestNameRtv,
+	[responseHeaderRtv.type]: responseHeaderRtv,
 	[responseStatusCodeRtv.type]: responseStatusCodeRtv,
 	[secureRtv.type]: secureRtv,
 	[timestampRtv.type]: timestampRtv,
