@@ -135,13 +135,14 @@ const BodyTab: React.FC<React.PropsWithChildren<BodyTabProps>> = props => {
 						theme={'vs-dark'}
 						value={body.payload}
 						options={createDefaultOptions()}
-						onChange={text => dispatch(requestBodyTextChanged({ requestId: node.id, text: text || '' }))}
+						onChange={text => dispatch(requestBodyTextChanged({ requestId: node.id, text: text ?? '' }))}
 					/>
 				)}
 				{body.type === 'json' && <JsonEditor requestId={node.id} value={body.payload} />}
 				{body.type === 'url_encoded_form' && (
 					<BasicTableEditor
 						items={body.payload}
+						requestId={node.id}
 						addItem={() => dispatch(actions.requestBodyUrlEncodedEditorAddItem({ requestId: node.id }))}
 						removeItem={id => dispatch(actions.requestBodyUrlEncodedEditorRemoveItem({
 							requestId: node.id,

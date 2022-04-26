@@ -84,15 +84,18 @@ const Header: React.FC<React.PropsWithChildren<HeaderProps>> = props => {
 						}));
 					}}
 				>
-					<option value={'get'}>{'GET'}</option>
-					<option value={'post'}>{'POST'}</option>
-					<option value={'patch'}>{'PATCH'}</option>
-					<option value={'put'}>{'PUT'}</option>
-					<option value={'delete'}>{'DELETE'}</option>
-					<option value={'head'}>{'HEAD'}</option>
-					<option value={'options'}>{'OPTIONS'}</option>
-					<option disabled>{'____________'}</option>
-					<option value={'custom'} disabled>{'Custom'}</option>
+					<optgroup label={'Standard'}>
+						<option value={'get'}>{'GET'}</option>
+						<option value={'post'}>{'POST'}</option>
+						<option value={'patch'}>{'PATCH'}</option>
+						<option value={'put'}>{'PUT'}</option>
+						<option value={'delete'}>{'DELETE'}</option>
+						<option value={'head'}>{'HEAD'}</option>
+						<option value={'options'}>{'OPTIONS'}</option>
+					</optgroup>
+					<optgroup label={'Custom'}>
+						<option value={'custom'} disabled>{'Create...'}</option>
+					</optgroup>
 				</VerbPickerHidden>
 			</VerbContainer>
 
@@ -156,6 +159,7 @@ const VerbPickerRenderer = styled.select`
 
 const VerbPickerHidden = styled(VerbPickerRenderer)`
 	position: absolute;
+	text-transform: none;
 	left: 0;
 	opacity: 0.0000001; /* lol */
 `;

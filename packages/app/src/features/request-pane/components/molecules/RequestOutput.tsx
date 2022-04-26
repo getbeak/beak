@@ -40,19 +40,17 @@ const RequestOutput: React.FC<React.PropsWithChildren<RequestOutputProps>> = pro
 	}, [node, selectedGroups, variableGroups]);
 
 	return (
-		<React.Fragment>
-			<Editor
-				height={'100%'}
-				width={'100%'}
-				language={'http'}
-				theme={'vs-dark'}
-				value={output}
-				options={{
-					...createDefaultOptions(),
-					readOnly: true,
-				}}
-			/>
-		</React.Fragment>
+		<Editor
+			height={'100%'}
+			width={'100%'}
+			language={'http'}
+			theme={'vs-dark'}
+			value={output}
+			options={{
+				...createDefaultOptions(),
+				readOnly: true,
+			}}
+		/>
 	);
 };
 
