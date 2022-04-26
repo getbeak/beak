@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Input, { Select } from '@beak/app/components/atoms/Input';
-import { useAppSelector } from '@beak/app/store/redux';
 import { ValueParts } from '@beak/common/types/beak-project';
 import styled from 'styled-components';
 
 import { getRealtimeValue } from '../../realtime-values';
+import useRealtimeValueContext from '../../realtime-values/hooks/use-realtime-value-context';
 import { RealtimeValue } from '../../realtime-values/types';
 import VariableInput from '../../variable-input/components/VariableInput';
 
@@ -17,18 +17,16 @@ interface RtvEditorContext {
 }
 
 interface RealtimeValueEditorProps {
+	requestId?: string;
 	editable: HTMLDivElement;
 	onSave: (partIndex: number, type: string, item: any) => void;
 }
 
 const RealtimeValueEditor: React.FC<React.PropsWithChildren<RealtimeValueEditorProps>> = props => {
-	const { editable, onSave } = props;
+	const { editable, requestId, onSave } = props;
 	const initialInputRef = useRef<HTMLElement | null>(null);
-
 	const [editorContext, setEditorContext] = useState<RtvEditorContext>();
-	const { variableGroups } = useAppSelector(s => s.global.variableGroups);
-	const selectedGroups = useAppSelector(s => s.global.preferences.editor.selectedVariableGroups);
-	const context = { selectedGroups, variableGroups };
+	const context = useRealtimeValueContext(requestId);
 
 	useEffect(() => {
 		if (editorContext)

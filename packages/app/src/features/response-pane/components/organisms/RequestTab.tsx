@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import WindowSessionContext from '@beak/app/contexts/window-session-context';
 import BasicTableEditor from '@beak/app/features/basic-table-editor/components/BasicTableEditor';
+import useRealtimeValueContext from '@beak/app/features/realtime-values/hooks/use-realtime-value-context';
 import { Flight } from '@beak/app/store/flight/types';
 import { requestPreferenceSetResSubTab } from '@beak/app/store/preferences/actions';
 import { useAppSelector } from '@beak/app/store/redux';
@@ -34,7 +35,7 @@ const RequestTab: React.FC<React.PropsWithChildren<RequestTabProps>> = props => 
 	) as Tab | undefined;
 
 	const windowSession = useContext(WindowSessionContext);
-	const context = { selectedGroups, variableGroups };
+	const context = useRealtimeValueContext(requestId);
 
 	// Ensure we have a valid tab
 	useEffect(() => {

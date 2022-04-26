@@ -1,4 +1,5 @@
-import { ValueParts, VariableGroups } from '@beak/common/types/beak-project';
+import { FlightHistory } from '@beak/app/store/flight/types';
+import { Tree, ValueParts, VariableGroups } from '@beak/common/types/beak-project';
 import { RealtimeValuePart } from '@beak/common/types/realtime-values';
 
 export interface RealtimeValue<
@@ -28,6 +29,9 @@ export type UISection<T> = TextInput<T> | NumberInput<T> | CheckboxInput<T> | Op
 export interface Context {
 	selectedGroups: Record<string, string>;
 	variableGroups: VariableGroups;
+	projectTree: Tree;
+	flightHistory: Record<string, FlightHistory>;
+	currentRequestId?: string;
 }
 
 interface TextInput<T> {

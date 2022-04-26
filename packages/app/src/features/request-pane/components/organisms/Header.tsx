@@ -1,5 +1,6 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
+import useRealtimeValueContext from '@beak/app/features/realtime-values/hooks/use-realtime-value-context';
 import { parseValueParts } from '@beak/app/features/realtime-values/parser';
 import VariableInput from '@beak/app/features/variable-input/components/VariableInput';
 import { requestPreferenceSetReqMainTab } from '@beak/app/store/preferences/actions';
@@ -20,11 +21,10 @@ export interface HeaderProps {
 const Header: React.FC<React.PropsWithChildren<HeaderProps>> = props => {
 	const dispatch = useDispatch();
 	const theme = useTheme();
-	const { variableGroups } = useAppSelector(s => s.global.variableGroups);
-	const selectedGroups = useAppSelector(s => s.global.preferences.editor.selectedVariableGroups);
 	const currentFlight = useAppSelector(s => s.global.flight.currentFlight);
 	const flighting = currentFlight && currentFlight.flighting && currentFlight.requestId === props.node.id;
 	const { node } = props;
+	const context = useRealtimeValueContext(node.id);
 	const verb = node.info.verb;
 
 	function dispatchFlightRequest() {
@@ -36,7 +36,6 @@ const Header: React.FC<React.PropsWithChildren<HeaderProps>> = props => {
 	}
 
 	async function handleUrlChange(parts: ValueParts) {
-		const context = { selectedGroups, variableGroups };
 		const value = await parseValueParts(context, parts);
 		let sanitizedParts = [...parts];
 		const parsed = new URL(value, true);
