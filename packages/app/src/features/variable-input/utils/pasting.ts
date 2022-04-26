@@ -14,7 +14,7 @@ const allowedDivAttributes = new Set([
 const sanitizerOptions: IOptions = {
 	allowedTags: ['div', 'span'],
 	allowedAttributes: {
-		div: Array.from(requiredDivAttributes),
+		div: Array.from(allowedDivAttributes),
 		span: [],
 	},
 	exclusiveFilter: frame => {
