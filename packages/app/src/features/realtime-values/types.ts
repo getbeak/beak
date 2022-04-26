@@ -1,5 +1,5 @@
 import { FlightHistory } from '@beak/app/store/flight/types';
-import { Tree, ValueParts, VariableGroups } from '@beak/common/types/beak-project';
+import { Tree, VariableGroups } from '@beak/common/types/beak-project';
 import { RealtimeValuePart } from '@beak/common/types/realtime-values';
 
 export interface RealtimeValue<
@@ -18,19 +18,26 @@ export interface RealtimeValue<
 	 * Get's a unique key representing this real-time value
 	 */
 	getRecursiveKey?: (ctx: Context, payload: T['payload']) => string;
-	getValue: (ctx: Context, payload: T['payload'], recursiveSet?: Set<string>) => Promise<string | ValueParts>;
+	getValue: (ctx: Context, payload: T['payload'], recursiveSet?: Set<string>) => Promise<string>;
 
 	attributes: Attributes;
 
 	editor?: {
-		ui: UISection<TS>[];
+		createUi: (ctx: Context) => UISection<TS>[];
 
 		load: (ctx: Context, payload: T['payload']) => Promise<TS>;
 		save: (ctx: Context, payload: T['payload'], state: TS) => Promise<T['payload']>;
 	};
 }
 
-export type UISection<T> = ValuePartInput<T> | TextInput<T> | NumberInput<T> | CheckboxInput<T> | OptionsInput<T>;
+/* eslint-disable @typescript-eslint/indent */
+export type UISection<T> = ValuePartInput<T> |
+	TextInput<T> |
+	NumberInput<T> |
+	CheckboxInput<T> |
+	OptionsInput<T> |
+	RequestSelectInput<T>;
+/* eslint-enable @typescript-eslint/indent */
 
 export interface Attributes {
 	requiresRequestId?: boolean;
@@ -73,4 +80,10 @@ interface OptionsInput<T> {
 	stateBinding: keyof T;
 	label?: string;
 	options: { key: string; label: string }[];
+}
+
+interface RequestSelectInput<T> {
+	type: 'request_select_input';
+	stateBinding: keyof T;
+	label?: string;
 }

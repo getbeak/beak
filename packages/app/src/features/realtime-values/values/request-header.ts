@@ -46,7 +46,7 @@ export default {
 	},
 
 	editor: {
-		ui: [{
+		createUi: () => [{
 			type: 'value_parts_input',
 			label: 'Header name:',
 			stateBinding: 'headerName',

@@ -47,7 +47,7 @@ export default {
 	attributes: {},
 
 	editor: {
-		ui: [{
+		createUi: () => [{
 			type: 'options_input',
 			label: 'Pick a date format:',
 			stateBinding: 'type',

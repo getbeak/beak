@@ -52,7 +52,7 @@ export default {
 	attributes: {},
 
 	editor: {
-		ui: [{
+		createUi: () => [{
 			type: 'value_parts_input',
 			label: 'Enter the data for the digest:',
 			stateBinding: 'input',

@@ -2,7 +2,7 @@ import { TypedObject } from '@beak/common/helpers/typescript';
 import { VariableGroups } from '@beak/common/types/beak-project';
 import { VariableGroupItemRtv } from '@beak/common/types/realtime-values';
 
-import { getValueParts } from '../parser';
+import { getValueParts, parseValueParts } from '../parser';
 import { RealtimeValue } from '../types';
 
 const type = 'variable_group_item';
@@ -19,7 +19,11 @@ export default {
 	},
 
 	getRecursiveKey: (_ctx, item) => `${type}:${item.itemId}`,
-	getValue: async (ctx, item) => getValueParts(ctx, item.itemId) || [],
+	getValue: async (ctx, item, recursiveSet) => {
+		const parts = getValueParts(ctx, item.itemId) || [];
+
+		return await parseValueParts(ctx, parts, recursiveSet);
+	},
 
 	attributes: {},
 } as RealtimeValue<VariableGroupItemRtv>;

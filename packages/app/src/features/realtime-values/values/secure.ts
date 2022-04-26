@@ -50,7 +50,7 @@ export default {
 	attributes: {},
 
 	editor: {
-		ui: [{
+		createUi: () => [{
 			type: 'string_input',
 			label: 'Enter the value you want to be encrypted:',
 			stateBinding: 'value',

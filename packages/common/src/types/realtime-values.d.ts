@@ -13,6 +13,10 @@ export type RealtimeValuePart =
 	RequestFolderRtv |
 	RequestMethodRtv |
 	RequestNameRtv |
+	ResponseBodyJsonRtv |
+	ResponseBodyTextRtv |
+	ResponseHeaderRtv |
+	ResponseStatusCodeRtv |
 	SecureRtv |
 	TimestampRtv |
 	UuidRtv |
@@ -76,6 +80,36 @@ export interface RequestMethodRtv {
 export interface RequestNameRtv {
 	type: 'request_name';
 	payload: void;
+}
+
+export interface ResponseBodyJsonRtv {
+	type: 'response_body_json';
+	payload: {
+		requestId: string;
+		dotPath: ValueParts;
+	};
+}
+
+export interface ResponseBodyTextRtv {
+	type: 'response_body_text';
+	payload: {
+		requestId: string;
+	};
+}
+
+export interface ResponseHeaderRtv {
+	type: 'response_header';
+	payload: {
+		requestId: string;
+		headerName: ValueParts;
+	};
+}
+
+export interface ResponseStatusCodeRtv {
+	type: 'response_status_code';
+	payload: {
+		requestId: string;
+	};
 }
 
 export interface SecureRtv {

@@ -47,7 +47,7 @@ export default {
 	attributes: {},
 
 	editor: {
-		ui: [{
+		createUi: () => [{
 			type: 'value_parts_input',
 			label: 'Enter the data to encode:',
 			stateBinding: 'input',
@@ -64,7 +64,7 @@ export default {
 			}],
 		}, {
 			type: 'checkbox_input',
-			label: 'xxx',
+			label: 'Remove padding:',
 			stateBinding: 'removePadding',
 		}],
 

@@ -1,12 +1,17 @@
 import React, { useEffect, useRef, useState } from 'react';
+import Button from '@beak/app/components/atoms/Button';
 import Input, { Select } from '@beak/app/components/atoms/Input';
 import { ValueParts } from '@beak/common/types/beak-project';
 import styled from 'styled-components';
 
 import { getRealtimeValue } from '../../realtime-values';
 import useRealtimeValueContext from '../../realtime-values/hooks/use-realtime-value-context';
+import { previewValue } from '../../realtime-values/preview';
 import { RealtimeValue } from '../../realtime-values/types';
 import VariableInput from '../../variable-input/components/VariableInput';
+import renderRequestSelectOptions from '../utils/render-request-select-options';
+import { FormGroup, Label } from './atoms/Form';
+import PreviewContainer from './molecules/PreviewContainer';
 
 interface RtvEditorContext {
 	realtimeValue: RealtimeValue<any, any>;
@@ -26,12 +31,23 @@ const RealtimeValueEditor: React.FC<React.PropsWithChildren<RealtimeValueEditorP
 	const { editable, requestId, onSave } = props;
 	const initialInputRef = useRef<HTMLElement | null>(null);
 	const [editorContext, setEditorContext] = useState<RtvEditorContext>();
+	const [preview, setPreview] = useState('');
 	const context = useRealtimeValueContext(requestId);
 
 	useEffect(() => {
-		if (editorContext)
-			initialInputRef.current?.focus();
+		if (!editorContext || !initialInputRef.current)
+			return;
+
+		initialInputRef.current.focus();
 	}, [Boolean(editorContext)]);
+
+	useEffect(() => {
+		if (!editorContext)
+			return;
+
+		previewValue(context, editorContext.realtimeValue, editorContext.item, editorContext.state)
+			.then(setPreview);
+	}, [editorContext]);
 
 	useEffect(() => {
 		const onClick = (event: MouseEvent) => {
@@ -97,7 +113,8 @@ const RealtimeValueEditor: React.FC<React.PropsWithChildren<RealtimeValueEditorP
 
 	const { item, state, parent, realtimeValue } = editorContext;
 	const boundingRect = parent.getBoundingClientRect();
-	const { save, ui } = realtimeValue.editor!;
+	const { save, createUi } = realtimeValue.editor!;
+	const ui = createUi(context);
 
 	return (
 		<Container onClick={() => close(null)}>
@@ -141,6 +158,23 @@ const RealtimeValueEditor: React.FC<React.PropsWithChildren<RealtimeValueEditorP
 								</FormGroup>
 							);
 
+						case 'checkbox_input':
+							return (
+								<FormGroup key={`${stateBinding}`}>
+									{section.label && <Label>{section.label}</Label>}
+									<Input
+										ref={i => trySetInitialRef(first, i, initialInputRef)}
+										beakSize={'sm'}
+										$noStretch
+										type={'checkbox'}
+										checked={state[stateBinding] as boolean}
+										onChange={e => updateState({
+											[stateBinding]: e.currentTarget.checked,
+										})}
+									/>
+								</FormGroup>
+							);
+
 						case 'number_input':
 							return (
 								<FormGroup key={`${stateBinding}`}>
@@ -174,15 +208,36 @@ const RealtimeValueEditor: React.FC<React.PropsWithChildren<RealtimeValueEditorP
 								</FormGroup>
 							);
 
+						case 'request_select_input':
+							return (
+								<FormGroup key={`${stateBinding}`}>
+									{section.label && <Label>{section.label}</Label>}
+									<Select
+										ref={i => trySetInitialRef(first, i, initialInputRef)}
+										beakSize={'sm'}
+										value={state[stateBinding] as string ?? ''}
+										onChange={e => updateState({
+											[stateBinding]: e.currentTarget.value,
+										})}
+									>
+										{renderRequestSelectOptions(context)}
+									</Select>
+								</FormGroup>
+							);
+
 						default:
 							return null;
 					}
 				})}
 
+				<PreviewContainer text={preview} />
+
 				<ButtonContainer>
-					<Button onClick={() => {
-						save(context, item, state).then(updatedItem => close(updatedItem));
-					}}>
+					<Button
+						size={'sm'}
+						colour={'primary'}
+						onClick={() => save(context, item, state).then(updatedItem => close(updatedItem))}
+					>
 						{'Save'}
 					</Button>
 				</ButtonContainer>
@@ -221,39 +276,9 @@ const Wrapper = styled.div<{ $top: number; $left: number }>`
 	z-index: 10000;
 `;
 
-const FormGroup = styled.div`
-	margin-bottom: 8px;
-
-	> div > article {
-		font-size: 13px;
-		padding: 3px 5px;
-		padding-bottom: 4px;
-		border-radius: 3px;
-	}
-`;
-
-const Label = styled.label`
-	display: block;
-	margin-bottom: 4px;
-
-	font-size: 13px;
-`;
-
 const ButtonContainer = styled.div`
 	display: flex;
 	flex-direction: row-reverse;
-`;
-
-const Button = styled.button`
-	background: none;
-	border: none;
-	font-weight: 600;
-	color: ${p => p.theme.ui.textOnAction};
-	cursor: pointer;
-
-	&:hover {
-		color: ${p => p.theme.ui.textOnFill};
-	}
 `;
 
 export default RealtimeValueEditor;
