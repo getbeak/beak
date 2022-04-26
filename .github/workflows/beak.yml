@@ -40,7 +40,7 @@ jobs:
           yarn test
 
       - name: Build and package (release)
-        if: startsWith(github.ref, 'refs/tags/v')
+        if: startsWith(github.ref, 'refs/tags/beak-app@')
         env:
           BUILD_ENVIRONMENT: ci
           COMMIT_IDENTIFIER: ${{ github.sha }}
@@ -59,7 +59,7 @@ jobs:
         run: yarn package:release
 
       - name: Build (non-release)
-        if: startsWith(github.ref, 'refs/tags/v') == false
+        if: startsWith(github.ref, 'refs/tags/beak-app@') == false
         env:
           BUILD_ENVIRONMENT: ci
           COMMIT_IDENTIFIER: ${{ github.sha }}
