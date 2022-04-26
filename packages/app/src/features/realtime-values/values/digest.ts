@@ -28,10 +28,10 @@ export default {
 		},
 	}),
 
-	getValue: async (ctx, payload) => {
+	getValue: async (ctx, payload, recursiveSet) => {
 		const { algorithm, input, hmac } = payload;
 		const isArray = Array.isArray(input);
-		const parsed = await parseValueParts(ctx, isArray ? input : [input as unknown as string]);
+		const parsed = await parseValueParts(ctx, isArray ? input : [input as unknown as string], recursiveSet);
 
 		const buf = new ArrayBuffer(parsed.length * 2);
 		const bufView = new Uint16Array(buf);
@@ -49,9 +49,11 @@ export default {
 		return arrayBufferToHexString(digest);
 	},
 
+	attributes: {},
+
 	editor: {
 		ui: [{
-			type: 'string_input',
+			type: 'value_parts_input',
 			label: 'Enter the data for the digest:',
 			stateBinding: 'input',
 		}, {
