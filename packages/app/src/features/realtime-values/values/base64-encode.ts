@@ -44,6 +44,8 @@ export default {
 		return encoded;
 	},
 
+	attributes: {},
+
 	editor: {
 		ui: [{
 			type: 'string_input',

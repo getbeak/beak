@@ -19,6 +19,8 @@ export default {
 	},
 
 	getValue: async (ctx, item) => getValueParts(ctx, item.itemId) || [],
+
+	attributes: {},
 } as RealtimeValue<VariableGroupItemRtv>;
 
 export function createFauxValue(item: VariableGroupItemRtv['payload'], variableGroups: VariableGroups) {
@@ -37,6 +39,8 @@ export function createFauxValue(item: VariableGroupItemRtv['payload'], variableG
 		getValue: () => {
 			throw new Error('Not supported, this should not happen.');
 		},
+
+		attributes: {},
 	} as RealtimeValue<VariableGroupItemRtv>;
 }
 

@@ -49,6 +49,8 @@ export default {
 		return arrayBufferToHexString(digest);
 	},
 
+	attributes: {},
+
 	editor: {
 		ui: [{
 			type: 'string_input',

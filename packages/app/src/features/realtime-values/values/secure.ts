@@ -47,6 +47,8 @@ export default {
 		return await parseValueParts(ctx, decrypted);
 	},
 
+	attributes: {},
+
 	editor: {
 		ui: [{
 			type: 'string_input',

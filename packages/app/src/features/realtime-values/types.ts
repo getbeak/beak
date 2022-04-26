@@ -16,6 +16,8 @@ export interface RealtimeValue<
 
 	getValue: (ctx: Context, payload: T['payload']) => Promise<string | ValueParts>;
 
+	attributes: Attributes;
+
 	editor?: {
 		ui: UISection<TS>[];
 
@@ -25,6 +27,10 @@ export interface RealtimeValue<
 }
 
 export type UISection<T> = TextInput<T> | NumberInput<T> | CheckboxInput<T> | OptionsInput<T>;
+
+export interface Attributes {
+	requiresRequestId?: boolean;
+}
 
 export interface Context {
 	selectedGroups: Record<string, string>;

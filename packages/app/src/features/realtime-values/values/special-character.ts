@@ -40,5 +40,7 @@ function createCharacter(type: keyof typeof characters): RealtimeValue<RealtimeV
 		}),
 
 		getValue: async () => character.character,
+
+		attributes: {},
 	};
 }
