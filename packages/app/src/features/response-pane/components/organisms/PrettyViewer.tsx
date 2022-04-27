@@ -24,7 +24,7 @@ const PrettyViewer: React.FC<React.PropsWithChildren<PrettyViewerProps>> = ({ fl
 	const requestId = flight.requestId;
 	const preferences = useAppSelector(s => s.global.preferences.requests[requestId].response.pretty[mode]);
 	const [eligibility, body] = useFlightBodyInfo(flight, mode);
-	const detectedFormat = useDetectedFlightFormat(flight, mode);
+	const [contentType, detectedFormat] = useDetectedFlightFormat(flight, mode);
 	const selectedLanguage = preferences.language ?? detectedFormat;
 
 	if (eligibility !== 'eligible')
@@ -40,13 +40,13 @@ const PrettyViewer: React.FC<React.PropsWithChildren<PrettyViewerProps>> = ({ fl
 					language: lang,
 				}))}
 			/>
-			{renderFormat(selectedLanguage, body)}
+			{renderFormat(selectedLanguage, contentType, body)}
 		</Container>
 	);
 };
 
-function renderFormat(detectedFormat: string | null, body: Uint8Array) {
-	switch (detectedFormat) {
+function renderFormat(language: string | null, contentType: string | null, body: Uint8Array) {
+	switch (language) {
 		case 'json': {
 			const json = new TextDecoder().decode(body);
 
