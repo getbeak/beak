@@ -72,6 +72,9 @@ const flightReducer = createReducer(initialState, builder => {
 				binaryStoreKey,
 				timing: state.currentFlight!.timing,
 			};
+
+			state.latestFlight = state.currentFlight;
+			state.currentFlight = void 0;
 		})
 		.addCase(actions.flightFailure, (state, action) => {
 			const { flightId, requestId, error } = action.payload;

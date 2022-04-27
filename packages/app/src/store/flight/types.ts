@@ -16,6 +16,7 @@ export const ActionTypes = {
 
 export interface State {
 	currentFlight?: FlightInProgress;
+	latestFlight?: FlightInProgress;
 	flightHistory: Record<string, FlightHistory>;
 	blackBox: Record<string, boolean>;
 }
