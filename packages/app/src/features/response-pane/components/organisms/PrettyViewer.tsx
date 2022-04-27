@@ -65,6 +65,46 @@ function renderFormat(detectedFormat: string | null, body: Uint8Array) {
 			);
 		}
 
+		case 'hex': {
+			const outputParts = [];
+			const rowLength = 0x0f;
+
+			for (let i = 0; i < body.length; i += rowLength) {
+				const row = body.slice(i, i + rowLength);
+
+				const hexValue = Array.from(row)
+					.map(r => r.toString(16).padStart(2, '0'))
+					.join(' ');
+
+				const textValue = new TextDecoder('ascii').decode(row)
+					.replaceAll(/[^\x20-\x7F]/g, '.')
+					.replaceAll(/\s/g, ' ')
+					.padEnd(15, '.');
+
+				const rowParts = [
+					i.toString(16).padStart(8, '0'),
+					hexValue.padEnd(44, ' '),
+					textValue,
+				];
+
+				outputParts.push(rowParts.join('  '));
+			}
+
+			return (
+				<Editor
+					height={'100%'}
+					width={'100%'}
+					language={'text'}
+					theme={'vs-dark'}
+					value={outputParts.join('\n')}
+					options={{
+						...createDefaultOptions(),
+						readOnly: true,
+					}}
+				/>
+			);
+		}
+
 		case 'xml': {
 			const xml = new TextDecoder().decode(body);
 
