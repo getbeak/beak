@@ -2,14 +2,20 @@ import { useMemo } from 'react';
 import { Flight } from '@beak/app/store/flight/types';
 import mime from 'mime-types';
 
-export default function useDetectedFlightFormat(flight: Flight, mode: 'request' | 'response') {
+export default function useDetectedFlightFormat(flight: Flight, mode: 'request' | 'response'): [string | null, string | null] {
 	return useMemo(() => {
 		const contentType = getContentType(flight, mode);
 
 		if (!contentType)
-			return null;
+			return [null, null];
 
-		return mime.extension(contentType) || null;
+		switch (true) {
+			case contentType.startsWith('image/'):
+				return [contentType, 'image'];
+
+			default:
+				return [contentType, mime.extension(contentType) || null];
+		}
 	}, [flight.flightId]);
 }
 

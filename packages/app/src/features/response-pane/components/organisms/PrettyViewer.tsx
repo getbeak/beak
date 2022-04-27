@@ -24,7 +24,7 @@ const PrettyViewer: React.FC<React.PropsWithChildren<PrettyViewerProps>> = ({ fl
 	const requestId = flight.requestId;
 	const preferences = useAppSelector(s => s.global.preferences.requests[requestId].response.pretty[mode]);
 	const [eligibility, body] = useFlightBodyInfo(flight, mode);
-	const detectedFormat = useDetectedFlightFormat(flight, mode);
+	const [contentType, detectedFormat] = useDetectedFlightFormat(flight, mode);
 	const selectedLanguage = preferences.language ?? detectedFormat;
 
 	if (eligibility !== 'eligible')
@@ -40,13 +40,13 @@ const PrettyViewer: React.FC<React.PropsWithChildren<PrettyViewerProps>> = ({ fl
 					language: lang,
 				}))}
 			/>
-			{renderFormat(selectedLanguage, body)}
+			{renderFormat(selectedLanguage, contentType, body)}
 		</Container>
 	);
 };
 
-function renderFormat(detectedFormat: string | null, body: Uint8Array) {
-	switch (detectedFormat) {
+function renderFormat(language: string | null, contentType: string | null, body: Uint8Array) {
+	switch (language) {
 		case 'json': {
 			const json = new TextDecoder().decode(body);
 
@@ -159,6 +159,22 @@ function renderFormat(detectedFormat: string | null, body: Uint8Array) {
 			);
 		}
 
+		case 'image': {
+			const blob = URL.createObjectURL(new Blob([body], { type: contentType ?? 'image/jpeg' }));
+
+			return <Image $imageBlob={blob} />;
+		}
+
+		case 'video': {
+			const blob = URL.createObjectURL(new Blob([body], { type: contentType ?? 'video/mp4' }));
+
+			return (
+				<Video controls autoPlay>
+					<source src={blob} />
+				</Video>
+			);
+		}
+
 		case null:
 		default: {
 			const text = new TextDecoder().decode(body);
@@ -190,6 +206,19 @@ function tryFormatXml(xml: string) {
 
 const Container = styled.div`
 	height: calc(100% - 35px);
+`;
+
+const Image = styled.div<{ $imageBlob: string }>`
+	background-image: url(${p => p.$imageBlob});
+	background-position: center;
+	background-size: contain;
+	background-repeat: no-repeat;
+	height: 100%;
+`;
+
+const Video = styled.video`
+	width: 100%;
+	height: 100%;
 `;
 
 export default React.memo(
