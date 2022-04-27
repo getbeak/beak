@@ -11,7 +11,6 @@ import {
 	RequestPreferencesSetReqJsonExpandPayload,
 	RequestPreferencesSetReqMainTabPayload,
 	RequestPreferencesSetResMainTabPayload,
-	RequestPreferencesSetResPrettyAutoDetectPayload,
 	RequestPreferencesSetResPrettyLanguagePayload,
 	RequestPreferencesSetResSubTabPayload,
 	SidebarCollapsePayload,
@@ -23,7 +22,6 @@ export const requestPreferenceSetReqMainTab = createAction<RequestPreferencesSet
 export const requestPreferenceSetReqJsonExpand = createAction<RequestPreferencesSetReqJsonExpandPayload>(AT.REQUEST_PREFERENCE_SET_REQ_JSON_EXPAND);
 export const requestPreferenceSetResMainTab = createAction<RequestPreferencesSetResMainTabPayload>(AT.REQUEST_PREFERENCE_SET_RES_MAIN_TAB);
 export const requestPreferenceSetResSubTab = createAction<RequestPreferencesSetResSubTabPayload>(AT.REQUEST_PREFERENCE_SET_RES_SUB_TAB);
-export const requestPreferenceSetResPrettyAutoDetect = createAction<RequestPreferencesSetResPrettyAutoDetectPayload>(AT.REQUEST_PREFERENCE_SET_RES_PRETTY_AUTO_DETECT);
 export const requestPreferenceSetResPrettyLanguage = createAction<RequestPreferencesSetResPrettyLanguagePayload>(AT.REQUEST_PREFERENCE_SET_RES_PRETTY_LANGUAGE);
 
 export const loadEditorPreferences = createAction(AT.LOAD_EDITOR_PREFERENCES);
@@ -46,7 +44,6 @@ export default {
 	requestPreferenceSetReqJsonExpand,
 	requestPreferenceSetResMainTab,
 	requestPreferenceSetResSubTab,
-	requestPreferenceSetResPrettyAutoDetect,
 	requestPreferenceSetResPrettyLanguage,
 
 	loadEditorPreferences,

@@ -14,7 +14,6 @@ export const ActionTypes = {
 	REQUEST_PREFERENCE_SET_REQ_JSON_EXPAND: '@beak/global/preferences/REQUEST_PREFERENCE_SET_REQ_JSON_EXPAND',
 	REQUEST_PREFERENCE_SET_RES_MAIN_TAB: '@beak/global/preferences/REQUEST_PREFERENCE_SET_RES_MAIN_TAB',
 	REQUEST_PREFERENCE_SET_RES_SUB_TAB: '@beak/global/preferences/REQUEST_PREFERENCE_SET_RES_SUB_TAB',
-	REQUEST_PREFERENCE_SET_RES_PRETTY_AUTO_DETECT: '@beak/global/preferences/REQUEST_PREFERENCE_SET_RES_PRETTY_AUTO_DETECT',
 	REQUEST_PREFERENCE_SET_RES_PRETTY_LANGUAGE: '@beak/global/preferences/REQUEST_PREFERENCE_SET_RES_PRETTY_LANGUAGE',
 
 	LOAD_EDITOR_PREFERENCES: '@beak/global/preferences/LOAD_EDITOR_PREFERENCES',
@@ -63,10 +62,6 @@ export type RequestPreferencesSetResMainTabPayload = RequestPreferencePayload<{ 
 export type RequestPreferencesSetResSubTabPayload = RequestPreferencePayload<{
 	tab: ResponsePreferenceMainTab;
 	subTab: string;
-}>;
-export type RequestPreferencesSetResPrettyAutoDetectPayload = RequestPreferencePayload<{
-	mode: 'request' | 'response';
-	autoDetect: boolean;
 }>;
 export type RequestPreferencesSetResPrettyLanguagePayload = RequestPreferencePayload<{
 	mode: 'request' | 'response';
