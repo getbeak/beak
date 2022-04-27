@@ -1,6 +1,6 @@
 import React from 'react';
 import { statusToColor } from '@beak/design-system/helpers';
-import { faCircleCheck, faCircleNotch, faCircleXmark, faSpinner } from '@fortawesome/free-solid-svg-icons';
+import { faCircleCheck, faCircleDot, faCircleXmark, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useTheme } from 'styled-components';
 
@@ -52,7 +52,7 @@ const ActionBarFlightStatus: React.FC<React.PropsWithChildren<unknown>> = () => 
 			return (
 				<abbr title={'Awaiting flight...'}>
 					<FontAwesomeIcon
-						icon={faCircleNotch}
+						icon={faCircleDot}
 						size={'1x'}
 					/>
 				</abbr>
