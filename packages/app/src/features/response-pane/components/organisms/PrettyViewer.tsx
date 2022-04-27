@@ -165,6 +165,16 @@ function renderFormat(language: string | null, contentType: string | null, body:
 			return <Image $imageBlob={blob} />;
 		}
 
+		case 'video': {
+			const blob = URL.createObjectURL(new Blob([body], { type: contentType ?? 'video/mp4' }));
+
+			return (
+				<Video controls autoPlay>
+					<source src={blob} />
+				</Video>
+			);
+		}
+
 		case null:
 		default: {
 			const text = new TextDecoder().decode(body);
@@ -203,6 +213,11 @@ const Image = styled.div<{ $imageBlob: string }>`
 	background-position: center;
 	background-size: contain;
 	background-repeat: no-repeat;
+	height: 100%;
+`;
+
+const Video = styled.video`
+	width: 100%;
 	height: 100%;
 `;
 
