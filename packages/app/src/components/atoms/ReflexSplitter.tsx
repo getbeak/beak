@@ -9,7 +9,6 @@ export interface ReflexSplitterProps extends RSP {
 	hideVisualIndicator?: boolean;
 	$disabled?: boolean;
 	$customChildren?: boolean;
-	children: React.ReactElement;
 }
 
 const ReflexSplitter = styled(RS)<ReflexSplitterProps>`
