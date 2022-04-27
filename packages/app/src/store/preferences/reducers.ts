@@ -27,9 +27,6 @@ const reducer = createReducer(initialState, builder => {
 		.addCase(actions.requestPreferenceSetResSubTab, (state, { payload }) => {
 			state.requests[payload.id].response.subTab[payload.tab] = payload.subTab;
 		})
-		.addCase(actions.requestPreferenceSetResPrettyAutoDetect, (state, { payload }) => {
-			state.requests[payload.id].response.pretty[payload.mode].autoDetect = payload.autoDetect;
-		})
 		.addCase(actions.requestPreferenceSetResPrettyLanguage, (state, { payload }) => {
 			state.requests[payload.id].response.pretty[payload.mode].language = payload.language;
 		})

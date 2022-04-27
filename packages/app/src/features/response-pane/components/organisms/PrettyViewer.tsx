@@ -33,22 +33,14 @@ const PrettyViewer: React.FC<React.PropsWithChildren<PrettyViewerProps>> = ({ fl
 	return (
 		<Container>
 			<PrettyRenderSelection
-				autoDetect={preferences.autoDetect}
-				detectedLanguage={detectedFormat}
 				selectedLanguage={selectedLanguage}
-				onAutoDetectToggle={() => dispatch(actions.requestPreferenceSetResPrettyAutoDetect({
-					id: requestId,
-					mode,
-					autoDetect: !preferences.autoDetect,
-				}))}
 				onSelectedLanguageChange={lang => dispatch(actions.requestPreferenceSetResPrettyLanguage({
 					id: requestId,
 					mode,
 					language: lang,
 				}))}
 			/>
-			{preferences.autoDetect && renderFormat(detectedFormat, body)}
-			{!preferences.autoDetect && renderFormat(selectedLanguage, body)}
+			{renderFormat(selectedLanguage, body)}
 		</Container>
 	);
 };

@@ -24,11 +24,9 @@ export interface RequestPreference {
 		subTab: Partial<Record<ResponsePreferenceMainTab, undefined | string>>;
 		pretty: {
 			request: {
-				autoDetect: boolean;
 				language: string | null;
 			};
 			response: {
-				autoDetect: boolean;
 				language: string | null;
 			};
 		};

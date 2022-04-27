@@ -2,34 +2,21 @@ import React from 'react';
 import { Select } from '@beak/app/components/atoms/Input';
 import styled from 'styled-components';
 
-const knownLanguages = ['json', 'xml', 'txt', 'html', 'css'];
-
 interface PrettyRenderSelectionProps {
-	autoDetect: boolean;
-	detectedLanguage: string | null;
 	selectedLanguage: string | null;
-	onAutoDetectToggle: () => void;
 	onSelectedLanguageChange: (lang: string) => void;
 }
 
 const PrettyRenderSelection: React.FC<React.PropsWithChildren<PrettyRenderSelectionProps>> = props => {
-	const { autoDetect, detectedLanguage, selectedLanguage, onAutoDetectToggle, onSelectedLanguageChange } = props;
+	const { selectedLanguage, onSelectedLanguageChange } = props;
 
 	return (
 		<Container>
-			<Label>
-				{'Auto detect: '}
-				<input type={'checkbox'} checked={autoDetect} onChange={onAutoDetectToggle} />
-			</Label>
-			<Spacer />
 			<Select
-				disabled={autoDetect}
 				beakSize={'sm'}
-				value={autoDetect ? 'auto_detect' : (selectedLanguage ?? 'text/plain')}
+				value={selectedLanguage ?? 'text/plain'}
 				onChange={e => onSelectedLanguageChange(e.currentTarget.value)}
 			>
-				{/* These values use the mime-type extension */}
-				<option value={'auto_detect'} hidden>{`Auto detect (${renderAutoDetectedLanguage(detectedLanguage)})`}</option>
 				<optgroup label={'Basic'}>
 					<option value={'txt'}>{'Text'}</option>
 				</optgroup>
@@ -46,18 +33,12 @@ const PrettyRenderSelection: React.FC<React.PropsWithChildren<PrettyRenderSelect
 				</optgroup>
 				<optgroup label={'Other'}>
 					<option disabled>{'Web'}</option>
+					<option value={'hex'}>{'Hex'}</option>
 				</optgroup>
 			</Select>
 		</Container>
 	);
 };
-
-function renderAutoDetectedLanguage(lang: string | null) {
-	if (lang === null)
-		return 'Text';
-
-	return knownLanguages.includes(lang) ? lang.toLocaleUpperCase() : 'Text';
-}
 
 const Container = styled.div`
 	display: flex;
@@ -68,21 +49,6 @@ const Container = styled.div`
 	border-bottom: 1px solid ${p => p.theme.ui.backgroundBorderSeparator};
 
 	font-size: 14px;
-`;
-
-const Label = styled.div`
-	display: inline-flex;
-	white-space: nowrap;
-	font-size: 12px;
-	align-items: center;
-`;
-
-const Spacer = styled.div`
-	margin: 3px;
-	margin-left: 8px;
-	margin-right: 11px;
-	width: 1px;
-	background: ${p => p.theme.ui.backgroundBorderSeparator};
 `;
 
 export default PrettyRenderSelection;
