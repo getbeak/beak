@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import PendingSlash from '@beak/app/components/molecules/PendingSplash';
 import { useAppSelector } from '@beak/app/store/redux';
 import styled from 'styled-components';
@@ -10,9 +10,12 @@ const ResponsePane: React.FC<React.PropsWithChildren<unknown>> = () => {
 	const { tree } = useAppSelector(s => s.global.project);
 	const selectedTab = useAppSelector(s => s.features.tabs.selectedTab);
 	const flightHistories = useAppSelector(s => s.global.flight.flightHistory);
-	const selectedNode = tree![selectedTab || 'non_existent'];
+	const currentFlight = useAppSelector(s => s.global.flight.currentFlight);
+	const selectedNode = tree![selectedTab!];
+	const flightHistory = flightHistories[selectedTab!];
+	const selectedFlight = flightHistory?.history[flightHistory?.selected!];
 
-	if (!selectedTab) {
+	if (!selectedNode) {
 		return (
 			<Container>
 				<PendingSlash />
@@ -20,15 +23,13 @@ const ResponsePane: React.FC<React.PropsWithChildren<unknown>> = () => {
 		);
 	}
 
-	if (selectedTab && !selectedNode) {
+	if (currentFlight && currentFlight.requestId === selectedNode.id) {
 		return (
 			<Container>
-				<span>{'id does not exist'}</span>
+				{'doing!'}
 			</Container>
 		);
 	}
-
-	const flightHistory = flightHistories[selectedTab];
 
 	if (!flightHistory) {
 		return (
@@ -38,12 +39,10 @@ const ResponsePane: React.FC<React.PropsWithChildren<unknown>> = () => {
 		);
 	}
 
-	const selectedFlight = flightHistory.history[flightHistory.selected!];
-
 	if (!selectedFlight) {
 		return (
 			<Container>
-				<span>{'selected flight id does not exist'}</span>
+				<PendingSlash />
 			</Container>
 		);
 	}
