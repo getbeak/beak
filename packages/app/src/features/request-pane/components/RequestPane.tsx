@@ -8,11 +8,12 @@ import { ValidRequestNode } from '@beak/common/types/beak-project';
 import ksuid from '@cuvva/ksuid';
 import styled from 'styled-components';
 
-import ReflexSplitter from '../../../components/atoms/ReflexSplitter';
+import { HorizontalContextualReflexSplitter } from '../../../components/atoms/ReflexSplitter';
 import SelectedNodeContext from '../contexts/selected-node';
 import RequestOutput from './molecules/RequestOutput';
 import Header from './organisms/Header';
 import Modifiers from './organisms/Modifiers';
+import RequestPaneSplitter from './organisms/RequestPaneSplitter';
 
 const allowedBodyVerbs = ['GET', 'HEAD', 'DELETE'];
 
@@ -58,16 +59,8 @@ const RequestPane: React.FC<React.PropsWithChildren<unknown>> = () => {
 		return () => dispatch(alertRemoveDependents({ requestId: selectedNode.id }));
 	}, [selectedNode.id, selectedNode.info]);
 
-	// TODO(afr): Maybe some sort of purgatory state here
-	if (!selectedTab)
+	if (!selectedTab || !preferences || !selectedNode)
 		return <Container />;
-
-	if (!preferences)
-		return <Container />;
-
-	// TODO(afr): Handle this state
-	if (selectedTab && !selectedNode)
-		return <span>{'TODO: id does not exist'}</span>;
 
 	return (
 		<SelectedNodeContext.Provider value={selectedNode}>
@@ -83,12 +76,13 @@ const RequestPane: React.FC<React.PropsWithChildren<unknown>> = () => {
 						<Modifiers node={selectedNode} />
 					</ReflexElement>
 
-					<ReflexSplitter orientation={'horizontal'} />
+					<HorizontalContextualReflexSplitter orientation={'horizontal'}>
+						<RequestPaneSplitter selectedNode={selectedNode} />
+					</HorizontalContextualReflexSplitter>
 
 					{/* @ts-expect-error - Temporary Fix */}
 					<ReflexElement
 						flex={2}
-						minSize={150}
 						style={{ overflowY: 'hidden' }}
 					>
 						<RequestOutput selectedNode={selectedNode} />
