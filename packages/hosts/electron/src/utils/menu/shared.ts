@@ -1,5 +1,5 @@
-import { MenuEventCode } from '@beak/shared-common/web-contents/types';
 import { getPendingUpdate } from '@beak/host-electron/updater';
+import { MenuEventCode } from '@beak/shared-common/web-contents/types';
 import { MenuItemConstructorOptions } from 'electron';
 import { autoUpdater } from 'electron-updater';
 
