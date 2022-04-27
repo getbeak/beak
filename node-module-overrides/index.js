@@ -8,7 +8,7 @@ const overrideDefs = {
 	// Needed until fix for this issue is published to NPM
 	// https://github.com/electron-userland/electron-builder/issues/4299
 	// 'app-builder-lib': {
-	// 	parentPackage: 'electron-host',
+	// 	parentPackage: 'hosts/electron',
 	// 	moduleName: 'app-builder-lib',
 	// 	moduleOverridePath: 'out/targets/ArchiveTarget.js',
 	// 	file: 'ArchiveTarget',

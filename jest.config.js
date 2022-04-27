@@ -5,7 +5,9 @@ module.exports = {
 		'<rootDir>/jest-setup.ts',
 	],
 	projects: [
-		'<rootDir>/packages/*',
+		'<rootDir>/packages/apps/*',
+		'<rootDir>/packages/hosts/*',
+		'<rootDir>/packages/shared/*',
 	],
 	transform: {
 		'^.+\\.tsx?$': 'esbuild-jest',

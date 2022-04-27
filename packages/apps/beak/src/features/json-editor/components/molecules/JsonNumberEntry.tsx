@@ -1,0 +1,86 @@
+import React from 'react';
+import { useDispatch } from 'react-redux';
+import DebouncedInput from '@beak/app-beak/components/atoms/DebouncedInput';
+import VariableInput from '@beak/app-beak/features/variable-input/components/VariableInput';
+import { actions } from '@beak/app-beak/store/project';
+import { NamedNumberEntry, NumberEntry } from '@beak/shared-common/types/beak-json-editor';
+
+import {
+	BodyAction,
+	BodyInputValueCell,
+	BodyInputWrapper,
+	BodyNameOverrideWrapper,
+	BodyPrimaryCell,
+	BodyTypeCell,
+} from '../atoms/Cells';
+import { Row } from '../atoms/Structure';
+import EntryActions from './EntryActions';
+import { EntryFolderIrrelevant } from './EntryFolder';
+import EntryToggler from './EntryToggler';
+import { detectName, JsonEntryProps } from './JsonEntry';
+import TypeSelector from './TypeSelector';
+
+interface JsonNumberEntryProps extends JsonEntryProps {
+	value: NumberEntry | NamedNumberEntry;
+}
+
+const JsonNumberEntry: React.FC<React.PropsWithChildren<JsonNumberEntryProps>> = props => {
+	const { depth, requestId, value, nameOverride } = props;
+	const { id } = value;
+	const dispatch = useDispatch();
+
+	return (
+		<Row>
+			<BodyPrimaryCell depth={depth}>
+				<EntryFolderIrrelevant />
+				<EntryToggler
+					id={id}
+					requestId={requestId}
+					value={value.enabled}
+				/>
+				<BodyInputWrapper>
+					{nameOverride === void 0 && (
+						<DebouncedInput
+							disabled={depth === 0}
+							type={'text'}
+							value={detectName(depth, value)}
+							onChange={name => dispatch(actions.requestBodyJsonEditorNameChange({
+								id,
+								requestId,
+								name,
+							}))}
+						/>
+					)}
+					{nameOverride !== void 0 && (
+						<BodyNameOverrideWrapper>{nameOverride}</BodyNameOverrideWrapper>
+					)}
+				</BodyInputWrapper>
+			</BodyPrimaryCell>
+			<BodyTypeCell>
+				<TypeSelector
+					requestId={requestId}
+					id={id}
+					value={value.type}
+				/>
+			</BodyTypeCell>
+			<BodyInputValueCell>
+				<BodyInputWrapper>
+					<VariableInput
+						requestId={props.requestId}
+						parts={props.value.value}
+						onChange={parts => dispatch(actions.requestBodyJsonEditorValueChange({
+							id,
+							requestId,
+							value: parts,
+						}))}
+					/>
+				</BodyInputWrapper>
+			</BodyInputValueCell>
+			<BodyAction>
+				<EntryActions id={id} entry={value} requestId={requestId} />
+			</BodyAction>
+		</Row>
+	);
+};
+
+export default JsonNumberEntry;

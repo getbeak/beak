@@ -13,11 +13,11 @@ This is the checklist to follow before releasing any Beak update!
 
 - Setup GitHub release (in draft!)
 - Write up release notes on Notion
-- Update link to release notes inside `@beak/electron-host/src/updater.ts`
+- Update link to release notes inside `@beak/host-electron/src/updater.ts`
 
 ### Prepare release
 
-- Update version in `@beak/electron-host/package.json`
+- Update version in `@beak/host-electron/package.json`
 - Commit the above
 - Tag the release `vx.x.x`
 

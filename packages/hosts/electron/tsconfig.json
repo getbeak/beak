@@ -1,0 +1,29 @@
+{
+  "extends": "../../../tsconfig.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": "./dist-ts",
+    "composite": true,
+
+    "allowJs": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "module": "es2022",
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true
+  },
+  "references": [{
+    "path": "../../shared/common"
+  }, {
+    "path": "../../shared/requester-node"
+  }],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "dist-ts",
+    "dist-react",
+    "dist-electron"
+  ]
+}

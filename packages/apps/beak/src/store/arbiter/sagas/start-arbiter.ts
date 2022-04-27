@@ -1,0 +1,38 @@
+import { ipcArbiterService } from '@beak/app-beak/lib/ipc';
+import { createTakeLatestSagaSet } from '@beak/app-beak/utils/redux/sagas';
+import { ArbiterStatus } from '@beak/shared-common/types/arbiter';
+import { eventChannel } from 'redux-saga';
+import { call, put, take } from 'redux-saga/effects';
+
+import { actions } from '..';
+
+interface Transport {
+	code: string;
+	payload: ArbiterStatus;
+}
+
+export default createTakeLatestSagaSet(actions.startArbiter, function* startArbiterWorker() {
+	const status: ArbiterStatus = yield call([ipcArbiterService, ipcArbiterService.getStatus]);
+
+	yield put(actions.updateStatus(status));
+
+	const channel = eventChannel(emitter => {
+		window.secureBridge.ipc.on('arbiter_broadcast', (_event, args) => {
+			emitter(args);
+		});
+
+		return () => { /* */ };
+	});
+
+	while (true) {
+		const result: Transport = yield take(channel);
+
+		if (result === null)
+			break;
+
+		if (result.code !== 'status_update')
+			continue;
+
+		yield put(actions.updateStatus(result.payload));
+	}
+});

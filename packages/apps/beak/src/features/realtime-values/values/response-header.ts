@@ -1,0 +1,72 @@
+import { TypedObject } from '@beak/shared-common/helpers/typescript';
+import { ResponseHeaderRtv } from '@beak/shared-common/types/realtime-values';
+
+import { parseValueParts } from '../parser';
+import { RealtimeValue } from '../types';
+import { getRequestNode } from '../utils/request';
+import { getLatestFlight } from '../utils/response';
+
+const type = 'response_header';
+
+export default {
+	type,
+
+	name: 'Response header',
+	description: 'Returns the header value of the most recent response for a request',
+	sensitive: false,
+
+	initValuePart: async () => ({
+		type,
+		payload: {
+			requestId: '',
+			headerName: [''],
+		},
+	}),
+
+	getValue: async (ctx, payload, recursiveSet) => {
+		const requestNode = getRequestNode(payload.requestId, ctx);
+
+		if (!requestNode)
+			return '';
+
+		const latestFlight = getLatestFlight(requestNode.id, ctx);
+
+		if (!latestFlight?.response)
+			return '';
+
+		const headers = latestFlight.response.headers;
+		const parsedHeaderName = await parseValueParts(ctx, payload.headerName, recursiveSet);
+		const headerKey = TypedObject.keys(headers)
+			.find(k => k.toLocaleLowerCase() === parsedHeaderName.toLocaleLowerCase());
+
+		const header = headers[headerKey!];
+
+		return header ?? '';
+	},
+
+	attributes: {
+		requiresRequestId: true,
+	},
+
+	editor: {
+		createUi: () => [{
+			type: 'request_select_input',
+			label: 'Select the request:',
+			stateBinding: 'requestId',
+		}, {
+			type: 'value_parts_input',
+			label: 'Header name:',
+			stateBinding: 'headerName',
+		}],
+
+		load: async (_ctx, item) => ({
+			requestId: item.requestId,
+			headerName: item.headerName,
+		}),
+
+		save: async (_ctx, _item, state) => ({
+			requestId: state.requestId,
+			headerName: state.headerName,
+		}),
+	},
+} as RealtimeValue<ResponseHeaderRtv, ResponseHeaderRtv['payload']>;

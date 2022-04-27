@@ -9,7 +9,9 @@
   "homepage": "https://getbeak.app",
   "workspaces": {
     "packages": [
-      "packages/*"
+      "packages/apps/*",
+      "packages/hosts/*",
+      "packages/shared/*"
     ],
     "nohoist": [
       "**/electron-builder",
@@ -25,15 +27,15 @@
   },
   "scripts": {
     "build": "lerna run build --stream",
-    "build:website": "lerna run build --stream --scope @beak/website",
-    "build:share": "lerna run build --stream --scope @beak/share",
+    "build:website": "lerna run build --stream --scope @beak/app-website",
+    "build:share": "lerna run build --stream --scope @beak/app-share",
     "prepackage": "yarn build",
     "prepackage:release": "yarn build",
-    "package": "lerna run package --stream --scope @beak/electron-host",
-    "package:release": "lerna run package:release --stream --scope @beak/electron-host",
-    "start": "lerna exec --parallel --concurrency 1 --stream --scope '@beak/{app,electron-host}' yarn start",
-    "start:website": "lerna exec --parallel --concurrency 1 --stream --scope '@beak/website' yarn start",
-    "start:share": "lerna exec --parallel --concurrency 1 --stream --scope '@beak/share' yarn start",
+    "package": "lerna run package --stream --scope @beak/host-electron",
+    "package:release": "lerna run package:release --stream --scope @beak/host-electron",
+    "start": "lerna exec --parallel --concurrency 1 --stream --scope '@beak/{app-beak,host-electron}' yarn start",
+    "start:website": "lerna exec --parallel --concurrency 1 --stream --scope '@beak/app-website' yarn start",
+    "start:share": "lerna exec --parallel --concurrency 1 --stream --scope '@beak/app-share' yarn start",
     "test": "jest",
     "lint": "eslint --ext .tsx --ext .ts './packages/'",
     "typecheck": "lerna exec --stream yarn typecheck",

@@ -1,0 +1,24 @@
+{
+  "name": "@beak/shared-requester-node",
+  "version": "0.0.0",
+  "private": true,
+  "main": "dist/index",
+  "types": "dist/index",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "yarn clean && yarn compile",
+    "clean": "rm -rf ./dist && rm -rf tsconfig.tsbuildinfo",
+    "compile": "tsc -b tsconfig.json",
+    "typecheck": "tsc",
+    "start": "tsc -b tsconfig.json -w"
+  },
+  "dependencies": {
+    "@beak/shared-common": "^0.0.0",
+    "node-fetch": "^2.6.1"
+  },
+  "devDependencies": {
+    "@types/node-fetch": "^2.6.1"
+  }
+}
