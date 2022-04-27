@@ -159,6 +159,12 @@ function renderFormat(language: string | null, contentType: string | null, body:
 			);
 		}
 
+		case 'image': {
+			const blob = URL.createObjectURL(new Blob([body], { type: contentType ?? 'image/jpeg' }));
+
+			return <Image $imageBlob={blob} />;
+		}
+
 		case null:
 		default: {
 			const text = new TextDecoder().decode(body);
@@ -190,6 +196,14 @@ function tryFormatXml(xml: string) {
 
 const Container = styled.div`
 	height: calc(100% - 35px);
+`;
+
+const Image = styled.div<{ $imageBlob: string }>`
+	background-image: url(${p => p.$imageBlob});
+	background-position: center;
+	background-size: contain;
+	background-repeat: no-repeat;
+	height: 100%;
 `;
 
 export default React.memo(

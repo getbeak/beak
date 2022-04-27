@@ -28,7 +28,7 @@ const PrettyRenderSelection: React.FC<React.PropsWithChildren<PrettyRenderSelect
 					<option value={'css'}>{'CSS'}</option>
 				</optgroup>
 				<optgroup label={'Media'}>
-					<option disabled>{'Image'}</option>
+					<option value={'image'}>{'Image'}</option>
 					<option disabled>{'Video'}</option>
 				</optgroup>
 				<optgroup label={'Other'}>
