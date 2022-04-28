@@ -9,6 +9,7 @@ import * as omniBarStore from '../features/omni-bar/store';
 import { State as OmniBarState } from '../features/omni-bar/store/types';
 import * as tabsStore from '../features/tabs/store';
 import { State as TabsState } from '../features/tabs/store/types';
+import { handleUnhandledError } from '../utils/unhandled-error-handler';
 import * as arbiterStore from './arbiter';
 import { State as ArbiterState } from './arbiter/types';
 import * as flightStore from './flight';
@@ -87,9 +88,12 @@ function createInitialState(): ApplicationState {
 }
 
 export function configureStore(): Store<ApplicationState> {
-	const composeEnhancers = composeWithDevTools({});
-	const sagaMiddleware = createSagaMiddleware();
 	const initialState = createInitialState();
+	const composeEnhancers = composeWithDevTools({});
+
+	const sagaMiddleware = createSagaMiddleware({
+		onError: error => handleUnhandledError(error),
+	});
 
 	const store = createStore(
 		createRootReducer(),

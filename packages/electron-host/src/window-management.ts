@@ -105,13 +105,22 @@ export function tryCloseWelcomeWindow() {
 }
 
 export function closeWindow(windowId: number) {
-	const window = windowStack[windowId];
+	const window = BrowserWindow.getAllWindows().find(win => win.webContents.id === windowId);
 
 	if (!window)
 		return; // probs already closed...
 
 	window.close();
 	delete windowStack[windowId];
+}
+
+export function reloadWindow(windowId: number) {
+	const window = BrowserWindow.getAllWindows().find(win => win.webContents.id === windowId);
+
+	if (!window)
+		return; // probs already closed...
+
+	window.reload();
 }
 
 export function createWelcomeWindow() {
