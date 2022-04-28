@@ -4,6 +4,7 @@ import { IpcServiceMain, IpcServiceRenderer, Listener, PartialIpcRenderer } from
 
 const WindowMessages = {
 	CloseSelfWindow: 'close_self_window',
+	ReloadSelfWindow: 'reload_self_window',
 };
 
 export class IpcWindowServiceRenderer extends IpcServiceRenderer {
@@ -14,6 +15,10 @@ export class IpcWindowServiceRenderer extends IpcServiceRenderer {
 	async closeSelfWindow() {
 		return await this.invoke(WindowMessages.CloseSelfWindow);
 	}
+
+	async reloadSelfWindow() {
+		return await this.invoke(WindowMessages.ReloadSelfWindow);
+	}
 }
 
 export class IpcWindowServiceMain extends IpcServiceMain {
@@ -23,5 +28,9 @@ export class IpcWindowServiceMain extends IpcServiceMain {
 
 	registerCloseSelfWindow(fn: Listener) {
 		this.registerListener(WindowMessages.CloseSelfWindow, fn);
+	}
+
+	registerReloadSelfWindow(fn: Listener) {
+		this.registerListener(WindowMessages.ReloadSelfWindow, fn);
 	}
 }
