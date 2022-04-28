@@ -4,6 +4,7 @@ import { Provider } from 'react-redux';
 import { DesignSystemProvider } from '@beak/design-system';
 import { init } from '@sentry/electron';
 
+import './utils/unhandled-error-handler';
 import NonprodBadge from './components/atoms/NonprodBadge';
 import Portal from './containers/Portal';
 import Preferences from './containers/Preferences';
