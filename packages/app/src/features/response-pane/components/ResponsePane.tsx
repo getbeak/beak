@@ -1,8 +1,9 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import PendingSlash from '@beak/app/components/molecules/PendingSplash';
 import { useAppSelector } from '@beak/app/store/redux';
 import styled from 'styled-components';
 
+import FlightInProgress from './molecules/FlightInProgress';
 import Header from './molecules/Header';
 import Inspector from './organisms/Inspector';
 
@@ -14,48 +15,25 @@ const ResponsePane: React.FC<React.PropsWithChildren<unknown>> = () => {
 	const selectedNode = tree![selectedTab!];
 	const flightHistory = flightHistories[selectedTab!];
 	const selectedFlight = flightHistory?.history[flightHistory?.selected!];
-
-	if (!selectedNode) {
-		return (
-			<Container>
-				<PendingSlash />
-			</Container>
-		);
-	}
-
-	if (currentFlight && currentFlight.requestId === selectedNode.id) {
-		return (
-			<Container>
-				{'doing!'}
-			</Container>
-		);
-	}
-
-	if (!flightHistory) {
-		return (
-			<Container>
-				<PendingSlash />
-			</Container>
-		);
-	}
-
-	if (!selectedFlight) {
-		return (
-			<Container>
-				<PendingSlash />
-			</Container>
-		);
-	}
+	const pending = !selectedNode || !flightHistory || !selectedFlight;
 
 	return (
 		<Container>
-			<Header selectedFlight={selectedFlight} />
-			<Inspector flight={selectedFlight} />
+			{pending && <PendingSlash />}
+			{!pending && (
+				<React.Fragment>
+					<Header selectedFlight={selectedFlight} />
+					<Inspector flight={selectedFlight} />
+				</React.Fragment>
+			)}
+
+			<FlightInProgress requestId={selectedTab!} currentFlight={currentFlight} />
 		</Container>
 	);
 };
 
 const Container = styled.div`
+	position: relative;
 	display: flex;
 	flex-direction: column;
 	background-color: ${props => props.theme.ui.surface};
