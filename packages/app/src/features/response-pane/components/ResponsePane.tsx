@@ -3,6 +3,7 @@ import PendingSlash from '@beak/app/components/molecules/PendingSplash';
 import { useAppSelector } from '@beak/app/store/redux';
 import styled from 'styled-components';
 
+import FlightInProgress from './molecules/FlightInProgress';
 import Header from './molecules/Header';
 import Inspector from './organisms/Inspector';
 
@@ -10,53 +11,29 @@ const ResponsePane: React.FC<React.PropsWithChildren<unknown>> = () => {
 	const { tree } = useAppSelector(s => s.global.project);
 	const selectedTab = useAppSelector(s => s.features.tabs.selectedTab);
 	const flightHistories = useAppSelector(s => s.global.flight.flightHistory);
-	const selectedNode = tree![selectedTab || 'non_existent'];
-
-	if (!selectedTab) {
-		return (
-			<Container>
-				<PendingSlash />
-			</Container>
-		);
-	}
-
-	if (selectedTab && !selectedNode) {
-		return (
-			<Container>
-				<span>{'id does not exist'}</span>
-			</Container>
-		);
-	}
-
-	const flightHistory = flightHistories[selectedTab];
-
-	if (!flightHistory) {
-		return (
-			<Container>
-				<PendingSlash />
-			</Container>
-		);
-	}
-
-	const selectedFlight = flightHistory.history[flightHistory.selected!];
-
-	if (!selectedFlight) {
-		return (
-			<Container>
-				<span>{'selected flight id does not exist'}</span>
-			</Container>
-		);
-	}
+	const currentFlight = useAppSelector(s => s.global.flight.currentFlight);
+	const selectedNode = tree![selectedTab!];
+	const flightHistory = flightHistories[selectedTab!];
+	const selectedFlight = flightHistory?.history[flightHistory?.selected!];
+	const pending = !selectedNode || !flightHistory || !selectedFlight;
 
 	return (
 		<Container>
-			<Header selectedFlight={selectedFlight} />
-			<Inspector flight={selectedFlight} />
+			{pending && <PendingSlash />}
+			{!pending && (
+				<React.Fragment>
+					<Header selectedFlight={selectedFlight} />
+					<Inspector flight={selectedFlight} />
+				</React.Fragment>
+			)}
+
+			<FlightInProgress requestId={selectedTab!} currentFlight={currentFlight} />
 		</Container>
 	);
 };
 
 const Container = styled.div`
+	position: relative;
 	display: flex;
 	flex-direction: column;
 	background-color: ${props => props.theme.ui.surface};
