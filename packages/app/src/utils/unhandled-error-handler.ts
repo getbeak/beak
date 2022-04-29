@@ -10,7 +10,7 @@ let failure = false;
 export async function handleUnhandledError(error: Error) {
 	captureException(error);
 
-	if (failure)
+	if (!error || failure)
 		return;
 
 	failure = true;
@@ -21,9 +21,9 @@ export async function handleUnhandledError(error: Error) {
 		type: 'error',
 		message: 'Beak encountered an unknown error. If restarting doesn\'t resolve the issue, please contact support.',
 		detail: [
-			error.name,
-			error.message,
-			error.stack,
+			error.name ?? '',
+			error.message ?? '',
+			error.stack ?? '',
 		].join('\n'),
 		buttons: ['Restart'],
 		defaultId: 0,
