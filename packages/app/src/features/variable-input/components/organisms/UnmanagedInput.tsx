@@ -28,8 +28,9 @@ const Input = styled.article`
 	white-space: nowrap;
 	overflow: hidden;
 
-	&:disabled {
+	&[disabled="true"] {
 		user-select: text;
+		cursor: text;
 	}
 
 	.bvs-blob {
