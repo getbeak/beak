@@ -61,7 +61,7 @@ const BasicTableEditor: React.FC<React.PropsWithChildren<BasicTableEditorProps>>
 									<DebouncedInput
 										type={'text'}
 										value={item.name}
-										readOnly={readOnly}
+										disabled={readOnly}
 										onChange={v => updateItem?.('name', k, v)}
 									/>
 								</BodyInputWrapper>
@@ -72,6 +72,7 @@ const BasicTableEditor: React.FC<React.PropsWithChildren<BasicTableEditorProps>>
 										requestId={requestId}
 										parts={item.value}
 										readOnly={readOnly}
+										disabled={readOnly}
 										onChange={parts => updateItem?.('value', k, parts)}
 									/>
 								</BodyInputWrapper>

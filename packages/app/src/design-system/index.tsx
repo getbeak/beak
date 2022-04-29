@@ -25,12 +25,16 @@ const GlobalStyle = createGlobalStyle<GlobalStyleProps>`
 	}
 
 	input[type=text], input[type=number], select, input[type=email], article[contenteditable=true] {
-		&:focus {
+		&:focus:not(:disabled) {
 			outline: 0;
 			border-color: ${p => p.theme.ui.primaryFill};
 			box-shadow: 0 0 0 3px ${p => p.theme.ui.primaryFill}77;
 			background: ${p => p.theme.ui.surfaceHighlight};
 			border-radius: 4px;
+		}
+
+		&:disabled {
+			cursor: text;
 		}
 	}
 

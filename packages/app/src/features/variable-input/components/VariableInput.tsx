@@ -107,7 +107,8 @@ const VariableInput = React.forwardRef<HTMLElement, VariableInputProps>((props, 
 			return;
 
 		// Pretend it's an input, as it technically is
-		(editableRef.current as HTMLInputElement).disabled = Boolean(disabled);
+		// (editableRef.current as HTMLInputElement).disabled = Boolean(disabled);
+		editableRef.current.setAttribute('disabled', String(Boolean(disabled)));
 	}, [requestId, disabled]);
 
 	useEffect(() => {

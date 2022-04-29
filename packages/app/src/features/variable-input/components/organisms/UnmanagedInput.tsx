@@ -16,6 +16,15 @@ export default class UnmanagedInput extends React.Component<UnmanagedInputProps>
 				contentEditable
 				spellCheck={false}
 				suppressContentEditableWarning
+				onDoubleClick={event => {
+					const disabled = event.currentTarget.getAttribute('disabled') === 'true';
+
+					if (!disabled)
+						return;
+
+					window.getSelection()?.selectAllChildren(event.currentTarget);
+					event.preventDefault();
+				}}
 				ref={this.props.innerRef}
 			/>
 		);
@@ -28,8 +37,12 @@ const Input = styled.article`
 	white-space: nowrap;
 	overflow: hidden;
 
-	&:disabled {
+	&[disabled="true"] {
 		user-select: text;
+		cursor: text;
+
+		overflow: hidden;
+		text-overflow: ellipsis;
 	}
 
 	.bvs-blob {
