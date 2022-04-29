@@ -1,4 +1,4 @@
-# Beak update guide
+# Beak checklist
 
 This is the checklist to follow before releasing any Beak update!
 
@@ -11,7 +11,6 @@ This is the checklist to follow before releasing any Beak update!
 
 ### Setup release tracking
 
-- Setup GitHub release (in draft!)
 - Write up release notes on Notion
 - Update link to release notes inside `@beak/electron-host/src/updater.ts`
 
@@ -20,6 +19,7 @@ This is the checklist to follow before releasing any Beak update!
 - Update version in `@beak/electron-host/package.json`
 - Commit the above
 - Tag the release `vx.x.x`
+- Setup GitHub release
 
 ### Watch along
 
