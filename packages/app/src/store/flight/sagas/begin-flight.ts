@@ -3,12 +3,10 @@ import { ipcFlightService, ipcNotificationService } from '@beak/app/lib/ipc';
 import { getStatusReasonPhrase } from '@beak/app/utils/http';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { FlightMessages } from '@beak/common/ipc/flight';
-import {
-	RequestNode,
-	RequestOverview,
-	ResponseOverview,
-} from '@beak/common/types/beak-project';
 import ksuid from '@cuvva/ksuid';
+import type { RequestNode } from '@getbeak/types/nodes';
+import type { RequestOverview } from '@getbeak/types/request';
+import type { ResponseOverview } from '@getbeak/types/response';
 import { PayloadAction } from '@reduxjs/toolkit';
 import { END, eventChannel } from 'redux-saga';
 import { put, select, take } from 'redux-saga/effects';

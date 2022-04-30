@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { Flight } from '@beak/app/store/flight/types';
+import type { Flight } from '@getbeak/types/flight';
 import mime from 'mime-types';
 
 export default function useDetectedFlightFormat(flight: Flight, mode: 'request' | 'response'): [string | null, string | null] {

@@ -4,7 +4,6 @@ import { actions as omniBarActions } from '@beak/app/features/omni-bar/store';
 import { actions as flightActions } from '@beak/app/store/flight';
 import { useAppSelector } from '@beak/app/store/redux';
 import { TypedObject } from '@beak/common/helpers/typescript';
-import { Nodes } from '@beak/common/types/beak-project';
 import {
 	faCaretLeft,
 	faCaretRight,
@@ -12,6 +11,7 @@ import {
 	faSearch,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import type { Nodes } from '@getbeak/types/nodes';
 import styled, { useTheme } from 'styled-components';
 
 import { showEncryptionView } from '../../encryption/store/actions';

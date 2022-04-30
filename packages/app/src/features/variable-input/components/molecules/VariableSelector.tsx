@@ -1,9 +1,9 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import useRealtimeValueContext from '@beak/app/features/realtime-values/hooks/use-realtime-value-context';
+import { RealtimeValuePart } from '@beak/app/features/realtime-values/values';
 import { useAppSelector } from '@beak/app/store/redux';
 import { movePosition } from '@beak/app/utils/arrays';
 import { TypedObject } from '@beak/common/helpers/typescript';
-import { RealtimeValuePart } from '@beak/common/types/realtime-values';
 import Fuse from 'fuse.js';
 import styled from 'styled-components';
 import * as uuid from 'uuid';

@@ -1,4 +1,4 @@
-import { ValueParts } from './beak-project';
+import { ValueParts } from './values';
 
 export type EntryMap = Record<string, Entries>;
 export type EntryType = 'string' | 'number' | 'boolean' | 'null' | 'object' | 'array';

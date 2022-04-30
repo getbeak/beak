@@ -1,4 +1,7 @@
-import { ValueParts } from './beak-project';
+import type { ValuePart as GenericValuePart } from '@getbeak/types/values';
+
+export type ValuePart = GenericValuePart | RealtimeValuePart;
+export type ValueParts = ValuePart[];
 
 /* eslint-disable @typescript-eslint/indent */
 export type RealtimeValuePart =

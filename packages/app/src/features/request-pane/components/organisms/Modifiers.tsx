@@ -5,7 +5,7 @@ import { requestPreferenceSetReqMainTab } from '@beak/app/store/preferences/acti
 import actions from '@beak/app/store/project/actions';
 import { useAppSelector } from '@beak/app/store/redux';
 import { RequestPreferenceMainTab } from '@beak/common/types/beak-hub';
-import { ValidRequestNode } from '@beak/common/types/beak-project';
+import type { ValidRequestNode } from '@getbeak/types/nodes';
 import styled from 'styled-components';
 
 import TabBar from '../../../../components/atoms/TabBar';

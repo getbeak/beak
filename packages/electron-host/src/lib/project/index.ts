@@ -1,6 +1,9 @@
 import { TypedObject } from '@beak/common/helpers/typescript';
-import { ProjectEncryption, ProjectFile, RequestNodeFile, VariableGroup } from '@beak/common/types/beak-project';
+import { ProjectEncryption } from '@beak/common/types/beak-project';
 import * as ksuid from '@cuvva/ksuid';
+import { RequestNodeFile } from '@getbeak/types/nodes';
+import { ProjectFile } from '@getbeak/types/project';
+import { VariableGroup } from '@getbeak/types/variable-groups';
 import { BrowserWindow, dialog, MessageBoxOptions, OpenDialogOptions } from 'electron';
 import * as fs from 'fs-extra';
 import git from 'isomorphic-git';

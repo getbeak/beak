@@ -1,4 +1,4 @@
-import { RequestBody, RequestBodyType } from '../types/beak-project';
+import type { RequestBody, RequestBodyType } from '@getbeak/types/request';
 
 const bodyContentTypeMap: Record<RequestBodyType, string> = {
 	json: 'application/json',

@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import binaryStore from '@beak/app/lib/binary-store';
-import { Flight } from '@beak/app/store/flight/types';
 import { requestAllowsBody } from '@beak/app/utils/http';
+import type { Flight } from '@getbeak/types/flight';
 
 export type NotEligible = 'request_invalid_body' | 'request_no_body' | 'response_no_body';
 type ReturnType = ['eligible', Uint8Array] | [NotEligible, null];

@@ -1,5 +1,6 @@
+import { ValueParts } from '@beak/app/features/realtime-values/values';
 import { ActiveRename } from '@beak/app/features/tree-view/types';
-import { ValueParts, VariableGroup, VariableGroups } from '@beak/common/types/beak-project';
+import type { VariableGroup, VariableGroups } from '@getbeak/types/variable-groups';
 
 export const ActionTypes = {
 	START_VARIABLE_GROUPS: '@beak/global/variable-groups/START_VARIABLE_GROUPS',

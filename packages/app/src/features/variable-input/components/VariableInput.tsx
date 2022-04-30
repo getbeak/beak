@@ -1,12 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import RealtimeValueEditor from '@beak/app/features/realtime-value-editor/components/RealtimeValueEditor';
+import { RealtimeValuePart } from '@beak/app/features/realtime-values/values';
+import { ValueParts } from '@beak/app/features/realtime-values/values';
 import useForceReRender from '@beak/app/hooks/use-force-rerender';
 import { checkShortcut } from '@beak/app/lib/keyboard-shortcuts';
 import { requestFlight } from '@beak/app/store/flight/actions';
 import { useAppSelector } from '@beak/app/store/redux';
-import { ValueParts } from '@beak/common/types/beak-project';
-import { RealtimeValuePart } from '@beak/common/types/realtime-values';
 import styled from 'styled-components';
 
 import { getRealtimeValue } from '../../realtime-values';

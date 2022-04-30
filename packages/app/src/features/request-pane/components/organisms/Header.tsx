@@ -2,12 +2,13 @@ import React from 'react';
 import { useDispatch } from 'react-redux';
 import useRealtimeValueContext from '@beak/app/features/realtime-values/hooks/use-realtime-value-context';
 import { parseValueParts } from '@beak/app/features/realtime-values/parser';
+import { ValueParts } from '@beak/app/features/realtime-values/values';
 import VariableInput from '@beak/app/features/variable-input/components/VariableInput';
 import { requestPreferenceSetReqMainTab } from '@beak/app/store/preferences/actions';
 import { useAppSelector } from '@beak/app/store/redux';
-import { ValidRequestNode, ValueParts } from '@beak/common/types/beak-project';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import type { ValidRequestNode } from '@getbeak/types/nodes';
 import styled, { useTheme } from 'styled-components';
 import URL from 'url-parse';
 

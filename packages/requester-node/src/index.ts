@@ -1,12 +1,12 @@
 import { requestBodyContentType } from '@beak/common/helpers/request';
 import { TypedObject } from '@beak/common/helpers/typescript';
-import { RequestOverview } from '@beak/common/types/beak-project';
 import {
 	FlightCompletePayload,
 	FlightFailedPayload,
 	FlightHeartbeatPayload,
 	FlightRequestPayload,
 } from '@beak/common/types/requester';
+import type { RequestOverview } from '@getbeak/types/request';
 import fetch, { RequestInit, Response } from 'node-fetch';
 
 const bodyFreeVerbs = ['get', 'head'];

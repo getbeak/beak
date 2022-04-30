@@ -8,8 +8,8 @@ interface PossibleSquawk {
 
 export default class Squawk extends Error {
 	readonly code: string = '';
-	readonly meta: Meta | undefined = void 0;
-	readonly reasons: Squawk[] | undefined = void 0;
+	readonly meta?: Meta | undefined = void 0;
+	readonly reasons?: Squawk[] | undefined = void 0;
 
 	constructor(code: string, meta?: Meta | null, reasons?: Error[]) {
 		super(code);

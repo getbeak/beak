@@ -19,7 +19,8 @@
   },
   "dependencies": {
     "@beak/common": "*",
-    "@beak/design-system": "*"
+    "@beak/design-system": "*",
+    "@getbeak/types": "*"
   },
   "devDependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.1.1",

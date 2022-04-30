@@ -1,6 +1,5 @@
+import { DigestRtv, ValueParts } from '@beak/app/features/realtime-values/values';
 import { arrayBufferToHexString } from '@beak/app/utils/encoding';
-import { ValueParts } from '@beak/common/types/beak-project';
-import { DigestRtv } from '@beak/common/types/realtime-values';
 
 import { parseValueParts } from '../parser';
 import { RealtimeValue } from '../types';

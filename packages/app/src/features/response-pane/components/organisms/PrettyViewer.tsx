@@ -1,10 +1,10 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import { Flight } from '@beak/app/store/flight/types';
 import actions from '@beak/app/store/preferences/actions';
 import { useAppSelector } from '@beak/app/store/redux';
 import { attemptJsonStringFormat } from '@beak/app/utils/json';
 import { createDefaultOptions } from '@beak/app/utils/monaco';
+import type { Flight } from '@getbeak/types/flight';
 import Editor from '@monaco-editor/react';
 import styled from 'styled-components';
 import xmlFormatter from 'xml-formatter';

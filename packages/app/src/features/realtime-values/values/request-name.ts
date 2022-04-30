@@ -1,4 +1,4 @@
-import { RequestNameRtv } from '@beak/common/types/realtime-values';
+import { RequestNameRtv } from '@beak/app/features/realtime-values/values';
 
 import { RealtimeValue } from '../types';
 

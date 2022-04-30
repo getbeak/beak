@@ -2,7 +2,7 @@ import React from 'react';
 import { useDispatch } from 'react-redux';
 import DebouncedInput from '@beak/app/components/atoms/DebouncedInput';
 import { actions } from '@beak/app/store/project';
-import { BooleanEntry, NamedBooleanEntry } from '@beak/common/types/beak-json-editor';
+import type { BooleanEntry, NamedBooleanEntry } from '@getbeak/types/body-editor-json';
 
 import {
 	BodyAction,

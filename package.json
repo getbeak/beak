@@ -36,7 +36,7 @@
     "start:share": "lerna exec --parallel --concurrency 1 --stream --scope '@beak/share' yarn start",
     "test": "jest",
     "lint": "eslint --ext .tsx --ext .ts './packages/'",
-    "typecheck": "lerna exec --stream yarn typecheck",
+    "typecheck": "lerna run typecheck --stream",
     "unfuck": "lerna clean && yarn --force",
     "postinstall": "node ./node-module-overrides/index.js",
     "release-safety": "yarn typecheck && yarn lint && yarn build"

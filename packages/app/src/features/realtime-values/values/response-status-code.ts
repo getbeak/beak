@@ -1,4 +1,4 @@
-import { ResponseStatusCodeRtv } from '@beak/common/types/realtime-values';
+import { ResponseStatusCodeRtv } from '@beak/app/features/realtime-values/values';
 
 import { RealtimeValue } from '../types';
 import { getRequestNode } from '../utils/request';

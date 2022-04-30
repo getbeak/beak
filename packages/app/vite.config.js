@@ -31,6 +31,8 @@ module.exports = {
 			'@beak/app': path.join(__dirname, './src'),
 			'@beak/common': path.join(__dirname, `../common/${sourcePath}`),
 			'@beak/design-system': path.join(__dirname, `../design-system/${sourcePath}`),
+
+			'@getbeak/types': path.join(__dirname, '../types/src'),
 		},
 	},
 	plugins: [

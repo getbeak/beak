@@ -1,4 +1,4 @@
-import { ValueParts } from '@beak/common/types/beak-project';
+import { ValueParts } from '@beak/app/features/realtime-values/values';
 
 export function detectRelevantCopiedValueParts(valueParts: ValueParts) {
 	const sel = window.getSelection()!;

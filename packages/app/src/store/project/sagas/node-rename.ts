@@ -3,7 +3,7 @@ import { ActiveRename } from '@beak/app/features/tree-view/types';
 import { renameFolderNode } from '@beak/app/lib/beak-project/folder';
 import { renameRequestNode } from '@beak/app/lib/beak-project/request';
 import { ipcDialogService } from '@beak/app/lib/ipc';
-import { FolderNode, Nodes, RequestNode } from '@beak/common/types/beak-project';
+import type { FolderNode, Nodes, RequestNode } from '@getbeak/types/nodes';
 import { PayloadAction } from '@reduxjs/toolkit';
 import { call, delay, put, select } from 'redux-saga/effects';
 

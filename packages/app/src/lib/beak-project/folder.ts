@@ -1,4 +1,4 @@
-import { FolderNode } from '@beak/common/types/beak-project';
+import type { FolderNode } from '@getbeak/types/nodes';
 import path from 'path-browserify';
 
 import { ipcFsService } from '../ipc';

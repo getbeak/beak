@@ -1,5 +1,5 @@
-import { ValueParts } from '@beak/common/types/beak-project';
-import { Base64EncodedRtv } from '@beak/common/types/realtime-values';
+import { Base64EncodedRtv } from '@beak/app/features/realtime-values/values';
+import { ValueParts } from '@beak/app/features/realtime-values/values';
 
 import { parseValueParts } from '../parser';
 import { RealtimeValue } from '../types';

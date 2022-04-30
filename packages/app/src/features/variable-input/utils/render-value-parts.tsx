@@ -1,9 +1,10 @@
 import React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { ValueParts, VariableGroups } from '@beak/common/types/beak-project';
+import type { VariableGroups } from '@getbeak/types/variable-groups';
 import * as uuid from 'uuid';
 
 import { getRealtimeValue } from '../../realtime-values';
+import { ValueParts } from '../../realtime-values/values';
 import { getVariableGroupItemName } from '../../realtime-values/values/variable-group-item';
 
 export default function renderValueParts(parts: ValueParts, variableGroups: VariableGroups) {
@@ -27,8 +28,11 @@ export default function renderValueParts(parts: ValueParts, variableGroups: Vari
 
 				const editable = Boolean(impl.editor);
 				const name = (() => {
-					if (p.type === 'variable_group_item')
-						return getVariableGroupItemName(p.payload, variableGroups);
+					if (p.type === 'variable_group_item') {
+						const payload = p.payload as { itemId: string };
+
+						return getVariableGroupItemName(payload, variableGroups);
+					}
 
 					return impl.name;
 				})();

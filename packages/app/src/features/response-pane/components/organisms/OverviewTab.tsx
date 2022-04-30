@@ -1,9 +1,9 @@
 import React from 'react';
 import BasicTableEditor from '@beak/app/features/basic-table-editor/components/BasicTableEditor';
 import binaryStore from '@beak/app/lib/binary-store';
-import { Flight } from '@beak/app/store/flight/types';
 import { getStatusReasonPhrase } from '@beak/app/utils/http';
-import { ToggleKeyValue } from '@beak/common/types/beak-project';
+import type { Flight } from '@getbeak/types/flight';
+import type { ToggleKeyValue } from '@getbeak/types/request';
 import prettyBytes from 'pretty-bytes';
 import styled from 'styled-components';
 

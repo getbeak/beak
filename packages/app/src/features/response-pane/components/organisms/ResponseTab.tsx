@@ -2,12 +2,12 @@ import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import BasicTableEditor from '@beak/app/features/basic-table-editor/components/BasicTableEditor';
 import binaryStore from '@beak/app/lib/binary-store';
-import { Flight } from '@beak/app/store/flight/types';
 import { requestPreferenceSetResSubTab } from '@beak/app/store/preferences/actions';
 import { useAppSelector } from '@beak/app/store/redux';
 import { createDefaultOptions } from '@beak/app/utils/monaco';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import ksuid from '@cuvva/ksuid';
+import type { Flight } from '@getbeak/types/flight';
 import Editor from '@monaco-editor/react';
 import styled from 'styled-components';
 

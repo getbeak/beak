@@ -3,10 +3,10 @@ import { useDispatch } from 'react-redux';
 import WindowSessionContext from '@beak/app/contexts/window-session-context';
 import BasicTableEditor from '@beak/app/features/basic-table-editor/components/BasicTableEditor';
 import useRealtimeValueContext from '@beak/app/features/realtime-values/hooks/use-realtime-value-context';
-import { Flight } from '@beak/app/store/flight/types';
 import { requestPreferenceSetResSubTab } from '@beak/app/store/preferences/actions';
 import { useAppSelector } from '@beak/app/store/redux';
 import { createDefaultOptions } from '@beak/app/utils/monaco';
+import type { Flight } from '@getbeak/types/flight';
 import Editor from '@monaco-editor/react';
 import styled from 'styled-components';
 

@@ -1,4 +1,4 @@
-import { UuidRtv } from '@beak/common/types/realtime-values';
+import { UuidRtv } from '@beak/app/features/realtime-values/values';
 import uuid from 'uuid';
 
 import { RealtimeValue } from '../types';

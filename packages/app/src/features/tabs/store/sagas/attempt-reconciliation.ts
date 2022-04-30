@@ -1,7 +1,9 @@
 import { ApplicationState } from '@beak/app/store';
 import { createTakeLatestSagaSet } from '@beak/app/utils/redux/sagas';
 import { TypedObject } from '@beak/common/helpers/typescript';
-import { TabItem, Tree, VariableGroups } from '@beak/common/types/beak-project';
+import { TabItem } from '@beak/common/types/beak-project';
+import type { Tree } from '@getbeak/types/nodes';
+import type { VariableGroups } from '@getbeak/types/variable-groups';
 import { delay, put, select } from 'redux-saga/effects';
 
 import actions, { closeTab, reconciliationComplete } from '../actions';

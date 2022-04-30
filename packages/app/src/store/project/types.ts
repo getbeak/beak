@@ -1,6 +1,8 @@
+import { ValueParts } from '@beak/app/features/realtime-values/values';
 import { ActiveRename } from '@beak/app/features/tree-view/types';
-import { EntryMap, EntryType } from '@beak/common/types/beak-json-editor';
-import { ToggleKeyValue, Tree, ValueParts } from '@beak/common/types/beak-project';
+import type { EntryMap, EntryType } from '@getbeak/types/body-editor-json';
+import type { Tree } from '@getbeak/types/nodes';
+import type { ToggleKeyValue } from '@getbeak/types/request';
 
 export const ActionTypes = {
 	START_PROJECT: '@beak/global/project/START_PROJECT',

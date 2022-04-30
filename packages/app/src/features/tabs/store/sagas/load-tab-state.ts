@@ -3,8 +3,8 @@ import { ipcFsService } from '@beak/app/lib/ipc';
 import { ApplicationState } from '@beak/app/store';
 import { createTakeEverySagaSet } from '@beak/app/utils/redux/sagas';
 import { TabPreferences } from '@beak/common/types/beak-hub';
-import { Tree } from '@beak/common/types/beak-project';
 import Squawk from '@beak/common/utils/squawk';
+import type { Tree } from '@getbeak/types/nodes';
 import path from 'path-browserify';
 import { call, put, select } from 'redux-saga/effects';
 

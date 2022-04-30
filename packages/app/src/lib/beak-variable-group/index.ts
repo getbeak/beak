@@ -1,4 +1,4 @@
-import { VariableGroup } from '@beak/common/types/beak-project';
+import type { VariableGroup } from '@getbeak/types/variable-groups';
 import path from 'path-browserify';
 
 import { readJsonAndValidate } from '../fs';

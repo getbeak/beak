@@ -1,6 +1,5 @@
 import { useAppSelector } from '@beak/app/store/redux';
-
-import { Context } from '../types';
+import type { Context } from '@getbeak/types/values';
 
 export default function useRealtimeValueContext(requestId?: string): Context {
 	const variableGroups = useAppSelector(s => s.global.variableGroups.variableGroups);

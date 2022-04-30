@@ -1,4 +1,4 @@
-import { RequestFolderRtv } from '@beak/common/types/realtime-values';
+import { RequestFolderRtv } from '@beak/app/features/realtime-values/values';
 
 import { RealtimeValue } from '../types';
 

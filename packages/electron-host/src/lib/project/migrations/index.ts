@@ -1,5 +1,5 @@
 import { TypedObject } from '@beak/common/helpers/typescript';
-import { ProjectFile } from '@beak/common/types/beak-project';
+import { ProjectFile } from '@getbeak/types/project';
 
 import logger from '../../logger';
 import handle_0_2_0_to_0_2_1 from './migration-0.2.0-0.2.1';

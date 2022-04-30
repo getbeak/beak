@@ -1,4 +1,5 @@
-import { ProjectEncryption, ProjectFile } from '@beak/common/types/beak-project';
+import { ProjectEncryption } from '@beak/common/types/beak-project';
+import { ProjectFile } from '@getbeak/types/project';
 import fs from 'fs-extra';
 import path from 'path';
 

@@ -2,9 +2,9 @@ import React, { useContext } from 'react';
 import WindowSessionContext from '@beak/app/contexts/window-session-context';
 import useRealtimeValueContext from '@beak/app/features/realtime-values/hooks/use-realtime-value-context';
 import useShareLink from '@beak/app/hooks/use-share-link';
-import { ValidRequestNode } from '@beak/common/types/beak-project';
 import { faCopy, faShareFromSquare } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import type { ValidRequestNode } from '@getbeak/types/nodes';
 import styled from 'styled-components';
 
 import { createBasicHttpOutput } from '../molecules/RequestOutput';
