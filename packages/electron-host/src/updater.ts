@@ -35,7 +35,7 @@ autoUpdater.on('update-downloaded', async (event: UpdateInfo) => {
 });
 
 (function backgroundUpdateScheduler() {
-	window.setInterval(() => {
+	setInterval(() => {
 		if (pendingUpdate)
 			return;
 
