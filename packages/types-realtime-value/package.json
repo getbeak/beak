@@ -1,0 +1,26 @@
+{
+    "name": "@getbeak/types-realtime-value",
+    "version": "1.0.0-prerelease.1",
+    "private": false,
+    "description": "Beak types for realtime value types",
+    "homepage": "https://github.com/getbeak/beak/tree/master/packages/types-realtime-value",
+    "license": "MIT",
+    "contributors": [
+        {
+            "name": "Alexander Forbes-Reed",
+            "url": "https://github.com/0xdeafcafe",
+            "githubUsername": "0xdeafcafe"
+        }
+    ],
+    "main": "",
+    "types": "src/index.d.ts",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/getbeak/beak.git",
+        "directory": "packages/types-realtime-value"
+    },
+    "dependencies": {
+        "@getbeak/types": "1.0.0-prerelease.1"
+    },
+    "scripts": {}
+}

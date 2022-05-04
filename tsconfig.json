@@ -42,6 +42,9 @@
 
       "@getbeak/types": ["packages/types/src"],
       "@getbeak/types/*": ["packages/types/src/*"],
+
+      "@getbeak/types-realtime-value": ["packages/types-realtime-value/src"],
+      "@getbeak/types-realtime-value/*": ["packages/types-realtime-value/src/*"],
     }
   },
   "exclude": [
