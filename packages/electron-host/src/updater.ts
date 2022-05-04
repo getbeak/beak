@@ -34,6 +34,15 @@ autoUpdater.on('update-downloaded', async (event: UpdateInfo) => {
 		autoUpdater.quitAndInstall();
 });
 
+(function backgroundUpdateScheduler() {
+	window.setInterval(() => {
+		if (pendingUpdate)
+			return;
+
+		autoUpdater.checkForUpdates();
+	}, 2700000); // 45 minutes
+}());
+
 export function getPendingUpdate() {
 	return pendingUpdate;
 }
