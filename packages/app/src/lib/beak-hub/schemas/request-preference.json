@@ -71,15 +71,10 @@
 						"additionalProperties": false,
 
 						"required": [
-							"autoDetect",
 							"language"
 						],
 
 						"properties": {
-							"autoDetect": {
-								"type": "boolean"
-							},
-
 							"language": {
 								"type": ["string", "null"],
 								"minLength": 1
