@@ -1,6 +1,6 @@
-import { FlightHistory } from '@beak/app/store/flight/types';
-import { Tree, VariableGroups } from '@beak/common/types/beak-project';
-import { RealtimeValuePart } from '@beak/common/types/realtime-values';
+import type { Context } from '@getbeak/types/values';
+
+import { RealtimeValuePart } from './values';
 
 export interface RealtimeValue<
 	T extends RealtimeValuePart,
@@ -41,14 +41,6 @@ export type UISection<T> = ValuePartInput<T> |
 
 export interface Attributes {
 	requiresRequestId?: boolean;
-}
-
-export interface Context {
-	selectedGroups: Record<string, string>;
-	variableGroups: VariableGroups;
-	projectTree: Tree;
-	flightHistory: Record<string, FlightHistory>;
-	currentRequestId?: string;
 }
 
 interface ValuePartInput<T> {

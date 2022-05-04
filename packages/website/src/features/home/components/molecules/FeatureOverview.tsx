@@ -104,8 +104,8 @@ const FeatureOverview: React.FC<React.PropsWithChildren<unknown>> = () => {
 						</CardTitle>
 						<CardBody>
 							{'Coming soon, is an expansive extensions API, allowing you '}
-							{'to create custom plugins for realtime values, '}
-							{'authentication providers, and more. Make Beak your own.'}
+							{'to create custom extensions for realtime values, '}
+							{'API workflows, and more. Make Beak your own.'}
 						</CardBody>
 					</Card>
 					<Card>

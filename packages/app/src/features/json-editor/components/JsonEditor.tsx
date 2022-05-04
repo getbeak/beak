@@ -1,6 +1,6 @@
 import React from 'react';
 import { TypedObject } from '@beak/common/helpers/typescript';
-import { EntryMap } from '@beak/common/types/beak-json-editor';
+import type { EntryMap } from '@getbeak/types/body-editor-json';
 import styled from 'styled-components';
 
 import {

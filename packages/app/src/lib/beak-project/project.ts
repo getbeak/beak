@@ -1,4 +1,4 @@
-import { ProjectFile } from '@beak/common/types/beak-project';
+import type { ProjectFile } from '@getbeak/types/project';
 import semver from 'semver';
 
 import { readJsonAndValidate } from '../fs';

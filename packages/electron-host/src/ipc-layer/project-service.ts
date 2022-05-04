@@ -1,6 +1,6 @@
 import { IpcProjectServiceMain } from '@beak/common/ipc/project';
-import { ProjectFile } from '@beak/common/types/beak-project';
 import Squawk from '@beak/common/utils/squawk';
+import type { ProjectFile } from '@getbeak/types/project';
 import { dialog, ipcMain, IpcMainInvokeEvent } from 'electron';
 import * as fs from 'fs-extra';
 import * as path from 'path';

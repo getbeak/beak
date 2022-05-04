@@ -1,5 +1,5 @@
 import { writeRequestNode } from '@beak/app/lib/beak-project/request';
-import { Nodes, RequestNode } from '@beak/common/types/beak-project';
+import type { Nodes, RequestNode } from '@getbeak/types/nodes';
 import { PayloadAction } from '@reduxjs/toolkit';
 import { call, delay, put, select } from 'redux-saga/effects';
 import * as uuid from 'uuid';

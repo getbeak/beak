@@ -1,6 +1,7 @@
-import { RealtimeValuePart } from '@beak/common/types/realtime-values';
+import { RealtimeValuePart } from '@beak/app/features/realtime-values/values';
+import type { Context } from '@getbeak/types/values';
 
-import { Context, RealtimeValue } from './types';
+import { RealtimeValue } from './types';
 
 export async function previewValue<T extends RealtimeValuePart>(
 	ctx: Context,

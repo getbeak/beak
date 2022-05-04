@@ -1,4 +1,4 @@
-import { RealtimeValuePart } from '@beak/common/types/realtime-values';
+import { RealtimeValuePart } from '@beak/app/features/realtime-values/values';
 
 import { RealtimeValue } from '../types';
 

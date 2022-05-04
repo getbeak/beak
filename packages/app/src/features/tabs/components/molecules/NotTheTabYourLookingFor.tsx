@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import Button from '@beak/app/components/atoms/Button';
 import { useAppSelector } from '@beak/app/store/redux';
 import { TypedObject } from '@beak/common/helpers/typescript';
-import { ValidRequestNode } from '@beak/common/types/beak-project';
+import type { ValidRequestNode } from '@getbeak/types/nodes';
 import styled from 'styled-components';
 
 import { changeTab } from '../../store/actions';

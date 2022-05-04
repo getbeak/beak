@@ -1,5 +1,5 @@
 import { changeTab } from '@beak/app/features/tabs/store/actions';
-import { Tree } from '@beak/common/types/beak-project';
+import type { Tree } from '@getbeak/types/nodes';
 import { PayloadAction } from '@reduxjs/toolkit';
 import { delay, put, select } from 'redux-saga/effects';
 

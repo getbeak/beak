@@ -4,7 +4,8 @@ import ReflexElement from '@beak/app/components/atoms/ReflexElement';
 import ReflexSplitter from '@beak/app/components/atoms/ReflexSplitter';
 import PendingSlash from '@beak/app/components/molecules/PendingSplash';
 import { useAppSelector } from '@beak/app/store/redux';
-import { RequestNode, TabItem } from '@beak/common/types/beak-project';
+import { TabItem } from '@beak/common/types/beak-project';
+import type { RequestNode } from '@getbeak/types/nodes';
 
 import BrokenRequest from '../../broken-request/components/BrokenRequest';
 import RequestPane from '../../request-pane/components/RequestPane';

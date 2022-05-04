@@ -4,7 +4,7 @@ import createFsEmitter, { scanDirectoryRecursively, ScanResult } from '@beak/app
 import { ipcDialogService } from '@beak/app/lib/ipc';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { EditorPreferences } from '@beak/common/types/beak-hub';
-import { VariableGroups } from '@beak/common/types/beak-project';
+import type { VariableGroups } from '@getbeak/types/variable-groups';
 import path from 'path-browserify';
 import { call, put, select, take } from 'redux-saga/effects';
 

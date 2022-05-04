@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import DebouncedInput from '@beak/app/components/atoms/DebouncedInput';
 import VariableInput from '@beak/app/features/variable-input/components/VariableInput';
 import { actions } from '@beak/app/store/project';
-import { NamedNumberEntry, NumberEntry } from '@beak/common/types/beak-json-editor';
+import type { NamedNumberEntry, NumberEntry } from '@getbeak/types/body-editor-json';
 
 import {
 	BodyAction,

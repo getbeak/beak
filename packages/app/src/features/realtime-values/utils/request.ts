@@ -1,6 +1,5 @@
-import { RequestNode } from '@beak/common/types/beak-project';
-
-import { Context } from '../types';
+import type { RequestNode } from '@getbeak/types/nodes';
+import type { Context } from '@getbeak/types/values';
 
 export function getRequestNode(id: string, ctx: Context) {
 	const node = ctx.projectTree[id];

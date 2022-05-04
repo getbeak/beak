@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Button from '@beak/app/components/atoms/Button';
 import Input, { Select } from '@beak/app/components/atoms/Input';
-import { ValueParts } from '@beak/common/types/beak-project';
+import { ValueParts } from '@beak/app/features/realtime-values/values';
 import styled from 'styled-components';
 
 import { getRealtimeValue } from '../../realtime-values';

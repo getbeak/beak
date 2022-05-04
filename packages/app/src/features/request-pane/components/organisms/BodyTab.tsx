@@ -5,13 +5,15 @@ import { convertKeyValueToString, convertStringToKeyValue } from '@beak/app/feat
 import JsonEditor from '@beak/app/features/json-editor/components/JsonEditor';
 import { convertToEntryJson, convertToRealJson } from '@beak/app/features/json-editor/parsers';
 import useRealtimeValueContext from '@beak/app/features/realtime-values/hooks/use-realtime-value-context';
+import { ValueParts } from '@beak/app/features/realtime-values/values';
 import { ipcDialogService } from '@beak/app/lib/ipc';
 import actions, { requestBodyTextChanged } from '@beak/app/store/project/actions';
 import { RequestBodyTypeChangedPayload } from '@beak/app/store/project/types';
 import { attemptTextToJson } from '@beak/app/utils/json';
 import { createDefaultOptions } from '@beak/app/utils/monaco';
-import { RequestBodyType, ValidRequestNode, ValueParts } from '@beak/common/types/beak-project';
 import ksuid from '@cuvva/ksuid';
+import type { ValidRequestNode } from '@getbeak/types/nodes';
+import type { RequestBodyType } from '@getbeak/types/request';
 import Editor from '@monaco-editor/react';
 import styled from 'styled-components';
 

@@ -1,5 +1,5 @@
+import { ResponseBodyTextRtv } from '@beak/app/features/realtime-values/values';
 import binaryStore from '@beak/app/lib/binary-store';
-import { ResponseBodyTextRtv } from '@beak/common/types/realtime-values';
 
 import { RealtimeValue } from '../types';
 import { getRequestNode } from '../utils/request';

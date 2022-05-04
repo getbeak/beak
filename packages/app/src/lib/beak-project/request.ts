@@ -1,5 +1,5 @@
-import { RequestNode, RequestNodeFile } from '@beak/common/types/beak-project';
 import ksuid from '@cuvva/ksuid';
+import type { RequestNode, RequestNodeFile } from '@getbeak/types/nodes';
 import path from 'path-browserify';
 
 import { readJsonAndValidate } from '../fs';

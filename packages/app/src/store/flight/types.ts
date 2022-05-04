@@ -1,4 +1,6 @@
-import { RequestOverview, ResponseOverview } from '@beak/common/types/beak-project';
+import type { Flight, FlightHistory } from '@getbeak/types/flight';
+import type { RequestOverview } from '@getbeak/types/request';
+import type { ResponseOverview } from '@getbeak/types/response';
 
 export const ActionTypes = {
 	REQUEST_FLIGHT: '@beak/global/flight/REQUEST_FLIGHT',
@@ -26,11 +28,6 @@ export const initialState: State = {
 	blackBox: {},
 };
 
-export interface FlightHistory {
-	selected?: string;
-	history: Record<string, Flight>;
-}
-
 export interface BeginFlightPayload {
 	requestId: string;
 	flightId: string;
@@ -50,22 +47,6 @@ export interface FlightFailurePayload {
 	requestId: string;
 	flightId: string;
 	error: Error;
-}
-
-export interface Flight {
-	requestId: string;
-	flightId: string;
-	request: RequestOverview;
-	response?: ResponseOverview;
-	error?: Error;
-	timing: {
-		beakStart: number;
-		requestStart?: number;
-		headersEnd?: number;
-		responseEnd?: number;
-		beakEnd?: number;
-	};
-	binaryStoreKey: string;
 }
 
 export interface FlightInProgress extends Flight {

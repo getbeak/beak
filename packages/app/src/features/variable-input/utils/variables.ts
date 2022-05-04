@@ -1,4 +1,4 @@
-import { ValueParts } from '@beak/common/types/beak-project';
+import { ValueParts } from '@beak/app/features/realtime-values/values';
 
 import { NormalizedSelection } from './browser-selection';
 

@@ -3,7 +3,7 @@ import { removeFolderNode } from '@beak/app/lib/beak-project/folder';
 import { removeRequestNode } from '@beak/app/lib/beak-project/request';
 import { ipcDialogService } from '@beak/app/lib/ipc';
 import { ShowMessageBoxRes } from '@beak/common/ipc/dialog';
-import { Nodes } from '@beak/common/types/beak-project';
+import type { Nodes } from '@getbeak/types/nodes';
 import { PayloadAction } from '@reduxjs/toolkit';
 import { call, put, select } from 'redux-saga/effects';
 

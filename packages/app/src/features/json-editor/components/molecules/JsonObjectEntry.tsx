@@ -5,8 +5,8 @@ import SelectedNodeContext from '@beak/app/features/request-pane/contexts/select
 import { actions } from '@beak/app/store/project';
 import { useAppSelector } from '@beak/app/store/redux';
 import { TypedObject } from '@beak/common/helpers/typescript';
-import { NamedObjectEntry, ObjectEntry } from '@beak/common/types/beak-json-editor';
-import { RequestBodyJson } from '@beak/common/types/beak-project';
+import type { NamedObjectEntry, ObjectEntry } from '@getbeak/types/body-editor-json';
+import type { RequestBodyJson } from '@getbeak/types/request';
 
 import {
 	BodyAction,

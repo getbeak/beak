@@ -1,9 +1,8 @@
 import { generateValueIdent } from '@beak/app/lib/beak-variable-group/utils';
 import { TypedObject } from '@beak/common/helpers/typescript';
-import { ValueParts } from '@beak/common/types/beak-project';
+import type { Context, ValueParts } from '@getbeak/types/values';
 
 import { getRealtimeValue } from '.';
-import { Context } from './types';
 
 export async function parseValueParts(
 	ctx: Context,

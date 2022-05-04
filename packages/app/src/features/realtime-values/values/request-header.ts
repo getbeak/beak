@@ -1,6 +1,6 @@
+import { RequestHeaderRtv } from '@beak/app/features/realtime-values/values';
+import { ValueParts } from '@beak/app/features/realtime-values/values';
 import { TypedObject } from '@beak/common/helpers/typescript';
-import { ValueParts } from '@beak/common/types/beak-project';
-import { RequestHeaderRtv } from '@beak/common/types/realtime-values';
 
 import { parseValueParts } from '../parser';
 import { RealtimeValue } from '../types';

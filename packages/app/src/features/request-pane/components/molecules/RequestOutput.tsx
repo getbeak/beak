@@ -4,14 +4,15 @@ import { convertKeyValueToString } from '@beak/app/features/basic-table-editor/p
 import { convertToRealJson } from '@beak/app/features/json-editor/parsers';
 import useRealtimeValueContext from '@beak/app/features/realtime-values/hooks/use-realtime-value-context';
 import { parseValueParts } from '@beak/app/features/realtime-values/parser';
-import { Context } from '@beak/app/features/realtime-values/types';
 import useComponentMounted from '@beak/app/hooks/use-component-mounted';
 import { useAppSelector } from '@beak/app/store/redux';
 import { createDefaultOptions } from '@beak/app/utils/monaco';
 import { convertRequestToUrl } from '@beak/app/utils/uri';
 import { requestBodyContentType } from '@beak/common/helpers/request';
 import { TypedObject } from '@beak/common/helpers/typescript';
-import { RequestBody, RequestOverview, ToggleKeyValue, ValidRequestNode } from '@beak/common/types/beak-project';
+import type { ValidRequestNode } from '@getbeak/types/nodes';
+import type { RequestBody, RequestOverview, ToggleKeyValue } from '@getbeak/types/request';
+import type { Context } from '@getbeak/types/values';
 import Editor from '@monaco-editor/react';
 
 const bodyFreeVerbs = ['get', 'head'];

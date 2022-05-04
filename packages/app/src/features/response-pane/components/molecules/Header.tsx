@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import useRealtimeValueContext from '@beak/app/features/realtime-values/hooks/use-realtime-value-context';
-import { Flight } from '@beak/app/store/flight/types';
 import { getStatusReasonPhrase } from '@beak/app/utils/http';
 import { convertRequestToUrl } from '@beak/app/utils/uri';
 import { statusToColor } from '@beak/design-system/helpers';
+import type { Flight } from '@getbeak/types/flight';
 import styled from 'styled-components';
 
 export interface HeaderProps {

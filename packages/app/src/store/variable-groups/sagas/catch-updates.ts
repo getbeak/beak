@@ -1,5 +1,5 @@
 import { writeVariableGroup } from '@beak/app/lib/beak-variable-group';
-import { VariableGroup } from '@beak/common/types/beak-project';
+import type { VariableGroup } from '@getbeak/types/variable-groups';
 import { PayloadAction } from '@reduxjs/toolkit';
 import { call, delay, put, select } from 'redux-saga/effects';
 import * as uuid from 'uuid';

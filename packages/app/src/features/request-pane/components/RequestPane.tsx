@@ -4,8 +4,8 @@ import { ReflexContainer, ReflexElement } from 'react-reflex';
 import { loadRequestPreferences } from '@beak/app/store/preferences/actions';
 import { alertInsert, alertRemoveDependents } from '@beak/app/store/project/actions';
 import { useAppSelector } from '@beak/app/store/redux';
-import { ValidRequestNode } from '@beak/common/types/beak-project';
 import ksuid from '@cuvva/ksuid';
+import type { ValidRequestNode } from '@getbeak/types/nodes';
 import styled from 'styled-components';
 
 import { HorizontalContextualReflexSplitter } from '../../../components/atoms/ReflexSplitter';

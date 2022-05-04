@@ -1,6 +1,6 @@
+import { ResponseBodyJsonRtv } from '@beak/app/features/realtime-values/values';
 import binaryStore from '@beak/app/lib/binary-store';
 import { attemptTextToJson } from '@beak/app/utils/json';
-import { ResponseBodyJsonRtv } from '@beak/common/types/realtime-values';
 import get from 'lodash.get';
 
 import { parseValueParts } from '../parser';

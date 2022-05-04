@@ -1,5 +1,5 @@
+import { NonceRtv } from '@beak/app/features/realtime-values/values';
 import { toWebSafeBase64 } from '@beak/app/lib/base64';
-import { NonceRtv } from '@beak/common/types/realtime-values';
 
 import { RealtimeValue } from '../types';
 

@@ -1,19 +1,10 @@
 /* eslint-disable no-param-reassign */
 
 import { TypedObject } from '@beak/common/helpers/typescript';
-import {
-	EntryMap,
-	NamedEntries,
-	NamedStringEntry,
-	ValueEntries,
-} from '@beak/common/types/beak-json-editor';
-import {
-	FolderNode,
-	RequestBodyJson,
-	RequestBodyUrlEncodedForm,
-	ValidRequestNode,
-} from '@beak/common/types/beak-project';
 import ksuid from '@cuvva/ksuid';
+import type { EntryMap, NamedEntries, NamedStringEntry, ValueEntries } from '@getbeak/types/body-editor-json';
+import type { FolderNode, ValidRequestNode } from '@getbeak/types/nodes';
+import type { RequestBodyJson, RequestBodyUrlEncodedForm } from '@getbeak/types/request';
 import { createReducer } from '@reduxjs/toolkit';
 
 import * as actions from './actions';

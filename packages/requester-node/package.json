@@ -15,7 +15,8 @@
     "start": "tsc -b tsconfig.json -w"
   },
   "dependencies": {
-    "@beak/common": "^0.0.0",
+    "@beak/common": "*",
+    "@getbeak/types": "*",
     "node-fetch": "^2.6.1"
   },
   "devDependencies": {

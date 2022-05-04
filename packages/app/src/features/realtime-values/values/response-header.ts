@@ -1,5 +1,5 @@
+import { ResponseHeaderRtv } from '@beak/app/features/realtime-values/values';
 import { TypedObject } from '@beak/common/helpers/typescript';
-import { ResponseHeaderRtv } from '@beak/common/types/realtime-values';
 
 import { parseValueParts } from '../parser';
 import { RealtimeValue } from '../types';

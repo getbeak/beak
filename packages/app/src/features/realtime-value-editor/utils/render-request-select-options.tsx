@@ -1,8 +1,7 @@
 import React from 'react';
 import { TypedObject } from '@beak/common/helpers/typescript';
-import { FolderNode, RequestNode } from '@beak/common/types/beak-project';
-
-import { Context } from '../../realtime-values/types';
+import type { FolderNode, RequestNode } from '@getbeak/types/nodes';
+import type { Context } from '@getbeak/types/values';
 
 export default function renderRequestSelectOptions(context: Context) {
 	const depth = 0;

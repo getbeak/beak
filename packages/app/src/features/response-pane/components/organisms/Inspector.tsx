@@ -3,12 +3,12 @@ import { useDispatch } from 'react-redux';
 import { requestPreferenceSetResMainTab } from '@beak/app/store/preferences/actions';
 import { useAppSelector } from '@beak/app/store/redux';
 import { ResponsePreferenceMainTab } from '@beak/common/types/beak-hub';
+import type { Flight } from '@getbeak/types/flight';
 import styled from 'styled-components';
 
 import TabBar from '../../../../components/atoms/TabBar';
 import TabItem from '../../../../components/atoms/TabItem';
 import TabSpacer from '../../../../components/atoms/TabSpacer';
-import { Flight } from '../../../../store/flight/types';
 import OverviewTab from './OverviewTab';
 import RequestTab from './RequestTab';
 import ResponseTab from './ResponseTab';

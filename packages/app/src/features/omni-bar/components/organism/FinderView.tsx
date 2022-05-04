@@ -6,7 +6,7 @@ import { checkShortcut } from '@beak/app/lib/keyboard-shortcuts';
 import { useAppSelector } from '@beak/app/store/redux';
 import { movePosition } from '@beak/app/utils/arrays';
 import { TypedObject } from '@beak/common/helpers/typescript';
-import { ValidRequestNode } from '@beak/common/types/beak-project';
+import type { ValidRequestNode } from '@getbeak/types/nodes';
 import Fuse from 'fuse.js';
 import styled, { css } from 'styled-components';
 

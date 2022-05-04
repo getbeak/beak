@@ -1,5 +1,5 @@
-import { VariableGroup } from '@beak/common/types/beak-project';
 import ksuid from '@cuvva/ksuid';
+import type { VariableGroup } from '@getbeak/types/variable-groups';
 import path from 'path-browserify';
 
 import { ipcFsService } from '../ipc';
@@ -14,15 +14,6 @@ const variableGroupNameWordlist = [
 	'Canary',
 	'Cockatoo',
 	'Cockatiel',
-	'Cockatiel',
-	'Cockatiel',
-	'Cockatiel',
-	'Cockatiel',
-	'Cockatiel',
-	'Cockatiel',
-	'Cockatiel',
-	'Cockatiel',
-	'Cockatiel',
 	'Cormorant',
 	'Crane',
 	'Crow',
@@ -31,14 +22,6 @@ const variableGroupNameWordlist = [
 	'Duck',
 	'Eagle',
 	'Falcon',
-	'Flamingo',
-	'Flamingo',
-	'Flamingo',
-	'Flamingo',
-	'Flamingo',
-	'Flamingo',
-	'Flamingo',
-	'Flamingo',
 	'Flamingo',
 	'Frigate',
 	'Gallinule',
@@ -70,14 +53,6 @@ const variableGroupNameWordlist = [
 	'Stork',
 	'Swallow',
 	'Swan',
-	'Swift',
-	'Swift',
-	'Swift',
-	'Swift',
-	'Swift',
-	'Swift',
-	'Swift',
-	'Swift',
 	'Swift',
 	'Turkey',
 	'Vulture',
