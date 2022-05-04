@@ -89,6 +89,9 @@ async function loadRequestPreferences(id: string) {
 		if (Squawk.coerce(error).code !== 'schema_invalid')
 			throw error;
 
+		// eslint-disable-next-line no-console
+		console.warn('Request preferences invalid:', error);
+
 		return defaultPreferences;
 	}
 }
@@ -112,6 +115,9 @@ async function loadEditorPreferences() {
 	} catch (error) {
 		if (Squawk.coerce(error).code !== 'schema_invalid')
 			throw error;
+
+		// eslint-disable-next-line no-console
+		console.warn('Editor preferences invalid:', error);
 
 		return defaultPreferences;
 	}
@@ -138,6 +144,9 @@ async function loadSidebarPreferences() {
 		if (Squawk.coerce(error).code !== 'schema_invalid')
 			throw error;
 
+		// eslint-disable-next-line no-console
+		console.warn('Sidebar preferences invalid:', error);
+
 		return defaultPreferences;
 	}
 }
@@ -161,6 +170,9 @@ async function loadProjectPanePreferences() {
 	} catch (error) {
 		if (Squawk.coerce(error).code !== 'schema_invalid')
 			throw error;
+
+		// eslint-disable-next-line no-console
+		console.warn('Project preferences invalid:', error);
 
 		return defaultPreferences;
 	}
