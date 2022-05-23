@@ -1,7 +1,7 @@
 import { attemptReconciliation } from '@beak/app/features/tabs/store/actions';
 import { readVariableGroup } from '@beak/app/lib/beak-variable-group';
 import createFsEmitter, { scanDirectoryRecursively, ScanResult } from '@beak/app/lib/fs-emitter';
-import { ipcDialogService } from '@beak/app/lib/ipc';
+import { ipcDialogService, ipcFsService } from '@beak/app/lib/ipc';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { EditorPreferences } from '@beak/common/types/beak-hub';
 import type { VariableGroups } from '@getbeak/types/variable-groups';
@@ -93,6 +93,14 @@ export default function* workerStartVariableGroups() {
 }
 
 function* initialImport(vgPath: string) {
+	const folderExists: boolean = yield call([ipcFsService, ipcFsService.pathExists], 'variable-groups');
+
+	if (!folderExists) {
+		yield put(actions.variableGroupsOpened({ variableGroups: {} }));
+
+		return;
+	}
+
 	const items: ScanResult[] = yield scanDirectoryRecursively(vgPath);
 	const files = items.filter(i => !i.isDirectory).map(i => i.path);
 	const variableGroups: VariableGroups = yield call(readVariableGroups, files);
