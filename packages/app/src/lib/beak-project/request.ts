@@ -43,7 +43,7 @@ export async function readRequestNode(requestFilePath: string): Promise<RequestN
 			filePath,
 			parent: path.join(filePath, '..'),
 			name,
-			id: file.id,
+			id: file.id || ksuid.generate('failedrequest').toString(),
 			mode: 'failed',
 			error,
 		};
