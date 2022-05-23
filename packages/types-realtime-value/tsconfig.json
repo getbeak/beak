@@ -1,0 +1,16 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "module": "ES2022",
+    "baseUrl": "./src",
+    "typeRoots": [
+        "./src"
+    ],
+  },
+  "references": [
+    { "path":  "../types" }
+  ],
+  "include": [
+    "src/**/*.ts"
+  ]
+}
