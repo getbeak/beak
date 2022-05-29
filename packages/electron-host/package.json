@@ -25,7 +25,7 @@
     "@beak/app": "*",
     "@beak/common": "*",
     "@beak/requester-node": "*",
-    "@getbeak/types": "*",
+    "@getbeak/types": "^1.0.0-prerelease.2",
     "asar": "^3.0.3",
     "date-fns": "^2.28.0",
     "electron-esbuild": "^5.0.2",
@@ -40,6 +40,7 @@
   },
   "devDependencies": {
     "@types/electron-devtools-installer": "^2.2.2",
+    "@getbeak/types-realtime-value": "1.0.0-prerelease.2",
     "@types/fs-extra": "^9.0.13",
     "@types/uuid": "^8.3.4",
     "copyfiles": "^2.4.1",

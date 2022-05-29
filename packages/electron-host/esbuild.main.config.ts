@@ -112,7 +112,7 @@ export default {
 	},
 	sourcemap: true,
 	assetNames: '[name]',
-	external: ['node:fs'],
+	external: ['node:fs', 'vm2'],
 } as BuildOptions;
 
 function writeDefinition(value: string | undefined) {
