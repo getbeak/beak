@@ -8,7 +8,7 @@ import { EditableRealtimeValue } from '@getbeak/types-realtime-value/';
 import fs from 'fs-extra';
 import cd from 'lodash.clonedeep';
 import path from 'path';
-import { NodeVM } from 'vm2';
+import { NodeVM, VMScript } from 'vm2';
 
 interface ProjectExtensions {
 	[projectId: string]: Record<string, RtvExtensionStorage>;
@@ -18,6 +18,9 @@ interface RtvExtensionStorage {
 	type: string;
 	version: string;
 	scriptContent: string;
+	vm: NodeVM;
+	script: VMScript;
+	extension: EditableRealtimeValue<any, any>;
 }
 
 export default class ExtensionManager {
@@ -42,7 +45,8 @@ export default class ExtensionManager {
 			},
 		});
 
-		const extensionContext = extensionVm.run(scriptContent);
+		const compiledScript = new VMScript(scriptContent);
+		const extensionContext = extensionVm.run(compiledScript);
 
 		// TODO(afr): Run validation on output
 		const extension = extensionContext.default as EditableRealtimeValue<any>;
@@ -54,6 +58,9 @@ export default class ExtensionManager {
 			type,
 			version,
 			scriptContent,
+			vm: extensionVm,
+			script: compiledScript,
+			extension,
 		};
 
 		return {
@@ -76,132 +83,46 @@ export default class ExtensionManager {
 	}
 
 	async rtvCreateDefaultPayload(projectId: string, type: string, context: Context) {
-		const extensionStorage = this.projectExtensions[projectId]?.[type];
-
-		if (!extensionStorage)
-			throw new Squawk('unknown_registered_extension', { projectId, type });
-
-		const extensionVm = new NodeVM({
-			console: 'off',
-			wasm: false,
-			eval: false,
-			sandbox: {
-				// TODO(afr): Pass in the proper sandbox context
-				beakApi: {
-					// eslint-disable-next-line no-console
-					log: (level: unknown, message: string) => console.log({ level, message }),
-					parseValueParts: (_ctx: unknown, _parts: unknown, _recursiveSet: unknown) => [],
-				},
-			},
-		});
-
-		const extension = extensionVm.run(extensionStorage.scriptContent).default as EditableRealtimeValue<any>;
+		const { extension } = this.getExtensionContext(projectId, type);
 		const x = await extension.createDefaultPayload(context);
 
 		return { ...x };
 	}
 
 	async rtvGetValue(projectId: string, type: string, context: Context, payload: any, recursiveSet: string[]) {
-		const extensionStorage = this.projectExtensions[projectId]?.[type];
-
-		if (!extensionStorage)
-			throw new Squawk('unknown_registered_extension', { projectId, type });
-
-		const extensionVm = new NodeVM({
-			console: 'off',
-			wasm: false,
-			eval: false,
-			sandbox: {
-				// TODO(afr): Pass in the proper sandbox context
-				beakApi: {
-					// eslint-disable-next-line no-console
-					log: (level: unknown, message: string) => console.log({ level, message }),
-					parseValueParts: (_ctx: unknown, _parts: unknown, _recursiveSet: unknown) => [],
-				},
-			},
-		});
-
-		const extension = extensionVm.run(extensionStorage.scriptContent).default as EditableRealtimeValue<any>;
+		const { extension } = this.getExtensionContext(projectId, type);
 
 		return await extension.getValue(context, payload, new Set(recursiveSet));
 	}
 
 	async rtvCreateUserInterface(projectId: string, type: string, context: Context) {
-		const extensionStorage = this.projectExtensions[projectId]?.[type];
-
-		if (!extensionStorage)
-			throw new Squawk('unknown_registered_extension', { projectId, type });
-
-		const extensionVm = new NodeVM({
-			console: 'off',
-			wasm: false,
-			eval: false,
-			sandbox: {
-				// TODO(afr): Pass in the proper sandbox context
-				beakApi: {
-					// eslint-disable-next-line no-console
-					log: (level: unknown, message: string) => console.log({ level, message }),
-					parseValueParts: (_ctx: unknown, _parts: unknown, _recursiveSet: unknown) => [],
-				},
-			},
-		});
-
-		const extension = extensionVm.run(extensionStorage.scriptContent).default as EditableRealtimeValue<any>;
+		const { extension } = this.getExtensionContext(projectId, type);
 		const uiSections = await extension.editor.createUserInterface(context);
 
 		return cd(uiSections);
 	}
 
 	async rtvEditorLoad(projectId: string, type: string, context: Context, payload: unknown) {
-		const extensionStorage = this.projectExtensions[projectId]?.[type];
-
-		if (!extensionStorage)
-			throw new Squawk('unknown_registered_extension', { projectId, type });
-
-		const extensionVm = new NodeVM({
-			console: 'off',
-			wasm: false,
-			eval: false,
-			sandbox: {
-				// TODO(afr): Pass in the proper sandbox context
-				beakApi: {
-					// eslint-disable-next-line no-console
-					log: (level: unknown, message: string) => console.log({ level, message }),
-					parseValueParts: (_ctx: unknown, _parts: unknown, _recursiveSet: unknown) => [],
-				},
-			},
-		});
-
-		const extension = extensionVm.run(extensionStorage.scriptContent).default as EditableRealtimeValue<any>;
+		const { extension } = this.getExtensionContext(projectId, type);
 		const editorState = await extension.editor.load(context, payload);
 
 		return cd(editorState);
 	}
 
 	async rtvEditorSave(projectId: string, type: string, context: Context, existingPayload: unknown, state: unknown) {
+		const { extension } = this.getExtensionContext(projectId, type);
+		const payload = await extension.editor.save(context, existingPayload, state);
+
+		return cd(payload);
+	}
+
+	private getExtensionContext(projectId: string, type: string) {
 		const extensionStorage = this.projectExtensions[projectId]?.[type];
 
 		if (!extensionStorage)
 			throw new Squawk('unknown_registered_extension', { projectId, type });
 
-		const extensionVm = new NodeVM({
-			console: 'off',
-			wasm: false,
-			eval: false,
-			sandbox: {
-				// TODO(afr): Pass in the proper sandbox context
-				beakApi: {
-					// eslint-disable-next-line no-console
-					log: (level: unknown, message: string) => console.log({ level, message }),
-					parseValueParts: (_ctx: unknown, _parts: unknown, _recursiveSet: unknown) => [],
-				},
-			},
-		});
-
-		const extension = extensionVm.run(extensionStorage.scriptContent).default as EditableRealtimeValue<any>;
-		const payload = await extension.editor.save(context, existingPayload, state);
-
-		return cd(payload);
+		return { vm: extensionStorage.vm, extension: extensionStorage.extension };
 	}
 
 	private async parseExtensionPackage(event: IpcEvent, extensionPath: string) {
