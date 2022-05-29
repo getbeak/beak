@@ -80,7 +80,7 @@ interface Editor<TPayload extends GenericDictionary, TEditorState extends Generi
 }
 
 /* eslint-disable @typescript-eslint/indent */
-export type UISection<T extends GenericDictionary> =
+export type UISection<T extends GenericDictionary = Record<string, never>> =
 	ValuePartInput<T> |
 	TextInput<T> |
 	NumberInput<T> |
