@@ -32,14 +32,14 @@ function randomLyric(lyrics: string[]): string {
 }
 
 const tswiftLyricExtension: EditableRealtimeValue<Payload, EditorState> = {
-	name: 'TSwift lyric',
+	name: 'Taylor Swift lyric',
 	description: 'A random Taylor Swift lyric from a specific album',
 	sensitive: false,
 	attributes: {
 		requiresRequestId: false,
 	},
 
-	createDefaultPayload: async () => ({ lyric: '', albumSlug: '1989' }),
+	createDefaultPayload: async () => ({ albumSlug: '1989' }),
 	getValue: async (_ctx, payload) => {
 		const albumLyrics = lyrics[payload.albumSlug];
 		const lyric = randomLyric(albumLyrics);
