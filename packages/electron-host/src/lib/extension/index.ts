@@ -3,9 +3,10 @@ import { RealtimeValueExtension } from '@beak/common/types/extensions';
 import Squawk from '@beak/common/utils/squawk';
 import { ensureWithinProject } from '@beak/electron-host/ipc-layer/fs-service';
 import { getProjectWindowMapping } from '@beak/electron-host/ipc-layer/fs-shared';
-import { EditableRealtimeValue } from '@getbeak/types-realtime-value/';
 import { Context } from '@getbeak/types/values';
+import { EditableRealtimeValue } from '@getbeak/types-realtime-value/';
 import fs from 'fs-extra';
+import cd from 'lodash.clonedeep';
 import path from 'path';
 import { NodeVM } from 'vm2';
 
@@ -146,9 +147,61 @@ export default class ExtensionManager {
 		});
 
 		const extension = extensionVm.run(extensionStorage.scriptContent).default as EditableRealtimeValue<any>;
-		const uiSections = extension.editable.
+		const uiSections = await extension.editor.createUserInterface(context);
 
-		// return await extension. editor(context, payload, new Set(recursiveSet));
+		return cd(uiSections);
+	}
+
+	async rtvEditorLoad(projectId: string, type: string, context: Context, payload: unknown) {
+		const extensionStorage = this.projectExtensions[projectId]?.[type];
+
+		if (!extensionStorage)
+			throw new Squawk('unknown_registered_extension', { projectId, type });
+
+		const extensionVm = new NodeVM({
+			console: 'off',
+			wasm: false,
+			eval: false,
+			sandbox: {
+				// TODO(afr): Pass in the proper sandbox context
+				beakApi: {
+					// eslint-disable-next-line no-console
+					log: (level: unknown, message: string) => console.log({ level, message }),
+					parseValueParts: (_ctx: unknown, _parts: unknown, _recursiveSet: unknown) => [],
+				},
+			},
+		});
+
+		const extension = extensionVm.run(extensionStorage.scriptContent).default as EditableRealtimeValue<any>;
+		const editorState = await extension.editor.load(context, payload);
+
+		return cd(editorState);
+	}
+
+	async rtvEditorSave(projectId: string, type: string, context: Context, existingPayload: unknown, state: unknown) {
+		const extensionStorage = this.projectExtensions[projectId]?.[type];
+
+		if (!extensionStorage)
+			throw new Squawk('unknown_registered_extension', { projectId, type });
+
+		const extensionVm = new NodeVM({
+			console: 'off',
+			wasm: false,
+			eval: false,
+			sandbox: {
+				// TODO(afr): Pass in the proper sandbox context
+				beakApi: {
+					// eslint-disable-next-line no-console
+					log: (level: unknown, message: string) => console.log({ level, message }),
+					parseValueParts: (_ctx: unknown, _parts: unknown, _recursiveSet: unknown) => [],
+				},
+			},
+		});
+
+		const extension = extensionVm.run(extensionStorage.scriptContent).default as EditableRealtimeValue<any>;
+		const payload = await extension.editor.save(context, existingPayload, state);
+
+		return cd(payload);
 	}
 
 	private async parseExtensionPackage(event: IpcEvent, extensionPath: string) {

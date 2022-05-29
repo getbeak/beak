@@ -44,12 +44,10 @@ export class RealtimeValueManager {
 		[secureRtv.type]: secureRtv,
 		[timestampRtv.type]: timestampRtv,
 		[uuidRtv.type]: uuidRtv,
-	
+
 		// Special case!
 		[variableGroupItemRtv.type]: variableGroupItemRtv,
 	};
-
-	constructor() { }
 
 	static registerExternalRealtimeValue(ext: RealtimeValueExtension) {
 		const rtv = ext.realtimeValue;
@@ -76,9 +74,17 @@ export class RealtimeValueManager {
 			return;
 
 		(this.externalRealtimeValues[rtv.type] as EditableRealtimeValue<any, any>).editor = {
-			createUserInterface: ctx => ipcExtensionsService.rtvEditorCreateUserInterface({ context: ctx }),
-			load: (ctx, payload) => ipcExtensionsService.rtvEditorLoad({ context: ctx, payload }),
+			createUserInterface: ctx => ipcExtensionsService.rtvEditorCreateUserInterface({
+				type: rtv.type,
+				context: ctx,
+			}),
+			load: (ctx, payload) => ipcExtensionsService.rtvEditorLoad({
+				type: rtv.type,
+				context: ctx,
+				payload,
+			}),
 			save: (ctx, existingPayload, state) => ipcExtensionsService.rtvEditorSave({
+				type: rtv.type,
 				context: ctx,
 				existingPayload,
 				state,

@@ -15,17 +15,17 @@ export async function handleUnhandledError(error: Error) {
 
 	failure = true;
 
-	window.setTimeout(() => ipcWindowService.reloadSelfWindow(), 0);
-	await ipcDialogService.showMessageBox({
-		title: 'Beak messed up...',
-		type: 'error',
-		message: 'Beak encountered an unknown error. If restarting doesn\'t resolve the issue, please contact support.',
-		detail: [
-			error.name ?? '',
-			error.message ?? '',
-			error.stack ?? '',
-		].join('\n'),
-		buttons: ['Restart'],
-		defaultId: 0,
-	});
+	// window.setTimeout(() => ipcWindowService.reloadSelfWindow(), 0);
+	// await ipcDialogService.showMessageBox({
+	// 	title: 'Beak messed up...',
+	// 	type: 'error',
+	// 	message: 'Beak encountered an unknown error. If restarting doesn\'t resolve the issue, please contact support.',
+	// 	detail: [
+	// 		error.name ?? '',
+	// 		error.message ?? '',
+	// 		error.stack ?? '',
+	// 	].join('\n'),
+	// 	buttons: ['Restart'],
+	// 	defaultId: 0,
+	// });
 }

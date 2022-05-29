@@ -1,8 +1,9 @@
-import type { IpcMain } from 'electron';
 import { Context } from '@getbeak/types/values';
+import { UISection } from '@getbeak/types-realtime-value';
+import type { IpcMain } from 'electron';
 
+import { RealtimeValueExtension } from '../types/extensions';
 import { IpcServiceMain, IpcServiceRenderer, Listener, PartialIpcRenderer } from './ipc';
-import { RealtimeValue, UISection } from '@getbeak/types-realtime-value';
 
 export const ExtensionsMessages = {
 	RegisterRtv: 'register_rtv',
@@ -15,29 +16,25 @@ export const ExtensionsMessages = {
 
 interface RegisterRtvPayload { extensionFilePath: string }
 
-interface RtvCreateDefaultValuePayload {
+interface RtvBase {
 	type: string;
 	context: Context;
 }
 
-interface RtvGetValuePayload {
-	type: string;
-	context: Context;
+interface RtvCreateDefaultValuePayload extends RtvBase { }
+
+interface RtvGetValuePayload extends RtvBase {
 	payload: Record<string, any>;
 	recursiveSet: string[];
 }
 
-interface RtvEditorCreateUserInterface {
-	context: Context;
-}
+interface RtvEditorCreateUserInterface extends RtvBase { }
 
-interface RtvEditorLoad {
-	context: Context;
+interface RtvEditorLoad extends RtvBase {
 	payload: unknown;
 }
 
-interface RtvEditorSave {
-	context: Context;
+interface RtvEditorSave extends RtvBase {
 	existingPayload: unknown;
 	state: unknown;
 }
@@ -47,7 +44,7 @@ export class IpcExtensionsServiceRenderer extends IpcServiceRenderer {
 		super('extensions', ipc);
 	}
 
-	async registerRtv(payload: RegisterRtvPayload): Promise<RealtimeValue | null> {
+	async registerRtv(payload: RegisterRtvPayload): Promise<RealtimeValueExtension | null> {
 		return await this.invoke(ExtensionsMessages.RegisterRtv, payload);
 	}
 
@@ -77,7 +74,7 @@ export class IpcExtensionsServiceMain extends IpcServiceMain {
 		super('extensions', ipc);
 	}
 
-	registerRegisterRtv(fn: Listener<RegisterRtvPayload, RealtimeValue | null>) {
+	registerRegisterRtv(fn: Listener<RegisterRtvPayload, RealtimeValueExtension | null>) {
 		this.registerListener(ExtensionsMessages.RegisterRtv, fn);
 	}
 

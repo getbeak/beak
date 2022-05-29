@@ -39,7 +39,13 @@ service.registerRtvGetValuePayload(async (event, payload) => {
 	if (!projectFile || !projectFile.id)
 		throw new Squawk('invalid_project_file', { projectFile });
 
-	return await extensionManager.rtvGetValue(projectFile.id, payload.type, payload.context, payload.payload, payload.recursiveSet);
+	return await extensionManager.rtvGetValue(
+		projectFile.id,
+		payload.type,
+		payload.context,
+		payload.payload,
+		payload.recursiveSet,
+	);
 });
 
 service.registerRtvEditorCreateUserInterface(async (event, payload) => {
@@ -49,5 +55,40 @@ service.registerRtvEditorCreateUserInterface(async (event, payload) => {
 	if (!projectFile || !projectFile.id)
 		throw new Squawk('invalid_project_file', { projectFile });
 
-	return await extensionManager.rtvGetValue(projectFile.id, payload.type, payload.context, payload.payload, payload.recursiveSet);
+	return await extensionManager.rtvCreateUserInterface(
+		projectFile.id,
+		payload.type,
+		payload.context,
+	);
+});
+
+service.registerRtvEditorLoad(async (event, payload) => {
+	const projectFolderPath = getProjectFolder(event);
+	const projectFile = await readProjectFile(projectFolderPath);
+
+	if (!projectFile || !projectFile.id)
+		throw new Squawk('invalid_project_file', { projectFile });
+
+	return await extensionManager.rtvEditorLoad(
+		projectFile.id,
+		payload.type,
+		payload.context,
+		payload.payload,
+	);
+});
+
+service.registerRtvEditorSave(async (event, payload) => {
+	const projectFolderPath = getProjectFolder(event);
+	const projectFile = await readProjectFile(projectFolderPath);
+
+	if (!projectFile || !projectFile.id)
+		throw new Squawk('invalid_project_file', { projectFile });
+
+	return await extensionManager.rtvEditorSave(
+		projectFile.id,
+		payload.type,
+		payload.context,
+		payload.existingPayload,
+		payload.state,
+	);
 });
