@@ -1,6 +1,6 @@
 {
     "name": "@getbeak/types",
-    "version": "1.0.0-prerelease.1",
+    "version": "1.0.0-prerelease.2",
     "private": false,
     "description": "Just general beak types",
     "homepage": "https://github.com/getbeak/beak/tree/master/packages/types",
@@ -13,7 +13,7 @@
         }
     ],
     "main": "",
-    "types": "src/index.d.ts",
+    "types": "index.d.ts",
     "repository": {
         "type": "git",
         "url": "https://github.com/getbeak/beak.git",

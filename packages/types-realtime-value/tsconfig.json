@@ -7,10 +7,7 @@
         "./src"
     ],
   },
-  "references": [
-    { "path":  "../types" }
-  ],
   "include": [
-    "src/**/*.ts"
+    "*.d.ts"
   ]
 }

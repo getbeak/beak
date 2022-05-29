@@ -1,12 +1,13 @@
 /* eslint-disable max-len */
 import type { Context } from '@getbeak/types/values';
 
+export interface RealtimeValueBase { }
+
 interface GenericDictionary {
 	[k: string]: any;
 }
 
-export interface RealtimeValueExtension<TPayload extends GenericDictionary> {
-
+export interface RealtimeValueInformation extends RealtimeValueBase {
 	/**
 	 * The public facing name of your extension.
 	 */
@@ -16,11 +17,19 @@ export interface RealtimeValueExtension<TPayload extends GenericDictionary> {
 	 * The public facing description of your extension.
 	 */
 	description: string;
-
+ 
 	/**
 	 * Denotes if the value's output is sensitive, and will be hidden by default in the UI and in copied responses.
 	 */
 	sensitive: boolean;
+
+	/**
+	 * Attributes that define when and how this value should be shown.
+	 */
+	attributes: Attributes;
+}
+
+export interface RealtimeValue<TPayload extends GenericDictionary> extends RealtimeValueInformation {
 
 	/**
 	 * Creates a default payload, if the user doesn't specify any data.
@@ -34,14 +43,9 @@ export interface RealtimeValueExtension<TPayload extends GenericDictionary> {
 	 * @param {Set<string>} recursiveSet Only needed if you're dealing with `ValueParts`. It should only be passed directly into `parseValueParts`.
 	 */
 	getValue: (ctx: Context, payload: TPayload, recursiveSet: Readonly<Set<string>>) => Promise<string>;
-
-	/**
-	 * Attributes that define when and how this value should be shown.
-	 */
-	attributes: Attributes;
 }
 
-export interface EditableRealtimeValueExtension<TPayload extends GenericDictionary, TEditorState extends GenericDictionary = TPayload> extends RealtimeValueExtension<TPayload> {
+export interface EditableRealtimeValue<TPayload extends GenericDictionary, TEditorState extends GenericDictionary = TPayload> extends Omit<RealtimeValue<TPayload>, 'editor'> {
 
 	/**
 	 * Details how Beak and user's should interact with the value editor for your realtime value.
@@ -67,12 +71,12 @@ interface Editor<TPayload extends GenericDictionary, TEditorState extends Generi
 	/**
 	 * If the payload data isn't the same as the editor state, this will convert Payload -> State
 	 */
-	load?: (ctx: Context, payload: TPayload) => Promise<TEditorState>;
+	load: (ctx: Context, payload: TPayload) => Promise<TEditorState>;
 
 	/**
 	 * If the payload data isn't the same as the editor state, this will convert State -> Payload
 	 */
-	save?: (ctx: Context, existingPayload: TPayload, state: TEditorState) => Promise<TPayload>;
+	save: (ctx: Context, existingPayload: TPayload, state: TEditorState) => Promise<TPayload>;
 }
 
 /* eslint-disable @typescript-eslint/indent */
