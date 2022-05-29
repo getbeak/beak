@@ -8,7 +8,10 @@ import { EditableRealtimeValue } from '@getbeak/types-realtime-value/';
 import fs from 'fs-extra';
 import cd from 'lodash.clonedeep';
 import path from 'path';
+import { Logger, TLogLevelName } from 'tslog';
 import { NodeVM, VMScript } from 'vm2';
+
+import { logToFileSystem } from '../logger';
 
 interface ProjectExtensions {
 	[projectId: string]: Record<string, RtvExtensionStorage>;
@@ -22,6 +25,18 @@ interface RtvExtensionStorage {
 	script: VMScript;
 	extension: EditableRealtimeValue<any, any>;
 }
+
+const logger = new Logger({ name: 'extensions' });
+
+logger.attachTransport({
+	silly: obj => logToFileSystem(obj, 'extensions'),
+	debug: obj => logToFileSystem(obj, 'extensions'),
+	trace: obj => logToFileSystem(obj, 'extensions'),
+	info: obj => logToFileSystem(obj, 'extensions'),
+	warn: obj => logToFileSystem(obj, 'extensions'),
+	error: obj => logToFileSystem(obj, 'extensions'),
+	fatal: obj => logToFileSystem(obj, 'extensions'),
+}, 'info');
 
 export default class ExtensionManager {
 	private readonly projectExtensions: ProjectExtensions = {};
@@ -39,8 +54,7 @@ export default class ExtensionManager {
 			eval: false,
 			sandbox: {
 				// TODO(afr): Pass in the proper sandbox context
-				// eslint-disable-next-line no-console
-				log: (level: unknown, message: string) => console.log({ level, message }),
+				log: (level: TLogLevelName, message: string) => logger[level](message),
 				parseValueParts: (_ctx: unknown, _parts: unknown, _recursiveSet: unknown) => [],
 			},
 		});

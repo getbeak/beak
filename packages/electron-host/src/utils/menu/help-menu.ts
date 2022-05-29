@@ -13,9 +13,14 @@ export default function generateHelpMenu(ctx: Context): MenuItemConstructorOptio
 
 	if (ctx.isDarwin) {
 		const darwinTemplate: MenuItemConstructorOptions[] = [{
-			label: 'Show logs',
+			label: 'Show application logs',
 			click: async () => {
 				await shell.openPath(path.join(app.getPath('userData'), 'logs', 'main'));
+			},
+		}, {
+			label: 'Show extension logs',
+			click: async () => {
+				await shell.openPath(path.join(app.getPath('userData'), 'logs', 'extensions'));
 			},
 		},
 		{
@@ -46,29 +51,32 @@ export default function generateHelpMenu(ctx: Context): MenuItemConstructorOptio
 
 		(template.submenu as MenuItemConstructorOptions[]).push(...darwinTemplate);
 	} else {
-		const nonDarwinTemplate: MenuItemConstructorOptions[] = [
-			{
-				label: 'Show logs',
-				click: async () => {
-					await shell.openPath(path.join(app.getPath('userData'), 'logs', 'main'));
-				},
+		const nonDarwinTemplate: MenuItemConstructorOptions[] = [{
+			label: 'Show application logs',
+			click: async () => {
+				await shell.openPath(path.join(app.getPath('userData'), 'logs', 'main'));
 			},
-			{
-				label: 'Documentation',
-				click: async () => {
-					await shell.openExternal('https://docs.getbeak.app');
-				},
+		}, {
+			label: 'Show extension logs',
+			click: async () => {
+				await shell.openPath(path.join(app.getPath('userData'), 'logs', 'extension'));
 			},
-			{
-				label: 'Learn More',
-				click: async () => {
-					await shell.openExternal('https://getbeak.app');
-				},
+		},
+		{
+			label: 'Documentation',
+			click: async () => {
+				await shell.openExternal('https://docs.getbeak.app');
 			},
-			{ type: 'separator' },
-			createUpdateMenuItem(),
-			{ role: 'about' },
-		];
+		},
+		{
+			label: 'Learn More',
+			click: async () => {
+				await shell.openExternal('https://getbeak.app');
+			},
+		},
+		{ type: 'separator' },
+		createUpdateMenuItem(),
+		{ role: 'about' }];
 
 		(template.submenu as MenuItemConstructorOptions[]).push(...nonDarwinTemplate);
 	}
