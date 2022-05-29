@@ -1,4 +1,4 @@
-import { EditableRealtimeValueExtension } from '@getbeak/types-realtime-value';
+import { EditableRealtimeValue } from '@getbeak/types-realtime-value';
 
 type AlbumSlug = '1989' | 'red';
 
@@ -31,7 +31,7 @@ function randomLyric(lyrics: string[]): string {
 	return lyrics[index] ?? 'Whoops';
 }
 
-const tswiftLyricExtension: EditableRealtimeValueExtension<Payload, EditorState> = {
+const tswiftLyricExtension: EditableRealtimeValue<Payload, EditorState> = {
 	name: 'TSwift lyric',
 	description: 'A random Taylor Swift lyric from a specific album',
 	sensitive: false,

@@ -2,11 +2,12 @@
     "name": "@beak/x-realtime-value",
     "version": "0.0.0",
     "private": true,
+    "beakExtensionType": "realtime-value",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
     "dependencies": {
-        "@getbeak/types": "1.0.0-prerelease.1",
-        "@getbeak/types-realtime-value": "1.0.0-prerelease.1"
+        "@getbeak/types": "1.0.0-prerelease.2",
+        "@getbeak/types-realtime-value": "1.0.0-prerelease.4"
     },
     "scripts": {
         "build": "tsc"
