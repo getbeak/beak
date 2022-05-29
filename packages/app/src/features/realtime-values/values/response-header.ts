@@ -1,26 +1,21 @@
 import { ResponseHeaderRtv } from '@beak/app/features/realtime-values/values';
 import { TypedObject } from '@beak/common/helpers/typescript';
+import { EditableRealtimeValue } from '@getbeak/types-realtime-value';
 
 import { parseValueParts } from '../parser';
-import { RealtimeValue } from '../types';
 import { getRequestNode } from '../utils/request';
 import { getLatestFlight } from '../utils/response';
 
-const type = 'response_header';
-
-export default {
-	type,
-
+const definition: EditableRealtimeValue<ResponseHeaderRtv, ResponseHeaderRtv> = {
+	type: 'response_header',
 	name: 'Response header',
 	description: 'Returns the header value of the most recent response for a request',
 	sensitive: false,
+	external: false,
 
-	initValuePart: async () => ({
-		type,
-		payload: {
-			requestId: '',
-			headerName: [''],
-		},
+	createDefaultPayload: async () => ({
+		requestId: '',
+		headerName: [''],
 	}),
 
 	getValue: async (ctx, payload, recursiveSet) => {
@@ -49,7 +44,7 @@ export default {
 	},
 
 	editor: {
-		createUi: () => [{
+		createUserInterface: async () => [{
 			type: 'request_select_input',
 			label: 'Select the request:',
 			stateBinding: 'requestId',
@@ -69,4 +64,6 @@ export default {
 			headerName: state.headerName,
 		}),
 	},
-} as RealtimeValue<ResponseHeaderRtv, ResponseHeaderRtv['payload']>;
+};
+
+export default definition;

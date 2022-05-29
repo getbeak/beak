@@ -1,3 +1,5 @@
+import { RealtimeValueExtension } from '@beak/common/types/extensions';
+
 export const ActionTypes = {
 	START_EXTENSIONS: '@beak/global/extensions/START_EXTENSIONS',
 	EXTENSIONS_OPENED: '@beak/global/extensions/EXTENSIONS_OPENED',
@@ -16,16 +18,7 @@ export interface FailedExtension {
 	valid: false;
 }
 
-export interface ValidExtension {
-	id: string;
-	name: string;
-	version: string;
-	filePath: string;
-
-	valid: true;
-}
-
-export type Extension = FailedExtension | ValidExtension;
+export type Extension = FailedExtension | RealtimeValueExtension;
 
 export interface ExtensionsOpenedPayload {
 	extensions: Extension[];

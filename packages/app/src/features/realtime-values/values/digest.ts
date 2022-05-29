@@ -1,30 +1,25 @@
 import { DigestRtv, ValueParts } from '@beak/app/features/realtime-values/values';
 import { arrayBufferToHexString } from '@beak/app/utils/encoding';
+import { EditableRealtimeValue } from '@getbeak/types-realtime-value';
 
 import { parseValueParts } from '../parser';
-import { RealtimeValue } from '../types';
 
 interface EditorState {
 	input: ValueParts;
-	algorithm: DigestRtv['payload']['algorithm'];
+	algorithm: DigestRtv['algorithm'];
 }
 
-const type = 'digest';
-
-export default {
-	type,
-
+const definition: EditableRealtimeValue<DigestRtv, EditorState> = {
+	type: 'digest',
 	name: 'Digest',
 	description: 'Generates a digest of a given input.',
 	sensitive: false,
+	external: false,
 
-	initValuePart: async () => ({
-		type,
-		payload: {
-			algorithm: 'SHA-256',
-			input: [''],
-			hmac: void 0,
-		},
+	createDefaultPayload: async () => ({
+		algorithm: 'SHA-256',
+		input: [''],
+		hmac: void 0,
 	}),
 
 	getValue: async (ctx, payload, recursiveSet) => {
@@ -51,7 +46,7 @@ export default {
 	attributes: {},
 
 	editor: {
-		createUi: () => [{
+		createUserInterface: async () => [{
 			type: 'value_parts_input',
 			label: 'Enter the data for the digest:',
 			stateBinding: 'input',
@@ -82,4 +77,6 @@ export default {
 			hmac: void 0,
 		}),
 	},
-} as RealtimeValue<DigestRtv, EditorState>;
+};
+
+export default definition;

@@ -1,31 +1,26 @@
 import { Base64EncodedRtv } from '@beak/app/features/realtime-values/values';
 import { ValueParts } from '@beak/app/features/realtime-values/values';
+import { EditableRealtimeValue } from '@getbeak/types-realtime-value';
 
 import { parseValueParts } from '../parser';
-import { RealtimeValue } from '../types';
 
 interface EditorState {
 	input: ValueParts;
-	characterSet: Base64EncodedRtv['payload']['characterSet'];
+	characterSet: Base64EncodedRtv['characterSet'];
 	removePadding: boolean;
 }
 
-const type = 'base64_encoded';
-
-export default {
-	type,
-
+const definition: EditableRealtimeValue<Base64EncodedRtv, EditorState> = {
+	type: 'base64_encoded',
 	name: 'Encode (Base64)',
 	description: 'Generates a base64 encoded string',
 	sensitive: false,
+	external: false,
 
-	initValuePart: async () => ({
-		type,
-		payload: {
-			input: [''],
-			characterSet: 'base64',
-			removePadding: false,
-		},
+	createDefaultPayload: async () => ({
+		input: [''],
+		characterSet: 'base64',
+		removePadding: false,
 	}),
 
 	getValue: async (ctx, payload, recursiveSet) => {
@@ -47,7 +42,7 @@ export default {
 	attributes: {},
 
 	editor: {
-		createUi: () => [{
+		createUserInterface: async () => [{
 			type: 'value_parts_input',
 			label: 'Enter the data to encode:',
 			stateBinding: 'input',
@@ -68,15 +63,11 @@ export default {
 			stateBinding: 'removePadding',
 		}],
 
-		load: async (_ctx, item) => {
-			const isArray = Array.isArray(item.input);
-
-			return {
-				characterSet: item.characterSet,
-				input: isArray ? item.input : [item.input],
-				removePadding: item.removePadding,
-			};
-		},
+		load: async (_ctx, item) => ({
+			characterSet: item.characterSet,
+			input: item.input,
+			removePadding: item.removePadding,
+		}),
 
 		save: async (_ctx, _item, state) => ({
 			characterSet: state.characterSet,
@@ -84,4 +75,6 @@ export default {
 			removePadding: state.removePadding,
 		}),
 	},
-} as RealtimeValue<Base64EncodedRtv, EditorState>;
+};
+
+export default definition;

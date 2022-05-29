@@ -2,34 +2,29 @@ import { PrivateRtv } from '@beak/app/features/realtime-values/values';
 import { ValueParts } from '@beak/app/features/realtime-values/values';
 import { ipcEncryptionService, ipcFsService } from '@beak/app/lib/ipc';
 import ksuid from '@cuvva/ksuid';
+import { EditableRealtimeValue } from '@getbeak/types-realtime-value';
 import path from 'path-browserify';
 
 import { parseValueParts } from '../parser';
-import { RealtimeValue } from '../types';
 
 interface EditorState {
 	value: ValueParts;
 }
 
-const type = 'private';
-
-export default {
-	type,
-
+const definition: EditableRealtimeValue<PrivateRtv, EditorState> = {
+	type: 'private',
 	name: 'Private',
 	description: 'A value only stored locally, and never included in the project (it is also encrypted at rest). Useful for PII fields.',
 	sensitive: true,
+	external: false,
 
-	initValuePart: async () => {
+	createDefaultPayload: async () => {
 		const iv = await ipcEncryptionService.generateIv();
 		const identifier = ksuid.generate('prvval').toString();
 
 		return {
-			type,
-			payload: {
-				iv,
-				identifier,
-			},
+			iv,
+			identifier,
 		};
 	},
 
@@ -53,7 +48,7 @@ export default {
 	attributes: {},
 
 	editor: {
-		createUi: () => [{
+		createUserInterface: async () => [{
 			type: 'value_parts_input',
 			label: 'Enter the value you want to be private:',
 			stateBinding: 'value',
@@ -90,7 +85,9 @@ export default {
 			return { iv, identifier: item.identifier };
 		},
 	},
-} as RealtimeValue<PrivateRtv, EditorState>;
+};
+
+export default definition;
 
 function createPath(identifier: string) {
 	return path.join('.beak', 'realtime-values', 'private', `${identifier}`);

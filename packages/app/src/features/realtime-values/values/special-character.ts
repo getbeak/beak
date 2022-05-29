@@ -1,6 +1,4 @@
-import { RealtimeValuePart } from '@beak/app/features/realtime-values/values';
-
-import { RealtimeValue } from '../types';
+import { RealtimeValue } from '@getbeak/types-realtime-value';
 
 const characters = {
 	character_carriage_return: {
@@ -24,20 +22,17 @@ export const characterCarriageReturnRtv = createCharacter('character_carriage_re
 export const characterNewlineRtv = createCharacter('character_newline');
 export const characterTabRtv = createCharacter('character_tab');
 
-function createCharacter(type: keyof typeof characters): RealtimeValue<RealtimeValuePart> {
+function createCharacter(type: keyof typeof characters): RealtimeValue<any> {
 	const character = characters[type];
 
 	return {
 		type,
-
 		name: character.name,
 		description: character.description,
 		sensitive: false,
+		external: false,
 
-		initValuePart: async () => ({
-			type,
-			payload: void 0,
-		}),
+		createDefaultPayload: async () => void 0,
 
 		getValue: async () => character.character,
 

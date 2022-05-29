@@ -1,29 +1,25 @@
 import { ResponseBodyJsonRtv } from '@beak/app/features/realtime-values/values';
 import binaryStore from '@beak/app/lib/binary-store';
 import { attemptTextToJson } from '@beak/app/utils/json';
+import { EditableRealtimeValue } from '@getbeak/types-realtime-value';
 import get from 'lodash.get';
 
 import { parseValueParts } from '../parser';
-import { RealtimeValue } from '../types';
 import { getRequestNode } from '../utils/request';
 import { getLatestFlight } from '../utils/response';
 
 const allowedRawJson = ['string', 'bool', 'number'];
-const type = 'response_body_json';
 
-export default {
-	type,
-
+const definition: EditableRealtimeValue<ResponseBodyJsonRtv, ResponseBodyJsonRtv> = {
+	type: 'response_body_json',
 	name: 'Response body (json)',
 	description: 'Returns the body text value of the most recent response for a request',
 	sensitive: false,
+	external: false,
 
-	initValuePart: async () => ({
-		type,
-		payload: {
-			requestId: '',
-			dotPath: [''],
-		},
+	createDefaultPayload: async () => ({
+		requestId: '',
+		dotPath: [''],
 	}),
 
 	getValue: async (ctx, payload, recursiveSet) => {
@@ -60,7 +56,7 @@ export default {
 	},
 
 	editor: {
-		createUi: () => [{
+		createUserInterface: async () => [{
 			type: 'request_select_input',
 			label: 'Select the request:',
 			stateBinding: 'requestId',
@@ -80,4 +76,6 @@ export default {
 			dotPath: state.dotPath,
 		}),
 	},
-} as RealtimeValue<ResponseBodyJsonRtv, ResponseBodyJsonRtv['payload']>;
+};
+
+export default definition;

@@ -1,23 +1,18 @@
 import { ResponseBodyTextRtv } from '@beak/app/features/realtime-values/values';
 import binaryStore from '@beak/app/lib/binary-store';
+import { EditableRealtimeValue } from '@getbeak/types-realtime-value';
 
-import { RealtimeValue } from '../types';
 import { getRequestNode } from '../utils/request';
 import { getLatestFlight } from '../utils/response';
 
-const type = 'response_body_text';
-
-export default {
-	type,
-
+const definition: EditableRealtimeValue<ResponseBodyTextRtv, ResponseBodyTextRtv> = {
+	type: 'response_body_text',
 	name: 'Response body (text)',
 	description: 'Returns the body text value of the most recent response for a request',
 	sensitive: false,
+	external: false,
 
-	initValuePart: async () => ({
-		type,
-		payload: { requestId: '' },
-	}),
+	createDefaultPayload: async () => ({ requestId: '' }),
 
 	getValue: async (ctx, payload) => {
 		const requestNode = getRequestNode(payload.requestId, ctx);
@@ -44,7 +39,7 @@ export default {
 	},
 
 	editor: {
-		createUi: () => [{
+		createUserInterface: async () => [{
 			type: 'request_select_input',
 			label: 'Select the request:',
 			stateBinding: 'requestId',
@@ -54,4 +49,6 @@ export default {
 
 		save: async (_ctx, _item, state) => ({ requestId: state.requestId }),
 	},
-} as RealtimeValue<ResponseBodyTextRtv, ResponseBodyTextRtv['payload']>;
+};
+
+export default definition;

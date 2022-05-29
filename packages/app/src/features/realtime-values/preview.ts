@@ -1,19 +1,23 @@
-import { RealtimeValuePart } from '@beak/app/features/realtime-values/values';
+import { ipcExtensionsService } from '@beak/app/lib/ipc';
+import { EditableRealtimeValue } from '@getbeak/types-realtime-value';
 import type { Context } from '@getbeak/types/values';
 
-import { RealtimeValue } from './types';
-
-export async function previewValue<T extends RealtimeValuePart>(
+export async function previewValue<T>(
 	ctx: Context,
-	rtv: RealtimeValue<T>,
+	rtv: EditableRealtimeValue<T>,
 	item: any,
-	state: T['payload'],
+	state: T,
 ) {
-	if (!rtv.editor)
-		return '';
-
-	// @ts-expect-error
 	const payload = await rtv.editor.save(ctx, item, state);
 
-	return await rtv.getValue(ctx, payload);
+	if (rtv.external) {
+		return await ipcExtensionsService.rtvGetValue({
+			type: rtv.type,
+			context: ctx,
+			payload: payload,
+			recursiveSet: [],
+		});
+	}
+
+	return await rtv.getValue(ctx, payload, new Set());
 }

@@ -4,17 +4,17 @@ import Input, { Select } from '@beak/app/components/atoms/Input';
 import { ValueParts } from '@beak/app/features/realtime-values/values';
 import styled from 'styled-components';
 
-import { getRealtimeValue } from '../../realtime-values';
 import useRealtimeValueContext from '../../realtime-values/hooks/use-realtime-value-context';
 import { previewValue } from '../../realtime-values/preview';
-import { RealtimeValue } from '../../realtime-values/types';
 import VariableInput from '../../variable-input/components/VariableInput';
 import renderRequestSelectOptions from '../utils/render-request-select-options';
 import { FormGroup, Label } from './atoms/Form';
 import PreviewContainer from './molecules/PreviewContainer';
+import { EditableRealtimeValue, UISection } from '@getbeak/types-realtime-value';
+import { RealtimeValueManager } from '../../realtime-values';
 
 interface RtvEditorContext {
-	realtimeValue: RealtimeValue<any, any>;
+	realtimeValue: EditableRealtimeValue<any, any>;
 	item: any;
 	parent: HTMLDivElement;
 	partIndex: number;
@@ -31,6 +31,7 @@ const RealtimeValueEditor: React.FC<React.PropsWithChildren<RealtimeValueEditorP
 	const { editable, requestId, onSave } = props;
 	const initialInputRef = useRef<HTMLElement | null>(null);
 	const [editorContext, setEditorContext] = useState<RtvEditorContext>();
+	const [uiSections, setUiSections] = useState<UISection<any>[]>([]);
 	const [preview, setPreview] = useState('');
 	const context = useRealtimeValueContext(requestId);
 
@@ -47,6 +48,10 @@ const RealtimeValueEditor: React.FC<React.PropsWithChildren<RealtimeValueEditorP
 
 		previewValue(context, editorContext.realtimeValue, editorContext.item, editorContext.state)
 			.then(setPreview);
+
+		const { createUserInterface } = editorContext.realtimeValue.editor;
+
+		createUserInterface(context).then(setUiSections);
 	}, [editorContext]);
 
 	useEffect(() => {
@@ -61,7 +66,10 @@ const RealtimeValueEditor: React.FC<React.PropsWithChildren<RealtimeValueEditorP
 			if (!type)
 				return;
 
-			const realtimeValue = getRealtimeValue(type);
+			const realtimeValue = RealtimeValueManager.getRealtimeValue(type);
+
+			if (!('editor' in realtimeValue))
+				return;
 
 			if (!realtimeValue.editor)
 				return;
@@ -113,8 +121,7 @@ const RealtimeValueEditor: React.FC<React.PropsWithChildren<RealtimeValueEditorP
 
 	const { item, state, parent, realtimeValue } = editorContext;
 	const boundingRect = parent.getBoundingClientRect();
-	const { save, createUi } = realtimeValue.editor!;
-	const ui = createUi(context);
+	const { save } = realtimeValue.editor!;
 
 	return (
 		<Container onClick={() => close(null)}>
@@ -123,7 +130,7 @@ const RealtimeValueEditor: React.FC<React.PropsWithChildren<RealtimeValueEditorP
 				$left={boundingRect.left - (300 / 2)}
 				onClick={event => void event.stopPropagation()}
 			>
-				{ui.map((section, i) => {
+				{uiSections.map((section, i) => {
 					const first = i === 0;
 					const stateBinding = section.stateBinding as string;
 

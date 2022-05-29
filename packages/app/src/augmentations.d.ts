@@ -23,3 +23,10 @@ declare module 'electron' {
 		click: () => void;
 	}
 }
+
+declare module '@getbeak/types-realtime-value' {
+	interface RealtimeValueBase {
+		type: string;
+		external: boolean;
+	}
+}

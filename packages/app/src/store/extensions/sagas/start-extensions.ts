@@ -1,5 +1,6 @@
+import { RealtimeValueManager } from '@beak/app/features/realtime-values';
 import createFsEmitter from '@beak/app/lib/fs-emitter';
-import { ipcFsService } from '@beak/app/lib/ipc';
+import { ipcExtensionsService, ipcFsService } from '@beak/app/lib/ipc';
 import path from 'path-browserify';
 import { call, put, take } from 'redux-saga/effects';
 
@@ -10,6 +11,7 @@ interface PackageJson {
 	name: string;
 	version: string;
 	dependencies: Record<string, string> | undefined;
+	beakExtensionType: string;
 }
 
 interface Emitter {
@@ -53,11 +55,6 @@ function* initialImport() {
 	yield put(actions.extensionsOpened({ extensions }));
 }
 
-// Read lock file
-// Read each package name and version
-// Read each package package.json
-// Store in store
-
 async function readExtensions(): Promise<Extension[]> {
 	const packagePath = path.join('extensions', 'package.json');
 	const lockPath = path.join('extensions', 'yarn.lock');
@@ -88,19 +85,22 @@ async function readExtensions(): Promise<Extension[]> {
 
 		if (!packageExists)
 			return { filePath: packagePath, valid: false };
-
+		
 		const packageJson = await ipcFsService.readJson<PackageJson>(packagePath);
 
-		// TODO(afr): Add `package.json` validation
-		// if (!packageJson.[fields])
-		// 	return { valid: false };
+		// TODO(afr): Parse this properly, with validation
+		const { beakExtensionType } = packageJson;
 
-		return {
-			filePath: packagePath,
-			id: `${packageJson.name}@${packageJson.version}`,
-			name: packageJson.name,
-			version: packageJson.version,
-			valid: true,
-		};
+		if (!beakExtensionType)
+			return { filePath: packagePath, valid: false };
+
+		const extension = await ipcExtensionsService.registerRtv({ extensionFilePath: dependencyPath });
+
+		if (!extension)
+			return { filePath: packagePath, valid: false };
+
+		RealtimeValueManager.registerExternalRealtimeValue(extension);
+
+		return extension;
 	}));
 }

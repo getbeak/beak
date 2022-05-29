@@ -3,9 +3,9 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import type { VariableGroups } from '@getbeak/types/variable-groups';
 import * as uuid from 'uuid';
 
-import { getRealtimeValue } from '../../realtime-values';
 import { ValueParts } from '../../realtime-values/values';
 import { getVariableGroupItemName } from '../../realtime-values/values/variable-group-item';
+import { RealtimeValueManager } from '../../realtime-values';
 
 export default function renderValueParts(parts: ValueParts, variableGroups: VariableGroups) {
 	return renderToStaticMarkup(
@@ -17,16 +17,8 @@ export default function renderValueParts(parts: ValueParts, variableGroups: Vari
 				if (typeof p !== 'object')
 					return `[Unknown value part ${p}:(${typeof p})]`;
 
-				const impl = getRealtimeValue(p.type);
-
-				if (!impl) {
-					// eslint-disable-next-line no-console
-					console.error(`Unknown RTV ${p} ${typeof p} ${p.type}`);
-
-					return null;
-				}
-
-				const editable = Boolean(impl.editor);
+				const rtv = RealtimeValueManager.getRealtimeValue(p.type);
+				const editable = 'editor' in rtv;
 				const name = (() => {
 					if (p.type === 'variable_group_item') {
 						const payload = p.payload as { itemId: string };
@@ -34,7 +26,7 @@ export default function renderValueParts(parts: ValueParts, variableGroups: Vari
 						return getVariableGroupItemName(payload, variableGroups);
 					}
 
-					return impl.name;
+					return rtv.name;
 				})();
 
 				return (
