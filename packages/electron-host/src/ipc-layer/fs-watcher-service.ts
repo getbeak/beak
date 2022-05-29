@@ -20,6 +20,7 @@ service.registerStartWatching(async (event, payload: StartWatchingReq) => {
 		...payload.options,
 		followSymlinks: false,
 		cwd: void 0,
+		atomic: true,
 	};
 
 	const watcher = chokidar

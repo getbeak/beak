@@ -103,7 +103,7 @@ async function backoffJsonRead(filePath: string, options?: fs.ReadOptions) {
 		} catch (error) {
 			latestError = error;
 
-			await new Promise(resolve => window.setTimeout(resolve, 50));
+			await new Promise(resolve => setTimeout(resolve, 50));
 		}
 	}
 	/* eslint-enable no-await-in-loop */
