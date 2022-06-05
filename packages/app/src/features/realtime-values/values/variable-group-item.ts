@@ -1,7 +1,7 @@
 import { VariableGroupItemRtv } from '@beak/app/features/realtime-values/values';
 import { TypedObject } from '@beak/common/helpers/typescript';
-import { RealtimeValue } from '@getbeak/types-realtime-value';
 import type { VariableGroups } from '@getbeak/types/variable-groups';
+import { RealtimeValue } from '@getbeak/types-realtime-value';
 
 import { getValueParts, parseValueParts } from '../parser';
 

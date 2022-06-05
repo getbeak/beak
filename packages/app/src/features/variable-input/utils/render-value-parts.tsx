@@ -3,9 +3,9 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import type { VariableGroups } from '@getbeak/types/variable-groups';
 import * as uuid from 'uuid';
 
+import { RealtimeValueManager } from '../../realtime-values';
 import { ValueParts } from '../../realtime-values/values';
 import { getVariableGroupItemName } from '../../realtime-values/values/variable-group-item';
-import { RealtimeValueManager } from '../../realtime-values';
 
 export default function renderValueParts(parts: ValueParts, variableGroups: VariableGroups) {
 	return renderToStaticMarkup(

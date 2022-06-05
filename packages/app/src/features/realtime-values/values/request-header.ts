@@ -1,5 +1,4 @@
-import { RequestHeaderRtv } from '@beak/app/features/realtime-values/values';
-import { ValueParts } from '@beak/app/features/realtime-values/values';
+import { RequestHeaderRtv, ValueParts } from '@beak/app/features/realtime-values/values';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { EditableRealtimeValue } from '@getbeak/types-realtime-value';
 
@@ -25,7 +24,7 @@ const definition: EditableRealtimeValue<RequestHeaderRtv, EditorState> = {
 
 		if (!node || node.type !== 'request' || node.mode !== 'valid')
 			return '';
-		
+
 		recursiveSet.add('x');
 
 		const parsedHeaderName = await parseValueParts(ctx, payload.headerName, recursiveSet);

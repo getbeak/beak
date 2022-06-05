@@ -1,17 +1,17 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { RealtimeValueManager } from '@beak/app/features/realtime-values';
 import useRealtimeValueContext from '@beak/app/features/realtime-values/hooks/use-realtime-value-context';
+import { ipcExtensionsService } from '@beak/app/lib/ipc';
 import { useAppSelector } from '@beak/app/store/redux';
 import { movePosition } from '@beak/app/utils/arrays';
 import { TypedObject } from '@beak/common/helpers/typescript';
+import { RealtimeValue, RealtimeValueInformation } from '@getbeak/types-realtime-value';
 import Fuse from 'fuse.js';
 import styled from 'styled-components';
 import * as uuid from 'uuid';
 
 import { createFauxValue } from '../../../realtime-values/values/variable-group-item';
 import { NormalizedSelection } from '../../utils/browser-selection';
-import { RealtimeValue, RealtimeValueInformation } from '@getbeak/types-realtime-value';
-import { ipcExtensionsService } from '@beak/app/lib/ipc';
-import { RealtimeValueManager } from '@beak/app/features/realtime-values';
 
 interface Position {
 	top: number;
@@ -126,7 +126,7 @@ const VariableSelector: React.FC<React.PropsWithChildren<VariableSelectorProps>>
 
 					if (!item)
 						return;
-					
+
 					createDefaultVariable(item);
 					break;
 				}

@@ -2,16 +2,16 @@ import React, { useEffect, useRef, useState } from 'react';
 import Button from '@beak/app/components/atoms/Button';
 import Input, { Select } from '@beak/app/components/atoms/Input';
 import { ValueParts } from '@beak/app/features/realtime-values/values';
+import { EditableRealtimeValue, UISection } from '@getbeak/types-realtime-value';
 import styled from 'styled-components';
 
+import { RealtimeValueManager } from '../../realtime-values';
 import useRealtimeValueContext from '../../realtime-values/hooks/use-realtime-value-context';
 import { previewValue } from '../../realtime-values/preview';
 import VariableInput from '../../variable-input/components/VariableInput';
 import renderRequestSelectOptions from '../utils/render-request-select-options';
 import { FormGroup, Label } from './atoms/Form';
 import PreviewContainer from './molecules/PreviewContainer';
-import { EditableRealtimeValue, UISection } from '@getbeak/types-realtime-value';
-import { RealtimeValueManager } from '../../realtime-values';
 
 interface RtvEditorContext {
 	realtimeValue: EditableRealtimeValue<any, any>;

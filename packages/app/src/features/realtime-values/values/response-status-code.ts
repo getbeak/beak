@@ -1,5 +1,5 @@
 import { ResponseStatusCodeRtv } from '@beak/app/features/realtime-values/values';
-import { EditableRealtimeValue, RealtimeValue } from '@getbeak/types-realtime-value';
+import { EditableRealtimeValue } from '@getbeak/types-realtime-value';
 
 import { getRequestNode } from '../utils/request';
 import { getLatestFlight } from '../utils/response';

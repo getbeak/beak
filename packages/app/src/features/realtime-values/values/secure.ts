@@ -1,5 +1,4 @@
-import { SecureRtv } from '@beak/app/features/realtime-values/values';
-import { ValueParts } from '@beak/app/features/realtime-values/values';
+import { SecureRtv, ValueParts } from '@beak/app/features/realtime-values/values';
 import { ipcEncryptionService } from '@beak/app/lib/ipc';
 import { EditableRealtimeValue } from '@getbeak/types-realtime-value';
 

@@ -104,13 +104,13 @@ async function prepareRequest(overview: RequestOverview, context: Context): Prom
 async function flattenToggleValueParts(context: Context, toggleValueParts: Record<string, ToggleKeyValue>) {
 	const out: Record<string, ToggleKeyValue> = {};
 
-	for (const key of TypedObject.keys(toggleValueParts)) {
-		out[key] = {
-			enabled: toggleValueParts[key].enabled,
-			name: toggleValueParts[key].name,
-			value: [await parseValueParts(context, toggleValueParts[key].value)],
+	await Promise.all(TypedObject.keys(toggleValueParts).map(async k => {
+		out[k] = {
+			enabled: toggleValueParts[k].enabled,
+			name: toggleValueParts[k].name,
+			value: [await parseValueParts(context, toggleValueParts[k].value)],
 		};
-	}
+	}));
 
 	return out;
 }
