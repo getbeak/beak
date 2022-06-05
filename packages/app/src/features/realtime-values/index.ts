@@ -3,6 +3,7 @@ import { TypedObject } from '@beak/common/helpers/typescript';
 import { RealtimeValueExtension } from '@beak/common/types/extensions';
 import { EditableRealtimeValue, RealtimeValue } from '@getbeak/types-realtime-value';
 
+import './ipc';
 import base64EncodeRtv from './values/base64-encode';
 import digestRtv from './values/digest';
 import nonceRtv from './values/nonce';
@@ -65,7 +66,8 @@ export class RealtimeValueManager {
 			}),
 			getValue: async (ctx, payload, recursiveSet) => ipcExtensionsService.rtvGetValue({
 				type: rtv.type,
-				context: ctx, payload,
+				context: ctx,
+				payload,
 				recursiveSet: Array.from(recursiveSet),
 			}),
 		};
@@ -103,6 +105,8 @@ export class RealtimeValueManager {
 	static getRealtimeValues(currentRequestId?: string) {
 		const allRealtimeValues = {
 			...this.externalRealtimeValues,
+
+			// Do this second to override any external attempts to override
 			...this.internalRealtimeValues,
 		};
 

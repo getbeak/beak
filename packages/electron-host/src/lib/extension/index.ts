@@ -1,12 +1,15 @@
-import { IpcEvent } from '@beak/common/ipc/ipc';
+import { ExtensionsMessages, IpcExtensionsServiceMain, RtvParseValuePartsResponse } from '@beak/common/ipc/extensions';
+import { IpcEvent, RequestPayload } from '@beak/common/ipc/ipc';
 import { RealtimeValueExtension } from '@beak/common/types/extensions';
 import Squawk from '@beak/common/utils/squawk';
 import { ensureWithinProject } from '@beak/electron-host/ipc-layer/fs-service';
 import { getProjectWindowMapping } from '@beak/electron-host/ipc-layer/fs-shared';
-import { Context } from '@getbeak/types/values';
+import ksuid from '@cuvva/ksuid';
+import { Context, ValueParts } from '@getbeak/types/values';
 import { EditableRealtimeValue } from '@getbeak/types-realtime-value/';
+import { ipcMain, WebContents } from 'electron';
 import fs from 'fs-extra';
-import cd from 'lodash.clonedeep';
+import clone from 'lodash.clonedeep';
 import path from 'path';
 import { Logger, TLogLevelName } from 'tslog';
 import { NodeVM, VMScript } from 'vm2';
@@ -40,6 +43,11 @@ logger.attachTransport({
 
 export default class ExtensionManager {
 	private readonly projectExtensions: ProjectExtensions = {};
+	private readonly extensionService: IpcExtensionsServiceMain;
+
+	constructor(extensionService: IpcExtensionsServiceMain) {
+		this.extensionService = extensionService;
+	}
 
 	async registerRtv(event: IpcEvent, projectId: string, extensionPath: string): Promise<RealtimeValueExtension> {
 		if (!this.projectExtensions[projectId])
@@ -49,13 +57,14 @@ export default class ExtensionManager {
 
 		const scriptContent = await fs.readFile(scriptPath, 'utf8');
 		const extensionVm = new NodeVM({
-			console: 'off',
+			console: 'inherit',
 			wasm: false,
 			eval: false,
 			sandbox: {
-				// TODO(afr): Pass in the proper sandbox context
-				log: (level: TLogLevelName, message: string) => logger[level](message),
-				parseValueParts: (_ctx: unknown, _parts: unknown, _recursiveSet: unknown) => [],
+				beakApi: {
+					log: (level: TLogLevelName, message: string) => (logger[level] ?? logger.warn)(message),
+					parseValueParts: (_ctx: unknown, _parts: unknown, _recursiveSet: unknown) => [],
+				},
 			},
 		});
 
@@ -100,11 +109,44 @@ export default class ExtensionManager {
 		const { extension } = this.getExtensionContext(projectId, type);
 		const x = await extension.createDefaultPayload(context);
 
-		return { ...x };
+		return clone(x);
 	}
 
-	async rtvGetValue(projectId: string, type: string, context: Context, payload: any, recursiveSet: string[]) {
-		const { extension } = this.getExtensionContext(projectId, type);
+	async rtvGetValue(
+		projectId: string,
+		type: string,
+		context: Context,
+		webContents: WebContents,
+		payload: unknown,
+		recursiveSet: string[],
+	) {
+		const { vm, extension } = this.getExtensionContext(projectId, type);
+
+		vm.sandbox.beakApi.parseValueParts = async (ctx: Context, parts: ValueParts, recursiveSet: Set<string>) => {
+			const uniqueSessionId = ksuid.generate('rtvparsersp').toString();
+
+			// send IPC request
+			this.extensionService.rtvParseValueParts(webContents, {
+				uniqueSessionId,
+				context: ctx,
+				parts,
+				recursiveSet: Array.from(recursiveSet),
+			});
+
+			return await new Promise(resolve => {
+				ipcMain.on(this.extensionService.getChannel(), async (_event, message) => {
+					const { code, payload } = message as RequestPayload<RtvParseValuePartsResponse>;
+
+					if (code !== ExtensionsMessages.RtvParseValuePartsResponse)
+						return;
+
+					if (payload.uniqueSessionId !== uniqueSessionId)
+						return;
+
+					resolve(payload.parsed);
+				});
+			});
+		};
 
 		return await extension.getValue(context, payload, new Set(recursiveSet));
 	}
@@ -113,21 +155,21 @@ export default class ExtensionManager {
 		const { extension } = this.getExtensionContext(projectId, type);
 		const uiSections = await extension.editor.createUserInterface(context);
 
-		return cd(uiSections);
+		return clone(uiSections);
 	}
 
 	async rtvEditorLoad(projectId: string, type: string, context: Context, payload: unknown) {
 		const { extension } = this.getExtensionContext(projectId, type);
 		const editorState = await extension.editor.load(context, payload);
 
-		return cd(editorState);
+		return clone(editorState);
 	}
 
 	async rtvEditorSave(projectId: string, type: string, context: Context, existingPayload: unknown, state: unknown) {
 		const { extension } = this.getExtensionContext(projectId, type);
 		const payload = await extension.editor.save(context, existingPayload, state);
 
-		return cd(payload);
+		return clone(payload);
 	}
 
 	private getExtensionContext(projectId: string, type: string) {
@@ -135,6 +177,8 @@ export default class ExtensionManager {
 
 		if (!extensionStorage)
 			throw new Squawk('unknown_registered_extension', { projectId, type });
+
+		extensionStorage.vm.sandbox.beakApi.parseValueParts = () => [];
 
 		return { vm: extensionStorage.vm, extension: extensionStorage.extension };
 	}

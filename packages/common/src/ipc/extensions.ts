@@ -1,6 +1,6 @@
-import { Context } from '@getbeak/types/values';
+import { Context, ValueParts } from '@getbeak/types/values';
 import { UISection } from '@getbeak/types-realtime-value';
-import type { IpcMain } from 'electron';
+import type { IpcMain, WebContents } from 'electron';
 
 import { RealtimeValueExtension } from '../types/extensions';
 import { IpcServiceMain, IpcServiceRenderer, Listener, PartialIpcRenderer } from './ipc';
@@ -12,6 +12,8 @@ export const ExtensionsMessages = {
 	RtvEditorCreateUserInterface: 'rtv_editor_create_user_interface',
 	RtvEditorLoad: 'rtv_editor_load',
 	RtvEditorSave: 'rtv_editor_save',
+	RtvParseValueParts: 'rtv_parse_value_parts',
+	RtvParseValuePartsResponse: 'rtv_parse_value_parts_response',
 };
 
 interface RegisterRtvPayload { extensionFilePath: string }
@@ -37,6 +39,17 @@ interface RtvEditorLoad extends RtvBase {
 interface RtvEditorSave extends RtvBase {
 	existingPayload: unknown;
 	state: unknown;
+}
+
+export interface RtvParseValueParts extends Omit<RtvBase, 'type'> {
+	uniqueSessionId: string;
+	recursiveSet: string[];
+	parts: ValueParts;
+}
+
+export interface RtvParseValuePartsResponse {
+	uniqueSessionId: string;
+	parsed: string;
 }
 
 export class IpcExtensionsServiceRenderer extends IpcServiceRenderer {
@@ -67,6 +80,10 @@ export class IpcExtensionsServiceRenderer extends IpcServiceRenderer {
 	async rtvEditorSave(payload: RtvEditorSave): Promise<any> {
 		return await this.invoke(ExtensionsMessages.RtvEditorSave, payload);
 	}
+
+	registerRtvParseValueParts(fn: Listener<RtvParseValueParts>) {
+		this.registerListener(ExtensionsMessages.RtvParseValueParts, fn);
+	}
 }
 
 export class IpcExtensionsServiceMain extends IpcServiceMain {
@@ -96,5 +113,12 @@ export class IpcExtensionsServiceMain extends IpcServiceMain {
 
 	registerRtvEditorSave(fn: Listener<RtvEditorSave, any>) {
 		this.registerListener(ExtensionsMessages.RtvEditorSave, fn);
+	}
+
+	rtvParseValueParts(wc: WebContents, payload: RtvParseValueParts) {
+		wc.send(this.channel, {
+			code: ExtensionsMessages.RtvParseValueParts,
+			payload,
+		});
 	}
 }

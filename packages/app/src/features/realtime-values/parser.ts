@@ -1,7 +1,7 @@
 import { generateValueIdent } from '@beak/app/lib/beak-variable-group/utils';
-import { ipcExtensionsService } from '@beak/app/lib/ipc';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import type { Context, ValueParts } from '@getbeak/types/values';
+
 import { RealtimeValueManager } from '.';
 
 export async function parseValueParts(
@@ -31,15 +31,6 @@ export async function parseValueParts(
 				return '';
 
 			recursiveSet.add(recursiveKey);
-		}
-
-		if (rtv.external) {
-			return await ipcExtensionsService.rtvGetValue({
-				type: rtv.type,
-				context: ctx,
-				payload: p.payload as any,
-				recursiveSet: Array.from(recursiveSet),
-			});
 		}
 
 		return await rtv.getValue(ctx, p.payload, recursiveSet);

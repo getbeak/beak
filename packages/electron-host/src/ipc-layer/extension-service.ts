@@ -1,6 +1,6 @@
 import { IpcExtensionsServiceMain } from '@beak/common/ipc/extensions';
 import Squawk from '@beak/common/utils/squawk';
-import { ipcMain } from 'electron';
+import { ipcMain, IpcMainInvokeEvent } from 'electron';
 
 import ExtensionManager from '../lib/extension';
 import { readProjectFile } from '../lib/project';
@@ -9,7 +9,7 @@ import { getProjectWindowMapping } from './fs-shared';
 import { getProjectFolder } from './utils';
 
 const service = new IpcExtensionsServiceMain(ipcMain);
-const extensionManager = new ExtensionManager();
+const extensionManager = new ExtensionManager(service);
 
 service.registerRegisterRtv(async (event, payload) => {
 	const filePath = await ensureWithinProject(getProjectWindowMapping(event), payload.extensionFilePath);
@@ -39,10 +39,13 @@ service.registerRtvGetValuePayload(async (event, payload) => {
 	if (!projectFile || !projectFile.id)
 		throw new Squawk('invalid_project_file', { projectFile });
 
+	const sender = (event as IpcMainInvokeEvent).sender;
+
 	return await extensionManager.rtvGetValue(
 		projectFile.id,
 		payload.type,
 		payload.context,
+		sender,
 		payload.payload,
 		payload.recursiveSet,
 	);

@@ -40,7 +40,7 @@
     "uuid": "^8.3.2"
   },
   "devDependencies": {
-    "@getbeak/types-realtime-value": "1.0.0-prerelease.4",
+    "@getbeak/types-realtime-value": "1.0.0-prerelease.5",
     "@types/electron-devtools-installer": "^2.2.2",
     "@types/fs-extra": "^9.0.13",
     "@types/lodash.clonedeep": "^4.5.7",
