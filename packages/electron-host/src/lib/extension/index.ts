@@ -193,8 +193,6 @@ export default class ExtensionManager {
 	private async parseExtensionPackage(event: IpcEvent, extensionPath: string) {
 		const packageJsonPath = path.join(extensionPath, 'package.json');
 		const packageJson = await fs.readJson(packageJsonPath);
-
-		// TODO(afr): Parse this properly, with validation
 		const { name, version, beakExtensionType, main } = packageJson;
 
 		if (beakExtensionType !== 'realtime-value') {
@@ -203,6 +201,22 @@ export default class ExtensionManager {
 				packageJsonKey: 'beakExtensionType',
 				expected: 'realtime-value',
 				actual: beakExtensionType ?? '[missing]',
+			});
+		}
+
+		if (!name) {
+			throw new Squawk('invalid_extension_package', {
+				extensionPath,
+				packageJsonKey: 'name',
+				reason: 'name is missing',
+			});
+		}
+
+		if (!version) {
+			throw new Squawk('invalid_extension_package', {
+				extensionPath,
+				packageJsonKey: 'version',
+				reason: 'version is missing',
 			});
 		}
 
@@ -221,5 +235,54 @@ export default class ExtensionManager {
 		await ensureWithinProject(getProjectWindowMapping(event), scriptPath);
 
 		return { main, name, scriptPath, version };
+	}
+
+	private validateExtensionSignature(extension: EditableRealtimeValue<any>) {
+		if (!('name' in extension))
+			throw new Squawk('incorrect_extension_signature', { key: 'name', reason: 'missing' });
+		if (typeof extension.name !== 'string')
+			throw new Squawk('incorrect_extension_signature', { key: 'name', reason: 'wrong type' });
+
+		if (!('description' in extension))
+			throw new Squawk('incorrect_extension_signature', { key: 'description', reason: 'missing' });
+		if (typeof extension.description !== 'string')
+			throw new Squawk('incorrect_extension_signature', { key: 'description', reason: 'wrong type' });
+
+		if (!('sensitive' in extension))
+			throw new Squawk('incorrect_extension_signature', { key: 'sensitive', reason: 'missing' });
+		if (typeof extension.sensitive !== 'boolean')
+			throw new Squawk('incorrect_extension_signature', { key: 'sensitive', reason: 'wrong type' });
+
+		if (!('attributes' in extension))
+			throw new Squawk('incorrect_extension_signature', { key: 'attributes', reason: 'missing' });
+		if (typeof extension.attributes !== 'object')
+			throw new Squawk('incorrect_extension_signature', { key: 'attributes', reason: 'wrong type' });
+
+		if (!('createDefaultPayload' in extension))
+			throw new Squawk('incorrect_extension_signature', { key: 'createDefaultPayload', reason: 'missing' });
+		if (typeof extension.createDefaultPayload !== 'function')
+			throw new Squawk('incorrect_extension_signature', { key: 'createDefaultPayload', reason: 'wrong type' });
+
+		if (!('getValue' in extension))
+			throw new Squawk('incorrect_extension_signature', { key: 'getValue', reason: 'missing' });
+		if (typeof extension.getValue !== 'function')
+			throw new Squawk('incorrect_extension_signature', { key: 'getValue', reason: 'wrong type' });
+
+		if ('editor' in extension) {
+			if (!('createUserInterface' in extension.editor))
+				throw new Squawk('incorrect_extension_signature', { key: 'editor.createUserInterface', reason: 'missing' });
+			if (typeof extension.editor.createUserInterface !== 'function')
+				throw new Squawk('incorrect_extension_signature', { key: 'editor.createUserInterface', reason: 'wrong type' });
+
+			if (!('load' in extension.editor))
+				throw new Squawk('incorrect_extension_signature', { key: 'editor.load', reason: 'missing' });
+			if (typeof extension.editor.load !== 'function')
+				throw new Squawk('incorrect_extension_signature', { key: 'editor.load', reason: 'wrong type' });
+
+			if (!('save' in extension.editor))
+				throw new Squawk('incorrect_extension_signature', { key: 'editor.save', reason: 'missing' });
+			if (typeof extension.editor.save !== 'function')
+				throw new Squawk('incorrect_extension_signature', { key: 'editor.save', reason: 'wrong type' });
+		}
 	}
 }
