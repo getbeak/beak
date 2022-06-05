@@ -55,9 +55,12 @@ export default class ExtensionManager {
 
 		const { name, scriptPath, version } = await this.parseExtensionPackage(event, extensionPath);
 
+		// Prefix added so malicious action can't replace built in sensitive RTVs
+		const type = `external:${name}`;
+
 		const scriptContent = await fs.readFile(scriptPath, 'utf8');
 		const extensionVm = new NodeVM({
-			console: 'inherit',
+			console: 'redirect',
 			wasm: false,
 			eval: false,
 			sandbox: {
@@ -68,15 +71,19 @@ export default class ExtensionManager {
 			},
 		});
 
+		extensionVm.on('console.log', message => logger.info(`[${type}]`, message));
+		extensionVm.on('console.dir', message => logger.info(`[${type}]`, message));
+		extensionVm.on('console.info', message => logger.info(`[${type}]`, message));
+		extensionVm.on('console.warn', message => logger.warn(`[${type}]`, message));
+		extensionVm.on('console.error', message => logger.error(`[${type}]`, message));
+		extensionVm.on('console.trace', message => logger.trace(`[${type}]`, message));
+
 		const compiledScript = new VMScript(scriptContent);
 		const extensionContext = extensionVm.run(compiledScript);
 
-		// TODO(afr): Run validation on output
 		const extension = extensionContext.default as EditableRealtimeValue<any>;
 
-		// Prefix added so malicious action can't replace built in sensitive RTVs
-		const type = `external:${name}`;
-
+		this.validateExtensionSignature(extension);
 		this.projectExtensions[projectId][type] = {
 			type,
 			version,
