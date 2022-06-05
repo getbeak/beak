@@ -1,13 +1,16 @@
-import { EditableRealtimeValue } from '@getbeak/types-realtime-value';
+import type { ValueParts } from '@getbeak/types/values';
+import type { EditableRealtimeValue } from '@getbeak/types-realtime-value';
 
 type AlbumSlug = '1989' | 'red';
 
 interface Payload {
 	albumSlug: AlbumSlug;
+	suffix: ValueParts;
 }
 
 interface EditorState {
 	albumSlug: AlbumSlug;
+	suffix: ValueParts;
 }
 
 const lyrics: Record<AlbumSlug, string[]> = {
@@ -39,12 +42,13 @@ const tswiftLyricExtension: EditableRealtimeValue<Payload, EditorState> = {
 		requiresRequestId: false,
 	},
 
-	createDefaultPayload: async () => ({ albumSlug: '1989' }),
-	getValue: async (_ctx, payload) => {
+	createDefaultPayload: async () => ({ albumSlug: '1989', suffix: [] }),
+	getValue: async (ctx, payload, recursiveSet) => {
 		const albumLyrics = lyrics[payload.albumSlug];
 		const lyric = randomLyric(albumLyrics);
+		const parsed = await beakApi.parseValueParts(ctx, payload.suffix, recursiveSet);
 
-		return lyric;
+		return `${lyric} ${parsed}`;
 	},
 
 	editor: {
@@ -53,10 +57,14 @@ const tswiftLyricExtension: EditableRealtimeValue<Payload, EditorState> = {
 			stateBinding: 'albumSlug',
 			label: 'Which tswift album should this lyric be from?',
 			options: [{ label: '1989', key: '1989' }, { label: 'red', key: 'red' }],
+		}, {
+			type: 'value_parts_input',
+			stateBinding: 'suffix',
+			label: 'Do you want a suffix?',
 		}],
 
-		load: async (_ctx, payload) => ({ albumSlug: payload.albumSlug }),
-		save: async (_ctx, _existingPayload, state) => ({ albumSlug: state.albumSlug }),
+		load: async (_ctx, payload) => payload,
+		save: async (_ctx, _existingPayload, state) => state,
 	},
 };
 

@@ -8,6 +8,7 @@ interface GenericDictionary {
 }
 
 export interface RealtimeValueInformation extends RealtimeValueBase {
+
 	/**
 	 * The public facing name of your extension.
 	 */
@@ -17,7 +18,7 @@ export interface RealtimeValueInformation extends RealtimeValueBase {
 	 * The public facing description of your extension.
 	 */
 	description: string;
- 
+
 	/**
 	 * Denotes if the value's output is sensitive, and will be hidden by default in the UI and in copied responses.
 	 */
@@ -124,4 +125,16 @@ interface RequestSelectInput<T extends GenericDictionary> {
 	type: 'request_select_input';
 	stateBinding: keyof T;
 	label?: string;
+}
+
+declare global {
+	const beakApi: Beak;
+}
+
+type Level = 'info' | 'warn' | 'error';
+
+interface Beak {
+	parseValueParts: (ctx: Context, parts: unknown[], recursiveSet: Set<string>) => Promise<string>;
+
+	log: (level: Level, message: string) => void;
 }
