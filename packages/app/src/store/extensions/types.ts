@@ -1,4 +1,5 @@
 import { RealtimeValueExtension } from '@beak/common/types/extensions';
+import Squawk from '@beak/common/utils/squawk';
 
 export const ActionTypes = {
 	START_EXTENSIONS: '@beak/global/extensions/START_EXTENSIONS',
@@ -16,6 +17,7 @@ export const initialState: State = {
 export interface FailedExtension {
 	filePath: string;
 	valid: false;
+	error: Squawk;
 }
 
 export type Extension = FailedExtension | RealtimeValueExtension;

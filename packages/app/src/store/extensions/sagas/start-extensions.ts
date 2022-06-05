@@ -1,11 +1,14 @@
 import { RealtimeValueManager } from '@beak/app/features/realtime-values';
 import createFsEmitter from '@beak/app/lib/fs-emitter';
 import { ipcExtensionsService, ipcFsService } from '@beak/app/lib/ipc';
+import Squawk from '@beak/common/utils/squawk';
+import ksuid from '@cuvva/ksuid';
 import path from 'path-browserify';
 import { call, put, take } from 'redux-saga/effects';
 
+import { alertInsert, alertRemoveType } from '../../project/actions';
 import * as actions from '../actions';
-import { Extension } from '../types';
+import { Extension, FailedExtension } from '../types';
 
 interface PackageJson {
 	name: string;
@@ -38,9 +41,7 @@ export default function* workerStartExtensions() {
 			continue;
 
 		// TODO(afr): make this more intelligent sometime
-		const extensions: Extension[] = yield call(readExtensions);
-
-		yield put(actions.extensionsOpened({ extensions }));
+		yield call(initialImport);
 	}
 }
 
@@ -51,8 +52,28 @@ function* initialImport() {
 		return;
 
 	const extensions: Extension[] = yield call(readExtensions);
+	const invalidExtensions = extensions.filter(e => !e.valid) as FailedExtension[];
 
+	yield put(alertRemoveType('invalid_extension'));
 	yield put(actions.extensionsOpened({ extensions }));
+
+	for (const invalid of invalidExtensions) {
+		const dir = path.dirname(invalid.filePath);
+		const lastDirIndex = dir.lastIndexOf(path.sep) + 1;
+		const lastDir = dir.substring(lastDirIndex);
+
+		yield put(alertInsert({
+			ident: ksuid.generate('alert').toString(),
+			alert: {
+				type: 'invalid_extension',
+				payload: {
+					error: invalid.error,
+					assumedName: lastDir,
+					filePath: invalid.filePath,
+				},
+			},
+		}));
+	}
 }
 
 async function readExtensions(): Promise<Extension[]> {
@@ -78,13 +99,13 @@ async function readExtensions(): Promise<Extension[]> {
 			return l.substring(1, closeIndex);
 		});
 
-	return await Promise.all(dependencies.map<Promise<Extension>>(async k => {
+	const extensions = await Promise.all(dependencies.map<Promise<Extension | null>>(async k => {
 		const dependencyPath = path.join('extensions', 'node_modules', k);
 		const packagePath = path.join(dependencyPath, 'package.json');
 		const packageExists = await ipcFsService.pathExists(packagePath);
 
 		if (!packageExists)
-			return { filePath: packagePath, valid: false };
+			return null;
 
 		const packageJson = await ipcFsService.readJson<PackageJson>(packagePath);
 
@@ -92,15 +113,22 @@ async function readExtensions(): Promise<Extension[]> {
 		const { beakExtensionType } = packageJson;
 
 		if (!beakExtensionType)
-			return { filePath: packagePath, valid: false };
+			return null;
 
-		const extension = await ipcExtensionsService.registerRtv({ extensionFilePath: dependencyPath });
+		try {
+			const extension = await ipcExtensionsService.registerRtv({ extensionFilePath: dependencyPath });
 
-		if (!extension)
-			return { filePath: packagePath, valid: false };
+			RealtimeValueManager.registerExternalRealtimeValue(extension);
 
-		RealtimeValueManager.registerExternalRealtimeValue(extension);
-
-		return extension;
+			return extension;
+		} catch (error) {
+			return {
+				filePath: packagePath,
+				valid: false,
+				error: Squawk.coerce(error),
+			};
+		}
 	}));
+
+	return extensions.filter(Boolean) as Extension[];
 }

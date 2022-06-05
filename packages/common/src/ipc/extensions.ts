@@ -57,7 +57,7 @@ export class IpcExtensionsServiceRenderer extends IpcServiceRenderer {
 		super('extensions', ipc);
 	}
 
-	async registerRtv(payload: RegisterRtvPayload): Promise<RealtimeValueExtension | null> {
+	async registerRtv(payload: RegisterRtvPayload): Promise<RealtimeValueExtension> {
 		return await this.invoke(ExtensionsMessages.RegisterRtv, payload);
 	}
 
@@ -91,7 +91,7 @@ export class IpcExtensionsServiceMain extends IpcServiceMain {
 		super('extensions', ipc);
 	}
 
-	registerRegisterRtv(fn: Listener<RegisterRtvPayload, RealtimeValueExtension | null>) {
+	registerRegisterRtv(fn: Listener<RegisterRtvPayload, RealtimeValueExtension>) {
 		this.registerListener(ExtensionsMessages.RegisterRtv, fn);
 	}
 

@@ -14,12 +14,12 @@ export async function parseValueParts(
 			return p;
 
 		if (typeof p !== 'object')
-			return `[Unknown value part ${p}:(${typeof p})]`;
+			return '';
 
 		const rtv = RealtimeValueManager.getRealtimeValue(p.type);
 
 		if (!rtv)
-			return '[Unknown realtime value]';
+			return '';
 
 		// Realtime values can in some situations references each other or themselves, so we need to be clever and
 		// detect recursive references. What we do is keep a set of each VG item id that we have seen so far, and if we

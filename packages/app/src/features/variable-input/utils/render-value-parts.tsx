@@ -14,10 +14,33 @@ export default function renderValueParts(parts: ValueParts, variableGroups: Vari
 				if (typeof p === 'string')
 					return <span key={p}>{p}</span>;
 
-				if (typeof p !== 'object')
-					return `[Unknown value part ${p}:(${typeof p})]`;
+				if (typeof p !== 'object') {
+					// eslint-disable-next-line no-console
+					console.error(`Unknown value part ${p}:(${typeof p})`);
+
+					return null;
+				}
 
 				const rtv = RealtimeValueManager.getRealtimeValue(p.type);
+
+				if (!rtv) {
+					return (
+						<div
+							className={'bvs-blob'}
+							contentEditable={false}
+							data-index={idx}
+							data-editable={false}
+							data-type={p.type}
+							data-payload={void 0}
+							key={uuid.v4()}
+						>
+							<abbr title={`Name ${p.type}`}>
+								{'[Extension missing]'}
+							</abbr>
+						</div>
+					);
+				}
+
 				const editable = 'editor' in rtv;
 				const name = (() => {
 					if (p.type === 'variable_group_item') {

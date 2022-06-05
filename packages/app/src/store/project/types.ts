@@ -1,5 +1,6 @@
 import { ValueParts } from '@beak/app/features/realtime-values/values';
 import { ActiveRename } from '@beak/app/features/tree-view/types';
+import Squawk from '@beak/common/utils/squawk';
 import type { EntryMap, EntryType } from '@getbeak/types/body-editor-json';
 import type { Tree } from '@getbeak/types/nodes';
 import type { ToggleKeyValue } from '@getbeak/types/request';
@@ -215,7 +216,7 @@ export interface RequestBodyUrlEncodedEditorRemoveItemPayload extends RequestIdP
 
 export interface RequestOptionFollowRedirects extends RequestIdPayload { followRedirects: boolean }
 
-export type Alert = AlertMissingEncryption | AlertHttpBodyNotAllowed;
+export type Alert = AlertMissingEncryption | AlertHttpBodyNotAllowed | AlertInvalidExtension;
 
 export interface AlertBase {
 	type: string;
@@ -232,6 +233,15 @@ export interface AlertMissingEncryption extends AlertBase {
 
 export interface AlertHttpBodyNotAllowed extends AlertBase {
 	type: 'http_body_not_allowed';
+}
+
+export interface AlertInvalidExtension extends AlertBase {
+	type: 'invalid_extension';
+	payload: {
+		error: Squawk;
+		assumedName: string;
+		filePath: string;
+	};
 }
 
 export interface AlertInsertPayload {
