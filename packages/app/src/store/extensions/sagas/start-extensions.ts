@@ -85,7 +85,7 @@ async function readExtensions(): Promise<Extension[]> {
 
 		if (!packageExists)
 			return { filePath: packagePath, valid: false };
-		
+
 		const packageJson = await ipcFsService.readJson<PackageJson>(packagePath);
 
 		// TODO(afr): Parse this properly, with validation
