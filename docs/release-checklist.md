@@ -18,7 +18,7 @@ This is the checklist to follow before releasing any Beak update!
 
 - Update version in `@beak/electron-host/package.json`
 - Commit the above
-- Tag the release `vx.x.x`
+- Tag the release `beak-app@x.x.x`
 - Setup GitHub release
 
 ### Watch along
