@@ -53,9 +53,8 @@ export default class ExtensionManager {
 		if (!this.projectExtensions[projectId])
 			this.projectExtensions[projectId] = {};
 
-		const { name, scriptPath, version } = await this.parseExtensionPackage(event, extensionPath);
-
 		// Prefix added so malicious action can't replace built in sensitive RTVs
+		const { name, scriptPath, version } = await this.parseExtensionPackage(event, extensionPath);
 		const type = `external:${name}`;
 
 		const scriptContent = await fs.readFile(scriptPath, 'utf8');
@@ -80,8 +79,7 @@ export default class ExtensionManager {
 
 		const compiledScript = new VMScript(scriptContent);
 		const extensionContext = extensionVm.run(compiledScript);
-
-		const extension = extensionContext.default as EditableRealtimeValue<any>;
+		const extension = extensionContext?.default as EditableRealtimeValue<any>;
 
 		this.validateExtensionSignature(extension);
 		this.projectExtensions[projectId][type] = {
@@ -105,7 +103,7 @@ export default class ExtensionManager {
 				description: extension.description,
 				sensitive: extension.sensitive,
 				attributes: {
-					requiresRequestId: extension.attributes?.requiresRequestId,
+					requiresRequestId: extension.attributes.requiresRequestId,
 				},
 				editable: Boolean(extension.editor),
 			},
@@ -217,6 +215,14 @@ export default class ExtensionManager {
 				extensionPath,
 				packageJsonKey: 'version',
 				reason: 'version is missing',
+			});
+		}
+
+		if (typeof main !== 'string') {
+			throw new Squawk('invalid_extension_package', {
+				extensionPath,
+				packageJsonKey: 'main',
+				reason: 'main is missing',
 			});
 		}
 
