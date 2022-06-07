@@ -10,10 +10,10 @@ import styled from 'styled-components';
 
 import useRealtimeValueContext from '../../realtime-values/hooks/use-realtime-value-context';
 import { parseValueParts } from '../../realtime-values/parser';
+import renderValueParts from '../../realtime-values/renderer';
 import { NormalizedSelection, normalizeSelection, trySetSelection } from '../utils/browser-selection';
 import { detectRelevantCopiedValueParts } from '../utils/copying';
 import { handlePaste } from '../utils/pasting';
-import renderValueParts from '../utils/render-value-parts';
 import { determineInsertionMode, VariableSelectionState } from '../utils/variables';
 import VariableSelector from './molecules/VariableSelector';
 import UnmanagedInput from './organisms/UnmanagedInput';
