@@ -21,17 +21,17 @@ export async function parseValueParts(
 		if (!rtv)
 			return '';
 
-		// Realtime values can in some situations references each other or themselves, so we need to be clever and
-		// detect recursive references. What we do is keep a set of each VG item id that we have seen so far, and if we
-		// hit the same once twice, then we simply exit out, preventing a loop.
-		const recursiveKey = `${p.type}:${JSON.stringify(p.payload)}`;
+		// NOTE(afr): Bring this back before 1.1.7 goes public
+		// // Realtime values can in some situations references each other or themselves, so we need to be clever and
+		// // detect recursive references.
+		// const recursiveKey = `${p.type}:${JSON.stringify(p.payload)}`;
 
-		if (recursiveKey) {
-			if (recursiveSet.has(recursiveKey))
-				return '';
+		// if (recursiveKey) {
+		// 	if (recursiveSet.has(recursiveKey))
+		// 		return '';
 
-			recursiveSet.add(recursiveKey);
-		}
+		// 	recursiveSet.add(recursiveKey);
+		// }
 
 		try {
 			return Promise.race([
