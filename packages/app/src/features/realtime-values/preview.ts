@@ -1,19 +1,13 @@
-import { RealtimeValuePart } from '@beak/app/features/realtime-values/values';
 import type { Context } from '@getbeak/types/values';
+import { EditableRealtimeValue } from '@getbeak/types-realtime-value';
 
-import { RealtimeValue } from './types';
-
-export async function previewValue<T extends RealtimeValuePart>(
+export async function previewValue<T>(
 	ctx: Context,
-	rtv: RealtimeValue<T>,
+	rtv: EditableRealtimeValue<T>,
 	item: any,
-	state: T['payload'],
+	state: T,
 ) {
-	if (!rtv.editor)
-		return '';
-
-	// @ts-expect-error
 	const payload = await rtv.editor.save(ctx, item, state);
 
-	return await rtv.getValue(ctx, payload);
+	return await rtv.getValue(ctx, payload, new Set());
 }

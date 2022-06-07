@@ -1,24 +1,17 @@
 import { ResponseStatusCodeRtv } from '@beak/app/features/realtime-values/values';
+import { EditableRealtimeValue } from '@getbeak/types-realtime-value';
 
-import { RealtimeValue } from '../types';
 import { getRequestNode } from '../utils/request';
 import { getLatestFlight } from '../utils/response';
 
-const type = 'response_status_code';
-
-export default {
-	type,
-
+const definition: EditableRealtimeValue<ResponseStatusCodeRtv, ResponseStatusCodeRtv> = {
+	type: 'response_status_code',
 	name: 'Response status code',
 	description: 'Returns HTTP status code of the most recent response for a request',
 	sensitive: false,
+	external: false,
 
-	initValuePart: async () => ({
-		type,
-		payload: {
-			requestId: '',
-		},
-	}),
+	createDefaultPayload: async () => ({ requestId: '' }),
 
 	getValue: async (ctx, payload) => {
 		const requestNode = getRequestNode(payload.requestId, ctx);
@@ -36,7 +29,7 @@ export default {
 	},
 
 	editor: {
-		createUi: () => [{
+		createUserInterface: async () => [{
 			type: 'request_select_input',
 			label: 'Select the request:',
 			stateBinding: 'requestId',
@@ -45,4 +38,6 @@ export default {
 		load: async (_ctx, item) => ({ requestId: item.requestId }),
 		save: async (_ctx, _item, state) => ({ requestId: state.requestId }),
 	},
-} as RealtimeValue<ResponseStatusCodeRtv, ResponseStatusCodeRtv['payload']>;
+};
+
+export default definition;

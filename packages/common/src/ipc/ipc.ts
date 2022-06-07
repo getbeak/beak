@@ -7,9 +7,9 @@ import type {
 
 import Squawk from '../utils/squawk';
 
-export interface RequestPayload {
+export interface RequestPayload<T = unknown> {
 	code: string;
-	payload: unknown;
+	payload: T;
 }
 
 export interface Response<T> {

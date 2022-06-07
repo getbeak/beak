@@ -1,20 +1,13 @@
-import { RequestMethodRtv } from '@beak/app/features/realtime-values/values';
+import { RealtimeValue } from '@getbeak/types-realtime-value';
 
-import { RealtimeValue } from '../types';
-
-const type = 'request_method';
-
-export default {
-	type,
-
+const definition: RealtimeValue<any> = {
+	type: 'request_method',
 	name: 'Request method',
 	description: 'Returns the HTTP method of the this request',
 	sensitive: false,
+	external: false,
 
-	initValuePart: async () => ({
-		type,
-		payload: void 0,
-	}),
+	createDefaultPayload: async () => void 0,
 
 	getValue: async ctx => {
 		const node = ctx.projectTree[ctx.currentRequestId!];
@@ -28,4 +21,6 @@ export default {
 	attributes: {
 		requiresRequestId: true,
 	},
-} as RealtimeValue<RequestMethodRtv>;
+};
+
+export default definition;

@@ -1,21 +1,14 @@
-import { NonceRtv } from '@beak/app/features/realtime-values/values';
 import { toWebSafeBase64 } from '@beak/app/lib/base64';
+import type { RealtimeValue } from '@getbeak/types-realtime-value';
 
-import { RealtimeValue } from '../types';
-
-const type = 'nonce';
-
-export default {
-	type,
-
+const definition: RealtimeValue<any> = {
+	type: 'nonce',
 	name: 'Nonce',
 	description: 'Generates a cryptographically random string',
 	sensitive: false,
+	external: false,
 
-	initValuePart: async () => ({
-		type,
-		payload: void 0,
-	}),
+	createDefaultPayload: async () => void 0,
 
 	getValue: async () => {
 		const array = new Uint8Array(10);
@@ -26,4 +19,6 @@ export default {
 	},
 
 	attributes: {},
-} as RealtimeValue<NonceRtv>;
+};
+
+export default definition;

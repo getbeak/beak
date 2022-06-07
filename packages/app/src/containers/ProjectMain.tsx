@@ -17,6 +17,7 @@ import Sidebar from '../features/sidebar/components/Sidebar';
 import TabView from '../features/tabs/components/TabView';
 import { useApplicationMenuEventListener } from '../hooks/use-application-menu-event-listener';
 import { checkShortcut } from '../lib/keyboard-shortcuts';
+import { startExtensions } from '../store/extensions/actions';
 import { requestFlight } from '../store/flight/actions';
 import { startGit } from '../store/git/actions';
 import { loadEditorPreferences, loadProjectPanePreferences, loadSidebarPreferences } from '../store/preferences/actions';
@@ -41,6 +42,7 @@ const ProjectMain: React.FC<React.PropsWithChildren<unknown>> = () => {
 		dispatch(loadSidebarPreferences());
 		dispatch(loadProjectPanePreferences());
 		dispatch(startProject());
+		dispatch(startExtensions());
 		dispatch(startGit());
 
 		window.secureBridge.ipc.on('reveal_request', (_event, payload) => {

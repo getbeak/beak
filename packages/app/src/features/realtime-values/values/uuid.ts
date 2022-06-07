@@ -1,26 +1,20 @@
 import { UuidRtv } from '@beak/app/features/realtime-values/values';
+import { EditableRealtimeValue } from '@getbeak/types-realtime-value';
 import uuid from 'uuid';
 
-import { RealtimeValue } from '../types';
-
 interface EditorState {
-	version: string;
+	version: UuidRtv['version'];
 }
 
-const type = 'uuid';
-
-export default {
-	type,
-
+const definition: EditableRealtimeValue<UuidRtv, EditorState> = {
+	type: 'uuid',
 	name: 'UUID',
 	description: 'Generate a UUID',
 	sensitive: false,
+	external: false,
 
-	initValuePart: async () => ({
-		type,
-		payload: {
-			version: 'v4',
-		},
+	createDefaultPayload: async () => ({
+		version: 'v4',
 	}),
 
 	getValue: async (_ctx, item) => {
@@ -39,7 +33,7 @@ export default {
 	attributes: {},
 
 	editor: {
-		createUi: () => [{
+		createUserInterface: async () => [{
 			type: 'options_input',
 			label: 'Pick a UUID format:',
 			stateBinding: 'version',
@@ -55,4 +49,6 @@ export default {
 		load: async (_ctx, item) => ({ version: item.version }),
 		save: async (_ctx, _item, state) => ({ version: state.version }),
 	},
-} as RealtimeValue<UuidRtv, EditorState>;
+};
+
+export default definition;

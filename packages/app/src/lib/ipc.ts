@@ -5,6 +5,7 @@ import { IpcContextMenuServiceRenderer } from '@beak/common/ipc/context-menu';
 import { IpcDialogServiceRenderer } from '@beak/common/ipc/dialog';
 import { IpcEncryptionServiceRenderer } from '@beak/common/ipc/encryption';
 import { IpcExplorerServiceRenderer } from '@beak/common/ipc/explorer';
+import { IpcExtensionsServiceRenderer } from '@beak/common/ipc/extensions';
 import { IpcFlightServiceRenderer } from '@beak/common/ipc/flight';
 import { IpcFsServiceRenderer } from '@beak/common/ipc/fs';
 import { IpcFsWatcherServiceRenderer } from '@beak/common/ipc/fs-watcher';
@@ -27,6 +28,7 @@ export const ipcContextMenuService = new IpcContextMenuServiceRenderer(partialIp
 export const ipcDialogService = new IpcDialogServiceRenderer(partialIpcRenderer);
 export const ipcEncryptionService = new IpcEncryptionServiceRenderer(partialIpcRenderer);
 export const ipcExplorerService = new IpcExplorerServiceRenderer(partialIpcRenderer);
+export const ipcExtensionsService = new IpcExtensionsServiceRenderer(partialIpcRenderer);
 export const ipcFlightService = new IpcFlightServiceRenderer(partialIpcRenderer);
 export const ipcFsService = new IpcFsServiceRenderer(partialIpcRenderer);
 export const ipcFsWatcherService = new IpcFsWatcherServiceRenderer(partialIpcRenderer);

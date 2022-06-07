@@ -1,24 +1,23 @@
 import { VariableGroupItemRtv } from '@beak/app/features/realtime-values/values';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import type { VariableGroups } from '@getbeak/types/variable-groups';
+import { RealtimeValue } from '@getbeak/types-realtime-value';
 
 import { getValueParts, parseValueParts } from '../parser';
-import { RealtimeValue } from '../types';
 
 const type = 'variable_group_item';
 
-export default {
+const definition: RealtimeValue<VariableGroupItemRtv> = {
 	type,
-
 	name: 'Variable group item',
 	description: 'A realtime value, you can edit it\'s value from the Variable Group editor',
 	sensitive: false,
+	external: false,
 
-	initValuePart: () => {
+	createDefaultPayload: () => {
 		throw new Error('Not supported, this should not happen.');
 	},
 
-	getRecursiveKey: (_ctx, item) => `${type}:${item.itemId}`,
 	getValue: async (ctx, item, recursiveSet) => {
 		const parts = getValueParts(ctx, item.itemId) || [];
 
@@ -26,33 +25,30 @@ export default {
 	},
 
 	attributes: {},
-} as RealtimeValue<VariableGroupItemRtv>;
+};
 
-export function createFauxValue(item: VariableGroupItemRtv['payload'], variableGroups: VariableGroups) {
+export function createFauxValue(
+	item: VariableGroupItemRtv,
+	variableGroups: VariableGroups,
+): RealtimeValue<VariableGroupItemRtv> {
 	return {
 		type,
-
 		name: getVariableGroupItemName(item, variableGroups),
 		description: 'A realtime value, you can edit it\'s value from the Variable Group editor',
 		sensitive: false,
+		external: false,
 
-		initValuePart: async () => ({
-			type,
-			payload: item,
-		}),
+		createDefaultPayload: async () => item,
 
-		getRecursiveKey: () => {
-			throw new Error('Not supported, this should not happen.');
-		},
 		getValue: () => {
 			throw new Error('Not supported, this should not happen.');
 		},
 
 		attributes: {},
-	} as RealtimeValue<VariableGroupItemRtv>;
+	};
 }
 
-export function getVariableGroupItemName(item: VariableGroupItemRtv['payload'], variableGroups: VariableGroups) {
+export function getVariableGroupItemName(item: VariableGroupItemRtv, variableGroups: VariableGroups) {
 	if (!variableGroups)
 		return 'Unknown';
 
@@ -68,3 +64,5 @@ export function getVariableGroupItemName(item: VariableGroupItemRtv['payload'], 
 
 	return 'Unknown';
 }
+
+export default definition;

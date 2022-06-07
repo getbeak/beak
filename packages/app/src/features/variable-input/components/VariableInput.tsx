@@ -1,21 +1,19 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import RealtimeValueEditor from '@beak/app/features/realtime-value-editor/components/RealtimeValueEditor';
-import { RealtimeValuePart } from '@beak/app/features/realtime-values/values';
-import { ValueParts } from '@beak/app/features/realtime-values/values';
+import { ValuePart, ValueParts } from '@beak/app/features/realtime-values/values';
 import useForceReRender from '@beak/app/hooks/use-force-rerender';
 import { checkShortcut } from '@beak/app/lib/keyboard-shortcuts';
 import { requestFlight } from '@beak/app/store/flight/actions';
 import { useAppSelector } from '@beak/app/store/redux';
 import styled from 'styled-components';
 
-import { getRealtimeValue } from '../../realtime-values';
 import useRealtimeValueContext from '../../realtime-values/hooks/use-realtime-value-context';
 import { parseValueParts } from '../../realtime-values/parser';
+import renderValueParts from '../../realtime-values/renderer';
 import { NormalizedSelection, normalizeSelection, trySetSelection } from '../utils/browser-selection';
 import { detectRelevantCopiedValueParts } from '../utils/copying';
 import { handlePaste } from '../utils/pasting';
-import renderValueParts from '../utils/render-value-parts';
 import { determineInsertionMode, VariableSelectionState } from '../utils/variables';
 import VariableSelector from './molecules/VariableSelector';
 import UnmanagedInput from './organisms/UnmanagedInput';
@@ -264,15 +262,6 @@ const VariableInput = React.forwardRef<HTMLElement, VariableInputProps>((props, 
 
 			const elem = n as HTMLElement;
 			const type = elem.dataset.type!;
-			const impl = getRealtimeValue(type);
-
-			if (!impl) {
-				// eslint-disable-next-line no-console
-				console.error(`Unknown RTV ${type}`);
-				anomalyDetected = true;
-
-				return;
-			}
 
 			// TODO(afr): Detect if payload is corrected, if it is ignore and mark the
 			// entire realtime value as an anomaly
@@ -281,7 +270,7 @@ const VariableInput = React.forwardRef<HTMLElement, VariableInputProps>((props, 
 			reconciledParts.push({
 				type,
 				payload: purePayload ? JSON.parse(purePayload) : void 0,
-			} as RealtimeValuePart);
+			});
 
 			return;
 		});
@@ -357,7 +346,7 @@ const VariableInput = React.forwardRef<HTMLElement, VariableInputProps>((props, 
 		};
 	}
 
-	function insertVariable(variable: RealtimeValuePart) {
+	function insertVariable(variable: ValuePart) {
 		const { valueParts, variableSelectionState } = unmanagedStateRef.current;
 
 		if (!variableSelectionState)
@@ -431,12 +420,14 @@ const VariableInput = React.forwardRef<HTMLElement, VariableInputProps>((props, 
 		}
 
 		const newParts = [...valueParts];
-		const existingPart = newParts[partIndex] as RealtimeValuePart;
+		const existingPart = newParts[partIndex] as ValuePart;
 
-		(newParts[partIndex] as RealtimeValuePart) = {
-			...existingPart,
-			payload: item,
-		};
+		if (typeof existingPart !== 'string') {
+			(newParts[partIndex]) = {
+				...existingPart,
+				payload: item,
+			};
+		}
 
 		unmanagedStateRef.current.valueParts = newParts;
 

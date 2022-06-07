@@ -27,11 +27,7 @@ export interface CreationOptions {
 
 export async function tryOpenProjectFolder(projectFolderPath: string) {
 	const projectFilePath = path.join(projectFolderPath, 'project.json');
-
-	if (!await fs.pathExists(projectFilePath))
-		return null;
-
-	const projectFile = await fs.readJson(projectFilePath, { throws: false }) as ProjectFile | null;
+	const projectFile = await readProjectFile(projectFolderPath);
 
 	if (!projectFile) {
 		await dialog.showMessageBox({
@@ -262,4 +258,13 @@ async function* listFilesRecursive(dir: string): AsyncGenerator<string> {
 		else
 			yield res;
 	}
+}
+
+export async function readProjectFile(projectFolderPath: string) {
+	const projectFilePath = path.join(projectFolderPath, 'project.json');
+
+	if (!await fs.pathExists(projectFilePath))
+		return null;
+
+	return await fs.readJson(projectFilePath, { throws: false }) as ProjectFile | null;
 }

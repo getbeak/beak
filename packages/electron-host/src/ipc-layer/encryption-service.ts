@@ -1,7 +1,5 @@
 import { IpcEncryptionServiceMain } from '@beak/common/ipc/encryption';
-import { IpcEvent } from '@beak/common/ipc/ipc';
 import { clipboard, ipcMain } from 'electron';
-import path from 'path';
 
 import {
 	decryptString,
@@ -10,7 +8,7 @@ import {
 	readProjectEncryptionKey,
 	writeProjectEncryptionKey,
 } from '../lib/aes';
-import { getProjectWindowMapping } from './fs-shared';
+import { getProjectFolder } from './utils';
 
 const service = new IpcEncryptionServiceMain(ipcMain);
 
@@ -86,9 +84,3 @@ service.registerCopyEncryptionKey(async event => {
 	if (key)
 		clipboard.writeText(key);
 });
-
-function getProjectFolder(event: IpcEvent) {
-	const projectFilePath = getProjectWindowMapping(event);
-
-	return path.join(projectFilePath, '..');
-}

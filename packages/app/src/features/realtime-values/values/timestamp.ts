@@ -1,28 +1,22 @@
 import { TimestampRtv } from '@beak/app/features/realtime-values/values';
+import { EditableRealtimeValue } from '@getbeak/types-realtime-value';
 import { add } from 'date-fns';
-
-import { RealtimeValue } from '../types';
 
 interface EditorState {
 	delta: number;
 	type: string;
 }
 
-const type = 'timestamp';
-
-export default {
-	type,
-
+const definition: EditableRealtimeValue<TimestampRtv, EditorState> = {
+	type: 'timestamp',
 	name: 'Datetime',
 	description: 'Render a date-time in a specific format, with an optional delta',
 	sensitive: false,
+	external: false,
 
-	initValuePart: async () => ({
-		type,
-		payload: {
-			delta: 0,
-			type: 'iso_8601',
-		},
+	createDefaultPayload: async () => ({
+		delta: 0,
+		type: 'iso_8601',
 	}),
 
 	getValue: async (_ctx, item) => {
@@ -34,10 +28,10 @@ export default {
 				return value.toISOString();
 
 			case 'unix_s':
-				return Math.round(value.getTime() / 1000);
+				return Math.round(value.getTime() / 1000).toString(10);
 
 			case 'unix_ms':
-				return value.getTime();
+				return value.getTime().toString();
 
 			default:
 				return 'unknown_type';
@@ -47,7 +41,7 @@ export default {
 	attributes: {},
 
 	editor: {
-		createUi: () => [{
+		createUserInterface: async () => [{
 			type: 'options_input',
 			label: 'Pick a date format:',
 			stateBinding: 'type',
@@ -70,4 +64,6 @@ export default {
 		load: async (_ctx, item) => ({ type: item.type, delta: item.delta ?? 0 }),
 		save: async (_ctx, _item, state) => ({ type: state.type, delta: state.delta }),
 	},
-} as RealtimeValue<TimestampRtv, EditorState>;
+};
+
+export default definition;

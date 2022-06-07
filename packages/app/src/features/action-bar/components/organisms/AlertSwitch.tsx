@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import FixProjectEncryption from '@beak/app/features/encryption/components/FixProjectEncryption';
+import ViewExtensionError from '@beak/app/features/extension/components/ViewExtensionError';
 import { alertRemoveType } from '@beak/app/store/project/actions';
 import { Alert } from '@beak/app/store/project/types';
 
@@ -11,7 +12,7 @@ interface AlertSwitchProps {
 }
 
 const AlertSwitch: React.FC<React.PropsWithChildren<AlertSwitchProps>> = ({ alert }) => {
-	const [fixer, setFixer] = useState<undefined | 'encryption'>();
+	const [fixer, setFixer] = useState<undefined | 'encryption' | 'extension_issue'>();
 	const dispatch = useDispatch();
 
 	switch (alert.type) {
@@ -46,6 +47,29 @@ const AlertSwitch: React.FC<React.PropsWithChildren<AlertSwitchProps>> = ({ aler
 					title={'Invalid HTTP request'}
 					description={'The request has a body, but the selected verb does not support bodies'}
 				/>
+			);
+
+		case 'invalid_extension':
+			return (
+				<React.Fragment>
+					<AlertItem
+						title={'Unable to load extension'}
+						description={`"${alert.payload.assumedName}" has encountered an error`}
+						action={{
+							cta: 'View',
+							callback: () => setFixer('extension_issue'),
+						}}
+					/>
+
+					{fixer === 'extension_issue' && (
+						<ViewExtensionError
+							assumedName={alert.payload.assumedName}
+							error={alert.payload.error}
+							filePath={alert.payload.filePath}
+							onClose={() => setFixer(void 0)}
+						/>
+					)}
+				</React.Fragment>
 			);
 
 		default:

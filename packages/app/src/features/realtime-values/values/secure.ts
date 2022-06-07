@@ -1,32 +1,26 @@
-import { SecureRtv } from '@beak/app/features/realtime-values/values';
-import { ValueParts } from '@beak/app/features/realtime-values/values';
+import { SecureRtv, ValueParts } from '@beak/app/features/realtime-values/values';
 import { ipcEncryptionService } from '@beak/app/lib/ipc';
+import { EditableRealtimeValue } from '@getbeak/types-realtime-value';
 
 import { parseValueParts } from '../parser';
-import { RealtimeValue } from '../types';
 
 interface EditorState {
 	value: ValueParts;
 }
 
-const type = 'secure';
-
-export default {
-	type,
-
+const definition: EditableRealtimeValue<SecureRtv, EditorState> = {
+	type: 'secure',
 	name: 'Secure',
 	description: 'A value protected by Beak project encryption',
 	sensitive: true,
+	external: false,
 
-	initValuePart: async () => {
+	createDefaultPayload: async () => {
 		const iv = await ipcEncryptionService.generateIv();
 
 		return {
-			type,
-			payload: {
-				iv,
-				cipherText: '',
-			},
+			iv,
+			cipherText: '',
 		};
 	},
 
@@ -50,7 +44,7 @@ export default {
 	attributes: {},
 
 	editor: {
-		createUi: () => [{
+		createUserInterface: async () => [{
 			type: 'value_parts_input',
 			label: 'Enter the value you want to be encrypted:',
 			stateBinding: 'value',
@@ -85,4 +79,6 @@ export default {
 			return { iv, cipherText };
 		},
 	},
-} as RealtimeValue<SecureRtv, EditorState>;
+};
+
+export default definition;

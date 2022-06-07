@@ -1,15 +1,15 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { RealtimeValueManager } from '@beak/app/features/realtime-values';
 import useRealtimeValueContext from '@beak/app/features/realtime-values/hooks/use-realtime-value-context';
-import { RealtimeValuePart } from '@beak/app/features/realtime-values/values';
+import { ipcExtensionsService } from '@beak/app/lib/ipc';
 import { useAppSelector } from '@beak/app/store/redux';
 import { movePosition } from '@beak/app/utils/arrays';
 import { TypedObject } from '@beak/common/helpers/typescript';
+import { RealtimeValue, RealtimeValueInformation } from '@getbeak/types-realtime-value';
 import Fuse from 'fuse.js';
 import styled from 'styled-components';
 import * as uuid from 'uuid';
 
-import { getRealtimeValues } from '../../../realtime-values';
-import { RealtimeValue } from '../../../realtime-values/types';
 import { createFauxValue } from '../../../realtime-values/values/variable-group-item';
 import { NormalizedSelection } from '../../utils/browser-selection';
 
@@ -24,7 +24,7 @@ export interface VariableSelectorProps {
 	sel: NormalizedSelection;
 	query: string;
 	onClose: () => void;
-	onDone: (value: RealtimeValuePart) => void;
+	onDone: (value: any) => void;
 }
 
 const VariableSelector: React.FC<React.PropsWithChildren<VariableSelectorProps>> = props => {
@@ -36,9 +36,9 @@ const VariableSelector: React.FC<React.PropsWithChildren<VariableSelectorProps>>
 	const [active, setActive] = useState<number>(0);
 	const context = useRealtimeValueContext(requestId);
 
-	const items: RealtimeValue<any>[] = useMemo(() => {
-		const all = [
-			...getRealtimeValues(requestId),
+	const items: RealtimeValueInformation[] = useMemo(() => {
+		const all: RealtimeValueInformation[] = [
+			...RealtimeValueManager.getRealtimeValues(requestId),
 
 			// Variable groups act a little differently
 			...TypedObject.keys(variableGroups)
@@ -57,12 +57,12 @@ const VariableSelector: React.FC<React.PropsWithChildren<VariableSelectorProps>>
 			includeScore: true,
 			keys: [
 				'name',
-				'type',
 				'description',
 			],
 		});
 
 		return fuse.search(query)
+			.sort()
 			.map(r => r.item)
 			.sort();
 	}, [variableGroups, query]);
@@ -127,7 +127,7 @@ const VariableSelector: React.FC<React.PropsWithChildren<VariableSelectorProps>>
 					if (!item)
 						return;
 
-					item.initValuePart(context).then(onDone);
+					createDefaultVariable(item);
 					break;
 				}
 
@@ -146,6 +146,17 @@ const VariableSelector: React.FC<React.PropsWithChildren<VariableSelectorProps>>
 
 		return () => window.removeEventListener('keydown', onKeyDown);
 	}, [active, items]);
+
+	async function createDefaultVariable(item: RealtimeValueInformation) {
+		let payload: any;
+
+		if (item.external)
+			payload = await ipcExtensionsService.rtvCreateDefaultPayload({ type: item.type, context });
+		else
+			payload = await (item as RealtimeValue<any>).createDefaultPayload(context);
+
+		onDone({ type: item.type, payload });
+	}
 
 	if (!position)
 		return null;
@@ -167,9 +178,7 @@ const VariableSelector: React.FC<React.PropsWithChildren<VariableSelectorProps>>
 							key={uuid.v4()}
 							tabIndex={0}
 							onClick={() => setActive(idx)}
-							onDoubleClick={() => {
-								i.initValuePart(context).then(onDone);
-							}}
+							onDoubleClick={() => createDefaultVariable(i)}
 						>
 							{i.name}
 						</Item>

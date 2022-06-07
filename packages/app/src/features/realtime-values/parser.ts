@@ -2,7 +2,7 @@ import { generateValueIdent } from '@beak/app/lib/beak-variable-group/utils';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import type { Context, ValueParts } from '@getbeak/types/values';
 
-import { getRealtimeValue } from '.';
+import { RealtimeValueManager } from '.';
 
 export async function parseValueParts(
 	ctx: Context,
@@ -14,31 +14,43 @@ export async function parseValueParts(
 			return p;
 
 		if (typeof p !== 'object')
-			return `[Unknown value part ${p}:(${typeof p})]`;
+			return '';
 
-		const rtv = getRealtimeValue(p.type);
+		const rtv = RealtimeValueManager.getRealtimeValue(p.type);
 
 		if (!rtv)
-			return '[Unknown realtime value]';
+			return '';
 
-		// Realtime values can in some situations references each other or themselves, so we need to be clever and
-		// detect recursive references.What we do is keep a set of each VG item id that we have seen so far, and if we
-		// hit the same once twice, then we simply exit out, preventing a loop.
-		const recursiveKey = rtv.getRecursiveKey?.(ctx, p.payload);
+		// NOTE(afr): Bring this back before 1.1.7 goes public
+		// // Realtime values can in some situations references each other or themselves, so we need to be clever and
+		// // detect recursive references.
+		// const recursiveKey = `${p.type}:${JSON.stringify(p.payload)}`;
 
-		if (recursiveKey) {
-			if (recursiveSet.has(recursiveKey))
-				return '';
+		// if (recursiveKey) {
+		// 	if (recursiveSet.has(recursiveKey))
+		// 		return '';
 
-			recursiveSet.add(recursiveKey);
+		// 	recursiveSet.add(recursiveKey);
+		// }
+
+		try {
+			return Promise.race([
+				rtv.getValue(ctx, p.payload, recursiveSet),
+				new Promise(resolve => {
+					window.setTimeout(() => {
+						// eslint-disable-next-line no-console
+						console.error(`Fetching value for ${rtv.type} exceeded 600ms`);
+						resolve('');
+					}, 600);
+				}),
+			]);
+		} catch (error) {
+			// TODO(afr): Move this to some sort of alert
+			// eslint-disable-next-line no-console
+			console.error(`Failed to get value from ${rtv.type}`);
+
+			return '';
 		}
-
-		const value = await rtv.getValue(ctx, p.payload, recursiveSet);
-
-		if (Array.isArray(value))
-			return await parseValueParts(ctx, value, recursiveSet);
-
-		return value;
 	}));
 
 	return out.join('');

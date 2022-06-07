@@ -12,6 +12,8 @@ import { State as TabsState } from '../features/tabs/store/types';
 import { handleUnhandledError } from '../utils/unhandled-error-handler';
 import * as arbiterStore from './arbiter';
 import { State as ArbiterState } from './arbiter/types';
+import * as extensionsStore from './extensions';
+import { State as ExtensionsState } from './extensions/types';
 import * as flightStore from './flight';
 import { State as FlightState } from './flight/types';
 import * as gitStore from './git';
@@ -31,6 +33,7 @@ export interface ApplicationState {
 	};
 	global: {
 		arbiter: ArbiterState;
+		extensions: ExtensionsState;
 		flight: FlightState;
 		git: GitState;
 		preferences: PreferencesState;
@@ -48,6 +51,7 @@ function createRootReducer() {
 		}),
 		global: combineReducers({
 			arbiter: arbiterStore.reducers,
+			extensions: extensionsStore.reducers,
 			flight: flightStore.reducers,
 			git: gitStore.reducers,
 			preferences: preferencesStore.reducers,
@@ -60,6 +64,7 @@ function createRootReducer() {
 function* rootSaga() {
 	yield all([
 		fork(arbiterStore.sagas),
+		fork(extensionsStore.sagas),
 		fork(flightStore.sagas),
 		fork(tabsStore.sagas),
 		fork(gitStore.sagas),
@@ -78,6 +83,7 @@ function createInitialState(): ApplicationState {
 		},
 		global: {
 			arbiter: arbiterStore.types.initialState,
+			extensions: extensionsStore.types.initialState,
 			flight: flightStore.types.initialState,
 			git: gitStore.types.initialState,
 			preferences: preferencesStore.types.initialState,

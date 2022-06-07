@@ -20,7 +20,7 @@
   "dependencies": {
     "@beak/common": "*",
     "@beak/design-system": "*",
-    "@getbeak/types": "*"
+    "@getbeak/types": "^1.0.0-prerelease.2"
   },
   "devDependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.1.1",

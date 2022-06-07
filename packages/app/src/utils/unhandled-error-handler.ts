@@ -15,6 +15,9 @@ export async function handleUnhandledError(error: Error) {
 
 	failure = true;
 
+	if (import.meta.env.MODE === 'development')
+		return;
+
 	window.setTimeout(() => ipcWindowService.reloadSelfWindow(), 0);
 	await ipcDialogService.showMessageBox({
 		title: 'Beak messed up...',

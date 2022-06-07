@@ -91,6 +91,7 @@
     "react-router-dom": "^6.3.0",
     "tslog": "^3.3.3",
     "url-parse": "^1.5.10",
-    "valid-filename": "^4.0.0"
+    "valid-filename": "^4.0.0",
+    "vm2": "^3.9.9"
   }
 }
