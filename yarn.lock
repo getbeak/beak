@@ -2972,9 +2972,9 @@
     redux "^4.0.0"
 
 "@types/react@*", "@types/react@^18.0.6", "@types/react@^18.0.8":
-  version "18.0.10"
-  resolved "https://registry.yarnpkg.com/@types/react/-/react-18.0.10.tgz#5692944d4a45e204fb7a981eb1388afe919cf4d0"
-  integrity sha512-dIugadZuIPrRzvIEevIu7A1smqOAjkSMv8qOfwPt9Ve6i6JT/FQcCHyk2qIAxwsQNKZt5/oGR0T4z9h2dXRAkg==
+  version "18.0.12"
+  resolved "https://registry.yarnpkg.com/@types/react/-/react-18.0.12.tgz#cdaa209d0a542b3fcf69cf31a03976ec4cdd8840"
+  integrity sha512-duF1OTASSBQtcigUvhuiTB1Ya3OvSy+xORCiEf20H0P0lzx+/KeVsA99U5UjLXSbyo1DRJDlLKqTeM1ngosqtg==
   dependencies:
     "@types/prop-types" "*"
     "@types/scheduler" "*"
@@ -5411,9 +5411,9 @@ electron-redux-devtools@^0.3.4:
   integrity sha1-IcLq/XOSSMZBTx00bmhHsJgVUOE=
 
 electron-releases@^3.1007.0:
-  version "3.1007.0"
-  resolved "https://registry.yarnpkg.com/electron-releases/-/electron-releases-3.1007.0.tgz#b6806c53d5e75b02b32de5ef96287cac4d4545b0"
-  integrity sha512-bYPMul+ENczRuXfLV5ZS1yhsme8YEWVq7UtPdaMLio8BmEiNnDPlV0wZfji8Os0NxdFyNuKUbmiwT4g6ig+78g==
+  version "3.1027.0"
+  resolved "https://registry.yarnpkg.com/electron-releases/-/electron-releases-3.1027.0.tgz#6a9726515e087455925e4ffff211131b29c49d62"
+  integrity sha512-pbJkBrosArX7ziqtOYsqCuXWIiFOPl/OVtjCSc97t1xJIR+Z0HGIJMdnzmp9qCkPJs3lHVzZIWHRnQqvUbAOnw==
 
 electron-store@^8.0.0:
   version "8.0.1"
