@@ -33,7 +33,24 @@ export async function parseValueParts(
 			recursiveSet.add(recursiveKey);
 		}
 
-		return await rtv.getValue(ctx, p.payload, recursiveSet);
+		try {
+			return Promise.race([
+				rtv.getValue(ctx, p.payload, recursiveSet),
+				new Promise(resolve => {
+					window.setTimeout(() => {
+						// eslint-disable-next-line no-console
+						console.error(`Fetching value for ${rtv.type} exceeded 600ms`);
+						resolve('');
+					}, 600);
+				}),
+			]);
+		} catch (error) {
+			// TODO(afr): Move this to some sort of alert
+			// eslint-disable-next-line no-console
+			console.error(`Failed to get value from ${rtv.type}`);
+
+			return '';
+		}
 	}));
 
 	return out.join('');
