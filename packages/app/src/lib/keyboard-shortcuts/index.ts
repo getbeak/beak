@@ -23,6 +23,9 @@ export type Shortcuts =
 
 	'omni-bar.launch.commands' |
 	'omni-bar.launch.finder' |
+	'omni-bar.commands.up' |
+	'omni-bar.commands.down' |
+	'omni-bar.commands.open' |
 	'omni-bar.finder.up' |
 	'omni-bar.finder.down' |
 	'omni-bar.finder.open' |
@@ -77,6 +80,10 @@ export const shortcutDefinitions: Record<Shortcuts, PlatformSpecificDefinitions 
 
 	'omni-bar.launch.commands': { type: 'agnostic', ctrlOrMeta: true, shift: true, key: 'p' },
 	'omni-bar.launch.finder': { type: 'agnostic', ctrlOrMeta: true, key: ['p', 'k'] },
+
+	'omni-bar.commands.up': { type: 'agnostic', key: 'ArrowUp' },
+	'omni-bar.commands.down': { type: 'agnostic', key: 'ArrowDown' },
+	'omni-bar.commands.open': { type: 'agnostic', key: 'Enter' },
 
 	'omni-bar.finder.up': { type: 'agnostic', key: 'ArrowUp' },
 	'omni-bar.finder.down': { type: 'agnostic', key: 'ArrowDown' },
