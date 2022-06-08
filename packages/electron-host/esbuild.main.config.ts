@@ -1,6 +1,7 @@
 /* eslint-disable no-process-env */
 import SentryCli from '@sentry/cli';
 import type { BuildOptions, PluginBuild } from 'esbuild';
+import fs from 'fs/promises';
 import { createRequire } from 'module';
 import path from 'path';
 
@@ -88,7 +89,25 @@ const sentrySourceMapsPlugin = {
 			await cli.releases.finalize(releaseIdentifier!);
 		});
 	},
+};
 
+const handleVm2Plugin = {
+	name: 'handle-vm2',
+	setup: (build: PluginBuild) => {
+		build.onEnd(async () => {
+			const outDir = build.initialOptions.outdir!;
+			const vm2Dir = path.join(outDir, '../../../../node_modules/vm2/lib/');
+			const bridge = path.join(vm2Dir, 'bridge.js');
+			const setupSandbox = path.join(vm2Dir, 'setup-sandbox.js');
+			const setupNodeSandbox = path.join(vm2Dir, 'setup-node-sandbox.js');
+
+			await Promise.all([
+				fs.copyFile(bridge, path.join(outDir, 'bridge.js')),
+				fs.copyFile(setupSandbox, path.join(outDir, 'setup-sandbox.js')),
+				fs.copyFile(setupNodeSandbox, path.join(outDir, 'setup-node-sandbox.js')),
+			]);
+		});
+	},
 };
 
 export default {
@@ -104,6 +123,7 @@ export default {
 	plugins: [
 		nativeNodeModulesPlugin,
 		sentrySourceMapsPlugin,
+		handleVm2Plugin,
 	],
 	define: {
 		'process.env.BUILD_ENVIRONMENT': writeDefinition(process.env.BUILD_ENVIRONMENT),
@@ -112,7 +132,7 @@ export default {
 	},
 	sourcemap: true,
 	assetNames: '[name]',
-	external: ['node:fs', 'vm2'],
+	external: ['node:fs'],
 } as BuildOptions;
 
 function writeDefinition(value: string | undefined) {
