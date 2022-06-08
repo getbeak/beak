@@ -43,8 +43,13 @@ const RealtimeValueEditor: React.FC<React.PropsWithChildren<RealtimeValueEditorP
 	}, [Boolean(editorContext)]);
 
 	useEffect(() => {
-		if (!editorContext)
+		if (!editorContext) {
+			// If the editor context is reset, then we need to reset some more local state
+			setUiSections([]);
+			setPreview('');
+
 			return;
+		}
 
 		previewValue(context, editorContext.realtimeValue, editorContext.item, editorContext.state)
 			.then(setPreview);
@@ -100,13 +105,13 @@ const RealtimeValueEditor: React.FC<React.PropsWithChildren<RealtimeValueEditorP
 		if (!editorContext)
 			return;
 
-		setEditorContext({
-			...editorContext,
+		setEditorContext(editorCtx => ({
+			...editorCtx!,
 			state: {
-				...editorContext.state,
+				...editorCtx!.state,
 				...delta,
 			},
-		});
+		}));
 	}
 
 	function close(item: any | null) {
@@ -137,7 +142,7 @@ const RealtimeValueEditor: React.FC<React.PropsWithChildren<RealtimeValueEditorP
 					switch (section.type) {
 						case 'value_parts_input':
 							return (
-								<FormGroup key={`${stateBinding}`}>
+								<FormGroup key={stateBinding}>
 									{section.label && <Label>{section.label}</Label>}
 									<VariableInput
 										ref={i => trySetInitialRef(first, i, initialInputRef)}
@@ -151,7 +156,7 @@ const RealtimeValueEditor: React.FC<React.PropsWithChildren<RealtimeValueEditorP
 
 						case 'string_input':
 							return (
-								<FormGroup key={`${stateBinding}`}>
+								<FormGroup key={stateBinding}>
 									{section.label && <Label>{section.label}</Label>}
 									<Input
 										ref={i => trySetInitialRef(first, i, initialInputRef)}
@@ -167,7 +172,7 @@ const RealtimeValueEditor: React.FC<React.PropsWithChildren<RealtimeValueEditorP
 
 						case 'checkbox_input':
 							return (
-								<FormGroup key={`${stateBinding}`}>
+								<FormGroup key={stateBinding}>
 									{section.label && <Label>{section.label}</Label>}
 									<Input
 										ref={i => trySetInitialRef(first, i, initialInputRef)}
@@ -184,7 +189,7 @@ const RealtimeValueEditor: React.FC<React.PropsWithChildren<RealtimeValueEditorP
 
 						case 'number_input':
 							return (
-								<FormGroup key={`${stateBinding}`}>
+								<FormGroup key={stateBinding}>
 									{section.label && <Label>{section.label}</Label>}
 									<Input
 										ref={i => trySetInitialRef(first, i, initialInputRef)}
@@ -200,7 +205,7 @@ const RealtimeValueEditor: React.FC<React.PropsWithChildren<RealtimeValueEditorP
 
 						case 'options_input':
 							return (
-								<FormGroup key={`${stateBinding}`}>
+								<FormGroup key={stateBinding}>
 									{section.label && <Label>{section.label}</Label>}
 									<Select
 										ref={i => trySetInitialRef(first, i, initialInputRef)}
@@ -217,7 +222,7 @@ const RealtimeValueEditor: React.FC<React.PropsWithChildren<RealtimeValueEditorP
 
 						case 'request_select_input':
 							return (
-								<FormGroup key={`${stateBinding}`}>
+								<FormGroup key={stateBinding}>
 									{section.label && <Label>{section.label}</Label>}
 									<Select
 										ref={i => trySetInitialRef(first, i, initialInputRef)}

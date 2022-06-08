@@ -7,7 +7,7 @@ export function getLatestFlight(id: string, ctx: Context) {
 	if (!requestFlightHistory)
 		return null;
 
-	const latestFlight = TypedObject.values(requestFlightHistory.history)[0];
+	const latestFlight = TypedObject.values(requestFlightHistory.history).reverse()[0];
 
 	return latestFlight;
 }
