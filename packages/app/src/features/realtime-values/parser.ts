@@ -34,16 +34,26 @@ export async function parseValueParts(
 		// }
 
 		try {
-			return Promise.race([
+			// Easier than using an abort controller
+			let complete = false;
+
+			const value = Promise.race([
 				rtv.getValue(ctx, p.payload, recursiveSet),
 				new Promise(resolve => {
 					window.setTimeout(() => {
-						// eslint-disable-next-line no-console
-						console.error(`Fetching value for ${rtv.type} exceeded 600ms`);
+						if (!complete) {
+							// eslint-disable-next-line no-console
+							console.error(`Fetching value for ${rtv.type} exceeded 600ms`);
+						}
+
 						resolve('');
 					}, 600);
 				}),
 			]);
+
+			complete = true;
+
+			return value;
 		} catch (error) {
 			// TODO(afr): Move this to some sort of alert
 			// eslint-disable-next-line no-console
