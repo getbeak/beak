@@ -56,7 +56,7 @@ const FauxRouter: React.FC<React.PropsWithChildren<unknown>> = () => {
 		<Provider store={configureStore()}>
 			<base href={'./'} />
 			<WindowSessionContext.Provider value={instance}>
-				<DesignSystemProvider themeKey={'dark'}>
+				<DesignSystemProvider themeKey={'light'}>
 					<GlobalStyle $darwin={instance.isDarwin()} />
 					{container === 'portal' && component}
 					{container !== 'portal' && (
