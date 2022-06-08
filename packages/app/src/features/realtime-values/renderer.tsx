@@ -10,7 +10,7 @@ import { getVariableGroupItemName } from './values/variable-group-item';
 export default function renderValueParts(parts: ValueParts, variableGroups: VariableGroups) {
 	return renderToStaticMarkup(
 		<React.Fragment>
-			{parts.map((p, idx) => {
+			{(parts ?? []).map((p, idx) => {
 				if (typeof p === 'string')
 					return <span key={p}>{p}</span>;
 
