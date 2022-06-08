@@ -18,7 +18,7 @@ export const SelectItem = styled.div<{ $active?: boolean }>`
 	color: ${p => p.theme.ui.textMinor};
 	opacity: ${p => p.$active ? 1 : 0.6};
 	font-size: 14px;
-	cursor: not-allowed;
+	cursor: pointer;
 `;
 
 export const SelectItemPreview = styled.div<{ $active?: boolean }>`
