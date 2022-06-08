@@ -1,4 +1,5 @@
 import React from 'react';
+import { ipcPreferencesService } from '@beak/app/lib/ipc';
 
 import { SelectContainer, SelectItem, SelectItemPreview } from '../atoms/fancy-select';
 import { ItemGroup, ItemInfo, ItemLabel } from '../atoms/item';
@@ -9,15 +10,15 @@ const GeneralPane: React.FC<React.PropsWithChildren<unknown>> = () => (
 		<ItemGroup>
 			<ItemLabel>{'Theme:'}</ItemLabel>
 			<SelectContainer>
-				<SelectItem>
+				<SelectItem onClick={() => ipcPreferencesService.switchThemeMode('system')}>
 					<SelectItemPreview />
 					{'System'}
 				</SelectItem>
-				<SelectItem>
+				<SelectItem onClick={() => ipcPreferencesService.switchThemeMode('light')}>
 					<SelectItemPreview />
 					{'Light'}
 				</SelectItem>
-				<SelectItem $active>
+				<SelectItem onClick={() => ipcPreferencesService.switchThemeMode('dark')}>
 					<SelectItemPreview $active />
 					{'Dark'}
 				</SelectItem>

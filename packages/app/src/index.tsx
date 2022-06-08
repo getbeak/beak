@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
+import { Theme } from '@beak/common/types/theme';
 import { DesignSystemProvider } from '@beak/design-system';
 import { init } from '@sentry/electron';
 
@@ -50,13 +51,20 @@ function getComponent(container: string | null) {
 const FauxRouter: React.FC<React.PropsWithChildren<unknown>> = () => {
 	const params = new URLSearchParams(window.location.search);
 	const container = params.get('container');
+	const [theme, setTheme] = useState<Theme>('dark');
 	const component = getComponent(container);
+
+	useEffect(() => {
+		window.secureBridge.ipc.on('theme-broadcast', (_event, theme) => {
+			setTheme(theme as Theme);
+		});
+	}, []);
 
 	return (
 		<Provider store={configureStore()}>
 			<base href={'./'} />
 			<WindowSessionContext.Provider value={instance}>
-				<DesignSystemProvider themeKey={'light'}>
+				<DesignSystemProvider themeKey={theme}>
 					<GlobalStyle $darwin={instance.isDarwin()} />
 					{container === 'portal' && component}
 					{container !== 'portal' && (

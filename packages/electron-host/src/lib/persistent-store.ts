@@ -1,6 +1,7 @@
 import { ArbiterStatus } from '@beak/common/types/arbiter';
 import { RecentLocalProject } from '@beak/common/types/beak-hub';
 import { MagicStates } from '@beak/common/types/nest';
+import { ThemeMode } from '@beak/common/types/theme';
 import crypto from 'crypto';
 import { app } from 'electron';
 import ElectronStore from 'electron-store';
@@ -21,6 +22,8 @@ export interface Store {
 
 	passedOnboarding: boolean;
 	projectMappings: Record<string, string>;
+
+	themeMode: ThemeMode;
 }
 
 const persistentStore = new ElectronStore<Store>({
@@ -40,6 +43,8 @@ const persistentStore = new ElectronStore<Store>({
 		magicStates: {},
 		passedOnboarding: false,
 		projectMappings: {},
+
+		themeMode: 'system',
 	},
 });
 
