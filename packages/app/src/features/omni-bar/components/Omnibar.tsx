@@ -6,10 +6,11 @@ import { useAppSelector } from '@beak/app/store/redux';
 import styled from 'styled-components';
 
 import { actions } from '../store';
+import CommandsView from './organism/CommandsView';
 import FinderView from './organism/FinderView';
 
 const Omnibar: React.FC<React.PropsWithChildren<unknown>> = () => {
-	const { open, mode } = useAppSelector(s => s.features.omniBar);
+	const { open } = useAppSelector(s => s.features.omniBar);
 	const [content, setContent] = useState('');
 	const inputRef = useRef<HTMLInputElement | null>(null);
 	const dispatch = useDispatch();
@@ -30,10 +31,22 @@ const Omnibar: React.FC<React.PropsWithChildren<unknown>> = () => {
 	function onKeyDown(event: KeyboardEvent) {
 		switch (true) {
 			case checkShortcut('omni-bar.launch.finder', event):
-				if (open)
+				if (open) {
 					dispatch(actions.hideOmniBar());
-				else
+				} else {
 					dispatch(actions.showOmniBar({ mode: 'search' }));
+					setContent('');
+				}
+
+				break;
+
+			case checkShortcut('omni-bar.launch.commands', event):
+				if (open) {
+					dispatch(actions.hideOmniBar());
+				} else {
+					dispatch(actions.showOmniBar({ mode: 'search' }));
+					setContent('>');
+				}
 
 				break;
 
@@ -54,13 +67,6 @@ const Omnibar: React.FC<React.PropsWithChildren<unknown>> = () => {
 		dispatch(actions.hideOmniBar());
 	}
 
-	function getPlaceholder() {
-		if (mode === 'search')
-			return 'Search requests by name, host, or path';
-
-		return 'command selector isn\'t ready yet xoxo';
-	}
-
 	if (!open)
 		return null;
 
@@ -69,7 +75,7 @@ const Omnibar: React.FC<React.PropsWithChildren<unknown>> = () => {
 			<BarOuter onClick={event => void event.stopPropagation()}>
 				<Bar>
 					<BarInput
-						placeholder={getPlaceholder()}
+						placeholder={'Search requests by name, host, or path'}
 						tabIndex={0}
 						ref={i => {
 							inputRef.current = i;
@@ -77,8 +83,8 @@ const Omnibar: React.FC<React.PropsWithChildren<unknown>> = () => {
 						value={content}
 						onChange={e => setContent(e.currentTarget.value)}
 					/>
-					{mode === 'search' && <FinderView content={content} reset={reset} />}
-					{mode === 'commands' && <span>{'todo'}</span>}
+					{!content.startsWith('>') && <FinderView content={content} reset={reset} />}
+					{content.startsWith('>') && <CommandsView content={content.substring(1)} reset={reset} />}
 				</Bar>
 			</BarOuter>
 		</Container>
