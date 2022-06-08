@@ -43,8 +43,13 @@ const RealtimeValueEditor: React.FC<React.PropsWithChildren<RealtimeValueEditorP
 	}, [Boolean(editorContext)]);
 
 	useEffect(() => {
-		if (!editorContext)
+		if (!editorContext) {
+			// If the editor context is reset, then we need to reset some more local state
+			setUiSections([]);
+			setPreview('');
+
 			return;
+		}
 
 		previewValue(context, editorContext.realtimeValue, editorContext.item, editorContext.state)
 			.then(setPreview);
