@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { DesignSystemProvider } from '@beak/design-system';
+import { Theme } from '@beak/design-system/types';
 import * as Sentry from '@sentry/react';
 import { Integrations } from '@sentry/tracing';
 import { createBrowserHistory } from 'history';
@@ -12,7 +13,6 @@ import AppContainer from './containers/App';
 import { GlobalStyle } from './design-system';
 import ErrorFallback from './features/errors/components/ErrorFallback';
 import { configureStore } from './store';
-import { Theme } from '@beak/design-system/types';
 
 const history = createBrowserHistory();
 const store = configureStore(history);

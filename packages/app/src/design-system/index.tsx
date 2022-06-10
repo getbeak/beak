@@ -16,7 +16,7 @@ const GlobalStyle = createGlobalStyle<GlobalStyleProps>`
 		// This is needed for Vibrancy
 		background-color: ${p => p.$darwin ? 'transparent' : p.theme.ui.background};
 
-		color: ${p => p.theme.ui.textOnAction};
+		color: ${p => p.theme.ui.textOnSurfaceBackground};
 		margin: 0;
 		padding: 0;
 
