@@ -3,7 +3,6 @@ import { load } from 'js-yaml';
 export interface Downloads {
 	windows: Update | null;
 	macOS: Update | null;
-	linux: Update | null;
 }
 
 interface Update {
@@ -25,13 +24,12 @@ const updateChannel = 'latest';
 export const buildsRepoBaseUrl = 'https://builds.getbeak.app';
 
 export default async function downloadsFetcher() {
-	const [windows, macOS, linux] = await Promise.all([
+	const [windows, macOS] = await Promise.all([
 		fetchPlatform('windows', true),
 		fetchPlatform('macOS', true),
-		fetchPlatform('linux', true),
 	]);
 
-	return { windows, macOS, linux };
+	return { windows, macOS };
 }
 
 async function fetchPlatform(platform: keyof Downloads, throwError?: boolean) {
@@ -57,9 +55,6 @@ async function fetchPlatform(platform: keyof Downloads, throwError?: boolean) {
 
 function platformToSquirrelKey(platform: keyof Downloads) {
 	switch (platform) {
-		case 'linux':
-			return 'linux';
-
 		case 'macOS':
 			return 'mac';
 

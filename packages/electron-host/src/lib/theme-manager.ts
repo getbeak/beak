@@ -4,18 +4,18 @@ import { nativeTheme } from 'electron';
 import { windowStack } from '../window-management';
 import persistentStore from './persistent-store';
 
+// Do this to start
+setupThemeMode();
+
 nativeTheme.on('updated', () => {
-	// const themeMode = persistentStore.get('themeMode');
-	// const systemThemeIsDark
+	const themeMode = persistentStore.get('themeMode');
 
-	// if (themeMode !== 'system')
-	// 	return;
-
-	// broadcastThemeChange(theme);
+	setThemeMode(themeMode);
 });
 
 export async function setThemeMode(themeMode: ThemeMode) {
 	persistentStore.set('themeMode', themeMode);
+	nativeTheme.themeSource = themeMode;
 
 	let theme: Theme = 'dark';
 
@@ -27,9 +27,13 @@ export async function setThemeMode(themeMode: ThemeMode) {
 		theme = themeMode;
 	}
 
-	nativeTheme.themeSource = theme;
-
 	broadcastThemeChange(theme);
+}
+
+async function setupThemeMode() {
+	const themeMode = persistentStore.get('themeMode');
+
+	await setThemeMode(themeMode);
 }
 
 async function broadcastThemeChange(theme: Theme) {

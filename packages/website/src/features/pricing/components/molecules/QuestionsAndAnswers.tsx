@@ -12,7 +12,7 @@ const QuestionsAndAnswers: React.FC<React.PropsWithChildren<unknown>> = () => (
 				<Card>
 					<Question>{'Cross platform?'}</Question>
 					<Answer>
-						{'Your license will work on all platforms Beak supports; macOS, Windows, and Linux. If you '}
+						{'Your license will work on all platforms Beak supports; macOS, or Windows. If you '}
 						{'switch platform, don\'t sweat it, you won\'t be signed out on the others.'}
 					</Answer>
 				</Card>

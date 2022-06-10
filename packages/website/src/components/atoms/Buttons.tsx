@@ -20,17 +20,19 @@ const CtaButton = styled.a<CtaButtonProps>`
 		}
 	`}
 	${p => p.$style === 'secondary' && css`
-		background: ${p.theme.ui.surfaceFill};
+		background: ${p.theme.ui.secondarySurface};
+		color: ${p => p.theme.ui.textOnFill};
 
 		&:hover {
-			box-shadow: 0 0 20px 6px ${p.theme.ui.surfaceFill}99;
+			box-shadow: 0 0 20px 6px ${p.theme.ui.secondarySurface}99;
 		}
 	`}
 	${p => p.$style === 'tertiary' && css`
-		background: ${p.theme.ui.secondaryBackground};
+		background: ${p.theme.ui.surfaceHighlight};
+		color: ${p => p.theme.ui.textOnFill};
 
 		&:hover {
-			box-shadow: 0 0 20px 6px ${p.theme.ui.secondaryBackground}99;
+			box-shadow: 0 0 20px 6px ${p.theme.ui.surfaceHighlight}99;
 		}
 	`}
 

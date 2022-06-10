@@ -15,7 +15,7 @@ export const NavBrand = styled.a`
 	font-size: 22px;
 	line-height: 24px;
 
-	color: ${p => p.theme.ui.textOnAction};
+	color: ${p => p.theme.ui.textOnSurfaceBackground};
 	text-decoration: none;
 `;
 

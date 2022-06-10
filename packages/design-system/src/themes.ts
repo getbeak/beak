@@ -53,17 +53,17 @@ const lightTheme: UIColors = {
 	destructiveActionMuted: '#DB182C',
 
 	background: '#ffffff',
-	secondaryBackground: '#fff',
-	blankBackground: '#fff',
+	secondaryBackground: '#ffffff',
+	blankBackground: '#ffffff',
 
-	surface: '#f3f3f3',
-	surfaceHighlight: '#ececec',
+	surface: '#ececec',
+	surfaceHighlight: '#f3f3f3',
 	secondarySurface: '#ececec',
 
 	backgroundBorderSeparator: '#dadada',
 	surfaceBorderSeparator: '#d7d7d7',
 
-	textOnAction: '#2e2e2e',
+	textOnAction: '#ffffff',
 	textOnFill: '#616161',
 	textHighlight: '#d45d80',
 	textSuccess: '#33CC99',

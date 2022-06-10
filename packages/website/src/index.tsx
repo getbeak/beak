@@ -1,4 +1,4 @@
-import React, { lazy, Suspense } from 'react';
+import React, { lazy, Suspense, useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
@@ -12,6 +12,7 @@ import AppContainer from './containers/App';
 import { GlobalStyle } from './design-system';
 import ErrorFallback from './features/errors/components/ErrorFallback';
 import { configureStore } from './store';
+import { Theme } from '@beak/design-system/types';
 
 const history = createBrowserHistory();
 const store = configureStore(history);
@@ -22,36 +23,55 @@ const Privacy = lazy(() => import('./features/legal/components/Privacy'));
 const Purchased = lazy(() => import('./features/purchased/components/Purchased'));
 const Terms = lazy(() => import('./features/legal/components/Terms'));
 
-const EntryPoint: React.FC<React.PropsWithChildren<unknown>> = () => (
-	<Provider store={store}>
-		<base href={'./'} />
-		<DesignSystemProvider themeKey={'dark'}>
-			<GlobalStyle />
-			<BrowserRouter>
-				<AppContainer>
-					<Sentry.ErrorBoundary fallback={<ErrorFallback />}>
-						<Scroller />
-						<Suspense fallback={<div />}>
-							<Routes>
-								<Route path={'/'} element={<Home />} />
-								<Route path={'/pricing'} element={<Pricing />} />
-								<Route path={'/legal/privacy'} element={<Privacy />} />
-								<Route path={'/purchased'} element={<Purchased />} />
-								<Route path={'/legal/terms'} element={<Terms />} />
-								<Route path={'/purchase/complete'} element={'welcome!!'} />
+function getSystemTheme(): Theme {
+	let theme: Theme = 'light';
 
-								<Route path={'/privacy'} element={<Navigate to={'/legal/privacy'} replace />} />
-								<Route path={'/terms'} element={<Navigate to={'/legal/terms'} replace />} />
+	if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)
+		theme = 'dark';
 
-								<Route element={'y u here'} />
-							</Routes>
-						</Suspense>
-					</Sentry.ErrorBoundary>
-				</AppContainer>
-			</BrowserRouter>
-		</DesignSystemProvider>
-	</Provider>
-);
+	return theme;
+}
+
+const EntryPoint: React.FC<React.PropsWithChildren<unknown>> = () => {
+	const [theme, setTheme] = useState<Theme>(getSystemTheme());
+
+	useEffect(() => {
+		window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+			setTheme(event.matches ? 'dark' : 'light');
+		});
+	}, []);
+
+	return (
+		<Provider store={store}>
+			<base href={'./'} />
+			<DesignSystemProvider themeKey={theme}>
+				<GlobalStyle />
+				<BrowserRouter>
+					<AppContainer>
+						<Sentry.ErrorBoundary fallback={<ErrorFallback />}>
+							<Scroller />
+							<Suspense fallback={<div />}>
+								<Routes>
+									<Route path={'/'} element={<Home />} />
+									<Route path={'/pricing'} element={<Pricing />} />
+									<Route path={'/legal/privacy'} element={<Privacy />} />
+									<Route path={'/purchased'} element={<Purchased />} />
+									<Route path={'/legal/terms'} element={<Terms />} />
+									<Route path={'/purchase/complete'} element={'welcome!!'} />
+
+									<Route path={'/privacy'} element={<Navigate to={'/legal/privacy'} replace />} />
+									<Route path={'/terms'} element={<Navigate to={'/legal/terms'} replace />} />
+
+									<Route element={'y u here'} />
+								</Routes>
+							</Suspense>
+						</Sentry.ErrorBoundary>
+					</AppContainer>
+				</BrowserRouter>
+			</DesignSystemProvider>
+		</Provider>
+	);
+}
 
 if (import.meta.env.MODE !== 'development') {
 	Sentry.init({
