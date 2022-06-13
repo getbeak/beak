@@ -3,7 +3,7 @@ import { ipcPreferencesService } from '@beak/app/lib/ipc';
 import { ThemeMode } from '@beak/common/types/theme';
 
 import { SelectContainer, SelectItem, SelectItemPreview } from '../atoms/fancy-select';
-import { ItemGroup, ItemInfo, ItemLabel } from '../atoms/item';
+import { ItemGroup, ItemLabel } from '../atoms/item';
 import Pane from '../molecules/Pane';
 
 const GeneralPane: React.FC<React.PropsWithChildren<unknown>> = () => {
