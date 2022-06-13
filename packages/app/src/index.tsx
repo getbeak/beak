@@ -27,6 +27,8 @@ if (import.meta.env.MODE !== 'development') {
 }
 /* eslint-enable no-process-env */
 
+const store = configureStore();
+
 setupMonaco();
 
 function getComponent(container: string | null) {
@@ -48,20 +50,29 @@ function getComponent(container: string | null) {
 	}
 }
 
+function getSystemTheme(): Theme {
+	let theme: Theme = 'light';
+
+	if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)
+		theme = 'dark';
+
+	return theme;
+}
+
 const FauxRouter: React.FC<React.PropsWithChildren<unknown>> = () => {
+	const [theme, setTheme] = useState<Theme>(getSystemTheme());
 	const params = new URLSearchParams(window.location.search);
 	const container = params.get('container');
-	const [theme, setTheme] = useState<Theme>('dark');
 	const component = getComponent(container);
 
 	useEffect(() => {
-		window.secureBridge.ipc.on('theme-broadcast', (_event, theme) => {
-			setTheme(theme as Theme);
+		window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+			setTheme(event.matches ? 'dark' : 'light');
 		});
 	}, []);
 
 	return (
-		<Provider store={configureStore()}>
+		<Provider store={store}>
 			<base href={'./'} />
 			<WindowSessionContext.Provider value={instance}>
 				<DesignSystemProvider themeKey={theme}>

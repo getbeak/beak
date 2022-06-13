@@ -5,7 +5,7 @@ const darkTheme: UIColors = {
 	secondaryFill: '#333399',
 	tertiaryFill: '#33CC99',
 	surfaceFill: '#2a2f43',
-	blankFill: '#fff',
+	blankFill: '#ffffff',
 	alertFill: '#FC3233',
 
 	goAction: '#33CC99',
@@ -26,7 +26,7 @@ const darkTheme: UIColors = {
 	backgroundBorderSeparator: '#4a4651',
 	surfaceBorderSeparator: '#1A1E2D',
 
-	textOnAction: '#fff',
+	textOnAction: '#ffffff',
 	textOnFill: '#a6accd',
 	textHighlight: '#d45d80',
 	textSuccess: '#33CC99',
@@ -42,7 +42,7 @@ const lightTheme: UIColors = {
 	secondaryFill: '#333399',
 	tertiaryFill: '#33CC99',
 	surfaceFill: '#ffffff',
-	blankFill: '#fff',
+	blankFill: '#ffffff',
 	alertFill: '#FC3233',
 
 	goAction: '#33CC99',
@@ -56,7 +56,7 @@ const lightTheme: UIColors = {
 	secondaryBackground: '#ffffff',
 	blankBackground: '#ffffff',
 
-	surface: '#ececec',
+	surface: '#ffffff',
 	surfaceHighlight: '#f3f3f3',
 	secondarySurface: '#ececec',
 
