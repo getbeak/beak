@@ -20,7 +20,7 @@ const darkTheme: UIColors = {
 	blankBackground: '#1A1E2D',
 
 	surface: '#161824',
-	surfaceHighlight: '#1b1e2b',
+	surfaceHighlight: '#131824',
 	secondarySurface: '#242941',
 
 	backgroundBorderSeparator: '#4a4651',
