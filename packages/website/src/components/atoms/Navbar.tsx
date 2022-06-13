@@ -6,6 +6,7 @@ import Container from './Container';
 export const NavBrand = styled.a`
 	display: flex;
 	flex-direction: row;
+	align-items: center;
 
 	grid-column: 1;
 	grid-row: 1;
@@ -35,7 +36,7 @@ export const NavItemLocal = styled(NavLink)`
 
 	font-size: 14px;
 	text-decoration: none;
-	color: ${p => p.theme.ui.textMinor};
+	color: ${p => p.theme.ui.textOnSurfaceBackground};
 
 	transition: color .2s ease;
 
@@ -50,7 +51,7 @@ export const NavItemExternal = styled.a`
 
 	font-size: 14px;
 	text-decoration: none;
-	color: ${p => p.theme.ui.textMinor};
+	color: ${p => p.theme.ui.textOnSurfaceBackground};
 
 	transition: color .2s ease;
 

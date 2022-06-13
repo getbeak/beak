@@ -26,8 +26,9 @@ const Label = styled.div`
 	border-radius: 6px;
 	padding: 2px 4px;
 	font-size: 12px;
+	color: ${p => p.theme.ui.textOnAction};
 
-	background: ${p => toHexAlpha(p.theme.ui.primaryFill, 0.5)};
+	background: ${p => toHexAlpha(p.theme.ui.primaryFill, 0.7)};
 `;
 
 export default ActionBarVersion;
