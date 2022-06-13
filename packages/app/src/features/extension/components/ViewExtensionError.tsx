@@ -1,9 +1,8 @@
 import React from 'react';
+import EditorView from '@beak/app/components/atoms/EditorView';
 import Dialog from '@beak/app/components/molecules/Dialog';
 import { ipcExplorerService } from '@beak/app/lib/ipc';
-import { createDefaultOptions } from '@beak/app/utils/monaco';
 import Squawk from '@beak/common/utils/squawk';
-import Editor from '@monaco-editor/react';
 import styled from 'styled-components';
 
 interface ViewExtensionErrorProps {
@@ -34,17 +33,11 @@ const ViewExtensionError: React.FC<React.PropsWithChildren<ViewExtensionErrorPro
 				</li>
 			</List>
 
-			<Editor
+			<EditorView
 				height={'200px'}
-				width={'100%'}
 				language={'json'}
-				theme={'vs-dark'}
 				value={JSON.stringify(props.error, null, '\t')}
-				options={{
-					...createDefaultOptions(),
-					lineNumbers: false,
-					readOnly: true,
-				}}
+				options={{ readOnly: true, lineNumbers: false }}
 			/>
 		</Container>
 	</Dialog>

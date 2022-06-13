@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
+import EditorView from '@beak/app/components/atoms/EditorView';
 import WindowSessionContext, { WindowSession } from '@beak/app/contexts/window-session-context';
 import { convertKeyValueToString } from '@beak/app/features/basic-table-editor/parsers';
 import { convertToRealJson } from '@beak/app/features/json-editor/parsers';
@@ -6,14 +7,12 @@ import useRealtimeValueContext from '@beak/app/features/realtime-values/hooks/us
 import { parseValueParts } from '@beak/app/features/realtime-values/parser';
 import useComponentMounted from '@beak/app/hooks/use-component-mounted';
 import { useAppSelector } from '@beak/app/store/redux';
-import { createDefaultOptions } from '@beak/app/utils/monaco';
 import { convertRequestToUrl } from '@beak/app/utils/uri';
 import { requestBodyContentType } from '@beak/common/helpers/request';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import type { ValidRequestNode } from '@getbeak/types/nodes';
 import type { RequestBody, RequestOverview, ToggleKeyValue } from '@getbeak/types/request';
 import type { Context } from '@getbeak/types/values';
-import Editor from '@monaco-editor/react';
 
 const bodyFreeVerbs = ['get', 'head'];
 
@@ -41,16 +40,10 @@ const RequestOutput: React.FC<React.PropsWithChildren<RequestOutputProps>> = pro
 	}, [node, selectedGroups, variableGroups]);
 
 	return (
-		<Editor
-			height={'100%'}
-			width={'100%'}
+		<EditorView
 			language={'http'}
-			theme={'vs-dark'}
 			value={output}
-			options={{
-				...createDefaultOptions(),
-				readOnly: true,
-			}}
+			options={{ readOnly: true }}
 		/>
 	);
 };

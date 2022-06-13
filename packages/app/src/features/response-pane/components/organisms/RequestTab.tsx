@@ -1,13 +1,12 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
+import EditorView from '@beak/app/components/atoms/EditorView';
 import WindowSessionContext from '@beak/app/contexts/window-session-context';
 import BasicTableEditor from '@beak/app/features/basic-table-editor/components/BasicTableEditor';
 import useRealtimeValueContext from '@beak/app/features/realtime-values/hooks/use-realtime-value-context';
 import { requestPreferenceSetResSubTab } from '@beak/app/store/preferences/actions';
 import { useAppSelector } from '@beak/app/store/redux';
-import { createDefaultOptions } from '@beak/app/utils/monaco';
 import type { Flight } from '@getbeak/types/flight';
-import Editor from '@monaco-editor/react';
 import styled from 'styled-components';
 
 import TabBar from '../../../../components/atoms/TabBar';
@@ -88,16 +87,10 @@ const RequestTab: React.FC<React.PropsWithChildren<RequestTabProps>> = props => 
 				)}
 				{tab === 'raw' && (
 					<React.Fragment>
-						<Editor
-							height={'100%'}
-							width={'100%'}
+						<EditorView
 							language={'http'}
-							theme={'vs-dark'}
 							value={output}
-							options={{
-								...createDefaultOptions(),
-								readOnly: true,
-							}}
+							options={{ readOnly: true }}
 						/>
 					</React.Fragment>
 				)}

@@ -1,11 +1,10 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
+import EditorView from '@beak/app/components/atoms/EditorView';
 import actions from '@beak/app/store/preferences/actions';
 import { useAppSelector } from '@beak/app/store/redux';
 import { attemptJsonStringFormat } from '@beak/app/utils/json';
-import { createDefaultOptions } from '@beak/app/utils/monaco';
 import type { Flight } from '@getbeak/types/flight';
-import Editor from '@monaco-editor/react';
 import styled from 'styled-components';
 import xmlFormatter from 'xml-formatter';
 
@@ -51,16 +50,10 @@ function renderFormat(language: string | null, contentType: string | null, body:
 			const json = new TextDecoder().decode(body);
 
 			return (
-				<Editor
-					height={'100%'}
-					width={'100%'}
+				<EditorView
 					language={'json'}
-					theme={'vs-dark'}
 					value={attemptJsonStringFormat(json)}
-					options={{
-						...createDefaultOptions(),
-						readOnly: true,
-					}}
+					options={{ readOnly: true }}
 				/>
 			);
 		}
@@ -91,16 +84,10 @@ function renderFormat(language: string | null, contentType: string | null, body:
 			}
 
 			return (
-				<Editor
-					height={'100%'}
-					width={'100%'}
+				<EditorView
 					language={'text'}
-					theme={'vs-dark'}
 					value={outputParts.join('\n')}
-					options={{
-						...createDefaultOptions(),
-						readOnly: true,
-					}}
+					options={{ readOnly: true }}
 				/>
 			);
 		}
@@ -109,16 +96,10 @@ function renderFormat(language: string | null, contentType: string | null, body:
 			const xml = new TextDecoder().decode(body);
 
 			return (
-				<Editor
-					height={'100%'}
-					width={'100%'}
+				<EditorView
 					language={'xml'}
-					theme={'vs-dark'}
 					value={tryFormatXml(xml)}
-					options={{
-						...createDefaultOptions(),
-						readOnly: true,
-					}}
+					options={{ readOnly: true }}
 				/>
 			);
 		}
@@ -127,16 +108,10 @@ function renderFormat(language: string | null, contentType: string | null, body:
 			const html = new TextDecoder().decode(body);
 
 			return (
-				<Editor
-					height={'100%'}
-					width={'100%'}
+				<EditorView
 					language={'html'}
-					theme={'vs-dark'}
 					value={tryFormatXml(html)}
-					options={{
-						...createDefaultOptions(),
-						readOnly: true,
-					}}
+					options={{ readOnly: true }}
 				/>
 			);
 		}
@@ -145,16 +120,10 @@ function renderFormat(language: string | null, contentType: string | null, body:
 			const css = new TextDecoder().decode(body);
 
 			return (
-				<Editor
-					height={'100%'}
-					width={'100%'}
+				<EditorView
 					language={'css'}
-					theme={'vs-dark'}
 					value={css}
-					options={{
-						...createDefaultOptions(),
-						readOnly: true,
-					}}
+					options={{ readOnly: true }}
 				/>
 			);
 		}
@@ -180,16 +149,10 @@ function renderFormat(language: string | null, contentType: string | null, body:
 			const text = new TextDecoder().decode(body);
 
 			return (
-				<Editor
-					height={'100%'}
-					width={'100%'}
+				<EditorView
 					language={'text'}
-					theme={'vs-dark'}
 					value={text}
-					options={{
-						...createDefaultOptions(),
-						readOnly: true,
-					}}
+					options={{ readOnly: true }}
 				/>
 			);
 		}

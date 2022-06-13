@@ -1,5 +1,6 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
+import EditorView from '@beak/app/components/atoms/EditorView';
 import BasicTableEditor from '@beak/app/features/basic-table-editor/components/BasicTableEditor';
 import { convertKeyValueToString, convertStringToKeyValue } from '@beak/app/features/basic-table-editor/parsers';
 import JsonEditor from '@beak/app/features/json-editor/components/JsonEditor';
@@ -10,11 +11,9 @@ import { ipcDialogService } from '@beak/app/lib/ipc';
 import actions, { requestBodyTextChanged } from '@beak/app/store/project/actions';
 import { RequestBodyTypeChangedPayload } from '@beak/app/store/project/types';
 import { attemptTextToJson } from '@beak/app/utils/json';
-import { createDefaultOptions } from '@beak/app/utils/monaco';
 import ksuid from '@cuvva/ksuid';
 import type { ValidRequestNode } from '@getbeak/types/nodes';
 import type { RequestBodyType } from '@getbeak/types/request';
-import Editor from '@monaco-editor/react';
 import styled from 'styled-components';
 
 import TabBar from '../../../../components/atoms/TabBar';
@@ -130,13 +129,9 @@ const BodyTab: React.FC<React.PropsWithChildren<BodyTabProps>> = props => {
 
 			<TabBody $allowVerticalScroll={body.type !== 'text'}>
 				{body.type === 'text' && (
-					<Editor
-						height={'100%'}
-						width={'100%'}
+					<EditorView
 						language={'plaintext'}
-						theme={'vs-dark'}
 						value={body.payload}
-						options={createDefaultOptions()}
 						onChange={text => dispatch(requestBodyTextChanged({ requestId: node.id, text: text ?? '' }))}
 					/>
 				)}
