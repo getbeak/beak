@@ -1,31 +1,61 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { ipcPreferencesService } from '@beak/app/lib/ipc';
+import { ThemeMode } from '@beak/common/types/theme';
 
 import { SelectContainer, SelectItem, SelectItemPreview } from '../atoms/fancy-select';
 import { ItemGroup, ItemInfo, ItemLabel } from '../atoms/item';
 import Pane from '../molecules/Pane';
 
-const GeneralPane: React.FC<React.PropsWithChildren<unknown>> = () => (
-	<Pane title={'General'}>
-		<ItemGroup>
-			<ItemLabel>{'Theme:'}</ItemLabel>
-			<SelectContainer>
-				<SelectItem onClick={() => ipcPreferencesService.switchThemeMode('system')}>
-					<SelectItemPreview />
-					{'System'}
-				</SelectItem>
-				<SelectItem onClick={() => ipcPreferencesService.switchThemeMode('light')}>
-					<SelectItemPreview />
-					{'Light'}
-				</SelectItem>
-				<SelectItem onClick={() => ipcPreferencesService.switchThemeMode('dark')}>
-					<SelectItemPreview $active />
-					{'Dark'}
-				</SelectItem>
-			</SelectContainer>
-			<ItemInfo>{'Theme switching is coming soon'}</ItemInfo>
-		</ItemGroup>
-	</Pane>
-);
+const GeneralPane: React.FC<React.PropsWithChildren<unknown>> = () => {
+	const [selectedTheme, setSelectedTheme] = useState<ThemeMode>('system');
+
+	async function updateSelected() {
+		const themeMode = await ipcPreferencesService.getThemeMode();
+
+		setSelectedTheme(themeMode);
+	}
+
+	useEffect(() => void updateSelected(), []);
+
+	return (
+		<Pane title={'General'}>
+			<ItemGroup>
+				<ItemLabel>{'Theme:'}</ItemLabel>
+				<SelectContainer>
+					<SelectItem
+						$active={selectedTheme === 'system'}
+						onClick={async () => {
+							await ipcPreferencesService.switchThemeMode('system');
+							await updateSelected();
+						}}
+					>
+						<SelectItemPreview $active={selectedTheme === 'system'} $themeMode={'system'} />
+						{'System'}
+					</SelectItem>
+					<SelectItem
+						$active={selectedTheme === 'light'}
+						onClick={async () => {
+							await ipcPreferencesService.switchThemeMode('light');
+							await updateSelected();
+						}}
+					>
+						<SelectItemPreview $active={selectedTheme === 'light'} $themeMode={'light'} />
+						{'Light'}
+					</SelectItem>
+					<SelectItem
+						$active={selectedTheme === 'dark'}
+						onClick={async () => {
+							await ipcPreferencesService.switchThemeMode('dark');
+							await updateSelected();
+						}}
+					>
+						<SelectItemPreview $active={selectedTheme === 'dark'} $themeMode={'dark'} />
+						{'Dark'}
+					</SelectItem>
+				</SelectContainer>
+			</ItemGroup>
+		</Pane>
+	);
+};
 
 export default GeneralPane;
