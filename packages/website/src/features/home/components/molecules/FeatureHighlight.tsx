@@ -41,7 +41,7 @@ const FeatureHighlight: React.FC<React.PropsWithChildren<FeatureHighlightProps>>
 
 const Wrapper = styled.div<{ flipped: boolean | undefined }>`
 	padding: 80px 0;
-	background: ${p => p.flipped ? p.theme.ui.surface : p.theme.ui.secondaryBackground};
+	background: ${p => p.flipped ? p.theme.ui.surfaceHighlight : p.theme.ui.secondaryBackground};
 `;
 
 const DetailContainer = styled.div`

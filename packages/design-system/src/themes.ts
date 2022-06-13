@@ -16,10 +16,10 @@ const darkTheme: UIColors = {
 	destructiveActionMuted: '#DB182C',
 
 	background: '#1A1E2D',
-	secondaryBackground: '#161824',
+	secondaryBackground: '#181d25',
 	blankBackground: '#1A1E2D',
 
-	surface: '#181d25',
+	surface: '#161824',
 	surfaceHighlight: '#1b1e2b',
 	secondarySurface: '#242941',
 

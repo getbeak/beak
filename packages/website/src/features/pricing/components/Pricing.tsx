@@ -30,7 +30,7 @@ const Header = styled.div`
 	padding-top: 80px;
 	padding-bottom: 80px;
 
-	background: ${p => p.theme.ui.background};
+	background: ${p => p.theme.ui.surfaceHighlight};
 
 	@media (max-width: 850px) {
 		padding-top: 40px;
