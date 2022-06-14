@@ -27,4 +27,4 @@ For help getting started, visit the [Beak docs](https://docs.getbeak.app).
 
 ## Download
 
-Visit [https://getbeak.app/#downloads](https://getbeak.app/#downloads). to download Beak for Mac, Windows, and Linux.
+Visit [https://getbeak.app/#downloads](https://getbeak.app/#downloads). to download Beak for Mac, and Windows.

@@ -14,8 +14,8 @@
     "build": "cross-env NODE_ENV=production electron-esbuild build",
     "prepackage": "rm -rf ./dist-electron",
     "prepackage:release": "rm -rf ./dist-electron",
-    "package": "electron-builder -mwl --publish never",
-    "package:release": "electron-builder -mwl --publish always",
+    "package": "electron-builder -mw --publish never",
+    "package:release": "electron-builder -mw --publish always",
     "start": "cross-env NODE_ENV=development electron-esbuild dev",
     "typecheck": "tsc",
     "test": "echo Skipped."
