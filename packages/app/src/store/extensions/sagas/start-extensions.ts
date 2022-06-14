@@ -3,12 +3,13 @@ import createFsEmitter from '@beak/app/lib/fs-emitter';
 import { ipcExtensionsService, ipcFsService } from '@beak/app/lib/ipc';
 import Squawk from '@beak/common/utils/squawk';
 import ksuid from '@cuvva/ksuid';
+import { Action } from '@reduxjs/toolkit';
 import path from 'path-browserify';
 import { call, put, take } from 'redux-saga/effects';
 
 import { alertInsert, alertRemoveType } from '../../project/actions';
 import * as actions from '../actions';
-import { Extension, FailedExtension } from '../types';
+import { ActionTypes, Extension, FailedExtension } from '../types';
 
 interface PackageJson {
 	name: string;
@@ -22,7 +23,13 @@ interface Emitter {
 	path: string;
 }
 
-export default function* workerStartExtensions() {
+export default function* workerStartExtensions(action: Action) {
+	if (action.type === ActionTypes.RELOAD_EXTENSIONS) {
+		yield initialImport();
+
+		return;
+	}
+
 	const channel = createFsEmitter('extensions', {
 		depth: 0,
 		followSymlinks: false,

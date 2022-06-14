@@ -3,6 +3,7 @@ import Squawk from '@beak/common/utils/squawk';
 
 export const ActionTypes = {
 	START_EXTENSIONS: '@beak/global/extensions/START_EXTENSIONS',
+	RELOAD_EXTENSIONS: '@beak/global/extensions/RELOAD_EXTENSIONS',
 	EXTENSIONS_OPENED: '@beak/global/extensions/EXTENSIONS_OPENED',
 };
 
