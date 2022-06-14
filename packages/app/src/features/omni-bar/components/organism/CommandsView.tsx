@@ -1,34 +1,92 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { ipcWindowService } from '@beak/app/lib/ipc';
+import tabActions from '@beak/app/features/tabs/store/actions';
+import { ipcExplorerService, ipcPreferencesService, ipcWindowService } from '@beak/app/lib/ipc';
 import { checkShortcut } from '@beak/app/lib/keyboard-shortcuts';
+import { reloadExtensions } from '@beak/app/store/extensions/actions';
 import { movePosition } from '@beak/app/utils/arrays';
-import ksuid from '@cuvva/ksuid';
 import Fuse from 'fuse.js';
 import type { Dispatch } from 'redux';
 import styled, { css } from 'styled-components';
 
-const commands: Command[] = [{
-	id: ksuid.generate('omnicmd').toString(),
-	name: 'Developer: Reload window',
-	keywords: [],
-	action: () => window.location.reload(),
-}, {
-	id: ksuid.generate('omnicmd').toString(),
-	name: 'Developer: Toggle developer tools',
-	keywords: [],
-	action: () => ipcWindowService.toggleDeveloperTools(),
-}, {
-	id: ksuid.generate('omnicmd').toString(),
-	name: 'Extensions: Reload all extensions',
-	keywords: [],
-	action: () => ipcWindowService.toggleDeveloperTools(),
-}, {
-	id: ksuid.generate('omnicmd').toString(),
-	name: 'Extensions: Open extensions folder',
-	keywords: [],
-	action: () => ipcWindowService.toggleDeveloperTools(),
-}];
+function generateCommands(): Command[] {
+	return [{ // Developer
+		id: 'developer:reload_window',
+		name: 'Developer: Reload window',
+		keywords: [],
+		action: () => window.location.reload(),
+	}, {
+		id: 'developer:toggle_developer_tools',
+		name: 'Developer: Toggle developer tools',
+		keywords: [],
+		action: () => ipcWindowService.toggleDeveloperTools(),
+	}, { // Extensions
+		id: 'extensions:reload_all_extensions',
+		name: 'Extensions: Reload all extensions',
+		keywords: [],
+		action: dispatch => dispatch(reloadExtensions()),
+	}, {
+		id: 'extensions:open_extensions_folder',
+		name: 'Extensions: Open extensions folder',
+		keywords: [],
+		action: () => ipcExplorerService.revealFile('extensions/'),
+	}, { // Preferences
+		id: 'preferences:switch_to_light_theme',
+		name: 'Preferences: Switch to light theme',
+		keywords: [],
+		action: () => ipcPreferencesService.switchThemeMode('light'),
+	}, {
+		id: 'preferences:switch_to_dark_theme',
+		name: 'Preferences: Switch to dark theme',
+		keywords: [],
+		action: () => ipcPreferencesService.switchThemeMode('dark'),
+	}, {
+		id: 'preferences:switch_to_system_theme',
+		name: 'Preferences: Switch to system theme',
+		keywords: [],
+		action: () => ipcPreferencesService.switchThemeMode('system'),
+	}, { // Tabs
+		id: 'tabs:visit_next_tab',
+		name: 'Tabs: Visit next tab',
+		keywords: [],
+		action: dispatch => dispatch(tabActions.changeTabNext()),
+	}, {
+		id: 'tabs:visit_previous_tab',
+		name: 'Tabs: Visit previous tab',
+		keywords: [],
+		action: dispatch => dispatch(tabActions.changeTabPrevious()),
+	}, {
+		id: 'tabs:make_current_tab_permanent',
+		name: 'Tabs: Make current tab permanent',
+		keywords: [],
+		action: dispatch => dispatch(tabActions.makeTabPermanent()),
+	}, {
+		id: 'tabs:close_current_tab',
+		name: 'Tabs: Close current tab',
+		keywords: [],
+		action: dispatch => dispatch(tabActions.closeTab()),
+	}, {
+		id: 'tabs:close_other_tabs',
+		name: 'Tabs: Close other tabs',
+		keywords: [],
+		action: dispatch => dispatch(tabActions.closeTabsOther()),
+	}, {
+		id: 'tabs:close_tabs_to_the_left',
+		name: 'Tabs: Close tabs to the left',
+		keywords: [],
+		action: dispatch => dispatch(tabActions.closeTabsLeft()),
+	}, {
+		id: 'tabs:close_tabs_to_the_right',
+		name: 'Tabs: Close tabs to the right',
+		keywords: [],
+		action: dispatch => dispatch(tabActions.closeTabsRight()),
+	}, {
+		id: 'tabs:close_all_tabs',
+		name: 'Tabs: Close all tabs',
+		keywords: [],
+		action: dispatch => dispatch(tabActions.closeTabsAll()),
+	}];
+}
 
 interface Command {
 	id: string;
@@ -46,6 +104,8 @@ const CommandsView: React.FC<React.PropsWithChildren<CommandsViewProps>> = ({ co
 	const dispatch = useDispatch();
 	const [matches, setMatches] = useState<string[]>([]);
 	const [active, setActive] = useState<number>(-1);
+	const commands = generateCommands();
+	const pureContent = content.substring(1);
 
 	const fuse = new Fuse(commands, {
 		includeScore: true,
@@ -53,6 +113,7 @@ const CommandsView: React.FC<React.PropsWithChildren<CommandsViewProps>> = ({ co
 			'name',
 			'keywords',
 		],
+		threshold: 0.4,
 	});
 
 	useEffect(() => {
@@ -97,17 +158,23 @@ const CommandsView: React.FC<React.PropsWithChildren<CommandsViewProps>> = ({ co
 	}, [matches, active, reset]);
 
 	useEffect(() => {
-		const matchedIds = fuse.search(content).map(s => s.item.id);
+		if (content === '>') {
+			setMatches(commands.map(c => c.id));
+
+			return;
+		}
+
+		const matchedIds = fuse.search(pureContent).map(s => s.item.id);
 
 		setMatches(matchedIds);
-	}, [content]);
+	}, [content, pureContent]);
 
-	if (!content)
+	if (matches.length === 0)
 		return null;
 
 	return (
 		<Container tabIndex={0}>
-			{matches?.map((k, i) => {
+			{matches.map((k, i) => {
 				const command = commands.find(c => c.id === k);
 
 				if (!command)
@@ -132,7 +199,6 @@ const CommandsView: React.FC<React.PropsWithChildren<CommandsViewProps>> = ({ co
 };
 
 const Container = styled.div`
-	border-top: 1px solid ${p => p.theme.ui.backgroundBorderSeparator};
 	padding: 8px 0;
 `;
 

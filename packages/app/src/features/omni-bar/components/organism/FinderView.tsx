@@ -119,7 +119,6 @@ const FinderView: React.FC<React.PropsWithChildren<FinderViewProps>> = ({ conten
 };
 
 const Container = styled.div`
-	border-top: 1px solid ${p => p.theme.ui.backgroundBorderSeparator};
 	padding: 8px 0;
 `;
 

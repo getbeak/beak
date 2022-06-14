@@ -83,8 +83,10 @@ const Omnibar: React.FC<React.PropsWithChildren<unknown>> = () => {
 						value={content}
 						onChange={e => setContent(e.currentTarget.value)}
 					/>
-					{!content.startsWith('>') && <FinderView content={content} reset={reset} />}
-					{content.startsWith('>') && <CommandsView content={content.substring(1)} reset={reset} />}
+					<BarContent>
+						{!content.startsWith('>') && <FinderView content={content} reset={reset} />}
+						{content.startsWith('>') && <CommandsView content={content} reset={reset} />}
+					</BarContent>
 				</Bar>
 			</BarOuter>
 		</Container>
@@ -131,6 +133,13 @@ const BarInput = styled.input`
 	&:focus {
 		outline: none;
 	}
+`;
+
+const BarContent = styled.div`
+	max-height: min(calc(100vh - 160px - 40px), 400px);
+	border-top: 1px solid ${p => p.theme.ui.backgroundBorderSeparator};
+	overflow-x: hidden;
+	overflow-y: scroll;
 `;
 
 export default Omnibar;
