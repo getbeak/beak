@@ -218,7 +218,7 @@ const ItemContainer = styled.div`
 const Item = styled.div<{ $active: boolean }>`
 	padding: 2px 4px;
 	cursor: pointer;
-	color: ${p => p.theme.ui.textOnAction};
+	color: ${p => p.theme.ui.textOnSurfaceBackground};
 	overflow-x: hidden;
 
 	&:focus {

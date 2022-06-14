@@ -2,7 +2,7 @@ import React from 'react';
 import { ReflexSplitter as RS, ReflexSplitterProps as RSP } from 'react-reflex';
 import styled, { css } from 'styled-components';
 
-// TODO(afr): Get rid of importants when css import is removed
+// TODO(afr): Get rid of important's when css import is removed
 
 export interface ReflexSplitterProps extends RSP {
 	orientation: 'horizontal' | 'vertical';
@@ -16,7 +16,7 @@ const ReflexSplitter = styled(RS)<ReflexSplitterProps>`
 	height: ${props => props.orientation === 'horizontal' ? '2px' : 'auto'} !important;
 	background-color: ${props => props.theme.ui.backgroundBorderSeparator} !important;
 	border: none !important;
-	transition: background .6s, box-shadow .6s !important;
+	transition: background .2s, box-shadow .2s !important;
 
 	&:hover {
 		background-color: ${props => props.theme.ui.primaryFill} !important;
