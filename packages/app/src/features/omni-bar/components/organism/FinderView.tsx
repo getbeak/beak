@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import useRealtimeValueContext from '@beak/app/features/realtime-values/hooks/use-realtime-value-context';
 import { changeTab } from '@beak/app/features/tabs/store/actions';
@@ -24,6 +24,7 @@ const FinderView: React.FC<React.PropsWithChildren<FinderViewProps>> = ({ conten
 	const [matches, setMatches] = useState<string[]>([]);
 	const [active, setActive] = useState<number>(-1);
 	const context = useRealtimeValueContext();
+	const activeRef = useRef<HTMLElement | null>(null);
 
 	const fuse = new Fuse(flattened, {
 		includeScore: true,
@@ -39,11 +40,21 @@ const FinderView: React.FC<React.PropsWithChildren<FinderViewProps>> = ({ conten
 			switch (true) {
 				case checkShortcut('omni-bar.finder.down', event):
 					setActive(movePosition(matches, active, 'forward'));
+					setTimeout(() => {
+						// This actually exists
+						// @ts-expect-error
+						activeRef.current?.scrollIntoViewIfNeeded(false);
+					}, 0);
 
 					break;
 
 				case checkShortcut('omni-bar.finder.up', event):
 					setActive(movePosition(matches, active, 'backward'));
+					setTimeout(() => {
+						// This actually exists
+						// @ts-expect-error
+						activeRef.current?.scrollIntoViewIfNeeded(false);
+					}, 0);
 
 					break;
 
@@ -83,13 +94,17 @@ const FinderView: React.FC<React.PropsWithChildren<FinderViewProps>> = ({ conten
 
 	return (
 		<Container tabIndex={0}>
-			{matches?.map((k, i) => {
+			{matches.map((k, idx) => {
 				const match = tree[k];
 				const reqNode = match as ValidRequestNode;
 
 				return (
 					<Item
-						active={active === i}
+						$active={active === idx}
+						ref={i => {
+							if (active === idx)
+								activeRef.current = i;
+						}}
 						key={k}
 						tabIndex={0}
 						onClick={() => {
@@ -122,7 +137,7 @@ const Container = styled.div`
 	padding: 8px 0;
 `;
 
-const Item = styled.div<{ active: boolean }>`
+const Item = styled.div<{ $active: boolean }>`
 	font-size: 13px;
 	color: ${p => p.theme.ui.textOnSurfaceBackground};
 	padding: 4px 10px;
@@ -134,7 +149,7 @@ const Item = styled.div<{ active: boolean }>`
 	text-decoration: none;
 
 	&:hover { background: ${p => p.theme.ui.secondaryActionMuted}; }
-	${p => p.active ? css`background: ${p => p.theme.ui.secondaryActionMuted};` : ''}
+	${p => p.$active ? css`background: ${p => p.theme.ui.secondaryActionMuted};` : ''}
 `;
 
 export default FinderView;

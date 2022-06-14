@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import tabActions from '@beak/app/features/tabs/store/actions';
 import { ipcExplorerService, ipcPreferencesService, ipcWindowService } from '@beak/app/lib/ipc';
@@ -104,6 +104,7 @@ const CommandsView: React.FC<React.PropsWithChildren<CommandsViewProps>> = ({ co
 	const dispatch = useDispatch();
 	const [matches, setMatches] = useState<string[]>([]);
 	const [active, setActive] = useState<number>(-1);
+	const activeRef = useRef<HTMLElement | null>(null);
 	const commands = generateCommands();
 	const pureContent = content.substring(1);
 
@@ -121,11 +122,21 @@ const CommandsView: React.FC<React.PropsWithChildren<CommandsViewProps>> = ({ co
 			switch (true) {
 				case checkShortcut('omni-bar.commands.down', event):
 					setActive(movePosition(matches, active, 'forward'));
+					setTimeout(() => {
+						// This actually exists
+						// @ts-expect-error
+						activeRef.current?.scrollIntoViewIfNeeded(false);
+					}, 0);
 
 					break;
 
 				case checkShortcut('omni-bar.commands.up', event):
 					setActive(movePosition(matches, active, 'backward'));
+					setTimeout(() => {
+						// This actually exists
+						// @ts-expect-error
+						activeRef.current?.scrollIntoViewIfNeeded(false);
+					}, 0);
 
 					break;
 
@@ -174,7 +185,7 @@ const CommandsView: React.FC<React.PropsWithChildren<CommandsViewProps>> = ({ co
 
 	return (
 		<Container tabIndex={0}>
-			{matches.map((k, i) => {
+			{matches.map((k, idx) => {
 				const command = commands.find(c => c.id === k);
 
 				if (!command)
@@ -182,8 +193,12 @@ const CommandsView: React.FC<React.PropsWithChildren<CommandsViewProps>> = ({ co
 
 				return (
 					<Item
-						active={active === i}
+						$active={active === idx}
 						key={k}
+						ref={i => {
+							if (active === idx)
+								activeRef.current = i;
+						}}
 						tabIndex={0}
 						onClick={() => {
 							reset();
@@ -202,7 +217,7 @@ const Container = styled.div`
 	padding: 8px 0;
 `;
 
-const Item = styled.div<{ active: boolean }>`
+const Item = styled.div<{ $active: boolean }>`
 	font-size: 13px;
 	color: ${p => p.theme.ui.textOnSurfaceBackground};
 	padding: 4px 10px;
@@ -214,7 +229,7 @@ const Item = styled.div<{ active: boolean }>`
 	text-decoration: none;
 
 	&:hover { background: ${p => p.theme.ui.secondaryActionMuted}; }
-	${p => p.active ? css`background: ${p => p.theme.ui.secondaryActionMuted};` : ''}
+	${p => p.$active ? css`background: ${p => p.theme.ui.secondaryActionMuted};` : ''}
 `;
 
 export default CommandsView;
