@@ -71,13 +71,6 @@
       }
     ]
   },
-  "linux": {
-    "target": [{
-      "target": "AppImage"
-    }, {
-      "target": "zip"
-    }]
-  },
 
   "afterSign": "scripts/notarize.js",
   "afterPack": "scripts/after-pack.js"

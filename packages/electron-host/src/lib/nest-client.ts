@@ -239,11 +239,8 @@ function getPlatform() {
 			return 'mac';
 
 		case 'win32':
-			return 'windows';
-
-		case 'linux':
 		default:
-			return 'linux';
+			return 'windows';
 	}
 }
 
@@ -253,11 +250,8 @@ function getClientId() {
 			return 'client_000000C2kdCzNlbL1BqR5FeMatItU';
 
 		case 'windows':
-			return 'client_000000CAixkP7YVb0cH1zvNfE5mYi';
-
-		case 'linux':
 		default:
-			return 'client_000000CAixjPMTECPznenOM8rKRxQ';
+			return 'client_000000CAixkP7YVb0cH1zvNfE5mYi';
 	}
 }
 

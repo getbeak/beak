@@ -31,7 +31,6 @@ function generateAsarPath(platform, appOutDir) {
 		case 'darwin':
 			return path.join(appOutDir, 'Beak.app', 'Contents', 'Resources', 'app.asar');
 
-		case 'linux':
 		case 'win32':
 			return path.join(appOutDir, 'resources', 'app.asar');
 
@@ -47,13 +46,6 @@ function generateKeytarFilename(arch, platform) {
 				return 'darwin-arm64-keytar.node';
 			else if (arch === 'x64')
 				return 'darwin-keytar.node';
-
-			break;
-		}
-
-		case 'linux': {
-			if (arch === 'x64')
-				return 'linux-x64-keytar.node';
 
 			break;
 		}

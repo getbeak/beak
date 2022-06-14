@@ -215,7 +215,7 @@ export function createProjectMainWindow(projectFilePath: string) {
 		windowOpts.vibrancy = 'under-window';
 	}
 
-	// On Linux and Windows we want total control of the frame
+	// On Windows we want total control of the frame
 	if (process.platform !== 'darwin')
 		windowOpts.autoHideMenuBar = false;
 
