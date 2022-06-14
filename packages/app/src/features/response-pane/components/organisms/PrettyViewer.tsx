@@ -60,7 +60,7 @@ function renderFormat(language: string | null, contentType: string | null, body:
 
 		case 'hex': {
 			const outputParts = [];
-			const rowLength = 0x0f;
+			const rowLength = 0x10;
 
 			for (let i = 0; i < body.length; i += rowLength) {
 				const row = body.slice(i, i + rowLength);
