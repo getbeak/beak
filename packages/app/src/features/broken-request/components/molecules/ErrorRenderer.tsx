@@ -1,7 +1,6 @@
 import React from 'react';
-import { createDefaultOptions } from '@beak/app/utils/monaco';
+import EditorView from '@beak/app/components/atoms/EditorView';
 import Squawk from '@beak/common/utils/squawk';
-import Editor from '@monaco-editor/react';
 import styled from 'styled-components';
 
 interface ErrorRendererProps {
@@ -11,17 +10,10 @@ interface ErrorRendererProps {
 const ErrorRenderer: React.FC<React.PropsWithChildren<ErrorRendererProps>> = ({ error }) => (
 	<EditorContainer>
 		<EditorHeader>{'Error body'}</EditorHeader>
-		<Editor
-			height={'100%'}
-			width={'100%'}
+		<EditorView
 			language={'json'}
-			theme={'vs-dark'}
 			value={JSON.stringify(error, null, '\t')}
-			options={{
-				...createDefaultOptions(),
-				lineNumbers: false,
-				readOnly: true,
-			}}
+			options={{ readOnly: true, lineNumbers: false }}
 		/>
 	</EditorContainer>
 );

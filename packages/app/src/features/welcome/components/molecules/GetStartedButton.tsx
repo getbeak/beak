@@ -51,7 +51,7 @@ const Button = styled.button`
 	background: ${props => toHexAlpha(props.theme.ui.secondarySurface, 0.7)};
 	backdrop-filter: blur(5px);
 	border-radius: 5px;
-	color: ${props => props.theme.ui.textOnAction};
+	color: ${props => props.theme.ui.textOnSurfaceBackground};
 	border: none;
 	cursor: pointer;
 

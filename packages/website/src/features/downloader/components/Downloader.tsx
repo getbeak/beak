@@ -1,7 +1,6 @@
 import React from 'react';
 import ScrollTarget from '@beak/website/components/atoms/ScrollTarget';
 import { faApple } from '@fortawesome/free-brands-svg-icons/faApple';
-import { faLinux } from '@fortawesome/free-brands-svg-icons/faLinux';
 import { faWindows } from '@fortawesome/free-brands-svg-icons/faWindows';
 import { faDownload } from '@fortawesome/free-solid-svg-icons/faDownload';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -54,17 +53,6 @@ const Downloader: React.FC<React.PropsWithChildren<unknown>> = () => {
 						<DownloadButton href={downloads.windows!.downloadPath}>
 							<FontAwesomeIcon icon={faDownload} color={theme.ui.textOnAction} />
 							{'Download for Windows'}
-						</DownloadButton>
-					</Platform>
-					<Platform>
-						<FontAwesomeIcon
-							icon={faLinux}
-							size={'4x'}
-						/>
-
-						<DownloadButton href={downloads.linux!.downloadPath}>
-							<FontAwesomeIcon icon={faDownload} color={theme.ui.textOnAction} />
-							{'Download for Linux'}
 						</DownloadButton>
 					</Platform>
 				</Grid>

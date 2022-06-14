@@ -1,4 +1,4 @@
-import { app, BrowserWindow, BrowserWindowConstructorOptions } from 'electron';
+import { app, BrowserWindow, BrowserWindowConstructorOptions, nativeTheme } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
 
@@ -54,6 +54,8 @@ function createWindow(
 	container: Container,
 	additionalParams?: Record<string, string>,
 ) {
+	nativeTheme.themeSource = 'light';
+
 	const windowStateManager = new WindowStateManager(container, windowOpts);
 	const window = new BrowserWindow({
 		webPreferences: {

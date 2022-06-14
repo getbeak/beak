@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
+import { Theme } from '@beak/common/types/theme';
 import { DesignSystemProvider } from '@beak/design-system';
 import { init } from '@sentry/electron';
 
@@ -26,6 +27,8 @@ if (import.meta.env.MODE !== 'development') {
 }
 /* eslint-enable no-process-env */
 
+const store = configureStore();
+
 setupMonaco();
 
 function getComponent(container: string | null) {
@@ -47,16 +50,32 @@ function getComponent(container: string | null) {
 	}
 }
 
+function getSystemTheme(): Theme {
+	let theme: Theme = 'light';
+
+	if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)
+		theme = 'dark';
+
+	return theme;
+}
+
 const FauxRouter: React.FC<React.PropsWithChildren<unknown>> = () => {
+	const [theme, setTheme] = useState<Theme>(getSystemTheme());
 	const params = new URLSearchParams(window.location.search);
 	const container = params.get('container');
 	const component = getComponent(container);
 
+	useEffect(() => {
+		window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+			setTheme(event.matches ? 'dark' : 'light');
+		});
+	}, []);
+
 	return (
-		<Provider store={configureStore()}>
+		<Provider store={store}>
 			<base href={'./'} />
 			<WindowSessionContext.Provider value={instance}>
-				<DesignSystemProvider themeKey={'dark'}>
+				<DesignSystemProvider themeKey={theme}>
 					<GlobalStyle $darwin={instance.isDarwin()} />
 					{container === 'portal' && component}
 					{container !== 'portal' && (

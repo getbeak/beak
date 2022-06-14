@@ -11,7 +11,7 @@ export const Card = styled.div`
 	backdrop-filter: blur(10px);
 	border-radius: 25px;
 	padding: 35px;
-	background: ${p => p.theme.ui.surface}BB;
+	background: ${p => p.theme.ui.surfaceHighlight}BB;
 	color: ${p => p.theme.ui.textOnSurfaceBackground};
 `;
 

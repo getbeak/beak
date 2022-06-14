@@ -1,12 +1,13 @@
-import {
-	IpcMain,
-} from 'electron';
+import { IpcMain } from 'electron';
 
+import { ThemeMode } from '../types/theme';
 import { IpcServiceMain, IpcServiceRenderer, Listener, PartialIpcRenderer } from './ipc';
 
 export const PreferencesMessages = {
 	GetEnvironment: 'get_environment',
 	SwitchEnvironment: 'switch_environment',
+	GetThemeMode: 'get_theme_mode',
+	SwitchThemeMode: 'switch_theme_mode',
 	ResetConfig: 'reset_config',
 	SignOut: 'sign_out',
 };
@@ -22,6 +23,14 @@ export class IpcPreferencesServiceRenderer extends IpcServiceRenderer {
 
 	async switchEnvironment(environment: string) {
 		return this.invoke(PreferencesMessages.SwitchEnvironment, environment);
+	}
+
+	async getThemeMode() {
+		return this.invoke<ThemeMode>(PreferencesMessages.GetThemeMode);
+	}
+
+	async switchThemeMode(themeMode: ThemeMode) {
+		return this.invoke(PreferencesMessages.SwitchThemeMode, themeMode);
 	}
 
 	async resetConfig() {
@@ -44,6 +53,14 @@ export class IpcPreferencesServiceMain extends IpcServiceMain {
 
 	registerSwitchEnvironment(fn: Listener<string>) {
 		this.registerListener(PreferencesMessages.SwitchEnvironment, fn);
+	}
+
+	registerGetThemeMode(fn: Listener<void, ThemeMode>) {
+		this.registerListener(PreferencesMessages.GetThemeMode, fn);
+	}
+
+	registerSwitchThemeMode(fn: Listener<ThemeMode>) {
+		this.registerListener(PreferencesMessages.SwitchThemeMode, fn);
 	}
 
 	registerResetConfig(fn: Listener<void>) {

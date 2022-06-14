@@ -120,7 +120,7 @@ const FeatureOverview: React.FC<React.PropsWithChildren<unknown>> = () => {
 							{'Fully cross platform'}
 						</CardTitle>
 						<CardBody>
-							{'Wether you\'re on macOS, Windows, or Linux. Beak will '}
+							{'Wether you\'re on macOS, or Windows. Beak will '}
 							{'look, work, and most importantly, feel the same.'}
 						</CardBody>
 					</Card>

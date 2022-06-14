@@ -28,7 +28,7 @@ const SidebarMenuItem: React.FC<React.PropsWithChildren<SidebarMenuItemProps>> =
 		>
 			<FontAwesomeIcon
 				icon={icons[item]}
-				color={theme.ui.blankFill}
+				color={theme.ui.textOnSurfaceBackground}
 				fontSize={'14px'}
 			/>
 		</Container>

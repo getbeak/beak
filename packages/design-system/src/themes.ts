@@ -5,7 +5,7 @@ const darkTheme: UIColors = {
 	secondaryFill: '#333399',
 	tertiaryFill: '#33CC99',
 	surfaceFill: '#2a2f43',
-	blankFill: '#fff',
+	blankFill: '#ffffff',
 	alertFill: '#FC3233',
 
 	goAction: '#33CC99',
@@ -16,17 +16,17 @@ const darkTheme: UIColors = {
 	destructiveActionMuted: '#DB182C',
 
 	background: '#1A1E2D',
-	secondaryBackground: '#161824',
+	secondaryBackground: '#181d25',
 	blankBackground: '#1A1E2D',
 
-	surface: '#181d25',
-	surfaceHighlight: '#1b1e2b',
+	surface: '#161824',
+	surfaceHighlight: '#131824',
 	secondarySurface: '#242941',
 
 	backgroundBorderSeparator: '#4a4651',
 	surfaceBorderSeparator: '#1A1E2D',
 
-	textOnAction: '#fff',
+	textOnAction: '#ffffff',
 	textOnFill: '#a6accd',
 	textHighlight: '#d45d80',
 	textSuccess: '#33CC99',
@@ -41,8 +41,8 @@ const lightTheme: UIColors = {
 	primaryFill: '#d45d80',
 	secondaryFill: '#333399',
 	tertiaryFill: '#33CC99',
-	surfaceFill: '#1A1E2D',
-	blankFill: '#fff',
+	surfaceFill: '#ffffff',
+	blankFill: '#ffffff',
 	alertFill: '#FC3233',
 
 	goAction: '#33CC99',
@@ -52,26 +52,26 @@ const lightTheme: UIColors = {
 	destructiveAction: '#FC3233',
 	destructiveActionMuted: '#DB182C',
 
-	background: '#F7F7FF',
-	secondaryBackground: '#fff',
-	blankBackground: '#fff',
+	background: '#ffffff',
+	secondaryBackground: '#ffffff',
+	blankBackground: '#ffffff',
 
-	surface: '#fff',
-	surfaceHighlight: '#1b1e2b',
-	secondarySurface: '#3A3F55',
+	surface: '#ffffff',
+	surfaceHighlight: '#f3f3f3',
+	secondarySurface: '#ececec',
 
-	backgroundBorderSeparator: '#4a4651',
-	surfaceBorderSeparator: '#1A1E2D',
+	backgroundBorderSeparator: '#dadada',
+	surfaceBorderSeparator: '#d7d7d7',
 
-	textOnAction: '#fff',
-	textOnFill: '#a6accd',
+	textOnAction: '#ffffff',
+	textOnFill: '#616161',
 	textHighlight: '#d45d80',
 	textSuccess: '#33CC99',
 	textAlert: '#FC3233',
-	textOnSurfaceBackground: '#fff',
+	textOnSurfaceBackground: '#2e2e2e',
 	textOnSurfaceBackgroundMuted: '#4B5178',
-	textMinor: '#BEBEC6',
-	textMinorMuted: '#a6accd',
+	textMinor: '#616161',
+	textMinorMuted: '#989899',
 };
 
 function createUiColors(theme: Theme): UIColors {
