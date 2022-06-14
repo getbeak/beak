@@ -1,13 +1,12 @@
 import React, { useContext, useState } from 'react';
 import { toHexAlpha } from '@beak/design-system/utils';
-import { faBoxes, faMoneyCheck, faUserShield, faWindowRestore } from '@fortawesome/free-solid-svg-icons';
+import { faMoneyCheck, faUserShield, faWindowRestore } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import styled, { css, useTheme } from 'styled-components';
 
 import WindowSessionContext from '../contexts/window-session-context';
 import AccountItem from '../features/preferences/components/molecules/AccountItem';
 import EngineeringPane from '../features/preferences/components/organisms/EngineeringPane';
-import ExtensionsPane from '../features/preferences/components/organisms/ExtensionsPane';
 import GeneralPane from '../features/preferences/components/organisms/GeneralPane';
 import SubscriptionPane from '../features/preferences/components/organisms/SubscriptionPane';
 
@@ -37,13 +36,6 @@ const About: React.FC<React.PropsWithChildren<unknown>> = () => {
 					/>
 					<span>{'Subscription'}</span>
 				</SidebarItem>
-				<SidebarItem $active={tab === 'extensions'} onClick={() => setTab('extensions')}>
-					<FontAwesomeIcon
-						icon={faBoxes}
-						color={tab === 'extensions' ? blankFill : primaryFill}
-					/>
-					<span>{'Extensions'}</span>
-				</SidebarItem>
 				<SidebarItem $active={tab === 'engineering'} onClick={() => setTab('engineering')}>
 					<FontAwesomeIcon
 						icon={faUserShield}
@@ -56,7 +48,6 @@ const About: React.FC<React.PropsWithChildren<unknown>> = () => {
 			<Panel>
 				{tab === 'general' && <GeneralPane />}
 				{tab === 'subscription' && <SubscriptionPane />}
-				{tab === 'extensions' && <ExtensionsPane />}
 				{tab === 'engineering' && <EngineeringPane />}
 			</Panel>
 		</Wrapper>
@@ -98,7 +89,11 @@ const SidebarItem = styled.div<{ $active?: boolean }>`
 	border-radius: 10px;
 	margin-bottom: 6px;
 
-	${p => p.$active && `background: ${toHexAlpha(p.theme.ui.primaryFill, 0.75)};`}
+	color: ${p => p.theme.ui.textOnSurfaceBackground};
+	${p => p.$active && css`
+		background: ${toHexAlpha(p.theme.ui.primaryFill, 0.75)};
+		color: ${p => p.theme.ui.textOnAction};
+	`}
 
 	&:last-of-type {
 		margin-bottom: 0;
