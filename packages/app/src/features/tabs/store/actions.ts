@@ -25,6 +25,8 @@ export default {
 	tabStateLoaded,
 
 	changeTab,
+	changeTabNext,
+	changeTabPrevious,
 	makeTabPermanent,
 
 	closeTab,
