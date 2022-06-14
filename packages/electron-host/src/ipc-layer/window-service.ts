@@ -13,3 +13,7 @@ service.registerCloseSelfWindow(async event => {
 service.registerReloadSelfWindow(async event => {
 	reloadWindow((event as IpcMainInvokeEvent).sender.id);
 });
+
+service.registerToggleDeveloperTools(async event => {
+	(event as IpcMainInvokeEvent).sender.toggleDevTools();
+});

@@ -6,9 +6,11 @@ import {
 } from './types';
 
 export const startExtensions = createAction(AT.START_EXTENSIONS);
+export const reloadExtensions = createAction(AT.RELOAD_EXTENSIONS);
 export const extensionsOpened = createAction<ExtensionsOpenedPayload>(AT.EXTENSIONS_OPENED);
 
 export default {
 	startExtensions,
+	reloadExtensions,
 	extensionsOpened,
 };

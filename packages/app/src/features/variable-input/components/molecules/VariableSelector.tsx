@@ -96,7 +96,7 @@ const VariableSelector: React.FC<React.PropsWithChildren<VariableSelectorProps>>
 	useEffect(() => {
 		// This actually exists
 		// @ts-expect-error
-		activeRef.current?.scrollIntoViewIfNeeded();
+		activeRef.current?.scrollIntoViewIfNeeded(false);
 	}, [activeRef, active]);
 
 	useEffect(() => {

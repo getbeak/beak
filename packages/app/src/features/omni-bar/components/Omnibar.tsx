@@ -6,10 +6,11 @@ import { useAppSelector } from '@beak/app/store/redux';
 import styled from 'styled-components';
 
 import { actions } from '../store';
+import CommandsView from './organism/CommandsView';
 import FinderView from './organism/FinderView';
 
 const Omnibar: React.FC<React.PropsWithChildren<unknown>> = () => {
-	const { open, mode } = useAppSelector(s => s.features.omniBar);
+	const { open } = useAppSelector(s => s.features.omniBar);
 	const [content, setContent] = useState('');
 	const inputRef = useRef<HTMLInputElement | null>(null);
 	const dispatch = useDispatch();
@@ -30,10 +31,22 @@ const Omnibar: React.FC<React.PropsWithChildren<unknown>> = () => {
 	function onKeyDown(event: KeyboardEvent) {
 		switch (true) {
 			case checkShortcut('omni-bar.launch.finder', event):
-				if (open)
+				if (open) {
 					dispatch(actions.hideOmniBar());
-				else
+				} else {
 					dispatch(actions.showOmniBar({ mode: 'search' }));
+					setContent('');
+				}
+
+				break;
+
+			case checkShortcut('omni-bar.launch.commands', event):
+				if (open) {
+					dispatch(actions.hideOmniBar());
+				} else {
+					dispatch(actions.showOmniBar({ mode: 'search' }));
+					setContent('>');
+				}
 
 				break;
 
@@ -54,13 +67,6 @@ const Omnibar: React.FC<React.PropsWithChildren<unknown>> = () => {
 		dispatch(actions.hideOmniBar());
 	}
 
-	function getPlaceholder() {
-		if (mode === 'search')
-			return 'Search requests by name, host, or path';
-
-		return 'command selector isn\'t ready yet xoxo';
-	}
-
 	if (!open)
 		return null;
 
@@ -69,7 +75,7 @@ const Omnibar: React.FC<React.PropsWithChildren<unknown>> = () => {
 			<BarOuter onClick={event => void event.stopPropagation()}>
 				<Bar>
 					<BarInput
-						placeholder={getPlaceholder()}
+						placeholder={'Search requests by name, host, or path'}
 						tabIndex={0}
 						ref={i => {
 							inputRef.current = i;
@@ -77,8 +83,10 @@ const Omnibar: React.FC<React.PropsWithChildren<unknown>> = () => {
 						value={content}
 						onChange={e => setContent(e.currentTarget.value)}
 					/>
-					{mode === 'search' && <FinderView content={content} reset={reset} />}
-					{mode === 'commands' && <span>{'todo'}</span>}
+					<BarContent>
+						{!content.startsWith('>') && <FinderView content={content} reset={reset} />}
+						{content.startsWith('>') && <CommandsView content={content} reset={reset} />}
+					</BarContent>
 				</Bar>
 			</BarOuter>
 		</Container>
@@ -94,7 +102,7 @@ const BarOuter = styled.div`
 	backdrop-filter: blur(25px);
 	background: ${p => toVibrancyAlpha(p.theme.ui.surfaceHighlight, 0.4)};
 	border: 1px solid ${p => p.theme.ui.blankBackground};
-	box-shadow: 0px 8px 12px 2px ${p => toVibrancyAlpha(p.theme.ui.surfaceFill, 1)};
+	box-shadow: 0px 4px 12px 2px ${p => toVibrancyAlpha(p.theme.ui.surfaceFill, .6)};
 
 	position: relative;
 	margin: 0 auto;
@@ -125,6 +133,13 @@ const BarInput = styled.input`
 	&:focus {
 		outline: none;
 	}
+`;
+
+const BarContent = styled.div`
+	max-height: min(calc(100vh - 160px - 40px), 400px);
+	border-top: 1px solid ${p => p.theme.ui.backgroundBorderSeparator};
+	overflow-x: hidden;
+	overflow-y: scroll;
 `;
 
 export default Omnibar;
