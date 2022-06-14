@@ -3,6 +3,7 @@ import { useDispatch } from 'react-redux';
 import { toVibrancyAlpha } from '@beak/app/design-system/utils';
 import { checkShortcut } from '@beak/app/lib/keyboard-shortcuts';
 import { projectPanePreferenceSetCollapse } from '@beak/app/store/preferences/actions';
+import { selectNextLogicalNode, selectPreviousLogicalNode } from '@beak/app/utils/keyboard-dom-node-navigation';
 import styled from 'styled-components';
 
 import { TreeViewAbstractionsContext } from '../../contexts/abstractions-context';
@@ -10,7 +11,6 @@ import { TreeViewFocusContext } from '../../contexts/focus-context';
 import { useNodeDrag } from '../../hooks/drag-and-drop';
 import { useActiveRename } from '../../hooks/use-active-rename';
 import { TreeViewItem } from '../../types';
-import { selectNextLogicalNode, selectPreviousLogicalNode } from '../../utils/node-dom-navigation';
 import NodeContextMenu from './NodeContextMenu';
 
 interface NodeItemProps {
