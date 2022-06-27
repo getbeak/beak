@@ -19,6 +19,6 @@
     "@getbeak/types-realtime-value": "^1.0.0-prerelease.5"
   },
   "devDependencies": {
-    "electron": "18.2.0"
+    "electron": "19.0.6"
   }
 }
