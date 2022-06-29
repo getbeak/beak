@@ -227,7 +227,11 @@ const VariableInput = React.forwardRef<HTMLElement, VariableInputProps>((props, 
 		Array.from(children).forEach(n => {
 			// Detect simple text content
 			if (n.nodeName === '#text' || n.nodeName === 'SPAN') {
-				let originalTextContent = (n.textContent || '').replaceAll(/(?:[\u00a0]+)/g, '');
+				let originalTextContent = (n.textContent || '')
+					.replaceAll(/(?:[\u00a0]+)/g,
+						substring => new Array(substring.length).fill(' ')
+							.join(''),
+					);
 
 				// Handle optional query string detection here
 				// TODO(afr): Pass query body back to parent component
