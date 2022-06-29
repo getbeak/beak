@@ -47,13 +47,13 @@ const Input = styled.article`
 
 	.bvs-blob {
 		display: inline-block;
-		margin: 0;
-		padding: 1px 3px;
+		margin: 0 1px;
 		border-radius: 4px;
 		font-size: 11px;
-		line-height: 12px;
+		line-height: 15px;
 		background: ${p => p.theme.ui.primaryFill};
 		color: ${p => p.theme.ui.textOnAction};
+		user-select: text;
 
 		> strong {
 			font-weight: 600;

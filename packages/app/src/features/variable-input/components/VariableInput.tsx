@@ -279,7 +279,32 @@ const VariableInput = React.forwardRef<HTMLElement, VariableInputProps>((props, 
 			return;
 		});
 
-		return { anomalyDetected, valueParts: reconciledParts };
+		// Now we need to slightly sanitise the reconciled state. The outcome of this must:
+		// - Remove leading empty string parts
+		// - Remove trailing empty string parts
+		// - Collapse 2 or more consecutive empty string parts into one
+
+		const sanitisedParts: ValueParts = reconciledParts.reduce((acc, value, index) => {
+			if (typeof value !== 'string')
+				return [...acc, value];
+
+			// Check if last item was a string too
+			if (typeof acc[index - 1] !== 'string')
+				return [...acc, value];
+
+			// eslint-disable-next-line no-param-reassign
+			acc[acc.length - 1] = `${acc[acc.length - 1]}${value}`;
+
+			return acc;
+		}, [] as ValueParts);
+
+		if (sanitisedParts[0] === '')
+			sanitisedParts.shift();
+
+		if (sanitisedParts[sanitisedParts.length - 1] === '')
+			sanitisedParts.pop();
+
+		return { anomalyDetected, valueParts: sanitisedParts };
 	}
 
 	function reconcile() {
@@ -318,10 +343,12 @@ const VariableInput = React.forwardRef<HTMLElement, VariableInputProps>((props, 
 		unmanagedStateRef.current.debounceHandler = window.setTimeout(reportChange, 50);
 	}
 
-	function reportChange() {
+	function reportChange(ignoreSelectorCheck = false) {
 		// Don't report changes upstream while the variable selector is open
-		if (showSelector)
-			return;
+		if (showSelector) {
+			if (!ignoreSelectorCheck)
+				return;
+		}
 
 		const { debounceHandler, lastSelectionPosition, valueParts } = unmanagedStateRef.current;
 
@@ -405,11 +432,10 @@ const VariableInput = React.forwardRef<HTMLElement, VariableInputProps>((props, 
 
 		closeSelector();
 
-		// eslint-disable-next-line no-new
-		new Promise(() => {
+		window.setTimeout(() => {
 			reportChange();
 			internalPartUpdate();
-		});
+		}, 100);
 	}
 
 	function variableEditSaved(partIndex: number, type: string, item: any) {
@@ -435,11 +461,10 @@ const VariableInput = React.forwardRef<HTMLElement, VariableInputProps>((props, 
 
 		unmanagedStateRef.current.valueParts = newParts;
 
-		// eslint-disable-next-line no-new
-		new Promise(() => {
+		window.setTimeout(() => {
 			reportChange();
 			internalPartUpdate();
-		});
+		}, 100);
 	}
 
 	function internalPartUpdate() {
