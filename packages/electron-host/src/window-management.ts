@@ -3,6 +3,7 @@ import * as path from 'path';
 import * as url from 'url';
 
 import { closeWatchersOnWindow } from './ipc-layer/fs-watcher-service';
+import persistentStore from './lib/persistent-store';
 import WindowStateManager from './lib/window-state-manager';
 import { staticPath } from './utils/static-path';
 
@@ -54,7 +55,7 @@ function createWindow(
 	container: Container,
 	additionalParams?: Record<string, string>,
 ) {
-	nativeTheme.themeSource = 'light';
+	nativeTheme.themeSource = persistentStore.get('themeMode');
 
 	const windowStateManager = new WindowStateManager(container, windowOpts);
 	const window = new BrowserWindow({
