@@ -12,7 +12,7 @@ export default function renderValueParts(parts: ValueParts, variableGroups: Vari
 		<React.Fragment>
 			{(parts ?? []).map((p, idx) => {
 				if (typeof p === 'string')
-					return <span key={p}>{p}</span>;
+					return <span key={p} data-index={idx}>{p}</span>;
 
 				if (typeof p !== 'object') {
 					// eslint-disable-next-line no-console
@@ -34,9 +34,11 @@ export default function renderValueParts(parts: ValueParts, variableGroups: Vari
 							data-payload={void 0}
 							key={uuid.v4()}
 						>
+							&nbsp;
 							<abbr title={`Name ${p.type}`}>
 								{'[Extension missing]'}
 							</abbr>
+							&nbsp;
 						</div>
 					);
 				}
@@ -62,7 +64,9 @@ export default function renderValueParts(parts: ValueParts, variableGroups: Vari
 						data-payload={p.payload ? JSON.stringify(p.payload) : void 0}
 						key={uuid.v4()}
 					>
+						&nbsp;
 						{name}
+						&nbsp;
 					</div>
 				);
 			})}

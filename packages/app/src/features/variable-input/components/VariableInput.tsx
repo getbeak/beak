@@ -14,6 +14,7 @@ import renderValueParts from '../../realtime-values/renderer';
 import { NormalizedSelection, normalizeSelection, trySetSelection } from '../utils/browser-selection';
 import { detectRelevantCopiedValueParts } from '../utils/copying';
 import { handlePaste } from '../utils/pasting';
+import { sanitiseValueParts } from '../utils/sanitation';
 import { determineInsertionMode, VariableSelectionState } from '../utils/variables';
 import VariableSelector from './molecules/VariableSelector';
 import UnmanagedInput from './organisms/UnmanagedInput';
@@ -318,10 +319,12 @@ const VariableInput = React.forwardRef<HTMLElement, VariableInputProps>((props, 
 		unmanagedStateRef.current.debounceHandler = window.setTimeout(reportChange, 50);
 	}
 
-	function reportChange() {
+	function reportChange(ignoreSelectorCheck = false) {
 		// Don't report changes upstream while the variable selector is open
-		if (showSelector)
-			return;
+		if (showSelector) {
+			if (!ignoreSelectorCheck)
+				return;
+		}
 
 		const { debounceHandler, lastSelectionPosition, valueParts } = unmanagedStateRef.current;
 
@@ -332,7 +335,9 @@ const VariableInput = React.forwardRef<HTMLElement, VariableInputProps>((props, 
 		unmanagedStateRef.current.lastUpstreamReport = Date.now();
 		unmanagedStateRef.current.lastSelectionPosition = normalizeSelection(lastSelectionPosition);
 
-		onChange(valueParts);
+		// Cleanup the format before we pass it back to the store. If we do this internally it'll mess up some of the
+		// DOM <-> State management. Very bad design from me.
+		onChange(sanitiseValueParts(valueParts));
 	}
 
 	function openSelector() {
@@ -405,11 +410,10 @@ const VariableInput = React.forwardRef<HTMLElement, VariableInputProps>((props, 
 
 		closeSelector();
 
-		// eslint-disable-next-line no-new
-		new Promise(() => {
+		window.setTimeout(() => {
 			reportChange();
 			internalPartUpdate();
-		});
+		}, 100);
 	}
 
 	function variableEditSaved(partIndex: number, type: string, item: any) {
@@ -435,11 +439,10 @@ const VariableInput = React.forwardRef<HTMLElement, VariableInputProps>((props, 
 
 		unmanagedStateRef.current.valueParts = newParts;
 
-		// eslint-disable-next-line no-new
-		new Promise(() => {
+		window.setTimeout(() => {
 			reportChange();
 			internalPartUpdate();
-		});
+		}, 100);
 	}
 
 	function internalPartUpdate() {
