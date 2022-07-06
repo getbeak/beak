@@ -11,7 +11,7 @@ import { RequestIdPayload } from '../types';
 export default function* catchNodeUpdatesWorker({ payload }: PayloadAction<RequestIdPayload>) {
 	const { requestId } = payload;
 
-	const node: Nodes = yield select((s: ApplicationState) => s.global.project.tree[requestId]);
+	let node: Nodes = yield select((s: ApplicationState) => s.global.project.tree[requestId]);
 
 	if (!node || node.type !== 'request')
 		return;
@@ -26,6 +26,9 @@ export default function* catchNodeUpdatesWorker({ payload }: PayloadAction<Reque
 	// This prevents us writing the file too often while data is changing
 	if (debounce !== nonce)
 		return;
+
+	// Fetch the node again to catch any internal state changes in the meantime
+	node = yield select((s: ApplicationState) => s.global.project.tree[requestId]);
 
 	yield put(actions.setLatestWrite({ filePath: node.filePath, writtenAt: Date.now() }));
 	yield call(writeRequestNode, node as RequestNode);

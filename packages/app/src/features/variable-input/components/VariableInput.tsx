@@ -14,6 +14,7 @@ import renderValueParts from '../../realtime-values/renderer';
 import { NormalizedSelection, normalizeSelection, trySetSelection } from '../utils/browser-selection';
 import { detectRelevantCopiedValueParts } from '../utils/copying';
 import { handlePaste } from '../utils/pasting';
+import { sanitiseValueParts } from '../utils/sanitation';
 import { determineInsertionMode, VariableSelectionState } from '../utils/variables';
 import VariableSelector from './molecules/VariableSelector';
 import UnmanagedInput from './organisms/UnmanagedInput';
@@ -279,32 +280,7 @@ const VariableInput = React.forwardRef<HTMLElement, VariableInputProps>((props, 
 			return;
 		});
 
-		// Now we need to slightly sanitise the reconciled state. The outcome of this must:
-		// - Remove leading empty string parts
-		// - Remove trailing empty string parts
-		// - Collapse 2 or more consecutive empty string parts into one
-
-		const sanitisedParts: ValueParts = reconciledParts.reduce((acc, value, index) => {
-			if (typeof value !== 'string')
-				return [...acc, value];
-
-			// Check if last item was a string too
-			if (typeof acc[index - 1] !== 'string')
-				return [...acc, value];
-
-			// eslint-disable-next-line no-param-reassign
-			acc[acc.length - 1] = `${acc[acc.length - 1]}${value}`;
-
-			return acc;
-		}, [] as ValueParts);
-
-		if (sanitisedParts[0] === '')
-			sanitisedParts.shift();
-
-		if (sanitisedParts[sanitisedParts.length - 1] === '')
-			sanitisedParts.pop();
-
-		return { anomalyDetected, valueParts: sanitisedParts };
+		return { anomalyDetected, valueParts: reconciledParts };
 	}
 
 	function reconcile() {
@@ -359,7 +335,9 @@ const VariableInput = React.forwardRef<HTMLElement, VariableInputProps>((props, 
 		unmanagedStateRef.current.lastUpstreamReport = Date.now();
 		unmanagedStateRef.current.lastSelectionPosition = normalizeSelection(lastSelectionPosition);
 
-		onChange(valueParts);
+		// Cleanup the format before we pass it back to the store. If we do this internally it'll mess up some of the
+		// DOM <-> State management. Very bad design from me.
+		onChange(sanitiseValueParts(valueParts));
 	}
 
 	function openSelector() {
