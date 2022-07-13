@@ -43,10 +43,12 @@ class Arbiter {
 				status: true,
 			};
 		} catch (error) {
+			logger.error('arbiter: ensure subscription has failed', error);
+
 			const squawk = Squawk.coerce(error);
 			const expired = checkExpired(status.lastSuccessfulCheck);
 
-			logger.warn('arbiter: ensure subscription has failed', error, squawk);
+			logger.error('arbiter: coerced failure', squawk);
 
 			status = {
 				lastSuccessfulCheck: status.lastSuccessfulCheck,
