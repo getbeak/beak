@@ -2,8 +2,10 @@ import { app, BrowserWindow, BrowserWindowConstructorOptions, nativeTheme } from
 import * as path from 'path';
 import * as url from 'url';
 
+import { getProjectFromWindowId } from './ipc-layer/fs-shared';
 import { closeWatchersOnWindow } from './ipc-layer/fs-watcher-service';
-import persistentStore from './lib/persistent-store';
+import persistentStore, { WindowPresence } from './lib/persistent-store';
+import { tryOpenProjectFolder } from './lib/project';
 import WindowStateManager from './lib/window-state-manager';
 import { staticPath } from './utils/static-path';
 
@@ -16,6 +18,61 @@ export const stackMap: Record<string, number> = { };
 const DEV_URL = 'http://localhost:3000';
 // eslint-disable-next-line no-process-env
 const environment = process.env.NODE_ENV;
+
+export function generateWindowPresence() {
+	const windows = BrowserWindow.getAllWindows().filter(w => windowType[w.id]);
+	const windowPresence = windows.reduce<(WindowPresence | null)[]>((acc, val) => {
+		const type = windowType[val.id];
+
+		if (!type)
+			return [...acc, null];
+
+		if (type === 'project-main') {
+			const projectPath = getProjectFromWindowId(val.id);
+
+			if (!projectPath)
+				return [...acc, null];
+
+			return [...acc, { type: 'project-main', payload: projectPath }];
+		}
+
+		return [...acc, { type: 'generic', payload: type }];
+	}, []);
+
+	return windowPresence.filter(Boolean) as WindowPresence[];
+}
+
+export function attemptWindowPresenceLoad() {
+	const previousWindowPresence = persistentStore.get('previousWindowPresence');
+
+	if (previousWindowPresence.length === 0)
+		return false;
+
+	previousWindowPresence.forEach(p => {
+		if (p.type === 'project-main') {
+			tryOpenProjectFolder(p.payload);
+
+			return;
+		}
+
+		switch (p.payload) {
+			case 'portal':
+				createPortalWindow();
+				break;
+			case 'preferences':
+				createPreferencesWindow();
+				break;
+			case 'welcome':
+				createWelcomeWindow();
+				break;
+
+			default:
+				return;
+		}
+	});
+
+	return true;
+}
 
 function generateLoadUrl(
 	container: Container,

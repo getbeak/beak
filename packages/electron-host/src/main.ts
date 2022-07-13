@@ -1,6 +1,6 @@
 /* eslint-disable global-require, no-process-env */
 import { init } from '@sentry/electron';
-import { app, nativeTheme } from 'electron';
+import { app } from 'electron';
 import electronDebug from 'electron-debug';
 import { autoUpdater } from 'electron-updater';
 
@@ -14,8 +14,10 @@ import { attemptShowPostUpdateWelcome } from './updater';
 import { createAndSetMenu } from './utils/menu';
 import { appIsPackaged } from './utils/static-path';
 import {
+	attemptWindowPresenceLoad,
 	createPortalWindow,
 	createWelcomeWindow,
+	generateWindowPresence,
 	windowStack,
 } from './window-management';
 
@@ -56,13 +58,16 @@ app.on('activate', () => {
 	createOrFocusDefaultWindow();
 });
 
-app.on('ready', () => {
-	nativeTheme.themeSource = 'dark';
+app.on('before-quit', () => {
+	// Store window presence for next load
+	persistentStore.set('previousWindowPresence', generateWindowPresence());
+});
 
+app.on('ready', () => {
 	createAndSetMenu();
 	arbiter.start();
 	autoUpdater.checkForUpdates();
-	createOrFocusDefaultWindow();
+	createOrFocusDefaultWindow(true);
 	attemptShowPostUpdateWelcome();
 
 	if (appIsPackaged)
@@ -96,22 +101,24 @@ app.on('browser-window-focus', (_event, window) => {
 	createAndSetMenu(window);
 });
 
-async function createOrFocusDefaultWindow() {
+async function createOrFocusDefaultWindow(initial = false) {
 	if (!persistentStore.get('passedOnboarding'))
-		return createPortalWindow();
+		return void createPortalWindow();
 
 	const auth = await nestClient.getAuth();
 
 	if (!auth)
-		return createPortalWindow();
+		return void createPortalWindow();
+
+	if (initial && attemptWindowPresenceLoad())
+		return void 0;
 
 	const openWindow = Object.values(windowStack)[0];
 
-	if (openWindow) {
+	if (openWindow)
 		openWindow.focus();
+	else
+		createWelcomeWindow();
 
-		return openWindow.id;
-	}
-
-	return createWelcomeWindow();
+	return void 0;
 }
