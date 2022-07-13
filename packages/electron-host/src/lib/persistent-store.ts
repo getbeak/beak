@@ -10,9 +10,22 @@ import { WindowState } from './window-state-manager';
 
 export type Environment = 'prod' | 'nonprod';
 
+export type WindowPresence = GenericWindowPresence | ProjectMainWindowPresence;
+
+export interface GenericWindowPresence {
+	type: 'generic';
+	payload: 'welcome' | 'preferences' | 'portal';
+}
+
+export interface ProjectMainWindowPresence {
+	type: 'project-main';
+	payload: string;
+}
+
 export interface Store {
 	recents: RecentLocalProject[];
 	windowStates: Record<string, WindowState>;
+	previousWindowPresence: WindowPresence[];
 	beakId: string;
 
 	latestKnownVersion: string | null;
@@ -30,6 +43,7 @@ const persistentStore = new ElectronStore<Store>({
 	defaults: {
 		recents: [],
 		windowStates: {},
+		previousWindowPresence: [],
 		beakId: crypto.randomBytes(128).toString('base64url'),
 
 		latestKnownVersion: app.getVersion(),
