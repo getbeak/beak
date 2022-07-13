@@ -15,6 +15,10 @@ export function getProjectWindowMapping(event: IpcEvent) {
 	return windowProjectMapping[window.id];
 }
 
+export function getProjectFromWindowId(id: number) {
+	return windowProjectMapping[id];
+}
+
 export function removeProjectPathPrefix(event: IpcEvent, filePath: string) {
 	const projectFilePath = getProjectWindowMapping(event);
 	const projectPath = path.join(projectFilePath, '..');

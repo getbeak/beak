@@ -32,7 +32,7 @@ export async function tryOpenProjectFolder(projectFolderPath: string) {
 	if (!projectFile) {
 		await dialog.showMessageBox({
 			title: 'Unable to load project',
-			message: 'The project file you tried to open could not be found',
+			message: 'The project file you tried to open could not be found, maybe it was moved?',
 			type: 'error',
 		});
 
