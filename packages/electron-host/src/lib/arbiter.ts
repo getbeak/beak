@@ -1,6 +1,7 @@
 import { TypedObject } from '@beak/common/helpers/typescript';
 import Squawk from '@beak/common/utils/squawk';
 import { differenceInDays } from 'date-fns';
+import { app } from 'electron';
 
 import { createPortalWindow, windowStack } from '../window-management';
 import logger from './logger';
@@ -43,10 +44,12 @@ class Arbiter {
 				status: true,
 			};
 		} catch (error) {
+			logger.error('arbiter: ensure subscription has failed', error);
+
 			const squawk = Squawk.coerce(error);
 			const expired = checkExpired(status.lastSuccessfulCheck);
 
-			logger.warn('arbiter: ensure subscription has failed', error, squawk);
+			logger.error('arbiter: coerced failure', squawk);
 
 			status = {
 				lastSuccessfulCheck: status.lastSuccessfulCheck,
@@ -66,18 +69,20 @@ class Arbiter {
 					break;
 
 				// If the token information is invalid, clear local auth
-				case squawk.code === 'unauthorized': {
+				case ['unauthorized', 'authorization_not_found'].includes(squawk.code): {
 					await nestClient.setAuth(null);
 
 					status.status = false;
 
-					logger.error('Known but unknown error in arbiter fetching', squawk);
+					logger.error('Known but unknown error in arbiter fetching');
+					app.relaunch();
+					app.exit();
 
 					break;
 				}
 
 				default:
-					logger.error('Unknown error checking subscription status', error);
+					logger.error('Unknown error checking subscription status');
 
 					break;
 			}

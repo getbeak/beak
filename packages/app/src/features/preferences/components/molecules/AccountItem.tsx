@@ -10,19 +10,21 @@ const AccountItem: React.FC<React.PropsWithChildren<unknown>> = () => {
 	const [primaryEmail, setPrimaryEmail] = useState<string | null>(null);
 
 	useEffect(() => {
-		ipcNestService.getUser().then(user => {
-			const identifiers = user.identifiers
-				.filter(i => i.identifierType === 'email' && i.removedAt === null)
-				.sort((a, b) => a.createdAt.localeCompare(b.createdAt));
+		ipcNestService.getUser()
+			.then(user => {
+				const identifiers = user.identifiers
+					.filter(i => i.identifierType === 'email' && i.removedAt === null)
+					.sort((a, b) => a.createdAt.localeCompare(b.createdAt));
 
-			const verifiedEmail = identifiers.find(i => i.verifiedAt !== null);
-			const backup = identifiers[0];
+				const verifiedEmail = identifiers.find(i => i.verifiedAt !== null);
+				const backup = identifiers[0];
 
-			if (!backup)
-				return;
+				if (!backup)
+					return;
 
-			setPrimaryEmail((verifiedEmail ?? backup).identifierValue);
-		});
+				setPrimaryEmail((verifiedEmail ?? backup).identifierValue);
+			})
+			.catch(() => setPrimaryEmail(null));
 	}, []);
 
 	if (!primaryEmail)
