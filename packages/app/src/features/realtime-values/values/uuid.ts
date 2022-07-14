@@ -1,6 +1,6 @@
 import { UuidRtv } from '@beak/app/features/realtime-values/values';
 import { EditableRealtimeValue } from '@getbeak/types-realtime-value';
-import uuid from 'uuid';
+import * as uuid from 'uuid';
 
 interface EditorState {
 	version: UuidRtv['version'];
