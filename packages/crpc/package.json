@@ -1,0 +1,20 @@
+{
+	"name": "@beak/crpc",
+	"version": "0.0.0",
+	"private": true,
+	"main": "dist/index",
+	"types": "dist/index",
+	"files": [
+		"dist"
+	],
+	"dependencies": {
+		"@beak/json-client": "*"
+	},
+	"scripts": {
+		"build": "yarn clean && yarn compile",
+		"clean": "rm -rf ./dist && rm -rf tsconfig.tsbuildinfo",
+		"compile": "tsc -b tsconfig.json",
+		"typecheck": "tsc",
+		"start": "tsc -b tsconfig.json -w"
+	}
+}
