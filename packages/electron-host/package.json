@@ -24,6 +24,7 @@
   "dependencies": {
     "@beak/app": "*",
     "@beak/common": "*",
+    "@beak/crpc": "*",
     "@beak/requester-node": "*",
     "@getbeak/types": "^1.0.0-prerelease.2",
     "asar": "^3.0.3",

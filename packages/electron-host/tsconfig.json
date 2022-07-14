@@ -18,6 +18,8 @@
     "path": "../common"
   }, {
     "path": "../requester-node"
+  }, {
+    "path": "../crpc"
   }],
   "exclude": [
     "node_modules",
