@@ -1,0 +1,15 @@
+{
+	"extends": "../../tsconfig.json",
+	"compilerOptions": {
+		"outDir": "./dist",
+		"rootDir": "./src",
+		"module": "ESNext",
+	},
+	"references": [
+		{ "path":  "../squawk" }
+	],
+	"exclude": [
+		"node_modules",
+		"dist"
+	]
+}

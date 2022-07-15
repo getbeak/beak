@@ -6,7 +6,7 @@ import {
 } from '@beak/common/types/nest';
 import QueryablePromise from '@beak/common/utils/promises';
 import Squawk from '@beak/common/utils/squawk';
-import crpc, { Client } from 'crpc';
+import crpc, { Client } from '@beak/crpc';
 import crypto from 'crypto';
 import { getFingerprint } from 'hw-fingerprint';
 
@@ -23,9 +23,7 @@ class NestClient {
 		const environmentPrefix = environment === 'nonprod' ? 'nonprod-' : '';
 		const nestUrl = `https://nest.${environmentPrefix}getbeak.app/1/`;
 
-		this.client = crpc(nestUrl, {
-			timeout: 5000,
-		});
+		this.client = crpc(nestUrl, { timeout: 10000 });
 	}
 
 	async getAuth(): Promise<AuthenticateUserResponse | null> {
@@ -112,7 +110,7 @@ class NestClient {
 			if (['Missing final \'@domain\'', 'Domain starts with dot'].includes(message))
 				throw new Squawk('invalid_email', void 0, [squawk]);
 
-			throw error;
+			throw squawk;
 		}
 	}
 
@@ -141,7 +139,7 @@ class NestClient {
 			if (['Missing final \'@domain\'', 'Domain starts with dot'].includes(message))
 				throw new Squawk('invalid_email', void 0, [squawk]);
 
-			throw error;
+			throw squawk;
 		}
 	}
 
