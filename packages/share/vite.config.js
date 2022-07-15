@@ -51,7 +51,7 @@ module.exports = {
 		emptyOutDir: true,
 		sourcemap: true,
 		assetsDir: '.',
-		minify: environment === 'development' ? false : 'terser',
+		minify: environment === 'development' ? false : 'esbuild',
 		rollupOptions: {
 			external: ['electron'],
 		},
