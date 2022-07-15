@@ -36,14 +36,13 @@ export class BackendError extends Squawk {
 	}
 }
 
-export type RequestOptions = {
+export interface RequestOptions extends RequestInit {
 	headers?: Record<string, string>;
-};
+	timeout?: number;
+}
 
 const defaultOptions: RequestOptions = {
-	headers: {
-		accept: 'application/json',
-	},
+	headers: { accept: 'application/json' },
 };
 
 export default function jsonClient(baseUrl: string, baseOptions?: RequestOptions) {
@@ -83,7 +82,19 @@ async function makeRequest<ResT>(
 
 	req = mergeOptions(options, req);
 
-	const response = await fetch(requestUrl, req);
+	let controller: AbortController;
+	let timeoutId: NodeJS.Timeout | undefined = void 0;
+
+	if (options.timeout !== void 0) {
+		controller = new AbortController();
+		timeoutId = setTimeout(() => controller.abort(), options.timeout);
+		req.signal = controller.signal;
+	}
+
+	const response = await fetch(requestUrl, req).finally(() => {
+		if (timeoutId) clearTimeout(timeoutId);
+	});
+
 	const responseBody = await response.text();
 
 	const errorFields = {

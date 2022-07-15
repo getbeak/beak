@@ -23,9 +23,7 @@ class NestClient {
 		const environmentPrefix = environment === 'nonprod' ? 'nonprod-' : '';
 		const nestUrl = `https://nest.${environmentPrefix}getbeak.app/1/`;
 
-		this.client = crpc(nestUrl, {
-			timeout: 5000,
-		});
+		this.client = crpc(nestUrl, { timeout: 10000 });
 	}
 
 	async getAuth(): Promise<AuthenticateUserResponse | null> {
