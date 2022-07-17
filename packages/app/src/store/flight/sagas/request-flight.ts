@@ -6,7 +6,7 @@ import { ipcDialogService } from '@beak/app/lib/ipc';
 import { convertRequestToUrl } from '@beak/app/utils/uri';
 import { requestBodyContentType } from '@beak/common/helpers/request';
 import { TypedObject } from '@beak/common/helpers/typescript';
-import ksuid from '@cuvva/ksuid';
+import ksuid from '@beak/ksuid';
 import type { FlightHistory } from '@getbeak/types/flight';
 import type { Tree, ValidRequestNode } from '@getbeak/types/nodes';
 import type { RequestBody, RequestBodyText, RequestOverview, ToggleKeyValue } from '@getbeak/types/request';

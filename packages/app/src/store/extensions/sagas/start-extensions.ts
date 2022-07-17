@@ -2,7 +2,7 @@ import { RealtimeValueManager } from '@beak/app/features/realtime-values';
 import createFsEmitter from '@beak/app/lib/fs-emitter';
 import { ipcExtensionsService, ipcFsService } from '@beak/app/lib/ipc';
 import Squawk from '@beak/common/utils/squawk';
-import ksuid from '@cuvva/ksuid';
+import ksuid from '@beak/ksuid';
 import { Action } from '@reduxjs/toolkit';
 import path from 'path-browserify';
 import { call, put, take } from 'redux-saga/effects';

@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 
 import { TypedObject } from '@beak/common/helpers/typescript';
-import ksuid from '@cuvva/ksuid';
+import ksuid from '@beak/ksuid';
 import type { EntryMap, NamedEntries, NamedStringEntry, ValueEntries } from '@getbeak/types/body-editor-json';
 import type { FolderNode, ValidRequestNode } from '@getbeak/types/nodes';
 import type { RequestBodyJson, RequestBodyUrlEncodedForm } from '@getbeak/types/request';

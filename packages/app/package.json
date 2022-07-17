@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@beak/common": "*",
+    "@beak/ksuid": "*",
     "@beak/design-system": "*",
     "@getbeak/types": "^1.0.0-prerelease.2"
   },

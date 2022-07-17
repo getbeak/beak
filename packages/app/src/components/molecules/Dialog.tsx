@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import ksuid from '@cuvva/ksuid';
+import ksuid from '@beak/ksuid';
 import styled from 'styled-components';
 
 const dialogContainerId = 'generic-dialog-container';

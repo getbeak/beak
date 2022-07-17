@@ -1,6 +1,6 @@
 import { PrivateRtv, ValueParts } from '@beak/app/features/realtime-values/values';
 import { ipcEncryptionService, ipcFsService } from '@beak/app/lib/ipc';
-import ksuid from '@cuvva/ksuid';
+import ksuid from '@beak/ksuid';
 import { EditableRealtimeValue } from '@getbeak/types-realtime-value';
 import path from 'path-browserify';
 

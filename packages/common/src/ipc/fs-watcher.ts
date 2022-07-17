@@ -1,4 +1,4 @@
-import * as ksuid from '@cuvva/ksuid';
+import ksuid from '@beak/ksuid';
 import type { WatchOptions } from 'chokidar';
 import { IpcMain, WebContents } from 'electron';
 

@@ -1,4 +1,4 @@
-import ksuid from '@cuvva/ksuid';
+import ksuid from '@beak/ksuid';
 import type { RequestNode, RequestNodeFile } from '@getbeak/types/nodes';
 import path from 'path-browserify';
 

@@ -15,7 +15,7 @@ export const windowStack: Record<number, BrowserWindow> = {};
 export const windowType: Record<number, Container> = {};
 export const stackMap: Record<string, number> = { };
 
-const DEV_URL = 'http://localhost:3000';
+const DEV_URL = 'http://localhost:5173';
 // eslint-disable-next-line no-process-env
 const environment = process.env.NODE_ENV;
 

@@ -15,6 +15,7 @@
     "start": "tsc -b tsconfig.json -w"
   },
   "dependencies": {
+    "@beak/ksuid": "*",
     "@getbeak/types": "^1.0.0-prerelease.2",
     "@getbeak/types-realtime-value": "^1.0.0-prerelease.5"
   },

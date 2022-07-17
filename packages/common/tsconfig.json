@@ -5,6 +5,9 @@
     "rootDir": "./src",
     "module": "ESNext",
   },
+  "references": [{
+    "path": "../ksuid"
+  }],
   "include": [
     "src/**/*.ts"
   ],

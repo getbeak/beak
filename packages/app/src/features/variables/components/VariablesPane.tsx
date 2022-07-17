@@ -1,7 +1,7 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
 import { actions } from '@beak/app/store/variable-groups';
-import ksuid from '@cuvva/ksuid';
+import ksuid from '@beak/ksuid';
 
 import SidebarPane from '../../sidebar/components/SidebarPane';
 import SidebarPaneSection from '../../sidebar/components/SidebarPaneSection';

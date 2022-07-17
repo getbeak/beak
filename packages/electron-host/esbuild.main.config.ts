@@ -112,7 +112,7 @@ const handleVm2Plugin = {
 
 export default {
 	platform: 'node',
-	target: 'node16.13.2', // TODO(afr): electron version target
+	target: 'node16.14.2', // TODO(afr): automatic electron version target
 	bundle: true,
 	format: 'cjs',
 	minify: environment !== 'development',

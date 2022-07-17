@@ -1,5 +1,5 @@
 import { TypedObject } from '@beak/common/helpers/typescript';
-import ksuid from '@cuvva/ksuid';
+import ksuid from '@beak/ksuid';
 import type { ToggleKeyValue } from '@getbeak/types/request';
 import type { Context } from '@getbeak/types/values';
 

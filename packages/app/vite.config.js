@@ -33,6 +33,10 @@ module.exports = {
 			'@beak/design-system': path.join(__dirname, `../design-system/${sourcePath}`),
 
 			'@getbeak/types': path.join(__dirname, '../types/src'),
+			'path': 'path-browserify',
+			'fs': {
+				existsSync: () => false,
+			},
 		},
 	},
 	plugins: [
