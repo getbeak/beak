@@ -1,6 +1,6 @@
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { ProjectEncryption } from '@beak/common/types/beak-project';
-import * as ksuid from '@beak/ksuid';
+import ksuid from '@beak/ksuid';
 import { RequestNodeFile } from '@getbeak/types/nodes';
 import { ProjectFile } from '@getbeak/types/project';
 import { VariableGroup } from '@getbeak/types/variable-groups';

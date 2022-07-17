@@ -34,9 +34,6 @@ module.exports = {
 
 			'@getbeak/types': path.join(__dirname, '../types/src'),
 			'path': 'path-browserify',
-			'fs': {
-				existsSync: () => false,
-			},
 		},
 	},
 	plugins: [
