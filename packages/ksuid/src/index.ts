@@ -4,8 +4,8 @@ import Node from './node';
 
 export { Id, Instance, Node };
 
-let _node: Node | undefined;
-const node = (): Node => _node ?? (_node = new Node());
+let internalNode: Node | undefined;
+const node = (): Node => internalNode ?? (internalNode = new Node());
 
 export default {
 	parse(input: string): Id {

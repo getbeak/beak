@@ -1,7 +1,7 @@
 import Id from './id';
 import Instance from './instance';
-import { checkPrefix } from './validation';
 import { getRandomBytes } from './random';
+import { checkPrefix } from './validation';
 
 export default class Node {
 	private _environment: string;
@@ -10,7 +10,7 @@ export default class Node {
 	private _currentSequence: number;
 
 	constructor(
-		environment: string = 'prod',
+		environment = 'prod',
 		instance: Instance = getInstance(),
 	) {
 		checkPrefix('environment', environment);

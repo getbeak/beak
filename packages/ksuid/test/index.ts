@@ -1,15 +1,16 @@
 import mockDate from 'mockdate';
 import test from 'tape';
+
 import ksuid, { Id, Instance, Node } from '..';
 
 const baseTimestamp = 1521470472; // 2018-03-19T14:41:12+00:00
 
-test('parsing invalid', (t) => {
+test('parsing invalid', t => {
 	t.throws(() => ksuid.parse(''), /input must not be empty/);
 	t.end();
 });
 
-test('setting valid environment', (t) => {
+test('setting valid environment', t => {
 	ksuid.environment = 'dev';
 	t.equal(ksuid.environment, 'dev');
 
@@ -19,7 +20,7 @@ test('setting valid environment', (t) => {
 	t.end();
 });
 
-test('setting invalid environment', (t) => {
+test('setting invalid environment', t => {
 	t.throws(
 		() => (ksuid.environment = 'xo_xo'),
 		/environment must be a valid prefix/,
@@ -36,7 +37,7 @@ test('setting invalid environment', (t) => {
 	t.end();
 });
 
-test('parsing without environment', (t) => {
+test('parsing without environment', t => {
 	const output = ksuid.parse('test_000000BPG1Uoez0pTaSKn9EtsNayW');
 
 	t.equal(output.environment, 'prod');
@@ -49,7 +50,7 @@ test('parsing without environment', (t) => {
 	t.end();
 });
 
-test('parsing with invalid environment', (t) => {
+test('parsing with invalid environment', t => {
 	t.throws(
 		() => ksuid.parse('Xx_test_000000BPG1Uoez0pTaSKn9EtsNayW'),
 		/id is invalid/,
@@ -66,7 +67,7 @@ test('parsing with invalid environment', (t) => {
 	t.end();
 });
 
-test('parsing with invalid resource', (t) => {
+test('parsing with invalid resource', t => {
 	t.throws(
 		() => ksuid.parse('t!est_000000BPG1Uoez0pTaSKn9EtsNayW'),
 		/id is invalid/,
@@ -83,7 +84,7 @@ test('parsing with invalid resource', (t) => {
 	t.end();
 });
 
-test('parsing with environment', (t) => {
+test('parsing with environment', t => {
 	const output = ksuid.parse('dev_test_000000BPG296UCnyv841TMQvmOhqS');
 
 	t.equal(output.environment, 'dev');
@@ -96,13 +97,13 @@ test('parsing with environment', (t) => {
 	t.end();
 });
 
-test('parsing without environment or resource', (t) => {
+test('parsing without environment or resource', t => {
 	t.throws(() => ksuid.parse('000000BPG296UCnyv841TMQvmOhqS'), /id is invalid/);
 
 	t.end();
 });
 
-test('parsing with invalid id characters', (t) => {
+test('parsing with invalid id characters', t => {
 	t.throws(
 		() => ksuid.parse('test_000000BPG296UCnyv841TMQvmOhq!'),
 		/id is invalid/,
@@ -111,7 +112,7 @@ test('parsing with invalid id characters', (t) => {
 	t.end();
 });
 
-test('parsing with invalid id length', (t) => {
+test('parsing with invalid id length', t => {
 	t.throws(
 		() => ksuid.parse('test_000000BPG296UCnyv841TMQvmOhqSP'),
 		/id is invalid/,
@@ -124,7 +125,7 @@ test('parsing with invalid id length', (t) => {
 	t.end();
 });
 
-test('parsing with prod env specified', (t) => {
+test('parsing with prod env specified', t => {
 	t.throws(
 		() => ksuid.parse('prod_test_000000BPG296UCnyv841TMQvmOhqS'),
 		/production env is implied/,
@@ -133,7 +134,7 @@ test('parsing with prod env specified', (t) => {
 	t.end();
 });
 
-test('generating with random instance', (t) => {
+test('generating with random instance', t => {
 	const node = new Node();
 	const id = node.generate('test');
 
@@ -143,7 +144,7 @@ test('generating with random instance', (t) => {
 	t.end();
 });
 
-test('sequencing', (t) => {
+test('sequencing', t => {
 	const timestampA = (baseTimestamp + 2) * 1000;
 	const timestampB = (baseTimestamp + 3) * 1000;
 	const timestampC = (baseTimestamp + 4) * 1000;
@@ -178,12 +179,12 @@ test('sequencing', (t) => {
 	t.end();
 });
 
-test('generating with invalid resource', (t) => {
+test('generating with invalid resource', t => {
 	t.throws(() => ksuid.generate(''), /resource must be a valid prefix/);
 	t.end();
 });
 
-test('generating non-prod id', (t) => {
+test('generating non-prod id', t => {
 	const devNode = new Node('dev');
 	const devId = devNode.generate('test').toString();
 	const prodId = ksuid.generate('test').toString();
@@ -194,7 +195,7 @@ test('generating non-prod id', (t) => {
 	t.end();
 });
 
-test('id constructor string validation', (t) => {
+test('id constructor string validation', t => {
 	t.throws(
 		() => new Id('', 'test', 0, null, 0),
 		/environment must be a valid prefix/,
@@ -203,13 +204,13 @@ test('id constructor string validation', (t) => {
 	t.end();
 });
 
-test('id constructor timestamp validation', (t) => {
+test('id constructor timestamp validation', t => {
 	t.throws(() => new Id('test', 'test', -1, null, 0), /must be positive/);
 
 	t.end();
 });
 
-test('id constructor scheme validation', (t) => {
+test('id constructor scheme validation', t => {
 	t.throws(
 		() => new Instance(256, new Uint8Array(8)),
 		/scheme must be a uint8/,
@@ -224,6 +225,6 @@ test('id constructor scheme validation', (t) => {
 
 function toHexString(buf: Uint8Array): string {
 	return Array.from(buf)
-		.map((b) => b.toString(16).padStart(2, '0'))
+		.map(b => b.toString(16).padStart(2, '0'))
 		.join('');
 }

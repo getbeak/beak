@@ -1,6 +1,6 @@
-import Instance from './instance';
 import base62 from './base62';
 import { decodedLen, encodedLen, ksuidRegex } from './constants';
+import Instance from './instance';
 import { checkPrefix, checkUint } from './validation';
 
 export default class Id {
@@ -49,18 +49,16 @@ export default class Id {
 	}
 
 	static parse(input: string): Id {
-		if (!input.length) {
+		if (!input.length)
 			throw new Error('input must not be empty');
-		}
 
 		const { environment, resource, encoded } = splitPrefixId(input);
 
 		const decoded = base62.decode(encoded).slice(-decodedLen);
 		const dataView = new DataView(decoded.buffer);
 
-		if (dataView.getUint16(0) !== 0) {
+		if (dataView.getUint16(0) !== 0)
 			throw new Error('timestamp greater than 8921556-12-07T10:44:16Z');
-		}
 
 		return new Id(
 			environment,
@@ -75,15 +73,13 @@ export default class Id {
 function splitPrefixId(input: string) {
 	const parsed = ksuidRegex.exec(input);
 
-	if (!parsed) {
+	if (!parsed)
 		throw new Error('id is invalid');
-	}
 
 	const [, environment, resource, encoded] = parsed;
 
-	if (environment === 'prod') {
+	if (environment === 'prod')
 		throw new Error('production env is implied');
-	}
 
 	return {
 		environment: environment || 'prod',
