@@ -5,7 +5,7 @@ import { ipcExplorerService } from '@beak/app/lib/ipc';
 import { checkShortcut } from '@beak/app/lib/keyboard-shortcuts';
 import { actions } from '@beak/app/store/project';
 import { useAppSelector } from '@beak/app/store/redux';
-import ksuid from '@cuvva/ksuid';
+import ksuid from '@beak/ksuid';
 import type { MenuItemConstructorOptions } from 'electron';
 
 import SidebarPane from '../../sidebar/components/SidebarPane';

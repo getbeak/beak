@@ -1,4 +1,4 @@
-import ksuid from '@cuvva/ksuid';
+import ksuid from '@beak/ksuid';
 import type { VariableGroup } from '@getbeak/types/variable-groups';
 import path from 'path-browserify';
 

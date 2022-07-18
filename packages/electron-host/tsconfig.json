@@ -17,6 +17,8 @@
   "references": [{
     "path": "../common"
   }, {
+    "path": "../ksuid"
+  }, {
     "path": "../requester-node"
   }, {
     "path": "../crpc"

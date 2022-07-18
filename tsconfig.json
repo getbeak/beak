@@ -37,6 +37,9 @@
 			"@beak/json-client": ["packages/json-client/src"],
 			"@beak/json-client/*": ["packages/json-client/src/*"],
 	  
+			"@beak/ksuid": ["packages/ksuid/src"],
+			"@beak/ksuid/*": ["packages/ksuid/src/*"],
+	  
 			"@beak/requester-node": ["packages/requester-node/src"],
 			"@beak/requester-node/*": ["packages/requester-node/src/*"],
 	  

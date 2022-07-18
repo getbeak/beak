@@ -5,7 +5,7 @@ import WindowSessionContext from '@beak/app/contexts/window-session-context';
 import { ipcExplorerService } from '@beak/app/lib/ipc';
 import { useAppSelector } from '@beak/app/store/redux';
 import { TabItem } from '@beak/common/types/beak-project';
-import ksuid from '@cuvva/ksuid';
+import ksuid from '@beak/ksuid';
 import type { MenuItemConstructorOptions } from 'electron';
 
 import { closeTab, closeTabsAll, closeTabsLeft, closeTabsOther, closeTabsRight } from '../../store/actions';

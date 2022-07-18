@@ -11,7 +11,7 @@ import { ipcDialogService } from '@beak/app/lib/ipc';
 import actions, { requestBodyTextChanged } from '@beak/app/store/project/actions';
 import { RequestBodyTypeChangedPayload } from '@beak/app/store/project/types';
 import { attemptTextToJson } from '@beak/app/utils/json';
-import ksuid from '@cuvva/ksuid';
+import ksuid from '@beak/ksuid';
 import type { ValidRequestNode } from '@getbeak/types/nodes';
 import type { RequestBodyType } from '@getbeak/types/request';
 import styled from 'styled-components';

@@ -10,7 +10,7 @@ import { useAppSelector } from '@beak/app/store/redux';
 import { actions } from '@beak/app/store/variable-groups';
 import { removeVariableGroupFromDisk } from '@beak/app/store/variable-groups/actions';
 import { TypedObject } from '@beak/common/helpers/typescript';
-import ksuid from '@cuvva/ksuid';
+import ksuid from '@beak/ksuid';
 import type { MenuItemConstructorOptions } from 'electron';
 import styled from 'styled-components';
 

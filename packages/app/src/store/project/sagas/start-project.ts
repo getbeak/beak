@@ -6,7 +6,7 @@ import createFsEmitter, { scanDirectoryRecursively, ScanResult } from '@beak/app
 import { ipcDialogService, ipcEncryptionService, ipcWindowService } from '@beak/app/lib/ipc';
 import actions, { alertInsert } from '@beak/app/store/project/actions';
 import Squawk from '@beak/common/utils/squawk';
-import ksuid from '@cuvva/ksuid';
+import ksuid from '@beak/ksuid';
 import type { FolderNode, RequestNode, Tree } from '@getbeak/types/nodes';
 import type { ProjectFile } from '@getbeak/types/project';
 import path from 'path-browserify';

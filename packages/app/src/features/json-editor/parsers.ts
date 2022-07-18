@@ -1,5 +1,5 @@
 import { TypedObject } from '@beak/common/helpers/typescript';
-import ksuid from '@cuvva/ksuid';
+import ksuid from '@beak/ksuid';
 import type { Entries, EntryMap, NamedEntries, StringEntry } from '@getbeak/types/body-editor-json';
 import type { Context } from '@getbeak/types/values';
 

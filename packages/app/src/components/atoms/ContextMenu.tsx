@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { showContextMenu } from '@beak/app/utils/context-menu';
-import ksuid from '@cuvva/ksuid';
+import ksuid from '@beak/ksuid';
 import type { MenuItemConstructorOptions } from 'electron';
 
 interface ContextMenuProps {

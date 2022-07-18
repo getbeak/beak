@@ -4,7 +4,7 @@ import { RealtimeValueExtension } from '@beak/common/types/extensions';
 import Squawk from '@beak/common/utils/squawk';
 import { ensureWithinProject } from '@beak/electron-host/ipc-layer/fs-service';
 import { getProjectWindowMapping } from '@beak/electron-host/ipc-layer/fs-shared';
-import ksuid from '@cuvva/ksuid';
+import ksuid from '@beak/ksuid';
 import { Context, ValueParts } from '@getbeak/types/values';
 import { EditableRealtimeValue } from '@getbeak/types-realtime-value/';
 import { ipcMain, WebContents } from 'electron';

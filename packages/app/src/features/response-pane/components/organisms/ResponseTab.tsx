@@ -6,7 +6,7 @@ import binaryStore from '@beak/app/lib/binary-store';
 import { requestPreferenceSetResSubTab } from '@beak/app/store/preferences/actions';
 import { useAppSelector } from '@beak/app/store/redux';
 import { TypedObject } from '@beak/common/helpers/typescript';
-import ksuid from '@cuvva/ksuid';
+import ksuid from '@beak/ksuid';
 import type { Flight } from '@getbeak/types/flight';
 import styled from 'styled-components';
 

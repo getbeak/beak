@@ -4,7 +4,7 @@ import { ReflexContainer, ReflexElement } from 'react-reflex';
 import { loadRequestPreferences } from '@beak/app/store/preferences/actions';
 import { alertInsert, alertRemoveDependents } from '@beak/app/store/project/actions';
 import { useAppSelector } from '@beak/app/store/redux';
-import ksuid from '@cuvva/ksuid';
+import ksuid from '@beak/ksuid';
 import type { ValidRequestNode } from '@getbeak/types/nodes';
 import styled from 'styled-components';
 

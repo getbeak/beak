@@ -22,6 +22,8 @@
   "references": [{
     "path": "../common"
   }, {
+    "path": "../ksuid"
+  }, {
     "path": "../design-system"
   }],
   "include": [

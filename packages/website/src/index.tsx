@@ -71,7 +71,7 @@ const EntryPoint: React.FC<React.PropsWithChildren<unknown>> = () => {
 			</DesignSystemProvider>
 		</Provider>
 	);
-}
+};
 
 if (import.meta.env.MODE !== 'development') {
 	Sentry.init({

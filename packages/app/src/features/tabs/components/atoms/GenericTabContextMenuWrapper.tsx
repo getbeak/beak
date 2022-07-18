@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import ContextMenu from '@beak/app/components/atoms/ContextMenu';
 import { useAppSelector } from '@beak/app/store/redux';
 import { TabItem } from '@beak/common/types/beak-project';
-import ksuid from '@cuvva/ksuid';
+import ksuid from '@beak/ksuid';
 import type { MenuItemConstructorOptions } from 'electron';
 
 import { closeTab, closeTabsAll, closeTabsLeft, closeTabsOther, closeTabsRight } from '../../store/actions';
