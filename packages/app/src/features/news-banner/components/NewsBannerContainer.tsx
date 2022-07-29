@@ -11,9 +11,9 @@ const NewsBannerContainer: React.FC<React.PropsWithChildren<unknown>> = () => {
 	const [newsItems, setNewsItems] = useState<NewsItem[]>([]);
 
 	useEffect(() => {
-		ipcNestService.listNewsItems().then(items => {
-			setNewsItems(items);
-		});
+		ipcNestService.listNewsItems()
+			.then(setNewsItems)
+			.catch(() => { /*  */ });
 	}, []);
 
 	if (newsItems.length === 0)
