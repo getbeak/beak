@@ -13,7 +13,7 @@ interface FlightInProgressProps {
 }
 
 const FlightInProgress: React.FC<FlightInProgressProps> = ({ currentFlight, requestId }) => {
-	const shown = Boolean(currentFlight && currentFlight.requestId === requestId);
+	const shown = Boolean(currentFlight && currentFlight.requestId === requestId && currentFlight.flighting);
 
 	return (
 		// <Container $shown={Boolean(currentFlight)}>
