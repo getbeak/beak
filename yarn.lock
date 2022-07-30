@@ -2618,14 +2618,14 @@
     "@sentry/utils" "6.19.2"
     tslib "^1.9.3"
 
-"@sentry/browser@7.6.0":
-  version "7.6.0"
-  resolved "https://registry.yarnpkg.com/@sentry/browser/-/browser-7.6.0.tgz#54bcd52747c40b2656d62d53541037a5724f3296"
-  integrity sha512-1gdvV8RtTnNFyc790t49MAgFuHAP43NEZvdQOMw5KFnDwSGYFqfBtvJ8tUm125UPbi2fghBryO9M1gfIWboKUg==
+"@sentry/browser@7.8.0":
+  version "7.8.0"
+  resolved "https://registry.yarnpkg.com/@sentry/browser/-/browser-7.8.0.tgz#0430d327d6a44901f42fdee11a8a983dfcebd7ab"
+  integrity sha512-khVrQ0/cfPgm4dAYc07TbHO+dGvaq5adjbIkzpQy0t64KI1GLz++JXv1GRHh5EF9J5kOTaDZX6EyKCa/zDNfxw==
   dependencies:
-    "@sentry/core" "7.6.0"
-    "@sentry/types" "7.6.0"
-    "@sentry/utils" "7.6.0"
+    "@sentry/core" "7.8.0"
+    "@sentry/types" "7.8.0"
+    "@sentry/utils" "7.8.0"
     tslib "^1.9.3"
 
 "@sentry/cli@^2.3.1":
@@ -2663,14 +2663,14 @@
     "@sentry/utils" "6.19.2"
     tslib "^1.9.3"
 
-"@sentry/core@7.6.0":
-  version "7.6.0"
-  resolved "https://registry.yarnpkg.com/@sentry/core/-/core-7.6.0.tgz#5e5efd54af7b63957ac4d446fb5a69af33da3e51"
-  integrity sha512-vXIuUZbHVSAXh2xZ3NyXYXqVvVQSbGEpgtQxLutwocvD88JFK6aZqO+WQG69GY1b1fKSeE9faEDDS6WGAi46mQ==
+"@sentry/core@7.8.0":
+  version "7.8.0"
+  resolved "https://registry.yarnpkg.com/@sentry/core/-/core-7.8.0.tgz#3ab3a4cb4389527e3ca08031a02f010ec52287e8"
+  integrity sha512-Xogwy96P6o3qgSLIGHxzKnRxrky8QdHpnS4A6ZWjnnFFAJmMg3MPF9SmqK5dOUpO9K69jTad9vs6ES2qTydfIw==
   dependencies:
-    "@sentry/hub" "7.6.0"
-    "@sentry/types" "7.6.0"
-    "@sentry/utils" "7.6.0"
+    "@sentry/hub" "7.8.0"
+    "@sentry/types" "7.8.0"
+    "@sentry/utils" "7.8.0"
     tslib "^1.9.3"
 
 "@sentry/electron@^3.0.7":
@@ -2704,6 +2704,15 @@
     "@sentry/utils" "7.6.0"
     tslib "^1.9.3"
 
+"@sentry/hub@7.8.0":
+  version "7.8.0"
+  resolved "https://registry.yarnpkg.com/@sentry/hub/-/hub-7.8.0.tgz#ba261fff11f389511b2a2f7ccd4466dc781d1a8d"
+  integrity sha512-L+aZ7XQJ5cM9NFBy/4caTyBVOc5DB6LK1wxPSFxCy1zsr/XpEYqTAy6ATRUeC0UKxdd/sN/lnQ8liGwVAc0gGQ==
+  dependencies:
+    "@sentry/types" "7.8.0"
+    "@sentry/utils" "7.8.0"
+    tslib "^1.9.3"
+
 "@sentry/minimal@6.19.2":
   version "6.19.2"
   resolved "https://registry.yarnpkg.com/@sentry/minimal/-/minimal-6.19.2.tgz#e748541e4adbc7e80a3b6ccaf01b631c17fc44b4"
@@ -2728,13 +2737,13 @@
     tslib "^1.9.3"
 
 "@sentry/react@^7.6.0":
-  version "7.6.0"
-  resolved "https://registry.yarnpkg.com/@sentry/react/-/react-7.6.0.tgz#349596f64da8eb9370c19dde0febfd2dbaeef682"
-  integrity sha512-R5xBZUxSjNLpeq1dlW22JudX5x1FhzfazSVEQ9TXJEZM2ufC1XP/JkO7bRJFad1JjIzSWqlez8Wm13EnbV9wRg==
+  version "7.8.0"
+  resolved "https://registry.yarnpkg.com/@sentry/react/-/react-7.8.0.tgz#6d4deea2b9b351454812945c414746d2c607b7db"
+  integrity sha512-oQLyRAyCBbb1sGnRjpeRNt7fKYYPoCM0XYiDdmudLFoQLkBNaVRm/JmYa+Ja009zV8NPG5v9yC8Ys/mIBLRgvg==
   dependencies:
-    "@sentry/browser" "7.6.0"
-    "@sentry/types" "7.6.0"
-    "@sentry/utils" "7.6.0"
+    "@sentry/browser" "7.8.0"
+    "@sentry/types" "7.8.0"
+    "@sentry/utils" "7.8.0"
     hoist-non-react-statics "^3.3.2"
     tslib "^1.9.3"
 
@@ -2758,6 +2767,11 @@
   resolved "https://registry.yarnpkg.com/@sentry/types/-/types-7.6.0.tgz#7352bcc5621177ceefb18733d0a6b0cdb0307822"
   integrity sha512-POimbDwr9tmHSKksJTXe5VQpvjkFO4/UWUptigwqf8684rkS7Ie2BT2uyp5GD2EgYFf0BwUOWi98FTYTvUGT+Q==
 
+"@sentry/types@7.8.0":
+  version "7.8.0"
+  resolved "https://registry.yarnpkg.com/@sentry/types/-/types-7.8.0.tgz#009ee9c53b474030a6b14025a8904b6260d57484"
+  integrity sha512-X9D2jlcAzbJdCHA+eCMv2t5HI9769Qpx48e+sZiK7Oasy1jwQtqzQRaiI9fy/zZ+p7Fyerj/4WjW/E2c4dJ63w==
+
 "@sentry/utils@6.19.2":
   version "6.19.2"
   resolved "https://registry.yarnpkg.com/@sentry/utils/-/utils-6.19.2.tgz#995efb896c5159369509f4896c27a2d2ea9191f2"
@@ -2772,6 +2786,14 @@
   integrity sha512-p0Byi6hgawp/sBMY88RY8OmkiAR2jxbjnl8gSo+y3YEu+KeXBUxXMBsI7YeW+1lSb6z8DGhUAOBszTeI4wAr2w==
   dependencies:
     "@sentry/types" "7.6.0"
+    tslib "^1.9.3"
+
+"@sentry/utils@7.8.0":
+  version "7.8.0"
+  resolved "https://registry.yarnpkg.com/@sentry/utils/-/utils-7.8.0.tgz#ed9b9a607fa51125a48140b1ea836603202d3cc2"
+  integrity sha512-6WvXawUPs60R9MitHXFL533D/Ic9tqQZbvPnBXmAkfp90Y5rcoq2QfJjkqMk/Z+Gnplwi8/wcJCC8EtYKfWg6w==
+  dependencies:
+    "@sentry/types" "7.8.0"
     tslib "^1.9.3"
 
 "@sideway/address@^4.1.3":
@@ -9262,6 +9284,11 @@ module-lookup-amd@^7.0.0:
     glob "^7.1.6"
     requirejs "^2.3.5"
     requirejs-config-file "^4.0.0"
+
+monaco-editor@^0.33.0:
+  version "0.33.0"
+  resolved "https://registry.yarnpkg.com/monaco-editor/-/monaco-editor-0.33.0.tgz#842e244f3750a2482f8a29c676b5684e75ff34af"
+  integrity sha512-VcRWPSLIUEgQJQIE0pVT8FcGBIgFoxz7jtqctE+IiCxWugD0DwgyQBcZBhdSrdMC84eumoqMZsGl2GTreOzwqw==
 
 ms@2.0.0:
   version "2.0.0"
