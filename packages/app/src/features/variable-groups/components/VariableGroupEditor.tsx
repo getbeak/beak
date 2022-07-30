@@ -226,8 +226,6 @@ const inputCss = css<{ $center?: boolean }>`
 	padding: 3px 5px;
 
 	&:disabled { user-select: none; }
-	&:focus {
-	}
 `;
 
 const StyledDebounce = styled(DebouncedInput)<{ $center?: boolean }>`${inputCss}`;
