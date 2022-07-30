@@ -37,7 +37,7 @@ const ViewExtensionError: React.FC<React.PropsWithChildren<ViewExtensionErrorPro
 				height={'200px'}
 				language={'json'}
 				value={JSON.stringify(props.error, null, '\t')}
-				options={{ readOnly: true, lineNumbers: false }}
+				options={{ readOnly: true, lineNumbers: 'off' }}
 			/>
 		</Container>
 	</Dialog>
