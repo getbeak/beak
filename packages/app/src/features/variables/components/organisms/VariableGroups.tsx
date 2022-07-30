@@ -139,6 +139,7 @@ const VariableGroups: React.FC<React.PropsWithChildren<unknown>> = () => {
 				tree={tree}
 				activeNodeId={selectedTabId}
 				focusedNodeId={selectedTabId}
+				allowRootContextMenu
 				rootParentName={'variable-groups'}
 
 				renameSelector={(_node, state) => state.global.variableGroups.activeRename}
