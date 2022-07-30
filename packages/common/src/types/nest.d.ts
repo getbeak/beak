@@ -64,6 +64,15 @@ export interface GetSubscriptionStatusResponse {
 	cancelledAt: string | null;
 }
 
+export interface GetMarketingConsentResponse {
+	level: 'none' | 'general';
+}
+
+export interface SetMarketingConsentRequest {
+	userId: string;
+	level: 'none' | 'general';
+}
+
 export interface GetUserRequest {
 	userId: string;
 }
