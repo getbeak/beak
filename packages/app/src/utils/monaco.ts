@@ -1,4 +1,5 @@
 import { EditorProps, loader } from '@monaco-editor/react';
+import * as monaco from 'monaco-editor';
 
 // Modified version of code from https://github.com/microsoft/monaco-editor/issues/2209
 const httpLanguageDefinition = {
@@ -61,6 +62,8 @@ export function createDefaultOptions(): EditorProps['options'] {
 }
 
 export function setupMonaco() {
+	loader.config({ monaco });
+
 	loader.init().then(monaco => {
 		monaco.languages.register({ id: 'http' });
 		monaco.languages.setMonarchTokensProvider('http', httpLanguageDefinition);
