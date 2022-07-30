@@ -7149,10 +7149,10 @@ humanize-ms@^1.2.1:
   dependencies:
     ms "^2.0.0"
 
-hw-fingerprint@^2.1.0:
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/hw-fingerprint/-/hw-fingerprint-2.1.0.tgz#3e443315212b16d298655ad259f1d7c3000694f2"
-  integrity sha512-pQh4dx8GcSDckkzBg8S8y3topSBaHFE4MIdmpZvz9wEsL29oIcNvAxW7+T8nN0j6WdU/RrlwhMGFzg3oFSxUUQ==
+hw-fingerprint@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/hw-fingerprint/-/hw-fingerprint-3.0.1.tgz#58aa3b2d238823adcace8afe0868f12f682291a8"
+  integrity sha512-/TSSTwrA2fQvIf6u5llJwRrCAm4m7CdImpVyN57QROKt1S+eig76Y89bfah9FrzNstHWibT4mr8mPQ7PlzVBmw==
   dependencies:
     systeminformation "^5.9.9"
 
