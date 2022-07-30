@@ -1,5 +1,6 @@
 import {
 	AuthenticateUserResponse,
+	GetMarketingConsentResponse,
 	GetSubscriptionStatusResponse,
 	GetUserResponse,
 	NewsItem,
@@ -183,6 +184,29 @@ class NestClient {
 
 		return await this.rpc<GetSubscriptionStatusResponse>('2021-10-06/get_subscription_status', {
 			userId: auth.userId,
+		});
+	}
+
+	async getMarketingConsent() {
+		const auth = await this.getAuth();
+
+		if (!auth)
+			throw new Squawk('not_authenticated');
+
+		return await this.rpc<GetMarketingConsentResponse>('2020-12-14/get_marketing_consent', {
+			userId: auth.userId,
+		});
+	}
+
+	async setMarketingConsent(level: 'none' | 'general') {
+		const auth = await this.getAuth();
+
+		if (!auth)
+			throw new Squawk('not_authenticated');
+
+		return await this.rpc('2020-12-14/set_marketing_consent', {
+			userId: auth.userId,
+			level,
 		});
 	}
 

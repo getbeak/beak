@@ -6,6 +6,7 @@ import { autoUpdater } from 'electron-updater';
 
 import './ipc-layer';
 import arbiter from './lib/arbiter';
+import { attemptMarketingConsentScreen } from './lib/marketing-consent';
 import nestClient from './lib/nest-client';
 import persistentStore from './lib/persistent-store';
 import { tryOpenProjectFolder } from './lib/project';
@@ -109,6 +110,8 @@ async function createOrFocusDefaultWindow(initial = false) {
 
 	if (!auth)
 		return void createPortalWindow();
+
+	attemptMarketingConsentScreen();
 
 	if (initial && attemptWindowPresenceLoad())
 		return void 0;
