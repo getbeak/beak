@@ -10,6 +10,7 @@ import type { ValidRequestNode } from '@getbeak/types/nodes';
 import Fuse from 'fuse.js';
 import styled, { css } from 'styled-components';
 
+import NoItemsFound from '../atoms/NoItemsFound';
 import FinderRequestItem from '../molecule/FinderRequestItem';
 
 export interface FinderViewProps {
@@ -87,13 +88,18 @@ const FinderView: React.FC<React.PropsWithChildren<FinderViewProps>> = ({ conten
 		const matchedIds = fuse.search(content).map(s => s.item.id);
 
 		setMatches(matchedIds);
-	}, [content]);
 
-	if (!content)
-		return null;
+		if (active === -1 && matchedIds.length > 0)
+			setActive(0);
+	}, [content]);
 
 	return (
 		<Container tabIndex={0}>
+			{matches.length === 0 && (
+				<NoItemsFound>
+					{'No matching requests found... sadface'}
+				</NoItemsFound>
+			)}
 			{matches.map((k, idx) => {
 				const match = tree[k];
 				const reqNode = match as ValidRequestNode;
