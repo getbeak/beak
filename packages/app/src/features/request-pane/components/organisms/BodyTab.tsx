@@ -130,7 +130,7 @@ const BodyTab: React.FC<React.PropsWithChildren<BodyTabProps>> = props => {
 			<TabBody $allowVerticalScroll={body.type !== 'text'}>
 				{body.type === 'text' && (
 					<EditorView
-						language={'plaintext'}
+						language={'text'}
 						value={body.payload}
 						onChange={text => dispatch(requestBodyTextChanged({ requestId: node.id, text: text ?? '' }))}
 					/>

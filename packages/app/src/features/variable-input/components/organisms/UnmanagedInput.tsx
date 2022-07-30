@@ -48,6 +48,7 @@ const Input = styled.article`
 	.bvs-blob {
 		display: inline-block;
 		margin: 0 1px;
+		margin-bottom: -1px;
 		border-radius: 4px;
 		font-size: 11px;
 		line-height: 15px;
