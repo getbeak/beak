@@ -7,20 +7,21 @@ import { TreeViewItem } from '../../types';
 
 interface NodeContextMenuProps {
 	node: TreeViewItem;
+	disabled?: boolean;
 	target: React.MutableRefObject<HTMLDivElement | null>;
 }
 
 const NodeContextMenu: React.FC<React.PropsWithChildren<NodeContextMenuProps>> = props => {
-	const { node, target, children } = props;
+	const { node, target, disabled, children } = props;
 	const [menuItems, setMenuItems] = useState<MenuItemConstructorOptions[]>([]);
 	const abs = useContext(TreeViewAbstractionsContext);
 
 	useEffect(() => {
-		if (!abs.onContextMenu)
+		if (!abs.onContextMenu || disabled)
 			return;
 
 		setMenuItems(abs.onContextMenu(node));
-	}, [node.id, Boolean(abs.onContextMenu)]);
+	}, [disabled, node.id, Boolean(abs.onContextMenu)]);
 
 	return (
 		<ContextMenu menuItems={menuItems} target={target.current!}>

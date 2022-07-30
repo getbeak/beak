@@ -166,6 +166,7 @@ const ProjectPane: React.FC<React.PropsWithChildren<unknown>> = () => {
 					tree={tree}
 					rootParentName={'tree'}
 					activeNodeId={selectedTabId}
+					allowRootContextMenu
 					nodeFlairRenderers={{ request: node => <RequestFlightStatus node={node} /> }}
 					onDrop={(sourceNodeId, destinationNodeId) => actions.moveNodeOnDisk({
 						sourceNodeId,
