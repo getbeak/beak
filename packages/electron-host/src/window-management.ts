@@ -24,7 +24,8 @@ export function generateWindowPresence() {
 	const windowPresence = windows.reduce<(WindowPresence | null)[]>((acc, val) => {
 		const type = windowType[val.id];
 
-		if (!type)
+		// Don't persist portal, as it's only used for signed out state
+		if (!type || type === 'portal')
 			return [...acc, null];
 
 		if (type === 'project-main') {
@@ -43,15 +44,20 @@ export function generateWindowPresence() {
 	return windowPresence.filter(Boolean) as WindowPresence[];
 }
 
-export function attemptWindowPresenceLoad() {
+export async function attemptWindowPresenceLoad() {
 	const previousWindowPresence = persistentStore.get('previousWindowPresence');
 
 	if (previousWindowPresence.length === 0)
 		return false;
 
-	previousWindowPresence.forEach(p => {
+	let success = false;
+
+	await Promise.all(previousWindowPresence.map(async p => {
 		if (p.type === 'project-main') {
-			tryOpenProjectFolder(p.payload, true);
+			const response = await tryOpenProjectFolder(p.payload, true);
+
+			if (response !== null)
+				success = true;
 
 			return;
 		}
@@ -59,20 +65,25 @@ export function attemptWindowPresenceLoad() {
 		switch (p.payload) {
 			case 'portal':
 				createPortalWindow();
+				success = true;
 				break;
+
 			case 'preferences':
 				createPreferencesWindow();
+				success = true;
 				break;
+
 			case 'welcome':
 				createWelcomeWindow();
+				success = true;
 				break;
 
 			default:
 				return;
 		}
-	});
+	}));
 
-	return true;
+	return success;
 }
 
 function generateLoadUrl(

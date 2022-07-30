@@ -113,7 +113,7 @@ async function createOrFocusDefaultWindow(initial = false) {
 
 	attemptMarketingConsentScreen();
 
-	if (initial && attemptWindowPresenceLoad())
+	if (initial && await attemptWindowPresenceLoad())
 		return void 0;
 
 	const openWindow = Object.values(windowStack)[0];
