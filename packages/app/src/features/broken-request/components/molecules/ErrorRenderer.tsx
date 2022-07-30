@@ -13,7 +13,7 @@ const ErrorRenderer: React.FC<React.PropsWithChildren<ErrorRendererProps>> = ({ 
 		<EditorView
 			language={'json'}
 			value={JSON.stringify(error, null, '\t')}
-			options={{ readOnly: true, lineNumbers: false }}
+			options={{ readOnly: true, lineNumbers: 'off' }}
 		/>
 	</EditorContainer>
 );

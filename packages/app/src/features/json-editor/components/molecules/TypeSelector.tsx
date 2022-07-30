@@ -48,13 +48,16 @@ const TypeSelector: React.FC<React.PropsWithChildren<TypeSelectorProps>> = props
 					selectRef.current!.blur();
 				}}
 			>
-				<option value={'string'}>{'String'}</option>
-				<option value={'number'}>{'Number'}</option>
-				<option value={'boolean'}>{'Boolean'}</option>
-				<option value={'null'}>{'Null'}</option>
-				<option disabled>{'──────────'}</option>
-				<option value={'array'}>{'Array'}</option>
-				<option value={'object'}>{'Object'}</option>
+				<optgroup label={'Primitives'}>
+					<option value={'string'}>{'String'}</option>
+					<option value={'number'}>{'Number'}</option>
+					<option value={'boolean'}>{'Boolean'}</option>
+					<option value={'null'}>{'Null'}</option>
+				</optgroup>
+				<optgroup label={'Objects'}>
+					<option value={'array'}>{'Array'}</option>
+					<option value={'object'}>{'Object'}</option>
+				</optgroup>
 			</Select>
 			<Button>
 				<FontAwesomeIcon icon={icon} />

@@ -129,10 +129,15 @@ const EnterTrialMagicState: React.FC<React.PropsWithChildren<EnterTrialMagicStat
 			{error && <FormError>{getErrorMessage(error)}</FormError>}
 
 			{!working && (
-				<ManualButton disabled={!canResend} onClick={() => reset()}>
-					{canResend && 'Request new magic link'}
-					{!canResend && `Request new magic link (${resend}s)`}
-				</ManualButton>
+				<React.Fragment>
+					<ManualButton disabled={!canResend} onClick={() => reset()}>
+						{canResend && 'Request new magic link'}
+						{!canResend && `Request new magic link (${resend}s)`}
+					</ManualButton>
+					<ManualButton onClick={() => reset()}>
+						{'Wrong email?'}
+					</ManualButton>
+				</React.Fragment>
 			)}
 		</React.Fragment>
 	);

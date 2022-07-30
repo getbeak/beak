@@ -34,6 +34,7 @@ const NonprodBadge: React.FC<React.PropsWithChildren<unknown>> = () => {
 
 const Badge = styled.div`
 	position: fixed;
+	z-index: 100000;
 
 	top: 40px; left: 0; right: 0;
 	padding: 6px 0;
