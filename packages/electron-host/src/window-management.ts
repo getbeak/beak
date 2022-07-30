@@ -28,7 +28,8 @@ export function generateWindowPresence() {
 			return [...acc, null];
 
 		if (type === 'project-main') {
-			const projectPath = getProjectFromWindowId(val.id);
+			const projectFilePath = getProjectFromWindowId(val.id);
+			const projectPath = path.dirname(projectFilePath);
 
 			if (!projectPath)
 				return [...acc, null];
@@ -50,7 +51,7 @@ export function attemptWindowPresenceLoad() {
 
 	previousWindowPresence.forEach(p => {
 		if (p.type === 'project-main') {
-			tryOpenProjectFolder(p.payload);
+			tryOpenProjectFolder(p.payload, true);
 
 			return;
 		}

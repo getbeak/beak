@@ -25,16 +25,18 @@ export interface CreationOptions {
 	rootPath: string;
 }
 
-export async function tryOpenProjectFolder(projectFolderPath: string) {
+export async function tryOpenProjectFolder(projectFolderPath: string, silent = false) {
 	const projectFilePath = path.join(projectFolderPath, 'project.json');
 	const projectFile = await readProjectFile(projectFolderPath);
 
 	if (!projectFile) {
-		await dialog.showMessageBox({
-			title: 'Unable to load project',
-			message: 'The project file you tried to open could not be found, maybe it was moved?',
-			type: 'error',
-		});
+		if (!silent) {
+			await dialog.showMessageBox({
+				title: 'Unable to load project',
+				message: 'The project file you tried to open could not be found, maybe it was moved?',
+				type: 'error',
+			});
+		}
 
 		return null;
 	}
