@@ -81,7 +81,11 @@ const Selector = styled.select`
 	text-align-last: right;
 	text-overflow: ellipsis;
 
-	&:hover, &:active, &:focus {
+	&:disabled {
+		cursor: not-allowed;
+	}
+
+	&:not(:disabled):hover, &:not(:disabled):active, &:not(:disabled):focus {
 		background: ${p => p.theme.ui.surface};
 		outline: none;
 	}
