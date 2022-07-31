@@ -41,9 +41,9 @@ export interface RealtimeValue<TPayload extends GenericDictionary> extends Realt
 	 * Get's the string value of the value, given the payload body
 	 * @param {Context} ctx The project context.
 	 * @param {T} payload This instance of the value's payload data.
-	 * @param {Set<string>} recursiveSet Only needed if you're dealing with `ValueParts`. It should only be passed directly into `parseValueParts`.
+	 * @param {number} recursiveDepth Ignored for extensions - internally used for recursive checks.
 	 */
-	getValue: (ctx: Context, payload: TPayload, recursiveSet: Readonly<Set<string>>) => Promise<string>;
+	getValue: (ctx: Context, payload: TPayload, recursiveDepth: number) => Promise<string>;
 }
 
 export interface EditableRealtimeValue<TPayload extends GenericDictionary, TEditorState extends GenericDictionary = TPayload> extends Omit<RealtimeValue<TPayload>, 'editor'> {
@@ -134,7 +134,7 @@ declare global {
 type Level = 'info' | 'warn' | 'error';
 
 interface Beak {
-	parseValueParts: (ctx: Context, parts: unknown[], recursiveSet: Set<string>) => Promise<string>;
+	parseValueParts: (ctx: Context, parts: unknown[], recursiveDepth: number) => Promise<string>;
 
 	log: (level: Level, message: string) => void;
 }

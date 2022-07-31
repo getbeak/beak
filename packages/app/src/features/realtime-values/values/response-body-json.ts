@@ -22,7 +22,7 @@ const definition: EditableRealtimeValue<ResponseBodyJsonRtv, ResponseBodyJsonRtv
 		dotPath: [''],
 	}),
 
-	getValue: async (ctx, payload, recursiveSet) => {
+	getValue: async (ctx, payload, recursiveDepth) => {
 		const requestNode = getRequestNode(payload.requestId, ctx);
 
 		if (!requestNode)
@@ -36,7 +36,7 @@ const definition: EditableRealtimeValue<ResponseBodyJsonRtv, ResponseBodyJsonRtv
 		if (!latestFlight.response.hasBody)
 			return '';
 
-		const dotPath = await parseValueParts(ctx, payload.dotPath, recursiveSet);
+		const dotPath = await parseValueParts(ctx, payload.dotPath, recursiveDepth);
 		const binary = binaryStore.get(latestFlight.binaryStoreKey);
 		const json = new TextDecoder().decode(binary);
 		const parsed = attemptTextToJson(json);

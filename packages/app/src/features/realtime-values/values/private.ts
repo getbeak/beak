@@ -27,7 +27,7 @@ const definition: EditableRealtimeValue<PrivateRtv, EditorState> = {
 		};
 	},
 
-	getValue: async (ctx, item, recursiveSet) => {
+	getValue: async (ctx, item, recursiveDepth) => {
 		// Get from private store
 		const cipherTextPath = createPath(item.identifier);
 		const exists = await ipcFsService.pathExists(cipherTextPath);
@@ -41,7 +41,7 @@ const definition: EditableRealtimeValue<PrivateRtv, EditorState> = {
 			payload: cipherText,
 		});
 
-		return await parseValueParts(ctx, decrypted, recursiveSet);
+		return await parseValueParts(ctx, decrypted, recursiveDepth);
 	},
 
 	attributes: {},

@@ -22,10 +22,10 @@ const definition: EditableRealtimeValue<DigestRtv, EditorState> = {
 		hmac: void 0,
 	}),
 
-	getValue: async (ctx, payload, recursiveSet) => {
+	getValue: async (ctx, payload, recursiveDepth) => {
 		const { algorithm, input, hmac } = payload;
 		const isArray = Array.isArray(input);
-		const parsed = await parseValueParts(ctx, isArray ? input : [input as unknown as string], recursiveSet);
+		const parsed = await parseValueParts(ctx, isArray ? input : [input as unknown as string], recursiveDepth);
 
 		const buf = new ArrayBuffer(parsed.length * 2);
 		const bufView = new Uint16Array(buf);
