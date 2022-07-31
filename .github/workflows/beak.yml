@@ -56,6 +56,7 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           USE_HARD_LINKS: false
+          NODE_OPTIONS: --max-old-space-size=8192
         run: yarn package:release
 
       - name: Build (non-release)
@@ -72,6 +73,7 @@ jobs:
           APPLE_ID_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
           ASC_PROVIDER: ${{ secrets.ASC_PROVIDER }}
           USE_HARD_LINKS: false
+          NODE_OPTIONS: --max-old-space-size=8192
         run: yarn package
 
       - name: Delete un-necessary artifacts

@@ -11,6 +11,9 @@ export async function attemptMarketingConsentScreen() {
 	if (!passedOnboarding)
 		return;
 
+	if (!await nestClient.getAuth())
+		return;
+
 	try {
 		await nestClient.getMarketingConsent();
 

@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 
 const path = require('path');
-const reactRefresh = require('@vitejs/plugin-react-refresh');
+const reactPlugin = require('@vitejs/plugin-react');
 const viteSentryPlugin = require('vite-plugin-sentry');
 
 // @ts-ignore
@@ -37,7 +37,7 @@ module.exports = {
 		},
 	},
 	plugins: [
-		reactRefresh({ include: '**/*.tsx' }),
+		reactPlugin({ include: '**/*.tsx' }),
 		viteSentryPlugin({
 			authToken: process.env.SENTRY_ELECTRON_APP_API_KEY,
 			dryRun: process.env.BUILD_ENVIRONMENT !== 'ci',
