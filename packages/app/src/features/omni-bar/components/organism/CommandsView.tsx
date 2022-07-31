@@ -9,6 +9,8 @@ import Fuse from 'fuse.js';
 import type { Dispatch } from 'redux';
 import styled, { css } from 'styled-components';
 
+import NoItemsFound from '../atoms/NoItemsFound';
+
 function generateCommands(): Command[] {
 	return [{ // Developer
 		id: 'developer:reload_window',
@@ -172,19 +174,27 @@ const CommandsView: React.FC<React.PropsWithChildren<CommandsViewProps>> = ({ co
 		if (content === '>') {
 			setMatches(commands.map(c => c.id));
 
+			if (active === -1)
+				setActive(0);
+
 			return;
 		}
 
 		const matchedIds = fuse.search(pureContent).map(s => s.item.id);
 
 		setMatches(matchedIds);
-	}, [content, pureContent]);
 
-	if (matches.length === 0)
-		return null;
+		if (active === -1 && matchedIds.length > 0)
+			setActive(0);
+	}, [content, pureContent]);
 
 	return (
 		<Container tabIndex={0}>
+			{matches.length === 0 && (
+				<NoItemsFound>
+					{'No matching commands found'}
+				</NoItemsFound>
+			)}
 			{matches.map((k, idx) => {
 				const command = commands.find(c => c.id === k);
 

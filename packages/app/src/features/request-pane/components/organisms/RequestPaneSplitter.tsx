@@ -27,7 +27,7 @@ const RequestPaneSplitter: React.FC<RequestPaneSplitterProps> = props => {
 	return (
 		<Container>
 			<PreviewLabel>
-				{'Request preview'}
+				{'Previewer'}
 			</PreviewLabel>
 			<ActionsContainer>
 				<ActionButton onClick={copyRequestPreview}>
@@ -37,7 +37,7 @@ const RequestPaneSplitter: React.FC<RequestPaneSplitterProps> = props => {
 				</ActionButton>
 				<ActionSeparator />
 				<ActionButton onClick={() => navigator.clipboard.writeText(shareUrl)}>
-					<abbr title={'Create project share link'}>
+					<abbr title={'Create request share link'}>
 						<FontAwesomeIcon
 							icon={faShareFromSquare}
 						/>
@@ -57,11 +57,11 @@ const Container = styled.div`
 	border-left: none;
 	border-right: none;
 
-	padding: 5px;
+	padding: 7px 9px;
 `;
 
 const PreviewLabel = styled.div`
-	font-size: 12px;
+	font-size: 13px;
 	color: ${p => p.theme.ui.textOnSurfaceBackground};
 `;
 
