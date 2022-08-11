@@ -127,7 +127,6 @@ export default class ExtensionManager {
 	) {
 		const { vm, extension } = this.getExtensionContext(projectId, type);
 
-		// We ignore the passed in depth here.
 		vm.sandbox.beakApi.parseValueParts = async (ctx: Context, parts: ValueParts) => {
 			const uniqueSessionId = ksuid.generate('rtvparsersp').toString();
 
