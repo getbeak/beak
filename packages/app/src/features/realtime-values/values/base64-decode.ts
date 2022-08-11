@@ -1,41 +1,35 @@
-import { Base64EncodedRtv, ValueParts } from '@beak/app/features/realtime-values/values';
+import { Base64DecodedRtv, ValueParts } from '@beak/app/features/realtime-values/values';
 import { EditableRealtimeValue } from '@getbeak/types-realtime-value';
 
 import { parseValueParts } from '../parser';
 
 interface EditorState {
 	input: ValueParts;
-	characterSet: Base64EncodedRtv['characterSet'];
-	removePadding: boolean;
+	characterSet: Base64DecodedRtv['characterSet'];
 }
 
-const definition: EditableRealtimeValue<Base64EncodedRtv, EditorState> = {
-	type: 'base64_encoded',
-	name: 'Encode (Base64)',
-	description: 'Generates a base64 encoded string',
+const definition: EditableRealtimeValue<Base64DecodedRtv, EditorState> = {
+	type: 'base64_decoded',
+	name: 'Decode (Base64)',
+	description: 'Decodes a base64 encoded string',
 	sensitive: false,
 	external: false,
 
 	createDefaultPayload: async () => ({
 		input: [''],
 		characterSet: 'base64',
-		removePadding: false,
 	}),
 
 	getValue: async (ctx, payload, recursiveDepth) => {
 		const isArray = Array.isArray(payload.input);
 		const input = isArray ? payload.input : [payload.input as unknown as string];
 
-		const parsed = await parseValueParts(ctx, input, recursiveDepth);
-		let encoded = btoa(parsed);
+		let encoded = await parseValueParts(ctx, input, recursiveDepth);
 
 		if (payload.characterSet === 'websafe_base64')
-			encoded = encoded.replaceAll('/', '_').replaceAll('+', '-');
+			encoded = encoded.replaceAll('_', '/').replaceAll('-', '+');
 
-		if (payload.removePadding)
-			encoded = encoded.replaceAll('=', '');
-
-		return encoded;
+		return atob(encoded);
 	},
 
 	attributes: {},
@@ -43,7 +37,7 @@ const definition: EditableRealtimeValue<Base64EncodedRtv, EditorState> = {
 	editor: {
 		createUserInterface: async () => [{
 			type: 'value_parts_input',
-			label: 'Enter the data to encode:',
+			label: 'Enter the data to decode:',
 			stateBinding: 'input',
 		}, {
 			type: 'options_input',
@@ -56,22 +50,16 @@ const definition: EditableRealtimeValue<Base64EncodedRtv, EditorState> = {
 				key: 'websafe_base64',
 				label: 'Websafe Base64',
 			}],
-		}, {
-			type: 'checkbox_input',
-			label: 'Remove padding:',
-			stateBinding: 'removePadding',
 		}],
 
 		load: async (_ctx, item) => ({
 			characterSet: item.characterSet,
 			input: item.input,
-			removePadding: item.removePadding,
 		}),
 
 		save: async (_ctx, _item, state) => ({
 			characterSet: state.characterSet,
 			input: state.input,
-			removePadding: state.removePadding,
 		}),
 	},
 };

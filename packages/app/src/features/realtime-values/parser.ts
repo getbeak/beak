@@ -7,7 +7,7 @@ import { RealtimeValueManager } from '.';
 export async function parseValueParts(
 	ctx: Context,
 	parts: ValueParts,
-	recursiveSet: Set<string> = new Set(),
+	depth = 0,
 ): Promise<string> {
 	const out = await Promise.all(parts.map(async p => {
 		if (typeof p === 'string')
@@ -21,24 +21,16 @@ export async function parseValueParts(
 		if (!rtv)
 			return '';
 
-		// NOTE(afr): Bring this back before 1.1.7 goes public
-		// // Realtime values can in some situations references each other or themselves, so we need to be clever and
-		// // detect recursive references.
-		// const recursiveKey = `${p.type}:${JSON.stringify(p.payload)}`;
-
-		// if (recursiveKey) {
-		// 	if (recursiveSet.has(recursiveKey))
-		// 		return '';
-
-		// 	recursiveSet.add(recursiveKey);
-		// }
+		// Oversimplified check for recursion. I'll build a proper system for this later
+		if (depth >= 5)
+			return '[recursion detected]';
 
 		try {
 			// Easier than using an abort controller
 			let complete = false;
 
 			const value = Promise.race([
-				rtv.getValue(ctx, p.payload, recursiveSet),
+				rtv.getValue(ctx, p.payload, depth + 1),
 				new Promise(resolve => {
 					window.setTimeout(() => {
 						if (!complete) {

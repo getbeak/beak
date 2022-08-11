@@ -47,7 +47,7 @@ service.registerRtvGetValuePayload(async (event, payload) => {
 		payload.context,
 		sender,
 		payload.payload,
-		payload.recursiveSet,
+		payload.recursiveDepth,
 	);
 });
 

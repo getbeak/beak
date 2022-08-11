@@ -18,10 +18,10 @@ const definition: RealtimeValue<VariableGroupItemRtv> = {
 		throw new Error('Not supported, this should not happen.');
 	},
 
-	getValue: async (ctx, item, recursiveSet) => {
+	getValue: async (ctx, item, recursiveDepth) => {
 		const parts = getValueParts(ctx, item.itemId) || [];
 
-		return await parseValueParts(ctx, parts, recursiveSet);
+		return await parseValueParts(ctx, parts, recursiveDepth);
 	},
 
 	attributes: {},

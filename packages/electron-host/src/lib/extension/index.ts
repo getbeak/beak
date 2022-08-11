@@ -123,11 +123,11 @@ export default class ExtensionManager {
 		context: Context,
 		webContents: WebContents,
 		payload: unknown,
-		recursiveSet: string[],
+		recursiveDepth: number,
 	) {
 		const { vm, extension } = this.getExtensionContext(projectId, type);
 
-		vm.sandbox.beakApi.parseValueParts = async (ctx: Context, parts: ValueParts, recursiveSet: Set<string>) => {
+		vm.sandbox.beakApi.parseValueParts = async (ctx: Context, parts: ValueParts) => {
 			const uniqueSessionId = ksuid.generate('rtvparsersp').toString();
 
 			// send IPC request
@@ -135,7 +135,7 @@ export default class ExtensionManager {
 				uniqueSessionId,
 				context: ctx,
 				parts,
-				recursiveSet: Array.from(recursiveSet),
+				recursiveDepth,
 			});
 
 			return await new Promise(resolve => {
@@ -153,7 +153,7 @@ export default class ExtensionManager {
 			});
 		};
 
-		return await extension.getValue(context, payload, new Set(recursiveSet));
+		return await extension.getValue(context, payload, recursiveDepth);
 	}
 
 	async rtvCreateUserInterface(projectId: string, type: string, context: Context) {

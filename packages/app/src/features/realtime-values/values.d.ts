@@ -3,6 +3,11 @@ import type { ValuePart as GenericValuePart } from '@getbeak/types/values';
 export type ValuePart = GenericValuePart;
 export type ValueParts = ValuePart[];
 
+export interface Base64DecodedRtv {
+	input: ValueParts;
+	characterSet: 'base64' | 'websafe_base64';
+}
+
 export interface Base64EncodedRtv {
 	input: ValueParts;
 	characterSet: 'base64' | 'websafe_base64';

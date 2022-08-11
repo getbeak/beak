@@ -18,7 +18,7 @@ const definition: EditableRealtimeValue<ResponseHeaderRtv, ResponseHeaderRtv> = 
 		headerName: [''],
 	}),
 
-	getValue: async (ctx, payload, recursiveSet) => {
+	getValue: async (ctx, payload, recursiveDepth) => {
 		const requestNode = getRequestNode(payload.requestId, ctx);
 
 		if (!requestNode)
@@ -30,7 +30,7 @@ const definition: EditableRealtimeValue<ResponseHeaderRtv, ResponseHeaderRtv> = 
 			return '';
 
 		const headers = latestFlight.response.headers;
-		const parsedHeaderName = await parseValueParts(ctx, payload.headerName, recursiveSet);
+		const parsedHeaderName = await parseValueParts(ctx, payload.headerName, recursiveDepth);
 		const headerKey = TypedObject.keys(headers)
 			.find(k => k.toLocaleLowerCase() === parsedHeaderName.toLocaleLowerCase());
 

@@ -4,6 +4,7 @@ import { RealtimeValueExtension } from '@beak/common/types/extensions';
 import { EditableRealtimeValue, RealtimeValue } from '@getbeak/types-realtime-value';
 
 import './ipc';
+import base64DecodeRtv from './values/base64-decode';
 import base64EncodeRtv from './values/base64-encode';
 import digestRtv from './values/digest';
 import nonceRtv from './values/nonce';
@@ -27,6 +28,7 @@ type Rtv = RealtimeValue<any> | EditableRealtimeValue<any>;
 export class RealtimeValueManager {
 	private static externalRealtimeValues: Record<string, Rtv> = { };
 	private static internalRealtimeValues: Record<string, Rtv> = {
+		[base64DecodeRtv.type]: base64DecodeRtv,
 		[base64EncodeRtv.type]: base64EncodeRtv,
 		[characterCarriageReturnRtv.type]: characterCarriageReturnRtv,
 		[characterNewlineRtv.type]: characterNewlineRtv,
@@ -64,11 +66,11 @@ export class RealtimeValueManager {
 				type: rtv.type,
 				context: ctx,
 			}),
-			getValue: async (ctx, payload, recursiveSet) => ipcExtensionsService.rtvGetValue({
+			getValue: async (ctx, payload, recursiveDepth) => ipcExtensionsService.rtvGetValue({
 				type: rtv.type,
 				context: ctx,
 				payload,
-				recursiveSet: Array.from(recursiveSet),
+				recursiveDepth,
 			}),
 		};
 

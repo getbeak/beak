@@ -27,7 +27,7 @@ interface RtvCreateDefaultValuePayload extends RtvBase { }
 
 interface RtvGetValuePayload extends RtvBase {
 	payload: Record<string, any>;
-	recursiveSet: string[];
+	recursiveDepth: number;
 }
 
 interface RtvEditorCreateUserInterface extends RtvBase { }
@@ -43,7 +43,7 @@ interface RtvEditorSave extends RtvBase {
 
 export interface RtvParseValueParts extends Omit<RtvBase, 'type'> {
 	uniqueSessionId: string;
-	recursiveSet: string[];
+	recursiveDepth: number;
 	parts: ValueParts;
 }
 

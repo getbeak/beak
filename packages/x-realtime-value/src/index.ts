@@ -43,12 +43,12 @@ const tswiftLyricExtension: EditableRealtimeValue<Payload, EditorState> = {
 	},
 
 	createDefaultPayload: async () => ({ albumSlug: '1989', suffix: [] }),
-	getValue: async (ctx, payload, recursiveSet) => {
+	getValue: async (ctx, payload) => {
 		const albumLyrics = lyrics[payload.albumSlug];
 		const lyric = randomLyric(albumLyrics);
 
 		// eslint-disable-next-line no-undef
-		const parsed = await beakApi.parseValueParts(ctx, payload.suffix, recursiveSet);
+		const parsed = await beakApi.parseValueParts(ctx, payload.suffix);
 
 		return `${lyric} ${parsed}`;
 	},

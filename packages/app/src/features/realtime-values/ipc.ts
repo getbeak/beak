@@ -5,7 +5,7 @@ import { RequestPayload } from '@beak/common/ipc/ipc';
 import { parseValueParts } from './parser';
 
 ipcExtensionsService.registerRtvParseValueParts(async (event, payload) => {
-	const parsed = await parseValueParts(payload.context, payload.parts, new Set(payload.recursiveSet));
+	const parsed = await parseValueParts(payload.context, payload.parts, payload.recursiveDepth);
 	const message: RequestPayload<RtvParseValuePartsResponse> = {
 		code: ExtensionsMessages.RtvParseValuePartsResponse,
 		payload: {

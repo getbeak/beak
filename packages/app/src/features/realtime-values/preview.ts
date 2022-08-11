@@ -9,5 +9,5 @@ export async function previewValue<T>(
 ) {
 	const payload = await rtv.editor.save(ctx, item, state);
 
-	return await rtv.getValue(ctx, payload, new Set());
+	return await rtv.getValue(ctx, payload, 0);
 }

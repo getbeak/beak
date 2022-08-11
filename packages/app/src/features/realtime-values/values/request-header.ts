@@ -19,15 +19,13 @@ const definition: EditableRealtimeValue<RequestHeaderRtv, EditorState> = {
 		headerName: [''],
 	}),
 
-	getValue: async (ctx, payload, recursiveSet) => {
+	getValue: async (ctx, payload, recursiveDepth) => {
 		const node = ctx.projectTree[ctx.currentRequestId!];
 
 		if (!node || node.type !== 'request' || node.mode !== 'valid')
 			return '';
 
-		recursiveSet.add('x');
-
-		const parsedHeaderName = await parseValueParts(ctx, payload.headerName, recursiveSet);
+		const parsedHeaderName = await parseValueParts(ctx, payload.headerName, recursiveDepth);
 		const headerKey = TypedObject.keys(node.info.headers)
 			.find(k => node.info.headers[k].name.toLocaleLowerCase() === parsedHeaderName.toLocaleLowerCase());
 
@@ -36,7 +34,7 @@ const definition: EditableRealtimeValue<RequestHeaderRtv, EditorState> = {
 		if (!header || !header.value)
 			return '';
 
-		return await parseValueParts(ctx, header.value, recursiveSet);
+		return await parseValueParts(ctx, header.value, recursiveDepth);
 	},
 
 	attributes: {
