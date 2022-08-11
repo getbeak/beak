@@ -1,6 +1,7 @@
 import { DigestRtv, ValueParts } from '@beak/app/features/realtime-values/values';
 import { arrayBufferToHexString } from '@beak/app/utils/encoding';
 import { EditableRealtimeValue } from '@getbeak/types-realtime-value';
+import { Md5 as MD5 } from 'ts-md5';
 
 import { parseValueParts } from '../parser';
 
@@ -11,8 +12,8 @@ interface EditorState {
 
 const definition: EditableRealtimeValue<DigestRtv, EditorState> = {
 	type: 'digest',
-	name: 'Digest',
-	description: 'Generates a digest of a given input.',
+	name: 'Digest / Hash',
+	description: 'Generates a digest of a given input. Supports SHA-*, MD5.',
 	sensitive: false,
 	external: false,
 
@@ -26,6 +27,9 @@ const definition: EditableRealtimeValue<DigestRtv, EditorState> = {
 		const { algorithm, input, hmac } = payload;
 		const isArray = Array.isArray(input);
 		const parsed = await parseValueParts(ctx, isArray ? input : [input as unknown as string], recursiveDepth);
+
+		if (algorithm === 'MD5')
+			return MD5.hashStr(parsed);
 
 		const buf = new ArrayBuffer(parsed.length * 2);
 		const bufView = new Uint16Array(buf);
@@ -56,16 +60,19 @@ const definition: EditableRealtimeValue<DigestRtv, EditorState> = {
 			stateBinding: 'algorithm',
 			options: [{
 				key: 'SHA-1',
-				label: 'SHA1 (Considered unsafe for cryptographic use)',
+				label: 'SHA-1 (Considered unsafe for cryptographic use)',
 			}, {
 				key: 'SHA-256',
-				label: 'SHA256',
+				label: 'SHA-256',
 			}, {
 				key: 'SHA-384',
-				label: 'SHA384',
+				label: 'SHA-384',
 			}, {
 				key: 'SHA-512',
-				label: 'SHA512',
+				label: 'SHA-512',
+			}, {
+				key: 'MD5',
+				label: 'MD5 (Considered unsafe for cryptographic use)',
 			}],
 		}],
 

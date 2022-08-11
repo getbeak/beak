@@ -3,6 +3,8 @@ import { EditableRealtimeValue } from '@getbeak/types-realtime-value';
 
 import { parseValueParts } from '../parser';
 
+const invalidBase64Error = 'Failed to execute \'atob\' on \'Window\': The string to be decoded is not correctly encoded.';
+
 interface EditorState {
 	input: ValueParts;
 	characterSet: Base64DecodedRtv['characterSet'];
@@ -29,7 +31,14 @@ const definition: EditableRealtimeValue<Base64DecodedRtv, EditorState> = {
 		if (payload.characterSet === 'websafe_base64')
 			encoded = encoded.replaceAll('_', '/').replaceAll('-', '+');
 
-		return atob(encoded);
+		try {
+			return atob(encoded);
+		} catch (error) {
+			if (error instanceof Error && error.name === 'InvalidCharacterError' && error.message.includes(invalidBase64Error))
+				return '';
+
+			throw error;
+		}
 	},
 
 	attributes: {},

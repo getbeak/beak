@@ -20,6 +20,8 @@ import responseStatusCodeRtv from './values/response-status-code';
 import secureRtv from './values/secure';
 import { characterCarriageReturnRtv, characterNewlineRtv, characterTabRtv } from './values/special-character';
 import timestampRtv from './values/timestamp';
+import urlDecodeRtv from './values/url-decode';
+import urlEncodeRtv from './values/url-encode';
 import uuidRtv from './values/uuid';
 import variableGroupItemRtv from './values/variable-group-item';
 
@@ -46,6 +48,8 @@ export class RealtimeValueManager {
 		[responseStatusCodeRtv.type]: responseStatusCodeRtv,
 		[secureRtv.type]: secureRtv,
 		[timestampRtv.type]: timestampRtv,
+		[urlDecodeRtv.type]: urlDecodeRtv,
+		[urlEncodeRtv.type]: urlEncodeRtv,
 		[uuidRtv.type]: uuidRtv,
 
 		// Special case!

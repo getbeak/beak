@@ -16,7 +16,7 @@ export interface Base64EncodedRtv {
 
 export interface DigestRtv {
 	input: ValueParts;
-	algorithm: 'SHA-1' | 'SHA-256' | 'SHA-384' | 'SHA-512';
+	algorithm: 'SHA-1' | 'SHA-256' | 'SHA-384' | 'SHA-512' | 'MD5';
 	hmac?: string;
 }
 

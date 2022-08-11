@@ -5,6 +5,8 @@ import { ipcExtensionsService } from '@beak/app/lib/ipc';
 import { useAppSelector } from '@beak/app/store/redux';
 import { movePosition } from '@beak/app/utils/arrays';
 import { TypedObject } from '@beak/common/helpers/typescript';
+import { faPlug } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { RealtimeValue, RealtimeValueInformation } from '@getbeak/types-realtime-value';
 import Fuse from 'fuse.js';
 import styled from 'styled-components';
@@ -180,11 +182,22 @@ const VariableSelector: React.FC<React.PropsWithChildren<VariableSelectorProps>>
 							onClick={() => setActive(idx)}
 							onDoubleClick={() => createDefaultVariable(i)}
 						>
+							{i.external && (
+								<ExtensionContainer>
+									<abbr title={'This value is an extension'}>
+										<FontAwesomeIcon icon={faPlug} />
+									</abbr>
+								</ExtensionContainer>
+							)}
 							{i.name}
 						</Item>
 					))}
 				</ItemContainer>
-				<Description>{items[active]?.description}</Description>
+				<Description>
+					{items[active]?.external && '(Extension) '}
+
+					{items[active]?.description}
+				</Description>
 			</Wrapper>
 		</Container>
 	);
@@ -227,6 +240,11 @@ const Item = styled.div<{ $active: boolean }>`
 	}
 
 	${p => p.$active ? `background-color: ${p.theme.ui.primaryFill};'` : ''}
+`;
+
+const ExtensionContainer = styled.div`
+	display: inline-block;
+	margin-right: 5px;
 `;
 
 const Description = styled.div`
