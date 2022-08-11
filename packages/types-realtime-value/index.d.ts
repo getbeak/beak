@@ -3,6 +3,16 @@ import type { Context } from '@getbeak/types/values';
 
 export interface RealtimeValueBase { }
 
+interface RealtimeValueGetter<TPayload> {
+
+	/**
+	 * Gets the string value of the value, given the payload body
+	 * @param {Context} ctx The project context.
+	 * @param {TPayload} payload This instance of the value's payload data.
+	 */
+	getValue: (ctx: Context, payload: TPayload) => Promise<string>;
+}
+
 interface GenericDictionary {
 	[k: string]: any;
 }
@@ -30,23 +40,16 @@ export interface RealtimeValueInformation extends RealtimeValueBase {
 	attributes: Attributes;
 }
 
-export interface RealtimeValue<TPayload extends GenericDictionary> extends RealtimeValueInformation {
+export interface RealtimeValue<TPayload extends GenericDictionary> extends RealtimeValueGetter<TPayload>, RealtimeValueInformation {
 
 	/**
 	 * Creates a default payload, if the user doesn't specify any data.
+	 * @param {Context} ctx The project context.
 	 */
 	createDefaultPayload: (ctx: Context) => Promise<TPayload>;
-
-	/**
-	 * Get's the string value of the value, given the payload body
-	 * @param {Context} ctx The project context.
-	 * @param {T} payload This instance of the value's payload data.
-	 * @param {number} recursiveDepth Ignored for extensions - internally used for recursive checks.
-	 */
-	getValue: (ctx: Context, payload: TPayload, recursiveDepth: number) => Promise<string>;
 }
 
-export interface EditableRealtimeValue<TPayload extends GenericDictionary, TEditorState extends GenericDictionary = TPayload> extends Omit<RealtimeValue<TPayload>, 'editor'> {
+export interface EditableRealtimeValue<TPayload extends GenericDictionary, TEditorState extends GenericDictionary = TPayload> extends RealtimeValue<TPayload> {
 
 	/**
 	 * Details how Beak and user's should interact with the value editor for your realtime value.
@@ -66,16 +69,22 @@ interface Editor<TPayload extends GenericDictionary, TEditorState extends Generi
 
 	/**
 	 * Generates the editor user interface
+	 * @param {Context} ctx The project context.
 	 */
 	createUserInterface: (ctx: Context) => Promise<UISection<TEditorState>[]>;
 
 	/**
 	 * If the payload data isn't the same as the editor state, this will convert Payload -> State
+	 * @param {Context} ctx The project context.
+	 * @param {TPayload} payload This instance of the value's payload data.
 	 */
 	load: (ctx: Context, payload: TPayload) => Promise<TEditorState>;
 
 	/**
 	 * If the payload data isn't the same as the editor state, this will convert State -> Payload
+	 * @param {Context} ctx The project context.
+	 * @param {TPayload} existingPayload This existing instance of the value's payload data.
+	 * @param {TEditorState} state This instance of the updated state data.
 	 */
 	save: (ctx: Context, existingPayload: TPayload, state: TEditorState) => Promise<TPayload>;
 }
@@ -134,7 +143,7 @@ declare global {
 type Level = 'info' | 'warn' | 'error';
 
 interface Beak {
-	parseValueParts: (ctx: Context, parts: unknown[], recursiveDepth: number) => Promise<string>;
+	parseValueParts: (ctx: Context, parts: unknown[]) => Promise<string>;
 
 	log: (level: Level, message: string) => void;
 }
