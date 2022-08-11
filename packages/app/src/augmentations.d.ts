@@ -1,6 +1,7 @@
 import { Store } from 'react-redux';
 import type { Context } from '@getbeak/types/values';
 import type { IpcRendererEvent } from 'electron';
+import type { Worker } from 'monaco-editor';
 
 import 'vite/client';
 import { ApplicationState } from './store';
@@ -8,6 +9,10 @@ import { ApplicationState } from './store';
 declare global {
 	interface Window {
 		store: Store<ApplicationState>;
+
+		MonacoEnvironment: {
+			getWorker: (_: unknown, label: string) => Worker;
+		};
 
 		secureBridge: {
 			ipc: {

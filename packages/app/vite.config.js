@@ -2,11 +2,12 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 
 const path = require('path');
+const fs = require('fs');
 const reactPlugin = require('@vitejs/plugin-react');
 const viteSentryPlugin = require('vite-plugin-sentry');
 
-// @ts-ignore
-const packageJson = require('../electron-host/package.json');
+// eslint-disable-next-line no-sync
+const packageJson = JSON.parse(fs.readFileSync(path.join(__dirname, '../', 'electron-host', 'package.json')));
 
 const environment = process.env.NODE_ENV;
 const versionRelease = Boolean(process.env.VERSION_RELEASE);
