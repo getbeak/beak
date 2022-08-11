@@ -8,20 +8,18 @@ interface EditorState {
 }
 
 const definition: EditableRealtimeValue<EditorState, EditorState> = {
-	type: 'url_encode',
-	name: 'Encode (URL)',
-	description: 'Generates a url encoded string',
+	type: 'url_decode',
+	name: 'Decode (URL)',
+	description: 'Decodes a url encoded string',
 	sensitive: false,
 	external: false,
 
-	createDefaultPayload: async () => ({
-		input: [''],
-	}),
+	createDefaultPayload: async () => ({ input: [''] }),
 
 	getValue: async (ctx, payload, recursiveDepth) => {
 		const parsed = await parseValueParts(ctx, payload.input, recursiveDepth);
 
-		return encodeURIComponent(parsed);
+		return decodeURIComponent(parsed);
 	},
 
 	attributes: {},
@@ -29,7 +27,7 @@ const definition: EditableRealtimeValue<EditorState, EditorState> = {
 	editor: {
 		createUserInterface: async () => [{
 			type: 'value_parts_input',
-			label: 'Enter the data to encode:',
+			label: 'Enter the data to decode:',
 			stateBinding: 'input',
 		}],
 
