@@ -43,7 +43,7 @@
     "base64-js": "^1.5.1",
     "change-case": "^4.1.2",
     "crpc": "^0.2.2",
-    "date-fns": "^2.28.0",
+    "date-fns": "^2.29.1",
     "electron-redux-devtools": "^0.3.4",
     "fuse.js": "^6.6.2",
     "http-status-codes": "^2.2.0",

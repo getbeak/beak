@@ -7,7 +7,7 @@
 	"types": "dist/index.d.ts",
 	"dependencies": {
 		"@getbeak/types": "1.0.0-prerelease.2",
-		"@getbeak/types-realtime-value": "1.0.0-prerelease.6"
+		"@getbeak/types-realtime-value": "1.0.0-prerelease.8"
 	},
 	"scripts": {
 		"build": "tsc"
