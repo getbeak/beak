@@ -65,7 +65,7 @@ const Purchased: React.FC<React.PropsWithChildren<unknown>> = () => {
 								<a
 									target={'_blank'}
 									rel={'noopener noreferrer nofollow'}
-									href={'https://beakapp.notion.site/User-licenses-and-authentication-37ccc436c3e648498b16a22e0e27a01a'}
+									href={'https://getbeak.notion.site/User-accounts-licences-d2e61bede483466fbe32d8a841a860b4'}
 								>
 									{'article'}
 								</a>{'.'}
@@ -88,7 +88,7 @@ const Purchased: React.FC<React.PropsWithChildren<unknown>> = () => {
 								<a
 									target={'_blank'}
 									rel={'noopener noreferrer nofollow'}
-									href={'https://beakapp.notion.site/Beak-guide-1c0d46949f9a4558998b183abc3a2b73'}
+									href={'https://getbeak.notion.site/Beak-manual-8c908d9584f34b8db19267dcc6206e9e'}
 								>
 									{'over here'}
 								</a>
