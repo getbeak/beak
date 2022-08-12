@@ -115,14 +115,14 @@ const BodyTab: React.FC<React.PropsWithChildren<BodyTabProps>> = props => {
 					size={'sm'}
 					onClick={() => changeRequestBodyType('json')}
 				>
-					{'Json'}
+					{'JSON'}
 				</TabItem>
 				<TabItem
 					active={body.type === 'url_encoded_form'}
 					size={'sm'}
 					onClick={() => changeRequestBodyType('url_encoded_form')}
 				>
-					{'Url encoded form'}
+					{'URL encoded form'}
 				</TabItem>
 				<TabSpacer />
 			</TabBar>
