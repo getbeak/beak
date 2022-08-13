@@ -25,7 +25,7 @@ export default function useFlightBodyInfo(flight: Flight, mode: 'request' | 'res
 			if (request.body.type === 'text')
 				return ['eligible', encoder.encode(request.body.payload)];
 
-			return ['eligible', request.body.payload.__hacky__binaryFileData!];
+			return ['eligible', request.body.payload.__hacky__binaryFileData! as Uint8Array];
 		}
 
 		if (!response || !response.hasBody)

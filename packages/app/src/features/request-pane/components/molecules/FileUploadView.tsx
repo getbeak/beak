@@ -6,7 +6,7 @@ import { requestBodyFileChanged } from '@beak/app/store/project/actions';
 import { PreviewReferencedFileRes } from '@beak/common/ipc/fs';
 import { ValidRequestNode } from '@getbeak/types/nodes';
 import mime from 'mime-types';
-import { RequestBodyFileForm } from 'packages/types/request';
+import { RequestBodyFile } from 'packages/types/request';
 import prettyBytes from 'pretty-bytes';
 import styled from 'styled-components';
 
@@ -17,7 +17,7 @@ export interface FileUploadViewProps {
 const FileUploadView: React.FC<FileUploadViewProps> = props => {
 	const { node } = props;
 	const dispatch = useDispatch();
-	const body = node.info.body as RequestBodyFileForm;
+	const body = node.info.body as RequestBodyFile;
 	const [preview, setPreview] = useState<PreviewReferencedFileRes>();
 
 	useEffect(() => {
