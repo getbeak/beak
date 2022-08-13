@@ -172,7 +172,8 @@
 					"enum": [
 						"text",
 						"json",
-						"url_encoded_form"
+						"url_encoded_form",
+						"file"
 					]
 				}
 			},
@@ -225,6 +226,26 @@
 									"^.*$": {
 										"$ref": "#/definitions/keyValuePair"
 									}
+								}
+							}
+						}
+					}
+				},
+				{
+					"if": {
+						"properties": {
+							"type": { "const": "file" }
+						}
+					},
+					"then": {
+						"properties": {
+							"payload": {
+								"type": "object",
+								"additionalProperties": false,
+
+								"properties": {
+									"fileReferenceId": { "type": "string" },
+									"contentType": { "type": "string" }
 								}
 							}
 						}

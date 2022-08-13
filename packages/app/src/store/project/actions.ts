@@ -12,6 +12,7 @@ import {
 	ProjectInfoPayload,
 	ProjectOpenedPayload,
 	RemoveNodeFromDiskPayload,
+	RequestBodyFileChangedPayload,
 	RequestBodyJsonEditorAddEntryPayload,
 	RequestBodyJsonEditorEnabledChangePayload,
 	RequestBodyJsonEditorNameChangePayload,
@@ -75,6 +76,7 @@ export const setWriteDebounce = createAction<WriteDebouncePayload>(AT.SET_WRITE_
 
 export const requestBodyTypeChanged = createAction<RequestBodyTypeChangedPayload>(AT.REQUEST_BODY_TYPE_CHANGED);
 export const requestBodyTextChanged = createAction<RequestBodyTextChangedPayload>(AT.REQUEST_BODY_TEXT_CHANGED);
+export const requestBodyFileChanged = createAction<RequestBodyFileChangedPayload>(AT.REQUEST_BODY_FILE_CHANGED);
 
 export const requestBodyJsonEditorNameChange = createAction<RequestBodyJsonEditorNameChangePayload>(
 	AT.REQUEST_BODY_JSON_EDITOR_NAME_CHANGE,
@@ -161,6 +163,7 @@ export default {
 
 	requestBodyTypeChanged,
 	requestBodyTextChanged,
+	requestBodyFileChanged,
 
 	requestBodyJsonEditorNameChange,
 	requestBodyJsonEditorValueChange,

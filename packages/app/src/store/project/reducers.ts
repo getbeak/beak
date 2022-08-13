@@ -168,6 +168,14 @@ const projectReducer = createReducer(initialState, builder => {
 
 			node.info.body.payload = action.payload.text;
 		})
+		.addCase(actions.requestBodyFileChanged, (state, action) => {
+			const node = state.tree[action.payload.requestId] as ValidRequestNode;
+
+			node.info.body.payload = {
+				fileReferenceId: action.payload.fileReferenceId,
+				contentType: action.payload.contentType,
+			};
+		})
 		.addCase(actions.requestBodyJsonEditorNameChange, (state, { payload }) => {
 			const { id, name, requestId } = payload;
 			const node = state.tree[requestId] as ValidRequestNode;

@@ -44,6 +44,8 @@ export const ActionTypes = {
 	REQUEST_BODY_TYPE_CHANGED: '@beak/global/project/REQUEST_BODY_TYPE_CHANGED',
 	REQUEST_BODY_TEXT_CHANGED: '@beak/global/project/REQUEST_BODY_TEXT_CHANGED',
 
+	REQUEST_BODY_FILE_CHANGED: '@beak/global/project/REQUEST_BODY_FILE_CHANGED',
+
 	REQUEST_BODY_JSON_EDITOR_NAME_CHANGE: '@beak/global/project/REQUEST_BODY_JSON_EDITOR_NAME_CHANGE',
 	REQUEST_BODY_JSON_EDITOR_VALUE_CHANGE: '@beak/global/project/REQUEST_BODY_JSON_EDITOR_VALUE_CHANGE',
 	REQUEST_BODY_JSON_EDITOR_TYPE_CHANGE: '@beak/global/project/REQUEST_BODY_JSON_EDITOR_TYPE_CHANGE',
@@ -154,7 +156,7 @@ export interface WriteDebouncePayload extends RequestIdPayload {
 
 export type RequestBodyTypeChangedPayload = RequestBodyTypeToJsonPayload |
 RequestBodyTypeToTextPayload |
-RequestBodyTypeToUrlEncodedFormPayload;
+RequestBodyTypeToUrlEncodedFormPayload | RequestBodyTypeToFilePayload;
 
 interface RequestBodyTypeToJsonPayload extends RequestIdPayload {
 	type: 'json';
@@ -171,7 +173,20 @@ interface RequestBodyTypeToUrlEncodedFormPayload extends RequestIdPayload {
 	payload: Record<string, ToggleKeyValue>;
 }
 
+interface RequestBodyTypeToFilePayload extends RequestIdPayload {
+	type: 'file';
+	payload: {
+		fileReferenceId?: string;
+		contentType?: string;
+	};
+}
+
 export interface RequestBodyTextChangedPayload extends RequestIdPayload { text: string }
+
+export interface RequestBodyFileChangedPayload extends RequestIdPayload {
+	fileReferenceId: string | undefined;
+	contentType: string | undefined;
+}
 
 export interface RequestBodyJsonEditorNameChangePayload extends RequestIdPayload {
 	id: string;
