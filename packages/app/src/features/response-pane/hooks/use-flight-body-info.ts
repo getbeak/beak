@@ -6,12 +6,14 @@ import type { Flight } from '@getbeak/types/flight';
 export type NotEligible = 'request_invalid_body' | 'request_no_body' | 'response_no_body';
 type ReturnType = ['eligible', Uint8Array] | [NotEligible, null];
 
+const encoder = new TextEncoder();
+
 export default function useFlightBodyInfo(flight: Flight, mode: 'request' | 'response'): ReturnType {
 	return useMemo<ReturnType>(() => {
 		const { request, response } = flight;
 
 		if (mode === 'request') {
-			if (request.body.type !== 'text')
+			if (!['text', 'file'].includes(request.body.type))
 				return ['request_invalid_body', null];
 
 			if (request.body.payload === '')
@@ -20,9 +22,10 @@ export default function useFlightBodyInfo(flight: Flight, mode: 'request' | 'res
 			if (!requestAllowsBody(request.verb))
 				return ['request_no_body', null];
 
-			const encoder = new TextEncoder();
+			if (request.body.type === 'text')
+				return ['eligible', encoder.encode(request.body.payload)];
 
-			return ['eligible', encoder.encode(request.body.payload)];
+			return ['eligible', request.body.payload.__hacky__binaryFileData!];
 		}
 
 		if (!response || !response.hasBody)

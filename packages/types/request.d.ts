@@ -10,7 +10,7 @@ export interface RequestOverview {
 	options: RequestOptions;
 }
 
-export type RequestBody = RequestBodyText | RequestBodyJson | RequestBodyUrlEncodedForm | RequestBodyFileForm;
+export type RequestBody = RequestBodyText | RequestBodyJson | RequestBodyUrlEncodedForm | RequestBodyFile;
 export type RequestBodyType = 'text' | 'json' | 'url_encoded_form' | 'file';
 
 export interface RequestBodyText {
@@ -28,11 +28,12 @@ export interface RequestBodyUrlEncodedForm {
 	payload: Record<string, ToggleKeyValue>;
 }
 
-export interface RequestBodyFileForm {
+export interface RequestBodyFile {
 	type: 'file';
 	payload: {
 		fileReferenceId?: string;
 		contentType?: string;
+		__hacky__binaryFileData?: Uint8Array;
 	};
 }
 
