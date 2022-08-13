@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import Button from '@beak/app/components/atoms/Button';
 import { ipcFsService } from '@beak/app/lib/ipc';
 import { requestBodyFileChanged } from '@beak/app/store/project/actions';
 import { PreviewReferencedFileRes } from '@beak/common/ipc/fs';
+import { faClose } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { ValidRequestNode } from '@getbeak/types/nodes';
 import mime from 'mime-types';
 import { RequestBodyFile } from 'packages/types/request';
@@ -24,6 +25,17 @@ const FileUploadView: React.FC<FileUploadViewProps> = props => {
 		openPreview(body.payload.fileReferenceId);
 	}, [body.payload.fileReferenceId]);
 
+	async function clearFile(event: React.MouseEvent) {
+		event.stopPropagation();
+
+		setPreview(void 0);
+		dispatch(requestBodyFileChanged({
+			requestId: node.id,
+			fileReferenceId: void 0,
+			contentType: void 0,
+		}));
+	}
+
 	async function openPreview(fileReferenceId: string | undefined) {
 		if (!fileReferenceId)
 			return;
@@ -41,12 +53,11 @@ const FileUploadView: React.FC<FileUploadViewProps> = props => {
 			return;
 		}
 
-		// TODO(afr): Fix content type fallback
 		setPreview(preview);
 		dispatch(requestBodyFileChanged({
 			requestId: node.id,
 			fileReferenceId,
-			contentType: mime.lookup(preview.fileExtension) || 'x',
+			contentType: mime.lookup(preview.fileExtension) || '',
 		}));
 	}
 
@@ -65,17 +76,14 @@ const FileUploadView: React.FC<FileUploadViewProps> = props => {
 				{!preview && 'No file selected...'}
 				{preview && (
 					<React.Fragment>
+						<ClearFile onClick={clearFile}>
+							<FontAwesomeIcon icon={faClose} />
+						</ClearFile>
 						<FileName>{preview.fileName}</FileName>
 						<FileSize>{prettyBytes(preview.fileSize)}</FileSize>
 					</React.Fragment>
 				)}
 			</FileBlob>
-			<Button
-				size={'sm'}
-				onClick={openFile}
-			>
-				{'Pick file'}
-			</Button>
 		</Container>
 	);
 };
@@ -89,6 +97,7 @@ const Container = styled.div`
 `;
 
 const FileBlob = styled.div`
+	position: relative;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
@@ -104,6 +113,13 @@ const FileBlob = styled.div`
 	font-size: 12px;
 `;
 
+const ClearFile = styled.div`
+	position: absolute;
+	right: 5px;
+	top: 3px;
+	background: transparent;
+	padding: 4px;
+`;
 const FileName = styled.div``;
 const FileSize = styled.div``;
 
