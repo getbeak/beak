@@ -9,6 +9,10 @@ import { switchEnvironment } from '../utils/environment';
 const service = new IpcPreferencesServiceMain(ipcMain);
 
 service.registerGetEnvironment(async () => persistentStore.get('environment'));
+
+service.registerGetNotificationValue(async (_event, key) => persistentStore.get(`notifications.${key}`));
+service.registerSetNotificationValue(async (_event, { key, value }) => persistentStore.set(`notifications.${key}`, value));
+
 service.registerGetThemeMode(async () => persistentStore.get('themeMode'));
 
 service.registerSwitchEnvironment(async (_event, environment) => {
