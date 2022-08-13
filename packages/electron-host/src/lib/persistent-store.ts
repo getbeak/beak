@@ -32,6 +32,7 @@ export interface Store {
 	environment: Environment;
 	arbiter: ArbiterStatus;
 	magicStates: MagicStates;
+	referenceFiles: Record<string, Record<string, string>>;
 
 	passedOnboarding: boolean;
 	projectMappings: Record<string, string>;
@@ -55,6 +56,8 @@ const persistentStore = new ElectronStore<Store>({
 			status: false,
 		},
 		magicStates: {},
+		referenceFiles: {},
+
 		passedOnboarding: false,
 		projectMappings: {},
 

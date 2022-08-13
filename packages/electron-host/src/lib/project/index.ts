@@ -19,6 +19,7 @@ import { checkAndHandleMigrations } from './migrations';
 import checkAndHandleSilentMigrations from './silent-migrations';
 
 export const windowProjectIdMapping: Record<string, number> = { };
+export const projectIdWindowMapping: Record<number, string> = { };
 
 export interface CreationOptions {
 	name: string;
@@ -61,8 +62,10 @@ export async function tryOpenProjectFolder(projectFolderPath: string, silent = f
 
 	const projectWindowId = createProjectMainWindow(projectFilePath);
 
+	// This is terrible, I need to refactor later
 	setProjectWindowMapping(projectWindowId, projectFilePath);
 	windowProjectIdMapping[projectFile.id] = projectWindowId;
+	projectIdWindowMapping[projectWindowId] = projectFile.id;
 
 	return projectWindowId;
 }

@@ -19,6 +19,7 @@ import styled from 'styled-components';
 import TabBar from '../../../../components/atoms/TabBar';
 import TabItem from '../../../../components/atoms/TabItem';
 import TabSpacer from '../../../../components/atoms/TabSpacer';
+import FileUploadView from '../molecules/FileUploadView';
 
 export interface BodyTabProps {
 	node: ValidRequestNode;
@@ -115,14 +116,21 @@ const BodyTab: React.FC<React.PropsWithChildren<BodyTabProps>> = props => {
 					size={'sm'}
 					onClick={() => changeRequestBodyType('json')}
 				>
-					{'Json'}
+					{'JSON'}
 				</TabItem>
 				<TabItem
 					active={body.type === 'url_encoded_form'}
 					size={'sm'}
 					onClick={() => changeRequestBodyType('url_encoded_form')}
 				>
-					{'Url encoded form'}
+					{'URL encoded form'}
+				</TabItem>
+				<TabItem
+					active={body.type === 'file'}
+					size={'sm'}
+					onClick={() => changeRequestBodyType('file')}
+				>
+					{'File'}
 				</TabItem>
 				<TabSpacer />
 			</TabBar>
@@ -168,6 +176,7 @@ const BodyTab: React.FC<React.PropsWithChildren<BodyTabProps>> = props => {
 						}}
 					/>
 				)}
+				{body.type === 'file' && <FileUploadView node={node} />}
 			</TabBody>
 		</Container>
 	);
@@ -208,6 +217,9 @@ function createEmptyBodyPayload(requestId: string, type: RequestBodyType): Reque
 				},
 			};
 		}
+
+		case 'file':
+			return { requestId, type, payload: { fileReferenceId: void 0, contentType: void 0 } };
 
 		case 'text':
 		default:

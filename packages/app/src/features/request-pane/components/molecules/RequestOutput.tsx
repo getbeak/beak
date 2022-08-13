@@ -6,6 +6,7 @@ import { convertToRealJson } from '@beak/app/features/json-editor/parsers';
 import useRealtimeValueContext from '@beak/app/features/realtime-values/hooks/use-realtime-value-context';
 import { parseValueParts } from '@beak/app/features/realtime-values/parser';
 import useComponentMounted from '@beak/app/hooks/use-component-mounted';
+import { ipcFsService } from '@beak/app/lib/ipc';
 import { useAppSelector } from '@beak/app/store/redux';
 import { convertRequestToUrl } from '@beak/app/utils/uri';
 import { requestBodyContentType } from '@beak/common/helpers/request';
@@ -114,7 +115,8 @@ export async function createBasicHttpOutput(overview: RequestOverview, context: 
 		if (!hasContentTypeHeader) {
 			const contentType = requestBodyContentType(body);
 
-			out.push(`Content-Type: ${contentType}`);
+			if (contentType)
+				out.push(`Content-Type: ${contentType}`);
 		}
 
 		// Padding between headers/body
@@ -126,11 +128,27 @@ export async function createBasicHttpOutput(overview: RequestOverview, context: 
 			out.push(body.payload);
 		else if (body.type === 'url_encoded_form')
 			out.push(await convertKeyValueToString(context, body.payload));
+		else if (body.type === 'file')
+			out.push(await readReferencedFile(body.payload.fileReferenceId));
 		else
 			out.push('[Unknown body type]');
 	}
 
 	return out.join('\n');
+}
+
+async function readReferencedFile(fileReferenceId: string | undefined) {
+	if (!fileReferenceId)
+		return '';
+
+	try {
+		const response = await ipcFsService.readReferencedFile(fileReferenceId, 1000);
+		const decoded = new TextDecoder().decode(response.body);
+
+		return decoded;
+	} catch (error) {
+		return '';
+	}
 }
 
 function hasHeader(header: string, headers: Record<string, ToggleKeyValue>) {

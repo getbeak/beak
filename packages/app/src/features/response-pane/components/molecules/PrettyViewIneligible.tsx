@@ -11,7 +11,7 @@ const reasons: Record<NotEligible, Reason> = {
 		description: 'The internal request body is in an invalid format. Report this as a bug.',
 	},
 	request_no_body: {
-		title: 'This request had no body (to love)',
+		title: 'This request had no body, to love',
 		description: 'The request had no body, so you don\'t need to be looking here',
 	},
 	response_no_body: {

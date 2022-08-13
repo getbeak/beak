@@ -6,7 +6,7 @@ import {
 	FlightHeartbeatPayload,
 	FlightRequestPayload,
 } from '@beak/common/types/requester';
-import type { RequestOverview } from '@getbeak/types/request';
+import type { RequestBodyFile, RequestOverview } from '@getbeak/types/request';
 import fetch, { RequestInit, Response } from 'node-fetch';
 
 const bodyFreeVerbs = ['get', 'head'];
@@ -104,10 +104,17 @@ async function runRequest(overview: RequestOverview) {
 	};
 
 	if (!bodyFreeVerbs.includes(verb)) {
-		if (['text'].includes(body.type))
-			init.body = body.payload as string;
-		else
-			throw new Error(`Unknown body type ${body.type}`);
+		switch (body.type) {
+			case 'text':
+				init.body = body.payload as string;
+				break;
+
+			case 'file':
+				init.body = (body as RequestBodyFile).payload.__hacky__binaryFileData!;
+				break;
+
+			default: throw new Error(`Unknown body type ${body.type}`);
+		}
 
 		const hasContentTypeHeader = TypedObject.keys(headers)
 			.map(h => h.toLocaleLowerCase())

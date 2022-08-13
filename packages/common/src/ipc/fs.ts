@@ -14,6 +14,9 @@ export const FsMessages = {
 	Remove: 'remove',
 	EnsureDir: 'ensure_dir',
 	Move: 'move',
+	OpenReferenceFile: 'open_reference_file',
+	PreviewReferencedFile: 'preview_referenced_file',
+	ReadReferencedFile: 'read_referenced_file',
 };
 
 export interface ReadJsonReq {
@@ -56,6 +59,32 @@ export interface ReadDirReq {
 export interface DirectoryEntry {
 	name: string;
 	isDirectory: boolean;
+}
+
+export interface OpenReferenceFileReq { }
+
+export interface OpenReferenceFileRes {
+	fileReferenceId: string;
+}
+
+export interface PreviewReferencedFileReq {
+	fileReferenceId: string;
+}
+
+export interface PreviewReferencedFileRes {
+	fileName: string;
+	filePath: string;
+	fileSize: number;
+	fileExtension: string;
+}
+
+export interface ReadReferencedFileReq {
+	fileReferenceId: string;
+	truncatedLength?: number;
+}
+
+export interface ReadReferencedFileRes {
+	body: Uint8Array;
 }
 
 export class IpcFsServiceRenderer extends IpcServiceRenderer {
@@ -102,6 +131,18 @@ export class IpcFsServiceRenderer extends IpcServiceRenderer {
 	async readDir(filePath: string, options?: ReadDirReq['options']) {
 		return this.invoke<DirectoryEntry[]>(FsMessages.ReadDir, { filePath, options });
 	}
+
+	async openReferenceFile() {
+		return this.invoke<OpenReferenceFileRes | null>(FsMessages.OpenReferenceFile);
+	}
+
+	async previewReferencedFile(fileReferenceId: string) {
+		return this.invoke<PreviewReferencedFileRes | null>(FsMessages.PreviewReferencedFile, { fileReferenceId });
+	}
+
+	async readReferencedFile(fileReferenceId: string, truncatedLength?: number) {
+		return this.invoke<ReadReferencedFileRes>(FsMessages.ReadReferencedFile, { fileReferenceId, truncatedLength });
+	}
 }
 
 export class IpcFsServiceMain extends IpcServiceMain {
@@ -147,5 +188,17 @@ export class IpcFsServiceMain extends IpcServiceMain {
 
 	registerReadDir(fn: Listener<ReadDirReq, DirectoryEntry[]>) {
 		this.registerListener(FsMessages.ReadDir, fn);
+	}
+
+	registerOpenReferenceFile(fn: Listener<OpenReferenceFileReq, OpenReferenceFileRes | null>) {
+		this.registerListener(FsMessages.OpenReferenceFile, fn);
+	}
+
+	registerPreviewReferencedFile(fn: Listener<PreviewReferencedFileReq, PreviewReferencedFileRes | null>) {
+		this.registerListener(FsMessages.PreviewReferencedFile, fn);
+	}
+
+	registerReadReferencedFile(fn: Listener<ReadReferencedFileReq, ReadReferencedFileRes>) {
+		this.registerListener(FsMessages.ReadReferencedFile, fn);
 	}
 }

@@ -9,10 +9,11 @@ import {
 	WriteTextReq,
 } from '@beak/common/ipc/fs';
 import Squawk from '@beak/common/utils/squawk';
-import { ipcMain, shell } from 'electron';
+import { BrowserWindow, ipcMain, IpcMainInvokeEvent, shell } from 'electron';
 import fs from 'fs-extra';
 import path from 'path';
 
+import { openReferenceFile, previewReferencedFile } from '../lib/referenced-files';
 import { getProjectWindowMapping } from './fs-shared';
 
 const service = new IpcFsServiceMain(ipcMain);
@@ -84,6 +85,44 @@ service.registerReadDir(async (event, payload: ReadDirReq) => {
 		name: d.name,
 		isDirectory: d.isDirectory(),
 	}));
+});
+
+service.registerOpenReferenceFile(async event => {
+	const sender = (event as IpcMainInvokeEvent).sender;
+	const window = BrowserWindow.fromWebContents(sender)!;
+
+	return await openReferenceFile(window);
+});
+
+service.registerPreviewReferencedFile(async (event, payload) => {
+	const sender = (event as IpcMainInvokeEvent).sender;
+	const window = BrowserWindow.fromWebContents(sender)!;
+	const filePath = await previewReferencedFile(window, payload.fileReferenceId);
+
+	if (!filePath) return null;
+	if (!await fs.pathExists(filePath)) return null;
+
+	const stat = await fs.stat(filePath);
+
+	return {
+		filePath,
+		fileName: path.basename(filePath),
+		fileExtension: path.extname(filePath),
+		fileSize: stat.size,
+	};
+});
+
+service.registerReadReferencedFile(async (event, payload) => {
+	const sender = (event as IpcMainInvokeEvent).sender;
+	const window = BrowserWindow.fromWebContents(sender)!;
+	const filePath = await previewReferencedFile(window, payload.fileReferenceId);
+
+	const file = await fs.readFile(filePath);
+
+	if (payload.truncatedLength === void 0)
+		return { body: file.slice(0, payload.truncatedLength) };
+
+	return { body: file };
 });
 
 async function ensureParentDirectoryExists(filePath: string) {

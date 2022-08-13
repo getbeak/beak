@@ -2,14 +2,14 @@ import { instance as windowSessionInstance } from '@beak/app/contexts/window-ses
 import { convertKeyValueToString } from '@beak/app/features/basic-table-editor/parsers';
 import { convertToRealJson } from '@beak/app/features/json-editor/parsers';
 import { parseValueParts } from '@beak/app/features/realtime-values/parser';
-import { ipcDialogService } from '@beak/app/lib/ipc';
+import { ipcDialogService, ipcFsService } from '@beak/app/lib/ipc';
 import { convertRequestToUrl } from '@beak/app/utils/uri';
 import { requestBodyContentType } from '@beak/common/helpers/request';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import ksuid from '@beak/ksuid';
 import type { FlightHistory } from '@getbeak/types/flight';
 import type { Tree, ValidRequestNode } from '@getbeak/types/nodes';
-import type { RequestBody, RequestBodyText, RequestOverview, ToggleKeyValue } from '@getbeak/types/request';
+import type { RequestBody, RequestBodyFile, RequestBodyText, RequestOverview, ToggleKeyValue } from '@getbeak/types/request';
 import type { Context } from '@getbeak/types/values';
 import type { VariableGroups } from '@getbeak/types/variable-groups';
 import { call, put, select } from 'redux-saga/effects';
@@ -85,11 +85,15 @@ async function prepareRequest(overview: RequestOverview, context: Context): Prom
 	}
 
 	if (!hasHeader('content-type', headers)) {
-		headers[ksuid.generate('header').toString()] = {
-			name: 'Content-Type',
-			value: [requestBodyContentType(overview.body)],
-			enabled: true,
-		};
+		const contentType = requestBodyContentType(overview.body);
+
+		if (contentType) {
+			headers[ksuid.generate('header').toString()] = {
+				name: 'Content-Type',
+				value: [contentType],
+				enabled: true,
+			};
+		}
 	}
 
 	return {
@@ -115,7 +119,7 @@ async function flattenToggleValueParts(context: Context, toggleValueParts: Recor
 	return out;
 }
 
-async function flattenBody(context: Context, body: RequestBody): Promise<RequestBodyText> {
+async function flattenBody(context: Context, body: RequestBody): Promise<RequestBodyText | RequestBodyFile> {
 	switch (body.type) {
 		case 'text':
 			return body;
@@ -135,7 +139,26 @@ async function flattenBody(context: Context, body: RequestBody): Promise<Request
 				payload: await convertKeyValueToString(context, body.payload),
 			};
 
-		default: return { type: 'text', payload: '' };
+		case 'file': {
+			try {
+				const response = await ipcFsService.readReferencedFile(body.payload.fileReferenceId!);
+
+				return {
+					type: 'file',
+					payload: {
+						...body.payload,
+						__hacky__binaryFileData: response.body,
+					},
+				};
+			} catch (error) {
+				// eslint-disable-next-line no-console
+				console.error('unable to read reference file', error);
+
+				return { type: 'text', payload: '' };
+			}
+		}
+
+		default: throw new Error('unknown_body_type');
 	}
 }
 
