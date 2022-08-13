@@ -1,6 +1,6 @@
 {
     "name": "@getbeak/types-realtime-value",
-    "version": "1.0.0-prerelease.8",
+    "version": "1.0.0-prerelease.9",
     "private": false,
     "description": "Beak types for realtime value types",
     "homepage": "https://github.com/getbeak/beak/tree/master/packages/types-realtime-value",
