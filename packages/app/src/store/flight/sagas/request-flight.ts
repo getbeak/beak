@@ -90,7 +90,7 @@ async function prepareRequest(overview: RequestOverview, context: Context): Prom
 		if (contentType) {
 			headers[ksuid.generate('header').toString()] = {
 				name: 'Content-Type',
-				value: [],
+				value: [contentType],
 				enabled: true,
 			};
 		}
