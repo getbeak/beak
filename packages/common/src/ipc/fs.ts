@@ -80,6 +80,7 @@ export interface PreviewReferencedFileRes {
 
 export interface ReadReferencedFileReq {
 	fileReferenceId: string;
+	truncatedLength?: number;
 }
 
 export interface ReadReferencedFileRes {
@@ -139,8 +140,8 @@ export class IpcFsServiceRenderer extends IpcServiceRenderer {
 		return this.invoke<PreviewReferencedFileRes | null>(FsMessages.PreviewReferencedFile, { fileReferenceId });
 	}
 
-	async readReferencedFile(fileReferenceId: string) {
-		return this.invoke<ReadReferencedFileRes>(FsMessages.ReadReferencedFile, { fileReferenceId });
+	async readReferencedFile(fileReferenceId: string, truncatedLength?: number) {
+		return this.invoke<ReadReferencedFileRes>(FsMessages.ReadReferencedFile, { fileReferenceId, truncatedLength });
 	}
 }
 

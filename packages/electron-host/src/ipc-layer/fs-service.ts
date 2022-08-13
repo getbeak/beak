@@ -112,6 +112,19 @@ service.registerPreviewReferencedFile(async (event, payload) => {
 	};
 });
 
+service.registerReadReferencedFile(async (event, payload) => {
+	const sender = (event as IpcMainInvokeEvent).sender;
+	const window = BrowserWindow.fromWebContents(sender)!;
+	const filePath = await previewReferencedFile(window, payload.fileReferenceId);
+
+	const file = await fs.readFile(filePath);
+
+	if (payload.truncatedLength === void 0)
+		return { body: file.slice(0, payload.truncatedLength) };
+
+	return { body: file };
+});
+
 async function ensureParentDirectoryExists(filePath: string) {
 	const parentDirectory = path.join(filePath, '..');
 
