@@ -1,14 +1,14 @@
 import styled from 'styled-components';
 
 export const ItemGroup = styled.div`
-	margin-bottom: 15px;
+	margin-bottom: 20px;
 `;
 
 export const ItemLabel = styled.div`
 	font-size: 14px;
 	font-weight: 600;
 	color: ${p => p.theme.ui.textMinor};
-	margin-bottom: 5px;
+	margin-bottom: 10px;
 `;
 
 export const ItemInfo = styled.div`

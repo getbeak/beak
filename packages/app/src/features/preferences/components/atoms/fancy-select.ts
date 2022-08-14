@@ -2,7 +2,6 @@ import { ThemeMode } from '@beak/common/types/theme';
 import styled, { css } from 'styled-components';
 
 export const SelectContainer = styled.div`
-	margin: 10px 0;
 	display: inline-flex;
 	gap: 35px;
 	padding: 20px 25px;
