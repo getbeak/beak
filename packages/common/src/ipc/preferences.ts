@@ -7,6 +7,7 @@ import { IpcServiceMain, IpcServiceRenderer, Listener, PartialIpcRenderer } from
 export const PreferencesMessages = {
 	GetEnvironment: 'get_environment',
 	SwitchEnvironment: 'switch_environment',
+	GetNotificationOverview: 'get_notification_overview',
 	GetNotificationValue: 'get_notification_value',
 	SetNotificationValue: 'set_notification_value',
 	GetThemeMode: 'get_theme_mode',
@@ -31,6 +32,10 @@ export class IpcPreferencesServiceRenderer extends IpcServiceRenderer {
 
 	async switchEnvironment(environment: string) {
 		return this.invoke(PreferencesMessages.SwitchEnvironment, environment);
+	}
+
+	async getNotificationOverview() {
+		return this.invoke<NotificationPreferences>(PreferencesMessages.GetNotificationOverview);
 	}
 
 	async getNotificationValue<Key extends keyof NotificationPreferences>(key: Key) {
@@ -73,7 +78,12 @@ export class IpcPreferencesServiceMain extends IpcServiceMain {
 	}
 
 	// eslint-disable-next-line max-len
-	registerGetNotificationValue<Key extends keyof NotificationPreferences>(fn: Listener<Key, Key>) {
+	registerGetNotificationOverview(fn: Listener<void, NotificationPreferences>) {
+		this.registerListener(PreferencesMessages.GetNotificationOverview, fn);
+	}
+
+	// eslint-disable-next-line max-len
+	registerGetNotificationValue<Key extends keyof NotificationPreferences>(fn: Listener<Key, NotificationPreferences[Key]>) {
 		this.registerListener(PreferencesMessages.GetNotificationValue, fn);
 	}
 
