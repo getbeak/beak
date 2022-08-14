@@ -3,11 +3,13 @@ import { ProjectFile } from '@getbeak/types/project';
 
 import logger from '../../logger';
 import handle_0_2_0_to_0_2_1 from './migration-0.2.0-0.2.1';
+import handle_0_2_1_to_0_3_0 from './migration-0.2.1-0.3.0';
 
 type MigrationHandler = (projectFolderPath: string) => Promise<void>;
 
 const migrationHistory: Record<string, MigrationHandler> = {
 	'0.2.0': handle_0_2_0_to_0_2_1, // Migrate from 0.2.0 -> 0.2.1
+	'0.3.0': handle_0_2_1_to_0_3_0, // Migrate from 0.2.1 -> 0.3.0
 };
 
 export async function checkAndHandleMigrations(projectFile: ProjectFile, projectFolderPath: string) {
