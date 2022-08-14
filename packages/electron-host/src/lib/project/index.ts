@@ -117,7 +117,7 @@ export default async function createProject(options: CreationOptions) {
 			[ksuid.generate('header').toString()]: {
 				enabled: true,
 				name: 'X-Example-Header',
-				value: ['Taylor Swift'],
+				value: ['Welcome to Beak!'],
 			},
 		},
 		body: {
@@ -149,13 +149,15 @@ export default async function createProject(options: CreationOptions) {
 	await fs.ensureDir(projectPath);
 	await ensureDirEmpty(projectPath);
 	await fs.ensureDir(path.join(projectPath, 'tree'));
-	await fs.writeJson(path.join(projectPath, 'tree', 'Example request.json'), exReq, {
-		spaces: '\t',
-	});
+	await fs.writeJson(path.join(projectPath, 'tree', 'Example request.json'), exReq, { spaces: '\t' });
+
 	await fs.ensureDir(path.join(projectPath, 'variable-groups'));
-	await fs.writeJson(path.join(projectPath, 'variable-groups', 'Environment.json'), variableGroup, {
-		spaces: '\t',
-	});
+	await fs.writeJson(path.join(projectPath, 'variable-groups', 'Environment.json'), variableGroup, { spaces: '\t' });
+
+	await fs.ensureDir(path.join(projectPath, 'extensions'));
+	await fs.writeJson(path.join(projectPath, 'extensions', 'package.json'), createExtensionsPackageJson(name), { spaces: '\t' });
+	await fs.writeJson(path.join(projectPath, 'extensions', 'README.md'), createExtensionsReadme(name), { spaces: '\t' });
+
 	await fs.writeFile(path.join(projectPath, '.gitignore'), createGitIgnore());
 	await fs.ensureDir(path.join(projectPath, '.beak'));
 	await fs.writeJson(path.join(projectPath, '.beak', 'supersecret.json'), {
@@ -199,7 +201,7 @@ async function createProjectFile(projectPath: string, name: string): Promise<[Pr
 	const file: ProjectFile = {
 		id: ksuid.generate('project').toString(),
 		name,
-		version: '0.2.1',
+		version: '0.3.0',
 	};
 
 	await fs.writeJson(projectFilePath, file, { spaces: '\t' });
@@ -212,6 +214,36 @@ function createReadme(name: string) {
 		`# ${name}`,
 		'',
 		'Welcome to your new Beak project! For help getting started, please visit the [Beak docs](https://docs.getbeak.app/).',
+		'',
+	].join('\n');
+}
+
+export function createExtensionsPackageJson(name: string) {
+	const slug = name.toString()
+		.normalize('NFKD')
+		.toLowerCase()
+		.trim()
+		.replace(/\s+/g, '-')
+		.replace(/[^\w-]+/g, '')
+		.replace(/--+/g, '-');
+
+	return {
+		name: `${slug}-extensions`,
+		version: '1.0.0',
+		dependencies: {},
+	};
+}
+
+export function createExtensionsReadme(name: string) {
+	return [
+		`# ${name} extensions`,
+		'',
+		'This folder handles the storage and orchestration of Beak extensions. Over time more management of extensions will be exposed inside Beak\'s interface.',
+		'',
+		'## Getting started',
+		'Below are some useful resources for getting started with Beak\'s extensions',
+		'- [Extensions manual](https://getbeak.notion.site/Extensions-realtime-values-4c16ca640b35460787056f8be815b904)',
+		'- [GitHub extension template](https://github.com/getbeak/realtime-value-extension-template)',
 		'',
 	].join('\n');
 }
