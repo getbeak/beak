@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
+import Checkbox from '@beak/app/components/atoms/Checkbox';
 import { ipcPreferencesService } from '@beak/app/lib/ipc';
 import { NotificationState } from '@beak/common/types/preferences';
 import styled from 'styled-components';
 
 import { ItemGroup, ItemLabel } from '../atoms/item';
 import NotificationStateSelect from '../atoms/NotificationStateSelect';
-import Checkbox from '@beak/app/components/atoms/Checkbox';
 
 const NotificationsItem: React.FC<React.PropsWithChildren<unknown>> = () => {
 	const [onSuccessfulRequest, setOnSuccessfulRequest] = useState<NotificationState>();
