@@ -65,7 +65,8 @@ const NotificationsItem: React.FC<React.PropsWithChildren<unknown>> = () => {
 						}}
 					/>
 				</SubItem>
-				<SubItem>
+				{/* Disabled for now */}
+				{/* <SubItem>
 					<SubItemLabel>{'Update available: '}</SubItemLabel>
 					<NotificationStateSelect
 						value={onUpdateAvailable}
@@ -74,7 +75,7 @@ const NotificationsItem: React.FC<React.PropsWithChildren<unknown>> = () => {
 							setNotificationValue('onUpdateAvailable', value);
 						}}
 					/>
-				</SubItem>
+				</SubItem> */}
 				<SubItem>
 					<Checkbox
 						id={'showRequestNotificationWhenFocused'}
