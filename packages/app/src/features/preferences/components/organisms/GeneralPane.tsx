@@ -4,6 +4,7 @@ import { ThemeMode } from '@beak/common/types/theme';
 
 import { SelectContainer, SelectItem, SelectItemPreview } from '../atoms/fancy-select';
 import { ItemGroup, ItemLabel } from '../atoms/item';
+import NotificationsItem from '../molecules/NotificationsItem';
 import Pane from '../molecules/Pane';
 
 const GeneralPane: React.FC<React.PropsWithChildren<unknown>> = () => {
@@ -54,6 +55,8 @@ const GeneralPane: React.FC<React.PropsWithChildren<unknown>> = () => {
 					</SelectItem>
 				</SelectContainer>
 			</ItemGroup>
+
+			<NotificationsItem />
 		</Pane>
 	);
 };
