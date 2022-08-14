@@ -1,4 +1,4 @@
-export type NotificationState = 'on' | 'on-with-sound' | 'sound-only' | 'off';
+export type NotificationState = 'on' | 'on-no-sound' | 'sound-only' | 'off';
 
 export interface NotificationPreferences {
 	onSuccessfulRequest: NotificationState;
