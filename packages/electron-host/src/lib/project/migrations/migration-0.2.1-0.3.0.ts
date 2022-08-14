@@ -14,7 +14,7 @@ import path from 'path';
 import { createExtensionsPackageJson, createExtensionsReadme } from '..';
 
 export default async function handle(projectFolder: string) {
-	const extensionsPath = path.join(projectFolder, '.beak', 'extensions');
+	const extensionsPath = path.join(projectFolder, 'extensions');
 	const projectFilePath = path.join(projectFolder, 'project.json');
 	const projectFile = await fs.readJson(projectFilePath) as ProjectFile;
 
@@ -22,7 +22,7 @@ export default async function handle(projectFolder: string) {
 	if (!await fs.pathExists(extensionsPath)) {
 		await fs.ensureDir(extensionsPath);
 		await fs.writeJson(path.join(extensionsPath, 'package.json'), createExtensionsPackageJson(projectFile.name), { spaces: '\t' });
-		await fs.writeJson(path.join(extensionsPath, 'README.md'), createExtensionsReadme(projectFile.name), { spaces: '\t' });
+		await fs.writeFile(path.join(extensionsPath, 'README.md'), createExtensionsReadme(projectFile.name));
 	}
 
 	await fs.writeJson(projectFilePath, {

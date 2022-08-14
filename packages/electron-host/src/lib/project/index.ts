@@ -156,7 +156,7 @@ export default async function createProject(options: CreationOptions) {
 
 	await fs.ensureDir(path.join(projectPath, 'extensions'));
 	await fs.writeJson(path.join(projectPath, 'extensions', 'package.json'), createExtensionsPackageJson(name), { spaces: '\t' });
-	await fs.writeJson(path.join(projectPath, 'extensions', 'README.md'), createExtensionsReadme(name), { spaces: '\t' });
+	await fs.writeFile(path.join(projectPath, 'extensions', 'README.md'), createExtensionsReadme(name));
 
 	await fs.writeFile(path.join(projectPath, '.gitignore'), createGitIgnore());
 	await fs.ensureDir(path.join(projectPath, '.beak'));

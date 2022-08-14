@@ -5,7 +5,7 @@ import { readJsonAndValidate } from '../fs';
 import { ipcFsService } from '../ipc';
 import { projectSchema } from './schemas';
 
-const latestSupported = '0.2.1';
+const latestSupported = '0.3.0';
 
 export async function readProjectFile() {
 	const { file } = await readJsonAndValidate<ProjectFile>('project.json', projectSchema);
