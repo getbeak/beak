@@ -5557,9 +5557,9 @@ electron-redux-devtools@^0.3.4:
   integrity sha1-IcLq/XOSSMZBTx00bmhHsJgVUOE=
 
 electron-releases@^3.1097.0:
-  version "3.1102.0"
-  resolved "https://registry.yarnpkg.com/electron-releases/-/electron-releases-3.1102.0.tgz#49623a9d1b2f660b658704cf5b37fd90e1fdfc63"
-  integrity sha512-RQ85ZhcE4Hz64sEAZrxY7r/52aEfeKplzZWtJ4aU3nHmYGdPeV4HV8aWxjIhg6QC0zyfUptz+W+4cgsXsidOlg==
+  version "3.1104.0"
+  resolved "https://registry.yarnpkg.com/electron-releases/-/electron-releases-3.1104.0.tgz#145886c879306cd735318de9a5b0f212989f0f3e"
+  integrity sha512-VR6ibDN7ckXs5lOg+i6grnUA+4pWKetxHZkQCpeYzc6VysJem+tXkLLLpzEcFwGh/Dapy41IYiFlvGXXOTfAJA==
 
 electron-store@^8.1.0:
   version "8.1.0"
