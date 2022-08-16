@@ -1,0 +1,2 @@
+Sitemap: https://getbeak.app/sitemap.xml
+User-agent: *
