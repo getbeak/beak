@@ -7,9 +7,12 @@ import { SubTitle, Title } from '../../../../components/atoms/Typography';
 const BeakOverview: React.FC<React.PropsWithChildren<unknown>> = () => (
 	<Container>
 		<Wrapper>
-			<Title>{'Some cool product info'}</Title>
+			<Title>{'What is Beak?'}</Title>
 			<SubTitle>
-				{'Not sure what to put here, but we\'re in beta so I\'m excusing my lazyness xo'}
+				{'Beak is the one stop shop for testing, building, managing, and reverse engineering API\'s — '}
+				<strong>{'quickly'}</strong>{' '}
+				{'and '}
+				<strong>{'easily'}</strong>{'.'}
 			</SubTitle>
 
 			<Image src={'/assets/overview.png'} />

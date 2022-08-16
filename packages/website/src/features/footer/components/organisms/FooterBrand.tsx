@@ -5,8 +5,8 @@ import styled from 'styled-components';
 const FooterBrand: React.FC<React.PropsWithChildren<unknown>> = () => (
 	<div>
 		<FooterLogo />
-		<Text>{'© 2021 Flamingo Corp Ltd.'}</Text>
-		<Text>{'Made with ❤️ in the UK'}</Text>
+		<Text>{`© 2021-${new Date().getFullYear()} Flamingo Corp Ltd.`}</Text>
+		<Text>{'Made with ❤️ in Amsterdam'}</Text>
 	</div>
 );
 
