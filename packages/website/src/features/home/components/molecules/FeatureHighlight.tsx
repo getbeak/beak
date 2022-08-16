@@ -28,7 +28,7 @@ const FeatureHighlight: React.FC<React.PropsWithChildren<FeatureHighlightProps>>
 					</DetailContainer>
 					<VisualContainer>
 						<picture>
-							<source srcSet={`/assets/${asset}.jpg`} type={'image/webp'} />
+							<source srcSet={`/assets/${asset}.webp`} type={'image/webp'} />
 							<source srcSet={`/assets/${asset}.jpg`} type={'image/jpeg'} />
 							<HighlightAsset loading={'lazy'} src={`/assets/${asset}.jpg`} />
 						</picture>
