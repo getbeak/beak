@@ -12352,9 +12352,9 @@ verror@^1.10.0:
     extsprintf "^1.2.0"
 
 vite-plugin-sentry@^1.1.4:
-  version "1.1.4"
-  resolved "https://registry.yarnpkg.com/vite-plugin-sentry/-/vite-plugin-sentry-1.1.4.tgz#669d39ad43d54869e735129195b80f06739b3f75"
-  integrity sha512-s8USL62rdz56WN8Cl+VDfhuUaJcg6YZ3xWypqcCwDi29UExd80XJsGuc+D/s6WpZrCQLL71bCALg5bkwJLcPhQ==
+  version "1.1.5"
+  resolved "https://registry.yarnpkg.com/vite-plugin-sentry/-/vite-plugin-sentry-1.1.5.tgz#edba9b436727704dbe826781c95e186cf04aa156"
+  integrity sha512-H7U2iQ3vGjEv0u3YGYxptZE1k50D7HmHvsX98hA/bWNxoUWaaTThQNto1P+uQTpTsFSCDGFdKr28MFJ92DyYjg==
   dependencies:
     "@sentry/cli" "^2.3.1"
 
