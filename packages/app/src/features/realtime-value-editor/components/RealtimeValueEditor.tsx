@@ -2,6 +2,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import Button from '@beak/app/components/atoms/Button';
 import Input, { Select } from '@beak/app/components/atoms/Input';
 import { ValueParts } from '@beak/app/features/realtime-values/values';
+import { faWarning } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { EditableRealtimeValue, UISection } from '@getbeak/types-realtime-value';
 import styled from 'styled-components';
 
@@ -245,6 +247,15 @@ const RealtimeValueEditor: React.FC<React.PropsWithChildren<RealtimeValueEditorP
 				<PreviewContainer text={preview} />
 
 				<ButtonContainer>
+					<div>
+						{editorContext.realtimeValue.external && (
+							<React.Fragment>
+								<FontAwesomeIcon icon={faWarning} />
+								{' This is an extension'}
+							</React.Fragment>
+						)}
+					</div>
+
 					<Button
 						size={'sm'}
 						colour={'primary'}
@@ -290,7 +301,8 @@ const Wrapper = styled.div<{ $top: number; $left: number }>`
 
 const ButtonContainer = styled.div`
 	display: flex;
-	flex-direction: row-reverse;
+	justify-content: space-between;
+	align-items: center;
 `;
 
 export default RealtimeValueEditor;
