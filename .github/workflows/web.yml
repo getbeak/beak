@@ -1,0 +1,89 @@
+name: Beak
+
+on:
+  push:
+    branches:
+     - master
+     - develop
+  pull_request:
+    branches:
+      - '*'
+
+jobs:
+  build-deploy:
+    name: Build and Deploy
+    runs-on: macos-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - uses: benjlevesque/short-sha@v1.2
+        id: short-sha
+        with:
+          length: 6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2.4.1
+        with:
+          node-version: '16'
+          cache: 'yarn'
+          cache-dependency-path: yarn.lock
+
+      - name: Install modules
+        run: yarn install --frozen-lockfile
+
+      - name: Lint, typecheck, and test
+        run: |
+          yarn lint
+          yarn typecheck
+          yarn test
+
+      - name: Build web code
+        env:
+          BUILD_ENVIRONMENT: ci
+          COMMIT_IDENTIFIER: ${{ github.sha }}
+          BUILD_NUMBER: ${{ steps.short-sha.outputs.sha }}
+          SENTRY_WEBSITE_API_KEY: ${{ secrets.SENTRY_WEBSITE_API_KEY }}
+          NODE_OPTIONS: --max-old-space-size=8192
+        run: yarn build:web
+
+      - name: Upload website to S3
+        if: "startsWith(github.event.head_commit.message, 'release(')"
+        uses: shallwefootball/upload-s3-action@v1.1.2
+        with:
+          aws_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_bucket: ${{ secrets.AWS_S3_BUCKET_WEBSITE }}
+          source_dir: 'packages/website/dist/'
+          destination_dir: ''
+      - name: Upload share to S3
+        if: "startsWith(github.event.head_commit.message, 'release(')"
+        uses: shallwefootball/upload-s3-action@v1.1.2
+        with:
+          aws_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_bucket: ${{ secrets.AWS_S3_BUCKET_SHARE }}
+          source_dir: 'packages/share/dist/'
+          destination_dir: ''
+
+      - name: Delete robots/humans/sitemap for nonprod
+        run: |
+          rm packages/website/dist/robots.txt
+          rm packages/website/dist/humans.txt
+          rm packages/website/dist/sitemap.xml
+
+      - name: Upload website to S3 (nonprod)
+        uses: shallwefootball/upload-s3-action@v1.1.2
+        with:
+          aws_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_bucket: ${{ secrets.AWS_S3_BUCKET_WEBSITE_NONPROD }}
+          source_dir: 'packages/website/dist/'
+          destination_dir: ''
+      - name: Upload share to S3 (nonprod)
+        uses: shallwefootball/upload-s3-action@v1.1.2
+        with:
+          aws_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_bucket: ${{ secrets.AWS_S3_BUCKET_SHARE_NONPROD }}
+          source_dir: 'packages/share/dist/'
+          destination_dir: ''

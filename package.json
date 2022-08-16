@@ -25,6 +25,7 @@
   },
   "scripts": {
     "build": "lerna run build --stream",
+    "build:web": "lerna run build --stream --scope @beak/{share,website}",
     "build:website": "lerna run build --stream --scope @beak/website",
     "build:share": "lerna run build --stream --scope @beak/share",
     "prepackage": "yarn build",
