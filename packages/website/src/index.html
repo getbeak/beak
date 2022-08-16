@@ -3,9 +3,22 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@100;200;400;700;800&display=swap" rel="stylesheet" />
     <link rel="shortcut icon" href="/assets/favicon.ico" />
     <script type="module" src="./index.tsx"></script>
+
+    <!-- connect to domain of font files -->
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <!-- optionally increase loading priority -->
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@100;200;400;700;800&display=swap">
+
+    <!-- async CSS -->
+    <link rel="stylesheet" media="print" onload="this.onload=null;this.removeAttribute('media');" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@100;200;400;700;800&display=swap">
+
+    <!-- no-JS fallback -->
+    <noscript>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@100;200;400;700;800&display=swap">
+    </noscript>
 
     <!-- Primary Meta Tags -->
     <title>Beak :: The feathery cross platform API crafting tool</title>
