@@ -12,6 +12,7 @@ import Scroller from './components/atoms/Scroller';
 import AppContainer from './containers/App';
 import { GlobalStyle } from './design-system';
 import ErrorFallback from './features/errors/components/ErrorFallback';
+import NotFound from './features/errors/components/NotFound';
 import { configureStore } from './store';
 
 const history = createBrowserHistory();
@@ -62,7 +63,7 @@ const EntryPoint: React.FC<React.PropsWithChildren<unknown>> = () => {
 									<Route path={'/privacy'} element={<Navigate to={'/legal/privacy'} replace />} />
 									<Route path={'/terms'} element={<Navigate to={'/legal/terms'} replace />} />
 
-									<Route element={'y u here'} />
+									<Route path={'*'} element={<NotFound />} />
 								</Routes>
 							</Suspense>
 						</Sentry.ErrorBoundary>
