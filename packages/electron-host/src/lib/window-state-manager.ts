@@ -4,8 +4,8 @@ import {
 	Rectangle,
 	screen,
 } from 'electron';
-import { screenshotSizing } from '../main';
 
+import { screenshotSizing } from '../main';
 import persistentStore from './persistent-store';
 
 export interface WindowState {
