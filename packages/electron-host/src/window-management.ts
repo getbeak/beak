@@ -7,6 +7,7 @@ import { closeWatchersOnWindow } from './ipc-layer/fs-watcher-service';
 import persistentStore, { WindowPresence } from './lib/persistent-store';
 import { tryOpenProjectFolder } from './lib/project';
 import WindowStateManager from './lib/window-state-manager';
+import { screenshotSizing } from './main';
 import { staticPath } from './utils/static-path';
 
 export type Container = 'project-main' | 'welcome' | 'preferences' | 'portal';
@@ -45,6 +46,9 @@ export function generateWindowPresence() {
 }
 
 export async function attemptWindowPresenceLoad() {
+	if (screenshotSizing)
+		return false;
+
 	const previousWindowPresence = persistentStore.get('previousWindowPresence');
 
 	if (previousWindowPresence.length === 0)
@@ -126,6 +130,15 @@ function createWindow(
 ) {
 	nativeTheme.themeSource = persistentStore.get('themeMode');
 
+	if (screenshotSizing && container === 'project-main') {
+		/* eslint-disable no-param-reassign */
+		windowOpts.minWidth = 1300;
+		windowOpts.maxWidth = 1300;
+		windowOpts.minHeight = 800;
+		windowOpts.maxHeight = 800;
+		/* eslint-enable no-param-reassign */
+	}
+
 	const windowStateManager = new WindowStateManager(container, windowOpts);
 	const window = new BrowserWindow({
 		webPreferences: {
@@ -136,7 +149,7 @@ function createWindow(
 		...windowOpts,
 	});
 
-	windowStateManager.attach(window);
+	if (!screenshotSizing) windowStateManager.attach(window);
 
 	window.loadURL(generateLoadUrl(container, window.id, additionalParams));
 	window.on('ready-to-show', () => {
