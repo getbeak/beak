@@ -5,9 +5,25 @@ on:
     branches:
      - master
      - develop
+    paths:
+      - '.github/workflows/beak-web.yml'
+      - 'package.json'
+      - 'yarn.lock'
+      - 'packages/**'
+      - '!packages/app/**'
+      - '!packages/electron-host/**'
+      - '!packages/requester-node/**'
   pull_request:
     branches:
       - '*'
+    paths:
+      - '.github/workflows/beak-web.yml'
+      - 'package.json'
+      - 'yarn.lock'
+      - 'packages/**'
+      - '!packages/app/**'
+      - '!packages/electron-host/**'
+      - '!packages/requester-node/**'
 
 jobs:
   build-deploy:

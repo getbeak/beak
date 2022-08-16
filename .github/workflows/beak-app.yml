@@ -7,9 +7,23 @@ on:
      - develop
     tags:
       - beak-app@*
+    paths:
+      - '.github/workflows/beak-app.yml'
+      - 'package.json'
+      - 'yarn.lock'
+      - 'packages/**'
+      - '!packages/website/**'
+      - '!packages/share/**'
   pull_request:
     branches:
       - '*'
+    paths:
+      - '.github/workflows/beak-app.yml'
+      - 'package.json'
+      - 'yarn.lock'
+      - 'packages/**'
+      - '!packages/website/**'
+      - '!packages/share/**'
 
 jobs:
   build-deploy:
