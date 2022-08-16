@@ -64,7 +64,7 @@ const AppContainer: React.FC<React.PropsWithChildren<unknown>> = ({ children }) 
 							{'Twitter'}
 						</NavItemExternal>
 					</NavItems>
-					<NavDropdown onClick={() => setExpandNav(!expandNav)}>
+					<NavDropdown onClick={() => setExpandNav(!expandNav)} aria-label={'Toggle dropdown navbar'}>
 						<FontAwesomeIcon icon={faBars} />
 					</NavDropdown>
 				</Container>
