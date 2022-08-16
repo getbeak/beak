@@ -10,7 +10,7 @@ const SneakPeak: React.FC<React.PropsWithChildren<unknown>> = () => (
 			<source media={'(prefers-color-scheme: dark)'} srcSet={'/assets/home-trans-dark.webp'} type={'image/webp'} />
 			<source media={'(prefers-color-scheme: light)'} srcSet={'/assets/home-trans-light.png'} type={'image/png'} />
 			<source media={'(prefers-color-scheme: dark)'} srcSet={'/assets/home-trans-dark.png'} type={'image/png'} />
-			<AppImage loading={'eager'} src={'/assets/home-dark-trans.png'} alt={'A preview of Beak, showing how a project, request, and response are displayed.'} />
+			<AppImage loading={'eager'} src={'/assets/home-trans-dark.png'} alt={'A preview of Beak, showing how a project, request, and response are displayed.'} />
 		</AppPicture>
 	</Wrapper>
 );
