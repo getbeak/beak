@@ -46,15 +46,23 @@ jobs:
           NODE_OPTIONS: --max-old-space-size=8192
         run: yarn build:web
 
-      - name: Upload website to S3
+      - name: Deploy website to production
         if: "startsWith(github.event.head_commit.message, 'release(')"
-        uses: shallwefootball/upload-s3-action@v1.1.2
+        uses: nwtgck/actions-netlify@v1.2
         with:
-          aws_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws_bucket: ${{ secrets.AWS_S3_BUCKET_WEBSITE }}
-          source_dir: 'packages/website/dist/'
-          destination_dir: ''
+          publish-dir: './packages/website/dist'
+          production-branch: master
+          production-deploy: true
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          deploy-message: "Deploy from GitHub Actions"
+          enable-pull-request-comment: true
+          enable-commit-comment: true
+          overwrites-pull-request-comment: true
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID_WEBSITE }}
+        timeout-minutes: 4
+
       - name: Upload share to S3
         if: "startsWith(github.event.head_commit.message, 'release(')"
         uses: shallwefootball/upload-s3-action@v1.1.2
@@ -71,14 +79,22 @@ jobs:
           rm packages/website/dist/humans.txt
           rm packages/website/dist/sitemap.xml
 
-      - name: Upload website to S3 (nonprod)
-        uses: shallwefootball/upload-s3-action@v1.1.2
+      - name: Deploy website to non-production
+        uses: nwtgck/actions-netlify@v1.2
         with:
-          aws_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws_bucket: ${{ secrets.AWS_S3_BUCKET_WEBSITE_NONPROD }}
-          source_dir: 'packages/website/dist/'
-          destination_dir: ''
+          publish-dir: './packages/website/dist'
+          production-branch: master
+          production-deploy: true
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          deploy-message: "Deploy from GitHub Actions"
+          enable-pull-request-comment: false
+          enable-commit-comment: true
+          overwrites-pull-request-comment: true
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID_WEBSITE_NONPROD }}
+        timeout-minutes: 4
+
       - name: Upload share to S3 (nonprod)
         uses: shallwefootball/upload-s3-action@v1.1.2
         with:

@@ -5,6 +5,7 @@ import {
 	screen,
 } from 'electron';
 
+import { screenshotSizing } from '../main';
 import persistentStore from './persistent-store';
 
 export interface WindowState {
@@ -35,7 +36,7 @@ export default class WindowStateManager {
 		this.windowKey = windowKey;
 		this.windowOptions = windowOptions;
 
-		if (existingState) {
+		if (existingState && !screenshotSizing) {
 			this.state = existingState;
 		} else {
 			const cursor = screen.getCursorScreenPoint();

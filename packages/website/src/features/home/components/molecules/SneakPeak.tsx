@@ -6,9 +6,11 @@ const SneakPeak: React.FC<React.PropsWithChildren<unknown>> = () => (
 	<Wrapper>
 		<Gradient />
 		<AppPicture>
-			<source srcSet={'/assets/home.webp'} type={'image/webp'} />
-			<source srcSet={'/assets/home.png'} type={'image/png'} />
-			<AppImage loading={'eager'} src={'/assets/home.png'} alt={'The Beak application!'} />
+			<source media={'(prefers-color-scheme: light)'} srcSet={'/assets/home-trans-light.webp'} type={'image/webp'} />
+			<source media={'(prefers-color-scheme: dark)'} srcSet={'/assets/home-trans-dark.webp'} type={'image/webp'} />
+			<source media={'(prefers-color-scheme: light)'} srcSet={'/assets/home-trans-light.png'} type={'image/png'} />
+			<source media={'(prefers-color-scheme: dark)'} srcSet={'/assets/home-trans-dark.png'} type={'image/png'} />
+			<AppImage loading={'eager'} src={'/assets/home-trans-dark.png'} alt={'A preview of Beak, showing how a project, request, and response are displayed.'} />
 		</AppPicture>
 	</Wrapper>
 );

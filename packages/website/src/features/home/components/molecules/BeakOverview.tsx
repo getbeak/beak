@@ -15,7 +15,11 @@ const BeakOverview: React.FC<React.PropsWithChildren<unknown>> = () => (
 				<strong>{'easily'}</strong>{'.'}
 			</SubTitle>
 
-			<Image src={'/assets/overview.png'} />
+			<Picture>
+				<source srcSet={'/assets/overview.webp'} type={'image/webp'} />
+				<source srcSet={'/assets/overview.png'} type={'image/png'} />
+				<Image loading={'lazy'} src={'/assets/overview.png'} alt={'Beak\'s interface, showing the project explorer and request view.'} />
+			</Picture>
 		</Wrapper>
 	</Container>
 );
@@ -31,5 +35,7 @@ const Image = styled.img`
 
 	border-bottom: 1px solid ${p => p.theme.ui.backgroundBorderSeparator};
 `;
+
+const Picture = styled(Image).attrs({ as: 'picture' })``;
 
 export default BeakOverview;

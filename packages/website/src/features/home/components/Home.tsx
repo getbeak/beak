@@ -14,6 +14,23 @@ const Home: React.FC<React.PropsWithChildren<unknown>> = () => (
 	<React.Fragment>
 		<Helmet defer={false}>
 			<title>{'Beak :: The feathery cross platform API crafting tool'}</title>
+
+			<link
+				as={'image'}
+				rel={'preload'}
+				type={'image/webp'}
+				crossOrigin={'anonymous'}
+				href={'/assets/home-trans-light.webp'}
+				media={'(prefers-color-scheme: light)'}
+			/>
+			<link
+				as={'image'}
+				rel={'preload'}
+				type={'image/webp'}
+				crossOrigin={'anonymous'}
+				href={'/assets/home-trans-dark.webp'}
+				media={'(prefers-color-scheme: dark)'}
+			/>
 		</Helmet>
 		<Header>
 			<Container>

@@ -32,6 +32,7 @@ if (process.env.NODE_ENV !== 'development') {
 
 app.setAsDefaultProtocolClient('beak-app');
 
+export const screenshotSizing = Boolean(process.env.SCREENSHOT_SIZING);
 const instanceLock = app.requestSingleInstanceLock();
 
 if (instanceLock) {
