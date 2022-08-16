@@ -12,7 +12,13 @@
 	The feathery cross-platform API crafting tool.
 </h3>
 
-![Project view](assets/home.png)
+<picture>
+	<source media="(prefers-color-scheme: light)" srcset="assets/home-trans-light.png" type="image/png">
+	<source media="(prefers-color-scheme: dark)" srcset="assets/home-trans-dark.webp" type="image/webp">
+	<source media="(prefers-color-scheme: light)" srcset="assets/home-trans-light.png" type="image/png">
+	<source media="(prefers-color-scheme: dark)" srcset="assets/home-trans-dark.webp" type="image/webp">
+	<img alt="Preview of Beak showing the project explorer, request and response views, and the omni bar" src="assets/home-trans-dark.png">
+</picture>
 
 Beak is a simple, extensible, and powerful API creation and management tool. Built using Electron, React, and Redux but striving for native levels of performance.
 
