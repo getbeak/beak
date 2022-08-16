@@ -13,23 +13,24 @@
 </h3>
 
 <picture>
-	<source media="(prefers-color-scheme: light)" srcset="assets/home-trans-light.png" type="image/png">
-	<source media="(prefers-color-scheme: dark)" srcset="assets/home-trans-dark.webp" type="image/webp">
-	<source media="(prefers-color-scheme: light)" srcset="assets/home-trans-light.png" type="image/png">
-	<source media="(prefers-color-scheme: dark)" srcset="assets/home-trans-dark.webp" type="image/webp">
-	<img alt="Preview of Beak showing the project explorer, request and response views, and the omni bar" src="assets/home-trans-dark.png">
+	<source media="(prefers-color-scheme: light)" srcset="assets/home-light.png" type="image/png">
+	<source media="(prefers-color-scheme: dark)" srcset="assets/home-dark.webp" type="image/webp">
+	<source media="(prefers-color-scheme: light)" srcset="assets/home-light.png" type="image/png">
+	<source media="(prefers-color-scheme: dark)" srcset="assets/home-dark.webp" type="image/webp">
+	<img alt="Preview of Beak showing the project explorer, request and response views, and the omni bar" src="assets/home-dark.png">
 </picture>
 
 Beak is a simple, extensible, and powerful API creation and management tool. Built using Electron, React, and Redux but striving for native levels of performance.
 
 Beak includes:
-- Powerful feature set for creating APIs
+- Powerful feature set for creating APIs interactions
 - Realtime values for dynamic variable replacement
+- Extensions API to create custom realtime values
 - Un-opinionated project syncing, just use the version control of your choice
 - Beautiful design language
 - And of course, fully cross platform
 
-For help getting started, visit the [Beak docs](https://docs.getbeak.app).
+To get started visit the [Beak manual](https://docs.getbeak.app).
 
 ## Download
 
