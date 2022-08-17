@@ -1,15 +1,16 @@
 import binaryStore from '@beak/app/lib/binary-store';
-import { ipcFlightService, ipcNotificationService } from '@beak/app/lib/ipc';
+import { ipcFlightService, ipcNotificationService, ipcPreferencesService } from '@beak/app/lib/ipc';
 import { getStatusReasonPhrase } from '@beak/app/utils/http';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { FlightMessages } from '@beak/common/ipc/flight';
+import { NotificationPreferences } from '@beak/common/types/preferences';
 import ksuid from '@beak/ksuid';
 import type { RequestNode } from '@getbeak/types/nodes';
 import type { RequestOverview } from '@getbeak/types/request';
 import type { ResponseOverview } from '@getbeak/types/response';
 import { PayloadAction } from '@reduxjs/toolkit';
 import { END, eventChannel } from 'redux-saga';
-import { put, select, take } from 'redux-saga/effects';
+import { call, put, select, take } from 'redux-saga/effects';
 
 import { ApplicationState } from '../..';
 import * as actions from '../actions';
@@ -86,12 +87,37 @@ export default function* requestFlightWorker({ payload }: PayloadAction<BeginFli
 		ipcFlightService.unregisterListener(FlightMessages.FlightComplete);
 		ipcFlightService.unregisterListener(FlightMessages.FlightFailed);
 
+		const focused = document.hasFocus();
+		const notifications: NotificationPreferences = yield call([
+			ipcPreferencesService,
+			ipcPreferencesService.getNotificationOverview,
+		]);
+
+		const shouldShowBanner = (() => {
+			if (!focused)
+				return true;
+
+			return focused && notifications.showRequestNotificationWhenFocused;
+		})();
+
 		switch (true) {
 			case Boolean(error): {
-				ipcNotificationService.sendNotification({
-					title: 'Request failed',
-					body: `${requestNode.name} failed in transit`,
-				});
+				if (notifications.onFailedRequest === 'off')
+					break;
+
+				if (notifications.onFailedRequest === 'sound-only') {
+					ipcNotificationService.notificationBeep();
+
+					break;
+				}
+
+				if (shouldShowBanner) {
+					ipcNotificationService.sendNotification({
+						title: 'Request failed',
+						body: `${requestNode.name} failed in transit`,
+						silent: notifications.onFailedRequest === 'on-no-sound',
+					});
+				}
 
 				break;
 			}
@@ -102,10 +128,25 @@ export default function* requestFlightWorker({ payload }: PayloadAction<BeginFli
 				if (redirected)
 					break;
 
-				ipcNotificationService.sendNotification({
-					title: `${requestNode.name} - ${response!.status} ${getStatusReasonPhrase(response!.status)}`,
-					body: request.url[0] as string,
-				});
+				const notificationPreference = statusToNotification(response!.status);
+				const preference = notifications[notificationPreference];
+
+				if (preference === 'off')
+					break;
+
+				if (preference === 'sound-only') {
+					ipcNotificationService.notificationBeep();
+
+					break;
+				}
+
+				if (shouldShowBanner) {
+					ipcNotificationService.sendNotification({
+						title: `${requestNode.name} - ${response!.status} ${getStatusReasonPhrase(response!.status)}`,
+						body: request.url[0] as string,
+						silent: preference === 'on-no-sound',
+					});
+				}
 
 				break;
 			}
@@ -149,4 +190,22 @@ function* detectAndHandleRedirect(request: RequestOverview, response: ResponseOv
 	}));
 
 	return true;
+}
+
+function statusToNotification(status: number): keyof NotificationPreferences {
+	switch (true) {
+		case status >= 100 && status < 200:
+			return 'onInformationRequest';
+		case status >= 200 && status < 300:
+			return 'onSuccessfulRequest';
+		case status >= 300 && status < 400:
+			return 'onInformationRequest';
+		case status >= 400 && status < 500:
+			return 'onInformationRequest';
+		case status >= 500 && status < 600:
+			return 'onFailedRequest';
+
+		default:
+			return 'onInformationRequest';
+	}
 }

@@ -29,6 +29,7 @@ export const Select = styled.select<InputProps>`
 	border-radius: ${p => (p.beakSize || 'md') === 'md' ? '4px' : '3px'};
 
 	${p => !p.$noStretch && 'width: 100%;'}
+	${p => p.$noStretch && 'width: fit-content;'}
 
 	&:active:not(:disabled) {
 		border: 1px solid ${p => p.theme.ui.primaryFill};

@@ -1,6 +1,7 @@
 import { ArbiterStatus } from '@beak/common/types/arbiter';
 import { RecentLocalProject } from '@beak/common/types/beak-hub';
 import { MagicStates } from '@beak/common/types/nest';
+import { NotificationPreferences } from '@beak/common/types/preferences';
 import { ThemeMode } from '@beak/common/types/theme';
 import crypto from 'crypto';
 import { app } from 'electron';
@@ -34,6 +35,8 @@ export interface Store {
 	magicStates: MagicStates;
 	referenceFiles: Record<string, Record<string, string>>;
 
+	notifications: NotificationPreferences;
+
 	passedOnboarding: boolean;
 	projectMappings: Record<string, string>;
 
@@ -57,6 +60,15 @@ const persistentStore = new ElectronStore<Store>({
 		},
 		magicStates: {},
 		referenceFiles: {},
+
+		notifications: {
+			onSuccessfulRequest: 'sound-only',
+			onInformationRequest: 'on',
+			onFailedRequest: 'on',
+			showRequestNotificationWhenFocused: false,
+
+			onUpdateAvailable: 'on',
+		},
 
 		passedOnboarding: false,
 		projectMappings: {},

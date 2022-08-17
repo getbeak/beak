@@ -5,6 +5,7 @@ import { IpcServiceMain, IpcServiceRenderer, Listener, PartialIpcRenderer } from
 
 export const NotificationMessages = {
 	SendNotification: 'send_notification',
+	NotificationBeep: 'notification_beep',
 };
 
 export interface SendNotificationReq extends NotificationConstructorOptions { }
@@ -17,6 +18,10 @@ export class IpcNotificationServiceRenderer extends IpcServiceRenderer {
 	async sendNotification(payload: SendNotificationReq) {
 		return this.invoke(NotificationMessages.SendNotification, payload);
 	}
+
+	async notificationBeep() {
+		return this.invoke(NotificationMessages.NotificationBeep);
+	}
 }
 
 export class IpcNotificationServiceMain extends IpcServiceMain {
@@ -26,5 +31,9 @@ export class IpcNotificationServiceMain extends IpcServiceMain {
 
 	registerSendNotification(fn: Listener<SendNotificationReq>) {
 		this.registerListener(NotificationMessages.SendNotification, fn);
+	}
+
+	registerNotificationBeep(fn: Listener) {
+		this.registerListener(NotificationMessages.NotificationBeep, fn);
 	}
 }
