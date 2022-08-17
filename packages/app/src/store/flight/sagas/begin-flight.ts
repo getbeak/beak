@@ -93,25 +93,31 @@ export default function* requestFlightWorker({ payload }: PayloadAction<BeginFli
 			ipcPreferencesService.getNotificationOverview,
 		]);
 
-		if (!focused && !notifications.showRequestNotificationWhenFocused) {
-			// eslint-disable-next-line no-unsafe-finally
-			return;
-		}
+		const shouldShowBanner = (() => {
+			if (!focused)
+				return true;
+
+			return focused && notifications.showRequestNotificationWhenFocused;
+		})();
 
 		switch (true) {
 			case Boolean(error): {
 				if (notifications.onFailedRequest === 'off')
 					break;
 
-				if (notifications.onFailedRequest === 'sound-only')
-					// TODO(afr): Beep!
-					break;
+				if (notifications.onFailedRequest === 'sound-only') {
+					ipcNotificationService.notificationBeep();
 
-				ipcNotificationService.sendNotification({
-					title: 'Request failed',
-					body: `${requestNode.name} failed in transit`,
-					silent: notifications.onFailedRequest === 'on-no-sound',
-				});
+					break;
+				}
+
+				if (shouldShowBanner) {
+					ipcNotificationService.sendNotification({
+						title: 'Request failed',
+						body: `${requestNode.name} failed in transit`,
+						silent: notifications.onFailedRequest === 'on-no-sound',
+					});
+				}
 
 				break;
 			}
@@ -128,15 +134,19 @@ export default function* requestFlightWorker({ payload }: PayloadAction<BeginFli
 				if (preference === 'off')
 					break;
 
-				if (preference === 'sound-only')
-					// TODO(afr): Beep!
-					break;
+				if (preference === 'sound-only') {
+					ipcNotificationService.notificationBeep();
 
-				ipcNotificationService.sendNotification({
-					title: `${requestNode.name} - ${response!.status} ${getStatusReasonPhrase(response!.status)}`,
-					body: request.url[0] as string,
-					silent: preference === 'on-no-sound',
-				});
+					break;
+				}
+
+				if (shouldShowBanner) {
+					ipcNotificationService.sendNotification({
+						title: `${requestNode.name} - ${response!.status} ${getStatusReasonPhrase(response!.status)}`,
+						body: request.url[0] as string,
+						silent: preference === 'on-no-sound',
+					});
+				}
 
 				break;
 			}
