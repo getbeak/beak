@@ -14,6 +14,10 @@ service.registerGetNotificationOverview(async () => persistentStore.get('notific
 service.registerGetNotificationValue(async (_event, key) => persistentStore.get(`notifications.${key}`));
 service.registerSetNotificationValue(async (_event, { key, value }) => persistentStore.set(`notifications.${key}`, value));
 
+service.registerGetEditorOverview(async () => persistentStore.get('editor'));
+service.registerGetEditorValue(async (_event, key) => persistentStore.get(`editor.${key}`));
+service.registerSetEditorValue(async (_event, { key, value }) => persistentStore.set(`editor.${key}`, value));
+
 service.registerGetThemeMode(async () => persistentStore.get('themeMode'));
 
 service.registerSwitchEnvironment(async (_event, environment) => {
