@@ -6,6 +6,7 @@ import logger from './lib/logger';
 import persistentStore from './lib/persistent-store';
 import { createAndSetMenu } from './utils/menu';
 
+// NOTE(afr): Update this to point to release news item, when that's done
 export const latestReleaseNotesUrl = 'https://getbeak.notion.site/Beak-manual-8c908d9584f34b8db19267dcc6206e9e';
 let pendingUpdate: UpdateInfo | null = null;
 
