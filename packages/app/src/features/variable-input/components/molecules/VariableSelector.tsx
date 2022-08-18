@@ -60,6 +60,7 @@ const VariableSelector: React.FC<React.PropsWithChildren<VariableSelectorProps>>
 			keys: [
 				'name',
 				'description',
+				'keywords',
 			],
 		});
 

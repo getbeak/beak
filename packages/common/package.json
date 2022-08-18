@@ -16,8 +16,8 @@
   },
   "dependencies": {
     "@beak/ksuid": "*",
-    "@getbeak/types": "^1.0.0-prerelease.2",
-    "@getbeak/types-realtime-value": "^1.0.0-prerelease.8"
+    "@getbeak/types": "^1.0.0",
+    "@getbeak/types-realtime-value": "^1.0.0"
   },
   "devDependencies": {
     "electron": "19.0.8"

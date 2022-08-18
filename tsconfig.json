@@ -56,12 +56,7 @@
 			"@getbeak/types/*": ["packages/types/src/*"],
 	  
 			"@getbeak/types-realtime-value": ["packages/types-realtime-value/src"],
-			"@getbeak/types-realtime-value/*": ["packages/types-realtime-value/src/*"],
-	  
-			// Experimental
-	  
-			"@beak/x-realtime-value": ["packages/x-realtime-value/src"],
-			"@beak/x-realtime-value/*": ["packages/x-realtime-value/src/*"]
+			"@getbeak/types-realtime-value/*": ["packages/types-realtime-value/src/*"]
 		}
 	},
 	"exclude": [

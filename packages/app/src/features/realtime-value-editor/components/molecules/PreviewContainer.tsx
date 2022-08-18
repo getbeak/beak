@@ -17,6 +17,7 @@ const Container = styled.div`
 	font-size: 12px;
 	background: ${p => p.theme.ui.secondarySurface};
 	margin: 10px -12px;
+	margin-bottom: 8px;
 	padding: 10px 12px;
 	padding-top: 25px;
 

@@ -30,6 +30,11 @@ export interface RealtimeValueInformation extends RealtimeValueBase {
 	description: string;
 
 	/**
+	 * Optional keywords used by Beak when searching for realtime values when the user is typing.
+	 */
+	keywords?: string[];
+
+	/**
 	 * Denotes if the value's output is sensitive, and will be hidden by default in the UI and in copied responses.
 	 */
 	sensitive: boolean;

@@ -1,6 +1,6 @@
 {
     "name": "@getbeak/types",
-    "version": "1.0.0-prerelease.2",
+    "version": "1.0.0",
     "private": false,
     "description": "Just general beak types",
     "homepage": "https://github.com/getbeak/beak/tree/master/packages/types",

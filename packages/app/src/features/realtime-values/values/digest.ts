@@ -14,6 +14,7 @@ const definition: EditableRealtimeValue<DigestRtv, EditorState> = {
 	type: 'digest',
 	name: 'Digest / Hash',
 	description: 'Generates a digest of a given input. Supports SHA-*, MD5.',
+	keywords: ['sha', 'md5', 'sha1', 'sha2', 'sha256', 'sha-384', 'sha512'],
 	sensitive: false,
 	external: false,
 
