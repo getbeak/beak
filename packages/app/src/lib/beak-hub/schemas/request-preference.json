@@ -26,10 +26,10 @@
 					"type": "object",
 					"additionalProperties": false,
 
-					"required": ["expands"],
+					"required": ["expanded"],
 		
 					"properties": {
-						"expands": {
+						"expanded": {
 							"type": "object",
 							"additionalProperties" : {
 								"type" : "boolean"
