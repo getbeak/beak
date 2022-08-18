@@ -1,11 +1,12 @@
 import React, { useContext, useState } from 'react';
 import { toHexAlpha } from '@beak/design-system/utils';
-import { faMoneyCheck, faUserShield, faWindowRestore } from '@fortawesome/free-solid-svg-icons';
+import { faMoneyCheck, faPenToSquare, faUserShield, faWindowRestore } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import styled, { css, useTheme } from 'styled-components';
 
 import WindowSessionContext from '../contexts/window-session-context';
 import AccountItem from '../features/preferences/components/molecules/AccountItem';
+import EditorPane from '../features/preferences/components/organisms/EditorPane';
 import EngineeringPane from '../features/preferences/components/organisms/EngineeringPane';
 import GeneralPane from '../features/preferences/components/organisms/GeneralPane';
 import SubscriptionPane from '../features/preferences/components/organisms/SubscriptionPane';
@@ -29,6 +30,13 @@ const About: React.FC<React.PropsWithChildren<unknown>> = () => {
 					/>
 					<span>{'General'}</span>
 				</SidebarItem>
+				<SidebarItem $active={tab === 'editor'} onClick={() => setTab('editor')}>
+					<FontAwesomeIcon
+						icon={faPenToSquare}
+						color={tab === 'editor' ? blankFill : primaryFill}
+					/>
+					<span>{'Editor'}</span>
+				</SidebarItem>
 				<SidebarItem $active={tab === 'subscription'} onClick={() => setTab('subscription')}>
 					<FontAwesomeIcon
 						icon={faMoneyCheck}
@@ -47,6 +55,7 @@ const About: React.FC<React.PropsWithChildren<unknown>> = () => {
 			<Border />
 			<Panel>
 				{tab === 'general' && <GeneralPane />}
+				{tab === 'editor' && <EditorPane />}
 				{tab === 'subscription' && <SubscriptionPane />}
 				{tab === 'engineering' && <EngineeringPane />}
 			</Panel>

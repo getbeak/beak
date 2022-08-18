@@ -1,3 +1,4 @@
+import { EditorPreferences } from '@beak/common/types/preferences';
 import { EditorProps, loader } from '@monaco-editor/react';
 import * as monaco from 'monaco-editor';
 import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker';
@@ -73,13 +74,12 @@ const httpLanguageDefinition: monaco.languages.IMonarchLanguage = {
 	},
 };
 
-export function createDefaultOptions(): EditorProps['options'] {
+export function createDefaultOptions(editorPreferences: EditorPreferences): EditorProps['options'] {
 	return {
 		automaticLayout: true,
 		minimap: { enabled: false },
 		fontFamily: '"Fira Code", Source Code Pro, Menlo, Monaco, Consolas, "Courier New", monospace',
-		fontSize: 11,
-		// wordWrap: true,
+		fontSize: editorPreferences.fontSize,
 		scrollbar: {
 			verticalScrollbarSize: 10,
 			horizontalScrollbarSize: 10,

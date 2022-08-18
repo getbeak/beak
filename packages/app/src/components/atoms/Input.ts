@@ -13,7 +13,7 @@ const Input = styled.input<InputProps>`
 
 	font-size: ${p => (p.beakSize || 'md') === 'md' ? '15px' : '13px'};
 	padding: ${p => (p.beakSize || 'md') === 'md' ? '3px 5px' : '2px 3px'};
-	border-radius: ${p => (p.beakSize || 'md') === 'md' ? '4px' : '2px'};
+	border-radius: ${p => (p.beakSize || 'md') === 'md' ? '4px' : '3px'};
 
 	${p => !p.$noStretch && 'width: 100%;'}
 `;

@@ -1,3 +1,5 @@
+import { ThemeMode } from './theme';
+
 export type NotificationState = 'on' | 'on-no-sound' | 'sound-only' | 'off';
 
 export interface NotificationPreferences {
@@ -7,4 +9,9 @@ export interface NotificationPreferences {
 	showRequestNotificationWhenFocused: boolean;
 
 	onUpdateAvailable: NotificationState;
+}
+
+export interface EditorPreferences {
+	fontSize: number;
+	themeOverride: ThemeMode;
 }

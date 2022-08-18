@@ -2,9 +2,8 @@ import React, { useEffect, useState } from 'react';
 import Checkbox from '@beak/app/components/atoms/Checkbox';
 import { ipcPreferencesService } from '@beak/app/lib/ipc';
 import { NotificationPreferences, NotificationState } from '@beak/common/types/preferences';
-import styled from 'styled-components';
 
-import { ItemGroup, ItemLabel } from '../atoms/item';
+import { ItemGroup, ItemLabel, SubItem, SubItemGroup, SubItemLabel } from '../atoms/item';
 import NotificationStateSelect from '../atoms/NotificationStateSelect';
 
 const NotificationsItem: React.FC<React.PropsWithChildren<unknown>> = () => {
@@ -91,19 +90,5 @@ const NotificationsItem: React.FC<React.PropsWithChildren<unknown>> = () => {
 		</ItemGroup>
 	);
 };
-
-const SubItemGroup = styled.div`
-	display: flex;
-	flex-direction: column;
-	gap: 8px;
-	font-size: 14px;
-`;
-const SubItem = styled.div`
-	font-size: 12px;
-	color: ${p => p.theme.ui.textMinor};
-`;
-const SubItemLabel = styled.div`
-	margin-bottom: 3px;
-`;
 
 export default NotificationsItem;
