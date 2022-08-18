@@ -24,7 +24,7 @@ interface Event {
 
 export default function* workerStartProject() {
 	let project: ProjectFile;
-	let channel: EventChannel<unknown>;
+	let channel: EventChannel<Record<string, unknown> | null>;
 
 	try {
 		// TODO(afr): Listen to this file too

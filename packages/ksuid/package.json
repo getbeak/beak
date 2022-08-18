@@ -8,17 +8,17 @@
 		"dist"
 	],
 	"scripts": {
-	  "build": "yarn clean && yarn compile",
-	  "clean": "rm -rf ./dist && rm -rf tsconfig.tsbuildinfo",
-	  "compile": "tsc -b tsconfig.json",
-	  "typecheck": "tsc",
-	  "start": "tsc -b tsconfig.json -w"
+		"build": "yarn clean && yarn compile",
+		"clean": "rm -rf ./dist && rm -rf tsconfig.tsbuildinfo",
+		"compile": "tsc -b tsconfig.json",
+		"typecheck": "tsc",
+		"start": "tsc -b tsconfig.json -w"
 	},
 	"dependencies": {
 		"base-x": "^4.0.0"
 	},
 	"devDependencies": {
 		"mockdate": "^3.0.5",
-		"tape": "^5.5.3"
+		"tape": "^5.6.0"
 	}
 }
