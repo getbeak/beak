@@ -1,22 +1,38 @@
 import { MenuEventCode } from '@beak/common/web-contents/types';
-import { getPendingUpdate } from '@beak/electron-host/updater';
+import { getCheckingForUpdates, getPendingUpdate, getUpdateDownloading } from '@beak/electron-host/updater';
 import { MenuItemConstructorOptions } from 'electron';
 import { autoUpdater } from 'electron-updater';
 
 import { Context } from '.';
 
 export function createUpdateMenuItem(): MenuItemConstructorOptions {
+	const checkingForUpdates = getCheckingForUpdates();
+	const updateDownloading = getUpdateDownloading();
 	const pendingUpdate = getPendingUpdate();
+
+	if (checkingForUpdates) {
+		return {
+			label: 'Checking for updates...',
+			enabled: false,
+		};
+	}
+
+	if (updateDownloading) {
+		return {
+			label: 'Update downloading...',
+			enabled: false,
+		};
+	}
 
 	if (pendingUpdate) {
 		return {
-			label: 'Install update...',
+			label: 'Update available...',
 			click: () => autoUpdater.quitAndInstall(),
 		};
 	}
 
 	return {
-		label: 'Check for Updates',
+		label: 'Check for updates',
 		click: () => autoUpdater.checkForUpdates(),
 	};
 }
