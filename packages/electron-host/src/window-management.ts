@@ -144,7 +144,6 @@ function createWindow(
 		webPreferences: {
 			contextIsolation: true,
 			preload: path.join(app.getAppPath(), 'preload.js'),
-			devTools: false,
 		},
 		show: false,
 		...windowOpts,

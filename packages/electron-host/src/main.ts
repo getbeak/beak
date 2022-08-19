@@ -82,7 +82,7 @@ app.on('ready', () => {
 		// eslint-disable-next-line @typescript-eslint/no-var-requires
 	} = require('electron-devtools-installer');
 
-	electronDebug();
+	electronDebug({ showDevTools: false });
 	installExtension(REDUX_DEVTOOLS);
 	installExtension(REACT_DEVELOPER_TOOLS);
 });
