@@ -3,6 +3,7 @@ import Kbd from '@beak/app/components/atoms/Kbd';
 import { instance as windowSessionInstance } from '@beak/app/contexts/window-session-context';
 import shortcutDefinitions, { Shortcuts } from '@beak/app/lib/keyboard-shortcuts';
 import { PlatformAgnosticDefinitions, PlatformSpecificDefinitions } from '@beak/app/lib/keyboard-shortcuts/types';
+import { renderSimpleKey } from '@beak/app/utils/keyboard-rendering';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import styled from 'styled-components';
 
@@ -34,11 +35,11 @@ const PendingSlash: React.FC<React.PropsWithChildren<unknown>> = () => (
 							<NonCommandKeys>
 								{Array.isArray(definition.key) && definition.key.map(k => (
 									<React.Fragment key={k}>
-										<Kbd>{renderKey(k)}</Kbd>
+										<Kbd>{renderSimpleKey(k)}</Kbd>
 										<KbdOption>{'|'}</KbdOption>
 									</React.Fragment>
 								))}
-								{typeof definition.key === 'string' && <Kbd>{renderKey(definition.key)}</Kbd>}
+								{typeof definition.key === 'string' && <Kbd>{renderSimpleKey(definition.key)}</Kbd>}
 							</NonCommandKeys>
 						</div>
 					</SingleShortcut>
@@ -47,18 +48,6 @@ const PendingSlash: React.FC<React.PropsWithChildren<unknown>> = () => (
 		</ShortcutContainer>
 	</Wrapper>
 );
-
-function renderKey(key: string) {
-	if (key.length === 1)
-		return key.toUpperCase();
-
-	switch (key) {
-		case 'ArrowUp': return '↑';
-		case 'ArrowDown': return '↓';
-
-		default: return key;
-	}
-}
 
 function shortcutDefinition(definition: PlatformSpecificDefinitions | PlatformAgnosticDefinitions) {
 	if (definition.type === 'agnostic')
