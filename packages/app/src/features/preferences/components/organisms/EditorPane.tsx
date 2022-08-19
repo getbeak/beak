@@ -33,7 +33,7 @@ const EditorPane: React.FC<React.PropsWithChildren<unknown>> = () => {
 						onClick={() => updateEditorPreference('themeOverride', 'system')}
 					>
 						<SelectItemPreview $active={editorPreferences.themeOverride === 'system'} $themeMode={'system'} />
-						{'Inherit from Beak'}
+						{'Default'}
 					</SelectItem>
 					<SelectItem
 						$active={editorPreferences.themeOverride === 'light'}
