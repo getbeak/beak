@@ -56,10 +56,23 @@ const Sidebar: React.FC<React.PropsWithChildren<unknown>> = () => {
 		function listener(_event: unknown, payload: MenuEventPayload) {
 			const { code } = payload;
 
-			if (code !== 'toggle_sidebar')
-				return;
+			switch (code) {
+				case 'toggle_sidebar':
+					dispatch(sidebarPreferenceSetCollapse({ key: 'sidebar', collapsed: !sidebarCollapsed }));
+					break;
 
-			dispatch(sidebarPreferenceSetCollapse({ key: 'sidebar', collapsed: !sidebarCollapsed }));
+				case 'sidebar_show_project':
+					dispatch(sidebarPreferenceSetCollapse({ key: 'sidebar', collapsed: false }));
+					dispatch(sidebarPreferenceSetSelected('project'));
+					break;
+
+				case 'sidebar_show_variables':
+					dispatch(sidebarPreferenceSetCollapse({ key: 'sidebar', collapsed: false }));
+					dispatch(sidebarPreferenceSetSelected('variables'));
+					break;
+
+				default: break;
+			}
 		}
 
 		window.secureBridge.ipc.on('menu:menu_item_click', listener);

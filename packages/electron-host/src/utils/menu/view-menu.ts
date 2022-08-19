@@ -35,6 +35,16 @@ export default function generateViewMenu(ctx: Context): MenuItemConstructorOptio
 				accelerator: 'CmdOrCtrl+B',
 				enabled: isProjectEditor(ctx),
 				click: async () => sendMenuItemClick(ctx, 'toggle_sidebar'),
+			}, {
+				label: 'Show Project Sidebar',
+				accelerator: 'CmdOrCtrl+1',
+				enabled: isProjectEditor(ctx),
+				click: async () => sendMenuItemClick(ctx, 'sidebar_show_project'),
+			}, {
+				label: 'Show Variables Sidebar',
+				accelerator: 'CmdOrCtrl+2',
+				enabled: isProjectEditor(ctx),
+				click: async () => sendMenuItemClick(ctx, 'sidebar_show_variables'),
 			},
 			{ type: 'separator' },
 			{ role: 'forceReload' },
