@@ -1,7 +1,6 @@
 import { readJsonAndValidate } from '@beak/app/lib/fs';
 import { ipcFsService } from '@beak/app/lib/ipc';
 import { EditorPreferences, ProjectPanePreferences, RequestPreference, SidebarPreferences } from '@beak/common/types/beak-hub';
-import Squawk from '@beak/common/utils/squawk';
 import { PayloadAction } from '@reduxjs/toolkit';
 import path from 'path-browserify';
 import { call, put } from 'redux-saga/effects';
@@ -86,9 +85,6 @@ async function loadRequestPreferences(id: string) {
 
 		return preferenceFile.file;
 	} catch (error) {
-		if (Squawk.coerce(error).code !== 'schema_invalid')
-			throw error;
-
 		// eslint-disable-next-line no-console
 		console.warn('Request preferences invalid:', error);
 
@@ -113,9 +109,6 @@ async function loadEditorPreferences() {
 
 		return preferenceFile.file;
 	} catch (error) {
-		if (Squawk.coerce(error).code !== 'schema_invalid')
-			throw error;
-
 		// eslint-disable-next-line no-console
 		console.warn('Editor preferences invalid:', error);
 
@@ -141,9 +134,6 @@ async function loadSidebarPreferences() {
 
 		return preferenceFile.file;
 	} catch (error) {
-		if (Squawk.coerce(error).code !== 'schema_invalid')
-			throw error;
-
 		// eslint-disable-next-line no-console
 		console.warn('Sidebar preferences invalid:', error);
 
@@ -168,9 +158,6 @@ async function loadProjectPanePreferences() {
 
 		return preferenceFile.file;
 	} catch (error) {
-		if (Squawk.coerce(error).code !== 'schema_invalid')
-			throw error;
-
 		// eslint-disable-next-line no-console
 		console.warn('Project preferences invalid:', error);
 
