@@ -3,7 +3,8 @@
 </p>
 
 <p align="center">
-	<img src="https://github.com/getbeak/beak/workflows/Beak/badge.svg" alt="Build Status" />
+	<img src="https://github.com/getbeak/beak/workflows/beak-app/badge.svg" alt="Build Status" />
+	<img src="https://github.com/getbeak/beak/workflows/beak-web/badge.svg" alt="Build Status" />
 </p>
 
 <h2 style="border-bottom: none" align="center">Beak</h1>
