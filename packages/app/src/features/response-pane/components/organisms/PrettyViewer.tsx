@@ -144,6 +144,14 @@ function renderFormat(language: string | null, contentType: string | null, body:
 			);
 		}
 
+		case 'web': {
+			const blob = URL.createObjectURL(new Blob([body], { type: contentType ?? 'text/html' }));
+
+			return (
+				<iframe src={blob} />
+			);
+		}
+
 		case null:
 		default: {
 			const text = new TextDecoder().decode(body);
