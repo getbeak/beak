@@ -24,7 +24,7 @@ const EditorPane: React.FC<React.PropsWithChildren<unknown>> = () => {
 		return null;
 
 	return (
-		<Pane title={'Editor'}>
+		<Pane title={'Rich text editor'}>
 			<ItemGroup>
 				<ItemLabel>{'Theme override:'}</ItemLabel>
 				<SelectContainer>
@@ -32,25 +32,25 @@ const EditorPane: React.FC<React.PropsWithChildren<unknown>> = () => {
 						$active={editorPreferences.themeOverride === 'system'}
 						onClick={() => updateEditorPreference('themeOverride', 'system')}
 					>
-						<SelectItemPreview $active={editorPreferences.themeOverride === 'system'} $themeMode={'system'} />
+						<SelectItemPreview $active={editorPreferences.themeOverride === 'system'} $themeMode={'system'} $themeType={'editor'} />
 						{'Default'}
 					</SelectItem>
 					<SelectItem
 						$active={editorPreferences.themeOverride === 'light'}
 						onClick={() => updateEditorPreference('themeOverride', 'light')}
 					>
-						<SelectItemPreview $active={editorPreferences.themeOverride === 'light'} $themeMode={'light'} />
+						<SelectItemPreview $active={editorPreferences.themeOverride === 'light'} $themeMode={'light'} $themeType={'editor'} />
 						{'Light'}
 					</SelectItem>
 					<SelectItem
 						$active={editorPreferences.themeOverride === 'dark'}
 						onClick={() => updateEditorPreference('themeOverride', 'dark')}
 					>
-						<SelectItemPreview $active={editorPreferences.themeOverride === 'dark'} $themeMode={'dark'} />
+						<SelectItemPreview $active={editorPreferences.themeOverride === 'dark'} $themeMode={'dark'} $themeType={'editor'} />
 						{'Dark'}
 					</SelectItem>
 				</SelectContainer>
-				<ItemInfo>{'By default, the editor theme will use the theme that Beak is using.'}</ItemInfo>
+				<ItemInfo>{'By default, the editor theme will use Beak\'s current theme.'}</ItemInfo>
 			</ItemGroup>
 
 			<ItemGroup>
@@ -58,7 +58,7 @@ const EditorPane: React.FC<React.PropsWithChildren<unknown>> = () => {
 
 				<SubItemGroup>
 					<SubItem>
-						<SubItemLabel>{'Font size used for rich text editors: '}</SubItemLabel>
+						<SubItemLabel>{'Font size: '}</SubItemLabel>
 						<Input
 							beakSize={'sm'}
 							type={'number'}
