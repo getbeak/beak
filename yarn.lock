@@ -2313,19 +2313,19 @@
     read-package-json-fast "^2.0.3"
     which "^2.0.2"
 
-"@nrwl/cli@14.5.7":
-  version "14.5.7"
-  resolved "https://registry.yarnpkg.com/@nrwl/cli/-/cli-14.5.7.tgz#c5aad51bd07b07c84949f300eb0779455a16ba50"
-  integrity sha512-VbjUx8hkNxjA/vFGUrcqfQ8yZgnL0JfUxO0M5pLUaffZMCpAt/eXw6ufd35GaQ91RWHeI7FX0Zv+Ke8d+tZcuA==
+"@nrwl/cli@14.6.4":
+  version "14.6.4"
+  resolved "https://registry.yarnpkg.com/@nrwl/cli/-/cli-14.6.4.tgz#b2af7d2713c535dd9017def5236fa46e9d27cfbc"
+  integrity sha512-VkS2L3O2MOCgqYg6Fubv7FfJ4D39iKGSKYhTom6ZJLPEcQrPXTvrD1hIzMJ4Cehal5P6DYw7ZEjcJgiTATcSYA==
   dependencies:
-    nx "14.5.7"
+    nx "14.6.4"
 
-"@nrwl/tao@14.5.7":
-  version "14.5.7"
-  resolved "https://registry.yarnpkg.com/@nrwl/tao/-/tao-14.5.7.tgz#ce94fb9b24cb800e41e3e9b942cbdde57c598882"
-  integrity sha512-6REA1aedpBXYBSgqMhJHllHCf6jveV8KycuNYIXy5r8BbCJPjTloiMrrACwUhGAqHDaP3FvvlTy2JiKAmBqlJQ==
+"@nrwl/tao@14.6.4":
+  version "14.6.4"
+  resolved "https://registry.yarnpkg.com/@nrwl/tao/-/tao-14.6.4.tgz#fdc2f14d4fac9b0a62a9c32cfc8b98bbf075e642"
+  integrity sha512-xSfcXeU8AyEbmTGiGPCwej2eK+36gU9o6smUQxcK00Yii6vb5I87n8U77jTF5tJ85TkDW0I1VoHm0Nd8f1d9Cw==
   dependencies:
-    nx "14.5.7"
+    nx "14.6.4"
 
 "@octokit/auth-token@^3.0.0":
   version "3.0.0"
@@ -9500,13 +9500,13 @@ nwsapi@^2.2.0:
   resolved "https://registry.yarnpkg.com/nwsapi/-/nwsapi-2.2.0.tgz#204879a9e3d068ff2a55139c2c772780681a38b7"
   integrity sha512-h2AatdwYH+JHiZpv7pt/gSX1XoRGb7L/qSIeuqA6GwYoF9w1vP1cw42TO0aI2pNyshRK5893hNSl+1//vHK7hQ==
 
-nx@14.5.7, "nx@>=14.5.4 < 16", nx@^14.5.7:
-  version "14.5.7"
-  resolved "https://registry.yarnpkg.com/nx/-/nx-14.5.7.tgz#dddf810d6efa921012f60fb9983ef76978e5a696"
-  integrity sha512-Pa1YeVZoLejpv3zuZvUNxQ+h3eb74uuYuFKCqUVg1IO7dVL6aCvJRS6BUHktc8x9BhKurK12bbWG1wahXkGJtw==
+nx@14.6.4, "nx@>=14.5.4 < 16", nx@^14.5.7:
+  version "14.6.4"
+  resolved "https://registry.yarnpkg.com/nx/-/nx-14.6.4.tgz#471379334efc8258a47ec80db0915667d29aace3"
+  integrity sha512-AbUH3xQVL6faSXSMB7kPFcRtnz+FNUt4xR0UtfBBCqNSItq5kMOlHK10G7aN+VWtw8ScNy7qkWIeQ6VezvUW8A==
   dependencies:
-    "@nrwl/cli" "14.5.7"
-    "@nrwl/tao" "14.5.7"
+    "@nrwl/cli" "14.6.4"
+    "@nrwl/tao" "14.6.4"
     "@parcel/watcher" "2.0.4"
     chalk "4.1.0"
     chokidar "^3.5.1"
