@@ -27,7 +27,7 @@ export default function useArbiterLocking() {
 	return {
 		lastSuccessfulCheck,
 		sinceLastCheck,
-		showWarning: true,
+		showWarning,
 		friendlyLockNotice,
 	};
 }

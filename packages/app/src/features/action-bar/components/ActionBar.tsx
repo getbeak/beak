@@ -14,6 +14,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import type { Nodes } from '@getbeak/types/nodes';
 import styled, { useTheme } from 'styled-components';
 
+import ArbiterBadge from '../../arbiter/components/ArbiterBadge';
 import { showEncryptionView } from '../../encryption/store/actions';
 import ActionBarButton from './atoms/ActionBarButton';
 import ActionBarSeparator from './atoms/ActionBarSeparator';
@@ -30,6 +31,9 @@ const ActionBar: React.FC<React.PropsWithChildren<unknown>> = () => {
 
 	return (
 		<Wrapper>
+			<Spacer>
+				<ArbiterBadge />
+			</Spacer>
 			<ActionBarVersion />
 			<ActionBarButton onClick={() => dispatch(showEncryptionView())}>
 				<FontAwesomeIcon
@@ -109,6 +113,10 @@ const Wrapper = styled.div`
 	-webkit-app-region: drag;
 	background-color: ${props => props.theme.ui.secondarySurface};
 	padding: 0 10px;
+`;
+
+const Spacer = styled.div`
+	margin: 0 6px;
 `;
 
 export default ActionBar;
