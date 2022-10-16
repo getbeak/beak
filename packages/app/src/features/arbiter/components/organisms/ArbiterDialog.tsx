@@ -1,5 +1,7 @@
 import React from 'react';
+import Button from '@beak/app/components/atoms/Button';
 import Dialog from '@beak/app/components/molecules/Dialog';
+import { ipcArbiterService } from '@beak/app/lib/ipc';
 import styled from 'styled-components';
 
 import useArbiterLocking from '../../hooks/use-arbiter-locking';
@@ -33,6 +35,15 @@ export const ArbiterDialog: React.FC<ArbiterDialogProps> = props => {
 					{'The last successful check was on '}
 					<strong>{lastSuccessfulCheck.toString()}</strong>{'.'}
 				</Body>
+
+				<ButtonContainer>
+					<Button
+						size={'sm'}
+						onClick={() => ipcArbiterService.checkStatus()}
+					>
+						{'Check again'}
+					</Button>
+				</ButtonContainer>
 			</Container>
 		</Dialog>
 	);
@@ -53,6 +64,10 @@ const Body = styled.p`
 	font-size: 13px;
 	margin: 5px 0;
 	color: ${p => p.theme.ui.textMinor};
+`;
+
+const ButtonContainer = styled.div`
+	margin-top: 10px;
 `;
 
 export default ArbiterDialog;
