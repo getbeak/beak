@@ -7,6 +7,8 @@ export type Shortcuts =
 	'global.execute-request' |
 
 	'sidebar.toggle-view' |
+	'sidebar.switch-project' |
+	'sidebar.switch-variables' |
 
 	'tree-view.node.up' |
 	'tree-view.node.down' |
@@ -47,6 +49,8 @@ export const shortcutDefinitions: Record<Shortcuts, PlatformSpecificDefinitions 
 	},
 
 	'sidebar.toggle-view': { type: 'agnostic', ctrlOrMeta: true, key: 'b' },
+	'sidebar.switch-project': { type: 'agnostic', ctrlOrMeta: true, key: '1' },
+	'sidebar.switch-variables': { type: 'agnostic', ctrlOrMeta: true, key: '2' },
 
 	'tree-view.node.up': { type: 'agnostic', key: 'ArrowUp' },
 	'tree-view.node.down': { type: 'agnostic', key: 'ArrowDown' },

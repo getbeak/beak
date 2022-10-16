@@ -4,6 +4,8 @@ import tabActions from '@beak/app/features/tabs/store/actions';
 import { ipcExplorerService, ipcPreferencesService, ipcWindowService } from '@beak/app/lib/ipc';
 import { checkShortcut } from '@beak/app/lib/keyboard-shortcuts';
 import { reloadExtensions } from '@beak/app/store/extensions/actions';
+import { sidebarPreferenceSetCollapse, sidebarPreferenceSetSelected } from '@beak/app/store/preferences/actions';
+import { useAppSelector } from '@beak/app/store/redux';
 import { movePosition } from '@beak/app/utils/arrays';
 import Fuse from 'fuse.js';
 import type { Dispatch } from 'redux';
@@ -11,7 +13,7 @@ import styled, { css } from 'styled-components';
 
 import NoItemsFound from '../atoms/NoItemsFound';
 
-function generateCommands(): Command[] {
+function generateCommands(context: GenerateContext): Command[] {
 	return [{ // Developer
 		id: 'developer:reload_window',
 		name: 'Developer: Reload window',
@@ -87,7 +89,36 @@ function generateCommands(): Command[] {
 		name: 'Tabs: Close all tabs',
 		keywords: [],
 		action: dispatch => dispatch(tabActions.closeTabsAll()),
+	}, {
+		id: 'sidebar:toggle_visibility',
+		name: 'Sidebar: Toggle visibility',
+		keywords: [],
+		action: dispatch => {
+			dispatch(sidebarPreferenceSetCollapse({ key: 'sidebar', collapsed: !context.sidebar.collapsed }));
+		},
+	}, {
+		id: 'sidebar:switch_to_project',
+		name: 'Sidebar: Switch to project ',
+		keywords: [],
+		action: dispatch => {
+			dispatch(sidebarPreferenceSetSelected('project'));
+			dispatch(sidebarPreferenceSetCollapse({ key: 'sidebar', collapsed: false }));
+		},
+	}, {
+		id: 'sidebar:switch_to_variables',
+		name: 'Sidebar: Switch to variables ',
+		keywords: [],
+		action: dispatch => {
+			dispatch(sidebarPreferenceSetSelected('variables'));
+			dispatch(sidebarPreferenceSetCollapse({ key: 'sidebar', collapsed: false }));
+		},
 	}];
+}
+
+interface GenerateContext {
+	sidebar: {
+		collapsed: boolean;
+	};
 }
 
 interface Command {
@@ -104,10 +135,16 @@ export interface CommandsViewProps {
 
 const CommandsView: React.FC<React.PropsWithChildren<CommandsViewProps>> = ({ content, reset }) => {
 	const dispatch = useDispatch();
+	const context: GenerateContext = {
+		sidebar: {
+			collapsed: useAppSelector(s => s.global.preferences.sidebar.collapsed.sidebar),
+		},
+	};
+
 	const [matches, setMatches] = useState<string[]>([]);
 	const [active, setActive] = useState<number>(-1);
 	const activeRef = useRef<HTMLElement | null>(null);
-	const commands = generateCommands();
+	const commands = generateCommands(context);
 	const pureContent = content.substring(1);
 
 	const fuse = new Fuse(commands, {

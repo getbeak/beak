@@ -7,6 +7,8 @@ export type MenuEventCode =
 	'new_folder' |
 
 	'toggle_sidebar' |
+	'sidebar_show_project' |
+	'sidebar_show_variables' |
 
 	'close_tab' |
 	'close_all_tabs' |

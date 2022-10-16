@@ -35,7 +35,7 @@ const About: React.FC<React.PropsWithChildren<unknown>> = () => {
 						icon={faPenToSquare}
 						color={tab === 'editor' ? blankFill : primaryFill}
 					/>
-					<span>{'Editor'}</span>
+					<span>{'Rich text editor'}</span>
 				</SidebarItem>
 				<SidebarItem $active={tab === 'subscription'} onClick={() => setTab('subscription')}>
 					<FontAwesomeIcon

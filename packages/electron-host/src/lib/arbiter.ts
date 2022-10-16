@@ -9,12 +9,18 @@ import nestClient from './nest-client';
 import persistentStore from './persistent-store';
 
 class Arbiter {
-	start() {
-		this.check().catch(error => logger.error('arbiter: preview user check failed', error));
+	private interval: NodeJS.Timer | undefined;
 
-		setInterval(() => {
-			this.check().catch(error => logger.error('arbiter: preview user check failed', error));
-		}, 1800000); // 30 minutes
+	start() {
+		this.restartCheckHandler();
+		this.checkAndHandle();
+	}
+
+	restartCheckHandler() {
+		if (this.interval)
+			clearInterval(this.interval);
+
+		this.interval = setInterval(() => this.checkAndHandle(), 1800000); // 30 minutes
 	}
 
 	getStatus() {
@@ -109,6 +115,10 @@ class Arbiter {
 
 			windowStack[portalWindowId].focus();
 		}
+	}
+
+	checkAndHandle() {
+		this.check().catch(error => logger.error('arbiter: preview user check failed', error));
 	}
 }
 

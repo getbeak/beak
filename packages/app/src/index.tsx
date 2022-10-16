@@ -13,7 +13,7 @@ import ProjectMain from './containers/ProjectMain';
 import Welcome from './containers/Welcome';
 import WindowSessionContext, { instance } from './contexts/window-session-context';
 import { GlobalStyle } from './design-system';
-import Arbiter from './features/arbiter/components/Arbiter';
+import ArbiterOverlayBadge from './features/arbiter/components/ArbiterOverlayBadge';
 import { configureStore } from './store';
 import { setupMonaco } from './utils/monaco';
 
@@ -62,7 +62,7 @@ function getSystemTheme(): Theme {
 const FauxRouter: React.FC<React.PropsWithChildren<unknown>> = () => {
 	const [theme, setTheme] = useState<Theme>(getSystemTheme());
 	const params = new URLSearchParams(window.location.search);
-	const container = params.get('container');
+	const container = params.get('container')!;
 	const component = getComponent(container);
 
 	useEffect(() => {
@@ -77,12 +77,8 @@ const FauxRouter: React.FC<React.PropsWithChildren<unknown>> = () => {
 			<WindowSessionContext.Provider value={instance}>
 				<DesignSystemProvider themeKey={theme}>
 					<GlobalStyle $darwin={instance.isDarwin()} />
-					{container === 'portal' && component}
-					{container !== 'portal' && (
-						<Arbiter>
-							{component}
-						</Arbiter>
-					)}
+					{component}
+					{!['portal', 'project-main'].includes(container) && <ArbiterOverlayBadge />}
 					<NonprodBadge />
 				</DesignSystemProvider>
 			</WindowSessionContext.Provider>

@@ -12,27 +12,27 @@ export function createUpdateMenuItem(): MenuItemConstructorOptions {
 
 	if (checkingForUpdates) {
 		return {
-			label: 'Checking for updates...',
+			label: 'Checking for Updates...',
 			enabled: false,
 		};
 	}
 
 	if (updateDownloading) {
 		return {
-			label: 'Update downloading...',
+			label: 'Update Downloading...',
 			enabled: false,
 		};
 	}
 
 	if (pendingUpdate) {
 		return {
-			label: 'Update available...',
+			label: 'Update Available...',
 			click: () => autoUpdater.quitAndInstall(),
 		};
 	}
 
 	return {
-		label: 'Check for updates',
+		label: 'Check for Updates',
 		click: () => autoUpdater.checkForUpdates(),
 	};
 }

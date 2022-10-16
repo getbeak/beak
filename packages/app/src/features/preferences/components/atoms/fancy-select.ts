@@ -21,14 +21,14 @@ export const SelectItem = styled.div<{ $active?: boolean }>`
 	cursor: pointer;
 `;
 
-export const SelectItemPreview = styled.div<{ $active?: boolean; $themeMode: ThemeMode }>`
+export const SelectItemPreview = styled.div<{ $active?: boolean; $themeMode: ThemeMode; $themeType?: 'general' | 'editor' }>`
 	width: 90px; height: 56px;
 	border-radius: 5px;
 	background: pink;
 	margin-bottom: 10px;
 	border: 2px solid transparent;
 
-	background-image: url('./images/theme-switcher/${p => p.$themeMode}.jpg');
+	background-image: url('./images/${p => p.$themeType === 'editor' && 'editor-'}theme-switcher/${p => p.$themeMode}.jpg');
 	background-position: center;
 	background-size: cover;
 	background-repeat: no-repeat;
