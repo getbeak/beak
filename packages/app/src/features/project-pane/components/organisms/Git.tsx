@@ -51,7 +51,7 @@ const Item = styled.div`
 	align-items: center;
 	gap: 10px;
 	margin: 4px 0;
-	max-width: 100%;
+	max-width: calc(100% - 3px);
 
 	&:first-child {
 		margin-top: 0;

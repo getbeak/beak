@@ -6,6 +6,7 @@ import styled from 'styled-components';
 
 import TB from '../../../components/atoms/TabBar';
 import { changeTabNext, changeTabPrevious, closeTab, closeTabsOther } from '../store/actions';
+import NewProjectIntroTab from './molecules/NewProjectIntroTab';
 import RequestTab from './molecules/RequestTab';
 import VariableGroupEditorTab from './molecules/VariableGroupEditorTab';
 import Router from './Router';
@@ -62,6 +63,9 @@ const TabView: React.FC<React.PropsWithChildren<TabViewProps>> = ({ selectedTab,
 
 					if (t.type === 'variable_group_editor')
 						return <VariableGroupEditorTab key={t.payload} tab={t} />;
+
+					if (t.type === 'new_project_intro')
+						return <NewProjectIntroTab key={t.payload} tab={t} />;
 
 					return null;
 				})}
