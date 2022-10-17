@@ -20,6 +20,6 @@
     "@getbeak/types-realtime-value": "^1.0.0"
   },
   "devDependencies": {
-    "electron": "20.0.3"
+    "electron": "21.1.1"
   }
 }
