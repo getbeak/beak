@@ -19,6 +19,6 @@
 	},
 	"devDependencies": {
 		"mockdate": "^3.0.5",
-		"tape": "^5.6.0"
+		"tape": "^5.6.1"
 	}
 }

@@ -1,9 +1,8 @@
-import type { History } from 'history';
 import { combineReducers, createStore } from 'redux';
 
 export interface ApplicationState { }
 
-function createRootReducer(_history: History) {
+function createRootReducer() {
 	return combineReducers<ApplicationState>({ });
 }
 
@@ -11,11 +10,11 @@ function createInitialState(): ApplicationState {
 	return { };
 }
 
-export function configureStore(history: History) {
+export function configureStore() {
 	const initialState = createInitialState();
 
 	const store = createStore(
-		createRootReducer(history),
+		createRootReducer(),
 		initialState,
 		// compose(applyMiddleware(middleware(history))),
 	);
