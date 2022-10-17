@@ -2,6 +2,8 @@ name: beak-app
 
 on:
   push:
+    tags:
+      - beak-app@*
     branches:
      - master
      - develop
