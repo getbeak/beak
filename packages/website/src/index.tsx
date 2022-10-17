@@ -6,7 +6,6 @@ import { DesignSystemProvider } from '@beak/design-system';
 import { Theme } from '@beak/design-system/types';
 import * as Sentry from '@sentry/react';
 import { Integrations } from '@sentry/tracing';
-import { createBrowserHistory } from 'history';
 
 import Scroller from './components/atoms/Scroller';
 import AppContainer from './containers/App';
@@ -15,8 +14,7 @@ import ErrorFallback from './features/errors/components/ErrorFallback';
 import NotFound from './features/errors/components/NotFound';
 import { configureStore } from './store';
 
-const history = createBrowserHistory();
-const store = configureStore(history);
+const store = configureStore();
 
 const Home = lazy(() => import('./features/home/components/Home'));
 const Pricing = lazy(() => import('./features/pricing/components/Pricing'));
