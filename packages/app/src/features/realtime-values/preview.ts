@@ -1,7 +1,7 @@
 import type { Context } from '@getbeak/types/values';
 import { EditableRealtimeValue } from '@getbeak/types-realtime-value';
 
-export async function previewValue<T>(
+export async function previewValue<T extends Record<string, any>>(
 	ctx: Context,
 	rtv: EditableRealtimeValue<T>,
 	item: any,
