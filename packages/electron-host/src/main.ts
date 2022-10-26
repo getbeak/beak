@@ -5,7 +5,7 @@ import electronDebug from 'electron-debug';
 import { autoUpdater } from 'electron-updater';
 
 import './ipc-layer';
-import arbiter from './lib/arbiter';
+import './lib/arbiter';
 import { attemptMarketingConsentScreen } from './lib/marketing-consent';
 import nestClient from './lib/nest-client';
 import persistentStore from './lib/persistent-store';
@@ -67,7 +67,6 @@ app.on('before-quit', () => {
 
 app.on('ready', () => {
 	createAndSetMenu();
-	arbiter.start();
 	autoUpdater.checkForUpdates();
 	createOrFocusDefaultWindow(true);
 	attemptShowPostUpdateWelcome();
