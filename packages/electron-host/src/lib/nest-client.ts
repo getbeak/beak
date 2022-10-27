@@ -11,11 +11,11 @@ import crpc, { Client } from '@beak/crpc';
 import crypto from 'crypto';
 import { getFingerprint } from 'hw-fingerprint';
 
-import { getBeakAuth, setBeakAuth } from './credential-vault';
-import logger from './logger';
+import AuthClient from './auth-client';
 import persistentStore from './persistent-store';
 
 class NestClient {
+	private authClient: AuthClient;
 	private client: Client;
 	private authRefreshPromise?: QueryablePromise<unknown>;
 
@@ -24,45 +24,16 @@ class NestClient {
 		const environmentPrefix = environment === 'nonprod' ? 'nonprod-' : '';
 		const nestUrl = `https://nest.${environmentPrefix}getbeak.app/1/`;
 
-		this.client = crpc(nestUrl, { timeout: 10000 });
+		this.authClient = new AuthClient();
+		this.client = crpc(nestUrl, { timeout: 5000 });
 	}
 
 	async getAuth(): Promise<AuthenticateUserResponse | null> {
-		let auth: string | null = null;
-
-		try {
-			auth = await getBeakAuth();
-		} catch (error) {
-			// This happens if the app doesn't have permission to access the secure credential file
-			if (error instanceof Error && error.message === 'UNIX[No such file or directory]') {
-				logger.warn('Unable to get access credential file', error);
-
-				return null;
-			}
-
-			logger.error('Unable to get authentication credentials', error);
-
-			return null;
-		}
-
-		if (!auth)
-			return null;
-
-		try {
-			return JSON.parse(auth);
-		} catch (error) {
-			logger.warn('parsing secure auth failed', error);
-
-			return null;
-		}
+		return await this.authClient.getAuth();
 	}
 
 	async setAuth(auth: AuthenticateUserResponse | null) {
-		try {
-			await setBeakAuth(JSON.stringify(auth));
-		} catch (error) {
-			logger.error('Unable to set authentication credentials', error);
-		}
+		await this.authClient.setAuth(auth);
 	}
 
 	async rpc<T>(path: string, body: unknown) {
@@ -151,6 +122,8 @@ class NestClient {
 		if (!magicState)
 			throw new Squawk('invalid_state');
 
+		console.log('a');
+
 		const authentication = await this.rpcNoAuth<AuthenticateUserResponse>('2020-12-14/authenticate_user', {
 			clientId: getClientId(),
 			grantType: 'authorization_code',
@@ -159,10 +132,15 @@ class NestClient {
 			codeVerifier: magicState.codeVerifier,
 		});
 
+		console.log('b');
+		console.log(authentication);
+
 		persistentStore.reset('magicStates');
 
 		await this.setAuth(authentication);
 		await this.ensureActiveSubscription();
+
+		console.log('c');
 
 		return authentication;
 	}
