@@ -10,8 +10,6 @@ import nestClient from './nest-client';
 import persistentStore from './persistent-store';
 
 class Arbiter {
-	private interval: NodeJS.Timer | undefined;
-
 	constructor() {
 		this.startScheduler();
 	}
