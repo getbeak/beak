@@ -31,8 +31,11 @@ export interface Store {
 
 	latestKnownVersion: string | null;
 	environment: Environment;
+
+	encryptedAuth: string | null;
 	arbiter: ArbiterStatus;
 	magicStates: MagicStates;
+
 	referenceFiles: Record<string, Record<string, string>>;
 
 	notifications: NotificationPreferences;
@@ -53,6 +56,8 @@ const persistentStore = new ElectronStore<Store>({
 
 		latestKnownVersion: app.getVersion(),
 		environment: 'prod',
+
+		encryptedAuth: null,
 		arbiter: {
 			lastSuccessfulCheck: '1989-12-13T00:00:00Z',
 			lastCheckError: null,
@@ -60,6 +65,7 @@ const persistentStore = new ElectronStore<Store>({
 			status: false,
 		},
 		magicStates: {},
+
 		referenceFiles: {},
 
 		notifications: {
