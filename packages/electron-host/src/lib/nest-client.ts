@@ -122,8 +122,6 @@ class NestClient {
 		if (!magicState)
 			throw new Squawk('invalid_state');
 
-		console.log('a');
-
 		const authentication = await this.rpcNoAuth<AuthenticateUserResponse>('2020-12-14/authenticate_user', {
 			clientId: getClientId(),
 			grantType: 'authorization_code',
@@ -132,15 +130,10 @@ class NestClient {
 			codeVerifier: magicState.codeVerifier,
 		});
 
-		console.log('b');
-		console.log(authentication);
-
 		persistentStore.reset('magicStates');
 
 		await this.setAuth(authentication);
 		await this.ensureActiveSubscription();
-
-		console.log('c');
 
 		return authentication;
 	}
