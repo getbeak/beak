@@ -42,7 +42,7 @@ class Arbiter {
 		try {
 			logger.info('arbiter: ensuring active subscription');
 
-			await nestClient.ensureActiveSubscription();
+			await this.ensureActiveSubscriptionWithBackoff();
 
 			logger.info('arbiter: subscription is active');
 
@@ -124,6 +124,24 @@ class Arbiter {
 		windowStack[portalWindowId].focus();
 	}
 
+	private async ensureActiveSubscriptionWithBackoff() {
+		let latestError: unknown | null = null;
+
+		for (let i = 0; i < 3; i++) {
+			try {
+				// eslint-disable-next-line no-await-in-loop
+				await nestClient.ensureActiveSubscription();
+			} catch (error) {
+				logger.error('arbiter: ensure error caught during backoff', i, error);
+
+				latestError = error;
+			}
+		}
+
+		if (latestError)
+			throw latestError;
+	}
+
 	private guardedCheck() {
 		this.check().catch(error => logger.error('arbiter: check failure', error));
 	}
@@ -148,7 +166,7 @@ class Arbiter {
 			} catch (error) {
 				logger.error('arbiter: guarded check failure', error);
 			}
-		}, 2_700_000);
+		}, 30_000);
 	}
 }
 
