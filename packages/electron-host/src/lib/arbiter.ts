@@ -166,7 +166,7 @@ class Arbiter {
 			} catch (error) {
 				logger.error('arbiter: guarded check failure', error);
 			}
-		}, 30_000);
+		}, 2_700_000); // 45 minutes
 	}
 }
 
