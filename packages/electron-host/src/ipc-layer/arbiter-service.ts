@@ -7,6 +7,5 @@ const service = new IpcArbiterServiceMain(ipcMain);
 
 service.registerGetStatus(async () => arbiter.getStatus());
 service.registerCheckStatus(async () => {
-	arbiter.checkAndHandle();
-	arbiter.restartCheckHandler();
+	arbiter.getStatus();
 });

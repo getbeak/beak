@@ -1,4 +1,5 @@
 import { TypedObject } from '@beak/common/helpers/typescript';
+import { ArbiterStatus } from '@beak/common/types/arbiter';
 import Squawk from '@beak/common/utils/squawk';
 import { differenceInDays } from 'date-fns';
 import { app } from 'electron';
@@ -9,18 +10,8 @@ import nestClient from './nest-client';
 import persistentStore from './persistent-store';
 
 class Arbiter {
-	private interval: NodeJS.Timer | undefined;
-
-	start() {
-		this.restartCheckHandler();
-		this.checkAndHandle();
-	}
-
-	restartCheckHandler() {
-		if (this.interval)
-			clearInterval(this.interval);
-
-		this.interval = setInterval(() => this.checkAndHandle(), 1800000); // 30 minutes
+	constructor() {
+		this.startScheduler();
 	}
 
 	getStatus() {
@@ -28,20 +19,32 @@ class Arbiter {
 	}
 
 	async check() {
+		logger.info('arbiter: starting check');
+
+		logger.info('arbiter: getting auth state');
+
 		const auth = await nestClient.getAuth();
+
+		if (!auth) {
+			logger.info('arbiter: auth state null');
+
+			return;
+		}
+
+		logger.info('arbiter: auth state exists with expiry', auth.expiresAt);
+
+		logger.info('arbiter: getting status');
+
 		let status = this.getStatus();
 
-		logger.info('arbiter: checking status');
-
-		if (!auth)
-			return;
+		logger.info('arbiter: status retrieved', status.lastCheck, status.lastCheckError);
 
 		try {
 			logger.info('arbiter: ensuring active subscription');
 
-			await nestClient.ensureActiveSubscription();
+			await this.ensureActiveSubscriptionWithBackoff();
 
-			logger.info('arbiter: ensured active subscription');
+			logger.info('arbiter: subscription is active');
 
 			status = {
 				lastSuccessfulCheck: new Date().toISOString(),
@@ -50,7 +53,7 @@ class Arbiter {
 				status: true,
 			};
 		} catch (error) {
-			logger.error('arbiter: ensure subscription has failed', error);
+			logger.error('arbiter: subscription check failed', error);
 
 			const squawk = Squawk.coerce(error);
 			const expired = checkExpired(status.lastSuccessfulCheck);
@@ -80,7 +83,7 @@ class Arbiter {
 
 					status.status = false;
 
-					logger.error('Known but unknown error in arbiter fetching');
+					logger.error('arbiter: auth revoked');
 					app.relaunch();
 					app.exit();
 
@@ -88,37 +91,82 @@ class Arbiter {
 				}
 
 				default:
-					logger.error('Unknown error checking subscription status');
+					logger.error('arbiter: unknown error case', squawk, error);
 
 					break;
 			}
 		} finally {
-			TypedObject.values(windowStack).forEach(window => {
-				if (!window)
-					return;
-
-				window.webContents.send('arbiter_broadcast', { code: 'status_update', payload: status });
-			});
+			this.broadcastStatus(status);
+			persistentStore.set('arbiter', status);
 		}
 
-		persistentStore.set('arbiter', status);
+		logger.info('arbiter: core status check over', status);
 
-		if (status.status === false) {
-			nestClient.setAuth(null);
+		if (status.status) {
+			logger.info('arbiter: status check passed');
 
-			const portalWindowId = createPortalWindow();
-
-			TypedObject.values(windowStack).forEach(window => {
-				if (window.id !== portalWindowId)
-					window.close();
-			});
-
-			windowStack[portalWindowId].focus();
+			return;
 		}
+
+		logger.info('arbiter: status check failed');
+
+		nestClient.setAuth(null);
+
+		logger.info('arbiter: closing windows and focusing on portal');
+
+		const portalWindowId = createPortalWindow();
+
+		TypedObject.values(windowStack).forEach(window => {
+			if (window.id !== portalWindowId)
+				window.close();
+		});
+
+		windowStack[portalWindowId].focus();
 	}
 
-	checkAndHandle() {
-		this.check().catch(error => logger.error('arbiter: preview user check failed', error));
+	private async ensureActiveSubscriptionWithBackoff() {
+		let latestError: unknown | null = null;
+
+		for (let i = 0; i < 3; i++) {
+			try {
+				// eslint-disable-next-line no-await-in-loop
+				await nestClient.ensureActiveSubscription();
+			} catch (error) {
+				logger.error('arbiter: ensure error caught during backoff', i, error);
+
+				latestError = error;
+			}
+		}
+
+		if (latestError)
+			throw latestError;
+	}
+
+	private guardedCheck() {
+		this.check().catch(error => logger.error('arbiter: check failure', error));
+	}
+
+	private broadcastStatus(status: ArbiterStatus) {
+		logger.info('arbiter: broadcasting status to windows');
+
+		TypedObject.values(windowStack).forEach(window => {
+			if (!window || window.isDestroyed())
+				return;
+
+			logger.info('arbiter: broadcasting status');
+
+			window.webContents.send('arbiter_broadcast', { code: 'status_update', payload: status });
+		});
+	}
+
+	private startScheduler() {
+		setInterval(async () => {
+			try {
+				this.guardedCheck();
+			} catch (error) {
+				logger.error('arbiter: guarded check failure', error);
+			}
+		}, 2_700_000); // 45 minutes
 	}
 }
 

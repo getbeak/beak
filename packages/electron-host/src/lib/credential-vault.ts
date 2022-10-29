@@ -1,8 +1,10 @@
 import keytar from 'keytar';
 import os from 'os';
 
+import { generateIv, generateKey } from './aes';
+
 export const credentialKeys = {
-	auth: 'app.getbeak.beak.auth',
+	authEncryptionKey: 'app.getbeak.beak.auth-encryption-key',
 	projectEncryptionPrefix: 'app.getbeak.beak.project-encryption',
 } as const;
 
@@ -18,18 +20,32 @@ export async function setProjectEncryption(projectId: string, encryption: string
 	await setKeyValue(key, encryption);
 }
 
-export async function getBeakAuth() {
-	return await getValue(credentialKeys.auth);
+export async function getOrCreateBeakAuthEncryptionKey(): Promise<[string, string]> {
+	const storedKey = await getValue(credentialKeys.authEncryptionKey);
+
+	if (storedKey) {
+		const [key, iv] = storedKey.split(':');
+
+		if (key && iv)
+			return [key, iv];
+	}
+
+	const key = await generateKey();
+	const iv = generateIv();
+
+	await setBeakAuthEncryptionKey(`${key}:${iv}`);
+
+	return [key, iv];
 }
 
-export async function setBeakAuth(authData: string) {
-	return await setKeyValue(credentialKeys.auth, authData);
+export async function setBeakAuthEncryptionKey(authEncryptionKey: string) {
+	return await setKeyValue(credentialKeys.authEncryptionKey, authEncryptionKey);
 }
 
 async function getValue(key: string) {
-	return await keytar.getPassword(os.userInfo().username, key);
+	return await keytar.getPassword(key, os.userInfo().username);
 }
 
 async function setKeyValue(key: string, value: string) {
-	await keytar.setPassword(os.userInfo().username, key, value);
+	await keytar.setPassword(key, os.userInfo().username, value);
 }
