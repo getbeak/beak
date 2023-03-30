@@ -19,7 +19,7 @@ module.exports = {
 	publicDir: '../public',
 	resolve: {
 		alias: {
-			'@beak/share': path.join(__dirname, './src'),
+			'@beak/web-share': path.join(__dirname, './src'),
 			'@beak/common': path.join(__dirname, '../common/src'),
 			'@beak/design-system': path.join(__dirname, '../design-system/src'),
 		},

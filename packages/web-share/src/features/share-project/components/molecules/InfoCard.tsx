@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
-import CtaButton from 'packages/web-share/src/components/atoms/Buttons';
-import { SubTitle, Title } from 'packages/web-share/src/components/atoms/Typography';
-import useBeakProjectUrl from 'packages/web-share/src/hooks/use-beak-project-url';
+import CtaButton from '@beak/web-share/components/atoms/Buttons';
+import { SubTitle, Title } from '@beak/web-share/components/atoms/Typography';
+import useBeakProjectUrl from '@beak/web-share/hooks/use-beak-project-url';
 import styled from 'styled-components';
 
 const InfoCard: React.FC<React.PropsWithChildren<unknown>> = () => {

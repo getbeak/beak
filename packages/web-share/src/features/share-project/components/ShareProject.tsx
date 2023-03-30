@@ -1,6 +1,6 @@
 import React from 'react';
 import Helmet from 'react-helmet';
-import { SmallContainer } from 'packages/web-share/src/components/atoms/Container';
+import { SmallContainer } from '@beak/web-share/components/atoms/Container';
 import styled from 'styled-components';
 
 import InfoCard from './molecules/InfoCard';

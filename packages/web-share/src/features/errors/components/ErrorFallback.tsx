@@ -1,6 +1,6 @@
 import React from 'react';
-import { SmallContainer } from 'packages/web-share/src/components/atoms/Container';
-import { BodyRegular, Title, TitleSubtle } from 'packages/web-share/src/components/atoms/Typography';
+import { SmallContainer } from '@beak/web-share/components/atoms/Container';
+import { BodyRegular, Title, TitleSubtle } from '@beak/web-share/components/atoms/Typography';
 import { faBug } from '@fortawesome/free-solid-svg-icons/faBug';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import styled from 'styled-components';
