@@ -4,7 +4,6 @@ on:
   push:
     branches:
      - master
-     - develop
   pull_request:
     branches:
       - '*'
@@ -12,10 +11,7 @@ on:
       - '.github/workflows/beak-web.yml'
       - 'package.json'
       - 'yarn.lock'
-      - 'packages/**'
-      - '!packages/app/**'
-      - '!packages/electron-host/**'
-      - '!packages/requester-node/**'
+      - '/packages/web-*/*'
 
 jobs:
   build-deploy:
@@ -85,9 +81,10 @@ jobs:
         run: |
           rm packages/website/dist/robots.txt
           rm packages/website/dist/humans.txt
-          rm packages/website/dist/sitemap.xml
+          rm packages/website/dist/sitemap-0.xml
+          rm packages/website/dist/sitemap-index.xml
 
-      - name: Deploy website to non-production
+      - name: Deploy website (nonprod)
         uses: nwtgck/actions-netlify@v1.2
         with:
           publish-dir: './packages/website/dist'
@@ -103,7 +100,7 @@ jobs:
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID_WEBSITE_NONPROD }}
         timeout-minutes: 4
 
-      - name: Upload share to S3 (nonprod)
+      - name: Deploy share (nonprod)
         uses: shallwefootball/upload-s3-action@v1.1.2
         with:
           aws_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}

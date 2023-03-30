@@ -43,14 +43,14 @@
 			"@beak/requester-node": ["packages/requester-node/src"],
 			"@beak/requester-node/*": ["packages/requester-node/src/*"],
 	  
-			"@beak/share": ["packages/share/src"],
-			"@beak/share/*": ["packages/share/src/*"],
-	  
 			"@beak/squawk": ["packages/squawk/src"],
 			"@beak/squawk/*": ["packages/squawk/src/*"],
 	  
-			"@beak/website": ["packages/website/src"],
-			"@beak/website/*": ["packages/website/src/*"],
+			"@beak/web-share": ["packages/web-share/src"],
+			"@beak/web-share/*": ["packages/web-share/src/*"],
+	  
+			"@beak/web-website": ["packages/web-website/src"],
+			"@beak/web-website/*": ["packages/web-website/src/*"],
 	  
 			"@getbeak/types": ["packages/types/src"],
 			"@getbeak/types/*": ["packages/types/src/*"],
