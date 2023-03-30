@@ -54,7 +54,7 @@ jobs:
         if: "startsWith(github.event.head_commit.message, 'release(')"
         uses: nwtgck/actions-netlify@v1.2
         with:
-          publish-dir: './packages/website/public'
+          publish-dir: './packages/web-website/public'
           production-branch: master
           production-deploy: true
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -74,20 +74,20 @@ jobs:
           aws_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws_bucket: ${{ secrets.AWS_S3_BUCKET_SHARE }}
-          source_dir: 'packages/share/dist/'
+          source_dir: 'packages/web-share/dist/'
           destination_dir: ''
 
       - name: Delete robots/humans/sitemap for nonprod
         run: |
-          rm packages/website/public/robots.txt
-          rm packages/website/public/humans.txt
-          rm packages/website/public/sitemap-0.xml
-          rm packages/website/public/sitemap-index.xml
+          rm packages/web-website/public/robots.txt
+          rm packages/web-website/public/humans.txt
+          rm packages/web-website/public/sitemap-0.xml
+          rm packages/web-website/public/sitemap-index.xml
 
       - name: Deploy website (nonprod)
         uses: nwtgck/actions-netlify@v1.2
         with:
-          publish-dir: './packages/website/public'
+          publish-dir: './packages/web-website/public'
           production-branch: master
           production-deploy: true
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -106,5 +106,5 @@ jobs:
           aws_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws_bucket: ${{ secrets.AWS_S3_BUCKET_SHARE_NONPROD }}
-          source_dir: 'packages/share/dist/'
+          source_dir: 'packages/web-share/dist/'
           destination_dir: ''
