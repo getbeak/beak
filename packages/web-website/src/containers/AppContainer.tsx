@@ -28,7 +28,7 @@ function getSystemTheme(): Theme {
 
 	// Assume dark during SSG
 	if (typeof window === 'undefined')
-		return 'light';
+		return theme;
 
 	if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)
 		theme = 'dark';
