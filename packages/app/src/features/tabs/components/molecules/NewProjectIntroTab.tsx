@@ -30,8 +30,8 @@ const NewProjectIntroTab: React.FC<React.PropsWithChildren<NewProjectIntroTabPro
 					dispatch(makeTabPermanent(tab.payload));
 				}}
 			>
-				{tab.temporary && <em>{'Get started'}</em>}
-				{!tab.temporary && 'Get started'}
+				{tab.temporary && <em>{'Getting started'}</em>}
+				{!tab.temporary && 'Getting started'}
 			</TabItem>
 		</GenericTabContextMenuWrapper>
 	);
