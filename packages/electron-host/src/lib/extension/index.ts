@@ -11,10 +11,10 @@ import { ipcMain, WebContents } from 'electron';
 import fs from 'fs-extra';
 import clone from 'lodash.clonedeep';
 import path from 'path';
-import { Logger, TLogLevelName } from 'tslog';
+import { Logger } from 'tslog';
 import { NodeVM, VMScript } from 'vm2';
 
-import { logToFileSystem } from '../logger';
+import { LogLevel,logToFileSystem } from '../logger';
 
 interface ProjectExtensions {
 	[projectId: string]: Record<string, RtvExtensionStorage>;
@@ -31,15 +31,9 @@ interface RtvExtensionStorage {
 
 const logger = new Logger({ name: 'extensions' });
 
-logger.attachTransport({
-	silly: obj => logToFileSystem(obj, 'extensions'),
-	debug: obj => logToFileSystem(obj, 'extensions'),
-	trace: obj => logToFileSystem(obj, 'extensions'),
-	info: obj => logToFileSystem(obj, 'extensions'),
-	warn: obj => logToFileSystem(obj, 'extensions'),
-	error: obj => logToFileSystem(obj, 'extensions'),
-	fatal: obj => logToFileSystem(obj, 'extensions'),
-}, 'info');
+logger.attachTransport(logObj => {
+	logToFileSystem(logObj, 'extensions');
+});
 
 export default class ExtensionManager {
 	private readonly projectExtensions: ProjectExtensions = {};
@@ -64,7 +58,7 @@ export default class ExtensionManager {
 			eval: false,
 			sandbox: {
 				beakApi: {
-					log: (level: TLogLevelName, message: string) => (logger[level] ?? logger.warn)(message),
+					log: (level: LogLevel, message: string) => (logger[level] ?? logger.warn)(message),
 					parseValueParts: (_ctx: unknown, _parts: unknown, _recursiveSet: unknown) => [],
 				},
 			},

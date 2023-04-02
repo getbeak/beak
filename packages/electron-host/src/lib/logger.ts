@@ -2,21 +2,25 @@
 import { app } from 'electron';
 import fs from 'fs';
 import path from 'path';
-import { ILogObject, Logger } from 'tslog';
+import { Logger } from 'tslog';
+import { ILogObjMeta } from 'tslog/dist/types/interfaces';
+
+export type LogLevel =
+	| 'silly'
+	| 'trace'
+	| 'debug'
+	| 'info'
+	| 'warn'
+	| 'error'
+	| 'fatal';
 
 const logger = new Logger({ name: 'electron-host' });
 
-logger.attachTransport({
-	silly: obj => logToFileSystem(obj, 'main'),
-	debug: obj => logToFileSystem(obj, 'main'),
-	trace: obj => logToFileSystem(obj, 'main'),
-	info: obj => logToFileSystem(obj, 'main'),
-	warn: obj => logToFileSystem(obj, 'main'),
-	error: obj => logToFileSystem(obj, 'main'),
-	fatal: obj => logToFileSystem(obj, 'main'),
-}, 'info');
+logger.attachTransport(logObj => {
+	logToFileSystem(logObj, 'main');
+});
 
-export function logToFileSystem(obj: ILogObject, logName: string) {
+export function logToFileSystem(obj: ILogObjMeta, logName: string) {
 	const now = new Date();
 	const year = now.getUTCFullYear();
 	const month = now.getUTCMonth() + 1;

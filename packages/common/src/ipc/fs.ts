@@ -1,5 +1,6 @@
 import type { IpcMain } from 'electron';
-import { ReadOptions, WriteOptions } from 'fs-extra';
+import { JsonWriteOptions } from 'fs-extra';
+import type { JFReadOptions } from 'jsonfile';
 
 import { IpcServiceMain, IpcServiceRenderer, Listener, PartialIpcRenderer } from './ipc';
 
@@ -21,13 +22,13 @@ export const FsMessages = {
 
 export interface ReadJsonReq {
 	filePath: string;
-	options?: ReadOptions;
+	options?: JFReadOptions;
 }
 
 export interface WriteJsonReq {
 	filePath: string;
 	content: unknown;
-	options?: WriteOptions;
+	options?: JsonWriteOptions;
 }
 
 export interface ReadTextReq {
@@ -51,7 +52,6 @@ export interface MoveReq {
 export interface ReadDirReq {
 	filePath: string;
 	options: {
-		encoding?: string | null;
 		withFileTypes: true;
 	};
 }
@@ -92,11 +92,11 @@ export class IpcFsServiceRenderer extends IpcServiceRenderer {
 		super('fs', ipc);
 	}
 
-	async readJson<T>(filePath: string, options?: ReadOptions) {
+	async readJson<T>(filePath: string, options?: JFReadOptions) {
 		return this.invoke<T>(FsMessages.ReadJson, { filePath, options });
 	}
 
-	async writeJson(filePath: string, content: unknown, options?: WriteOptions) {
+	async writeJson(filePath: string, content: unknown, options?: JsonWriteOptions) {
 		return this.invoke(FsMessages.WriteJson, { filePath, content, options });
 	}
 
