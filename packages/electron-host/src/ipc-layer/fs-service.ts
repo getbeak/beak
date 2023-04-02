@@ -11,6 +11,7 @@ import {
 import Squawk from '@beak/common/utils/squawk';
 import { BrowserWindow, ipcMain, IpcMainInvokeEvent, shell } from 'electron';
 import fs from 'fs-extra';
+import type { JFReadOptions } from 'jsonfile';
 import path from 'path';
 
 import { openReferenceFile, previewReferencedFile } from '../lib/referenced-files';
@@ -132,7 +133,7 @@ async function ensureParentDirectoryExists(filePath: string) {
 }
 
 // This is needed as a json file read may happen while the file is being stream-written
-async function backoffJsonRead(filePath: string, options?: fs.ReadOptions) {
+async function backoffJsonRead(filePath: string, options?: JFReadOptions) {
 	let latestError: unknown = null;
 
 	/* eslint-disable no-await-in-loop */

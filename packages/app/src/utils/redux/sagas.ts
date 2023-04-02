@@ -1,8 +1,7 @@
+import { PayloadActionCreator } from '@reduxjs/toolkit';
 import { fork, takeEvery, takeLatest } from 'redux-saga/effects';
 
-import { TypedActionCreator } from './action-types';
-
-export function createTakeEverySagaSet<ActionCreator extends TypedActionCreator>(
+export function createTakeEverySagaSet<ActionCreator extends PayloadActionCreator>(
 	actionCreator: ActionCreator,
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	worker: (action: ReturnType<ActionCreator>) => Generator<unknown, unknown, any>,
@@ -12,7 +11,7 @@ export function createTakeEverySagaSet<ActionCreator extends TypedActionCreator>
 	});
 }
 
-export function createTakeLatestSagaSet<ActionCreator extends TypedActionCreator>(
+export function createTakeLatestSagaSet<ActionCreator extends PayloadActionCreator>(
 	actionCreator: ActionCreator,
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	worker: (action: ReturnType<ActionCreator>) => Generator<unknown, unknown, any>,

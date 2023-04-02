@@ -37,11 +37,9 @@ const httpLanguageDefinition: monaco.languages.IMonarchLanguage = {
 			[/^(?:[A-Z0-9]+\s)/, 'comment', '@overview'],
 		],
 		overview: [
-			// @ts-expect-error
 			[/(.+\s)(.*)(\n)$/, ['variable.name', 'source', { token: 'source', next: '@headers' }]],
 		],
 		headers: [
-			// @ts-expect-error
 			[/^(content-type\s*)(:)/, ['variable.name', { token: 'delimiter', next: '@content_type' }]],
 			[/^([^:]+)(:)(.+\n)$/, ['variable.name', 'delimiter', 'source']],
 
@@ -59,7 +57,6 @@ const httpLanguageDefinition: monaco.languages.IMonarchLanguage = {
 
 		content_type: [
 			// Pull out mime-type so we can style the body accordingly
-			// @ts-expect-error
 			[/(\s*)([a-z0-9.-]+\/[a-z0-9.+-]+)(.*\n)$/, ['source', { token: 'source', next: '@headers.$2' }, 'source']],
 
 			[/./, '@rematch', '@pop'],
