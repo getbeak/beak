@@ -16,7 +16,6 @@ import { createAndSetMenu } from './utils/menu';
 import { appIsPackaged } from './utils/static-path';
 import {
 	attemptWindowPresenceLoad,
-	createPortalWindow,
 	createWelcomeWindow,
 	generateWindowPresence,
 	windowStack,
@@ -103,15 +102,10 @@ app.on('browser-window-focus', (_event, window) => {
 });
 
 async function createOrFocusDefaultWindow(initial = false) {
-	if (!persistentStore.get('passedOnboarding'))
-		return void createPortalWindow();
-
 	const auth = await nestClient.getAuth();
 
 	if (!auth)
-		return void createPortalWindow();
-
-	attemptMarketingConsentScreen();
+		attemptMarketingConsentScreen();
 
 	if (initial && await attemptWindowPresenceLoad())
 		return void 0;

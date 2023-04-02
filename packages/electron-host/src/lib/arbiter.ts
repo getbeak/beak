@@ -4,7 +4,7 @@ import Squawk from '@beak/common/utils/squawk';
 import { differenceInDays } from 'date-fns';
 import { app } from 'electron';
 
-import { createPortalWindow, windowStack } from '../window-management';
+import { windowStack } from '../window-management';
 import logger from './logger';
 import nestClient from './nest-client';
 import persistentStore from './persistent-store';
@@ -111,25 +111,14 @@ class Arbiter {
 		logger.info('arbiter: status check failed');
 
 		nestClient.setAuth(null);
-
-		logger.info('arbiter: closing windows and focusing on portal');
-
-		const portalWindowId = createPortalWindow();
-
-		TypedObject.values(windowStack).forEach(window => {
-			if (window.id !== portalWindowId)
-				window.close();
-		});
-
-		windowStack[portalWindowId].focus();
 	}
 
 	private async ensureActiveSubscriptionWithBackoff() {
 		let latestError: unknown | null = null;
 
+		/* eslint-disable no-await-in-loop */
 		for (let i = 0; i < 3; i++) {
 			try {
-				// eslint-disable-next-line no-await-in-loop
 				await nestClient.ensureActiveSubscription();
 			} catch (error) {
 				logger.error('arbiter: ensure error caught during backoff', i, error);
