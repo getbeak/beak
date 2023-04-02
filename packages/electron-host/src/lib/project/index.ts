@@ -149,7 +149,7 @@ export default async function createProject(options: CreationOptions) {
 	await fs.ensureDir(projectPath);
 	await ensureDirEmpty(projectPath);
 	await fs.ensureDir(path.join(projectPath, 'tree'));
-	await fs.writeJson(path.join(projectPath, 'tree', 'Example request.json'), exReq, { spaces: '\t' });
+	await fs.writeJson(path.join(projectPath, 'tree', 'Request.json'), exReq, { spaces: '\t' });
 
 	await fs.ensureDir(path.join(projectPath, 'variable-groups'));
 	await fs.writeJson(path.join(projectPath, 'variable-groups', 'Environment.json'), variableGroup, { spaces: '\t' });

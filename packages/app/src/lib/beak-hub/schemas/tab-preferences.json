@@ -45,6 +45,23 @@
 				},
 				"temporary": { "type": "boolean" }
 			}
+		},
+
+		"newProjectIntroTab": {
+			"type": "object",
+			"additionalProperties": false,
+
+			"required": [
+				"type",
+				"payload",
+				"temporary"
+			],
+
+			"properties": {
+				"type": { "const": "new_project_intro" },
+				"payload": { "const": "new_project_intro" },
+				"temporary": { "type": "boolean" }
+			}
 		}
 	},
 
@@ -60,7 +77,8 @@
 			"items": {
 				"oneOf": [
 					{ "$ref": "#/definitions/requestTab" },
-					{ "$ref": "#/definitions/variableGroupEditorTab" }
+					{ "$ref": "#/definitions/variableGroupEditorTab" },
+					{ "$ref": "#/definitions/newProjectIntroTab" }
 				]
 			}
 		}

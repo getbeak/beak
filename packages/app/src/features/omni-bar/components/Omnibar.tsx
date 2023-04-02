@@ -10,7 +10,7 @@ import CommandsView from './organism/CommandsView';
 import FinderView from './organism/FinderView';
 
 const Omnibar: React.FC<React.PropsWithChildren<unknown>> = () => {
-	const { open } = useAppSelector(s => s.features.omniBar);
+	const { open, mode } = useAppSelector(s => s.features.omniBar);
 	const [content, setContent] = useState('');
 	const inputRef = useRef<HTMLInputElement | null>(null);
 	const dispatch = useDispatch();
@@ -18,15 +18,18 @@ const Omnibar: React.FC<React.PropsWithChildren<unknown>> = () => {
 	useEffect(() => {
 		window.addEventListener('keydown', onKeyDown);
 
-		return () => {
-			window.removeEventListener('keydown', onKeyDown);
-		};
+		return () => window.removeEventListener('keydown', onKeyDown);
 	}, []);
 
 	useEffect(() => {
 		if (open)
 			inputRef?.current?.focus();
 	}, [open, inputRef]);
+
+	useEffect(() => {
+		if (open && mode === 'commands')
+			setContent('>');
+	}, [open, mode]);
 
 	function onKeyDown(event: KeyboardEvent) {
 		switch (true) {

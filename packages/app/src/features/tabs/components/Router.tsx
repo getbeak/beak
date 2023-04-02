@@ -2,6 +2,7 @@ import React from 'react';
 import { ReflexContainer } from 'react-reflex';
 import ReflexElement from '@beak/app/components/atoms/ReflexElement';
 import ReflexSplitter from '@beak/app/components/atoms/ReflexSplitter';
+import NewProjectIntro from '@beak/app/components/molecules/NewProjectIntro';
 import PendingSlash from '@beak/app/components/molecules/PendingSplash';
 import { useAppSelector } from '@beak/app/store/redux';
 import { TabItem } from '@beak/common/types/beak-project';
@@ -71,6 +72,9 @@ const Router: React.FC<React.PropsWithChildren<RouterProps>> = ({ selectedTab })
 				/>
 			);
 		}
+
+		case 'new_project_intro':
+			return <NewProjectIntro />;
 
 		default: return <span>{'Unknown renderer'}</span>;
 	}

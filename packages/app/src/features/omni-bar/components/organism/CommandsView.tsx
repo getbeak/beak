@@ -89,7 +89,12 @@ function generateCommands(context: GenerateContext): Command[] {
 		name: 'Tabs: Close all tabs',
 		keywords: [],
 		action: dispatch => dispatch(tabActions.closeTabsAll()),
-	}, {
+	}, { // View
+		id: 'view:view_getting_started',
+		name: 'View: Getting started',
+		keywords: ['Welcome'],
+		action: dispatch => dispatch(tabActions.changeTab({ type: 'new_project_intro', temporary: false, payload: 'new_project_intro' })),
+	}, { // Sidebar
 		id: 'sidebar:toggle_visibility',
 		name: 'Sidebar: Toggle visibility',
 		keywords: [],

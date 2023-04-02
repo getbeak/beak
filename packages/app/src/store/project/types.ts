@@ -68,6 +68,8 @@ export const ActionTypes = {
 	ALERTS_CLEAR: '@beak/global/project/ALERTS_CLEAR',
 
 	REVEAL_REQUEST_EXTERNAL: '@beak/global/project/REVEAL_REQUEST_EXTERNAL',
+
+	DEFAULT_OR_CREATE_REQUEST: '@beak/global/project/DEFAULT_OR_CREATE_REQUEST',
 };
 
 export interface State {

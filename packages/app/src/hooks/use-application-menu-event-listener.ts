@@ -3,7 +3,9 @@ import { useDispatch } from 'react-redux';
 import { MenuEventPayload } from '@beak/common/web-contents/types';
 
 import { showEncryptionView } from '../features/encryption/store/actions';
+import { showOmniBar } from '../features/omni-bar/store/actions';
 import {
+	changeTab,
 	changeTabNext,
 	changeTabPrevious,
 	closeTab,
@@ -49,6 +51,13 @@ export function useApplicationMenuEventListener() {
 					break;
 				case 'view_project_encryption':
 					dispatch(showEncryptionView());
+					break;
+				case 'show_new_project_intro':
+					dispatch(changeTab({ type: 'new_project_intro', temporary: false, payload: 'new_project_intro' }));
+					break;
+
+				case 'show_omni_commands':
+					dispatch(showOmniBar({ mode: 'commands' }));
 					break;
 
 				default:

@@ -17,4 +17,7 @@ export type MenuEventCode =
 	'select_previous_tab' |
 
 	'execute_request' |
-	'view_project_encryption';
+	'view_project_encryption' |
+	'show_new_project_intro' |
+
+	'show_omni_commands';
