@@ -41,6 +41,10 @@ export default createTakeLatestSagaSet(actions.attemptReconciliation, function* 
 				break;
 			}
 
+			// No action needed for these tabs
+			case 'new_project_intro':
+				break;
+
 			default:
 				// @ts-expect-error
 				yield put(closeTab(tab.payload));

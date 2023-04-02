@@ -6,6 +6,7 @@ import {
 	workerCreateNewFolder as createNewFolder,
 	workerCreateNewRequest as createNewRequest,
 } from './create-things';
+import defaultOrCreateRequest from './default-or-create-request';
 import duplicateRequest from './duplicate-request';
 import moveNodeOnDisk from './move-node-on-disk';
 import nodeRename from './node-rename';
@@ -64,6 +65,9 @@ export default function* projectSaga() {
 		}),
 		fork(function* revealRequestExternalWatcher() {
 			yield takeEvery(ActionTypes.REVEAL_REQUEST_EXTERNAL, revealRequest);
+		}),
+		fork(function* defaultOrCreateRequestWatcher() {
+			yield takeEvery(ActionTypes.DEFAULT_OR_CREATE_REQUEST, defaultOrCreateRequest);
 		}),
 		fork(function* startProjectWatcher() {
 			yield takeEvery(ActionTypes.START_PROJECT, startProject);

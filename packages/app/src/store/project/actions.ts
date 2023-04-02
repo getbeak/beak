@@ -125,6 +125,8 @@ export const alertClear = createAction(AT.ALERTS_CLEAR);
 
 export const revealRequestExternal = createAction<string>(AT.REVEAL_REQUEST_EXTERNAL);
 
+export const defaultOrCreateRequest = createAction(AT.DEFAULT_OR_CREATE_REQUEST);
+
 export default {
 	startProject,
 	insertProjectInfo,
@@ -187,4 +189,5 @@ export default {
 	alertClear,
 
 	revealRequestExternal,
+	defaultOrCreateRequest,
 };
