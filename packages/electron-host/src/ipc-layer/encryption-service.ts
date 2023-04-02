@@ -1,5 +1,6 @@
 import { IpcEncryptionServiceMain } from '@beak/common/ipc/encryption';
 import { clipboard, ipcMain } from 'electron';
+import { ValueParts } from 'packages/types/values';
 
 import {
 	decryptString,
@@ -37,7 +38,7 @@ service.registerEncryptString(async (event, { iv, payload }) => {
 	return await encryptString(payload, key, iv);
 });
 
-service.registerDecryptString(async (event, { iv, payload }) => {
+service.registerDecryptString(async (event, { iv, payload }): Promise<string> => {
 	const projectFolder = getProjectFolder(event);
 	const key = await readProjectEncryptionKey(projectFolder);
 
@@ -58,12 +59,12 @@ service.registerEncryptObject(async (event, { iv, payload }) => {
 	return await encryptString(json, key, iv);
 });
 
-service.registerDecryptObject(async (event, { iv, payload }) => {
+service.registerDecryptObject(async (event, { iv, payload }): Promise<ValueParts> => {
 	const projectFolder = getProjectFolder(event);
 	const key = await readProjectEncryptionKey(projectFolder);
 
 	if (key === null)
-		return '[Encryption key missing]';
+		return ['[Encryption key missing]'];
 
 	const decrypted = await decryptString(payload, key, iv);
 
@@ -71,7 +72,12 @@ service.registerDecryptObject(async (event, { iv, payload }) => {
 		return [];
 
 	try {
-		return JSON.parse(decrypted);
+		const parsed = JSON.parse(decrypted);
+
+		if (Array.isArray(parsed))
+			return parsed;
+
+		return [parsed];
 	} catch {
 		return [];
 	}

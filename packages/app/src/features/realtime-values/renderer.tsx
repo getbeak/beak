@@ -8,9 +8,14 @@ import { ValueParts } from './values';
 import { getVariableGroupItemName } from './values/variable-group-item';
 
 export default function renderValueParts(parts: ValueParts, variableGroups: VariableGroups) {
+	let safeParts = parts;
+
+	if (!Array.isArray(parts))
+		safeParts = [];
+
 	return renderToStaticMarkup(
 		<React.Fragment>
-			{(parts ?? []).map((p, idx) => {
+			{safeParts.map((p, idx) => {
 				if (typeof p === 'string')
 					return <span key={p} data-index={idx}>{p}</span>;
 
