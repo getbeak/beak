@@ -41,9 +41,9 @@ const NotificationsItem: React.FC<React.PropsWithChildren<unknown>> = () => {
 					/>
 				</SubItem>
 				<SubItem>
-					<abbr title={'Requests where the HTTP status code is in the information range (100-199) or in the redirection range (300-399).'}>
-						<SubItemLabel>{'Information & redirect requests: '}</SubItemLabel>
-					</abbr>
+					<SubItemLabel id={'tt-preferences-notifications-information-requests'} $abbr>
+						{'Information & redirect requests: '}
+					</SubItemLabel>
 					<NotificationStateSelect
 						value={notificationPreferences.onInformationRequest}
 						onChange={value => setNotificationValue('onInformationRequest', value)}

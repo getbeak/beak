@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
 export const ItemGroup = styled.div`
 	margin-bottom: 20px;
@@ -33,6 +33,11 @@ export const SubItem = styled.div`
 	color: ${p => p.theme.ui.textMinor};
 `;
 
-export const SubItemLabel = styled.div`
+export const SubItemLabel = styled.div<{ $abbr?: boolean }>`
 	margin-bottom: 3px;
+
+	${p => p.$abbr && css`
+		text-decoration: underline;
+		text-decoration-style: dotted;
+	`}
 `;

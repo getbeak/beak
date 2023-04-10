@@ -13,49 +13,46 @@ const ActionBarFlightStatus: React.FC<React.PropsWithChildren<unknown>> = () => 
 	switch (flightStatus.status) {
 		case 'active':
 			return (
-				<abbr title={'Flight in progress...'}>
-					<FontAwesomeIcon
-						icon={faSpinner}
-						size={'1x'}
-						spin
-					/>
-				</abbr>
+				<FontAwesomeIcon
+					id={'#tt-action-bar-flight-status-active'}
+					icon={faSpinner}
+					size={'1x'}
+					spin
+				/>
 			);
 
 		case 'complete': {
 			const failure = flightStatus.httpStatus > 399;
+			const tooltipId = failure ? 'tt-action-bar-flight-status-server-failed' : 'tt-action-bar-flight-status-success';
 
 			return (
-				<abbr title={`Flight ${failure ? 'failed successfully' : 'complete'}`}>
-					<FontAwesomeIcon
-						icon={failure ? faCircleXmark : faCircleCheck}
-						color={statusToColor(theme, flightStatus.httpStatus)}
-						size={'1x'}
-					/>
-				</abbr>
+				<FontAwesomeIcon
+					id={tooltipId}
+					icon={failure ? faCircleXmark : faCircleCheck}
+					color={statusToColor(theme, flightStatus.httpStatus)}
+					size={'1x'}
+				/>
 			);
 		}
 
 		case 'failed':
 			return (
-				<abbr title={'Flight failed'}>
-					<FontAwesomeIcon
-						icon={faCircleXmark}
-						color={theme.ui.destructiveAction}
-						size={'1x'}
-					/>
-				</abbr>
+				<FontAwesomeIcon
+					id={'tt-action-bar-flight-status-failed'}
+					icon={faCircleXmark}
+					color={theme.ui.destructiveAction}
+					size={'1x'}
+				/>
 			);
 
 		case 'pending':
 		default:
 			return (
-				<abbr title={'Awaiting flight...'}>
-					<FontAwesomeIcon
-						icon={faCircleDot}
-						size={'1x'}
-					/>
-				</abbr>
+				<FontAwesomeIcon
+					id={'tt-action-bar-flight-status-pending'}
+					icon={faCircleDot}
+					size={'1x'}
+				/>
 			);
 	}
 };

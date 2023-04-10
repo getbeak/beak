@@ -1,8 +1,11 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { useDispatch } from 'react-redux';
+import WindowSessionContext from '@beak/app/contexts/window-session-context';
 import { actions as omniBarActions } from '@beak/app/features/omni-bar/store';
+import shortcutDefinitions from '@beak/app/lib/keyboard-shortcuts';
 import { actions as flightActions } from '@beak/app/store/flight';
 import { useAppSelector } from '@beak/app/store/redux';
+import { renderPlainTextDefinition } from '@beak/app/utils/keyboard-rendering';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import {
 	faCaretLeft,
@@ -28,14 +31,21 @@ const ActionBar: React.FC<React.PropsWithChildren<unknown>> = () => {
 	const selectedTabPayload = useAppSelector(s => s.features.tabs.selectedTab);
 	const request = useAppSelector(s => s.global.project.tree![selectedTabPayload ?? 'non_existent']);
 	const requirements = useRequirements(selectedTabPayload, request);
+	const windowContext = useContext(WindowSessionContext)!;
+	const omniBarDefinition = (() => {
+		const shortcutDefinition = shortcutDefinitions['omni-bar.launch.finder'];
+
+		if (shortcutDefinition.type === 'agnostic')
+			return shortcutDefinition;
+
+		return shortcutDefinition[windowContext.getPlatform()];
+	})();
 
 	return (
 		<Wrapper>
-			<Spacer>
-				<ArbiterBadge />
-			</Spacer>
-			<ActionBarVersion />
-			<ActionBarButton onClick={() => dispatch(showEncryptionView())}>
+			<Spacer><ArbiterBadge /></Spacer>
+			<Spacer><ActionBarVersion /></Spacer>
+			<ActionBarButton id={'tt-action-bar-encryption-button'} onClick={() => dispatch(showEncryptionView())}>
 				<FontAwesomeIcon
 					color={theme.ui.textMinor}
 					size={'1x'}
@@ -43,44 +53,42 @@ const ActionBar: React.FC<React.PropsWithChildren<unknown>> = () => {
 				/>
 			</ActionBarButton>
 			<ActionBarSeparator />
-			<abbr title={'Go to previous item in flight history'}>
-				<ActionBarButton
-					disabled={!requirements?.canGoBack}
-					onClick={() => dispatch(flightActions.previousFlightHistory({ requestId: selectedTabPayload! }))}
-				>
-					<FontAwesomeIcon
-						color={theme.ui.textMinor}
-						size={'lg'}
-						icon={faCaretLeft}
-					/>
-				</ActionBarButton>
-			</abbr>
+			<ActionBarButton
+				id={'tt-action-bar-previous-flight-history'}
+				disabled={!requirements?.canGoBack}
+				onClick={() => dispatch(flightActions.previousFlightHistory({ requestId: selectedTabPayload! }))}
+			>
+				<FontAwesomeIcon
+					color={theme.ui.textMinor}
+					size={'lg'}
+					icon={faCaretLeft}
+				/>
+			</ActionBarButton>
 			<ActionBarFlightStatus />
-			<abbr title={'Go to next item in flight history'}>
-				<ActionBarButton
-					disabled={!requirements?.canGoForward}
-					onClick={() => dispatch(flightActions.nextFlightHistory({ requestId: selectedTabPayload! }))}
-				>
-					<FontAwesomeIcon
-						color={theme.ui.textMinor}
-						size={'lg'}
-						icon={faCaretRight}
-					/>
-				</ActionBarButton>
-			</abbr>
+			<ActionBarButton
+				id={'tt-action-bar-next-flight-history'}
+				disabled={!requirements?.canGoForward}
+				onClick={() => dispatch(flightActions.nextFlightHistory({ requestId: selectedTabPayload! }))}
+			>
+				<FontAwesomeIcon
+					color={theme.ui.textMinor}
+					size={'lg'}
+					icon={faCaretRight}
+				/>
+			</ActionBarButton>
 			<ActionBarSeparator />
-			<abbr title={'Shows possible errors with your project'}>
-				<ActionBarAlertButton />
-			</abbr>
-			<abbr title={'Go bird watching'}>
-				<ActionBarButton onClick={() => dispatch(omniBarActions.showOmniBar({ mode: 'search' }))}>
-					<FontAwesomeIcon
-						color={theme.ui.textMinor}
-						size={'1x'}
-						icon={faSearch}
-					/>
-				</ActionBarButton>
-			</abbr>
+			<ActionBarAlertButton id={'tt-action-bar-alert-button'} />
+			<ActionBarButton
+				data-tooltip-id={'tt-action-bar-omni-search'}
+				data-tooltip-content={`Open search bar (${renderPlainTextDefinition(omniBarDefinition)})`}
+				onClick={() => dispatch(omniBarActions.showOmniBar({ mode: 'search' }))}
+			>
+				<FontAwesomeIcon
+					color={theme.ui.textMinor}
+					size={'1x'}
+					icon={faSearch}
+				/>
+			</ActionBarButton>
 		</Wrapper>
 	);
 };
@@ -120,7 +128,7 @@ const Wrapper = styled.div`
 `;
 
 const Spacer = styled.div`
-	margin: 0 6px;
+	margin: 0 3px;
 `;
 
 export default ActionBar;

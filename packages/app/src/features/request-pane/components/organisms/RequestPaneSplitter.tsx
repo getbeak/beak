@@ -27,21 +27,21 @@ const RequestPaneSplitter: React.FC<RequestPaneSplitterProps> = props => {
 	return (
 		<Container>
 			<PreviewLabel>
-				{'Previewer'}
+				{'Request preview'}
 			</PreviewLabel>
 			<ActionsContainer>
 				<ActionButton onClick={copyRequestPreview}>
-					<abbr title={'Copy request preview'}>
-						<FontAwesomeIcon icon={faCopy} />
-					</abbr>
+					<FontAwesomeIcon
+						id={'tt-request-preview-copy'}
+						icon={faCopy}
+					/>
 				</ActionButton>
 				<ActionSeparator />
 				<ActionButton onClick={() => navigator.clipboard.writeText(shareUrl)}>
-					<abbr title={'Create request share link'}>
-						<FontAwesomeIcon
-							icon={faShareFromSquare}
-						/>
-					</abbr>
+					<FontAwesomeIcon
+						id={'tt-request-preview-share'}
+						icon={faShareFromSquare}
+					/>
 				</ActionButton>
 			</ActionsContainer>
 		</Container>

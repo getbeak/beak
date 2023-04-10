@@ -8,7 +8,11 @@ import { useTheme } from 'styled-components';
 import ActionBarButton from '../atoms/ActionBarButton';
 import AlertsPopover from '../organisms/AlertsPopover';
 
-const ActionBarAlertButton: React.FC<React.PropsWithChildren<unknown>> = () => {
+interface ActionBarAlertButtonProps {
+	id: string;
+}
+
+const ActionBarAlertButton: React.FC<ActionBarAlertButtonProps> = ({ id }) => {
 	const theme = useTheme();
 	const [showPopover, setShowPopover] = useState(false);
 	const alerts = useAppSelector(s => s.global.project.alerts);
@@ -20,7 +24,7 @@ const ActionBarAlertButton: React.FC<React.PropsWithChildren<unknown>> = () => {
 
 	return (
 		<React.Fragment>
-			<ActionBarButton ref={parentRef}>
+			<ActionBarButton id={id} ref={parentRef}>
 				<FontAwesomeIcon
 					color={hasAlerts ? 'orange' : theme.ui.textMinor}
 					size={'1x'}

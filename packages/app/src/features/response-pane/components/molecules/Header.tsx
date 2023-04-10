@@ -25,10 +25,13 @@ const Header: React.FC<React.PropsWithChildren<HeaderProps>> = props => {
 				<strong>{request.verb.toUpperCase()}</strong>
 			</Section>
 			<UrlSection>
-				<Abbr title={url}>
+				<div
+					data-tooltip-id={'tt-response-header-url-bar'}
+					data-tooltip-content={url}
+				>
 					{/* The "&lrm;" char is a requirement of using RTL to trim the end vs start of the string */}
 					{url}&lrm;
-				</Abbr>
+				</div>
 			</UrlSection>
 			{response && (
 				<StatusSection $status={response.status}>
@@ -76,10 +79,6 @@ const UrlSection = styled(Section)`
 	overflow: hidden;
 	text-overflow: ellipsis;
 	direction: rtl;
-`;
-
-const Abbr = styled.abbr`
-	text-decoration: none;
 `;
 
 const StatusSection = styled(Section)<{ $status: number }>`

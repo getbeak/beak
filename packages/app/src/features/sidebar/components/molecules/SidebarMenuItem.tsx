@@ -34,7 +34,10 @@ const SidebarMenuItem: React.FC<React.PropsWithChildren<SidebarMenuItemProps>> =
 	})();
 
 	return (
-		<abbr title={`${name} sidebar (${renderPlainTextDefinition(definition)})`}>
+		<FakeAbbr
+			data-tooltip-id={'tt-sidebar-menu-item'}
+			data-tooltip-content={`${name} sidebar (${renderPlainTextDefinition(definition)})`}
+		>
 			<Container
 				$active={active}
 				onClick={() => onClick(item)}
@@ -45,11 +48,16 @@ const SidebarMenuItem: React.FC<React.PropsWithChildren<SidebarMenuItemProps>> =
 					fontSize={'14px'}
 				/>
 			</Container>
-		</abbr>
+		</FakeAbbr>
 	);
 };
 
 export default SidebarMenuItem;
+
+const FakeAbbr = styled.div`
+	text-decoration: underline;
+	text-decoration-style: dotted;
+`;
 
 const Container = styled.div<{ $active?: boolean }>`
 	display: flex;
