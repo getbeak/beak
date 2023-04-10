@@ -7,6 +7,7 @@ import { init } from '@sentry/electron';
 
 import './utils/unhandled-error-handler';
 import NonprodBadge from './components/atoms/NonprodBadge';
+import Tooltips from './components/molecules/Tooltips';
 import Portal from './containers/Portal';
 import Preferences from './containers/Preferences';
 import ProjectMain from './containers/ProjectMain';
@@ -80,6 +81,7 @@ const FauxRouter: React.FC<React.PropsWithChildren<unknown>> = () => {
 					{component}
 					{!['portal', 'project-main'].includes(container) && <ArbiterOverlayBadge />}
 					<NonprodBadge />
+					<Tooltips />
 				</DesignSystemProvider>
 			</WindowSessionContext.Provider>
 		</Provider>
