@@ -113,6 +113,10 @@ const Wrapper = styled.div`
 	-webkit-app-region: drag;
 	background-color: ${props => props.theme.ui.secondarySurface};
 	padding: 0 10px;
+
+	> * {
+		-webkit-app-region: no-drag;
+	}
 `;
 
 const Spacer = styled.div`
