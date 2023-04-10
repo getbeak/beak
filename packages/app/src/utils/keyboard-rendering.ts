@@ -18,13 +18,20 @@ export function renderPlainTextDefinition(definition: ShortcutDefinition) {
 	if (definition.shift) parts.push('⇧');
 
 	if (Array.isArray(definition.key)) {
-		parts.push(' ');
-		definition.key.forEach(k => parts.push(k));
-	} else {
-		parts.push(renderSimpleKey(definition.key));
+		const shortcutOptions: string[] = [];
+
+		definition.key.forEach(k => {
+			const partsClone = [...parts, k.toLocaleUpperCase()];
+
+			shortcutOptions.push(partsClone.join(' '));
+		});
+
+		return shortcutOptions.join(', ');
 	}
 
-	return parts.join('');
+	parts.push(renderSimpleKey(definition.key.toLocaleUpperCase()));
+
+	return parts.join(' ');
 }
 
 export function renderPlatformAwareCtrlOrMeta(darwin: boolean) {
