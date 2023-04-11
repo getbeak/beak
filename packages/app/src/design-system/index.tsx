@@ -9,7 +9,7 @@ const GlobalStyle = createGlobalStyle<GlobalStyleProps>`
 	:root {
 		--rt-color-white: ${p => p.theme.ui.textOnSurfaceBackground};
 		--rt-color-dark: ${p => p.theme.ui.surfaceHighlight};
-		--rt-opacity: 1;
+		--rt-opacity: .9;
 	}
 
 	* {
