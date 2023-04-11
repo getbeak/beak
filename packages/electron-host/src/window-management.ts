@@ -146,6 +146,7 @@ function createWindow(
 			preload: path.join(app.getAppPath(), 'preload.js'),
 		},
 		show: false,
+		hasShadow: true,
 		...windowOpts,
 	});
 

@@ -4,40 +4,43 @@ import { instance as windowSessionInstance } from '@beak/app/contexts/window-ses
 import { PlatformAgnosticDefinitions, PlatformSpecificDefinitions } from './types';
 
 export type Shortcuts =
-	'global.execute-request' |
+	| 'global.execute-request'
 
-	'sidebar.toggle-view' |
-	'sidebar.switch-project' |
-	'sidebar.switch-variables' |
+	| 'sidebar.toggle-view'
+	| 'sidebar.switch-project'
+	| 'sidebar.switch-variables'
 
-	'tree-view.node.up' |
-	'tree-view.node.down' |
-	'tree-view.node.left' |
-	'tree-view.node.right' |
-	'tree-view.node.rename' |
+	| 'tree-view.node.up'
+	| 'tree-view.node.down'
+	| 'tree-view.node.left'
+	| 'tree-view.node.right'
+	| 'tree-view.node.rename'
+	| 'tree-view.node.delete'
 
-	'variable-groups.variable-group.open' |
-	'variable-groups.variable-group.delete' |
+	| 'variable-groups.variable-group.open'
+	| 'variable-groups.variable-group.delete'
 
-	'project-explorer.request.open' |
-	'project-explorer.request.duplicate' |
-	'project-explorer.item.delete' |
+	| 'project-explorer.request.open'
+	| 'project-explorer.request.duplicate'
+	| 'project-explorer.item.delete'
 
-	'omni-bar.launch.commands' |
-	'omni-bar.launch.finder' |
-	'omni-bar.commands.up' |
-	'omni-bar.commands.down' |
-	'omni-bar.commands.open' |
-	'omni-bar.finder.up' |
-	'omni-bar.finder.down' |
-	'omni-bar.finder.open' |
+	| 'omni-bar.launch.commands'
+	| 'omni-bar.launch.finder'
+	| 'omni-bar.commands.up'
+	| 'omni-bar.commands.down'
+	| 'omni-bar.commands.open'
+	| 'omni-bar.finder.up'
+	| 'omni-bar.finder.down'
+	| 'omni-bar.finder.open'
 
-	'tab-bar.all.next' |
-	'tab-bar.all.previous' |
-	'tab-bar.all.close' |
-	'tab-bar.all.close-others' |
+	| 'tab-bar.all.next'
+	| 'tab-bar.all.previous'
+	| 'tab-bar.all.close'
+	| 'tab-bar.all.close-others'
+	| 'tab-bar.current.close'
 
-	'menu-bar.file.new-request';
+	| 'menu-bar.file.new-request'
+	| 'menu-bar.file.new-folder';
 
 export const shortcutDefinitions: Record<Shortcuts, PlatformSpecificDefinitions | PlatformAgnosticDefinitions> = {
 	'global.execute-request': {
@@ -45,10 +48,10 @@ export const shortcutDefinitions: Record<Shortcuts, PlatformSpecificDefinitions 
 
 		windows: { ctrl: true, key: 'Enter' },
 		linux: { ctrl: true, key: 'Enter' },
-		darwin: { meta: true, key: ['Enter', 'r'] },
+		darwin: { meta: true, key: ['Enter', 'R'] },
 	},
 
-	'sidebar.toggle-view': { type: 'agnostic', ctrlOrMeta: true, key: 'b' },
+	'sidebar.toggle-view': { type: 'agnostic', ctrlOrMeta: true, key: 'B' },
 	'sidebar.switch-project': { type: 'agnostic', ctrlOrMeta: true, key: '1' },
 	'sidebar.switch-variables': { type: 'agnostic', ctrlOrMeta: true, key: '2' },
 
@@ -56,6 +59,7 @@ export const shortcutDefinitions: Record<Shortcuts, PlatformSpecificDefinitions 
 	'tree-view.node.down': { type: 'agnostic', key: 'ArrowDown' },
 	'tree-view.node.left': { type: 'agnostic', key: 'ArrowLeft' },
 	'tree-view.node.right': { type: 'agnostic', key: 'ArrowRight' },
+	'tree-view.node.delete': { type: 'agnostic', ctrlOrMeta: true, key: 'Backspace' },
 	'tree-view.node.rename': {
 		type: 'specific',
 		windows: { key: 'F2' },
@@ -79,11 +83,11 @@ export const shortcutDefinitions: Record<Shortcuts, PlatformSpecificDefinitions 
 		linux: { key: 'Enter' },
 		darwin: { meta: true, key: 'ArrowDown' },
 	},
-	'project-explorer.request.duplicate': { type: 'agnostic', ctrlOrMeta: true, key: 'd' },
+	'project-explorer.request.duplicate': { type: 'agnostic', ctrlOrMeta: true, key: 'D' },
 	'project-explorer.item.delete': { type: 'agnostic', ctrlOrMeta: true, key: 'Backspace' },
 
-	'omni-bar.launch.commands': { type: 'agnostic', ctrlOrMeta: true, shift: true, key: 'p' },
-	'omni-bar.launch.finder': { type: 'agnostic', ctrlOrMeta: true, key: ['p', 'k'] },
+	'omni-bar.launch.commands': { type: 'agnostic', ctrlOrMeta: true, shift: true, key: 'P' },
+	'omni-bar.launch.finder': { type: 'agnostic', ctrlOrMeta: true, key: ['P', 'K'] },
 
 	'omni-bar.commands.up': { type: 'agnostic', key: 'ArrowUp' },
 	'omni-bar.commands.down': { type: 'agnostic', key: 'ArrowDown' },
@@ -95,10 +99,12 @@ export const shortcutDefinitions: Record<Shortcuts, PlatformSpecificDefinitions 
 
 	'tab-bar.all.next': { type: 'agnostic', ctrl: true, key: 'Tab' },
 	'tab-bar.all.previous': { type: 'agnostic', ctrl: true, shift: true, key: 'Tab' },
-	'tab-bar.all.close': { type: 'agnostic', ctrlOrMeta: true, key: 'w' },
+	'tab-bar.all.close': { type: 'agnostic', ctrlOrMeta: true, key: 'W' },
 	'tab-bar.all.close-others': { type: 'agnostic', ctrlOrMeta: true, alt: true, key: 'T' },
+	'tab-bar.current.close': { type: 'agnostic', ctrlOrMeta: true, shift: true, key: 'W' },
 
 	'menu-bar.file.new-request': { type: 'agnostic', ctrlOrMeta: true, shift: true, key: 'N' },
+	'menu-bar.file.new-folder': { type: 'agnostic', ctrlOrMeta: true, alt: true, key: 'N' },
 };
 
 export function checkShortcut(shortcutKey: Shortcuts, event: React.KeyboardEvent | KeyboardEvent) {

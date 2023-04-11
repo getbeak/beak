@@ -1,5 +1,35 @@
 import { instance as windowSessionInstance } from '../contexts/window-session-context';
-import { ShortcutDefinition } from '../lib/keyboard-shortcuts/types';
+import shortcutDefinitions, { Shortcuts } from '../lib/keyboard-shortcuts';
+import { PlatformAgnosticDefinitions, PlatformSpecificDefinitions, ShortcutDefinition } from '../lib/keyboard-shortcuts/types';
+
+function selectDefinition(platformDefinition: PlatformSpecificDefinitions | PlatformAgnosticDefinitions) {
+	if (platformDefinition.type === 'agnostic') return platformDefinition;
+
+	const isDarwin = windowSessionInstance.isDarwin();
+
+	if (isDarwin) return platformDefinition.darwin;
+
+	return platformDefinition.windows;
+}
+
+export function renderAcceleratorDefinition(shortcutKey: Shortcuts) {
+	const definition = selectDefinition(shortcutDefinitions[shortcutKey]);
+
+	const parts: string[] = [];
+
+	if (definition.ctrlOrMeta) parts.push('CmdOrCtrl');
+	if (definition.alt) parts.push('Alt');
+	if (definition.ctrl) parts.push('Ctrl');
+	if (definition.shift) parts.push('Shift');
+	if (definition.meta) parts.push('Meta');
+
+	if (Array.isArray(definition.key))
+		parts.push(definition.key[0]);
+	else
+		parts.push(definition.key);
+
+	return parts.join('+');
+}
 
 export function renderPlainTextDefinition(definition: ShortcutDefinition) {
 	const darwin = windowSessionInstance.isDarwin();

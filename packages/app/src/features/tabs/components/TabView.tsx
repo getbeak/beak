@@ -5,7 +5,7 @@ import { TabItem } from '@beak/common/types/beak-project';
 import styled from 'styled-components';
 
 import TB from '../../../components/atoms/TabBar';
-import { changeTabNext, changeTabPrevious, closeTab, closeTabsOther } from '../store/actions';
+import { changeTabNext, changeTabPrevious, closeTab, closeTabsAll, closeTabsOther } from '../store/actions';
 import NewProjectIntroTab from './molecules/NewProjectIntroTab';
 import RequestTab from './molecules/RequestTab';
 import VariableGroupEditorTab from './molecules/VariableGroupEditorTab';
@@ -30,15 +30,16 @@ const TabView: React.FC<React.PropsWithChildren<TabViewProps>> = ({ selectedTab,
 			return;
 
 		switch (true) {
-			case checkShortcut('tab-bar.all.close', event):
+			case checkShortcut('tab-bar.current.close', event):
 				dispatch(closeTab());
-
 				break;
 
+			case checkShortcut('tab-bar.all.close', event):
+				dispatch(closeTabsAll());
+				break;
 			case checkShortcut('tab-bar.all.close-others', event):
 				dispatch(closeTabsOther());
 				break;
-
 			case checkShortcut('tab-bar.all.previous', event):
 				dispatch(changeTabPrevious());
 				break;

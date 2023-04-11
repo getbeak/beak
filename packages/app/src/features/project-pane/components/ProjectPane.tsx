@@ -5,6 +5,7 @@ import { ipcExplorerService } from '@beak/app/lib/ipc';
 import { checkShortcut } from '@beak/app/lib/keyboard-shortcuts';
 import { actions } from '@beak/app/store/project';
 import { useAppSelector } from '@beak/app/store/redux';
+import { renderAcceleratorDefinition } from '@beak/app/utils/keyboard-rendering';
 import ksuid from '@beak/ksuid';
 import type { MenuItemConstructorOptions } from 'electron';
 
@@ -27,7 +28,7 @@ const ProjectPane: React.FC<React.PropsWithChildren<unknown>> = () => {
 	function generateContextMenu(node: TreeViewItem): MenuItemConstructorOptions[] {
 		return [{
 			id: ksuid.generate('ctxmenuitem').toString(),
-			accelerator: 'CmdOrCtrl+Shift+N',
+			accelerator: renderAcceleratorDefinition('menu-bar.file.new-request'),
 			label: 'New request',
 			click: () => {
 				dispatch(actions.createNewRequest({ highlightedNodeId: node.id }));
@@ -35,7 +36,7 @@ const ProjectPane: React.FC<React.PropsWithChildren<unknown>> = () => {
 		}, {
 			id: ksuid.generate('ctxmenuitem').toString(),
 			label: 'Duplicate request',
-			accelerator: 'CmdOrCtrl+D',
+			accelerator: renderAcceleratorDefinition('project-explorer.request.duplicate'),
 			enabled: node.type === 'request',
 			click: () => {
 				dispatch(actions.duplicateRequest({ requestId: node.id }));
@@ -43,7 +44,7 @@ const ProjectPane: React.FC<React.PropsWithChildren<unknown>> = () => {
 		}, {
 			id: ksuid.generate('ctxmenuitem').toString(),
 			label: 'New folder',
-			accelerator: 'CmdOrCtrl+Alt+N',
+			accelerator: renderAcceleratorDefinition('menu-bar.file.new-folder'),
 			click: () => {
 				dispatch(actions.createNewFolder({ highlightedNodeId: node?.id }));
 			},
@@ -96,7 +97,7 @@ const ProjectPane: React.FC<React.PropsWithChildren<unknown>> = () => {
 		{
 			id: ksuid.generate('ctxmenuitem').toString(),
 			label: 'Rename',
-			accelerator: darwin ? 'Return' : 'F2',
+			accelerator: renderAcceleratorDefinition('tree-view.node.rename'),
 			enabled: node.id !== 'root',
 			click: () => {
 				if (node.id === 'root')
@@ -107,7 +108,7 @@ const ProjectPane: React.FC<React.PropsWithChildren<unknown>> = () => {
 		}, {
 			id: ksuid.generate('ctxmenuitem').toString(),
 			label: 'Delete',
-			accelerator: 'CmdOrCtrl+Backspace',
+			accelerator: renderAcceleratorDefinition('tree-view.node.delete'),
 			enabled: node.id !== 'root',
 			click: () => {
 				dispatch(actions.removeNodeFromDisk({ requestId: node.id, withConfirmation: true }));

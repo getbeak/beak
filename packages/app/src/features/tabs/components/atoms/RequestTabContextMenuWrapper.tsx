@@ -4,6 +4,7 @@ import ContextMenu from '@beak/app/components/atoms/ContextMenu';
 import WindowSessionContext from '@beak/app/contexts/window-session-context';
 import { ipcExplorerService } from '@beak/app/lib/ipc';
 import { useAppSelector } from '@beak/app/store/redux';
+import { renderAcceleratorDefinition } from '@beak/app/utils/keyboard-rendering';
 import { TabItem } from '@beak/common/types/beak-project';
 import ksuid from '@beak/ksuid';
 import type { MenuItemConstructorOptions } from 'electron';
@@ -36,7 +37,7 @@ const RequestTabContextMenuWrapper: React.FC<React.PropsWithChildren<RequestTabC
 		setMenuItems([
 			{
 				id: ksuid.generate('ctxmenuitem').toString(),
-				accelerator: 'CmdOrCtrl+W',
+				accelerator: renderAcceleratorDefinition('tab-bar.current.close'),
 				label: 'Close',
 				click: () => {
 					dispatch(closeTab(node.id));
@@ -44,7 +45,7 @@ const RequestTabContextMenuWrapper: React.FC<React.PropsWithChildren<RequestTabC
 			},
 			{
 				id: ksuid.generate('ctxmenuitem').toString(),
-				accelerator: 'CmdOrCtrl+Alt+T',
+				accelerator: renderAcceleratorDefinition('tab-bar.all.close-others'),
 				label: 'Close Others',
 				click: () => {
 					dispatch(closeTabsOther(node.id));
@@ -68,7 +69,7 @@ const RequestTabContextMenuWrapper: React.FC<React.PropsWithChildren<RequestTabC
 			},
 			{
 				id: ksuid.generate('ctxmenuitem').toString(),
-				label: 'Close All',
+				label: renderAcceleratorDefinition('tab-bar.all.close'),
 				click: () => {
 					dispatch(closeTabsAll());
 				},
