@@ -17,6 +17,7 @@ const ActionBarFlightStatus: React.FC<React.PropsWithChildren<unknown>> = () => 
 					id={'#tt-action-bar-flight-status-active'}
 					icon={faSpinner}
 					size={'1x'}
+					tabIndex={-1}
 					spin
 				/>
 			);
@@ -30,6 +31,7 @@ const ActionBarFlightStatus: React.FC<React.PropsWithChildren<unknown>> = () => 
 					id={tooltipId}
 					icon={failure ? faCircleXmark : faCircleCheck}
 					color={statusToColor(theme, flightStatus.httpStatus)}
+					tabIndex={-1}
 					size={'1x'}
 				/>
 			);
@@ -41,6 +43,7 @@ const ActionBarFlightStatus: React.FC<React.PropsWithChildren<unknown>> = () => 
 					id={'tt-action-bar-flight-status-failed'}
 					icon={faCircleXmark}
 					color={theme.ui.destructiveAction}
+					tabIndex={-1}
 					size={'1x'}
 				/>
 			);
@@ -51,6 +54,7 @@ const ActionBarFlightStatus: React.FC<React.PropsWithChildren<unknown>> = () => 
 				<FontAwesomeIcon
 					id={'tt-action-bar-flight-status-pending'}
 					icon={faCircleDot}
+					tabIndex={-1}
 					size={'1x'}
 				/>
 			);

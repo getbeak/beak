@@ -15,7 +15,7 @@ const ActionBarButton = styled.button`
 		opacity: 0.5;
 	}
 	&:focus {
-		outline: 0;
+		outline: 1;
 	}
 
 	&:not(:disabled) {
