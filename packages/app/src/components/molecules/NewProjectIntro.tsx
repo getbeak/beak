@@ -17,7 +17,10 @@ const NewProjectIntro: React.FC<React.PropsWithChildren<unknown>> = () => {
 					<WelcomeBannerSummary>
 						{'Welcome to your Beak project. Beak\'s provides comprehensive a '}
 						{'toolkit that will make building, editing, testing, and '}
-						{'researching API\'s super simple. Click the button below to get '}
+						{'researching API\'s super simple.'}
+						<br />
+						<br />
+						{'Click the button below to get '}
 						{'started with making a request, or you can browse the guides below '}
 						{'to learn more about the features Beak has to offer.'}
 					</WelcomeBannerSummary>
@@ -60,7 +63,8 @@ const NewProjectIntro: React.FC<React.PropsWithChildren<unknown>> = () => {
 					<GuidesGridItem>
 						<GuidesGridItemTitle>{'Realtime values'}</GuidesGridItemTitle>
 						<GuidesGridItemBody>
-							{'Body'}
+							{'Variables can be inserted into your request, and are '}
+							{'calculated for every request.'}
 						</GuidesGridItemBody>
 						<Button onClick={() => ipcExplorerService.launchUrl('https://getbeak.notion.site/Realtime-values-e569e07fec964859926edcab2a3351ac')}>
 							{'Read docs'}
@@ -83,6 +87,8 @@ const Wrapper = styled.div`
 	flex-direction: column;
 
 	background-color: ${props => props.theme.ui.surface};
+
+	overflow-y: scroll;
 `;
 
 const WelcomeBanner = styled.div`
@@ -105,7 +111,7 @@ const WelcomeBannerTitle = styled.div`
 `;
 
 const WelcomeBannerSummary = styled.div`
-	font-size: 15px;
+	font-size: 14px;
 	margin-top: 15px;
 	margin-bottom: 15px;
 	color: ${p => p.theme.ui.textOnAction};
@@ -136,14 +142,14 @@ const GuidesGridItem = styled.div`
 `;
 
 const GuidesGridItemTitle = styled.div`
-	font-size: 20px;
+	font-size: 18px;
 	color: ${p => p.theme.ui.textOnSurfaceBackground};
 `;
 
 const GuidesGridItemBody = styled.div`
-	font-size: 15px;
+	font-size: 14px;
 	margin-top: 10px;
-	margin-bottom: 10px;
+	margin-bottom: 20px;
 	color: ${p => p.theme.ui.textMinor};
 `;
 
