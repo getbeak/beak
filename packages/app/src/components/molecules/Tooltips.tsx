@@ -73,10 +73,25 @@ const tooltips: TooltipDefinition[] = [{
 export const Tooltips: React.FC = () => (
 	<React.Fragment>
 		{tooltips.map(t => {
-			if (t.content === void 0)
-				return <Tooltip id={t.anchor} place={t.placement} />;
+			if (t.content === void 0) {
+				return (
+					<Tooltip
+						id={t.anchor}
+						key={t.anchor}
+						place={t.placement}
+					/>
+				);
+			}
 
-			return <Tooltip anchorSelect={t.anchor} place={t.placement}>{t.content}</Tooltip>;
+			return (
+				<Tooltip
+					anchorSelect={t.anchor}
+					key={t.anchor}
+					place={t.placement}
+				>
+					{t.content}
+				</Tooltip>
+			);
 		})}
 	</React.Fragment>
 );
