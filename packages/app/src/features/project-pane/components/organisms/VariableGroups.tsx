@@ -1,6 +1,5 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import { SilentAbbr } from '@beak/app/components/atoms/Abbr';
 import useSectionBody from '@beak/app/features/sidebar/hooks/use-section-body';
 import { editorPreferencesSetSelectedVariableGroup } from '@beak/app/store/preferences/actions';
 import { useAppSelector } from '@beak/app/store/redux';
@@ -8,6 +7,7 @@ import { TypedObject } from '@beak/common/helpers/typescript';
 import styled from 'styled-components';
 
 import NoVariableGroups from '../molecules/NoVariableGroups';
+import VariableGroupName from '../molecules/VariableGroupName';
 
 const VariableGroups: React.FC<React.PropsWithChildren<unknown>> = () => {
 	const dispatch = useDispatch();
@@ -37,9 +37,7 @@ const VariableGroups: React.FC<React.PropsWithChildren<unknown>> = () => {
 
 				return (
 					<Item key={k}>
-						<GroupName>
-							<SilentAbbr title={k}>{k}</SilentAbbr>
-						</GroupName>
+						<VariableGroupName variableGroupName={k} />
 
 						<Selector
 							value={value}
@@ -83,15 +81,6 @@ const Item = styled.div`
 	&:not(:last-child) {
 		margin-bottom: 6px;
 	}
-`;
-
-const GroupName = styled.span`
-	color: ${p => p.theme.ui.textMinor};
-	font-size: 12px;
-
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
 `;
 
 const Selector = styled.select`
