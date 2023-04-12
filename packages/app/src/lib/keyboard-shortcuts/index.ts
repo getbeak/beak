@@ -109,6 +109,7 @@ export const shortcutDefinitions: Record<Shortcuts, PlatformSpecificDefinitions 
 
 export function checkShortcut(shortcutKey: Shortcuts, event: React.KeyboardEvent | KeyboardEvent) {
 	const { altKey, ctrlKey, metaKey, shiftKey, key } = event;
+	const modifiedKey = key.length === 1 ? key.toLocaleUpperCase() : key;
 	const platformDefinition = shortcutDefinitions[shortcutKey];
 
 	const shortcutDefinition = (() => {
@@ -127,7 +128,7 @@ export function checkShortcut(shortcutKey: Shortcuts, event: React.KeyboardEvent
 			((useMeta && metaKey) || (useCtrl && ctrlKey)) &&
 			Boolean(shortcutDefinition.alt) === altKey &&
 			Boolean(shortcutDefinition.shift) === shiftKey &&
-			(typeof shortcutDefinition.key === 'string' ? shortcutDefinition.key === key : shortcutDefinition.key.includes(key))
+			(typeof shortcutDefinition.key === 'string' ? shortcutDefinition.key === key : shortcutDefinition.key.includes(modifiedKey))
 		);
 		/* eslint-enable operator-linebreak */
 	}
@@ -138,7 +139,7 @@ export function checkShortcut(shortcutKey: Shortcuts, event: React.KeyboardEvent
 		Boolean(shortcutDefinition.ctrl) === ctrlKey &&
 		Boolean(shortcutDefinition.meta) === metaKey &&
 		Boolean(shortcutDefinition.shift) === shiftKey &&
-		(typeof shortcutDefinition.key === 'string' ? shortcutDefinition.key === key : shortcutDefinition.key.includes(key))
+		(typeof shortcutDefinition.key === 'string' ? shortcutDefinition.key === key : shortcutDefinition.key.includes(modifiedKey))
 	);
 	/* eslint-enable operator-linebreak */
 }

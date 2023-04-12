@@ -1,6 +1,5 @@
-import React, { useContext } from 'react';
-import WindowSessionContext from '@beak/app/contexts/window-session-context';
-import { PlatformAgnosticDefinitions, PlatformSpecificDefinitions } from '@beak/app/lib/keyboard-shortcuts/types';
+import React from 'react';
+import { Shortcuts } from '@beak/app/lib/keyboard-shortcuts';
 import { renderPlainTextDefinition } from '@beak/app/utils/keyboard-rendering';
 import { SidebarVariant } from '@beak/common/types/beak-hub';
 import { faTable, IconDefinition } from '@fortawesome/free-solid-svg-icons';
@@ -17,26 +16,19 @@ interface SidebarMenuItemProps {
 	item: SidebarVariant;
 	name: string;
 	selectedItem: SidebarVariant | null;
-	shortcutDefinition: PlatformAgnosticDefinitions | PlatformSpecificDefinitions;
+	shortcut: Shortcuts;
 	onClick: (variant: SidebarVariant) => void;
 }
 
 const SidebarMenuItem: React.FC<React.PropsWithChildren<SidebarMenuItemProps>> = props => {
 	const theme = useTheme();
-	const { item, name, selectedItem, shortcutDefinition, onClick } = props;
+	const { item, name, selectedItem, shortcut, onClick } = props;
 	const active = item === selectedItem;
-	const windowContext = useContext(WindowSessionContext)!;
-	const definition = (() => {
-		if (shortcutDefinition.type === 'agnostic')
-			return shortcutDefinition;
-
-		return shortcutDefinition[windowContext.getPlatform()];
-	})();
 
 	return (
 		<FakeAbbr
 			data-tooltip-id={'tt-sidebar-menu-item'}
-			data-tooltip-content={`${name} sidebar (${renderPlainTextDefinition(definition)})`}
+			data-tooltip-content={`${name} sidebar (${renderPlainTextDefinition(shortcut)})`}
 		>
 			<Container
 				$active={active}

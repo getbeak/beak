@@ -1,7 +1,7 @@
 import React, { useContext, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import WindowSessionContext from '@beak/app/contexts/window-session-context';
-import shortcutDefinitions, { checkShortcut } from '@beak/app/lib/keyboard-shortcuts';
+import { checkShortcut } from '@beak/app/lib/keyboard-shortcuts';
 import { sidebarPreferenceSetCollapse, sidebarPreferenceSetSelected } from '@beak/app/store/preferences/actions';
 import { useAppSelector } from '@beak/app/store/redux';
 import { SidebarVariant } from '@beak/common/types/beak-hub';
@@ -104,14 +104,14 @@ const Sidebar: React.FC<React.PropsWithChildren<unknown>> = () => {
 					item={'project'}
 					name={'Project'}
 					selectedItem={selectedSidebar}
-					shortcutDefinition={shortcutDefinitions['sidebar.switch-project']}
+					shortcut={'sidebar.switch-project'}
 					onClick={usefulSetVariant}
 				/>
 				<SidebarMenuItem
 					item={'variables'}
 					name={'Variables'}
 					selectedItem={selectedSidebar}
-					shortcutDefinition={shortcutDefinitions['sidebar.switch-variables']}
+					shortcut={'sidebar.switch-variables'}
 					onClick={usefulSetVariant}
 				/>
 			</SidebarMenu>

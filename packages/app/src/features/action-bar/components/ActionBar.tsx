@@ -1,8 +1,6 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { useDispatch } from 'react-redux';
-import WindowSessionContext from '@beak/app/contexts/window-session-context';
 import { actions as omniBarActions } from '@beak/app/features/omni-bar/store';
-import shortcutDefinitions from '@beak/app/lib/keyboard-shortcuts';
 import { actions as flightActions } from '@beak/app/store/flight';
 import { useAppSelector } from '@beak/app/store/redux';
 import { renderPlainTextDefinition } from '@beak/app/utils/keyboard-rendering';
@@ -31,15 +29,6 @@ const ActionBar: React.FC<React.PropsWithChildren<unknown>> = () => {
 	const selectedTabPayload = useAppSelector(s => s.features.tabs.selectedTab);
 	const request = useAppSelector(s => s.global.project.tree![selectedTabPayload ?? 'non_existent']);
 	const requirements = useRequirements(selectedTabPayload, request);
-	const windowContext = useContext(WindowSessionContext)!;
-	const omniBarDefinition = (() => {
-		const shortcutDefinition = shortcutDefinitions['omni-bar.launch.finder'];
-
-		if (shortcutDefinition.type === 'agnostic')
-			return shortcutDefinition;
-
-		return shortcutDefinition[windowContext.getPlatform()];
-	})();
 
 	return (
 		<Wrapper>
@@ -80,7 +69,7 @@ const ActionBar: React.FC<React.PropsWithChildren<unknown>> = () => {
 			<ActionBarAlertButton id={'tt-action-bar-alert-button'} />
 			<ActionBarButton
 				data-tooltip-id={'tt-action-bar-omni-search'}
-				data-tooltip-content={`Open search bar (${renderPlainTextDefinition(omniBarDefinition)})`}
+				data-tooltip-content={`Open search bar (${renderPlainTextDefinition('omni-bar.launch.finder')})`}
 				onClick={() => dispatch(omniBarActions.showOmniBar({ mode: 'search' }))}
 			>
 				<FontAwesomeIcon
