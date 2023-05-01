@@ -1408,11 +1408,6 @@
   resolved "https://registry.yarnpkg.com/@gar/promisify/-/promisify-1.1.3.tgz#555193ab2e3bb3b6adc3d551c9c030d9e860daf6"
   integrity sha512-k2Ty1JcVojjJFwrg/ThKi2ujJ7XNLYaFGNB/bWT9wGR+oSMJHMa5w+CUq6p/pVrKeNNgA7pCqEcjSnHVoqJQFw==
 
-"@getbeak/types@1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@getbeak/types/-/types-1.0.0.tgz#329c1a93ab90d9e373e915b9997d8b630617e392"
-  integrity sha512-DZ6NfMcnnOjrFYWIQ1PzvB68emAImCICAoQgVVyw7JD36avn+sDkvpBp0FChJW8E5aeLYOvOuR4RteegBrFXdA==
-
 "@graphiql/toolkit@^0.8.3":
   version "0.8.3"
   resolved "https://registry.yarnpkg.com/@graphiql/toolkit/-/toolkit-0.8.3.tgz#62ffb6efc0202a94fe0fc38dd39c31f89d1d15c9"
