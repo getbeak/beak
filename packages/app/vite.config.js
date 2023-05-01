@@ -5,6 +5,7 @@ const path = require('path');
 const fs = require('fs');
 const reactPlugin = require('@vitejs/plugin-react');
 const viteSentryPlugin = require('vite-plugin-sentry');
+const monacoEditorPlugin = require('vite-plugin-monaco-editor');
 
 // eslint-disable-next-line no-sync
 const packageJson = JSON.parse(fs.readFileSync(path.join(__dirname, '../', 'electron-host', 'package.json')));
@@ -39,6 +40,34 @@ module.exports = {
 	},
 	plugins: [
 		reactPlugin({ include: '**/*.tsx' }),
+		monacoEditorPlugin.default({
+			languageWorkers: [
+				'json',
+				'css',
+				'html',
+				'typescript',
+				'editorWorkerService',
+			],
+			customWorkers: [{
+				label: 'graphql',
+				entry: '../../../node_modules/monaco-graphql/dist/graphql.worker',
+			}, {
+				label: 'scss',
+				entry: '../../../node_modules/monaco-editor/esm/vs/language/css/css.worker',
+			}, {
+				label: 'less',
+				entry: '../../../node_modules/monaco-editor/esm/vs/language/css/css.worker',
+			}, {
+				label: 'handlebars',
+				entry: '../../../node_modules/monaco-editor/esm/vs/language/html/html.worker',
+			}, {
+				label: 'razor',
+				entry: '../../../node_modules/monaco-editor/esm/vs/language/html/html.worker',
+			}, {
+				label: 'javascript',
+				entry: '../../../node_modules/monaco-editor/esm/vs/language/typescript/ts.worker',
+			}],
+		}),
 		viteSentryPlugin({
 			authToken: process.env.SENTRY_ELECTRON_APP_API_KEY,
 			dryRun: process.env.BUILD_ENVIRONMENT !== 'ci',
