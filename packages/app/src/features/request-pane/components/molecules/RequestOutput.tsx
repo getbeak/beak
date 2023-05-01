@@ -56,6 +56,8 @@ function createBodySection(verb: string, body: RequestBody) {
 	switch (body.type) {
 		case 'text':
 		case 'json':
+		case 'graphql':
+		case 'url_encoded_form':
 			return body.payload;
 
 		default:
@@ -71,14 +73,19 @@ export async function createBasicHttpOutput(overview: RequestOverview, context: 
 		url.pathname,
 	];
 
-	if (overview.query && TypedObject.keys(overview.query).length > 0) {
-		const builder = new URLSearchParams();
+	const queryBuilder = new URLSearchParams();
 
-		for (const { name, value } of TypedObject.values(overview.query).filter(q => q.enabled))
-			builder.append(name, await parseValueParts(context, value));
+	await Promise.all(TypedObject
+		.values(overview.query)
+		.filter(q => q.enabled)
+		.map(async value => queryBuilder.append(value.name, await parseValueParts(context, value.value))),
+	);
 
-		firstLine.push(`?${builder.toString()}`);
-	}
+	if (bodyFreeVerbs.includes(verb) && body.type === 'graphql')
+		queryBuilder.append('query', body.payload.query);
+
+	if (queryBuilder.values.length > 0)
+		firstLine.push(`?${queryBuilder.toString()}`);
 
 	if (url.hash)
 		firstLine.push(url.hash);
@@ -122,16 +129,24 @@ export async function createBasicHttpOutput(overview: RequestOverview, context: 
 		// Padding between headers/body
 		out.push('');
 
-		if (body.type === 'json')
+		if (body.type === 'json') {
 			out.push(JSON.stringify(await convertToRealJson(context, body.payload), null, '\t'));
-		else if (body.type === 'text')
+		} else if (body.type === 'text') {
 			out.push(body.payload);
-		else if (body.type === 'url_encoded_form')
+		} else if (body.type === 'url_encoded_form') {
 			out.push(await convertKeyValueToString(context, body.payload));
-		else if (body.type === 'file')
+		} else if (body.type === 'file') {
 			out.push(await readReferencedFile(body.payload.fileReferenceId));
-		else
+		} else if (bodyFreeVerbs.includes(verb) && body.type === 'graphql') {
+			// Do nothing here, the graphql body on a get/head is set in the query
+		} else if (!bodyFreeVerbs.includes(verb) && body.type === 'graphql') {
+			out.push(JSON.stringify({
+				query: body.payload.query,
+				variables: await convertToRealJson(context, body.payload.variables),
+			}, null, '\t'));
+		} else {
 			out.push('[Unknown body type]');
+		}
 	}
 
 	return out.join('\n');

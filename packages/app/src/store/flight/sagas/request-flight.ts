@@ -9,9 +9,16 @@ import { TypedObject } from '@beak/common/helpers/typescript';
 import ksuid from '@beak/ksuid';
 import type { FlightHistory } from '@getbeak/types/flight';
 import type { Tree, ValidRequestNode } from '@getbeak/types/nodes';
-import type { RequestBody, RequestBodyFile, RequestBodyText, RequestOverview, ToggleKeyValue } from '@getbeak/types/request';
+import type {
+	RequestBody,
+	RequestBodyFile,
+	RequestBodyText,
+	RequestOverview,
+	ToggleKeyValue,
+} from '@getbeak/types/request';
 import type { Context } from '@getbeak/types/values';
 import type { VariableGroups } from '@getbeak/types/variable-groups';
+import { FetcherParams } from '@graphiql/toolkit';
 import { call, put, select } from 'redux-saga/effects';
 
 import { ApplicationState } from '../..';
@@ -156,6 +163,19 @@ async function flattenBody(context: Context, body: RequestBody): Promise<Request
 
 				return { type: 'text', payload: '' };
 			}
+		}
+
+		case 'graphql': {
+			const variables = await convertToRealJson(context, body.payload.variables);
+			const graphQlBody: FetcherParams = {
+				query: body.payload.query,
+				variables,
+			};
+
+			return {
+				type: 'text',
+				payload: JSON.stringify(graphQlBody),
+			};
 		}
 
 		default: throw new Error('unknown_body_type');
