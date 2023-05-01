@@ -6,6 +6,12 @@ interface GlobalStyleProps {
 }
 
 const GlobalStyle = createGlobalStyle<GlobalStyleProps>`
+	:root {
+		--rt-color-white: ${p => p.theme.ui.textOnSurfaceBackground};
+		--rt-color-dark: ${p => p.theme.ui.surfaceHighlight};
+		--rt-opacity: .9;
+	}
+
 	* {
 		-webkit-font-smoothing: subpixel-antialiased;
 	}
@@ -36,6 +42,13 @@ const GlobalStyle = createGlobalStyle<GlobalStyleProps>`
 		&:disabled {
 			cursor: text;
 		}
+	}
+
+	body .react-tooltip {
+		padding: 6px 8px;
+		font-size: 13px;
+		box-shadow: ${p => p.theme.ui.textOnSurfaceBackground}44 0px 8px 24px;
+		z-index: 105;
 	}
 
 	::-webkit-scrollbar {

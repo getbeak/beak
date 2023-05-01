@@ -6,7 +6,8 @@ export default function useArbiterLocking() {
 	const now = new Date();
 	const lastSuccessfulCheck = new Date(arbiter.lastSuccessfulCheck);
 	const sinceLastCheck = differenceInDays(now, lastSuccessfulCheck);
-	const showWarning = sinceLastCheck > 1;
+	// const showWarning = sinceLastCheck > 1;
+	const showWarning = false;
 
 	const friendlyLockNotice = (() => {
 		const daysUntilLock = 5 - sinceLastCheck;

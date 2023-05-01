@@ -18,19 +18,18 @@ const FinderRequestItem: React.FC<FinderRequestItemProps> = ({ context, info }) 
 
 	return (
 		<UriSpan>
-			<Abbr title={uri}>
+			<div
+				data-tooltip-id={'tt-omni-bar-finder-request-uri'}
+				data-tooltip-content={uri}
+			>
 				{uri}
-			</Abbr>
+			</div>
 		</UriSpan>
 	);
 };
 
 const UriSpan = styled.small`
 	opacity: 0.6;
-`;
-
-const Abbr = styled.abbr`
-	text-decoration: none;
 `;
 
 export default FinderRequestItem;

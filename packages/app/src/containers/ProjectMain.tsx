@@ -16,6 +16,7 @@ import Omnibar from '../features/omni-bar/components/Omnibar';
 import Sidebar from '../features/sidebar/components/Sidebar';
 import TabView from '../features/tabs/components/TabView';
 import { useApplicationMenuEventListener } from '../hooks/use-application-menu-event-listener';
+import { useProjectLoading } from '../hooks/use-project-loading';
 import { checkShortcut } from '../lib/keyboard-shortcuts';
 import { startExtensions } from '../store/extensions/actions';
 import { requestFlight } from '../store/flight/actions';
@@ -34,6 +35,7 @@ const ProjectMain: React.FC<React.PropsWithChildren<unknown>> = () => {
 	const activeTab = tabs.activeTabs.find(t => t.payload === tabs.selectedTab);
 
 	const loaded = project.loaded && variableGroups.loaded && tabs.loaded;
+	const projectLoading = useProjectLoading(loaded, setup);
 
 	useApplicationMenuEventListener();
 
@@ -122,7 +124,7 @@ const ProjectMain: React.FC<React.PropsWithChildren<unknown>> = () => {
 
 			<ProjectEncryption />
 
-			{(!loaded || !setup) && <ProjectLoading />}
+			{projectLoading && <ProjectLoading />}
 		</React.Fragment>
 	);
 };

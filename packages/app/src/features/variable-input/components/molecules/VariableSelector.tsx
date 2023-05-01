@@ -185,9 +185,7 @@ const VariableSelector: React.FC<React.PropsWithChildren<VariableSelectorProps>>
 						>
 							{i.external && (
 								<ExtensionContainer>
-									<abbr title={'This value is an extension'}>
-										<FontAwesomeIcon icon={faPlug} />
-									</abbr>
+									<FontAwesomeIcon id={'tt-variable-input-extension'} icon={faPlug} />
 								</ExtensionContainer>
 							)}
 							{i.name}

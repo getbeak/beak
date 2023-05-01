@@ -29,18 +29,18 @@ const GetStartedColumn: React.FC<React.PropsWithChildren<GetStartedColumnProps>>
 
 		<ColumnTitle>{'Useful things'}</ColumnTitle>
 		<GetStartedButton
-			title={'Get support'}
-			description={'Reach out to our team'}
-			icon={faEnvelopeOpen}
-			iconColor={'primaryFill'}
-			onClick={() => ipcExplorerService.launchUrl('mailto:support@getbeak.app')}
-		/>
-		<GetStartedButton
 			title={'View manual'}
-			description={'Get the hottest tips for Beak'}
+			description={'Get sweet & spicy tips for Beak'}
 			icon={faBook}
 			iconColor={'primaryFill'}
 			onClick={() => ipcExplorerService.launchUrl('https://docs.getbeak.app')}
+		/>
+		<GetStartedButton
+			title={'Get support'}
+			description={'Reach out if you need help'}
+			icon={faEnvelopeOpen}
+			iconColor={'primaryFill'}
+			onClick={() => ipcExplorerService.launchUrl('mailto:support@getbeak.app')}
 		/>
 	</Wrapper>
 );

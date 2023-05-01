@@ -6,6 +6,7 @@ const ActionBarButton = styled.button`
 	padding: 0px 8px;
 	height: 25px;
 	background: transparent;
+	pointer-events: auto;
 
 	&:hover:not(:disabled) {
 		background: ${p => p.theme.ui.surface};
@@ -14,7 +15,7 @@ const ActionBarButton = styled.button`
 		opacity: 0.5;
 	}
 	&:focus {
-		outline: 0;
+		outline: 1;
 	}
 
 	&:not(:disabled) {

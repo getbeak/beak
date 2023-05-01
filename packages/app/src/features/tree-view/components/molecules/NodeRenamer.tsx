@@ -26,7 +26,10 @@ const NodeRenamer: React.FC<React.PropsWithChildren<NodeRenamerProps>> = props =
 	const [error, setError] = useState<string | undefined>(void 0);
 	const renameInputRef = useRef<HTMLInputElement>(null);
 
-	useEffect(() => renameInputRef.current?.focus(), [activeRename?.id]);
+	useEffect(() => {
+		renameInputRef.current?.focus();
+		renameInputRef.current?.select();
+	}, [activeRename?.id]);
 
 	if (!renaming)
 		return <React.Fragment>{node.name}</React.Fragment>;

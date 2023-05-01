@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import ContextMenu from '@beak/app/components/atoms/ContextMenu';
 import { useAppSelector } from '@beak/app/store/redux';
+import { renderAcceleratorDefinition } from '@beak/app/utils/keyboard-rendering';
 import { TabItem } from '@beak/common/types/beak-project';
 import ksuid from '@beak/ksuid';
 import type { MenuItemConstructorOptions } from 'electron';
@@ -28,7 +29,7 @@ const GenericTabContextMenuWrapper: React.FC<React.PropsWithChildren<GenericTabC
 		setMenuItems([
 			{
 				id: ksuid.generate('ctxmenuitem').toString(),
-				accelerator: 'CmdOrCtrl+W',
+				accelerator: renderAcceleratorDefinition('tab-bar.current.close'),
 				label: 'Close',
 				click: () => {
 					dispatch(closeTab(tab.payload));
@@ -36,7 +37,7 @@ const GenericTabContextMenuWrapper: React.FC<React.PropsWithChildren<GenericTabC
 			},
 			{
 				id: ksuid.generate('ctxmenuitem').toString(),
-				accelerator: 'CmdOrCtrl+Alt+T',
+				accelerator: renderAcceleratorDefinition('tab-bar.all.close-others'),
 				label: 'Close others',
 				click: () => {
 					dispatch(closeTabsOther(tab.payload));
@@ -60,6 +61,7 @@ const GenericTabContextMenuWrapper: React.FC<React.PropsWithChildren<GenericTabC
 			},
 			{
 				id: ksuid.generate('ctxmenuitem').toString(),
+				accelerator: renderAcceleratorDefinition('tab-bar.all.close'),
 				label: 'Close All',
 				click: () => {
 					dispatch(closeTabsAll());

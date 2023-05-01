@@ -40,9 +40,12 @@ export default function renderValueParts(parts: ValueParts, variableGroups: Vari
 							key={uuid.v4()}
 						>
 							&nbsp;
-							<abbr title={`Name ${p.type}`}>
+							<div
+								data-tooltip-id={'tt-realtime-values-renderer-extension-missing'}
+								data-tooltip-content={`Name ${p.type}`}
+							>
 								{'[Extension missing]'}
-							</abbr>
+							</div>
 							&nbsp;
 						</div>
 					);

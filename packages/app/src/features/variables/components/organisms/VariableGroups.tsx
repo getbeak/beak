@@ -9,6 +9,7 @@ import { checkShortcut } from '@beak/app/lib/keyboard-shortcuts';
 import { useAppSelector } from '@beak/app/store/redux';
 import { actions } from '@beak/app/store/variable-groups';
 import { removeVariableGroupFromDisk } from '@beak/app/store/variable-groups/actions';
+import { renderAcceleratorDefinition } from '@beak/app/utils/keyboard-rendering';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import ksuid from '@beak/ksuid';
 import type { MenuItemConstructorOptions } from 'electron';
@@ -78,7 +79,7 @@ const VariableGroups: React.FC<React.PropsWithChildren<unknown>> = () => {
 		{
 			id: ksuid.generate('ctxmenuitem').toString(),
 			label: 'Rename',
-			accelerator: darwin ? 'Return' : 'F2',
+			accelerator: renderAcceleratorDefinition('tree-view.node.rename'),
 			enabled: node.id !== 'root',
 			click: () => {
 				if (node.id === 'root')
@@ -89,7 +90,7 @@ const VariableGroups: React.FC<React.PropsWithChildren<unknown>> = () => {
 		}, {
 			id: ksuid.generate('ctxmenuitem').toString(),
 			label: 'Delete',
-			accelerator: 'CmdOrCtrl+Backspace',
+			accelerator: renderAcceleratorDefinition('tree-view.node.delete'),
 			enabled: node.id !== 'root',
 			click: () => {
 				dispatch(actions.removeVariableGroupFromDisk({ id: node.id, withConfirmation: true }));

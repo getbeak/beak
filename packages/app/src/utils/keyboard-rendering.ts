@@ -1,8 +1,38 @@
 import { instance as windowSessionInstance } from '../contexts/window-session-context';
-import { ShortcutDefinition } from '../lib/keyboard-shortcuts/types';
+import shortcutDefinitions, { Shortcuts } from '../lib/keyboard-shortcuts';
+import { PlatformAgnosticDefinitions, PlatformSpecificDefinitions } from '../lib/keyboard-shortcuts/types';
 
-export function renderPlainTextDefinition(definition: ShortcutDefinition) {
+function selectDefinition(platformDefinition: PlatformSpecificDefinitions | PlatformAgnosticDefinitions) {
+	if (platformDefinition.type === 'agnostic') return platformDefinition;
+
+	const isDarwin = windowSessionInstance.isDarwin();
+
+	if (isDarwin) return platformDefinition.darwin;
+
+	return platformDefinition.windows;
+}
+
+export function renderAcceleratorDefinition(shortcutKey: Shortcuts) {
+	const definition = selectDefinition(shortcutDefinitions[shortcutKey]);
+	const parts: string[] = [];
+
+	if (definition.ctrlOrMeta) parts.push('CmdOrCtrl');
+	if (definition.alt) parts.push('Alt');
+	if (definition.ctrl) parts.push('Ctrl');
+	if (definition.shift) parts.push('Shift');
+	if (definition.meta) parts.push('Meta');
+
+	if (Array.isArray(definition.key))
+		parts.push(definition.key[0]);
+	else
+		parts.push(definition.key);
+
+	return parts.join('+');
+}
+
+export function renderPlainTextDefinition(shortcutKey: Shortcuts) {
 	const darwin = windowSessionInstance.isDarwin();
+	const definition = selectDefinition(shortcutDefinitions[shortcutKey]);
 	const parts: string[] = [];
 
 	if (definition.ctrlOrMeta) {
@@ -18,13 +48,20 @@ export function renderPlainTextDefinition(definition: ShortcutDefinition) {
 	if (definition.shift) parts.push('⇧');
 
 	if (Array.isArray(definition.key)) {
-		parts.push(' ');
-		definition.key.forEach(k => parts.push(k));
-	} else {
-		parts.push(renderSimpleKey(definition.key));
+		const shortcutOptions: string[] = [];
+
+		definition.key.forEach(k => {
+			const partsClone = [...parts, k.toLocaleUpperCase()];
+
+			shortcutOptions.push(partsClone.join(' '));
+		});
+
+		return shortcutOptions.join(', ');
 	}
 
-	return parts.join('');
+	parts.push(renderSimpleKey(definition.key.toLocaleUpperCase()));
+
+	return parts.join(' ');
 }
 
 export function renderPlatformAwareCtrlOrMeta(darwin: boolean) {

@@ -7,6 +7,7 @@ import path from 'path-browserify';
 import { call, delay, put, race, select, take } from 'redux-saga/effects';
 
 import { ApplicationState } from '../..';
+import { renameStarted } from '../actions';
 import { ActionTypes, CreateNewThing } from '../types';
 
 export function* workerCreateNewFolder({ payload }: PayloadAction<CreateNewThing>) {
@@ -17,7 +18,13 @@ export function* workerCreateNewFolder({ payload }: PayloadAction<CreateNewThing
 	if (parentNode)
 		directory = parentNode.type === 'folder' ? parentNode.filePath : path.dirname(parentNode.filePath);
 
-	yield call(createFolderNode, directory, payload.name);
+	const resolvedPath: string = yield call(createFolderNode, directory, payload.name);
+
+	yield race([
+		delay(250),
+		take(ActionTypes.INSERT_FOLDER_NODE),
+	]);
+	yield put(renameStarted({ requestId: resolvedPath }));
 }
 
 export function* workerCreateNewRequest({ payload }: PayloadAction<CreateNewThing>) {
@@ -35,4 +42,5 @@ export function* workerCreateNewRequest({ payload }: PayloadAction<CreateNewThin
 		take(ActionTypes.INSERT_REQUEST_NODE),
 	]);
 	yield put(changeTab({ type: 'request', payload: nodeId, temporary: true }));
+	yield put(renameStarted({ requestId: nodeId }));
 }
