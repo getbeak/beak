@@ -6,6 +6,7 @@ import useDebounce from '@beak/app/hooks/use-debounce';
 import { requestBodyGraphQlEditorQueryChanged } from '@beak/app/store/project/actions';
 import { useAppSelector } from '@beak/app/store/redux';
 import { convertRequestToUrl } from '@beak/app/utils/uri';
+import Squawk from '@beak/common/utils/squawk';
 import { ValidRequestNode } from '@getbeak/types/nodes';
 import { createGraphiQLFetcher } from '@graphiql/toolkit';
 import { getIntrospectionQuery, IntrospectionQuery } from 'graphql';
@@ -16,6 +17,7 @@ import styled from 'styled-components';
 
 import useRealtimeValueContext from '../../realtime-values/hooks/use-realtime-value-context';
 import { parseValueParts } from '../../realtime-values/parser';
+import GraphQlError from './molecules/GraphQlError';
 
 export interface GraphQlEditorProps {
 	node: ValidRequestNode;
@@ -26,7 +28,7 @@ const GraphQlEditor: React.FC<GraphQlEditorProps> = props => {
 	const dispatch = useDispatch();
 	const mounted = useComponentMounted();
 	const [loading, setLoading] = useState(() => true);
-	const [schemaFetchError, setSchemaFetchError] = useState<unknown | null>(null);
+	const [schemaFetchError, setSchemaFetchError] = useState<Error | null>(null);
 	const variableGroups = useAppSelector(s => s.global.variableGroups.variableGroups);
 	const selectedGroups = useAppSelector(s => s.global.preferences.editor.selectedVariableGroups);
 
@@ -93,7 +95,7 @@ const GraphQlEditor: React.FC<GraphQlEditorProps> = props => {
 
 			setSchemaFetchError(null);
 		} catch (error) {
-			setSchemaFetchError(error);
+			setSchemaFetchError(error as Error);
 		} finally {
 			setLoading(false);
 		}
@@ -110,9 +112,13 @@ const GraphQlEditor: React.FC<GraphQlEditorProps> = props => {
 	if (loading)
 		return <>{'Loading...'}</>;
 
-	// TODO(afr): Handle error state from fetching schema!
-	if (schemaFetchError)
-		return <>{'Shit broke'}</>;
+	if (schemaFetchError) {
+		return (
+			<Container>
+				<GraphQlError error={schemaFetchError} />
+			</Container>
+		);
+	}
 
 	// TODO(afr): Handle updating schema icon(?)
 
