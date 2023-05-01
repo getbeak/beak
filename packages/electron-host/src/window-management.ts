@@ -167,10 +167,8 @@ function createWindow(
 		closeWatchersOnWindow(window.webContents.id);
 	});
 
-	window.webContents.session.webRequest.onBeforeSendHeaders(
-		(details, callback) => {
-			callback({ requestHeaders: { Origin: '*', ...details.requestHeaders } });
-		},
+	window.webContents.session.webRequest.onBeforeSendHeaders((details, callback) =>
+		callback({ requestHeaders: { Origin: '*', ...details.requestHeaders } }),
 	);
 	window.webContents.session.webRequest.onHeadersReceived((details, callback) => {
 		callback({
