@@ -1,12 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import EditorView from '@beak/app/components/atoms/EditorView';
-import useComponentMounted from '@beak/app/hooks/use-component-mounted';
 import useDebounce from '@beak/app/hooks/use-debounce';
 import { requestBodyGraphQlEditorQueryChanged } from '@beak/app/store/project/actions';
 import { useAppSelector } from '@beak/app/store/redux';
 import { convertRequestToUrl } from '@beak/app/utils/uri';
-import Squawk from '@beak/common/utils/squawk';
 import { ValidRequestNode } from '@getbeak/types/nodes';
 import { createGraphiQLFetcher } from '@graphiql/toolkit';
 import { getIntrospectionQuery, IntrospectionQuery } from 'graphql';
@@ -18,16 +16,19 @@ import styled from 'styled-components';
 import useRealtimeValueContext from '../../realtime-values/hooks/use-realtime-value-context';
 import { parseValueParts } from '../../realtime-values/parser';
 import GraphQlError from './molecules/GraphQlError';
+import GraphQlLoading from './molecules/GraphQlLoading';
 
 export interface GraphQlEditorProps {
 	node: ValidRequestNode;
 }
 
+const schemaCache: Record<string, IntrospectionQuery> = {};
+
 const GraphQlEditor: React.FC<GraphQlEditorProps> = props => {
 	const { node } = props;
 	const dispatch = useDispatch();
-	const mounted = useComponentMounted();
 	const [loading, setLoading] = useState(() => true);
+	const [hasSchema, setHasSchema] = useState(() => Boolean(schemaCache[node.id]));
 	const [schemaFetchError, setSchemaFetchError] = useState<Error | null>(null);
 	const variableGroups = useAppSelector(s => s.global.variableGroups.variableGroups);
 	const selectedGroups = useAppSelector(s => s.global.preferences.editor.selectedVariableGroups);
@@ -39,9 +40,36 @@ const GraphQlEditor: React.FC<GraphQlEditorProps> = props => {
 	const body = node.info.body as RequestBodyGraphQl;
 	const context = useRealtimeValueContext(node.id);
 
-	useDebounce(async () => {
-		if (!mounted) return;
+	useEffect(() => {
+		const schema = schemaCache[node.id];
 
+		if (!schema) return;
+
+		initializeMode({
+			diagnosticSettings: {
+				validateVariablesJSON: {
+					[Uri.file(operationsUri).toString()]: [
+						Uri.file(variablesUri).toString(),
+					],
+				},
+				jsonDiagnosticSettings: {
+					validate: true,
+					schemaValidation: 'error',
+					allowComments: true,
+					trailingCommas: 'ignore',
+				},
+			},
+			completionSettings: {
+				__experimental__fillLeafsOnComplete: true,
+			},
+			schemas: [{
+				introspectionJSON: schema,
+				uri: schemaUri,
+			}],
+		});
+	}, [node.id]);
+
+	useDebounce(async () => {
 		setLoading(true);
 
 		try {
@@ -55,14 +83,16 @@ const GraphQlEditor: React.FC<GraphQlEditorProps> = props => {
 					value: await parseValueParts(context, node.info.headers[key].value),
 				})));
 
+			const headerMapping = resolvedHeaders.reduce<Record<string, string>>((acc, val) => {
+				// eslint-disable-next-line no-param-reassign
+				acc[val.key] = val.value;
+
+				return acc;
+			}, {});
+
 			const schemaFetcher = createGraphiQLFetcher({
 				url: schemaUrl,
-				headers: resolvedHeaders.reduce<Record<string, string>>((acc, val) => {
-					// eslint-disable-next-line no-param-reassign
-					acc[val.key] = val.value;
-
-					return acc;
-				}, {}),
+				headers: headerMapping,
 			});
 
 			const schema = await schemaFetcher({
@@ -93,9 +123,12 @@ const GraphQlEditor: React.FC<GraphQlEditorProps> = props => {
 				}],
 			});
 
+			schemaCache[node.id] = schema.data as unknown as IntrospectionQuery;
 			setSchemaFetchError(null);
+			setHasSchema(true);
 		} catch (error) {
 			setSchemaFetchError(error as Error);
+			setHasSchema(false);
 		} finally {
 			setLoading(false);
 		}
@@ -108,9 +141,13 @@ const GraphQlEditor: React.FC<GraphQlEditorProps> = props => {
 		JSON.stringify(selectedGroups),
 	]);
 
-	// TODO(afr): Handle loading state from initial schema fetch
-	if (loading)
-		return <>{'Loading...'}</>;
+	if (!hasSchema && loading) {
+		return (
+			<Container>
+				<GraphQlLoading />
+			</Container>
+		);
+	}
 
 	if (schemaFetchError) {
 		return (

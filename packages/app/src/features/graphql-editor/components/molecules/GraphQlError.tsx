@@ -9,7 +9,7 @@ interface GraphQlErrorProps {
 	error: Error;
 }
 
-const GraphQlError: React.FC<React.PropsWithChildren<GraphQlErrorProps>> = ({ error }) => (
+const GraphQlError: React.FC<GraphQlErrorProps> = ({ error }) => (
 	<Wrapper>
 		<FontAwesomeIcon
 			icon={faCloudBolt}
