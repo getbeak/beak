@@ -8,14 +8,13 @@ import { parseValueParts } from '@beak/app/features/realtime-values/parser';
 import useComponentMounted from '@beak/app/hooks/use-component-mounted';
 import { ipcFsService } from '@beak/app/lib/ipc';
 import { useAppSelector } from '@beak/app/store/redux';
+import { requestAllowsBody } from '@beak/app/utils/http';
 import { convertRequestToUrl } from '@beak/app/utils/uri';
 import { requestBodyContentType } from '@beak/common/helpers/request';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import type { ValidRequestNode } from '@getbeak/types/nodes';
 import type { RequestBody, RequestOverview, ToggleKeyValue } from '@getbeak/types/request';
 import type { Context } from '@getbeak/types/values';
-
-const bodyFreeVerbs = ['get', 'head'];
 
 export interface RequestOutputProps {
 	selectedNode: ValidRequestNode;
@@ -50,7 +49,7 @@ const RequestOutput: React.FC<React.PropsWithChildren<RequestOutputProps>> = pro
 };
 
 function createBodySection(verb: string, body: RequestBody) {
-	if (bodyFreeVerbs.includes(verb))
+	if (!requestAllowsBody(verb))
 		return null;
 
 	switch (body.type) {
@@ -81,7 +80,7 @@ export async function createBasicHttpOutput(overview: RequestOverview, context: 
 		.map(async value => queryBuilder.append(value.name, await parseValueParts(context, value.value))),
 	);
 
-	if (bodyFreeVerbs.includes(verb) && body.type === 'graphql')
+	if (!requestAllowsBody(verb) && body.type === 'graphql')
 		queryBuilder.append('query', body.payload.query);
 
 	if (queryBuilder.values.length > 0)
@@ -137,9 +136,9 @@ export async function createBasicHttpOutput(overview: RequestOverview, context: 
 			out.push(await convertKeyValueToString(context, body.payload));
 		} else if (body.type === 'file') {
 			out.push(await readReferencedFile(body.payload.fileReferenceId));
-		} else if (bodyFreeVerbs.includes(verb) && body.type === 'graphql') {
+		} else if (requestAllowsBody(verb) && body.type === 'graphql') {
 			// Do nothing here, the graphql body on a get/head is set in the query
-		} else if (!bodyFreeVerbs.includes(verb) && body.type === 'graphql') {
+		} else if (!requestAllowsBody(verb) && body.type === 'graphql') {
 			out.push(JSON.stringify({
 				query: body.payload.query,
 				variables: await convertToRealJson(context, body.payload.variables),

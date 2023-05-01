@@ -4,6 +4,7 @@ import { ReflexContainer, ReflexElement } from 'react-reflex';
 import { loadRequestPreferences } from '@beak/app/store/preferences/actions';
 import { alertInsert, alertRemoveDependents } from '@beak/app/store/project/actions';
 import { useAppSelector } from '@beak/app/store/redux';
+import { requestAllowsBody } from '@beak/app/utils/http';
 import ksuid from '@beak/ksuid';
 import type { ValidRequestNode } from '@getbeak/types/nodes';
 import styled from 'styled-components';
@@ -14,8 +15,6 @@ import RequestOutput from './molecules/RequestOutput';
 import Header from './organisms/Header';
 import Modifiers from './organisms/Modifiers';
 import RequestPaneSplitter from './organisms/RequestPaneSplitter';
-
-const allowedBodyVerbs = ['GET', 'HEAD', 'DELETE'];
 
 const RequestPane: React.FC<React.PropsWithChildren<unknown>> = () => {
 	const dispatch = useDispatch();
@@ -44,7 +43,7 @@ const RequestPane: React.FC<React.PropsWithChildren<unknown>> = () => {
 		const info = selectedNode.info;
 		const hasBody = info.body.type !== 'text' || info.body.payload !== '';
 
-		if (allowedBodyVerbs.includes(info.verb.toUpperCase()) && hasBody) {
+		if (!requestAllowsBody(info.verb) && hasBody) {
 			dispatch(alertInsert({
 				ident: ksuid.generate('alert').toString(),
 				alert: {
