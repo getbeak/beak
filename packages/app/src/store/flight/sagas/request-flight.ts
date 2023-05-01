@@ -3,6 +3,7 @@ import { convertKeyValueToString } from '@beak/app/features/basic-table-editor/p
 import { convertToRealJson } from '@beak/app/features/json-editor/parsers';
 import { parseValueParts } from '@beak/app/features/realtime-values/parser';
 import { ipcDialogService, ipcFsService } from '@beak/app/lib/ipc';
+import { requestAllowsBody } from '@beak/app/utils/http';
 import { convertRequestToUrl } from '@beak/app/utils/uri';
 import { requestBodyContentType } from '@beak/common/helpers/request';
 import { TypedObject } from '@beak/common/helpers/typescript';
@@ -10,7 +11,6 @@ import ksuid from '@beak/ksuid';
 import type { FlightHistory } from '@getbeak/types/flight';
 import type { Tree, ValidRequestNode } from '@getbeak/types/nodes';
 import type {
-	RequestBody,
 	RequestBodyFile,
 	RequestBodyText,
 	RequestOverview,
@@ -91,7 +91,7 @@ async function prepareRequest(overview: RequestOverview, context: Context): Prom
 		};
 	}
 
-	if (!hasHeader('content-type', headers)) {
+	if (!hasHeader('content-type', headers) && requestAllowsBody(overview.verb)) {
 		const contentType = requestBodyContentType(overview.body);
 
 		if (contentType) {
@@ -103,13 +103,15 @@ async function prepareRequest(overview: RequestOverview, context: Context): Prom
 		}
 	}
 
-	return {
+	const requestOverview: RequestOverview = {
 		...overview,
 		url: [url.toString()],
-		query: await flattenToggleValueParts(context, overview.query),
+		query: await flattenQuery(context, overview),
 		headers,
-		body: await flattenBody(context, overview.body),
+		body: await flattenBody(context, overview),
 	};
+
+	return requestOverview;
 }
 
 async function flattenToggleValueParts(context: Context, toggleValueParts: Record<string, ToggleKeyValue>) {
@@ -126,7 +128,32 @@ async function flattenToggleValueParts(context: Context, toggleValueParts: Recor
 	return out;
 }
 
-async function flattenBody(context: Context, body: RequestBody): Promise<RequestBodyText | RequestBodyFile> {
+async function flattenQuery(context: Context, overview: RequestOverview): Promise<Record<string, ToggleKeyValue>> {
+	const { body, query, verb } = overview;
+	const resolvedQuery = await flattenToggleValueParts(context, query);
+
+	// When using GraphQL body-less verbs require the body to be sent via the url
+	if (!requestAllowsBody(verb) && body.type === 'graphql') {
+		const existingQueryId = Object.keys(resolvedQuery).find(k => resolvedQuery[k].name.toLocaleLowerCase() === 'query');
+		const queryId = existingQueryId ?? ksuid.generate('query').toString();
+
+		resolvedQuery[queryId] = {
+			enabled: true,
+			name: 'query',
+			value: [body.payload.query],
+		};
+	}
+
+	return resolvedQuery;
+}
+
+async function flattenBody(context: Context, overview: RequestOverview): Promise<RequestBodyText | RequestBodyFile> {
+	const { body, verb } = overview;
+
+	// Don't send bodies for verbs which forbid it
+	if (requestAllowsBody(verb))
+		return { type: 'text', payload: '' };
+
 	switch (body.type) {
 		case 'text':
 			return body;

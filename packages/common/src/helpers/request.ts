@@ -5,6 +5,7 @@ const bodyContentTypeMap: Record<RequestBodyType, string> = {
 	text: 'text/plain',
 	url_encoded_form: 'application/x-www-form-urlencoded',
 	file: 'application/octet-stream',
+	graphql: 'application/json',
 };
 
 export function requestBodyContentType(body: RequestBody) {
