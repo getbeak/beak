@@ -28,7 +28,7 @@ const SidebarMenuItem: React.FC<React.PropsWithChildren<SidebarMenuItemProps>> =
 	return (
 		<FakeAbbr
 			data-tooltip-id={'tt-sidebar-menu-item'}
-			data-tooltip-content={`${name} sidebar (${renderPlainTextDefinition(shortcut)})`}
+			data-tooltip-content={`${name} (${renderPlainTextDefinition(shortcut)})`}
 		>
 			<Container
 				$active={active}
