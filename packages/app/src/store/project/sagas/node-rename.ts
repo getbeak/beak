@@ -31,7 +31,7 @@ export default function* workerRequestRename({ payload }: PayloadAction<RequestR
 			yield delay(200);
 			yield put(changeTab({ type: 'request', temporary: false, payload: node.id }));
 		} catch (error) {
-			if (error instanceof Error && error.message === 'Folder already exists') {
+			if (error instanceof Error && error.message === 'Request already exists') {
 				yield call([ipcDialogService, ipcDialogService.showMessageBox], {
 					title: 'Already exists!',
 					message: 'The file name you specified already exists, please try something else.',
