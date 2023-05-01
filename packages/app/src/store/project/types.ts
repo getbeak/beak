@@ -59,6 +59,14 @@ export const ActionTypes = {
 	REQUEST_BODY_URL_ENCODED_EDITOR_REMOVE_ITEM: '@beak/global/project/REQUEST_BODY_URL_ENCODED_EDITOR_REMOVE_ITEM',
 	REQUEST_BODY_URL_ENCODED_EDITOR_ENABLED_CHANGE: '@beak/global/project/REQUEST_BODY_URL_ENCODED_EDITOR_ENABLED_CHANGE',
 
+	REQUEST_BODY_GRAPHQL_EDITOR_VARIABLE_NAME_CHANGE: '@beak/global/project/REQUEST_BODY_GRAPHQL_EDITOR_VARIABLE_NAME_CHANGE',
+	REQUEST_BODY_GRAPHQL_EDITOR_VARIABLE_VALUE_CHANGE: '@beak/global/project/REQUEST_BODY_GRAPHQL_EDITOR_VARIABLE_VALUE_CHANGE',
+	REQUEST_BODY_GRAPHQL_EDITOR_VARIABLE_TYPE_CHANGE: '@beak/global/project/REQUEST_BODY_GRAPHQL_EDITOR_VARIABLE_TYPE_CHANGE',
+	REQUEST_BODY_GRAPHQL_EDITOR_VARIABLE_ENABLED_CHANGE: '@beak/global/project/REQUEST_BODY_GRAPHQL_EDITOR_VARIABLE_ENABLED_CHANGE',
+	REQUEST_BODY_GRAPHQL_EDITOR_VARIABLE_ADD_ENTRY: '@beak/global/project/REQUEST_BODY_GRAPHQL_EDITOR_VARIABLE_ADD_ENTRY',
+	REQUEST_BODY_GRAPHQL_EDITOR_VARIABLE_REMOVE_ENTRY: '@beak/global/project/REQUEST_BODY_GRAPHQL_EDITOR_VARIABLE_REMOVE_ENTRY',
+	REQUEST_BODY_GRAPHQL_EDITOR_QUERY_CHANGED: '@beak/global/project/REQUEST_BODY_GRAPHQL_EDITOR_QUERY_CHANGED',
+
 	REQUEST_OPTION_FOLLOW_REDIRECTS: '@beak/global/project/REQUEST_OPTION_FOLLOW_REDIRECTS',
 
 	ALERTS_INSERT: '@beak/global/project/ALERTS_INSERT',
@@ -156,9 +164,12 @@ export interface WriteDebouncePayload extends RequestIdPayload {
 	nonce: string;
 }
 
-export type RequestBodyTypeChangedPayload = RequestBodyTypeToJsonPayload |
-RequestBodyTypeToTextPayload |
-RequestBodyTypeToUrlEncodedFormPayload | RequestBodyTypeToFilePayload;
+export type RequestBodyTypeChangedPayload =
+	| RequestBodyTypeToJsonPayload
+	| RequestBodyTypeToTextPayload
+	| RequestBodyTypeToUrlEncodedFormPayload
+	| RequestBodyTypeToFilePayload
+	| RequestBodyTypeToGraphQlPayload;
 
 interface RequestBodyTypeToJsonPayload extends RequestIdPayload {
 	type: 'json';
@@ -180,6 +191,14 @@ interface RequestBodyTypeToFilePayload extends RequestIdPayload {
 	payload: {
 		fileReferenceId?: string;
 		contentType?: string;
+	};
+}
+
+interface RequestBodyTypeToGraphQlPayload extends RequestIdPayload {
+	type: 'graphql';
+	payload: {
+		query: string;
+		variables: EntryMap;
 	};
 }
 
@@ -230,6 +249,8 @@ export interface RequestBodyUrlEncodedEditorEnabledChangePayload extends Request
 
 export interface RequestBodyUrlEncodedEditorAddItemPayload extends RequestIdPayload { }
 export interface RequestBodyUrlEncodedEditorRemoveItemPayload extends RequestIdPayload { id: string }
+
+export interface RequestBodyGraphQlEditorQueryChangedPayload extends RequestIdPayload { query: string }
 
 export interface RequestOptionFollowRedirects extends RequestIdPayload { followRedirects: boolean }
 

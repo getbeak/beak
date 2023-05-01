@@ -157,6 +157,28 @@
 				"enabled": { "type": "boolean" }
 			}
 		},
+		"graphQl": {
+			"type": "object",
+			"additionalProperties": true,
+
+			"required": [
+				"query",
+				"variables"
+			],
+
+			"properties": {
+				"query": { "type": "string" },
+				"variables": {
+					"type": "object",
+
+					"patternProperties": {
+						"^.*$": {
+							"$ref": "#/definitions/jsonEntry"
+						}
+					}
+				}
+			}
+		},
 		"body": {
 			"type": "object",
 			"additionalProperties": true,
@@ -173,7 +195,8 @@
 						"text",
 						"json",
 						"url_encoded_form",
-						"file"
+						"file",
+						"graphql"
 					]
 				}
 			},
@@ -248,6 +271,18 @@
 									"contentType": { "type": "string" }
 								}
 							}
+						}
+					}
+				},
+				{
+					"if": {
+						"properties": {
+							"type": { "const": "graphql" }
+						}
+					},
+					"then": {
+						"properties": {
+							"payload": { "$ref": "#/definitions/graphQl" }
 						}
 					}
 				}

@@ -4,7 +4,7 @@ import { TypedObject } from '@beak/common/helpers/typescript';
 import ksuid from '@beak/ksuid';
 import type { EntryMap, NamedEntries, NamedStringEntry, ValueEntries } from '@getbeak/types/body-editor-json';
 import type { FolderNode, ValidRequestNode } from '@getbeak/types/nodes';
-import type { RequestBodyJson, RequestBodyUrlEncodedForm } from '@getbeak/types/request';
+import type { RequestBodyGraphQl, RequestBodyJson, RequestBodyUrlEncodedForm } from '@getbeak/types/request';
 import { createReducer } from '@reduxjs/toolkit';
 
 import * as actions from './actions';
@@ -309,6 +309,13 @@ const projectReducer = createReducer(initialState, builder => {
 			const body = node.info.body as RequestBodyUrlEncodedForm;
 
 			delete body.payload[id];
+		})
+
+		.addCase(actions.requestBodyGraphQlEditorQueryChanged, (state, action) => {
+			const node = state.tree[action.payload.requestId] as ValidRequestNode;
+			const body = node.info.body as RequestBodyGraphQl;
+
+			body.payload.query = action.payload.query;
 		})
 
 		.addCase(actions.requestOptionFollowRedirects, (state, { payload }) => {
