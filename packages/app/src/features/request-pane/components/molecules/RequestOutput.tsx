@@ -136,9 +136,9 @@ export async function createBasicHttpOutput(overview: RequestOverview, context: 
 			out.push(await convertKeyValueToString(context, body.payload));
 		} else if (body.type === 'file') {
 			out.push(await readReferencedFile(body.payload.fileReferenceId));
-		} else if (requestAllowsBody(verb) && body.type === 'graphql') {
-			// Do nothing here, the graphql body on a get/head is set in the query
 		} else if (!requestAllowsBody(verb) && body.type === 'graphql') {
+			// Do nothing here, the graphql body on a get/head is set in the query
+		} else if (requestAllowsBody(verb) && body.type === 'graphql') {
 			out.push(JSON.stringify({
 				query: body.payload.query,
 				variables: await convertToRealJson(context, body.payload.variables),
