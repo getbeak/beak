@@ -10,8 +10,19 @@ export interface RequestOverview {
 	options: RequestOptions;
 }
 
-export type RequestBody = RequestBodyText | RequestBodyJson | RequestBodyUrlEncodedForm | RequestBodyFile;
-export type RequestBodyType = 'text' | 'json' | 'url_encoded_form' | 'file';
+export type RequestBody =
+	| RequestBodyText
+	| RequestBodyJson
+	| RequestBodyUrlEncodedForm
+	| RequestBodyFile
+	| RequestBodyGraphQl;
+
+export type RequestBodyType =
+	| 'text'
+	| 'json'
+	| 'url_encoded_form'
+	| 'file'
+	| 'graphql';
 
 export interface RequestBodyText {
 	type: 'text';
@@ -34,6 +45,14 @@ export interface RequestBodyFile {
 		fileReferenceId?: string;
 		contentType?: string;
 		__hacky__binaryFileData?: Uint8Array;
+	};
+}
+
+export interface RequestBodyGraphQl {
+	type: 'graphql';
+	payload: {
+		query: string;
+		variables: EntryMap;
 	};
 }
 
