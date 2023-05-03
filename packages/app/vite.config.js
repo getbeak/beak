@@ -41,6 +41,7 @@ module.exports = {
 	plugins: [
 		reactPlugin({ include: '**/*.tsx' }),
 		monacoEditorPlugin.default({
+			globalAPI: true,
 			languageWorkers: [
 				'json',
 				'css',

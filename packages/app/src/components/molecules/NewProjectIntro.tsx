@@ -15,14 +15,14 @@ const NewProjectIntro: React.FC<React.PropsWithChildren<unknown>> = () => {
 				<WelcomeBannerBody>
 					<WelcomeBannerTitle>{'Beak'}</WelcomeBannerTitle>
 					<WelcomeBannerSummary>
-						{'Welcome to your Beak project. Beak\'s provides comprehensive a '}
+						{'Welcome to your Beak project. Beak\'s provides a comprehensive'}
 						{'toolkit that will make building, editing, testing, and '}
 						{'researching API\'s super simple.'}
 						<br />
 						<br />
-						{'Click the button below to get '}
-						{'started with making a request, or you can browse the guides below '}
-						{'to learn more about the features Beak has to offer.'}
+						{'Click the button below to get started with making a request, '}
+						{'or you can browse the guides below to learn more about the '}
+						{'features Beak has to offer.'}
 					</WelcomeBannerSummary>
 					<Button onClick={() => dispatch(defaultOrCreateRequest())}>{'Get started'}</Button>
 				</WelcomeBannerBody>
