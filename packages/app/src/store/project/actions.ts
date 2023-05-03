@@ -197,6 +197,14 @@ export default {
 	requestBodyJsonEditorAddEntry,
 	requestBodyJsonEditorRemoveEntry,
 
+	requestBodyGraphQlEditorQueryChanged,
+	requestBodyGraphQlEditorNameChange,
+	requestBodyGraphQlEditorValueChange,
+	requestBodyGraphQlEditorTypeChange,
+	requestBodyGraphQlEditorEnabledChange,
+	requestBodyGraphQlEditorAddEntry,
+	requestBodyGraphQlEditorRemoveEntry,
+
 	requestBodyUrlEncodedEditorNameChange,
 	requestBodyUrlEncodedEditorValueChange,
 	requestBodyUrlEncodedEditorEnabledChange,

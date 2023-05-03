@@ -176,6 +176,7 @@ const projectReducer = createReducer(initialState, builder => {
 				contentType: action.payload.contentType,
 			};
 		})
+
 		.addCase(actions.requestBodyJsonEditorNameChange, (state, { payload }) => {
 			const { id, name, requestId } = payload;
 			const node = state.tree[requestId] as ValidRequestNode;
@@ -316,6 +317,99 @@ const projectReducer = createReducer(initialState, builder => {
 			const body = node.info.body as RequestBodyGraphQl;
 
 			body.payload.query = action.payload.query;
+		})
+		.addCase(actions.requestBodyGraphQlEditorNameChange, (state, { payload }) => {
+			const { id, name, requestId } = payload;
+			const node = state.tree[requestId] as ValidRequestNode;
+			const body = node.info.body as RequestBodyGraphQl;
+
+			if (!body.payload.variables[id])
+				return;
+
+			(body.payload.variables[id] as NamedEntries).name = name;
+		})
+		.addCase(actions.requestBodyGraphQlEditorValueChange, (state, { payload }) => {
+			const { id, value, requestId } = payload;
+			const node = state.tree[requestId] as ValidRequestNode;
+			const body = node.info.body as RequestBodyGraphQl;
+
+			if (!body.payload.variables[id])
+				return;
+
+			(body.payload.variables[id] as ValueEntries).value = value;
+		})
+		.addCase(actions.requestBodyGraphQlEditorTypeChange, (state, { payload }) => {
+			const { id, type, requestId } = payload;
+			const node = state.tree[requestId] as ValidRequestNode;
+			const body = node.info.body as RequestBodyGraphQl;
+			const entry = body.payload.variables[id];
+
+			if (!entry)
+				return;
+
+			entry.type = type;
+
+			if (['array', 'object'].includes(type)) {
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				(entry as any).value = void 0;
+
+				return;
+			}
+
+			if (type === 'boolean')
+				(entry as ValueEntries).value = true;
+			else if (type === 'null')
+				(entry as ValueEntries).value = null;
+			else
+				(entry as ValueEntries).value = [];
+
+			// Cleanup orphaned entries
+			body.payload.variables = removeOrphanedJsonEntries(body.payload.variables);
+		})
+		.addCase(actions.requestBodyGraphQlEditorEnabledChange, (state, { payload }) => {
+			const { id, enabled, requestId } = payload;
+			const node = state.tree[requestId] as ValidRequestNode;
+			const body = node.info.body as RequestBodyGraphQl;
+
+			if (!body.payload.variables[id])
+				return;
+
+			body.payload.variables[id].enabled = enabled;
+		})
+		.addCase(actions.requestBodyGraphQlEditorAddEntry, (state, { payload }) => {
+			const { id, requestId } = payload;
+			const node = state.tree[requestId] as ValidRequestNode;
+			const body = node.info.body as RequestBodyGraphQl;
+			const entry = body.payload.variables[id];
+			const isRoot = entry.parentId === null;
+			const allowsChildren = ['array', 'object'].includes(entry.type);
+			const newId = ksuid.generate('jsonentry').toString();
+
+			if (!entry)
+				return;
+
+			// Don't allow non-child friendly root entries to have children
+			if (!allowsChildren && isRoot)
+				return;
+
+			body.payload.variables[newId] = {
+				id: newId,
+				parentId: allowsChildren ? id : entry.parentId,
+				type: 'string',
+				name: entry.type === 'array' ? void 0 : '',
+				enabled: true,
+				value: [],
+			} as NamedStringEntry;
+		})
+		.addCase(actions.requestBodyGraphQlEditorRemoveEntry, (state, { payload }) => {
+			const { id, requestId } = payload;
+			const node = state.tree[requestId] as ValidRequestNode;
+			const body = node.info.body as RequestBodyGraphQl;
+
+			delete body.payload.variables[id];
+
+			// Cleanup orphaned entries
+			body.payload.variables = removeOrphanedJsonEntries(body.payload.variables);
 		})
 
 		.addCase(actions.requestOptionFollowRedirects, (state, { payload }) => {
