@@ -232,6 +232,7 @@ const BodyTab: React.FC<React.PropsWithChildren<BodyTabProps>> = props => {
 					/>
 				)}
 				{body.type === 'graphql' && graphQlMode === 'query' && <GraphQlQueryEditor node={node} />}
+				{body.type === 'graphql' && graphQlMode === 'variables' && <GraphQlVariablesEditor node={node} />}
 				{body.type === 'file' && <FileUploadView node={node} />}
 			</TabBody>
 		</Container>
