@@ -1,9 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import EditorView from '@beak/app/components/atoms/EditorView';
 import BasicTableEditor from '@beak/app/features/basic-table-editor/components/BasicTableEditor';
 import { convertKeyValueToString, convertStringToKeyValue } from '@beak/app/features/basic-table-editor/parsers';
-import GraphQlEditor from '@beak/app/features/graphql-editor/components/GraphQlEditor';
+import GraphQlQueryEditor from '@beak/app/features/graphql-editor/components/GraphQlQueryEditor';
+import GraphQlVariablesEditor from '@beak/app/features/graphql-editor/components/GraphQlVariablesEditor';
+import { EditorMode } from '@beak/app/features/graphql-editor/types';
+import { editorTabSubItems } from '@beak/app/features/graphql-editor/utils';
 import JsonEditor from '@beak/app/features/json-editor/components/JsonEditor';
 import { convertToEntryJson, convertToRealJson } from '@beak/app/features/json-editor/parsers';
 import useRealtimeValueContext from '@beak/app/features/realtime-values/hooks/use-realtime-value-context';
@@ -31,6 +34,7 @@ const BodyTab: React.FC<React.PropsWithChildren<BodyTabProps>> = props => {
 	const context = useRealtimeValueContext();
 	const { node } = props;
 	const { body } = node.info;
+	const [graphQlMode, setGraphQlMode] = useState<EditorMode>('query');
 
 	async function changeRequestBodyType(newType: RequestBodyType) {
 		if (newType === body.type)
@@ -166,10 +170,13 @@ const BodyTab: React.FC<React.PropsWithChildren<BodyTabProps>> = props => {
 				>
 					{'URL encoded form'}
 				</TabItem>
-				<TabItem
+				<TabItem<EditorMode>
 					active={body.type === 'graphql'}
+					activeSubItem={graphQlMode}
+					subItems={editorTabSubItems}
 					size={'sm'}
 					onClick={() => changeRequestBodyType('graphql')}
+					onSubItemChanged={setGraphQlMode}
 				>
 					{'GraphQL'}
 				</TabItem>
@@ -224,7 +231,7 @@ const BodyTab: React.FC<React.PropsWithChildren<BodyTabProps>> = props => {
 						}}
 					/>
 				)}
-				{body.type === 'graphql' && <GraphQlEditor node={node} />}
+				{body.type === 'graphql' && graphQlMode === 'query' && <GraphQlQueryEditor node={node} />}
 				{body.type === 'file' && <FileUploadView node={node} />}
 			</TabBody>
 		</Container>
@@ -270,8 +277,25 @@ function createEmptyBodyPayload(requestId: string, type: RequestBodyType): Reque
 		case 'file':
 			return { requestId, type, payload: { fileReferenceId: void 0, contentType: void 0 } };
 
-		case 'graphql':
-			return { requestId, type, payload: { query: '', variables: {} } };
+		case 'graphql': {
+			const id = ksuid.generate('jsonentry').toString() as string;
+
+			return {
+				requestId,
+				type,
+				payload: {
+					query: '',
+					variables: {
+						[id]: {
+							id,
+							parentId: null,
+							type: 'object',
+							enabled: true,
+						},
+					},
+				},
+			};
+		}
 
 		case 'text':
 		default:

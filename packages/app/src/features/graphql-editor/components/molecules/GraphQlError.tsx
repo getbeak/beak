@@ -97,7 +97,7 @@ const Wrapper = styled.div`
 `;
 
 const Title = styled.div`
-	font-size: 23px;
+	font-size: 18px;
 	margin: 10px 0;
 	font-weight: 300;
 	color: ${p => p.theme.ui.textOnSurfaceBackground};

@@ -18,13 +18,13 @@ import { parseValueParts } from '../../realtime-values/parser';
 import GraphQlError from './molecules/GraphQlError';
 import GraphQlLoading from './molecules/GraphQlLoading';
 
-export interface GraphQlEditorProps {
+export interface GraphQlQueryEditorProps {
 	node: ValidRequestNode;
 }
 
 const schemaCache: Record<string, IntrospectionQuery> = {};
 
-const GraphQlEditor: React.FC<GraphQlEditorProps> = props => {
+const GraphQlQueryEditor: React.FC<GraphQlQueryEditorProps> = props => {
 	const { node } = props;
 	const dispatch = useDispatch();
 	const [loading, setLoading] = useState(() => true);
@@ -178,4 +178,4 @@ const Container = styled.div`
 	height: 100%;
 `;
 
-export default GraphQlEditor;
+export default GraphQlQueryEditor;
