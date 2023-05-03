@@ -1,6 +1,5 @@
-import React, { useRef } from 'react';
+import React, { useContext, useRef } from 'react';
 import { useDispatch } from 'react-redux';
-import actions from '@beak/app/store/project/actions';
 import {
 	faBan,
 	faCalculator,
@@ -13,6 +12,8 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import type { EntryType } from '@getbeak/types/body-editor-json';
 import styled from 'styled-components';
+
+import { JsonEditorAbstractionsContext } from '../../contexts/json-editor-context';
 
 interface TypeSelectorProps {
 	requestId: string;
@@ -27,6 +28,8 @@ const TypeSelector: React.FC<React.PropsWithChildren<TypeSelectorProps>> = props
 	const icon = getIconFromType(value);
 	const dispatch = useDispatch();
 
+	const abstractionContext = useContext(JsonEditorAbstractionsContext)!;
+
 	return (
 		<Wrapper>
 			<Select
@@ -36,7 +39,7 @@ const TypeSelector: React.FC<React.PropsWithChildren<TypeSelectorProps>> = props
 				onChange={e => {
 					const type = e.currentTarget.value as EntryType;
 
-					dispatch(actions.requestBodyJsonEditorTypeChange({
+					dispatch(abstractionContext.requestBodyJsonEditorTypeChange({
 						requestId,
 						id,
 						type,

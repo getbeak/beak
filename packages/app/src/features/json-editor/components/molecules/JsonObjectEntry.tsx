@@ -2,12 +2,12 @@ import React, { useContext, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import DebouncedInput from '@beak/app/components/atoms/DebouncedInput';
 import SelectedNodeContext from '@beak/app/features/request-pane/contexts/selected-node';
-import { actions } from '@beak/app/store/project';
 import { useAppSelector } from '@beak/app/store/redux';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import type { NamedObjectEntry, ObjectEntry } from '@getbeak/types/body-editor-json';
 import type { RequestBodyJson } from '@getbeak/types/request';
 
+import { JsonEditorAbstractionsContext } from '../../contexts/json-editor-context';
 import {
 	BodyAction,
 	BodyInputWrapper,
@@ -31,7 +31,9 @@ const JsonObjectEntry: React.FC<React.PropsWithChildren<JsonObjectEntryProps>> =
 	const { depth, requestId, value, nameOverride } = props;
 	const { id } = value;
 	const dispatch = useDispatch();
+
 	const node = useContext(SelectedNodeContext);
+	const abstractionContext = useContext(JsonEditorAbstractionsContext)!;
 	const preferences = useAppSelector(s => s.global.preferences.requests[requestId]);
 	const [expanded, setExpanded] = useState(preferences.request.jsonEditor?.expanded[id] !== false);
 
@@ -59,7 +61,7 @@ const JsonObjectEntry: React.FC<React.PropsWithChildren<JsonObjectEntryProps>> =
 								disabled={depth === 0}
 								type={'text'}
 								value={detectName(depth, value)}
-								onChange={name => dispatch(actions.requestBodyJsonEditorNameChange({
+								onChange={name => dispatch(abstractionContext.requestBodyJsonEditorNameChange({
 									id,
 									requestId,
 									name,
