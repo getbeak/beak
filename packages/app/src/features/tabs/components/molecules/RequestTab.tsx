@@ -25,7 +25,7 @@ const RequestTab: React.FC<React.PropsWithChildren<RequestTabProps>> = ({ tab })
 			<TabItem
 				active={selectedTabPayload === node.id}
 				key={node.id}
-				ref={i => setTarget(i!)}
+				lazyForwardedRef={i => setTarget(i!)}
 				onClick={() => dispatch(changeTab(tab))}
 				onDoubleClick={() => {
 					if (!tab.temporary)

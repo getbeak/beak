@@ -1,11 +1,56 @@
+import React from 'react';
 import styled, { css } from 'styled-components';
 
-export interface TabItemProps {
-	active?: boolean;
-	size?: 'sm' | 'md';
+import TabItemSubItemsDropdown from './TabItemSubItemsDropdown';
+
+export interface TabSubItem<T = string> {
+	key: T;
+	label: string;
 }
 
-const TabItem = styled.div<TabItemProps>`
+export interface TabItemProps<T = string> extends Omit<React.HTMLProps<HTMLDivElement>, 'size'> {
+	active?: boolean;
+	activeSubItem?: string;
+	lazyForwardedRef?: React.LegacyRef<HTMLDivElement>;
+	size?: 'sm' | 'md';
+	subItems?: TabSubItem<T>[];
+	onSubItemChanged?: (subItem: T) => void;
+}
+
+const TabItem = <T = string>(props: React.PropsWithChildren<TabItemProps<T>>): React.ReactElement => {
+	const {
+		active,
+		activeSubItem,
+		children,
+		lazyForwardedRef,
+		onSubItemChanged,
+		size,
+		subItems,
+		...rest
+	} = props;
+
+	return (
+		// @ts-expect-error
+		<Wrapper $active={active} $size={size} ref={lazyForwardedRef} {...rest}>
+			{children}
+			{subItems && subItems.length > 0 && (
+				<TabItemSubItemsDropdown<T>
+					activeSubItem={activeSubItem!}
+					subItems={subItems}
+					onSubItemChanged={onSubItemChanged!}
+				/>
+			)}
+		</Wrapper>
+	);
+};
+
+export interface WrapperProps {
+	$active?: boolean;
+	$size?: 'sm' | 'md';
+}
+
+const Wrapper = styled.div<WrapperProps>`
+	display: flex;
 	border-bottom: 1px solid ${props => props.theme.ui.backgroundBorderSeparator};
 
 	font-size: 13px;
@@ -15,7 +60,7 @@ const TabItem = styled.div<TabItemProps>`
 	white-space: nowrap;
 
 	${p => {
-		if (p.size !== 'sm')
+		if (p.$size !== 'sm')
 			return '';
 
 		return css`
@@ -24,8 +69,8 @@ const TabItem = styled.div<TabItemProps>`
 		`;
 	}}
 
-	${({ active, theme }) => {
-		if (!active) {
+	${({ $active, theme }) => {
+		if (!$active) {
 			return css`
 				&:hover {
 					color: ${theme.ui.textOnSurfaceBackground};
@@ -39,6 +84,10 @@ const TabItem = styled.div<TabItemProps>`
 			border-bottom-color: ${theme.ui.primaryFill};
 		`;
 	}}
+
+	> svg {
+		margin-left: 5px;
+	}
 `;
 
 export default TabItem;
