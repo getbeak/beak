@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import type { Nodes } from '@getbeak/types/nodes';
 import { createAction } from '@reduxjs/toolkit';
 
@@ -14,6 +15,7 @@ import {
 	RemoveNodeFromDiskPayload,
 	RequestBodyFileChangedPayload,
 	RequestBodyGraphQlEditorQueryChangedPayload,
+	RequestBodyGraphQlEditorReconcileVariablesPayload,
 	RequestBodyJsonEditorAddEntryPayload,
 	RequestBodyJsonEditorEnabledChangePayload,
 	RequestBodyJsonEditorNameChangePayload,
@@ -79,66 +81,29 @@ export const requestBodyTypeChanged = createAction<RequestBodyTypeChangedPayload
 export const requestBodyTextChanged = createAction<RequestBodyTextChangedPayload>(AT.REQUEST_BODY_TEXT_CHANGED);
 export const requestBodyFileChanged = createAction<RequestBodyFileChangedPayload>(AT.REQUEST_BODY_FILE_CHANGED);
 
-export const requestBodyJsonEditorNameChange = createAction<RequestBodyJsonEditorNameChangePayload>(
-	AT.REQUEST_BODY_JSON_EDITOR_NAME_CHANGE,
-);
-export const requestBodyJsonEditorValueChange = createAction<RequestBodyJsonEditorValueChangePayload>(
-	AT.REQUEST_BODY_JSON_EDITOR_VALUE_CHANGE,
-);
-export const requestBodyJsonEditorTypeChange = createAction<RequestBodyJsonEditorTypeChangePayload>(
-	AT.REQUEST_BODY_JSON_EDITOR_TYPE_CHANGE,
-);
-export const requestBodyJsonEditorEnabledChange = createAction<RequestBodyJsonEditorEnabledChangePayload>(
-	AT.REQUEST_BODY_JSON_EDITOR_ENABLED_CHANGE,
-);
-export const requestBodyJsonEditorAddEntry = createAction<RequestBodyJsonEditorAddEntryPayload>(
-	AT.REQUEST_BODY_JSON_EDITOR_ADD_ENTRY,
-);
-export const requestBodyJsonEditorRemoveEntry = createAction<RequestBodyJsonEditorRemoveEntryPayload>(
-	AT.REQUEST_BODY_JSON_EDITOR_REMOVE_ENTRY,
-);
+export const requestBodyJsonEditorNameChange = createAction<RequestBodyJsonEditorNameChangePayload>(AT.REQUEST_BODY_JSON_EDITOR_NAME_CHANGE);
+export const requestBodyJsonEditorValueChange = createAction<RequestBodyJsonEditorValueChangePayload>(AT.REQUEST_BODY_JSON_EDITOR_VALUE_CHANGE);
+export const requestBodyJsonEditorTypeChange = createAction<RequestBodyJsonEditorTypeChangePayload>(AT.REQUEST_BODY_JSON_EDITOR_TYPE_CHANGE);
+export const requestBodyJsonEditorEnabledChange = createAction<RequestBodyJsonEditorEnabledChangePayload>(AT.REQUEST_BODY_JSON_EDITOR_ENABLED_CHANGE);
+export const requestBodyJsonEditorAddEntry = createAction<RequestBodyJsonEditorAddEntryPayload>(AT.REQUEST_BODY_JSON_EDITOR_ADD_ENTRY);
+export const requestBodyJsonEditorRemoveEntry = createAction<RequestBodyJsonEditorRemoveEntryPayload>(AT.REQUEST_BODY_JSON_EDITOR_REMOVE_ENTRY);
 
-export const requestBodyUrlEncodedEditorNameChange = createAction<RequestBodyUrlEncodedEditorNameChangePayload>(
-	AT.REQUEST_BODY_URL_ENCODED_EDITOR_NAME_CHANGE,
-);
-export const requestBodyUrlEncodedEditorValueChange = createAction<RequestBodyUrlEncodedEditorValueChangePayload>(
-	AT.REQUEST_BODY_URL_ENCODED_EDITOR_VALUE_CHANGE,
-);
-export const requestBodyUrlEncodedEditorEnabledChange = createAction<RequestBodyUrlEncodedEditorEnabledChangePayload>(
-	AT.REQUEST_BODY_URL_ENCODED_EDITOR_ENABLED_CHANGE,
-);
-export const requestBodyUrlEncodedEditorAddItem = createAction<RequestBodyUrlEncodedEditorAddItemPayload>(
-	AT.REQUEST_BODY_URL_ENCODED_EDITOR_ADD_ITEM,
-);
-export const requestBodyUrlEncodedEditorRemoveItem = createAction<RequestBodyUrlEncodedEditorRemoveItemPayload>(
-	AT.REQUEST_BODY_URL_ENCODED_EDITOR_REMOVE_ITEM,
-);
+export const requestBodyUrlEncodedEditorNameChange = createAction<RequestBodyUrlEncodedEditorNameChangePayload>(AT.REQUEST_BODY_URL_ENCODED_EDITOR_NAME_CHANGE);
+export const requestBodyUrlEncodedEditorValueChange = createAction<RequestBodyUrlEncodedEditorValueChangePayload>(AT.REQUEST_BODY_URL_ENCODED_EDITOR_VALUE_CHANGE);
+export const requestBodyUrlEncodedEditorEnabledChange = createAction<RequestBodyUrlEncodedEditorEnabledChangePayload>(AT.REQUEST_BODY_URL_ENCODED_EDITOR_ENABLED_CHANGE);
+export const requestBodyUrlEncodedEditorAddItem = createAction<RequestBodyUrlEncodedEditorAddItemPayload>(AT.REQUEST_BODY_URL_ENCODED_EDITOR_ADD_ITEM);
+export const requestBodyUrlEncodedEditorRemoveItem = createAction<RequestBodyUrlEncodedEditorRemoveItemPayload>(AT.REQUEST_BODY_URL_ENCODED_EDITOR_REMOVE_ITEM);
 
-export const requestBodyGraphQlEditorQueryChanged = createAction<RequestBodyGraphQlEditorQueryChangedPayload>(
-	AT.REQUEST_BODY_GRAPHQL_EDITOR_QUERY_CHANGED,
-);
-export const requestBodyGraphQlEditorNameChange = createAction<RequestBodyJsonEditorNameChangePayload>(
-	AT.REQUEST_BODY_GRAPHQL_EDITOR_VARIABLE_NAME_CHANGE,
-);
-export const requestBodyGraphQlEditorValueChange = createAction<RequestBodyJsonEditorValueChangePayload>(
-	AT.REQUEST_BODY_GRAPHQL_EDITOR_VARIABLE_VALUE_CHANGE,
-);
-export const requestBodyGraphQlEditorTypeChange = createAction<RequestBodyJsonEditorTypeChangePayload>(
-	AT.REQUEST_BODY_GRAPHQL_EDITOR_VARIABLE_TYPE_CHANGE,
-);
-export const requestBodyGraphQlEditorEnabledChange = createAction<RequestBodyJsonEditorEnabledChangePayload>(
-	AT.REQUEST_BODY_GRAPHQL_EDITOR_VARIABLE_ENABLED_CHANGE,
-);
-export const requestBodyGraphQlEditorAddEntry = createAction<RequestBodyJsonEditorAddEntryPayload>(
-	AT.REQUEST_BODY_GRAPHQL_EDITOR_VARIABLE_ADD_ENTRY,
-);
-export const requestBodyGraphQlEditorRemoveEntry = createAction<RequestBodyJsonEditorRemoveEntryPayload>(
-	AT.REQUEST_BODY_GRAPHQL_EDITOR_VARIABLE_REMOVE_ENTRY,
-);
+export const requestBodyGraphQlEditorQueryChanged = createAction<RequestBodyGraphQlEditorQueryChangedPayload>(AT.REQUEST_BODY_GRAPHQL_EDITOR_QUERY_CHANGED);
+export const requestBodyGraphQlEditorNameChange = createAction<RequestBodyJsonEditorNameChangePayload>(AT.REQUEST_BODY_GRAPHQL_EDITOR_VARIABLE_NAME_CHANGE);
+export const requestBodyGraphQlEditorValueChange = createAction<RequestBodyJsonEditorValueChangePayload>(AT.REQUEST_BODY_GRAPHQL_EDITOR_VARIABLE_VALUE_CHANGE);
+export const requestBodyGraphQlEditorTypeChange = createAction<RequestBodyJsonEditorTypeChangePayload>(AT.REQUEST_BODY_GRAPHQL_EDITOR_VARIABLE_TYPE_CHANGE);
+export const requestBodyGraphQlEditorEnabledChange = createAction<RequestBodyJsonEditorEnabledChangePayload>(AT.REQUEST_BODY_GRAPHQL_EDITOR_VARIABLE_ENABLED_CHANGE);
+export const requestBodyGraphQlEditorAddEntry = createAction<RequestBodyJsonEditorAddEntryPayload>(AT.REQUEST_BODY_GRAPHQL_EDITOR_VARIABLE_ADD_ENTRY);
+export const requestBodyGraphQlEditorRemoveEntry = createAction<RequestBodyJsonEditorRemoveEntryPayload>(AT.REQUEST_BODY_GRAPHQL_EDITOR_VARIABLE_REMOVE_ENTRY);
+export const requestBodyGraphQlEditorReconcileVariables = createAction<RequestBodyGraphQlEditorReconcileVariablesPayload>(AT.REQUEST_BODY_GRAPHQL_EDITOR_RECONCILE_VARIABLES);
 
-export const requestOptionFollowRedirects = createAction<RequestOptionFollowRedirects>(
-	AT.REQUEST_OPTION_FOLLOW_REDIRECTS,
-);
+export const requestOptionFollowRedirects = createAction<RequestOptionFollowRedirects>(AT.REQUEST_OPTION_FOLLOW_REDIRECTS);
 
 export const alertInsert = createAction<AlertInsertPayload>(AT.ALERTS_INSERT);
 export const alertRemove = createAction<string>(AT.ALERTS_REMOVE);
@@ -204,6 +169,7 @@ export default {
 	requestBodyGraphQlEditorEnabledChange,
 	requestBodyGraphQlEditorAddEntry,
 	requestBodyGraphQlEditorRemoveEntry,
+	requestBodyGraphQlEditorReconcileVariables,
 
 	requestBodyUrlEncodedEditorNameChange,
 	requestBodyUrlEncodedEditorValueChange,

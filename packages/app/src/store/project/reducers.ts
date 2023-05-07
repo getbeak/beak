@@ -411,6 +411,59 @@ const projectReducer = createReducer(initialState, builder => {
 			// Cleanup orphaned entries
 			body.payload.variables = removeOrphanedJsonEntries(body.payload.variables);
 		})
+		.addCase(actions.requestBodyGraphQlEditorReconcileVariables, (state, { payload }) => {
+			const { requestId, variables } = payload;
+			const node = state.tree[requestId] as ValidRequestNode;
+			const body = node.info.body as RequestBodyGraphQl;
+
+			const extractedVariableNames = Object.keys(variables);
+			const variablesValues = Object.values(body.payload.variables) as NamedEntries[];
+			const root = variablesValues.find(v => v.parentId === null);
+
+			// Graphql variable root must be `object`
+			if (!root || root.type !== 'object') return;
+
+			// Find all nodes with root as their parent
+			const existingVariablesSet = new Set(variablesValues.filter(v => v.parentId === root.id).map(v => v.name));
+
+			// Iterate over variables list, filtering out ones that don't exist yet
+			const missingVariableNames = extractedVariableNames.filter(v => !existingVariablesSet.has(v));
+
+			// Create them
+			missingVariableNames.forEach(v => {
+				const id = ksuid.generate('jsonentry').toString();
+				const type = variables[v];
+
+				// eslint-disable-next-line max-nested-callbacks
+				const value = (() => {
+					switch (type) {
+						case 'array':
+						case 'object':
+							return void 0;
+
+						case 'boolean': return true;
+
+						case 'null': return null;
+						case 'number': return ['0'];
+
+						case 'string':
+						default:
+							return [''];
+					}
+				})();
+
+				body.payload.variables[id] = {
+					id,
+					enabled: true,
+					name: v,
+					parentId: root.id,
+					type: variables[v],
+
+					// @ts-expect-error
+					value,
+				};
+			});
+		})
 
 		.addCase(actions.requestOptionFollowRedirects, (state, { payload }) => {
 			const { requestId, followRedirects } = payload;

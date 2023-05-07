@@ -1,3 +1,4 @@
+import { ExtractedVariables } from '@beak/app/features/graphql-editor/types';
 import { ValueParts } from '@beak/app/features/realtime-values/values';
 import { ActiveRename } from '@beak/app/features/tree-view/types';
 import Squawk from '@beak/common/utils/squawk';
@@ -66,6 +67,7 @@ export const ActionTypes = {
 	REQUEST_BODY_GRAPHQL_EDITOR_VARIABLE_ENABLED_CHANGE: '@beak/global/project/REQUEST_BODY_GRAPHQL_EDITOR_VARIABLE_ENABLED_CHANGE',
 	REQUEST_BODY_GRAPHQL_EDITOR_VARIABLE_ADD_ENTRY: '@beak/global/project/REQUEST_BODY_GRAPHQL_EDITOR_VARIABLE_ADD_ENTRY',
 	REQUEST_BODY_GRAPHQL_EDITOR_VARIABLE_REMOVE_ENTRY: '@beak/global/project/REQUEST_BODY_GRAPHQL_EDITOR_VARIABLE_REMOVE_ENTRY',
+	REQUEST_BODY_GRAPHQL_EDITOR_RECONCILE_VARIABLES: '@beak/global/project/REQUEST_BODY_GRAPHQL_EDITOR_RECONCILE_VARIABLES',
 
 	REQUEST_OPTION_FOLLOW_REDIRECTS: '@beak/global/project/REQUEST_OPTION_FOLLOW_REDIRECTS',
 
@@ -251,6 +253,9 @@ export interface RequestBodyUrlEncodedEditorAddItemPayload extends RequestIdPayl
 export interface RequestBodyUrlEncodedEditorRemoveItemPayload extends RequestIdPayload { id: string }
 
 export interface RequestBodyGraphQlEditorQueryChangedPayload extends RequestIdPayload { query: string }
+export interface RequestBodyGraphQlEditorReconcileVariablesPayload extends RequestIdPayload {
+	variables: ExtractedVariables;
+}
 
 export interface RequestOptionFollowRedirects extends RequestIdPayload { followRedirects: boolean }
 

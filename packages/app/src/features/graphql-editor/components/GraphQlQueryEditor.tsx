@@ -183,6 +183,19 @@ const GraphQlQueryEditor: React.FC<GraphQlQueryEditorProps> = props => {
 			requestId: node.id,
 			query: text,
 		}));
+
+		// TODO(afr): Some sort of debounce on this?
+		try {
+			const parsedQuery = parse(text);
+			const variables = extractVariableNamesFromQuery(parsedQuery);
+
+			if (!variables) return;
+
+			dispatch(requestBodyGraphQlEditorReconcileVariables({
+				requestId: node.id,
+				variables,
+			}));
+		} catch { /* Don't care if this fails */ }
 	}
 
 	return (
