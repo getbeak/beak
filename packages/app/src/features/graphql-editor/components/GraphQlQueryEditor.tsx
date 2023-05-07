@@ -13,7 +13,7 @@ import { ValidRequestNode } from '@getbeak/types/nodes';
 import { FetcherParams } from '@graphiql/toolkit';
 import { getIntrospectionQuery, IntrospectionQuery, parse } from 'graphql';
 import { Uri } from 'monaco-editor';
-import { initializeMode } from 'monaco-graphql/src/initializeMode';
+import { initializeMode } from 'monaco-graphql/esm/initializeMode';
 import { RequestBodyGraphQl } from 'packages/types/request';
 import styled from 'styled-components';
 
