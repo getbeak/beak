@@ -7,9 +7,11 @@ import {
 	CompleteFlightPayload,
 	FlightFailurePayload,
 	FlightHistoryChangePayload,
+	RequestPureFlightPayload,
 } from './types';
 
 export const requestFlight = createAction(ActionTypes.REQUEST_FLIGHT);
+export const requestPureFlight = createAction<RequestPureFlightPayload>(ActionTypes.REQUEST_PURE_FLIGHT);
 export const cancelFlightRequest = createAction<string>(ActionTypes.CANCEL_FLIGHT_REQUEST);
 export const beginFlightRequest = createAction<BeginFlightPayload>(ActionTypes.BEGIN_FLIGHT);
 export const updateFlightProgress = createAction<FlightHeartbeatPayload>(ActionTypes.UPDATE_FLIGHT_PROGRESS);

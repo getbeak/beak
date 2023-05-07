@@ -78,7 +78,6 @@
     "vite-plugin-sentry": "^1.1.7"
   },
   "dependencies": {
-    "@monaco-editor/react": "^4.4.6",
     "@sentry/cli": "^2.16.1",
     "@sentry/electron": "^4.3.0",
     "@sentry/react": "^7.46.0",
@@ -88,7 +87,7 @@
     "hw-fingerprint": "^2.1.0",
     "jest": "^27.5.1",
     "keytar": "^7.9.0",
-    "monaco-editor": "^0.36.1",
+    "prettier": "^2.8.7",
     "pretty-bytes": "^6.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

@@ -1,8 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import EditorView from '@beak/app/components/atoms/EditorView';
 import BasicTableEditor from '@beak/app/features/basic-table-editor/components/BasicTableEditor';
 import { convertKeyValueToString, convertStringToKeyValue } from '@beak/app/features/basic-table-editor/parsers';
+import GraphQlQueryEditor from '@beak/app/features/graphql-editor/components/GraphQlQueryEditor';
+import GraphQlVariablesEditor from '@beak/app/features/graphql-editor/components/GraphQlVariablesEditor';
+import { EditorMode } from '@beak/app/features/graphql-editor/types';
+import { editorTabSubItems } from '@beak/app/features/graphql-editor/utils';
 import JsonEditor from '@beak/app/features/json-editor/components/JsonEditor';
 import { convertToEntryJson, convertToRealJson } from '@beak/app/features/json-editor/parsers';
 import useRealtimeValueContext from '@beak/app/features/realtime-values/hooks/use-realtime-value-context';
@@ -13,7 +17,7 @@ import { RequestBodyTypeChangedPayload } from '@beak/app/store/project/types';
 import { attemptTextToJson } from '@beak/app/utils/json';
 import ksuid from '@beak/ksuid';
 import type { ValidRequestNode } from '@getbeak/types/nodes';
-import type { RequestBodyType } from '@getbeak/types/request';
+import type { RequestBodyJson, RequestBodyType } from '@getbeak/types/request';
 import styled from 'styled-components';
 
 import TabBar from '../../../../components/atoms/TabBar';
@@ -30,6 +34,7 @@ const BodyTab: React.FC<React.PropsWithChildren<BodyTabProps>> = props => {
 	const context = useRealtimeValueContext();
 	const { node } = props;
 	const { body } = node.info;
+	const [graphQlMode, setGraphQlMode] = useState<EditorMode>('query');
 
 	async function changeRequestBodyType(newType: RequestBodyType) {
 		if (newType === body.type)
@@ -70,7 +75,39 @@ const BodyTab: React.FC<React.PropsWithChildren<BodyTabProps>> = props => {
 				}));
 
 				return;
+			} else if (newType === 'graphql') {
+				dispatch(actions.requestBodyTypeChanged({
+					requestId: node.id,
+					type: 'graphql',
+					payload: {
+						query: body.payload,
+						variables: { },
+					},
+				}));
+
+				return;
 			}
+		}
+
+		// Changing from graphql to json
+		if (newType === 'json' && body.type === 'graphql') {
+			dispatch(actions.requestBodyTypeChanged({
+				requestId: node.id,
+				type: 'json',
+				payload: body.payload.variables,
+			}));
+		}
+
+		// Changing from json to graphql
+		if (newType === 'graphql' && body.type === 'json') {
+			dispatch(actions.requestBodyTypeChanged({
+				requestId: node.id,
+				type: 'graphql',
+				payload: {
+					query: '',
+					variables: body.payload,
+				},
+			}));
 		}
 
 		// Changing from lang specific editor to text
@@ -90,6 +127,14 @@ const BodyTab: React.FC<React.PropsWithChildren<BodyTabProps>> = props => {
 					requestId: node.id,
 					type: 'text',
 					payload: await convertKeyValueToString(context, body.payload),
+				}));
+
+				return;
+			} else if (body.type === 'graphql') {
+				dispatch(actions.requestBodyTypeChanged({
+					requestId: node.id,
+					type: 'text',
+					payload: body.payload.query,
 				}));
 
 				return;
@@ -125,6 +170,16 @@ const BodyTab: React.FC<React.PropsWithChildren<BodyTabProps>> = props => {
 				>
 					{'URL encoded form'}
 				</TabItem>
+				<TabItem<EditorMode>
+					active={body.type === 'graphql'}
+					activeSubItem={graphQlMode}
+					subItems={editorTabSubItems}
+					size={'sm'}
+					onClick={() => changeRequestBodyType('graphql')}
+					onSubItemChanged={setGraphQlMode}
+				>
+					{'GraphQL'}
+				</TabItem>
 				<TabItem
 					active={body.type === 'file'}
 					size={'sm'}
@@ -143,7 +198,19 @@ const BodyTab: React.FC<React.PropsWithChildren<BodyTabProps>> = props => {
 						onChange={text => dispatch(requestBodyTextChanged({ requestId: node.id, text: text ?? '' }))}
 					/>
 				)}
-				{body.type === 'json' && <JsonEditor requestId={node.id} value={body.payload} />}
+				{body.type === 'json' && (
+					<JsonEditor
+						requestId={node.id}
+						value={body.payload}
+						editorSelector={state => {
+							// Type hell
+							const requestNode = state.global.project.tree[node.id] as ValidRequestNode;
+							const jsonBody = requestNode.info.body as RequestBodyJson;
+
+							return jsonBody.payload;
+						}}
+					/>
+				)}
 				{body.type === 'url_encoded_form' && (
 					<BasicTableEditor
 						items={body.payload}
@@ -176,6 +243,8 @@ const BodyTab: React.FC<React.PropsWithChildren<BodyTabProps>> = props => {
 						}}
 					/>
 				)}
+				{body.type === 'graphql' && graphQlMode === 'query' && <GraphQlQueryEditor node={node} />}
+				{body.type === 'graphql' && graphQlMode === 'variables' && <GraphQlVariablesEditor node={node} />}
 				{body.type === 'file' && <FileUploadView node={node} />}
 			</TabBody>
 		</Container>
@@ -220,6 +289,26 @@ function createEmptyBodyPayload(requestId: string, type: RequestBodyType): Reque
 
 		case 'file':
 			return { requestId, type, payload: { fileReferenceId: void 0, contentType: void 0 } };
+
+		case 'graphql': {
+			const id = ksuid.generate('jsonentry').toString() as string;
+
+			return {
+				requestId,
+				type,
+				payload: {
+					query: '',
+					variables: {
+						[id]: {
+							id,
+							parentId: null,
+							type: 'object',
+							enabled: true,
+						},
+					},
+				},
+			};
+		}
 
 		case 'text':
 		default:

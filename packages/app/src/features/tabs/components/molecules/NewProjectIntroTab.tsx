@@ -21,7 +21,7 @@ const NewProjectIntroTab: React.FC<React.PropsWithChildren<NewProjectIntroTabPro
 			<TabItem
 				active={selectedTabPayload === tab.payload}
 				key={tab.payload}
-				ref={i => setTarget(i!)}
+				lazyForwardedRef={i => setTarget(i!)}
 				onClick={() => dispatch(changeTab(tab))}
 				onDoubleClick={() => {
 					if (!tab.temporary)

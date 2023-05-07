@@ -25,6 +25,10 @@ const definition: EditableRealtimeValue<SecureRtv, EditorState> = {
 	},
 
 	getValue: async (ctx, item) => {
+		const encryptionSetup = await ipcEncryptionService.checkStatus();
+
+		if (!encryptionSetup) return '[Encryption key missing]';
+
 		// handle legacy
 		if (item.datum !== void 0) {
 			return await ipcEncryptionService.decryptString({

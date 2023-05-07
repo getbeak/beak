@@ -69,7 +69,8 @@ const RequestTabContextMenuWrapper: React.FC<React.PropsWithChildren<RequestTabC
 			},
 			{
 				id: ksuid.generate('ctxmenuitem').toString(),
-				label: renderAcceleratorDefinition('tab-bar.all.close'),
+				accelerator: renderAcceleratorDefinition('tab-bar.all.close'),
+				label: 'Close all',
 				click: () => {
 					dispatch(closeTabsAll());
 				},

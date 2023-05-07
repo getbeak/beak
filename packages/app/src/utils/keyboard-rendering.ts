@@ -56,12 +56,12 @@ export function renderPlainTextDefinition(shortcutKey: Shortcuts) {
 			shortcutOptions.push(partsClone.join(' '));
 		});
 
-		return shortcutOptions.join(', ');
+		return shortcutOptions.join(',');
 	}
 
 	parts.push(renderSimpleKey(definition.key.toLocaleUpperCase()));
 
-	return parts.join(' ');
+	return parts.join('');
 }
 
 export function renderPlatformAwareCtrlOrMeta(darwin: boolean) {

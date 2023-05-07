@@ -9,7 +9,7 @@ import {
 import type { RequestBodyFile, RequestOverview } from '@getbeak/types/request';
 import fetch, { RequestInit, Response } from 'node-fetch';
 
-const bodyFreeVerbs = ['get', 'head'];
+const bodyFreeVerbs = ['get', 'head', 'delete'];
 
 export interface RequesterOptions {
 	payload: FlightRequestPayload;

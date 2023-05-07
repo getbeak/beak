@@ -4,7 +4,7 @@ import { TypedObject } from '@beak/common/helpers/typescript';
 import ksuid from '@beak/ksuid';
 import type { EntryMap, NamedEntries, NamedStringEntry, ValueEntries } from '@getbeak/types/body-editor-json';
 import type { FolderNode, ValidRequestNode } from '@getbeak/types/nodes';
-import type { RequestBodyJson, RequestBodyUrlEncodedForm } from '@getbeak/types/request';
+import type { RequestBodyGraphQl, RequestBodyJson, RequestBodyUrlEncodedForm } from '@getbeak/types/request';
 import { createReducer } from '@reduxjs/toolkit';
 
 import * as actions from './actions';
@@ -176,6 +176,7 @@ const projectReducer = createReducer(initialState, builder => {
 				contentType: action.payload.contentType,
 			};
 		})
+
 		.addCase(actions.requestBodyJsonEditorNameChange, (state, { payload }) => {
 			const { id, name, requestId } = payload;
 			const node = state.tree[requestId] as ValidRequestNode;
@@ -309,6 +310,159 @@ const projectReducer = createReducer(initialState, builder => {
 			const body = node.info.body as RequestBodyUrlEncodedForm;
 
 			delete body.payload[id];
+		})
+
+		.addCase(actions.requestBodyGraphQlEditorQueryChanged, (state, action) => {
+			const node = state.tree[action.payload.requestId] as ValidRequestNode;
+			const body = node.info.body as RequestBodyGraphQl;
+
+			body.payload.query = action.payload.query;
+		})
+		.addCase(actions.requestBodyGraphQlEditorNameChange, (state, { payload }) => {
+			const { id, name, requestId } = payload;
+			const node = state.tree[requestId] as ValidRequestNode;
+			const body = node.info.body as RequestBodyGraphQl;
+
+			if (!body.payload.variables[id])
+				return;
+
+			(body.payload.variables[id] as NamedEntries).name = name;
+		})
+		.addCase(actions.requestBodyGraphQlEditorValueChange, (state, { payload }) => {
+			const { id, value, requestId } = payload;
+			const node = state.tree[requestId] as ValidRequestNode;
+			const body = node.info.body as RequestBodyGraphQl;
+
+			if (!body.payload.variables[id])
+				return;
+
+			(body.payload.variables[id] as ValueEntries).value = value;
+		})
+		.addCase(actions.requestBodyGraphQlEditorTypeChange, (state, { payload }) => {
+			const { id, type, requestId } = payload;
+			const node = state.tree[requestId] as ValidRequestNode;
+			const body = node.info.body as RequestBodyGraphQl;
+			const entry = body.payload.variables[id];
+
+			if (!entry)
+				return;
+
+			entry.type = type;
+
+			if (['array', 'object'].includes(type)) {
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				(entry as any).value = void 0;
+
+				return;
+			}
+
+			if (type === 'boolean')
+				(entry as ValueEntries).value = true;
+			else if (type === 'null')
+				(entry as ValueEntries).value = null;
+			else
+				(entry as ValueEntries).value = [];
+
+			// Cleanup orphaned entries
+			body.payload.variables = removeOrphanedJsonEntries(body.payload.variables);
+		})
+		.addCase(actions.requestBodyGraphQlEditorEnabledChange, (state, { payload }) => {
+			const { id, enabled, requestId } = payload;
+			const node = state.tree[requestId] as ValidRequestNode;
+			const body = node.info.body as RequestBodyGraphQl;
+
+			if (!body.payload.variables[id])
+				return;
+
+			body.payload.variables[id].enabled = enabled;
+		})
+		.addCase(actions.requestBodyGraphQlEditorAddEntry, (state, { payload }) => {
+			const { id, requestId } = payload;
+			const node = state.tree[requestId] as ValidRequestNode;
+			const body = node.info.body as RequestBodyGraphQl;
+			const entry = body.payload.variables[id];
+			const isRoot = entry.parentId === null;
+			const allowsChildren = ['array', 'object'].includes(entry.type);
+			const newId = ksuid.generate('jsonentry').toString();
+
+			if (!entry)
+				return;
+
+			// Don't allow non-child friendly root entries to have children
+			if (!allowsChildren && isRoot)
+				return;
+
+			body.payload.variables[newId] = {
+				id: newId,
+				parentId: allowsChildren ? id : entry.parentId,
+				type: 'string',
+				name: entry.type === 'array' ? void 0 : '',
+				enabled: true,
+				value: [],
+			} as NamedStringEntry;
+		})
+		.addCase(actions.requestBodyGraphQlEditorRemoveEntry, (state, { payload }) => {
+			const { id, requestId } = payload;
+			const node = state.tree[requestId] as ValidRequestNode;
+			const body = node.info.body as RequestBodyGraphQl;
+
+			delete body.payload.variables[id];
+
+			// Cleanup orphaned entries
+			body.payload.variables = removeOrphanedJsonEntries(body.payload.variables);
+		})
+		.addCase(actions.requestBodyGraphQlEditorReconcileVariables, (state, { payload }) => {
+			const { requestId, variables } = payload;
+			const node = state.tree[requestId] as ValidRequestNode;
+			const body = node.info.body as RequestBodyGraphQl;
+
+			const extractedVariableNames = Object.keys(variables);
+			const variablesValues = Object.values(body.payload.variables) as NamedEntries[];
+			const root = variablesValues.find(v => v.parentId === null);
+
+			// Graphql variable root must be `object`
+			if (!root || root.type !== 'object') return;
+
+			// Find all nodes with root as their parent
+			const existingVariablesSet = new Set(variablesValues.filter(v => v.parentId === root.id).map(v => v.name));
+
+			// Iterate over variables list, filtering out ones that don't exist yet
+			const missingVariableNames = extractedVariableNames.filter(v => !existingVariablesSet.has(v));
+
+			// Create them
+			missingVariableNames.forEach(v => {
+				const id = ksuid.generate('jsonentry').toString();
+				const type = variables[v];
+
+				// eslint-disable-next-line max-nested-callbacks
+				const value = (() => {
+					switch (type) {
+						case 'array':
+						case 'object':
+							return void 0;
+
+						case 'boolean': return true;
+
+						case 'null': return null;
+						case 'number': return ['0'];
+
+						case 'string':
+						default:
+							return [''];
+					}
+				})();
+
+				body.payload.variables[id] = {
+					id,
+					enabled: true,
+					name: v,
+					parentId: root.id,
+					type: variables[v],
+
+					// @ts-expect-error
+					value,
+				};
+			});
 		})
 
 		.addCase(actions.requestOptionFollowRedirects, (state, { payload }) => {

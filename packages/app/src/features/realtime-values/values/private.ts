@@ -28,6 +28,10 @@ const definition: EditableRealtimeValue<PrivateRtv, EditorState> = {
 	},
 
 	getValue: async (ctx, item, recursiveDepth) => {
+		const encryptionSetup = await ipcEncryptionService.checkStatus();
+
+		if (!encryptionSetup) return '[Encryption key missing]';
+
 		// Get from private store
 		const cipherTextPath = createPath(item.identifier);
 		const exists = await ipcFsService.pathExists(cipherTextPath);

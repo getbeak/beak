@@ -9,5 +9,5 @@ export function getStatusReasonPhrase(status: number) {
 }
 
 export function requestAllowsBody(verb: string) {
-	return !['get', 'head'].includes(verb.toLowerCase());
+	return !['get', 'head', 'delete'].includes(verb.toLowerCase());
 }

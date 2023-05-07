@@ -8,6 +8,7 @@ export async function parseValueParts(
 	ctx: Context,
 	parts: ValueParts,
 	depth = 0,
+	sensitiveMode = false,
 ): Promise<string> {
 	const out = await Promise.all(parts.map(async p => {
 		if (typeof p === 'string')
@@ -23,7 +24,10 @@ export async function parseValueParts(
 
 		// Oversimplified check for recursion. I'll build a proper system for this later
 		if (depth >= 5)
-			return '[recursion detected]';
+			return '[Recursion detected]';
+
+		if (sensitiveMode && rtv.sensitive)
+			return '[Sensitive mode enabled]';
 
 		try {
 			// Easier than using an abort controller

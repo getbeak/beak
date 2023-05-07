@@ -1,6 +1,5 @@
-import React, { useRef } from 'react';
+import React, { useContext, useRef } from 'react';
 import { useDispatch } from 'react-redux';
-import actions from '@beak/app/store/project/actions';
 import {
 	faBan,
 	faCalculator,
@@ -14,7 +13,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import type { EntryType } from '@getbeak/types/body-editor-json';
 import styled from 'styled-components';
 
+import { JsonEditorContext } from '../../contexts/json-editor-context';
+
 interface TypeSelectorProps {
+	disabled?: boolean;
 	requestId: string;
 	id: string;
 	value: EntryType;
@@ -22,21 +24,24 @@ interface TypeSelectorProps {
 }
 
 const TypeSelector: React.FC<React.PropsWithChildren<TypeSelectorProps>> = props => {
-	const { requestId, id, value, onChange } = props;
+	const { disabled, requestId, id, value, onChange } = props;
 	const selectRef = useRef<HTMLSelectElement>(null);
 	const icon = getIconFromType(value);
 	const dispatch = useDispatch();
 
+	const editorContext = useContext(JsonEditorContext)!;
+
 	return (
 		<Wrapper>
 			<Select
+				disabled={disabled}
 				ref={selectRef}
 				value={value}
 				tabIndex={-1}
 				onChange={e => {
 					const type = e.currentTarget.value as EntryType;
 
-					dispatch(actions.requestBodyJsonEditorTypeChange({
+					dispatch(editorContext.typeChange({
 						requestId,
 						id,
 						type,
@@ -95,6 +100,10 @@ const Select = styled.select`
 	opacity: 0;
 	width: 100%;
 	height: 20px;
+
+	&:disabled {
+		cursor: not-allowed;
+	}
 `;
 
 function getIconFromType(type: EntryType) {

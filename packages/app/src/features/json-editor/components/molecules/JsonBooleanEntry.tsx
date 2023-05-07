@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { useDispatch } from 'react-redux';
 import DebouncedInput from '@beak/app/components/atoms/DebouncedInput';
-import { actions } from '@beak/app/store/project';
 import type { BooleanEntry, NamedBooleanEntry } from '@getbeak/types/body-editor-json';
 
+import { JsonEditorContext } from '../../contexts/json-editor-context';
 import {
 	BodyAction,
 	BodyInputValueCell,
@@ -28,6 +28,8 @@ const JsonBooleanEntry: React.FC<React.PropsWithChildren<JsonBooleanEntryProps>>
 	const { id } = value;
 	const dispatch = useDispatch();
 
+	const editorContext = useContext(JsonEditorContext)!;
+
 	return (
 		<Row>
 			<BodyPrimaryCell depth={depth}>
@@ -43,7 +45,7 @@ const JsonBooleanEntry: React.FC<React.PropsWithChildren<JsonBooleanEntryProps>>
 							disabled={depth === 0}
 							type={'text'}
 							value={detectName(depth, value)}
-							onChange={name => dispatch(actions.requestBodyJsonEditorNameChange({
+							onChange={name => dispatch(editorContext.nameChange({
 								id,
 								requestId,
 								name,
@@ -67,7 +69,7 @@ const JsonBooleanEntry: React.FC<React.PropsWithChildren<JsonBooleanEntryProps>>
 					<input
 						type={'checkbox'}
 						checked={value.value}
-						onChange={e => dispatch(actions.requestBodyJsonEditorValueChange({
+						onChange={e => dispatch(editorContext.valueChange({
 							id,
 							requestId,
 							value: e.target.checked,

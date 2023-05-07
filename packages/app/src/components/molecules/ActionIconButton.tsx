@@ -11,7 +11,7 @@ const ActionIconButton: React.FC<React.PropsWithChildren<ActionIconButtonProps>>
 	const { icon, ...buttonProps } = props;
 
 	return (
-		// @ts-ignore
+		// @ts-expect-error
 		<Button {...buttonProps}>
 			<FontAwesomeIcon icon={icon} />
 		</Button>

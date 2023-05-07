@@ -3,20 +3,27 @@ import { convertKeyValueToString } from '@beak/app/features/basic-table-editor/p
 import { convertToRealJson } from '@beak/app/features/json-editor/parsers';
 import { parseValueParts } from '@beak/app/features/realtime-values/parser';
 import { ipcDialogService, ipcFsService } from '@beak/app/lib/ipc';
+import { requestAllowsBody } from '@beak/app/utils/http';
 import { convertRequestToUrl } from '@beak/app/utils/uri';
 import { requestBodyContentType } from '@beak/common/helpers/request';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import ksuid from '@beak/ksuid';
 import type { FlightHistory } from '@getbeak/types/flight';
 import type { Tree, ValidRequestNode } from '@getbeak/types/nodes';
-import type { RequestBody, RequestBodyFile, RequestBodyText, RequestOverview, ToggleKeyValue } from '@getbeak/types/request';
+import type {
+	RequestBodyFile,
+	RequestBodyText,
+	RequestOverview,
+	ToggleKeyValue,
+} from '@getbeak/types/request';
 import type { Context } from '@getbeak/types/values';
 import type { VariableGroups } from '@getbeak/types/variable-groups';
+import { FetcherParams } from '@graphiql/toolkit';
 import { call, put, select } from 'redux-saga/effects';
 
 import { ApplicationState } from '../..';
 import * as actions from '../actions';
-import { State } from '../types';
+import { FlightRequest, FlightRequestKeyValue, State } from '../types';
 
 export default function* requestFlightWorker() {
 	const binaryStoreKey = ksuid.generate('binstore').toString();
@@ -47,7 +54,7 @@ export default function* requestFlightWorker() {
 		currentRequestId: requestId,
 	};
 
-	const preparedRequest: RequestOverview = yield call(prepareRequest, node.info, context);
+	const preparedRequest: FlightRequest = yield call(prepareRequest, node.info, context);
 
 	if (!node)
 		return;
@@ -69,10 +76,14 @@ export default function* requestFlightWorker() {
 		flightId,
 		request: preparedRequest,
 		redirectDepth: 0,
+
+		reason: 'request_editor',
+		showProgress: true,
+		showResult: true,
 	}));
 }
 
-async function prepareRequest(overview: RequestOverview, context: Context): Promise<RequestOverview> {
+async function prepareRequest(overview: RequestOverview, context: Context): Promise<FlightRequest> {
 	const url = await convertRequestToUrl(context, overview);
 	const headers = await flattenToggleValueParts(context, overview.headers);
 
@@ -84,7 +95,7 @@ async function prepareRequest(overview: RequestOverview, context: Context): Prom
 		};
 	}
 
-	if (!hasHeader('content-type', headers)) {
+	if (!hasHeader('content-type', headers) && requestAllowsBody(overview.verb)) {
 		const contentType = requestBodyContentType(overview.body);
 
 		if (contentType) {
@@ -96,17 +107,19 @@ async function prepareRequest(overview: RequestOverview, context: Context): Prom
 		}
 	}
 
-	return {
+	const requestOverview: FlightRequest = {
 		...overview,
 		url: [url.toString()],
-		query: await flattenToggleValueParts(context, overview.query),
+		query: await flattenQuery(context, overview),
 		headers,
-		body: await flattenBody(context, overview.body),
+		body: await flattenBody(context, overview),
 	};
+
+	return requestOverview;
 }
 
 async function flattenToggleValueParts(context: Context, toggleValueParts: Record<string, ToggleKeyValue>) {
-	const out: Record<string, ToggleKeyValue> = {};
+	const out: Record<string, FlightRequestKeyValue> = {};
 
 	await Promise.all(TypedObject.keys(toggleValueParts).map(async k => {
 		out[k] = {
@@ -119,7 +132,35 @@ async function flattenToggleValueParts(context: Context, toggleValueParts: Recor
 	return out;
 }
 
-async function flattenBody(context: Context, body: RequestBody): Promise<RequestBodyText | RequestBodyFile> {
+async function flattenQuery(
+	context: Context,
+	overview: RequestOverview,
+): Promise<Record<string, FlightRequestKeyValue>> {
+	const { body, query, verb } = overview;
+	const resolvedQuery = await flattenToggleValueParts(context, query);
+
+	// When using GraphQL body-less verbs require the body to be sent via the url
+	if (!requestAllowsBody(verb) && body.type === 'graphql') {
+		const existingQueryId = Object.keys(resolvedQuery).find(k => resolvedQuery[k].name.toLocaleLowerCase() === 'query');
+		const queryId = existingQueryId ?? ksuid.generate('query').toString();
+
+		resolvedQuery[queryId] = {
+			enabled: true,
+			name: 'query',
+			value: [body.payload.query],
+		};
+	}
+
+	return resolvedQuery;
+}
+
+async function flattenBody(context: Context, overview: RequestOverview): Promise<RequestBodyText | RequestBodyFile> {
+	const { body, verb } = overview;
+
+	// Don't send bodies for verbs which forbid it
+	if (!requestAllowsBody(verb))
+		return { type: 'text', payload: '' };
+
 	switch (body.type) {
 		case 'text':
 			return body;
@@ -156,6 +197,19 @@ async function flattenBody(context: Context, body: RequestBody): Promise<Request
 
 				return { type: 'text', payload: '' };
 			}
+		}
+
+		case 'graphql': {
+			const variables = await convertToRealJson(context, body.payload.variables);
+			const graphQlBody: FetcherParams = {
+				query: body.payload.query,
+				variables,
+			};
+
+			return {
+				type: 'text',
+				payload: JSON.stringify(graphQlBody),
+			};
 		}
 
 		default: throw new Error('unknown_body_type');
