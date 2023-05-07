@@ -23,7 +23,7 @@ import { call, put, select } from 'redux-saga/effects';
 
 import { ApplicationState } from '../..';
 import * as actions from '../actions';
-import { State } from '../types';
+import { FlightRequest, FlightRequestKeyValue, State } from '../types';
 
 export default function* requestFlightWorker() {
 	const binaryStoreKey = ksuid.generate('binstore').toString();
@@ -54,7 +54,7 @@ export default function* requestFlightWorker() {
 		currentRequestId: requestId,
 	};
 
-	const preparedRequest: RequestOverview = yield call(prepareRequest, node.info, context);
+	const preparedRequest: FlightRequest = yield call(prepareRequest, node.info, context);
 
 	if (!node)
 		return;
@@ -76,10 +76,14 @@ export default function* requestFlightWorker() {
 		flightId,
 		request: preparedRequest,
 		redirectDepth: 0,
+
+		reason: 'request_editor',
+		showProgress: true,
+		showResult: true,
 	}));
 }
 
-async function prepareRequest(overview: RequestOverview, context: Context): Promise<RequestOverview> {
+async function prepareRequest(overview: RequestOverview, context: Context): Promise<FlightRequest> {
 	const url = await convertRequestToUrl(context, overview);
 	const headers = await flattenToggleValueParts(context, overview.headers);
 
@@ -103,7 +107,7 @@ async function prepareRequest(overview: RequestOverview, context: Context): Prom
 		}
 	}
 
-	const requestOverview: RequestOverview = {
+	const requestOverview: FlightRequest = {
 		...overview,
 		url: [url.toString()],
 		query: await flattenQuery(context, overview),
@@ -115,7 +119,7 @@ async function prepareRequest(overview: RequestOverview, context: Context): Prom
 }
 
 async function flattenToggleValueParts(context: Context, toggleValueParts: Record<string, ToggleKeyValue>) {
-	const out: Record<string, ToggleKeyValue> = {};
+	const out: Record<string, FlightRequestKeyValue> = {};
 
 	await Promise.all(TypedObject.keys(toggleValueParts).map(async k => {
 		out[k] = {
@@ -128,7 +132,10 @@ async function flattenToggleValueParts(context: Context, toggleValueParts: Recor
 	return out;
 }
 
-async function flattenQuery(context: Context, overview: RequestOverview): Promise<Record<string, ToggleKeyValue>> {
+async function flattenQuery(
+	context: Context,
+	overview: RequestOverview,
+): Promise<Record<string, FlightRequestKeyValue>> {
 	const { body, query, verb } = overview;
 	const resolvedQuery = await flattenToggleValueParts(context, query);
 
@@ -151,7 +158,7 @@ async function flattenBody(context: Context, overview: RequestOverview): Promise
 	const { body, verb } = overview;
 
 	// Don't send bodies for verbs which forbid it
-	if (requestAllowsBody(verb))
+	if (!requestAllowsBody(verb))
 		return { type: 'text', payload: '' };
 
 	switch (body.type) {

@@ -1,9 +1,15 @@
 import type { Flight, FlightHistory } from '@getbeak/types/flight';
-import type { RequestOverview } from '@getbeak/types/request';
+import type {
+	RequestBodyFile,
+	RequestBodyText,
+	RequestOptions,
+	ToggleKeyValue,
+} from '@getbeak/types/request';
 import type { ResponseOverview } from '@getbeak/types/response';
 
 export const ActionTypes = {
 	REQUEST_FLIGHT: '@beak/global/flight/REQUEST_FLIGHT',
+	REQUEST_PURE_FLIGHT: '@beak/global/flight/REQUEST_PURE_FLIGHT',
 
 	BEGIN_FLIGHT: '@beak/global/flight/BEGIN_FLIGHT',
 	UPDATE_FLIGHT_PROGRESS: '@beak/global/flight/UPDATE_FLIGHT_PROGRESS',
@@ -15,6 +21,24 @@ export const ActionTypes = {
 
 	CANCEL_FLIGHT_REQUEST: '@beak/global/flight/CANCEL_FLIGHT_REQUEST',
 };
+
+export type FlightReason = 'request_editor' | 'graphql_schema';
+export type ShowResultMode = boolean | 'on_failure';
+
+export interface FlightRequestKeyValue extends ToggleKeyValue {
+	name: string;
+	value: [string];
+	enabled: boolean;
+}
+
+export interface FlightRequest {
+	verb: string;
+	url: [string];
+	query: Record<string, FlightRequestKeyValue>;
+	headers: Record<string, FlightRequestKeyValue>;
+	body: RequestBodyText | RequestBodyFile;
+	options: RequestOptions;
+}
 
 export interface State {
 	currentFlight?: FlightInProgress;
@@ -28,12 +52,26 @@ export const initialState: State = {
 	blackBox: {},
 };
 
+export interface RequestPureFlightPayload {
+	flightId?: string;
+	referenceRequestId: string;
+	request: FlightRequest;
+	showProgress?: boolean;
+	showResult?: ShowResultMode;
+
+	reason: FlightReason;
+}
+
 export interface BeginFlightPayload {
 	requestId: string;
 	flightId: string;
 	binaryStoreKey: string;
-	request: RequestOverview;
+	request: FlightRequest;
 	redirectDepth: number;
+	reason: FlightReason;
+
+	showProgress: boolean;
+	showResult: ShowResultMode;
 }
 
 export interface CompleteFlightPayload {

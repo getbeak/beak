@@ -6,7 +6,6 @@ import { FlightMessages } from '@beak/common/ipc/flight';
 import { NotificationPreferences } from '@beak/common/types/preferences';
 import ksuid from '@beak/ksuid';
 import type { RequestNode } from '@getbeak/types/nodes';
-import type { RequestOverview } from '@getbeak/types/request';
 import type { ResponseOverview } from '@getbeak/types/response';
 import { PayloadAction } from '@reduxjs/toolkit';
 import { END, eventChannel } from 'redux-saga';
@@ -14,7 +13,7 @@ import { call, put, select, take } from 'redux-saga/effects';
 
 import { ApplicationState } from '../..';
 import * as actions from '../actions';
-import { BeginFlightPayload } from '../types';
+import { BeginFlightPayload, FlightRequest } from '../types';
 
 export default function* requestFlightWorker({ payload }: PayloadAction<BeginFlightPayload>) {
 	const { binaryStoreKey, flightId, request, requestId, redirectDepth } = payload;
@@ -123,7 +122,13 @@ export default function* requestFlightWorker({ payload }: PayloadAction<BeginFli
 			}
 
 			case Boolean(response): {
-				const redirected: boolean = yield detectAndHandleRedirect(request, response!, redirectDepth, requestId);
+				const redirected: boolean = yield detectAndHandleRedirect(
+					payload,
+					request,
+					response!,
+					redirectDepth,
+					requestId,
+				);
 
 				if (redirected)
 					break;
@@ -156,7 +161,13 @@ export default function* requestFlightWorker({ payload }: PayloadAction<BeginFli
 	}
 }
 
-function* detectAndHandleRedirect(request: RequestOverview, response: ResponseOverview, depth: number, reqId: string) {
+function* detectAndHandleRedirect(
+	payload: BeginFlightPayload,
+	request: FlightRequest,
+	response: ResponseOverview,
+	depth: number,
+	reqId: string,
+) {
 	const withinRedirectRange = response.status >= 300 && response.status < 400;
 
 	if (!withinRedirectRange || !request.options.followRedirects)
@@ -173,7 +184,7 @@ function* detectAndHandleRedirect(request: RequestOverview, response: ResponseOv
 	const flightId = ksuid.generate('flight').toString();
 	const stagingResolvedUrl = new URL(location, url);
 	const resolvedUrl = stagingResolvedUrl.host === url.host ? stagingResolvedUrl.toString() : location;
-	const newRequest = {
+	const newRequest: FlightRequest = {
 		...request,
 		url: [resolvedUrl],
 	};
@@ -187,6 +198,10 @@ function* detectAndHandleRedirect(request: RequestOverview, response: ResponseOv
 		redirectDepth: depth + 1,
 		request: newRequest,
 		requestId: reqId,
+
+		reason: payload.reason,
+		showProgress: payload.showProgress,
+		showResult: payload.showResult,
 	}));
 
 	return true;
