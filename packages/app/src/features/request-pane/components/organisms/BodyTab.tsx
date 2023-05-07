@@ -17,7 +17,7 @@ import { RequestBodyTypeChangedPayload } from '@beak/app/store/project/types';
 import { attemptTextToJson } from '@beak/app/utils/json';
 import ksuid from '@beak/ksuid';
 import type { ValidRequestNode } from '@getbeak/types/nodes';
-import type { RequestBodyType } from '@getbeak/types/request';
+import type { RequestBodyJson, RequestBodyType } from '@getbeak/types/request';
 import styled from 'styled-components';
 
 import TabBar from '../../../../components/atoms/TabBar';
@@ -198,7 +198,19 @@ const BodyTab: React.FC<React.PropsWithChildren<BodyTabProps>> = props => {
 						onChange={text => dispatch(requestBodyTextChanged({ requestId: node.id, text: text ?? '' }))}
 					/>
 				)}
-				{body.type === 'json' && <JsonEditor requestId={node.id} value={body.payload} />}
+				{body.type === 'json' && (
+					<JsonEditor
+						requestId={node.id}
+						value={body.payload}
+						editorSelector={state => {
+							// Type hell
+							const requestNode = state.global.project.tree[node.id] as ValidRequestNode;
+							const jsonBody = requestNode.info.body as RequestBodyJson;
+
+							return jsonBody.payload;
+						}}
+					/>
+				)}
 				{body.type === 'url_encoded_form' && (
 					<BasicTableEditor
 						items={body.payload}

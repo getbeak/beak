@@ -4,7 +4,7 @@ import DebouncedInput from '@beak/app/components/atoms/DebouncedInput';
 import VariableInput from '@beak/app/features/variable-input/components/VariableInput';
 import type { NamedNumberEntry, NumberEntry } from '@getbeak/types/body-editor-json';
 
-import { JsonEditorAbstractionsContext } from '../../contexts/json-editor-context';
+import { JsonEditorContext } from '../../contexts/json-editor-context';
 import {
 	BodyAction,
 	BodyInputValueCell,
@@ -29,7 +29,7 @@ const JsonNumberEntry: React.FC<React.PropsWithChildren<JsonNumberEntryProps>> =
 	const { id } = value;
 	const dispatch = useDispatch();
 
-	const abstractionContext = useContext(JsonEditorAbstractionsContext)!;
+	const editorContext = useContext(JsonEditorContext)!;
 
 	return (
 		<Row>
@@ -46,7 +46,7 @@ const JsonNumberEntry: React.FC<React.PropsWithChildren<JsonNumberEntryProps>> =
 							disabled={depth === 0}
 							type={'text'}
 							value={detectName(depth, value)}
-							onChange={name => dispatch(abstractionContext.requestBodyJsonEditorNameChange({
+							onChange={name => dispatch(editorContext.nameChange({
 								id,
 								requestId,
 								name,
@@ -70,7 +70,7 @@ const JsonNumberEntry: React.FC<React.PropsWithChildren<JsonNumberEntryProps>> =
 					<VariableInput
 						requestId={props.requestId}
 						parts={props.value.value}
-						onChange={parts => dispatch(abstractionContext.requestBodyJsonEditorValueChange({
+						onChange={parts => dispatch(editorContext.valueChange({
 							id,
 							requestId,
 							value: parts,

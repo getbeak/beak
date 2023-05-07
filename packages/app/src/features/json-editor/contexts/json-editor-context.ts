@@ -1,4 +1,5 @@
 import { createContext } from 'react';
+import { ApplicationState } from '@beak/app/store';
 import { actions } from '@beak/app/store/project';
 import {
 	RequestBodyJsonEditorAddEntryPayload,
@@ -8,22 +9,38 @@ import {
 	RequestBodyJsonEditorTypeChangePayload,
 	RequestBodyJsonEditorValueChangePayload,
 } from '@beak/app/store/project/types';
+import type { EntryMap } from '@getbeak/types/body-editor-json';
 import { AnyAction } from '@reduxjs/toolkit';
 
 interface Context {
-	requestBodyJsonEditorNameChange: (payload: RequestBodyJsonEditorNameChangePayload) => AnyAction;
-	requestBodyJsonEditorValueChange: (payload: RequestBodyJsonEditorValueChangePayload) => AnyAction;
-	requestBodyJsonEditorTypeChange: (payload: RequestBodyJsonEditorTypeChangePayload) => AnyAction;
-	requestBodyJsonEditorEnabledChange: (payload: RequestBodyJsonEditorEnabledChangePayload) => AnyAction;
-	requestBodyJsonEditorAddEntry: (payload: RequestBodyJsonEditorAddEntryPayload) => AnyAction;
-	requestBodyJsonEditorRemoveEntry: (payload: RequestBodyJsonEditorRemoveEntryPayload) => AnyAction;
+	requestId: string;
+	editorSelector: (state: ApplicationState) => EntryMap;
+
+	nameChange: (payload: RequestBodyJsonEditorNameChangePayload) => AnyAction;
+	valueChange: (payload: RequestBodyJsonEditorValueChangePayload) => AnyAction;
+	typeChange: (payload: RequestBodyJsonEditorTypeChangePayload) => AnyAction;
+	enabledChange: (payload: RequestBodyJsonEditorEnabledChangePayload) => AnyAction;
+	addEntry: (payload: RequestBodyJsonEditorAddEntryPayload) => AnyAction;
+	removeEntry: (payload: RequestBodyJsonEditorRemoveEntryPayload) => AnyAction;
 }
 
-export const JsonEditorAbstractionsContext = createContext<Context>({
-	requestBodyJsonEditorNameChange: actions.requestBodyJsonEditorNameChange,
-	requestBodyJsonEditorValueChange: actions.requestBodyJsonEditorValueChange,
-	requestBodyJsonEditorTypeChange: actions.requestBodyJsonEditorTypeChange,
-	requestBodyJsonEditorEnabledChange: actions.requestBodyJsonEditorEnabledChange,
-	requestBodyJsonEditorAddEntry: actions.requestBodyJsonEditorAddEntry,
-	requestBodyJsonEditorRemoveEntry: actions.requestBodyJsonEditorRemoveEntry,
+export const JsonEditorContext = createContext<Context>({
+	requestId: 'impossible',
+	editorSelector: () => ({
+		'no-op': {
+			enabled: true,
+			id: 'no-op',
+			name: 'No-operation',
+			parentId: null,
+			type: 'string',
+			value: ['No-operation'],
+		},
+	}),
+
+	nameChange: actions.requestBodyJsonEditorNameChange,
+	valueChange: actions.requestBodyJsonEditorValueChange,
+	typeChange: actions.requestBodyJsonEditorTypeChange,
+	enabledChange: actions.requestBodyJsonEditorEnabledChange,
+	addEntry: actions.requestBodyJsonEditorAddEntry,
+	removeEntry: actions.requestBodyJsonEditorRemoveEntry,
 });

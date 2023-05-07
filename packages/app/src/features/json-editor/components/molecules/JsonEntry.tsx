@@ -13,11 +13,12 @@ export interface JsonEntryProps {
 	requestId: string;
 	value: Entries;
 
+	forceRootObject?: boolean;
 	nameOverride?: string;
 }
 
 export const JsonEntry: React.FC<React.PropsWithChildren<JsonEntryProps>> = props => {
-	const { depth, requestId, value, nameOverride } = props;
+	const { depth, requestId, value, nameOverride, forceRootObject } = props;
 
 	switch (value.type) {
 		case 'string':
@@ -31,8 +32,17 @@ export const JsonEntry: React.FC<React.PropsWithChildren<JsonEntryProps>> = prop
 
 		case 'array':
 			return <JsonArrayEntry depth={depth} requestId={requestId} value={value} nameOverride={nameOverride} />;
-		case 'object':
-			return <JsonObjectEntry depth={depth} requestId={requestId} value={value} nameOverride={nameOverride} />;
+		case 'object': {
+			return (
+				<JsonObjectEntry
+					depth={depth}
+					requestId={requestId}
+					value={value}
+					forceRootObject={forceRootObject}
+					nameOverride={nameOverride}
+				/>
+			);
+		}
 
 		default:
 			return null;

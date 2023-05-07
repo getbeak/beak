@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 
-import { JsonEditorAbstractionsContext } from '../../contexts/json-editor-context';
+import { JsonEditorContext } from '../../contexts/json-editor-context';
 
 interface EntryTogglerProps {
 	requestId: string;
@@ -13,7 +13,7 @@ interface EntryTogglerProps {
 
 const EntryToggler: React.FC<React.PropsWithChildren<EntryTogglerProps>> = props => {
 	const { requestId, id, value, onChange } = props;
-	const abstractionContext = useContext(JsonEditorAbstractionsContext)!;
+	const editorContext = useContext(JsonEditorContext)!;
 	const dispatch = useDispatch();
 
 	return (
@@ -22,7 +22,7 @@ const EntryToggler: React.FC<React.PropsWithChildren<EntryTogglerProps>> = props
 				type={'checkbox'}
 				checked={value}
 				onChange={e => {
-					dispatch(abstractionContext.requestBodyJsonEditorEnabledChange({
+					dispatch(editorContext.enabledChange({
 						requestId,
 						id,
 						enabled: e.target.checked,

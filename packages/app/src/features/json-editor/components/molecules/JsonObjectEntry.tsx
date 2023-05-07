@@ -1,13 +1,11 @@
 import React, { useContext, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import DebouncedInput from '@beak/app/components/atoms/DebouncedInput';
-import SelectedNodeContext from '@beak/app/features/request-pane/contexts/selected-node';
 import { useAppSelector } from '@beak/app/store/redux';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import type { NamedObjectEntry, ObjectEntry } from '@getbeak/types/body-editor-json';
-import type { RequestBodyJson } from '@getbeak/types/request';
 
-import { JsonEditorAbstractionsContext } from '../../contexts/json-editor-context';
+import { JsonEditorContext } from '../../contexts/json-editor-context';
 import {
 	BodyAction,
 	BodyInputWrapper,
@@ -25,19 +23,19 @@ import TypeSelector from './TypeSelector';
 
 interface JsonObjectEntryProps extends JsonEntryProps {
 	value: ObjectEntry | NamedObjectEntry;
+	forceRootObject?: boolean;
 }
 
 const JsonObjectEntry: React.FC<React.PropsWithChildren<JsonObjectEntryProps>> = props => {
-	const { depth, requestId, value, nameOverride } = props;
+	const { depth, requestId, value, nameOverride, forceRootObject } = props;
 	const { id } = value;
 	const dispatch = useDispatch();
 
-	const node = useContext(SelectedNodeContext);
-	const abstractionContext = useContext(JsonEditorAbstractionsContext)!;
+	const editorContext = useContext(JsonEditorContext)!;
 	const preferences = useAppSelector(s => s.global.preferences.requests[requestId]);
 	const [expanded, setExpanded] = useState(preferences.request.jsonEditor?.expanded[id] !== false);
 
-	const entries = (node.info.body as RequestBodyJson).payload;
+	const entries = useAppSelector(editorContext.editorSelector);
 	const children = TypedObject.values(entries).filter(e => e.parentId === id);
 
 	return (
@@ -61,7 +59,7 @@ const JsonObjectEntry: React.FC<React.PropsWithChildren<JsonObjectEntryProps>> =
 								disabled={depth === 0}
 								type={'text'}
 								value={detectName(depth, value)}
-								onChange={name => dispatch(abstractionContext.requestBodyJsonEditorNameChange({
+								onChange={name => dispatch(editorContext.nameChange({
 									id,
 									requestId,
 									name,
@@ -75,6 +73,7 @@ const JsonObjectEntry: React.FC<React.PropsWithChildren<JsonObjectEntryProps>> =
 				</BodyPrimaryCell>
 				<BodyTypeCell>
 					<TypeSelector
+						disabled={forceRootObject}
 						id={id}
 						requestId={requestId}
 						value={value.type}

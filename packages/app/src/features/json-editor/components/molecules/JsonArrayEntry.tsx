@@ -7,7 +7,7 @@ import { TypedObject } from '@beak/common/helpers/typescript';
 import type { ArrayEntry, NamedArrayEntry } from '@getbeak/types/body-editor-json';
 import type { RequestBodyJson } from '@getbeak/types/request';
 
-import { JsonEditorAbstractionsContext } from '../../contexts/json-editor-context';
+import { JsonEditorContext } from '../../contexts/json-editor-context';
 import {
 	BodyAction,
 	BodyInputWrapper,
@@ -34,9 +34,9 @@ const JsonArrayEntry: React.FC<React.PropsWithChildren<JsonArrayEntryProps>> = p
 	const node = useContext(SelectedNodeContext);
 	const preferences = useAppSelector(s => s.global.preferences.requests[requestId]);
 	const [expanded, setExpanded] = useState(preferences.request.jsonEditor?.expanded[id] !== false);
-	const abstractionContext = useContext(JsonEditorAbstractionsContext)!;
+	const editorContext = useContext(JsonEditorContext)!;
 
-	const entries = (node.info.body as RequestBodyJson).payload;
+	const entries = useAppSelector(editorContext.editorSelector);
 	const children = TypedObject.values(entries).filter(e => e.parentId === id);
 
 	return (
@@ -60,7 +60,7 @@ const JsonArrayEntry: React.FC<React.PropsWithChildren<JsonArrayEntryProps>> = p
 								disabled={depth === 0}
 								type={'text'}
 								value={detectName(depth, value)}
-								onChange={name => dispatch(abstractionContext.requestBodyJsonEditorNameChange({
+								onChange={name => dispatch(editorContext.nameChange({
 									id,
 									requestId,
 									name,

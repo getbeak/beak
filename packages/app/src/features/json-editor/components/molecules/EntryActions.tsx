@@ -5,7 +5,7 @@ import { faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
 import type { Entries } from '@getbeak/types/body-editor-json';
 import styled from 'styled-components';
 
-import { JsonEditorAbstractionsContext } from '../../contexts/json-editor-context';
+import { JsonEditorContext } from '../../contexts/json-editor-context';
 
 interface EntryActionsProps {
 	requestId: string;
@@ -17,7 +17,7 @@ const EntryActions: React.FC<React.PropsWithChildren<EntryActionsProps>> = props
 	const { requestId, id, entry } = props;
 	const isRoot = entry.parentId === null;
 	const dispatch = useDispatch();
-	const abstractionContext = useContext(JsonEditorAbstractionsContext)!;
+	const editorContext = useContext(JsonEditorContext)!;
 
 	// Don't show any icons for root level primitives
 	if (isRoot && !['array', 'object'].includes(entry.type))
@@ -30,7 +30,7 @@ const EntryActions: React.FC<React.PropsWithChildren<EntryActionsProps>> = props
 					tabIndex={-1}
 					icon={faMinus}
 					onClick={() => {
-						dispatch(abstractionContext.requestBodyJsonEditorRemoveEntry({
+						dispatch(editorContext.removeEntry({
 							id,
 							requestId,
 						}));
@@ -41,7 +41,7 @@ const EntryActions: React.FC<React.PropsWithChildren<EntryActionsProps>> = props
 				tabIndex={-1}
 				icon={faPlus}
 				onClick={() => {
-					dispatch(abstractionContext.requestBodyJsonEditorAddEntry({
+					dispatch(editorContext.addEntry({
 						id,
 						requestId,
 					}));

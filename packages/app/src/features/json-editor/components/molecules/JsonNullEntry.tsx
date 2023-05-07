@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import DebouncedInput from '@beak/app/components/atoms/DebouncedInput';
 import type { NamedNullEntry, NullEntry } from '@getbeak/types/body-editor-json';
 
-import { JsonEditorAbstractionsContext } from '../../contexts/json-editor-context';
+import { JsonEditorContext } from '../../contexts/json-editor-context';
 import {
 	BodyAction,
 	BodyInputValueCell,
@@ -29,7 +29,7 @@ const JsonNullEntry: React.FC<React.PropsWithChildren<JsonNullEntryProps>> = pro
 	const { id } = value;
 	const dispatch = useDispatch();
 
-	const abstractionContext = useContext(JsonEditorAbstractionsContext)!;
+	const editorContext = useContext(JsonEditorContext)!;
 
 	return (
 		<Row>
@@ -46,7 +46,7 @@ const JsonNullEntry: React.FC<React.PropsWithChildren<JsonNullEntryProps>> = pro
 							disabled={depth === 0}
 							type={'text'}
 							value={detectName(depth, value)}
-							onChange={name => dispatch(abstractionContext.requestBodyJsonEditorNameChange({
+							onChange={name => dispatch(editorContext.nameChange({
 								id,
 								requestId,
 								name,

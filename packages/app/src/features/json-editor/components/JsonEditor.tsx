@@ -1,4 +1,5 @@
 import React from 'react';
+import { ApplicationState } from '@beak/app/store';
 import { actions } from '@beak/app/store/project';
 import {
 	RequestBodyJsonEditorAddEntryPayload,
@@ -13,7 +14,7 @@ import type { EntryMap } from '@getbeak/types/body-editor-json';
 import { AnyAction } from '@reduxjs/toolkit';
 import styled from 'styled-components';
 
-import { JsonEditorAbstractionsContext } from '../contexts/json-editor-context';
+import { JsonEditorContext } from '../contexts/json-editor-context';
 import {
 	HeaderAction,
 	HeaderKeyCell,
@@ -25,31 +26,36 @@ import { JsonEntry } from './molecules/JsonEntry';
 
 interface JsonEditorProps {
 	requestId: string;
+	editorSelector: (state: ApplicationState) => EntryMap;
 	value: EntryMap;
 
-	jsonEditorNameChanged?: (payload: RequestBodyJsonEditorNameChangePayload) => AnyAction;
-	jsonEditorValueChanged?: (payload: RequestBodyJsonEditorValueChangePayload) => AnyAction;
-	jsonEditorTypeChanged?: (payload: RequestBodyJsonEditorTypeChangePayload) => AnyAction;
-	jsonEditorEnabledChanged?: (payload: RequestBodyJsonEditorEnabledChangePayload) => AnyAction;
-	jsonEditorAddedEntry?: (payload: RequestBodyJsonEditorAddEntryPayload) => AnyAction;
-	jsonEditorRemovedEntry?: (payload: RequestBodyJsonEditorRemoveEntryPayload) => AnyAction;
+	forceRootObject?: boolean;
+
+	nameChanged?: (payload: RequestBodyJsonEditorNameChangePayload) => AnyAction;
+	valueChanged?: (payload: RequestBodyJsonEditorValueChangePayload) => AnyAction;
+	typeChanged?: (payload: RequestBodyJsonEditorTypeChangePayload) => AnyAction;
+	enabledChanged?: (payload: RequestBodyJsonEditorEnabledChangePayload) => AnyAction;
+	addedEntry?: (payload: RequestBodyJsonEditorAddEntryPayload) => AnyAction;
+	removedEntry?: (payload: RequestBodyJsonEditorRemoveEntryPayload) => AnyAction;
 }
 
 const JsonEditor: React.FC<React.PropsWithChildren<JsonEditorProps>> = props => {
-	const { requestId, value } = props;
+	const { requestId, editorSelector, value, forceRootObject } = props;
 	const root = TypedObject.values(value).find(e => e.parentId === null);
 
+	// TODO(afr): If there is no root element, create one and return null
+
 	return (
-		<JsonEditorAbstractionsContext.Provider value={{
-			requestBodyJsonEditorNameChange: props.jsonEditorNameChanged ?? actions.requestBodyJsonEditorNameChange,
-			requestBodyJsonEditorValueChange: props.jsonEditorValueChanged ?? actions.requestBodyJsonEditorValueChange,
-			requestBodyJsonEditorTypeChange: props.jsonEditorTypeChanged ?? actions.requestBodyJsonEditorTypeChange,
+		<JsonEditorContext.Provider value={{
+			requestId,
+			editorSelector,
 
-			// eslint-disable-next-line max-len
-			requestBodyJsonEditorEnabledChange: props.jsonEditorEnabledChanged ?? actions.requestBodyJsonEditorEnabledChange,
-
-			requestBodyJsonEditorAddEntry: props.jsonEditorAddedEntry ?? actions.requestBodyJsonEditorAddEntry,
-			requestBodyJsonEditorRemoveEntry: props.jsonEditorRemovedEntry ?? actions.requestBodyJsonEditorRemoveEntry,
+			nameChange: props.nameChanged ?? actions.requestBodyJsonEditorNameChange,
+			valueChange: props.valueChanged ?? actions.requestBodyJsonEditorValueChange,
+			typeChange: props.typeChanged ?? actions.requestBodyJsonEditorTypeChange,
+			enabledChange: props.enabledChanged ?? actions.requestBodyJsonEditorEnabledChange,
+			addEntry: props.addedEntry ?? actions.requestBodyJsonEditorAddEntry,
+			removeEntry: props.removedEntry ?? actions.requestBodyJsonEditorRemoveEntry,
 		}}>
 			<Wrapper>
 				<Header>
@@ -62,13 +68,14 @@ const JsonEditor: React.FC<React.PropsWithChildren<JsonEditorProps>> = props => 
 				</Header>
 				<Body>
 					<JsonEntry
+						forceRootObject={forceRootObject}
 						requestId={requestId}
 						depth={0}
 						value={root!}
 					/>
 				</Body>
 			</Wrapper>
-		</JsonEditorAbstractionsContext.Provider>
+		</JsonEditorContext.Provider>
 	);
 };
 
