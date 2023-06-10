@@ -7,7 +7,8 @@ const service = new IpcWindowServiceMain(ipcMain);
 
 service.registerCloseSelfWindow(async event => {
 	closeWindow((event as IpcMainInvokeEvent).sender.id);
-	createWelcomeWindow();
+
+	await createWelcomeWindow();
 });
 
 service.registerReloadSelfWindow(async event => {

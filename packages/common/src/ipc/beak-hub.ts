@@ -1,7 +1,7 @@
 import type { IpcMain } from 'electron';
 
-import { RecentLocalProject } from '../types/beak-hub';
-import { IpcServiceMain, IpcServiceRenderer, Listener, PartialIpcRenderer } from './ipc';
+import { RecentProject } from '../types/beak-hub';
+import { IpcServiceMain, IpcServiceRenderer, Listener, PartialIpcMain, PartialIpcRenderer } from './ipc';
 
 export const BeakHubMessages = {
 	ListRecentProjects: 'list_recent_projects',
@@ -13,16 +13,16 @@ export class IpcBeakHubServiceRenderer extends IpcServiceRenderer {
 	}
 
 	async listRecentProjects() {
-		return this.invoke<RecentLocalProject[]>(BeakHubMessages.ListRecentProjects);
+		return this.invoke<RecentProject[]>(BeakHubMessages.ListRecentProjects);
 	}
 }
 
 export class IpcBeakHubServiceMain extends IpcServiceMain {
-	constructor(ipc: IpcMain) {
+	constructor(ipc: PartialIpcMain) {
 		super('beak_hub', ipc);
 	}
 
-	registerListRecentProjects(fn: Listener<void, RecentLocalProject[]>) {
+	registerListRecentProjects(fn: Listener<void, RecentProject[]>) {
 		this.registerListener(BeakHubMessages.ListRecentProjects, fn);
 	}
 }

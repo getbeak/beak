@@ -1,25 +1,27 @@
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { IpcPreferencesServiceMain } from '@beak/common/ipc/preferences';
+import { Environment } from '@beak/common/types/beak';
 import { app, ipcMain } from 'electron';
 
-import nestClient from '../lib/nest-client';
-import persistentStore, { Environment } from '../lib/persistent-store';
+import getBeakHost from '../host';
 import { setThemeMode } from '../lib/theme-manager';
 import { switchEnvironment } from '../utils/environment';
 import { windowStack } from '../window-management';
 
 const service = new IpcPreferencesServiceMain(ipcMain);
 
-service.registerGetEnvironment(async () => persistentStore.get('environment'));
+service.registerGetEnvironment(async () => await getBeakHost().providers.storage.get('environment'));
 
-service.registerGetNotificationOverview(async () => persistentStore.get('notifications'));
-service.registerGetNotificationValue(async (_event, key) => persistentStore.get(`notifications.${key}`));
-service.registerSetNotificationValue(async (_event, { key, value }) => persistentStore.set(`notifications.${key}`, value));
+service.registerGetNotificationOverview(async () => await getBeakHost().providers.storage.get('notifications'));
+service.registerGetNotificationValue(async (_event, key) => await getBeakHost().providers.storage.get(`notifications.${key}`));
+service.registerSetNotificationValue(async (_event, { key, value }) => {
+	// await getBeakHost().providers.storage.set(`notifications.${key}`, value)
+});
 
-service.registerGetEditorOverview(async () => persistentStore.get('editor'));
-service.registerGetEditorValue(async (_event, key) => persistentStore.get(`editor.${key}`));
+service.registerGetEditorOverview(async () => await getBeakHost().providers.storage.get('editor'));
+service.registerGetEditorValue(async (_event, key) => await getBeakHost().providers.storage.get(`editor.${key}`));
 service.registerSetEditorValue(async (_event, { key, value }) => {
-	persistentStore.set(`editor.${key}`, value);
+	// await getBeakHost().providers.storage.set(`editor.${key}`, value);
 
 	TypedObject.values(windowStack).forEach(window => {
 		if (!window)
@@ -29,7 +31,7 @@ service.registerSetEditorValue(async (_event, { key, value }) => {
 	});
 });
 
-service.registerGetThemeMode(async () => persistentStore.get('themeMode'));
+service.registerGetThemeMode(async () => await getBeakHost().providers.storage.get('themeMode'));
 
 service.registerSwitchEnvironment(async (_event, environment) => {
 	await switchEnvironment(environment as Environment);
@@ -39,14 +41,13 @@ service.registerSwitchThemeMode(async (_event, themeMode) => {
 });
 
 service.registerResetConfig(async () => {
-	persistentStore.reset();
+	await getBeakHost().providers.storage.reset();
+
 	app.relaunch();
 	app.exit();
 });
 
 service.registerSignOut(async () => {
-	await nestClient.setAuth(null);
-
 	app.relaunch();
 	app.exit();
 });

@@ -2,8 +2,7 @@ import { app, dialog, shell } from 'electron';
 import { autoUpdater, UpdateInfo } from 'electron-updater';
 import { parse } from 'semver';
 
-import logger from './lib/logger';
-import persistentStore from './lib/persistent-store';
+import getBeakHost from './host';
 import { createAndSetMenu } from './utils/menu';
 
 // NOTE(afr): Update this to point to release news item, when that's done
@@ -15,7 +14,7 @@ let pendingUpdate: UpdateInfo | null = null;
 let checkingForUpdates = false;
 let updateDownloading = false;
 
-autoUpdater.logger = logger;
+autoUpdater.logger = getBeakHost().providers.logger;
 autoUpdater.autoDownload = true;
 autoUpdater.autoInstallOnAppQuit = true;
 
@@ -69,12 +68,12 @@ export function getPendingUpdate() {
 
 export async function attemptShowPostUpdateWelcome() {
 	const version = app.getVersion();
-	const latestKnownVersion = persistentStore.get('latestKnownVersion');
+	const latestKnownVersion = await getBeakHost().providers.storage.get('latestKnownVersion');
 
 	if (version === latestKnownVersion)
 		return;
 
-	persistentStore.set('latestKnownVersion', version);
+	await getBeakHost().providers.storage.set('latestKnownVersion', version);
 
 	const parsedVersion = parse(version);
 

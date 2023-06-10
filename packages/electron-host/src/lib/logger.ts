@@ -3,7 +3,6 @@ import { app } from 'electron';
 import fs from 'fs';
 import path from 'path';
 import { Logger } from 'tslog';
-import { ILogObjMeta } from 'tslog/dist/types/interfaces';
 
 export type LogLevel =
 	| 'silly'
@@ -14,23 +13,17 @@ export type LogLevel =
 	| 'error'
 	| 'fatal';
 
-const logger = new Logger({ name: 'electron-host' });
+export function setupLoggerForFsLogging(logger: Logger<unknown>, logDirectoryName: string) {
+	logger.attachTransport(logObj => {
+		const now = new Date();
+		const year = now.getUTCFullYear();
+		const month = now.getUTCMonth() + 1;
+		const logDir = path.join(app.getPath('userData'), 'logs', logDirectoryName);
+		const logFilePath = path.join(logDir, `${year}-${month}.txt`);
 
-logger.attachTransport(logObj => {
-	logToFileSystem(logObj, 'main');
-});
+		if (!fs.existsSync(logDir))
+			fs.mkdirSync(logDir, { recursive: true });
 
-export function logToFileSystem(obj: ILogObjMeta, logName: string) {
-	const now = new Date();
-	const year = now.getUTCFullYear();
-	const month = now.getUTCMonth() + 1;
-	const logDir = path.join(app.getPath('userData'), 'logs', logName);
-	const logFilePath = path.join(logDir, `${year}-${month}.txt`);
-
-	if (!fs.existsSync(logDir))
-		fs.mkdirSync(logDir, { recursive: true });
-
-	fs.appendFileSync(logFilePath, `${JSON.stringify(obj)}\n`);
+		fs.appendFileSync(logFilePath, `${JSON.stringify(logObj)}\n`);
+	});
 }
-
-export default logger;

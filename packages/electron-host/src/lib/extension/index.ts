@@ -14,7 +14,7 @@ import path from 'path';
 import { Logger } from 'tslog';
 import { NodeVM, VMScript } from 'vm2';
 
-import { LogLevel,logToFileSystem } from '../logger';
+import { LogLevel, setupLoggerForFsLogging } from '../logger';
 
 interface ProjectExtensions {
 	[projectId: string]: Record<string, RtvExtensionStorage>;
@@ -31,9 +31,7 @@ interface RtvExtensionStorage {
 
 const logger = new Logger({ name: 'extensions' });
 
-logger.attachTransport(logObj => {
-	logToFileSystem(logObj, 'extensions');
-});
+setupLoggerForFsLogging(logger, 'extensions');
 
 export default class ExtensionManager {
 	private readonly projectExtensions: ProjectExtensions = {};

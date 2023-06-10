@@ -14,7 +14,7 @@ export default function generateAppMenu(_ctx: Context): MenuItemConstructorOptio
 			{
 				label: 'Preferences...',
 				accelerator: 'Cmd+,',
-				click: () => createPreferencesWindow(),
+				click: async () => await createPreferencesWindow(),
 			},
 			{ type: 'separator' },
 			{ role: 'services' },

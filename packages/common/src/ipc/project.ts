@@ -1,6 +1,6 @@
 import type { IpcMain } from 'electron';
 
-import { IpcServiceMain, IpcServiceRenderer, Listener, PartialIpcRenderer } from './ipc';
+import { IpcServiceMain, IpcServiceRenderer, Listener, PartialIpcMain, PartialIpcRenderer } from './ipc';
 
 export const ProjectMessages = {
 	OpenFolder: 'open_folder',
@@ -31,7 +31,7 @@ export class IpcProjectServiceRenderer extends IpcServiceRenderer {
 }
 
 export class IpcProjectServiceMain extends IpcServiceMain {
-	constructor(ipc: IpcMain) {
+	constructor(ipc: PartialIpcMain) {
 		super('project', ipc);
 	}
 

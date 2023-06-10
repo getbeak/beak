@@ -24,6 +24,7 @@
   "dependencies": {
     "@beak/app": "*",
     "@beak/common": "*",
+    "@beak/common-host": "*",
     "@beak/crpc": "*",
     "@beak/ksuid": "*",
     "@beak/requester-node": "*",

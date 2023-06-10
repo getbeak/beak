@@ -25,6 +25,9 @@
 			"@beak/common": ["packages/common/src"],
 			"@beak/common/*": ["packages/common/src/*"],
 	  
+			"@beak/common-host": ["packages/common-host/src"],
+			"@beak/common-host/*": ["packages/common-host/src/*"],
+	  
 			"@beak/crpc": ["packages/crpc/src"],
 			"@beak/crpc/*": ["packages/crpc/src/*"],
 	  

@@ -5,11 +5,8 @@ import electronDebug from 'electron-debug';
 import { autoUpdater } from 'electron-updater';
 
 import './ipc-layer';
-import './lib/arbiter';
-import { attemptMarketingConsentScreen } from './lib/marketing-consent';
-import nestClient from './lib/nest-client';
-import persistentStore from './lib/persistent-store';
-import { tryOpenProjectFolder } from './lib/project';
+import getBeakHost from './host';
+import { tryOpenProjectFolder } from './host/extensions/project';
 import handleUrlEvent from './protocol';
 import { attemptShowPostUpdateWelcome } from './updater';
 import { createAndSetMenu } from './utils/menu';
@@ -59,9 +56,9 @@ app.on('activate', () => {
 	createOrFocusDefaultWindow();
 });
 
-app.on('before-quit', () => {
+app.on('before-quit', async () => {
 	// Store window presence for next load
-	persistentStore.set('previousWindowPresence', generateWindowPresence());
+	await getBeakHost().providers.storage.set('previousWindowPresence', generateWindowPresence());
 });
 
 app.on('ready', () => {
@@ -102,11 +99,6 @@ app.on('browser-window-focus', (_event, window) => {
 });
 
 async function createOrFocusDefaultWindow(initial = false) {
-	const auth = await nestClient.getAuth();
-
-	if (!auth)
-		attemptMarketingConsentScreen();
-
 	if (initial && await attemptWindowPresenceLoad())
 		return void 0;
 
@@ -115,7 +107,7 @@ async function createOrFocusDefaultWindow(initial = false) {
 	if (openWindow)
 		openWindow.focus();
 	else
-		createWelcomeWindow();
+		await createWelcomeWindow();
 
 	return void 0;
 }

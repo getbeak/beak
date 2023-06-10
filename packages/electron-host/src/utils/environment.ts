@@ -1,12 +1,10 @@
+import { Environment } from '@beak/common/types/beak';
 import { app } from 'electron';
 
-import nestClient from '../lib/nest-client';
-import persistentStore, { Environment } from '../lib/persistent-store';
+import getBeakHost from '../host';
 
 export async function switchEnvironment(environment: Environment) {
-	persistentStore.set('environment', environment);
-
-	await nestClient.setAuth(null);
+	await getBeakHost().providers.storage.set('environment', environment);
 
 	app.relaunch();
 	app.exit();

@@ -1,8 +1,8 @@
 import { IpcBeakHubServiceMain } from '@beak/common/ipc/beak-hub';
 import { ipcMain } from 'electron';
 
-import { listRecentProjects } from '../lib/beak-hub';
+import getBeakHost from '../host';
 
 const service = new IpcBeakHubServiceMain(ipcMain);
 
-service.registerListRecentProjects(async () => await listRecentProjects());
+service.registerListRecentProjects(async () => await getBeakHost().project.recents.listProjects());

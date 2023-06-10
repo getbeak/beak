@@ -1,29 +1,15 @@
 import { IpcProjectServiceMain } from '@beak/common/ipc/project';
 import Squawk from '@beak/common/utils/squawk';
-import type { ProjectFile } from '@getbeak/types/project';
 import { dialog, ipcMain, IpcMainInvokeEvent } from 'electron';
-import * as fs from 'fs-extra';
-import * as path from 'path';
 
-import { addRecentProject } from '../lib/beak-hub';
-import createProject, { openProjectDialog, tryOpenProjectFolder } from '../lib/project';
+import getBeakHost from '../host';
+import { openProjectDialog, tryOpenProjectFolder } from '../host/extensions/project';
 import { closeWindow, createProjectMainWindow, tryCloseWelcomeWindow, windowStack } from '../window-management';
 import { setProjectWindowMapping } from './fs-shared';
 
 const service = new IpcProjectServiceMain(ipcMain);
 
 service.registerOpenFolder(async (event, projectPath) => {
-	const projectFilePath = path.join(projectPath, 'project.json');
-	const projectFile = await fs.readJson(projectFilePath) as ProjectFile;
-
-	await addRecentProject({
-		name: projectFile.name,
-		path: projectPath,
-		type: 'local',
-	});
-
-	closeWindow((event as IpcMainInvokeEvent).sender.id);
-	tryCloseWelcomeWindow();
 	tryOpenProjectFolder(projectPath);
 });
 
@@ -64,15 +50,12 @@ service.registerCreateProject(async (event, payload) => {
 	}
 
 	try {
-		const projectFilePath = await createProject({
-			name: projectName,
-			rootPath: result.filePaths[0],
-		});
+		const { projectFilePath, projectId } = await getBeakHost().project.create(projectName, result.filePaths[0]);
 
 		closeWindow((event as IpcMainInvokeEvent).sender.id);
 		tryCloseWelcomeWindow();
 
-		const projectWindowId = createProjectMainWindow(projectFilePath);
+		const projectWindowId = await createProjectMainWindow(projectId, projectFilePath);
 
 		setProjectWindowMapping(projectWindowId, projectFilePath);
 	} catch (error) {

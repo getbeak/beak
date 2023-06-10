@@ -2,21 +2,21 @@ import { IpcEvent } from '@beak/common/ipc/ipc';
 import { BrowserWindow, IpcMainInvokeEvent } from 'electron';
 import path from 'path';
 
-const windowProjectMapping: Record<number, string> = {};
+import { windowIdToProjectIdMapping } from '../window-management';
 
 export function setProjectWindowMapping(windowId: number, projectFilePath: string) {
-	windowProjectMapping[windowId] = projectFilePath;
+	windowIdToProjectIdMapping[windowId] = projectFilePath;
 }
 
 export function getProjectWindowMapping(event: IpcEvent) {
 	const sender = (event as IpcMainInvokeEvent).sender;
 	const window = BrowserWindow.fromWebContents(sender)!;
 
-	return windowProjectMapping[window.id];
+	return windowIdToProjectIdMapping[window.id];
 }
 
 export function getProjectFromWindowId(id: number) {
-	return windowProjectMapping[id];
+	return windowIdToProjectIdMapping[id];
 }
 
 export function removeProjectPathPrefix(event: IpcEvent, filePath: string) {

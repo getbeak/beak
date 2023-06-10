@@ -1,41 +1,26 @@
 import { IpcNestServiceMain } from '@beak/common/ipc/nest';
+import Squawk from '@beak/common/utils/squawk';
 import { ipcMain } from 'electron';
-
-import arbiter from '../lib/arbiter';
-import nestClient from '../lib/nest-client';
-import persistentStore from '../lib/persistent-store';
-import { createWelcomeWindow, stackMap, windowStack } from '../window-management';
 
 const service = new IpcNestServiceMain(ipcMain);
 
-service.registerSendMagicLink(async (_event, email) => {
-	await nestClient.sendMagicLink(email);
+service.registerSendMagicLink(async (_event, _email) => {
+	// Removed currently
 });
 
-service.registerCreateTrialAndMagicLink(async (_event, email) => {
-	await nestClient.createTrialAndMagicLink(email);
+service.registerCreateTrialAndMagicLink(async (_event, _email) => {
+	// Removed currently
 });
 
-service.registerHandleMagicLink(async (_event, payload) => {
-	await nestClient.handleMagicLink(payload.code, payload.state);
-	await arbiter.check();
-
-	if (!payload.fromPortal)
-		return;
-
-	const portalWindowId = stackMap.portal;
-
-	if (portalWindowId !== void 0) {
-		const portalWindow = windowStack[portalWindowId];
-
-		portalWindow?.close();
-	}
-
-	persistentStore.set('passedOnboarding', true);
-	createWelcomeWindow();
+service.registerHandleMagicLink(async (_event, _payload) => {
+	// Removed currently
 });
 
-service.registerListNewsItems(async (_event, clientId) => await nestClient.listNewsItems(clientId));
-service.registerGetSubscriptionState(async () => await nestClient.getSubscriptionStatus());
-service.registerGetUser(async () => await nestClient.getUser());
-service.registerHasAuth(async () => Boolean(await nestClient.getAuth()));
+service.registerListNewsItems(async (_event, _clientId) => []);
+service.registerGetSubscriptionState(async () => {
+	throw new Squawk('not_authenticated');
+});
+service.registerGetUser(async () => {
+	throw new Squawk('not_authenticated');
+});
+service.registerHasAuth(async () => true);

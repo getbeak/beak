@@ -1,8 +1,8 @@
 import { BrowserWindow, dialog } from 'electron';
 
-import persistentStore from '../lib/persistent-store';
-import { tryOpenProjectFolder, windowProjectIdMapping } from '../lib/project';
-import { windowStack } from '../window-management';
+import getBeakHost from '../host';
+import { tryOpenProjectFolder } from '../host/extensions/project';
+import { projectIdToWindowIdMapping, windowStack } from '../window-management';
 
 export default async function handleLaunch(url: URL) {
 	switch (url.pathname) {
@@ -21,7 +21,7 @@ async function handleProject(url: URL) {
 		return false;
 
 	// Check if the project already has a window open
-	const existingWindowId = windowProjectIdMapping[projectId];
+	const existingWindowId = projectIdToWindowIdMapping[projectId];
 
 	if (existingWindowId) {
 		const window = windowStack[existingWindowId];
@@ -37,7 +37,8 @@ async function handleProject(url: URL) {
 	}
 
 	// Check if project is known about
-	const projectPath = persistentStore.get('projectMappings')[projectId];
+	const projectMappings = await getBeakHost().providers.storage.get('projectMappings');
+	const projectPath = projectMappings[projectId];
 
 	if (!projectPath) {
 		await dialog.showMessageBox({

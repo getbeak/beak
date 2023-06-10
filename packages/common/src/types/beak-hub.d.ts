@@ -1,8 +1,6 @@
 import { TabItem } from './beak-project';
 
-export interface RecentLocalProject {
-	type: 'local';
-
+export interface RecentProject {
 	name: string;
 	path: string;
 	accessTime: string;

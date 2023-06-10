@@ -1,20 +1,25 @@
+import { WindowPresence } from '@beak/common-host/providers/storage';
 import { app, BrowserWindow, BrowserWindowConstructorOptions, nativeTheme } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
 
+import getBeakHost from './host';
+import { tryOpenProjectFolder } from './host/extensions/project';
 import { getProjectFromWindowId } from './ipc-layer/fs-shared';
 import { closeWatchersOnWindow } from './ipc-layer/fs-watcher-service';
-import persistentStore, { WindowPresence } from './lib/persistent-store';
-import { tryOpenProjectFolder } from './lib/project';
 import WindowStateManager from './lib/window-state-manager';
 import { screenshotSizing } from './main';
 import { staticPath } from './utils/static-path';
 
 export type Container = 'project-main' | 'welcome' | 'preferences' | 'portal';
 
+// This is pretty lame, there should be a better way
+export const projectIdToWindowIdMapping: Record<string, number> = {};
+export const windowIdToProjectIdMapping: Record<number, string> = {};
+
 export const windowStack: Record<number, BrowserWindow> = {};
 export const windowType: Record<number, Container> = {};
-export const stackMap: Record<string, number> = { };
+export const stackMap: Record<string, number> = {};
 
 const DEV_URL = 'http://localhost:5173';
 // eslint-disable-next-line no-process-env
@@ -49,7 +54,7 @@ export async function attemptWindowPresenceLoad() {
 	if (screenshotSizing)
 		return false;
 
-	const previousWindowPresence = persistentStore.get('previousWindowPresence');
+	const previousWindowPresence = await getBeakHost().providers.storage.get('previousWindowPresence');
 
 	if (previousWindowPresence.length === 0)
 		return false;
@@ -68,17 +73,20 @@ export async function attemptWindowPresenceLoad() {
 
 		switch (p.payload) {
 			case 'portal':
-				createPortalWindow();
+				await createPortalWindow();
+
 				success = true;
 				break;
 
 			case 'preferences':
-				createPreferencesWindow();
+				await createPreferencesWindow();
+
 				success = true;
 				break;
 
 			case 'welcome':
-				createWelcomeWindow();
+				await createWelcomeWindow();
+
 				success = true;
 				break;
 
@@ -123,12 +131,12 @@ function generateLoadUrl(
 	return loadUrl.toString();
 }
 
-function createWindow(
+async function createWindow(
 	windowOpts: BrowserWindowConstructorOptions,
 	container: Container,
 	additionalParams?: Record<string, string>,
 ) {
-	nativeTheme.themeSource = persistentStore.get('themeMode');
+	nativeTheme.themeSource = await getBeakHost().providers.storage.get('themeMode');
 
 	if (screenshotSizing && container === 'project-main') {
 		/* eslint-disable no-param-reassign */
@@ -139,7 +147,7 @@ function createWindow(
 		/* eslint-enable no-param-reassign */
 	}
 
-	const windowStateManager = new WindowStateManager(container, windowOpts);
+	const windowStateManager = await WindowStateManager.create(container, windowOpts);
 	const window = new BrowserWindow({
 		webPreferences: {
 			contextIsolation: true,
@@ -209,7 +217,7 @@ export function reloadWindow(windowId: number) {
 	window.reload();
 }
 
-export function createWelcomeWindow() {
+export async function createWelcomeWindow() {
 	const existing = stackMap.welcome;
 
 	if (existing && windowStack[existing]) {
@@ -240,14 +248,14 @@ export function createWelcomeWindow() {
 	if (process.platform !== 'darwin')
 		windowOpts.height = 550;
 
-	const window = createWindow(windowOpts, 'welcome');
+	const window = await createWindow(windowOpts, 'welcome');
 
 	stackMap.welcome = window.id;
 
 	return window.id;
 }
 
-export function createPreferencesWindow() {
+export async function createPreferencesWindow() {
 	const existing = stackMap.preferences;
 
 	if (existing && windowStack[existing]) {
@@ -274,14 +282,14 @@ export function createPreferencesWindow() {
 	if (process.platform === 'darwin')
 		windowOpts.frame = false;
 
-	const window = createWindow(windowOpts, 'preferences');
+	const window = await createWindow(windowOpts, 'preferences');
 
 	stackMap.preferences = window.id;
 
 	return window.id;
 }
 
-export function createProjectMainWindow(projectFilePath: string) {
+export async function createProjectMainWindow(projectId: string, projectFilePath: string) {
 	const windowOpts: BrowserWindowConstructorOptions = {
 		height: 850,
 		width: 1400,
@@ -303,14 +311,17 @@ export function createProjectMainWindow(projectFilePath: string) {
 	if (process.platform !== 'darwin')
 		windowOpts.autoHideMenuBar = false;
 
-	const window = createWindow(windowOpts, 'project-main');
+	const window = await createWindow(windowOpts, 'project-main');
+
+	projectIdToWindowIdMapping[projectId] = window.id;
+	windowIdToProjectIdMapping[window.id] = projectId;
 
 	window.setRepresentedFilename(projectFilePath);
 
 	return window.id;
 }
 
-export function createPortalWindow() {
+export async function createPortalWindow() {
 	const existing = stackMap.portal;
 
 	if (existing && windowStack[existing]) {
@@ -337,7 +348,7 @@ export function createPortalWindow() {
 	if (process.platform === 'darwin')
 		windowOpts.frame = false;
 
-	const window = createWindow(windowOpts, 'portal');
+	const window = await createWindow(windowOpts, 'portal');
 
 	stackMap.portal = window.id;
 

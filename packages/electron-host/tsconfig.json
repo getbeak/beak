@@ -17,6 +17,8 @@
   "references": [{
     "path": "../common"
   }, {
+    "path": "../common-host"
+  }, {
     "path": "../ksuid"
   }, {
     "path": "../requester-node"

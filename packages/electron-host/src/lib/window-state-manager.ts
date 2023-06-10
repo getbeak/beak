@@ -1,3 +1,4 @@
+import { WindowState } from '@beak/common-host/providers/storage';
 import {
 	BrowserWindow,
 	BrowserWindowConstructorOptions,
@@ -5,23 +6,8 @@ import {
 	screen,
 } from 'electron';
 
+import getBeakHost from '../host';
 import { screenshotSizing } from '../main';
-import persistentStore from './persistent-store';
-
-export interface WindowState {
-	width: number;
-	height: number;
-	x: number;
-	y: number;
-
-	isMaximized: boolean;
-	isFullScreen: boolean;
-
-	display: {
-		id: number;
-		bounds: Rectangle;
-	};
-}
 
 export default class WindowStateManager {
 	private windowKey: string;
@@ -30,14 +16,16 @@ export default class WindowStateManager {
 	private stateChangeTimer: NodeJS.Timeout | undefined;
 	private windowOptions: BrowserWindowConstructorOptions;
 
-	constructor(windowKey: string, windowOptions: BrowserWindowConstructorOptions) {
-		const existingState = persistentStore.get('windowStates')[windowKey];
-
+	constructor(
+		existingWindowState: WindowState | undefined,
+		windowKey: string,
+		windowOptions: BrowserWindowConstructorOptions,
+	) {
 		this.windowKey = windowKey;
 		this.windowOptions = windowOptions;
 
-		if (existingState && !screenshotSizing) {
-			this.state = existingState;
+		if (existingWindowState && !screenshotSizing) {
+			this.state = existingWindowState;
 		} else {
 			const cursor = screen.getCursorScreenPoint();
 			const display = screen.getDisplayNearestPoint(cursor);
@@ -55,6 +43,13 @@ export default class WindowStateManager {
 				},
 			};
 		}
+	}
+
+	static async create(windowKey: string, windowOptions: BrowserWindowConstructorOptions) {
+		const windowStates = await getBeakHost().providers.storage.get('windowStates');
+		const windowState = windowStates[windowKey];
+
+		return new WindowStateManager(windowState, windowKey, windowOptions);
 	}
 
 	attach(window: BrowserWindow) {
@@ -77,7 +72,7 @@ export default class WindowStateManager {
 		this.window.on('resize', () => this.stateChangedHandler());
 		this.window.on('move', () => this.stateChangedHandler());
 		this.window.on('close', () => this.closeHandler());
-		this.window.on('closed', () => this.closedHandler());
+		this.window.on('closed', async () => await this.closedHandler());
 	}
 
 	detach() {
@@ -99,9 +94,9 @@ export default class WindowStateManager {
 		this.updateState();
 	}
 
-	private closedHandler() {
+	private async closedHandler() {
 		this.detach();
-		this.saveState();
+		await this.saveState();
 	}
 
 	private updateState() {
@@ -133,11 +128,12 @@ export default class WindowStateManager {
 		return !this.window.isMaximized() && !this.window.isMinimized() && !this.window.isFullScreen();
 	}
 
-	private saveState() {
-		const windowStates = persistentStore.get('windowStates');
+	private async saveState() {
+		const windowStates = await getBeakHost().providers.storage.get('windowStates');
 
 		windowStates[this.windowKey] = this.state;
-		persistentStore.set('windowStates', windowStates);
+
+		await getBeakHost().providers.storage.set('windowStates', windowStates);
 
 		this.window = void 0;
 	}

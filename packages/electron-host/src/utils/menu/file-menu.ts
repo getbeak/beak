@@ -1,4 +1,4 @@
-import { openProjectDialog } from '@beak/electron-host/lib/project';
+import { openProjectDialog } from '@beak/electron-host/host/extensions/project';
 import { createPreferencesWindow, createWelcomeWindow } from '@beak/electron-host/window-management';
 import { MenuItemConstructorOptions } from 'electron';
 
@@ -47,7 +47,7 @@ export default function generateFileMenu(ctx: Context): MenuItemConstructorOptio
 		}, {
 			label: 'Preferences...',
 			visible: !ctx.isDarwin,
-			click: () => createPreferencesWindow(),
+			click: async () => await createPreferencesWindow(),
 		}, {
 			role: ctx.isDarwin ? 'close' : 'quit',
 		}],

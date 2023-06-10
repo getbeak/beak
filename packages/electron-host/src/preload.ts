@@ -14,3 +14,6 @@ contextBridge.exposeInMainWorld('secureBridge', {
 		removeListener: (channel: string, listener: Listener) => ipcRenderer.removeListener(channel, listener),
 	},
 });
+
+// Embedded indicator
+contextBridge.exposeInMainWorld('embeddedIndicator', true);

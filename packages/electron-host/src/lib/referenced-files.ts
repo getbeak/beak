@@ -1,8 +1,8 @@
 import ksuid from '@beak/ksuid';
 import { BrowserWindow, dialog } from 'electron';
 
-import persistentStore from './persistent-store';
-import { projectIdWindowMapping } from './project';
+import getBeakHost from '../host';
+import { windowIdToProjectIdMapping } from '../window-management';
 
 export async function openReferenceFile(window: BrowserWindow) {
 	const response = await dialog.showOpenDialog(window, {
@@ -14,23 +14,23 @@ export async function openReferenceFile(window: BrowserWindow) {
 	if (response.canceled)
 		return null;
 
-	const projectId = projectIdWindowMapping[window.id];
-	const fileReferenceId = createReferenceFile(response.filePaths[0], projectId);
+	const projectId = windowIdToProjectIdMapping[window.id];
+	const fileReferenceId = await createReferenceFile(response.filePaths[0], projectId);
 
 	return { fileReferenceId };
 }
 
 export async function previewReferencedFile(window: BrowserWindow, id: string) {
-	const projectId = projectIdWindowMapping[window.id];
+	const projectId = windowIdToProjectIdMapping[window.id];
 
-	return getReferenceFilePath(id, projectId);
+	return await getReferenceFilePath(id, projectId);
 }
 
-function createReferenceFile(filePath: string, projectId: string) {
+async function createReferenceFile(filePath: string, projectId: string) {
 	const id = ksuid.generate('fileref').toString();
-	const referenceFiles = persistentStore.get('referenceFiles');
+	const referenceFiles = await getBeakHost().providers.storage.get('referenceFiles');
 
-	persistentStore.set('referenceFiles', {
+	await getBeakHost().providers.storage.set('referenceFiles', {
 		...referenceFiles,
 		[projectId]: {
 			...referenceFiles[projectId],
@@ -41,8 +41,8 @@ function createReferenceFile(filePath: string, projectId: string) {
 	return id;
 }
 
-function getReferenceFilePath(id: string, projectId: string) {
-	const referenceFiles = persistentStore.get('referenceFiles');
+async function getReferenceFilePath(id: string, projectId: string) {
+	const referenceFiles = await getBeakHost().providers.storage.get('referenceFiles');
 
 	return referenceFiles?.[projectId]?.[id];
 }
