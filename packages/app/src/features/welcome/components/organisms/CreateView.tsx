@@ -41,10 +41,10 @@ const CreateView: React.FC<React.PropsWithChildren<CreateViewProps>> = ({ setVie
 			<ViewTitle>{'Let\'s get going 🌶'}</ViewTitle>
 			<ViewIntroLine>{'You should be good to go in just a sec...'}</ViewIntroLine>
 
-			<Label>{'Let\'s give your project a cool name'}</Label>
+			<Label>{'Give your project a name'}</Label>
 			<Input
 				ref={projNameInput}
-				placeholder={'My billion dollar side project'}
+				placeholder={''}
 				type={'text'}
 				value={name}
 				onChange={e => projectNameChange(e.target.value)}
@@ -79,8 +79,8 @@ const CreateView: React.FC<React.PropsWithChildren<CreateViewProps>> = ({ setVie
 const Wrapper = styled.div`
 	position: relative;
 	top: 0; bottom: 0; left: 0; right: 0;
-	width: calc(100vw - 60px);
-	height: calc(100vh - 80px);
+	width: calc(100% - 60px);
+	height: calc(100% - 80px);
 `;
 
 const ActionsWrapper = styled.div`

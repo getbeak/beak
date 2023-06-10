@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Helmet } from 'react-helmet';
 import styled from 'styled-components';
 
 import { toVibrancyAlpha } from '../design-system/utils';
@@ -12,6 +13,10 @@ const Welcome: React.FC<React.PropsWithChildren<unknown>> = () => {
 
 	return (
 		<Wrapper>
+			<Helmet defer={false}>
+				<title>{'Welcome to Beak - The feathery cross-platform crafting tool'}</title>
+			</Helmet>
+
 			<BrandIndicatorTop />
 			<BrandIndicatorBottom style={{ opacity: view === 'main' ? 1 : 0 }} />
 			<DragBar />
@@ -25,8 +30,8 @@ const Welcome: React.FC<React.PropsWithChildren<unknown>> = () => {
 };
 
 const Wrapper = styled.div`
-	background: ${p => toVibrancyAlpha(p.theme.ui.background, 0)};
-	height: 100vh;
+	background: ${p => toVibrancyAlpha(p.theme.ui.background, 0.75)};
+	height: 100%;
 `;
 
 const BrandIndicatorTop = styled.div`
@@ -68,7 +73,7 @@ const Container = styled.div`
 	position: relative;
 	padding: 0 30px;
 	padding-top: 40px;
-	height: calc(100vh - 40px);
+	height: calc(100% - 40px);
 
 	z-index: 2;
 `;

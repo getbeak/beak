@@ -1,7 +1,6 @@
 import React from 'react';
 import Button from '@beak/app/components/atoms/Button';
 import Dialog from '@beak/app/components/molecules/Dialog';
-import { ipcArbiterService } from '@beak/app/lib/ipc';
 import styled from 'styled-components';
 
 import useArbiterLocking from '../../hooks/use-arbiter-locking';
@@ -39,7 +38,7 @@ export const ArbiterDialog: React.FC<ArbiterDialogProps> = props => {
 				<ButtonContainer>
 					<Button
 						size={'sm'}
-						onClick={() => ipcArbiterService.checkStatus()}
+						onClick={() => { /* This dialog is disabled currently */ }}
 					>
 						{'Check again'}
 					</Button>

@@ -1,8 +1,7 @@
-import { useAppSelector } from '@beak/app/store/redux';
 import { differenceInDays } from 'date-fns';
 
 export default function useArbiterLocking() {
-	const arbiter = useAppSelector(s => s.global.arbiter.status);
+	const arbiter = { lastSuccessfulCheck: Date.now() };
 	const now = new Date();
 	const lastSuccessfulCheck = new Date(arbiter.lastSuccessfulCheck);
 	const sinceLastCheck = differenceInDays(now, lastSuccessfulCheck);

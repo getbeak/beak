@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import NewsBannerContainer from '@beak/app/features/news-banner/components/NewsBannerContainer';
 import { ipcBeakHubService, ipcProjectService } from '@beak/app/lib/ipc';
 import { sortIso8601 } from '@beak/app/utils/sort';
-import { RecentLocalProject } from '@beak/common/types/beak-hub';
+import { RecentProject } from '@beak/common/types/beak-hub';
 import { sentenceCase } from 'change-case';
 import styled from 'styled-components';
 
@@ -11,7 +11,7 @@ import Collapse from '../molecules/Collapse';
 import RecentEntry from '../molecules/RecentEntry';
 
 type TimeCategory = 'today' | 'week' | 'month' | 'older';
-type Recents = Record<TimeCategory, RecentLocalProject[]>;
+type Recents = Record<TimeCategory, RecentProject[]>;
 
 const categories: TimeCategory[] = ['today', 'week', 'month', 'older'];
 

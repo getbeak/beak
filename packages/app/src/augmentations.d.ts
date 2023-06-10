@@ -21,6 +21,8 @@ declare global {
 				off: (event: string, listener: (...args: any[]) => void) => unknown;
 			};
 		};
+
+		embeddedIndicator?: boolean;
 	}
 }
 
