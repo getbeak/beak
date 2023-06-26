@@ -2939,9 +2939,9 @@
   integrity sha512-rZ5drC/jWjrArrS8BR6SIr4cWpW09RNTYt9AMZo3Jwwif+iacXAqgVjm0B0Bv/S1jhDXKHqRVNCbACkJ89RAnQ==
 
 "@types/react-dom@^18.0.0", "@types/react-dom@^18.0.11", "@types/react-dom@^18.0.2":
-  version "18.2.4"
-  resolved "https://registry.yarnpkg.com/@types/react-dom/-/react-dom-18.2.4.tgz#13f25bfbf4e404d26f62ac6e406591451acba9e0"
-  integrity sha512-G2mHoTMTL4yoydITgOGwWdWMVd8sNgyEP85xVmMKAPUBwQWm9wBPQUmvbeF4V3WBY1P7mmL4BkjQ0SqUpf1snw==
+  version "18.2.6"
+  resolved "https://registry.yarnpkg.com/@types/react-dom/-/react-dom-18.2.6.tgz#ad621fa71a8db29af7c31b41b2ea3d8a6f4144d1"
+  integrity sha512-2et4PDvg6PVCyS7fuTc4gPoksV58bW0RwSxWKcPRcHZf0PRUGq03TKcD/rUHe3azfV6/5/biUBJw+HhCQjaP0A==
   dependencies:
     "@types/react" "*"
 
@@ -2963,9 +2963,9 @@
     redux "^4.0.0"
 
 "@types/react@*", "@types/react@^18.0.31", "@types/react@^18.0.6":
-  version "18.2.6"
-  resolved "https://registry.yarnpkg.com/@types/react/-/react-18.2.6.tgz#5cd53ee0d30ffc193b159d3516c8c8ad2f19d571"
-  integrity sha512-wRZClXn//zxCFW+ye/D2qY65UsYP1Fpex2YXorHc8awoNamkMZSvBxwxdYVInsHOZZd2Ppq8isnSzJL5Mpf8OA==
+  version "18.2.14"
+  resolved "https://registry.yarnpkg.com/@types/react/-/react-18.2.14.tgz#fa7a6fecf1ce35ca94e74874f70c56ce88f7a127"
+  integrity sha512-A0zjq+QN/O0Kpe30hA1GidzyFjatVvrpIvWLxD+xv67Vt91TWWgco9IvrJBkeyHm1trGaFS/FSGqPlhyeZRm0g==
   dependencies:
     "@types/prop-types" "*"
     "@types/scheduler" "*"
@@ -10569,9 +10569,9 @@ react-spring@^9.7.1:
     "@react-spring/zdog" "~9.7.1"
 
 react-tooltip@^5.10.6:
-  version "5.10.6"
-  resolved "https://registry.yarnpkg.com/react-tooltip/-/react-tooltip-5.10.6.tgz#b9e6bc91b002b52b52d3ec8cd3375dceb1186104"
-  integrity sha512-eYxJsP4H/u0eD6key23rZB80mT2xPy8ehu9CgrXuqZT6+ol7HY1Zx7G31xS6nDzwlQs4vFLd6v1muZ1luPie+w==
+  version "5.15.0"
+  resolved "https://registry.yarnpkg.com/react-tooltip/-/react-tooltip-5.15.0.tgz#54a1fdbd43b5ce90733c7495bc8b575e9c88f58e"
+  integrity sha512-OiH870zteP4T5B/J7cUGz37aY8C0Cny/i1qcLXevL+wZlW09mfjdcQ6FKP9OMMsRlszRwieOqAPT9l8rWz+BtA==
   dependencies:
     "@floating-ui/dom" "^1.0.0"
     classnames "^2.3.0"
