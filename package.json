@@ -9,6 +9,8 @@
   "homepage": "https://getbeak.app",
   "workspaces": {
     "packages": [
+      "apps-host/*",
+      "apps-web/*",
       "packages/*"
     ],
     "nohoist": [
@@ -25,23 +27,31 @@
   },
   "scripts": {
     "build": "lerna run build --stream",
-    "build:web": "lerna run build --stream --scope '@beak/{share,website}'",
-    "build:website": "lerna run build --stream --scope @beak/website",
-    "build:share": "lerna run build --stream --scope @beak/share",
+    "build:apps-host": "lerna run build --stream --scope '@beak/apps-host-*'",
+    "build:apps-host-electron": "lerna run build --stream --scope '@beak/apps-host-electron'",
+    "build:apps-host-web": "lerna run build --stream --scope '@beak/apps-host-web'",
+
+    "build:apps-web": "lerna run build --stream --scope '@beak/apps-web-*'",
+    "build:apps-web-marketing": "lerna run build --stream --scope @beak/apps-web-marketing",
+    "build:apps-web-share": "lerna run build --stream --scope @beak/apps-web-share",
+
     "prepackage": "yarn build",
     "prepackage:release": "yarn build",
-    "package": "lerna run package --stream --scope @beak/electron-host",
-    "package:release": "lerna run package:release --stream --scope @beak/electron-host",
-    "start:electron-host": "lerna exec --parallel --concurrency 1 --stream --scope '@beak/{app,electron-host}' yarn start",
-    "start:electron-host-screenshot": "SCREENSHOT_SIZING=true lerna exec --parallel --concurrency 1 --stream --scope '@beak/{app,electron-host}' yarn start",
-    "start:web-host": "lerna exec --scope '@beak/web-host' yarn start",
-    "start:website": "lerna exec --parallel --concurrency 1 --stream --scope '@beak/website' yarn start",
-    "start:share": "lerna exec --parallel --concurrency 1 --stream --scope '@beak/share' yarn start",
+
+    "package": "lerna run package --stream --scope @beak/apps-host-electron",
+    "package:release": "lerna run package:release --stream --scope @beak/apps-host-electron",
+
+    "start:apps-host-electron": "lerna exec --parallel --concurrency 1 --stream --scope '@beak/{electron-host,ui}' yarn start",
+    "start:electron-host-screenshot": "SCREENSHOT_SIZING=true lerna exec --parallel --concurrency 1 --stream --scope '@beak/{electron-host,ui}' yarn start",
+    "start:apps-host-web": "lerna exec --scope '@beak/apps-host-web' yarn start",
+    "start:apps-web-marketing": "lerna exec --parallel --concurrency 1 --stream --scope '@beak/apps-web-marketing' yarn start",
+    "start:apps-web-share": "lerna exec --parallel --concurrency 1 --stream --scope '@beak/apps-web-share' yarn start",
+
     "test": "jest",
     "lint": "eslint --ext .tsx --ext .ts './packages/'",
     "typecheck": "lerna run typecheck --stream",
     "unfuck": "lerna clean && yarn --force",
-    "postinstall": "node ./node-module-overrides/index.js",
+    "postinstall": "node ./build/package-overrides/index.js",
     "release-safety": "yarn typecheck && yarn lint && yarn build"
   },
   "devDependencies": {

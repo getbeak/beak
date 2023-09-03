@@ -12,9 +12,9 @@ on:
       - '.github/workflows/beak-web.yml'
       - 'package.json'
       - 'yarn.lock'
+      - 'apps-web/**'
       - 'packages/**'
-      - '!packages/app/**'
-      - '!packages/electron-host/**'
+      - '!packages/ui/**'
       - '!packages/requester-node/**'
 
 jobs:
@@ -58,7 +58,7 @@ jobs:
         if: "startsWith(github.event.head_commit.message, 'release(')"
         uses: nwtgck/actions-netlify@v1.2
         with:
-          publish-dir: './packages/website/dist'
+          publish-dir: './apps-web/marketing/dist'
           production-branch: master
           production-deploy: true
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -78,19 +78,19 @@ jobs:
           aws_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws_bucket: ${{ secrets.AWS_S3_BUCKET_SHARE }}
-          source_dir: 'packages/share/dist/'
+          source_dir: 'apps-web/share/dist/'
           destination_dir: ''
 
       - name: Delete robots/humans/sitemap for nonprod
         run: |
-          rm packages/website/dist/robots.txt
-          rm packages/website/dist/humans.txt
-          rm packages/website/dist/sitemap.xml
+          rm apps-web/marketing/dist/robots.txt
+          rm apps-web/marketing/dist/humans.txt
+          rm apps-web/marketing/dist/sitemap.xml
 
       - name: Deploy website to non-production
         uses: nwtgck/actions-netlify@v1.2
         with:
-          publish-dir: './packages/website/dist'
+          publish-dir: './apps-web/marketing/dist'
           production-branch: master
           production-deploy: true
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -109,5 +109,5 @@ jobs:
           aws_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws_bucket: ${{ secrets.AWS_S3_BUCKET_SHARE_NONPROD }}
-          source_dir: 'packages/share/dist/'
+          source_dir: 'apps-web/share/dist/'
           destination_dir: ''

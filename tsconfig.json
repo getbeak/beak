@@ -19,8 +19,20 @@
 		],
 
 		"paths": {
-			"@beak/app": ["packages/app/src"],
-			"@beak/app/*": ["packages/app/src/*"],
+			"@beak/apps-host-electron": ["apps-host/electron/src"],
+			"@beak/apps-host-electron/*": ["apps-host/electron/src/*"],
+
+			"@beak/apps-host-web": ["apps-host/web/src"],
+			"@beak/apps-host-web/*": ["apps-host/web/src/*"],
+	  
+			"@beak/apps-web-share": ["apps-web/share/src"],
+			"@beak/apps-web-share/*": ["apps-web/share/src/*"],
+	  
+			"@beak/marketplace": ["apps-web/marketing/src"],
+			"@beak/marketplace/*": ["apps-web/marketing/src/*"],
+
+			"@beak/ui": ["packages/ui/src"],
+			"@beak/ui/*": ["packages/ui/src/*"],
 	  
 			"@beak/common": ["packages/common/src"],
 			"@beak/common/*": ["packages/common/src/*"],
@@ -33,9 +45,6 @@
 	  
 			"@beak/design-system": ["packages/design-system/src"],
 			"@beak/design-system/*": ["packages/design-system/src/*"],
-			
-			"@beak/electron-host": ["packages/electron-host/src"],
-			"@beak/electron-host/*": ["packages/electron-host/src/*"],
 	  
 			"@beak/json-client": ["packages/json-client/src"],
 			"@beak/json-client/*": ["packages/json-client/src/*"],
@@ -46,14 +55,8 @@
 			"@beak/requester-node": ["packages/requester-node/src"],
 			"@beak/requester-node/*": ["packages/requester-node/src/*"],
 	  
-			"@beak/share": ["packages/share/src"],
-			"@beak/share/*": ["packages/share/src/*"],
-	  
 			"@beak/squawk": ["packages/squawk/src"],
 			"@beak/squawk/*": ["packages/squawk/src/*"],
-	  
-			"@beak/website": ["packages/website/src"],
-			"@beak/website/*": ["packages/website/src/*"],
 	  
 			"@getbeak/types": ["packages/types/src"],
 			"@getbeak/types/*": ["packages/types/src/*"],
