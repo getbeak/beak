@@ -25,11 +25,11 @@
 			"@beak/apps-host-web": ["apps-host/web/src"],
 			"@beak/apps-host-web/*": ["apps-host/web/src/*"],
 	  
+			"@beak/apps-web-marketing": ["apps-web/marketing/src"],
+			"@beak/apps-web-marketing/*": ["apps-web/marketing/src/*"],
+	  
 			"@beak/apps-web-share": ["apps-web/share/src"],
 			"@beak/apps-web-share/*": ["apps-web/share/src/*"],
-	  
-			"@beak/marketplace": ["apps-web/marketing/src"],
-			"@beak/marketplace/*": ["apps-web/marketing/src/*"],
 
 			"@beak/ui": ["packages/ui/src"],
 			"@beak/ui/*": ["packages/ui/src/*"],
