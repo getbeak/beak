@@ -52,7 +52,7 @@ jobs:
           BUILD_NUMBER: ${{ steps.short-sha.outputs.sha }}
           SENTRY_WEBSITE_API_KEY: ${{ secrets.SENTRY_WEBSITE_API_KEY }}
           NODE_OPTIONS: --max-old-space-size=8192
-        run: yarn build:web
+        run: yarn build:apps-web
 
       - name: Deploy website to production
         if: "startsWith(github.event.head_commit.message, 'release(')"
