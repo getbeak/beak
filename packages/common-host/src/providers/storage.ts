@@ -68,12 +68,13 @@ export default abstract class StorageProvider<T extends GenericStore> {
 	}
 
 	abstract get<Key extends keyof T>(key: Key): Promise<T[Key]>;
-	abstract get<Key extends keyof T>(key: Key, defaultValue: Required<T>[Key]): Promise<T[Key]>;
+	abstract get<Key extends keyof T>(key: Key, defaultValue: Required<T>[Key]): Promise<Required<T>[Key]>;
 	abstract get<Key extends string, Value = unknown>(key: Exclude<Key, keyof T>, defaultValue?: Value): Value;
 
 	abstract reset<Key extends keyof T>(...keys: Key[]): Promise<void>;
 
 	abstract set<Key extends keyof T>(key: Key, value?: T[Key]): Promise<void>;
+	abstract set(key: string, value: unknown): Promise<void>;
 
 	abstract has<Key extends keyof T>(key: Key | string): Promise<boolean>;
 }

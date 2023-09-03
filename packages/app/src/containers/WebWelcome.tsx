@@ -20,7 +20,7 @@ const Background = styled.div`
 	height: 100vh;
 	width: 100vw;
 
-	background: url('./images/backgrounds/temp.jpg');
+	background: url('/images/backgrounds/temp.jpg');
 	background-repeat: no-repeat;
 	background-size: cover;
 `;

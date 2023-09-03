@@ -6,12 +6,17 @@ import type { VariableGroup } from '@getbeak/types/variable-groups';
 import git from 'isomorphic-git';
 
 import { BeakBase, Providers } from '../base';
+import { fileExists } from '../utils/fs';
 import BeakExtensions from './extensions';
 import BeakMigrations from './migrations';
 import BeakRecents from './recents';
 
+interface CreateProjectOptions {
+	useProjectIdAsProjectFolder?: boolean;
+}
+
 interface ReadProjectFileOptions {
-	runExtensions?: boolean;
+	runMigrations?: boolean;
 }
 
 export default class BeakProject extends BeakBase {
@@ -27,8 +32,14 @@ export default class BeakProject extends BeakBase {
 		this.beakRecents = new BeakRecents(this.providers);
 	}
 
-	async create(name: string, projectParentFolder: string) {
-		const projectFolderPath = this.p.node.path.join(projectParentFolder, name);
+	async create(name: string, projectParentFolder: string, opts?: CreateProjectOptions) {
+		const options: CreateProjectOptions = { ...opts };
+		const projectId = ksuid.generate('project').toString();
+
+		const projectFolderPath = this.p.node.path.join(
+			projectParentFolder,
+			options.useProjectIdAsProjectFolder ? projectId : name,
+		);
 
 		const defaultRequest: RequestNodeFile = {
 			id: ksuid.generate('request').toString(),
@@ -69,24 +80,21 @@ export default class BeakProject extends BeakBase {
 			},
 		};
 
-		// eslint-disable-next-line no-sync
-		const projectFolderExists = this.p.node.fs.existsSync(projectFolderPath);
-
-		if (projectFolderExists)
-			throw new Error('Project folder already exists.');
+		if (await fileExists(this, projectFolderPath))
+			throw new Error('Project folder already exists');
 
 		// Create project folder
-		await this.p.node.fs.promises.mkdir(projectFolderPath);
+		await this.p.node.fs.promises.mkdir(projectFolderPath, { recursive: true });
 
 		// Create tree structure
-		await this.p.node.fs.promises.mkdir(
-			this.p.node.path.join(projectFolderPath, 'tree'),
-		);
+		await this.p.node.fs.promises.mkdir(this.p.node.path.join(projectFolderPath, 'tree'));
 		await this.p.node.fs.promises.writeFile(
 			this.p.node.path.join(projectFolderPath, 'tree', 'Request.json'),
 			JSON.stringify(defaultRequest, null, '\t'),
-			'utf-8',
+			'utf8',
 		);
+
+		await this.p.node.fs.promises.readFile(this.p.node.path.join(projectFolderPath, 'tree', 'Request.json'), 'utf8');
 
 		// Create variable groups structure
 		await this.p.node.fs.promises.mkdir(
@@ -95,7 +103,7 @@ export default class BeakProject extends BeakBase {
 		await this.p.node.fs.promises.writeFile(
 			this.p.node.path.join(projectFolderPath, 'variable-groups', 'Environment.json'),
 			JSON.stringify(variableGroup, null, '\t'),
-			'utf-8',
+			'utf8',
 		);
 
 		// Create extensions structure
@@ -105,19 +113,19 @@ export default class BeakProject extends BeakBase {
 		await this.p.node.fs.promises.writeFile(
 			this.p.node.path.join(projectFolderPath, 'extensions', 'package.json'),
 			JSON.stringify(this.beakExtensions.createPackageJsonContent(name), null, '\t'),
-			'utf-8',
+			'utf8',
 		);
 		await this.p.node.fs.promises.writeFile(
 			this.p.node.path.join(projectFolderPath, 'extensions', 'README.md'),
 			this.beakExtensions.createReadmeContent(name),
-			'utf-8',
+			'utf8',
 		);
 
 		// Create hidden project items
 		await this.p.node.fs.promises.writeFile(
 			this.p.node.path.join(projectFolderPath, '.gitignore'),
 			JSON.stringify(this.createGitIgnore(), null, '\t'),
-			'utf-8',
+			'utf8',
 		);
 		await this.p.node.fs.promises.mkdir(
 			this.p.node.path.join(projectFolderPath, '.beak'),
@@ -125,44 +133,48 @@ export default class BeakProject extends BeakBase {
 		await this.p.node.fs.promises.writeFile(
 			this.p.node.path.join(projectFolderPath, '.beak', 'supersecret.json'),
 			JSON.stringify(this.createGitIgnore(), null, '\t'),
-			'utf-8',
+			'utf8',
 		);
 
 		// Create project root files
 		await this.p.node.fs.promises.writeFile(
 			this.p.node.path.join(projectFolderPath, 'README.md'),
 			JSON.stringify(this.createReadme(name), null, '\t'),
-			'utf-8',
+			'utf8',
 		);
 
-		const project = await this.createProjectFile(projectFolderPath, name);
+		const project = await this.createProjectFile(projectFolderPath, name, projectId);
 		const [projectFile, projectFilePath] = project;
 
 		await this.createProjectEncryption(projectFile.id);
 		await this.setupGit(projectFolderPath);
 
+		await this.beakRecents.addProject({
+			name,
+			path: projectFolderPath,
+		});
+
 		return { projectFilePath, projectId: projectFile.id };
 	}
 
 	async readProjectFile(projectFolderPath: string, opts?: ReadProjectFileOptions) {
-		const options = { ...opts };
+		const options: ReadProjectFileOptions = { ...opts };
 		const projectFilePath = this.p.node.path.join(projectFolderPath, 'project.json');
 
-		// eslint-disable-next-line no-sync
-		if (!this.p.node.fs.existsSync(projectFilePath))
+		if (!await fileExists(this, projectFilePath))
 			return null;
 
-		const projectFileJson = await this.p.node.fs.promises.readFile(projectFilePath, 'utf-8');
+		const projectFileJson = await this.p.node.fs.promises.readFile(projectFilePath, 'utf8');
 		let projectFile: ProjectFile;
 
 		try {
 			// TODO(afr): validate schema of project file!
 			projectFile = JSON.parse(projectFileJson) as ProjectFile;
-		} catch {
+		} catch (error) {
 			return null;
 		}
 
-		if (options.runExtensions)
+		if (options.runMigrations)
 			await this.beakMigrations.runMigrations(projectFile, projectFolderPath);
 
 		return projectFile;
@@ -184,10 +196,11 @@ export default class BeakProject extends BeakBase {
 	private async createProjectFile(
 		projectPath: string,
 		name: string,
+		projectId?: string,
 	): Promise<[ProjectFile, string]> {
 		const projectFilePath = this.p.node.path.join(projectPath, 'project.json');
 		const profileFile: ProjectFile = {
-			id: ksuid.generate('project').toString(),
+			id: projectId ?? ksuid.generate('project').toString(),
 			name,
 			version: '0.3.0',
 		};
@@ -195,7 +208,7 @@ export default class BeakProject extends BeakBase {
 		await this.p.node.fs.promises.writeFile(
 			projectFilePath,
 			JSON.stringify(profileFile, null, '\t'),
-			'utf-8',
+			'utf8',
 		);
 
 		return [profileFile, projectFilePath];
@@ -247,19 +260,23 @@ export default class BeakProject extends BeakBase {
 		});
 	}
 
-	private async *listFilesRecursive(dir: string): AsyncGenerator<string> {
-		const dirents = await this.p.node.fs.promises.readdir(dir, { encoding: 'utf-8', withFileTypes: true });
+	private async* listFilesRecursive(dir: string): AsyncGenerator<string> {
+		const dirents = await this.p.node.fs.promises.readdir(dir, { encoding: 'utf8', withFileTypes: true });
 
 		for (const dirent of dirents) {
-			const res = this.p.node.path.resolve(dir, dirent.name);
+			const direntPath = typeof dirent === 'string' ? dirent : dirent.name;
+			const resolvedPath = this.p.node.path.resolve(dir, direntPath);
 
-			if (dirent.name === '.git')
+			// eslint-disable-next-line no-await-in-loop
+			const stat = await this.p.node.fs.promises.stat(resolvedPath);
+
+			if (direntPath === '.git')
 				continue;
 
-			if (dirent.isDirectory())
-				yield* this.listFilesRecursive(res);
+			if (stat.isDirectory())
+				yield* this.listFilesRecursive(resolvedPath);
 			else
-				yield res;
+				yield resolvedPath;
 		}
 	}
 }

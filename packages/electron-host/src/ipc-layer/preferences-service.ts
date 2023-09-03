@@ -15,13 +15,13 @@ service.registerGetEnvironment(async () => await getBeakHost().providers.storage
 service.registerGetNotificationOverview(async () => await getBeakHost().providers.storage.get('notifications'));
 service.registerGetNotificationValue(async (_event, key) => await getBeakHost().providers.storage.get(`notifications.${key}`));
 service.registerSetNotificationValue(async (_event, { key, value }) => {
-	// await getBeakHost().providers.storage.set(`notifications.${key}`, value)
+	await getBeakHost().providers.storage.set(`notifications.${key}`, value);
 });
 
 service.registerGetEditorOverview(async () => await getBeakHost().providers.storage.get('editor'));
 service.registerGetEditorValue(async (_event, key) => await getBeakHost().providers.storage.get(`editor.${key}`));
 service.registerSetEditorValue(async (_event, { key, value }) => {
-	// await getBeakHost().providers.storage.set(`editor.${key}`, value);
+	await getBeakHost().providers.storage.set(`editor.${key}`, value);
 
 	TypedObject.values(windowStack).forEach(window => {
 		if (!window)

@@ -24,7 +24,7 @@ import { startGit } from '../store/git/actions';
 import { loadEditorPreferences, loadProjectPanePreferences, loadSidebarPreferences } from '../store/preferences/actions';
 import { revealRequestExternal, startProject } from '../store/project/actions';
 
-const ProjectMain: React.FC<React.PropsWithChildren<unknown>> = () => {
+const ProjectMain: React.FC = () => {
 	const dispatch = useDispatch();
 	const [title, setTitle] = useState('Loading... - Beak');
 	const [setup, setSetup] = useState(false);

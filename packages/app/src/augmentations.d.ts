@@ -48,7 +48,7 @@ declare module '@getbeak/types-realtime-value' {
 		 * Gets the string value of the value, given the payload body
 		 * @param {Context} ctx The project context.
 		 * @param {TPayload} payload This instance of the value's payload data.
-		 * @param {number} recursiveDepth 
+		 * @param {number} recursiveDepth The current depth of realtime value recursion.
 		 */
 		getValue: (ctx: Context, payload: TPayload, recursiveDepth: number) => Promise<string>;
 	}

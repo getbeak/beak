@@ -1,4 +1,4 @@
-import { IpcServiceMain, IpcServiceRenderer, Listener, PartialIpcMain,PartialIpcRenderer } from './ipc';
+import { IpcServiceMain, IpcServiceRenderer, Listener, PartialIpcMain, PartialIpcRenderer } from './ipc';
 
 const AppMessages = {
 	GetVersion: 'get_version',

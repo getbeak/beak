@@ -1,7 +1,7 @@
-import { IpcMain, WebContents } from 'electron';
+import { WebContents } from 'electron';
 
 import { FlightCompletePayload, FlightFailedPayload, FlightHeartbeatPayload, FlightRequestPayload } from '../types/requester';
-import { IpcServiceMain, IpcServiceRenderer, Listener, PartialIpcRenderer } from './ipc';
+import { IpcServiceMain, IpcServiceRenderer, Listener, PartialIpcMain, PartialIpcRenderer } from './ipc';
 
 export const FlightMessages = {
 	StartFlight: 'start_flight',
@@ -33,7 +33,7 @@ export class IpcFlightServiceRenderer extends IpcServiceRenderer {
 }
 
 export class IpcFlightServiceMain extends IpcServiceMain {
-	constructor(ipc: IpcMain) {
+	constructor(ipc: PartialIpcMain) {
 		super('flight', ipc);
 	}
 

@@ -4,12 +4,16 @@ import {
 	RouterProvider,
 } from 'react-router-dom';
 
+import WebProjectMain from '../containers/WebProjectMain';
 import WebWelcome from '../containers/WebWelcome';
 
 const router = createBrowserRouter([{
 	path: '/',
-	element: <WebWelcome />,
-	children: [],
+	// errorElement: <RedirectToHome />,
+	children: [
+		{ path: '', element: <WebWelcome /> },
+		{ path: 'project/:projectId', element: <WebProjectMain /> },
+	],
 }]);
 
 export const WebEntrypoint: React.FC = () => <RouterProvider router={router} />;

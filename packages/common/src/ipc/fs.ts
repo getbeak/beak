@@ -1,8 +1,7 @@
-import type { IpcMain } from 'electron';
 import { JsonWriteOptions } from 'fs-extra';
 import type { JFReadOptions } from 'jsonfile';
 
-import { IpcServiceMain, IpcServiceRenderer, Listener, PartialIpcRenderer } from './ipc';
+import { IpcServiceMain, IpcServiceRenderer, Listener, PartialIpcMain, PartialIpcRenderer } from './ipc';
 
 export const FsMessages = {
 	ReadDir: 'read_dir',
@@ -146,7 +145,7 @@ export class IpcFsServiceRenderer extends IpcServiceRenderer {
 }
 
 export class IpcFsServiceMain extends IpcServiceMain {
-	constructor(ipc: IpcMain) {
+	constructor(ipc: PartialIpcMain) {
 		super('fs', ipc);
 	}
 

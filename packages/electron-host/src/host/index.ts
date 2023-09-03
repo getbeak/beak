@@ -19,6 +19,7 @@ const beakHost = new BeakHost({
 	logger: beakHostLogger,
 	credentials: new CredentialsProvider(),
 	storage: new StorageProvider({
+		recents: [],
 		windowStates: {},
 		previousWindowPresence: [],
 		beakId: crypto.randomBytes(128).toString('base64url'),

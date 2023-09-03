@@ -1,6 +1,5 @@
 import React from 'react';
 import Kbd from '@beak/app/components/atoms/Kbd';
-import { instance as windowSessionInstance } from '@beak/app/contexts/window-session-context';
 import shortcutDefinitions, { Shortcuts } from '@beak/app/lib/keyboard-shortcuts';
 import { PlatformAgnosticDefinitions, PlatformSpecificDefinitions } from '@beak/app/lib/keyboard-shortcuts/types';
 import { renderSimpleKey } from '@beak/app/utils/keyboard-rendering';
@@ -53,7 +52,8 @@ function shortcutDefinition(definition: PlatformSpecificDefinitions | PlatformAg
 	if (definition.type === 'agnostic')
 		return definition;
 
-	return definition[windowSessionInstance.getPlatform()];
+	// return definition[windowSessionInstance.getPlatform()];
+	return definition.darwin;
 }
 
 const Wrapper = styled.div`
@@ -69,7 +69,7 @@ const Wrapper = styled.div`
 const FadedLogo = styled.div`
 	width: 200px;
 	height: 200px;
-	background: url('./images/logo-blank.png');
+	background: url('/images/logo-blank.png');
 	background-repeat: no-repeat;
 	background-position: center;
 	background-size: contain;

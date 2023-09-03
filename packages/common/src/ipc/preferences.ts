@@ -1,8 +1,6 @@
-import { IpcMain } from 'electron';
-
 import { EditorPreferences, NotificationPreferences } from '../types/preferences';
 import { ThemeMode } from '../types/theme';
-import { IpcServiceMain, IpcServiceRenderer, Listener, PartialIpcRenderer } from './ipc';
+import { IpcServiceMain, IpcServiceRenderer, Listener, PartialIpcMain, PartialIpcRenderer } from './ipc';
 
 export const PreferencesMessages = {
 	GetEnvironment: 'get_environment',
@@ -89,7 +87,7 @@ export class IpcPreferencesServiceRenderer extends IpcServiceRenderer {
 }
 
 export class IpcPreferencesServiceMain extends IpcServiceMain {
-	constructor(ipc: IpcMain) {
+	constructor(ipc: PartialIpcMain) {
 		super('preferences', ipc);
 	}
 

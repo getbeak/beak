@@ -9,7 +9,7 @@ import { setProjectWindowMapping } from './fs-shared';
 
 const service = new IpcProjectServiceMain(ipcMain);
 
-service.registerOpenFolder(async (event, projectPath) => {
+service.registerOpenFolder(async (_event, projectPath) => {
 	tryOpenProjectFolder(projectPath);
 });
 

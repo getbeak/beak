@@ -2,6 +2,7 @@
 
 import { ProjectEncryption } from '@beak/common/types/beak-project';
 import { BeakBase, Providers } from '@beak/common-host/base';
+import { fileExists } from '@beak/common-host/utils/fs';
 import { ProjectFile } from '@getbeak/types/project';
 
 import BeakExtensions from '../extensions';
@@ -18,7 +19,7 @@ interface SupersecretFile {
 }
 
 // When creating a new migration, don't forget to update `latestSupported`
-// -> `app/src/lib/beak-project/project.ts`
+// -> `packages/app/src/lib/beak-project/project.ts`
 
 export default class BeakStandardMigrations extends BeakBase {
 	private readonly beakExtensions: BeakExtensions;
@@ -61,12 +62,10 @@ export default class BeakStandardMigrations extends BeakBase {
 		const supersecretFilePath = this.p.node.path.join(projectFolderPath, '.beak', 'supersecret.json');
 
 		// Only try and migrate if supersecret exists...
-		// eslint-disable-next-line no-sync
-		if (!this.p.node.fs.existsSync(supersecretFilePath))
-			return;
+		if (!await fileExists(this, supersecretFilePath)) return;
 
 		try {
-			const ssfContent = await this.p.node.fs.promises.readFile(supersecretFilePath, 'utf-8');
+			const ssfContent = await this.p.node.fs.promises.readFile(supersecretFilePath, 'utf8');
 			const ssf = JSON.parse(ssfContent) as SupersecretFile;
 
 			if (ssf && ssf.encryption && ssf.encryption.algo && ssf.encryption.key) {
@@ -86,21 +85,26 @@ export default class BeakStandardMigrations extends BeakBase {
 	private async handle_0_2_1_to_0_3_0(projectFile: ProjectFile, projectFolderPath: string): Promise<void> {
 		const extensionsPath = this.p.node.path.join(projectFolderPath, 'extensions');
 
+		let hasExtensions = true;
+
+		if (!await fileExists(this, extensionsPath))
+			hasExtensions = true;
+
 		// Only try and migrate if extensions don't exist... May be left over from beta testers
 		// eslint-disable-next-line no-sync
-		if (!this.p.node.fs.existsSync(extensionsPath)) {
+		if (!hasExtensions) {
 			await this.p.node.fs.promises.mkdir(extensionsPath);
 
 			await Promise.all([
 				await this.p.node.fs.promises.writeFile(
 					this.p.node.path.join(extensionsPath, 'package.json'),
 					JSON.stringify(this.beakExtensions.createPackageJsonContent(projectFile.name), null, '\t'),
-					'utf-8',
+					'utf8',
 				),
 				await this.p.node.fs.promises.writeFile(
 					this.p.node.path.join(extensionsPath, 'README.md'),
 					this.beakExtensions.createReadmeContent(projectFile.name),
-					'utf-8',
+					'utf8',
 				),
 			]);
 		}
@@ -121,7 +125,7 @@ export default class BeakStandardMigrations extends BeakBase {
 		await this.p.node.fs.promises.writeFile(
 			projectFolderPath,
 			JSON.stringify(newProjectFile, null, '\t'),
-			{ encoding: 'utf-8' },
+			{ encoding: 'utf8' },
 		);
 
 		// eslint-disable-next-line no-param-reassign

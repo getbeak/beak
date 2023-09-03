@@ -15,6 +15,7 @@ export interface CreateViewProps {
 }
 
 const CreateView: React.FC<React.PropsWithChildren<CreateViewProps>> = ({ setView }) => {
+	const [working, setWorking] = useState(false);
 	const [name, setName] = useState('');
 	const projNameInput = useRef<HTMLInputElement>(null);
 	const [validProjectName, setValidProjectName] = useState(true);
@@ -43,6 +44,7 @@ const CreateView: React.FC<React.PropsWithChildren<CreateViewProps>> = ({ setVie
 
 			<Label>{'Give your project a name'}</Label>
 			<Input
+				disabled={working}
 				ref={projNameInput}
 				placeholder={''}
 				type={'text'}
@@ -57,9 +59,18 @@ const CreateView: React.FC<React.PropsWithChildren<CreateViewProps>> = ({ setVie
 
 			<ActionsWrapper>
 				<Button
-					disabled={!name || !validProjectName}
-					onClick={() => {
-						ipcProjectService.createProject({ projectName: name });
+					disabled={!name || !validProjectName || working}
+					onClick={async () => {
+						if (working) return;
+
+						setWorking(true);
+
+						try {
+							// TODO(afr): Handle error
+							await ipcProjectService.createProject({ projectName: name });
+						} finally {
+							setWorking(false);
+						}
 					}}
 				>
 					{'Select folder'}

@@ -1,5 +1,6 @@
 import { ProjectEncryption } from '@beak/common/types/beak-project';
 import { BeakBase } from '@beak/common-host/base';
+import { fileExists } from '@beak/common-host/utils/fs';
 import { ProjectFile } from '@getbeak/types/project';
 
 interface SupersecretFile {
@@ -31,12 +32,10 @@ export default class BeakSilentMigrations extends BeakBase {
 		const supersecretFilePath = this.p.node.path.join(projectFolderPath, '.beak', 'supersecret.json');
 
 		// Only try and migrate if supersecret exists...
-		// eslint-disable-next-line no-sync
-		if (!this.p.node.fs.existsSync(supersecretFilePath))
-			return;
+		if (!await fileExists(this, supersecretFilePath)) return;
 
 		try {
-			const ssfContent = await this.p.node.fs.promises.readFile(supersecretFilePath, 'utf-8');
+			const ssfContent = await this.p.node.fs.promises.readFile(supersecretFilePath, 'utf8');
 			const ssf = JSON.parse(ssfContent) as SupersecretFile;
 
 			if (ssf && ssf.encryption && ssf.encryption.algo && ssf.encryption.key) {

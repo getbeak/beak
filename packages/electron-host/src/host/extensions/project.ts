@@ -13,7 +13,7 @@ import getBeakHost from '..';
 export async function tryOpenProjectFolder(projectFolderPath: string, silent = false) {
 	const projectFilePath = path.join(projectFolderPath, 'project.json');
 	const projectFile = await getBeakHost().project.readProjectFile(projectFolderPath, {
-		runExtensions: true,
+		runMigrations: true,
 	});
 
 	if (!projectFile) {

@@ -70,7 +70,7 @@ const OpenRecentColumn: React.FC<React.PropsWithChildren<unknown>> = () => {
 									modifiedDate={m.accessTime}
 									name={m.name}
 									path={m.path}
-									type={m.type}
+									type={'local'}
 
 									onClick={() => {
 										ipcProjectService.openFolder(m.path);

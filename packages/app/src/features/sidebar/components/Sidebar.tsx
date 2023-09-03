@@ -1,6 +1,7 @@
 import React, { useContext, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import WindowSessionContext from '@beak/app/contexts/window-session-context';
+import { toVibrancyAlpha } from '@beak/app/design-system/utils';
 import { checkShortcut } from '@beak/app/lib/keyboard-shortcuts';
 import { sidebarPreferenceSetCollapse, sidebarPreferenceSetSelected } from '@beak/app/store/preferences/actions';
 import { useAppSelector } from '@beak/app/store/redux';
@@ -128,7 +129,7 @@ const Container = styled.div<{ $darwin: boolean }>`
 	grid-template-columns: 40px 1fr;
 	height: calc(100% - 72px);
 	padding-top: 72px;
-	background: ${p => p.$darwin ? 'transparent' : p.theme.ui.background};
+	background: ${p => toVibrancyAlpha(p.theme.ui.background, 0.75)};
 	overflow: hidden;
 `;
 
@@ -149,7 +150,7 @@ const CollapsedLogo = styled.div`
 	top: 0; left: 0; right: 0;
 	height: 71px;
 
-	background: url('./images/logo.svg');
+	background: url('/images/logo.svg');
 	background-position: center 85%;
 	background-size: 20px;
 	background-repeat: no-repeat;

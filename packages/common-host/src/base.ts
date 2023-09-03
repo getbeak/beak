@@ -11,6 +11,7 @@ export interface Providers {
 	credentials: CredentialsProvider;
 	logger: Logger<unknown>;
 	storage: StorageProvider<GenericStore>;
+
 	node: {
 		fs: typeof fs;
 		path: typeof path;

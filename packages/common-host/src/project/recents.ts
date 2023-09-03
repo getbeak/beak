@@ -14,19 +14,23 @@ export default class BeakRecents extends BeakBase {
 		const resolved = await Promise.all(recents.map(async r => {
 			const projectFilePath = this.p.node.path.join(r.path, 'project.json');
 
-			// eslint-disable-next-line no-sync
-			const projectFileExists = this.p.node.fs.existsSync(projectFilePath);
+			try {
+				const pfStat = await this.p.node.fs.promises.stat(projectFilePath);
 
-			if (!projectFileExists)
-				return null;
+				const accessTime = (pfStat.atime?.toISOString() ?? new Date(pfStat.mtimeMs).toISOString());
 
-			const pfStat = await this.p.node.fs.promises.stat(projectFilePath);
-			const accessTime = pfStat.atime.toISOString();
+				return {
+					...r,
+					accessTime,
+				};
+			} catch (error) {
+				if (error instanceof Error) {
+					if ('code' in error && typeof error.code === 'string' && ['ENOENT', 'ENOTDIR'].includes(error.code))
+						return null;
+				}
 
-			return {
-				...r,
-				accessTime,
-			};
+				throw error;
+			}
 		}));
 
 		return resolved.filter(Boolean) as RecentProject[];
@@ -36,12 +40,13 @@ export default class BeakRecents extends BeakBase {
 		const recents = await this.listProjects();
 		const filteredRecents = recents.filter(r => r.path !== recent.path);
 
+		// TODO(afr): Find a way to add project to app recent document list on electron
 		// app.addRecentDocument(recent.path);
 
 		await this.p.storage.set('recents', [recent, ...filteredRecents].map<RecentProject>(r => ({
 			name: r.name,
 			path: r.path,
-			accessTime: new Date().toISOString(),
+			accessTime: (new Date()).toISOString(),
 		})));
 	}
 }

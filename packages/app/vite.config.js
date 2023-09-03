@@ -1,11 +1,11 @@
 /* eslint-disable no-process-env */
 /* eslint-disable @typescript-eslint/no-var-requires */
 
-const path = require('path');
-const fs = require('fs');
-const reactPlugin = require('@vitejs/plugin-react');
-const viteSentryPlugin = require('vite-plugin-sentry');
-const monacoEditorPlugin = require('vite-plugin-monaco-editor');
+import reactPlugin from '@vitejs/plugin-react';
+import fs from 'fs';
+import path from 'path';
+import monacoEditorPlugin from 'vite-plugin-monaco-editor';
+import viteSentryPlugin from 'vite-plugin-sentry';
 
 // eslint-disable-next-line no-sync
 const packageJson = JSON.parse(fs.readFileSync(path.join(__dirname, '../', 'electron-host', 'package.json')));
@@ -22,7 +22,7 @@ const sourcePath = environment === 'development' ? 'src' : 'dist';
  * @type {import('vite').UserConfig}
  * @see https://vitejs.dev/config/
  */
-module.exports = {
+export default {
 	mode: environment,
 	jsx: 'react',
 	root: './src',

@@ -1,5 +1,3 @@
-import type { IpcMain } from 'electron';
-
 import { RecentProject } from '../types/beak-hub';
 import { IpcServiceMain, IpcServiceRenderer, Listener, PartialIpcMain, PartialIpcRenderer } from './ipc';
 

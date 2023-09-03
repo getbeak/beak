@@ -116,8 +116,14 @@ export function checkShortcut(shortcutKey: Shortcuts, event: React.KeyboardEvent
 		if (platformDefinition.type === 'agnostic')
 			return platformDefinition;
 
-		return platformDefinition[windowSessionInstance.getPlatform()];
+		const platform = windowSessionInstance.getPlatform();
+
+		if (platform === 'browser') return platformDefinition.darwin;
+
+		return platformDefinition[platform];
 	})();
+
+	if (!shortcutDefinition) return false;
 
 	if (shortcutDefinition.ctrlOrMeta) {
 		const useMeta = windowSessionInstance.getPlatform() === 'darwin';

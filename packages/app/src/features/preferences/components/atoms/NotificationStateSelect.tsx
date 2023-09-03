@@ -11,9 +11,7 @@ const NotificationStateSelect: React.FC<NotificationStateSelectProps> = ({ value
 	<Select
 		beakSize={'sm'}
 		value={value}
-		onChange={e => {
-			onChange(e.currentTarget.value as NotificationState)
-		}}
+		onChange={e => onChange(e.currentTarget.value as NotificationState)}
 	>
 		<option value={'on'}>{'Banner, with sound'}</option>
 		<option value={'on-no-sound'}>{'Banner, without sound'}</option>

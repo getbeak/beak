@@ -1,7 +1,6 @@
-import type { IpcMain } from 'electron';
 import { NotificationConstructorOptions } from 'electron/main';
 
-import { IpcServiceMain, IpcServiceRenderer, Listener, PartialIpcRenderer } from './ipc';
+import { IpcServiceMain, IpcServiceRenderer, Listener, PartialIpcMain, PartialIpcRenderer } from './ipc';
 
 export const NotificationMessages = {
 	SendNotification: 'send_notification',
@@ -25,7 +24,7 @@ export class IpcNotificationServiceRenderer extends IpcServiceRenderer {
 }
 
 export class IpcNotificationServiceMain extends IpcServiceMain {
-	constructor(ipc: IpcMain) {
+	constructor(ipc: PartialIpcMain) {
 		super('notification', ipc);
 	}
 

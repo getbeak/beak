@@ -3,12 +3,14 @@
   "version": "0.0.0",
   "homepage": "./",
   "private": true,
+  "type": "module",
   "scripts": {
     "build": "cross-env NODE_ENV=production vite build",
     "start": "cross-env NODE_ENV=development vite",
     "typecheck": "tsc",
     "test": "echo Skipped for now."
   },
+  "main": "dist/index.es.min.js",
   "browserslist": {
     "production": [
       "last 1 chrome version"

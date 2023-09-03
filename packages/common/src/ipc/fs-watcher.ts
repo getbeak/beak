@@ -1,8 +1,8 @@
 import ksuid from '@beak/ksuid';
 import type { WatchOptions } from 'chokidar';
-import { IpcMain, WebContents } from 'electron';
+import { WebContents } from 'electron';
 
-import { IpcServiceMain, IpcServiceRenderer, Listener, PartialIpcRenderer } from './ipc';
+import { IpcServiceMain, IpcServiceRenderer, Listener, PartialIpcMain, PartialIpcRenderer } from './ipc';
 
 export const FsWatcherMessages = {
 	StartWatching: 'start_watching',
@@ -61,7 +61,7 @@ export class IpcFsWatcherServiceRenderer extends IpcServiceRenderer {
 }
 
 export class IpcFsWatcherServiceMain extends IpcServiceMain {
-	constructor(ipc: IpcMain) {
+	constructor(ipc: PartialIpcMain) {
 		super('fs_watcher', ipc);
 	}
 

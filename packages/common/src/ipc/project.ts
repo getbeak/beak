@@ -1,5 +1,3 @@
-import type { IpcMain } from 'electron';
-
 import { IpcServiceMain, IpcServiceRenderer, Listener, PartialIpcMain, PartialIpcRenderer } from './ipc';
 
 export const ProjectMessages = {

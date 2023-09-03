@@ -152,7 +152,7 @@ async function backoffJsonRead(filePath: string, options?: JFReadOptions) {
 }
 
 export async function ensureWithinProject(projectFilePath: string, inputPath: string) {
-	const exists = fs.pathExists(projectFilePath);
+	const exists = await fs.pathExists(projectFilePath);
 
 	if (!exists)
 		throw new Squawk('path_not_project', { projectFilePath });

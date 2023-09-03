@@ -1,6 +1,4 @@
-import type { IpcMain } from 'electron';
-
-import { IpcServiceMain, IpcServiceRenderer, Listener, PartialIpcRenderer } from './ipc';
+import { IpcServiceMain, IpcServiceRenderer, Listener, PartialIpcMain, PartialIpcRenderer } from './ipc';
 
 export const EncryptionMessages = {
 	CheckStatus: 'check_status',
@@ -76,7 +74,7 @@ export class IpcEncryptionServiceRenderer extends IpcServiceRenderer {
 }
 
 export class IpcEncryptionServiceMain extends IpcServiceMain {
-	constructor(ipc: IpcMain) {
+	constructor(ipc: PartialIpcMain) {
 		super('encryption', ipc);
 	}
 

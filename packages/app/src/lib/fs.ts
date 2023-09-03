@@ -8,6 +8,7 @@ const avj = new Ajv();
 
 export async function readJsonAndValidate<T>(filePath: string, schema: SchemaObject, avoidThrow = false) {
 	const requestFile = await ipcFsService.readJson<T>(filePath);
+
 	const extension = path.extname(filePath);
 	const name = path.basename(filePath, extension);
 	const validator = avj.compile(schema);

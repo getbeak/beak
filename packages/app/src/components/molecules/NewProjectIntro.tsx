@@ -94,7 +94,7 @@ const Wrapper = styled.div`
 const WelcomeBanner = styled.div`
 	border-radius: 10px;
 	padding: 25px 50px;
-	background: url('${p => `./images/backgrounds/${p.theme.theme}-waves.jpg`}');
+	background: url('${p => `/images/backgrounds/${p.theme.theme}-waves.jpg`}');
 	background-position: center;
 	background-size: cover;
 	background-repeat: no-repeat;
