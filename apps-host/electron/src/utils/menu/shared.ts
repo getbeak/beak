@@ -1,5 +1,5 @@
-import { MenuEventCode } from '@beak/common/web-contents/types';
 import { getCheckingForUpdates, getPendingUpdate, getUpdateDownloading } from '@beak/apps-host-electron/updater';
+import { MenuEventCode } from '@beak/common/web-contents/types';
 import { MenuItemConstructorOptions } from 'electron';
 import { autoUpdater } from 'electron-updater';
 

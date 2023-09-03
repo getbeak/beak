@@ -10,7 +10,6 @@ const Checkbox: React.FC<CheckboxProps> = props => {
 
 	return (
 		<Container>
-			{/* @ts-expect-error */}
 			<Input type={'checkbox'} {...rest} />
 			<Label htmlFor={props.id}>{label}</Label>
 		</Container>
