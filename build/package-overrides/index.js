@@ -16,7 +16,7 @@ const overrideDefs = {
 
 function main() {
 	const wd = process.cwd();
-	const overrideDir = path.join(wd, 'node-module-overrides', 'overrides');
+	const overrideDir = path.join(wd, 'build', 'package-overrides', 'overrides');
 	const overrides = Object.values(overrideDefs);
 
 	overrides.forEach(override => {
