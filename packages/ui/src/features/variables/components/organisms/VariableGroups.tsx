@@ -1,5 +1,7 @@
 import React, { useContext } from 'react';
 import { useDispatch } from 'react-redux';
+import { TypedObject } from '@beak/common/helpers/typescript';
+import ksuid from '@beak/ksuid';
 import WindowSessionContext from '@beak/ui/contexts/window-session-context';
 import { changeTab, makeTabPermanent } from '@beak/ui/features/tabs/store/actions';
 import TreeView from '@beak/ui/features/tree-view/components/TreeView';
@@ -10,8 +12,6 @@ import { useAppSelector } from '@beak/ui/store/redux';
 import { actions } from '@beak/ui/store/variable-groups';
 import { removeVariableGroupFromDisk } from '@beak/ui/store/variable-groups/actions';
 import { renderAcceleratorDefinition } from '@beak/ui/utils/keyboard-rendering';
-import { TypedObject } from '@beak/common/helpers/typescript';
-import ksuid from '@beak/ksuid';
 import type { MenuItemConstructorOptions } from 'electron';
 import styled from 'styled-components';
 

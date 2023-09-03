@@ -1,9 +1,9 @@
 import React from 'react';
+import { TypedObject } from '@beak/common/helpers/typescript';
 import Kbd from '@beak/ui/components/atoms/Kbd';
 import shortcutDefinitions, { Shortcuts } from '@beak/ui/lib/keyboard-shortcuts';
 import { PlatformAgnosticDefinitions, PlatformSpecificDefinitions } from '@beak/ui/lib/keyboard-shortcuts/types';
 import { renderSimpleKey } from '@beak/ui/utils/keyboard-rendering';
-import { TypedObject } from '@beak/common/helpers/typescript';
 import styled from 'styled-components';
 
 const displayShortcuts: Partial<Record<Shortcuts, string>> = {

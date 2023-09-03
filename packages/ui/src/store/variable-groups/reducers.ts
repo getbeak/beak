@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
-import { generateValueIdent } from '@beak/ui/lib/beak-variable-group/utils';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import ksuid from '@beak/ksuid';
+import { generateValueIdent } from '@beak/ui/lib/beak-variable-group/utils';
 import { createReducer } from '@reduxjs/toolkit';
 
 import * as actions from './actions';

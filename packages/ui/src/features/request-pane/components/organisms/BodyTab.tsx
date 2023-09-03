@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
+import ksuid from '@beak/ksuid';
 import EditorView from '@beak/ui/components/atoms/EditorView';
 import BasicTableEditor from '@beak/ui/features/basic-table-editor/components/BasicTableEditor';
 import { convertKeyValueToString, convertStringToKeyValue } from '@beak/ui/features/basic-table-editor/parsers';
@@ -15,7 +16,6 @@ import { ipcDialogService } from '@beak/ui/lib/ipc';
 import actions, { requestBodyTextChanged } from '@beak/ui/store/project/actions';
 import { RequestBodyTypeChangedPayload } from '@beak/ui/store/project/types';
 import { attemptTextToJson } from '@beak/ui/utils/json';
-import ksuid from '@beak/ksuid';
 import type { ValidRequestNode } from '@getbeak/types/nodes';
 import type { RequestBodyJson, RequestBodyType } from '@getbeak/types/request';
 import styled from 'styled-components';

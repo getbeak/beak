@@ -1,10 +1,10 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { TypedObject } from '@beak/common/helpers/typescript';
 import { RealtimeValueManager } from '@beak/ui/features/realtime-values';
 import useRealtimeValueContext from '@beak/ui/features/realtime-values/hooks/use-realtime-value-context';
 import { ipcExtensionsService } from '@beak/ui/lib/ipc';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { movePosition } from '@beak/ui/utils/arrays';
-import { TypedObject } from '@beak/common/helpers/typescript';
 import { faPlug } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { RealtimeValue, RealtimeValueInformation } from '@getbeak/types-realtime-value';

@@ -1,7 +1,7 @@
 import React from 'react';
+import { SidebarVariant } from '@beak/common/types/beak-hub';
 import { Shortcuts } from '@beak/ui/lib/keyboard-shortcuts';
 import { renderPlainTextDefinition } from '@beak/ui/utils/keyboard-rendering';
-import { SidebarVariant } from '@beak/common/types/beak-hub';
 import { faTable, IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import { faFolderTree } from '@fortawesome/free-solid-svg-icons/faFolderTree';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';

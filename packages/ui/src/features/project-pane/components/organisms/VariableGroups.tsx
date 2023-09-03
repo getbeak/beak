@@ -1,9 +1,9 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
+import { TypedObject } from '@beak/common/helpers/typescript';
 import useSectionBody from '@beak/ui/features/sidebar/hooks/use-section-body';
 import { editorPreferencesSetSelectedVariableGroup } from '@beak/ui/store/preferences/actions';
 import { useAppSelector } from '@beak/ui/store/redux';
-import { TypedObject } from '@beak/common/helpers/typescript';
 import styled from 'styled-components';
 
 import NoVariableGroups from '../molecules/NoVariableGroups';

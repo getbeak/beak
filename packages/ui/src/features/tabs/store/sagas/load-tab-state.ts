@@ -1,8 +1,8 @@
+import { TabPreferences } from '@beak/common/types/beak-hub';
+import Squawk from '@beak/common/utils/squawk';
 import { readJsonAndValidate } from '@beak/ui/lib/fs';
 import { ipcFsService } from '@beak/ui/lib/ipc';
 import { createTakeEverySagaSet } from '@beak/ui/utils/redux/sagas';
-import { TabPreferences } from '@beak/common/types/beak-hub';
-import Squawk from '@beak/common/utils/squawk';
 import path from 'path-browserify';
 import { call, put } from 'redux-saga/effects';
 

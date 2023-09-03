@@ -1,6 +1,6 @@
-import { ipcExtensionsService } from '@beak/ui/lib/ipc';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { RealtimeValueExtension } from '@beak/common/types/extensions';
+import { ipcExtensionsService } from '@beak/ui/lib/ipc';
 import { EditableRealtimeValue, RealtimeValue } from '@getbeak/types-realtime-value';
 
 import './ipc';

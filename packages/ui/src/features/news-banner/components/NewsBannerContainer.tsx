@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { ipcNestService } from '@beak/ui/lib/ipc';
 import { NewsItem, NewsItemType } from '@beak/common/types/nest';
+import { ipcNestService } from '@beak/ui/lib/ipc';
 import styled from 'styled-components';
 
 import GenericBanner from './molecules/GenericBanner';

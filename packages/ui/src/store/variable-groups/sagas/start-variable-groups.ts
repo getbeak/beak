@@ -1,9 +1,9 @@
+import { TypedObject } from '@beak/common/helpers/typescript';
+import { EditorPreferences } from '@beak/common/types/beak-hub';
 import { attemptReconciliation } from '@beak/ui/features/tabs/store/actions';
 import { readVariableGroup } from '@beak/ui/lib/beak-variable-group';
 import createFsEmitter, { scanDirectoryRecursively, ScanResult } from '@beak/ui/lib/fs-emitter';
 import { ipcDialogService, ipcFsService } from '@beak/ui/lib/ipc';
-import { TypedObject } from '@beak/common/helpers/typescript';
-import { EditorPreferences } from '@beak/common/types/beak-hub';
 import type { VariableGroups } from '@getbeak/types/variable-groups';
 import path from 'path-browserify';
 import { call, put, select, take } from 'redux-saga/effects';

@@ -1,8 +1,8 @@
 import React, { useContext, useState } from 'react';
 import { useDispatch } from 'react-redux';
+import { TypedObject } from '@beak/common/helpers/typescript';
 import DebouncedInput from '@beak/ui/components/atoms/DebouncedInput';
 import { useAppSelector } from '@beak/ui/store/redux';
-import { TypedObject } from '@beak/common/helpers/typescript';
 import type { ArrayEntry, NamedArrayEntry } from '@getbeak/types/body-editor-json';
 
 import { JsonEditorContext } from '../../contexts/json-editor-context';

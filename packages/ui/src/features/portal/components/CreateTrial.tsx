@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
+import Squawk from '@beak/common/utils/squawk';
 import ArrowButton from '@beak/ui/components/atoms/ArrowButton';
 import Button from '@beak/ui/components/atoms/Button';
-import Squawk from '@beak/common/utils/squawk';
 import styled from 'styled-components';
 
 import { MagicState } from './organisms/EnterMagicState';

@@ -1,12 +1,12 @@
 import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
+import { TypedObject } from '@beak/common/helpers/typescript';
+import ksuid from '@beak/ksuid';
 import EditorView from '@beak/ui/components/atoms/EditorView';
 import BasicTableEditor from '@beak/ui/features/basic-table-editor/components/BasicTableEditor';
 import binaryStore from '@beak/ui/lib/binary-store';
 import { requestPreferenceSetResSubTab } from '@beak/ui/store/preferences/actions';
 import { useAppSelector } from '@beak/ui/store/redux';
-import { TypedObject } from '@beak/common/helpers/typescript';
-import ksuid from '@beak/ksuid';
 import type { Flight } from '@getbeak/types/flight';
 import styled from 'styled-components';
 

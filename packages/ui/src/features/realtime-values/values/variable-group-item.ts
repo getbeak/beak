@@ -1,5 +1,5 @@
-import { VariableGroupItemRtv } from '@beak/ui/features/realtime-values/values';
 import { TypedObject } from '@beak/common/helpers/typescript';
+import { VariableGroupItemRtv } from '@beak/ui/features/realtime-values/values';
 import type { VariableGroups } from '@getbeak/types/variable-groups';
 import { RealtimeValue } from '@getbeak/types-realtime-value';
 

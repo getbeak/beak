@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { useAppSelector } from '@beak/ui/store/redux';
 import { RequestTabItem } from '@beak/common/types/beak-project';
+import { useAppSelector } from '@beak/ui/store/redux';
 
 import TabItem from '../../../../components/atoms/TabItem';
 import { changeTab, makeTabPermanent } from '../../store/actions';

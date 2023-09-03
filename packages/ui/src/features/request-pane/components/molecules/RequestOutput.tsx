@@ -1,4 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
+import { requestBodyContentType } from '@beak/common/helpers/request';
+import { TypedObject } from '@beak/common/helpers/typescript';
 import EditorView from '@beak/ui/components/atoms/EditorView';
 import WindowSessionContext, { WindowSession } from '@beak/ui/contexts/window-session-context';
 import { convertKeyValueToString } from '@beak/ui/features/basic-table-editor/parsers';
@@ -10,8 +12,6 @@ import { ipcFsService } from '@beak/ui/lib/ipc';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { requestAllowsBody } from '@beak/ui/utils/http';
 import { convertRequestToUrl } from '@beak/ui/utils/uri';
-import { requestBodyContentType } from '@beak/common/helpers/request';
-import { TypedObject } from '@beak/common/helpers/typescript';
 import type { ValidRequestNode } from '@getbeak/types/nodes';
 import type { RequestBody, RequestOverview, ToggleKeyValue } from '@getbeak/types/request';
 import type { Context } from '@getbeak/types/values';

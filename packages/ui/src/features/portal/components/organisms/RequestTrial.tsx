@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
+import Squawk from '@beak/common/utils/squawk';
 import Button from '@beak/ui/components/atoms/Button';
 import Input from '@beak/ui/components/atoms/Input';
 import Label from '@beak/ui/components/atoms/Label';
 import { ipcDialogService, ipcNestService } from '@beak/ui/lib/ipc';
-import Squawk from '@beak/common/utils/squawk';
 
 import { Error } from '../atoms/typography';
 

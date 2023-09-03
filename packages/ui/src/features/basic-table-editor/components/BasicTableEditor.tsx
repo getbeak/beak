@@ -1,7 +1,7 @@
 import React from 'react';
+import { TypedObject } from '@beak/common/helpers/typescript';
 import DebouncedInput from '@beak/ui/components/atoms/DebouncedInput';
 import { ValueParts } from '@beak/ui/features/realtime-values/values';
-import { TypedObject } from '@beak/common/helpers/typescript';
 import type { ToggleKeyValue } from '@getbeak/types/request';
 import styled from 'styled-components';
 

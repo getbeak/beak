@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
+import Squawk from '@beak/common/utils/squawk';
 import Button from '@beak/ui/components/atoms/Button';
 import Label from '@beak/ui/components/atoms/Label';
 import { ipcNestService } from '@beak/ui/lib/ipc';
-import Squawk from '@beak/common/utils/squawk';
 import styled from 'styled-components';
 
 import FormError from '../../../../components/atoms/FormError';

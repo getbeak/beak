@@ -1,8 +1,8 @@
 import React, { ReactElement, useRef } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import { ApplicationState } from '@beak/ui/store';
 import { TypedObject } from '@beak/common/helpers/typescript';
+import { ApplicationState } from '@beak/ui/store';
 import { PayloadAction } from '@reduxjs/toolkit';
 import type { MenuItemConstructorOptions } from 'electron';
 import styled from 'styled-components';

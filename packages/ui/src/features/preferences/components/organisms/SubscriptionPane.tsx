@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { ipcNestService } from '@beak/ui/lib/ipc';
 import { GetSubscriptionStatusResponse } from '@beak/common/types/nest';
 import Squawk from '@beak/common/utils/squawk';
+import { ipcNestService } from '@beak/ui/lib/ipc';
 
 import NoActiveSubscription from '../molecules/NoActiveSubscription';
 import NotSignedIn from '../molecules/NotSignedIn';

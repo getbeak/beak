@@ -1,4 +1,5 @@
 import React from 'react';
+import { TypedObject } from '@beak/common/helpers/typescript';
 import { ApplicationState } from '@beak/ui/store';
 import { actions } from '@beak/ui/store/project';
 import {
@@ -9,7 +10,6 @@ import {
 	RequestBodyJsonEditorTypeChangePayload,
 	RequestBodyJsonEditorValueChangePayload,
 } from '@beak/ui/store/project/types';
-import { TypedObject } from '@beak/common/helpers/typescript';
 import type { EntryMap } from '@getbeak/types/body-editor-json';
 import { AnyAction } from '@reduxjs/toolkit';
 import styled from 'styled-components';

@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
+import { PreviewReferencedFileRes } from '@beak/common/ipc/fs';
 import { ipcFsService } from '@beak/ui/lib/ipc';
 import { requestBodyFileChanged } from '@beak/ui/store/project/actions';
-import { PreviewReferencedFileRes } from '@beak/common/ipc/fs';
 import { faClose } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { ValidRequestNode } from '@getbeak/types/nodes';

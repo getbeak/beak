@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { ipcNestService } from '@beak/ui/lib/ipc';
 import { toHexAlpha } from '@beak/design-system/utils';
+import { ipcNestService } from '@beak/ui/lib/ipc';
 import { faUserCircle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import styled, { useTheme } from 'styled-components';

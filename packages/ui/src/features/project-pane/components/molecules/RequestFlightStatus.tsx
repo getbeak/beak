@@ -1,8 +1,8 @@
 import React from 'react';
-import { TreeViewItem } from '@beak/ui/features/tree-view/types';
-import { useAppSelector } from '@beak/ui/store/redux';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { statusToColor } from '@beak/design-system/helpers';
+import { TreeViewItem } from '@beak/ui/features/tree-view/types';
+import { useAppSelector } from '@beak/ui/store/redux';
 import styled from 'styled-components';
 
 interface RequestFlightStatusProps {

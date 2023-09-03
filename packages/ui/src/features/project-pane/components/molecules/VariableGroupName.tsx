@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
+import ksuid from '@beak/ksuid';
 import ContextMenu from '@beak/ui/components/atoms/ContextMenu';
 import tabActions from '@beak/ui/features/tabs/store/actions';
 import sidebarActions from '@beak/ui/store/preferences/actions';
 import { actions as vgActions } from '@beak/ui/store/variable-groups';
-import ksuid from '@beak/ksuid';
 import type { MenuItemConstructorOptions } from 'electron';
 import styled from 'styled-components';
 

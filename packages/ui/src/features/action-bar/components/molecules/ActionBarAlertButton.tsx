@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
-import { useAppSelector } from '@beak/ui/store/redux';
 import { TypedObject } from '@beak/common/helpers/typescript';
+import { useAppSelector } from '@beak/ui/store/redux';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useTheme } from 'styled-components';

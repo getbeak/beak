@@ -1,8 +1,8 @@
+import { ShowMessageBoxRes } from '@beak/common/ipc/dialog';
 import { attemptReconciliation } from '@beak/ui/features/tabs/store/actions';
 import { removeFolderNode } from '@beak/ui/lib/beak-project/folder';
 import { removeRequestNode } from '@beak/ui/lib/beak-project/request';
 import { ipcDialogService } from '@beak/ui/lib/ipc';
-import { ShowMessageBoxRes } from '@beak/common/ipc/dialog';
 import type { Nodes } from '@getbeak/types/nodes';
 import { PayloadAction } from '@reduxjs/toolkit';
 import { call, put, select } from 'redux-saga/effects';

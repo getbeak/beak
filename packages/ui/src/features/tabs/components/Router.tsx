@@ -1,11 +1,11 @@
 import React from 'react';
 import { ReflexContainer } from 'react-reflex';
+import { TabItem } from '@beak/common/types/beak-project';
 import ReflexElement from '@beak/ui/components/atoms/ReflexElement';
 import ReflexSplitter from '@beak/ui/components/atoms/ReflexSplitter';
 import NewProjectIntro from '@beak/ui/components/molecules/NewProjectIntro';
 import PendingSlash from '@beak/ui/components/molecules/PendingSplash';
 import { useAppSelector } from '@beak/ui/store/redux';
-import { TabItem } from '@beak/common/types/beak-project';
 import type { RequestNode } from '@getbeak/types/nodes';
 
 import BrokenRequest from '../../broken-request/components/BrokenRequest';

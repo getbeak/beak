@@ -1,10 +1,10 @@
-import binaryStore from '@beak/ui/lib/binary-store';
-import { ipcFlightService, ipcNotificationService, ipcPreferencesService } from '@beak/ui/lib/ipc';
-import { getStatusReasonPhrase } from '@beak/ui/utils/http';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { FlightMessages } from '@beak/common/ipc/flight';
 import { NotificationPreferences } from '@beak/common/types/preferences';
 import ksuid from '@beak/ksuid';
+import binaryStore from '@beak/ui/lib/binary-store';
+import { ipcFlightService, ipcNotificationService, ipcPreferencesService } from '@beak/ui/lib/ipc';
+import { getStatusReasonPhrase } from '@beak/ui/utils/http';
 import type { RequestNode } from '@getbeak/types/nodes';
 import type { ResponseOverview } from '@getbeak/types/response';
 import { PayloadAction } from '@reduxjs/toolkit';

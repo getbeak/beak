@@ -1,6 +1,6 @@
 import React, { MutableRefObject } from 'react';
-import { useAppSelector } from '@beak/ui/store/redux';
 import { toHexAlpha } from '@beak/design-system/utils';
+import { useAppSelector } from '@beak/ui/store/redux';
 import styled, { css } from 'styled-components';
 
 import { useNodeDrop } from '../../hooks/drag-and-drop';

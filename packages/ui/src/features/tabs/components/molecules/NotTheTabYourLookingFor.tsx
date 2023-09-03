@@ -1,8 +1,8 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
+import { TypedObject } from '@beak/common/helpers/typescript';
 import Button from '@beak/ui/components/atoms/Button';
 import { useAppSelector } from '@beak/ui/store/redux';
-import { TypedObject } from '@beak/common/helpers/typescript';
 import type { ValidRequestNode } from '@getbeak/types/nodes';
 import styled from 'styled-components';
 

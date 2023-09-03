@@ -1,9 +1,9 @@
 /* eslint-disable max-len */
 
+import { ShowMessageBoxRes } from '@beak/common/ipc/dialog';
 import { attemptReconciliation } from '@beak/ui/features/tabs/store/actions';
 import { removeVariableGroup } from '@beak/ui/lib/beak-variable-group';
 import { ipcDialogService } from '@beak/ui/lib/ipc';
-import { ShowMessageBoxRes } from '@beak/common/ipc/dialog';
 import { PayloadAction } from '@reduxjs/toolkit';
 import { call, put } from 'redux-saga/effects';
 

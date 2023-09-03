@@ -1,6 +1,6 @@
 import React from 'react';
-import { Select } from '@beak/ui/components/atoms/Input';
 import { NotificationState } from '@beak/common/types/preferences';
+import { Select } from '@beak/ui/components/atoms/Input';
 
 interface NotificationStateSelectProps {
 	value: NotificationState;

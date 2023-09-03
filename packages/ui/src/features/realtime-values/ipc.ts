@@ -1,6 +1,6 @@
-import { ipcExtensionsService } from '@beak/ui/lib/ipc';
 import { ExtensionsMessages, RtvParseValuePartsResponse } from '@beak/common/ipc/extensions';
 import { RequestPayload } from '@beak/common/ipc/ipc';
+import { ipcExtensionsService } from '@beak/ui/lib/ipc';
 
 import { parseValueParts } from './parser';
 

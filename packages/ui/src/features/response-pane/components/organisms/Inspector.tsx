@@ -1,8 +1,8 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
+import { ResponsePreferenceMainTab } from '@beak/common/types/beak-hub';
 import { requestPreferenceSetResMainTab } from '@beak/ui/store/preferences/actions';
 import { useAppSelector } from '@beak/ui/store/redux';
-import { ResponsePreferenceMainTab } from '@beak/common/types/beak-hub';
 import type { Flight } from '@getbeak/types/flight';
 import styled from 'styled-components';
 

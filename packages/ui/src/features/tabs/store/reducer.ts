@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
-import { movePosition } from '@beak/ui/utils/arrays';
 import { TabItem } from '@beak/common/types/beak-project';
+import { movePosition } from '@beak/ui/utils/arrays';
 import { createReducer } from '@reduxjs/toolkit';
 
 import * as actions from './actions';

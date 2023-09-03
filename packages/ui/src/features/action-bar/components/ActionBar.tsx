@@ -1,10 +1,10 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
+import { TypedObject } from '@beak/common/helpers/typescript';
 import { actions as omniBarActions } from '@beak/ui/features/omni-bar/store';
 import { actions as flightActions } from '@beak/ui/store/flight';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { renderPlainTextDefinition } from '@beak/ui/utils/keyboard-rendering';
-import { TypedObject } from '@beak/common/helpers/typescript';
 import {
 	faCaretLeft,
 	faCaretRight,

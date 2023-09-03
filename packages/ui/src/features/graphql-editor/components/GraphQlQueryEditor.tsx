@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
+import ksuid from '@beak/ksuid';
 import EditorView from '@beak/ui/components/atoms/EditorView';
 import useDebounce from '@beak/ui/hooks/use-debounce';
 import binaryStore from '@beak/ui/lib/binary-store';
@@ -8,7 +9,6 @@ import { FlightRequest, FlightRequestKeyValue } from '@beak/ui/store/flight/type
 import { requestBodyGraphQlEditorQueryChanged, requestBodyGraphQlEditorReconcileVariables } from '@beak/ui/store/project/actions';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { convertRequestToUrl } from '@beak/ui/utils/uri';
-import ksuid from '@beak/ksuid';
 import { ValidRequestNode } from '@getbeak/types/nodes';
 import { FetcherParams } from '@graphiql/toolkit';
 import { getIntrospectionQuery, IntrospectionQuery, parse } from 'graphql';

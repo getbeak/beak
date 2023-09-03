@@ -1,11 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
+import { TypedObject } from '@beak/common/helpers/typescript';
 import useRealtimeValueContext from '@beak/ui/features/realtime-values/hooks/use-realtime-value-context';
 import { changeTab } from '@beak/ui/features/tabs/store/actions';
 import { checkShortcut } from '@beak/ui/lib/keyboard-shortcuts';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { movePosition } from '@beak/ui/utils/arrays';
-import { TypedObject } from '@beak/common/helpers/typescript';
 import type { ValidRequestNode } from '@getbeak/types/nodes';
 import Fuse from 'fuse.js';
 import styled, { css } from 'styled-components';

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
+import { EditorPreferences } from '@beak/common/types/preferences';
 import Input from '@beak/ui/components/atoms/Input';
 import { ipcPreferencesService } from '@beak/ui/lib/ipc';
-import { EditorPreferences } from '@beak/common/types/preferences';
 
 import { SelectContainer, SelectItem, SelectItemPreview } from '../atoms/fancy-select';
 import { ItemGroup, ItemInfo, ItemLabel, SubItem, SubItemGroup, SubItemLabel } from '../atoms/item';

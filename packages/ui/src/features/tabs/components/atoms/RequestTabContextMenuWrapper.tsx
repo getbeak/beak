@@ -1,12 +1,12 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
+import { TabItem } from '@beak/common/types/beak-project';
+import ksuid from '@beak/ksuid';
 import ContextMenu from '@beak/ui/components/atoms/ContextMenu';
 import WindowSessionContext from '@beak/ui/contexts/window-session-context';
 import { ipcExplorerService } from '@beak/ui/lib/ipc';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { renderAcceleratorDefinition } from '@beak/ui/utils/keyboard-rendering';
-import { TabItem } from '@beak/common/types/beak-project';
-import ksuid from '@beak/ksuid';
 import type { MenuItemConstructorOptions } from 'electron';
 
 import { closeTab, closeTabsAll, closeTabsLeft, closeTabsOther, closeTabsRight } from '../../store/actions';

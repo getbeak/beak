@@ -1,10 +1,10 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
+import { RequestPreferenceMainTab } from '@beak/common/types/beak-hub';
 import BasicTableEditor from '@beak/ui/features/basic-table-editor/components/BasicTableEditor';
 import { requestPreferenceSetReqMainTab } from '@beak/ui/store/preferences/actions';
 import actions from '@beak/ui/store/project/actions';
 import { useAppSelector } from '@beak/ui/store/redux';
-import { RequestPreferenceMainTab } from '@beak/common/types/beak-hub';
 import type { ValidRequestNode } from '@getbeak/types/nodes';
 import styled from 'styled-components';
 

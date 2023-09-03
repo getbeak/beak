@@ -1,11 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
+import { TypedObject } from '@beak/common/helpers/typescript';
 import DebouncedInput from '@beak/ui/components/atoms/DebouncedInput';
 import { generateValueIdent } from '@beak/ui/lib/beak-variable-group/utils';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { actions } from '@beak/ui/store/variable-groups';
 import { insertNewGroup, insertNewItem, removeGroup, removeItem } from '@beak/ui/store/variable-groups/actions';
-import { TypedObject } from '@beak/common/helpers/typescript';
 import styled, { css } from 'styled-components';
 
 import VariableInput from '../../variable-input/components/VariableInput';

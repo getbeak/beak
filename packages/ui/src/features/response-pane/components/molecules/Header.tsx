@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
+import { statusToColor } from '@beak/design-system/helpers';
 import useRealtimeValueContext from '@beak/ui/features/realtime-values/hooks/use-realtime-value-context';
 import { getStatusReasonPhrase } from '@beak/ui/utils/http';
 import { convertRequestToUrl } from '@beak/ui/utils/uri';
-import { statusToColor } from '@beak/design-system/helpers';
 import type { Flight } from '@getbeak/types/flight';
 import styled from 'styled-components';
 

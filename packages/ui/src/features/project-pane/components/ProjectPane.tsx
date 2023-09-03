@@ -1,12 +1,12 @@
 import React, { useContext } from 'react';
 import { useDispatch } from 'react-redux';
+import ksuid from '@beak/ksuid';
 import WindowSessionContext from '@beak/ui/contexts/window-session-context';
 import { ipcExplorerService } from '@beak/ui/lib/ipc';
 import { checkShortcut } from '@beak/ui/lib/keyboard-shortcuts';
 import { actions } from '@beak/ui/store/project';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { renderAcceleratorDefinition } from '@beak/ui/utils/keyboard-rendering';
-import ksuid from '@beak/ksuid';
 import type { MenuItemConstructorOptions } from 'electron';
 
 import SidebarPane from '../../sidebar/components/SidebarPane';

@@ -1,7 +1,7 @@
-import { ApplicationState } from '@beak/ui/store';
-import { createTakeLatestSagaSet } from '@beak/ui/utils/redux/sagas';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { TabItem } from '@beak/common/types/beak-project';
+import { ApplicationState } from '@beak/ui/store';
+import { createTakeLatestSagaSet } from '@beak/ui/utils/redux/sagas';
 import type { Tree } from '@getbeak/types/nodes';
 import type { VariableGroups } from '@getbeak/types/variable-groups';
 import { delay, put, select } from 'redux-saga/effects';

@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
+import { RecentProject } from '@beak/common/types/beak-hub';
 import NewsBannerContainer from '@beak/ui/features/news-banner/components/NewsBannerContainer';
 import { ipcBeakHubService, ipcProjectService } from '@beak/ui/lib/ipc';
 import { sortIso8601 } from '@beak/ui/utils/sort';
-import { RecentProject } from '@beak/common/types/beak-hub';
 import { sentenceCase } from 'change-case';
 import styled from 'styled-components';
 

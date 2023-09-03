@@ -1,6 +1,6 @@
 import React from 'react';
-import { ipcExplorerService } from '@beak/ui/lib/ipc';
 import { NewsItemGenericBanner } from '@beak/common/types/nest';
+import { ipcExplorerService } from '@beak/ui/lib/ipc';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import styled, { useTheme } from 'styled-components';

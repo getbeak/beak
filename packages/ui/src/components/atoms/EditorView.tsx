@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
+import { EditorPreferences } from '@beak/common/types/preferences';
+import { Theme, ThemeMode } from '@beak/common/types/theme';
 import useForceReRender from '@beak/ui/hooks/use-force-rerender';
 import { ipcPreferencesService } from '@beak/ui/lib/ipc';
 import { createDefaultOptions } from '@beak/ui/utils/monaco';
-import { EditorPreferences } from '@beak/common/types/preferences';
-import { Theme, ThemeMode } from '@beak/common/types/theme';
 import Editor, { EditorProps } from '@monaco-editor/react';
 import { useTheme } from 'styled-components';
 

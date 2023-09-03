@@ -1,7 +1,7 @@
+import Squawk from '@beak/common/utils/squawk';
 import { ExtractedVariables } from '@beak/ui/features/graphql-editor/types';
 import { ValueParts } from '@beak/ui/features/realtime-values/values';
 import { ActiveRename } from '@beak/ui/features/tree-view/types';
-import Squawk from '@beak/common/utils/squawk';
 import type { EntryMap, EntryType } from '@getbeak/types/body-editor-json';
 import type { Tree } from '@getbeak/types/nodes';
 import type { ToggleKeyValue } from '@getbeak/types/request';

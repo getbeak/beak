@@ -1,7 +1,7 @@
 import React from 'react';
+import { GetSubscriptionStatusResponse } from '@beak/common/types/nest';
 import Button from '@beak/ui/components/atoms/Button';
 import { ipcExplorerService } from '@beak/ui/lib/ipc';
-import { GetSubscriptionStatusResponse } from '@beak/common/types/nest';
 import { formatDistance } from 'date-fns';
 import styled from 'styled-components';
 

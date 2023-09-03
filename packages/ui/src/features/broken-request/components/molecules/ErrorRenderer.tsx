@@ -1,6 +1,6 @@
 import React from 'react';
-import EditorView from '@beak/ui/components/atoms/EditorView';
 import Squawk from '@beak/common/utils/squawk';
+import EditorView from '@beak/ui/components/atoms/EditorView';
 import styled from 'styled-components';
 
 interface ErrorRendererProps {

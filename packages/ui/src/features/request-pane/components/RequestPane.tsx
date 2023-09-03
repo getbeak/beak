@@ -1,11 +1,11 @@
 import React, { useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { ReflexContainer, ReflexElement } from 'react-reflex';
+import ksuid from '@beak/ksuid';
 import { loadRequestPreferences } from '@beak/ui/store/preferences/actions';
 import { alertInsert, alertRemoveDependents } from '@beak/ui/store/project/actions';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { requestAllowsBody } from '@beak/ui/utils/http';
-import ksuid from '@beak/ksuid';
 import type { ValidRequestNode } from '@getbeak/types/nodes';
 import styled from 'styled-components';
 

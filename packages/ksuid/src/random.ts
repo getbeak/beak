@@ -33,14 +33,14 @@ function getWebCrypto(): any | undefined {
 		return crypto;
 	}
 
-	return undefined;
+	return void 0;
 }
 
 function getNodeCrypto(): any | undefined {
 	const r = require;
 
 	if (typeof r === 'undefined')
-		return undefined;
+		return void 0;
 
 	// indirect use of require to avoid Metro's dependency resolution
 	return r('crypto');

@@ -1,5 +1,5 @@
-import { AsyncMapState, AsyncState, MetaPayloadAction } from '@beak/ui/store/types';
 import Squawk from '@beak/common/utils/squawk';
+import { AsyncMapState, AsyncState, MetaPayloadAction } from '@beak/ui/store/types';
 import { PayloadAction } from '@reduxjs/toolkit';
 import { Reducer } from 'redux';
 

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
+import { NotificationPreferences } from '@beak/common/types/preferences';
 import Checkbox from '@beak/ui/components/atoms/Checkbox';
 import { ipcPreferencesService } from '@beak/ui/lib/ipc';
-import { NotificationPreferences } from '@beak/common/types/preferences';
 
 import { ItemGroup, ItemLabel, SubItem, SubItemGroup, SubItemLabel } from '../atoms/item';
 import NotificationStateSelect from '../atoms/NotificationStateSelect';

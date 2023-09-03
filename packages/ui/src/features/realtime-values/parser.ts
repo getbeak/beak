@@ -1,5 +1,5 @@
-import { generateValueIdent } from '@beak/ui/lib/beak-variable-group/utils';
 import { TypedObject } from '@beak/common/helpers/typescript';
+import { generateValueIdent } from '@beak/ui/lib/beak-variable-group/utils';
 import type { Context, ValueParts } from '@getbeak/types/values';
 
 import { RealtimeValueManager } from '.';

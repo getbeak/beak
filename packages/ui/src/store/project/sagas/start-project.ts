@@ -1,3 +1,5 @@
+import Squawk from '@beak/common/utils/squawk';
+import ksuid from '@beak/ksuid';
 import { attemptReconciliation, closeTab, loadTabState } from '@beak/ui/features/tabs/store/actions';
 import { readFolderNode } from '@beak/ui/lib/beak-project/folder';
 import { readProjectFile } from '@beak/ui/lib/beak-project/project';
@@ -5,8 +7,6 @@ import { readRequestNode } from '@beak/ui/lib/beak-project/request';
 import createFsEmitter, { scanDirectoryRecursively, ScanResult } from '@beak/ui/lib/fs-emitter';
 import { ipcDialogService, ipcEncryptionService, ipcWindowService } from '@beak/ui/lib/ipc';
 import actions, { alertInsert } from '@beak/ui/store/project/actions';
-import Squawk from '@beak/common/utils/squawk';
-import ksuid from '@beak/ksuid';
 import type { FolderNode, RequestNode, Tree } from '@getbeak/types/nodes';
 import type { ProjectFile } from '@getbeak/types/project';
 import path from 'path-browserify';
