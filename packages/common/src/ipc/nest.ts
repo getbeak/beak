@@ -1,7 +1,5 @@
-import type { IpcMain } from 'electron';
-
 import { GetSubscriptionStatusResponse, GetUserResponse, NewsItem } from '../types/nest';
-import { IpcServiceMain, IpcServiceRenderer, Listener, PartialIpcRenderer } from './ipc';
+import { IpcServiceMain, IpcServiceRenderer, Listener, PartialIpcMain, PartialIpcRenderer } from './ipc';
 
 export const NestMessages = {
 	SendMagicLink: 'send_magic_link',
@@ -55,7 +53,7 @@ export class IpcNestServiceRenderer extends IpcServiceRenderer {
 }
 
 export class IpcNestServiceMain extends IpcServiceMain {
-	constructor(ipc: IpcMain) {
+	constructor(ipc: PartialIpcMain) {
 		super('nest', ipc);
 	}
 

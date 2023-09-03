@@ -14,9 +14,8 @@ on:
       - '.github/workflows/beak-app.yml'
       - 'package.json'
       - 'yarn.lock'
+      - 'apps-host/**'
       - 'packages/**'
-      - '!packages/website/**'
-      - '!packages/share/**'
 
 jobs:
   build-deploy:
@@ -88,13 +87,13 @@ jobs:
       - name: Delete un-necessary artifacts
         if: startsWith(github.ref, 'refs/tags/v') == false
         run: |
-          rm -rf ./packages/electron-host/dist-electron/.icon-ico
-          rm -rf ./packages/electron-host/dist-electron/.icon-icns
-          rm -rf ./packages/electron-host/dist-electron/mac
-          rm -rf ./packages/electron-host/dist-electron/mac-arm64
-          rm -rf ./packages/electron-host/dist-electron/win-unpacked
-          rm -rf ./packages/electron-host/dist-electron/win-ia32-unpacked
-          rm -rf ./packages/electron-host/dist-electron/linux-unpacked
+          rm -rf ./apps-host/electron/dist-electron/.icon-ico
+          rm -rf ./apps-host/electron/dist-electron/.icon-icns
+          rm -rf ./apps-host/electron/dist-electron/mac
+          rm -rf ./apps-host/electron/dist-electron/mac-arm64
+          rm -rf ./apps-host/electron/dist-electron/win-unpacked
+          rm -rf ./apps-host/electron/dist-electron/win-ia32-unpacked
+          rm -rf ./apps-host/electron/dist-electron/linux-unpacked
       - name: Upload non-release artifacts to S3
         if: startsWith(github.ref, 'refs/tags/v') == false
         uses: shallwefootball/upload-s3-action@v1.1.2
@@ -102,5 +101,5 @@ jobs:
           aws_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY}}
           aws_bucket: ${{ secrets.AWS_S3_BUILDS_BUCKET }}
-          source_dir: 'packages/electron-host/dist-electron/'
+          source_dir: 'apps-host/electron/dist-electron/'
           destination_dir: 'commits/${{ github.sha }}/'

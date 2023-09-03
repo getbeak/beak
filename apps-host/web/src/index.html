@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="robots" content="noindex" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+  </head>
+  <body>
+    <!-- TODO(afr): Style a noscript page, or redirect to beak web app home -->
+    <noscript>javascript pls</noscript>
+    <script>
+      if (global === undefined) {
+        var global = window;
+      }
+
+      // Create a fake secure bridge, this will be properly setup in `setup-web-host.ts`
+      window.secureBridge = {
+        ipc: {
+          invoke: () => null,
+          on: () => { /* Stub */ },
+          off: () => { /* Stub */ },
+        },
+      };
+    </script>
+    <!-- TODO(afr): Register service worker one day -->
+    <script type="module" src="./setup-web-host.ts"></script>
+    <script type="module" src="./index.tsx"></script>
+
+    <div id="root"></div>
+    <div id="root-host"></div>
+
+    <div id="portal-container">
+      <div id="action-alerts-popover"></div>
+      <div id="generic-dialog-container"></div>
+      <div id="tab-item-sub-items-popover"></div>
+    </div>
+
+    <div id="portal-container-host">
+      <div id="context-menu-container"></div>
+    </div>
+  </body>
+</html>

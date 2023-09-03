@@ -1,6 +1,4 @@
-import type { IpcMain } from 'electron';
-
-import { IpcServiceMain, IpcServiceRenderer, Listener, PartialIpcRenderer } from './ipc';
+import { IpcServiceMain, IpcServiceRenderer, Listener, PartialIpcMain, PartialIpcRenderer } from './ipc';
 
 const WindowMessages = {
 	CloseSelfWindow: 'close_self_window',
@@ -27,7 +25,7 @@ export class IpcWindowServiceRenderer extends IpcServiceRenderer {
 }
 
 export class IpcWindowServiceMain extends IpcServiceMain {
-	constructor(ipc: IpcMain) {
+	constructor(ipc: PartialIpcMain) {
 		super('window', ipc);
 	}
 

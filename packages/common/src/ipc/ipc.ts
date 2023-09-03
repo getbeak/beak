@@ -1,5 +1,4 @@
 import type {
-	IpcMain,
 	IpcMainInvokeEvent,
 	IpcRenderer,
 	IpcRendererEvent,
@@ -14,15 +13,21 @@ export interface RequestPayload<T = unknown> {
 
 export interface Response<T> {
 	response?: T;
-	error: Squawk;
+	error?: Squawk;
 }
 
 export type IpcEvent = IpcMainInvokeEvent | IpcRendererEvent;
+
+export type IpcMainListener = <T>(event: IpcMainInvokeEvent, payload: IpcMessage) => Promise<Response<T>>;
 export type Listener<TP = any, TR = void | any> = (event: IpcEvent, payload: TP) => Promise<TR>;
 
 export interface PartialIpcRenderer {
 	on: (channel: string, listening: (event: IpcRendererEvent, ...args: any[]) => void) => void;
 	invoke: IpcRenderer['invoke'];
+}
+
+export interface PartialIpcMain {
+	handle: (channel: string, listener: IpcMainListener) => void;
 }
 
 export interface IpcMessage {
@@ -95,9 +100,9 @@ export class IpcServiceRenderer extends IpcServiceBase {
 }
 
 export class IpcServiceMain extends IpcServiceBase {
-	protected ipc: IpcMain;
+	protected ipc: PartialIpcMain;
 
-	constructor(channel: string, ipc: IpcMain) {
+	constructor(channel: string, ipc: PartialIpcMain) {
 		super(channel);
 
 		this.ipc = ipc;
@@ -123,6 +128,9 @@ export class IpcServiceMain extends IpcServiceBase {
 
 				return { response };
 			} catch (error) {
+				// eslint-disable-next-line no-console
+				console.log('[ipc_main_error]', error);
+
 				// TODO(afr): Yeah this is shit, can't be bothered to find out why I need it
 				return { error: JSON.parse(JSON.stringify(Squawk.coerce(error))) };
 			}

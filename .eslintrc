@@ -47,7 +47,6 @@
 	},
 
 	"rules": {
-			
 		"accessor-pairs": 1,
 		"array-bracket-spacing": 1,
 		"array-callback-return": 1,
@@ -101,7 +100,7 @@
 		"no-caller": 1,
 		"no-catch-shadow": 1,
 		"no-confusing-arrow": 0,
-		"no-console": "error",
+		"no-console": ["error", { "allow": ["info", "warn", "error"] }],
 		"no-div-regex": 1,
 		"no-duplicate-imports": 1,
 		"no-else-return": 1,
