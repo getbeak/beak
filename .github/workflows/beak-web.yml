@@ -1,5 +1,9 @@
 name: beak-web
 
+env:
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  VERCEL_MARKETING_PROJECT_ID: ${{ secrets.VERCEL_MARKETING_PROJECT_ID }}
+
 on:
   push:
     branches:
@@ -24,10 +28,27 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - uses: benjlevesque/short-sha@v1.2
-        id: short-sha
-        with:
-          length: 6
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+
+      - name: Install modules
+        run: yarn install --frozen-lockfile
+      - name: Lint, typecheck, and test
+        run: |
+          yarn lint
+          yarn typecheck
+          yarn test
+
+      # New non-prod site
+      - name: Pull Vercel Environment Information
+        working-directory: apps-web/marketing
+        run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Build Project Artifacts
+        working-directory: apps-web/marketing
+        run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Deploy Project Artifacts to Vercel
+        working-directory: apps-web/marketing
+        run: vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v2.4.1
@@ -35,41 +56,6 @@ jobs:
           node-version: '18'
           cache: 'yarn'
           cache-dependency-path: yarn.lock
-
-      - name: Install modules
-        run: yarn install --frozen-lockfile
-
-      - name: Lint, typecheck, and test
-        run: |
-          yarn lint
-          yarn typecheck
-          yarn test
-
-      - name: Build web code
-        env:
-          BUILD_ENVIRONMENT: ci
-          COMMIT_IDENTIFIER: ${{ github.sha }}
-          BUILD_NUMBER: ${{ steps.short-sha.outputs.sha }}
-          SENTRY_WEBSITE_API_KEY: ${{ secrets.SENTRY_WEBSITE_API_KEY }}
-          NODE_OPTIONS: --max-old-space-size=8192
-        run: yarn build:apps-web
-
-      - name: Deploy website to production
-        if: "startsWith(github.event.head_commit.message, 'release(')"
-        uses: nwtgck/actions-netlify@v1.2
-        with:
-          publish-dir: './apps-web/marketing/dist'
-          production-branch: master
-          production-deploy: true
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          deploy-message: "Deploy from GitHub Actions"
-          enable-pull-request-comment: true
-          enable-commit-comment: true
-          overwrites-pull-request-comment: true
-        env:
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID_WEBSITE }}
-        timeout-minutes: 4
 
       - name: Upload share to S3
         if: "startsWith(github.event.head_commit.message, 'release(')"
@@ -80,28 +66,6 @@ jobs:
           aws_bucket: ${{ secrets.AWS_S3_BUCKET_SHARE }}
           source_dir: 'apps-web/share/dist/'
           destination_dir: ''
-
-      - name: Delete robots/humans/sitemap for nonprod
-        run: |
-          rm apps-web/marketing/dist/robots.txt
-          rm apps-web/marketing/dist/humans.txt
-          rm apps-web/marketing/dist/sitemap.xml
-
-      - name: Deploy website to non-production
-        uses: nwtgck/actions-netlify@v1.2
-        with:
-          publish-dir: './apps-web/marketing/dist'
-          production-branch: master
-          production-deploy: true
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          deploy-message: "Deploy from GitHub Actions"
-          enable-pull-request-comment: false
-          enable-commit-comment: true
-          overwrites-pull-request-comment: true
-        env:
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID_WEBSITE_NONPROD }}
-        timeout-minutes: 4
 
       - name: Upload share to S3 (nonprod)
         uses: shallwefootball/upload-s3-action@v1.1.2
