@@ -1,6 +1,5 @@
 import React from 'react';
 import Helmet from 'react-helmet';
-import { Link } from 'react-router-dom';
 import { Card, CardBody, CardGrid, CardIcons, CardTitle } from '@beak/apps-web-marketing/components/atoms/Card';
 import { SmallContainer } from '@beak/apps-web-marketing/components/atoms/Container';
 import { SubTitle, Title, TitleSubtle } from '@beak/apps-web-marketing/components/atoms/Typography';
@@ -9,6 +8,7 @@ import { faHatWizard } from '@fortawesome/free-solid-svg-icons/faHatWizard';
 import { faLifeRing } from '@fortawesome/free-solid-svg-icons/faLifeRing';
 import { faPersonSnowboarding } from '@fortawesome/free-solid-svg-icons/faPersonSnowboarding';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Link from 'next/link';
 import styled, { useTheme } from 'styled-components';
 
 const Purchased: React.FC<React.PropsWithChildren<unknown>> = () => {
@@ -42,7 +42,7 @@ const Purchased: React.FC<React.PropsWithChildren<unknown>> = () => {
 							</CardTitle>
 							<CardBody>
 								{'Welcome to Beak! To get started, just head to the '}
-								<Link to={'/#downloads'}>{'downloads'}</Link>{' page '}
+								<Link href={'/#downloads'}>{'downloads'}</Link>{' page '}
 								{'to download Beak for your device. Updates will of '}
 								{'course be automatically downloaded in future.'}
 							</CardBody>
@@ -93,7 +93,7 @@ const Purchased: React.FC<React.PropsWithChildren<unknown>> = () => {
 									{'over here'}
 								</a>
 								{'. And of course there is the feature overview available on our '}
-								<Link to={'/#features'}>{'home page'}</Link>{'.'}
+								<Link href={'/#features'}>{'home page'}</Link>{'.'}
 							</CardBody>
 						</Card>
 						<Card>

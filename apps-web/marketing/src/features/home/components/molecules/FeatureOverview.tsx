@@ -11,14 +11,15 @@ import styled, { useTheme } from 'styled-components';
 
 import { Card, CardBody, CardGrid, CardIcons, CardTitle } from '../../../../components/atoms/Card';
 
+// const fetchFeatureTitleVariant = () => Math.round(Math.random()) === 1 ? 'introduce' : 'bring home';
+
 const FeatureOverview: React.FC<React.PropsWithChildren<unknown>> = () => {
 	const theme = useTheme();
-	const hillVsSarah = Math.round(Math.random()) === 1 ? 'introduce' : 'bring home';
 
 	return (
 		<Container>
 			<Wrapper>
-				<FeatureTitle>{`The only API crafting tool you'd ${hillVsSarah} to your mother`}</FeatureTitle>
+				<FeatureTitle>{'The only API crafting tool you\'d bring home to your mother'}</FeatureTitle>
 
 				<CardGrid>
 					<Card>

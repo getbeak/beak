@@ -17,11 +17,11 @@ const FeatureHighlight: React.FC<React.PropsWithChildren<FeatureHighlightProps>>
 	const { title, description, asset, flipped } = props;
 
 	return (
-		<Wrapper flipped={flipped}>
+		<Wrapper $flipped={flipped}>
 			<ScrollTarget target={'features'} />
 
 			<Container>
-				<Grid flipped={flipped}>
+				<Grid $flipped={flipped}>
 					<DetailContainer>
 						<Title>{title}</Title>
 						<SubTitle>{description}</SubTitle>
@@ -39,9 +39,9 @@ const FeatureHighlight: React.FC<React.PropsWithChildren<FeatureHighlightProps>>
 	);
 };
 
-const Wrapper = styled.div<{ flipped: boolean | undefined }>`
+const Wrapper = styled.div<{ $flipped: boolean | undefined }>`
 	padding: 80px 0;
-	background: ${p => p.flipped ? p.theme.ui.surfaceHighlight : p.theme.ui.secondaryBackground};
+	background: ${p => p.$flipped ? p.theme.ui.surfaceHighlight : p.theme.ui.secondaryBackground};
 `;
 
 const DetailContainer = styled.div`
@@ -63,9 +63,9 @@ const HighlightAsset = styled.img`
 	object-fit: contain;
 `;
 
-const Grid = styled.div<{ flipped: boolean | undefined }>`
+const Grid = styled.div<{ $flipped: boolean | undefined }>`
 	display: flex;
-	flex-direction: ${p => p.flipped ? 'row-reverse' : 'row'};
+	flex-direction: ${p => p.$flipped ? 'row-reverse' : 'row'};
 
 	padding: 60px 0;
 

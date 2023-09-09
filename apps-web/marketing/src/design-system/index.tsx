@@ -1,3 +1,5 @@
+'use client';
+
 import { createGlobalStyle } from 'styled-components';
 
 const GlobalStyle = createGlobalStyle`
@@ -7,6 +9,10 @@ const GlobalStyle = createGlobalStyle`
 		color: ${p => p.theme.ui.textOnSurfaceBackground};
 
 		margin: 0; padding: 0;
+	}
+
+	* {
+		transition: background-color 250ms ease;
 	}
 
 	a {

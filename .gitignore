@@ -15,5 +15,8 @@ dist-ts/
 dist-react/
 tsconfig.tsbuildinfo
 
+# Tooling
+.next/
+
 # Beak
 .beak

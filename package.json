@@ -42,6 +42,7 @@
     "start:apps-host-web": "lerna exec --scope '@beak/apps-host-web' yarn start",
     "start:apps-web-marketing": "lerna exec --parallel --concurrency 1 --stream --scope '@beak/apps-web-marketing' yarn start",
     "start:apps-web-share": "lerna exec --parallel --concurrency 1 --stream --scope '@beak/apps-web-share' yarn start",
+    "dev:apps-web-marketing": "lerna exec --parallel --concurrency 1 --stream --scope '@beak/apps-web-marketing' yarn dev",
     "test": "jest",
     "lint": "eslint --ext .tsx --ext .ts .",
     "typecheck": "lerna run typecheck --stream",

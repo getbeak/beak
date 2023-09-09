@@ -1,8 +1,8 @@
 import React from 'react';
 import Helmet from 'react-helmet';
-import { Link } from 'react-router-dom';
 import { SmallContainer } from '@beak/apps-web-marketing/components/atoms/Container';
 import { SubTitle, Title, TitleSubtle } from '@beak/apps-web-marketing/components/atoms/Typography';
+import Link from 'next/link';
 import styled from 'styled-components';
 
 import { LastUpdated, LegalTlDr } from './atoms/LegalTypograpgy';
@@ -130,7 +130,7 @@ const Terms: React.FC<React.PropsWithChildren<unknown>> = () => (
 			<p>
 				{'Unless you are using the Beta or Trial license of Beak, access to Beak requires the purchase of a '}
 				{'subscription. Our pricing and subscription information, and limits are available at '}
-				<Link to={'/pricing'}>{`https://${window.location.hostname}.app/pricing`}</Link>{'.'}
+				<Link href={'/pricing'}>{`https://${window.location.hostname}.app/pricing`}</Link>{'.'}
 			</p>
 			<p>
 				{'If you purchase a subscription, the price will remain constant until the end of the selected '}
@@ -144,7 +144,7 @@ const Terms: React.FC<React.PropsWithChildren<unknown>> = () => (
 			<p>
 				{'If you purchase a subscription, you will be charged the then-current rate immediately, and then '}
 				{'each year thereafter. Subscription pricing is detailed on our pricing page '}
-				<Link to={'/pricing'}>{`https://${window.location.hostname}.app/pricing`}</Link>{'. '}
+				<Link href={'/pricing'}>{`https://${window.location.hostname}.app/pricing`}</Link>{'. '}
 			</p>
 			<p>
 				{'By agreeing to these terms and purchasing a subscription, you acknowledge that your subscription '}
@@ -208,7 +208,7 @@ const Terms: React.FC<React.PropsWithChildren<unknown>> = () => (
 			</LegalTitle>
 			<p>
 				{'You can view our full Privacy Policy ("notice") by visiting '}
-				<Link to={'/legal/privacy'}>{`${window.location.hostname}.app/legal/privacy`}</Link>
+				<Link href={'/legal/privacy'}>{`${window.location.hostname}.app/legal/privacy`}</Link>
 				{'.'}
 			</p>
 
