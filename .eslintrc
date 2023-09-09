@@ -26,7 +26,6 @@
 		"unused-imports"
 	],
 
-
 	"env": {
 		"node": true,
 		"es6": true,
@@ -253,7 +252,7 @@
 		"@typescript-eslint/no-inferrable-types": "error",
 		"@typescript-eslint/no-misused-new": "error",
 		"@typescript-eslint/no-namespace": "error",
-		"@typescript-eslint/no-parameter-properties": "error",
+		"@typescript-eslint/parameter-properties": "error",
 		"@typescript-eslint/triple-slash-reference": [1, { "path": "never", "types": "never", "lib": "never" }],
 		"@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
 		"@typescript-eslint/no-use-before-define": "off", // NOTE(afr): Un-useful rule for how we write components

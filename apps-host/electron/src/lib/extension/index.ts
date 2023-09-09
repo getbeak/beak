@@ -1,9 +1,9 @@
+import { ensureWithinProject } from '@beak/apps-host-electron/ipc-layer/fs-service';
+import { getProjectWindowMapping } from '@beak/apps-host-electron/ipc-layer/fs-shared';
 import { ExtensionsMessages, IpcExtensionsServiceMain, RtvParseValuePartsResponse } from '@beak/common/ipc/extensions';
 import { IpcEvent, RequestPayload } from '@beak/common/ipc/ipc';
 import { RealtimeValueExtension } from '@beak/common/types/extensions';
 import Squawk from '@beak/common/utils/squawk';
-import { ensureWithinProject } from '@beak/apps-host-electron/ipc-layer/fs-service';
-import { getProjectWindowMapping } from '@beak/apps-host-electron/ipc-layer/fs-shared';
 import ksuid from '@beak/ksuid';
 import { Context, ValueParts } from '@getbeak/types/values';
 import { EditableRealtimeValue } from '@getbeak/types-realtime-value/';

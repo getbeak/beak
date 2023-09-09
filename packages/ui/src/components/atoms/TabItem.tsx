@@ -30,7 +30,6 @@ const TabItem = <T = string>(props: React.PropsWithChildren<TabItemProps<T>>): R
 	} = props;
 
 	return (
-		// @ts-expect-error
 		<Wrapper $active={active} $size={size} ref={lazyForwardedRef} {...rest}>
 			{children}
 			{subItems && subItems.length > 0 && (
