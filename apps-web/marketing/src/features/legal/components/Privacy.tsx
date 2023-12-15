@@ -30,7 +30,7 @@ const Privacy: React.FC<React.PropsWithChildren<unknown>> = () => (
 			<a
 				target={'_blank'}
 				rel={'noopener noreferrer nofollow'}
-				href={'https://github.com/getbeak/beak/commits/master/packages/website/src/features/legal/components/Privacy.tsx'}
+				href={'https://github.com/getbeak/beak/commits/master/apps-web/marketing/src/features/legal/components/Privacy.tsx'}
 			>
 				{'View history'}
 			</a>

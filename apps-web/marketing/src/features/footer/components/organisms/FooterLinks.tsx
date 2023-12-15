@@ -7,7 +7,7 @@ const FooterLinks: React.FC<React.PropsWithChildren<unknown>> = () => (
 		<LinkColumn>
 			<LinkHeader>{'Beak'}</LinkHeader>
 			<LinkItem href={'/#features'}>{'Features'}</LinkItem>
-			<LinkItem href={'/pricing'}>{'Pricing'}</LinkItem>
+			{/* <LinkItem href={'/pricing'}>{'Pricing'}</LinkItem> */}
 			<ExternalLinkItem
 				target={'_blank'}
 				rel={'noopener noreferrer nofollow'}
@@ -22,17 +22,17 @@ const FooterLinks: React.FC<React.PropsWithChildren<unknown>> = () => (
 			>
 				{'Status'}
 			</ExternalLinkItem>
-			<ExternalLinkItem
+			{/* <ExternalLinkItem
 				target={'_blank'}
 				rel={'noopener noreferrer nofollow'}
 				href={'https://climate.stripe.com/x4snkJ'}
 			>
 				{'Climate contribution'}
-			</ExternalLinkItem>
+			</ExternalLinkItem> */}
 		</LinkColumn>
 
 		<LinkColumn>
-			<LinkHeader>{'Fun legals'}</LinkHeader>
+			<LinkHeader>{'Legals'}</LinkHeader>
 			<LinkItem href={'/legal/terms'}>{'Terms'}</LinkItem>
 			<LinkItem href={'/legal/privacy'}>{'Privacy'}</LinkItem>
 		</LinkColumn>

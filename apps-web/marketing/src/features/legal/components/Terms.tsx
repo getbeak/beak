@@ -31,7 +31,7 @@ const Terms: React.FC<React.PropsWithChildren<unknown>> = () => (
 			<a
 				target={'_blank'}
 				rel={'noopener noreferrer nofollow'}
-				href={'https://github.com/getbeak/beak/commits/master/packages/website/src/features/legal/components/Terms.tsx'}
+				href={'https://github.com/getbeak/beak/commits/master/apps-web/marketing/src/features/legal/components/Terms.tsx'}
 			>
 				{'View history'}
 			</a>
@@ -105,7 +105,7 @@ const Terms: React.FC<React.PropsWithChildren<unknown>> = () => (
 			</p>
 
 			<LegalSubTitle id={'trial-license'}>
-				{'b. Trial license'}
+				{'c. Trial license'}
 			</LegalSubTitle>
 			<p>
 				{'Flamingo Corp grants you a non-exclusive, non-transferable license to use Beak on a time limited '}
@@ -121,6 +121,22 @@ const Terms: React.FC<React.PropsWithChildren<unknown>> = () => (
 				{'will have to purchase a commercial license.'}
 			</p>
 
+			<LegalSubTitle id={'commercial-license'}>
+				{'d. Free license'}
+			</LegalSubTitle>
+			<p>
+				{'Flamingo Corp hereby grants you a free, non-exclusive, and non-transferable license to use Beak in accordance '}
+				{'with the terms of the following license agreement. You are free to share, transfer, and lend Beak to any other '}
+				{'person or entity (legal or not) without any restrictions. We encourage you to contribute to the open-source '}
+				{'community and share the benefits of Beak with others.'}
+			</p>
+			<p>
+				{'Beak is freely available for use on a per-user basis. You are allowed to use Beak on multiple machines, '}
+				{'without any limitations on the number of machines or users. Feel free to share and distribute Beak as '}
+				{'much as you want. Our goal is to foster collaboration and ensure that Beak is accessible to as many '}
+				{'users as possible.'}
+			</p>
+
 			<LegalTitle id={'subs-pays-refs'}>
 				{'3. Subscriptions, payments, and refunds'}
 			</LegalTitle>
@@ -128,7 +144,7 @@ const Terms: React.FC<React.PropsWithChildren<unknown>> = () => (
 				{'a. Pricing'}
 			</LegalSubTitle>
 			<p>
-				{'Unless you are using the Beta or Trial license of Beak, access to Beak requires the purchase of a '}
+				{'Unless you are using the Free, Beta, or Trial license of Beak, access to Beak requires the purchase of a '}
 				{'subscription. Our pricing and subscription information, and limits are available at '}
 				<Link href={'/pricing'}>{`https://${window.location.hostname}.app/pricing`}</Link>{'.'}
 			</p>

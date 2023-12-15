@@ -5,8 +5,8 @@ import CtaButton from '../../../../components/atoms/Buttons';
 
 const HeaderCta: React.FC<React.PropsWithChildren<unknown>> = () => (
 	<Wrapper>
-		<CtaButton href={'/pricing'} $style={'primary'}>{'Get Beak for $25'}</CtaButton>
-		<CtaButton href={'/#downloads'} $style={'secondary'}>{'Download free trial'}</CtaButton>
+		{/* <CtaButton href={'/pricing'} $style={'primary'}>{'Get Beak for $25'}</CtaButton> */}
+		<CtaButton href={'/#downloads'} $style={'primary'}>{'Download free to get started'}</CtaButton>
 	</Wrapper>
 );
 
