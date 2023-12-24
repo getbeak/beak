@@ -1,8 +1,9 @@
+/* eslint-disable no-process-env */
 /* eslint-disable @typescript-eslint/no-var-requires */
 
-const path = require('path');
-const reactPlugin = require('@vitejs/plugin-react');
-const viteSentryPlugin = require('vite-plugin-sentry');
+import reactPlugin from '@vitejs/plugin-react';
+import path from 'path';
+import viteSentryPlugin from 'vite-plugin-sentry';
 
 const environment = process.env.NODE_ENV;
 const commitIdentifier = process.env.COMMIT_IDENTIFIER;
@@ -12,7 +13,7 @@ const releaseIdentifier = commitIdentifier;
  * @type {import('vite').UserConfig}
  * @see https://vitejs.dev/config/
  */
-module.exports = {
+export default {
 	mode: environment,
 	jsx: 'react',
 	root: './src',
