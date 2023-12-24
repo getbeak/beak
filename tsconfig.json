@@ -2,6 +2,7 @@
 	"compilerOptions": {
 		"composite": true,
 		"incremental": true,
+		"rootDir": ".",
 		"outDir": "./dist",
 		"baseUrl": ".",
 
