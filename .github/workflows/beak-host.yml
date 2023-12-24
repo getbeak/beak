@@ -1,4 +1,4 @@
-name: beak-app
+name: beak-host
 
 on:
   push:
@@ -11,7 +11,7 @@ on:
     branches:
       - '*'
     paths:
-      - '.github/workflows/beak-app.yml'
+      - '.github/workflows/beak-host.yml'
       - 'package.json'
       - 'yarn.lock'
       - 'apps-host/**'
@@ -42,7 +42,7 @@ jobs:
       - name: Lint, typecheck, and test
         run: |
           yarn lint
-          yarn typecheck
+          yarn typecheck:apps-host
           yarn test
 
       - name: Build and package (release)
@@ -52,13 +52,12 @@ jobs:
           COMMIT_IDENTIFIER: ${{ github.sha }}
           BUILD_NUMBER: ${{ steps.short-sha.outputs.sha }}
           VERSION_RELEASE: 'qui'
-          SENTRY_ELECTRON_APP_API_KEY: ${{ secrets.SENTRY_ELECTRON_APP_API_KEY }}
-          SENTRY_WEBSITE_API_KEY: ${{ secrets.SENTRY_WEBSITE_API_KEY }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           CSC_LINK: ${{ secrets.CSC_LINK }}
           CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
           CSC_FOR_PULL_REQUEST: true
           APPLE_ID: ${{ secrets.APPLE_ID }}
-          APPLE_ID_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
           ASC_PROVIDER: ${{ secrets.ASC_PROVIDER }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -72,13 +71,12 @@ jobs:
           BUILD_ENVIRONMENT: ci
           COMMIT_IDENTIFIER: ${{ github.sha }}
           BUILD_NUMBER: ${{ steps.short-sha.outputs.sha }}
-          SENTRY_ELECTRON_APP_API_KEY: ${{ secrets.SENTRY_ELECTRON_APP_API_KEY }}
-          SENTRY_WEBSITE_API_KEY: ${{ secrets.SENTRY_WEBSITE_API_KEY }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           CSC_LINK: ${{ secrets.CSC_LINK }}
           CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
           CSC_FOR_PULL_REQUEST: true
           APPLE_ID: ${{ secrets.APPLE_ID }}
-          APPLE_ID_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
           ASC_PROVIDER: ${{ secrets.ASC_PROVIDER }}
           USE_HARD_LINKS: false
           NODE_OPTIONS: --max-old-space-size=8192

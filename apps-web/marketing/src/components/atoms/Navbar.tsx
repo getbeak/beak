@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom';
+import Link from 'next/link';
 import styled, { css } from 'styled-components';
 
 import Container from './Container';
@@ -30,7 +30,7 @@ export const NavLogo = styled.div`
 	margin-right: 15px;
 `;
 
-export const NavItemLocal = styled(NavLink)`
+export const NavItemLocal = styled(Link)`
 	padding: 5px 10px;
 	margin: 0 8px;
 

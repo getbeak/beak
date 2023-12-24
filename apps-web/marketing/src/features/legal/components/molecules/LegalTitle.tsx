@@ -1,7 +1,7 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { faLink } from '@fortawesome/free-solid-svg-icons/faLink';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Link from 'next/link';
 import styled, { useTheme } from 'styled-components';
 
 interface LegalTitleProps {
@@ -19,7 +19,7 @@ const LegalTitleItem: React.FC<React.PropsWithChildren<LegalTitleProps>> = ({ el
 
 			{children}
 
-			<Clicker to={url}>
+			<Clicker href={url}>
 				<FontAwesomeIcon
 					icon={faLink}
 					color={theme.ui.primaryFill}

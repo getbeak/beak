@@ -70,9 +70,9 @@ const sentrySourceMapsPlugin = {
 			}
 
 			const cli = new SentryCli(null, {
-				authToken: process.env.SENTRY_ELECTRON_APP_API_KEY,
+				authToken: process.env.SENTRY_AUTH_TOKEN,
 				org: 'beak',
-				project: 'electron-app',
+				project: 'apps-host-electron',
 			});
 
 			await cli.releases.new(releaseIdentifier!);

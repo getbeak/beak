@@ -27,7 +27,7 @@ module.exports = {
 	plugins: [
 		reactPlugin({ include: '**/*.tsx' }),
 		viteSentryPlugin({
-			authToken: process.env.SENTRY_WEBSITE_API_KEY,
+			authToken: process.env.SENTRY_AUTH_TOKEN,
 			dryRun: process.env.BUILD_ENVIRONMENT !== 'ci',
 			org: 'beak',
 			project: 'share',

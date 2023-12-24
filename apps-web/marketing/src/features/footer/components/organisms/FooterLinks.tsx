@@ -1,13 +1,13 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import styled from 'styled-components';
 
 const FooterLinks: React.FC<React.PropsWithChildren<unknown>> = () => (
 	<LinkContainer>
 		<LinkColumn>
 			<LinkHeader>{'Beak'}</LinkHeader>
-			<LinkItem to={'/#features'}>{'Features'}</LinkItem>
-			<LinkItem to={'/pricing'}>{'Pricing'}</LinkItem>
+			<LinkItem href={'/#features'}>{'Features'}</LinkItem>
+			{/* <LinkItem href={'/pricing'}>{'Pricing'}</LinkItem> */}
 			<ExternalLinkItem
 				target={'_blank'}
 				rel={'noopener noreferrer nofollow'}
@@ -22,19 +22,19 @@ const FooterLinks: React.FC<React.PropsWithChildren<unknown>> = () => (
 			>
 				{'Status'}
 			</ExternalLinkItem>
-			<ExternalLinkItem
+			{/* <ExternalLinkItem
 				target={'_blank'}
 				rel={'noopener noreferrer nofollow'}
 				href={'https://climate.stripe.com/x4snkJ'}
 			>
 				{'Climate contribution'}
-			</ExternalLinkItem>
+			</ExternalLinkItem> */}
 		</LinkColumn>
 
 		<LinkColumn>
-			<LinkHeader>{'Fun legals'}</LinkHeader>
-			<LinkItem to={'/legal/terms'}>{'Terms'}</LinkItem>
-			<LinkItem to={'/legal/privacy'}>{'Privacy'}</LinkItem>
+			<LinkHeader>{'Legals'}</LinkHeader>
+			<LinkItem href={'/legal/terms'}>{'Terms'}</LinkItem>
+			<LinkItem href={'/legal/privacy'}>{'Privacy'}</LinkItem>
 		</LinkColumn>
 
 		<LinkColumn>

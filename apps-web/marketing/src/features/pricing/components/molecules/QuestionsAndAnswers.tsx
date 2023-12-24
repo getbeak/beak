@@ -1,7 +1,7 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { SmallContainer } from '@beak/apps-web-marketing/components/atoms/Container';
 import { BodyBold, BodyRegular, Title } from '@beak/apps-web-marketing/components/atoms/Typography';
+import Link from 'next/link';
 import styled from 'styled-components';
 
 const QuestionsAndAnswers: React.FC<React.PropsWithChildren<unknown>> = () => (
@@ -48,7 +48,7 @@ const QuestionsAndAnswers: React.FC<React.PropsWithChildren<unknown>> = () => (
 					<Question>{'Trial period'}</Question>
 					<Answer>
 						{'Beak comes with fully featured Trial mode. '}
-						<Link to={'/#downloads'}>{'Download'}</Link>{' Beak to start your trial where you\'ll get '}
+						<Link href={'/#downloads'}>{'Download'}</Link>{' Beak to start your trial where you\'ll get '}
 						{'access to all of Beak\'s features for 14 days!'}
 					</Answer>
 				</Card>

@@ -23,8 +23,6 @@ const versionRelease = Boolean(process.env.VERSION_RELEASE);
 const versionIdentifier = packageJson.version;
 const commitIdentifier = process.env.COMMIT_IDENTIFIER;
 const releaseIdentifier = versionRelease ? `beak-app@${versionIdentifier}` : commitIdentifier;
-
-const sourcePath = environment === 'development' ? 'src' : 'dist';
 const sourcePathInDev = environment === 'development' ? 'src' : '';
 
 /**
@@ -42,9 +40,10 @@ module.exports = {
 			'@beak/apps-host-web': path.join(__dirname, './src'),
 
 			'@beak/ui': path.join(__dirname, `../../packages/ui/${sourcePathInDev}`),
-			'@beak/common': path.join(__dirname, `../../packages/common/${sourcePath}`),
-			'@beak/common-host': path.join(__dirname, `../../packages/common-host/${sourcePath}`),
-			'@beak/design-system': path.join(__dirname, `../../packages/design-system/${sourcePath}`),
+			'@beak/common': path.join(__dirname, '../../packages/common/src'),
+			'@beak/common-host': path.join(__dirname, '../../packages/common-host/src'),
+			'@beak/design-system': path.join(__dirname, '../../packages/design-system/src'),
+			'@beak/ksuid': path.join(__dirname, '../../packages/ksuid/src'),
 
 			'@getbeak/types': path.join(__dirname, '../../packages/types/src'),
 			'path': 'path-browserify',
@@ -86,10 +85,10 @@ module.exports = {
 			}],
 		}),
 		viteSentryPlugin({
-			authToken: process.env.SENTRY_WEB_APP_API_KEY,
+			authToken: process.env.SENTRY_AUTH_TOKEN,
 			dryRun: process.env.BUILD_ENVIRONMENT !== 'ci',
 			org: 'beak',
-			project: 'web-app',
+			project: 'apps-host-web',
 			release: releaseIdentifier,
 			deploy: {
 				env: environment,

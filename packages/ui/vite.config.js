@@ -22,8 +22,6 @@ const versionIdentifier = packageJson.version;
 const commitIdentifier = process.env.COMMIT_IDENTIFIER;
 const releaseIdentifier = versionRelease ? `beak-app@${versionIdentifier}` : commitIdentifier;
 
-const sourcePath = environment === 'development' ? 'src' : 'dist';
-
 /**
  * @type {import('vite').UserConfig}
  * @see https://vitejs.dev/config/
@@ -37,8 +35,9 @@ export default {
 	resolve: {
 		alias: {
 			'@beak/ui': path.join(__dirname, './src'),
-			'@beak/common': path.join(__dirname, `../common/${sourcePath}`),
-			'@beak/design-system': path.join(__dirname, `../design-system/${sourcePath}`),
+			'@beak/common': path.join(__dirname, '../common/src'),
+			'@beak/design-system': path.join(__dirname, '../design-system/src'),
+			'@beak/ksuid': path.join(__dirname, '../ksuid/src'),
 
 			'@getbeak/types': path.join(__dirname, '../types/src'),
 			'path': 'path-browserify',
@@ -76,10 +75,10 @@ export default {
 			}],
 		}),
 		viteSentryPlugin({
-			authToken: process.env.SENTRY_ELECTRON_APP_API_KEY,
+			authToken: process.env.SENTRY_AUTH_TOKEN,
 			dryRun: process.env.BUILD_ENVIRONMENT !== 'ci',
 			org: 'beak',
-			project: 'electron-app',
+			project: 'apps-host-electron',
 			release: releaseIdentifier,
 			deploy: {
 				env: environment,

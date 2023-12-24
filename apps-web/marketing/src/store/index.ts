@@ -11,6 +11,8 @@ function createInitialState(): ApplicationState {
 }
 
 export function configureStore() {
+	// 'use server';
+
 	const initialState = createInitialState();
 
 	const store = createStore(

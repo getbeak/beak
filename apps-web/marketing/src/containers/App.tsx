@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState } from 'react';
 import { faBars } from '@fortawesome/free-solid-svg-icons/faBars';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -36,12 +38,12 @@ const AppContainer: React.FC<React.PropsWithChildren<unknown>> = ({ children }) 
 							setExpandNav(false);
 						}}
 					>
-						<NavItemLocal to={'/#features'}>
+						<NavItemLocal href={'/#features'}>
 							{'Features'}
 						</NavItemLocal>
-						<NavItemLocal to={'/pricing'}>
+						{/* <NavItemLocal href={'/pricing'}>
 							{'Pricing'}
-						</NavItemLocal>
+						</NavItemLocal> */}
 						<NavItemExternal
 							target={'_blank'}
 							rel={'noopener noreferrer nofollow'}

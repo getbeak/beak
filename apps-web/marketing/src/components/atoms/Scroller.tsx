@@ -1,20 +1,21 @@
+'use client';
+
 import React, { useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
 
 const Scroller: React.FC<React.PropsWithChildren<unknown>> = () => {
-	const location = useLocation();
+	const hash = typeof window === 'undefined' ? '' : window.location.hash;
 
 	useEffect(() => {
-		if (!location.hash)
+		if (!hash)
 			return;
 
 		// Hack to handle first page render
 		window.setTimeout(() => {
-			const element = document.getElementById(location.hash.slice(1));
+			const element = document.getElementById(hash.slice(1));
 
 			element?.scrollIntoView({ behavior: 'smooth' });
 		}, 200);
-	}, [location.hash]);
+	}, [hash]);
 
 	return null;
 };

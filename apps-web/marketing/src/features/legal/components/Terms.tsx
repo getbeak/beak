@@ -1,8 +1,8 @@
 import React from 'react';
 import Helmet from 'react-helmet';
-import { Link } from 'react-router-dom';
 import { SmallContainer } from '@beak/apps-web-marketing/components/atoms/Container';
 import { SubTitle, Title, TitleSubtle } from '@beak/apps-web-marketing/components/atoms/Typography';
+import Link from 'next/link';
 import styled from 'styled-components';
 
 import { LastUpdated, LegalTlDr } from './atoms/LegalTypograpgy';
@@ -31,7 +31,7 @@ const Terms: React.FC<React.PropsWithChildren<unknown>> = () => (
 			<a
 				target={'_blank'}
 				rel={'noopener noreferrer nofollow'}
-				href={'https://github.com/getbeak/beak/commits/master/packages/website/src/features/legal/components/Terms.tsx'}
+				href={'https://github.com/getbeak/beak/commits/master/apps-web/marketing/src/features/legal/components/Terms.tsx'}
 			>
 				{'View history'}
 			</a>
@@ -105,7 +105,7 @@ const Terms: React.FC<React.PropsWithChildren<unknown>> = () => (
 			</p>
 
 			<LegalSubTitle id={'trial-license'}>
-				{'b. Trial license'}
+				{'c. Trial license'}
 			</LegalSubTitle>
 			<p>
 				{'Flamingo Corp grants you a non-exclusive, non-transferable license to use Beak on a time limited '}
@@ -121,6 +121,22 @@ const Terms: React.FC<React.PropsWithChildren<unknown>> = () => (
 				{'will have to purchase a commercial license.'}
 			</p>
 
+			<LegalSubTitle id={'commercial-license'}>
+				{'d. Free license'}
+			</LegalSubTitle>
+			<p>
+				{'Flamingo Corp hereby grants you a free, non-exclusive, and non-transferable license to use Beak in accordance '}
+				{'with the terms of the following license agreement. You are free to share, transfer, and lend Beak to any other '}
+				{'person or entity (legal or not) without any restrictions. We encourage you to contribute to the open-source '}
+				{'community and share the benefits of Beak with others.'}
+			</p>
+			<p>
+				{'Beak is freely available for use on a per-user basis. You are allowed to use Beak on multiple machines, '}
+				{'without any limitations on the number of machines or users. Feel free to share and distribute Beak as '}
+				{'much as you want. Our goal is to foster collaboration and ensure that Beak is accessible to as many '}
+				{'users as possible.'}
+			</p>
+
 			<LegalTitle id={'subs-pays-refs'}>
 				{'3. Subscriptions, payments, and refunds'}
 			</LegalTitle>
@@ -128,9 +144,9 @@ const Terms: React.FC<React.PropsWithChildren<unknown>> = () => (
 				{'a. Pricing'}
 			</LegalSubTitle>
 			<p>
-				{'Unless you are using the Beta or Trial license of Beak, access to Beak requires the purchase of a '}
+				{'Unless you are using the Free, Beta, or Trial license of Beak, access to Beak requires the purchase of a '}
 				{'subscription. Our pricing and subscription information, and limits are available at '}
-				<Link to={'/pricing'}>{`https://${window.location.hostname}.app/pricing`}</Link>{'.'}
+				<Link href={'/pricing'}>{`https://${window.location.hostname}.app/pricing`}</Link>{'.'}
 			</p>
 			<p>
 				{'If you purchase a subscription, the price will remain constant until the end of the selected '}
@@ -144,7 +160,7 @@ const Terms: React.FC<React.PropsWithChildren<unknown>> = () => (
 			<p>
 				{'If you purchase a subscription, you will be charged the then-current rate immediately, and then '}
 				{'each year thereafter. Subscription pricing is detailed on our pricing page '}
-				<Link to={'/pricing'}>{`https://${window.location.hostname}.app/pricing`}</Link>{'. '}
+				<Link href={'/pricing'}>{`https://${window.location.hostname}.app/pricing`}</Link>{'. '}
 			</p>
 			<p>
 				{'By agreeing to these terms and purchasing a subscription, you acknowledge that your subscription '}
@@ -208,7 +224,7 @@ const Terms: React.FC<React.PropsWithChildren<unknown>> = () => (
 			</LegalTitle>
 			<p>
 				{'You can view our full Privacy Policy ("notice") by visiting '}
-				<Link to={'/legal/privacy'}>{`${window.location.hostname}.app/legal/privacy`}</Link>
+				<Link href={'/legal/privacy'}>{`${window.location.hostname}.app/legal/privacy`}</Link>
 				{'.'}
 			</p>
 
