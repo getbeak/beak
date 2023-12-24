@@ -42,7 +42,7 @@ jobs:
       - name: Lint, typecheck, and test
         run: |
           yarn lint
-          yarn typecheck
+          yarn typecheck:apps-host
           yarn test
 
       - name: Build and package (release)

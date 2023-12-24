@@ -46,6 +46,7 @@
     "test": "jest",
     "lint": "eslint --ext .tsx --ext .ts .",
     "typecheck": "lerna run typecheck --stream",
+    "typecheck:apps-host": "lerna run typecheck --stream --scope '@beak/apps-host-*' --include-dependencies",
     "unfuck": "lerna clean && yarn --force",
     "postinstall": "node ./build/package-overrides/index.js",
     "release-safety": "yarn typecheck && yarn lint && yarn build"
