@@ -9,7 +9,7 @@ import Welcome from '../containers/Welcome';
 /* eslint-disable no-process-env */
 if (import.meta.env.MODE !== 'development') {
 	init({
-		dsn: 'https://5118444e09d74b03a320d0e604aa68ff@o988021.ingest.sentry.io/5945114',
+		dsn: 'https://c7a8bd8013242cfe728beeaae8a3e9f1@o988021.ingest.sentry.io/4506451600670720',
 		environment: import.meta.env.ENVIRONMENT,
 		release: import.meta.env.RELEASE_IDENTIFIER,
 	});

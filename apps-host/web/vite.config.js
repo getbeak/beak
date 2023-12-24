@@ -85,10 +85,10 @@ module.exports = {
 			}],
 		}),
 		viteSentryPlugin({
-			authToken: process.env.SENTRY_WEB_APP_API_KEY,
+			authToken: process.env.SENTRY_AUTH_TOKEN,
 			dryRun: process.env.BUILD_ENVIRONMENT !== 'ci',
 			org: 'beak',
-			project: 'web-app',
+			project: 'apps-host-web',
 			release: releaseIdentifier,
 			deploy: {
 				env: environment,

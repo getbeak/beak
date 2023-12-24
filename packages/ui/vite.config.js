@@ -75,10 +75,10 @@ export default {
 			}],
 		}),
 		viteSentryPlugin({
-			authToken: process.env.SENTRY_ELECTRON_APP_API_KEY,
+			authToken: process.env.SENTRY_AUTH_TOKEN,
 			dryRun: process.env.BUILD_ENVIRONMENT !== 'ci',
 			org: 'beak',
-			project: 'electron-app',
+			project: 'apps-host-electron',
 			release: releaseIdentifier,
 			deploy: {
 				env: environment,

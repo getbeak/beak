@@ -52,8 +52,7 @@ jobs:
           COMMIT_IDENTIFIER: ${{ github.sha }}
           BUILD_NUMBER: ${{ steps.short-sha.outputs.sha }}
           VERSION_RELEASE: 'qui'
-          SENTRY_ELECTRON_APP_API_KEY: ${{ secrets.SENTRY_ELECTRON_APP_API_KEY }}
-          SENTRY_WEBSITE_API_KEY: ${{ secrets.SENTRY_WEBSITE_API_KEY }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           CSC_LINK: ${{ secrets.CSC_LINK }}
           CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
           CSC_FOR_PULL_REQUEST: true
@@ -72,8 +71,7 @@ jobs:
           BUILD_ENVIRONMENT: ci
           COMMIT_IDENTIFIER: ${{ github.sha }}
           BUILD_NUMBER: ${{ steps.short-sha.outputs.sha }}
-          SENTRY_ELECTRON_APP_API_KEY: ${{ secrets.SENTRY_ELECTRON_APP_API_KEY }}
-          SENTRY_WEBSITE_API_KEY: ${{ secrets.SENTRY_WEBSITE_API_KEY }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           CSC_LINK: ${{ secrets.CSC_LINK }}
           CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
           CSC_FOR_PULL_REQUEST: true
