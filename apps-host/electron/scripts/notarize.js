@@ -15,7 +15,7 @@ exports.default = async function notarizing(context) {
 		appBundleId: 'app.getbeak.beak',
 		appPath: appFilePath,
 		appleId: process.env.APPLE_ID,
-		appleIdPassword: process.env.APPLE_ID_PASSWORD,
+		appleIdPassword: process.env.APPLE_APP_SPECIFIC_PASSWORD,
 		ascProvider: process.env.ASC_PROVIDER,
 	});
 };
