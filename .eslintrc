@@ -3,6 +3,7 @@
 		"eslint:recommended",
 		"plugin:react-hooks/recommended"
 	],
+
 	"parser": "@typescript-eslint/parser",
 	"parserOptions": {
 		"ecmaVersion": 2018,
@@ -44,6 +45,8 @@
 		"process": false,
 		"NodeJS": true
 	},
+
+	"ignorePatterns": ["next-env.d.ts"],
 
 	"rules": {
 		"accessor-pairs": 1,
