@@ -5,14 +5,14 @@ import { ipcMain, IpcMainInvokeEvent } from 'electron';
 import getBeakHost from '../host';
 import ExtensionManager from '../lib/extension';
 import { ensureWithinProject } from './fs-service';
-import { getProjectWindowMapping } from './fs-shared';
+import { getProjectFilePathWindowMapping } from './fs-shared';
 import { getProjectFolder } from './utils';
 
 const service = new IpcExtensionsServiceMain(ipcMain);
 const extensionManager = new ExtensionManager(service);
 
 service.registerRegisterRtv(async (event, payload) => {
-	const filePath = await ensureWithinProject(getProjectWindowMapping(event), payload.extensionFilePath);
+	const filePath = await ensureWithinProject(getProjectFilePathWindowMapping(event), payload.extensionFilePath);
 	const projectFolderPath = getProjectFolder(event);
 	const projectFile = await getBeakHost().project.readProjectFile(projectFolderPath);
 

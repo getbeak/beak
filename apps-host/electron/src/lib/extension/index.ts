@@ -1,5 +1,5 @@
 import { ensureWithinProject } from '@beak/apps-host-electron/ipc-layer/fs-service';
-import { getProjectWindowMapping } from '@beak/apps-host-electron/ipc-layer/fs-shared';
+import { getProjectFilePathWindowMapping } from '@beak/apps-host-electron/ipc-layer/fs-shared';
 import { ExtensionsMessages, IpcExtensionsServiceMain, RtvParseValuePartsResponse } from '@beak/common/ipc/extensions';
 import { IpcEvent, RequestPayload } from '@beak/common/ipc/ipc';
 import { RealtimeValueExtension } from '@beak/common/types/extensions';
@@ -230,7 +230,7 @@ export default class ExtensionManager {
 		}
 
 		// Needed to ensure the `main` property isn't breaking out of the project directory
-		await ensureWithinProject(getProjectWindowMapping(event), scriptPath);
+		await ensureWithinProject(getProjectFilePathWindowMapping(event), scriptPath);
 
 		return { main, name, scriptPath, version };
 	}

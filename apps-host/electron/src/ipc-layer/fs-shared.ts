@@ -2,25 +2,33 @@ import { IpcEvent } from '@beak/common/ipc/ipc';
 import { BrowserWindow, IpcMainInvokeEvent } from 'electron';
 import path from 'path';
 
-import { windowIdToProjectIdMapping } from '../window-management';
+import { windowIdToProjectFilePathMapping, windowIdToProjectIdMapping } from '../window-management';
 
-export function setProjectWindowMapping(windowId: number, projectFilePath: string) {
-	windowIdToProjectIdMapping[windowId] = projectFilePath;
+export function setProjectIdWindowMapping(windowId: number, projectId: string) {
+	windowIdToProjectIdMapping[windowId] = projectId;
 }
 
-export function getProjectWindowMapping(event: IpcEvent) {
+export function setProjectFilePathWindowMapping(windowId: number, projectFilePath: string) {
+	windowIdToProjectFilePathMapping[windowId] = projectFilePath;
+}
+
+export function getProjectFilePathWindowMapping(event: IpcEvent) {
 	const sender = (event as IpcMainInvokeEvent).sender;
 	const window = BrowserWindow.fromWebContents(sender)!;
 
-	return windowIdToProjectIdMapping[window.id];
+	return windowIdToProjectFilePathMapping[window.id];
 }
 
-export function getProjectFromWindowId(id: number) {
+export function getProjectFilePathFromWindowId(id: number) {
+	return windowIdToProjectFilePathMapping[id];
+}
+
+export function getProjectIdFromWindowId(id: number) {
 	return windowIdToProjectIdMapping[id];
 }
 
 export function removeProjectPathPrefix(event: IpcEvent, filePath: string) {
-	const projectFilePath = getProjectWindowMapping(event);
+	const projectFilePath = getProjectFilePathWindowMapping(event);
 	const projectPath = path.join(projectFilePath, '..');
 
 	return filePath.slice(projectPath.length + 1);

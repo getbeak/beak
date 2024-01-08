@@ -5,7 +5,7 @@ import * as url from 'url';
 
 import getBeakHost from './host';
 import { tryOpenProjectFolder } from './host/extensions/project';
-import { getProjectFromWindowId } from './ipc-layer/fs-shared';
+import { getProjectFilePathFromWindowId } from './ipc-layer/fs-shared';
 import { closeWatchersOnWindow } from './ipc-layer/fs-watcher-service';
 import WindowStateManager from './lib/window-state-manager';
 import { screenshotSizing } from './main';
@@ -16,6 +16,7 @@ export type Container = 'project-main' | 'welcome' | 'preferences' | 'portal';
 // This is pretty lame, there should be a better way
 export const projectIdToWindowIdMapping: Record<string, number> = {};
 export const windowIdToProjectIdMapping: Record<number, string> = {};
+export const windowIdToProjectFilePathMapping: Record<number, string> = {};
 
 export const windowStack: Record<number, BrowserWindow> = {};
 export const windowType: Record<number, Container> = {};
@@ -35,7 +36,7 @@ export function generateWindowPresence() {
 			return [...acc, null];
 
 		if (type === 'project-main') {
-			const projectFilePath = getProjectFromWindowId(val.id);
+			const projectFilePath = getProjectFilePathFromWindowId(val.id);
 			const projectPath = path.dirname(projectFilePath);
 
 			if (!projectPath)
@@ -315,6 +316,7 @@ export async function createProjectMainWindow(projectId: string, projectFilePath
 
 	projectIdToWindowIdMapping[projectId] = window.id;
 	windowIdToProjectIdMapping[window.id] = projectId;
+	windowIdToProjectFilePathMapping[window.id] = projectFilePath;
 
 	window.setRepresentedFilename(projectFilePath);
 
