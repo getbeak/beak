@@ -5,7 +5,6 @@ import { dialog, ipcMain, IpcMainInvokeEvent } from 'electron';
 import getBeakHost from '../host';
 import { openProjectDialog, tryOpenProjectFolder } from '../host/extensions/project';
 import { closeWindow, createProjectMainWindow, tryCloseWelcomeWindow, windowStack } from '../window-management';
-import { setProjectWindowMapping } from './fs-shared';
 
 const service = new IpcProjectServiceMain(ipcMain);
 
@@ -55,9 +54,7 @@ service.registerCreateProject(async (event, payload) => {
 		closeWindow((event as IpcMainInvokeEvent).sender.id);
 		tryCloseWelcomeWindow();
 
-		const projectWindowId = await createProjectMainWindow(projectId, projectFilePath);
-
-		setProjectWindowMapping(projectWindowId, projectFilePath);
+		await createProjectMainWindow(projectId, projectFilePath);
 	} catch (error) {
 		const sqk = Squawk.coerce(error);
 
