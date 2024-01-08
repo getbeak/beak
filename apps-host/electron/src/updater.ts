@@ -6,7 +6,7 @@ import getBeakHost from './host';
 import { createAndSetMenu } from './utils/menu';
 
 // NOTE(afr): Update this to point to release news item, when that's done
-export const latestReleaseNotesUrl = 'https://getbeak.notion.site/Beak-manual-8c908d9584f34b8db19267dcc6206e9e';
+export const latestReleaseNotesUrl = 'https://github.com/getbeak/beak/releases/tag/beak-app%401.1.7-beta.9';
 export const getUpdateDownloading = () => updateDownloading;
 export const getCheckingForUpdates = () => checkingForUpdates;
 
