@@ -69,7 +69,7 @@ const Wrapper = styled.div`
 const FadedLogo = styled.div`
 	width: 200px;
 	height: 200px;
-	background: url('/images/logo-blank.png');
+	background: url('./images/logo-blank.png');
 	background-repeat: no-repeat;
 	background-position: center;
 	background-size: contain;

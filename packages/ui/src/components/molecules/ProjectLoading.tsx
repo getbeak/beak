@@ -22,7 +22,7 @@ const ProjectLoading: React.FC<React.PropsWithChildren<unknown>> = () => {
 			<div>
 				<Logo
 					width={60}
-					src={'/images/logo-tile.png'}
+					src={'./images/logo-tile.png'}
 				/>
 
 				<Header>{'Did you know?'}</Header>

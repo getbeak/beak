@@ -150,7 +150,7 @@ const CollapsedLogo = styled.div`
 	top: 0; left: 0; right: 0;
 	height: 71px;
 
-	background: url('/images/logo.svg');
+	background: url('./images/logo.svg');
 	background-position: center 85%;
 	background-size: 20px;
 	background-repeat: no-repeat;
