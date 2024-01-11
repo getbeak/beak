@@ -3,8 +3,8 @@
 </p>
 
 <p align="center">
-	<img src="https://github.com/getbeak/beak/workflows/beak-app/badge.svg" alt="Build Status" />
-	<img src="https://github.com/getbeak/beak/workflows/beak-web/badge.svg" alt="Build Status" />
+	<img src="https://github.com/getbeak/beak/workflows/beak-host/badge.svg" alt="Beak host build badge" />
+	<img src="https://vercelbadge.vercel.app/api/getbeak/beak?style=flat" alt="Beak web build badge" />
 </p>
 
 <h2 style="border-bottom: none" align="center">Beak</h1>
