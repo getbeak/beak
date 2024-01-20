@@ -37,7 +37,7 @@
     "@types/command-exists": "^1.2.3",
     "@types/crpc": "^0.2.3",
     "@types/fs-extra": "^11.0.4",
-    "@types/jest": "^27.4.1",
+    "@types/jest": "^29.5.11",
     "@types/lodash.get": "^4.4.9",
     "@types/mime-types": "^2.1.4",
     "@types/react-helmet": "^6.1.11",
