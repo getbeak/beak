@@ -59,7 +59,7 @@ const PulseOrb = styled.div`
 		background-size: 45px;
 		background-position: center;
 		background-repeat: no-repeat;
-		background-image: url('./images/logo.svg');
+		background-image: url('images/logo.svg');
 		opacity: .8;
 		margin-top: -150px;
 		width: 50px; height: 50px;

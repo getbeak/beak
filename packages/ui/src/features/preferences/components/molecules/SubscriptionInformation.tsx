@@ -75,7 +75,7 @@ const LogoOuter = styled.div`
 	border-radius: 100%;
 	width: 60px; height: 60px;
 	background: ${p => p.theme.ui.secondaryBackground};
-	background-image: url('./images/logo.svg');
+	background-image: url('images/logo.svg');
 	background-repeat: no-repeat;
 	background-position: center;
 	background-size: 35px;
