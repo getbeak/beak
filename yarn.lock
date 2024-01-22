@@ -8071,9 +8071,9 @@ isobject@^3.0.0, isobject@^3.0.1:
   integrity sha1-TkMekrEalzFjaqH5yNHMvP2reN8=
 
 isomorphic-git@^1.25.2:
-  version "1.25.2"
-  resolved "https://registry.yarnpkg.com/isomorphic-git/-/isomorphic-git-1.25.2.tgz#07932fe2d48f96c9d94b9a898c1b22f28539cdc0"
-  integrity sha512-GHMZVujE76NpZ7Za0Kus/46J6Y7UZsY+xcHMLnFHqvcGbJzkXB1LQCzpYaRq+xQinWGdkcjBDQoE+8Tv3StPCg==
+  version "1.25.3"
+  resolved "https://registry.yarnpkg.com/isomorphic-git/-/isomorphic-git-1.25.3.tgz#e8e7d6981bec2aa2b7b2c78f501ae49755a0c025"
+  integrity sha512-iUaDB5kObupWpwjQ+EGkDQmaYQzbq1XaPqo+xJCCfbPViGZL94rU2RvK4EDJKpYbyiwbq5OSLEjkXHa8r5I1aw==
   dependencies:
     async-lock "^1.1.0"
     clean-git-ref "^2.0.1"
