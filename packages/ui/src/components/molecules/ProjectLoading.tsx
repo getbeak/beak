@@ -2,19 +2,16 @@ import React, { useState } from 'react';
 import { renderPlainTextDefinition } from '@beak/ui/utils/keyboard-rendering';
 import styled from 'styled-components';
 
-const hints: string[] = [
-	`You can collapse the sidebar by clicking the same icon again, or pressing ${renderPlainTextDefinition('sidebar.toggle-view')}`,
-	'You can use variables to make request bodies more dynamic',
-	`Use the omni bar to get around Beak quickly... ${renderPlainTextDefinition('omni-bar.launch.commands')} or ${renderPlainTextDefinition('omni-bar.launch.finder')}`,
-	'Keep an eye out for easter eggs...',
-	`Quickly run a request from anywhere by pressing ${renderPlainTextDefinition('global.execute-request')}`,
-	'Check out the preferences to make Beak more you',
-	'Consectetur velit consequat minim dolor ex mollit amet',
-	'Eiusmod culpa anim id consequat nisi nisi do sint deserunt irure officia',
-	'Aliqua deserunt sunt excepteur non duis ad',
-];
-
 const ProjectLoading: React.FC<React.PropsWithChildren<unknown>> = () => {
+	const hints: string[] = [
+		`You can collapse the sidebar by clicking the same icon again, or pressing ${renderPlainTextDefinition('sidebar.toggle-view')}`,
+		'You can use variables to make request bodies more dynamic',
+		`Use the omni bar to get around Beak quickly... ${renderPlainTextDefinition('omni-bar.launch.commands')} or ${renderPlainTextDefinition('omni-bar.launch.finder')}`,
+		'Keep an eye out for easter eggs...',
+		`Quickly run a request from anywhere by pressing ${renderPlainTextDefinition('global.execute-request')}`,
+		'Check out the preferences to make Beak a little more... you',
+	];
+
 	const [hintIndex] = useState<number>(() => Math.floor(Math.random() * hints.length));
 
 	return (

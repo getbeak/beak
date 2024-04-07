@@ -30,7 +30,7 @@ const Modifiers: React.FC<React.PropsWithChildren<ModifiersProps>> = props => {
 
 	return (
 		<Container>
-			<TabBar centered>
+			<TabBar $centered>
 				<TabSpacer />
 				<TabItem
 					active={tab === 'headers'}

@@ -9,7 +9,7 @@ interface NotificationStateSelectProps {
 
 const NotificationStateSelect: React.FC<NotificationStateSelectProps> = ({ value, onChange }) => (
 	<Select
-		beakSize={'sm'}
+		$beakSize={'sm'}
 		value={value}
 		onChange={e => onChange(e.currentTarget.value as NotificationState)}
 	>

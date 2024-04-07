@@ -19,11 +19,11 @@ const tooltips: TooltipDefinition[] = [{
 	content: 'Go to previous item in flight history',
 }, {
 	anchor: '#tt-action-bar-next-flight-history',
-	placement: 'bottom',
+	placement: 'bottom-end',
 	content: 'Go to next item in flight history',
 }, {
 	anchor: '#tt-action-bar-alert-button',
-	placement: 'bottom',
+	placement: 'bottom-end',
 	content: 'Shows possible errors with your project',
 }, {
 	anchor: '#tt-action-bar-flight-status-pending',
@@ -62,6 +62,7 @@ const tooltips: TooltipDefinition[] = [{
 	anchor: 'tt-response-header-url-bar',
 }, {
 	anchor: 'tt-action-bar-omni-search',
+	placement: 'bottom-end',
 }, {
 	anchor: 'tt-omni-bar-finder-request-uri',
 }, {

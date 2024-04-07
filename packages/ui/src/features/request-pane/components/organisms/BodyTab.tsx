@@ -147,7 +147,7 @@ const BodyTab: React.FC<React.PropsWithChildren<BodyTabProps>> = props => {
 
 	return (
 		<Container>
-			<TabBar centered>
+			<TabBar $centered>
 				<TabSpacer />
 				<TabItem
 					active={body.type === 'text'}
