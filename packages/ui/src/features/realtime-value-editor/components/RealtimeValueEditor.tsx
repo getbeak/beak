@@ -162,7 +162,7 @@ const RealtimeValueEditor: React.FC<React.PropsWithChildren<RealtimeValueEditorP
 									{section.label && <Label>{section.label}</Label>}
 									<Input
 										ref={i => trySetInitialRef(first, i, initialInputRef)}
-										beakSize={'sm'}
+										$beakSize={'sm'}
 										type={'text'}
 										value={state[stateBinding] as string || ''}
 										onChange={e => updateState({
@@ -178,7 +178,7 @@ const RealtimeValueEditor: React.FC<React.PropsWithChildren<RealtimeValueEditorP
 									{section.label && <Label>{section.label}</Label>}
 									<Input
 										ref={i => trySetInitialRef(first, i, initialInputRef)}
-										beakSize={'sm'}
+										$beakSize={'sm'}
 										$noStretch
 										type={'checkbox'}
 										checked={state[stateBinding] as boolean}
@@ -195,7 +195,7 @@ const RealtimeValueEditor: React.FC<React.PropsWithChildren<RealtimeValueEditorP
 									{section.label && <Label>{section.label}</Label>}
 									<Input
 										ref={i => trySetInitialRef(first, i, initialInputRef)}
-										beakSize={'sm'}
+										$beakSize={'sm'}
 										type={'number'}
 										value={(state[stateBinding] as number).toString(10)}
 										onChange={e => updateState({
@@ -211,7 +211,7 @@ const RealtimeValueEditor: React.FC<React.PropsWithChildren<RealtimeValueEditorP
 									{section.label && <Label>{section.label}</Label>}
 									<Select
 										ref={i => trySetInitialRef(first, i, initialInputRef)}
-										beakSize={'sm'}
+										$beakSize={'sm'}
 										value={state[stateBinding] as string ?? ''}
 										onChange={e => updateState({
 											[stateBinding]: e.currentTarget.value,
@@ -228,7 +228,7 @@ const RealtimeValueEditor: React.FC<React.PropsWithChildren<RealtimeValueEditorP
 									{section.label && <Label>{section.label}</Label>}
 									<Select
 										ref={i => trySetInitialRef(first, i, initialInputRef)}
-										beakSize={'sm'}
+										$beakSize={'sm'}
 										value={state[stateBinding] as string ?? ''}
 										onChange={e => updateState({
 											[stateBinding]: e.currentTarget.value,

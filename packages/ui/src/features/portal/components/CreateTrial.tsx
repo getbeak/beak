@@ -44,7 +44,7 @@ const CreateTrial: React.FC<React.PropsWithChildren<CreateTrialProps>> = ({ onCh
 			<ArrowButton onClick={() => onChangeToDefault()}>
 				{'Go back'}
 			</ArrowButton>
-			<Logo src={'./images/logo-tile.png'} />
+			<Logo src={'images/logo-tile.png'} />
 			<Title>{'Start your free Beak trial'}</Title>
 			<SubTitle>
 				{'No credit card, no fuss, no limits... Just 14 days of the full Beak experience.'}

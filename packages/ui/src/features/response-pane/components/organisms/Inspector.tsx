@@ -28,7 +28,7 @@ const Inspector: React.FC<React.PropsWithChildren<InspectorProps>> = props => {
 
 	return (
 		<React.Fragment>
-			<TabBar centered>
+			<TabBar $centered>
 				<TabSpacer />
 				<TabItem
 					active={preferences.mainTab === 'overview'}

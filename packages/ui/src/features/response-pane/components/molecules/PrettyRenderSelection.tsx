@@ -13,7 +13,7 @@ const PrettyRenderSelection: React.FC<React.PropsWithChildren<PrettyRenderSelect
 	return (
 		<Container>
 			<Select
-				beakSize={'sm'}
+				$beakSize={'sm'}
 				value={selectedLanguage ?? 'text/plain'}
 				onChange={e => onSelectedLanguageChange(e.currentTarget.value)}
 			>

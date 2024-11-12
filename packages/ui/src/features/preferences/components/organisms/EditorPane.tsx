@@ -60,7 +60,7 @@ const EditorPane: React.FC<React.PropsWithChildren<unknown>> = () => {
 					<SubItem>
 						<SubItemLabel>{'Font size: '}</SubItemLabel>
 						<Input
-							beakSize={'sm'}
+							$beakSize={'sm'}
 							type={'number'}
 							value={editorPreferences.fontSize}
 							onChange={event => updateEditorPreference('fontSize', Number(event.currentTarget.value ?? 0))}

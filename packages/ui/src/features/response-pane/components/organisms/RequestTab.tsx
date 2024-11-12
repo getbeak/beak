@@ -52,7 +52,7 @@ const RequestTab: React.FC<React.PropsWithChildren<RequestTabProps>> = props => 
 
 	return (
 		<Container>
-			<TabBar centered>
+			<TabBar $centered>
 				<TabSpacer />
 				<TabItem
 					active={tab === 'headers'}

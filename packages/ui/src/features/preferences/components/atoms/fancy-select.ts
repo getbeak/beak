@@ -28,7 +28,7 @@ export const SelectItemPreview = styled.div<{ $active?: boolean; $themeMode: The
 	margin-bottom: 10px;
 	border: 2px solid transparent;
 
-	background-image: url('./images/${p => p.$themeType === 'editor' && 'editor-'}theme-switcher/${p => p.$themeMode}.jpg');
+	background-image: url('images/${p => p.$themeType === 'editor' && 'editor-'}theme-switcher/${p => p.$themeMode}.jpg');
 	background-position: center;
 	background-size: cover;
 	background-repeat: no-repeat;

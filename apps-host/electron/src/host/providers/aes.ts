@@ -1,58 +1,58 @@
 import AesProviderBase from '@beak/common-host/providers/encryption-aes';
-import crypto, { Cipher, Decipher } from 'crypto';
-import { promisify } from 'util';
+import crypto, { Cipher, Decipher } from 'node:crypto';
+import { promisify } from 'node:util';
 
 const scrypt = promisify(crypto.scrypt);
 
 export default class AesProvider extends AesProviderBase {
-	async generateKey(): Promise<string> {
-		const password = crypto.randomBytes(32);
-		const salt = crypto.randomBytes(16);
-		const key = await scrypt(password, salt, 32) as Buffer;
+  async generateKey(): Promise<string> {
+    const password = crypto.randomBytes(32);
+    const salt = crypto.randomBytes(16);
+    const key = await scrypt(password, salt, 32) as Buffer;
 
-		return key.toString('base64');
-	}
+    return key.toString('base64');
+  }
 
-	async generateIv(): Promise<string> {
-		const iv = crypto.randomBytes(16);
+  async generateIv(): Promise<string> {
+    const iv = crypto.randomBytes(16);
 
-		return iv.toString('base64');
-	}
+    return iv.toString('base64');
+  }
 
-	async encrypt(payload: Uint8Array, key: string, iv: string): Promise<string> {
-		const keyBuffer = Buffer.from(key, 'base64');
-		const ivBuffer = Buffer.from(iv, 'base64');
+  async encrypt(payload: Uint8Array, key: string, iv: string): Promise<string> {
+    const keyBuffer = Buffer.from(key, 'base64');
+    const ivBuffer = Buffer.from(iv, 'base64');
 
-		const cipher = crypto.createCipheriv(this.aesAlgo, keyBuffer, ivBuffer, void 0) as Cipher;
-		const update = cipher.update(payload);
-		const final = Buffer.concat([update, cipher.final()]);
+    const cipher = crypto.createCipheriv(this.aesAlgo, keyBuffer, ivBuffer, void 0) as Cipher;
+    const update = cipher.update(payload);
+    const final = Buffer.concat([update, cipher.final()]);
 
-		return final.toString('base64');
-	}
+    return final.toString('base64');
+  }
 
-	async decrypt(payload: Uint8Array, key: string, iv: string): Promise<string> {
-		const keyBuffer = Buffer.from(key, 'base64');
-		const ivBuffer = Buffer.from(iv, 'base64');
+  async decrypt(payload: Uint8Array, key: string, iv: string): Promise<string> {
+    const keyBuffer = Buffer.from(key, 'base64');
+    const ivBuffer = Buffer.from(iv, 'base64');
 
-		const decipher = crypto.createDecipheriv(this.aesAlgo, keyBuffer, ivBuffer, void 0) as Decipher;
-		const update = decipher.update(payload);
-		const final = Buffer.concat([update, decipher.final()]);
+    const decipher = crypto.createDecipheriv(this.aesAlgo, keyBuffer, ivBuffer, void 0) as Decipher;
+    const update = decipher.update(payload);
+    const final = Buffer.concat([update, decipher.final()]);
 
-		return final.toString('utf-8');
-	}
+    return final.toString('utf-8');
+  }
 
-	async encryptString(payload: string, key: string, iv: string): Promise<string> {
-		const buf = Buffer.from(payload, 'utf-8');
+  async encryptString(payload: string, key: string, iv: string): Promise<string> {
+    const buf = Buffer.from(payload, 'utf-8');
 
-		return await this.encrypt(buf, key, iv);
-	}
+    return await this.encrypt(buf, key, iv);
+  }
 
-	async decryptString(payload: string, key: string, iv: string): Promise<string> {
-		if (payload === '')
-			return '';
+  async decryptString(payload: string, key: string, iv: string): Promise<string> {
+    if (payload === '')
+      return '';
 
-		const buf = Buffer.from(payload, 'base64');
+    const buf = Buffer.from(payload, 'base64');
 
-		return await this.decrypt(buf, key, iv);
-	}
+    return await this.decrypt(buf, key, iv);
+  }
 }

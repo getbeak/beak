@@ -62,7 +62,7 @@ const ResponseTab: React.FC<React.PropsWithChildren<ResponseTabProps>> = props =
 
 	return (
 		<Container>
-			<TabBar centered>
+			<TabBar $centered>
 				<TabSpacer />
 				{!hasErrored && (
 					<React.Fragment>
