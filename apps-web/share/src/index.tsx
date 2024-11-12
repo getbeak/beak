@@ -3,7 +3,6 @@ import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { DesignSystemProvider } from '@beak/design-system';
 import * as Sentry from '@sentry/react';
-import { Integrations } from '@sentry/tracing';
 
 import Redirect from './components/atoms/Redirect';
 import AppContainer from './containers/App';
@@ -37,7 +36,7 @@ const EntryPoint: React.FC<React.PropsWithChildren<unknown>> = () => (
 if (import.meta.env.MODE !== 'development') {
 	Sentry.init({
 		dsn: 'https://f70de5e39405453594ebd9d7712d113a@o988021.ingest.sentry.io/6320237',
-		integrations: [new Integrations.BrowserTracing()],
+		integrations: [],
 
 		environment: import.meta.env.ENVIRONMENT,
 		release: import.meta.env.RELEASE_IDENTIFIER,
