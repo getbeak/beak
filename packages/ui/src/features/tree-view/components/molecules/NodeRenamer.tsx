@@ -23,16 +23,52 @@ const NodeRenamer: React.FC<React.PropsWithChildren<NodeRenamerProps>> = props =
 	const focusContext = useContext(TreeViewFocusContext);
 	const [activeRename, renaming] = useActiveRename(node);
 
+	const [canShowTooltip, setCanShowTooltip] = useState(false);
 	const [error, setError] = useState<string | undefined>(void 0);
 	const renameInputRef = useRef<HTMLInputElement>(null);
+	const wrappedTextRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
 		renameInputRef.current?.focus();
 		renameInputRef.current?.select();
 	}, [activeRename?.id]);
 
-	if (!renaming)
-		return <React.Fragment>{node.name}</React.Fragment>;
+	useEffect(() => {
+		if (activeRename || !wrappedTextRef.current)
+			return;
+
+		const element = wrappedTextRef.current;
+		const textOverflowed = element.scrollWidth > element.clientWidth || element.scrollHeight > element.clientHeight;
+
+		const resizeObserver = new ResizeObserver(() => {
+			if (textOverflowed) {
+				setCanShowTooltip(true);
+			} else {
+				setCanShowTooltip(false);
+			}
+		});
+	
+		resizeObserver.observe(element);
+	
+		return () => {
+			resizeObserver.disconnect();
+			setCanShowTooltip(false);
+		};
+	}, [activeRename]);
+
+	if (!renaming) {
+		return (
+			<RenameWrappedText
+				data-tooltip-id={'tt-realtime-values-renderer-extension-missing'}
+				data-tooltip-content={node.name}
+				data-tooltip-place={'top-end'}
+				data-tooltip-hidden={!canShowTooltip}
+				ref={wrappedTextRef}
+			>
+				{node.name}
+			</RenameWrappedText>
+		);
+	}
 
 	function updateEditValue(value: string) {
 		absContext.onRenameUpdated?.(node, value);
@@ -87,6 +123,13 @@ const NodeRenamer: React.FC<React.PropsWithChildren<NodeRenamerProps>> = props =
 const Renamer = styled.div`
 	position: relative;
 	flex-grow: 2;
+	text-overflow: ellipsis;
+`;
+
+const RenameWrappedText = styled.div`
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
 `;
 
 const RenameInput = styled.input<{ $error: boolean }>`

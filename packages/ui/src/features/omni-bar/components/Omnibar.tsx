@@ -104,7 +104,7 @@ const Container = styled.div`
 `;
 
 const BarOuter = styled.div`
-	backdrop-filter: blur(10px);
+	backdrop-filter: blur(100px);
 	background: ${p => toVibrancyAlpha(p.theme.ui.surfaceHighlight, 0.4)};
 	border: 1px solid ${p => p.theme.ui.blankBackground};
 	box-shadow: 0px 4px 12px 2px ${p => toVibrancyAlpha(p.theme.ui.surfaceFill, 0.6)};

@@ -1,3 +1,5 @@
+import { ProjectEncryption } from "@beak/common/types/beak-project";
+
 export default abstract class CredentialsProvider {
 	protected readonly credentialKeys = {
 		authEncryptionKey: 'app.getbeak.beak.auth-encryption-key',
@@ -11,6 +13,6 @@ export default abstract class CredentialsProvider {
 	abstract getBeakAuthEncryptionKey(): Promise<[string, string] | null>;
 	abstract getOrCreateBeakAuthEncryptionKey(key: string, iv: string): Promise<[string, string]>;
 
-	abstract getProjectEncryptionKey(projectId: string): Promise<string | null>;
-	abstract setProjectEncryptionKey(projectId: string, encryptionKey: string): Promise<void>;
+	abstract getProjectEncryption(projectId: string): Promise<ProjectEncryption | null>;
+	abstract setProjectEncryption(projectId: string, projectEncryption: ProjectEncryption): Promise<void>;
 }

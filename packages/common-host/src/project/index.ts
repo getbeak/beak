@@ -185,12 +185,10 @@ export default class BeakProject extends BeakBase {
 	}
 
 	private async createProjectEncryption(projectId: string) {
-		const encryption: ProjectEncryption = {
+		await this.p.credentials.setProjectEncryption(projectId, {
 			algorithm: this.p.aes.algorithmVersionMap['2020-01-25'],
 			key: await this.p.aes.generateKey(),
-		};
-
-		await this.p.credentials.setProjectEncryptionKey(projectId, JSON.stringify(encryption));
+		});
 	}
 
 	private async createProjectFile(

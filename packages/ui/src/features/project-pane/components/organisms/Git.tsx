@@ -46,10 +46,10 @@ const Container = styled.div`
 
 const Item = styled.div`
 	display: grid;
-	grid-template-columns: 1fr 1fr;
+	grid-template-columns: minmax(10px, max-content) minmax(10px, max-content);
 	justify-content: space-between;
 	align-items: center;
-	gap: 10px;
+	gap: 5px;
 	margin: 4px 0;
 	max-width: calc(100% - 3px);
 

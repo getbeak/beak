@@ -42,12 +42,12 @@ export function renderPlainTextDefinition(shortcutKey: Shortcuts) {
 			parts.push(renderPlatformAwareCtrlOrMeta(darwin));
 	}
 
-	if (definition.ctrl) parts.push('⌃');
-	if (definition.alt) parts.push('⌥');
-	if (definition.meta) parts.push('⌘');
-	if (definition.shift) parts.push('⇧');
-
 	if (Array.isArray(definition.key)) {
+		if (definition.ctrl) parts.push('⌃');
+		if (definition.alt) parts.push('⌥');
+		if (definition.meta) parts.push('⌘');
+		if (definition.shift) parts.push('⇧');
+
 		const shortcutOptions: string[] = [];
 
 		definition.key.forEach(k => {
@@ -59,6 +59,10 @@ export function renderPlainTextDefinition(shortcutKey: Shortcuts) {
 		return shortcutOptions.join(',');
 	}
 
+	if (definition.ctrl) parts.push('⌃');
+	if (definition.alt) parts.push('⌥');
+	if (definition.meta) parts.push('⌘');
+	if (definition.shift) parts.push('⇧');
 	parts.push(renderSimpleKey(definition.key.toLocaleUpperCase()));
 
 	return parts.join('');

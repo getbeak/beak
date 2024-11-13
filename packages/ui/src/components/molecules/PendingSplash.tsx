@@ -2,14 +2,15 @@ import React from 'react';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import Kbd from '@beak/ui/components/atoms/Kbd';
 import shortcutDefinitions, { Shortcuts } from '@beak/ui/lib/keyboard-shortcuts';
-import { PlatformAgnosticDefinitions, PlatformSpecificDefinitions } from '@beak/ui/lib/keyboard-shortcuts/types';
+import { PlatformAgnosticDefinitions, PlatformSpecificDefinitions, ShortcutDefinition } from '@beak/ui/lib/keyboard-shortcuts/types';
 import { renderSimpleKey } from '@beak/ui/utils/keyboard-rendering';
 import styled from 'styled-components';
 
 const displayShortcuts: Partial<Record<Shortcuts, string>> = {
 	'menu-bar.file.new-request': 'Create new request',
 	'global.execute-request': 'Execute request',
-	'omni-bar.launch.finder': 'Open omni bar',
+	'omni-bar.launch.commands': 'Open command bar',
+	'omni-bar.launch.finder': 'Open finder bar',
 	'sidebar.toggle-view': 'Toggle sidebar',
 };
 
@@ -24,28 +25,36 @@ const PendingSlash: React.FC<React.PropsWithChildren<unknown>> = () => (
 				return (
 					<SingleShortcut key={k}>
 						<ShortcutName>{name}</ShortcutName>
-						<div>
-							{definition.ctrlOrMeta && <Kbd>{'⌘'}</Kbd>}
-							{definition.ctrl && <Kbd>{'⌃'}</Kbd>}
-							{definition.alt && <Kbd>{'⌥'}</Kbd>}
-							{definition.meta && <Kbd>{'⌘'}</Kbd>}
-							{definition.shift && <Kbd>{'⇧'}</Kbd>}
-							{' '}
-							<NonCommandKeys>
-								{Array.isArray(definition.key) && definition.key.map(k => (
-									<React.Fragment key={k}>
-										<Kbd>{renderSimpleKey(k)}</Kbd>
-										<KbdOption>{'|'}</KbdOption>
-									</React.Fragment>
-								))}
-								{typeof definition.key === 'string' && <Kbd>{renderSimpleKey(definition.key)}</Kbd>}
-							</NonCommandKeys>
-						</div>
+						<NonCommandKeys>
+							{Array.isArray(definition.key) && definition.key.map(k => (
+								<React.Fragment key={k}>
+									<CommandKeys definition={definition} />
+									<Kbd>{renderSimpleKey(k)}</Kbd>
+									<KbdOption>{'|'}</KbdOption>
+								</React.Fragment>
+							))}
+							{typeof definition.key === 'string' && (
+								<React.Fragment>
+									<CommandKeys definition={definition} />
+									<Kbd>{renderSimpleKey(definition.key)}</Kbd>
+								</React.Fragment>
+							)}
+						</NonCommandKeys>
 					</SingleShortcut>
 				);
 			})}
 		</ShortcutContainer>
 	</Wrapper>
+);
+
+const CommandKeys: React.FC<{ definition: ShortcutDefinition }> = ({ definition }) => (
+	<>
+		{definition.ctrlOrMeta && <Kbd>{'⌘'}</Kbd>}
+		{definition.ctrl && <Kbd>{'⌃'}</Kbd>}
+		{definition.alt && <Kbd>{'⌥'}</Kbd>}
+		{definition.meta && <Kbd>{'⌘'}</Kbd>}
+		{definition.shift && <Kbd>{'⇧'}</Kbd>}
+	</>
 );
 
 function shortcutDefinition(definition: PlatformSpecificDefinitions | PlatformAgnosticDefinitions) {

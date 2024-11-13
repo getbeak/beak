@@ -12,9 +12,9 @@ service.registerCheckStatus(async () => {
 
 	if (!projectId) return false;
 
-	const key = await getBeakHost().providers.credentials.getProjectEncryptionKey(projectId);
+	const encryption = await getBeakHost().providers.credentials.getProjectEncryption(projectId);
 
-	return key !== null;
+	return encryption !== null;
 });
 
 service.registerSubmitKey(async (_event, { key }) => {
@@ -22,7 +22,10 @@ service.registerSubmitKey(async (_event, { key }) => {
 
 	if (!projectId) return false;
 
-	await getBeakHost().providers.credentials.setProjectEncryptionKey(key, projectId);
+	await getBeakHost().providers.credentials.setProjectEncryption(projectId, {
+		key,
+		algorithm: getBeakHost().providers.aes.aesAlgo,
+	});
 
 	return true;
 });
@@ -34,12 +37,12 @@ service.registerEncryptString(async (_event, { iv, payload }) => {
 
 	if (!projectId) return '';
 
-	const key = await getBeakHost().providers.credentials.getProjectEncryptionKey(projectId);
+	const encryption = await getBeakHost().providers.credentials.getProjectEncryption(projectId);
 
-	if (key === null)
+	if (encryption === null)
 		return '';
 
-	return await getBeakHost().providers.aes.encryptString(payload, key, iv);
+	return await getBeakHost().providers.aes.encryptString(payload, encryption.key, iv);
 });
 
 service.registerDecryptString(async (_event, { iv, payload }): Promise<string> => {
@@ -47,12 +50,12 @@ service.registerDecryptString(async (_event, { iv, payload }): Promise<string> =
 
 	if (!projectId) return '[Project not loaded]';
 
-	const key = await getBeakHost().providers.credentials.getProjectEncryptionKey(projectId);
+	const encryption = await getBeakHost().providers.credentials.getProjectEncryption(projectId);
 
-	if (key === null)
+	if (encryption === null)
 		return '[Encryption key missing]';
 
-	return await getBeakHost().providers.aes.decryptString(payload, key, iv);
+	return await getBeakHost().providers.aes.decryptString(payload, encryption.key, iv);
 });
 
 service.registerEncryptObject(async (_event, { iv, payload }) => {
@@ -61,12 +64,12 @@ service.registerEncryptObject(async (_event, { iv, payload }) => {
 
 	if (!projectId) return '';
 
-	const key = await getBeakHost().providers.credentials.getProjectEncryptionKey(projectId);
+	const encryption = await getBeakHost().providers.credentials.getProjectEncryption(projectId);
 
-	if (key === null)
+	if (encryption === null)
 		return '';
 
-	return await getBeakHost().providers.aes.encryptString(json, key, iv);
+	return await getBeakHost().providers.aes.encryptString(json, encryption.key, iv);
 });
 
 service.registerDecryptObject(async (_event, { iv, payload }): Promise<ValueParts> => {
@@ -74,12 +77,12 @@ service.registerDecryptObject(async (_event, { iv, payload }): Promise<ValuePart
 
 	if (!projectId) return ['Project not loaded'];
 
-	const key = await getBeakHost().providers.credentials.getProjectEncryptionKey(projectId);
+	const encryption = await getBeakHost().providers.credentials.getProjectEncryption(projectId);
 
-	if (key === null)
+	if (encryption === null)
 		return ['[Encryption key missing]'];
 
-	const decrypted = await getBeakHost().providers.aes.decryptString(payload, key, iv);
+	const decrypted = await getBeakHost().providers.aes.decryptString(payload, encryption.key, iv);
 
 	if (decrypted === '')
 		return [];
@@ -101,8 +104,8 @@ service.registerCopyEncryptionKey(async _event => {
 
 	if (!projectId) return;
 
-	const key = await getBeakHost().providers.credentials.getProjectEncryptionKey(projectId);
+	const encryption = await getBeakHost().providers.credentials.getProjectEncryption(projectId);
 
-	if (key)
-		await navigator.clipboard.writeText(key);
+	if (encryption)
+		await navigator.clipboard.writeText(encryption.key);
 });
