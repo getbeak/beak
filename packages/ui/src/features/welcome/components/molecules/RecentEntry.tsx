@@ -3,6 +3,8 @@ import { faDiagramProject } from '@fortawesome/free-solid-svg-icons/faDiagramPro
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { format, parseISO } from 'date-fns';
 import styled from 'styled-components';
+import { toVibrancyAlpha } from '@beak/ui/design-system/utils';
+import { toHexAlpha } from '@beak/design-system/utils';
 
 export interface RecentEntryProps {
 	name: string;
@@ -53,12 +55,12 @@ const Wrapper = styled.div`
 	border-radius: 5px;
 
 	&:hover {
-		background: ${props => props.theme.ui.surfaceHighlight};
+		background: ${props => toHexAlpha(props.theme.ui.surfaceHighlight, 0.6)};
 		cursor: pointer;
 	}
 
 	&:active, &:focus {
-		background: ${props => props.theme.ui.surfaceHighlight};
+		background: ${props => toHexAlpha(props.theme.ui.surfaceHighlight, 0.8)};
 		transform: scale(0.99);
 		outline: 0;
 	}
