@@ -1,13 +1,34 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { toVibrancyAlpha } from '@beak/ui/design-system/utils';
 import { checkShortcut } from '@beak/ui/lib/keyboard-shortcuts';
 import { useAppSelector } from '@beak/ui/store/redux';
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 
 import { actions } from '../store';
 import CommandsView from './organism/CommandsView';
 import FinderView from './organism/FinderView';
+import { toHexAlpha } from '@beak/design-system/utils';
+
+const scaleIn = keyframes`
+	0% {
+		transform: scale(.97);
+		opacity: 0;
+	}
+
+	100% {
+		transform: scale(1);
+		opacity: 1;
+	}
+`;
+const fadeIn = keyframes`
+	0% {
+		opacity: 0;
+	}
+
+	100% {
+		opacity: 1;
+	}
+`;
 
 const Omnibar: React.FC<React.PropsWithChildren<unknown>> = () => {
 	const { open, mode } = useAppSelector(s => s.features.omniBar);
@@ -99,21 +120,29 @@ const Omnibar: React.FC<React.PropsWithChildren<unknown>> = () => {
 };
 
 const Container = styled.div`
+	background: ${p => toHexAlpha(p.theme.ui.surfaceHighlight, 0.6)};
 	position: absolute;
 	top: 0; bottom: 0; left: 0; right: 0;
+	z-index: 100;
+
+	animation: ${fadeIn} .2s ease;
 `;
 
 const BarOuter = styled.div`
-	backdrop-filter: blur(10px);
-	background: ${p => toVibrancyAlpha(p.theme.ui.surfaceHighlight, 0.4)};
+	backdrop-filter: blur(100px);
+	background: ${p => toHexAlpha(p.theme.ui.surfaceHighlight, 0.4)};
 	border: 1px solid ${p => p.theme.ui.blankBackground};
-	box-shadow: 0px 4px 12px 2px ${p => toVibrancyAlpha(p.theme.ui.surfaceFill, 0.6)};
+	box-shadow: 0px 4px 12px 2px ${p => toHexAlpha(p.theme.ui.surfaceFill, 0.6)};
 
 	position: relative;
 	margin: 0 auto;
 	margin-top: 120px;
 	width: 450px;
 	border-radius: 10px;
+
+	transform-origin: center;
+	animation: ${scaleIn} .2s ease;
+	transition: transform .1s ease;
 
 	z-index: 101;
 `;

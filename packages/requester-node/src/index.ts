@@ -134,7 +134,11 @@ function headersToObject(entries: Iterable<[string, string]>) {
 	const headers: Record<string, string> = {};
 
 	for (const [key, value] of entries)
-		headers[key] = value;
+		headers[capitalizeHeader(key)] = value;
 
 	return headers;
+}
+
+function capitalizeHeader(str: string): string {
+	return str.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join('-');
 }

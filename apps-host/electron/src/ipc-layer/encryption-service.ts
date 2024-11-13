@@ -3,21 +3,24 @@ import { clipboard, ipcMain } from 'electron';
 import { ValueParts } from 'packages/types/values';
 
 import getBeakHost from '../host';
-import { getProjectFolder } from './utils';
+import { getProjectId } from './utils';
 
 const service = new IpcEncryptionServiceMain(ipcMain);
 
 service.registerCheckStatus(async event => {
-	const projectFolder = getProjectFolder(event);
-	const key = await getBeakHost().providers.credentials.getProjectEncryptionKey(projectFolder);
+	const projectId = getProjectId(event);
+	const encryption = await getBeakHost().providers.credentials.getProjectEncryption(projectId);
 
-	return key !== null;
+	return encryption !== null;
 });
 
 service.registerSubmitKey(async (event, { key }) => {
-	const projectFolder = getProjectFolder(event);
+	const projectId = getProjectId(event);
 
-	await getBeakHost().providers.credentials.setProjectEncryptionKey(key, projectFolder);
+	await getBeakHost().providers.credentials.setProjectEncryption(projectId, {
+		key,
+		algorithm: getBeakHost().providers.aes.aesAlgo,
+	});
 
 	return true;
 });
@@ -25,44 +28,44 @@ service.registerSubmitKey(async (event, { key }) => {
 service.registerGenerateIv(async () => await getBeakHost().providers.aes.generateIv());
 
 service.registerEncryptString(async (event, { iv, payload }) => {
-	const projectFolder = getProjectFolder(event);
-	const key = await getBeakHost().providers.credentials.getProjectEncryptionKey(projectFolder);
+	const projectId = getProjectId(event);
+	const encryption = await getBeakHost().providers.credentials.getProjectEncryption(projectId);
 
-	if (key === null)
+	if (encryption === null)
 		return '';
 
-	return await getBeakHost().providers.aes.encryptString(payload, key, iv);
+	return await getBeakHost().providers.aes.encryptString(payload, encryption.key, iv);
 });
 
 service.registerDecryptString(async (event, { iv, payload }): Promise<string> => {
-	const projectFolder = getProjectFolder(event);
-	const key = await getBeakHost().providers.credentials.getProjectEncryptionKey(projectFolder);
+	const projectId = getProjectId(event);
+	const encryption = await getBeakHost().providers.credentials.getProjectEncryption(projectId);
 
-	if (key === null)
+	if (encryption === null)
 		return '[Encryption key missing]';
 
-	return await getBeakHost().providers.aes.decryptString(payload, key, iv);
+	return await getBeakHost().providers.aes.decryptString(payload, encryption.key, iv);
 });
 
 service.registerEncryptObject(async (event, { iv, payload }) => {
 	const json = JSON.stringify(payload);
-	const projectFolder = getProjectFolder(event);
-	const key = await getBeakHost().providers.credentials.getProjectEncryptionKey(projectFolder);
+	const projectId = getProjectId(event);
+	const encryption = await getBeakHost().providers.credentials.getProjectEncryption(projectId);
 
-	if (key === null)
+	if (encryption === null)
 		return '';
 
-	return await getBeakHost().providers.aes.encryptString(json, key, iv);
+	return await getBeakHost().providers.aes.encryptString(json, encryption.key, iv);
 });
 
 service.registerDecryptObject(async (event, { iv, payload }): Promise<ValueParts> => {
-	const projectFolder = getProjectFolder(event);
-	const key = await getBeakHost().providers.credentials.getProjectEncryptionKey(projectFolder);
+	const projectId = getProjectId(event);
+	const encryption = await getBeakHost().providers.credentials.getProjectEncryption(projectId);
 
-	if (key === null)
+	if (encryption === null)
 		return ['[Encryption key missing]'];
 
-	const decrypted = await getBeakHost().providers.aes.decryptString(payload, key, iv);
+	const decrypted = await getBeakHost().providers.aes.decryptString(payload, encryption.key, iv);
 
 	if (decrypted === '')
 		return [];
@@ -80,9 +83,9 @@ service.registerDecryptObject(async (event, { iv, payload }): Promise<ValueParts
 });
 
 service.registerCopyEncryptionKey(async event => {
-	const projectFolder = getProjectFolder(event);
-	const key = await getBeakHost().providers.credentials.getProjectEncryptionKey(projectFolder);
+	const projectId = getProjectId(event);
+	const encryption = await getBeakHost().providers.credentials.getProjectEncryption(projectId);
 
-	if (key)
-		clipboard.writeText(key);
+	if (encryption)
+		clipboard.writeText(encryption.key);
 });

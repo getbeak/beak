@@ -10,13 +10,11 @@ export default class BeakRecents extends BeakBase {
 			return [];
 
 		const recents = await this.p.storage.get('recents');
-
 		const resolved = await Promise.all(recents.map(async r => {
-			const projectFilePath = this.p.node.path.join(r.path, 'project.json');
+			const projectFilePath = r.path;
 
 			try {
 				const pfStat = await this.p.node.fs.promises.stat(projectFilePath);
-
 				const accessTime = (pfStat.atime?.toISOString() ?? new Date(pfStat.mtimeMs).toISOString());
 
 				return {

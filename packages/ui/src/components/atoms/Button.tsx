@@ -1,7 +1,8 @@
+import { toHexAlpha } from '@beak/design-system/utils';
 import styled, { css } from 'styled-components';
 
 const primaryCss = css`
-	background: ${props => props.theme.ui.background};
+	background: ${props => toHexAlpha(props.theme.ui.background, 0.5)};
 	border: 2px solid ${props => props.theme.ui.primaryFill};
 
 	&:not(:disabled) {
@@ -16,7 +17,7 @@ const primaryCss = css`
 `;
 
 const secondaryCss = css`
-	background: ${props => props.theme.ui.background};
+	background: ${props => toHexAlpha(props.theme.ui.background, 0.5)};
 	border: 2px solid ${props => props.theme.ui.secondaryAction};
 
 	&:not(:disabled) {
@@ -31,7 +32,7 @@ const secondaryCss = css`
 `;
 
 const destructiveCss = css`
-	background: ${props => props.theme.ui.background};
+	background: ${props => toHexAlpha(props.theme.ui.background, 0.5)};
 	border: 2px solid ${props => props.theme.ui.destructiveAction};
 
 	&:not(:disabled) {

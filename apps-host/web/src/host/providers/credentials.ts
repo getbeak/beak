@@ -1,4 +1,5 @@
 import CredentialsProviderBase from '@beak/common-host/providers/credentials';
+import { ProjectEncryption } from '@beak/common/types/beak-project';
 
 export default class CredentialsProvider extends CredentialsProviderBase {
 	async readFromStore(key: string): Promise<string | null> {
@@ -37,15 +38,20 @@ export default class CredentialsProvider extends CredentialsProviderBase {
 		return [key, iv];
 	}
 
-	async getProjectEncryptionKey(projectId: string): Promise<string | null> {
+	async getProjectEncryption(projectId: string): Promise<ProjectEncryption | null> {
 		const key = [this.credentialKeys.projectEncryptionPrefix, projectId].join('.');
+		const projectEncryptionString = await this.readFromStore(key);
 
-		return await this.readFromStore(key);
+		if (!projectEncryptionString)
+			return null;
+
+		// TODO(afr): Validate this
+		return JSON.parse(projectEncryptionString);
 	}
 
-	async setProjectEncryptionKey(projectId: string, encryptionKey: string): Promise<void> {
+	async setProjectEncryption(projectId: string, projectEncryption: ProjectEncryption): Promise<void> {
 		const key = [this.credentialKeys.projectEncryptionPrefix, projectId].join('.');
 
-		await this.writeToStore(key, encryptionKey);
+		await this.writeToStore(key, JSON.stringify(projectEncryption));
 	}
 }

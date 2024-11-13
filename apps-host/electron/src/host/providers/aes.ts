@@ -6,9 +6,7 @@ const scrypt = promisify(crypto.scrypt);
 
 export default class AesProvider extends AesProviderBase {
   async generateKey(): Promise<string> {
-    const password = crypto.randomBytes(32);
-    const salt = crypto.randomBytes(16);
-    const key = await scrypt(password, salt, 32) as Buffer;
+    const key = crypto.randomBytes(32);
 
     return key.toString('base64');
   }
@@ -23,7 +21,7 @@ export default class AesProvider extends AesProviderBase {
     const keyBuffer = Buffer.from(key, 'base64');
     const ivBuffer = Buffer.from(iv, 'base64');
 
-    const cipher = crypto.createCipheriv(this.aesAlgo, keyBuffer, ivBuffer, void 0) as Cipher;
+    const cipher = crypto.createCipheriv(this.aesAlgo, keyBuffer, ivBuffer, void 0) as Cipher; // TODO(afr): fix key len issue
     const update = cipher.update(payload);
     const final = Buffer.concat([update, cipher.final()]);
 

@@ -6,10 +6,12 @@ const ProjectLoading: React.FC<React.PropsWithChildren<unknown>> = () => {
 	const hints: string[] = [
 		`You can collapse the sidebar by clicking the same icon again, or pressing ${renderPlainTextDefinition('sidebar.toggle-view')}`,
 		'You can use variables to make request bodies more dynamic',
-		`Use the omni bar to get around Beak quickly... ${renderPlainTextDefinition('omni-bar.launch.commands')} or ${renderPlainTextDefinition('omni-bar.launch.finder')}`,
+		`Use the command bar to get around Beak quickly... ${renderPlainTextDefinition('omni-bar.launch.commands')}`,
+		`Use the finder bar to get around Beak quickly... ${renderPlainTextDefinition('omni-bar.launch.finder')}`,
 		'Keep an eye out for easter eggs...',
 		`Quickly run a request from anywhere by pressing ${renderPlainTextDefinition('global.execute-request')}`,
-		'Check out the preferences to make Beak a little more... you',
+		'Check out the preferences to customize Beak to your liking',
+
 	];
 
 	const [hintIndex] = useState<number>(() => Math.floor(Math.random() * hints.length));

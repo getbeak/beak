@@ -74,7 +74,7 @@ export default class BeakStandardMigrations extends BeakBase {
 					key: ssf.encryption.key,
 				};
 
-				await this.p.credentials.setProjectEncryptionKey(projectFile.id, JSON.stringify(encryption));
+				await this.p.credentials.setProjectEncryption(projectFile.id, encryption);
 			}
 		} finally {
 			await this.p.node.fs.promises.rm(supersecretFilePath, { force: true });

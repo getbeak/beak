@@ -13,7 +13,7 @@ const NewProjectIntro: React.FC<React.PropsWithChildren<unknown>> = () => {
 		<Wrapper>
 			<WelcomeBanner>
 				<WelcomeBannerBody>
-					<WelcomeBannerTitle>{'Beak'}</WelcomeBannerTitle>
+					<WelcomeBannerTitle>{'Welcome to your Beak project'}</WelcomeBannerTitle>
 					<WelcomeBannerSummary>
 						{'Welcome to your Beak project. Beak\'s provides a comprehensive'}
 						{'toolkit that will make building, editing, testing, and '}
@@ -47,7 +47,7 @@ const NewProjectIntro: React.FC<React.PropsWithChildren<unknown>> = () => {
 							{'by trait.'}
 						</GuidesGridItemBody>
 						<Button onClick={() => ipcExplorerService.launchUrl('https://getbeak.notion.site/Variable-groups-b5e2083aa597496b89006e1a48acf5fb')}>
-							{'Read docs'}
+							{'Read about variable groups'}
 						</Button>
 					</GuidesGridItem>
 					<GuidesGridItem>
@@ -57,7 +57,7 @@ const NewProjectIntro: React.FC<React.PropsWithChildren<unknown>> = () => {
 							{'your team or community.'}
 						</GuidesGridItemBody>
 						<Button onClick={() => ipcExplorerService.launchUrl('https://getbeak.notion.site/Source-control-versioning-aa9b4d423e614148a10f69d42b3bc746')}>
-							{'Read docs'}
+							{'Read about versioning'}
 						</Button>
 					</GuidesGridItem>
 					<GuidesGridItem>
@@ -67,7 +67,7 @@ const NewProjectIntro: React.FC<React.PropsWithChildren<unknown>> = () => {
 							{'calculated for every request.'}
 						</GuidesGridItemBody>
 						<Button onClick={() => ipcExplorerService.launchUrl('https://getbeak.notion.site/Realtime-values-e569e07fec964859926edcab2a3351ac')}>
-							{'Read docs'}
+							{'Read more'}
 						</Button>
 					</GuidesGridItem>
 				</GuidesGrid>
@@ -106,7 +106,7 @@ const WelcomeBannerBody = styled.div`
 
 const WelcomeBannerTitle = styled.div`
 	font-size: 30px;
-	font-weight: 300;
+	font-weight: 400;
 	color: ${p => p.theme.ui.textOnAction};
 `;
 

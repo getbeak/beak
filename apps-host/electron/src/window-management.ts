@@ -296,6 +296,7 @@ export async function createProjectMainWindow(projectId: string, projectFilePath
 		width: 1400,
 		minHeight: 450,
 		minWidth: 1150,
+		resizable: true,
 		title: 'Loading... - Beak',
 		titleBarStyle: 'hiddenInset',
 		visualEffectState: 'active',

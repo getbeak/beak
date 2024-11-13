@@ -21,6 +21,7 @@ const FinderRequestItem: React.FC<FinderRequestItemProps> = ({ context, info }) 
 			<div
 				data-tooltip-id={'tt-omni-bar-finder-request-uri'}
 				data-tooltip-content={uri}
+				data-tooltip-hidden={uri.length < 100}
 			>
 				{uri}
 			</div>
@@ -29,7 +30,7 @@ const FinderRequestItem: React.FC<FinderRequestItemProps> = ({ context, info }) 
 };
 
 const UriSpan = styled.small`
-	opacity: 0.6;
+	opacity: .4;
 `;
 
 export default FinderRequestItem;

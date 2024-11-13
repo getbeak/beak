@@ -96,7 +96,7 @@ const ProjectMain: React.FC = () => {
 						<ReflexContainer orientation={'vertical'}>
 							<ReflexElement
 								flex={15}
-								minSize={250}
+								minSize={200}
 								$forcedWidth={collapsedSidebar ? 42 : void 0}
 							>
 								<Sidebar />

@@ -1,5 +1,5 @@
 export interface ProjectEncryption {
-	algorithm: 'aes-256-ctr';
+	algorithm: 'aes-256-ctr' | (string & {});
 	key: string;
 }
 

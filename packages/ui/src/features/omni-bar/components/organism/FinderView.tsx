@@ -6,7 +6,7 @@ import { changeTab } from '@beak/ui/features/tabs/store/actions';
 import { checkShortcut } from '@beak/ui/lib/keyboard-shortcuts';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { movePosition } from '@beak/ui/utils/arrays';
-import type { ValidRequestNode } from '@getbeak/types/nodes';
+import type { FolderNode, Nodes, Tree, ValidRequestNode } from '@getbeak/types/nodes';
 import Fuse from 'fuse.js';
 import styled, { css } from 'styled-components';
 
@@ -20,7 +20,7 @@ export interface FinderViewProps {
 
 const FinderView: React.FC<React.PropsWithChildren<FinderViewProps>> = ({ content, reset }) => {
 	const dispatch = useDispatch();
-	const tree = useAppSelector(s => s.global.project.tree) || {};
+	const tree = useAppSelector(s => s.global.project.tree) || ({} as Tree);
 	const flattened = TypedObject.values(tree).filter(t => t.type === 'request') as ValidRequestNode[];
 	const [matches, setMatches] = useState<string[]>([]);
 	const [active, setActive] = useState<number>(-1);
@@ -103,6 +103,18 @@ const FinderView: React.FC<React.PropsWithChildren<FinderViewProps>> = ({ conten
 			{matches.map((k, idx) => {
 				const match = tree[k];
 				const reqNode = match as ValidRequestNode;
+				const parentChain = [];
+				let parentFinderNode: Nodes = reqNode;
+
+				while (parentFinderNode.parent) {
+					const parent = tree[parentFinderNode.parent] as FolderNode | undefined;
+
+					if (!parent)
+						break;
+
+					parentChain.unshift(parent);
+					parentFinderNode = parent;
+				}
 
 				return (
 					<Item
@@ -122,10 +134,16 @@ const FinderView: React.FC<React.PropsWithChildren<FinderViewProps>> = ({ conten
 							}));
 						}}
 					>
+						<React.Fragment>
+							{parentChain.map((p, idx) => (
+								<ParentChain key={p.id}>
+									{p.name}
+								</ParentChain>
+							))}
+						</React.Fragment>
 						{match.name}
 						{match.type === 'request' && (
 							<React.Fragment>
-								{' - '}
 								<FinderRequestItem
 									context={{ ...context, currentRequestId: match.id }}
 									info={reqNode.info}
@@ -140,7 +158,8 @@ const FinderView: React.FC<React.PropsWithChildren<FinderViewProps>> = ({ conten
 };
 
 const Container = styled.div`
-	padding: 8px 0;
+	/* padding: 8px 0; */
+	overflow: none;
 `;
 
 const Item = styled.div<{ $active: boolean }>`
@@ -156,6 +175,28 @@ const Item = styled.div<{ $active: boolean }>`
 
 	&:hover { background: ${p => p.theme.ui.secondaryActionMuted}; }
 	${p => p.$active ? css`background: ${p => p.theme.ui.secondaryActionMuted};` : ''}
+
+	&:last-of-type {
+		padding-bottom: 10px;
+		border-bottom-left-radius: 10px;
+		border-bottom-right-radius: 10px;
+	}
+`;
+
+const ParentChain = styled.span`
+	display: inline-block;
+	font-size: 13px;
+	color: ${p => p.theme.ui.textMinor};
+	margin-bottom: 4px;
+
+	&:not(:last-of-type):after {
+		content: '/';
+		margin: 0 2px;
+	}
+
+	&:last-of-type {
+		margin-right: 4px;
+	}
 `;
 
 export default FinderView;
