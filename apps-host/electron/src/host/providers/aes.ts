@@ -21,14 +21,6 @@ export default class AesProvider extends AesProviderBase {
     const keyBuffer = Buffer.from(key, 'base64');
     const ivBuffer = Buffer.from(iv, 'base64');
 
-    console.log('key', key);
-    console.log('key.buffer', keyBuffer);
-    console.log('key.length', keyBuffer.length);
-    console.log('iv', iv);
-    console.log('iv.buffer', ivBuffer);
-    console.log('iv.length', ivBuffer.length);
-
-
     const cipher = crypto.createCipheriv(this.aesAlgo, keyBuffer, ivBuffer, void 0) as Cipher; // TODO(afr): fix key len issue
     const update = cipher.update(payload);
     const final = Buffer.concat([update, cipher.final()]);
