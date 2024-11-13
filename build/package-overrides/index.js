@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable no-sync */
-const fs = require('fs');
-const path = require('path');
-const process = require('process');
+import fs from 'node:fs';
+import path from 'node:path';
+import process from 'node:process';
 
 const overrideDefs = {
 	// Needed until postcss supports browser environments + sanitise-html imports it

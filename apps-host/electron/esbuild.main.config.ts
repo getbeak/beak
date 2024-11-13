@@ -110,7 +110,7 @@ const handleVm2Plugin = {
 	},
 };
 
-export default {
+export default [{
 	platform: 'node',
 	target: 'node18.12.1', // TODO(afr): automatic electron version target
 	bundle: true,
@@ -133,7 +133,7 @@ export default {
 	sourcemap: true,
 	assetNames: '[name]',
 	external: ['node:fs'],
-} as BuildOptions;
+}] as BuildOptions[];
 
 function writeDefinition(value: string | undefined) {
 	if (value === void 0)

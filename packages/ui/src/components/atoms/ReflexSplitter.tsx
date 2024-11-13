@@ -11,7 +11,7 @@ export interface ReflexSplitterProps extends RSP {
 	$customChildren?: boolean;
 }
 
-const ReflexSplitter = styled(RS)<ReflexSplitterProps>`
+const ReflexSplitter: React.FC<ReflexSplitterProps> = styled(RS)<ReflexSplitterProps>`
 	width: ${props => props.orientation === 'vertical' ? '2px' : 'auto'} !important;
 	height: ${props => props.orientation === 'horizontal' ? '2px' : 'auto'} !important;
 	background-color: ${props => props.theme.ui.backgroundBorderSeparator} !important;
@@ -42,7 +42,7 @@ export interface HorizontalContextualReflexSplitterProps extends RSP {
 	children: React.ReactElement;
 }
 
-export const HorizontalContextualReflexSplitter = styled(RS)<HorizontalContextualReflexSplitterProps>`
+export const HorizontalContextualReflexSplitter: React.FC<HorizontalContextualReflexSplitterProps> = styled(RS)<HorizontalContextualReflexSplitterProps>`
 	width: auto !important;
 	height: auto !important;
 	background-color: ${props => props.theme.ui.backgroundBorderSeparator} !important;
