@@ -124,16 +124,11 @@ export default class BeakProject extends BeakBase {
 		// Create hidden project items
 		await this.p.node.fs.promises.writeFile(
 			this.p.node.path.join(projectFolderPath, '.gitignore'),
-			JSON.stringify(this.createGitIgnore(), null, '\t'),
+			this.createGitIgnore(),
 			'utf8',
 		);
 		await this.p.node.fs.promises.mkdir(
 			this.p.node.path.join(projectFolderPath, '.beak'),
-		);
-		await this.p.node.fs.promises.writeFile(
-			this.p.node.path.join(projectFolderPath, '.beak', 'supersecret.json'),
-			JSON.stringify(this.createGitIgnore(), null, '\t'),
-			'utf8',
 		);
 
 		// Create project root files
