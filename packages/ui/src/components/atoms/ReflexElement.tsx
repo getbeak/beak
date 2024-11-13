@@ -7,7 +7,7 @@ export interface ReflexElementProps extends REP {
 	$forcedWidth?: number;
 }
 
-const ReflexElement = styled(RE) <ReflexElementProps>`
+const ReflexElement: React.FC<ReflexElementProps> = styled(RE)<ReflexElementProps>`
 	${p => p.minSize && `min-width: ${p.minSize}px;`}
 
 	${p => p.$forcedWidth !== void 0 && css`
