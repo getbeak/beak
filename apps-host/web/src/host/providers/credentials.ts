@@ -1,5 +1,5 @@
-import CredentialsProviderBase from '@beak/common-host/providers/credentials';
 import { ProjectEncryption } from '@beak/common/types/beak-project';
+import CredentialsProviderBase from '@beak/common-host/providers/credentials';
 
 export default class CredentialsProvider extends CredentialsProviderBase {
 	async readFromStore(key: string): Promise<string | null> {

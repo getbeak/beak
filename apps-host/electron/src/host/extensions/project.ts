@@ -10,8 +10,13 @@ import path from 'node:path';
 
 import getBeakHost from '..';
 
-export async function tryOpenProjectFolder(projectFolderPath: string, silent = false) {
-	const projectFilePath = path.join(projectFolderPath, 'project.json');
+export async function tryOpenProjectFolder(projectPath: string, silent = false) {
+	let projectFilePath = projectPath;
+	if (!projectFilePath.endsWith('.json')) {
+		projectFilePath = path.join(projectFilePath, 'project.json');
+	}
+
+	const projectFolderPath = path.parse(projectFilePath).dir;
 	const projectFile = await getBeakHost().project.readProjectFile(projectFolderPath, {
 		runMigrations: true,
 	});
@@ -19,8 +24,8 @@ export async function tryOpenProjectFolder(projectFolderPath: string, silent = f
 	if (!projectFile) {
 		if (!silent) {
 			await dialog.showMessageBox({
-				title: 'Unable to load project',
-				message: 'The project file you tried to open could not be found.',
+				title: 'Unable to open project',
+				message: 'The project you tried to open does not exist. Project path provided: ' + projectPath,
 				type: 'error',
 			});
 		}
@@ -31,7 +36,7 @@ export async function tryOpenProjectFolder(projectFolderPath: string, silent = f
 	if (!projectFile.name) {
 		if (!silent) {
 			await dialog.showMessageBox({
-				title: 'Unable to load project',
+				title: 'Unable to open project',
 				message: 'The selected project does not look like a Beak project file. Please try again.',
 				type: 'error',
 			});
@@ -48,10 +53,10 @@ export async function tryOpenProjectFolder(projectFolderPath: string, silent = f
 	});
 	await getBeakHost().project.recents.addProject({
 		name: projectFile.name,
-		path: projectFilePath,
+		path: projectFolderPath,
 	});
 
-	app.addRecentDocument(projectFilePath);
+	app.addRecentDocument(projectFolderPath);
 
 	return await createProjectMainWindow(projectFile.id, projectFilePath);
 }
@@ -87,7 +92,5 @@ export async function openProjectDialog(browserWindow?: BrowserWindow) {
 		return;
 	}
 
-	const projectFolder = path.parse(result.filePaths[0]).dir;
-
-	await tryOpenProjectFolder(projectFolder);
+	await tryOpenProjectFolder(result.filePaths[0]);
 }

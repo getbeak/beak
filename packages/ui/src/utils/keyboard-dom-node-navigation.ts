@@ -1,5 +1,3 @@
-/* eslint-disable padding-line-between-statements */
-
 export function selectNextLogicalNode(root: HTMLElement, selected: HTMLElement) {
 	const { focusableNodes, currentIndex } = gatherFocusState(root, selected);
 	const nextNode = focusableNodes[currentIndex + 1];

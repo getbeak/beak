@@ -1,5 +1,3 @@
-/* eslint-disable no-param-reassign */
-
 import { createReducer } from '@reduxjs/toolkit';
 
 import * as actions from './actions';

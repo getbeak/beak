@@ -23,7 +23,6 @@ export const editorTabSubItems: TabSubItem<EditorMode>[] = [{
 export function extractVariableNamesFromQuery(document: DocumentNode): ExtractedVariables | null {
 	if (document.kind !== 'Document') return null;
 
-	/* eslint-disable @typescript-eslint/indent */
 	/* eslint-disable no-param-reassign */
 	return document.definitions
 		.filter(d => d.kind === Kind.OPERATION_DEFINITION)
@@ -39,7 +38,6 @@ export function extractVariableNamesFromQuery(document: DocumentNode): Extracted
 
 			return acc;
 		}, {});
-	/* eslint-enable @typescript-eslint/indent */
 	/* eslint-enable no-param-reassign */
 }
 

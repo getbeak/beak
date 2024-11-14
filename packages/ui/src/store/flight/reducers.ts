@@ -1,5 +1,3 @@
-/* eslint-disable no-param-reassign */
-
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { createReducer } from '@reduxjs/toolkit';
 

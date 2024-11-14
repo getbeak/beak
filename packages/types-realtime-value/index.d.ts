@@ -94,7 +94,6 @@ interface Editor<TPayload extends GenericDictionary, TEditorState extends Generi
 	save: (ctx: Context, existingPayload: TPayload, state: TEditorState) => Promise<TPayload>;
 }
 
-/* eslint-disable @typescript-eslint/indent */
 export type UISection<T extends GenericDictionary = Record<string, never>> =
 	ValuePartInput<T> |
 	TextInput<T> |
@@ -102,7 +101,6 @@ export type UISection<T extends GenericDictionary = Record<string, never>> =
 	CheckboxInput<T> |
 	OptionsInput<T> |
 	RequestSelectInput<T>;
-/* eslint-enable @typescript-eslint/indent */
 
 interface ValuePartInput<T extends GenericDictionary> {
 	type: 'value_parts_input';

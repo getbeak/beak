@@ -258,7 +258,6 @@ const VariableInput = React.forwardRef<HTMLElement, VariableInputProps>((props, 
 
 			// Detect un-allowed div content
 			if (n.nodeName !== 'DIV') {
-				// eslint-disable-next-line no-console
 				console.error(`Unknown node detected in variable input ${n.nodeName}`);
 				anomalyDetected = true;
 
@@ -299,7 +298,6 @@ const VariableInput = React.forwardRef<HTMLElement, VariableInputProps>((props, 
 		// This means something really weird has happened, such as an unknown element getting into our DOM state. If
 		// that happens we just tell React to re-render and override with the state that we know about
 		if (anomalyDetected) {
-			// eslint-disable-next-line no-console
 			console.error('Anomaly detected while parsing dom state!');
 
 			unmanagedStateRef.current.lastSelectionPosition = void 0;
@@ -421,7 +419,6 @@ const VariableInput = React.forwardRef<HTMLElement, VariableInputProps>((props, 
 		const part = unmanagedStateRef.current.valueParts[partIndex];
 
 		if (typeof part !== 'object' || part.type !== type) {
-			// eslint-disable-next-line no-console
 			console.error(`Part ordering change mid edit, cannot continue. expected ${type}`);
 
 			return;

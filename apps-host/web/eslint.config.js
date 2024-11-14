@@ -1,7 +1,10 @@
+import globals from "globals";
 import baseConfig from "../../eslint.config.js";
 
-export default [baseConfig, {
-	"env": {
-		"browser": true
-	}
+export default [...baseConfig, {
+	"languageOptions": {
+		"globals": {
+			...globals.browser,
+		}
+	},
 }];

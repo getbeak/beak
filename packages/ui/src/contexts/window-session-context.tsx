@@ -1,8 +1,11 @@
 import React from 'react';
 import UAParser from 'ua-parser-js';
 
+type Platform = 'darwin' | 'win32' | 'browser' | 'linux';
+export type BeakPlatform = 'darwin' | 'windows' | 'browser' | 'linux';
+
 export class WindowSession {
-	platform: NodeJS.Platform | 'browser';
+	platform: Platform;
 	windowId: string | null;
 	version: string;
 	os: string;
@@ -11,7 +14,7 @@ export class WindowSession {
 		const params = new URLSearchParams(window.location.search);
 
 		if (window.embeddedIndicator)
-			this.platform = params.get('platform')! as NodeJS.Platform;
+			this.platform = params.get('platform')! as Platform;
 		else
 			this.platform = 'browser';
 
@@ -22,7 +25,7 @@ export class WindowSession {
 		this.version = params.get('version')! ?? '0.0.1';
 	}
 
-	getPlatform() {
+	getPlatform(): BeakPlatform {
 		if (this.platform === 'darwin')
 			return 'darwin';
 

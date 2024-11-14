@@ -31,7 +31,7 @@ export function normalizeSelection(existing?: NormalizedSelection): NormalizedSe
 			subject = subject.parentNode!;
 
 		// Keep reverse-traversing the dom until we find the article node
-		// eslint-disable-next-line no-constant-condition
+
 		while (true) {
 			container = container.parentNode!;
 

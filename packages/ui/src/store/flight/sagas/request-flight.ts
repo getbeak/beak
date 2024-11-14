@@ -192,7 +192,6 @@ async function flattenBody(context: Context, overview: RequestOverview): Promise
 					},
 				};
 			} catch (error) {
-				// eslint-disable-next-line no-console
 				console.error('unable to read reference file', error);
 
 				return { type: 'text', payload: '' };

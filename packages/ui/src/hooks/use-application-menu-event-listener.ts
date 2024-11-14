@@ -61,7 +61,7 @@ export function useApplicationMenuEventListener() {
 					break;
 
 				default:
-					// eslint-disable-next-line no-console
+
 					console.warn('Unknown menu item event', payload);
 					break;
 			}

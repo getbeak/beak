@@ -15,12 +15,10 @@ export interface FlightRequestPayload {
 	request: RequestOverview;
 }
 
-/* eslint-disable @typescript-eslint/indent */
 export type FlightHeartbeatPayload =
 	FlightHeartbeatFetchResponse |
 	FlightHeartbeatParsingResponse |
 	FlightHeartbeatReadingBody;
-/* eslint-enable @typescript-eslint/indent */
 
 export interface FlightHeartbeatFetchResponse {
 	stage: 'fetch_response';

@@ -20,7 +20,6 @@ export async function generateSafeNewPath(name: string, directory: string, exten
 		index = Number(matches[2]) + 1;
 	}
 
-	// eslint-disable-next-line no-constant-condition
 	while (true) {
 		const full = createPath(`${useableName} (${index})`);
 

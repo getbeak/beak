@@ -37,10 +37,9 @@ export async function parseValueParts(
 				rtv.getValue(ctx, p.payload, depth + 1),
 				new Promise(resolve => {
 					window.setTimeout(() => {
-						if (!complete) {
-							// eslint-disable-next-line no-console
+						if (!complete)
+
 							console.error(`Fetching value for ${rtv.type} exceeded 600ms`);
-						}
 
 						resolve('');
 					}, 600);
@@ -50,9 +49,9 @@ export async function parseValueParts(
 			complete = true;
 
 			return value;
-		} catch (error) {
+		} catch {
 			// TODO(afr): Move this to some sort of alert
-			// eslint-disable-next-line no-console
+
 			console.error(`Failed to get value from ${rtv.type}`);
 
 			return '';

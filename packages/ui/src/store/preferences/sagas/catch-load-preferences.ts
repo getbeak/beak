@@ -85,7 +85,6 @@ async function loadRequestPreferences(id: string) {
 
 		return preferenceFile.file;
 	} catch (error) {
-		// eslint-disable-next-line no-console
 		console.warn('Request preferences invalid:', error);
 
 		return defaultPreferences;
@@ -109,7 +108,6 @@ async function loadEditorPreferences() {
 
 		return preferenceFile.file;
 	} catch (error) {
-		// eslint-disable-next-line no-console
 		console.warn('Editor preferences invalid:', error);
 
 		return defaultPreferences;
@@ -134,7 +132,6 @@ async function loadSidebarPreferences() {
 
 		return preferenceFile.file;
 	} catch (error) {
-		// eslint-disable-next-line no-console
 		console.warn('Sidebar preferences invalid:', error);
 
 		return defaultPreferences;
@@ -158,7 +155,6 @@ async function loadProjectPanePreferences() {
 
 		return preferenceFile.file;
 	} catch (error) {
-		// eslint-disable-next-line no-console
 		console.warn('Project preferences invalid:', error);
 
 		return defaultPreferences;

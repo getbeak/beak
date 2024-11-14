@@ -147,16 +147,16 @@ service.registerReadDir(async (_event, payload: ReadDirReq) => {
 	}));
 });
 
-service.registerOpenReferenceFile(async _event => {
+service.registerOpenReferenceFile(async _event =>
 	// const sender = (event as IpcMainInvokeEvent).sender;
 	// const window = BrowserWindow.fromWebContents(sender)!;
 
 	// return await openReferenceFile(window);
 
-	return null;
-});
+	null,
+);
 
-service.registerPreviewReferencedFile(async (_event, _payload) => {
+service.registerPreviewReferencedFile(async (_event, _payload) =>
 	// const sender = (event as IpcMainInvokeEvent).sender;
 	// const window = BrowserWindow.fromWebContents(sender)!;
 	// const filePath = await previewReferencedFile(window, payload.fileReferenceId);
@@ -173,10 +173,10 @@ service.registerPreviewReferencedFile(async (_event, _payload) => {
 	// 	fileSize: stat.size,
 	// };
 
-	return null;
-});
+	null,
+);
 
-service.registerReadReferencedFile(async (_event, _payload) => {
+service.registerReadReferencedFile(async (_event, _payload) =>
 	// const sender = (event as IpcMainInvokeEvent).sender;
 	// const window = BrowserWindow.fromWebContents(sender)!;
 	// const filePath = await previewReferencedFile(window, payload.fileReferenceId);
@@ -188,8 +188,8 @@ service.registerReadReferencedFile(async (_event, _payload) => {
 
 	// return { body: file };
 
-	return { body: new Uint8Array() };
-});
+	({ body: new Uint8Array() }),
+);
 
 async function ensureParentDirectoryExists(filePath: string) {
 	const parentDirectory = getBeakHost().p.node.path.dirname(filePath);
@@ -206,7 +206,6 @@ async function ensureParentDirectoryExists(filePath: string) {
 			acc.push(`/${val}`);
 
 		return acc;
-	// eslint-disable-next-line newline-per-chained-call
 	}, []).filter(Boolean);
 
 	for (const iteration of directoryIterations) {

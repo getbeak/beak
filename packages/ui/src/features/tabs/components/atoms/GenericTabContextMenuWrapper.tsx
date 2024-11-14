@@ -14,7 +14,6 @@ interface GenericTabContextMenuWrapperProps {
 	target: HTMLElement | undefined;
 }
 
-// eslint-disable-next-line max-len
 const GenericTabContextMenuWrapper: React.FC<React.PropsWithChildren<GenericTabContextMenuWrapperProps>> = props => {
 	const dispatch = useDispatch();
 	const { tab, target, children } = props;
