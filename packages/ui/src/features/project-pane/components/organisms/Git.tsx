@@ -28,7 +28,7 @@ const Git: React.FC<React.PropsWithChildren<unknown>> = () => {
 					{'Branch'}
 				</GroupName>
 
-				<Selector disabled value={selectedBranch}>
+				<Selector value={selectedBranch}>
 					{branches.map(b => (
 						<option disabled={selectedBranch !== b.name} key={b.name} value={b.name}>{b.name}</option>
 					))}
