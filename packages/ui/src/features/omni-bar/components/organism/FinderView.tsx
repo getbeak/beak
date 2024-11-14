@@ -158,7 +158,6 @@ const FinderView: React.FC<React.PropsWithChildren<FinderViewProps>> = ({ conten
 };
 
 const Container = styled.div`
-	/* padding: 8px 0; */
 	overflow: none;
 `;
 
