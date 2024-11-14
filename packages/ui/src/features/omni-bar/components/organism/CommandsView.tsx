@@ -265,9 +265,7 @@ const CommandsView: React.FC<React.PropsWithChildren<CommandsViewProps>> = ({ co
 	);
 };
 
-const Container = styled.div`
-	padding: 8px 0;
-`;
+const Container = styled.div``;
 
 const Item = styled.div<{ $active: boolean }>`
 	font-size: 13px;
@@ -282,6 +280,12 @@ const Item = styled.div<{ $active: boolean }>`
 
 	&:hover { background: ${p => p.theme.ui.secondaryActionMuted}; }
 	${p => p.$active ? css`background: ${p => p.theme.ui.secondaryActionMuted};` : ''}
+
+	&:last-of-type {
+		padding-bottom: 10px;
+		border-bottom-left-radius: 10px;
+		border-bottom-right-radius: 10px;
+	}
 `;
 
 export default CommandsView;
