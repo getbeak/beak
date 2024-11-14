@@ -48,7 +48,6 @@ export default [
 				...globals.node,
 				...globals.sharedNodeBrowser,
 				...globals.es2017,
-				...globals.jest,
 			}
 		},
 
