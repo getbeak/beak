@@ -72,7 +72,7 @@ export async function startRequester(options: RequesterOptions) {
 
 				heartbeat({
 					stage: 'reading_body',
-					payload: { buffer: value as Buffer, timestamp: Date.now() },
+					payload: { buffer: value, timestamp: Date.now() },
 				});
 			}
 

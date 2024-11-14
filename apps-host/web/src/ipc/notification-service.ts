@@ -13,7 +13,8 @@ service.registerSendNotification(async (_event, payload) => {
 	const notification = new Notification(payload.title ?? 'Title', {
 		body: payload.body,
 		icon: '/images/logo-title.png',
-		vibrate: payload.silent ? void 0 : [200, 100, 200],
+		// TODO(afr): Set custom type for this due to experimental status
+		// vibrate: payload.silent ? void 0 : [200, 100, 200],
 		silent: payload.silent,
 		requireInteraction: payload.urgency === 'critical',
 	});
