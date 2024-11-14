@@ -80,7 +80,6 @@ export function detectRelevantCopiedValueParts(valueParts: ValueParts) {
 function findParentNode(node: Node, nodeName: string) {
 	let currentNode = node;
 
-	// eslint-disable-next-line no-constant-condition
 	while (true) {
 		if (!currentNode)
 			return null;
@@ -95,7 +94,6 @@ function findParentNode(node: Node, nodeName: string) {
 function findChildNode(node: Node, nodeName: string) {
 	let currentNode = node;
 
-	// eslint-disable-next-line no-constant-condition
 	while (true) {
 		if (!currentNode)
 			return null;

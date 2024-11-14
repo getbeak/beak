@@ -23,16 +23,16 @@ jobs:
     runs-on: macos-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
-      - uses: benjlevesque/short-sha@v1.2
+        uses: actions/checkout@v4.2.2
+      - uses: benjlevesque/short-sha@v3.0
         id: short-sha
         with:
           length: 6
 
       - name: Setup Node.js
-        uses: actions/setup-node@v2.4.1
+        uses: actions/setup-node@v4.1.0
         with:
-          node-version: '18'
+          node-version: '22'
           cache: 'yarn'
           cache-dependency-path: yarn.lock
 
@@ -94,7 +94,7 @@ jobs:
           rm -rf ./apps-host/electron/dist-electron/linux-unpacked
       - name: Upload non-release artifacts to S3
         if: startsWith(github.ref, 'refs/tags/v') == false
-        uses: shallwefootball/upload-s3-action@v1.1.2
+        uses: shallwefootball/upload-s3-action@v1.3.3
         with:
           aws_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY}}

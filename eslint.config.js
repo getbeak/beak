@@ -16,14 +16,14 @@ const gitignorePath = path.resolve(__dirname, ".gitignore");
 
 export default [
 	includeIgnoreFile(gitignorePath),
+	{
+		"ignores": [
+			"**/*.js",
+		],
+	},
 	js.configs.recommended,
-	// reactHooks.configs.recommended,
 	{
 		"files": ["**/*.ts", "**/*.tsx"],
-		"ignores": [
-			"packages/**/next-env.d.ts",
-			"packages/**/vite.config.js",
-		],
 
 		"languageOptions": {
 			"parser": tsEslintParser,

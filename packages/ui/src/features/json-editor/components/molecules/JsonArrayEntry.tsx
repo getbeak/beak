@@ -85,7 +85,7 @@ const JsonArrayEntry: React.FC<React.PropsWithChildren<JsonArrayEntryProps>> = p
 			</Row>
 			{expanded && children.map((c, i) => (
 				<JsonEntry
-					// eslint-disable-next-line @typescript-eslint/restrict-plus-operands
+
 					depth={depth + 1}
 					key={c.id}
 					requestId={requestId}

@@ -14,7 +14,6 @@ function createDesignSystem(themeKey: Theme): DesignSystem {
 	};
 }
 
-// eslint-disable-next-line max-len
 const DesignSystemProvider: React.FC<React.PropsWithChildren<{ themeKey: Theme }>> = ({ children, themeKey }) => (
 	<ThemeProvider theme={createDesignSystem(themeKey)}>{children}</ThemeProvider>
 );

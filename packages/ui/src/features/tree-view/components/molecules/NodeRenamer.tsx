@@ -35,21 +35,20 @@ const NodeRenamer: React.FC<React.PropsWithChildren<NodeRenamerProps>> = props =
 
 	useEffect(() => {
 		if (activeRename || !wrappedTextRef.current)
-			return;
+			return void 0;
 
 		const element = wrappedTextRef.current;
 		const textOverflowed = element.scrollWidth > element.clientWidth || element.scrollHeight > element.clientHeight;
 
 		const resizeObserver = new ResizeObserver(() => {
-			if (textOverflowed) {
+			if (textOverflowed)
 				setCanShowTooltip(true);
-			} else {
+			else
 				setCanShowTooltip(false);
-			}
 		});
-	
+
 		resizeObserver.observe(element);
-	
+
 		return () => {
 			resizeObserver.disconnect();
 			setCanShowTooltip(false);

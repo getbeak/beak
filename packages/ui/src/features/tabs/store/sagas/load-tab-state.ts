@@ -28,7 +28,7 @@ export default createTakeEverySagaSet(actions.loadTabState, function* worker() {
 		}
 	} catch (error) {
 		// On error, just fall back to default state and log the error
-		// eslint-disable-next-line no-console
+
 		console.error(error);
 	}
 

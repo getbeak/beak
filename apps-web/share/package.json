@@ -8,6 +8,7 @@
     "build": "cross-env NODE_ENV=production vite build",
     "start": "cross-env NODE_ENV=development vite",
     "typecheck": "tsc",
+    "lint": "eslint .",
     "test": "echo Skipped for now."
   },
   "browserslist": {

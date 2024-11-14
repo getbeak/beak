@@ -160,7 +160,7 @@ async function readReferencedFile(fileReferenceId: string | undefined) {
 		const decoded = new TextDecoder().decode(response.body);
 
 		return decoded;
-	} catch (error) {
+	} catch {
 		return '';
 	}
 }

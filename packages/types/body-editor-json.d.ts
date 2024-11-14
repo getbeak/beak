@@ -45,11 +45,10 @@ export type Entries = NamedEntries | AnonymousEntries;
 export type AnonymousEntries = StringEntry | NumberEntry | BooleanEntry | NullEntry | ObjectEntry | ArrayEntry;
 export type ValueEntries = StringEntry | NumberEntry | BooleanEntry | NullEntry;
 
-/* eslint-disable @typescript-eslint/indent */
-export type NamedEntries = NamedStringEntry |
+export type NamedEntries =
+	NamedStringEntry |
 	NamedNumberEntry |
 	NamedBooleanEntry |
 	NamedNullEntry |
 	NamedObjectEntry |
 	NamedArrayEntry;
-/* eslint-enable @typescript-eslint/indent */

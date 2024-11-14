@@ -13,7 +13,7 @@ export default function createFsEmitter(path: string, options?: WatchOptions) {
 		});
 
 		ipcFsWatcherService.registerWatcherError(sessionIdentifier, async (_event, payload) =>
-			// eslint-disable-next-line no-console
+
 			console.error(payload),
 		);
 

@@ -135,7 +135,7 @@ const FinderView: React.FC<React.PropsWithChildren<FinderViewProps>> = ({ conten
 						}}
 					>
 						<React.Fragment>
-							{parentChain.map((p, idx) => (
+							{parentChain.map(p => (
 								<ParentChain key={p.id}>
 									{p.name}
 								</ParentChain>

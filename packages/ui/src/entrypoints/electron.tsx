@@ -6,7 +6,6 @@ import Preferences from '../containers/Preferences';
 import ProjectMain from '../containers/ProjectMain';
 import Welcome from '../containers/Welcome';
 
-/* eslint-disable no-process-env */
 if (import.meta.env.MODE !== 'development') {
 	init({
 		dsn: 'https://c7a8bd8013242cfe728beeaae8a3e9f1@o988021.ingest.sentry.io/4506451600670720',
@@ -14,7 +13,6 @@ if (import.meta.env.MODE !== 'development') {
 		release: import.meta.env.RELEASE_IDENTIFIER,
 	});
 }
-/* eslint-enable no-process-env */
 
 function getComponent(container: string | null) {
 	switch (container) {

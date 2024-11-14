@@ -20,7 +20,6 @@ export default function renderValueParts(parts: ValueParts, variableGroups: Vari
 					return <span key={p} data-index={idx}>{p}</span>;
 
 				if (typeof p !== 'object') {
-					// eslint-disable-next-line no-console
 					console.error(`Unknown value part ${p}:(${typeof p})`);
 
 					return null;

@@ -92,7 +92,7 @@ const RealtimeValueEditor: React.FC<React.PropsWithChildren<RealtimeValueEditorP
 					partIndex,
 					state,
 				}))
-				// eslint-disable-next-line no-console
+
 				.catch(console.error);
 		};
 

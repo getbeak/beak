@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
+import { toHexAlpha } from '@beak/design-system/utils';
 import { checkShortcut } from '@beak/ui/lib/keyboard-shortcuts';
 import { useAppSelector } from '@beak/ui/store/redux';
 import styled, { keyframes } from 'styled-components';
@@ -7,7 +8,6 @@ import styled, { keyframes } from 'styled-components';
 import { actions } from '../store';
 import CommandsView from './organism/CommandsView';
 import FinderView from './organism/FinderView';
-import { toHexAlpha } from '@beak/design-system/utils';
 
 const scaleIn = keyframes`
 	0% {

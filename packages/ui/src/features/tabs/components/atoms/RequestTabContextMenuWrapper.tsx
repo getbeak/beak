@@ -16,7 +16,6 @@ interface RequestTabContextMenuWrapperProps {
 	target: HTMLElement | undefined;
 }
 
-// eslint-disable-next-line max-len
 const RequestTabContextMenuWrapper: React.FC<React.PropsWithChildren<RequestTabContextMenuWrapperProps>> = props => {
 	const dispatch = useDispatch();
 	const { tab, target, children } = props;

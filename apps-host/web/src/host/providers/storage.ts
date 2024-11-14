@@ -1,4 +1,3 @@
-/* eslint-disable max-len */
 /* eslint-disable no-dupe-class-members */
 
 // TODO(afr): This is temporary, move to a better library in future
