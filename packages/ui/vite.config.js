@@ -1,5 +1,4 @@
 /* eslint-disable no-process-env */
-/* eslint-disable @typescript-eslint/no-var-requires */
 
 import reactPlugin from '@vitejs/plugin-react';
 import fs from 'fs';
@@ -40,7 +39,9 @@ export default {
 			'@beak/ksuid': path.join(__dirname, '../ksuid/src'),
 
 			'@getbeak/types': path.join(__dirname, '../types/src'),
+
 			'path': 'path-browserify',
+			'monaco-editor/esm/vs/editor/contrib/hover/browser/hover': 'monaco-editor/esm/vs/editor/contrib/hover/browser/contentHoverController2',
 		},
 	},
 	plugins: [
@@ -101,7 +102,7 @@ export default {
 		assetsDir: '.',
 		minify: environment === 'development' ? false : 'esbuild',
 		rollupOptions: {
-			external: ['electron'],
+			external: ['electron', ],
 			output: {
 				entryFileNames: '[name].[format].min.js',
 				chunkFileNames: '[name].[format].min.js',
