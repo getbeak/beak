@@ -134,7 +134,7 @@ export default class BeakProject extends BeakBase {
 		// Create project root files
 		await this.p.node.fs.promises.writeFile(
 			this.p.node.path.join(projectFolderPath, 'README.md'),
-			JSON.stringify(this.createReadme(name), null, '\t'),
+			this.createReadme(name),
 			'utf8',
 		);
 
@@ -211,7 +211,9 @@ export default class BeakProject extends BeakBase {
 		return [
 			`# ${name}`,
 			'',
-			'Welcome to your new Beak project! For help getting started, please visit the [Beak docs](https://docs.getbeak.app/).',
+			'**Welcome to this new Beak project!**',
+			'',
+			'For help getting started, please visit the[Beak docs](https://docs.getbeak.app/).',
 			'',
 		].join('\n');
 	}

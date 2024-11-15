@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-const { notarize } = require('electron-notarize');
+const { notarize } = require('@electron/notarize');
 const path = require('path');
 
 exports.default = async function notarizing(context) {
@@ -12,10 +12,10 @@ exports.default = async function notarizing(context) {
 	const appFilePath = path.join(appOutDir, `${appName}.app`);
 
 	await notarize({
-		appBundleId: 'app.getbeak.beak',
-		appPath: appFilePath,
+		tool: 'notarytool',
 		appleId: process.env.APPLE_ID,
 		appleIdPassword: process.env.APPLE_APP_SPECIFIC_PASSWORD,
-		ascProvider: process.env.ASC_PROVIDER,
+		teamId: process.env.APPLE_TEAM_ID,
+		appPath: appFilePath,
 	});
 };
