@@ -33,6 +33,13 @@ export default function* requestFlightWorker() {
 	const flight: State = yield select((s: ApplicationState) => s.global.flight);
 	const node: ValidRequestNode = yield select((s: ApplicationState) => s.global.project.tree![requestId]);
 
+	if (!node) {
+		// eslint-disable-next-line no-console
+		console.error('Node not found for flight request', requestId);
+
+		return;
+	}
+
 	const projectTree: Tree = yield select(
 		(s: ApplicationState) => s.global.project.tree,
 	);
