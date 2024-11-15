@@ -11,7 +11,7 @@ const ProjectLoading: React.FC<React.PropsWithChildren<unknown>> = () => {
 		'Keep an eye out for easter eggs...',
 		`Quickly run a request from anywhere by pressing ${renderPlainTextDefinition('global.execute-request')}`,
 		'Check out the preferences to customize Beak to your liking',
-
+		'Beak supports GraphQL, helping you write queries and inject variables',
 	];
 
 	const [hintIndex] = useState<number>(() => Math.floor(Math.random() * hints.length));
@@ -39,6 +39,7 @@ const Wrapper = styled.div`
 	align-items: center;
 	justify-content: center;
 	text-align: center;
+	-webkit-app-region: drag;
 
 	background: ${p => p.theme.ui.background};
 `;

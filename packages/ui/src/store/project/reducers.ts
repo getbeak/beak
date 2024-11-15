@@ -75,6 +75,13 @@ const projectReducer = createReducer(initialState, builder => {
 			const node = state.tree[payload.requestId] as ValidRequestNode;
 			const existingItem = node.info.headers[payload.identifier];
 
+			if (!existingItem) {
+				// eslint-disable-next-line no-console
+				console.log('Header not found', payload, node.info.headers);
+
+				return;
+			}
+
 			if (payload.name !== void 0)
 				existingItem.name = payload.name;
 			if (payload.value !== void 0)
