@@ -16,7 +16,7 @@
 		"start": "tsc -b tsconfig.json -w"
 	},
 	"dependencies": {
-		"base-x": "^4.0.0"
+		"base-x": "^5.0.0"
 	},
 	"devDependencies": {
 		"mockdate": "^3.0.5",
