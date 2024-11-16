@@ -1,13 +1,13 @@
 /* eslint-disable no-sync */
 /* eslint-disable @typescript-eslint/no-var-requires */
-const asar = require('asar');
-const path = require('path');
-const fs = require('fs');
-const os = require('os');
+import asar from 'asar';
+import path from 'path';
+import fs from 'fs';
+import os from 'os';
 
 const architectures = ['ia32', 'x64', 'armv7l', 'arm64', 'universal'];
 
-exports.default = async function afterPack(context) {
+export default async function afterPack(context) {
 	const arch = architectures[context.arch];
 	const platform = context.packager.platform.nodeName;
 	const tempDirPath = path.join(os.tmpdir(), Date.now().toString());
