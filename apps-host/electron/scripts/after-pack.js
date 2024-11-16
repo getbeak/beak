@@ -12,7 +12,7 @@ export default async function afterPack(context) {
 	const platform = context.packager.platform.nodeName;
 	const tempDirPath = path.join(os.tmpdir(), Date.now().toString());
 	const asarPath = generateAsarPath(platform, context.appOutDir);
-	const nativeKeytarDir = path.join(__dirname, '..', '..', '..', 'build', 'native-components', 'keytar');
+	const nativeKeytarDir = path.join(import.meta.dirname, '..', '..', '..', 'build', 'native-components', 'keytar');
 	const nativeKeytarPath = path.join(nativeKeytarDir, generateKeytarFilename(arch, platform));
 	const asarKeytarPath = path.join(tempDirPath, 'keytar.node');
 
