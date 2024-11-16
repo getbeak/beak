@@ -97,7 +97,7 @@ const FinderView: React.FC<React.PropsWithChildren<FinderViewProps>> = ({ conten
 		<Container tabIndex={0}>
 			{matches.length === 0 && (
 				<NoItemsFound>
-					{'No matching requests found... sadface'}
+					{'No matching requests found'}
 				</NoItemsFound>
 			)}
 			{matches.map((k, idx) => {

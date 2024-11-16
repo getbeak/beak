@@ -2,18 +2,30 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { RealtimeValueManager } from '@beak/ui/features/realtime-values';
 import useRealtimeValueContext from '@beak/ui/features/realtime-values/hooks/use-realtime-value-context';
-import { ipcExtensionsService } from '@beak/ui/lib/ipc';
+import { ipcExplorerService, ipcExtensionsService } from '@beak/ui/lib/ipc';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { movePosition } from '@beak/ui/utils/arrays';
 import { faPlug } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { RealtimeValue, RealtimeValueInformation } from '@getbeak/types-realtime-value';
 import Fuse from 'fuse.js';
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import * as uuid from 'uuid';
 
 import { createFauxValue } from '../../../realtime-values/values/variable-group-item';
 import { NormalizedSelection } from '../../utils/browser-selection';
+
+const scaleIn = keyframes`
+	0% {
+		transform: scale(.97);
+		opacity: 0;
+	}
+
+	100% {
+		transform: scale(1);
+		opacity: 1;
+	}
+`;
 
 interface Position {
 	top: number;
@@ -164,6 +176,32 @@ const VariableSelector: React.FC<React.PropsWithChildren<VariableSelectorProps>>
 	if (!position)
 		return null;
 
+	if (items.length === 0) {
+		return (
+			<Container onClick={event => {
+				event.stopPropagation();
+				onClose();
+			}}>
+				<Wrapper $top={position.top} $left={position.left}>
+					<ItemContainer>
+						<NoItems>
+							{'There are no variables matching your search. Try widening '}
+							{'your horizons.'}
+						</NoItems>
+						</ItemContainer>
+						<Description>
+							<strong>{'Missing a variable you would find useful?'}</strong><br />
+							{'You can build your own with an extension, check the '}
+							<a href="#" onClick={async () => void await ipcExplorerService.launchUrl("https://getbeak.notion.site/Extensions-4c16ca640b35460787056f8be815b904") }>
+								{'docs'}
+							</a>
+							{'.'}
+						</Description>
+				</Wrapper>
+			</Container>
+		);
+	}
+
 	return (
 		<Container onClick={event => {
 			event.stopPropagation();
@@ -218,6 +256,10 @@ const Wrapper = styled.div<{ $top: number; $left: number }>`
 	border: 1px solid ${p => p.theme.ui.backgroundBorderSeparator};
 	background: ${p => p.theme.ui.surface};
 
+	transform-origin: center;
+	animation: ${scaleIn} .2s ease;
+	transition: transform .1s ease;
+
 	font-size: 12px;
 `;
 
@@ -241,6 +283,13 @@ const Item = styled.div<{ $active: boolean }>`
 	${p => p.$active ? `background-color: ${p.theme.ui.primaryFill};'` : ''}
 `;
 
+const NoItems = styled.div`
+	padding: 10px;
+	cursor: pointer;
+	color: ${p => p.theme.ui.textOnSurfaceBackground};
+	overflow-x: hidden;
+`;
+
 const ExtensionContainer = styled.div`
 	display: inline-block;
 	margin-right: 5px;
@@ -252,6 +301,10 @@ const Description = styled.div`
 
 	padding: 5px;
 	min-height: 30px;
+
+	> a {
+		color: #ffa210;
+	}
 `;
 
 export default VariableSelector;
