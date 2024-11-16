@@ -7,7 +7,6 @@ import path from 'path';
 
 const require = createRequire(import.meta.url);
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 const packageJson = require('./package.json');
 
 const environment = process.env.NODE_ENV;

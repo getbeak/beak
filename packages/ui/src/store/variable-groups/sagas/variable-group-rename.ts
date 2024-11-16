@@ -2,8 +2,8 @@ import { changeTab } from '@beak/ui/features/tabs/store/actions';
 import { ActiveRename } from '@beak/ui/features/tree-view/types';
 import { renameVariableGroup } from '@beak/ui/lib/beak-project/variable-groups';
 import { ipcDialogService } from '@beak/ui/lib/ipc';
+import { call, delay, put, select } from '@redux-saga/core/effects';
 import { PayloadAction } from '@reduxjs/toolkit';
-import { call, delay, put, select } from 'redux-saga/effects';
 
 import { ApplicationState } from '../..';
 import actions from '../actions';

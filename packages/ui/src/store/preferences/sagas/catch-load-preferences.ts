@@ -1,9 +1,9 @@
 import { EditorPreferences, ProjectPanePreferences, RequestPreference, SidebarPreferences } from '@beak/common/types/beak-hub';
 import { readJsonAndValidate } from '@beak/ui/lib/fs';
 import { ipcFsService } from '@beak/ui/lib/ipc';
+import { call, put } from '@redux-saga/core/effects';
 import { PayloadAction } from '@reduxjs/toolkit';
 import path from 'path-browserify';
-import { call, put } from 'redux-saga/effects';
 
 import {
 	editorPreferences,

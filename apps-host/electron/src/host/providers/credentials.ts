@@ -1,5 +1,5 @@
-import CredentialsProviderBase from '@beak/common-host/providers/credentials';
 import { ProjectEncryption } from '@beak/common/types/beak-project';
+import CredentialsProviderBase from '@beak/common-host/providers/credentials';
 import keytar from 'keytar';
 import os from 'os';
 

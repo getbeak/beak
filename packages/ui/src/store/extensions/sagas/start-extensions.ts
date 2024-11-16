@@ -3,9 +3,9 @@ import ksuid from '@beak/ksuid';
 import { RealtimeValueManager } from '@beak/ui/features/realtime-values';
 import createFsEmitter from '@beak/ui/lib/fs-emitter';
 import { ipcExtensionsService, ipcFsService } from '@beak/ui/lib/ipc';
+import { call, put, take } from '@redux-saga/core/effects';
 import { Action } from '@reduxjs/toolkit';
 import path from 'path-browserify';
-import { call, put, take } from 'redux-saga/effects';
 
 import { alertInsert, alertRemoveType } from '../../project/actions';
 import * as actions from '../actions';

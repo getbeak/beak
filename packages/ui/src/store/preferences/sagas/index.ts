@@ -1,4 +1,4 @@
-import { all, fork, takeEvery, takeLatest } from 'redux-saga/effects';
+import { all, fork, takeEvery, takeLatest } from '@redux-saga/core/effects';
 
 import { ActionTypes } from '../types';
 import catchLoadPreferences from './catch-load-preferences';

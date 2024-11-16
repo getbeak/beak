@@ -1,7 +1,7 @@
 import { writeVariableGroup } from '@beak/ui/lib/beak-variable-group';
 import type { VariableGroup } from '@getbeak/types/variable-groups';
+import { call, delay, put, select } from '@redux-saga/core/effects';
 import { PayloadAction } from '@reduxjs/toolkit';
-import { call, delay, put, select } from 'redux-saga/effects';
 import * as uuid from 'uuid';
 
 import { ApplicationState } from '../..';

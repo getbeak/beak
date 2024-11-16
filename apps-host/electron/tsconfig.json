@@ -26,6 +26,7 @@
   }],
   "exclude": [
     "node_modules",
+    "eslint.config.js",
     "dist",
     "dist-ts",
     "dist-react",

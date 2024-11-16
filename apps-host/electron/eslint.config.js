@@ -5,6 +5,7 @@ export default [...baseConfig, {
 	"languageOptions": {
 		"globals": {
 			...globals.browser,
-		},
+			...globals.node,
+		}
 	},
 }];

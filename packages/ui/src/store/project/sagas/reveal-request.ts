@@ -1,7 +1,7 @@
 import { changeTab } from '@beak/ui/features/tabs/store/actions';
 import type { Tree } from '@getbeak/types/nodes';
+import { delay, put, select } from '@redux-saga/core/effects';
 import { PayloadAction } from '@reduxjs/toolkit';
-import { delay, put, select } from 'redux-saga/effects';
 
 import { ApplicationState } from '../..';
 

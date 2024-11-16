@@ -1,7 +1,7 @@
 import createFsEmitter, { scanDirectoryRecursively, ScanResult } from '@beak/ui/lib/fs-emitter';
 import { ipcFsService } from '@beak/ui/lib/ipc';
+import { call, put, take } from '@redux-saga/core/effects';
 import path from 'path-browserify';
-import { call, put, take } from 'redux-saga/effects';
 
 import * as actions from '../actions';
 

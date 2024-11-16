@@ -1,6 +1,6 @@
 import { changeTab } from '@beak/ui/features/tabs/store/actions';
 import type { Nodes } from '@getbeak/types/nodes';
-import { put, select } from 'redux-saga/effects';
+import { put, select } from '@redux-saga/core/effects';
 
 import { ApplicationState } from '../..';
 import { createNewRequest } from '../actions';

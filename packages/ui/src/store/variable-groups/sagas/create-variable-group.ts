@@ -1,7 +1,7 @@
 import { changeTab } from '@beak/ui/features/tabs/store/actions';
 import { createVariableGroup } from '@beak/ui/lib/beak-project/variable-groups';
+import { call, delay, put, race, take } from '@redux-saga/core/effects';
 import { PayloadAction } from '@reduxjs/toolkit';
-import { call, delay, put, race, take } from 'redux-saga/effects';
 
 import { renameStarted } from '../actions';
 import { ActionTypes, CreateNewVariableGroupPayload } from '../types';

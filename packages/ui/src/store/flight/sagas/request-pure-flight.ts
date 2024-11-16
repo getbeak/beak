@@ -1,7 +1,7 @@
 import ksuid from '@beak/ksuid';
 import type { ValidRequestNode } from '@getbeak/types/nodes';
+import { put, select } from '@redux-saga/core/effects';
 import { PayloadAction } from '@reduxjs/toolkit';
-import { put, select } from 'redux-saga/effects';
 
 import { ApplicationState } from '../..';
 import * as actions from '../actions';

@@ -4,8 +4,8 @@ import { renameFolderNode } from '@beak/ui/lib/beak-project/folder';
 import { renameRequestNode } from '@beak/ui/lib/beak-project/request';
 import { ipcDialogService } from '@beak/ui/lib/ipc';
 import type { FolderNode, Nodes, RequestNode } from '@getbeak/types/nodes';
+import { call, delay, put, select } from '@redux-saga/core/effects';
 import { PayloadAction } from '@reduxjs/toolkit';
-import { call, delay, put, select } from 'redux-saga/effects';
 
 import { ApplicationState } from '../..';
 import actions from '../actions';
