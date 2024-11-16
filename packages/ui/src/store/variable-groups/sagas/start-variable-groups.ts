@@ -5,8 +5,8 @@ import { readVariableGroup } from '@beak/ui/lib/beak-variable-group';
 import createFsEmitter, { scanDirectoryRecursively, ScanResult } from '@beak/ui/lib/fs-emitter';
 import { ipcDialogService, ipcFsService } from '@beak/ui/lib/ipc';
 import type { VariableGroups } from '@getbeak/types/variable-groups';
+import { call, put, select, take } from '@redux-saga/core/effects';
 import path from 'path-browserify';
-import { call, put, select, take } from 'redux-saga/effects';
 
 import { ApplicationState } from '../..';
 import { editorPreferencesSetSelectedVariableGroup } from '../../preferences/actions';

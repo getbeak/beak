@@ -19,7 +19,7 @@ import type {
 import type { Context } from '@getbeak/types/values';
 import type { VariableGroups } from '@getbeak/types/variable-groups';
 import { FetcherParams } from '@graphiql/toolkit';
-import { call, put, select } from 'redux-saga/effects';
+import { call, put, select } from '@redux-saga/core/effects';
 
 import { ApplicationState } from '../..';
 import * as actions from '../actions';
@@ -34,7 +34,6 @@ export default function* requestFlightWorker() {
 	const node: ValidRequestNode = yield select((s: ApplicationState) => s.global.project.tree![requestId]);
 
 	if (!node) {
-		// eslint-disable-next-line no-console
 		console.error('Node not found for flight request', requestId);
 
 		return;

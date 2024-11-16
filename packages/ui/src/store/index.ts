@@ -1,7 +1,7 @@
+import createSagaMiddleware from '@redux-saga/core';
+import { all, fork } from '@redux-saga/core/effects';
 import { applyMiddleware, combineReducers, createStore, Store } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
-import createSagaMiddleware from 'redux-saga';
-import { all, fork } from 'redux-saga/effects';
 
 import * as encryptionStore from '../features/encryption/store';
 import { State as EncryptionState } from '../features/encryption/store/types';

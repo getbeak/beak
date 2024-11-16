@@ -1,10 +1,10 @@
-import type { WatchOptions } from 'chokidar';
+import { eventChannel } from '@redux-saga/core';
+import type { ChokidarOptions } from 'chokidar';
 import path from 'path-browserify';
-import { eventChannel } from 'redux-saga';
 
 import { ipcFsService, ipcFsWatcherService } from './ipc';
 
-export default function createFsEmitter(path: string, options?: WatchOptions) {
+export default function createFsEmitter(path: string, options?: ChokidarOptions) {
 	const sessionIdentifier = ipcFsWatcherService.generateSessionIdentifier();
 
 	const channel = eventChannel(emitter => {

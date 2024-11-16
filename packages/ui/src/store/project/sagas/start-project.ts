@@ -9,9 +9,9 @@ import { ipcDialogService, ipcEncryptionService, ipcWindowService } from '@beak/
 import actions, { alertInsert } from '@beak/ui/store/project/actions';
 import type { FolderNode, RequestNode, Tree } from '@getbeak/types/nodes';
 import type { ProjectFile } from '@getbeak/types/project';
+import { EventChannel } from '@redux-saga/core';
+import { call, put, select, take } from '@redux-saga/core/effects';
 import path from 'path-browserify';
-import { EventChannel } from 'redux-saga';
-import { call, put, select, take } from 'redux-saga/effects';
 
 import { ApplicationState } from '../..';
 import { startVariableGroups } from '../../variable-groups/actions';

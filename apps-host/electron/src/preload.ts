@@ -1,4 +1,3 @@
-/* eslint-disable no-process-env */
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
 
 import '@sentry/electron/preload';

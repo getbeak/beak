@@ -13,8 +13,10 @@ export default class WindowStateManager {
 	private windowKey: string;
 	private window: BrowserWindow | undefined;
 	private state: WindowState;
-	private stateChangeTimer: NodeJS.Timeout | undefined;
 	private windowOptions: BrowserWindowConstructorOptions;
+
+	// eslint-disable-next-line
+	private stateChangeTimer: NodeJS.Timeout | undefined;
 
 	constructor(
 		existingWindowState: WindowState | undefined,

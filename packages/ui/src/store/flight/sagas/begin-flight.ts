@@ -7,9 +7,9 @@ import { ipcFlightService, ipcNotificationService, ipcPreferencesService } from 
 import { getStatusReasonPhrase } from '@beak/ui/utils/http';
 import type { RequestNode } from '@getbeak/types/nodes';
 import type { ResponseOverview } from '@getbeak/types/response';
+import { END, eventChannel } from '@redux-saga/core';
+import { call, put, select, take } from '@redux-saga/core/effects';
 import { PayloadAction } from '@reduxjs/toolkit';
-import { END, eventChannel } from 'redux-saga';
-import { call, put, select, take } from 'redux-saga/effects';
 
 import { ApplicationState } from '../..';
 import * as actions from '../actions';

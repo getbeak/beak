@@ -1,4 +1,4 @@
-import { all, fork, takeEvery } from 'redux-saga/effects';
+import { all, fork, takeEvery } from '@redux-saga/core/effects';
 
 import { ActionTypes } from '../types';
 import startExtensions from './start-extensions';

@@ -1,8 +1,8 @@
 import { TabPreferences } from '@beak/common/types/beak-hub';
 import { ipcFsService } from '@beak/ui/lib/ipc';
 import { ApplicationState } from '@beak/ui/store';
+import { call, select } from '@redux-saga/core/effects';
 import path from 'path-browserify';
-import { call, select } from 'redux-saga/effects';
 
 import { State } from '../types';
 

@@ -1,5 +1,6 @@
 import { IpcFsWatcherServiceMain, StartWatchingReq } from '@beak/common/ipc/fs-watcher';
-import chokidar, { WatchOptions } from 'chokidar';
+import type { ChokidarOptions } from 'chokidar';
+import chokidar from 'chokidar';
 import { ipcMain, IpcMainInvokeEvent } from 'electron';
 import { FSWatcher } from 'original-fs';
 
@@ -16,7 +17,7 @@ service.registerStartWatching(async (event, payload: StartWatchingReq) => {
 
 	const sender = (event as IpcMainInvokeEvent).sender;
 	const senderIdStr = sender.id.toString();
-	const options: WatchOptions = {
+	const options: ChokidarOptions = {
 		...payload.options,
 		followSymlinks: false,
 		cwd: void 0,
@@ -45,6 +46,7 @@ service.registerStartWatching(async (event, payload: StartWatchingReq) => {
 				watcher.close();
 		});
 
+	// @ts-expect-error
 	watchers[payload.sessionIdentifier] = watcher;
 
 	if (windowContentsMapping[senderIdStr] === void 0)

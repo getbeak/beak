@@ -4,8 +4,8 @@ import { removeFolderNode } from '@beak/ui/lib/beak-project/folder';
 import { removeRequestNode } from '@beak/ui/lib/beak-project/request';
 import { ipcDialogService } from '@beak/ui/lib/ipc';
 import type { Nodes } from '@getbeak/types/nodes';
+import { call, put, select } from '@redux-saga/core/effects';
 import { PayloadAction } from '@reduxjs/toolkit';
-import { call, put, select } from 'redux-saga/effects';
 
 import { ApplicationState } from '../..';
 import actions from '../actions';

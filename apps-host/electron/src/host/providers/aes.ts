@@ -1,8 +1,5 @@
 import AesProviderBase from '@beak/common-host/providers/encryption-aes';
 import crypto, { Cipher, Decipher } from 'node:crypto';
-import { promisify } from 'node:util';
-
-const scrypt = promisify(crypto.scrypt);
 
 export default class AesProvider extends AesProviderBase {
   async generateKey(): Promise<string> {

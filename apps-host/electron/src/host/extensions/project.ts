@@ -12,9 +12,9 @@ import getBeakHost from '..';
 
 export async function tryOpenProjectFolder(projectPath: string, silent = false) {
 	let projectFilePath = projectPath;
-	if (!projectFilePath.endsWith('.json')) {
+
+	if (!projectFilePath.endsWith('.json'))
 		projectFilePath = path.join(projectFilePath, 'project.json');
-	}
 
 	const projectFolderPath = path.parse(projectFilePath).dir;
 	const projectFile = await getBeakHost().project.readProjectFile(projectFolderPath, {
@@ -25,7 +25,7 @@ export async function tryOpenProjectFolder(projectPath: string, silent = false) 
 		if (!silent) {
 			await dialog.showMessageBox({
 				title: 'Unable to open project',
-				message: 'The project you tried to open does not exist. Project path provided: ' + projectPath,
+				message: `The project you tried to open does not exist. Project path provided: ${projectPath}`,
 				type: 'error',
 			});
 		}

@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-const { notarize } = require('@electron/notarize');
-const path = require('path');
+import { notarize } from '@electron/notarize';
+import path from 'path';
 
-exports.default = async function notarizing(context) {
+export default async function notarizing(context) {
 	const { electronPlatformName, appOutDir } = context;
 
 	if (electronPlatformName !== 'darwin')

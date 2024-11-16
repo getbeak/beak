@@ -20,6 +20,7 @@
     "@getbeak/types-realtime-value": "^1.0.0"
   },
   "devDependencies": {
+    "chokidar": "^4.0.1",
     "electron": "33.2.0"
   }
 }

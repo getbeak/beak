@@ -4,7 +4,7 @@ import { ApplicationState } from '@beak/ui/store';
 import { createTakeLatestSagaSet } from '@beak/ui/utils/redux/sagas';
 import type { Tree } from '@getbeak/types/nodes';
 import type { VariableGroups } from '@getbeak/types/variable-groups';
-import { delay, put, select } from 'redux-saga/effects';
+import { delay, put, select } from '@redux-saga/core/effects';
 
 import actions, { closeTab, reconciliationComplete } from '../actions';
 

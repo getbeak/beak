@@ -1,5 +1,5 @@
+import { fork, takeEvery, takeLatest } from '@redux-saga/core/effects';
 import { PayloadActionCreator } from '@reduxjs/toolkit';
-import { fork, takeEvery, takeLatest } from 'redux-saga/effects';
 
 export function createTakeEverySagaSet<ActionCreator extends PayloadActionCreator>(
 	actionCreator: ActionCreator,

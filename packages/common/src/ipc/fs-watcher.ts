@@ -1,5 +1,5 @@
 import ksuid from '@beak/ksuid';
-import type { WatchOptions } from 'chokidar';
+import type { ChokidarOptions } from 'chokidar';
 import { WebContents } from 'electron';
 
 import { IpcServiceMain, IpcServiceRenderer, Listener, PartialIpcMain, PartialIpcRenderer } from './ipc';
@@ -13,7 +13,7 @@ export const FsWatcherMessages = {
 
 export interface StartWatchingReq {
 	filePath: string;
-	options: WatchOptions;
+	options: ChokidarOptions;
 	sessionIdentifier: string;
 }
 
@@ -31,7 +31,7 @@ export class IpcFsWatcherServiceRenderer extends IpcServiceRenderer {
 		return ksuid.generate('fswatch').toString();
 	}
 
-	async startWatching(sessionIdentifier: string, filePath: string, options: WatchOptions) {
+	async startWatching(sessionIdentifier: string, filePath: string, options: ChokidarOptions) {
 		await this.invoke(FsWatcherMessages.StartWatching, {
 			filePath,
 			options,

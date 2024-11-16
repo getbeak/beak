@@ -1,6 +1,3 @@
-/* eslint-disable max-len */
-/* eslint-disable no-dupe-class-members */
-
 import StorageProviderBase, { GenericStore } from '@beak/common-host/providers/storage';
 import ElectronStore from 'electron-store';
 

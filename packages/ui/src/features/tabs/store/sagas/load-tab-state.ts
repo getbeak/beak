@@ -3,8 +3,8 @@ import Squawk from '@beak/common/utils/squawk';
 import { readJsonAndValidate } from '@beak/ui/lib/fs';
 import { ipcFsService } from '@beak/ui/lib/ipc';
 import { createTakeEverySagaSet } from '@beak/ui/utils/redux/sagas';
+import { call, put } from '@redux-saga/core/effects';
 import path from 'path-browserify';
-import { call, put } from 'redux-saga/effects';
 
 import { tabPreferences } from '../../../../lib/beak-hub/schemas';
 import actions from '../actions';

@@ -2,9 +2,9 @@ import { changeTab } from '@beak/ui/features/tabs/store/actions';
 import { createFolderNode } from '@beak/ui/lib/beak-project/folder';
 import { createRequestNode } from '@beak/ui/lib/beak-project/request';
 import type { Nodes } from '@getbeak/types/nodes';
+import { call, delay, put, race, select, take } from '@redux-saga/core/effects';
 import { PayloadAction } from '@reduxjs/toolkit';
 import path from 'path-browserify';
-import { call, delay, put, race, select, take } from 'redux-saga/effects';
 
 import { ApplicationState } from '../..';
 import { renameStarted } from '../actions';

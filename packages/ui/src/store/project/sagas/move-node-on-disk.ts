@@ -2,8 +2,8 @@ import { TabItem } from '@beak/common/types/beak-project';
 import { changeTab, makeTabPermanent } from '@beak/ui/features/tabs/store/actions';
 import { moveNodesOnDisk } from '@beak/ui/lib/beak-project/nodes';
 import type { Tree } from '@getbeak/types/nodes';
+import { call, delay, put, select } from '@redux-saga/core/effects';
 import { PayloadAction } from '@reduxjs/toolkit';
-import { call, delay, put, select } from 'redux-saga/effects';
 
 import { ApplicationState } from '../..';
 import { MoveNodeOnDiskPayload } from '../types';
