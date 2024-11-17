@@ -33,28 +33,28 @@ declare module 'electron' {
 	}
 }
 
-declare module '@getbeak/types-realtime-value' {
+declare module '@getbeak/types-variables' {
 	interface GenericDictionary {
 		[k: string]: any;
 	}
 
-	interface RealtimeValueBase {
+	interface VariableBase {
 		type: string;
 		external: boolean;
 	}
 
-	interface RealtimeValue<TPayload extends GenericDictionary> {
+	interface Variable<TPayload extends GenericDictionary> {
 
 		/**
 		 * Gets the string value of the value, given the payload body
 		 * @param {Context} ctx The project context.
 		 * @param {TPayload} payload This instance of the value's payload data.
-		 * @param {number} recursiveDepth The current depth of realtime value recursion.
+		 * @param {number} recursiveDepth The current depth of value recursion.
 		 */
 		getValue: (ctx: Context, payload: TPayload, recursiveDepth: number) => Promise<string>;
 	}
 
-	interface EditableRealtimeValue<TPayload extends GenericDictionary> {
+	interface EditableVariable<TPayload extends GenericDictionary> {
 
 		/**
 		 * Gets the string value of the value, given the payload body

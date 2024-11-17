@@ -1,12 +1,12 @@
 import { ensureWithinProject } from '@beak/apps-host-electron/ipc-layer/fs-service';
 import { getProjectFilePathWindowMapping } from '@beak/apps-host-electron/ipc-layer/fs-shared';
-import { ExtensionsMessages, IpcExtensionsServiceMain, RtvParseValuePartsResponse } from '@beak/common/ipc/extensions';
+import { ExtensionsMessages, IpcExtensionsServiceMain, RtvParseValueSectionsResponse } from '@beak/common/ipc/extensions';
 import { IpcEvent, RequestPayload } from '@beak/common/ipc/ipc';
-import { RealtimeValueExtension } from '@beak/common/types/extensions';
+import { VariableExtension } from '@beak/common/types/extensions';
 import Squawk from '@beak/common/utils/squawk';
 import ksuid from '@beak/ksuid';
-import { Context, ValueParts } from '@getbeak/types/values';
-import { EditableRealtimeValue } from '@getbeak/types-realtime-value/';
+import { Context, ValueSections } from '@getbeak/types/values';
+import { EditableVariable } from '@getbeak/types-variables';
 import { ipcMain, WebContents } from 'electron';
 import fs from 'fs-extra';
 import clone from 'lodash.clonedeep';
@@ -26,7 +26,7 @@ interface RtvExtensionStorage {
 	scriptContent: string;
 	vm: NodeVM;
 	script: VMScript;
-	extension: EditableRealtimeValue<any, any>;
+	extension: EditableVariable<any, any>;
 }
 
 const logger = new Logger({ name: 'extensions' });
@@ -41,7 +41,7 @@ export default class ExtensionManager {
 		this.extensionService = extensionService;
 	}
 
-	async registerRtv(event: IpcEvent, projectId: string, extensionPath: string): Promise<RealtimeValueExtension> {
+	async registerRtv(event: IpcEvent, projectId: string, extensionPath: string): Promise<VariableExtension> {
 		if (!this.projectExtensions[projectId])
 			this.projectExtensions[projectId] = {};
 
@@ -57,7 +57,7 @@ export default class ExtensionManager {
 			sandbox: {
 				beakApi: {
 					log: (level: LogLevel, message: string) => (logger[level] ?? logger.warn)(message),
-					parseValueParts: (_ctx: unknown, _parts: unknown, _recursiveSet: unknown) => [],
+					parseValueSections: (_ctx: unknown, _parts: unknown, _recursiveSet: unknown) => [],
 				},
 			},
 		});
@@ -71,7 +71,7 @@ export default class ExtensionManager {
 
 		const compiledScript = new VMScript(scriptContent);
 		const extensionContext = extensionVm.run(compiledScript);
-		const extension = extensionContext?.default as EditableRealtimeValue<any>;
+		const extension = extensionContext?.default as EditableVariable<any>;
 
 		this.validateExtensionSignature(extension);
 		this.projectExtensions[projectId][type] = {
@@ -88,7 +88,7 @@ export default class ExtensionManager {
 			version,
 			filePath: extensionPath,
 			valid: true,
-			realtimeValue: {
+			variable: {
 				type,
 				external: true,
 				name: extension.name,
@@ -119,11 +119,11 @@ export default class ExtensionManager {
 	) {
 		const { vm, extension } = this.getExtensionContext(projectId, type);
 
-		vm.sandbox.beakApi.parseValueParts = async (ctx: Context, parts: ValueParts) => {
+		vm.sandbox.beakApi.parseValueSections = async (ctx: Context, parts: ValueSections) => {
 			const uniqueSessionId = ksuid.generate('rtvparsersp').toString();
 
 			// send IPC request
-			this.extensionService.rtvParseValueParts(webContents, {
+			this.extensionService.rtvParseValueSections(webContents, {
 				uniqueSessionId,
 				context: ctx,
 				parts,
@@ -132,9 +132,9 @@ export default class ExtensionManager {
 
 			return await new Promise(resolve => {
 				ipcMain.on(this.extensionService.getChannel(), async (_event, message) => {
-					const { code, payload } = message as RequestPayload<RtvParseValuePartsResponse>;
+					const { code, payload } = message as RequestPayload<RtvParseValueSectionsResponse>;
 
-					if (code !== ExtensionsMessages.RtvParseValuePartsResponse)
+					if (code !== ExtensionsMessages.RtvParseValueSectionsResponse)
 						return;
 
 					if (payload.uniqueSessionId !== uniqueSessionId)
@@ -157,6 +157,10 @@ export default class ExtensionManager {
 
 	async rtvEditorLoad(projectId: string, type: string, context: Context, payload: unknown) {
 		const { extension } = this.getExtensionContext(projectId, type);
+
+		if (extension.editor.load === void 0)
+			return payload;
+
 		const editorState = await extension.editor.load(context, payload);
 
 		return clone(editorState);
@@ -164,6 +168,10 @@ export default class ExtensionManager {
 
 	async rtvEditorSave(projectId: string, type: string, context: Context, existingPayload: unknown, state: unknown) {
 		const { extension } = this.getExtensionContext(projectId, type);
+
+		if (extension.editor.save === void 0)
+			return state;
+
 		const payload = await extension.editor.save(context, existingPayload, state);
 
 		return clone(payload);
@@ -175,7 +183,7 @@ export default class ExtensionManager {
 		if (!extensionStorage)
 			throw new Squawk('unknown_registered_extension', { projectId, type });
 
-		extensionStorage.vm.sandbox.beakApi.parseValueParts = () => [];
+		extensionStorage.vm.sandbox.beakApi.parseValueSections = () => [];
 
 		return { vm: extensionStorage.vm, extension: extensionStorage.extension };
 	}
@@ -185,11 +193,11 @@ export default class ExtensionManager {
 		const packageJson = await fs.readJson(packageJsonPath);
 		const { name, version, beakExtensionType, main } = packageJson;
 
-		if (beakExtensionType !== 'realtime-value') {
+		if (beakExtensionType !== 'variable') {
 			throw new Squawk('invalid_extension_type', {
 				extensionPath,
 				packageJsonKey: 'beakExtensionType',
-				expected: 'realtime-value',
+				expected: 'variable',
 				actual: beakExtensionType ?? '[missing]',
 			});
 		}
@@ -235,7 +243,7 @@ export default class ExtensionManager {
 		return { main, name, scriptPath, version };
 	}
 
-	private validateExtensionSignature(extension: EditableRealtimeValue<any>) {
+	private validateExtensionSignature(extension: EditableVariable<any>) {
 		if (!('name' in extension))
 			throw new Squawk('incorrect_extension_signature', { key: 'name', reason: 'missing' });
 		if (typeof extension.name !== 'string')
