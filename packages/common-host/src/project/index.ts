@@ -1,8 +1,7 @@
-import { ProjectEncryption } from '@beak/common/types/beak-project';
 import ksuid from '@beak/ksuid';
 import type { RequestNodeFile } from '@getbeak/types/nodes';
 import type { ProjectFile } from '@getbeak/types/project';
-import type { VariableGroup } from '@getbeak/types/variable-groups';
+import type { VariableSet } from '@getbeak/types/variable-sets';
 import git from 'isomorphic-git';
 
 import { BeakBase, Providers } from '../base';
@@ -62,21 +61,27 @@ export default class BeakProject extends BeakBase {
 			},
 		};
 
-		const productionGroupId = ksuid.generate('group').toString();
-		const localGroupId = ksuid.generate('group').toString();
+		const productionSetId = ksuid.generate('set').toString();
+		const stagingSetId = ksuid.generate('set').toString();
+		const developmentSetId = ksuid.generate('set').toString();
+		const localSetId = ksuid.generate('set').toString();
 		const environmentIdentifierItemId = ksuid.generate('item').toString();
 
-		const variableGroup: VariableGroup = {
-			groups: {
-				[productionGroupId]: 'Production',
-				[localGroupId]: 'Local',
+		const variableSet: VariableSet = {
+			sets: {
+				[productionSetId]: 'Production',
+				[stagingSetId]: 'Staging',
+				[developmentSetId]: 'Development',
+				[localSetId]: 'Local',
 			},
 			items: {
 				[environmentIdentifierItemId]: 'env_identifier',
 			},
 			values: {
-				[`${productionGroupId}&${environmentIdentifierItemId}`]: ['prod'],
-				[`${localGroupId}&${environmentIdentifierItemId}`]: ['local'],
+				[`${productionSetId}&${environmentIdentifierItemId}`]: ['production'],
+				[`${stagingSetId}&${environmentIdentifierItemId}`]: ['staging'],
+				[`${developmentSetId}&${environmentIdentifierItemId}`]: ['development'],
+				[`${localSetId}&${environmentIdentifierItemId}`]: ['local'],
 			},
 		};
 
@@ -96,13 +101,13 @@ export default class BeakProject extends BeakBase {
 
 		await this.p.node.fs.promises.readFile(this.p.node.path.join(projectFolderPath, 'tree', 'Request.json'), 'utf8');
 
-		// Create variable groups structure
+		// Create variable sets structure
 		await this.p.node.fs.promises.mkdir(
-			this.p.node.path.join(projectFolderPath, 'variable-groups'),
+			this.p.node.path.join(projectFolderPath, 'variable-sets'),
 		);
 		await this.p.node.fs.promises.writeFile(
-			this.p.node.path.join(projectFolderPath, 'variable-groups', 'Environment.json'),
-			JSON.stringify(variableGroup, null, '\t'),
+			this.p.node.path.join(projectFolderPath, 'variable-sets', 'Environment.json'),
+			JSON.stringify(variableSet, null, '\t'),
 			'utf8',
 		);
 
@@ -165,7 +170,7 @@ export default class BeakProject extends BeakBase {
 		try {
 			// TODO(afr): validate schema of project file!
 			projectFile = JSON.parse(projectFileJson) as ProjectFile;
-		} catch (error) {
+		} catch {
 			return null;
 		}
 
@@ -195,7 +200,7 @@ export default class BeakProject extends BeakBase {
 		const profileFile: ProjectFile = {
 			id: projectId ?? ksuid.generate('project').toString(),
 			name,
-			version: '0.3.0',
+			version: '0.4.0',
 		};
 
 		await this.p.node.fs.promises.writeFile(
