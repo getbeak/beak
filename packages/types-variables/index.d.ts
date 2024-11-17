@@ -1,9 +1,9 @@
 /* eslint-disable max-len */
 import type { Context } from '@getbeak/types/values';
 
-export interface RealtimeValueBase { }
+export interface VariableBase { }
 
-interface RealtimeValueGetter<TPayload> {
+interface VariableGetter<TPayload> {
 
 	/**
 	 * Gets the string value of the value, given the payload body
@@ -17,7 +17,7 @@ interface GenericDictionary {
 	[k: string]: any;
 }
 
-export interface RealtimeValueInformation extends RealtimeValueBase {
+export interface VariableStaticInformation extends VariableBase {
 
 	/**
 	 * The public facing name of your extension.
@@ -30,12 +30,14 @@ export interface RealtimeValueInformation extends RealtimeValueBase {
 	description: string;
 
 	/**
-	 * Optional keywords used by Beak when searching for realtime values when the user is typing.
+	 * Optional keywords used by Beak when searching for variables when the user is
+	 * typing.
 	 */
 	keywords?: string[];
 
 	/**
-	 * Denotes if the value's output is sensitive, and will be hidden by default in the UI and in copied responses.
+	 * Denotes if the value's output is sensitive, and will be hidden by default in the UI
+	 * and in copied responses.
 	 */
 	sensitive: boolean;
 
@@ -45,19 +47,26 @@ export interface RealtimeValueInformation extends RealtimeValueBase {
 	attributes: Attributes;
 }
 
-export interface RealtimeValue<TPayload extends GenericDictionary> extends RealtimeValueGetter<TPayload>, RealtimeValueInformation {
+export interface Variable<TPayload extends GenericDictionary> extends VariableGetter<TPayload>, VariableStaticInformation {
 
 	/**
 	 * Creates a default payload, if the user doesn't specify any data.
 	 * @param {Context} ctx The project context.
 	 */
 	createDefaultPayload: (ctx: Context) => Promise<TPayload>;
-}
-
-export interface EditableRealtimeValue<TPayload extends GenericDictionary, TEditorState extends GenericDictionary = TPayload> extends RealtimeValue<TPayload> {
 
 	/**
-	 * Details how Beak and user's should interact with the value editor for your realtime value.
+	 * Gets a name for the variable, with context of the payload of this specific instance of the variable.
+	 * @param {TPayload} payload This instance of the value's payload data.
+	 */
+	getContextAwareName?: (payload: TPayload) => string;
+}
+
+export interface EditableVariable<TPayload extends GenericDictionary, TEditorState extends GenericDictionary = TPayload> extends Variable<TPayload> {
+
+	/**
+	 * Details how Beak and user's should interact with the value editor for your
+	 * variable.
 	 */
 	editor: Editor<TPayload, TEditorState>;
 }
@@ -79,19 +88,23 @@ interface Editor<TPayload extends GenericDictionary, TEditorState extends Generi
 	createUserInterface: (ctx: Context) => Promise<UISection<TEditorState>[]>;
 
 	/**
-	 * If the payload data isn't the same as the editor state, this will convert Payload -> State
+	 * If the payload data isn't the same as the editor state, this will convert
+	 * Payload -> State. This is optional if no modification of the payload is needed to
+	 * create the editor state.
 	 * @param {Context} ctx The project context.
 	 * @param {TPayload} payload This instance of the value's payload data.
 	 */
-	load: (ctx: Context, payload: TPayload) => Promise<TEditorState>;
+	load?: (ctx: Context, payload: TPayload) => Promise<TEditorState>;
 
 	/**
-	 * If the payload data isn't the same as the editor state, this will convert State -> Payload
+	 * If the payload data isn't the same as the editor state, this will convert
+	 * State -> Payload. This is optional if no modification of the state is needed to
+	 * create the payload.
 	 * @param {Context} ctx The project context.
 	 * @param {TPayload} existingPayload This existing instance of the value's payload data.
 	 * @param {TEditorState} state This instance of the updated state data.
 	 */
-	save: (ctx: Context, existingPayload: TPayload, state: TEditorState) => Promise<TPayload>;
+	save?: (ctx: Context, existingPayload: TPayload, state: TEditorState) => Promise<TPayload>;
 }
 
 export type UISection<T extends GenericDictionary = Record<string, never>> =
@@ -146,7 +159,7 @@ declare global {
 type Level = 'info' | 'warn' | 'error';
 
 interface Beak {
-	parseValueParts: (ctx: Context, parts: unknown[]) => Promise<string>;
+	parseValueSections: (ctx: Context, parts: unknown[]) => Promise<string>;
 
 	log: (level: Level, message: string) => void;
 }
