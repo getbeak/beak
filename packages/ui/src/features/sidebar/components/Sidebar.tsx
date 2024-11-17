@@ -10,7 +10,7 @@ import { useAppSelector } from '@beak/ui/store/redux';
 import styled, { css } from 'styled-components';
 
 import ProjectPane from '../../project-pane/components/ProjectPane';
-import VariablesPane from '../../variables/components/VariablesPane';
+import VariablesPane from '../../variables-sets/components/VariablesPane';
 import SidebarMenuHighlighter from './molecules/SidebarMenuHighlighter';
 import SidebarMenuItem from './molecules/SidebarMenuItem';
 

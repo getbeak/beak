@@ -3,7 +3,7 @@
 	"additionalProperties": false,
 
 	"properties": {
-		"selectedVariableGroups": {
+		"selectedVariableSets": {
 			"type": "object",
 
 			"patternProperties": {

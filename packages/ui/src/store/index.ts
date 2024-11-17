@@ -22,8 +22,8 @@ import * as preferencesStore from './preferences';
 import { State as PreferencesState } from './preferences/types';
 import * as projectStore from './project';
 import { State as ProjectState } from './project/types';
-import * as variableGroupsStore from './variable-groups';
-import { State as VariableGroupState } from './variable-groups/types';
+import * as variableSetsStore from './variable-sets';
+import { State as VariableSetState } from './variable-sets/types';
 
 export interface ApplicationState {
 	features: {
@@ -38,7 +38,7 @@ export interface ApplicationState {
 		git: GitState;
 		preferences: PreferencesState;
 		project: ProjectState;
-		variableGroups: VariableGroupState;
+		variableSets: VariableSetState;
 	};
 }
 
@@ -56,7 +56,7 @@ function createRootReducer() {
 			git: gitStore.reducers,
 			preferences: preferencesStore.reducers,
 			project: projectStore.reducers,
-			variableGroups: variableGroupsStore.reducers,
+			variableSets: variableSetsStore.reducers,
 		}),
 	});
 }
@@ -70,7 +70,7 @@ function* rootSaga() {
 		fork(gitStore.sagas),
 		fork(preferencesStore.sagas),
 		fork(projectStore.sagas),
-		fork(variableGroupsStore.sagas),
+		fork(variableSetsStore.sagas),
 	]);
 }
 
@@ -88,7 +88,7 @@ function createInitialState(): ApplicationState {
 			git: gitStore.types.initialState,
 			preferences: preferencesStore.types.initialState,
 			project: projectStore.types.initialState,
-			variableGroups: variableGroupsStore.types.initialState,
+			variableSets: variableSetsStore.types.initialState,
 		},
 	};
 }

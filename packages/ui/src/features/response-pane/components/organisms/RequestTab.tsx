@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import EditorView from '@beak/ui/components/atoms/EditorView';
 import WindowSessionContext from '@beak/ui/contexts/window-session-context';
 import BasicTableEditor from '@beak/ui/features/basic-table-editor/components/BasicTableEditor';
-import useRealtimeValueContext from '@beak/ui/features/realtime-values/hooks/use-realtime-value-context';
+import useVariableContext from '@beak/ui/features/variables/hooks/use-variable-context';
 import { requestPreferenceSetResSubTab } from '@beak/ui/store/preferences/actions';
 import { useAppSelector } from '@beak/ui/store/redux';
 import type { Flight } from '@getbeak/types/flight';
@@ -27,14 +27,14 @@ const RequestTab: React.FC<React.PropsWithChildren<RequestTabProps>> = props => 
 	const requestId = flight.requestId;
 	const dispatch = useDispatch();
 	const [output, setOutput] = useState('');
-	const { variableGroups } = useAppSelector(s => s.global.variableGroups);
-	const selectedGroups = useAppSelector(s => s.global.preferences.editor.selectedVariableGroups);
+	const { variableSets } = useAppSelector(s => s.global.variableSets);
+	const selectedGroups = useAppSelector(s => s.global.preferences.editor.selectedVariableSets);
 	const tab = useAppSelector(
 		s => s.global.preferences.requests[requestId].response.subTab.request,
 	) as Tab | undefined;
 
 	const windowSession = useContext(WindowSessionContext);
-	const context = useRealtimeValueContext(requestId);
+	const context = useVariableContext(requestId);
 
 	// Ensure we have a valid tab
 	useEffect(() => {
@@ -48,7 +48,7 @@ const RequestTab: React.FC<React.PropsWithChildren<RequestTabProps>> = props => 
 
 	useEffect(() => {
 		createBasicHttpOutput(flight.request, context, windowSession).then(setOutput);
-	}, [flight.request, selectedGroups, variableGroups]);
+	}, [flight.request, selectedGroups, variableSets]);
 
 	return (
 		<Container>

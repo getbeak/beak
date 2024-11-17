@@ -32,7 +32,7 @@ export interface RequestPreference {
 }
 
 export interface EditorPreferences {
-	selectedVariableGroups: Record<string, string>;
+	selectedVariableSets: Record<string, string>;
 }
 
 export type SidebarVariant = 'project' | 'variables';

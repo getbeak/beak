@@ -11,7 +11,7 @@ import type { RequestNode } from '@getbeak/types/nodes';
 import BrokenRequest from '../../broken-request/components/BrokenRequest';
 import RequestPane from '../../request-pane/components/RequestPane';
 import ResponsePane from '../../response-pane/components/ResponsePane';
-import VariableGroupEditor from '../../variable-groups/components/VariableGroupEditor';
+import VariableSetEditor from '../../variable-sets/components/VariableSetEditor';
 
 interface RouterProps {
 	selectedTab: TabItem | undefined;
@@ -62,13 +62,13 @@ const Router: React.FC<React.PropsWithChildren<RouterProps>> = ({ selectedTab })
 	}
 
 	switch (selectedTab.type) {
-		case 'variable_group_editor': {
-			const variableGroupName = selectedTab.payload;
+		case 'variable_set_editor': {
+			const variableSetName = selectedTab.payload;
 
 			return (
-				<VariableGroupEditor
-					key={variableGroupName}
-					variableGroupName={variableGroupName}
+				<VariableSetEditor
+					key={variableSetName}
+					variableSetName={variableSetName}
 				/>
 			);
 		}

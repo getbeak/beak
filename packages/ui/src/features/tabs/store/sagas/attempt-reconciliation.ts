@@ -3,7 +3,7 @@ import { TabItem } from '@beak/common/types/beak-project';
 import { ApplicationState } from '@beak/ui/store';
 import { createTakeLatestSagaSet } from '@beak/ui/utils/redux/sagas';
 import type { Tree } from '@getbeak/types/nodes';
-import type { VariableGroups } from '@getbeak/types/variable-groups';
+import type { VariableSets } from '@getbeak/types/variable-sets';
 import { delay, put, select } from '@redux-saga/core/effects';
 
 import actions, { closeTab, reconciliationComplete } from '../actions';
@@ -16,12 +16,12 @@ export default createTakeLatestSagaSet(actions.attemptReconciliation, function* 
 
 	const tabs: TabItem[] = yield select((s: ApplicationState) => s.features.tabs.activeTabs);
 	const tree: Tree = yield select((s: ApplicationState) => s.global.project.tree);
-	const variableGroups: VariableGroups = yield select(
-		(s: ApplicationState) => s.global.variableGroups.variableGroups,
+	const variableSets: VariableSets = yield select(
+		(s: ApplicationState) => s.global.variableSets.variableSets,
 	);
 
 	const nodes = TypedObject.values(tree);
-	const variableGroupNames = TypedObject.keys(variableGroups);
+	const variableSetNames = TypedObject.keys(variableSets);
 
 	for (const tab of tabs) {
 		switch (tab.type) {
@@ -33,10 +33,10 @@ export default createTakeLatestSagaSet(actions.attemptReconciliation, function* 
 				break;
 			}
 
-			case 'variable_group_editor': {
-				const variableGroup = variableGroupNames.find(n => n === tab.payload);
+			case 'variable_set_editor': {
+				const variableSet = variableSetNames.find(n => n === tab.payload);
 
-				if (!variableGroup)
+				if (!variableSet)
 					yield put(closeTab(tab.payload));
 				break;
 			}

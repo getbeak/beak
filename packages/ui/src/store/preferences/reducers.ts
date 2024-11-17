@@ -32,10 +32,10 @@ const reducer = createReducer(initialState, builder => {
 		.addCase(actions.editorPreferencesLoaded, (state, { payload }) => {
 			state.editor = payload;
 		})
-		.addCase(actions.editorPreferencesSetSelectedVariableGroup, (state, { payload }) => {
-			const { variableGroup, groupId } = payload;
+		.addCase(actions.editorPreferencesSetSelectedVariableSet, (state, { payload }) => {
+			const { variableSet, setId: setId } = payload;
 
-			state.editor.selectedVariableGroups[variableGroup] = groupId;
+			state.editor.selectedVariableSets[variableSet] = setId;
 		})
 
 		.addCase(actions.sidebarPreferencesLoaded, (state, { payload }) => {

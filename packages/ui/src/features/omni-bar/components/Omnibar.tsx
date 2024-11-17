@@ -1,34 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
+import { fadeIn, scaleIn } from '@beak/design-system/animations';
 import { toHexAlpha } from '@beak/design-system/utils';
 import { checkShortcut } from '@beak/ui/lib/keyboard-shortcuts';
 import { useAppSelector } from '@beak/ui/store/redux';
-import styled, { keyframes } from 'styled-components';
+import styled from 'styled-components';
 
 import { actions } from '../store';
 import CommandsView from './organism/CommandsView';
 import FinderView from './organism/FinderView';
-
-const scaleIn = keyframes`
-	0% {
-		transform: scale(.97);
-		opacity: 0;
-	}
-
-	100% {
-		transform: scale(1);
-		opacity: 1;
-	}
-`;
-const fadeIn = keyframes`
-	0% {
-		opacity: 0;
-	}
-
-	100% {
-		opacity: 1;
-	}
-`;
 
 const Omnibar: React.FC<React.PropsWithChildren<unknown>> = () => {
 	const { open, mode } = useAppSelector(s => s.features.omniBar);

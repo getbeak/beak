@@ -3,7 +3,7 @@ import { all, fork, takeEvery } from '@redux-saga/core/effects';
 import { ActionTypes } from '../types';
 import startExtensions from './start-extensions';
 
-export default function* variableGroupsSaga() {
+export default function* variableSetsSaga() {
 	yield all([
 		fork(function* startExtensionsWatcher() {
 			yield takeEvery([

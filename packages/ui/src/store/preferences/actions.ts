@@ -4,7 +4,7 @@ import { createAction } from '@reduxjs/toolkit';
 
 import {
 	ActionTypes as AT,
-	EditorPreferencesSetSelectedVariableGroupPayload,
+	EditorPreferencesSetSelectedVariableSetPayload,
 	ProjectPaneCollapsePayload,
 	RequestPreferencePayload,
 	RequestPreferencesLoadedPayload,
@@ -26,7 +26,7 @@ export const requestPreferenceSetResPrettyLanguage = createAction<RequestPrefere
 
 export const loadEditorPreferences = createAction(AT.LOAD_EDITOR_PREFERENCES);
 export const editorPreferencesLoaded = createAction<EditorPreferences>(AT.EDITOR_PREFERENCES_LOADED);
-export const editorPreferencesSetSelectedVariableGroup = createAction<EditorPreferencesSetSelectedVariableGroupPayload>(AT.EDITOR_PREFERENCES_SET_SELECTED_VARIABLE_GROUP);
+export const editorPreferencesSetSelectedVariableSet = createAction<EditorPreferencesSetSelectedVariableSetPayload>(AT.EDITOR_PREFERENCES_SET_SELECTED_VARIABLE_GROUP);
 
 export const loadSidebarPreferences = createAction(AT.LOAD_SIDEBAR_PREFERENCES);
 export const sidebarPreferencesLoaded = createAction<SidebarPreferences>(AT.SIDEBAR_PREFERENCES_LOADED);
@@ -48,7 +48,7 @@ export default {
 
 	loadEditorPreferences,
 	editorPreferencesLoaded,
-	editorPreferencesSetSelectedVariableGroup,
+	editorPreferencesSetSelectedVariableSet,
 
 	loadSidebarPreferences,
 	sidebarPreferencesLoaded,

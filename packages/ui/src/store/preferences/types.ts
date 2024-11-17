@@ -40,7 +40,7 @@ export interface State {
 export const initialState: State = {
 	requests: {},
 	editor: {
-		selectedVariableGroups: {},
+		selectedVariableSets: {},
 	},
 	sidebar: {
 		selected: 'project',
@@ -68,9 +68,9 @@ export type RequestPreferencesSetResPrettyLanguagePayload = RequestPreferencePay
 	language: string | null;
 }>;
 
-export interface EditorPreferencesSetSelectedVariableGroupPayload {
-	variableGroup: string;
-	groupId: string;
+export interface EditorPreferencesSetSelectedVariableSetPayload {
+	variableSet: string;
+	setId: string;
 }
 
 export interface SidebarCollapsePayload {

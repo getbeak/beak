@@ -10,8 +10,8 @@ import { EditorMode } from '@beak/ui/features/graphql-editor/types';
 import { editorTabSubItems } from '@beak/ui/features/graphql-editor/utils';
 import JsonEditor from '@beak/ui/features/json-editor/components/JsonEditor';
 import { convertToEntryJson, convertToRealJson } from '@beak/ui/features/json-editor/parsers';
-import useRealtimeValueContext from '@beak/ui/features/realtime-values/hooks/use-realtime-value-context';
-import { ValueParts } from '@beak/ui/features/realtime-values/values';
+import useVariableContext from '@beak/ui/features/variables/hooks/use-variable-context';
+import { ValueSections } from '@beak/ui/features/variables/values';
 import { ipcDialogService } from '@beak/ui/lib/ipc';
 import actions, { requestBodyTextChanged } from '@beak/ui/store/project/actions';
 import { RequestBodyTypeChangedPayload } from '@beak/ui/store/project/types';
@@ -31,7 +31,7 @@ export interface BodyTabProps {
 
 const BodyTab: React.FC<React.PropsWithChildren<BodyTabProps>> = props => {
 	const dispatch = useDispatch();
-	const context = useRealtimeValueContext();
+	const context = useVariableContext();
 	const { node } = props;
 	const { body } = node.info;
 	const [graphQlMode, setGraphQlMode] = useState<EditorMode>('query');
@@ -237,7 +237,7 @@ const BodyTab: React.FC<React.PropsWithChildren<BodyTabProps>> = props => {
 								dispatch(actions.requestBodyUrlEncodedEditorValueChange({
 									requestId: node.id,
 									id,
-									value: value as ValueParts,
+									value: value as ValueSections,
 								}));
 							}
 						}}

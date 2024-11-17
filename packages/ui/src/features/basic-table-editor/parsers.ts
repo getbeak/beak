@@ -3,7 +3,7 @@ import ksuid from '@beak/ksuid';
 import type { ToggleKeyValue } from '@getbeak/types/request';
 import type { Context } from '@getbeak/types/values';
 
-import { parseValueParts } from '../realtime-values/parser';
+import { parseValueSections } from '../variables/parser';
 
 const queryStringRegex = /[a-z0-9%=+-[\]]+/;
 
@@ -12,7 +12,7 @@ export async function convertKeyValueToString(context: Context, items: Record<st
 	const eligible = TypedObject.values(items).filter(i => i.enabled);
 	const resolved = await Promise.all(eligible.map(async e => ({
 		name: e.name,
-		value: await parseValueParts(context, e.value),
+		value: await parseValueSections(context, e.value),
 	})));
 
 	for (const resolve of resolved)

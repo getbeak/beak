@@ -1,4 +1,4 @@
-import { RealtimeValueExtension } from '@beak/common/types/extensions';
+import { VariableExtension } from '@beak/common/types/extensions';
 import Squawk from '@beak/common/utils/squawk';
 
 export const ActionTypes = {
@@ -21,7 +21,7 @@ export interface FailedExtension {
 	error: Squawk;
 }
 
-export type Extension = FailedExtension | RealtimeValueExtension;
+export type Extension = FailedExtension | VariableExtension;
 
 export interface ExtensionsOpenedPayload {
 	extensions: Extension[];

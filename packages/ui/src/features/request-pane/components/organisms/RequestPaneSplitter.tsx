@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import WindowSessionContext from '@beak/ui/contexts/window-session-context';
-import useRealtimeValueContext from '@beak/ui/features/realtime-values/hooks/use-realtime-value-context';
+import useVariableContext from '@beak/ui/features/variables/hooks/use-variable-context';
 import useShareLink from '@beak/ui/hooks/use-share-link';
 import { faCopy, faShareFromSquare } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -15,7 +15,7 @@ interface RequestPaneSplitterProps {
 
 const RequestPaneSplitter: React.FC<RequestPaneSplitterProps> = props => {
 	const { selectedNode } = props;
-	const context = useRealtimeValueContext(selectedNode.id);
+	const context = useVariableContext(selectedNode.id);
 	const windowSession = useContext(WindowSessionContext);
 	const shareUrl = useShareLink(selectedNode.id);
 

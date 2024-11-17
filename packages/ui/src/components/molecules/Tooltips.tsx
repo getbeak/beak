@@ -66,7 +66,7 @@ const tooltips: TooltipDefinition[] = [{
 }, {
 	anchor: 'tt-omni-bar-finder-request-uri',
 }, {
-	anchor: 'tt-realtime-values-renderer-extension-missing',
+	anchor: 'tt-variables-renderer-extension-missing',
 }, {
 	anchor: 'tt-sidebar-menu-item',
 }];

@@ -1,9 +1,9 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import useRealtimeValueContext from '@beak/ui/features/realtime-values/hooks/use-realtime-value-context';
-import { parseValueParts } from '@beak/ui/features/realtime-values/parser';
-import { ValueParts } from '@beak/ui/features/realtime-values/values';
 import VariableInput from '@beak/ui/features/variable-input/components/VariableInput';
+import useVariableContext from '@beak/ui/features/variables/hooks/use-variable-context';
+import { parseValueSections } from '@beak/ui/features/variables/parser';
+import { ValueSections } from '@beak/ui/features/variables/values';
 import { requestPreferenceSetReqMainTab } from '@beak/ui/store/preferences/actions';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
@@ -25,7 +25,7 @@ const Header: React.FC<React.PropsWithChildren<HeaderProps>> = props => {
 	const currentFlight = useAppSelector(s => s.global.flight.currentFlight);
 	const flighting = currentFlight && currentFlight.flighting && currentFlight.requestId === props.node.id;
 	const { node } = props;
-	const context = useRealtimeValueContext(node.id);
+	const context = useVariableContext(node.id);
 	const verb = node.info.verb;
 
 	function dispatchFlightRequest() {
@@ -36,8 +36,8 @@ const Header: React.FC<React.PropsWithChildren<HeaderProps>> = props => {
 		dispatch(requestPreferenceSetReqMainTab({ id: node.id, tab: 'url_query' }));
 	}
 
-	async function handleUrlChange(parts: ValueParts) {
-		const value = await parseValueParts(context, parts);
+	async function handleUrlChange(parts: ValueSections) {
+		const value = await parseValueSections(context, parts);
 		let sanitizedParts = [...parts];
 		const parsed = new URL(value, true);
 

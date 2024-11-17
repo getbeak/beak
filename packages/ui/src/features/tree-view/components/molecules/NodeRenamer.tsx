@@ -58,7 +58,7 @@ const NodeRenamer: React.FC<React.PropsWithChildren<NodeRenamerProps>> = props =
 	if (!renaming) {
 		return (
 			<RenameWrappedText
-				data-tooltip-id={'tt-realtime-values-renderer-extension-missing'}
+				data-tooltip-id={'tt-variables-renderer-extension-missing'}
 				data-tooltip-content={node.name}
 				data-tooltip-place={'top-end'}
 				data-tooltip-hidden={!canShowTooltip}

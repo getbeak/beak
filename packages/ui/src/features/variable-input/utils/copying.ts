@@ -1,6 +1,6 @@
-import { ValueParts } from '@beak/ui/features/realtime-values/values';
+import { ValueSections } from '@beak/ui/features/variables/values';
 
-export function detectRelevantCopiedValueParts(valueParts: ValueParts) {
+export function detectRelevantCopiedValueSections(ValueSections: ValueSections) {
 	const sel = window.getSelection()!;
 
 	let startNode = sel.anchorNode!;
@@ -62,7 +62,7 @@ export function detectRelevantCopiedValueParts(valueParts: ValueParts) {
 	if (startIndex === -1 || endIndex === -1)
 		return null;
 
-	const relevantParts = valueParts.slice(startIndex, endIndex + 1);
+	const relevantParts = ValueSections.slice(startIndex, endIndex + 1);
 	const samePart = startIndex === endIndex;
 
 	if (samePart) {

@@ -5,8 +5,8 @@ import EditorView from '@beak/ui/components/atoms/EditorView';
 import WindowSessionContext, { WindowSession } from '@beak/ui/contexts/window-session-context';
 import { convertKeyValueToString } from '@beak/ui/features/basic-table-editor/parsers';
 import { convertToRealJson } from '@beak/ui/features/json-editor/parsers';
-import useRealtimeValueContext from '@beak/ui/features/realtime-values/hooks/use-realtime-value-context';
-import { parseValueParts } from '@beak/ui/features/realtime-values/parser';
+import useVariableContext from '@beak/ui/features/variables/hooks/use-variable-context';
+import { parseValueSections } from '@beak/ui/features/variables/parser';
 import useComponentMounted from '@beak/ui/hooks/use-component-mounted';
 import { ipcFsService } from '@beak/ui/lib/ipc';
 import { useAppSelector } from '@beak/ui/store/redux';
@@ -22,12 +22,12 @@ export interface RequestOutputProps {
 
 const RequestOutput: React.FC<React.PropsWithChildren<RequestOutputProps>> = props => {
 	const node = props.selectedNode;
-	const variableGroups = useAppSelector(s => s.global.variableGroups.variableGroups);
-	const selectedGroups = useAppSelector(s => s.global.preferences.editor.selectedVariableGroups);
+	const variableSets = useAppSelector(s => s.global.variableSets.variableSets);
+	const selectedGroups = useAppSelector(s => s.global.preferences.editor.selectedVariableSets);
 	const windowSession = useContext(WindowSessionContext);
 	const [output, setOutput] = useState('');
 	const mounted = useComponentMounted();
-	const context = useRealtimeValueContext(node.id);
+	const context = useVariableContext(node.id);
 
 	useEffect(() => {
 		createBasicHttpOutput(node.info, context, windowSession)
@@ -37,7 +37,7 @@ const RequestOutput: React.FC<React.PropsWithChildren<RequestOutputProps>> = pro
 
 				setOutput(response);
 			});
-	}, [node, selectedGroups, variableGroups]);
+	}, [node, selectedGroups, variableSets]);
 
 	return (
 		<EditorView
@@ -77,7 +77,7 @@ export async function createBasicHttpOutput(overview: RequestOverview, context: 
 	await Promise.all(TypedObject
 		.values(overview.query)
 		.filter(q => q.enabled)
-		.map(async value => queryBuilder.append(value.name, await parseValueParts(context, value.value))),
+		.map(async value => queryBuilder.append(value.name, await parseValueSections(context, value.value))),
 	);
 
 	if (!requestAllowsBody(verb) && body.type === 'graphql')
@@ -107,7 +107,7 @@ export async function createBasicHttpOutput(overview: RequestOverview, context: 
 		out.push(...(await Promise.all(
 			TypedObject.values(headers)
 				.filter(h => h.enabled)
-				.map(async ({ name, value }) => `${name}: ${await parseValueParts(context, value)}`))),
+				.map(async ({ name, value }) => `${name}: ${await parseValueSections(context, value)}`))),
 		);
 	}
 
