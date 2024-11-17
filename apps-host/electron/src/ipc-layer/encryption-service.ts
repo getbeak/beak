@@ -1,6 +1,6 @@
 import { IpcEncryptionServiceMain } from '@beak/common/ipc/encryption';
 import { clipboard, ipcMain } from 'electron';
-import { ValueParts } from 'packages/types/values';
+import { ValueSections } from 'packages/types/values';
 
 import getBeakHost from '../host';
 import { getProjectId } from './utils';
@@ -58,7 +58,7 @@ service.registerEncryptObject(async (event, { iv, payload }) => {
 	return await getBeakHost().providers.aes.encryptString(json, encryption.key, iv);
 });
 
-service.registerDecryptObject(async (event, { iv, payload }): Promise<ValueParts> => {
+service.registerDecryptObject(async (event, { iv, payload }): Promise<ValueSections> => {
 	const projectId = getProjectId(event);
 	const encryption = await getBeakHost().providers.credentials.getProjectEncryption(projectId);
 

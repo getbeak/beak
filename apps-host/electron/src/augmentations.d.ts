@@ -1,16 +1,16 @@
 import type { Context } from '@getbeak/types/values';
 
-declare module '@getbeak/types-realtime-value' {
+declare module '@getbeak/types-variables' {
 	interface GenericDictionary {
 		[k: string]: any;
 	}
 
-	interface RealtimeValueBase {
+	interface VariableBase {
 		type: string;
 		external: boolean;
 	}
 
-	interface RealtimeValue<TPayload extends GenericDictionary> {
+	interface Variable<TPayload extends GenericDictionary> {
 
 		/**
 		 * Gets the string value of the value, given the payload body
@@ -21,7 +21,7 @@ declare module '@getbeak/types-realtime-value' {
 		getValue: (ctx: Context, payload: TPayload, recursiveDepth: number) => Promise<string>;
 	}
 
-	interface EditableRealtimeValue<TPayload extends GenericDictionary> {
+	interface EditableVariable<TPayload extends GenericDictionary> {
 
 		/**
 		 * Gets the string value of the value, given the payload body
