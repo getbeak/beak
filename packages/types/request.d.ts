@@ -1,9 +1,9 @@
 import { EntryMap } from './body-editor-json';
-import { ValueParts } from './values';
+import { ValueSections } from './values';
 
 export interface RequestOverview {
 	verb: string;
-	url: ValueParts;
+	url: ValueSections;
 	query: Record<string, ToggleKeyValue>;
 	headers: Record<string, ToggleKeyValue>;
 	body: RequestBody;
@@ -62,6 +62,6 @@ export interface RequestOptions {
 
 export interface ToggleKeyValue {
 	name: string;
-	value: ValueParts;
+	value: ValueSections;
 	enabled: boolean;
 }

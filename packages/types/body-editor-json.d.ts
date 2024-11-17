@@ -1,4 +1,4 @@
-import { ValueParts } from './values';
+import { ValueSections } from './values';
 
 export type EntryMap = Record<string, Entries>;
 export type EntryType = 'string' | 'number' | 'boolean' | 'null' | 'object' | 'array';
@@ -13,12 +13,12 @@ export interface NamedEntryBase { name: string }
 
 export interface StringEntry extends Base {
 	type: 'string';
-	value: ValueParts;
+	value: ValueSections;
 }
 
 export interface NumberEntry extends Base {
 	type: 'number';
-	value: ValueParts;
+	value: ValueSections;
 }
 
 export interface BooleanEntry extends Base {
