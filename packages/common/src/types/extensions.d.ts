@@ -1,12 +1,12 @@
-import { RealtimeValueInformation } from '@getbeak/types-realtime-value';
+import { VariableStaticInformation } from '@getbeak/types-variables';
 
-export interface RealtimeValueExtension {
+export interface VariableExtension {
 	name: string;
 	version: string;
 	filePath: string;
 	valid: true;
-	realtimeValue: {
+	variable: {
 		type: string;
 		editable: boolean;
-	} & RealtimeValueInformation;
+	} & VariableStaticInformation;
 }

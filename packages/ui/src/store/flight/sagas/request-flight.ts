@@ -4,7 +4,7 @@ import ksuid from '@beak/ksuid';
 import { instance as windowSessionInstance } from '@beak/ui/contexts/window-session-context';
 import { convertKeyValueToString } from '@beak/ui/features/basic-table-editor/parsers';
 import { convertToRealJson } from '@beak/ui/features/json-editor/parsers';
-import { parseValueParts } from '@beak/ui/features/realtime-values/parser';
+import { parseValueSections } from '@beak/ui/features/variables/parser';
 import { ipcDialogService, ipcFsService } from '@beak/ui/lib/ipc';
 import { requestAllowsBody } from '@beak/ui/utils/http';
 import { convertRequestToUrl } from '@beak/ui/utils/uri';
@@ -17,7 +17,7 @@ import type {
 	ToggleKeyValue,
 } from '@getbeak/types/request';
 import type { Context } from '@getbeak/types/values';
-import type { VariableGroups } from '@getbeak/types/variable-groups';
+import type { VariableSets } from '@getbeak/types/variable-sets';
 import { FetcherParams } from '@graphiql/toolkit';
 import { call, put, select } from '@redux-saga/core/effects';
 
@@ -45,16 +45,16 @@ export default function* requestFlightWorker() {
 	const flightHistory: Record<string, FlightHistory> = yield select(
 		(s: ApplicationState) => s.global.flight.flightHistory,
 	);
-	const variableGroups: VariableGroups = yield select(
-		(s: ApplicationState) => s.global.variableGroups.variableGroups,
+	const variableSets: VariableSets = yield select(
+		(s: ApplicationState) => s.global.variableSets.variableSets,
 	);
-	const selectedGroups: Record<string, string> = yield select(
-		(s: ApplicationState) => s.global.preferences.editor.selectedVariableGroups,
+	const selectedSets: Record<string, string> = yield select(
+		(s: ApplicationState) => s.global.preferences.editor.selectedVariableSets,
 	);
 
 	const context: Context = {
-		selectedGroups,
-		variableGroups,
+		selectedSets,
+		variableSets,
 		flightHistory,
 		projectTree,
 		currentRequestId: requestId,
@@ -91,7 +91,7 @@ export default function* requestFlightWorker() {
 
 async function prepareRequest(overview: RequestOverview, context: Context): Promise<FlightRequest> {
 	const url = await convertRequestToUrl(context, overview);
-	const headers = await flattenToggleValueParts(context, overview.headers);
+	const headers = await flattenToggleValueSections(context, overview.headers);
 
 	if (!hasHeader('user-agent', headers)) {
 		headers[ksuid.generate('header').toString()] = {
@@ -124,14 +124,14 @@ async function prepareRequest(overview: RequestOverview, context: Context): Prom
 	return requestOverview;
 }
 
-async function flattenToggleValueParts(context: Context, toggleValueParts: Record<string, ToggleKeyValue>) {
+async function flattenToggleValueSections(context: Context, toggleValueSections: Record<string, ToggleKeyValue>) {
 	const out: Record<string, FlightRequestKeyValue> = {};
 
-	await Promise.all(TypedObject.keys(toggleValueParts).map(async k => {
+	await Promise.all(TypedObject.keys(toggleValueSections).map(async k => {
 		out[k] = {
-			enabled: toggleValueParts[k].enabled,
-			name: toggleValueParts[k].name,
-			value: [await parseValueParts(context, toggleValueParts[k].value)],
+			enabled: toggleValueSections[k].enabled,
+			name: toggleValueSections[k].name,
+			value: [await parseValueSections(context, toggleValueSections[k].value)],
 		};
 	}));
 
@@ -143,7 +143,7 @@ async function flattenQuery(
 	overview: RequestOverview,
 ): Promise<Record<string, FlightRequestKeyValue>> {
 	const { body, query, verb } = overview;
-	const resolvedQuery = await flattenToggleValueParts(context, query);
+	const resolvedQuery = await flattenToggleValueSections(context, query);
 
 	// When using GraphQL body-less verbs require the body to be sent via the url
 	if (!requestAllowsBody(verb) && body.type === 'graphql') {

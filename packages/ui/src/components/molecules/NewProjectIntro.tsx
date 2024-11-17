@@ -41,13 +41,13 @@ const NewProjectIntro: React.FC<React.PropsWithChildren<unknown>> = () => {
 						</Button>
 					</GuidesGridItem>
 					<GuidesGridItem>
-						<GuidesGridItemTitle>{'Variable groups'}</GuidesGridItemTitle>
+						<GuidesGridItemTitle>{'Variable sets'}</GuidesGridItemTitle>
 						<GuidesGridItemBody>
-							{'Easily share common values between requests, and group them '}
-							{'by trait.'}
+							{'Easily share common variables between requests, and group them '}
+							{'in sets.'}
 						</GuidesGridItemBody>
-						<Button onClick={() => ipcExplorerService.launchUrl('https://getbeak.notion.site/Variable-groups-b5e2083aa597496b89006e1a48acf5fb')}>
-							{'Read about variable groups'}
+						<Button onClick={() => ipcExplorerService.launchUrl('https://getbeak.notion.site/Variable-sets-b5e2083aa597496b89006e1a48acf5fb?pvs=74')}>
+							{'Read about variable sets'}
 						</Button>
 					</GuidesGridItem>
 					<GuidesGridItem>
@@ -61,12 +61,12 @@ const NewProjectIntro: React.FC<React.PropsWithChildren<unknown>> = () => {
 						</Button>
 					</GuidesGridItem>
 					<GuidesGridItem>
-						<GuidesGridItemTitle>{'Realtime values'}</GuidesGridItemTitle>
+						<GuidesGridItemTitle>{'Variables'}</GuidesGridItemTitle>
 						<GuidesGridItemBody>
 							{'Variables can be inserted into your request, and are '}
 							{'calculated for every request.'}
 						</GuidesGridItemBody>
-						<Button onClick={() => ipcExplorerService.launchUrl('https://getbeak.notion.site/Realtime-values-e569e07fec964859926edcab2a3351ac')}>
+						<Button onClick={() => ipcExplorerService.launchUrl('https://www.notion.so/getbeak/Variables-e569e07fec964859926edcab2a3351ac')}>
 							{'Read more'}
 						</Button>
 					</GuidesGridItem>

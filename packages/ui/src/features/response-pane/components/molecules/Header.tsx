@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { statusToColor } from '@beak/design-system/helpers';
-import useRealtimeValueContext from '@beak/ui/features/realtime-values/hooks/use-realtime-value-context';
+import useVariableContext from '@beak/ui/features/variables/hooks/use-variable-context';
 import { getStatusReasonPhrase } from '@beak/ui/utils/http';
 import { convertRequestToUrl } from '@beak/ui/utils/uri';
 import type { Flight } from '@getbeak/types/flight';
@@ -12,7 +12,7 @@ export interface HeaderProps {
 
 const Header: React.FC<React.PropsWithChildren<HeaderProps>> = props => {
 	const { error, request, response } = props.selectedFlight;
-	const context = useRealtimeValueContext(props.selectedFlight.requestId);
+	const context = useVariableContext(props.selectedFlight.requestId);
 	const [url, setUrl] = useState('');
 
 	useEffect(() => {

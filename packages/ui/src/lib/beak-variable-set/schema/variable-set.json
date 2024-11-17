@@ -1,0 +1,37 @@
+{
+	"type": "object",
+	"additionalProperties": false,
+
+	"definitions": {
+		"mapping": {
+			"type": "object",
+
+			"patternProperties": {
+				"^.*$": {
+					"type": "string"
+				}
+			}
+		}
+	},
+
+	"required": [
+		"sets",
+		"items",
+		"values"
+	],
+
+	"properties": {
+		"sets": { "$ref": "#/definitions/mapping" },
+		"items": { "$ref": "#/definitions/mapping" },
+
+		"values": {
+			"type": "object",
+
+			"patternProperties": {
+				"^.*$": {
+					"type": "array"
+				}
+			}
+		}
+	}
+}

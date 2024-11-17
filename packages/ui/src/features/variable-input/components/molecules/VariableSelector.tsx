@@ -1,31 +1,20 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { TypedObject } from '@beak/common/helpers/typescript';
-import { RealtimeValueManager } from '@beak/ui/features/realtime-values';
-import useRealtimeValueContext from '@beak/ui/features/realtime-values/hooks/use-realtime-value-context';
+import { scaleIn } from '@beak/design-system/animations';
+import { VariableManager } from '@beak/ui/features/variables';
+import useVariableContext from '@beak/ui/features/variables/hooks/use-variable-context';
 import { ipcExplorerService, ipcExtensionsService } from '@beak/ui/lib/ipc';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { movePosition } from '@beak/ui/utils/arrays';
 import { faPlug } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { RealtimeValue, RealtimeValueInformation } from '@getbeak/types-realtime-value';
+import { Variable, VariableStaticInformation } from '@getbeak/types-variables';
 import Fuse from 'fuse.js';
-import styled, { keyframes } from 'styled-components';
+import styled from 'styled-components';
 import * as uuid from 'uuid';
 
-import { createFauxValue } from '../../../realtime-values/values/variable-group-item';
+import { createFauxValue } from '../../../variables/values/variable-set-item';
 import { NormalizedSelection } from '../../utils/browser-selection';
-
-const scaleIn = keyframes`
-	0% {
-		transform: scale(.97);
-		opacity: 0;
-	}
-
-	100% {
-		transform: scale(1);
-		opacity: 1;
-	}
-`;
 
 interface Position {
 	top: number;
@@ -43,23 +32,23 @@ export interface VariableSelectorProps {
 
 const VariableSelector: React.FC<React.PropsWithChildren<VariableSelectorProps>> = props => {
 	const { editableElement, sel, query, requestId, onClose, onDone } = props;
-	const { variableGroups } = useAppSelector(s => s.global.variableGroups);
+	const { variableSets } = useAppSelector(s => s.global.variableSets);
 
 	const activeRef = useRef<HTMLDivElement | null>(null);
 	const [position, setPosition] = useState<Position | null>(null);
 	const [active, setActive] = useState<number>(0);
-	const context = useRealtimeValueContext(requestId);
+	const context = useVariableContext(requestId);
 
-	const items: RealtimeValueInformation[] = useMemo(() => {
-		const all: RealtimeValueInformation[] = [
-			...RealtimeValueManager.getRealtimeValues(requestId),
+	const items: VariableStaticInformation[] = useMemo(() => {
+		const all: VariableStaticInformation[] = [
+			...VariableManager.getVariables(requestId),
 
-			// Variable groups act a little differently
-			...TypedObject.keys(variableGroups)
+			// Variable sets act a little differently
+			...TypedObject.keys(variableSets)
 				.map(vgKey => {
-					const vg = variableGroups[vgKey];
+					const vg = variableSets[vgKey];
 
-					return TypedObject.keys(vg.items).map(i => createFauxValue({ itemId: i }, variableGroups));
+					return TypedObject.keys(vg.items).map(i => createFauxValue({ itemId: i }, variableSets));
 				})
 				.flat(),
 		];
@@ -80,7 +69,7 @@ const VariableSelector: React.FC<React.PropsWithChildren<VariableSelectorProps>>
 			.sort()
 			.map(r => r.item)
 			.sort();
-	}, [variableGroups, query]);
+	}, [variableSets, query]);
 
 	useEffect(() => {
 		if (!sel)
@@ -162,13 +151,13 @@ const VariableSelector: React.FC<React.PropsWithChildren<VariableSelectorProps>>
 		return () => window.removeEventListener('keydown', onKeyDown);
 	}, [active, items]);
 
-	async function createDefaultVariable(item: RealtimeValueInformation) {
+	async function createDefaultVariable(item: VariableStaticInformation) {
 		let payload: any;
 
 		if (item.external)
 			payload = await ipcExtensionsService.rtvCreateDefaultPayload({ type: item.type, context });
 		else
-			payload = await (item as RealtimeValue<any>).createDefaultPayload(context);
+			payload = await (item as Variable<any>).createDefaultPayload(context);
 
 		onDone({ type: item.type, payload });
 	}
@@ -192,7 +181,7 @@ const VariableSelector: React.FC<React.PropsWithChildren<VariableSelectorProps>>
 						<Description>
 							<strong>{'Missing a variable you would find useful?'}</strong><br />
 							{'You can build your own with an extension, check the '}
-							<a href="#" onClick={async () => void await ipcExplorerService.launchUrl("https://getbeak.notion.site/Extensions-4c16ca640b35460787056f8be815b904") }>
+							<a onClick={async () => void await ipcExplorerService.launchUrl("https://getbeak.notion.site/Extensions-4c16ca640b35460787056f8be815b904") }>
 								{'docs'}
 							</a>
 							{'.'}

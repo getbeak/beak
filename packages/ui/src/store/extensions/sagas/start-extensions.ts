@@ -1,6 +1,6 @@
 import Squawk from '@beak/common/utils/squawk';
 import ksuid from '@beak/ksuid';
-import { RealtimeValueManager } from '@beak/ui/features/realtime-values';
+import { VariableManager } from '@beak/ui/features/variables';
 import createFsEmitter from '@beak/ui/lib/fs-emitter';
 import { ipcExtensionsService, ipcFsService } from '@beak/ui/lib/ipc';
 import { call, put, take } from '@redux-saga/core/effects';
@@ -125,7 +125,7 @@ async function readExtensions(): Promise<Extension[]> {
 		try {
 			const extension = await ipcExtensionsService.registerRtv({ extensionFilePath: dependencyPath });
 
-			RealtimeValueManager.registerExternalRealtimeValue(extension);
+			VariableManager.registerExternalVariable(extension);
 
 			return extension;
 		} catch (error) {

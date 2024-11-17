@@ -1,7 +1,7 @@
 import React from 'react';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import DebouncedInput from '@beak/ui/components/atoms/DebouncedInput';
-import { ValueParts } from '@beak/ui/features/realtime-values/values';
+import { ValueSections } from '@beak/ui/features/variables/values';
 import type { ToggleKeyValue } from '@getbeak/types/request';
 import styled from 'styled-components';
 
@@ -27,7 +27,7 @@ interface BasicTableEditorProps {
 	disableItemToggle?: boolean;
 
 	addItem?: () => void;
-	updateItem?: (type: keyof ToggleKeyValue, ident: string, value: string | boolean | ValueParts) => void;
+	updateItem?: (type: keyof ToggleKeyValue, ident: string, value: string | boolean | ValueSections) => void;
 	removeItem?: (ident: string) => void;
 }
 
