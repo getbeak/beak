@@ -26,8 +26,8 @@
     "@beak/ksuid": "*",
     "@beak/ui": "*",
     "@esbuild-plugins/node-globals-polyfill": "^0.2.3",
-    "@getbeak/types": "^1.0.0",
-    "@getbeak/types-realtime-value": "^1.0.0",
+    "@getbeak/types": "^2.1.0",
+    "@getbeak/types-variables": "^2.1.0",
     "@isomorphic-git/lightning-fs": "^4.6.0",
     "path-browserify": "^1.0.1"
   },
