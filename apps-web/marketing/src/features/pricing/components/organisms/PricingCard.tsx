@@ -20,7 +20,7 @@ const versions: Record<Version, VersionInformation> = {
 		items: [
 			'Requests',
 			'Responses',
-			'Realtime values',
+			'Variables',
 			'Literally everything',
 		],
 	},
@@ -30,7 +30,7 @@ const versions: Record<Version, VersionInformation> = {
 		items: [
 			'Requests',
 			'Responses',
-			'Realtime values',
+			'Variables',
 			'Literally everything',
 		],
 	},
@@ -40,7 +40,7 @@ const versions: Record<Version, VersionInformation> = {
 		items: [
 			'Requests',
 			'Responses',
-			'Realtime values',
+			'Variables',
 			'Literally everything',
 		],
 	},
