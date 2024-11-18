@@ -458,13 +458,22 @@ const VariableInput = React.forwardRef<HTMLElement, VariableInputProps>((props, 
 		setShowSelector(false);
 		setQuery('');
 
-		// if (editableRef.current && unmanagedStateRef.current.variableSelectionState) {
-		// 	const node = editableRef.current.childNodes[unmanagedStateRef.current.variableSelectionState.queryStartSelection.partIndex];
+		if (!unmanagedStateRef.current.variableSelectionState)
+			return;
 
-		// 	if (node && node.nodeName == 'SPAN') {
+		// const { queryStartSelection } = unmanagedStateRef.current.variableSelectionState;
+
+		// if (editableRef.current) {
+		// 	const node = editableRef.current.childNodes[queryStartSelection.partIndex];
+
+		// 	if (node && node.nodeName === 'SPAN') {
 		// 		const span = node as HTMLSpanElement;
 
-		// 		span.innerText = span.innerText.substring(0, unmanagedStateRef.current.variableSelectionState.queryStartSelection.offset);
+		// 		console.log('span', span.innerText);
+		// 		console.log('queryStartSelection.offset', queryStartSelection.offset);
+		// 		console.log('queryStartSelection.partIndex', queryStartSelection.partIndex);
+
+		// 		span.innerText = span.innerText.substring(0, queryStartSelection.offset);
 		// 	}
 		// }
 
