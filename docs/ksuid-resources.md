@@ -12,6 +12,7 @@ While we don't use the environment portion of the KSUID (for obvious reasons), w
 | `flight` | A flight (or historical request) made by Beak. |
 | `query` | A query item, used in the request info. |
 | `header` | A header item, used in the request info. |
-| `item` | An item in a variable group. Closely related to `group`. |
-| `group` | A group in a variable group. Closely related to `item`. |
-| `value` | A value linking an `item` and a `group` from a variable group. |
+| `item` | An item in a variable set. Closely related to `set`. |
+| `group` | A group in a variable group. Legacy, this is called `set` going forward. Closely related to `item`. |
+| `set` | A set in a variable set. Closely related to `item`. |
+| `value` | A value linking an `item` and a `set` from a variable set. |

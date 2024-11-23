@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { TypedObject } from '@beak/common/helpers/typescript';
-import useRealtimeValueContext from '@beak/ui/features/realtime-values/hooks/use-realtime-value-context';
 import { changeTab } from '@beak/ui/features/tabs/store/actions';
+import useVariableContext from '@beak/ui/features/variables/hooks/use-variable-context';
 import { checkShortcut } from '@beak/ui/lib/keyboard-shortcuts';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { movePosition } from '@beak/ui/utils/arrays';
@@ -24,7 +24,7 @@ const FinderView: React.FC<React.PropsWithChildren<FinderViewProps>> = ({ conten
 	const flattened = TypedObject.values(tree).filter(t => t.type === 'request') as ValidRequestNode[];
 	const [matches, setMatches] = useState<string[]>([]);
 	const [active, setActive] = useState<number>(-1);
-	const context = useRealtimeValueContext();
+	const context = useVariableContext();
 	const activeRef = useRef<HTMLElement | null>(null);
 
 	const fuse = new Fuse(flattened, {
@@ -97,7 +97,7 @@ const FinderView: React.FC<React.PropsWithChildren<FinderViewProps>> = ({ conten
 		<Container tabIndex={0}>
 			{matches.length === 0 && (
 				<NoItemsFound>
-					{'No matching requests found... sadface'}
+					{'No matching requests found'}
 				</NoItemsFound>
 			)}
 			{matches.map((k, idx) => {

@@ -3,7 +3,7 @@ import ksuid from '@beak/ksuid';
 import type { Entries, EntryMap, NamedEntries, StringEntry } from '@getbeak/types/body-editor-json';
 import type { Context } from '@getbeak/types/values';
 
-import { parseValueParts } from '../realtime-values/parser';
+import { parseValueSections } from '../variables/parser';
 
 type JsonTypes = null | string | number | boolean | Record<string, unknown> | unknown[];
 
@@ -27,10 +27,10 @@ async function convertEntry(
 			return entry.value;
 
 		case 'number':
-			return Number(await parseValueParts(context, entry.value));
+			return Number(await parseValueSections(context, entry.value));
 
 		case 'string':
-			return await parseValueParts(context, entry.value);
+			return await parseValueSections(context, entry.value);
 
 		case 'array': {
 			const children = TypedObject

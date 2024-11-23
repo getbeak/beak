@@ -16,7 +16,7 @@ import TreeView from '../../tree-view/components/TreeView';
 import { TreeViewItem } from '../../tree-view/types';
 import RequestFlightStatus from './molecules/RequestFlightStatus';
 import Git from './organisms/Git';
-import VariableGroups from './organisms/VariableGroups';
+import VariableSets from './organisms/VariableSets';
 
 const ProjectPane: React.FC<React.PropsWithChildren<unknown>> = () => {
 	const { id, tree, name } = useAppSelector(s => s.global.project);
@@ -159,8 +159,8 @@ const ProjectPane: React.FC<React.PropsWithChildren<unknown>> = () => {
 			<SidebarPaneSection title={`Project :: ${name!}`} collapseKey={'beak.project.project'}>
 				<Git />
 			</SidebarPaneSection>
-			<SidebarPaneSection title={'Variable groups'} collapseKey={'beak.project.variable-groups'}>
-				<VariableGroups />
+			<SidebarPaneSection title={'Variable sets'} collapseKey={'beak.project.variable-sets'}>
+				<VariableSets />
 			</SidebarPaneSection>
 			<SidebarPaneSection title={'Explorer'} collapseKey={'beak.project.explorer'}>
 				<TreeView

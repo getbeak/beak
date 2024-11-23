@@ -34,7 +34,7 @@ const FeatureOverview: React.FC<React.PropsWithChildren<unknown>> = () => {
 							{'Powerful feature set'}
 						</CardTitle>
 						<CardBody>
-							{'From support for large API projects, realtime values, '}
+							{'From support for large API projects, variables, '}
 							{'rich value editors, to baked in project encryption, for '}
 							{'your most secretive of secrets 🤫.'}
 						</CardBody>
@@ -48,12 +48,12 @@ const FeatureOverview: React.FC<React.PropsWithChildren<unknown>> = () => {
 							/>
 						</CardIcons>
 						<CardTitle>
-							{'Realtime values'}
+							{'Variables'}
 						</CardTitle>
 						<CardBody>
-							{'Realtime values are inline variables you can insert into '}
-							{'any part of your request that are calculated in real time '}
-							{'as you type, and as you send requests. '}
+							{'Variables are inline values you can insert into any part '}
+							{'of your request that are calculated dynamically in real '}
+							{'time as you type, and as you send requests.'}
 						</CardBody>
 					</Card>
 					<Card>
@@ -105,7 +105,7 @@ const FeatureOverview: React.FC<React.PropsWithChildren<unknown>> = () => {
 						</CardTitle>
 						<CardBody>
 							{'Coming soon, is an expansive extensions API, allowing you '}
-							{'to create custom extensions for realtime values, '}
+							{'to create custom extensions for variables, '}
 							{'API workflows, and more. Make Beak your own.'}
 						</CardBody>
 					</Card>

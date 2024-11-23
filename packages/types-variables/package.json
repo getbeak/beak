@@ -1,0 +1,25 @@
+{
+    "name": "@getbeak/types-variables",
+    "version": "2.1.0",
+    "private": false,
+    "description": "Types for Beak Variables",
+    "homepage": "https://github.com/getbeak/beak/tree/master/packages/types-variables",
+    "license": "MIT",
+    "contributors": [
+        {
+            "name": "Alexander Forbes-Reed",
+            "url": "https://github.com/0xdeafcafe",
+            "githubUsername": "0xdeafcafe"
+        }
+    ],
+    "main": "",
+    "types": "index.d.ts",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/getbeak/beak.git",
+        "directory": "packages/types-variables"
+    },
+    "dependencies": {
+        "@getbeak/types": "2.1.0"
+    }
+}

@@ -8,7 +8,7 @@ import TB from '../../../components/atoms/TabBar';
 import { changeTabNext, changeTabPrevious, closeTab, closeTabsAll, closeTabsOther } from '../store/actions';
 import NewProjectIntroTab from './molecules/NewProjectIntroTab';
 import RequestTab from './molecules/RequestTab';
-import VariableGroupEditorTab from './molecules/VariableGroupEditorTab';
+import VariableSetEditorTab from './molecules/VariableSetEditorTab';
 import Router from './Router';
 
 interface TabViewProps {
@@ -62,8 +62,8 @@ const TabView: React.FC<React.PropsWithChildren<TabViewProps>> = ({ selectedTab,
 					if (t.type === 'request')
 						return <RequestTab key={t.payload} tab={t} />;
 
-					if (t.type === 'variable_group_editor')
-						return <VariableGroupEditorTab key={t.payload} tab={t} />;
+					if (t.type === 'variable_set_editor')
+						return <VariableSetEditorTab key={t.payload} tab={t} />;
 
 					if (t.type === 'new_project_intro')
 						return <NewProjectIntroTab key={t.payload} tab={t} />;

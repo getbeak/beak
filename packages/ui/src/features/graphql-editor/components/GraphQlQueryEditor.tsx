@@ -17,8 +17,8 @@ import { initializeMode } from 'monaco-graphql/esm/initializeMode';
 import { RequestBodyGraphQl } from 'packages/types/request';
 import styled from 'styled-components';
 
-import useRealtimeValueContext from '../../realtime-values/hooks/use-realtime-value-context';
-import { parseValueParts } from '../../realtime-values/parser';
+import useVariableContext from '../../variables/hooks/use-variable-context';
+import { parseValueSections } from '../../variables/parser';
 import { extractVariableNamesFromQuery } from '../utils';
 import GraphQlError from './molecules/GraphQlError';
 import GraphQlLoading from './molecules/GraphQlLoading';
@@ -36,8 +36,8 @@ const GraphQlQueryEditor: React.FC<GraphQlQueryEditorProps> = props => {
 	const [schemaFlightId, setSchemaFlightId] = useState<string>('impossible-yolo');
 	const [hasSchema, setHasSchema] = useState(() => Boolean(schemaCache[node.id]));
 	const [schemaFetchError, setSchemaFetchError] = useState<Error | null>(null);
-	const variableGroups = useAppSelector(s => s.global.variableGroups.variableGroups);
-	const selectedGroups = useAppSelector(s => s.global.preferences.editor.selectedVariableGroups);
+	const variableSets = useAppSelector(s => s.global.variableSets.variableSets);
+	const selectedGroups = useAppSelector(s => s.global.preferences.editor.selectedVariableSets);
 	const schemaFlight = useAppSelector(s => s.global.flight.flightHistory[node.id]?.history[schemaFlightId]);
 
 	const operationsUri = `${node.id}/operations.graphql`;
@@ -45,7 +45,7 @@ const GraphQlQueryEditor: React.FC<GraphQlQueryEditorProps> = props => {
 	const schemaUri = `${node.id}/schema.graphql`;
 
 	const body = node.info.body as RequestBodyGraphQl;
-	const context = useRealtimeValueContext(node.id);
+	const context = useVariableContext(node.id);
 
 	// TODO(afr): Also run this when schema _changes_
 	useEffect(() => {
@@ -108,7 +108,7 @@ const GraphQlQueryEditor: React.FC<GraphQlQueryEditorProps> = props => {
 			.filter(key => node.info.headers[key].enabled)
 			.map(async key => ({
 				key: node.info.headers[key].name,
-				value: await parseValueParts(context, node.info.headers[key].value),
+				value: await parseValueSections(context, node.info.headers[key].value),
 			})));
 
 		const graphQlBody: FetcherParams = { query: getIntrospectionQuery() };
@@ -154,7 +154,7 @@ const GraphQlQueryEditor: React.FC<GraphQlQueryEditorProps> = props => {
 		node.info.verb,
 		node.info.url,
 		JSON.stringify(node.info.query),
-		JSON.stringify(variableGroups),
+		JSON.stringify(variableSets),
 		JSON.stringify(selectedGroups),
 	]);
 

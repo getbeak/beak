@@ -30,11 +30,11 @@ const ProjectMain: React.FC = () => {
 	const [setup, setSetup] = useState(false);
 	const collapsedSidebar = useAppSelector(s => s.global.preferences.sidebar.collapsed.sidebar);
 	const project = useAppSelector(s => s.global.project);
-	const variableGroups = useAppSelector(s => s.global.variableGroups);
+	const variableSets = useAppSelector(s => s.global.variableSets);
 	const tabs = useAppSelector(s => s.features.tabs);
 	const activeTab = tabs.activeTabs.find(t => t.payload === tabs.selectedTab);
 
-	const loaded = project.loaded && variableGroups.loaded && tabs.loaded;
+	const loaded = project.loaded && variableSets.loaded && tabs.loaded;
 	const projectLoading = useProjectLoading(loaded, setup);
 
 	useApplicationMenuEventListener();

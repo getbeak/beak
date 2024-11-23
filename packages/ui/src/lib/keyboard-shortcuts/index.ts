@@ -17,8 +17,8 @@ export type Shortcuts =
 	| 'tree-view.node.rename'
 	| 'tree-view.node.delete'
 
-	| 'variable-groups.variable-group.open'
-	| 'variable-groups.variable-group.delete'
+	| 'variable-sets.variable-set.open'
+	| 'variable-sets.variable-set.delete'
 
 	| 'project-explorer.request.open'
 	| 'project-explorer.request.duplicate'
@@ -67,14 +67,14 @@ export const shortcutDefinitions: Record<Shortcuts, PlatformSpecificDefinitions 
 		darwin: { key: 'Enter' },
 	},
 
-	'variable-groups.variable-group.open': {
+	'variable-sets.variable-set.open': {
 		type: 'specific',
 
 		windows: { key: 'Enter' },
 		linux: { key: 'Enter' },
 		darwin: { meta: true, key: 'ArrowDown' },
 	},
-	'variable-groups.variable-group.delete': { type: 'agnostic', ctrlOrMeta: true, key: 'Backspace' },
+	'variable-sets.variable-set.delete': { type: 'agnostic', ctrlOrMeta: true, key: 'Backspace' },
 
 	'project-explorer.request.open': {
 		type: 'specific',

@@ -3,7 +3,7 @@ import type { RequestOverview } from '@getbeak/types/request';
 import type { Context } from '@getbeak/types/values';
 import URL from 'url-parse';
 
-import { parseValueParts } from '../features/realtime-values/parser';
+import { parseValueSections } from '../features/variables/parser';
 
 interface Options {
 	includeQuery: boolean;
@@ -15,7 +15,7 @@ export async function convertRequestToUrl(
 	info: RequestOverview,
 	opts?: Partial<Options>,
 ) {
-	const value = await parseValueParts(context, info.url);
+	const value = await parseValueSections(context, info.url);
 	const url = new URL(value, true);
 	const options = {
 		includeQuery: true,
@@ -34,7 +34,7 @@ export async function convertRequestToUrl(
 
 		for (const query of TypedObject.values(info.query).filter(q => q.enabled)) {
 			// eslint-disable-next-line no-await-in-loop
-			outQuery[query.name] = await parseValueParts(context, query.value);
+			outQuery[query.name] = await parseValueSections(context, query.value);
 		}
 
 		url.set('query', outQuery);

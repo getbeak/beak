@@ -1,18 +1,19 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { TypedObject } from '@beak/common/helpers/typescript';
-import { RealtimeValueManager } from '@beak/ui/features/realtime-values';
-import useRealtimeValueContext from '@beak/ui/features/realtime-values/hooks/use-realtime-value-context';
-import { ipcExtensionsService } from '@beak/ui/lib/ipc';
+import { scaleIn } from '@beak/design-system/animations';
+import { VariableManager } from '@beak/ui/features/variables';
+import useVariableContext from '@beak/ui/features/variables/hooks/use-variable-context';
+import { ipcExplorerService, ipcExtensionsService } from '@beak/ui/lib/ipc';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { movePosition } from '@beak/ui/utils/arrays';
 import { faPlug } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { RealtimeValue, RealtimeValueInformation } from '@getbeak/types-realtime-value';
+import { Variable, VariableStaticInformation } from '@getbeak/types-variables';
 import Fuse from 'fuse.js';
 import styled from 'styled-components';
 import * as uuid from 'uuid';
 
-import { createFauxValue } from '../../../realtime-values/values/variable-group-item';
+import { createFauxValue } from '../../../variables/values/variable-set-item';
 import { NormalizedSelection } from '../../utils/browser-selection';
 
 interface Position {
@@ -31,23 +32,23 @@ export interface VariableSelectorProps {
 
 const VariableSelector: React.FC<React.PropsWithChildren<VariableSelectorProps>> = props => {
 	const { editableElement, sel, query, requestId, onClose, onDone } = props;
-	const { variableGroups } = useAppSelector(s => s.global.variableGroups);
+	const { variableSets } = useAppSelector(s => s.global.variableSets);
 
 	const activeRef = useRef<HTMLDivElement | null>(null);
 	const [position, setPosition] = useState<Position | null>(null);
 	const [active, setActive] = useState<number>(0);
-	const context = useRealtimeValueContext(requestId);
+	const context = useVariableContext(requestId);
 
-	const items: RealtimeValueInformation[] = useMemo(() => {
-		const all: RealtimeValueInformation[] = [
-			...RealtimeValueManager.getRealtimeValues(requestId),
+	const items: VariableStaticInformation[] = useMemo(() => {
+		const all: VariableStaticInformation[] = [
+			...VariableManager.getVariables(requestId),
 
-			// Variable groups act a little differently
-			...TypedObject.keys(variableGroups)
+			// Variable sets act a little differently
+			...TypedObject.keys(variableSets)
 				.map(vgKey => {
-					const vg = variableGroups[vgKey];
+					const vg = variableSets[vgKey];
 
-					return TypedObject.keys(vg.items).map(i => createFauxValue({ itemId: i }, variableGroups));
+					return TypedObject.keys(vg.items).map(i => createFauxValue({ itemId: i }, variableSets));
 				})
 				.flat(),
 		];
@@ -68,7 +69,7 @@ const VariableSelector: React.FC<React.PropsWithChildren<VariableSelectorProps>>
 			.sort()
 			.map(r => r.item)
 			.sort();
-	}, [variableGroups, query]);
+	}, [variableSets, query]);
 
 	useEffect(() => {
 		if (!sel)
@@ -150,19 +151,45 @@ const VariableSelector: React.FC<React.PropsWithChildren<VariableSelectorProps>>
 		return () => window.removeEventListener('keydown', onKeyDown);
 	}, [active, items]);
 
-	async function createDefaultVariable(item: RealtimeValueInformation) {
+	async function createDefaultVariable(item: VariableStaticInformation) {
 		let payload: any;
 
 		if (item.external)
 			payload = await ipcExtensionsService.rtvCreateDefaultPayload({ type: item.type, context });
 		else
-			payload = await (item as RealtimeValue<any>).createDefaultPayload(context);
+			payload = await (item as Variable<any>).createDefaultPayload(context);
 
 		onDone({ type: item.type, payload });
 	}
 
 	if (!position)
 		return null;
+
+	if (items.length === 0) {
+		return (
+			<Container onClick={event => {
+				event.stopPropagation();
+				onClose();
+			}}>
+				<Wrapper $top={position.top} $left={position.left}>
+					<ItemContainer>
+						<NoItems>
+							{'There are no variables matching your search. Try widening '}
+							{'your horizons.'}
+						</NoItems>
+						</ItemContainer>
+						<Description>
+							<strong>{'Missing a variable you would find useful?'}</strong><br />
+							{'You can build your own with an extension, check the '}
+							<a onClick={async () => void await ipcExplorerService.launchUrl("https://getbeak.notion.site/Extensions-4c16ca640b35460787056f8be815b904") }>
+								{'docs'}
+							</a>
+							{'.'}
+						</Description>
+				</Wrapper>
+			</Container>
+		);
+	}
 
 	return (
 		<Container onClick={event => {
@@ -218,6 +245,10 @@ const Wrapper = styled.div<{ $top: number; $left: number }>`
 	border: 1px solid ${p => p.theme.ui.backgroundBorderSeparator};
 	background: ${p => p.theme.ui.surface};
 
+	transform-origin: center;
+	animation: ${scaleIn} .2s ease;
+	transition: transform .1s ease;
+
 	font-size: 12px;
 `;
 
@@ -241,6 +272,13 @@ const Item = styled.div<{ $active: boolean }>`
 	${p => p.$active ? `background-color: ${p.theme.ui.primaryFill};'` : ''}
 `;
 
+const NoItems = styled.div`
+	padding: 10px;
+	cursor: pointer;
+	color: ${p => p.theme.ui.textOnSurfaceBackground};
+	overflow-x: hidden;
+`;
+
 const ExtensionContainer = styled.div`
 	display: inline-block;
 	margin-right: 5px;
@@ -252,6 +290,10 @@ const Description = styled.div`
 
 	padding: 5px;
 	min-height: 30px;
+
+	> a {
+		color: #ffa210;
+	}
 `;
 
 export default VariableSelector;

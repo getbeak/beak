@@ -14,7 +14,7 @@ import { call, put, select, take } from '@redux-saga/core/effects';
 import path from 'path-browserify';
 
 import { ApplicationState } from '../..';
-import { startVariableGroups } from '../../variable-groups/actions';
+import { startVariableSets } from '../../variable-sets/actions';
 import { LatestWrite } from '../types';
 
 interface Event {
@@ -32,7 +32,7 @@ export default function* workerStartProject() {
 		channel = createFsEmitter('tree', { followSymlinks: false });
 
 		yield put(actions.insertProjectInfo({ id: project.id, name: project.name }));
-		yield put(startVariableGroups());
+		yield put(startVariableSets());
 		yield initialImport('tree');
 		yield put(loadTabState());
 	} catch (error) {

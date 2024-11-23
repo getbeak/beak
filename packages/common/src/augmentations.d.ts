@@ -1,7 +1,7 @@
-import '@getbeak/types-realtime-value';
+import '@getbeak/types-variables';
 
-declare module '@getbeak/types-realtime-value' {
-	interface RealtimeValueBase {
+declare module '@getbeak/types-variables' {
+	interface VariableBase {
 		type: string;
 		external: boolean;
 	}

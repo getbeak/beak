@@ -4,7 +4,7 @@ export interface ProjectEncryption {
 }
 
 // NOTE(afr): Adding a new tab item? Don't forget to update tab-preferences schema too!
-export type TabItem = RequestTabItem | VariableGroupEditorTabItem | NewProjectIntroTabItem;
+export type TabItem = RequestTabItem | VariableSetEditorTabItem | NewProjectIntroTabItem;
 
 export interface TabBase {
 	type: string;
@@ -17,8 +17,8 @@ export interface RequestTabItem extends TabBase {
 	payload: string;
 }
 
-export interface VariableGroupEditorTabItem extends TabBase {
-	type: 'variable_group_editor';
+export interface VariableSetEditorTabItem extends TabBase {
+	type: 'variable_set_editor';
 	payload: string;
 }
 

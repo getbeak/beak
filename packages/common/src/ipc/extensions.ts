@@ -1,8 +1,8 @@
-import { Context, ValueParts } from '@getbeak/types/values';
-import { UISection } from '@getbeak/types-realtime-value';
+import { Context, ValueSections } from '@getbeak/types/values';
+import { UISection } from '@getbeak/types-variables';
 import type { IpcMain, WebContents } from 'electron';
 
-import { RealtimeValueExtension } from '../types/extensions';
+import { VariableExtension } from '../types/extensions';
 import { IpcServiceMain, IpcServiceRenderer, Listener, PartialIpcRenderer } from './ipc';
 
 export const ExtensionsMessages = {
@@ -12,8 +12,8 @@ export const ExtensionsMessages = {
 	RtvEditorCreateUserInterface: 'rtv_editor_create_user_interface',
 	RtvEditorLoad: 'rtv_editor_load',
 	RtvEditorSave: 'rtv_editor_save',
-	RtvParseValueParts: 'rtv_parse_value_parts',
-	RtvParseValuePartsResponse: 'rtv_parse_value_parts_response',
+	RtvParseValueSections: 'rtv_parse_value_parts',
+	RtvParseValueSectionsResponse: 'rtv_parse_value_parts_response',
 };
 
 interface RegisterRtvPayload { extensionFilePath: string }
@@ -41,13 +41,13 @@ interface RtvEditorSave extends RtvBase {
 	state: unknown;
 }
 
-export interface RtvParseValueParts extends Omit<RtvBase, 'type'> {
+export interface RtvParseValueSections extends Omit<RtvBase, 'type'> {
 	uniqueSessionId: string;
 	recursiveDepth: number;
-	parts: ValueParts;
+	parts: ValueSections;
 }
 
-export interface RtvParseValuePartsResponse {
+export interface RtvParseValueSectionsResponse {
 	uniqueSessionId: string;
 	parsed: string;
 }
@@ -57,7 +57,7 @@ export class IpcExtensionsServiceRenderer extends IpcServiceRenderer {
 		super('extensions', ipc);
 	}
 
-	async registerRtv(payload: RegisterRtvPayload): Promise<RealtimeValueExtension> {
+	async registerRtv(payload: RegisterRtvPayload): Promise<VariableExtension> {
 		return await this.invoke(ExtensionsMessages.RegisterRtv, payload);
 	}
 
@@ -81,8 +81,8 @@ export class IpcExtensionsServiceRenderer extends IpcServiceRenderer {
 		return await this.invoke(ExtensionsMessages.RtvEditorSave, payload);
 	}
 
-	registerRtvParseValueParts(fn: Listener<RtvParseValueParts>) {
-		this.registerListener(ExtensionsMessages.RtvParseValueParts, fn);
+	registerRtvParseValueSections(fn: Listener<RtvParseValueSections>) {
+		this.registerListener(ExtensionsMessages.RtvParseValueSections, fn);
 	}
 }
 
@@ -91,7 +91,7 @@ export class IpcExtensionsServiceMain extends IpcServiceMain {
 		super('extensions', ipc);
 	}
 
-	registerRegisterRtv(fn: Listener<RegisterRtvPayload, RealtimeValueExtension>) {
+	registerRegisterRtv(fn: Listener<RegisterRtvPayload, VariableExtension>) {
 		this.registerListener(ExtensionsMessages.RegisterRtv, fn);
 	}
 
@@ -115,9 +115,9 @@ export class IpcExtensionsServiceMain extends IpcServiceMain {
 		this.registerListener(ExtensionsMessages.RtvEditorSave, fn);
 	}
 
-	rtvParseValueParts(wc: WebContents, payload: RtvParseValueParts) {
+	rtvParseValueSections(wc: WebContents, payload: RtvParseValueSections) {
 		wc.send(this.channel, {
-			code: ExtensionsMessages.RtvParseValueParts,
+			code: ExtensionsMessages.RtvParseValueSections,
 			payload,
 		});
 	}

@@ -1,13 +1,13 @@
 import { FlightHistory } from './flight';
 import { Tree } from './nodes';
-import { VariableGroups } from './variable-groups';
+import { VariableSets } from './variable-sets';
 
-export type ValueParts = ValuePart[];
-export type ValuePart = string | { type: string; payload: unknown };
+export type ValueSections = ValueSection[];
+export type ValueSection = string | { type: string; payload: unknown };
 
 export interface Context {
-	selectedGroups: Record<string, string>;
-	variableGroups: VariableGroups;
+	selectedSets: Record<string, string>;
+	variableSets: VariableSets;
 	projectTree: Tree;
 	flightHistory: Record<string, FlightHistory>;
 	currentRequestId?: string;

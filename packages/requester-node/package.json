@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@beak/common": "*",
-    "@getbeak/types": "^1.0.0",
+    "@getbeak/types": "^2.1.0",
     "node-fetch": "^2.6.1"
   },
   "devDependencies": {
