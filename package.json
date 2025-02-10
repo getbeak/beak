@@ -86,7 +86,7 @@
   },
   "dependencies": {
     "@sentry/cli": "^2.23.1",
-    "@sentry/electron": "^4.15.1",
+    "@sentry/electron": "^5.11.0",
     "@sentry/react": "^7.91.0",
     "@sentry/tracing": "^7.91.0",
     "chokidar": "^4.0.1",
