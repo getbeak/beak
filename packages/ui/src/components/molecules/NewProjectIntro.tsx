@@ -1,13 +1,12 @@
 import React from 'react';
-import { useDispatch } from 'react-redux';
 import { ipcExplorerService } from '@beak/ui/lib/ipc';
-import { defaultOrCreateRequest } from '@beak/ui/store/project/actions';
 import styled from 'styled-components';
 
+import { useDefaultOrCreateRequest } from '../../hooks/use-default-or-create-request';
 import Button from '../atoms/Button';
 
 const NewProjectIntro: React.FC<React.PropsWithChildren<unknown>> = () => {
-	const dispatch = useDispatch();
+	const defaultOrCreateRequest = useDefaultOrCreateRequest();
 
 	return (
 		<Wrapper>
@@ -24,7 +23,7 @@ const NewProjectIntro: React.FC<React.PropsWithChildren<unknown>> = () => {
 						{'or you can browse the guides below to learn more about the '}
 						{'features Beak has to offer.'}
 					</WelcomeBannerSummary>
-					<Button onClick={() => dispatch(defaultOrCreateRequest())}>{'Get started'}</Button>
+					<Button onClick={defaultOrCreateRequest}>{'Get started'}</Button>
 				</WelcomeBannerBody>
 			</WelcomeBanner>
 

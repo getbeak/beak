@@ -5,7 +5,7 @@ import {
 	insertNewVariableGroup,
 	removeGroup,
 	removeItem,
-	removeVariableGroupFromStore,
+	removeVariableSetFromStore,
 	startVariableSets,
 	updateGroupName,
 	updateItemName,
@@ -14,8 +14,8 @@ import {
 } from '@beak/core/variable-groups';
 import { attemptReconciliation, changeTab } from '@beak/ui/features/tabs/store/actions';
 import type { ActiveRename } from '@beak/ui/features/tree-view/types';
-import { createVariableGroup, renameVariableGroup } from '@beak/ui/lib/beak-project/variable-groups';
-import { readVariableGroup, removeVariableGroup, writeVariableGroup } from '@beak/ui/lib/beak-variable-group';
+import { createVariableSet, renameVariableSet } from '@beak/ui/lib/beak-project/variable-sets';
+import { readVariableSet, removeVariableSet, writeVariableSet } from '@beak/ui/lib/beak-variable-set';
 import createFsEmitter, { type FsSubscription, scanDirectoryRecursively } from '@beak/ui/lib/fs-emitter';
 import { ipcDialogService, ipcFsService } from '@beak/ui/lib/ipc';
 import type { VariableGroup, VariableGroups } from '@getbeak/types/variable-groups';
@@ -24,7 +24,7 @@ import * as uuid from 'uuid';
 import type { AppStartListening } from '../listener';
 import { editorPreferencesSetSelectedVariableGroup } from '../preferences/actions';
 import * as vgActions from '../variable-sets/actions';
-import { createNewVariableGroup, removeVariableGroupFromDisk, renameSubmitted } from '../variable-sets/actions';
+import { createNewVariableSet, removeVariableSetFromDisk, renameSubmitted } from '../variable-sets/actions';
 
 export function registerVariableSetsEffects(start: AppStartListening) {
 	// start: initial import + long-running fs watcher on variable-groups/.
@@ -50,7 +50,7 @@ export function registerVariableSetsEffects(start: AppStartListening) {
 
 					if (event.type === 'add' || event.type === 'change') {
 						try {
-							const { file, name } = await readVariableGroup(event.path);
+							const { file, name } = await readVariableSet(event.path);
 							api.dispatch(insertNewVariableGroup({ id: name, variableGroup: file as VariableGroup }));
 						} catch (error) {
 							if (!(error instanceof Error)) return;
@@ -64,7 +64,7 @@ export function registerVariableSetsEffects(start: AppStartListening) {
 					} else if (event.type === 'unlink') {
 						try {
 							const variableGroupName = path.basename(event.path, path.extname(event.path));
-							api.dispatch(removeVariableGroupFromStore(variableGroupName));
+							api.dispatch(removeVariableSetFromStore(variableGroupName));
 							api.dispatch(attemptReconciliation());
 						} catch (error) {
 							if (!(error instanceof Error)) return;
@@ -111,16 +111,16 @@ export function registerVariableSetsEffects(start: AppStartListening) {
 				if (debounce !== nonce) return;
 
 				api.dispatch(vgActions.setLatestWrite(Date.now()));
-				await writeVariableGroup(id, variableGroup);
+				await writeVariableSet(id, variableGroup);
 			},
 		});
 	}
 
 	// Create a new variable group (then start rename UI once it appears in store).
 	start({
-		actionCreator: createNewVariableGroup,
+		actionCreator: createNewVariableSet,
 		effect: async ({ payload }, api) => {
-			const id = await createVariableGroup('variable-groups', payload.name);
+			const id = await createVariableSet('variable-groups', payload.name);
 			api.dispatch(changeTab({ type: 'variable_set_editor', payload: id, temporary: true }));
 			await api.take(insertNewVariableGroup.match, 250);
 			api.dispatch(vgActions.renameStarted({ id }));
@@ -129,7 +129,7 @@ export function registerVariableSetsEffects(start: AppStartListening) {
 
 	// Remove from disk (with confirm).
 	start({
-		actionCreator: removeVariableGroupFromDisk,
+		actionCreator: removeVariableSetFromDisk,
 		effect: async ({ payload }, api) => {
 			const { id, withConfirmation } = payload;
 
@@ -145,8 +145,8 @@ export function registerVariableSetsEffects(start: AppStartListening) {
 				if (response.response === 1) return;
 			}
 
-			await removeVariableGroup(id);
-			api.dispatch(removeVariableGroupFromStore(id));
+			await removeVariableSet(id);
+			api.dispatch(removeVariableSetFromStore(id));
 			api.dispatch(attemptReconciliation());
 		},
 	});
@@ -166,7 +166,7 @@ export function registerVariableSetsEffects(start: AppStartListening) {
 			}
 
 			try {
-				await renameVariableGroup(id, activeRename.name);
+				await renameVariableSet(id, activeRename.name);
 				api.dispatch(vgActions.renameResolved({ id }));
 				await api.delay(200);
 				api.dispatch(changeTab({ type: 'variable_set_editor', temporary: false, payload: activeRename.name }));
@@ -202,7 +202,7 @@ async function initialImport(api: {
 
 	const items = await scanDirectoryRecursively('variable-groups');
 	const files = items.filter(i => !i.isDirectory).map(i => i.path);
-	const variableGroups = await readVariableGroups(files);
+	const variableGroups = await readVariableSets(files);
 	const editorPreferences = api.getState().global.preferences.editor;
 
 	for (const vgk of TypedObject.keys(variableGroups)) {
@@ -220,7 +220,7 @@ async function initialImport(api: {
 	api.dispatch(variableGroupsOpened({ variableGroups }));
 }
 
-async function readVariableGroups(filePaths: string[]): Promise<VariableGroups> {
-	const results = await Promise.all(filePaths.map(f => readVariableGroup(f)));
+async function readVariableSets(filePaths: string[]): Promise<VariableGroups> {
+	const results = await Promise.all(filePaths.map(f => readVariableSet(f)));
 	return results.reduce((acc, { name, file }) => ({ ...acc, [name]: file as VariableGroup }), {} as VariableGroups);
 }
