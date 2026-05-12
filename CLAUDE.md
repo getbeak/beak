@@ -113,3 +113,44 @@ The root `tsconfig.json` defines `@beak/*` and `@getbeak/*` aliases pointing at 
 ## Release flow
 
 `docs/release-checklist.md` is the source of truth. In short: bump `apps-host/electron/package.json`, update the release-notes link in `apps-host/electron/src/updater.ts`, commit, tag `beak-app@x.x.x`, push, watch the `beak-host.yml` workflow for signing.
+
+## TypeScript code intelligence (tslsp MCP)
+
+In any TypeScript or JavaScript project that has a `tsconfig.json`, the
+`tslsp` MCP is type-aware and MUST be used instead of the built-in text
+tools for the operations below. The built-in tools see strings; tslsp
+sees the program.
+
+| Task                          | DO use                | DO NOT use      |
+| ----------------------------- | --------------------- | --------------- |
+| Find every usage of a symbol  | `tslsp:references`    | `Grep`, `Glob`  |
+| Search for a symbol by name   | `tslsp:find_symbol`   | `Grep`          |
+| Jump to a definition          | `tslsp:definition`    | `Grep` + `Read` |
+| Rename a symbol               | `tslsp:rename`        | `Edit`, `MultiEdit`, find-and-replace |
+| Get a symbol's type / JSDoc   | `tslsp:hover`         | `Read` |
+| Outline a file before diving  | `tslsp:outline`       | `Read` on the whole file |
+| Type errors after an edit     | `tslsp:diagnostics`   | `Bash` running `tsc` ad-hoc |
+
+Hard rules:
+
+1. NEVER rename a TypeScript identifier with `Edit` or `MultiEdit`. Use
+   `tslsp:rename`. Pass `dry_run: true` first when the symbol has many
+   call sites; review the preview, then apply.
+2. NEVER `Grep` for a symbol name to find usages or definitions. Use
+   `tslsp:references` or `tslsp:definition`. Grep matches strings in
+   comments, in unrelated identifiers, in `.md` files - it lies.
+3. Before reading a large file, call `tslsp:outline` first and use the
+   line numbers to `Read` only the slices you need. Do not page through
+   100s of lines hunting for a function.
+4. After non-trivial edits to a TS file, call `tslsp:diagnostics` on it
+   to confirm it still type-checks before claiming the change is done.
+
+Locator ergonomics: every position-taking tool accepts
+`{ symbol: "name" }` (workspace search), `{ file, line, symbol }` (line
+scan), or full `{ file, line, character }`. Use the cheapest form you
+have. Ambiguous name-only queries return the candidate list; pick by
+file or line and re-call.
+
+Fall back to the built-in text tools ONLY for: string literals,
+comments, non-TS files (Markdown, YAML, configs), or projects without a
+`tsconfig.json`.
