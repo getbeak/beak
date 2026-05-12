@@ -80,8 +80,8 @@ export function registerFlightEffects(start: AppStartListening) {
 			const state = api.getState();
 			const context: Context = {
 				selectedSets: state.global.preferences.editor.selectedVariableSets,
-				variableGroups: state.global.variableGroups.variableGroups,
-				flightHistories: state.global.flight.flightHistories,
+				variableSets: state.global.variableSets.variableSets,
+				flightHistory: state.global.flight.flightHistories,
 				projectTree: state.global.project.tree,
 				currentRequestId: requestId,
 			};

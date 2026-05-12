@@ -37,7 +37,6 @@
 		"typecheck": "pnpm -r typecheck",
 		"typecheck:apps-host": "pnpm --filter '@beak/apps-host-*...' typecheck",
 		"unfuck": "pnpm -r exec rm -rf node_modules && rm -rf node_modules && pnpm install",
-		"postinstall": "node ./build/package-overrides/index.js",
 		"release-safety": "pnpm typecheck && pnpm lint && pnpm build"
 	},
 	"pnpm": {

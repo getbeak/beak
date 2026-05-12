@@ -17,7 +17,7 @@ const ActionBarAlertButton: React.FC<ActionBarAlertButtonProps> = ({ id }) => {
 	const [showPopover, setShowPopover] = useState(false);
 	const alerts = useAppSelector(s => s.global.project.alerts);
 	const hasAlerts = TypedObject.values(alerts).filter(Boolean).length > 0;
-	const parentRef = useRef() as React.MutableRefObject<HTMLButtonElement>;
+	const parentRef = useRef<HTMLButtonElement | null>(null);
 
 	if (!hasAlerts) return null;
 

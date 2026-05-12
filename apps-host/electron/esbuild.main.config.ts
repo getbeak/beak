@@ -3,7 +3,7 @@
 import fs from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import path from 'node:path';
-import SentryCli from '@sentry/cli';
+import SentryCliModule from '@sentry/cli';
 import type { BuildOptions, PluginBuild } from 'esbuild';
 
 const require = createRequire(import.meta.url);
@@ -69,7 +69,11 @@ const sentrySourceMapsPlugin = {
 				return;
 			}
 
-			const cli = new SentryCli(null, {
+			const SentryCliCtor = ((SentryCliModule as any).default ?? SentryCliModule) as new (
+				configFile: string | null,
+				options: Record<string, unknown>,
+			) => any;
+			const cli = new SentryCliCtor(null, {
 				authToken: process.env.SENTRY_AUTH_TOKEN,
 				org: 'beak',
 				project: 'apps-host-electron',

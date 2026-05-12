@@ -25,8 +25,8 @@ export default class AesProvider extends AesProviderBase {
 		return base64.fromByteArray(iv);
 	}
 
-	async encrypt(payload: Uint8Array, keyBase64: string, ivBase64: string): Promise<string> {
-		const key = await window.crypto.subtle.importKey('raw', base64.toByteArray(keyBase64), 'AES-CTR', true, [
+	async encrypt(payload: Uint8Array,keyBase64: string, ivBase64: string): Promise<string> {
+		const key = await window.crypto.subtle.importKey('raw', base64.toByteArray(keyBase64) as BufferSource, 'AES-CTR', true, [
 			'encrypt',
 			'decrypt',
 		]);
@@ -35,10 +35,10 @@ export default class AesProvider extends AesProviderBase {
 			{
 				name: 'AES-CTR',
 				length: 256,
-				counter: base64.toByteArray(ivBase64),
+				counter: base64.toByteArray(ivBase64) as BufferSource,
 			},
 			key,
-			payload,
+			payload as BufferSource,
 		);
 
 		return base64.fromByteArray(new Uint8Array(cipherText));
@@ -54,10 +54,10 @@ export default class AesProvider extends AesProviderBase {
 			{
 				name: 'AES-CTR',
 				length: 256,
-				counter: textEncoder.encode(atob(ivBase64)),
+				counter: textEncoder.encode(atob(ivBase64)) as BufferSource,
 			},
 			key,
-			payload,
+			payload as BufferSource,
 		);
 
 		return base64.fromByteArray(new Uint8Array(decrypted));

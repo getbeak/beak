@@ -30,7 +30,7 @@ service.registerWriteJson(async (event, payload: WriteJsonReq) => {
 
 	await ensureParentDirectoryExists(filePath);
 
-	return await fs.writeJson(filePath, payload.content, payload.options);
+	return await fs.writeJson(filePath, payload.content, payload.options as any);
 });
 
 service.registerReadText(async (event, payload: ReadTextReq) => {

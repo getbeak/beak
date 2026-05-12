@@ -1,4 +1,4 @@
-import crypto, { type Cipher, type Decipher } from 'node:crypto';
+import crypto, { type Cipheriv as Cipher, type Decipheriv as Decipher } from 'node:crypto';
 import AesProviderBase from '@beak/common-host/providers/encryption-aes';
 
 export default class AesProvider extends AesProviderBase {

@@ -14,7 +14,7 @@ const RootDropContainer: React.FC<React.PropsWithChildren<unknown>> = props => {
 	});
 
 	return (
-		<Container $dropAccepted={canDrop} $dropHovering={hovering} ref={dropRef}>
+		<Container $dropAccepted={canDrop} $dropHovering={hovering} ref={dropRef as unknown as React.Ref<HTMLDivElement>}>
 			{props.children}
 		</Container>
 	);

@@ -48,8 +48,9 @@ const beakHost = new BeakHost({
 		themeMode: 'system',
 	}),
 	node: {
-		// @ts-expect-error
+		// @ts-expect-error path-browserify lacks the full node:path surface (matchesGlob, toNamespacedPath) — fine for renderer.
 		fs: beakBrowserFs,
+		// @ts-expect-error see above
 		path,
 	},
 });

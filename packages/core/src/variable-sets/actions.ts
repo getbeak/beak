@@ -3,20 +3,20 @@ import { createAction } from '@reduxjs/toolkit';
 import type {
 	InsertNewGroupPayload,
 	InsertNewItemPayload,
-	InsertNewVariableGroupPayload,
+	InsertNewVariableSetPayload,
 	RemoveGroupPayload,
 	RemoveItemPayload,
 	UpdateGroupNamePayload,
 	UpdateItemNamePayload,
 	UpdateValuePayload,
-	VariableGroupsOpenedPayload,
+	VariableSetsOpenedPayload,
 } from './types';
 
-export const startVariableGroups = createAction('variableGroups/startVariableGroups');
-export const variableGroupsOpened = createAction<VariableGroupsOpenedPayload>('variableGroups/variableGroupsOpened');
+export const startVariableSets = createAction('variableGroups/startVariableSets');
+export const variableSetsOpened = createAction<VariableSetsOpenedPayload>('variableGroups/variableSetsOpened');
 
-export const insertNewVariableGroup = createAction<InsertNewVariableGroupPayload>(
-	'variableGroups/insertNewVariableGroup',
+export const insertNewVariableSet = createAction<InsertNewVariableSetPayload>(
+	'variableGroups/insertNewVariableSet',
 );
 export const insertNewGroup = createAction<InsertNewGroupPayload>('variableGroups/insertNewGroup');
 export const insertNewItem = createAction<InsertNewItemPayload>('variableGroups/insertNewItem');
@@ -25,6 +25,6 @@ export const updateGroupName = createAction<UpdateGroupNamePayload>('variableGro
 export const updateItemName = createAction<UpdateItemNamePayload>('variableGroups/updateItemName');
 export const updateValue = createAction<UpdateValuePayload>('variableGroups/updateValue');
 
-export const removeVariableGroupFromStore = createAction<string>('variableGroups/removeVariableGroupFromStore');
+export const removeVariableSetFromStore = createAction<string>('variableGroups/removeVariableSetFromStore');
 export const removeGroup = createAction<RemoveGroupPayload>('variableGroups/removeGroup');
 export const removeItem = createAction<RemoveItemPayload>('variableGroups/removeItem');

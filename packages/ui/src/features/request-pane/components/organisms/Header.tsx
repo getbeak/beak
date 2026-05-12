@@ -22,8 +22,8 @@ export interface HeaderProps {
 const Header: React.FC<React.PropsWithChildren<HeaderProps>> = props => {
 	const dispatch = useDispatch();
 	const theme = useTheme();
-	const currentFlight = useAppSelector(s => s.global.flight.currentFlight);
-	const flighting = currentFlight && currentFlight.flighting && currentFlight.requestId === props.node.id;
+	const currentFlight = useAppSelector(s => s.global.flight.activeFlights[props.node.id]);
+	const flighting = Boolean(currentFlight);
 	const { node } = props;
 	const context = useVariableContext(node.id);
 	const verb = node.info.verb;

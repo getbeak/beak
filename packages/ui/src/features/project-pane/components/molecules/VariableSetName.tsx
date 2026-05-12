@@ -14,7 +14,7 @@ interface VariableSetNameProps {
 
 export const VariableSetName: React.FC<VariableSetNameProps> = ({ variableSetName }) => {
 	const [menuItems, setMenuItems] = useState<MenuItemConstructorOptions[]>([]);
-	const targetRef = useRef<HTMLElement>();
+	const targetRef = useRef<HTMLElement | null>(null);
 	const dispatch = useDispatch();
 
 	useEffect(() => {
@@ -51,11 +51,12 @@ export const VariableSetName: React.FC<VariableSetNameProps> = ({ variableSetNam
 
 	return (
 		<React.Fragment>
-			<ContextMenu menuItems={menuItems} target={targetRef.current}>
+			<ContextMenu menuItems={menuItems} target={targetRef.current ?? undefined}>
 				<Name
 					title={variableSetName}
-					// eslint-disable-next-line no-return-assign
-					ref={i => targetRef.current = i!}
+					ref={i => {
+						targetRef.current = i;
+					}}
 				>
 					{variableSetName}
 				</Name>

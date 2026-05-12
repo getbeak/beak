@@ -24,7 +24,7 @@
 		"@beak/common": "*",
 		"@beak/ksuid": "*",
 		"@beak/squawk": "*",
-		"@getbeak/types": "^1.0.0",
+		"@getbeak/types": "*",
 		"@reduxjs/toolkit": "^2.11.2",
 		"zod": "^4.4.3",
 		"zod-to-json-schema": "^3.25.2"

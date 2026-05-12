@@ -99,13 +99,13 @@ function renderFormat(language: string | null, contentType: string | null, body:
 		}
 
 		case 'image': {
-			const blob = URL.createObjectURL(new Blob([body], { type: contentType ?? 'image/jpeg' }));
+			const blob = URL.createObjectURL(new Blob([body as BlobPart], { type: contentType ?? 'image/jpeg' }));
 
 			return <Image $imageBlob={blob} />;
 		}
 
 		case 'video': {
-			const blob = URL.createObjectURL(new Blob([body], { type: contentType ?? 'video/mp4' }));
+			const blob = URL.createObjectURL(new Blob([body as BlobPart], { type: contentType ?? 'video/mp4' }));
 
 			return (
 				<Video controls autoPlay>

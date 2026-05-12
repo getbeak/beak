@@ -24,7 +24,7 @@ const FolderNode: React.FC<React.PropsWithChildren<FolderNodeProps>> = props => 
 	const [{ hovering, canDrop }, dropRef] = useNodeDrop(node);
 
 	return (
-		<FolderWrapper $dropAccepted={canDrop} $dropHovering={hovering} ref={dropRef}>
+		<FolderWrapper $dropAccepted={canDrop} $dropHovering={hovering} ref={dropRef as unknown as React.Ref<HTMLDivElement>}>
 			<NodeItem node={node} collapsed={collapsed} collapsible depth={depth}>
 				<NodeName node={node} collapsed={collapsed} collapsible />
 			</NodeItem>

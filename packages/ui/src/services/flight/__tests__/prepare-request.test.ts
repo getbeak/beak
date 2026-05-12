@@ -7,8 +7,8 @@ import { type PrepareRequestDeps, prepareRequest } from '../prepare-request';
 function makeContext(): Context {
 	return {
 		selectedSets: {},
-		variableGroups: {},
-		flightHistories: {},
+		variableSets: {},
+		flightHistory: {},
 		projectTree: {},
 		currentRequestId: 'req-1',
 	};

@@ -1,12 +1,12 @@
-import { ExtensionsMessages, RtvParseValueSectionsResponse } from '@beak/common/ipc/extensions';
-import { RequestPayload } from '@beak/common/ipc/main';
+import { ExtensionsMessages, type RtvParseValueSectionsResponse } from '@beak/common/ipc/extensions';
+import type { IpcMessage } from '@beak/common/ipc/types';
 import { ipcExtensionsService } from '@beak/ui/lib/ipc';
 
 import { parseValueSections } from './parser';
 
 ipcExtensionsService.registerRtvParseValueSections(async (event, payload) => {
 	const parsed = await parseValueSections(payload.context, payload.parts, payload.recursiveDepth);
-	const message: RequestPayload<RtvParseValueSectionsResponse> = {
+	const message: IpcMessage<RtvParseValueSectionsResponse> = {
 		code: ExtensionsMessages.RtvParseValueSectionsResponse,
 		payload: {
 			parsed,
@@ -14,5 +14,5 @@ ipcExtensionsService.registerRtvParseValueSections(async (event, payload) => {
 		},
 	};
 
-	event.sender.send(ipcExtensionsService.getChannel(), message);
+	event.sender.send('extensions', message);
 });

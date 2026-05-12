@@ -1,4 +1,4 @@
-import { buildVariableGroupsReducer } from '@beak/core/variable-groups';
+import { buildVariableSetsReducer } from '@beak/core/variable-sets';
 import { createReducer } from '@reduxjs/toolkit';
 
 import * as actions from './actions';
@@ -10,7 +10,7 @@ import { initialState } from './types';
  */
 const variableGroupsReducer = createReducer(initialState, builder => {
 	// Pure variable-groups domain — sourced from @beak/core/variable-groups.
-	buildVariableGroupsReducer(builder);
+	buildVariableSetsReducer(builder);
 
 	// UI-coupled rename state.
 	builder

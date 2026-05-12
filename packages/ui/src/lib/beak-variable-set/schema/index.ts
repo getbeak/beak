@@ -1,5 +1,3 @@
-import variableSetSchema from './variable-set.json';
-
-export {
-	variableSetSchema,
-};
+// Schema lives in @beak/core/schemas now (zod-based, with z.infer types).
+// This module re-exports it under the legacy name for back-compat.
+export { variableGroupSchema as variableSetSchema } from '@beak/core/schemas';

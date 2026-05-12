@@ -96,7 +96,7 @@ export default class ExtensionManager {
 			version,
 			filePath: extensionPath,
 			valid: true,
-			realtimeValue: {
+			variable: {
 				type,
 				external: true,
 				name: extension.name,
@@ -163,14 +163,14 @@ export default class ExtensionManager {
 
 	async rtvEditorLoad(projectId: string, type: string, context: Context, payload: unknown) {
 		const { extension } = this.getExtensionContext(projectId, type);
-		const editorState = await extension.editor.load(context, payload);
+		const editorState = await extension.editor!.load!(context, payload);
 
 		return clone(editorState);
 	}
 
 	async rtvEditorSave(projectId: string, type: string, context: Context, existingPayload: unknown, state: unknown) {
 		const { extension } = this.getExtensionContext(projectId, type);
-		const payload = await extension.editor.save(context, existingPayload, state);
+		const payload = await extension.editor!.save!(context, existingPayload, state);
 
 		return clone(payload);
 	}

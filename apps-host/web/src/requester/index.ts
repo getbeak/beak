@@ -119,7 +119,7 @@ async function runRequest(overview: RequestOverview) {
 				break;
 
 			case 'file':
-				init.body = (body as RequestBodyFile).payload.__hacky__binaryFileData!;
+				init.body = (body as RequestBodyFile).payload.__hacky__binaryFileData! as BlobPart as BodyInit;
 				break;
 
 			default:

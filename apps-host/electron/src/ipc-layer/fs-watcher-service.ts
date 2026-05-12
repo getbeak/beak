@@ -27,6 +27,7 @@ service.registerStartWatching(async (event, payload: StartWatchingReq) => {
 	const watcher = chokidar
 		.watch(filePath, options)
 		.on('all', (eventName, path) => {
+			if (eventName !== 'add' && eventName !== 'addDir' && eventName !== 'change' && eventName !== 'unlink' && eventName !== 'unlinkDir') return;
 			const destroyed = checkForDestruction(() => {
 				service.sendWatcherEvent(sender, payload.sessionIdentifier, {
 					eventName,
@@ -38,7 +39,7 @@ service.registerStartWatching(async (event, payload: StartWatchingReq) => {
 		})
 		.on('error', error => {
 			const destroyed = checkForDestruction(() => {
-				service.sendWatcherError(sender, payload.sessionIdentifier, error);
+				service.sendWatcherError(sender, payload.sessionIdentifier, error instanceof Error ? error : new Error(String(error)));
 			});
 
 			if (destroyed) watcher.close();

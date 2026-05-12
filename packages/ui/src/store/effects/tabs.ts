@@ -88,10 +88,10 @@ export function registerTabsEffects(start: AppStartListening) {
 
 			const tabs = api.getState().features.tabs.activeTabs;
 			const tree = api.getState().global.project.tree;
-			const variableGroups = api.getState().global.variableGroups.variableGroups;
+			const variableSets = api.getState().global.variableSets.variableSets;
 
 			const nodes = TypedObject.values(tree);
-			const variableGroupNames = TypedObject.keys(variableGroups);
+			const variableGroupNames = TypedObject.keys(variableSets) as string[];
 
 			for (const tab of tabs) {
 				switch (tab.type) {

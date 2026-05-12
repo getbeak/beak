@@ -114,7 +114,7 @@ async function readExtensions(): Promise<Extension[]> {
 
 			try {
 				const extension = await ipcExtensionsService.registerRtv({ extensionFilePath: dependencyPath });
-				VariableManager.registerExternalRealtimeValue(extension);
+				VariableManager.registerExternalVariable(extension);
 				return extension;
 			} catch (error) {
 				return {
