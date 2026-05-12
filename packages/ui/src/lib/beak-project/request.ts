@@ -1,11 +1,22 @@
 import ksuid from '@beak/ksuid';
+import {
+	diffFromDefaults,
+	mergeCollectionDefaults,
+	type RequestFile,
+	requestFileOverrideSchema,
+} from '@beak/state/schemas';
 import type { RequestNode, RequestNodeFile } from '@getbeak/types/nodes';
 import path from 'path-browserify';
 
 import { readJsonAndValidate } from '../fs';
 import { ipcFsService } from '../ipc';
+import { loadCollectionForRequest } from './collection';
 import { requestSchema } from './schemas';
 import { generateSafeNewPath } from './utils';
+
+function hasNonEmptyDefaults(defaults: unknown): boolean {
+	return Boolean(defaults && typeof defaults === 'object' && Object.keys(defaults).length > 0);
+}
 
 export async function createRequestNode(directory: string, name?: string, template?: RequestNodeFile) {
 	const { fullPath } = await generateSafeNewPath(name || 'New request', directory, '.json');
@@ -30,6 +41,43 @@ export async function createRequestNode(directory: string, name?: string, templa
 }
 
 export async function readRequestNode(requestFilePath: string): Promise<RequestNode> {
+	const collection = await loadCollectionForRequest(requestFilePath);
+
+	if (hasNonEmptyDefaults(collection?.defaults)) {
+		// Sparse override path: validate against the override schema, then
+		// merge the collection's defaults into the override to produce the
+		// concrete request the renderer expects.
+		const { file, filePath, name, error } = await readJsonAndValidate<{ id?: string }>(
+			requestFilePath,
+			requestFileOverrideSchema,
+			true,
+		);
+
+		if (error) {
+			return {
+				type: 'request',
+				filePath,
+				parent: path.join(filePath, '..'),
+				name,
+				id: (file?.id as string) || ksuid.generate('failedrequest').toString(),
+				mode: 'failed',
+				error,
+			};
+		}
+
+		const merged = mergeCollectionDefaults(collection?.defaults, file as never) as RequestNodeFile;
+		return {
+			type: 'request',
+			filePath,
+			parent: path.join(filePath, '..'),
+			name,
+			id: merged.id,
+			mode: 'valid',
+			info: { ...merged },
+		};
+	}
+
+	// Legacy / empty-defaults path: validate as a full request file.
 	const { file, filePath, name, error } = await readJsonAndValidate<RequestNodeFile>(
 		requestFilePath,
 		requestSchema,
@@ -68,6 +116,18 @@ export async function writeRequestNode(request: RequestNode) {
 		...request.info,
 	};
 
+	const collection = await loadCollectionForRequest(request.filePath);
+
+	if (hasNonEmptyDefaults(collection?.defaults)) {
+		// Sparse override path: compute the diff against the collection's
+		// defaults and persist only the fields that differ. This keeps the
+		// diff tree quiet for routine API usage.
+		const sparse = diffFromDefaults(collection?.defaults, node as unknown as RequestFile);
+		await ipcFsService.writeJson(request.filePath, sparse, { spaces: '\t' });
+		return;
+	}
+
+	// Legacy / empty-defaults path: write the full request file.
 	await ipcFsService.writeJson(request.filePath, node, { spaces: '\t' });
 }
 
