@@ -2,6 +2,7 @@ import { z, type ZodType } from 'zod';
 
 export * from './beak-project';
 export * from './beak-variable-group';
+export * from './collection-merge';
 export * from './preferences';
 
 /**

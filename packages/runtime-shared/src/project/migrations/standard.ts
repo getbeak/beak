@@ -26,6 +26,7 @@ export default class BeakStandardMigrations extends BeakBase {
 		'0.2.0': this.handle_0_2_0_to_0_2_1.bind(this), // Migrate from 0.2.0 -> 0.2.1
 		'0.2.1': this.handle_0_2_1_to_0_3_0.bind(this), // Migrate from 0.2.1 -> 0.3.0
 		'0.3.0': this.handle_0_3_0_to_0_4_0.bind(this), // Migrate from 0.3.0 -> 0.4.0
+		'0.4.0': this.handle_0_4_0_to_0_5_0.bind(this), // Migrate from 0.4.0 -> 0.5.0
 	} as const;
 
 	constructor(providers: Providers, beakExtensions: BeakExtensions) {
@@ -209,6 +210,52 @@ export default class BeakStandardMigrations extends BeakBase {
 		}));
 
 		await this.changeProjectFileVersion(projectFile, projectFolderPath, '0.4.0');
+	}
+
+	/**
+	 * Handles the migration of a project from version 0.4.0 to 0.5.0.
+	 *
+	 * Introduces the collection concept: every folder under `tree/` (and the
+	 * root tree itself) gets a `_collection.json` declaring its source. For
+	 * existing projects the source is always `manual` with no defaults —
+	 * existing fully-specified request files keep working unchanged. New
+	 * sources (openapi, graphql) will arrive in later sync features.
+	 *
+	 * The defaults-merge logic (request files becoming sparse overrides) is
+	 * non-destructive on existing requests; they're written sparse on next
+	 * save once a user explicitly populates the collection defaults.
+	 *
+	 * @param projectFile - The project file to be migrated.
+	 * @param projectFolderPath - The path to the project folder.
+	 */
+	private async handle_0_4_0_to_0_5_0(projectFile: ProjectFile, projectFolderPath: string): Promise<void> {
+		const treeRoot = this.p.node.path.join(projectFolderPath, 'tree');
+
+		if (await fileExists(this, treeRoot)) {
+			await this.writeCollectionFilesRecursively(treeRoot);
+		}
+
+		await this.changeProjectFileVersion(projectFile, projectFolderPath, '0.5.0');
+	}
+
+	private async writeCollectionFilesRecursively(folderPath: string): Promise<void> {
+		const collectionFilePath = this.p.node.path.join(folderPath, '_collection.json');
+
+		if (!await fileExists(this, collectionFilePath)) {
+			const collectionFile = { source: { type: 'manual' } };
+			await this.p.node.fs.promises.writeFile(
+				collectionFilePath,
+				JSON.stringify(collectionFile, null, '\t'),
+				{ encoding: 'utf8' },
+			);
+		}
+
+		const entries = await this.p.node.fs.promises.readdir(folderPath, { withFileTypes: true });
+		for (const entry of entries) {
+			if (!entry.isDirectory()) continue;
+			// eslint-disable-next-line no-await-in-loop
+			await this.writeCollectionFilesRecursively(this.p.node.path.join(folderPath, entry.name));
+		}
 	}
 
 	private async replaceStringInBeakFile(

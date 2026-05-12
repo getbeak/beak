@@ -94,6 +94,11 @@ export default class BeakProject extends BeakBase {
 		// Create tree structure
 		await this.p.node.fs.promises.mkdir(this.p.node.path.join(projectFolderPath, 'tree'));
 		await this.p.node.fs.promises.writeFile(
+			this.p.node.path.join(projectFolderPath, 'tree', '_collection.json'),
+			JSON.stringify({ source: { type: 'manual' } }, null, '\t'),
+			'utf8',
+		);
+		await this.p.node.fs.promises.writeFile(
 			this.p.node.path.join(projectFolderPath, 'tree', 'Request.json'),
 			JSON.stringify(defaultRequest, null, '\t'),
 			'utf8',
@@ -200,7 +205,7 @@ export default class BeakProject extends BeakBase {
 		const profileFile: ProjectFile = {
 			id: projectId ?? ksuid.generate('project').toString(),
 			name,
-			version: '0.4.0',
+			version: '0.5.0',
 		};
 
 		await this.p.node.fs.promises.writeFile(
