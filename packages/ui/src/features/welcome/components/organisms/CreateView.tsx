@@ -1,7 +1,7 @@
 import Input, { InputInvalidText } from '@beak/ui/components/atoms/Input';
 import Label from '@beak/ui/components/atoms/Label';
 import { ipcProjectService } from '@beak/ui/lib/ipc';
-import type React from 'react';
+import React from 'react';
 import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import validFilename from 'valid-filename';

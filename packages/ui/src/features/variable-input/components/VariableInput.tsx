@@ -47,7 +47,7 @@ const VariableInput = React.forwardRef<HTMLElement, VariableInputProps>((props, 
 	const [query, setQuery] = useState('');
 
 	const { variableSets } = useAppSelector(s => s.global.variableSets);
-	const selectedGroups = useAppSelector(s => s.global.preferences.editor.selectedVariableSets);
+	const selectedSets = useAppSelector(s => s.global.preferences.editor.selectedVariableSets);
 
 	const context = useVariableContext(props.requestId);
 	const editableRef = useRef<HTMLDivElement | null>(null);
@@ -99,7 +99,7 @@ const VariableInput = React.forwardRef<HTMLElement, VariableInputProps>((props, 
 			elem.removeEventListener('blur', handleBlur);
 			elem.removeEventListener('paste', handlePaste);
 		};
-	}, [requestId, showSelector, query, variableSets, selectedGroups]);
+	}, [requestId, showSelector, query, variableSets, selectedSets]);
 
 	useEffect(() => {
 		if (!editableRef.current)

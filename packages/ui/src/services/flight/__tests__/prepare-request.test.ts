@@ -6,9 +6,9 @@ import { type PrepareRequestDeps, prepareRequest } from '../prepare-request';
 
 function makeContext(): Context {
 	return {
-		selectedGroups: {},
+		selectedSets: {},
 		variableGroups: {},
-		flightHistory: {},
+		flightHistories: {},
 		projectTree: {},
 		currentRequestId: 'req-1',
 	};
@@ -31,9 +31,9 @@ let idCounter: number;
 function makeDeps(overrides: Partial<PrepareRequestDeps> = {}): PrepareRequestDeps {
 	idCounter = 0;
 	return {
-		parseValueParts: vi.fn(async (_ctx, parts) =>
+		parseValueSections: vi.fn(async (_ctx, parts) =>
 			parts.map((p: unknown) => (typeof p === 'string' ? p : `<${(p as { type: string }).type}>`)).join(''),
-		) as PrepareRequestDeps['parseValueParts'],
+		) as PrepareRequestDeps['parseValueSections'],
 		convertRequestToUrl: vi.fn(async (_ctx, overview) => new URL((overview.url[0] as string) || 'https://example.com')),
 		convertToRealJson: vi.fn(async (_ctx, payload) => payload),
 		convertKeyValueToString: vi.fn(async () => 'a=1&b=2'),
@@ -101,7 +101,7 @@ describe('prepareRequest', () => {
 		expect(contentType).toBeUndefined();
 	});
 
-	it('flattens header value parts through parseValueParts', async () => {
+	it('flattens header value parts through parseValueSections', async () => {
 		const overview = makeOverview({
 			headers: {
 				'h-1': { name: 'X-Custom', value: ['hello ', { type: 'variable', payload: {} }], enabled: true },

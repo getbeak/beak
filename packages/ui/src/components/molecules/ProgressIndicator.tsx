@@ -1,5 +1,5 @@
 import { useAppSelector } from '@beak/ui/store/redux';
-import type React from 'react';
+import React from 'react';
 import styled from 'styled-components';
 
 const ProgressIndicator: React.FC<React.PropsWithChildren<unknown>> = () => {

@@ -83,7 +83,7 @@ async function makeRequest<ResT>(
 	req = mergeOptions(options, req);
 
 	let controller: AbortController;
-	let timeoutId: NodeJS.Timeout | undefined = void 0;
+	let timeoutId: ReturnType<typeof setTimeout> | undefined = void 0;
 
 	if (options.timeout !== void 0) {
 		controller = new AbortController();

@@ -1,5 +1,5 @@
 import type { Entries, NamedEntries } from '@getbeak/types/body-editor-json';
-import type React from 'react';
+import React from 'react';
 
 import JsonArrayEntry from './JsonArrayEntry';
 import JsonBooleanEntry from './JsonBooleanEntry';

@@ -1,7 +1,7 @@
 import { actions } from '@beak/ui/store/project';
 import type { ValidRequestNode } from '@getbeak/types/nodes';
 import type { RequestBodyGraphQl } from '@getbeak/types/request';
-import type React from 'react';
+import React from 'react';
 
 import JsonEditor from '../../json-editor/components/JsonEditor';
 

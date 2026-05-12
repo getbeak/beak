@@ -23,7 +23,7 @@ export interface RequestOutputProps {
 const RequestOutput: React.FC<React.PropsWithChildren<RequestOutputProps>> = props => {
 	const node = props.selectedNode;
 	const variableSets = useAppSelector(s => s.global.variableSets.variableSets);
-	const selectedGroups = useAppSelector(s => s.global.preferences.editor.selectedVariableSets);
+	const selectedSets = useAppSelector(s => s.global.preferences.editor.selectedVariableSets);
 	const windowSession = useContext(WindowSessionContext);
 	const [output, setOutput] = useState('');
 	const mounted = useComponentMounted();
@@ -37,7 +37,7 @@ const RequestOutput: React.FC<React.PropsWithChildren<RequestOutputProps>> = pro
 
 				setOutput(response);
 			});
-	}, [node, selectedGroups, variableSets]);
+	}, [node, selectedSets, variableSets]);
 
 	return (
 		<EditorView

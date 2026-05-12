@@ -1,5 +1,5 @@
 import { SmallContainer } from '@beak/apps-web-share/components/atoms/Container';
-import type React from 'react';
+import React from 'react';
 import Helmet from 'react-helmet';
 import styled from 'styled-components';
 

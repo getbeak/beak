@@ -1,5 +1,5 @@
 import { toHexAlpha } from '@beak/design-system/utils';
-import type React from 'react';
+import React from 'react';
 import styled, { css } from 'styled-components';
 
 import { useNodeDrop } from '../../hooks/drag-and-drop';

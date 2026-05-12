@@ -1,7 +1,7 @@
-import type { ValueParts } from '@beak/ui/features/realtime-values/values';
+import type { ValueSections } from '@beak/ui/features/variables/values';
 
 /**
- * Convert a contenteditable element's child nodes back into our `ValueParts`
+ * Convert a contenteditable element's child nodes back into our `ValueSections`
  * internal representation.
  *
  * Text/SPAN nodes become string parts; DIV nodes (the "tokens" the renderer
@@ -20,14 +20,14 @@ export interface ParseDomStateOptions {
 }
 
 export interface ParseDomStateResult {
-	valueParts: ValueParts;
+	valueParts: ValueSections;
 	anomalyDetected: boolean;
 }
 
 export function parseDomState(root: HTMLElement | null, opts: ParseDomStateOptions = {}): ParseDomStateResult {
 	if (!root) return { anomalyDetected: false, valueParts: [] };
 
-	const reconciledParts: ValueParts = [];
+	const reconciledParts: ValueSections = [];
 	const children = root.childNodes;
 
 	let anomalyDetected = false;

@@ -1,5 +1,5 @@
 import ksuid from '@beak/ksuid';
-import type React from 'react';
+import React from 'react';
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import styled from 'styled-components';

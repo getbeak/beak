@@ -13,12 +13,12 @@ import {
 
 describe('preferences schemas', () => {
 	it('editor preferences: accepts well-formed input', () => {
-		const r = editorPreferencesSchema.safeParse({ selectedVariableGroups: { foo: 'bar' } });
+		const r = editorPreferencesSchema.safeParse({ selectedVariableSets: { foo: 'bar' } });
 		expect(r.success).toBe(true);
 	});
 
 	it('editor preferences: rejects empty group selection value', () => {
-		const r = editorPreferencesSchema.safeParse({ selectedVariableGroups: { foo: '' } });
+		const r = editorPreferencesSchema.safeParse({ selectedVariableSets: { foo: '' } });
 		expect(r.success).toBe(false);
 	});
 

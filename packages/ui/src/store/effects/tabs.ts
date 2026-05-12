@@ -100,7 +100,7 @@ export function registerTabsEffects(start: AppStartListening) {
 						if (!node) api.dispatch(closeTab(tab.payload));
 						break;
 					}
-					case 'variable_group_editor': {
+					case 'variable_set_editor': {
 						const variableGroup = variableGroupNames.find(n => n === tab.payload);
 						if (!variableGroup) api.dispatch(closeTab(tab.payload));
 						break;

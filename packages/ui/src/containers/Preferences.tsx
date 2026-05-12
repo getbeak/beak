@@ -1,7 +1,7 @@
 import { toHexAlpha } from '@beak/design-system/utils';
 import { faMoneyCheck, faPenToSquare, faUserShield, faWindowRestore } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import type React from 'react';
+import React from 'react';
 import { useContext, useState } from 'react';
 import styled, { css, useTheme } from 'styled-components';
 

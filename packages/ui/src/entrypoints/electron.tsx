@@ -1,5 +1,5 @@
 import { init } from '@sentry/electron';
-import type React from 'react';
+import React from 'react';
 
 import Portal from '../containers/Portal';
 import Preferences from '../containers/Preferences';

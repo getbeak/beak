@@ -2,7 +2,7 @@ import type Squawk from '@beak/common/utils/squawk';
 import EditorView from '@beak/ui/components/atoms/EditorView';
 import Dialog from '@beak/ui/components/molecules/Dialog';
 import { ipcExplorerService } from '@beak/ui/lib/ipc';
-import type React from 'react';
+import React from 'react';
 import styled from 'styled-components';
 
 interface ViewExtensionErrorProps {

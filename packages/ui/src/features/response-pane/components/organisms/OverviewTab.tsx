@@ -4,7 +4,7 @@ import { getStatusReasonPhrase } from '@beak/ui/utils/http';
 import type { Flight } from '@getbeak/types/flight';
 import type { ToggleKeyValue } from '@getbeak/types/request';
 import prettyBytes from 'pretty-bytes';
-import type React from 'react';
+import React from 'react';
 import styled from 'styled-components';
 
 export interface OverviewTabProps {

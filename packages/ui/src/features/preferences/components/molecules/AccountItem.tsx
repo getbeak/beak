@@ -2,7 +2,7 @@ import { toHexAlpha } from '@beak/design-system/utils';
 import { ipcNestService } from '@beak/ui/lib/ipc';
 import { faUserCircle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import type React from 'react';
+import React from 'react';
 import { useEffect, useState } from 'react';
 import styled, { useTheme } from 'styled-components';
 

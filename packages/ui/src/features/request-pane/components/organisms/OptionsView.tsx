@@ -1,6 +1,6 @@
 import { actions } from '@beak/ui/store/project';
 import type { ValidRequestNode } from '@getbeak/types/nodes';
-import type React from 'react';
+import React from 'react';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 

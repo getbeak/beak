@@ -3,7 +3,7 @@ import useVariableContext from '@beak/ui/features/variables/hooks/use-variable-c
 import { getStatusReasonPhrase } from '@beak/ui/utils/http';
 import { convertRequestToUrl } from '@beak/ui/utils/uri';
 import type { Flight } from '@getbeak/types/flight';
-import type React from 'react';
+import React from 'react';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 

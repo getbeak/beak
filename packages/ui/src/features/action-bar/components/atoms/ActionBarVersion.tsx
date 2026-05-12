@@ -1,6 +1,6 @@
 import { toHexAlpha } from '@beak/design-system/utils';
 import WindowSessionContext from '@beak/ui/contexts/window-session-context';
-import type React from 'react';
+import React from 'react';
 import { useContext } from 'react';
 import semverParse from 'semver/functions/parse';
 import styled from 'styled-components';

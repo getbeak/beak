@@ -1,6 +1,6 @@
 import useSectionBody from '@beak/ui/features/sidebar/hooks/use-section-body';
 import { useAppSelector } from '@beak/ui/store/redux';
-import type React from 'react';
+import React from 'react';
 import styled from 'styled-components';
 
 import NoProjectInformation from '../molecules/NoProjectInformation';

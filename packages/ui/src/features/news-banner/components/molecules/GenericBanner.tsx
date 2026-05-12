@@ -2,7 +2,7 @@ import type { NewsItemGenericBanner } from '@beak/common/types/nest';
 import { ipcExplorerService } from '@beak/ui/lib/ipc';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import type React from 'react';
+import React from 'react';
 import styled, { useTheme } from 'styled-components';
 
 interface GenericBannerProps {

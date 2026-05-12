@@ -2,7 +2,7 @@ import { SmallContainer } from '@beak/apps-web-share/components/atoms/Container'
 import { BodyRegular, Title, TitleSubtle } from '@beak/apps-web-share/components/atoms/Typography';
 import { faBug } from '@fortawesome/free-solid-svg-icons/faBug';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import type React from 'react';
+import React from 'react';
 import styled from 'styled-components';
 
 const ErrorFallback: React.FC<React.PropsWithChildren<unknown>> = () => (

@@ -3,7 +3,7 @@ import NewsBannerContainer from '@beak/ui/features/news-banner/components/NewsBa
 import { ipcBeakHubService, ipcProjectService } from '@beak/ui/lib/ipc';
 import { sortIso8601 } from '@beak/ui/utils/sort';
 import { sentenceCase } from 'change-case';
-import type React from 'react';
+import React from 'react';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 

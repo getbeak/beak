@@ -5,7 +5,7 @@ import { z } from 'zod';
  */
 export const editorPreferencesSchema = z
 	.object({
-		selectedVariableGroups: z.record(z.string(), z.string().min(1)).default({}),
+		selectedVariableSets: z.record(z.string(), z.string().min(1)).default({}),
 	})
 	.strict();
 

@@ -1,7 +1,7 @@
 import { TypedObject } from '@beak/common/helpers/typescript';
 import type { FlightRequest, FlightRequestKeyValue } from '@beak/core/flight';
 import type { RequestBodyFile, RequestBodyText, RequestOverview, ToggleKeyValue } from '@getbeak/types/request';
-import type { Context, ValueParts } from '@getbeak/types/values';
+import type { Context, ValueSections } from '@getbeak/types/values';
 
 /**
  * Side-effecting helpers that prepareRequest needs in order to resolve
@@ -10,7 +10,7 @@ import type { Context, ValueParts } from '@getbeak/types/values';
  * of its inputs and is unit-testable without saga / IPC plumbing.
  */
 export interface PrepareRequestDeps {
-	parseValueParts: (context: Context, valueParts: ValueParts) => Promise<string>;
+	parseValueSections: (context: Context, valueParts: ValueSections) => Promise<string>;
 	// URL result only needs to be stringifiable — both the native `URL` and `url-parse`'s `URLParse` satisfy this.
 	convertRequestToUrl: (context: Context, overview: RequestOverview) => Promise<{ toString(): string }>;
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -33,7 +33,7 @@ export async function prepareRequest(
 	deps: PrepareRequestDeps,
 ): Promise<FlightRequest> {
 	const url = await deps.convertRequestToUrl(context, overview);
-	const headers = await flattenToggleValueParts(context, overview.headers, deps);
+	const headers = await flattenToggleValueSections(context, overview.headers, deps);
 
 	if (!hasHeader('user-agent', headers)) {
 		headers[deps.generateId('header')] = {
@@ -63,18 +63,18 @@ export async function prepareRequest(
 	};
 }
 
-async function flattenToggleValueParts(
+async function flattenToggleValueSections(
 	context: Context,
-	toggleValueParts: Record<string, ToggleKeyValue>,
+	toggleValueSections: Record<string, ToggleKeyValue>,
 	deps: PrepareRequestDeps,
 ): Promise<Record<string, FlightRequestKeyValue>> {
 	const out: Record<string, FlightRequestKeyValue> = {};
 	await Promise.all(
-		TypedObject.keys(toggleValueParts).map(async k => {
+		TypedObject.keys(toggleValueSections).map(async k => {
 			out[k] = {
-				enabled: toggleValueParts[k].enabled,
-				name: toggleValueParts[k].name,
-				value: [await deps.parseValueParts(context, toggleValueParts[k].value)],
+				enabled: toggleValueSections[k].enabled,
+				name: toggleValueSections[k].name,
+				value: [await deps.parseValueSections(context, toggleValueSections[k].value)],
 			};
 		}),
 	);
@@ -87,7 +87,7 @@ async function flattenQuery(
 	deps: PrepareRequestDeps,
 ): Promise<Record<string, FlightRequestKeyValue>> {
 	const { body, query, verb } = overview;
-	const resolvedQuery = await flattenToggleValueParts(context, query, deps);
+	const resolvedQuery = await flattenToggleValueSections(context, query, deps);
 
 	// When using GraphQL with body-less verbs, the query needs to ride along on the URL.
 	if (!deps.requestAllowsBody(verb) && body.type === 'graphql') {

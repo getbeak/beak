@@ -37,8 +37,8 @@ const GraphQlQueryEditor: React.FC<GraphQlQueryEditorProps> = props => {
 	const [hasSchema, setHasSchema] = useState(() => Boolean(schemaCache[node.id]));
 	const [schemaFetchError, setSchemaFetchError] = useState<Error | null>(null);
 	const variableSets = useAppSelector(s => s.global.variableSets.variableSets);
-	const selectedGroups = useAppSelector(s => s.global.preferences.editor.selectedVariableSets);
-	const schemaFlight = useAppSelector(s => s.global.flight.flightHistory[node.id]?.history[schemaFlightId]);
+	const selectedSets = useAppSelector(s => s.global.preferences.editor.selectedVariableSets);
+	const schemaFlight = useAppSelector(s => s.global.flight.flightHistories[node.id]?.history[schemaFlightId]);
 
 	const operationsUri = `${node.id}/operations.graphql`;
 	const variablesUri = `${node.id}/variables.json`;
@@ -155,7 +155,7 @@ const GraphQlQueryEditor: React.FC<GraphQlQueryEditorProps> = props => {
 		node.info.url,
 		JSON.stringify(node.info.query),
 		JSON.stringify(variableSets),
-		JSON.stringify(selectedGroups),
+		JSON.stringify(selectedSets),
 	]);
 
 	if (!hasSchema && loading) {

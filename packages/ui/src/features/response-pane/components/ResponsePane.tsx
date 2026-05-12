@@ -13,9 +13,9 @@ const ResponsePane: React.FC<React.PropsWithChildren<unknown>> = () => {
 	const flightHistories = useAppSelector(s => s.global.flight.flightHistories);
 	const currentFlight = useAppSelector(s => (selectedTab ? s.global.flight.activeFlights[selectedTab] : undefined));
 	const selectedNode = tree![selectedTab!];
-	const flightHistory = flightHistories[selectedTab!];
-	const selectedFlight = flightHistory?.history[flightHistory?.selected!];
-	const pending = !selectedNode || !flightHistory || !selectedFlight;
+	const flightHistories = flightHistories[selectedTab!];
+	const selectedFlight = flightHistories?.history[flightHistories?.selected!];
+	const pending = !selectedNode || !flightHistories || !selectedFlight;
 
 	return (
 		<Container>

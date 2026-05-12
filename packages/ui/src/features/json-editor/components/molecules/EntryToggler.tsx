@@ -1,4 +1,4 @@
-import type React from 'react';
+import React from 'react';
 import { useContext } from 'react';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';

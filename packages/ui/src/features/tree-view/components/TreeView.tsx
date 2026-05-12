@@ -2,7 +2,7 @@ import { TypedObject } from '@beak/common/helpers/typescript';
 import type { ApplicationState } from '@beak/ui/store';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import type { MenuItemConstructorOptions } from 'electron';
-import type React from 'react';
+import React from 'react';
 import { type ReactElement, useRef } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';

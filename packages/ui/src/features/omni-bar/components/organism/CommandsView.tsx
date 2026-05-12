@@ -6,7 +6,7 @@ import { sidebarPreferenceSetCollapse, sidebarPreferenceSetSelected } from '@bea
 import { useAppSelector } from '@beak/ui/store/redux';
 import { movePosition } from '@beak/ui/utils/arrays';
 import Fuse from 'fuse.js';
-import type React from 'react';
+import React from 'react';
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import type { Dispatch } from 'redux';

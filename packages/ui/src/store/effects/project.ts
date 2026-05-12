@@ -46,7 +46,7 @@ import {
 	renameSubmitted,
 	revealRequestExternal,
 } from '../project/actions';
-import { startVariableGroups } from '../variable-groups/actions';
+import { startVariableSets } from '../variable-sets/actions';
 
 export function registerProjectEffects(start: AppStartListening) {
 	// startProject: read project metadata, kick off variable groups, do the initial tree
@@ -60,7 +60,7 @@ export function registerProjectEffects(start: AppStartListening) {
 			try {
 				project = await readProjectFile();
 				api.dispatch(insertProjectInfo({ id: project.id, name: project.name }));
-				api.dispatch(startVariableGroups());
+				api.dispatch(startVariableSets());
 				await initialImport(api, 'tree');
 				api.dispatch(loadTabState());
 			} catch (error) {

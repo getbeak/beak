@@ -2,7 +2,7 @@ import { TypedObject } from '@beak/common/helpers/typescript';
 import { statusToColor } from '@beak/design-system/helpers';
 import type { TreeViewItem } from '@beak/ui/features/tree-view/types';
 import { useAppSelector } from '@beak/ui/store/redux';
-import type React from 'react';
+import React from 'react';
 import styled from 'styled-components';
 
 interface RequestFlightStatusProps {
@@ -14,10 +14,10 @@ const RequestFlightStatus: React.FC<React.PropsWithChildren<RequestFlightStatusP
 	let mostRecentFlight: number | undefined;
 
 	if (flight?.history) {
-		const flightHistory = TypedObject.values(flight.history);
-		const lastIndex = flightHistory.length - 1;
+		const flightHistories = TypedObject.values(flight.history);
+		const lastIndex = flightHistories.length - 1;
 
-		if (lastIndex > -1) mostRecentFlight = flightHistory[lastIndex]?.response?.status;
+		if (lastIndex > -1) mostRecentFlight = flightHistories[lastIndex]?.response?.status;
 	}
 
 	if (mostRecentFlight === void 0) return null;

@@ -11,7 +11,7 @@ import type {
 } from '@beak/ui/store/project/types';
 import type { EntryMap } from '@getbeak/types/body-editor-json';
 import type { AnyAction } from '@reduxjs/toolkit';
-import type React from 'react';
+import React from 'react';
 import styled from 'styled-components';
 
 import { JsonEditorContext } from '../contexts/json-editor-context';

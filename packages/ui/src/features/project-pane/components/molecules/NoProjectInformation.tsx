@@ -1,5 +1,5 @@
 import SidebarSectionCard from '@beak/ui/features/sidebar/components/SidebarSectionCard';
-import type React from 'react';
+import React from 'react';
 import styled from 'styled-components';
 
 const NoProjectInformation: React.FC<React.PropsWithChildren<unknown>> = () => (

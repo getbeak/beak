@@ -1,7 +1,7 @@
 import { statusToColor } from '@beak/design-system/helpers';
 import { faCircleCheck, faCircleDot, faCircleXmark, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import type React from 'react';
+import React from 'react';
 import { useTheme } from 'styled-components';
 
 import { useSelectedTabFlightStatus } from '../../../../services/flight/tab-integration';

@@ -2,7 +2,7 @@ import React from 'react';
 import { useDispatch } from 'react-redux';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import useSectionBody from '@beak/ui/features/sidebar/hooks/use-section-body';
-import { editorPreferencesSetSelectedVariableSet } from '@beak/ui/store/preferences/actions';
+import { editorPreferencesSetSelectedVariableGroup } from '@beak/ui/store/preferences/actions';
 import { useAppSelector } from '@beak/ui/store/redux';
 import styled from 'styled-components';
 
@@ -42,7 +42,7 @@ const VariableSets: React.FC<React.PropsWithChildren<unknown>> = () => {
 						<Selector
 							value={value}
 							onChange={e => {
-								dispatch(editorPreferencesSetSelectedVariableSet({
+								dispatch(editorPreferencesSetSelectedVariableGroup({
 									variableSet: k,
 									setId: e.target.value,
 								}));

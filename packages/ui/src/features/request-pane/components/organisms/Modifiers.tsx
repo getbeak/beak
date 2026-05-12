@@ -4,7 +4,7 @@ import { requestPreferenceSetReqMainTab } from '@beak/ui/store/preferences/actio
 import actions from '@beak/ui/store/project/actions';
 import { useAppSelector } from '@beak/ui/store/redux';
 import type { ValidRequestNode } from '@getbeak/types/nodes';
-import type React from 'react';
+import React from 'react';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 

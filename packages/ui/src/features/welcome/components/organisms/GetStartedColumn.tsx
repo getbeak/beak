@@ -1,6 +1,6 @@
 import { ipcExplorerService, ipcProjectService } from '@beak/ui/lib/ipc';
 import { faBook, faEgg, faEnvelopeOpen, faFolderOpen } from '@fortawesome/free-solid-svg-icons';
-import type React from 'react';
+import React from 'react';
 import styled from 'styled-components';
 
 import type { WelcomeViewType } from '../../../../containers/Welcome';

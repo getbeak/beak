@@ -1,6 +1,6 @@
 // Source of truth is @beak/core/preferences.
 import {
-	type EditorPreferencesSetSelectedVariableGroupPayload,
+	type EditorPreferencesSetSelectedVariableSetPayload,
 	initialPreferencesState,
 	type PreferencesState,
 	type ProjectPaneCollapsePayload,
@@ -18,7 +18,7 @@ export type State = PreferencesState;
 export const initialState: State = initialPreferencesState;
 
 export type {
-	EditorPreferencesSetSelectedVariableGroupPayload,
+	EditorPreferencesSetSelectedVariableSetPayload,
 	ProjectPaneCollapsePayload,
 	RequestPreferencePayload,
 	RequestPreferencesLoadedPayload,

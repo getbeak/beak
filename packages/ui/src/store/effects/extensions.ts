@@ -1,7 +1,7 @@
 import Squawk from '@beak/common/utils/squawk';
 import { reloadExtensions, startExtensions } from '@beak/core/extensions';
 import ksuid from '@beak/ksuid';
-import { RealtimeValueManager } from '@beak/ui/features/realtime-values';
+import { RealtimeValueManager } from '@beak/ui/features/variables';
 import createFsEmitter, { type FsSubscription } from '@beak/ui/lib/fs-emitter';
 import { ipcExtensionsService, ipcFsService } from '@beak/ui/lib/ipc';
 import path from 'path-browserify';

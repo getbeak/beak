@@ -1,6 +1,6 @@
 import type { Theme } from '@beak/common/types/theme';
 import { DesignSystemProvider } from '@beak/design-system';
-import type React from 'react';
+import React from 'react';
 import { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';

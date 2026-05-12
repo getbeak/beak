@@ -1,6 +1,6 @@
 import type { RequestTabItem } from '@beak/common/types/beak-project';
 import { useAppSelector } from '@beak/ui/store/redux';
-import type React from 'react';
+import React from 'react';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 

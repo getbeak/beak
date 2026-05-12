@@ -1,4 +1,4 @@
-import type React from 'react';
+import React from 'react';
 import { useContext, useEffect, useRef, useState } from 'react';
 import styled, { css } from 'styled-components';
 import validFilename from 'valid-filename';

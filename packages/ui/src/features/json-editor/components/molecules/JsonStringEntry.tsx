@@ -1,7 +1,7 @@
 import DebouncedInput from '@beak/ui/components/atoms/DebouncedInput';
 import VariableInput from '@beak/ui/features/variable-input/components/VariableInput';
 import type { NamedStringEntry, StringEntry } from '@getbeak/types/body-editor-json';
-import type React from 'react';
+import React from 'react';
 import { useContext } from 'react';
 import { useDispatch } from 'react-redux';
 

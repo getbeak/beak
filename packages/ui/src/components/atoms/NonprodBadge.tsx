@@ -1,6 +1,6 @@
 import { toHexAlpha } from '@beak/design-system/utils';
 import { ipcPreferencesService } from '@beak/ui/lib/ipc';
-import type React from 'react';
+import React from 'react';
 import { useEffect, useState } from 'react';
 import styled, { type DefaultTheme, keyframes } from 'styled-components';
 

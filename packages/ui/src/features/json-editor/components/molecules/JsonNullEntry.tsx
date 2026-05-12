@@ -1,6 +1,6 @@
 import DebouncedInput from '@beak/ui/components/atoms/DebouncedInput';
 import type { NamedNullEntry, NullEntry } from '@getbeak/types/body-editor-json';
-import type React from 'react';
+import React from 'react';
 import { useContext } from 'react';
 import { useDispatch } from 'react-redux';
 

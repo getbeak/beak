@@ -78,7 +78,7 @@ function MyComponent() {
   
   // Get flight state
   const flightState = useFlightState(requestId);
-  const flightHistory = useFlightHistory(requestId);
+  const flightHistories = useFlightHistory(requestId);
   const flightStatus = useFlightStatus(requestId);
   const requirements = useFlightRequirements(requestId);
   

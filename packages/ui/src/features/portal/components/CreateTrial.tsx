@@ -1,7 +1,7 @@
 import type Squawk from '@beak/common/utils/squawk';
 import ArrowButton from '@beak/ui/components/atoms/ArrowButton';
 import Button from '@beak/ui/components/atoms/Button';
-import type React from 'react';
+import React from 'react';
 import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 

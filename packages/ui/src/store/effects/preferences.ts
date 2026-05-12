@@ -144,7 +144,7 @@ async function loadRequestPreferencesFile(id: string) {
 
 async function loadEditorPreferencesFile() {
 	const preferencesPath = path.join('.beak', 'preferences', 'editor.json');
-	const defaultPreferences = { selectedVariableGroups: {} };
+	const defaultPreferences = { selectedVariableSets: {} };
 
 	if (!(await ipcFsService.pathExists(preferencesPath))) return defaultPreferences;
 

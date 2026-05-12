@@ -5,7 +5,7 @@ import Input from '@beak/ui/components/atoms/Input';
 import Label from '@beak/ui/components/atoms/Label';
 import Dialog from '@beak/ui/components/molecules/Dialog';
 import { ipcEncryptionService } from '@beak/ui/lib/ipc';
-import type React from 'react';
+import React from 'react';
 import { useState } from 'react';
 import styled from 'styled-components';
 

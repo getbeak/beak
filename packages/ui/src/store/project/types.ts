@@ -1,6 +1,6 @@
 import type Squawk from '@beak/common/utils/squawk';
 import type { ExtractedVariables } from '@beak/ui/features/graphql-editor/types';
-import type { ValueParts } from '@beak/ui/features/realtime-values/values';
+import type { ValueSections } from '@beak/ui/features/variables/values';
 import type { ActiveRename } from '@beak/ui/features/tree-view/types';
 import type { EntryMap, EntryType } from '@getbeak/types/body-editor-json';
 import type { Tree } from '@getbeak/types/nodes';
@@ -108,19 +108,19 @@ export interface RequestIdPayload {
 }
 
 export interface RequestUriUpdatedPayload extends RequestIdPayload {
-	url?: ValueParts;
+	url?: ValueSections;
 	verb?: string;
 }
 
 export interface ToggleableItemAddedPayload extends RequestIdPayload {
 	name?: string;
-	value?: ValueParts;
+	value?: ValueSections;
 }
 
 export interface ToggleableItemUpdatedPayload extends RequestIdPayload {
 	identifier: string;
 	name?: string;
-	value?: ValueParts;
+	value?: ValueSections;
 	enabled?: boolean;
 }
 
@@ -215,7 +215,7 @@ export interface RequestBodyJsonEditorNameChangePayload extends RequestIdPayload
 
 export interface RequestBodyJsonEditorValueChangePayload extends RequestIdPayload {
 	id: string;
-	value: ValueParts | boolean | null;
+	value: ValueSections | boolean | null;
 }
 
 export interface RequestBodyJsonEditorTypeChangePayload extends RequestIdPayload {
@@ -242,7 +242,7 @@ export interface RequestBodyUrlEncodedEditorNameChangePayload extends RequestIdP
 
 export interface RequestBodyUrlEncodedEditorValueChangePayload extends RequestIdPayload {
 	id: string;
-	value: ValueParts;
+	value: ValueSections;
 }
 
 export interface RequestBodyUrlEncodedEditorEnabledChangePayload extends RequestIdPayload {

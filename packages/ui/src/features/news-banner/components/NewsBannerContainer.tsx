@@ -1,6 +1,6 @@
 import type { NewsItem, NewsItemType } from '@beak/common/types/nest';
 import { ipcNestService } from '@beak/ui/lib/ipc';
-import type React from 'react';
+import React from 'react';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 

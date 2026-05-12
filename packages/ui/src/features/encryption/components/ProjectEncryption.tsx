@@ -1,6 +1,6 @@
 import { ipcEncryptionService } from '@beak/ui/lib/ipc';
 import { useAppSelector } from '@beak/ui/store/redux';
-import type React from 'react';
+import React from 'react';
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 

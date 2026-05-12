@@ -2,7 +2,7 @@ import { toVibrancyAlpha } from '@beak/ui/design-system/utils';
 import { checkShortcut } from '@beak/ui/lib/keyboard-shortcuts';
 import { projectPanePreferenceSetCollapse } from '@beak/ui/store/preferences/actions';
 import { selectNextLogicalNode, selectPreviousLogicalNode } from '@beak/ui/utils/keyboard-dom-node-navigation';
-import type React from 'react';
+import React from 'react';
 import { useContext, useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';

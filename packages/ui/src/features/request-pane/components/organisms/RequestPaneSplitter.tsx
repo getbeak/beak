@@ -4,7 +4,7 @@ import useShareLink from '@beak/ui/hooks/use-share-link';
 import { faCopy, faShareFromSquare } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import type { ValidRequestNode } from '@getbeak/types/nodes';
-import type React from 'react';
+import React from 'react';
 import { useContext } from 'react';
 import styled from 'styled-components';
 

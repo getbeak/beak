@@ -28,7 +28,7 @@ const RequestTab: React.FC<React.PropsWithChildren<RequestTabProps>> = props => 
 	const dispatch = useDispatch();
 	const [output, setOutput] = useState('');
 	const { variableSets } = useAppSelector(s => s.global.variableSets);
-	const selectedGroups = useAppSelector(s => s.global.preferences.editor.selectedVariableSets);
+	const selectedSets = useAppSelector(s => s.global.preferences.editor.selectedVariableSets);
 	const tab = useAppSelector(
 		s => s.global.preferences.requests[requestId].response.subTab.request,
 	) as Tab | undefined;
@@ -48,7 +48,7 @@ const RequestTab: React.FC<React.PropsWithChildren<RequestTabProps>> = props => 
 
 	useEffect(() => {
 		createBasicHttpOutput(flight.request, context, windowSession).then(setOutput);
-	}, [flight.request, selectedGroups, variableSets]);
+	}, [flight.request, selectedSets, variableSets]);
 
 	return (
 		<Container>

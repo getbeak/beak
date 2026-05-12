@@ -6,7 +6,7 @@ import {
 	removeGroup,
 	removeItem,
 	removeVariableGroupFromStore,
-	startVariableGroups,
+	startVariableSets,
 	updateGroupName,
 	updateItemName,
 	updateValue,
@@ -23,13 +23,13 @@ import path from 'path-browserify';
 import * as uuid from 'uuid';
 import type { AppStartListening } from '../listener';
 import { editorPreferencesSetSelectedVariableGroup } from '../preferences/actions';
-import * as vgActions from '../variable-groups/actions';
-import { createNewVariableGroup, removeVariableGroupFromDisk, renameSubmitted } from '../variable-groups/actions';
+import * as vgActions from '../variable-sets/actions';
+import { createNewVariableGroup, removeVariableGroupFromDisk, renameSubmitted } from '../variable-sets/actions';
 
-export function registerVariableGroupsEffects(start: AppStartListening) {
+export function registerVariableSetsEffects(start: AppStartListening) {
 	// start: initial import + long-running fs watcher on variable-groups/.
 	start({
-		actionCreator: startVariableGroups,
+		actionCreator: startVariableSets,
 		effect: async (_action, api) => {
 			await initialImport(api);
 
@@ -121,7 +121,7 @@ export function registerVariableGroupsEffects(start: AppStartListening) {
 		actionCreator: createNewVariableGroup,
 		effect: async ({ payload }, api) => {
 			const id = await createVariableGroup('variable-groups', payload.name);
-			api.dispatch(changeTab({ type: 'variable_group_editor', payload: id, temporary: true }));
+			api.dispatch(changeTab({ type: 'variable_set_editor', payload: id, temporary: true }));
 			await api.take(insertNewVariableGroup.match, 250);
 			api.dispatch(vgActions.renameStarted({ id }));
 		},
@@ -169,7 +169,7 @@ export function registerVariableGroupsEffects(start: AppStartListening) {
 				await renameVariableGroup(id, activeRename.name);
 				api.dispatch(vgActions.renameResolved({ id }));
 				await api.delay(200);
-				api.dispatch(changeTab({ type: 'variable_group_editor', temporary: false, payload: activeRename.name }));
+				api.dispatch(changeTab({ type: 'variable_set_editor', temporary: false, payload: activeRename.name }));
 			} catch (error) {
 				if (error instanceof Error && error.message === 'Folder already exists') {
 					await ipcDialogService.showMessageBox({
@@ -190,7 +190,7 @@ export function registerVariableGroupsEffects(start: AppStartListening) {
 }
 
 async function initialImport(api: {
-	getState: () => { global: { preferences: { editor: { selectedVariableGroups: Record<string, string> } } } };
+	getState: () => { global: { preferences: { editor: { selectedVariableSets: Record<string, string> } } } };
 	dispatch: (action: { type: string; [k: string]: unknown }) => unknown;
 }) {
 	const folderExists = await ipcFsService.pathExists('variable-groups');
@@ -207,7 +207,7 @@ async function initialImport(api: {
 
 	for (const vgk of TypedObject.keys(variableGroups)) {
 		const vg = variableGroups[vgk];
-		if (editorPreferences.selectedVariableGroups[vgk] === void 0) {
+		if (editorPreferences.selectedVariableSets[vgk] === void 0) {
 			api.dispatch(
 				editorPreferencesSetSelectedVariableGroup({
 					variableGroup: vgk,

@@ -1,7 +1,7 @@
 import CtaButton from '@beak/apps-web-share/components/atoms/Buttons';
 import { SubTitle, Title } from '@beak/apps-web-share/components/atoms/Typography';
 import useBeakProjectUrl from '@beak/apps-web-share/hooks/use-beak-project-url';
-import type React from 'react';
+import React from 'react';
 import { useEffect } from 'react';
 import styled from 'styled-components';
 

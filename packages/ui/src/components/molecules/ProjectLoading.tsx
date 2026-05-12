@@ -1,5 +1,5 @@
 import { renderPlainTextDefinition } from '@beak/ui/utils/keyboard-rendering';
-import type React from 'react';
+import React from 'react';
 import { useState } from 'react';
 import styled from 'styled-components';
 

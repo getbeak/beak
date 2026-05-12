@@ -2,7 +2,7 @@ import { TypedObject } from '@beak/common/helpers/typescript';
 import type { Context } from '@getbeak/types/values';
 
 export function getLatestFlight(id: string, ctx: Context) {
-	const requestFlightHistory = ctx.flightHistory[id];
+	const requestFlightHistory = ctx.flightHistories[id];
 
 	if (!requestFlightHistory) return null;
 

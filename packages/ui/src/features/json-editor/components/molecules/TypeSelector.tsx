@@ -9,7 +9,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import type { EntryType } from '@getbeak/types/body-editor-json';
-import type React from 'react';
+import React from 'react';
 import { useContext, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';

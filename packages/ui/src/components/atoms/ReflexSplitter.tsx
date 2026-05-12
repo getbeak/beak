@@ -1,4 +1,4 @@
-import type React from 'react';
+import React from 'react';
 import { ReflexSplitter as RS, type ReflexSplitterProps as RSP } from 'react-reflex';
 import styled, { css } from 'styled-components';
 

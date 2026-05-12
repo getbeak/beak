@@ -4,7 +4,7 @@ import { alertInsert, alertRemoveDependents } from '@beak/ui/store/project/actio
 import { useAppSelector } from '@beak/ui/store/redux';
 import { requestAllowsBody } from '@beak/ui/utils/http';
 import type { ValidRequestNode } from '@getbeak/types/nodes';
-import type React from 'react';
+import React from 'react';
 import { useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { ReflexContainer, ReflexElement } from 'react-reflex';

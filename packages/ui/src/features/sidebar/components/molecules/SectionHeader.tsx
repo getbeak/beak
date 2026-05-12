@@ -2,7 +2,7 @@ import { showContextMenu } from '@beak/ui/utils/context-menu';
 import { faChevronRight, faEllipsisV } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import type { MenuItemConstructorOptions } from 'electron';
-import type React from 'react';
+import React from 'react';
 import styled from 'styled-components';
 
 interface SectionHeaderProps {

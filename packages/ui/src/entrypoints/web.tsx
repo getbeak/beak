@@ -1,4 +1,4 @@
-import type React from 'react';
+import React from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
 import WebProjectMain from '../containers/WebProjectMain';

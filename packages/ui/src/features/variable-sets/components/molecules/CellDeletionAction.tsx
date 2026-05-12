@@ -1,7 +1,7 @@
 import { ipcDialogService } from '@beak/ui/lib/ipc';
 import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import type React from 'react';
+import React from 'react';
 import { useTheme } from 'styled-components';
 
 import { CellAction } from '../atoms/Cells';

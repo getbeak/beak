@@ -3,7 +3,7 @@ import { useAppSelector } from '@beak/ui/store/redux';
 import { renderPlainTextDefinition } from '@beak/ui/utils/keyboard-rendering';
 import { faCaretLeft, faCaretRight, faLock, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import type React from 'react';
+import React from 'react';
 import { useDispatch } from 'react-redux';
 import styled, { useTheme } from 'styled-components';
 import {

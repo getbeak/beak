@@ -1,4 +1,4 @@
-import type { JsonWriteOptions } from 'fs-extra';
+import type { WriteOptions } from 'fs-extra';
 import type { JFReadOptions } from 'jsonfile';
 import { z } from 'zod';
 import type { PartialIpcMain } from './main';
@@ -56,7 +56,7 @@ export interface ReadJsonReq {
 export interface WriteJsonReq {
 	filePath: string;
 	content: unknown;
-	options?: JsonWriteOptions;
+	options?: WriteOptions;
 }
 
 export interface ReadTextReq {
@@ -124,7 +124,7 @@ export class IpcFsServiceRenderer extends IpcServiceRenderer<'fs'> {
 		return this.invoke<T>(FsMessages.ReadJson, { filePath, options });
 	}
 
-	async writeJson(filePath: string, content: unknown, options?: JsonWriteOptions) {
+	async writeJson(filePath: string, content: unknown, options?: WriteOptions) {
 		return this.invoke(FsMessages.WriteJson, { filePath, content, options });
 	}
 

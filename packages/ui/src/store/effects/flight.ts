@@ -16,7 +16,7 @@ import ksuid from '@beak/ksuid';
 import { instance as windowSessionInstance } from '@beak/ui/contexts/window-session-context';
 import { convertKeyValueToString } from '@beak/ui/features/basic-table-editor/parsers';
 import { convertToRealJson } from '@beak/ui/features/json-editor/parsers';
-import { parseValueParts } from '@beak/ui/features/realtime-values/parser';
+import { parseValueSections } from '@beak/ui/features/variables/parser';
 import binaryStore from '@beak/ui/lib/binary-store';
 import {
 	ipcDialogService,
@@ -37,7 +37,7 @@ import type { AppStartListening } from '../listener';
 
 function buildPrepareDeps(): PrepareRequestDeps {
 	return {
-		parseValueParts,
+		parseValueSections,
 		convertRequestToUrl,
 		convertToRealJson,
 		convertKeyValueToString,
@@ -79,9 +79,9 @@ export function registerFlightEffects(start: AppStartListening) {
 
 			const state = api.getState();
 			const context: Context = {
-				selectedGroups: state.global.preferences.editor.selectedVariableGroups,
+				selectedSets: state.global.preferences.editor.selectedVariableSets,
 				variableGroups: state.global.variableGroups.variableGroups,
-				flightHistory: state.global.flight.flightHistories,
+				flightHistories: state.global.flight.flightHistories,
 				projectTree: state.global.project.tree,
 				currentRequestId: requestId,
 			};

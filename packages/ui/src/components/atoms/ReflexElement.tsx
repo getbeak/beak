@@ -1,4 +1,4 @@
-import type React from 'react';
+import React from 'react';
 import { ReflexElement as RE, type ReflexElementProps as REP } from 'react-reflex';
 import styled, { css } from 'styled-components';
 

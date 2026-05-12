@@ -1,4 +1,4 @@
-import type { RealtimeValueExtension } from '@beak/common/types/extensions';
+import type { VariableExtension } from '@beak/common/types/extensions';
 import type Squawk from '@beak/common/utils/squawk';
 import { createAction, createReducer } from '@reduxjs/toolkit';
 
@@ -8,7 +8,7 @@ export interface FailedExtension {
 	error: Squawk;
 }
 
-export type Extension = FailedExtension | RealtimeValueExtension;
+export type Extension = FailedExtension | VariableExtension;
 
 export interface ExtensionsState {
 	extensions: Extension[];

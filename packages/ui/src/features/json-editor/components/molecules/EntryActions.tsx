@@ -1,7 +1,7 @@
 import ActionIconButton from '@beak/ui/components/molecules/ActionIconButton';
 import { faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
 import type { Entries } from '@getbeak/types/body-editor-json';
-import type React from 'react';
+import React from 'react';
 import { useContext } from 'react';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';

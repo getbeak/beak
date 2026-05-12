@@ -5,7 +5,7 @@ import { registerGitEffects } from './git';
 import { registerPreferencesEffects } from './preferences';
 import { registerProjectEffects } from './project';
 import { registerTabsEffects } from './tabs';
-import { registerVariableGroupsEffects } from './variable-groups';
+import { registerVariableSetsEffects } from './variable-sets';
 
 /**
  * Register every former-saga effect with the listener middleware. Called
@@ -19,5 +19,5 @@ export function registerAllEffects(): void {
 	registerPreferencesEffects(startAppListening);
 	registerProjectEffects(startAppListening);
 	registerTabsEffects(startAppListening);
-	registerVariableGroupsEffects(startAppListening);
+	registerVariableSetsEffects(startAppListening);
 }

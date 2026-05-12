@@ -1,5 +1,5 @@
 import { Select } from '@beak/ui/components/atoms/Input';
-import type React from 'react';
+import React from 'react';
 import styled from 'styled-components';
 
 interface PrettyRenderSelectionProps {

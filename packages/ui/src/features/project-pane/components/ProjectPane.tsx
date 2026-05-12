@@ -6,7 +6,7 @@ import { actions } from '@beak/ui/store/project';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { renderAcceleratorDefinition } from '@beak/ui/utils/keyboard-rendering';
 import type { MenuItemConstructorOptions } from 'electron';
-import type React from 'react';
+import React from 'react';
 import { useContext } from 'react';
 import { useDispatch } from 'react-redux';
 

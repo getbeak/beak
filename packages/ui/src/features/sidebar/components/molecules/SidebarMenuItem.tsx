@@ -4,7 +4,7 @@ import { renderPlainTextDefinition } from '@beak/ui/utils/keyboard-rendering';
 import { faTable, type IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import { faFolderTree } from '@fortawesome/free-solid-svg-icons/faFolderTree';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import type React from 'react';
+import React from 'react';
 import styled, { useTheme } from 'styled-components';
 
 const icons: Record<SidebarVariant, IconDefinition> = {

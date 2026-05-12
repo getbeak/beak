@@ -1,5 +1,5 @@
 import type { FlightInProgress as FlightInProgressType } from '@beak/core/flight';
-import type React from 'react';
+import React from 'react';
 import styled, { keyframes } from 'styled-components';
 
 const pulseRing = keyframes`

@@ -18,7 +18,7 @@ export interface PreferencesState {
 
 export const initialPreferencesState: PreferencesState = {
 	requests: {},
-	editor: { selectedVariableGroups: {} },
+	editor: { selectedVariableSets: {} },
 	sidebar: { selected: 'project', collapsed: {} },
 	projectPane: { collapsed: {} },
 };
@@ -40,9 +40,9 @@ export type RequestPreferencesSetResPrettyLanguagePayload = RequestPreferencePay
 	language: string | null;
 }>;
 
-export interface EditorPreferencesSetSelectedVariableGroupPayload {
-	variableGroup: string;
-	groupId: string;
+export interface EditorPreferencesSetSelectedVariableSetPayload {
+	variableSet: string;
+	setId: string;
 }
 
 export interface SidebarCollapsePayload {
@@ -78,7 +78,7 @@ export const requestPreferenceSetResPrettyLanguage = createAction<RequestPrefere
 );
 
 export const editorPreferencesLoaded = createAction<EditorPreferences>('preferences/editorLoaded');
-export const editorPreferencesSetSelectedVariableGroup = createAction<EditorPreferencesSetSelectedVariableGroupPayload>(
+export const editorPreferencesSetSelectedVariableGroup = createAction<EditorPreferencesSetSelectedVariableSetPayload>(
 	'preferences/editorSetSelectedVariableGroup',
 );
 
@@ -121,7 +121,7 @@ const preferencesReducer = createReducer(initialPreferencesState, builder => {
 			state.editor = payload;
 		})
 		.addCase(editorPreferencesSetSelectedVariableGroup, (state, { payload }) => {
-			state.editor.selectedVariableGroups[payload.variableGroup] = payload.groupId;
+			state.editor.selectedVariableSets[payload.variableSet] = payload.setId;
 		})
 
 		.addCase(sidebarPreferencesLoaded, (state, { payload }) => {
