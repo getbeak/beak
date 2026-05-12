@@ -7,6 +7,25 @@ import type AesProvider from './providers/encryption-aes';
 import type StorageProvider from './providers/storage';
 import type { GenericStore } from './providers/storage';
 
+/**
+ * Capabilities matrix advertised by a concrete runtime. Renderer features
+ * gate on these flags instead of branching on `if (electron)`.
+ */
+export interface RuntimeCapabilities {
+	/** Native OS context menus (Electron). Web falls back to DOM menus. */
+	nativeContextMenus: boolean;
+	/** Loading and executing RTV extension code in a sandbox. Electron-only today. */
+	extensions: boolean;
+	/** Multiple OS windows. Web is single-window, uses tabs. */
+	multipleWindows: boolean;
+	/** Credentials stored in the OS keychain instead of in-process storage. */
+	systemKeychain: boolean;
+	/** Native FS vs sandboxed (e.g. lightning-fs over IndexedDB). */
+	fileSystemAccess: 'native' | 'sandboxed';
+	/** True if request/response binary bodies can stream incrementally. */
+	binaryStreaming: boolean;
+}
+
 export interface Providers {
 	aes: AesProvider;
 	credentials: CredentialsProvider;
@@ -19,7 +38,16 @@ export interface Providers {
 	};
 }
 
-export class BeakBase {
+export interface RuntimeOptions {
+	providers: Providers;
+	capabilities: RuntimeCapabilities;
+}
+
+/**
+ * Common base for any class that needs the providers handle. Used by
+ * `Runtime` itself and by per-domain helpers (project, extensions, …).
+ */
+export class RuntimeBase {
 	readonly providers: Providers;
 
 	get p() {
@@ -30,3 +58,8 @@ export class BeakBase {
 		this.providers = providers;
 	}
 }
+
+/** @deprecated use {@link RuntimeBase}. Kept as an alias during the migration. */
+export const BeakBase = RuntimeBase;
+/** @deprecated use {@link RuntimeBase}. Kept as an alias during the migration. */
+export type BeakBase = RuntimeBase;
