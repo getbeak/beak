@@ -109,7 +109,7 @@ describe('openapiToCollection', () => {
 		expect(result.warnings.some(w => w.includes('Unsupported OpenAPI version'))).toBe(true);
 	});
 
-	it('warns and falls through when a parameter is a $ref (not yet resolved)', () => {
+	it('resolves a #/components/parameters/<name> $ref against the document', () => {
 		const spec: OpenApiDocument = {
 			openapi: '3.0.0',
 			info: { title: 'r', version: '1' },
@@ -119,9 +119,48 @@ describe('openapiToCollection', () => {
 					get: { operationId: 'op', parameters: [{ $ref: '#/components/parameters/Common' }] },
 				},
 			},
+			components: {
+				parameters: {
+					Common: { name: 'x-trace', in: 'header', required: true, schema: { type: 'string' } },
+				},
+			},
 		};
 		const result = openapiToCollection(spec, { now: FIXED_NOW, makeId: STABLE_ID });
-		expect(result.warnings.some(w => w.includes('$ref parameter'))).toBe(true);
+		const op = result.requests.find(r => r.override.operationId === 'op')!;
+		expect(op.override.headers?.['x-trace']).toBeDefined();
+		// No warning when resolution succeeds.
+		expect(result.warnings.find(w => w.includes('x-trace'))).toBeUndefined();
+	});
+
+	it('warns about an external $ref it cannot resolve', () => {
+		const spec: OpenApiDocument = {
+			openapi: '3.0.0',
+			info: { title: 'r', version: '1' },
+			servers: [{ url: 'https://x' }],
+			paths: {
+				'/r': {
+					get: { operationId: 'op', parameters: [{ $ref: 'common.yaml#/parameters/Common' }] },
+				},
+			},
+		};
+		const result = openapiToCollection(spec, { now: FIXED_NOW, makeId: STABLE_ID });
+		expect(result.warnings.some(w => w.includes('unsupported $ref'))).toBe(true);
+	});
+
+	it('warns about a dangling $ref (target missing from components)', () => {
+		const spec: OpenApiDocument = {
+			openapi: '3.0.0',
+			info: { title: 'r', version: '1' },
+			servers: [{ url: 'https://x' }],
+			paths: {
+				'/r': {
+					get: { operationId: 'op', parameters: [{ $ref: '#/components/parameters/Missing' }] },
+				},
+			},
+			components: { parameters: {} },
+		};
+		const result = openapiToCollection(spec, { now: FIXED_NOW, makeId: STABLE_ID });
+		expect(result.warnings.some(w => w.includes('Dangling $ref'))).toBe(true);
 	});
 
 	it('uses the provided id generator for each request', () => {

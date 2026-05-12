@@ -92,6 +92,7 @@ export function openapiToCollection(
 				pathItem,
 				operation: op,
 				warnings,
+				spec,
 			});
 
 			requests.push({
@@ -135,6 +136,7 @@ interface BuildOverrideArgs {
 	pathItem: OpenApiPathItem;
 	operation: OpenApiOperation;
 	warnings: string[];
+	spec: OpenApiDocument;
 }
 
 function buildRequestOverride({
@@ -145,8 +147,9 @@ function buildRequestOverride({
 	pathItem,
 	operation,
 	warnings,
+	spec,
 }: BuildOverrideArgs): RequestFileOverride {
-	const allParams = collectParameters(pathItem, operation, warnings);
+	const allParams = collectParameters(pathItem, operation, warnings, spec);
 	const queryParams = allParams.filter(p => p.in === 'query');
 	const headerParams = allParams.filter(p => p.in === 'header');
 	const pathParams = allParams.filter(p => p.in === 'path');
@@ -179,6 +182,7 @@ function collectParameters(
 	pathItem: OpenApiPathItem,
 	operation: OpenApiOperation,
 	warnings: string[],
+	spec?: OpenApiDocument,
 ): OpenApiParameter[] {
 	const out: OpenApiParameter[] = [];
 	const sources: (OpenApiParameter | OpenApiReference)[] = [
@@ -187,12 +191,42 @@ function collectParameters(
 	];
 	for (const p of sources) {
 		if ('$ref' in p) {
-			warnings.push(`Skipping $ref parameter '${p.$ref}' — references are not resolved yet.`);
+			const resolved = resolveParameterRef(p.$ref, spec, warnings);
+			if (resolved) out.push(resolved);
 			continue;
 		}
 		out.push(p);
 	}
 	return out;
+}
+
+/**
+ * Resolve a `$ref` of the form `#/components/parameters/<name>`. Only the
+ * local intra-document form is supported — external `$ref` URLs would need
+ * network fetching and a JSON-pointer resolver, which is out of scope for
+ * the converter today.
+ */
+function resolveParameterRef(
+	ref: string,
+	spec: OpenApiDocument | undefined,
+	warnings: string[],
+): OpenApiParameter | null {
+	if (!spec) {
+		warnings.push(`Cannot resolve $ref '${ref}' — converter was called without the document context.`);
+		return null;
+	}
+	const match = ref.match(/^#\/components\/parameters\/(.+)$/);
+	if (!match) {
+		warnings.push(`Skipping unsupported $ref '${ref}' — only #/components/parameters/* is resolved.`);
+		return null;
+	}
+	const name = match[1];
+	const param = spec.components?.parameters?.[name];
+	if (!param) {
+		warnings.push(`Dangling $ref '${ref}' — no parameter declared at that path.`);
+		return null;
+	}
+	return param;
 }
 
 function renderPath(pathPattern: string, pathParams: OpenApiParameter[]): string {
