@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
 import { sidebarPreferenceSetCollapse } from '@beak/ui/store/preferences/actions';
 import { useAppSelector } from '@beak/ui/store/redux';
 import type { MenuItemConstructorOptions } from 'electron';
+import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import styled, { css } from 'styled-components';
 
-import { SectionBodyContext, SectionBodyOptions } from '../context/section-body-context';
+import { SectionBodyContext, type SectionBodyOptions } from '../context/section-body-context';
 import SectionHeader from './molecules/SectionHeader';
 
 interface SidebarPaneSectionProps {
@@ -24,8 +24,7 @@ const SidebarPaneSection: React.FC<React.PropsWithChildren<SidebarPaneSectionPro
 	const [uiCollapsed, setUiCollapsed] = useState(collapsed);
 
 	function setCollapsedProxy() {
-		if (disableCollapse)
-			return;
+		if (disableCollapse) return;
 
 		const collapsing = !collapsed;
 
@@ -33,16 +32,20 @@ const SidebarPaneSection: React.FC<React.PropsWithChildren<SidebarPaneSectionPro
 
 		if (collapsing) {
 			window.setTimeout(() => {
-				dispatch(sidebarPreferenceSetCollapse({
-					key: collapseKey,
-					collapsed: collapsing,
-				}));
+				dispatch(
+					sidebarPreferenceSetCollapse({
+						key: collapseKey,
+						collapsed: collapsing,
+					}),
+				);
 			}, 200);
 		} else {
-			dispatch(sidebarPreferenceSetCollapse({
-				key: collapseKey,
-				collapsed: collapsing,
-			}));
+			dispatch(
+				sidebarPreferenceSetCollapse({
+					key: collapseKey,
+					collapsed: collapsing,
+				}),
+			);
 		}
 	}
 
@@ -87,11 +90,15 @@ const SectionBody = styled.div<SectionBodyProps>`
 		flex-shrink .3s ease,
 		opacity .2s ease;
 
-	${p => p.$flexGrow !== void 0 && css`
+	${p =>
+		p.$flexGrow !== void 0 &&
+		css`
 		flex-grow: ${p.$flexGrow};
 		overflow-y: overlay;
 	`}
-	${p => p.$flexShrink !== void 0 && css`
+	${p =>
+		p.$flexShrink !== void 0 &&
+		css`
 		flex-shrink: ${p.$flexShrink};
 		overflow-y: scroll;
 	`}
@@ -99,7 +106,9 @@ const SectionBody = styled.div<SectionBodyProps>`
 	${p => p.$maxHeight !== void 0 && css`max-height: ${p.$maxHeight};`}
 	${p => p.$minHeight !== void 0 && css`min-height: ${p.$minHeight};`}
 
-	${p => p.$collapsed && css`
+	${p =>
+		p.$collapsed &&
+		css`
 		opacity: 0;
 		height: 0;
 		min-height: 0;

@@ -1,14 +1,14 @@
-import React, { useEffect, useRef, useState } from 'react';
 import Squawk from '@beak/common/utils/squawk';
 import Button from '@beak/ui/components/atoms/Button';
 import Label from '@beak/ui/components/atoms/Label';
 import { ipcNestService } from '@beak/ui/lib/ipc';
+import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
 import FormError from '../../../../components/atoms/FormError';
 import FormInput from '../../../../components/atoms/FormInput';
 import Input from '../../../../components/atoms/Input';
-import { MagicState } from './EnterMagicState';
+import type { MagicState } from './EnterMagicState';
 
 interface EnterTrialMagicStateProps {
 	email: string;
@@ -36,8 +36,7 @@ const EnterTrialMagicState: React.FC<React.PropsWithChildren<EnterTrialMagicStat
 	}, [resend]);
 
 	useEffect(() => {
-		if (!inboundState)
-			return;
+		if (!inboundState) return;
 
 		handleMagicState(inboundState.code, inboundState.state);
 	}, [inboundState]);
@@ -47,8 +46,7 @@ const EnterTrialMagicState: React.FC<React.PropsWithChildren<EnterTrialMagicStat
 	}, [manualInputRef]);
 
 	function showManualState() {
-		if (manualState === void 0)
-			setManualState('');
+		if (manualState === void 0) setManualState('');
 	}
 
 	function parseAndHandleMagicState() {
@@ -57,15 +55,12 @@ const EnterTrialMagicState: React.FC<React.PropsWithChildren<EnterTrialMagicStat
 		const state = params.get('state');
 		const valid = Boolean(code && state);
 
-		if (valid)
-			handleMagicState(code!, state!);
-		else
-			setError(new Squawk('invalid_manual_state'));
+		if (valid) handleMagicState(code!, state!);
+		else setError(new Squawk('invalid_manual_state'));
 	}
 
 	function handleMagicState(code: string, state: string) {
-		if (working)
-			return;
+		if (working) return;
 
 		setWorking(true);
 
@@ -83,7 +78,9 @@ const EnterTrialMagicState: React.FC<React.PropsWithChildren<EnterTrialMagicStat
 					{!working && (
 						<React.Fragment>
 							<Text>
-								{'Your magic link is on the way to '}<b>{email}</b>{'.'}
+								{'Your magic link is on the way to '}
+								<b>{email}</b>
+								{'.'}
 							</Text>
 							<Text>
 								{'Clicking the link in the email will finish signing you into your Beak trial. '}
@@ -92,38 +89,27 @@ const EnterTrialMagicState: React.FC<React.PropsWithChildren<EnterTrialMagicStat
 						</React.Fragment>
 					)}
 
-					{working && (
-						<Text>
-							{'Working away on your magic link, make a wish 🪄 '}
-						</Text>
-					)}
+					{working && <Text>{'Working away on your magic link, make a wish 🪄 '}</Text>}
 				</React.Fragment>
 			)}
 
 			{manualState !== void 0 && (
-				<React.Fragment>
-					<FormInput>
-						<Label>{'If the link isn\'t working, please paste the payload from magic link site below 👇'}</Label>
-						<Input
-							placeholder={'code=xxxx&state=yyyy'}
-							value={manualState}
-							type={'text'}
-							ref={manualInputRef}
-							onChange={e => setManualState(e.target.value)}
-							onKeyDown={e => {
-								if (e.key === 'Enter')
-									parseAndHandleMagicState();
-							}}
-						/>
-						<ManualButton
-							disabled={working}
-							size={'sm'}
-							onClick={() => parseAndHandleMagicState()}
-						>
-							{'Submit'}
-						</ManualButton>
-					</FormInput>
-				</React.Fragment>
+				<FormInput>
+					<Label>{"If the link isn't working, please paste the payload from magic link site below 👇"}</Label>
+					<Input
+						placeholder={'code=xxxx&state=yyyy'}
+						value={manualState}
+						type={'text'}
+						ref={manualInputRef}
+						onChange={e => setManualState(e.target.value)}
+						onKeyDown={e => {
+							if (e.key === 'Enter') parseAndHandleMagicState();
+						}}
+					/>
+					<ManualButton disabled={working} size={'sm'} onClick={() => parseAndHandleMagicState()}>
+						{'Submit'}
+					</ManualButton>
+				</FormInput>
 			)}
 
 			{error && <FormError>{getErrorMessage(error)}</FormError>}
@@ -134,9 +120,7 @@ const EnterTrialMagicState: React.FC<React.PropsWithChildren<EnterTrialMagicStat
 						{canResend && 'Request new magic link'}
 						{!canResend && `Request new magic link (${resend}s)`}
 					</ManualButton>
-					<ManualButton onClick={() => reset()}>
-						{'Wrong email?'}
-					</ManualButton>
+					<ManualButton onClick={() => reset()}>{'Wrong email?'}</ManualButton>
 				</React.Fragment>
 			)}
 		</React.Fragment>
@@ -162,7 +146,7 @@ const ManualButton = styled(Button)`
 function getErrorMessage(error: Squawk) {
 	switch (error.code) {
 		case 'no_active_subscription':
-			return 'You don\'t have an active Beak subscription.';
+			return "You don't have an active Beak subscription.";
 
 		case 'token_expired':
 			return 'Your magic link expired. Please request a new one.';

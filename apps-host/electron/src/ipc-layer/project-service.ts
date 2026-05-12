@@ -1,6 +1,6 @@
 import { IpcProjectServiceMain } from '@beak/common/ipc/project';
 import Squawk from '@beak/common/utils/squawk';
-import { dialog, ipcMain, IpcMainInvokeEvent } from 'electron';
+import { dialog, type IpcMainInvokeEvent, ipcMain } from 'electron';
 
 import getBeakHost from '../host';
 import { openProjectDialog, tryOpenProjectFolder } from '../host/extensions/project';
@@ -28,21 +28,16 @@ service.registerCreateProject(async (event, payload) => {
 	const result = await dialog.showOpenDialog(window, {
 		title: 'Where do you want to create your new Beak project?',
 		buttonLabel: 'Select',
-		properties: [
-			'openDirectory',
-			'createDirectory',
-			'promptToCreate',
-		],
+		properties: ['openDirectory', 'createDirectory', 'promptToCreate'],
 	});
 
-	if (result.canceled)
-		return;
+	if (result.canceled) return;
 
 	if (result.filePaths.length !== 1) {
 		await dialog.showMessageBox(window, {
 			type: 'error',
-			title: 'That shouldn\'t happen',
-			message: 'You managed to select more than 1 directory... pls don\'t do that.',
+			title: "That shouldn't happen",
+			message: "You managed to select more than 1 directory... pls don't do that.",
 		});
 
 		return;

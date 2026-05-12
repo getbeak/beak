@@ -1,13 +1,9 @@
 {
-  "extends": "../../tsconfig.json",
-  "compilerOptions": {
-    "outDir": "./dist"
-  },
-  "references": [
-    { "path":  "../common" }
-  ],
-  "exclude": [
-    "node_modules",
-    "dist"
-  ]
+	"extends": "./../../tsconfig.json",
+	"compilerOptions": {
+		"outDir": "./dist",
+		"types": ["node"]
+	},
+	"references": [{ "path": "../common" }],
+	"exclude": ["node_modules", "dist"]
 }

@@ -9,7 +9,7 @@ const TabBar = styled.div<TabBarProps>`
 	flex-direction: row;
 	align-items: flex-end;
 
-	justify-content: ${props => props.$centered ? 'center' : 'initial'};
+	justify-content: ${props => (props.$centered ? 'center' : 'initial')};
 	overflow-x: overlay;
 
 	min-width: 100%;

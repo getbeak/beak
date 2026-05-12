@@ -1,7 +1,7 @@
 import { createPreferencesWindow } from '@beak/apps-host-electron/window-management';
-import { MenuItemConstructorOptions } from 'electron';
+import type { MenuItemConstructorOptions } from 'electron';
 
-import { Context } from '.';
+import type { Context } from '.';
 import { createUpdateMenuItem } from './shared';
 
 export default function generateAppMenu(_ctx: Context): MenuItemConstructorOptions {

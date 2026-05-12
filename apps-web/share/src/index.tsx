@@ -1,8 +1,8 @@
+import { DesignSystemProvider } from '@beak/design-system';
+import * as Sentry from '@sentry/react';
 import React, { lazy, Suspense } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import { DesignSystemProvider } from '@beak/design-system';
-import * as Sentry from '@sentry/react';
 
 import Redirect from './components/atoms/Redirect';
 import AppContainer from './containers/App';

@@ -17,12 +17,7 @@ export type RequestBody =
 	| RequestBodyFile
 	| RequestBodyGraphQl;
 
-export type RequestBodyType =
-	| 'text'
-	| 'json'
-	| 'url_encoded_form'
-	| 'file'
-	| 'graphql';
+export type RequestBodyType = 'text' | 'json' | 'url_encoded_form' | 'file' | 'graphql';
 
 export interface RequestBodyText {
 	type: 'text';

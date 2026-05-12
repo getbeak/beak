@@ -1,11 +1,15 @@
-import { RecentProject } from '../types/beak-hub';
-import { IpcServiceMain, IpcServiceRenderer, Listener, PartialIpcMain, PartialIpcRenderer } from './ipc';
+import type { RecentProject } from '../types/beak-hub';
+import type { PartialIpcMain } from './main';
+import { IpcServiceMain } from './main';
+import type { PartialIpcRenderer } from './renderer';
+import { IpcServiceRenderer } from './renderer';
+import type { IpcListener } from './types';
 
 export const BeakHubMessages = {
 	ListRecentProjects: 'list_recent_projects',
 };
 
-export class IpcBeakHubServiceRenderer extends IpcServiceRenderer {
+export class IpcBeakHubServiceRenderer extends IpcServiceRenderer<'beak_hub'> {
 	constructor(ipc: PartialIpcRenderer) {
 		super('beak_hub', ipc);
 	}
@@ -15,12 +19,12 @@ export class IpcBeakHubServiceRenderer extends IpcServiceRenderer {
 	}
 }
 
-export class IpcBeakHubServiceMain extends IpcServiceMain {
+export class IpcBeakHubServiceMain extends IpcServiceMain<'beak_hub'> {
 	constructor(ipc: PartialIpcMain) {
 		super('beak_hub', ipc);
 	}
 
-	registerListRecentProjects(fn: Listener<void, RecentProject[]>) {
-		this.registerListener(BeakHubMessages.ListRecentProjects, fn);
+	registerListRecentProjects(fn: IpcListener<void>) {
+		this.registerRequestHandler(BeakHubMessages.ListRecentProjects, fn);
 	}
 }

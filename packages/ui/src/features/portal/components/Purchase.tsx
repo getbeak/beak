@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
 import Button from '@beak/ui/components/atoms/Button';
 import { ipcExplorerService, ipcPreferencesService } from '@beak/ui/lib/ipc';
 import { faTags } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import type React from 'react';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 interface PurchaseProps {
@@ -26,19 +27,12 @@ const Purchase: React.FC<React.PropsWithChildren<PurchaseProps>> = ({ onChangeTo
 				<FontAwesomeIcon icon={faTags} />
 			</Logo>
 			<Title>{'New to Beak?'}</Title>
-			<SubTitle>
-				{'For just $25 a year, get access to Beak\'s full set of powerful features.'}
-			</SubTitle>
-			<SubTitle>
-				{'No hidden fees, no pricing tiers.'}
-			</SubTitle>
+			<SubTitle>{"For just $25 a year, get access to Beak's full set of powerful features."}</SubTitle>
+			<SubTitle>{'No hidden fees, no pricing tiers.'}</SubTitle>
 
 			<ActionContainer>
 				{/* <Button onClick={() => ipcExplorerService.launchUrl(pricingUrl)}>{'View pricing page'}</Button> */}
-				<Button
-					color={'primary'}
-					onClick={() => ipcExplorerService.launchUrl(buyUrl)}
-				>
+				<Button color={'primary'} onClick={() => ipcExplorerService.launchUrl(buyUrl)}>
 					{'Buy'}
 				</Button>
 				<Button onClick={() => onChangeToTrial()}>{'Start trial'}</Button>

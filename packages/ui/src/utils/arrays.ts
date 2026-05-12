@@ -17,12 +17,10 @@ export function movePosition(arr: unknown[], currentIndex: number, direction: Di
 		returnIndex -= 1;
 
 		// If within a valid range, return
-		if (returnIndex >= 0)
-			return returnIndex;
+		if (returnIndex >= 0) return returnIndex;
 
 		// If invalid and wrapped, go to end
-		if (options.allowWrapping)
-			return maxArrayIndex;
+		if (options.allowWrapping) return maxArrayIndex;
 
 		// Otherwise stick to start
 		return 0;
@@ -31,12 +29,10 @@ export function movePosition(arr: unknown[], currentIndex: number, direction: Di
 	returnIndex += 1;
 
 	// If within a valid range, return
-	if (returnIndex <= maxArrayIndex)
-		return returnIndex;
+	if (returnIndex <= maxArrayIndex) return returnIndex;
 
 	// If invalid and wrapped, go to start
-	if (options.allowWrapping)
-		return 0;
+	if (options.allowWrapping) return 0;
 
 	// Otherwise stick to end
 	return maxArrayIndex;

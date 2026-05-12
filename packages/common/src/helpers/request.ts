@@ -9,8 +9,7 @@ const bodyContentTypeMap: Record<RequestBodyType, string> = {
 };
 
 export function requestBodyContentType(body: RequestBody) {
-	if (body.type === 'file' && body.payload.contentType)
-		return body.payload.contentType;
+	if (body.type === 'file' && body.payload.contentType) return body.payload.contentType;
 
 	return bodyContentTypeMap[body.type];
 }

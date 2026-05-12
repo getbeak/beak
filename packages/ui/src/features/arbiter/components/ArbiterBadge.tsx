@@ -8,8 +8,7 @@ const ArbiterBadge: React.FC = () => {
 	const { showWarning } = useArbiterLocking();
 	const [show, setShow] = useState(false);
 
-	if (!showWarning)
-		return null;
+	if (!showWarning) return null;
 
 	return (
 		<React.Fragment>

@@ -1,6 +1,6 @@
-import React from 'react';
 import Button from '@beak/ui/components/atoms/Button';
 import Dialog from '@beak/ui/components/molecules/Dialog';
+import type React from 'react';
 import styled from 'styled-components';
 
 import useArbiterLocking from '../../hooks/use-arbiter-locking';
@@ -13,8 +13,7 @@ export interface ArbiterDialogProps {
 export const ArbiterDialog: React.FC<ArbiterDialogProps> = props => {
 	const { friendlyLockNotice, lastSuccessfulCheck } = useArbiterLocking();
 
-	if (!props.open)
-		return null;
+	if (!props.open) return null;
 
 	return (
 		<Dialog onClose={props.onClose}>
@@ -32,13 +31,16 @@ export const ArbiterDialog: React.FC<ArbiterDialogProps> = props => {
 
 				<Body>
 					{'The last successful check was on '}
-					<strong>{lastSuccessfulCheck.toString()}</strong>{'.'}
+					<strong>{lastSuccessfulCheck.toString()}</strong>
+					{'.'}
 				</Body>
 
 				<ButtonContainer>
 					<Button
 						size={'sm'}
-						onClick={() => { /* This dialog is disabled currently */ }}
+						onClick={() => {
+							/* This dialog is disabled currently */
+						}}
 					>
 						{'Check again'}
 					</Button>

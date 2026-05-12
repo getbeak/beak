@@ -1,12 +1,13 @@
-import React, { useEffect, useRef, useState } from 'react';
 import Input, { InputInvalidText } from '@beak/ui/components/atoms/Input';
 import Label from '@beak/ui/components/atoms/Label';
 import { ipcProjectService } from '@beak/ui/lib/ipc';
+import type React from 'react';
+import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import validFilename from 'valid-filename';
 
 import Button from '../../../../components/atoms/Button';
-import { WelcomeViewType } from '../../../../containers/Welcome';
+import type { WelcomeViewType } from '../../../../containers/Welcome';
 import ViewIntroLine from '../atoms/ViewIntroLine';
 import ViewTitle from '../atoms/ViewTitle';
 
@@ -21,8 +22,7 @@ const CreateView: React.FC<React.PropsWithChildren<CreateViewProps>> = ({ setVie
 	const [validProjectName, setValidProjectName] = useState(true);
 
 	useEffect(() => {
-		if (projNameInput.current)
-			projNameInput.current.focus();
+		if (projNameInput.current) projNameInput.current.focus();
 	}, []);
 
 	function projectNameChange(name: string) {
@@ -39,7 +39,7 @@ const CreateView: React.FC<React.PropsWithChildren<CreateViewProps>> = ({ setVie
 
 	return (
 		<Wrapper>
-			<ViewTitle>{'Let\'s get going 🌶'}</ViewTitle>
+			<ViewTitle>{"Let's get going 🌶"}</ViewTitle>
 			<ViewIntroLine>{'You should be good to go in just a sec...'}</ViewIntroLine>
 
 			<Label>{'Give your project a name'}</Label>
@@ -53,7 +53,7 @@ const CreateView: React.FC<React.PropsWithChildren<CreateViewProps>> = ({ setVie
 			/>
 			{!validProjectName && (
 				<InputInvalidText>
-					{'That project name isn\'t valid, it contains invalid characters or reserved words!'}
+					{"That project name isn't valid, it contains invalid characters or reserved words!"}
 				</InputInvalidText>
 			)}
 
@@ -76,10 +76,7 @@ const CreateView: React.FC<React.PropsWithChildren<CreateViewProps>> = ({ setVie
 					{'Select folder'}
 				</Button>
 				<ActionSpacer />
-				<Button
-					colour={'secondary'}
-					onClick={() => setView('main')}
-				>
+				<Button colour={'secondary'} onClick={() => setView('main')}>
 					{'Cancel'}
 				</Button>
 			</ActionsWrapper>

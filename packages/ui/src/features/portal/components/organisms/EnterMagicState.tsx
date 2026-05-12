@@ -1,8 +1,8 @@
-import React, { useEffect, useRef, useState } from 'react';
 import Squawk from '@beak/common/utils/squawk';
 import Button from '@beak/ui/components/atoms/Button';
 import Label from '@beak/ui/components/atoms/Label';
 import { ipcNestService } from '@beak/ui/lib/ipc';
+import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
 import FormError from '../../../../components/atoms/FormError';
@@ -40,8 +40,7 @@ const EnterMagicState: React.FC<React.PropsWithChildren<EnterMagicStateProps>> =
 	}, [resend]);
 
 	useEffect(() => {
-		if (!inboundState)
-			return;
+		if (!inboundState) return;
 
 		handleMagicState(inboundState.code, inboundState.state);
 	}, [inboundState]);
@@ -51,8 +50,7 @@ const EnterMagicState: React.FC<React.PropsWithChildren<EnterMagicStateProps>> =
 	}, [manualInputRef]);
 
 	function showManualState() {
-		if (manualState === void 0)
-			setManualState('');
+		if (manualState === void 0) setManualState('');
 	}
 
 	function parseAndHandleMagicState() {
@@ -61,15 +59,12 @@ const EnterMagicState: React.FC<React.PropsWithChildren<EnterMagicStateProps>> =
 		const state = params.get('state');
 		const valid = Boolean(code && state);
 
-		if (valid)
-			handleMagicState(code!, state!);
-		else
-			setError(new Squawk('invalid_manual_state'));
+		if (valid) handleMagicState(code!, state!);
+		else setError(new Squawk('invalid_manual_state'));
 	}
 
 	function handleMagicState(code: string, state: string) {
-		if (working)
-			return;
+		if (working) return;
 
 		setWorking(true);
 
@@ -85,7 +80,8 @@ const EnterMagicState: React.FC<React.PropsWithChildren<EnterMagicStateProps>> =
 			{!working && (
 				<React.Fragment>
 					<Paragraph $center>
-						{'Your magic link is on the way to'}<br />
+						{'Your magic link is on the way to'}
+						<br />
 						<b>{email}</b>
 					</Paragraph>
 					<Paragraph>
@@ -95,36 +91,25 @@ const EnterMagicState: React.FC<React.PropsWithChildren<EnterMagicStateProps>> =
 				</React.Fragment>
 			)}
 
-			{working && (
-				<Paragraph>
-					{'Working away on your magic link, make a wish 🪄 '}
-				</Paragraph>
-			)}
+			{working && <Paragraph>{'Working away on your magic link, make a wish 🪄 '}</Paragraph>}
 
 			{manualState !== void 0 && (
-				<React.Fragment>
-					<FormInput>
-						<Label>{'If the link isn\'t working, please paste the payload from magic link site below 👇'}</Label>
-						<Input
-							placeholder={'code=xxxx&state=yyyy'}
-							value={manualState}
-							type={'text'}
-							ref={manualInputRef}
-							onChange={e => setManualState(e.target.value)}
-							onKeyDown={e => {
-								if (e.key === 'Enter')
-									parseAndHandleMagicState();
-							}}
-						/>
-						<ManualButton
-							disabled={working}
-							size={'sm'}
-							onClick={() => parseAndHandleMagicState()}
-						>
-							{'Submit'}
-						</ManualButton>
-					</FormInput>
-				</React.Fragment>
+				<FormInput>
+					<Label>{"If the link isn't working, please paste the payload from magic link site below 👇"}</Label>
+					<Input
+						placeholder={'code=xxxx&state=yyyy'}
+						value={manualState}
+						type={'text'}
+						ref={manualInputRef}
+						onChange={e => setManualState(e.target.value)}
+						onKeyDown={e => {
+							if (e.key === 'Enter') parseAndHandleMagicState();
+						}}
+					/>
+					<ManualButton disabled={working} size={'sm'} onClick={() => parseAndHandleMagicState()}>
+						{'Submit'}
+					</ManualButton>
+				</FormInput>
 			)}
 
 			{error && <FormError>{getErrorMessage(error)}</FormError>}
@@ -135,9 +120,7 @@ const EnterMagicState: React.FC<React.PropsWithChildren<EnterMagicStateProps>> =
 						{canResend && 'Request new magic link'}
 						{!canResend && `Request new magic link (${resend}s)`}
 					</ManualButton>
-					<ManualButton onClick={() => reset()}>
-						{'Wrong email?'}
-					</ManualButton>
+					<ManualButton onClick={() => reset()}>{'Wrong email?'}</ManualButton>
 				</React.Fragment>
 			)}
 		</React.Fragment>
@@ -147,7 +130,7 @@ const EnterMagicState: React.FC<React.PropsWithChildren<EnterMagicStateProps>> =
 const Paragraph = styled.p<{ $center?: boolean }>`
 	font-size: 14px;
 	color: ${p => p.theme.ui.textOnSurfaceBackground};
-	text-align: ${p => p.$center ? 'center' : 'inherit'};
+	text-align: ${p => (p.$center ? 'center' : 'inherit')};
 `;
 
 const HelpButton = styled.span`
@@ -163,7 +146,7 @@ const ManualButton = styled(Button)`
 function getErrorMessage(error: Squawk) {
 	switch (error.code) {
 		case 'no_active_subscription':
-			return 'You don\'t have an active Beak subscription.';
+			return "You don't have an active Beak subscription.";
 
 		case 'token_expired':
 			return 'Your magic link expired. Please request a new one.';

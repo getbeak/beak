@@ -1,4 +1,4 @@
-import { ProjectEncryption } from '@beak/common/types/beak-project';
+import type { ProjectEncryption } from '@beak/common/types/beak-project';
 import CredentialsProviderBase from '@beak/common-host/providers/credentials';
 
 export default class CredentialsProvider extends CredentialsProviderBase {
@@ -17,13 +17,11 @@ export default class CredentialsProvider extends CredentialsProviderBase {
 	async getBeakAuthEncryptionKey(): Promise<[string, string] | null> {
 		const storedKey = await this.readFromStore(this.credentialKeys.authEncryptionKey);
 
-		if (!storedKey)
-			return null;
+		if (!storedKey) return null;
 
 		const [key, iv] = storedKey.split(':');
 
-		if (key && iv)
-			return [key, iv];
+		if (key && iv) return [key, iv];
 
 		return null;
 	}
@@ -42,8 +40,7 @@ export default class CredentialsProvider extends CredentialsProviderBase {
 		const key = [this.credentialKeys.projectEncryptionPrefix, projectId].join('.');
 		const projectEncryptionString = await this.readFromStore(key);
 
-		if (!projectEncryptionString)
-			return null;
+		if (!projectEncryptionString) return null;
 
 		// TODO(afr): Validate this
 		return JSON.parse(projectEncryptionString);

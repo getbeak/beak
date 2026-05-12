@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { createRoot } from 'react-dom/client';
-import { Theme } from '@beak/common/types/theme';
+import type { Theme } from '@beak/common/types/theme';
 // import { GlobalStyle } from '@beak/design-system';
 import { DesignSystemProvider } from '@beak/design-system';
+import type React from 'react';
+import { useEffect, useState } from 'react';
+import { createRoot } from 'react-dom/client';
 
 import '@beak/ui';
 import './ipc/services';
@@ -10,8 +11,7 @@ import './ipc/services';
 function getSystemTheme(): Theme {
 	let theme: Theme = 'light';
 
-	if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)
-		theme = 'dark';
+	if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) theme = 'dark';
 
 	return theme;
 }
@@ -28,9 +28,7 @@ const App: React.FC = () => {
 	return (
 		<>
 			<base href={'./'} />
-			<DesignSystemProvider themeKey={theme}>
-				{/* <GlobalStyle $darwin /> */}
-			</DesignSystemProvider>
+			<DesignSystemProvider themeKey={theme}>{/* <GlobalStyle $darwin /> */}</DesignSystemProvider>
 		</>
 	);
 };

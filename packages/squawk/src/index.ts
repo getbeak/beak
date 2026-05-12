@@ -16,15 +16,13 @@ export default class Squawk extends Error {
 
 		this.code = code;
 
-		if (meta)
-			this.meta = meta;
+		if (meta) this.meta = meta;
 
 		if (reasons) {
 			this.reasons = [];
 
 			for (const i in reasons) {
-				if (!Squawk.isSquawk(reasons[i]))
-					this.reasons.push(Squawk.coerce(reasons[i]));
+				if (!Squawk.isSquawk(reasons[i])) this.reasons.push(Squawk.coerce(reasons[i]));
 			}
 		}
 
@@ -33,12 +31,11 @@ export default class Squawk extends Error {
 	}
 
 	static isSquawk(error: Error) {
-		return (error instanceof Squawk);
+		return error instanceof Squawk;
 	}
 
 	static coerce(error: unknown) {
-		if (error instanceof Error && Squawk.isSquawk(error))
-			return error as Squawk;
+		if (error instanceof Error && Squawk.isSquawk(error)) return error as Squawk;
 
 		const possibleSquawk = error as PossibleSquawk;
 
@@ -48,11 +45,9 @@ export default class Squawk extends Error {
 			newError = new Squawk(possibleSquawk.code, possibleSquawk.meta, possibleSquawk.reasons);
 		else if (error instanceof Error)
 			newError = new Squawk('unknown', error.message ? { message: error.message } : void 0);
-		else
-			newError = new Squawk('unknown', error ? { error } : void 0);
+		else newError = new Squawk('unknown', error ? { error } : void 0);
 
-		if (error instanceof Error)
-			defineNonSerializable(newError, 'stack', error.stack);
+		if (error instanceof Error) defineNonSerializable(newError, 'stack', error.stack);
 
 		return newError;
 	}

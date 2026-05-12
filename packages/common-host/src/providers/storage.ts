@@ -1,7 +1,7 @@
-import { Environment } from '@beak/common/types/beak';
-import { RecentProject } from '@beak/common/types/beak-hub';
-import { EditorPreferences, NotificationPreferences } from '@beak/common/types/preferences';
-import { ThemeMode } from '@beak/common/types/theme';
+import type { Environment } from '@beak/common/types/beak';
+import type { RecentProject } from '@beak/common/types/beak-hub';
+import type { EditorPreferences, NotificationPreferences } from '@beak/common/types/preferences';
+import type { ThemeMode } from '@beak/common/types/theme';
 
 export type WindowPresence = GenericWindowPresence | ProjectMainWindowPresence;
 

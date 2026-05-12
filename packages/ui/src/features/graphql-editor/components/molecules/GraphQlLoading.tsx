@@ -1,17 +1,11 @@
-import React from 'react';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import type React from 'react';
 import styled from 'styled-components';
 
 const GraphQlLoading: React.FC = () => (
 	<Wrapper>
-		<FontAwesomeIcon
-			icon={faSpinner}
-			opacity={0.4}
-			spin
-			speed={10}
-			size={'4x'}
-		/>
+		<FontAwesomeIcon icon={faSpinner} opacity={0.4} spin speed={10} size={'4x'} />
 		<Title>{'Fetching GraphQL schema'}</Title>
 	</Wrapper>
 );

@@ -1,4 +1,4 @@
-import { ThemeMode } from '@beak/common/types/theme';
+import type { ThemeMode } from '@beak/common/types/theme';
 import styled, { css } from 'styled-components';
 
 export const SelectContainer = styled.div`
@@ -16,12 +16,16 @@ export const SelectItem = styled.div<{ $active?: boolean }>`
 	align-items: center;
 
 	color: ${p => p.theme.ui.textMinor};
-	opacity: ${p => p.$active ? 1 : 0.6};
+	opacity: ${p => (p.$active ? 1 : 0.6)};
 	font-size: 14px;
 	cursor: pointer;
 `;
 
-export const SelectItemPreview = styled.div<{ $active?: boolean; $themeMode: ThemeMode; $themeType?: 'general' | 'editor' }>`
+export const SelectItemPreview = styled.div<{
+	$active?: boolean;
+	$themeMode: ThemeMode;
+	$themeType?: 'general' | 'editor';
+}>`
 	width: 90px; height: 56px;
 	border-radius: 5px;
 	background: pink;

@@ -83,22 +83,17 @@ const Button = styled.button<ButtonProps>`
 	}
 
 	${({ colour }) => {
-		if (colour === 'primary')
-			return primaryCss;
-		if (!colour || colour === 'secondary')
-			return secondaryCss;
-		if (colour === 'destructive')
-			return destructiveCss;
+		if (colour === 'primary') return primaryCss;
+		if (!colour || colour === 'secondary') return secondaryCss;
+		if (colour === 'destructive') return destructiveCss;
 
 		return '';
 	}}
 
 	${({ size }) => {
-		if (size === 'sm')
-			return smCss;
+		if (size === 'sm') return smCss;
 
-		if (!size || size === 'md')
-			return mdCss;
+		if (!size || size === 'md') return mdCss;
 
 		return '';
 	}}

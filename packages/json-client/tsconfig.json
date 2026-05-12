@@ -1,14 +1,9 @@
 {
-	"extends": "../../tsconfig.json",
+	"extends": "./../../tsconfig.json",
 	"compilerOptions": {
 		"outDir": "./dist",
-		"module": "ESNext",
+		"module": "ESNext"
 	},
-	"references": [
-		{ "path":  "../squawk" }
-	],
-	"exclude": [
-		"node_modules",
-		"dist"
-	]
+	"references": [{ "path": "../squawk" }],
+	"exclude": ["node_modules", "dist"]
 }

@@ -10,17 +10,12 @@ type JsonTypes = null | string | number | boolean | Record<string, unknown> | un
 export async function convertToRealJson(context: Context, entries: EntryMap) {
 	const root = TypedObject.values(entries).find(e => e.parentId === null);
 
-	if (!root || !root.enabled)
-		return null;
+	if (!root || !root.enabled) return null;
 
 	return await convertEntry(context, entries, root);
 }
 
-async function convertEntry(
-	context: Context,
-	entries: EntryMap,
-	entry: Entries,
-): Promise<JsonTypes> {
+async function convertEntry(context: Context, entries: EntryMap, entry: Entries): Promise<JsonTypes> {
 	switch (entry.type) {
 		case 'null':
 		case 'boolean':
@@ -33,23 +28,21 @@ async function convertEntry(
 			return await parseValueSections(context, entry.value);
 
 		case 'array': {
-			const children = TypedObject
-				.values(entries)
-				.filter(e => e.parentId === entry.id && e.enabled);
+			const children = TypedObject.values(entries).filter(e => e.parentId === entry.id && e.enabled);
 
 			return await Promise.all(children.map(c => convertEntry(context, entries, c)));
 		}
 
 		case 'object': {
-			const children = TypedObject
-				.values(entries)
-				.filter(e => e.parentId === entry.id && e.enabled) as NamedEntries[];
+			const children = TypedObject.values(entries).filter(e => e.parentId === entry.id && e.enabled) as NamedEntries[];
 
 			const out: Record<string, unknown> = {};
 
-			await Promise.all(children.map(async c => {
-				out[c.name] = await convertEntry(context, entries, c);
-			}));
+			await Promise.all(
+				children.map(async c => {
+					out[c.name] = await convertEntry(context, entries, c);
+				}),
+			);
 
 			return out;
 		}
@@ -119,9 +112,11 @@ export function convertToEntryJson(json: JsonTypes, parentId: string | null = nu
 
 			(json as JsonTypes[])
 				.map(e => convertToEntryJson(e, id))
-				.map(e => TypedObject.keys(e).forEach(k => {
-					out[k] = e[k];
-				}));
+				.map(e =>
+					TypedObject.keys(e).forEach(k => {
+						out[k] = e[k];
+					}),
+				);
 
 			break;
 		}
@@ -135,12 +130,13 @@ export function convertToEntryJson(json: JsonTypes, parentId: string | null = nu
 				type: 'object',
 			} as Entries;
 
-			TypedObject
-				.keys(json as Record<string, JsonTypes>)
+			TypedObject.keys(json as Record<string, JsonTypes>)
 				.map(key => convertToEntryJson((json as Record<string, JsonTypes>)[key], id, key))
-				.map(e => TypedObject.keys(e).forEach(k => {
-					out[k] = e[k];
-				}));
+				.map(e =>
+					TypedObject.keys(e).forEach(k => {
+						out[k] = e[k];
+					}),
+				);
 
 			break;
 		}
@@ -153,10 +149,9 @@ export function convertToEntryJson(json: JsonTypes, parentId: string | null = nu
 	const keys = Object.keys(out);
 
 	if (keys.length === 1 && out[keys[0]].type === 'string') {
-		const entry = (out[keys[0]] as StringEntry);
+		const entry = out[keys[0]] as StringEntry;
 
-		if (entry.value[0] === '""')
-			entry.value[0] = '';
+		if (entry.value[0] === '""') entry.value[0] = '';
 	}
 
 	return out;

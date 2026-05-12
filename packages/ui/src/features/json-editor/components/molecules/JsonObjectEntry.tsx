@@ -1,9 +1,9 @@
-import React, { useContext, useState } from 'react';
-import { useDispatch } from 'react-redux';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import DebouncedInput from '@beak/ui/components/atoms/DebouncedInput';
 import { useAppSelector } from '@beak/ui/store/redux';
 import type { NamedObjectEntry, ObjectEntry } from '@getbeak/types/body-editor-json';
+import React, { useContext, useState } from 'react';
+import { useDispatch } from 'react-redux';
 
 import { JsonEditorContext } from '../../contexts/json-editor-context';
 import {
@@ -18,7 +18,7 @@ import { Row } from '../atoms/Structure';
 import EntryActions from './EntryActions';
 import EntryFolder from './EntryFolder';
 import EntryToggler from './EntryToggler';
-import { detectName, JsonEntry, JsonEntryProps } from './JsonEntry';
+import { detectName, JsonEntry, type JsonEntryProps } from './JsonEntry';
 import TypeSelector from './TypeSelector';
 
 interface JsonObjectEntryProps extends JsonEntryProps {
@@ -42,59 +42,37 @@ const JsonObjectEntry: React.FC<React.PropsWithChildren<JsonObjectEntryProps>> =
 		<React.Fragment>
 			<Row>
 				<BodyPrimaryCell depth={depth}>
-					<EntryFolder
-						id={id}
-						expanded={expanded}
-						requestId={requestId}
-						onChange={expanded => setExpanded(expanded)}
-					/>
-					<EntryToggler
-						id={id}
-						requestId={requestId}
-						value={value.enabled}
-					/>
+					<EntryFolder id={id} expanded={expanded} requestId={requestId} onChange={expanded => setExpanded(expanded)} />
+					<EntryToggler id={id} requestId={requestId} value={value.enabled} />
 					<BodyInputWrapper>
 						{nameOverride === void 0 && (
 							<DebouncedInput
 								disabled={depth === 0}
 								type={'text'}
 								value={detectName(depth, value)}
-								onChange={name => dispatch(editorContext.nameChange({
-									id,
-									requestId,
-									name,
-								}))}
+								onChange={name =>
+									dispatch(
+										editorContext.nameChange({
+											id,
+											requestId,
+											name,
+										}),
+									)
+								}
 							/>
 						)}
-						{nameOverride !== void 0 && (
-							<BodyNameOverrideWrapper>{nameOverride}</BodyNameOverrideWrapper>
-						)}
+						{nameOverride !== void 0 && <BodyNameOverrideWrapper>{nameOverride}</BodyNameOverrideWrapper>}
 					</BodyInputWrapper>
 				</BodyPrimaryCell>
 				<BodyTypeCell>
-					<TypeSelector
-						disabled={forceRootObject}
-						id={id}
-						requestId={requestId}
-						value={value.type}
-					/>
+					<TypeSelector disabled={forceRootObject} id={id} requestId={requestId} value={value.type} />
 				</BodyTypeCell>
-				<BodyLabelValueCell>
-					{`${children.length} ${children.length === 1 ? 'key' : 'keys'}`}
-				</BodyLabelValueCell>
+				<BodyLabelValueCell>{`${children.length} ${children.length === 1 ? 'key' : 'keys'}`}</BodyLabelValueCell>
 				<BodyAction>
 					<EntryActions id={id} entry={value} requestId={requestId} />
 				</BodyAction>
 			</Row>
-			{expanded && children.map(c => (
-				<JsonEntry
-
-					depth={depth + 1}
-					key={c.id}
-					requestId={requestId}
-					value={c}
-				/>
-			))}
+			{expanded && children.map(c => <JsonEntry depth={depth + 1} key={c.id} requestId={requestId} value={c} />)}
 		</React.Fragment>
 	);
 };

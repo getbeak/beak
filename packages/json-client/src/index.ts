@@ -108,8 +108,7 @@ async function makeRequest<ResT>(
 
 	// 2xx - success
 	if (response.ok) {
-		if (!responseBody)
-			return void 0 as unknown as ResT;
+		if (!responseBody) return void 0 as unknown as ResT;
 
 		try {
 			return JSON.parse(responseBody);
@@ -124,21 +123,22 @@ async function makeRequest<ResT>(
 
 	try {
 		parsedBody = errorFields.responseData = JSON.parse(responseBody);
-	} catch { /* */ }
+	} catch {
+		/* */
+	}
 
 	let cher: Squawk | undefined;
 
 	if (parsedBody && typeof parsedBody === 'object' && !Array.isArray(parsedBody)) {
 		try {
 			cher = Squawk.coerce(parsedBody as Record<string, unknown>);
-		} catch { /* */ }
+		} catch {
+			/* */
+		}
 	}
 
 	if (!cher) {
-		throw new BackendError(
-			response.statusText.toLowerCase().replace(/\s+/g, '_'),
-			errorFields,
-		);
+		throw new BackendError(response.statusText.toLowerCase().replace(/\s+/g, '_'), errorFields);
 	}
 
 	throw new BackendError(cher.code, {

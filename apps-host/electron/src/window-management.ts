@@ -1,7 +1,7 @@
-import { WindowPresence } from '@beak/common-host/providers/storage';
-import { app, BrowserWindow, BrowserWindowConstructorOptions, nativeTheme } from 'electron';
-import * as path from 'path';
-import * as url from 'url';
+import * as path from 'node:path';
+import * as url from 'node:url';
+import type { WindowPresence } from '@beak/common-host/providers/storage';
+import { app, BrowserWindow, type BrowserWindowConstructorOptions, nativeTheme } from 'electron';
 
 import getBeakHost from './host';
 import { tryOpenProjectFolder } from './host/extensions/project';
@@ -32,15 +32,13 @@ export function generateWindowPresence() {
 		const type = windowType[val.id];
 
 		// Don't persist portal, as it's only used for signed out state
-		if (!type || type === 'portal')
-			return [...acc, null];
+		if (!type || type === 'portal') return [...acc, null];
 
 		if (type === 'project-main') {
 			const projectFilePath = getProjectFilePathFromWindowId(val.id);
 			const projectPath = path.dirname(projectFilePath);
 
-			if (!projectPath)
-				return [...acc, null];
+			if (!projectPath) return [...acc, null];
 
 			return [...acc, { type: 'project-main', payload: projectPath }];
 		}
@@ -52,71 +50,66 @@ export function generateWindowPresence() {
 }
 
 export async function attemptWindowPresenceLoad() {
-	if (screenshotSizing)
-		return false;
+	if (screenshotSizing) return false;
 
 	const previousWindowPresence = await getBeakHost().providers.storage.get('previousWindowPresence');
 
-	if (previousWindowPresence.length === 0)
-		return false;
+	if (previousWindowPresence.length === 0) return false;
 
 	let success = false;
 
-	await Promise.all(previousWindowPresence.map(async p => {
-		if (p.type === 'project-main') {
-			const response = await tryOpenProjectFolder(p.payload, true);
+	await Promise.all(
+		previousWindowPresence.map(async p => {
+			if (p.type === 'project-main') {
+				const response = await tryOpenProjectFolder(p.payload, true);
 
-			if (response !== null)
-				success = true;
+				if (response !== null) success = true;
 
-			return;
-		}
-
-		switch (p.payload) {
-			case 'portal':
-				await createPortalWindow();
-
-				success = true;
-				break;
-
-			case 'preferences':
-				await createPreferencesWindow();
-
-				success = true;
-				break;
-
-			case 'welcome':
-				await createWelcomeWindow();
-
-				success = true;
-				break;
-
-			default:
 				return;
-		}
-	}));
+			}
+
+			switch (p.payload) {
+				case 'portal':
+					await createPortalWindow();
+
+					success = true;
+					break;
+
+				case 'preferences':
+					await createPreferencesWindow();
+
+					success = true;
+					break;
+
+				case 'welcome':
+					await createWelcomeWindow();
+
+					success = true;
+					break;
+
+				default:
+					return;
+			}
+		}),
+	);
 
 	return success;
 }
 
-function generateLoadUrl(
-	container: Container,
-	windowId: number,
-	additionalParams?: Record<string, string>,
-) {
-	let loadUrl = new URL(url.format({
-		pathname: path.join(staticPath, 'index.html'),
-		protocol: 'file:',
-		slashes: true,
-	}));
+function generateLoadUrl(container: Container, windowId: number, additionalParams?: Record<string, string>) {
+	let loadUrl = new URL(
+		url.format({
+			pathname: path.join(staticPath, 'index.html'),
+			protocol: 'file:',
+			slashes: true,
+		}),
+	);
 
-	if (environment !== 'production')
-		loadUrl = new URL(DEV_URL);
+	if (environment !== 'production') loadUrl = new URL(DEV_URL);
 
 	if (additionalParams) {
 		Object.keys(additionalParams).forEach(k => {
-			if (k === 'container')
-				return; // Just to be extra safe
+			if (k === 'container') return; // Just to be extra safe
 
 			const urlSafe = encodeURIComponent(additionalParams[k]);
 
@@ -185,13 +178,11 @@ async function createWindow(
 export function tryCloseWelcomeWindow() {
 	const windowId = stackMap.welcome;
 
-	if (windowId === void 0)
-		return;
+	if (windowId === void 0) return;
 
 	const window = windowStack[windowId];
 
-	if (!window)
-		return;
+	if (!window) return;
 
 	window.close();
 
@@ -202,8 +193,7 @@ export function tryCloseWelcomeWindow() {
 export function closeWindow(windowId: number) {
 	const window = BrowserWindow.getAllWindows().find(win => win.webContents.id === windowId);
 
-	if (!window)
-		return; // probs already closed...
+	if (!window) return; // probs already closed...
 
 	window.close();
 	delete windowStack[windowId];
@@ -212,8 +202,7 @@ export function closeWindow(windowId: number) {
 export function reloadWindow(windowId: number) {
 	const window = BrowserWindow.getAllWindows().find(win => win.webContents.id === windowId);
 
-	if (!window)
-		return; // probs already closed...
+	if (!window) return; // probs already closed...
 
 	window.reload();
 }
@@ -222,8 +211,7 @@ export async function createWelcomeWindow() {
 	const existing = stackMap.welcome;
 
 	if (existing && windowStack[existing]) {
-		if (windowStack[existing].isMinimized())
-			windowStack[existing].restore();
+		if (windowStack[existing].isMinimized()) windowStack[existing].restore();
 
 		windowStack[existing].focus();
 
@@ -241,13 +229,10 @@ export async function createWelcomeWindow() {
 		vibrancy: 'under-window',
 	};
 
-	if (process.platform === 'darwin')
-		windowOpts.frame = false;
+	if (process.platform === 'darwin') windowOpts.frame = false;
 
-	if (process.platform === 'darwin')
-		windowOpts.frame = false;
-	if (process.platform !== 'darwin')
-		windowOpts.height = 550;
+	if (process.platform === 'darwin') windowOpts.frame = false;
+	if (process.platform !== 'darwin') windowOpts.height = 550;
 
 	const window = await createWindow(windowOpts, 'welcome');
 
@@ -260,8 +245,7 @@ export async function createPreferencesWindow() {
 	const existing = stackMap.preferences;
 
 	if (existing && windowStack[existing]) {
-		if (windowStack[existing].isMinimized())
-			windowStack[existing].restore();
+		if (windowStack[existing].isMinimized()) windowStack[existing].restore();
 
 		windowStack[existing].focus();
 
@@ -280,8 +264,7 @@ export async function createPreferencesWindow() {
 		vibrancy: 'under-window',
 	};
 
-	if (process.platform === 'darwin')
-		windowOpts.frame = false;
+	if (process.platform === 'darwin') windowOpts.frame = false;
 
 	const window = await createWindow(windowOpts, 'preferences');
 
@@ -310,8 +293,7 @@ export async function createProjectMainWindow(projectId: string, projectFilePath
 	}
 
 	// On Windows we want total control of the frame
-	if (process.platform !== 'darwin')
-		windowOpts.autoHideMenuBar = false;
+	if (process.platform !== 'darwin') windowOpts.autoHideMenuBar = false;
 
 	const window = await createWindow(windowOpts, 'project-main');
 
@@ -328,8 +310,7 @@ export async function createPortalWindow() {
 	const existing = stackMap.portal;
 
 	if (existing && windowStack[existing]) {
-		if (windowStack[existing].isMinimized())
-			windowStack[existing].restore();
+		if (windowStack[existing].isMinimized()) windowStack[existing].restore();
 
 		windowStack[existing].focus();
 
@@ -348,8 +329,7 @@ export async function createPortalWindow() {
 		vibrancy: 'under-window',
 	};
 
-	if (process.platform === 'darwin')
-		windowOpts.frame = false;
+	if (process.platform === 'darwin') windowOpts.frame = false;
 
 	const window = await createWindow(windowOpts, 'portal');
 

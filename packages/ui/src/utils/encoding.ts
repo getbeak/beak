@@ -6,14 +6,13 @@ const byteToHex = new Array(0xff);
 
 		byteToHex[i] = hexOctet;
 	}
-}());
+})();
 
 export function arrayBufferToHexString(arrayBuffer: ArrayBuffer) {
 	const buff = new Uint8Array(arrayBuffer);
 	const hexOctets = new Array(buff.length);
 
-	for (let i = 0; i < buff.length; ++i)
-		hexOctets[i] = byteToHex[buff[i]];
+	for (let i = 0; i < buff.length; ++i) hexOctets[i] = byteToHex[buff[i]];
 
 	return hexOctets.join('');
 }

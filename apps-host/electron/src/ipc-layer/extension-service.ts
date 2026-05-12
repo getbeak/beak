@@ -1,6 +1,6 @@
 import { IpcExtensionsServiceMain } from '@beak/common/ipc/extensions';
 import Squawk from '@beak/common/utils/squawk';
-import { ipcMain, IpcMainInvokeEvent } from 'electron';
+import { type IpcMainInvokeEvent, ipcMain } from 'electron';
 
 import getBeakHost from '../host';
 import ExtensionManager from '../lib/extension';
@@ -16,8 +16,7 @@ service.registerRegisterRtv(async (event, payload) => {
 	const projectFolderPath = getProjectFolder(event);
 	const projectFile = await getBeakHost().project.readProjectFile(projectFolderPath);
 
-	if (!projectFile || !projectFile.id)
-		throw new Squawk('invalid_project_file', { projectFile });
+	if (!projectFile || !projectFile.id) throw new Squawk('invalid_project_file', { projectFile });
 
 	return await extensionManager.registerRtv(event, projectFile.id, filePath);
 });
@@ -26,8 +25,7 @@ service.registerRtvCreateDefaultPayload(async (event, payload) => {
 	const projectFolderPath = getProjectFolder(event);
 	const projectFile = await getBeakHost().project.readProjectFile(projectFolderPath);
 
-	if (!projectFile || !projectFile.id)
-		throw new Squawk('invalid_project_file', { projectFile });
+	if (!projectFile || !projectFile.id) throw new Squawk('invalid_project_file', { projectFile });
 
 	return await extensionManager.rtvCreateDefaultPayload(projectFile.id, payload.type, payload.context);
 });
@@ -36,8 +34,7 @@ service.registerRtvGetValuePayload(async (event, payload) => {
 	const projectFolderPath = getProjectFolder(event);
 	const projectFile = await getBeakHost().project.readProjectFile(projectFolderPath);
 
-	if (!projectFile || !projectFile.id)
-		throw new Squawk('invalid_project_file', { projectFile });
+	if (!projectFile || !projectFile.id) throw new Squawk('invalid_project_file', { projectFile });
 
 	const sender = (event as IpcMainInvokeEvent).sender;
 
@@ -55,37 +52,25 @@ service.registerRtvEditorCreateUserInterface(async (event, payload) => {
 	const projectFolderPath = getProjectFolder(event);
 	const projectFile = await getBeakHost().project.readProjectFile(projectFolderPath);
 
-	if (!projectFile || !projectFile.id)
-		throw new Squawk('invalid_project_file', { projectFile });
+	if (!projectFile || !projectFile.id) throw new Squawk('invalid_project_file', { projectFile });
 
-	return await extensionManager.rtvCreateUserInterface(
-		projectFile.id,
-		payload.type,
-		payload.context,
-	);
+	return await extensionManager.rtvCreateUserInterface(projectFile.id, payload.type, payload.context);
 });
 
 service.registerRtvEditorLoad(async (event, payload) => {
 	const projectFolderPath = getProjectFolder(event);
 	const projectFile = await getBeakHost().project.readProjectFile(projectFolderPath);
 
-	if (!projectFile || !projectFile.id)
-		throw new Squawk('invalid_project_file', { projectFile });
+	if (!projectFile || !projectFile.id) throw new Squawk('invalid_project_file', { projectFile });
 
-	return await extensionManager.rtvEditorLoad(
-		projectFile.id,
-		payload.type,
-		payload.context,
-		payload.payload,
-	);
+	return await extensionManager.rtvEditorLoad(projectFile.id, payload.type, payload.context, payload.payload);
 });
 
 service.registerRtvEditorSave(async (event, payload) => {
 	const projectFolderPath = getProjectFolder(event);
 	const projectFile = await getBeakHost().project.readProjectFile(projectFolderPath);
 
-	if (!projectFile || !projectFile.id)
-		throw new Squawk('invalid_project_file', { projectFile });
+	if (!projectFile || !projectFile.id) throw new Squawk('invalid_project_file', { projectFile });
 
 	return await extensionManager.rtvEditorSave(
 		projectFile.id,

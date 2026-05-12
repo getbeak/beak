@@ -1,38 +1,41 @@
 {
-  "extends": "../../tsconfig.json",
-  "compilerOptions": {
-    "outDir": "./dist-ts",
-    "composite": true,
+	"extends": "./../../tsconfig.json",
+	"compilerOptions": {
+		"outDir": "./dist-ts",
+		"composite": true,
 
-    "allowJs": true,
-    "skipLibCheck": true,
-    "esModuleInterop": true,
-    "module": "es2022",
-    "forceConsistentCasingInFileNames": true,
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "isolatedModules": true
-  },
-  "references": [{
-    "path": "../../packages/common"
-  }, {
-    "path": "../../packages/common-host"
-  }, {
-    "path": "../../packages/ksuid"
-  }, {
-    "path": "../../packages/requester-node"
-  }, {
-    "path": "../../packages/crpc"
-  }],
-  "exclude": [
-    "node_modules",
-    "eslint.config.js",
-    "dist",
-    "dist-ts",
-    "dist-react",
-    "dist-electron",
-    "../app",
-    "../common",
-    "../requester-node"
-  ]
+		"allowJs": true,
+		"skipLibCheck": true,
+		"esModuleInterop": true,
+		"module": "es2022",
+		"forceConsistentCasingInFileNames": true,
+		"moduleResolution": "bundler",
+		"resolveJsonModule": true,
+		"isolatedModules": true
+	},
+	"references": [
+		{
+			"path": "../../packages/common"
+		},
+		{
+			"path": "../../packages/common-host"
+		},
+		{
+			"path": "../../packages/ksuid"
+		},
+		{
+			"path": "../../packages/requester-node"
+		}
+	],
+	"exclude": [
+		"node_modules",
+		"eslint.config.js",
+		"dist",
+		"dist-ts",
+		"dist-react",
+		"dist-electron",
+		"../app",
+		"../common",
+		"../requester-node"
+	]
 }

@@ -1,7 +1,7 @@
+import type { MenuEventPayload } from '@beak/common/web-contents/types';
+import { requestFlight } from '@beak/core/flight';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { MenuEventPayload } from '@beak/common/web-contents/types';
-
 import { showEncryptionView } from '../features/encryption/store/actions';
 import { showOmniBar } from '../features/omni-bar/store/actions';
 import {
@@ -12,7 +12,6 @@ import {
 	closeTabsAll,
 	closeTabsOther,
 } from '../features/tabs/store/actions';
-import { requestFlight } from '../store/flight/actions';
 import { createNewFolder, createNewRequest } from '../store/project/actions';
 
 export function useApplicationMenuEventListener() {
@@ -61,7 +60,6 @@ export function useApplicationMenuEventListener() {
 					break;
 
 				default:
-
 					console.warn('Unknown menu item event', payload);
 					break;
 			}

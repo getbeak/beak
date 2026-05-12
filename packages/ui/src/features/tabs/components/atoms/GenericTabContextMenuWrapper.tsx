@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { TabItem } from '@beak/common/types/beak-project';
+import type { TabItem } from '@beak/common/types/beak-project';
 import ksuid from '@beak/ksuid';
 import ContextMenu from '@beak/ui/components/atoms/ContextMenu';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { renderAcceleratorDefinition } from '@beak/ui/utils/keyboard-rendering';
 import type { MenuItemConstructorOptions } from 'electron';
+import type React from 'react';
+import { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 
 import { closeTab, closeTabsAll, closeTabsLeft, closeTabsOther, closeTabsRight } from '../../store/actions';
 

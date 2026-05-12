@@ -8,18 +8,19 @@ export function normalizeSelection(existing?: NormalizedSelection): NormalizedSe
 	const sel = window.getSelection();
 
 	if (!sel || sel.rangeCount === 0) {
-		return existing ?? {
-			isTextNode: false,
-			partIndex: 0,
-			offset: 0,
-		};
+		return (
+			existing ?? {
+				isTextNode: false,
+				partIndex: 0,
+				offset: 0,
+			}
+		);
 	}
 
 	const range = sel!.getRangeAt(0);
 	const startPoint = range.commonAncestorContainer;
 
-	if (existing && startPoint.nodeName === 'ARTICLE')
-		return existing;
+	if (existing && startPoint.nodeName === 'ARTICLE') return existing;
 
 	let subject: Node = startPoint;
 	let container: Node = startPoint;
@@ -27,16 +28,14 @@ export function normalizeSelection(existing?: NormalizedSelection): NormalizedSe
 
 	if (isTextNode) {
 		// Try to move to the parent span if we're selecting a text node
-		if (subject.parentNode!.nodeName === 'SPAN')
-			subject = subject.parentNode!;
+		if (subject.parentNode!.nodeName === 'SPAN') subject = subject.parentNode!;
 
 		// Keep reverse-traversing the dom until we find the article node
 
 		while (true) {
 			container = container.parentNode!;
 
-			if (container.nodeName === 'ARTICLE')
-				break;
+			if (container.nodeName === 'ARTICLE') break;
 		}
 	}
 
@@ -57,11 +56,9 @@ export function setSelection(elem: HTMLElement, selection: NormalizedSelection) 
 	const range = document.createRange();
 	const node = elem.childNodes[selection.partIndex];
 
-	if (!node)
-		return;
+	if (!node) return;
 
-	if (range.startOffset !== range.endOffset)
-		return;
+	if (range.startOffset !== range.endOffset) return;
 
 	if (selection.isTextNode) {
 		range.setStart(node.childNodes[0], selection.offset);
@@ -83,10 +80,11 @@ export function trySetSelection(
 	elem: HTMLElement | undefined | null,
 	selection: NormalizedSelection | undefined | null,
 ) {
-	if (!elem || !selection)
-		return;
+	if (!elem || !selection) return;
 
 	try {
 		setSelection(elem, selection);
-	} catch { /* Acceptable failure here */ }
+	} catch {
+		/* Acceptable failure here */
+	}
 }

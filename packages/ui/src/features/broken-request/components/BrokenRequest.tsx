@@ -1,5 +1,5 @@
-import React from 'react';
-import Squawk from '@beak/common/utils/squawk';
+import type Squawk from '@beak/common/utils/squawk';
+import type React from 'react';
 
 import GenericError from './molecules/GenericError';
 import SchemaInvalidError from './molecules/SchemaInvalidError';
@@ -11,8 +11,10 @@ interface BrokenRequestProps {
 
 const BrokenRequest: React.FC<React.PropsWithChildren<BrokenRequestProps>> = ({ filePath, error }) => {
 	switch (error.code) {
-		case 'schema_invalid': return <SchemaInvalidError filePath={filePath} error={error} />;
-		default: return <GenericError filePath={filePath} error={error} />;
+		case 'schema_invalid':
+			return <SchemaInvalidError filePath={filePath} error={error} />;
+		default:
+			return <GenericError filePath={filePath} error={error} />;
 	}
 };
 

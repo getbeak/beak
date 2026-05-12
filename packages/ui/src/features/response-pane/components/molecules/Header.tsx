@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
 import { statusToColor } from '@beak/design-system/helpers';
 import useVariableContext from '@beak/ui/features/variables/hooks/use-variable-context';
 import { getStatusReasonPhrase } from '@beak/ui/utils/http';
 import { convertRequestToUrl } from '@beak/ui/utils/uri';
 import type { Flight } from '@getbeak/types/flight';
+import type React from 'react';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 export interface HeaderProps {
@@ -25,19 +26,14 @@ const Header: React.FC<React.PropsWithChildren<HeaderProps>> = props => {
 				<strong>{request.verb.toUpperCase()}</strong>
 			</Section>
 			<UrlSection>
-				<div
-					data-tooltip-id={'tt-response-header-url-bar'}
-					data-tooltip-content={url}
-				>
+				<div data-tooltip-id={'tt-response-header-url-bar'} data-tooltip-content={url}>
 					{/* The "&lrm;" char is a requirement of using RTL to trim the end vs start of the string */}
 					{url}&lrm;
 				</div>
 			</UrlSection>
 			{response && (
 				<StatusSection $status={response.status}>
-					<strong>{response.status}</strong>
-					{' '}
-					{getStatusReasonPhrase(response.status)}
+					<strong>{response.status}</strong> {getStatusReasonPhrase(response.status)}
 				</StatusSection>
 			)}
 			{error && (

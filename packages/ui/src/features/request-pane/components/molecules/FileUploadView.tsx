@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { PreviewReferencedFileRes } from '@beak/common/ipc/fs';
+import type { PreviewReferencedFileRes } from '@beak/common/ipc/fs';
 import { ipcFsService } from '@beak/ui/lib/ipc';
 import { requestBodyFileChanged } from '@beak/ui/store/project/actions';
 import { faClose } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { ValidRequestNode } from '@getbeak/types/nodes';
+import type { ValidRequestNode } from '@getbeak/types/nodes';
+import type { RequestBodyFile } from '@getbeak/types/request';
 import mime from 'mime-types';
-import { RequestBodyFile } from 'packages/types/request';
 import prettyBytes from 'pretty-bytes';
+import React, { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 
 export interface FileUploadViewProps {
@@ -29,43 +29,47 @@ const FileUploadView: React.FC<FileUploadViewProps> = props => {
 		event.stopPropagation();
 
 		setPreview(void 0);
-		dispatch(requestBodyFileChanged({
-			requestId: node.id,
-			fileReferenceId: void 0,
-			contentType: void 0,
-		}));
+		dispatch(
+			requestBodyFileChanged({
+				requestId: node.id,
+				fileReferenceId: void 0,
+				contentType: void 0,
+			}),
+		);
 	}
 
 	async function openPreview(fileReferenceId: string | undefined) {
-		if (!fileReferenceId)
-			return;
+		if (!fileReferenceId) return;
 
 		const preview = await ipcFsService.previewReferencedFile(fileReferenceId);
 
 		if (!preview) {
 			setPreview(void 0);
-			dispatch(requestBodyFileChanged({
-				requestId: node.id,
-				fileReferenceId: void 0,
-				contentType: void 0,
-			}));
+			dispatch(
+				requestBodyFileChanged({
+					requestId: node.id,
+					fileReferenceId: void 0,
+					contentType: void 0,
+				}),
+			);
 
 			return;
 		}
 
 		setPreview(preview);
-		dispatch(requestBodyFileChanged({
-			requestId: node.id,
-			fileReferenceId,
-			contentType: mime.lookup(preview.fileExtension) || '',
-		}));
+		dispatch(
+			requestBodyFileChanged({
+				requestId: node.id,
+				fileReferenceId,
+				contentType: mime.lookup(preview.fileExtension) || '',
+			}),
+		);
 	}
 
 	async function openFile() {
 		const response = await ipcFsService.openReferenceFile();
 
-		if (!response)
-			return;
+		if (!response) return;
 
 		await openPreview(response.fileReferenceId);
 	}

@@ -10,13 +10,7 @@ export default class Id {
 	readonly instance: Instance;
 	readonly sequenceId: number;
 
-	constructor(
-		environment: string,
-		resource: string,
-		timestamp: number,
-		instance: Instance,
-		sequenceId: number,
-	) {
+	constructor(environment: string, resource: string, timestamp: number, instance: Instance, sequenceId: number) {
 		checkPrefix('environment', environment);
 		checkPrefix('resource', resource);
 		checkUint('timestamp', timestamp, 8);
@@ -49,16 +43,14 @@ export default class Id {
 	}
 
 	static parse(input: string): Id {
-		if (!input.length)
-			throw new Error('input must not be empty');
+		if (!input.length) throw new Error('input must not be empty');
 
 		const { environment, resource, encoded } = splitPrefixId(input);
 
 		const decoded = base62.decode(encoded).slice(-decodedLen);
 		const dataView = new DataView(decoded.buffer);
 
-		if (dataView.getUint16(0) !== 0)
-			throw new Error('timestamp greater than 8921556-12-07T10:44:16Z');
+		if (dataView.getUint16(0) !== 0) throw new Error('timestamp greater than 8921556-12-07T10:44:16Z');
 
 		return new Id(
 			environment,
@@ -73,13 +65,11 @@ export default class Id {
 function splitPrefixId(input: string) {
 	const parsed = ksuidRegex.exec(input);
 
-	if (!parsed)
-		throw new Error('id is invalid');
+	if (!parsed) throw new Error('id is invalid');
 
 	const [, environment, resource, encoded] = parsed;
 
-	if (environment === 'prod')
-		throw new Error('production env is implied');
+	if (environment === 'prod') throw new Error('production env is implied');
 
 	return {
 		environment: environment || 'prod',

@@ -1,19 +1,14 @@
-import React from 'react';
 import { useAppSelector } from '@beak/ui/store/redux';
+import type React from 'react';
 import styled from 'styled-components';
 
 const ProgressIndicator: React.FC<React.PropsWithChildren<unknown>> = () => {
-	const currentFlight = useAppSelector(s => s.global.flight.currentFlight);
+	const selectedTab = useAppSelector(s => s.features.tabs.selectedTab);
+	const activeFlight = useAppSelector(s => (selectedTab ? s.global.flight.activeFlights[selectedTab] : undefined));
 
-	return (
-		<Wrapper>
-			{currentFlight?.flighting && (
-				<IndicatorBar
-					style={{ width: `${currentFlight.bodyTransferPercentage || 0}%` }}
-				/>
-			)}
-		</Wrapper>
-	);
+	const percentage = activeFlight?.bodyTransferPercentage ?? 0;
+
+	return <Wrapper>{activeFlight && <IndicatorBar style={{ width: `${percentage}%` }} />}</Wrapper>;
 };
 
 const Wrapper = styled.div`

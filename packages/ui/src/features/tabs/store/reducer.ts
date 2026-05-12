@@ -1,9 +1,9 @@
-import { TabItem } from '@beak/common/types/beak-project';
+import type { TabItem } from '@beak/common/types/beak-project';
 import { movePosition } from '@beak/ui/utils/arrays';
 import { createReducer } from '@reduxjs/toolkit';
 
 import * as actions from './actions';
-import { initialState, State } from './types';
+import { initialState, type State } from './types';
 
 const tabsReducer = createReducer(initialState, builder => {
 	builder
@@ -22,8 +22,7 @@ const tabsReducer = createReducer(initialState, builder => {
 		.addCase(actions.changeTabNext, (state, { payload }) => {
 			const targetTab = getTargetTab(state, payload);
 
-			if (!targetTab)
-				return;
+			if (!targetTab) return;
 
 			const targetIndex = state.activeTabs.findIndex(t => t.payload === targetTab.payload);
 			const nextIndex = movePosition(state.activeTabs, targetIndex, 'forward');
@@ -33,8 +32,7 @@ const tabsReducer = createReducer(initialState, builder => {
 		.addCase(actions.changeTabPrevious, (state, { payload }) => {
 			const targetTab = getTargetTab(state, payload);
 
-			if (!targetTab)
-				return;
+			if (!targetTab) return;
 
 			const targetIndex = state.activeTabs.findIndex(t => t.payload === targetTab.payload);
 			const nextIndex = movePosition(state.activeTabs, targetIndex, 'backward');
@@ -44,8 +42,7 @@ const tabsReducer = createReducer(initialState, builder => {
 		.addCase(actions.makeTabPermanent, (state, { payload }) => {
 			const targetTab = getTargetTab(state, payload);
 
-			if (!targetTab)
-				return;
+			if (!targetTab) return;
 
 			const index = state.activeTabs.findIndex(t => t.payload === targetTab.payload);
 
@@ -55,8 +52,7 @@ const tabsReducer = createReducer(initialState, builder => {
 		.addCase(actions.closeTab, (state, { payload }) => {
 			const targetTab = getTargetTab(state, payload);
 
-			if (!targetTab)
-				return;
+			if (!targetTab) return;
 
 			const selectedIsTarget = targetTab.payload === state.selectedTab;
 			const targetIndex = state.activeTabs.findIndex(t => t.payload === targetTab.payload);
@@ -69,13 +65,11 @@ const tabsReducer = createReducer(initialState, builder => {
 				const newIndex = movePosition(state.activeTabs, targetIndex, 'backward');
 				const tab = state.activeTabs[newIndex];
 
-				if (tab)
-					state.selectedTab = tab.payload;
+				if (tab) state.selectedTab = tab.payload;
 			}
 		})
 		.addCase(actions.closeTabsAll, state => {
-			if (state.activeTabs.length === 0)
-				return;
+			if (state.activeTabs.length === 0) return;
 
 			updateRecentlyClosed(state, ...state.activeTabs);
 
@@ -84,13 +78,11 @@ const tabsReducer = createReducer(initialState, builder => {
 		.addCase(actions.closeTabsLeft, (state, { payload }) => {
 			const targetTab = getTargetTab(state, payload);
 
-			if (!targetTab)
-				return;
+			if (!targetTab) return;
 
 			const targetIndex = state.activeTabs.findIndex(t => t.payload === targetTab.payload);
 
-			if (targetIndex === 0)
-				return;
+			if (targetIndex === 0) return;
 
 			state.activeTabs.splice(0, targetIndex);
 			state.selectedTab = targetTab.payload;
@@ -98,14 +90,12 @@ const tabsReducer = createReducer(initialState, builder => {
 		.addCase(actions.closeTabsRight, (state, { payload }) => {
 			const targetTab = getTargetTab(state, payload);
 
-			if (!targetTab)
-				return;
+			if (!targetTab) return;
 
 			const tabCount = state.activeTabs.length;
 			const targetIndex = state.activeTabs.findIndex(t => t.payload === targetTab.payload);
 
-			if (targetIndex === tabCount - 1)
-				return;
+			if (targetIndex === tabCount - 1) return;
 
 			state.activeTabs.splice(targetIndex + 1, tabCount - targetIndex - 1);
 			state.selectedTab = targetTab.payload;
@@ -113,8 +103,7 @@ const tabsReducer = createReducer(initialState, builder => {
 		.addCase(actions.closeTabsOther, (state, { payload }) => {
 			const targetTab = getTargetTab(state, payload);
 
-			if (!targetTab)
-				return;
+			if (!targetTab) return;
 
 			state.activeTabs = [targetTab];
 			state.selectedTab = targetTab.payload;
@@ -128,8 +117,7 @@ const tabsReducer = createReducer(initialState, builder => {
 function getTargetTab(state: State, tab: string | undefined) {
 	const selectedTab = tab ?? state.selectedTab;
 
-	if (!selectedTab)
-		return void 0;
+	if (!selectedTab) return void 0;
 
 	return state.activeTabs.find(t => t.payload === selectedTab);
 }

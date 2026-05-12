@@ -1,0 +1,30 @@
+diff --git a/lib/previous-map.js b/lib/previous-map.js
+index 3c9d8b9710ea5600ba332cd037f536d9e020f169..21dffca35b3204c6cffbd8704acac058c9192626 100644
+--- a/lib/previous-map.js
++++ b/lib/previous-map.js
+@@ -1,6 +1,5 @@
+ 'use strict'
+ 
+-let { existsSync, readFileSync } = require('fs')
+ let { dirname, join } = require('path')
+ let { SourceMapConsumer, SourceMapGenerator } = require('source-map-js')
+ 
+@@ -85,17 +84,7 @@ class PreviousMap {
+   }
+ 
+   loadFile(path, cssFile, trusted) {
+-    /* c8 ignore next 5 */
+-    if (!trusted && !this.unsafeMap) {
+-      if (!/\.map$/i.test(path)) {
+-        return undefined
+-      }
+-    }
+-    this.root = dirname(path)
+-    if (existsSync(path)) {
+-      this.mapFile = path
+-      return readFileSync(path, 'utf-8').toString().trim()
+-    }
++    return undefined
+   }
+ 
+   loadMap(file, prev) {

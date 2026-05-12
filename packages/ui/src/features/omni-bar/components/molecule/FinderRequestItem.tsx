@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
 import { convertRequestToUrl } from '@beak/ui/utils/uri';
 import type { RequestOverview } from '@getbeak/types/request';
 import type { Context } from '@getbeak/types/values';
+import type React from 'react';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 export interface FinderRequestItemProps {

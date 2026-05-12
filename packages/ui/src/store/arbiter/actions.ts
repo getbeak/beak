@@ -1,11 +1,5 @@
-import { createAction } from '@reduxjs/toolkit';
+// Source of truth is @beak/core/arbiter; this re-export keeps existing UI imports working.
+import { startArbiter, updateStatus } from '@beak/core/arbiter';
 
-import { ActionTypes } from './types';
-
-export const startArbiter = createAction(ActionTypes.START_ARBITER);
-export const updateStatus = createAction<boolean>(ActionTypes.UPDATE_STATUS);
-
-export default {
-	startArbiter,
-	updateStatus,
-};
+export { startArbiter, updateStatus };
+export default { startArbiter, updateStatus };

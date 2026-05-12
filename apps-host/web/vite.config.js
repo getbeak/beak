@@ -1,22 +1,18 @@
 /* eslint-disable no-process-env */
 /* eslint-disable @typescript-eslint/no-var-requires */
 
+import fs from 'node:fs';
+import path from 'node:path';
 import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill';
 import reactPlugin from '@vitejs/plugin-react';
-import fs from 'fs';
-import path from 'path';
 import mkcert from 'vite-plugin-mkcert';
 import monacoEditorPlugin from 'vite-plugin-monaco-editor';
 import viteSentryPlugin from 'vite-plugin-sentry';
 
 // eslint-disable-next-line no-sync
-const packageJson = JSON.parse(fs.readFileSync(path.join(
-	__dirname,
-	'..', '..',
-	'apps-host',
-	'electron',
-	'package.json',
-)));
+const packageJson = JSON.parse(
+	fs.readFileSync(path.join(__dirname, '..', '..', 'apps-host', 'electron', 'package.json')),
+);
 
 const environment = process.env.NODE_ENV;
 const versionRelease = Boolean(process.env.VERSION_RELEASE);
@@ -46,7 +42,7 @@ export default {
 			'@beak/ksuid': path.join(__dirname, '../../packages/ksuid/src'),
 
 			'@getbeak/types': path.join(__dirname, '../../packages/types/src'),
-			'path': 'path-browserify',
+			path: 'path-browserify',
 		},
 	},
 	server: {
@@ -57,32 +53,33 @@ export default {
 		reactPlugin({ include: '**/*.tsx' }),
 		monacoEditorPlugin.default({
 			globalAPI: true,
-			languageWorkers: [
-				'json',
-				'css',
-				'html',
-				'typescript',
-				'editorWorkerService',
+			languageWorkers: ['json', 'css', 'html', 'typescript', 'editorWorkerService'],
+			customWorkers: [
+				{
+					label: 'graphql',
+					entry: '../../../node_modules/monaco-graphql/dist/graphql.worker',
+				},
+				{
+					label: 'scss',
+					entry: '../../../node_modules/monaco-editor/esm/vs/language/css/css.worker',
+				},
+				{
+					label: 'less',
+					entry: '../../../node_modules/monaco-editor/esm/vs/language/css/css.worker',
+				},
+				{
+					label: 'handlebars',
+					entry: '../../../node_modules/monaco-editor/esm/vs/language/html/html.worker',
+				},
+				{
+					label: 'razor',
+					entry: '../../../node_modules/monaco-editor/esm/vs/language/html/html.worker',
+				},
+				{
+					label: 'javascript',
+					entry: '../../../node_modules/monaco-editor/esm/vs/language/typescript/ts.worker',
+				},
 			],
-			customWorkers: [{
-				label: 'graphql',
-				entry: '../../../node_modules/monaco-graphql/dist/graphql.worker',
-			}, {
-				label: 'scss',
-				entry: '../../../node_modules/monaco-editor/esm/vs/language/css/css.worker',
-			}, {
-				label: 'less',
-				entry: '../../../node_modules/monaco-editor/esm/vs/language/css/css.worker',
-			}, {
-				label: 'handlebars',
-				entry: '../../../node_modules/monaco-editor/esm/vs/language/html/html.worker',
-			}, {
-				label: 'razor',
-				entry: '../../../node_modules/monaco-editor/esm/vs/language/html/html.worker',
-			}, {
-				label: 'javascript',
-				entry: '../../../node_modules/monaco-editor/esm/vs/language/typescript/ts.worker',
-			}],
 		}),
 		viteSentryPlugin({
 			authToken: process.env.SENTRY_AUTH_TOKEN,
@@ -139,8 +136,7 @@ export default {
 };
 
 function writeDefinition(value) {
-	if (value === void 0)
-		return value;
+	if (value === void 0) return value;
 
 	return `'${value}'`;
 }

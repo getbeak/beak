@@ -1,9 +1,9 @@
-import React from 'react';
-import { useDispatch } from 'react-redux';
-import { ResponsePreferenceMainTab } from '@beak/common/types/beak-hub';
+import type { ResponsePreferenceMainTab } from '@beak/common/types/beak-hub';
 import { requestPreferenceSetResMainTab } from '@beak/ui/store/preferences/actions';
 import { useAppSelector } from '@beak/ui/store/redux';
 import type { Flight } from '@getbeak/types/flight';
+import React from 'react';
+import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 
 import TabBar from '../../../../components/atoms/TabBar';
@@ -30,22 +30,13 @@ const Inspector: React.FC<React.PropsWithChildren<InspectorProps>> = props => {
 		<React.Fragment>
 			<TabBar $centered>
 				<TabSpacer />
-				<TabItem
-					active={preferences.mainTab === 'overview'}
-					onClick={() => setTab('overview')}
-				>
+				<TabItem active={preferences.mainTab === 'overview'} onClick={() => setTab('overview')}>
 					{'Overview'}
 				</TabItem>
-				<TabItem
-					active={preferences.mainTab === 'request'}
-					onClick={() => setTab('request')}
-				>
+				<TabItem active={preferences.mainTab === 'request'} onClick={() => setTab('request')}>
 					{'Request'}
 				</TabItem>
-				<TabItem
-					active={preferences.mainTab === 'response'}
-					onClick={() => setTab('response')}
-				>
+				<TabItem active={preferences.mainTab === 'response'} onClick={() => setTab('response')}>
 					{'Response'}
 				</TabItem>
 				<TabSpacer />

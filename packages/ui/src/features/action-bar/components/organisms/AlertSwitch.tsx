@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
 import FixProjectEncryption from '@beak/ui/features/encryption/components/FixProjectEncryption';
 import ViewExtensionError from '@beak/ui/features/extension/components/ViewExtensionError';
 import { alertRemoveType } from '@beak/ui/store/project/actions';
-import { Alert } from '@beak/ui/store/project/types';
+import type { Alert } from '@beak/ui/store/project/types';
+import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
 
 import AlertItem from '../molecules/AlertItem';
 
@@ -33,8 +33,7 @@ const AlertSwitch: React.FC<React.PropsWithChildren<AlertSwitchProps>> = ({ aler
 							onClose={resolved => {
 								setFixer(void 0);
 
-								if (resolved)
-									dispatch(alertRemoveType('missing_encryption'));
+								if (resolved) dispatch(alertRemoveType('missing_encryption'));
 							}}
 						/>
 					)}

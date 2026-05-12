@@ -1,13 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import { EditorPreferences } from '@beak/common/types/preferences';
-import { Theme, ThemeMode } from '@beak/common/types/theme';
+import type { EditorPreferences } from '@beak/common/types/preferences';
+import type { Theme, ThemeMode } from '@beak/common/types/theme';
 import useForceReRender from '@beak/ui/hooks/use-force-rerender';
 import { ipcPreferencesService } from '@beak/ui/lib/ipc';
 import { createDefaultOptions } from '@beak/ui/utils/monaco';
-import Editor, { EditorProps } from '@monaco-editor/react';
+import Editor, { type EditorProps } from '@monaco-editor/react';
+import type React from 'react';
+import { useEffect, useState } from 'react';
 import { useTheme } from 'styled-components';
 
-interface EditorViewProps extends EditorProps { }
+interface EditorViewProps extends EditorProps {}
 
 const EditorView: React.FC<EditorViewProps> = props => {
 	const { theme } = useTheme();
@@ -27,8 +28,7 @@ const EditorView: React.FC<EditorViewProps> = props => {
 		};
 	}, []);
 
-	if (!preferences)
-		return null;
+	if (!preferences) return null;
 
 	return (
 		<Editor
@@ -43,8 +43,7 @@ const EditorView: React.FC<EditorViewProps> = props => {
 };
 
 function getRenderedTheme(theme: Theme, preferenceThemeMode: ThemeMode) {
-	if (preferenceThemeMode === 'system')
-		return theme === 'dark' ? 'vs-dark' : 'light';
+	if (preferenceThemeMode === 'system') return theme === 'dark' ? 'vs-dark' : 'light';
 
 	return preferenceThemeMode === 'dark' ? 'vs-dark' : 'light';
 }

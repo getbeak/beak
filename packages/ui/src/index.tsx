@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import type { Theme } from '@beak/common/types/theme';
+import { DesignSystemProvider } from '@beak/design-system';
+import type React from 'react';
+import { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
-import { Theme } from '@beak/common/types/theme';
-import { DesignSystemProvider } from '@beak/design-system';
 
 import './utils/unhandled-error-handler';
 import NonprodBadge from './components/atoms/NonprodBadge';
@@ -22,8 +23,7 @@ setupMonaco();
 function getSystemTheme(): Theme {
 	let theme: Theme = 'light';
 
-	if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)
-		theme = 'dark';
+	if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) theme = 'dark';
 
 	return theme;
 }

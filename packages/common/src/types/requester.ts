@@ -16,9 +16,9 @@ export interface FlightRequestPayload {
 }
 
 export type FlightHeartbeatPayload =
-	FlightHeartbeatFetchResponse |
-	FlightHeartbeatParsingResponse |
-	FlightHeartbeatReadingBody;
+	| FlightHeartbeatFetchResponse
+	| FlightHeartbeatParsingResponse
+	| FlightHeartbeatReadingBody;
 
 export interface FlightHeartbeatFetchResponse {
 	stage: 'fetch_response';

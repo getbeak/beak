@@ -7,13 +7,13 @@ export async function generateSafeNewPath(name: string, directory: string, exten
 		return path.join(directory, `${name}${extension ?? ''}`);
 	}
 
-	if (!await ipcFsService.pathExists(createPath(name)))
+	if (!(await ipcFsService.pathExists(createPath(name))))
 		return { name: `${name}${extension ?? ''}`, fullPath: createPath(name) };
 
 	let useableName = name;
 	let index = 1;
 
-	const matches = (/^(.+) {1}\(([0-9]+)\)$/gm).exec(useableName);
+	const matches = /^(.+) {1}\(([0-9]+)\)$/gm.exec(useableName);
 
 	if (matches && matches.length === 3) {
 		useableName = matches[1];
@@ -24,7 +24,7 @@ export async function generateSafeNewPath(name: string, directory: string, exten
 		const full = createPath(`${useableName} (${index})`);
 
 		// eslint-disable-next-line no-await-in-loop
-		if (!await ipcFsService.pathExists(full)) {
+		if (!(await ipcFsService.pathExists(full))) {
 			return {
 				name: `${useableName} (${index})${extension ?? ''}`,
 				fullPath: full,

@@ -17,8 +17,7 @@ export async function renameFolderNode(newName: string, folderNode: FolderNode) 
 	const newFilePath = path.join(directory, newName);
 	const oldFilePath = folderNode.filePath;
 
-	if (await ipcFsService.pathExists(newFilePath))
-		throw new Error('Folder already exists');
+	if (await ipcFsService.pathExists(newFilePath)) throw new Error('Folder already exists');
 
 	await ipcFsService.move(oldFilePath, newFilePath);
 }

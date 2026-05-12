@@ -1,5 +1,3 @@
-import React, { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import ksuid from '@beak/ksuid';
 import EditorView from '@beak/ui/components/atoms/EditorView';
@@ -8,6 +6,8 @@ import binaryStore from '@beak/ui/lib/binary-store';
 import { requestPreferenceSetResSubTab } from '@beak/ui/store/preferences/actions';
 import { useAppSelector } from '@beak/ui/store/redux';
 import type { Flight } from '@getbeak/types/flight';
+import React, { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 
 import TabBar from '../../../../components/atoms/TabBar';
@@ -16,7 +16,7 @@ import TabSpacer from '../../../../components/atoms/TabSpacer';
 import ErrorView from '../molecules/ErrorView';
 import PrettyViewer from './PrettyViewer';
 
-type Tab = typeof tabs[number];
+type Tab = (typeof tabs)[number];
 const tabs = ['headers', 'pretty', 'raw'] as const;
 
 export interface ResponseTabProps {
@@ -28,20 +28,20 @@ const ResponseTab: React.FC<React.PropsWithChildren<ResponseTabProps>> = props =
 	const dispatch = useDispatch();
 	const { error, response, requestId } = flight;
 	const hasErrored = Boolean(error);
-	const tab = useAppSelector(s =>
-		s.global.preferences.requests[requestId]?.response.subTab.response,
-	) as Tab | undefined;
+	const tab = useAppSelector(s => s.global.preferences.requests[requestId]?.response.subTab.response) as Tab | undefined;
 
 	function convertHeaderFormat() {
-		return Object.keys(flight.response!.headers)
-			.reduce((acc, val) => ({
+		return Object.keys(flight.response!.headers).reduce(
+			(acc, val) => ({
 				...acc,
 				[ksuid.generate('header').toString()]: {
 					name: val,
 					value: [flight.response!.headers[val]],
 					enabled: true,
 				},
-			}), {});
+			}),
+			{},
+		);
 	}
 
 	// Ensure we have a valid tab
@@ -66,50 +66,27 @@ const ResponseTab: React.FC<React.PropsWithChildren<ResponseTabProps>> = props =
 				<TabSpacer />
 				{!hasErrored && (
 					<React.Fragment>
-						<TabItem
-							active={tab === 'headers'}
-							size={'sm'}
-							onClick={() => setTab('headers')}
-						>
+						<TabItem active={tab === 'headers'} size={'sm'} onClick={() => setTab('headers')}>
 							{'Headers'}
 						</TabItem>
-						<TabItem
-							active={tab === 'pretty'}
-							size={'sm'}
-							onClick={() => setTab('pretty')}
-						>
+						<TabItem active={tab === 'pretty'} size={'sm'} onClick={() => setTab('pretty')}>
 							{'Pretty'}
 						</TabItem>
 					</React.Fragment>
 				)}
-				<TabItem
-					active={tab === 'raw'}
-					size={'sm'}
-					onClick={() => setTab('raw')}
-				>
+				<TabItem active={tab === 'raw'} size={'sm'} onClick={() => setTab('raw')}>
 					{hasErrored ? 'Error' : 'Raw'}
 				</TabItem>
 				<TabSpacer />
 			</TabBar>
 
 			<TabBody>
-				{tab === 'headers' && (
-					<BasicTableEditor
-						items={convertHeaderFormat()}
-						readOnly
-					/>
-				)}
-				{tab === 'pretty' && (
-					<PrettyViewer flight={flight} mode={'response'} />
-				)}
+				{tab === 'headers' && <BasicTableEditor items={convertHeaderFormat()} readOnly />}
+				{tab === 'pretty' && <PrettyViewer flight={flight} mode={'response'} />}
 				{tab === 'raw' && (
 					<React.Fragment>
 						{response && (
-							<EditorView
-								language={'http'}
-								value={createHttpResponseMessage(flight)}
-								options={{ readOnly: true }}
-							/>
+							<EditorView language={'http'} value={createHttpResponseMessage(flight)} options={{ readOnly: true }} />
 						)}
 						{error && <ErrorView error={error} />}
 					</React.Fragment>
@@ -148,10 +125,8 @@ function createHttpResponseMessage(flight: Flight) {
 		const decoder = new TextDecoder('utf-8');
 		const string = decoder.decode(store);
 
-		if (string.startsWith('\n'))
-			lines.push(string);
-		else
-			lines.push('', string);
+		if (string.startsWith('\n')) lines.push(string);
+		else lines.push('', string);
 	}
 
 	return lines.join('\n');

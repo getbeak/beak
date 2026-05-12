@@ -1,14 +1,10 @@
-import React from 'react';
+import type React from 'react';
 import styled from 'styled-components';
 
-interface SidebarPaneProps {
-
-}
+type SidebarPaneProps = {};
 
 const SidebarPane: React.FC<React.PropsWithChildren<SidebarPaneProps>> = ({ children }) => (
-	<Container>
-		{children}
-	</Container>
+	<Container>{children}</Container>
 );
 
 const Container = styled.div`

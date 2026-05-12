@@ -1,6 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { TabItem } from '@beak/common/types/beak-project';
+import type { TabItem } from '@beak/common/types/beak-project';
 import ksuid from '@beak/ksuid';
 import ContextMenu from '@beak/ui/components/atoms/ContextMenu';
 import WindowSessionContext from '@beak/ui/contexts/window-session-context';
@@ -8,6 +6,9 @@ import { ipcExplorerService } from '@beak/ui/lib/ipc';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { renderAcceleratorDefinition } from '@beak/ui/utils/keyboard-rendering';
 import type { MenuItemConstructorOptions } from 'electron';
+import type React from 'react';
+import { useContext, useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 
 import { closeTab, closeTabsAll, closeTabsLeft, closeTabsOther, closeTabsRight } from '../../store/actions';
 
@@ -25,8 +26,7 @@ const RequestTabContextMenuWrapper: React.FC<React.PropsWithChildren<RequestTabC
 	const windowSession = useContext(WindowSessionContext);
 
 	useEffect(() => {
-		if (!node)
-			return;
+		if (!node) return;
 
 		const isRequestTab = tab.type === 'request';
 		const selectedIndex = activeTabs.findIndex(t => t.payload === node.id);

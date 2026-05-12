@@ -1,4 +1,4 @@
-import { IpcDialogServiceMain, ShowMessageBoxReq } from '@beak/common/ipc/dialog';
+import { IpcDialogServiceMain, type ShowMessageBoxReq } from '@beak/common/ipc/dialog';
 
 import { webIpcMain } from './ipc';
 

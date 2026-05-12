@@ -1,18 +1,18 @@
+import path from 'node:path';
 import {
 	IpcFsServiceMain,
-	MoveReq,
-	ReadDirReq,
-	ReadJsonReq,
-	ReadTextReq,
-	SimplePath,
-	WriteJsonReq,
-	WriteTextReq,
+	type MoveReq,
+	type ReadDirReq,
+	type ReadJsonReq,
+	type ReadTextReq,
+	type SimplePath,
+	type WriteJsonReq,
+	type WriteTextReq,
 } from '@beak/common/ipc/fs';
 import Squawk from '@beak/common/utils/squawk';
-import { BrowserWindow, ipcMain, IpcMainInvokeEvent, shell } from 'electron';
+import { BrowserWindow, type IpcMainInvokeEvent, ipcMain, shell } from 'electron';
 import fs from 'fs-extra';
 import type { JFReadOptions } from 'jsonfile';
-import path from 'path';
 
 import { openReferenceFile, previewReferencedFile } from '../lib/referenced-files';
 import { getProjectFilePathWindowMapping } from './fs-shared';
@@ -101,7 +101,7 @@ service.registerPreviewReferencedFile(async (event, payload) => {
 	const filePath = await previewReferencedFile(window, payload.fileReferenceId);
 
 	if (!filePath) return null;
-	if (!await fs.pathExists(filePath)) return null;
+	if (!(await fs.pathExists(filePath))) return null;
 
 	const stat = await fs.stat(filePath);
 
@@ -120,8 +120,7 @@ service.registerReadReferencedFile(async (event, payload) => {
 
 	const file = await fs.readFile(filePath);
 
-	if (payload.truncatedLength === void 0)
-		return { body: file.slice(0, payload.truncatedLength) };
+	if (payload.truncatedLength === void 0) return { body: file.slice(0, payload.truncatedLength) };
 
 	return { body: file };
 });
@@ -154,13 +153,11 @@ async function backoffJsonRead(filePath: string, options?: JFReadOptions) {
 export async function ensureWithinProject(projectFilePath: string, inputPath: string) {
 	const exists = await fs.pathExists(projectFilePath);
 
-	if (!exists)
-		throw new Squawk('path_not_project', { projectFilePath, inputPath });
+	if (!exists) throw new Squawk('path_not_project', { projectFilePath, inputPath });
 
 	const project = await fs.readJson(projectFilePath);
 
-	if (typeof project !== 'object')
-		throw new Squawk('path_project_corrupt', { projectFilePath, inputPath });
+	if (typeof project !== 'object') throw new Squawk('path_project_corrupt', { projectFilePath, inputPath });
 
 	if (!project.id || !project.version || !project.name)
 		throw new Squawk('path_project_invalid', { projectFilePath, inputPath });
@@ -169,8 +166,7 @@ export async function ensureWithinProject(projectFilePath: string, inputPath: st
 	const resolved = path.resolve(path.join(projectDir, inputPath));
 	const isWithinProject = resolved.startsWith(projectDir) && path.isAbsolute(resolved);
 
-	if (!isWithinProject)
-		throw new Squawk('path_not_within_project', { projectFilePath, inputPath });
+	if (!isWithinProject) throw new Squawk('path_not_within_project', { projectFilePath, inputPath });
 
 	return resolved;
 }

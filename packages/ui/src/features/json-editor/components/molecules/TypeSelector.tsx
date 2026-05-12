@@ -1,5 +1,3 @@
-import React, { useContext, useRef } from 'react';
-import { useDispatch } from 'react-redux';
 import {
 	faBan,
 	faCalculator,
@@ -11,6 +9,9 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import type { EntryType } from '@getbeak/types/body-editor-json';
+import type React from 'react';
+import { useContext, useRef } from 'react';
+import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 
 import { JsonEditorContext } from '../../contexts/json-editor-context';
@@ -41,14 +42,15 @@ const TypeSelector: React.FC<React.PropsWithChildren<TypeSelectorProps>> = props
 				onChange={e => {
 					const type = e.currentTarget.value as EntryType;
 
-					dispatch(editorContext.typeChange({
-						requestId,
-						id,
-						type,
-					}));
+					dispatch(
+						editorContext.typeChange({
+							requestId,
+							id,
+							type,
+						}),
+					);
 
-					if (onChange)
-						onChange(type);
+					if (onChange) onChange(type);
 
 					selectRef.current!.blur();
 				}}
@@ -108,12 +110,18 @@ const Select = styled.select`
 
 function getIconFromType(type: EntryType) {
 	switch (type) {
-		case 'number': return faCalculator;
-		case 'boolean': return faCheckCircle;
-		case 'null': return faBan;
-		case 'object': return faStream;
-		case 'array': return faLayerGroup;
-		case 'string': return faFont;
+		case 'number':
+			return faCalculator;
+		case 'boolean':
+			return faCheckCircle;
+		case 'null':
+			return faBan;
+		case 'object':
+			return faStream;
+		case 'array':
+			return faLayerGroup;
+		case 'string':
+			return faFont;
 
 		// This should _never_ happen, so let's have some fun
 		default:

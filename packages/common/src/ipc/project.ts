@@ -1,4 +1,8 @@
-import { IpcServiceMain, IpcServiceRenderer, Listener, PartialIpcMain, PartialIpcRenderer } from './ipc';
+import type { PartialIpcMain } from './main';
+import { IpcServiceMain } from './main';
+import type { PartialIpcRenderer } from './renderer';
+import { IpcServiceRenderer } from './renderer';
+import type { IpcListener } from './types';
 
 export const ProjectMessages = {
 	OpenFolder: 'open_folder',
@@ -10,7 +14,7 @@ export interface CreateProjectReq {
 	projectName: string;
 }
 
-export class IpcProjectServiceRenderer extends IpcServiceRenderer {
+export class IpcProjectServiceRenderer extends IpcServiceRenderer<'project'> {
 	constructor(ipc: PartialIpcRenderer) {
 		super('project', ipc);
 	}
@@ -28,20 +32,20 @@ export class IpcProjectServiceRenderer extends IpcServiceRenderer {
 	}
 }
 
-export class IpcProjectServiceMain extends IpcServiceMain {
+export class IpcProjectServiceMain extends IpcServiceMain<'project'> {
 	constructor(ipc: PartialIpcMain) {
 		super('project', ipc);
 	}
 
-	registerOpenFolder(fn: Listener<string>) {
-		this.registerListener(ProjectMessages.OpenFolder, fn);
+	registerOpenFolder(fn: IpcListener<string>) {
+		this.registerRequestHandler(ProjectMessages.OpenFolder, fn);
 	}
 
-	registerOpenProject(fn: Listener) {
-		this.registerListener(ProjectMessages.OpenProject, fn);
+	registerOpenProject(fn: IpcListener<void>) {
+		this.registerRequestHandler(ProjectMessages.OpenProject, fn);
 	}
 
-	registerCreateProject(fn: Listener<CreateProjectReq>) {
-		this.registerListener(ProjectMessages.CreateProject, fn);
+	registerCreateProject(fn: IpcListener<CreateProjectReq>) {
+		this.registerRequestHandler(ProjectMessages.CreateProject, fn);
 	}
 }

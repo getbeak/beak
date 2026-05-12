@@ -1,4 +1,8 @@
-import { IpcServiceMain, IpcServiceRenderer, Listener, PartialIpcMain, PartialIpcRenderer } from './ipc';
+import type { PartialIpcMain } from './main';
+import { IpcServiceMain } from './main';
+import type { PartialIpcRenderer } from './renderer';
+import { IpcServiceRenderer } from './renderer';
+import type { IpcListener } from './types';
 
 const WindowMessages = {
 	CloseSelfWindow: 'close_self_window',
@@ -6,7 +10,7 @@ const WindowMessages = {
 	ToggleDeveloperTools: 'toggle_developer_tools',
 };
 
-export class IpcWindowServiceRenderer extends IpcServiceRenderer {
+export class IpcWindowServiceRenderer extends IpcServiceRenderer<'window'> {
 	constructor(ipc: PartialIpcRenderer) {
 		super('window', ipc);
 	}
@@ -24,20 +28,20 @@ export class IpcWindowServiceRenderer extends IpcServiceRenderer {
 	}
 }
 
-export class IpcWindowServiceMain extends IpcServiceMain {
+export class IpcWindowServiceMain extends IpcServiceMain<'window'> {
 	constructor(ipc: PartialIpcMain) {
 		super('window', ipc);
 	}
 
-	registerCloseSelfWindow(fn: Listener) {
-		this.registerListener(WindowMessages.CloseSelfWindow, fn);
+	registerCloseSelfWindow(fn: IpcListener<void>) {
+		this.registerRequestHandler(WindowMessages.CloseSelfWindow, fn);
 	}
 
-	registerReloadSelfWindow(fn: Listener) {
-		this.registerListener(WindowMessages.ReloadSelfWindow, fn);
+	registerReloadSelfWindow(fn: IpcListener<void>) {
+		this.registerRequestHandler(WindowMessages.ReloadSelfWindow, fn);
 	}
 
-	registerToggleDeveloperTools(fn: Listener) {
-		this.registerListener(WindowMessages.ToggleDeveloperTools, fn);
+	registerToggleDeveloperTools(fn: IpcListener<void>) {
+		this.registerRequestHandler(WindowMessages.ToggleDeveloperTools, fn);
 	}
 }

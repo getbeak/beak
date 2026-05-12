@@ -1,8 +1,8 @@
-import { useContext } from 'react';
 import { useAppSelector } from '@beak/ui/store/redux';
+import { useContext } from 'react';
 
 import { TreeViewAbstractionsContext } from '../contexts/abstractions-context';
-import { ActiveRename, TreeViewItem } from '../types';
+import type { ActiveRename, TreeViewItem } from '../types';
 
 function shimRenameSelector() {
 	return void 0;

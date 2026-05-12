@@ -1,12 +1,13 @@
-import React, { useContext, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
-import { SidebarVariant } from '@beak/common/types/beak-hub';
-import { MenuEventPayload } from '@beak/common/web-contents/types';
+import type { SidebarVariant } from '@beak/common/types/beak-hub';
+import type { MenuEventPayload } from '@beak/common/web-contents/types';
 import WindowSessionContext from '@beak/ui/contexts/window-session-context';
 import { toVibrancyAlpha } from '@beak/ui/design-system/utils';
 import { checkShortcut } from '@beak/ui/lib/keyboard-shortcuts';
 import { sidebarPreferenceSetCollapse, sidebarPreferenceSetSelected } from '@beak/ui/store/preferences/actions';
 import { useAppSelector } from '@beak/ui/store/redux';
+import type React from 'react';
+import { useContext, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 import styled, { css } from 'styled-components';
 
 import ProjectPane from '../../project-pane/components/ProjectPane';
@@ -72,7 +73,8 @@ const Sidebar: React.FC<React.PropsWithChildren<unknown>> = () => {
 					dispatch(sidebarPreferenceSetSelected('variables'));
 					break;
 
-				default: break;
+				default:
+					break;
 			}
 		}
 
@@ -139,7 +141,9 @@ const DragBar = styled.div<{ $collapsed: boolean }>`
 	height: 71px;
 	-webkit-app-region: drag;
 
-	${p => p.$collapsed && css`
+	${p =>
+		p.$collapsed &&
+		css`
 		background: ${p => p.theme.ui.secondarySurface};
 		border-bottom: 1px solid ${p => p.theme.ui.backgroundBorderSeparator};
 	`}

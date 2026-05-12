@@ -2,25 +2,19 @@
 
 // TODO(afr): This is temporary, move to a better library in future
 
-import StorageProviderBase, { GenericStore } from '@beak/common-host/providers/storage';
+import StorageProviderBase, { type GenericStore } from '@beak/common-host/providers/storage';
 
 const keyPrefix = 'app.getbeak.beak.preferences';
 
 export default class StorageProvider extends StorageProviderBase<GenericStore> {
 	get<Key extends keyof GenericStore>(key: Key): Promise<GenericStore[Key] | null>;
-	get<Key extends keyof GenericStore>(
-		key: Key,
-		defaultValue: Required<GenericStore>[Key],
-	): Promise<GenericStore[Key]>;
+	get<Key extends keyof GenericStore>(key: Key, defaultValue: Required<GenericStore>[Key]): Promise<GenericStore[Key]>;
 	get<Key extends string, Value = unknown>(
 		key: Exclude<Key, keyof GenericStore>,
 		defaultValue?: Value | undefined,
 	): Value;
 
-	get<Key extends string, Value = unknown>(
-		key: Key,
-		defaultValue?: unknown,
-	): Value | Promise<Value | null> {
+	get<Key extends string, Value = unknown>(key: Key, defaultValue?: unknown): Value | Promise<Value | null> {
 		const ret = localStorage.getItem([keyPrefix, key].join('.'));
 
 		if (!ret) return defaultValue as Value;

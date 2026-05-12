@@ -1,6 +1,6 @@
-import React from 'react';
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import type React from 'react';
 import styled from 'styled-components';
 
 interface ChevronProps {
@@ -28,7 +28,7 @@ const ChevronElement = styled.div<ChevronProps>`
 	> svg {
 		transition: transform .2s ease;
 		transform-origin: center center;
-		transform: rotate(${p => p.$collapsed ? '0deg' : '90deg'});
+		transform: rotate(${p => (p.$collapsed ? '0deg' : '90deg')});
 	}
 `;
 

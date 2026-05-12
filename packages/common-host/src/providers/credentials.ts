@@ -1,4 +1,4 @@
-import { ProjectEncryption } from "@beak/common/types/beak-project";
+import type { ProjectEncryption } from '@beak/common/types/beak-project';
 
 export default abstract class CredentialsProvider {
 	protected readonly credentialKeys = {

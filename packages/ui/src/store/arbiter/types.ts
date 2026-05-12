@@ -1,17 +1,7 @@
-export const ActionTypes = {
-	START_ARBITER: '@beak/global/arbiter/START_ARBITER',
-	UPDATE_STATUS: '@beak/global/arbiter/UPDATE_STATUS',
-};
+// Source of truth is @beak/core/arbiter.
+import { type ArbiterState, initialArbiterState } from '@beak/core/arbiter';
 
-export interface State {
-	status: boolean;
-}
+export type State = ArbiterState;
+export const initialState: State = initialArbiterState;
 
-export const initialState: State = {
-	status: true,
-};
-
-export default {
-	ActionTypes,
-	initialState,
-};
+export default { initialState };

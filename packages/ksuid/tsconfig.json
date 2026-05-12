@@ -1,15 +1,10 @@
 {
-	"extends": "../../tsconfig.json",
+	"extends": "./../../tsconfig.json",
 	"compilerOptions": {
 		"outDir": "./dist",
 		"module": "ESNext",
+		"types": ["node"]
 	},
-	"include": [
-		"src/**/*.ts",
-		"package.json"
-	],
-	"exclude": [
-		"node_modules",
-		"dist"
-	]
+	"include": ["src/**/*.ts", "package.json"],
+	"exclude": ["node_modules", "dist"]
 }

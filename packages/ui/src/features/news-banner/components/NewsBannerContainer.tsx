@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { NewsItem, NewsItemType } from '@beak/common/types/nest';
+import type { NewsItem, NewsItemType } from '@beak/common/types/nest';
 import { ipcNestService } from '@beak/ui/lib/ipc';
+import type React from 'react';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 import GenericBanner from './molecules/GenericBanner';
@@ -11,13 +12,15 @@ const NewsBannerContainer: React.FC<React.PropsWithChildren<unknown>> = () => {
 	const [newsItems, setNewsItems] = useState<NewsItem[]>([]);
 
 	useEffect(() => {
-		ipcNestService.listNewsItems()
+		ipcNestService
+			.listNewsItems()
 			.then(setNewsItems)
-			.catch(() => { /*  */ });
+			.catch(() => {
+				/*  */
+			});
 	}, []);
 
-	if (newsItems.length === 0)
-		return null;
+	if (newsItems.length === 0) return null;
 
 	return (
 		<Container>
@@ -27,13 +30,10 @@ const NewsBannerContainer: React.FC<React.PropsWithChildren<unknown>> = () => {
 				const hasFallback = Boolean(n.fallback);
 				const supported = supportedCodes.includes(primaryCode);
 
-				if (supported)
-					renderItem = n.primary;
-				else if (hasFallback && supportedCodes.includes(n.fallback!.code))
-					renderItem = n.fallback!;
+				if (supported) renderItem = n.primary;
+				else if (hasFallback && supportedCodes.includes(n.fallback!.code)) renderItem = n.fallback!;
 
-				if (!renderItem)
-					return null;
+				if (!renderItem) return null;
 
 				switch (renderItem.code) {
 					case 'generic_banner':

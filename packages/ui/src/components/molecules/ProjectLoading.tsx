@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
 import { renderPlainTextDefinition } from '@beak/ui/utils/keyboard-rendering';
+import type React from 'react';
+import { useState } from 'react';
 import styled from 'styled-components';
 
 const ProjectLoading: React.FC<React.PropsWithChildren<unknown>> = () => {
@@ -19,10 +20,7 @@ const ProjectLoading: React.FC<React.PropsWithChildren<unknown>> = () => {
 	return (
 		<Wrapper>
 			<div>
-				<Logo
-					width={60}
-					src={'images/logo-tile.png'}
-				/>
+				<Logo width={60} src={'images/logo-tile.png'} />
 
 				<Header>{'Did you know?'}</Header>
 				<Body>{hints[hintIndex]}</Body>

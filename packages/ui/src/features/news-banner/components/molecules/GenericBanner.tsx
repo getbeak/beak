@@ -1,8 +1,8 @@
-import React from 'react';
-import { NewsItemGenericBanner } from '@beak/common/types/nest';
+import type { NewsItemGenericBanner } from '@beak/common/types/nest';
 import { ipcExplorerService } from '@beak/ui/lib/ipc';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import type React from 'react';
 import styled, { useTheme } from 'styled-components';
 
 interface GenericBannerProps {
@@ -14,8 +14,7 @@ const GenericBanner: React.FC<React.PropsWithChildren<GenericBannerProps>> = ({ 
 	const theme = useTheme();
 
 	function visitAction() {
-		if (!action)
-			return;
+		if (!action) return;
 
 		ipcExplorerService.launchUrl(action.url);
 	}
@@ -26,22 +25,13 @@ const GenericBanner: React.FC<React.PropsWithChildren<GenericBannerProps>> = ({ 
 			<Body>
 				<TitleText>{title}</TitleText>
 				<BodyText>
-					{body}
-					{' '}
-					{action && (
-						<ActionButton onClick={visitAction}>
-							{action.cta}
-						</ActionButton>
-					)}
+					{body} {action && <ActionButton onClick={visitAction}>{action.cta}</ActionButton>}
 				</BodyText>
 			</Body>
 			<Dismiss>
 				{item.dismissible && (
 					<BlankButton>
-						<FontAwesomeIcon
-							icon={faTimes}
-							color={theme.ui.textOnFill}
-						/>
+						<FontAwesomeIcon icon={faTimes} color={theme.ui.textOnFill} />
 					</BlankButton>
 				)}
 			</Dismiss>

@@ -1,61 +1,60 @@
-/* eslint-disable max-len */
-import { EditorPreferences, ProjectPanePreferences, SidebarPreferences, SidebarVariant } from '@beak/common/types/beak-hub';
-import { createAction } from '@reduxjs/toolkit';
-
+// Source of truth is @beak/core/preferences; this re-export keeps existing UI imports working.
 import {
-	ActionTypes as AT,
-	EditorPreferencesSetSelectedVariableSetPayload,
-	ProjectPaneCollapsePayload,
-	RequestPreferencePayload,
-	RequestPreferencesLoadedPayload,
-	RequestPreferencesSetReqJsonExpandPayload,
-	RequestPreferencesSetReqMainTabPayload,
-	RequestPreferencesSetResMainTabPayload,
-	RequestPreferencesSetResPrettyLanguagePayload,
-	RequestPreferencesSetResSubTabPayload,
-	SidebarCollapsePayload,
-} from './types';
+	editorPreferencesLoaded,
+	editorPreferencesSetSelectedVariableGroup,
+	loadEditorPreferences,
+	loadProjectPanePreferences,
+	loadRequestPreferences,
+	loadSidebarPreferences,
+	projectPanePreferenceSetCollapse,
+	projectPanePreferencesLoaded,
+	requestPreferenceSetReqJsonExpand,
+	requestPreferenceSetReqMainTab,
+	requestPreferenceSetResMainTab,
+	requestPreferenceSetResPrettyLanguage,
+	requestPreferenceSetResSubTab,
+	requestPreferencesLoaded,
+	sidebarPreferenceSetCollapse,
+	sidebarPreferenceSetSelected,
+	sidebarPreferencesLoaded,
+} from '@beak/core/preferences';
 
-export const loadRequestPreferences = createAction<RequestPreferencePayload>(AT.LOAD_REQUEST_PREFERENCES);
-export const requestPreferencesLoaded = createAction<RequestPreferencesLoadedPayload>(AT.REQUEST_PREFERENCES_LOADED);
-export const requestPreferenceSetReqMainTab = createAction<RequestPreferencesSetReqMainTabPayload>(AT.REQUEST_PREFERENCE_SET_REQ_MAIN_TAB);
-export const requestPreferenceSetReqJsonExpand = createAction<RequestPreferencesSetReqJsonExpandPayload>(AT.REQUEST_PREFERENCE_SET_REQ_JSON_EXPAND);
-export const requestPreferenceSetResMainTab = createAction<RequestPreferencesSetResMainTabPayload>(AT.REQUEST_PREFERENCE_SET_RES_MAIN_TAB);
-export const requestPreferenceSetResSubTab = createAction<RequestPreferencesSetResSubTabPayload>(AT.REQUEST_PREFERENCE_SET_RES_SUB_TAB);
-export const requestPreferenceSetResPrettyLanguage = createAction<RequestPreferencesSetResPrettyLanguagePayload>(AT.REQUEST_PREFERENCE_SET_RES_PRETTY_LANGUAGE);
-
-export const loadEditorPreferences = createAction(AT.LOAD_EDITOR_PREFERENCES);
-export const editorPreferencesLoaded = createAction<EditorPreferences>(AT.EDITOR_PREFERENCES_LOADED);
-export const editorPreferencesSetSelectedVariableSet = createAction<EditorPreferencesSetSelectedVariableSetPayload>(AT.EDITOR_PREFERENCES_SET_SELECTED_VARIABLE_GROUP);
-
-export const loadSidebarPreferences = createAction(AT.LOAD_SIDEBAR_PREFERENCES);
-export const sidebarPreferencesLoaded = createAction<SidebarPreferences>(AT.SIDEBAR_PREFERENCES_LOADED);
-export const sidebarPreferenceSetSelected = createAction<SidebarVariant>(AT.SIDEBAR_PREFERENCE_SET_SELECTED);
-export const sidebarPreferenceSetCollapse = createAction<SidebarCollapsePayload>(AT.SIDEBAR_PREFERENCE_SET_COLLAPSE);
-
-export const loadProjectPanePreferences = createAction(AT.LOAD_PROJECT_PANE_PREFERENCES);
-export const projectPanePreferencesLoaded = createAction<ProjectPanePreferences>(AT.PROJECT_PANE_PREFERENCES_LOADED);
-export const projectPanePreferenceSetCollapse = createAction<ProjectPaneCollapsePayload>(AT.PROJECT_PANE_PREFERENCE_SET_COLLAPSE);
+export {
+	editorPreferencesLoaded,
+	editorPreferencesSetSelectedVariableGroup,
+	loadEditorPreferences,
+	loadProjectPanePreferences,
+	loadRequestPreferences,
+	loadSidebarPreferences,
+	projectPanePreferenceSetCollapse,
+	projectPanePreferencesLoaded,
+	requestPreferenceSetReqJsonExpand,
+	requestPreferenceSetReqMainTab,
+	requestPreferenceSetResMainTab,
+	requestPreferenceSetResPrettyLanguage,
+	requestPreferenceSetResSubTab,
+	requestPreferencesLoaded,
+	sidebarPreferenceSetCollapse,
+	sidebarPreferenceSetSelected,
+	sidebarPreferencesLoaded,
+};
 
 export default {
-	loadRequestPreferences,
-	requestPreferencesLoaded,
-	requestPreferenceSetReqMainTab,
-	requestPreferenceSetReqJsonExpand,
-	requestPreferenceSetResMainTab,
-	requestPreferenceSetResSubTab,
-	requestPreferenceSetResPrettyLanguage,
-
-	loadEditorPreferences,
 	editorPreferencesLoaded,
-	editorPreferencesSetSelectedVariableSet,
-
-	loadSidebarPreferences,
-	sidebarPreferencesLoaded,
-	sidebarPreferenceSetSelected,
-	sidebarPreferenceSetCollapse,
-
+	editorPreferencesSetSelectedVariableGroup,
+	loadEditorPreferences,
 	loadProjectPanePreferences,
-	projectPanePreferencesLoaded,
+	loadRequestPreferences,
+	loadSidebarPreferences,
 	projectPanePreferenceSetCollapse,
+	projectPanePreferencesLoaded,
+	requestPreferenceSetReqJsonExpand,
+	requestPreferenceSetReqMainTab,
+	requestPreferenceSetResMainTab,
+	requestPreferenceSetResPrettyLanguage,
+	requestPreferenceSetResSubTab,
+	requestPreferencesLoaded,
+	sidebarPreferenceSetCollapse,
+	sidebarPreferenceSetSelected,
+	sidebarPreferencesLoaded,
 };

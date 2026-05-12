@@ -1,7 +1,7 @@
-import React from 'react';
 import { actions } from '@beak/ui/store/project';
 import type { ValidRequestNode } from '@getbeak/types/nodes';
-import type { RequestBodyGraphQl } from 'packages/types/request';
+import type { RequestBodyGraphQl } from '@getbeak/types/request';
+import type React from 'react';
 
 import JsonEditor from '../../json-editor/components/JsonEditor';
 
@@ -25,7 +25,6 @@ const GraphQlVariablesEditor: React.FC<GraphQlVariablesEditorProps> = props => {
 
 				return graphQlBody.payload.variables;
 			}}
-
 			addedEntry={actions.requestBodyGraphQlEditorAddEntry}
 			enabledChanged={actions.requestBodyGraphQlEditorEnabledChange}
 			removedEntry={actions.requestBodyGraphQlEditorRemoveEntry}

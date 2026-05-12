@@ -1,9 +1,10 @@
 /* eslint-disable no-sync */
 /* eslint-disable @typescript-eslint/no-var-requires */
+
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 import asar from 'asar';
-import path from 'path';
-import fs from 'fs';
-import os from 'os';
 
 const architectures = ['ia32', 'x64', 'armv7l', 'arm64', 'universal'];
 
@@ -25,7 +26,7 @@ export default async function afterPack(context) {
 
 	// eslint-disable-next-line no-console
 	console.log(`  • postpackaging   native keytar injected platform=${platform} arch=${arch}`);
-};
+}
 
 function generateAsarPath(platform, appOutDir) {
 	switch (platform) {
@@ -43,17 +44,14 @@ function generateAsarPath(platform, appOutDir) {
 function generateKeytarFilename(arch, platform) {
 	switch (platform) {
 		case 'darwin': {
-			if (arch === 'arm64')
-				return 'darwin-arm64-keytar.node';
-			else if (arch === 'x64')
-				return 'darwin-keytar.node';
+			if (arch === 'arm64') return 'darwin-arm64-keytar.node';
+			if (arch === 'x64') return 'darwin-keytar.node';
 
 			break;
 		}
 
 		case 'win32': {
-			if (arch === 'x64')
-				return 'win-x64-keytar.node';
+			if (arch === 'x64') return 'win-x64-keytar.node';
 
 			break;
 		}

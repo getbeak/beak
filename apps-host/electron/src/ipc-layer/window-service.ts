@@ -1,5 +1,5 @@
 import { IpcWindowServiceMain } from '@beak/common/ipc/window';
-import { ipcMain, IpcMainInvokeEvent } from 'electron';
+import { type IpcMainInvokeEvent, ipcMain } from 'electron';
 
 import { closeWindow, createWelcomeWindow, reloadWindow } from '../window-management';
 

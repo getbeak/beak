@@ -1,8 +1,8 @@
-import React, { useRef, useState } from 'react';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React, { useRef, useState } from 'react';
 import { useTheme } from 'styled-components';
 
 import ActionBarButton from '../atoms/ActionBarButton';
@@ -19,8 +19,7 @@ const ActionBarAlertButton: React.FC<ActionBarAlertButtonProps> = ({ id }) => {
 	const hasAlerts = TypedObject.values(alerts).filter(Boolean).length > 0;
 	const parentRef = useRef() as React.MutableRefObject<HTMLButtonElement>;
 
-	if (!hasAlerts)
-		return null;
+	if (!hasAlerts) return null;
 
 	return (
 		<React.Fragment>
@@ -34,10 +33,7 @@ const ActionBarAlertButton: React.FC<ActionBarAlertButtonProps> = ({ id }) => {
 			</ActionBarButton>
 
 			{parentRef.current && showPopover && (
-				<AlertsPopover
-					parent={parentRef.current}
-					onClose={() => setShowPopover(false)}
-				/>
+				<AlertsPopover parent={parentRef.current} onClose={() => setShowPopover(false)} />
 			)}
 		</React.Fragment>
 	);

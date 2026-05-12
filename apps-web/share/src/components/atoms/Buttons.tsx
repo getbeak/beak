@@ -12,21 +12,27 @@ const CtaButton = styled.a<CtaButtonProps>`
 	font-size: 14px;
 	cursor: pointer;
 
-	${p => p.$style === 'primary' && css`
+	${p =>
+		p.$style === 'primary' &&
+		css`
 		background: ${p.theme.ui.primaryFill};
 
 		&:hover {
 			box-shadow: 0 0 20px 2px ${p.theme.ui.primaryFill}99;
 		}
 	`}
-	${p => p.$style === 'secondary' && css`
+	${p =>
+		p.$style === 'secondary' &&
+		css`
 		background: ${p.theme.ui.surfaceFill};
 
 		&:hover {
 			box-shadow: 0 0 20px 2px ${p.theme.ui.surfaceFill}99;
 		}
 	`}
-	${p => p.$style === 'tertiary' && css`
+	${p =>
+		p.$style === 'tertiary' &&
+		css`
 		background: ${p.theme.ui.secondaryBackground};
 
 		&:hover {

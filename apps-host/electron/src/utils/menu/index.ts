@@ -1,5 +1,5 @@
-import { Container, windowType } from '@beak/apps-host-electron/window-management';
-import { BrowserWindow, Menu, MenuItemConstructorOptions } from 'electron';
+import { type Container, windowType } from '@beak/apps-host-electron/window-management';
+import { type BrowserWindow, Menu, type MenuItemConstructorOptions } from 'electron';
 
 import generateAppMenu from './app-menu';
 import generateEditMenu from './edit-menu';
@@ -35,8 +35,7 @@ export function createAndSetMenu(browserWindow?: BrowserWindow) {
 function generateTemplate(ctx: Context): MenuItemConstructorOptions[] {
 	const template: MenuItemConstructorOptions[] = [];
 
-	if (ctx.isDarwin)
-		template.push(generateAppMenu(ctx));
+	if (ctx.isDarwin) template.push(generateAppMenu(ctx));
 
 	template.push(generateFileMenu(ctx));
 	template.push(generateEditMenu(ctx));

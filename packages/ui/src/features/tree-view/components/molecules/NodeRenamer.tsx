@@ -1,11 +1,12 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import type React from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import styled, { css } from 'styled-components';
 import validFilename from 'valid-filename';
 
 import { TreeViewAbstractionsContext } from '../../contexts/abstractions-context';
 import { TreeViewFocusContext } from '../../contexts/focus-context';
 import { useActiveRename } from '../../hooks/use-active-rename';
-import { TreeViewItem } from '../../types';
+import type { TreeViewItem } from '../../types';
 
 const errors = {
 	noName: 'A name must be provided.',
@@ -34,17 +35,14 @@ const NodeRenamer: React.FC<React.PropsWithChildren<NodeRenamerProps>> = props =
 	}, [activeRename?.id]);
 
 	useEffect(() => {
-		if (activeRename || !wrappedTextRef.current)
-			return void 0;
+		if (activeRename || !wrappedTextRef.current) return void 0;
 
 		const element = wrappedTextRef.current;
 		const textOverflowed = element.scrollWidth > element.clientWidth || element.scrollHeight > element.clientHeight;
 
 		const resizeObserver = new ResizeObserver(() => {
-			if (textOverflowed)
-				setCanShowTooltip(true);
-			else
-				setCanShowTooltip(false);
+			if (textOverflowed) setCanShowTooltip(true);
+			else setCanShowTooltip(false);
 		});
 
 		resizeObserver.observe(element);
@@ -96,15 +94,12 @@ const NodeRenamer: React.FC<React.PropsWithChildren<NodeRenamerProps>> = props =
 				$error={Boolean(error)}
 				onBlur={() => absContext.onRenameEnded?.(node)}
 				onKeyDown={e => {
-					if (!['Escape', 'Enter'].includes(e.key))
-						return;
+					if (!['Escape', 'Enter'].includes(e.key)) return;
 
-					if (e.key === 'Escape')
-						absContext.onRenameEnded?.(node);
+					if (e.key === 'Escape') absContext.onRenameEnded?.(node);
 
 					if (e.key === 'Enter') {
-						if (error !== void 0)
-							return;
+						if (error !== void 0) return;
 
 						absContext.onRenameSubmitted?.(node);
 					}

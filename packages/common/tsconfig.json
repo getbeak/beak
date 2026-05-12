@@ -1,17 +1,17 @@
 {
-  "extends": "../../tsconfig.json",
-  "compilerOptions": {
-    "outDir": "./dist",
-    "module": "ESNext",
-  },
-  "references": [{
-    "path": "../ksuid"
-  }],
-  "include": [
-    "src/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist"
-  ]
+	"extends": "./../../tsconfig.json",
+	"compilerOptions": {
+		"outDir": "./dist",
+		"module": "ESNext"
+	},
+	"references": [
+		{
+			"path": "../ksuid"
+		},
+		{
+			"path": "../squawk"
+		}
+	],
+	"include": ["src/**/*.ts"],
+	"exclude": ["node_modules", "dist"]
 }

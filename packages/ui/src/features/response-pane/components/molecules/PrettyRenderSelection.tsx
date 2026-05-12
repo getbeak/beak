@@ -1,5 +1,5 @@
-import React from 'react';
 import { Select } from '@beak/ui/components/atoms/Input';
+import type React from 'react';
 import styled from 'styled-components';
 
 interface PrettyRenderSelectionProps {
@@ -22,7 +22,9 @@ const PrettyRenderSelection: React.FC<React.PropsWithChildren<PrettyRenderSelect
 				</optgroup>
 				<optgroup label={'Rich'}>
 					<option value={'json'}>{'JSON'}</option>
-					<option disabled value={'json+viewer'}>{'JSON viewer'}</option>
+					<option disabled value={'json+viewer'}>
+						{'JSON viewer'}
+					</option>
 					<option value={'xml'}>{'XML'}</option>
 					<option value={'html'}>{'HTML'}</option>
 					<option value={'css'}>{'CSS'}</option>

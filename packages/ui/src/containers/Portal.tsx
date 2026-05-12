@@ -21,9 +21,7 @@ const Portal: React.FC<React.PropsWithChildren<unknown>> = () => {
 						<Purchase onChangeToTrial={() => setVariant('trial_creation')} />
 					</React.Fragment>
 				)}
-				{variant === 'trial_creation' && (
-					<CreateTrial onChangeToDefault={() => setVariant('default')} />
-				)}
+				{variant === 'trial_creation' && <CreateTrial onChangeToDefault={() => setVariant('default')} />}
 			</Container>
 		</Wrapper>
 	);
@@ -40,14 +38,16 @@ const Accent = styled.div<{ $variant: Variant }>`
 	top: 0; bottom: 0; left: 375px;
 
 	width: 1100px; height: 2800px;
-	background: ${p => toVibrancyAlpha(p.theme.ui.primaryFill, 0.70)};
+	background: ${p => toVibrancyAlpha(p.theme.ui.primaryFill, 0.7)};
 
 	transition: transform 0.2s ease;
 
 	transform: rotate(20deg) translateX(-350px);
 	transform-origin: center;
 
-	${p => p.$variant === 'trial_creation' && css`
+	${p =>
+		p.$variant === 'trial_creation' &&
+		css`
 		transform: rotate(20deg) translateX(-800px);
 	`}
 `;
@@ -55,7 +55,7 @@ const Accent = styled.div<{ $variant: Variant }>`
 const Container = styled.div<{ $variant: Variant }>`
 	position: absolute;
 	display: grid;
-	grid-template-columns: ${p => p.$variant === 'trial_creation' ? '1fr' : 'repeat(2, .5fr)'};
+	grid-template-columns: ${p => (p.$variant === 'trial_creation' ? '1fr' : 'repeat(2, .5fr)')};
 	grid-template-rows: 1fr;
 	gap: 50px;
 	width: calc(100% - 100px); height: calc(100% - 100px);

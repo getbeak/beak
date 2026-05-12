@@ -1,6 +1,7 @@
-import React, { useContext } from 'react';
 import { toHexAlpha } from '@beak/design-system/utils';
 import WindowSessionContext from '@beak/ui/contexts/window-session-context';
+import type React from 'react';
+import { useContext } from 'react';
 import semverParse from 'semver/functions/parse';
 import styled from 'styled-components';
 
@@ -8,15 +9,12 @@ const ActionBarVersion: React.FC<React.PropsWithChildren<unknown>> = () => {
 	const context = useContext(WindowSessionContext);
 	const parsed = semverParse(context.version);
 
-	if (!parsed)
-		return null;
+	if (!parsed) return null;
 
 	// Hack for local version being that of electron (We'll never be higher...)
-	if (parsed.major > 10)
-		return <Label>{'local'}</Label>;
+	if (parsed.major > 10) return <Label>{'local'}</Label>;
 
-	if (parsed.prerelease.length === 0)
-		return null;
+	if (parsed.prerelease.length === 0) return null;
 
 	return <Label>{parsed.prerelease[0]}</Label>;
 };

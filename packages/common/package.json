@@ -1,26 +1,35 @@
 {
-  "name": "@beak/common",
-  "version": "0.0.0",
-  "private": true,
-  "main": "dist/index",
-  "types": "dist/index",
-  "files": [
-    "dist"
-  ],
-  "scripts": {
-    "build": "yarn clean && yarn compile",
-    "clean": "rm -rf ./dist && rm -rf tsconfig.tsbuildinfo",
-    "compile": "tsc -b tsconfig.json",
-    "typecheck": "tsc",
-    "start": "tsc -b tsconfig.json -w"
-  },
-  "dependencies": {
-    "@beak/ksuid": "*",
-    "@getbeak/types": "^2.1.0",
-    "@getbeak/types-variables": "^2.1.0"
-  },
-  "devDependencies": {
-    "chokidar": "^4.0.1",
-    "electron": "33.2.0"
-  }
+	"name": "@beak/common",
+	"version": "0.0.0",
+	"private": true,
+	"main": "dist/index",
+	"types": "dist/index",
+	"files": [
+		"dist"
+	],
+	"scripts": {
+		"build": "pnpm clean && pnpm compile",
+		"clean": "rm -rf ./dist && rm -rf tsconfig.tsbuildinfo",
+		"compile": "tsgo --build tsconfig.json",
+		"typecheck": "tsgo",
+		"start": "tsgo --build tsconfig.json --watch",
+		"lint": "biome lint .",
+		"test": "vitest",
+		"test:run": "vitest run",
+		"test:coverage": "vitest run --coverage",
+		"test:ui": "vitest --ui"
+	},
+	"dependencies": {
+		"@beak/ksuid": "*",
+		"@beak/squawk": "*",
+		"@getbeak/types": "^2.1.0",
+		"@getbeak/types-variables": "^2.1.0",
+		"chokidar": "^5.0.0",
+		"zod": "^4.4.3"
+	},
+	"devDependencies": {
+		"electron": "^42.0.1",
+		"vitest": "^4.1.6",
+		"@vitest/coverage-v8": "^4.1.6"
+	}
 }

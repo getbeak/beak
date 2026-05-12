@@ -1,8 +1,8 @@
-import React from 'react';
-import { GetSubscriptionStatusResponse } from '@beak/common/types/nest';
+import type { GetSubscriptionStatusResponse } from '@beak/common/types/nest';
 import Button from '@beak/ui/components/atoms/Button';
 import { ipcExplorerService } from '@beak/ui/lib/ipc';
 import { formatDistance } from 'date-fns';
+import React from 'react';
 import styled from 'styled-components';
 
 export interface SubscriptionInformationProps {
@@ -13,47 +13,44 @@ const SubscriptionInformation: React.FC<SubscriptionInformationProps> = ({ subsc
 	const trial = subscription.status === 'trialing';
 
 	return (
-		<React.Fragment>
-			<Container>
-				<LogoSection>
-					<LogoOuter />
-				</LogoSection>
-				<AboutSection>
-					{trial && (
-						<React.Fragment>
-							<Title>{'Beak subscription trial'}</Title>
-							<SubTitle>{'Your Beak subscription trial'}</SubTitle>
-						</React.Fragment>
-					)}
-					{!trial && (
-						<React.Fragment>
-							<Title>{'Beak subscription'}</Title>
-							<SubTitle>{'Your current Beak subscription'}</SubTitle>
-						</React.Fragment>
-					)}
-
-					{subscription.billingPortalUrl && (
-						<Button onClick={() => ipcExplorerService.launchUrl(subscription.billingPortalUrl!)}>
-							{'Visit billing portal'}
-						</Button>
-					)}
-				</AboutSection>
-				{!trial && (
-					<SubscriptionMetaSection>
-						<MetaTitle>{'$25.00'}</MetaTitle>
-						<MetaBody>{' / year'}</MetaBody>
-					</SubscriptionMetaSection>
-				)}
+		<Container>
+			<LogoSection>
+				<LogoOuter />
+			</LogoSection>
+			<AboutSection>
 				{trial && (
-					<SubscriptionMetaSection>
-						<MetaTitle>{'Trial ends'}</MetaTitle><br />
-						<MetaBody>
-							{formatDistance(new Date(subscription.endDate!), new Date(), { addSuffix: true })}
-						</MetaBody>
-					</SubscriptionMetaSection>
+					<React.Fragment>
+						<Title>{'Beak subscription trial'}</Title>
+						<SubTitle>{'Your Beak subscription trial'}</SubTitle>
+					</React.Fragment>
 				)}
-			</Container>
-		</React.Fragment>
+				{!trial && (
+					<React.Fragment>
+						<Title>{'Beak subscription'}</Title>
+						<SubTitle>{'Your current Beak subscription'}</SubTitle>
+					</React.Fragment>
+				)}
+
+				{subscription.billingPortalUrl && (
+					<Button onClick={() => ipcExplorerService.launchUrl(subscription.billingPortalUrl!)}>
+						{'Visit billing portal'}
+					</Button>
+				)}
+			</AboutSection>
+			{!trial && (
+				<SubscriptionMetaSection>
+					<MetaTitle>{'$25.00'}</MetaTitle>
+					<MetaBody>{' / year'}</MetaBody>
+				</SubscriptionMetaSection>
+			)}
+			{trial && (
+				<SubscriptionMetaSection>
+					<MetaTitle>{'Trial ends'}</MetaTitle>
+					<br />
+					<MetaBody>{formatDistance(new Date(subscription.endDate!), new Date(), { addSuffix: true })}</MetaBody>
+				</SubscriptionMetaSection>
+			)}
+		</Container>
 	);
 };
 

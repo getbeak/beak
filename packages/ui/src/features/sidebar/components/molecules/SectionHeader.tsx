@@ -1,8 +1,8 @@
-import React from 'react';
 import { showContextMenu } from '@beak/ui/utils/context-menu';
 import { faChevronRight, faEllipsisV } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import type { MenuItemConstructorOptions } from 'electron';
+import type React from 'react';
 import styled from 'styled-components';
 
 interface SectionHeaderProps {
@@ -25,16 +25,15 @@ const SectionHeader: React.FC<React.PropsWithChildren<SectionHeaderProps>> = pro
 				{children}
 			</Header>
 			{actions && actions.length > 0 && (
-				<Actions onClick={event => {
-					event.preventDefault();
-					event.stopPropagation();
+				<Actions
+					onClick={event => {
+						event.preventDefault();
+						event.stopPropagation();
 
-					showContextMenu('test', actions);
-				}}>
-					<FontAwesomeIcon
-						icon={faEllipsisV}
-						fontSize={'10px'}
-					/>
+						showContextMenu('test', actions);
+					}}
+				>
+					<FontAwesomeIcon icon={faEllipsisV} fontSize={'10px'} />
 				</Actions>
 			)}
 		</Container>
@@ -51,7 +50,7 @@ const Container = styled.div<{ $disableCollapse?: boolean }>`
 	font-size: 11px;
 	font-weight: 600;
 
-	cursor: ${p => p.$disableCollapse ? 'default' : 'pointer'};
+	cursor: ${p => (p.$disableCollapse ? 'default' : 'pointer')};
 `;
 
 const Header = styled.div`
@@ -73,7 +72,7 @@ const CollapsedIndicator = styled.div<{ $collapsed?: boolean }>`
 	> svg {
 		transition: transform .2s ease;
 		transform-origin: center center;
-		transform: rotate(${p => p.$collapsed ? '0deg' : '90deg'});
+		transform: rotate(${p => (p.$collapsed ? '0deg' : '90deg')});
 	}
 `;
 

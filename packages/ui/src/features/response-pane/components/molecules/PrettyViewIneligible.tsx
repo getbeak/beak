@@ -1,9 +1,9 @@
-import React from 'react';
 import { faPersonCircleQuestion } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import type React from 'react';
 import styled from 'styled-components';
 
-import { NotEligible } from '../../hooks/use-flight-body-info';
+import type { NotEligible } from '../../hooks/use-flight-body-info';
 
 const reasons: Record<NotEligible, Reason> = {
 	request_invalid_body: {
@@ -12,11 +12,11 @@ const reasons: Record<NotEligible, Reason> = {
 	},
 	request_no_body: {
 		title: 'This request had no body, to love',
-		description: 'The request had no body, so you don\'t need to be looking here',
+		description: "The request had no body, so you don't need to be looking here",
 	},
 	response_no_body: {
 		title: 'This response had no body',
-		description: 'The response had no body, so you don\'t need to be looking here',
+		description: "The response had no body, so you don't need to be looking here",
 	},
 };
 
@@ -35,11 +35,7 @@ const PrettyViewIneligible: React.FC<PrettyViewIneligibleProps> = ({ eligibility
 	return (
 		<Container>
 			<ErrorInformation>
-				<FontAwesomeIcon
-					icon={faPersonCircleQuestion}
-					opacity={0.4}
-					size={'4x'}
-				/>
+				<FontAwesomeIcon icon={faPersonCircleQuestion} opacity={0.4} size={'4x'} />
 				<Title>{reason.title}</Title>
 				<Description>{reason.description}</Description>
 			</ErrorInformation>

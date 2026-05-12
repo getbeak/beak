@@ -1,8 +1,7 @@
+import { useAppSelector } from '@beak/ui/store/redux';
 import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
-import { useDispatch } from 'react-redux';
 import { ReflexContainer } from 'react-reflex';
-import { useAppSelector } from '@beak/ui/store/redux';
 import styled from 'styled-components';
 
 import ReflexElement from '../components/atoms/ReflexElement';
@@ -16,16 +15,11 @@ import Omnibar from '../features/omni-bar/components/Omnibar';
 import Sidebar from '../features/sidebar/components/Sidebar';
 import TabView from '../features/tabs/components/TabView';
 import { useApplicationMenuEventListener } from '../hooks/use-application-menu-event-listener';
+import { useGlobalKeyboardShortcuts } from '../hooks/use-global-keyboard-shortcuts';
+import { useProjectBootstrap } from '../hooks/use-project-bootstrap';
 import { useProjectLoading } from '../hooks/use-project-loading';
-import { checkShortcut } from '../lib/keyboard-shortcuts';
-import { startExtensions } from '../store/extensions/actions';
-import { requestFlight } from '../store/flight/actions';
-import { startGit } from '../store/git/actions';
-import { loadEditorPreferences, loadProjectPanePreferences, loadSidebarPreferences } from '../store/preferences/actions';
-import { revealRequestExternal, startProject } from '../store/project/actions';
 
 const ProjectMain: React.FC = () => {
-	const dispatch = useDispatch();
 	const [title, setTitle] = useState('Loading... - Beak');
 	const [setup, setSetup] = useState(false);
 	const collapsedSidebar = useAppSelector(s => s.global.preferences.sidebar.collapsed.sidebar);
@@ -38,45 +32,11 @@ const ProjectMain: React.FC = () => {
 	const projectLoading = useProjectLoading(loaded, setup);
 
 	useApplicationMenuEventListener();
+	useProjectBootstrap();
+	useGlobalKeyboardShortcuts(loaded && setup);
 
 	useEffect(() => {
-		dispatch(loadEditorPreferences());
-		dispatch(loadSidebarPreferences());
-		dispatch(loadProjectPanePreferences());
-		dispatch(startProject());
-		dispatch(startExtensions());
-		dispatch(startGit());
-
-		window.secureBridge.ipc.on('reveal_request', (_event, payload) => {
-			const typed = payload as { requestId: string };
-
-			dispatch(revealRequestExternal(typed.requestId));
-		});
-	}, []);
-
-	useEffect(() => {
-		if (!loaded || !setup)
-			return;
-
-		window.addEventListener('keydown', event => {
-			switch (true) {
-				case checkShortcut('global.execute-request', event):
-					event.stopPropagation();
-					dispatch(requestFlight());
-
-					break;
-
-				default:
-					return;
-			}
-
-			event.preventDefault();
-		});
-	}, [loaded, setup]);
-
-	useEffect(() => {
-		if (!loaded || setup)
-			return;
+		if (!loaded || setup) return;
 
 		window.setTimeout(() => setSetup(true), 300);
 
@@ -94,25 +54,13 @@ const ProjectMain: React.FC = () => {
 				{setup && loaded && (
 					<React.Fragment>
 						<ReflexContainer orientation={'vertical'}>
-							<ReflexElement
-								flex={15}
-								minSize={200}
-								$forcedWidth={collapsedSidebar ? 42 : void 0}
-							>
+							<ReflexElement flex={15} minSize={200} $forcedWidth={collapsedSidebar ? 42 : void 0}>
 								<Sidebar />
 							</ReflexElement>
 
-							<ReflexSplitter
-								$disabled={collapsedSidebar}
-								hideVisualIndicator
-								orientation={'vertical'}
-							/>
+							<ReflexSplitter $disabled={collapsedSidebar} hideVisualIndicator orientation={'vertical'} />
 
-							<ReflexElement
-								flex={80}
-								minSize={902}
-								style={{ overflowY: 'hidden' }}
-							>
+							<ReflexElement flex={80} minSize={902} style={{ overflowY: 'hidden' }}>
 								<ActionBar />
 								<TabView tabs={tabs.activeTabs} selectedTab={activeTab} />
 							</ReflexElement>

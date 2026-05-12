@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import type React from 'react';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
-import EnterMagicState, { MagicState } from './organisms/EnterMagicState';
+import EnterMagicState, { type MagicState } from './organisms/EnterMagicState';
 
 interface MagicalProps {
 	email: string;
@@ -25,11 +26,7 @@ const Magical: React.FC<React.PropsWithChildren<MagicalProps>> = ({ email, rever
 		<Wrapper>
 			<Title>{'Almost there'}</Title>
 
-			<EnterMagicState
-				email={email}
-				inboundState={inboundState}
-				reset={revertFromMagical}
-			/>
+			<EnterMagicState email={email} inboundState={inboundState} reset={revertFromMagical} />
 		</Wrapper>
 	);
 };

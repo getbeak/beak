@@ -1,9 +1,13 @@
-import { Context, ValueSections } from '@getbeak/types/values';
-import { UISection } from '@getbeak/types-variables';
-import type { IpcMain, WebContents } from 'electron';
+import type { Context, ValueSections } from '@getbeak/types/values';
+import type { UISection } from '@getbeak/types-variables';
+import type { WebContents } from 'electron';
 
-import { VariableExtension } from '../types/extensions';
-import { IpcServiceMain, IpcServiceRenderer, Listener, PartialIpcRenderer } from './ipc';
+import type { VariableExtension } from '../types/extensions';
+import type { PartialIpcMain } from './main';
+import { IpcServiceMain } from './main';
+import type { PartialIpcRenderer } from './renderer';
+import { IpcServiceRenderer } from './renderer';
+import type { IpcListener } from './types';
 
 export const ExtensionsMessages = {
 	RegisterRtv: 'register_rtv',
@@ -16,21 +20,23 @@ export const ExtensionsMessages = {
 	RtvParseValueSectionsResponse: 'rtv_parse_value_parts_response',
 };
 
-interface RegisterRtvPayload { extensionFilePath: string }
+interface RegisterRtvPayload {
+	extensionFilePath: string;
+}
 
 interface RtvBase {
 	type: string;
 	context: Context;
 }
 
-interface RtvCreateDefaultValuePayload extends RtvBase { }
+interface RtvCreateDefaultValuePayload extends RtvBase {}
 
 interface RtvGetValuePayload extends RtvBase {
 	payload: Record<string, any>;
 	recursiveDepth: number;
 }
 
-interface RtvEditorCreateUserInterface extends RtvBase { }
+interface RtvEditorCreateUserInterface extends RtvBase {}
 
 interface RtvEditorLoad extends RtvBase {
 	payload: unknown;
@@ -52,7 +58,7 @@ export interface RtvParseValueSectionsResponse {
 	parsed: string;
 }
 
-export class IpcExtensionsServiceRenderer extends IpcServiceRenderer {
+export class IpcExtensionsServiceRenderer extends IpcServiceRenderer<'extensions'> {
 	constructor(ipc: PartialIpcRenderer) {
 		super('extensions', ipc);
 	}
@@ -81,44 +87,41 @@ export class IpcExtensionsServiceRenderer extends IpcServiceRenderer {
 		return await this.invoke(ExtensionsMessages.RtvEditorSave, payload);
 	}
 
-	registerRtvParseValueSections(fn: Listener<RtvParseValueSections>) {
+	registerRtvParseValueSections(fn: IpcListener<RtvParseValueSections>) {
 		this.registerListener(ExtensionsMessages.RtvParseValueSections, fn);
 	}
 }
 
-export class IpcExtensionsServiceMain extends IpcServiceMain {
-	constructor(ipc: IpcMain) {
+export class IpcExtensionsServiceMain extends IpcServiceMain<'extensions'> {
+	constructor(ipc: PartialIpcMain) {
 		super('extensions', ipc);
 	}
 
-	registerRegisterRtv(fn: Listener<RegisterRtvPayload, VariableExtension>) {
-		this.registerListener(ExtensionsMessages.RegisterRtv, fn);
+	registerRegisterRtv(fn: IpcListener<RegisterRtvPayload>) {
+		this.registerRequestHandler(ExtensionsMessages.RegisterRtv, fn);
 	}
 
-	registerRtvCreateDefaultPayload(fn: Listener<RtvCreateDefaultValuePayload, Record<string, any>>) {
-		this.registerListener(ExtensionsMessages.RtvCreateDefaultValue, fn);
+	registerRtvCreateDefaultPayload(fn: IpcListener<RtvCreateDefaultValuePayload>) {
+		this.registerRequestHandler(ExtensionsMessages.RtvCreateDefaultValue, fn);
 	}
 
-	registerRtvGetValuePayload(fn: Listener<RtvGetValuePayload, string>) {
-		this.registerListener(ExtensionsMessages.RtvGetValue, fn);
+	registerRtvGetValuePayload(fn: IpcListener<RtvGetValuePayload>) {
+		this.registerRequestHandler(ExtensionsMessages.RtvGetValue, fn);
 	}
 
-	registerRtvEditorCreateUserInterface(fn: Listener<RtvEditorCreateUserInterface, UISection[]>) {
-		this.registerListener(ExtensionsMessages.RtvEditorCreateUserInterface, fn);
+	registerRtvEditorCreateUserInterface(fn: IpcListener<RtvEditorCreateUserInterface>) {
+		this.registerRequestHandler(ExtensionsMessages.RtvEditorCreateUserInterface, fn);
 	}
 
-	registerRtvEditorLoad(fn: Listener<RtvEditorLoad, any>) {
-		this.registerListener(ExtensionsMessages.RtvEditorLoad, fn);
+	registerRtvEditorLoad(fn: IpcListener<RtvEditorLoad>) {
+		this.registerRequestHandler(ExtensionsMessages.RtvEditorLoad, fn);
 	}
 
-	registerRtvEditorSave(fn: Listener<RtvEditorSave, any>) {
-		this.registerListener(ExtensionsMessages.RtvEditorSave, fn);
+	registerRtvEditorSave(fn: IpcListener<RtvEditorSave>) {
+		this.registerRequestHandler(ExtensionsMessages.RtvEditorSave, fn);
 	}
 
 	rtvParseValueSections(wc: WebContents, payload: RtvParseValueSections) {
-		wc.send(this.channel, {
-			code: ExtensionsMessages.RtvParseValueSections,
-			payload,
-		});
+		this.sendMessage(wc, ExtensionsMessages.RtvParseValueSections, payload);
 	}
 }

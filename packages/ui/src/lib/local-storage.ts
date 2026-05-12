@@ -12,8 +12,7 @@ export class LocalStorage {
 	getJsonItem<T>(key: string) {
 		const value = window.localStorage.getItem(this.generateKey(key));
 
-		if (!value)
-			return null;
+		if (!value) return null;
 
 		return JSON.parse(value) as T;
 	}

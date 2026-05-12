@@ -1,4 +1,4 @@
-import React from 'react';
+import type React from 'react';
 import styled from 'styled-components';
 
 interface EntryTogglerProps {
@@ -8,11 +8,7 @@ interface EntryTogglerProps {
 
 const EntryToggler: React.FC<React.PropsWithChildren<EntryTogglerProps>> = ({ value, onChange }) => (
 	<Wrapper>
-		<Checkbox
-			type={'checkbox'}
-			checked={value}
-			onChange={e => onChange(e.target.checked)}
-		/>
+		<Checkbox type={'checkbox'} checked={value} onChange={e => onChange(e.target.checked)} />
 	</Wrapper>
 );
 

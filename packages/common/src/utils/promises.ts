@@ -5,18 +5,20 @@ export default class QueryablePromise<T> extends Promise<T> {
 	private internalStatus: Status = 'pending';
 
 	constructor(executor: Executor<T>) {
-		super((resolve, reject) => executor(
-			response => {
-				resolve(response);
+		super((resolve, reject) =>
+			executor(
+				response => {
+					resolve(response);
 
-				this.internalStatus = 'resolved';
-			},
-			error => {
-				reject(error);
+					this.internalStatus = 'resolved';
+				},
+				error => {
+					reject(error);
 
-				this.internalStatus = 'rejected';
-			},
-		));
+					this.internalStatus = 'rejected';
+				},
+			),
+		);
 
 		this.internalStatus = 'pending';
 	}

@@ -1,4 +1,4 @@
-import { Environment } from '@beak/common/types/beak';
+import type { Environment } from '@beak/common/types/beak';
 import { app } from 'electron';
 
 import getBeakHost from '../host';

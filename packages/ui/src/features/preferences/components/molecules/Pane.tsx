@@ -1,4 +1,4 @@
-import React from 'react';
+import type React from 'react';
 import styled from 'styled-components';
 
 interface PaneProps {
@@ -8,9 +8,7 @@ interface PaneProps {
 const Pane: React.FC<React.PropsWithChildren<PaneProps>> = ({ title, children }) => (
 	<Wrapper>
 		<Title>{title}</Title>
-		<Container>
-			{children}
-		</Container>
+		<Container>{children}</Container>
 	</Wrapper>
 );
 

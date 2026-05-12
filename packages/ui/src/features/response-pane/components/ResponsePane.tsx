@@ -1,6 +1,6 @@
-import React from 'react';
 import PendingSlash from '@beak/ui/components/molecules/PendingSplash';
 import { useAppSelector } from '@beak/ui/store/redux';
+import React from 'react';
 import styled from 'styled-components';
 
 import FlightInProgress from './molecules/FlightInProgress';
@@ -10,8 +10,8 @@ import Inspector from './organisms/Inspector';
 const ResponsePane: React.FC<React.PropsWithChildren<unknown>> = () => {
 	const { tree } = useAppSelector(s => s.global.project);
 	const selectedTab = useAppSelector(s => s.features.tabs.selectedTab);
-	const flightHistories = useAppSelector(s => s.global.flight.flightHistory);
-	const currentFlight = useAppSelector(s => s.global.flight.currentFlight);
+	const flightHistories = useAppSelector(s => s.global.flight.flightHistories);
+	const currentFlight = useAppSelector(s => (selectedTab ? s.global.flight.activeFlights[selectedTab] : undefined));
 	const selectedNode = tree![selectedTab!];
 	const flightHistory = flightHistories[selectedTab!];
 	const selectedFlight = flightHistory?.history[flightHistory?.selected!];

@@ -1,5 +1,3 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { useDispatch } from 'react-redux';
 import tabActions from '@beak/ui/features/tabs/store/actions';
 import { ipcExplorerService, ipcPreferencesService, ipcWindowService } from '@beak/ui/lib/ipc';
 import { checkShortcut } from '@beak/ui/lib/keyboard-shortcuts';
@@ -8,116 +6,146 @@ import { sidebarPreferenceSetCollapse, sidebarPreferenceSetSelected } from '@bea
 import { useAppSelector } from '@beak/ui/store/redux';
 import { movePosition } from '@beak/ui/utils/arrays';
 import Fuse from 'fuse.js';
+import type React from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import type { Dispatch } from 'redux';
 import styled, { css } from 'styled-components';
 
 import NoItemsFound from '../atoms/NoItemsFound';
 
 function generateCommands(context: GenerateContext): Command[] {
-	return [{ // Developer
-		id: 'developer:reload_window',
-		name: 'Developer: Reload window',
-		keywords: [],
-		action: () => window.location.reload(),
-	}, {
-		id: 'developer:toggle_developer_tools',
-		name: 'Developer: Toggle developer tools',
-		keywords: [],
-		action: () => ipcWindowService.toggleDeveloperTools(),
-	}, { // Extensions
-		id: 'extensions:reload_all_extensions',
-		name: 'Extensions: Reload all extensions',
-		keywords: [],
-		action: dispatch => dispatch(reloadExtensions()),
-	}, {
-		id: 'extensions:open_extensions_folder',
-		name: 'Extensions: Open extensions folder',
-		keywords: [],
-		action: () => ipcExplorerService.revealFile('extensions/'),
-	}, { // Preferences
-		id: 'preferences:switch_to_light_theme',
-		name: 'Preferences: Switch to light theme',
-		keywords: [],
-		action: () => ipcPreferencesService.switchThemeMode('light'),
-	}, {
-		id: 'preferences:switch_to_dark_theme',
-		name: 'Preferences: Switch to dark theme',
-		keywords: [],
-		action: () => ipcPreferencesService.switchThemeMode('dark'),
-	}, {
-		id: 'preferences:switch_to_system_theme',
-		name: 'Preferences: Switch to system theme',
-		keywords: [],
-		action: () => ipcPreferencesService.switchThemeMode('system'),
-	}, { // Tabs
-		id: 'tabs:visit_next_tab',
-		name: 'Tabs: Visit next tab',
-		keywords: [],
-		action: dispatch => dispatch(tabActions.changeTabNext()),
-	}, {
-		id: 'tabs:visit_previous_tab',
-		name: 'Tabs: Visit previous tab',
-		keywords: [],
-		action: dispatch => dispatch(tabActions.changeTabPrevious()),
-	}, {
-		id: 'tabs:make_current_tab_permanent',
-		name: 'Tabs: Make current tab permanent',
-		keywords: [],
-		action: dispatch => dispatch(tabActions.makeTabPermanent()),
-	}, {
-		id: 'tabs:close_current_tab',
-		name: 'Tabs: Close current tab',
-		keywords: [],
-		action: dispatch => dispatch(tabActions.closeTab()),
-	}, {
-		id: 'tabs:close_other_tabs',
-		name: 'Tabs: Close other tabs',
-		keywords: [],
-		action: dispatch => dispatch(tabActions.closeTabsOther()),
-	}, {
-		id: 'tabs:close_tabs_to_the_left',
-		name: 'Tabs: Close tabs to the left',
-		keywords: [],
-		action: dispatch => dispatch(tabActions.closeTabsLeft()),
-	}, {
-		id: 'tabs:close_tabs_to_the_right',
-		name: 'Tabs: Close tabs to the right',
-		keywords: [],
-		action: dispatch => dispatch(tabActions.closeTabsRight()),
-	}, {
-		id: 'tabs:close_all_tabs',
-		name: 'Tabs: Close all tabs',
-		keywords: [],
-		action: dispatch => dispatch(tabActions.closeTabsAll()),
-	}, { // View
-		id: 'view:view_getting_started',
-		name: 'View: Getting started',
-		keywords: ['Welcome'],
-		action: dispatch => dispatch(tabActions.changeTab({ type: 'new_project_intro', temporary: false, payload: 'new_project_intro' })),
-	}, { // Sidebar
-		id: 'sidebar:toggle_visibility',
-		name: 'Sidebar: Toggle visibility',
-		keywords: [],
-		action: dispatch => {
-			dispatch(sidebarPreferenceSetCollapse({ key: 'sidebar', collapsed: !context.sidebar.collapsed }));
+	return [
+		{
+			// Developer
+			id: 'developer:reload_window',
+			name: 'Developer: Reload window',
+			keywords: [],
+			action: () => window.location.reload(),
 		},
-	}, {
-		id: 'sidebar:switch_to_project',
-		name: 'Sidebar: Switch to project ',
-		keywords: [],
-		action: dispatch => {
-			dispatch(sidebarPreferenceSetSelected('project'));
-			dispatch(sidebarPreferenceSetCollapse({ key: 'sidebar', collapsed: false }));
+		{
+			id: 'developer:toggle_developer_tools',
+			name: 'Developer: Toggle developer tools',
+			keywords: [],
+			action: () => ipcWindowService.toggleDeveloperTools(),
 		},
-	}, {
-		id: 'sidebar:switch_to_variables',
-		name: 'Sidebar: Switch to variables ',
-		keywords: [],
-		action: dispatch => {
-			dispatch(sidebarPreferenceSetSelected('variables'));
-			dispatch(sidebarPreferenceSetCollapse({ key: 'sidebar', collapsed: false }));
+		{
+			// Extensions
+			id: 'extensions:reload_all_extensions',
+			name: 'Extensions: Reload all extensions',
+			keywords: [],
+			action: dispatch => dispatch(reloadExtensions()),
 		},
-	}];
+		{
+			id: 'extensions:open_extensions_folder',
+			name: 'Extensions: Open extensions folder',
+			keywords: [],
+			action: () => ipcExplorerService.revealFile('extensions/'),
+		},
+		{
+			// Preferences
+			id: 'preferences:switch_to_light_theme',
+			name: 'Preferences: Switch to light theme',
+			keywords: [],
+			action: () => ipcPreferencesService.switchThemeMode('light'),
+		},
+		{
+			id: 'preferences:switch_to_dark_theme',
+			name: 'Preferences: Switch to dark theme',
+			keywords: [],
+			action: () => ipcPreferencesService.switchThemeMode('dark'),
+		},
+		{
+			id: 'preferences:switch_to_system_theme',
+			name: 'Preferences: Switch to system theme',
+			keywords: [],
+			action: () => ipcPreferencesService.switchThemeMode('system'),
+		},
+		{
+			// Tabs
+			id: 'tabs:visit_next_tab',
+			name: 'Tabs: Visit next tab',
+			keywords: [],
+			action: dispatch => dispatch(tabActions.changeTabNext()),
+		},
+		{
+			id: 'tabs:visit_previous_tab',
+			name: 'Tabs: Visit previous tab',
+			keywords: [],
+			action: dispatch => dispatch(tabActions.changeTabPrevious()),
+		},
+		{
+			id: 'tabs:make_current_tab_permanent',
+			name: 'Tabs: Make current tab permanent',
+			keywords: [],
+			action: dispatch => dispatch(tabActions.makeTabPermanent()),
+		},
+		{
+			id: 'tabs:close_current_tab',
+			name: 'Tabs: Close current tab',
+			keywords: [],
+			action: dispatch => dispatch(tabActions.closeTab()),
+		},
+		{
+			id: 'tabs:close_other_tabs',
+			name: 'Tabs: Close other tabs',
+			keywords: [],
+			action: dispatch => dispatch(tabActions.closeTabsOther()),
+		},
+		{
+			id: 'tabs:close_tabs_to_the_left',
+			name: 'Tabs: Close tabs to the left',
+			keywords: [],
+			action: dispatch => dispatch(tabActions.closeTabsLeft()),
+		},
+		{
+			id: 'tabs:close_tabs_to_the_right',
+			name: 'Tabs: Close tabs to the right',
+			keywords: [],
+			action: dispatch => dispatch(tabActions.closeTabsRight()),
+		},
+		{
+			id: 'tabs:close_all_tabs',
+			name: 'Tabs: Close all tabs',
+			keywords: [],
+			action: dispatch => dispatch(tabActions.closeTabsAll()),
+		},
+		{
+			// View
+			id: 'view:view_getting_started',
+			name: 'View: Getting started',
+			keywords: ['Welcome'],
+			action: dispatch =>
+				dispatch(tabActions.changeTab({ type: 'new_project_intro', temporary: false, payload: 'new_project_intro' })),
+		},
+		{
+			// Sidebar
+			id: 'sidebar:toggle_visibility',
+			name: 'Sidebar: Toggle visibility',
+			keywords: [],
+			action: dispatch => {
+				dispatch(sidebarPreferenceSetCollapse({ key: 'sidebar', collapsed: !context.sidebar.collapsed }));
+			},
+		},
+		{
+			id: 'sidebar:switch_to_project',
+			name: 'Sidebar: Switch to project ',
+			keywords: [],
+			action: dispatch => {
+				dispatch(sidebarPreferenceSetSelected('project'));
+				dispatch(sidebarPreferenceSetCollapse({ key: 'sidebar', collapsed: false }));
+			},
+		},
+		{
+			id: 'sidebar:switch_to_variables',
+			name: 'Sidebar: Switch to variables ',
+			keywords: [],
+			action: dispatch => {
+				dispatch(sidebarPreferenceSetSelected('variables'));
+				dispatch(sidebarPreferenceSetCollapse({ key: 'sidebar', collapsed: false }));
+			},
+		},
+	];
 }
 
 interface GenerateContext {
@@ -154,10 +182,7 @@ const CommandsView: React.FC<React.PropsWithChildren<CommandsViewProps>> = ({ co
 
 	const fuse = new Fuse(commands, {
 		includeScore: true,
-		keys: [
-			'name',
-			'keywords',
-		],
+		keys: ['name', 'keywords'],
 		threshold: 0.4,
 	});
 
@@ -185,15 +210,13 @@ const CommandsView: React.FC<React.PropsWithChildren<CommandsViewProps>> = ({ co
 					break;
 
 				case checkShortcut('omni-bar.commands.open', event): {
-					if (active < 0)
-						break;
+					if (active < 0) break;
 
 					reset();
 
 					const match = matches[active];
 
-					if (!match)
-						return;
+					if (!match) return;
 
 					commands.find(c => c.id === match)?.action(dispatch);
 
@@ -216,8 +239,7 @@ const CommandsView: React.FC<React.PropsWithChildren<CommandsViewProps>> = ({ co
 		if (content === '>') {
 			setMatches(commands.map(c => c.id));
 
-			if (active === -1)
-				setActive(0);
+			if (active === -1) setActive(0);
 
 			return;
 		}
@@ -226,30 +248,23 @@ const CommandsView: React.FC<React.PropsWithChildren<CommandsViewProps>> = ({ co
 
 		setMatches(matchedIds);
 
-		if (active === -1 && matchedIds.length > 0)
-			setActive(0);
+		if (active === -1 && matchedIds.length > 0) setActive(0);
 	}, [content, pureContent]);
 
 	return (
 		<Container tabIndex={0}>
-			{matches.length === 0 && (
-				<NoItemsFound>
-					{'No matching commands found'}
-				</NoItemsFound>
-			)}
+			{matches.length === 0 && <NoItemsFound>{'No matching commands found'}</NoItemsFound>}
 			{matches.map((k, idx) => {
 				const command = commands.find(c => c.id === k);
 
-				if (!command)
-					return null;
+				if (!command) return null;
 
 				return (
 					<Item
 						$active={active === idx}
 						key={k}
 						ref={i => {
-							if (active === idx)
-								activeRef.current = i;
+							if (active === idx) activeRef.current = i;
 						}}
 						tabIndex={0}
 						onClick={() => {
@@ -279,7 +294,7 @@ const Item = styled.div<{ $active: boolean }>`
 	text-decoration: none;
 
 	&:hover { background: ${p => p.theme.ui.secondaryActionMuted}; }
-	${p => p.$active ? css`background: ${p => p.theme.ui.secondaryActionMuted};` : ''}
+	${p => (p.$active ? css`background: ${p => p.theme.ui.secondaryActionMuted};` : '')}
 
 	&:last-of-type {
 		padding-bottom: 10px;

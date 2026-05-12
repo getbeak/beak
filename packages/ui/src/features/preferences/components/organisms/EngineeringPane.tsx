@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
 import Button from '@beak/ui/components/atoms/Button';
 import { Select } from '@beak/ui/components/atoms/Input';
 import { ipcNestService, ipcPreferencesService } from '@beak/ui/lib/ipc';
+import React, { useEffect, useState } from 'react';
 
 import { ItemGroup, ItemLabel, ItemSpacer } from '../atoms/item';
 import Pane from '../molecules/Pane';
@@ -34,16 +34,11 @@ const EngineeringPane: React.FC<React.PropsWithChildren<unknown>> = () => {
 
 			<ItemGroup>
 				<ItemLabel>{'Actions:'}</ItemLabel>
-				<Button onClick={() => ipcPreferencesService.resetConfig()}>
-					{'Reset config & cache'}
-				</Button>
+				<Button onClick={() => ipcPreferencesService.resetConfig()}>{'Reset config & cache'}</Button>
 				{hasAuth && (
 					<React.Fragment>
 						<ItemSpacer />
-						<Button
-							colour={'destructive'}
-							onClick={() => ipcPreferencesService.signOut()}
-						>
+						<Button colour={'destructive'} onClick={() => ipcPreferencesService.signOut()}>
 							{'Sign out'}
 						</Button>
 					</React.Fragment>

@@ -5,7 +5,7 @@ function typedObjectKeys<T extends GenericObject>(inputObject: T) {
 }
 
 function typedObjectValues<T extends GenericObject>(inputObject: T) {
-	return Object.values(inputObject) as (T[keyof T])[];
+	return Object.values(inputObject) as T[keyof T][];
 }
 
 export const TypedObject = {

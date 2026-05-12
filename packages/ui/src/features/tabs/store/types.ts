@@ -1,4 +1,4 @@
-import { TabItem } from '@beak/common/types/beak-project';
+import type { TabItem } from '@beak/common/types/beak-project';
 
 export const ActionTypes = {
 	LOAD_TAB_STATE: '@beak/features/tabs/LOAD_TAB_STATE',

@@ -1,7 +1,7 @@
-import React from 'react';
-import { useDispatch } from 'react-redux';
 import { actions } from '@beak/ui/store/project';
 import type { ValidRequestNode } from '@getbeak/types/nodes';
+import type React from 'react';
+import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 
 export interface OptionsViewProps {
@@ -21,10 +21,14 @@ const OptionsView: React.FC<React.PropsWithChildren<OptionsViewProps>> = props =
 					name={'followRedirects'}
 					type={'checkbox'}
 					checked={options.followRedirects}
-					onChange={e => dispatch(actions.requestOptionFollowRedirects({
-						requestId: node.id,
-						followRedirects: e.target.checked,
-					}))}
+					onChange={e =>
+						dispatch(
+							actions.requestOptionFollowRedirects({
+								requestId: node.id,
+								followRedirects: e.target.checked,
+							}),
+						)
+					}
 				/>
 			</OptionRow>
 		</Container>

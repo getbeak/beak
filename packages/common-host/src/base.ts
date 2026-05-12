@@ -2,9 +2,10 @@ import type fs from 'node:fs';
 import type path from 'node:path';
 import type { Logger } from 'tslog';
 
-import CredentialsProvider from './providers/credentials';
-import AesProvider from './providers/encryption-aes';
-import StorageProvider, { GenericStore } from './providers/storage';
+import type CredentialsProvider from './providers/credentials';
+import type AesProvider from './providers/encryption-aes';
+import type StorageProvider from './providers/storage';
+import type { GenericStore } from './providers/storage';
 
 export interface Providers {
 	aes: AesProvider;

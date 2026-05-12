@@ -1,4 +1,4 @@
-import React from 'react';
+import type React from 'react';
 import styled from 'styled-components';
 
 interface SidebarMenuHighlighterProps {
@@ -13,7 +13,7 @@ const SidebarMenuHighlighter: React.FC<React.PropsWithChildren<SidebarMenuHighli
 );
 
 const Container = styled.div<{ $hidden: boolean }>`
-	display: ${p => p.$hidden ? 'none' : 'block'};
+	display: ${p => (p.$hidden ? 'none' : 'block')};
 	position: absolute;
 	top: 0; bottom: 0; left: 0;
 `;
@@ -25,7 +25,7 @@ const HighlightBar = styled.div<{ $index: number }>`
 
 	transition: margin-top .2s ease;
 
-	display: ${p => p.$index === -1 ? 'none' : 'block'};
+	display: ${p => (p.$index === -1 ? 'none' : 'block')};
 	margin-top: ${p => p.$index * 40}px;
 `;
 

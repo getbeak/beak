@@ -1,0 +1,37 @@
+diff --git a/dist/commands/dev.js b/dist/commands/dev.js
+index 1228cbec2012d7557c7ab3ede3e1370c3da5ee66..928fa8860bae019f084f946fad4e3641ebb66c54 100644
+--- a/dist/commands/dev.js
++++ b/dist/commands/dev.js
+@@ -1,4 +1,5 @@
+ import { spawn } from "child_process";
++import { createRequire } from "node:module";
+ import path from "node:path";
+ import { Cli } from "../cli.js";
+ import { CONFIG_FILE_NAME } from "../config/constants.js";
+@@ -7,6 +8,17 @@ import { Worker } from "../worker.js";
+ const _isWindows = process.platform === "win32";
+ const _electronBin = _isWindows ? "electron.cmd" : "electron";
+ const _logger = new Logger("Commands/Dev");
++const _require = createRequire(import.meta.url);
++function _resolveElectronBinary() {
++  try {
++    const fromPackage = _require("electron");
++    if (typeof fromPackage === "string" && fromPackage.length > 0) {
++      return fromPackage;
++    }
++  } catch {
++  }
++  return path.resolve(`node_modules/.bin/${_electronBin}`);
++}
+ class _ApplicationStarter {
+   _electronProcess;
+   _args;
+@@ -25,7 +37,7 @@ class _ApplicationStarter {
+     }
+     _logger.log("Start application");
+     this._electronProcess = spawn(
+-      path.resolve(`node_modules/.bin/${_electronBin}`),
++      _resolveElectronBinary(),
+       [outputEntryFile, ...this._args],
+       {
+         stdio: "inherit",

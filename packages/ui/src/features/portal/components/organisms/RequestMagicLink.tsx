@@ -1,8 +1,8 @@
-import React, { useEffect, useRef, useState } from 'react';
 import Squawk from '@beak/common/utils/squawk';
 import Button from '@beak/ui/components/atoms/Button';
 import Input from '@beak/ui/components/atoms/Input';
 import { ipcNestService } from '@beak/ui/lib/ipc';
+import React, { useEffect, useRef, useState } from 'react';
 
 import { ActionContainer, Error, SubTitle } from '../atoms/typography';
 
@@ -23,8 +23,7 @@ const RequestMagicLink: React.FC<React.PropsWithChildren<RequestMagicLinkProps>>
 	useEffect(() => inputRef.current?.select(), []);
 
 	function sendMagicLink() {
-		if (email === '' || working)
-			return;
+		if (email === '' || working) return;
 
 		if (!emailRegex.test(email)) {
 			setError(new Squawk('invalid_email'));
@@ -35,7 +34,8 @@ const RequestMagicLink: React.FC<React.PropsWithChildren<RequestMagicLinkProps>>
 		setError(null);
 		setWorking(true);
 
-		ipcNestService.sendMagicLink(email)
+		ipcNestService
+			.sendMagicLink(email)
 			.then(() => onMagicLinkSent())
 			.catch(error => setError(Squawk.coerce(error)))
 			.finally(() => setWorking(false));
@@ -43,9 +43,7 @@ const RequestMagicLink: React.FC<React.PropsWithChildren<RequestMagicLinkProps>>
 
 	return (
 		<React.Fragment>
-			<SubTitle>
-				{'Enter your Beak email address:'}
-			</SubTitle>
+			<SubTitle>{'Enter your Beak email address:'}</SubTitle>
 			<ActionContainer>
 				<Input
 					type={'email'}
@@ -54,19 +52,11 @@ const RequestMagicLink: React.FC<React.PropsWithChildren<RequestMagicLinkProps>>
 					ref={inputRef}
 					onChange={e => onEmailChange(e.target.value)}
 					onKeyDown={e => {
-						if (e.key === 'Enter')
-							sendMagicLink();
+						if (e.key === 'Enter') sendMagicLink();
 					}}
 				/>
-				{error && (
-					<Error>
-						{getErrorMessage(error)}
-					</Error>
-				)}
-				<Button
-					disabled={working}
-					onClick={() => sendMagicLink()}
-				>
+				{error && <Error>{getErrorMessage(error)}</Error>}
+				<Button disabled={working} onClick={() => sendMagicLink()}>
 					{'Continue'}
 				</Button>
 			</ActionContainer>

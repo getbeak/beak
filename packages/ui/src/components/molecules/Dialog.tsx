@@ -1,6 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { createPortal } from 'react-dom';
 import ksuid from '@beak/ksuid';
+import type React from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import styled from 'styled-components';
 
 const dialogContainerId = 'generic-dialog-container';
@@ -37,17 +38,11 @@ const Dialog: React.FC<React.PropsWithChildren<DialogProps>> = props => {
 		};
 	}, []);
 
-	if (!identifier)
-		return null;
+	if (!identifier) return null;
 
 	return createPortal(
-		<Container
-			backdrop={stackIndex.current === 1}
-			onClick={() => onClose()}
-		>
-			<Wrapper onClick={e => e.stopPropagation()}>
-				{children}
-			</Wrapper>
+		<Container backdrop={stackIndex.current === 1} onClick={() => onClose()}>
+			<Wrapper onClick={e => e.stopPropagation()}>{children}</Wrapper>
 		</Container>,
 		document.getElementById(identifier!)!,
 	);

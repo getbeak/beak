@@ -1,7 +1,7 @@
 import { IpcFlightServiceMain } from '@beak/common/ipc/flight';
-import { FlightRequestPayload } from '@beak/common/types/requester';
+import type { FlightRequestPayload } from '@beak/common/types/requester';
 
-import { RequesterOptions, startRequester } from '../requester';
+import { type RequesterOptions, startRequester } from '../requester';
 import { webIpcMain } from './ipc';
 
 const service = new IpcFlightServiceMain(webIpcMain);

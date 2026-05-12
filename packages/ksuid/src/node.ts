@@ -9,10 +9,7 @@ export default class Node {
 	private _lastTimestamp: number;
 	private _currentSequence: number;
 
-	constructor(
-		environment = 'prod',
-		instance: Instance = getInstance(),
-	) {
+	constructor(environment = 'prod', instance: Instance = getInstance()) {
 		checkPrefix('environment', environment);
 
 		this._environment = environment;
@@ -49,13 +46,7 @@ export default class Node {
 			this._currentSequence = 0;
 		}
 
-		return new Id(
-			this.environment,
-			resource,
-			this._lastTimestamp,
-			this.instance,
-			this._currentSequence,
-		);
+		return new Id(this.environment, resource, this._lastTimestamp, this.instance, this._currentSequence);
 	}
 }
 

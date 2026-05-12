@@ -1,7 +1,7 @@
-import { TabItem } from '@beak/common/types/beak-project';
+import type { TabItem } from '@beak/common/types/beak-project';
 import { createAction } from '@reduxjs/toolkit';
 
-import { ActionTypes, State } from './types';
+import { ActionTypes, type State } from './types';
 
 export const loadTabState = createAction(ActionTypes.LOAD_TAB_STATE);
 export const tabStateLoaded = createAction<State>(ActionTypes.TAB_STATE_LOADED);

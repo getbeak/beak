@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
 import { toHexAlpha } from '@beak/design-system/utils';
 import { ipcNestService } from '@beak/ui/lib/ipc';
 import { faUserCircle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import type React from 'react';
+import { useEffect, useState } from 'react';
 import styled, { useTheme } from 'styled-components';
 
 const AccountItem: React.FC<React.PropsWithChildren<unknown>> = () => {
@@ -10,7 +11,8 @@ const AccountItem: React.FC<React.PropsWithChildren<unknown>> = () => {
 	const [primaryEmail, setPrimaryEmail] = useState<string | null>(null);
 
 	useEffect(() => {
-		ipcNestService.getUser()
+		ipcNestService
+			.getUser()
 			.then(user => {
 				const identifiers = user.identifiers
 					.filter(i => i.identifierType === 'email' && i.removedAt === null)
@@ -19,29 +21,21 @@ const AccountItem: React.FC<React.PropsWithChildren<unknown>> = () => {
 				const verifiedEmail = identifiers.find(i => i.verifiedAt !== null);
 				const backup = identifiers[0];
 
-				if (!backup)
-					return;
+				if (!backup) return;
 
 				setPrimaryEmail((verifiedEmail ?? backup).identifierValue);
 			})
 			.catch(() => setPrimaryEmail(null));
 	}, []);
 
-	if (!primaryEmail)
-		return null;
+	if (!primaryEmail) return null;
 
 	return (
 		<Wrapper>
-			<FontAwesomeIcon
-				icon={faUserCircle}
-				size={'3x'}
-				color={theme.ui.primaryFill}
-			/>
+			<FontAwesomeIcon icon={faUserCircle} size={'3x'} color={theme.ui.primaryFill} />
 			<Account>
 				<AccountTop>{'Beak'}</AccountTop>
-				<AccountEmail title={primaryEmail}>
-					{primaryEmail}
-				</AccountEmail>
+				<AccountEmail title={primaryEmail}>{primaryEmail}</AccountEmail>
 			</Account>
 		</Wrapper>
 	);

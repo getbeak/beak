@@ -1,4 +1,4 @@
-import React from 'react';
+import type React from 'react';
 
 const Redirect: React.FC<React.PropsWithChildren<unknown>> = () => {
 	window.location.href = 'https://getbeak.app';

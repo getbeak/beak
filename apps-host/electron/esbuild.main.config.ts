@@ -1,9 +1,10 @@
 /* eslint-disable no-process-env */
+
+import fs from 'node:fs/promises';
+import { createRequire } from 'node:module';
+import path from 'node:path';
 import SentryCli from '@sentry/cli';
 import type { BuildOptions, PluginBuild } from 'esbuild';
-import fs from 'fs/promises';
-import { createRequire } from 'module';
-import path from 'path';
 
 const require = createRequire(import.meta.url);
 
@@ -109,34 +110,28 @@ const handleVm2Plugin = {
 	},
 };
 
-export default [{
-	platform: 'node',
-	target: 'node18.12.1', // TODO(afr): automatic electron version target
-	bundle: true,
-	format: 'cjs',
-	minify: environment !== 'development',
-	entryPoints: [
-		path.resolve('src/main.ts'),
-		path.resolve('src/preload.ts'),
-	],
-	plugins: [
-		nativeNodeModulesPlugin,
-		sentrySourceMapsPlugin,
-		handleVm2Plugin,
-	],
-	define: {
-		'process.env.BUILD_ENVIRONMENT': writeDefinition(process.env.BUILD_ENVIRONMENT),
-		'process.env.RELEASE_IDENTIFIER': writeDefinition(releaseIdentifier),
-		'process.env.ENVIRONMENT': writeDefinition(environment),
+export default [
+	{
+		platform: 'node',
+		target: 'node18.12.1', // TODO(afr): automatic electron version target
+		bundle: true,
+		format: 'cjs',
+		minify: environment !== 'development',
+		entryPoints: [path.resolve('src/main.ts'), path.resolve('src/preload.ts')],
+		plugins: [nativeNodeModulesPlugin, sentrySourceMapsPlugin, handleVm2Plugin],
+		define: {
+			'process.env.BUILD_ENVIRONMENT': writeDefinition(process.env.BUILD_ENVIRONMENT),
+			'process.env.RELEASE_IDENTIFIER': writeDefinition(releaseIdentifier),
+			'process.env.ENVIRONMENT': writeDefinition(environment),
+		},
+		sourcemap: true,
+		assetNames: '[name]',
+		external: ['node:fs'],
 	},
-	sourcemap: true,
-	assetNames: '[name]',
-	external: ['node:fs'],
-}] as BuildOptions[];
+] as BuildOptions[];
 
 function writeDefinition(value: string | undefined) {
-	if (value === void 0)
-		return value;
+	if (value === void 0) return value;
 
 	return `'${value}'`;
 }

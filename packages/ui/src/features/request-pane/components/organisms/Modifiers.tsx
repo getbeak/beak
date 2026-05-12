@@ -1,11 +1,11 @@
-import React from 'react';
-import { useDispatch } from 'react-redux';
-import { RequestPreferenceMainTab } from '@beak/common/types/beak-hub';
+import type { RequestPreferenceMainTab } from '@beak/common/types/beak-hub';
 import BasicTableEditor from '@beak/ui/features/basic-table-editor/components/BasicTableEditor';
 import { requestPreferenceSetReqMainTab } from '@beak/ui/store/preferences/actions';
 import actions from '@beak/ui/store/project/actions';
 import { useAppSelector } from '@beak/ui/store/redux';
 import type { ValidRequestNode } from '@getbeak/types/nodes';
+import type React from 'react';
+import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 
 import TabBar from '../../../../components/atoms/TabBar';
@@ -32,28 +32,16 @@ const Modifiers: React.FC<React.PropsWithChildren<ModifiersProps>> = props => {
 		<Container>
 			<TabBar $centered>
 				<TabSpacer />
-				<TabItem
-					active={tab === 'headers'}
-					onClick={() => setTab('headers')}
-				>
+				<TabItem active={tab === 'headers'} onClick={() => setTab('headers')}>
 					{'Headers'}
 				</TabItem>
-				<TabItem
-					active={tab === 'url_query'}
-					onClick={() => setTab('url_query')}
-				>
+				<TabItem active={tab === 'url_query'} onClick={() => setTab('url_query')}>
 					{'URL query'}
 				</TabItem>
-				<TabItem
-					active={tab === 'body'}
-					onClick={() => setTab('body')}
-				>
+				<TabItem active={tab === 'body'} onClick={() => setTab('body')}>
 					{'Body'}
 				</TabItem>
-				<TabItem
-					active={tab === 'options'}
-					onClick={() => setTab('options')}
-				>
+				<TabItem active={tab === 'options'} onClick={() => setTab('options')}>
 					{'Options'}
 				</TabItem>
 				<TabSpacer />
@@ -65,15 +53,23 @@ const Modifiers: React.FC<React.PropsWithChildren<ModifiersProps>> = props => {
 						items={node.info.headers}
 						requestId={node.id}
 						addItem={() => dispatch(actions.requestHeaderAdded({ requestId: node.id }))}
-						removeItem={id => dispatch(actions.requestHeaderRemoved({
-							requestId: node.id,
-							identifier: id,
-						}))}
-						updateItem={(type, id, value) => dispatch(actions.requestHeaderUpdated({
-							requestId: node.id,
-							identifier: id,
-							[type]: value,
-						}))}
+						removeItem={id =>
+							dispatch(
+								actions.requestHeaderRemoved({
+									requestId: node.id,
+									identifier: id,
+								}),
+							)
+						}
+						updateItem={(type, id, value) =>
+							dispatch(
+								actions.requestHeaderUpdated({
+									requestId: node.id,
+									identifier: id,
+									[type]: value,
+								}),
+							)
+						}
 					/>
 				)}
 				{tab === 'url_query' && (
@@ -81,15 +77,23 @@ const Modifiers: React.FC<React.PropsWithChildren<ModifiersProps>> = props => {
 						items={node.info.query}
 						requestId={node.id}
 						addItem={() => dispatch(actions.requestQueryAdded({ requestId: node.id }))}
-						removeItem={id => dispatch(actions.requestQueryRemoved({
-							requestId: node.id,
-							identifier: id,
-						}))}
-						updateItem={(type, id, value) => dispatch(actions.requestQueryUpdated({
-							requestId: node.id,
-							identifier: id,
-							[type]: value,
-						}))}
+						removeItem={id =>
+							dispatch(
+								actions.requestQueryRemoved({
+									requestId: node.id,
+									identifier: id,
+								}),
+							)
+						}
+						updateItem={(type, id, value) =>
+							dispatch(
+								actions.requestQueryUpdated({
+									requestId: node.id,
+									identifier: id,
+									[type]: value,
+								}),
+							)
+						}
 					/>
 				)}
 				{tab === 'body' && <BodyTab node={node} />}

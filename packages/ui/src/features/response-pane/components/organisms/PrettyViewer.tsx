@@ -1,10 +1,10 @@
-import React from 'react';
-import { useDispatch } from 'react-redux';
 import EditorView from '@beak/ui/components/atoms/EditorView';
 import actions from '@beak/ui/store/preferences/actions';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { attemptJsonStringFormat } from '@beak/ui/utils/json';
 import type { Flight } from '@getbeak/types/flight';
+import React from 'react';
+import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import xmlFormatter from 'xml-formatter';
 
@@ -26,18 +26,21 @@ const PrettyViewer: React.FC<React.PropsWithChildren<PrettyViewerProps>> = ({ fl
 	const [contentType, detectedFormat] = useDetectedFlightFormat(flight, mode);
 	const selectedLanguage = preferences.language ?? detectedFormat;
 
-	if (eligibility !== 'eligible')
-		return <PrettyViewIneligible eligibility={eligibility} />;
+	if (eligibility !== 'eligible') return <PrettyViewIneligible eligibility={eligibility} />;
 
 	return (
 		<Container>
 			<PrettyRenderSelection
 				selectedLanguage={selectedLanguage}
-				onSelectedLanguageChange={lang => dispatch(actions.requestPreferenceSetResPrettyLanguage({
-					id: requestId,
-					mode,
-					language: lang,
-				}))}
+				onSelectedLanguageChange={lang =>
+					dispatch(
+						actions.requestPreferenceSetResPrettyLanguage({
+							id: requestId,
+							mode,
+							language: lang,
+						}),
+					)
+				}
 			/>
 			{renderFormat(selectedLanguage, contentType, body)}
 		</Container>
@@ -49,13 +52,7 @@ function renderFormat(language: string | null, contentType: string | null, body:
 		case 'json': {
 			const json = new TextDecoder().decode(body);
 
-			return (
-				<EditorView
-					language={'json'}
-					value={attemptJsonStringFormat(json)}
-					options={{ readOnly: true }}
-				/>
-			);
+			return <EditorView language={'json'} value={attemptJsonStringFormat(json)} options={{ readOnly: true }} />;
 		}
 
 		case 'hex': {
@@ -69,63 +66,36 @@ function renderFormat(language: string | null, contentType: string | null, body:
 					.map(r => r.toString(16).padStart(2, '0'))
 					.join(' ');
 
-				const textValue = new TextDecoder('ascii').decode(row)
+				const textValue = new TextDecoder('ascii')
+					.decode(row)
 					.replaceAll(/[^\x20-\x7F]/g, '.')
 					.replaceAll(/\s/g, ' ')
 					.padEnd(15, '.');
 
-				const rowParts = [
-					i.toString(16).padStart(8, '0'),
-					hexValue.padEnd(44, ' '),
-					textValue,
-				];
+				const rowParts = [i.toString(16).padStart(8, '0'), hexValue.padEnd(44, ' '), textValue];
 
 				outputParts.push(rowParts.join('  '));
 			}
 
-			return (
-				<EditorView
-					language={'text'}
-					value={outputParts.join('\n')}
-					options={{ readOnly: true }}
-				/>
-			);
+			return <EditorView language={'text'} value={outputParts.join('\n')} options={{ readOnly: true }} />;
 		}
 
 		case 'xml': {
 			const xml = new TextDecoder().decode(body);
 
-			return (
-				<EditorView
-					language={'xml'}
-					value={tryFormatXml(xml)}
-					options={{ readOnly: true }}
-				/>
-			);
+			return <EditorView language={'xml'} value={tryFormatXml(xml)} options={{ readOnly: true }} />;
 		}
 
 		case 'html': {
 			const html = new TextDecoder().decode(body);
 
-			return (
-				<EditorView
-					language={'html'}
-					value={tryFormatXml(html)}
-					options={{ readOnly: true }}
-				/>
-			);
+			return <EditorView language={'html'} value={tryFormatXml(html)} options={{ readOnly: true }} />;
 		}
 
 		case 'css': {
 			const css = new TextDecoder().decode(body);
 
-			return (
-				<EditorView
-					language={'css'}
-					value={css}
-					options={{ readOnly: true }}
-				/>
-			);
+			return <EditorView language={'css'} value={css} options={{ readOnly: true }} />;
 		}
 
 		case 'image': {
@@ -143,18 +113,10 @@ function renderFormat(language: string | null, contentType: string | null, body:
 				</Video>
 			);
 		}
-
-		case null:
 		default: {
 			const text = new TextDecoder().decode(body);
 
-			return (
-				<EditorView
-					language={'text'}
-					value={text}
-					options={{ readOnly: true }}
-				/>
-			);
+			return <EditorView language={'text'} value={text} options={{ readOnly: true }} />;
 		}
 	}
 }
@@ -184,7 +146,4 @@ const Video = styled.video`
 	height: 100%;
 `;
 
-export default React.memo(
-	PrettyViewer,
-	(prev, next) => prev.flight.flightId === next.flight.flightId,
-);
+export default React.memo(PrettyViewer, (prev, next) => prev.flight.flightId === next.flight.flightId);

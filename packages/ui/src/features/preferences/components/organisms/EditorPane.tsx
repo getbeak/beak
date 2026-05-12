@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { EditorPreferences } from '@beak/common/types/preferences';
+import type { EditorPreferences } from '@beak/common/types/preferences';
 import Input from '@beak/ui/components/atoms/Input';
 import { ipcPreferencesService } from '@beak/ui/lib/ipc';
+import type React from 'react';
+import { useEffect, useState } from 'react';
 
 import { SelectContainer, SelectItem, SelectItemPreview } from '../atoms/fancy-select';
 import { ItemGroup, ItemInfo, ItemLabel, SubItem, SubItemGroup, SubItemLabel } from '../atoms/item';
@@ -20,8 +21,7 @@ const EditorPane: React.FC<React.PropsWithChildren<unknown>> = () => {
 		ipcPreferencesService.setEditorValue(key, value).then(getEditorPreferences);
 	}
 
-	if (!editorPreferences)
-		return null;
+	if (!editorPreferences) return null;
 
 	return (
 		<Pane title={'Rich text editor'}>
@@ -32,25 +32,37 @@ const EditorPane: React.FC<React.PropsWithChildren<unknown>> = () => {
 						$active={editorPreferences.themeOverride === 'system'}
 						onClick={() => updateEditorPreference('themeOverride', 'system')}
 					>
-						<SelectItemPreview $active={editorPreferences.themeOverride === 'system'} $themeMode={'system'} $themeType={'editor'} />
+						<SelectItemPreview
+							$active={editorPreferences.themeOverride === 'system'}
+							$themeMode={'system'}
+							$themeType={'editor'}
+						/>
 						{'Default'}
 					</SelectItem>
 					<SelectItem
 						$active={editorPreferences.themeOverride === 'light'}
 						onClick={() => updateEditorPreference('themeOverride', 'light')}
 					>
-						<SelectItemPreview $active={editorPreferences.themeOverride === 'light'} $themeMode={'light'} $themeType={'editor'} />
+						<SelectItemPreview
+							$active={editorPreferences.themeOverride === 'light'}
+							$themeMode={'light'}
+							$themeType={'editor'}
+						/>
 						{'Light'}
 					</SelectItem>
 					<SelectItem
 						$active={editorPreferences.themeOverride === 'dark'}
 						onClick={() => updateEditorPreference('themeOverride', 'dark')}
 					>
-						<SelectItemPreview $active={editorPreferences.themeOverride === 'dark'} $themeMode={'dark'} $themeType={'editor'} />
+						<SelectItemPreview
+							$active={editorPreferences.themeOverride === 'dark'}
+							$themeMode={'dark'}
+							$themeType={'editor'}
+						/>
 						{'Dark'}
 					</SelectItem>
 				</SelectContainer>
-				<ItemInfo>{'By default, the editor theme will use Beak\'s current theme.'}</ItemInfo>
+				<ItemInfo>{"By default, the editor theme will use Beak's current theme."}</ItemInfo>
 			</ItemGroup>
 
 			<ItemGroup>

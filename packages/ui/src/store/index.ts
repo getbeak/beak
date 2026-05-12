@@ -1,29 +1,27 @@
-import createSagaMiddleware from '@redux-saga/core';
-import { all, fork } from '@redux-saga/core/effects';
-import { applyMiddleware, combineReducers, createStore, Store } from 'redux';
+// Flight slice lives in @beak/core (pure domain), used here as a global state shard.
+import { type FlightSliceState, flightSlice } from '@beak/core/flight';
+import { applyMiddleware, combineReducers, createStore, type Store } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
-
 import * as encryptionStore from '../features/encryption/store';
-import { State as EncryptionState } from '../features/encryption/store/types';
+import type { State as EncryptionState } from '../features/encryption/store/types';
 import * as omniBarStore from '../features/omni-bar/store';
-import { State as OmniBarState } from '../features/omni-bar/store/types';
+import type { State as OmniBarState } from '../features/omni-bar/store/types';
 import * as tabsStore from '../features/tabs/store';
-import { State as TabsState } from '../features/tabs/store/types';
-import { handleUnhandledError } from '../utils/unhandled-error-handler';
+import type { State as TabsState } from '../features/tabs/store/types';
 import * as arbiterStore from './arbiter';
-import { State as ArbiterState } from './arbiter/types';
+import type { State as ArbiterState } from './arbiter/types';
 import * as extensionsStore from './extensions';
-import { State as ExtensionsState } from './extensions/types';
-import * as flightStore from './flight';
-import { State as FlightState } from './flight/types';
+import type { State as ExtensionsState } from './extensions/types';
 import * as gitStore from './git';
-import { State as GitState } from './git/types';
+import type { State as GitState } from './git/types';
+import { registerAllEffects } from './effects';
+import { listenerMiddleware } from './listener';
 import * as preferencesStore from './preferences';
-import { State as PreferencesState } from './preferences/types';
+import type { State as PreferencesState } from './preferences/types';
 import * as projectStore from './project';
-import { State as ProjectState } from './project/types';
+import type { State as ProjectState } from './project/types';
 import * as variableSetsStore from './variable-sets';
-import { State as VariableSetState } from './variable-sets/types';
+import type { State as VariableSetState } from './variable-sets/types';
 
 export interface ApplicationState {
 	features: {
@@ -34,7 +32,7 @@ export interface ApplicationState {
 	global: {
 		arbiter: ArbiterState;
 		extensions: ExtensionsState;
-		flight: FlightState;
+		flight: FlightSliceState;
 		git: GitState;
 		preferences: PreferencesState;
 		project: ProjectState;
@@ -43,7 +41,7 @@ export interface ApplicationState {
 }
 
 function createRootReducer() {
-	return combineReducers<ApplicationState>({
+	return combineReducers({
 		features: combineReducers({
 			encryption: encryptionStore.reducer,
 			omniBar: omniBarStore.reducer,
@@ -52,26 +50,13 @@ function createRootReducer() {
 		global: combineReducers({
 			arbiter: arbiterStore.reducers,
 			extensions: extensionsStore.reducers,
-			flight: flightStore.reducers,
+			flight: flightSlice,
 			git: gitStore.reducers,
 			preferences: preferencesStore.reducers,
 			project: projectStore.reducers,
 			variableSets: variableSetsStore.reducers,
 		}),
 	});
-}
-
-function* rootSaga() {
-	yield all([
-		fork(arbiterStore.sagas),
-		fork(extensionsStore.sagas),
-		fork(flightStore.sagas),
-		fork(tabsStore.sagas),
-		fork(gitStore.sagas),
-		fork(preferencesStore.sagas),
-		fork(projectStore.sagas),
-		fork(variableSetsStore.sagas),
-	]);
 }
 
 function createInitialState(): ApplicationState {
@@ -84,7 +69,13 @@ function createInitialState(): ApplicationState {
 		global: {
 			arbiter: arbiterStore.types.initialState,
 			extensions: extensionsStore.types.initialState,
-			flight: flightStore.types.initialState,
+			flight: {
+				flightStates: {},
+				flightHistories: {},
+				activeFlights: {},
+				loading: {},
+				errors: {},
+			},
 			git: gitStore.types.initialState,
 			preferences: preferencesStore.types.initialState,
 			project: projectStore.types.initialState,
@@ -97,18 +88,13 @@ export function configureStore(): Store<ApplicationState> {
 	const initialState = createInitialState();
 	const composeEnhancers = composeWithDevTools({});
 
-	const sagaMiddleware = createSagaMiddleware({
-		onError: error => handleUnhandledError(error),
-	});
-
 	const store = createStore(
 		createRootReducer(),
 		initialState,
-		composeEnhancers(applyMiddleware(sagaMiddleware)),
-	);
+		composeEnhancers(applyMiddleware(listenerMiddleware.middleware)),
+	) as Store<ApplicationState>;
 
-	sagaMiddleware.run(rootSaga);
-	store.dispatch(arbiterStore.actions.startArbiter());
+	registerAllEffects();
 
 	return store;
 }

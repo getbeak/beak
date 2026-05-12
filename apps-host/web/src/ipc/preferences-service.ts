@@ -8,7 +8,9 @@ const service = new IpcPreferencesServiceMain(webIpcMain);
 service.registerGetEnvironment(async () => await getBeakHost().providers.storage.get('environment'));
 
 service.registerGetNotificationOverview(async () => await getBeakHost().providers.storage.get('notifications'));
-service.registerGetNotificationValue(async (_event, key) => await getBeakHost().providers.storage.get(`notifications.${key}`));
+service.registerGetNotificationValue(
+	async (_event, key) => await getBeakHost().providers.storage.get(`notifications.${key}`),
+);
 service.registerSetNotificationValue(async (_event, { key, value }) => {
 	await getBeakHost().providers.storage.set(`notifications.${key}`, value);
 });

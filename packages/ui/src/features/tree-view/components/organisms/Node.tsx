@@ -1,7 +1,8 @@
-import React, { MutableRefObject } from 'react';
+import type React from 'react';
+import type { MutableRefObject } from 'react';
 import styled from 'styled-components';
 
-import { TreeViewNode } from '../../types';
+import type { TreeViewNode } from '../../types';
 import NodeItem from '../molecules/NodeItem';
 import NodeName from '../molecules/NodeName';
 

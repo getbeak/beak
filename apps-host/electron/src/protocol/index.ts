@@ -11,6 +11,7 @@ export default async function handleUrlEvent(url: string) {
 		case 'launch':
 			return await handleLaunch(parsed);
 
-		default: return null;
+		default:
+			return null;
 	}
 }

@@ -1,8 +1,9 @@
-import { Store } from 'react-redux';
-import type { IpcMessage, Response } from '@beak/common/ipc/ipc';
+import type { Response } from '@beak/common/ipc/main';
+import type { IpcMessage } from '@beak/common/ipc/types';
 import type { Context } from '@getbeak/types/values';
 import type { IpcRendererEvent } from 'electron';
 import type { Worker } from 'monaco-editor';
+import { Store } from 'react-redux';
 
 import 'vite/client';
 import { ApplicationState } from './store';
@@ -17,7 +18,7 @@ declare global {
 
 		secureBridge: {
 			ipc: {
-				invoke: <T>(channel: string, payload: IpcMessage) => Promise<Response<T>>;
+				invoke: (channel: string, payload: IpcMessage) => Promise<Response<unknown>>;
 				on: (channel: string, listening: (event: IpcRendererEvent, ...args: any[]) => void) => void;
 				off: (event: string, listener: (...args: any[]) => void) => unknown;
 			};
@@ -44,7 +45,6 @@ declare module '@getbeak/types-variables' {
 	}
 
 	interface Variable<TPayload extends GenericDictionary> {
-
 		/**
 		 * Gets the string value of the value, given the payload body
 		 * @param {Context} ctx The project context.
@@ -55,7 +55,6 @@ declare module '@getbeak/types-variables' {
 	}
 
 	interface EditableVariable<TPayload extends GenericDictionary> {
-
 		/**
 		 * Gets the string value of the value, given the payload body
 		 * @param {Context} ctx The project context.

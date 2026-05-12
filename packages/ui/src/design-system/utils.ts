@@ -3,8 +3,7 @@ import { instance as windowSessionInstance } from '@beak/ui/contexts/window-sess
 
 export function toVibrancyAlpha(color: string, opacity: number) {
 	// We always want full transparency on darwin platforms
-	if (windowSessionInstance.isDarwin())
-		return toHexAlpha(color, 0);
+	if (windowSessionInstance.isDarwin()) return toHexAlpha(color, 0);
 
 	return toHexAlpha(color, opacity, !windowSessionInstance.isBrowser());
 }

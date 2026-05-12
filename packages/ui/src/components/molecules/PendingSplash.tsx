@@ -1,9 +1,13 @@
-import React from 'react';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import Kbd from '@beak/ui/components/atoms/Kbd';
-import shortcutDefinitions, { Shortcuts } from '@beak/ui/lib/keyboard-shortcuts';
-import { PlatformAgnosticDefinitions, PlatformSpecificDefinitions, ShortcutDefinition } from '@beak/ui/lib/keyboard-shortcuts/types';
+import shortcutDefinitions, { type Shortcuts } from '@beak/ui/lib/keyboard-shortcuts';
+import type {
+	PlatformAgnosticDefinitions,
+	PlatformSpecificDefinitions,
+	ShortcutDefinition,
+} from '@beak/ui/lib/keyboard-shortcuts/types';
 import { renderSimpleKey } from '@beak/ui/utils/keyboard-rendering';
+import React from 'react';
 import styled from 'styled-components';
 
 const displayShortcuts: Partial<Record<Shortcuts, string>> = {
@@ -26,13 +30,14 @@ const PendingSlash: React.FC<React.PropsWithChildren<unknown>> = () => (
 					<SingleShortcut key={k}>
 						<ShortcutName>{name}</ShortcutName>
 						<NonCommandKeys>
-							{Array.isArray(definition.key) && definition.key.map(k => (
-								<React.Fragment key={k}>
-									<CommandKeys definition={definition} />
-									<Kbd>{renderSimpleKey(k)}</Kbd>
-									<KbdOption>{'|'}</KbdOption>
-								</React.Fragment>
-							))}
+							{Array.isArray(definition.key) &&
+								definition.key.map(k => (
+									<React.Fragment key={k}>
+										<CommandKeys definition={definition} />
+										<Kbd>{renderSimpleKey(k)}</Kbd>
+										<KbdOption>{'|'}</KbdOption>
+									</React.Fragment>
+								))}
 							{typeof definition.key === 'string' && (
 								<React.Fragment>
 									<CommandKeys definition={definition} />
@@ -58,8 +63,7 @@ const CommandKeys: React.FC<{ definition: ShortcutDefinition }> = ({ definition 
 );
 
 function shortcutDefinition(definition: PlatformSpecificDefinitions | PlatformAgnosticDefinitions) {
-	if (definition.type === 'agnostic')
-		return definition;
+	if (definition.type === 'agnostic') return definition;
 
 	// return definition[windowSessionInstance.getPlatform()];
 	return definition.darwin;
@@ -82,7 +86,7 @@ const FadedLogo = styled.div`
 	background-repeat: no-repeat;
 	background-position: center;
 	background-size: contain;
-	opacity: ${p => p.theme.theme === 'light' ? 0.3 : 0.15};
+	opacity: ${p => (p.theme.theme === 'light' ? 0.3 : 0.15)};
 `;
 
 const ShortcutContainer = styled.div``;

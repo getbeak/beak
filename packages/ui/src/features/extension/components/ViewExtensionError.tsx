@@ -1,8 +1,8 @@
-import React from 'react';
-import Squawk from '@beak/common/utils/squawk';
+import type Squawk from '@beak/common/utils/squawk';
 import EditorView from '@beak/ui/components/atoms/EditorView';
 import Dialog from '@beak/ui/components/molecules/Dialog';
 import { ipcExplorerService } from '@beak/ui/lib/ipc';
+import type React from 'react';
 import styled from 'styled-components';
 
 interface ViewExtensionErrorProps {
@@ -16,9 +16,7 @@ const ViewExtensionError: React.FC<React.PropsWithChildren<ViewExtensionErrorPro
 	<Dialog onClose={() => props.onClose()}>
 		<Container>
 			<Title>{'Unable to load extension'}</Title>
-			<Description>
-				{'There was an issue while trying to load one of the installed extensions.'}
-			</Description>
+			<Description>{'There was an issue while trying to load one of the installed extensions.'}</Description>
 
 			<List>
 				<li>
@@ -27,9 +25,7 @@ const ViewExtensionError: React.FC<React.PropsWithChildren<ViewExtensionErrorPro
 				</li>
 				<li>
 					{'Extension file path: '}
-					<FilePathButton onClick={() => ipcExplorerService.revealFile(props.filePath)}>
-						{props.filePath}
-					</FilePathButton>
+					<FilePathButton onClick={() => ipcExplorerService.revealFile(props.filePath)}>{props.filePath}</FilePathButton>
 				</li>
 			</List>
 

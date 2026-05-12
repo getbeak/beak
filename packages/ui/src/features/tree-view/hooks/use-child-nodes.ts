@@ -1,8 +1,8 @@
-import { useContext } from 'react';
 import { TypedObject } from '@beak/common/helpers/typescript';
+import { useContext } from 'react';
 
 import { TreeViewNodesContext } from '../contexts/nodes-context';
-import { TreeViewFolderNode, TreeViewNode } from '../types';
+import type { TreeViewFolderNode, TreeViewNode } from '../types';
 
 interface ReturnType {
 	nodes: TreeViewNode[];
@@ -16,10 +16,12 @@ export default function useChildNodes(filePath: string): ReturnType {
 
 	const childNodes = TypedObject.values(context)
 		.filter(i => i.parent === filePath)
-		.sort((a, b) => a.name.localeCompare(b.name, void 0, {
-			numeric: true,
-			sensitivity: 'base',
-		}));
+		.sort((a, b) =>
+			a.name.localeCompare(b.name, void 0, {
+				numeric: true,
+				sensitivity: 'base',
+			}),
+		);
 
 	return {
 		nodes: childNodes.filter(n => n.type !== 'folder') as TreeViewNode[],

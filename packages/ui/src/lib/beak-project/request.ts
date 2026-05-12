@@ -14,7 +14,7 @@ export async function createRequestNode(directory: string, name?: string, templa
 		verb: 'get',
 		headers: {},
 		url: ['https://httpbin.org/anything'],
-		query: { },
+		query: {},
 		body: {
 			type: 'text',
 			payload: '',
@@ -30,12 +30,11 @@ export async function createRequestNode(directory: string, name?: string, templa
 }
 
 export async function readRequestNode(requestFilePath: string): Promise<RequestNode> {
-	const {
-		file,
-		filePath,
-		name,
-		error,
-	} = await readJsonAndValidate<RequestNodeFile>(requestFilePath, requestSchema, true);
+	const { file, filePath, name, error } = await readJsonAndValidate<RequestNodeFile>(
+		requestFilePath,
+		requestSchema,
+		true,
+	);
 
 	if (error) {
 		return {
@@ -62,8 +61,7 @@ export async function readRequestNode(requestFilePath: string): Promise<RequestN
 
 export async function writeRequestNode(request: RequestNode) {
 	// Don't write invalid files!
-	if (request.mode === 'failed')
-		return;
+	if (request.mode === 'failed') return;
 
 	const node: RequestNodeFile = {
 		id: request.id,
@@ -82,8 +80,7 @@ export async function renameRequestNode(newName: string, requestNode: RequestNod
 	const newFilePath = path.join(directory, `${newName}.json`);
 	const oldFilePath = requestNode.filePath;
 
-	if (await ipcFsService.pathExists(newFilePath))
-		throw new Error('Request already exists');
+	if (await ipcFsService.pathExists(newFilePath)) throw new Error('Request already exists');
 
 	await ipcFsService.move(oldFilePath, newFilePath);
 }
@@ -95,8 +92,7 @@ export async function duplicateRequestNode(request: RequestNode): Promise<string
 	const directory = path.join(oldPath, '..');
 
 	// Don't allow duplicating invalid nodes!
-	if (request.mode === 'failed')
-		return null;
+	if (request.mode === 'failed') return null;
 
 	const { fullPath } = await generateSafeNewPath(name, directory, extension);
 	const node: RequestNodeFile = {

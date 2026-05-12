@@ -36,8 +36,7 @@ if (instanceLock) {
 		if (process.platform !== 'darwin') {
 			const url = argv.find(a => a.startsWith('beak-app://'));
 
-			if (url && await handleUrlEvent(url))
-				return;
+			if (url && (await handleUrlEvent(url))) return;
 		}
 
 		createOrFocusDefaultWindow();
@@ -48,8 +47,7 @@ if (instanceLock) {
 
 // Quit application when all windows are closed on macOS
 app.on('window-all-closed', () => {
-	if (process.platform !== 'darwin')
-		app.quit();
+	if (process.platform !== 'darwin') app.quit();
 });
 
 app.on('activate', () => {
@@ -67,8 +65,7 @@ app.on('ready', () => {
 	createOrFocusDefaultWindow(true);
 	attemptShowPostUpdateWelcome();
 
-	if (appIsPackaged)
-		return;
+	if (appIsPackaged) return;
 
 	const {
 		default: installExtension,
@@ -89,8 +86,7 @@ app.on('open-file', async (_event, filePath) => {
 app.on('open-url', async (_event, url) => {
 	const handled = await handleUrlEvent(url);
 
-	if (!handled)
-		createOrFocusDefaultWindow();
+	if (!handled) createOrFocusDefaultWindow();
 });
 
 app.on('browser-window-focus', (_event, window) => {
@@ -99,15 +95,12 @@ app.on('browser-window-focus', (_event, window) => {
 });
 
 async function createOrFocusDefaultWindow(initial = false) {
-	if (initial && await attemptWindowPresenceLoad())
-		return void 0;
+	if (initial && (await attemptWindowPresenceLoad())) return void 0;
 
 	const openWindow = Object.values(windowStack)[0];
 
-	if (openWindow)
-		openWindow.focus();
-	else
-		await createWelcomeWindow();
+	if (openWindow) openWindow.focus();
+	else await createWelcomeWindow();
 
 	return void 0;
 }

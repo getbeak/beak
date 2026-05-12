@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { ThemeMode } from '@beak/common/types/theme';
+import type { ThemeMode } from '@beak/common/types/theme';
 import { ipcPreferencesService } from '@beak/ui/lib/ipc';
+import type React from 'react';
+import { useEffect, useState } from 'react';
 
 import { SelectContainer, SelectItem, SelectItemPreview } from '../atoms/fancy-select';
 import { ItemGroup, ItemLabel } from '../atoms/item';

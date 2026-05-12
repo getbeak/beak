@@ -1,5 +1,5 @@
 import { IpcEncryptionServiceMain } from '@beak/common/ipc/encryption';
-import { ValueSections } from 'packages/types/values';
+import type { ValueSections } from '@getbeak/types/values';
 
 import getBeakHost from '../host';
 import { webIpcMain } from './ipc';
@@ -39,8 +39,7 @@ service.registerEncryptString(async (_event, { iv, payload }) => {
 
 	const encryption = await getBeakHost().providers.credentials.getProjectEncryption(projectId);
 
-	if (encryption === null)
-		return '';
+	if (encryption === null) return '';
 
 	return await getBeakHost().providers.aes.encryptString(payload, encryption.key, iv);
 });
@@ -52,8 +51,7 @@ service.registerDecryptString(async (_event, { iv, payload }): Promise<string> =
 
 	const encryption = await getBeakHost().providers.credentials.getProjectEncryption(projectId);
 
-	if (encryption === null)
-		return '[Encryption key missing]';
+	if (encryption === null) return '[Encryption key missing]';
 
 	return await getBeakHost().providers.aes.decryptString(payload, encryption.key, iv);
 });
@@ -66,8 +64,7 @@ service.registerEncryptObject(async (_event, { iv, payload }) => {
 
 	const encryption = await getBeakHost().providers.credentials.getProjectEncryption(projectId);
 
-	if (encryption === null)
-		return '';
+	if (encryption === null) return '';
 
 	return await getBeakHost().providers.aes.encryptString(json, encryption.key, iv);
 });
@@ -79,19 +76,16 @@ service.registerDecryptObject(async (_event, { iv, payload }): Promise<ValueSect
 
 	const encryption = await getBeakHost().providers.credentials.getProjectEncryption(projectId);
 
-	if (encryption === null)
-		return ['[Encryption key missing]'];
+	if (encryption === null) return ['[Encryption key missing]'];
 
 	const decrypted = await getBeakHost().providers.aes.decryptString(payload, encryption.key, iv);
 
-	if (decrypted === '')
-		return [];
+	if (decrypted === '') return [];
 
 	try {
 		const parsed = JSON.parse(decrypted);
 
-		if (Array.isArray(parsed))
-			return parsed;
+		if (Array.isArray(parsed)) return parsed;
 
 		return [parsed];
 	} catch {
@@ -106,6 +100,5 @@ service.registerCopyEncryptionKey(async _event => {
 
 	const encryption = await getBeakHost().providers.credentials.getProjectEncryption(projectId);
 
-	if (encryption)
-		await navigator.clipboard.writeText(encryption.key);
+	if (encryption) await navigator.clipboard.writeText(encryption.key);
 });

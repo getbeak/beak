@@ -1,9 +1,10 @@
-import React, { createContext } from 'react';
-import { ApplicationState } from '@beak/ui/store';
-import { PayloadAction } from '@reduxjs/toolkit';
+import type { ApplicationState } from '@beak/ui/store';
+import type { PayloadAction } from '@reduxjs/toolkit';
 import type { MenuItemConstructorOptions } from 'electron';
+import type React from 'react';
+import { createContext } from 'react';
 
-import { TreeViewItem } from '../types';
+import type { TreeViewItem } from '../types';
 
 interface Context {
 	nodeFlairRenderers?: {
@@ -23,4 +24,4 @@ interface Context {
 	onNodeKeyDown?: (event: React.KeyboardEvent<HTMLDivElement>, node: TreeViewItem) => void;
 }
 
-export const TreeViewAbstractionsContext = createContext<Context>({ });
+export const TreeViewAbstractionsContext = createContext<Context>({});

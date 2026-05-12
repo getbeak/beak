@@ -8,8 +8,7 @@ export async function moveNodesOnDisk(sourceNode: Nodes, destinationNode: Nodes 
 	const sourceBasename = path.basename(sourcePath);
 	const destinationPath = path.join(getDestinationFolder(destinationNode), sourceBasename);
 
-	if (sourcePath === destinationPath)
-		return;
+	if (sourcePath === destinationPath) return;
 
 	if (await ipcFsService.pathExists(destinationPath)) {
 		const { response } = await ipcDialogService.showMessageBox({
@@ -21,8 +20,7 @@ export async function moveNodesOnDisk(sourceNode: Nodes, destinationNode: Nodes 
 			defaultId: 0,
 		});
 
-		if (response === 1)
-			return;
+		if (response === 1) return;
 	}
 
 	await ipcFsService.move(sourcePath, destinationPath);
@@ -30,11 +28,9 @@ export async function moveNodesOnDisk(sourceNode: Nodes, destinationNode: Nodes 
 
 export function getDestinationFolder(node: Nodes | null) {
 	// Workaround for the root!
-	if (!node)
-		return 'tree';
+	if (!node) return 'tree';
 
-	if (node.type === 'folder')
-		return node.filePath;
+	if (node.type === 'folder') return node.filePath;
 
 	return node.parent!;
 }

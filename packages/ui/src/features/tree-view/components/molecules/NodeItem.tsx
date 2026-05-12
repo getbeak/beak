@@ -1,16 +1,17 @@
-import React, { useContext, useEffect, useRef } from 'react';
-import { useDispatch } from 'react-redux';
 import { toVibrancyAlpha } from '@beak/ui/design-system/utils';
 import { checkShortcut } from '@beak/ui/lib/keyboard-shortcuts';
 import { projectPanePreferenceSetCollapse } from '@beak/ui/store/preferences/actions';
 import { selectNextLogicalNode, selectPreviousLogicalNode } from '@beak/ui/utils/keyboard-dom-node-navigation';
+import type React from 'react';
+import { useContext, useEffect, useRef } from 'react';
+import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 
 import { TreeViewAbstractionsContext } from '../../contexts/abstractions-context';
 import { TreeViewFocusContext } from '../../contexts/focus-context';
 import { useNodeDrag } from '../../hooks/drag-and-drop';
 import { useActiveRename } from '../../hooks/use-active-rename';
-import { TreeViewItem } from '../../types';
+import type { TreeViewItem } from '../../types';
 import NodeContextMenu from './NodeContextMenu';
 
 interface NodeItemProps {
@@ -33,15 +34,13 @@ const NodeItem: React.FC<React.PropsWithChildren<NodeItemProps>> = props => {
 	dragRef(element);
 
 	useEffect(() => {
-		if (focusContext.focusedNodeId === node.id)
-			element.current?.focus();
+		if (focusContext.focusedNodeId === node.id) element.current?.focus();
 	}, [focusContext.focusedNodeInvalidator]);
 
 	function handleOnKeyDown(event: React.KeyboardEvent<HTMLDivElement>) {
 		absContext.onNodeKeyDown?.(event, node);
 
-		if (renaming)
-			return;
+		if (renaming) return;
 
 		switch (true) {
 			case checkShortcut('tree-view.node.rename', event):
@@ -50,10 +49,12 @@ const NodeItem: React.FC<React.PropsWithChildren<NodeItemProps>> = props => {
 
 			case checkShortcut('tree-view.node.left', event): {
 				if (node.type === 'folder' && !collapsed) {
-					dispatch(projectPanePreferenceSetCollapse({
-						key: node.id,
-						collapsed: !collapsed,
-					}));
+					dispatch(
+						projectPanePreferenceSetCollapse({
+							key: node.id,
+							collapsed: !collapsed,
+						}),
+					);
 
 					return;
 				}
@@ -61,8 +62,7 @@ const NodeItem: React.FC<React.PropsWithChildren<NodeItemProps>> = props => {
 				const selected = element.current;
 				const root = focusContext.rootRef.current;
 
-				if (!selected || !root)
-					return;
+				if (!selected || !root) return;
 
 				selectPreviousLogicalNode(root, selected);
 				break;
@@ -70,10 +70,12 @@ const NodeItem: React.FC<React.PropsWithChildren<NodeItemProps>> = props => {
 
 			case checkShortcut('tree-view.node.right', event): {
 				if (node.type === 'folder' && collapsed) {
-					dispatch(projectPanePreferenceSetCollapse({
-						key: node.id,
-						collapsed: !collapsed,
-					}));
+					dispatch(
+						projectPanePreferenceSetCollapse({
+							key: node.id,
+							collapsed: !collapsed,
+						}),
+					);
 
 					return;
 				}
@@ -81,8 +83,7 @@ const NodeItem: React.FC<React.PropsWithChildren<NodeItemProps>> = props => {
 				const selected = element.current;
 				const root = focusContext.rootRef.current;
 
-				if (!selected || !root)
-					return;
+				if (!selected || !root) return;
 
 				selectNextLogicalNode(root, selected);
 				break;
@@ -92,8 +93,7 @@ const NodeItem: React.FC<React.PropsWithChildren<NodeItemProps>> = props => {
 				const selected = element.current;
 				const root = focusContext.rootRef.current;
 
-				if (!selected || !root)
-					return;
+				if (!selected || !root) return;
 
 				selectPreviousLogicalNode(root, selected);
 				break;
@@ -103,8 +103,7 @@ const NodeItem: React.FC<React.PropsWithChildren<NodeItemProps>> = props => {
 				const selected = element.current;
 				const root = focusContext.rootRef.current;
 
-				if (!selected || !root)
-					return;
+				if (!selected || !root) return;
 
 				selectNextLogicalNode(root, selected);
 				break;
@@ -126,13 +125,14 @@ const NodeItem: React.FC<React.PropsWithChildren<NodeItemProps>> = props => {
 
 		absContext.onNodeClick?.(event, node);
 
-		if (!collapsible)
-			return;
+		if (!collapsible) return;
 
-		dispatch(projectPanePreferenceSetCollapse({
-			key: node.id,
-			collapsed: !collapsed,
-		}));
+		dispatch(
+			projectPanePreferenceSetCollapse({
+				key: node.id,
+				collapsed: !collapsed,
+			}),
+		);
 	}
 
 	return (
@@ -146,9 +146,7 @@ const NodeItem: React.FC<React.PropsWithChildren<NodeItemProps>> = props => {
 				onClick={handleOnClick}
 			>
 				{children}
-				<FlairRendererContainer>
-					{renderer?.(node)}
-				</FlairRendererContainer>
+				<FlairRendererContainer>{renderer?.(node)}</FlairRendererContainer>
 			</NodeItemContainer>
 		</NodeContextMenu>
 	);
@@ -172,8 +170,8 @@ const NodeItemContainer = styled.div<NodeItemContainerProps>`
 	border-top-left-radius: 4px;
 	border-bottom-left-radius: 4px;
 
-	color: ${p => p.$active ? p.theme.ui.textOnSurfaceBackground : p.theme.ui.textMinor};
-	background-color: ${p => p.$active ? toVibrancyAlpha(p.theme.ui.surface, 0.8) : 'transparent'};
+	color: ${p => (p.$active ? p.theme.ui.textOnSurfaceBackground : p.theme.ui.textMinor)};
+	background-color: ${p => (p.$active ? toVibrancyAlpha(p.theme.ui.surface, 0.8) : 'transparent')};
 
 	&:hover {
 		color: ${p => p.theme.ui.textOnSurfaceBackground};

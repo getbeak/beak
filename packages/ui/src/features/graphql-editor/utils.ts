@@ -1,24 +1,27 @@
-import { TabSubItem } from '@beak/ui/components/atoms/TabItem';
+import type { TabSubItem } from '@beak/ui/components/atoms/TabItem';
+import type { EntryType } from '@getbeak/types/body-editor-json';
 import {
-	ASTNode,
-	DocumentNode,
+	type ASTNode,
+	type DocumentNode,
 	Kind,
-	NamedTypeNode,
-	NameNode,
-	NonNullTypeNode,
-	OperationDefinitionNode,
+	type NamedTypeNode,
+	type NameNode,
+	type NonNullTypeNode,
+	type OperationDefinitionNode,
 } from 'graphql';
-import { EntryType } from 'packages/types/body-editor-json';
 
-import { EditorMode, ExtractedVariables } from './types';
+import type { EditorMode, ExtractedVariables } from './types';
 
-export const editorTabSubItems: TabSubItem<EditorMode>[] = [{
-	key: 'query',
-	label: 'Query',
-}, {
-	key: 'variables',
-	label: 'Variables',
-}];
+export const editorTabSubItems: TabSubItem<EditorMode>[] = [
+	{
+		key: 'query',
+		label: 'Query',
+	},
+	{
+		key: 'variables',
+		label: 'Variables',
+	},
+];
 
 export function extractVariableNamesFromQuery(document: DocumentNode): ExtractedVariables | null {
 	if (document.kind !== 'Document') return null;
@@ -27,8 +30,7 @@ export function extractVariableNamesFromQuery(document: DocumentNode): Extracted
 	return document.definitions
 		.filter(d => d.kind === Kind.OPERATION_DEFINITION)
 		.map(d => d as OperationDefinitionNode)
-		.map(d => d.variableDefinitions)
-		.flat(1)
+		.flatMap(d => d.variableDefinitions)
 		.reduce<ExtractedVariables>((acc, val) => {
 			if (!val) return acc;
 
@@ -55,7 +57,8 @@ function detectKnownJsonType(node: ASTNode): EntryType {
 		case Kind.NAMED_TYPE:
 			return detectKnownJsonType((node as NamedTypeNode).name);
 
-		default: return 'string';
+		default:
+			return 'string';
 	}
 }
 
@@ -68,6 +71,7 @@ function nameNodeToKnownJsonType(node: NameNode): EntryType {
 		case 'Boolean':
 			return 'boolean';
 
-		default: return 'string';
+		default:
+			return 'string';
 	}
 }

@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { GetSubscriptionStatusResponse } from '@beak/common/types/nest';
-import Squawk from '@beak/common/utils/squawk';
+import type { GetSubscriptionStatusResponse } from '@beak/common/types/nest';
+import type Squawk from '@beak/common/utils/squawk';
 import { ipcNestService } from '@beak/ui/lib/ipc';
+import React, { useEffect, useState } from 'react';
 
 import NoActiveSubscription from '../molecules/NoActiveSubscription';
 import NotSignedIn from '../molecules/NotSignedIn';
@@ -18,9 +18,7 @@ const SubscriptionPane: React.FC<React.PropsWithChildren<unknown>> = () => {
 	const noActiveSubscription = error?.code === 'no_active_subscription';
 
 	useEffect(() => {
-		ipcNestService.getSubscriptionState()
-			.then(setResponse)
-			.catch(setError);
+		ipcNestService.getSubscriptionState().then(setResponse).catch(setError);
 	}, []);
 
 	return (

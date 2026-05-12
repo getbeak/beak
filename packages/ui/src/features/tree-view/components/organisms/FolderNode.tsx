@@ -1,11 +1,12 @@
-import React, { MutableRefObject } from 'react';
 import { toHexAlpha } from '@beak/design-system/utils';
 import { useAppSelector } from '@beak/ui/store/redux';
+import type React from 'react';
+import type { MutableRefObject } from 'react';
 import styled, { css } from 'styled-components';
 
 import { useNodeDrop } from '../../hooks/drag-and-drop';
 import useChildNodes from '../../hooks/use-child-nodes';
-import { TreeViewFolderNode } from '../../types';
+import type { TreeViewFolderNode } from '../../types';
 import NodeItem from '../molecules/NodeItem';
 import NodeName from '../molecules/NodeName';
 import Node from './Node';
@@ -28,12 +29,8 @@ const FolderNode: React.FC<React.PropsWithChildren<FolderNodeProps>> = props => 
 				<NodeName node={node} collapsed={collapsed} collapsible />
 			</NodeItem>
 			<FolderChildren>
-				{!collapsed && folderNodes.map(n => (
-					<FolderNode key={n.id} depth={depth + 1} node={n} />
-				))}
-				{!collapsed && nodes.map(n => (
-					<Node key={n.id} depth={depth + 1} node={n} />
-				))}
+				{!collapsed && folderNodes.map(n => <FolderNode key={n.id} depth={depth + 1} node={n} />)}
+				{!collapsed && nodes.map(n => <Node key={n.id} depth={depth + 1} node={n} />)}
 			</FolderChildren>
 		</FolderWrapper>
 	);
@@ -45,7 +42,10 @@ interface FolderWrapperProps {
 }
 
 const FolderWrapper = styled.div<FolderWrapperProps>`
-	${p => p.$dropAccepted && p.$dropHovering && css`
+	${p =>
+		p.$dropAccepted &&
+		p.$dropHovering &&
+		css`
 		border-radius: 4px;
 		background-color: ${toHexAlpha(p.theme.ui.primaryFill, 0.6)};
 	`}

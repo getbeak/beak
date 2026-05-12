@@ -1,8 +1,8 @@
-import React from 'react';
 import { ipcWindowService } from '@beak/ui/lib/ipc';
 import { renderPlainTextDefinition } from '@beak/ui/utils/keyboard-rendering';
 import { faCloudBolt, faLightbulb } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import type React from 'react';
 import styled from 'styled-components';
 
 interface GraphQlErrorProps {
@@ -11,13 +11,12 @@ interface GraphQlErrorProps {
 
 const GraphQlError: React.FC<GraphQlErrorProps> = ({ error }) => (
 	<Wrapper>
-		<FontAwesomeIcon
-			icon={faCloudBolt}
-			opacity={0.4}
-			size={'4x'}
-		/>
+		<FontAwesomeIcon icon={faCloudBolt} opacity={0.4} size={'4x'} />
 		<Title>{'Unable to fetch GraphQL schema'}</Title>
-		<ErrorMessage>{'Error message: '}{error.message}</ErrorMessage>
+		<ErrorMessage>
+			{'Error message: '}
+			{error.message}
+		</ErrorMessage>
 		<Separator />
 		<Body>
 			{'You can try the troubleshooting points below, but if that fails to '}
@@ -26,43 +25,23 @@ const GraphQlError: React.FC<GraphQlErrorProps> = ({ error }) => (
 		</Body>
 		<UnstyledList>
 			<ListItem>
-				<FontAwesomeIcon
-					icon={faLightbulb}
-					opacity={0.6}
-					size={'1x'}
-				/>
+				<FontAwesomeIcon icon={faLightbulb} opacity={0.6} size={'1x'} />
 				{' Check the URL is correct'}
 			</ListItem>
 			<ListItem>
-				<FontAwesomeIcon
-					icon={faLightbulb}
-					opacity={0.6}
-					size={'1x'}
-				/>
+				<FontAwesomeIcon icon={faLightbulb} opacity={0.6} size={'1x'} />
 				{' Check that any security headers are provided'}
 			</ListItem>
 			<ListItem>
-				<FontAwesomeIcon
-					icon={faLightbulb}
-					opacity={0.6}
-					size={'1x'}
-				/>
+				<FontAwesomeIcon icon={faLightbulb} opacity={0.6} size={'1x'} />
 				{' Check the HTTP method/verb is correct'}
 			</ListItem>
 			<ListItem>
-				<FontAwesomeIcon
-					icon={faLightbulb}
-					opacity={0.6}
-					size={'1x'}
-				/>
+				<FontAwesomeIcon icon={faLightbulb} opacity={0.6} size={'1x'} />
 				{` Toggle developer tools from the command search bar ${renderPlainTextDefinition('omni-bar.launch.commands')}`}
 			</ListItem>
 			<ListItem>
-				<FontAwesomeIcon
-					icon={faLightbulb}
-					opacity={0.6}
-					size={'1x'}
-				/>
+				<FontAwesomeIcon icon={faLightbulb} opacity={0.6} size={'1x'} />
 				{' Toggle developer tools by clicking '}
 				<DevToolsToggle
 					href={'#'}

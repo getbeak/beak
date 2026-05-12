@@ -1,5 +1,5 @@
 import ksuid from '@beak/ksuid';
-import { BrowserWindow, dialog } from 'electron';
+import { type BrowserWindow, dialog } from 'electron';
 
 import getBeakHost from '../host';
 import { windowIdToProjectIdMapping } from '../window-management';
@@ -11,8 +11,7 @@ export async function openReferenceFile(window: BrowserWindow) {
 		properties: ['openFile', 'dontAddToRecent', 'showHiddenFiles'],
 	});
 
-	if (response.canceled)
-		return null;
+	if (response.canceled) return null;
 
 	const projectId = windowIdToProjectIdMapping[window.id];
 	const fileReferenceId = await createReferenceFile(response.filePaths[0], projectId);

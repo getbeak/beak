@@ -1,7 +1,8 @@
-import React, { useEffect } from 'react';
 import CtaButton from '@beak/apps-web-share/components/atoms/Buttons';
 import { SubTitle, Title } from '@beak/apps-web-share/components/atoms/Typography';
 import useBeakProjectUrl from '@beak/apps-web-share/hooks/use-beak-project-url';
+import type React from 'react';
+import { useEffect } from 'react';
 import styled from 'styled-components';
 
 const InfoCard: React.FC<React.PropsWithChildren<unknown>> = () => {
@@ -17,15 +18,18 @@ const InfoCard: React.FC<React.PropsWithChildren<unknown>> = () => {
 			<Ugh>
 				<Title>{'Someone has shared a Beak with you'}</Title>
 				<SubTitle>
-					{'Someone has shared a beak project with you, if Beak doesn\'t launch automatically, you can '}
+					{"Someone has shared a beak project with you, if Beak doesn't launch automatically, you can "}
 					{'tap the button below.'}
 				</SubTitle>
 
 				<Spacer />
 
-				<CtaButton $style={'primary'} onClick={() => {
-					window.location.href = beakUrl;
-				}}>
+				<CtaButton
+					$style={'primary'}
+					onClick={() => {
+						window.location.href = beakUrl;
+					}}
+				>
 					{'Launch Beak'}
 				</CtaButton>
 			</Ugh>

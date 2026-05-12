@@ -1,7 +1,7 @@
-import Squawk from '@beak/common/utils/squawk';
-import { AsyncMapState, AsyncState, MetaPayloadAction } from '@beak/ui/store/types';
-import { PayloadAction } from '@reduxjs/toolkit';
-import { Reducer } from 'redux';
+import type Squawk from '@beak/common/utils/squawk';
+import type { AsyncMapState, AsyncState, MetaPayloadAction } from '@beak/ui/store/types';
+import type { PayloadAction } from '@reduxjs/toolkit';
+import type { Reducer } from 'redux';
 
 import { createAsyncActionTypes } from './action-types';
 
@@ -11,10 +11,7 @@ export function createAsyncReducer<R = void>(
 ): Reducer<AsyncState<R>, PayloadAction<R | Squawk>> {
 	const { request, reset, success, failure } = createAsyncActionTypes(actionType);
 
-	return function asyncReducer(
-		state = initialState,
-		{ type, payload },
-	) {
+	return function asyncReducer(state = initialState, { type, payload }) {
 		switch (type) {
 			case request:
 				return {
@@ -49,10 +46,7 @@ export default function createAsyncMapReducer<R = void>(
 ): Reducer<AsyncMapState<R>, MetaPayloadAction<R | Squawk>> {
 	const { request, reset, success, failure } = createAsyncActionTypes(actionType);
 
-	return function asyncMapReducer(
-		state = initialState,
-		{ type, payload, meta },
-	): AsyncMapState<R> {
+	return function asyncMapReducer(state = initialState, { type, payload, meta }): AsyncMapState<R> {
 		switch (type) {
 			case request:
 				return {

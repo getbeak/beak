@@ -14,7 +14,7 @@ export const HeaderValueCell = styled(HeaderCell)`
 export const HeaderAction = styled(HeaderCell)``;
 
 export const BodyCell = styled.div``;
-export const BodyPrimaryCell = styled(BodyCell) <{ depth: number }>`
+export const BodyPrimaryCell = styled(BodyCell)<{ depth: number }>`
 	display: flex;
 	flex-direction: row;
 	padding-left: ${p => p.depth * 10}px;

@@ -1,32 +1,9 @@
-export const ActionTypes = {
-	START_GIT: '@beak/global/git/START_GIT',
-	GIT_OPENED: '@beak/global/git/GIT_OPENED',
+// Source of truth is @beak/core/git.
+import { type Branch, type GitOpenedPayload, type GitState, initialGitState } from '@beak/core/git';
 
-	ADD_BRANCH: '@beak/global/git/ADD_BRANCH',
-	REMOVE_BRANCH: '@beak/global/git/REMOVE_BRANCH',
-	CHANGE_SELECTED_BRANCH: '@beak/global/git/CHANGE_SELECTED_BRANCH',
-};
+export type State = GitState;
+export const initialState: State = initialGitState;
 
-export interface State {
-	branches: Branch[];
-	selectedBranch: string | undefined;
-}
+export type { Branch, GitOpenedPayload };
 
-export const initialState: State = {
-	branches: [],
-	selectedBranch: void 0,
-};
-
-export interface Branch {
-	name: string;
-}
-
-export interface GitOpenedPayload {
-	branches: Branch[];
-	selectedBranch: string | undefined;
-}
-
-export default {
-	ActionTypes,
-	initialState,
-};
+export default { initialState };

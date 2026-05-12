@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { NewProjectIntroTabItem } from '@beak/common/types/beak-project';
+import type { NewProjectIntroTabItem } from '@beak/common/types/beak-project';
 import { useAppSelector } from '@beak/ui/store/redux';
+import type React from 'react';
+import { useState } from 'react';
+import { useDispatch } from 'react-redux';
 
 import TabItem from '../../../../components/atoms/TabItem';
 import { changeTab, makeTabPermanent } from '../../store/actions';
@@ -24,8 +25,7 @@ const NewProjectIntroTab: React.FC<React.PropsWithChildren<NewProjectIntroTabPro
 				lazyForwardedRef={i => setTarget(i!)}
 				onClick={() => dispatch(changeTab(tab))}
 				onDoubleClick={() => {
-					if (!tab.temporary)
-						return;
+					if (!tab.temporary) return;
 
 					dispatch(makeTabPermanent(tab.payload));
 				}}

@@ -1,4 +1,4 @@
-import React from 'react';
+import type React from 'react';
 import styled, { css } from 'styled-components';
 
 import TabItemSubItemsDropdown from './TabItemSubItemsDropdown';
@@ -18,16 +18,7 @@ export interface TabItemProps<T = string> extends Omit<React.HTMLProps<HTMLDivEl
 }
 
 const TabItem = <T = string>(props: React.PropsWithChildren<TabItemProps<T>>): React.ReactElement => {
-	const {
-		active,
-		activeSubItem,
-		children,
-		lazyForwardedRef,
-		onSubItemChanged,
-		size,
-		subItems,
-		...rest
-	} = props;
+	const { active, activeSubItem, children, lazyForwardedRef, onSubItemChanged, size, subItems, ...rest } = props;
 
 	return (
 		<Wrapper $active={active} $size={size} ref={lazyForwardedRef} {...rest}>
@@ -59,8 +50,7 @@ const Wrapper = styled.div<WrapperProps>`
 	white-space: nowrap;
 
 	${p => {
-		if (p.$size !== 'sm')
-			return '';
+		if (p.$size !== 'sm') return '';
 
 		return css`
 			padding: 6px 8px;

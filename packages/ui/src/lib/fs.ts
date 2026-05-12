@@ -1,34 +1,42 @@
 import Squawk from '@beak/common/utils/squawk';
-import Ajv, { SchemaObject } from 'ajv';
 import path from 'path-browserify';
+import type { ZodTypeAny } from 'zod';
 
 import { ipcFsService } from './ipc';
 
-const avj = new Ajv();
-
-export async function readJsonAndValidate<T>(filePath: string, schema: SchemaObject, avoidThrow = false) {
-	const requestFile = await ipcFsService.readJson<T>(filePath);
+/**
+ * Reads a JSON file from disk and parses it through a zod schema. Throws a
+ * `schema_invalid` Squawk on validation failure (unless `avoidThrow`).
+ *
+ * The schema's inferred type is independent of `T` — callers can still
+ * assert their own type as they did with the legacy ajv-based version.
+ * Future cleanup: drop `T` entirely and rely on `z.infer<typeof schema>`.
+ */
+export async function readJsonAndValidate<T>(filePath: string, schema: ZodTypeAny, avoidThrow = false) {
+	const file = await ipcFsService.readJson<T>(filePath);
 
 	const extension = path.extname(filePath);
 	const name = path.basename(filePath, extension);
-	const validator = avj.compile(schema);
-	const valid = validator(requestFile);
 
-	if (!valid && !avoidThrow) {
+	const result = schema.safeParse(file);
+
+	if (!result.success && !avoidThrow) {
 		throw new Squawk('schema_invalid', {
-			errors: validator.errors,
+			errors: result.error.issues,
 			filePath,
 		});
 	}
 
 	return {
-		file: requestFile,
+		file: (result.success ? result.data : file) as T,
 		filePath,
 		name,
 		extension,
-		error: valid ? null : new Squawk('schema_invalid', {
-			errors: validator.errors,
-			filePath,
-		}),
+		error: result.success
+			? null
+			: new Squawk('schema_invalid', {
+					errors: result.error.issues,
+					filePath,
+				}),
 	};
 }

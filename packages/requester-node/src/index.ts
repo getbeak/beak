@@ -1,13 +1,13 @@
 import { requestBodyContentType } from '@beak/common/helpers/request';
 import { TypedObject } from '@beak/common/helpers/typescript';
-import {
+import type {
 	FlightCompletePayload,
 	FlightFailedPayload,
 	FlightHeartbeatPayload,
 	FlightRequestPayload,
 } from '@beak/common/types/requester';
 import type { RequestBodyFile, RequestOverview } from '@getbeak/types/request';
-import fetch, { RequestInit, Response } from 'node-fetch';
+import fetch, { type RequestInit, type Response } from 'node-fetch';
 
 const bodyFreeVerbs = ['get', 'head', 'delete'];
 
@@ -95,10 +95,13 @@ async function runRequest(overview: RequestOverview) {
 		method: verb,
 		headers: TypedObject.values(headers)
 			.filter(h => h.enabled)
-			.reduce((acc, val) => ({
-				...acc,
-				[val.name]: val.value[0],
-			}), {}),
+			.reduce(
+				(acc, val) => ({
+					...acc,
+					[val.name]: val.value[0],
+				}),
+				{},
+			),
 		redirect: 'manual',
 		compress: false,
 	};
@@ -113,7 +116,8 @@ async function runRequest(overview: RequestOverview) {
 				init.body = (body as RequestBodyFile).payload.__hacky__binaryFileData!;
 				break;
 
-			default: throw new Error(`Unknown body type ${body.type}`);
+			default:
+				throw new Error(`Unknown body type ${body.type}`);
 		}
 
 		const hasContentTypeHeader = TypedObject.keys(headers)
@@ -133,12 +137,14 @@ async function runRequest(overview: RequestOverview) {
 function headersToObject(entries: Iterable<[string, string]>) {
 	const headers: Record<string, string> = {};
 
-	for (const [key, value] of entries)
-		headers[capitalizeHeader(key)] = value;
+	for (const [key, value] of entries) headers[capitalizeHeader(key)] = value;
 
 	return headers;
 }
 
 function capitalizeHeader(str: string): string {
-	return str.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join('-');
+	return str
+		.split('-')
+		.map(word => word.charAt(0).toUpperCase() + word.slice(1))
+		.join('-');
 }

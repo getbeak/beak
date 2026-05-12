@@ -1,6 +1,6 @@
-import React from 'react';
 import ActionIconButton from '@beak/ui/components/molecules/ActionIconButton';
 import { faMinus } from '@fortawesome/free-solid-svg-icons';
+import type React from 'react';
 import styled from 'styled-components';
 
 interface EntryActionsProps {
@@ -9,11 +9,7 @@ interface EntryActionsProps {
 
 const EntryActions: React.FC<React.PropsWithChildren<EntryActionsProps>> = ({ onRemove }) => (
 	<Wrapper>
-		<ActionIconButton
-			tabIndex={-1}
-			icon={faMinus}
-			onClick={() => onRemove()}
-		/>
+		<ActionIconButton tabIndex={-1} icon={faMinus} onClick={() => onRemove()} />
 	</Wrapper>
 );
 

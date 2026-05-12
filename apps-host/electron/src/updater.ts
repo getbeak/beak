@@ -1,5 +1,5 @@
 import { app, dialog, shell } from 'electron';
-import { autoUpdater, UpdateInfo } from 'electron-updater';
+import { autoUpdater, type UpdateInfo } from 'electron-updater';
 import { parse } from 'semver';
 
 import getBeakHost from './host';
@@ -43,24 +43,22 @@ autoUpdater.on('update-downloaded', async (event: UpdateInfo) => {
 		type: 'info',
 		title: 'Update available',
 		message: `Version ${event.version} of Beak is now available!`,
-		detail: 'Grab it while it\'s hot',
+		detail: "Grab it while it's hot",
 		buttons: ['Update on next launch', 'Update now'],
 		cancelId: 0,
 		defaultId: 1,
 	});
 
-	if (response === 1)
-		autoUpdater.quitAndInstall();
+	if (response === 1) autoUpdater.quitAndInstall();
 });
 
 (function backgroundUpdateScheduler() {
 	setInterval(() => {
-		if (pendingUpdate)
-			return;
+		if (pendingUpdate) return;
 
 		autoUpdater.checkForUpdates();
 	}, 2700000); // 45 minutes
-}());
+})();
 
 export function getPendingUpdate() {
 	return pendingUpdate;
@@ -70,15 +68,13 @@ export async function attemptShowPostUpdateWelcome() {
 	const version = app.getVersion();
 	const latestKnownVersion = await getBeakHost().providers.storage.get('latestKnownVersion');
 
-	if (version === latestKnownVersion)
-		return;
+	if (version === latestKnownVersion) return;
 
 	await getBeakHost().providers.storage.set('latestKnownVersion', version);
 
 	const parsedVersion = parse(version);
 
-	if (parsedVersion?.prerelease.length === 0)
-		return;
+	if (parsedVersion?.prerelease.length === 0) return;
 
 	const { response } = await dialog.showMessageBox({
 		title: 'Beak has updated!',
@@ -89,8 +85,7 @@ export async function attemptShowPostUpdateWelcome() {
 		defaultId: 1,
 	});
 
-	if (response === 1)
-		return;
+	if (response === 1) return;
 
 	shell.openExternal(latestReleaseNotesUrl);
 }

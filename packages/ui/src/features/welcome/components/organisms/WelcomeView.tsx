@@ -1,7 +1,7 @@
-import React from 'react';
+import type React from 'react';
 import styled from 'styled-components';
 
-import { WelcomeViewType } from '../../../../containers/Welcome';
+import type { WelcomeViewType } from '../../../../containers/Welcome';
 import ViewIntroLine from '../atoms/ViewIntroLine';
 import ViewTitle from '../atoms/ViewTitle';
 import GetStartedColumn from './GetStartedColumn';

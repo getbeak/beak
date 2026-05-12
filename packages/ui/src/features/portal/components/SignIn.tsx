@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import type React from 'react';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
-import EnterMagicState, { MagicState } from './organisms/EnterMagicState';
+import EnterMagicState, { type MagicState } from './organisms/EnterMagicState';
 import RequestMagicLink from './organisms/RequestMagicLink';
 
 type Mode = 'request_magic_link' | 'use_magic_link';
@@ -32,18 +33,10 @@ const SignIn: React.FC<React.PropsWithChildren<unknown>> = () => {
 			<Title>{'Welcome to Beak!'}</Title>
 
 			{mode === 'request_magic_link' && (
-				<RequestMagicLink
-					email={email}
-					onEmailChange={setEmail}
-					onMagicLinkSent={() => setMode('use_magic_link')}
-				/>
+				<RequestMagicLink email={email} onEmailChange={setEmail} onMagicLinkSent={() => setMode('use_magic_link')} />
 			)}
 			{mode === 'use_magic_link' && (
-				<EnterMagicState
-					email={email}
-					inboundState={inboundState}
-					reset={() => setMode('request_magic_link')}
-				/>
+				<EnterMagicState email={email} inboundState={inboundState} reset={() => setMode('request_magic_link')} />
 			)}
 		</Wrapper>
 	);

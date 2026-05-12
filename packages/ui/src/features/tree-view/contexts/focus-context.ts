@@ -1,4 +1,5 @@
-import React, { createContext } from 'react';
+import type React from 'react';
+import { createContext } from 'react';
 
 interface Context {
 	rootRef: React.MutableRefObject<HTMLElement | null>;
@@ -10,5 +11,7 @@ interface Context {
 
 export const TreeViewFocusContext = createContext<Context>({
 	rootRef: { current: null },
-	setFocusedNodeId: () => { /* */ },
+	setFocusedNodeId: () => {
+		/* */
+	},
 });

@@ -1,7 +1,7 @@
-import { BeakBase, Providers } from '@beak/common-host/base';
-import { ProjectFile } from '@getbeak/types/project';
+import { BeakBase, type Providers } from '@beak/common-host/base';
+import type { ProjectFile } from '@getbeak/types/project';
 
-import BeakExtensions from '../extensions';
+import type BeakExtensions from '../extensions';
 import BeakSilentMigrations from './silent';
 import BeakStandardMigrations from './standard';
 

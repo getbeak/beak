@@ -1,7 +1,8 @@
-import React, { useContext } from 'react';
-import { useDispatch } from 'react-redux';
 import SelectedNodeContext from '@beak/ui/features/request-pane/contexts/selected-node';
 import { requestPreferenceSetReqJsonExpand } from '@beak/ui/store/preferences/actions';
+import type React from 'react';
+import { useContext } from 'react';
+import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 
 interface EntryFolderProps {
@@ -17,16 +18,18 @@ const EntryFolder: React.FC<React.PropsWithChildren<EntryFolderProps>> = props =
 	const node = useContext(SelectedNodeContext);
 
 	return (
-		<Wrapper onClick={() => {
-			dispatch(requestPreferenceSetReqJsonExpand({ id: node.id, jsonId: id, expanded: !expanded }));
-			onChange(!expanded);
-		}}>
+		<Wrapper
+			onClick={() => {
+				dispatch(requestPreferenceSetReqJsonExpand({ id: node.id, jsonId: id, expanded: !expanded }));
+				onChange(!expanded);
+			}}
+		>
 			<Chevron expanded={Boolean(expanded)} />
 		</Wrapper>
 	);
 };
 
-export const EntryFolderIrrelevant: React.FC<React.PropsWithChildren<unknown>> = () => (<Wrapper />);
+export const EntryFolderIrrelevant: React.FC<React.PropsWithChildren<unknown>> = () => <Wrapper />;
 
 const Wrapper = styled.div`
 	margin-top: 1px;
@@ -39,10 +42,10 @@ const Chevron = styled.div<{ expanded: boolean }>`
 	border-bottom: 1px solid ${props => props.theme.ui.textOnSurfaceBackground};
 	width: 5px;
 	height: 5px;
-	transform: rotate(${props => props.expanded ? '45deg' : '-45deg'});
+	transform: rotate(${props => (props.expanded ? '45deg' : '-45deg')});
 	transform-origin: 50%;
 
-	margin-bottom: ${props => props.expanded ? '2px' : 0};
+	margin-bottom: ${props => (props.expanded ? '2px' : 0)};
 	margin-left: 5px;
 `;
 

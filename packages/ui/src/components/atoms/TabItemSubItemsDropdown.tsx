@@ -1,10 +1,10 @@
-import React, { useRef, useState } from 'react';
-import { createPortal } from 'react-dom';
 import { faSortDown } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React, { useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import styled from 'styled-components';
 
-import { TabSubItem } from './TabItem';
+import type { TabSubItem } from './TabItem';
 
 interface TabItemSubItemsDropdownProps<T = string> {
 	activeSubItem: string;
@@ -37,30 +37,32 @@ const TabItemSubItemsDropdown = <T = string>(props: TabItemSubItemsDropdownProps
 				<FontAwesomeIcon icon={faSortDown} />
 			</DropdownButton>
 
-			{parentRef.current && showDropdown && createPortal(
-				<Container onClick={() => setShowDropdown(false)}>
-					<Wrapper
-						$top={parentRef.current!.getBoundingClientRect().top + parentRef.current!.clientHeight + 6}
-						$left={parentRef.current!.getBoundingClientRect().left - 140 + 10}
-						onClick={event => void event.stopPropagation()}
-					>
-						{subItems.map(i => (
-							<WrapperItem
-								tabIndex={0}
-								role={'button'}
-								key={i.key as string}
-								onClick={() => setSubItem(i.key)}
-								onKeyDown={event => {
-									if (event.key === 'Enter') setSubItem(i.key);
-								}}
-							>
-								{i.label}
-							</WrapperItem>
-						))}
-					</Wrapper>
-				</Container>,
-				document.getElementById('tab-item-sub-items-popover')!,
-			)}
+			{parentRef.current &&
+				showDropdown &&
+				createPortal(
+					<Container onClick={() => setShowDropdown(false)}>
+						<Wrapper
+							$top={parentRef.current!.getBoundingClientRect().top + parentRef.current!.clientHeight + 6}
+							$left={parentRef.current!.getBoundingClientRect().left - 140 + 10}
+							onClick={event => void event.stopPropagation()}
+						>
+							{subItems.map(i => (
+								<WrapperItem
+									tabIndex={0}
+									role={'button'}
+									key={i.key as string}
+									onClick={() => setSubItem(i.key)}
+									onKeyDown={event => {
+										if (event.key === 'Enter') setSubItem(i.key);
+									}}
+								>
+									{i.label}
+								</WrapperItem>
+							))}
+						</Wrapper>
+					</Container>,
+					document.getElementById('tab-item-sub-items-popover')!,
+				)}
 		</React.Fragment>
 	);
 };

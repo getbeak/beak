@@ -1,7 +1,36 @@
-import { JsonWriteOptions } from 'fs-extra';
+import type { JsonWriteOptions } from 'fs-extra';
 import type { JFReadOptions } from 'jsonfile';
+import { z } from 'zod';
+import type { PartialIpcMain } from './main';
+import { IpcServiceMain } from './main';
+import type { PartialIpcRenderer } from './renderer';
+import { IpcServiceRenderer } from './renderer';
+import type { IpcListener } from './types';
 
-import { IpcServiceMain, IpcServiceRenderer, Listener, PartialIpcMain, PartialIpcRenderer } from './ipc';
+// Inbound payload schemas. These guard the renderer→main boundary; main is
+// trusted but the renderer can be running extension code that produces
+// malformed payloads. Paths in particular are sensitive — we validate them
+// as non-empty strings here; the consuming handlers do further sandboxing
+// (ensureWithinProject etc.) so this catches wire-protocol errors, not
+// path-traversal attempts.
+const simplePathSchema = z.object({ filePath: z.string().min(1) });
+const readJsonSchema = simplePathSchema.extend({ options: z.unknown().optional() });
+const writeJsonSchema = simplePathSchema.extend({
+	content: z.unknown(),
+	options: z.unknown().optional(),
+});
+const writeTextSchema = simplePathSchema.extend({ content: z.string() });
+const moveSchema = z.object({
+	srcPath: z.string().min(1),
+	dstPath: z.string().min(1),
+});
+const readDirSchema = simplePathSchema.extend({
+	options: z.object({ withFileTypes: z.literal(true) }).optional(),
+});
+const fileReferenceSchema = z.object({
+	fileReferenceId: z.string().min(1),
+	truncatedLength: z.number().int().nonnegative().optional(),
+});
 
 export const FsMessages = {
 	ReadDir: 'read_dir',
@@ -60,7 +89,7 @@ export interface DirectoryEntry {
 	isDirectory: boolean;
 }
 
-export interface OpenReferenceFileReq { }
+export type OpenReferenceFileReq = {};
 
 export interface OpenReferenceFileRes {
 	fileReferenceId: string;
@@ -86,7 +115,7 @@ export interface ReadReferencedFileRes {
 	body: Uint8Array;
 }
 
-export class IpcFsServiceRenderer extends IpcServiceRenderer {
+export class IpcFsServiceRenderer extends IpcServiceRenderer<'fs'> {
 	constructor(ipc: PartialIpcRenderer) {
 		super('fs', ipc);
 	}
@@ -144,60 +173,60 @@ export class IpcFsServiceRenderer extends IpcServiceRenderer {
 	}
 }
 
-export class IpcFsServiceMain extends IpcServiceMain {
+export class IpcFsServiceMain extends IpcServiceMain<'fs'> {
 	constructor(ipc: PartialIpcMain) {
 		super('fs', ipc);
 	}
 
-	registerReadJson(fn: Listener<ReadJsonReq, any>) {
-		this.registerListener(FsMessages.ReadJson, fn);
+	registerReadJson(fn: IpcListener<ReadJsonReq>) {
+		this.registerRequestHandler(FsMessages.ReadJson, fn, readJsonSchema as never);
 	}
 
-	registerWriteJson(fn: Listener<WriteJsonReq>) {
-		this.registerListener(FsMessages.WriteJson, fn);
+	registerWriteJson(fn: IpcListener<WriteJsonReq>) {
+		this.registerRequestHandler(FsMessages.WriteJson, fn, writeJsonSchema as never);
 	}
 
-	registerReadText(fn: Listener<ReadTextReq, any>) {
-		this.registerListener(FsMessages.ReadText, fn);
+	registerReadText(fn: IpcListener<ReadTextReq>) {
+		this.registerRequestHandler(FsMessages.ReadText, fn, simplePathSchema as never);
 	}
 
-	registerWriteText(fn: Listener<WriteTextReq>) {
-		this.registerListener(FsMessages.WriteText, fn);
+	registerWriteText(fn: IpcListener<WriteTextReq>) {
+		this.registerRequestHandler(FsMessages.WriteText, fn, writeTextSchema as never);
 	}
 
-	registerPathExists(fn: Listener<SimplePath, boolean>) {
-		this.registerListener(FsMessages.PathExists, fn);
+	registerPathExists(fn: IpcListener<SimplePath>) {
+		this.registerRequestHandler(FsMessages.PathExists, fn, simplePathSchema as never);
 	}
 
-	registerEnsureFile(fn: Listener<SimplePath>) {
-		this.registerListener(FsMessages.EnsureFile, fn);
+	registerEnsureFile(fn: IpcListener<SimplePath>) {
+		this.registerRequestHandler(FsMessages.EnsureFile, fn, simplePathSchema as never);
 	}
 
-	registerEnsureDir(fn: Listener<SimplePath>) {
-		this.registerListener(FsMessages.EnsureDir, fn);
+	registerEnsureDir(fn: IpcListener<SimplePath>) {
+		this.registerRequestHandler(FsMessages.EnsureDir, fn, simplePathSchema as never);
 	}
 
-	registerRemove(fn: Listener<SimplePath>) {
-		this.registerListener(FsMessages.Remove, fn);
+	registerRemove(fn: IpcListener<SimplePath>) {
+		this.registerRequestHandler(FsMessages.Remove, fn, simplePathSchema as never);
 	}
 
-	registerMove(fn: Listener<MoveReq>) {
-		this.registerListener(FsMessages.Move, fn);
+	registerMove(fn: IpcListener<MoveReq>) {
+		this.registerRequestHandler(FsMessages.Move, fn, moveSchema as never);
 	}
 
-	registerReadDir(fn: Listener<ReadDirReq, DirectoryEntry[]>) {
-		this.registerListener(FsMessages.ReadDir, fn);
+	registerReadDir(fn: IpcListener<ReadDirReq>) {
+		this.registerRequestHandler(FsMessages.ReadDir, fn, readDirSchema as never);
 	}
 
-	registerOpenReferenceFile(fn: Listener<OpenReferenceFileReq, OpenReferenceFileRes | null>) {
-		this.registerListener(FsMessages.OpenReferenceFile, fn);
+	registerOpenReferenceFile(fn: IpcListener<OpenReferenceFileReq>) {
+		this.registerRequestHandler(FsMessages.OpenReferenceFile, fn);
 	}
 
-	registerPreviewReferencedFile(fn: Listener<PreviewReferencedFileReq, PreviewReferencedFileRes | null>) {
-		this.registerListener(FsMessages.PreviewReferencedFile, fn);
+	registerPreviewReferencedFile(fn: IpcListener<PreviewReferencedFileReq>) {
+		this.registerRequestHandler(FsMessages.PreviewReferencedFile, fn, fileReferenceSchema as never);
 	}
 
-	registerReadReferencedFile(fn: Listener<ReadReferencedFileReq, ReadReferencedFileRes>) {
-		this.registerListener(FsMessages.ReadReferencedFile, fn);
+	registerReadReferencedFile(fn: IpcListener<ReadReferencedFileReq>) {
+		this.registerRequestHandler(FsMessages.ReadReferencedFile, fn, fileReferenceSchema as never);
 	}
 }

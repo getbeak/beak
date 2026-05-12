@@ -1,13 +1,9 @@
-import editorPreferences from './editor-preferences.json';
-import projectPanePreferences from './project-pane-preferences.json';
-import requestPreference from './request-preference.json';
-import sidebarPreferences from './sidebar-preferences.json';
-import tabPreferences from './tab-preferences.json';
-
+// Schemas live in @beak/core/schemas now (zod-based, with z.infer types).
+// This module re-exports them under the legacy names for back-compat.
 export {
-	editorPreferences,
-	projectPanePreferences,
-	requestPreference,
-	sidebarPreferences,
-	tabPreferences,
-};
+	editorPreferencesSchema as editorPreferences,
+	projectPanePreferencesSchema as projectPanePreferences,
+	requestPreferenceSchema as requestPreference,
+	sidebarPreferencesSchema as sidebarPreferences,
+	tabPreferencesSchema as tabPreferences,
+} from '@beak/core/schemas';

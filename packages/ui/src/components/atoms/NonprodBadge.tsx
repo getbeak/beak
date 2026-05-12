@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
 import { toHexAlpha } from '@beak/design-system/utils';
 import { ipcPreferencesService } from '@beak/ui/lib/ipc';
-import styled, { DefaultTheme, keyframes } from 'styled-components';
+import type React from 'react';
+import { useEffect, useState } from 'react';
+import styled, { type DefaultTheme, keyframes } from 'styled-components';
 
 const pulse = (theme: DefaultTheme) => keyframes`
 	0% {
@@ -22,8 +23,7 @@ const NonprodBadge: React.FC<React.PropsWithChildren<unknown>> = () => {
 		ipcPreferencesService.getEnvironment().then(e => setShow(e === 'nonprod'));
 	}, []);
 
-	if (!show)
-		return null;
+	if (!show) return null;
 
 	return (
 		<Badge onClick={() => ipcPreferencesService.switchEnvironment('prod')}>

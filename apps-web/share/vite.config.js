@@ -1,8 +1,8 @@
 /* eslint-disable no-process-env */
 /* eslint-disable @typescript-eslint/no-var-requires */
 
+import path from 'node:path';
 import reactPlugin from '@vitejs/plugin-react';
-import path from 'path';
 import viteSentryPlugin from 'vite-plugin-sentry';
 
 const environment = process.env.NODE_ENV;
@@ -65,8 +65,7 @@ export default {
 };
 
 function writeDefinition(value) {
-	if (value === void 0)
-		return value;
+	if (value === void 0) return value;
 
 	return `'${value}'`;
 }

@@ -1,9 +1,9 @@
-import React, { useEffect, useRef, useState } from 'react';
 import Squawk from '@beak/common/utils/squawk';
 import Button from '@beak/ui/components/atoms/Button';
 import Input from '@beak/ui/components/atoms/Input';
 import Label from '@beak/ui/components/atoms/Label';
 import { ipcDialogService, ipcNestService } from '@beak/ui/lib/ipc';
+import React, { useEffect, useRef, useState } from 'react';
 
 import { Error } from '../atoms/typography';
 
@@ -25,8 +25,7 @@ const RequestTrial: React.FC<React.PropsWithChildren<RequestTrialProps>> = props
 	useEffect(() => inputRef.current?.focus(), []);
 
 	function requestTrial() {
-		if (email === '' || working)
-			return;
+		if (email === '' || working) return;
 
 		if (!emailRegex.test(email)) {
 			setError(new Squawk('invalid_email'));
@@ -37,31 +36,37 @@ const RequestTrial: React.FC<React.PropsWithChildren<RequestTrialProps>> = props
 		setError(null);
 		setWorking(true);
 
-		ipcNestService.createTrialAndMagicLink(email)
+		ipcNestService
+			.createTrialAndMagicLink(email)
 			.then(() => onMagicLinkSent())
 			.catch(error => {
 				const squawk = Squawk.coerce(error);
 
 				switch (squawk.code) {
 					case 'already_subscribed':
-						ipcDialogService.showMessageBox({
-							title: 'You\'re already subscribed',
-							type: 'info',
-							message: 'You already have a Beak subscription. Just sign in with your email!',
-						}).then(() => onChangeToDefault());
+						ipcDialogService
+							.showMessageBox({
+								title: "You're already subscribed",
+								type: 'info',
+								message: 'You already have a Beak subscription. Just sign in with your email!',
+							})
+							.then(() => onChangeToDefault());
 
 						break;
 
 					case 'trial_already_used':
-						ipcDialogService.showMessageBox({
-							title: 'You\'re already used the trial',
-							type: 'info',
-							message: 'You have already used your Beak trial. You can purchase a subscription to continue using Beak.',
-						}).then(() => onChangeToDefault());
+						ipcDialogService
+							.showMessageBox({
+								title: "You're already used the trial",
+								type: 'info',
+								message: 'You have already used your Beak trial. You can purchase a subscription to continue using Beak.',
+							})
+							.then(() => onChangeToDefault());
 
 						break;
 
-					default: break;
+					default:
+						break;
 				}
 
 				setError(squawk);
@@ -71,7 +76,7 @@ const RequestTrial: React.FC<React.PropsWithChildren<RequestTrialProps>> = props
 
 	return (
 		<React.Fragment>
-			<Label>{'Please enter your email to get started (you\'ll use this to sign in later)'}</Label>
+			<Label>{"Please enter your email to get started (you'll use this to sign in later)"}</Label>
 			<Input
 				disabled={working}
 				type={'email'}
@@ -80,21 +85,13 @@ const RequestTrial: React.FC<React.PropsWithChildren<RequestTrialProps>> = props
 				ref={inputRef}
 				onChange={e => onEmailChange(e.target.value)}
 				onKeyDown={e => {
-					if (e.key === 'Enter')
-						requestTrial();
+					if (e.key === 'Enter') requestTrial();
 				}}
 			/>
-			<Button
-				disabled={working}
-				onClick={() => requestTrial()}
-			>
+			<Button disabled={working} onClick={() => requestTrial()}>
 				{'Continue'}
 			</Button>
-			{error && (
-				<Error>
-					{getErrorMessage(error)}
-				</Error>
-			)}
+			{error && <Error>{getErrorMessage(error)}</Error>}
 		</React.Fragment>
 	);
 };

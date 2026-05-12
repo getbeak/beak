@@ -1,5 +1,5 @@
-import React from 'react';
-import { ReflexSplitter as RS, ReflexSplitterProps as RSP } from 'react-reflex';
+import type React from 'react';
+import { ReflexSplitter as RS, type ReflexSplitterProps as RSP } from 'react-reflex';
 import styled, { css } from 'styled-components';
 
 // TODO(afr): Get rid of important's when css import is removed
@@ -12,8 +12,8 @@ export interface ReflexSplitterProps extends RSP {
 }
 
 const ReflexSplitter: React.FC<ReflexSplitterProps> = styled(RS)<ReflexSplitterProps>`
-	width: ${props => props.orientation === 'vertical' ? '2px' : 'auto'} !important;
-	height: ${props => props.orientation === 'horizontal' ? '2px' : 'auto'} !important;
+	width: ${props => (props.orientation === 'vertical' ? '2px' : 'auto')} !important;
+	height: ${props => (props.orientation === 'horizontal' ? '2px' : 'auto')} !important;
 	background-color: ${props => props.theme.ui.backgroundBorderSeparator} !important;
 	border: none !important;
 	transition: background .2s, box-shadow .2s !important;
@@ -25,7 +25,9 @@ const ReflexSplitter: React.FC<ReflexSplitterProps> = styled(RS)<ReflexSplitterP
 
 	${p => p.$customChildren && 'height: auto !important;'}
 
-	${p => p.$disabled && css`
+	${p =>
+		p.$disabled &&
+		css`
 		display: none;
 		pointer-events: none !important;
 		cursor: default !important;
@@ -42,7 +44,9 @@ export interface HorizontalContextualReflexSplitterProps extends RSP {
 	children: React.ReactElement;
 }
 
-export const HorizontalContextualReflexSplitter: React.FC<HorizontalContextualReflexSplitterProps> = styled(RS)<HorizontalContextualReflexSplitterProps>`
+export const HorizontalContextualReflexSplitter: React.FC<HorizontalContextualReflexSplitterProps> = styled(
+	RS,
+)<HorizontalContextualReflexSplitterProps>`
 	width: auto !important;
 	height: auto !important;
 	background-color: ${props => props.theme.ui.backgroundBorderSeparator} !important;

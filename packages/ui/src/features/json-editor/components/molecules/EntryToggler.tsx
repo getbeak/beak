@@ -1,4 +1,5 @@
-import React, { useContext } from 'react';
+import type React from 'react';
+import { useContext } from 'react';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 
@@ -22,14 +23,15 @@ const EntryToggler: React.FC<React.PropsWithChildren<EntryTogglerProps>> = props
 				type={'checkbox'}
 				checked={value}
 				onChange={e => {
-					dispatch(editorContext.enabledChange({
-						requestId,
-						id,
-						enabled: e.target.checked,
-					}));
+					dispatch(
+						editorContext.enabledChange({
+							requestId,
+							id,
+							enabled: e.target.checked,
+						}),
+					);
 
-					if (onChange)
-						onChange(e.target.checked);
+					if (onChange) onChange(e.target.checked);
 				}}
 			/>
 		</Wrapper>

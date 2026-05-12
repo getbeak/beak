@@ -11,8 +11,7 @@ export async function fileOrFolderExists(filePath: string): Promise<boolean> {
 		return true;
 	} catch (error) {
 		if (error instanceof Error) {
-			if ('code' in error && typeof error.code === 'string' && ['ENOENT', 'ENOTDIR'].includes(error.code))
-				return false;
+			if ('code' in error && typeof error.code === 'string' && ['ENOENT', 'ENOTDIR'].includes(error.code)) return false;
 		}
 
 		throw error;

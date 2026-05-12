@@ -1,5 +1,5 @@
-import React from 'react';
 import Button from '@beak/ui/components/atoms/Button';
+import type React from 'react';
 import styled from 'styled-components';
 
 interface AlertItemProps {

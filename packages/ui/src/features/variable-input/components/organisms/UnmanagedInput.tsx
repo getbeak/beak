@@ -19,8 +19,7 @@ export default class UnmanagedInput extends React.Component<UnmanagedInputProps>
 				onDoubleClick={event => {
 					const disabled = event.currentTarget.getAttribute('disabled') === 'true';
 
-					if (!disabled)
-						return;
+					if (!disabled) return;
 
 					window.getSelection()?.selectAllChildren(event.currentTarget);
 					event.preventDefault();

@@ -1,22 +1,5 @@
-import { createAction } from '@reduxjs/toolkit';
+// Source of truth is @beak/core/git; this re-export keeps existing UI imports working.
+import { addBranch, changeSelectedBranch, gitOpened, removeBranch, startGit } from '@beak/core/git';
 
-import {
-	ActionTypes as AT,
-	GitOpenedPayload,
-} from './types';
-
-export const startGit = createAction(AT.START_GIT);
-export const gitOpened = createAction<GitOpenedPayload>(AT.GIT_OPENED);
-
-export const addBranch = createAction<string>(AT.ADD_BRANCH);
-export const removeBranch = createAction<string>(AT.REMOVE_BRANCH);
-export const changeSelectedBranch = createAction<string | undefined>(AT.CHANGE_SELECTED_BRANCH);
-
-export default {
-	startGit,
-	gitOpened,
-
-	addBranch,
-	removeBranch,
-	changeSelectedBranch,
-};
+export { addBranch, changeSelectedBranch, gitOpened, removeBranch, startGit };
+export default { addBranch, changeSelectedBranch, gitOpened, removeBranch, startGit };

@@ -1,12 +1,13 @@
-import React, { useEffect, useRef } from 'react';
-import { useDispatch } from 'react-redux';
-import { ReflexContainer, ReflexElement } from 'react-reflex';
 import ksuid from '@beak/ksuid';
 import { loadRequestPreferences } from '@beak/ui/store/preferences/actions';
 import { alertInsert, alertRemoveDependents } from '@beak/ui/store/project/actions';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { requestAllowsBody } from '@beak/ui/utils/http';
 import type { ValidRequestNode } from '@getbeak/types/nodes';
+import type React from 'react';
+import { useEffect, useRef } from 'react';
+import { useDispatch } from 'react-redux';
+import { ReflexContainer, ReflexElement } from 'react-reflex';
 import styled from 'styled-components';
 
 import { HorizontalContextualReflexSplitter } from '../../../components/atoms/ReflexSplitter';
@@ -38,38 +39,38 @@ const RequestPane: React.FC<React.PropsWithChildren<unknown>> = () => {
 
 	useEffect(() => {
 		if (selectedNode.type !== 'request')
-			return () => { /* */ };
+			return () => {
+				/* */
+			};
 
 		const info = selectedNode.info;
 		const hasBody = info.body.type !== 'text' || info.body.payload !== '';
 
 		if (!requestAllowsBody(info.verb) && hasBody) {
-			dispatch(alertInsert({
-				ident: ksuid.generate('alert').toString(),
-				alert: {
-					type: 'http_body_not_allowed',
-					dependencies: {
-						requestId: selectedNode.id,
+			dispatch(
+				alertInsert({
+					ident: ksuid.generate('alert').toString(),
+					alert: {
+						type: 'http_body_not_allowed',
+						dependencies: {
+							requestId: selectedNode.id,
+						},
 					},
-				},
-			}));
+				}),
+			);
 		}
 
 		return () => dispatch(alertRemoveDependents({ requestId: selectedNode.id }));
 	}, [selectedNode.id, selectedNode.info]);
 
-	if (!selectedTab || !preferences || !selectedNode)
-		return <Container />;
+	if (!selectedTab || !preferences || !selectedNode) return <Container />;
 
 	return (
 		<SelectedNodeContext.Provider value={selectedNode}>
 			<Container>
 				<Header node={selectedNode} />
 				<ReflexContainer orientation={'horizontal'}>
-					<ReflexElement
-						flex={8}
-						minSize={400}
-					>
+					<ReflexElement flex={8} minSize={400}>
 						<Modifiers node={selectedNode} />
 					</ReflexElement>
 
@@ -77,10 +78,7 @@ const RequestPane: React.FC<React.PropsWithChildren<unknown>> = () => {
 						<RequestPaneSplitter selectedNode={selectedNode} />
 					</HorizontalContextualReflexSplitter>
 
-					<ReflexElement
-						flex={2}
-						style={{ overflowY: 'hidden' }}
-					>
+					<ReflexElement flex={2} style={{ overflowY: 'hidden' }}>
 						<RequestOutput selectedNode={selectedNode} />
 					</ReflexElement>
 				</ReflexContainer>

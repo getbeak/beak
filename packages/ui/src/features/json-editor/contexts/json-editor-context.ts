@@ -1,7 +1,6 @@
-import { createContext } from 'react';
-import { ApplicationState } from '@beak/ui/store';
+import type { ApplicationState } from '@beak/ui/store';
 import { actions } from '@beak/ui/store/project';
-import {
+import type {
 	RequestBodyJsonEditorAddEntryPayload,
 	RequestBodyJsonEditorEnabledChangePayload,
 	RequestBodyJsonEditorNameChangePayload,
@@ -10,7 +9,8 @@ import {
 	RequestBodyJsonEditorValueChangePayload,
 } from '@beak/ui/store/project/types';
 import type { EntryMap } from '@getbeak/types/body-editor-json';
-import { AnyAction } from '@reduxjs/toolkit';
+import type { AnyAction } from '@reduxjs/toolkit';
+import { createContext } from 'react';
 
 interface Context {
 	requestId: string;

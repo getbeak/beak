@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import type React from 'react';
+import { useState } from 'react';
 import styled, { css } from 'styled-components';
 
 export interface CollapseProps {
@@ -22,11 +23,7 @@ const Collapse: React.FC<React.PropsWithChildren<CollapseProps>> = props => {
 				</ArrowWrapper>
 				<Title>{title}</Title>
 			</ActionBar>
-			{show && (
-				<ChildrenWrapper>
-					{children}
-				</ChildrenWrapper>
-			)}
+			{show && <ChildrenWrapper>{children}</ChildrenWrapper>}
 		</Wrapper>
 	);
 };
@@ -55,7 +52,7 @@ const Arrow = styled.div<{ direction: 'right' | 'down' }>`
 	border-bottom: 5px solid transparent;
 	border-left: 5px solid ${p => p.theme.ui.textOnSurfaceBackground};
 
-	${({ direction }) => direction === 'down' ? css`transform: rotate(90deg);` : ''};
+	${({ direction }) => (direction === 'down' ? css`transform: rotate(90deg);` : '')};
 `;
 
 const Title = styled.span`

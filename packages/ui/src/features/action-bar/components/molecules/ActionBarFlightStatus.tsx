@@ -1,25 +1,21 @@
-import React from 'react';
 import { statusToColor } from '@beak/design-system/helpers';
 import { faCircleCheck, faCircleDot, faCircleXmark, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import type React from 'react';
 import { useTheme } from 'styled-components';
 
-import useFlightStatus from '../../hooks/use-flight-status';
+import { useSelectedTabFlightStatus } from '../../../../services/flight/tab-integration';
 
 const ActionBarFlightStatus: React.FC<React.PropsWithChildren<unknown>> = () => {
 	const theme = useTheme();
-	const flightStatus = useFlightStatus();
+
+	// Use new tab-integrated flight status hook
+	const flightStatus = useSelectedTabFlightStatus();
 
 	switch (flightStatus.status) {
 		case 'active':
 			return (
-				<FontAwesomeIcon
-					id={'#tt-action-bar-flight-status-active'}
-					icon={faSpinner}
-					size={'1x'}
-					tabIndex={-1}
-					spin
-				/>
+				<FontAwesomeIcon id={'#tt-action-bar-flight-status-active'} icon={faSpinner} size={'1x'} tabIndex={-1} spin />
 			);
 
 		case 'complete': {
@@ -47,17 +43,8 @@ const ActionBarFlightStatus: React.FC<React.PropsWithChildren<unknown>> = () => 
 					size={'1x'}
 				/>
 			);
-
-		case 'pending':
 		default:
-			return (
-				<FontAwesomeIcon
-					id={'tt-action-bar-flight-status-pending'}
-					icon={faCircleDot}
-					tabIndex={-1}
-					size={'1x'}
-				/>
-			);
+			return <FontAwesomeIcon id={'tt-action-bar-flight-status-pending'} icon={faCircleDot} tabIndex={-1} size={'1x'} />;
 	}
 };
 

@@ -9,7 +9,9 @@ export interface Base {
 	enabled: boolean;
 }
 
-export interface NamedEntryBase { name: string }
+export interface NamedEntryBase {
+	name: string;
+}
 
 export interface StringEntry extends Base {
 	type: 'string';
@@ -31,24 +33,28 @@ export interface NullEntry extends Base {
 	value: null;
 }
 
-export interface ObjectEntry extends Base { type: 'object' }
-export interface ArrayEntry extends Base { type: 'array' }
+export interface ObjectEntry extends Base {
+	type: 'object';
+}
+export interface ArrayEntry extends Base {
+	type: 'array';
+}
 
-export interface NamedStringEntry extends StringEntry, NamedEntryBase { }
-export interface NamedNumberEntry extends NumberEntry, NamedEntryBase { }
-export interface NamedBooleanEntry extends BooleanEntry, NamedEntryBase { }
-export interface NamedNullEntry extends NullEntry, NamedEntryBase { }
-export interface NamedObjectEntry extends ObjectEntry, NamedEntryBase { }
-export interface NamedArrayEntry extends ArrayEntry, NamedEntryBase { }
+export interface NamedStringEntry extends StringEntry, NamedEntryBase {}
+export interface NamedNumberEntry extends NumberEntry, NamedEntryBase {}
+export interface NamedBooleanEntry extends BooleanEntry, NamedEntryBase {}
+export interface NamedNullEntry extends NullEntry, NamedEntryBase {}
+export interface NamedObjectEntry extends ObjectEntry, NamedEntryBase {}
+export interface NamedArrayEntry extends ArrayEntry, NamedEntryBase {}
 
 export type Entries = NamedEntries | AnonymousEntries;
 export type AnonymousEntries = StringEntry | NumberEntry | BooleanEntry | NullEntry | ObjectEntry | ArrayEntry;
 export type ValueEntries = StringEntry | NumberEntry | BooleanEntry | NullEntry;
 
 export type NamedEntries =
-	NamedStringEntry |
-	NamedNumberEntry |
-	NamedBooleanEntry |
-	NamedNullEntry |
-	NamedObjectEntry |
-	NamedArrayEntry;
+	| NamedStringEntry
+	| NamedNumberEntry
+	| NamedBooleanEntry
+	| NamedNullEntry
+	| NamedObjectEntry
+	| NamedArrayEntry;

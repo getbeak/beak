@@ -1,8 +1,8 @@
-import React from 'react';
-import { UIColors } from '@beak/design-system/types';
+import type { UIColors } from '@beak/design-system/types';
 import { toHexAlpha } from '@beak/design-system/utils';
-import { IconDefinition } from '@fortawesome/free-solid-svg-icons';
+import type { IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import type React from 'react';
 import styled, { useTheme } from 'styled-components';
 
 type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement>;
@@ -16,13 +16,7 @@ export interface GetStartedButtonProps extends ButtonProps {
 
 const GetStartedButton: React.FC<React.PropsWithChildren<GetStartedButtonProps>> = props => {
 	const theme = useTheme();
-	const {
-		title,
-		description,
-		icon,
-		iconColor,
-		...passProps
-	} = props;
+	const { title, description, icon, iconColor, ...passProps } = props;
 
 	const color = iconColor ? theme.ui[iconColor] : void 0;
 
@@ -30,11 +24,7 @@ const GetStartedButton: React.FC<React.PropsWithChildren<GetStartedButtonProps>>
 		<Button {...passProps}>
 			<Container>
 				<Icon>
-					<FontAwesomeIcon
-						icon={icon}
-						color={color}
-						size={'2x'}
-					/>
+					<FontAwesomeIcon icon={icon} color={color} size={'2x'} />
 				</Icon>
 				<TextParts>
 					<Title>{title}</Title>

@@ -5,7 +5,8 @@ export default async function handleNest(url: URL) {
 		case '/magic-link':
 			return await handleMagicLink(url);
 
-		default: return null;
+		default:
+			return null;
 	}
 }
 
@@ -13,8 +14,7 @@ async function handleMagicLink(url: URL) {
 	const code = url.searchParams.get('code');
 	const state = url.searchParams.get('state');
 
-	if (!code || !state)
-		return false;
+	if (!code || !state) return false;
 
 	const windowId = await createPortalWindow();
 	const window = windowStack[windowId];

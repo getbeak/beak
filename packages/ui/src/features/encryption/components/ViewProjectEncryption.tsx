@@ -1,7 +1,7 @@
-import React from 'react';
 import Button from '@beak/ui/components/atoms/Button';
 import Dialog from '@beak/ui/components/molecules/Dialog';
 import { ipcEncryptionService } from '@beak/ui/lib/ipc';
+import type React from 'react';
 import styled from 'styled-components';
 
 interface ViewProjectEncryptionProps {
@@ -14,16 +14,12 @@ const ViewProjectEncryption: React.FC<React.PropsWithChildren<ViewProjectEncrypt
 			<Title>{'Project encryption'}</Title>
 			<Description>
 				{'You can share the key below with your team to reveal your secrets... Be careful with this key, '}
-				{'don\'t post it anywhere permanent or public!'}
+				{"don't post it anywhere permanent or public!"}
 			</Description>
 
-			<Description>
-				{'Tap the button below to add the encryption key to your clipboard'}
-			</Description>
+			<Description>{'Tap the button below to add the encryption key to your clipboard'}</Description>
 
-			<Button onClick={() => ipcEncryptionService.copyEncryptionKey()}>
-				{'Copy encryption key'}
-			</Button>
+			<Button onClick={() => ipcEncryptionService.copyEncryptionKey()}>{'Copy encryption key'}</Button>
 		</Container>
 	</Dialog>
 );

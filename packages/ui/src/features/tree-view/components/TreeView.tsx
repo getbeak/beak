@@ -1,10 +1,11 @@
-import React, { ReactElement, useRef } from 'react';
+import { TypedObject } from '@beak/common/helpers/typescript';
+import type { ApplicationState } from '@beak/ui/store';
+import type { PayloadAction } from '@reduxjs/toolkit';
+import type { MenuItemConstructorOptions } from 'electron';
+import type React from 'react';
+import { type ReactElement, useRef } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import { TypedObject } from '@beak/common/helpers/typescript';
-import { ApplicationState } from '@beak/ui/store';
-import { PayloadAction } from '@reduxjs/toolkit';
-import type { MenuItemConstructorOptions } from 'electron';
 import styled from 'styled-components';
 
 import useSectionBody from '../../sidebar/hooks/use-section-body';
@@ -12,7 +13,7 @@ import { TreeViewAbstractionsContext } from '../contexts/abstractions-context';
 import { TreeViewFocusContext } from '../contexts/focus-context';
 import { TreeViewNodesContext } from '../contexts/nodes-context';
 import useFocusedNodeSetup from '../hooks/use-focused-node-setup';
-import { TreeViewFolderNode, TreeViewItem, TreeViewNode, TreeViewNodes } from '../types';
+import type { TreeViewFolderNode, TreeViewItem, TreeViewNode, TreeViewNodes } from '../types';
 import NodeContextMenu from './molecules/NodeContextMenu';
 import RootDropContainer from './molecules/RootDropContainer';
 import FolderNode from './organisms/FolderNode';
@@ -48,38 +49,44 @@ const TreeView: React.FC<React.PropsWithChildren<TreeViewProps>> = props => {
 	const [focusedNodeId, focusedNodeInvalidator, setFocusedNodeId] = useFocusedNodeSetup(props.focusedNodeId);
 	const formattedNodes = TypedObject.values(tree)
 		.filter(t => t.parent === rootParentName)
-		.sort((a, b) => a.name.localeCompare(b.name, void 0, {
-			numeric: true,
-			sensitivity: 'base',
-		}));
+		.sort((a, b) =>
+			a.name.localeCompare(b.name, void 0, {
+				numeric: true,
+				sensitivity: 'base',
+			}),
+		);
 
 	// A tree view is probably inside a flex body, so let's grooow
 	useSectionBody({ flexGrow: 2 });
 
 	return (
 		<TreeViewNodesContext.Provider value={tree}>
-			<TreeViewAbstractionsContext.Provider value={{
-				nodeFlairRenderers: props.nodeFlairRenderers,
+			<TreeViewAbstractionsContext.Provider
+				value={{
+					nodeFlairRenderers: props.nodeFlairRenderers,
 
-				renameSelector: props.renameSelector,
-				onRenameStarted: props.onRenameStarted,
-				onRenameUpdated: props.onRenameUpdated,
-				onRenameSubmitted: props.onRenameSubmitted,
-				onRenameEnded: props.onRenameEnded,
+					renameSelector: props.renameSelector,
+					onRenameStarted: props.onRenameStarted,
+					onRenameUpdated: props.onRenameUpdated,
+					onRenameSubmitted: props.onRenameSubmitted,
+					onRenameEnded: props.onRenameEnded,
 
-				onContextMenu: props.onContextMenu,
-				onDrop: props.onDrop,
-				onNodeClick: props.onNodeClick,
-				onNodeDoubleClick: props.onNodeDoubleClick,
-				onNodeKeyDown: props.onNodeKeyDown,
-			}}>
-				<TreeViewFocusContext.Provider value={{
-					rootRef: container,
-					activeNodeId: props.activeNodeId,
-					focusedNodeId,
-					focusedNodeInvalidator,
-					setFocusedNodeId,
-				}}>
+					onContextMenu: props.onContextMenu,
+					onDrop: props.onDrop,
+					onNodeClick: props.onNodeClick,
+					onNodeDoubleClick: props.onNodeDoubleClick,
+					onNodeKeyDown: props.onNodeKeyDown,
+				}}
+			>
+				<TreeViewFocusContext.Provider
+					value={{
+						rootRef: container,
+						activeNodeId: props.activeNodeId,
+						focusedNodeId,
+						focusedNodeInvalidator,
+						setFocusedNodeId,
+					}}
+				>
 					<DndProvider backend={HTML5Backend}>
 						<NodeContextMenu
 							disabled={!allowRootContextMenu}
@@ -94,20 +101,16 @@ const TreeView: React.FC<React.PropsWithChildren<TreeViewProps>> = props => {
 						>
 							<Container ref={container}>
 								<RootDropContainer>
-									{formattedNodes.filter(i => i.type === 'folder').map(i => (
-										<FolderNode
-											key={i.id}
-											depth={0}
-											node={i as TreeViewFolderNode}
-										/>
-									))}
-									{formattedNodes.filter(i => i.type !== 'folder').map(i => (
-										<Node
-											key={i.id}
-											depth={0}
-											node={i as TreeViewNode}
-										/>
-									))}
+									{formattedNodes
+										.filter(i => i.type === 'folder')
+										.map(i => (
+											<FolderNode key={i.id} depth={0} node={i as TreeViewFolderNode} />
+										))}
+									{formattedNodes
+										.filter(i => i.type !== 'folder')
+										.map(i => (
+											<Node key={i.id} depth={0} node={i as TreeViewNode} />
+										))}
 								</RootDropContainer>
 							</Container>
 						</NodeContextMenu>

@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { RequestTabItem } from '@beak/common/types/beak-project';
+import type { RequestTabItem } from '@beak/common/types/beak-project';
 import { useAppSelector } from '@beak/ui/store/redux';
+import type React from 'react';
+import { useState } from 'react';
+import { useDispatch } from 'react-redux';
 
 import TabItem from '../../../../components/atoms/TabItem';
 import { changeTab, makeTabPermanent } from '../../store/actions';
@@ -17,8 +18,7 @@ const RequestTab: React.FC<React.PropsWithChildren<RequestTabProps>> = ({ tab })
 	const selectedTabPayload = useAppSelector(s => s.features.tabs.selectedTab);
 	const [target, setTarget] = useState<HTMLElement>();
 
-	if (!node)
-		return null;
+	if (!node) return null;
 
 	return (
 		<TabContextMenuWrapper tab={tab} target={target}>
@@ -28,8 +28,7 @@ const RequestTab: React.FC<React.PropsWithChildren<RequestTabProps>> = ({ tab })
 				lazyForwardedRef={i => setTarget(i!)}
 				onClick={() => dispatch(changeTab(tab))}
 				onDoubleClick={() => {
-					if (!tab.temporary)
-						return;
+					if (!tab.temporary) return;
 
 					dispatch(makeTabPermanent(tab.payload));
 				}}

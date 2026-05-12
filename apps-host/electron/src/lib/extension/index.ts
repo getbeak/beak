@@ -1,20 +1,29 @@
 import { ensureWithinProject } from '@beak/apps-host-electron/ipc-layer/fs-service';
 import { getProjectFilePathWindowMapping } from '@beak/apps-host-electron/ipc-layer/fs-shared';
-import { ExtensionsMessages, IpcExtensionsServiceMain, RtvParseValueSectionsResponse } from '@beak/common/ipc/extensions';
-import { IpcEvent, RequestPayload } from '@beak/common/ipc/ipc';
-import { VariableExtension } from '@beak/common/types/extensions';
+import {
+	ExtensionsMessages,
+	type IpcExtensionsServiceMain,
+	type RtvParseValueSectionsResponse,
+} from '@beak/common/ipc/extensions';
+import type { IpcMessage } from '@beak/common/ipc/types';
+import type { IpcMainInvokeEvent, IpcRendererEvent } from 'electron';
+
+type IpcEvent = IpcMainInvokeEvent | IpcRendererEvent;
+type RequestPayload<T> = IpcMessage<T>;
+
+import path from 'node:path';
+import type { VariableExtension } from '@beak/common/types/extensions';
 import Squawk from '@beak/common/utils/squawk';
 import ksuid from '@beak/ksuid';
-import { Context, ValueSections } from '@getbeak/types/values';
-import { EditableVariable } from '@getbeak/types-variables';
-import { ipcMain, WebContents } from 'electron';
+import type { Context, ValueSections } from '@getbeak/types/values';
+import type { EditableVariable } from '@getbeak/types-variables/';
+import { ipcMain, type WebContents } from 'electron';
 import fs from 'fs-extra';
 import clone from 'lodash.clonedeep';
-import path from 'path';
 import { Logger } from 'tslog';
 import { NodeVM, VMScript } from 'vm2';
 
-import { LogLevel, setupLoggerForFsLogging } from '../logger';
+import { type LogLevel, setupLoggerForFsLogging } from '../logger';
 
 interface ProjectExtensions {
 	[projectId: string]: Record<string, RtvExtensionStorage>;
@@ -42,8 +51,7 @@ export default class ExtensionManager {
 	}
 
 	async registerRtv(event: IpcEvent, projectId: string, extensionPath: string): Promise<VariableExtension> {
-		if (!this.projectExtensions[projectId])
-			this.projectExtensions[projectId] = {};
+		if (!this.projectExtensions[projectId]) this.projectExtensions[projectId] = {};
 
 		// Prefix added so malicious action can't replace built in sensitive RTVs
 		const { name, scriptPath, version } = await this.parseExtensionPackage(event, extensionPath);
@@ -88,7 +96,7 @@ export default class ExtensionManager {
 			version,
 			filePath: extensionPath,
 			valid: true,
-			variable: {
+			realtimeValue: {
 				type,
 				external: true,
 				name: extension.name,
@@ -131,14 +139,12 @@ export default class ExtensionManager {
 			});
 
 			return await new Promise(resolve => {
-				ipcMain.on(this.extensionService.getChannel(), async (_event, message) => {
+				ipcMain.on('extensions', async (_event, message) => {
 					const { code, payload } = message as RequestPayload<RtvParseValueSectionsResponse>;
 
-					if (code !== ExtensionsMessages.RtvParseValueSectionsResponse)
-						return;
+					if (code !== ExtensionsMessages.RtvParseValueSectionsResponse) return;
 
-					if (payload.uniqueSessionId !== uniqueSessionId)
-						return;
+					if (payload.uniqueSessionId !== uniqueSessionId) return;
 
 					resolve(payload.parsed);
 				});
@@ -157,10 +163,6 @@ export default class ExtensionManager {
 
 	async rtvEditorLoad(projectId: string, type: string, context: Context, payload: unknown) {
 		const { extension } = this.getExtensionContext(projectId, type);
-
-		if (extension.editor.load === void 0)
-			return payload;
-
 		const editorState = await extension.editor.load(context, payload);
 
 		return clone(editorState);
@@ -168,10 +170,6 @@ export default class ExtensionManager {
 
 	async rtvEditorSave(projectId: string, type: string, context: Context, existingPayload: unknown, state: unknown) {
 		const { extension } = this.getExtensionContext(projectId, type);
-
-		if (extension.editor.save === void 0)
-			return state;
-
 		const payload = await extension.editor.save(context, existingPayload, state);
 
 		return clone(payload);
@@ -180,8 +178,7 @@ export default class ExtensionManager {
 	private getExtensionContext(projectId: string, type: string) {
 		const extensionStorage = this.projectExtensions[projectId]?.[type];
 
-		if (!extensionStorage)
-			throw new Squawk('unknown_registered_extension', { projectId, type });
+		if (!extensionStorage) throw new Squawk('unknown_registered_extension', { projectId, type });
 
 		extensionStorage.vm.sandbox.beakApi.parseValueSections = () => [];
 
@@ -193,11 +190,11 @@ export default class ExtensionManager {
 		const packageJson = await fs.readJson(packageJsonPath);
 		const { name, version, beakExtensionType, main } = packageJson;
 
-		if (beakExtensionType !== 'variable') {
+		if (beakExtensionType !== 'realtime-value') {
 			throw new Squawk('invalid_extension_type', {
 				extensionPath,
 				packageJsonKey: 'beakExtensionType',
-				expected: 'variable',
+				expected: 'realtime-value',
 				actual: beakExtensionType ?? '[missing]',
 			});
 		}
@@ -228,7 +225,7 @@ export default class ExtensionManager {
 
 		const scriptPath = path.join(extensionPath, main);
 
-		if (!await fs.pathExists(scriptPath)) {
+		if (!(await fs.pathExists(scriptPath))) {
 			throw new Squawk('extension_main_missing', {
 				extensionPath,
 				packageJsonKey: 'main',
@@ -244,8 +241,7 @@ export default class ExtensionManager {
 	}
 
 	private validateExtensionSignature(extension: EditableVariable<any>) {
-		if (!('name' in extension))
-			throw new Squawk('incorrect_extension_signature', { key: 'name', reason: 'missing' });
+		if (!('name' in extension)) throw new Squawk('incorrect_extension_signature', { key: 'name', reason: 'missing' });
 		if (typeof extension.name !== 'string')
 			throw new Squawk('incorrect_extension_signature', { key: 'name', reason: 'wrong type' });
 

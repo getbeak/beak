@@ -1,38 +1,36 @@
 {
-  "extends": "../../tsconfig.json",
-  "compilerOptions": {
-    "outDir": "./dist-ts",
+	"extends": "./../../tsconfig.json",
+	"compilerOptions": {
+		"outDir": "./dist-ts",
 
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
-    "allowJs": true,
-    "skipLibCheck": true,
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "module": "es2022",
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "jsx": "react"
-  },
-  "references": [{
-    "path": "../common"
-  }, {
-    "path": "../ksuid"
-  }, {
-    "path": "../design-system"
-  }],
-  "include": [
-    "src/**/*.ts",
-    "src/**/*.tsx",
-    "src/**/*.json"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist",
-    "dist-ts"
-  ]
+		"lib": ["dom", "dom.iterable", "esnext"],
+		"allowJs": true,
+		"skipLibCheck": true,
+		"esModuleInterop": true,
+		"forceConsistentCasingInFileNames": true,
+		"module": "es2022",
+		"moduleResolution": "bundler",
+		"resolveJsonModule": true,
+		"isolatedModules": true,
+		"jsx": "react"
+	},
+	"references": [
+		{
+			"path": "../common"
+		},
+		{
+			"path": "../core"
+		},
+		{
+			"path": "../ksuid"
+		},
+		{
+			"path": "../realtime-values"
+		},
+		{
+			"path": "../design-system"
+		}
+	],
+	"include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.json"],
+	"exclude": ["node_modules", "dist", "dist-ts"]
 }

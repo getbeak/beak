@@ -1,4 +1,4 @@
-import { Theme, UIColors } from './types';
+import type { Theme, UIColors } from './types';
 
 const darkTheme: UIColors = {
 	primaryFill: '#d45d80',

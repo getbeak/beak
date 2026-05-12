@@ -1,5 +1,9 @@
-import { GetSubscriptionStatusResponse, GetUserResponse, NewsItem } from '../types/nest';
-import { IpcServiceMain, IpcServiceRenderer, Listener, PartialIpcMain, PartialIpcRenderer } from './ipc';
+import type { GetSubscriptionStatusResponse, GetUserResponse, NewsItem } from '../types/nest';
+import type { PartialIpcMain } from './main';
+import { IpcServiceMain } from './main';
+import type { PartialIpcRenderer } from './renderer';
+import { IpcServiceRenderer } from './renderer';
+import type { IpcListener } from './types';
 
 export const NestMessages = {
 	SendMagicLink: 'send_magic_link',
@@ -18,7 +22,7 @@ interface HandleMagicLinkReq {
 	fromTrial?: boolean;
 }
 
-export class IpcNestServiceRenderer extends IpcServiceRenderer {
+export class IpcNestServiceRenderer extends IpcServiceRenderer<'nest'> {
 	constructor(ipc: PartialIpcRenderer) {
 		super('nest', ipc);
 	}
@@ -52,36 +56,36 @@ export class IpcNestServiceRenderer extends IpcServiceRenderer {
 	}
 }
 
-export class IpcNestServiceMain extends IpcServiceMain {
+export class IpcNestServiceMain extends IpcServiceMain<'nest'> {
 	constructor(ipc: PartialIpcMain) {
 		super('nest', ipc);
 	}
 
-	registerSendMagicLink(fn: Listener<string>) {
-		this.registerListener(NestMessages.SendMagicLink, fn);
+	registerSendMagicLink(fn: IpcListener<string>) {
+		this.registerRequestHandler(NestMessages.SendMagicLink, fn);
 	}
 
-	registerCreateTrialAndMagicLink(fn: Listener<string>) {
-		this.registerListener(NestMessages.CreateTrialAndMagicLink, fn);
+	registerCreateTrialAndMagicLink(fn: IpcListener<string>) {
+		this.registerRequestHandler(NestMessages.CreateTrialAndMagicLink, fn);
 	}
 
-	registerHandleMagicLink(fn: Listener<HandleMagicLinkReq>) {
-		this.registerListener(NestMessages.HandleMagicLink, fn);
+	registerHandleMagicLink(fn: IpcListener<HandleMagicLinkReq>) {
+		this.registerRequestHandler(NestMessages.HandleMagicLink, fn);
 	}
 
-	registerListNewsItems(fn: Listener<string | undefined, NewsItem[]>) {
-		this.registerListener(NestMessages.ListNewsItems, fn);
+	registerListNewsItems(fn: IpcListener<string | undefined>) {
+		this.registerRequestHandler(NestMessages.ListNewsItems, fn);
 	}
 
-	registerGetSubscriptionState(fn: Listener<void, GetSubscriptionStatusResponse>) {
-		this.registerListener(NestMessages.GetSubscriptionState, fn);
+	registerGetSubscriptionState(fn: IpcListener<void>) {
+		this.registerRequestHandler(NestMessages.GetSubscriptionState, fn);
 	}
 
-	registerGetUser(fn: Listener<void, GetUserResponse>) {
-		this.registerListener(NestMessages.GetUser, fn);
+	registerGetUser(fn: IpcListener<void>) {
+		this.registerRequestHandler(NestMessages.GetUser, fn);
 	}
 
-	registerHasAuth(fn: Listener<void, boolean>) {
-		this.registerListener(NestMessages.HasAuth, fn);
+	registerHasAuth(fn: IpcListener<void>) {
+		this.registerRequestHandler(NestMessages.HasAuth, fn);
 	}
 }

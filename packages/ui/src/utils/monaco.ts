@@ -1,5 +1,5 @@
-import { EditorPreferences } from '@beak/common/types/preferences';
-import { EditorProps, loader } from '@monaco-editor/react';
+import type { EditorPreferences } from '@beak/common/types/preferences';
+import { type EditorProps, loader } from '@monaco-editor/react';
 import * as monaco from 'monaco-editor';
 
 // Modified version of code from https://github.com/microsoft/monaco-editor/issues/2209
@@ -10,12 +10,8 @@ const httpLanguageDefinition: monaco.languages.IMonarchLanguage = {
 	brackets: [],
 
 	tokenizer: {
-		root: [
-			[/^(?:[A-Z0-9]+\s)/, 'comment', '@overview'],
-		],
-		overview: [
-			[/(.+\s)(.*)(\n)$/, ['variable.name', 'source', { token: 'source', next: '@headers' }]],
-		],
+		root: [[/^(?:[A-Z0-9]+\s)/, 'comment', '@overview']],
+		overview: [[/(.+\s)(.*)(\n)$/, ['variable.name', 'source', { token: 'source', next: '@headers' }]]],
 		headers: [
 			[/^(content-type\s*)(:)/, ['variable.name', { token: 'delimiter', next: '@content_type' }]],
 			[/^([^:]+)(:)(.+\n)$/, ['variable.name', 'delimiter', 'source']],

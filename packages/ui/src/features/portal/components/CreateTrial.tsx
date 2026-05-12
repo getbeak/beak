@@ -1,10 +1,11 @@
-import React, { useEffect, useRef, useState } from 'react';
-import Squawk from '@beak/common/utils/squawk';
+import type Squawk from '@beak/common/utils/squawk';
 import ArrowButton from '@beak/ui/components/atoms/ArrowButton';
 import Button from '@beak/ui/components/atoms/Button';
+import type React from 'react';
+import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
-import { MagicState } from './organisms/EnterMagicState';
+import type { MagicState } from './organisms/EnterMagicState';
 import EnterTrialMagicState from './organisms/EnterTrialMagicState';
 import RequestTrial from './organisms/RequestTrial';
 
@@ -41,14 +42,10 @@ const CreateTrial: React.FC<React.PropsWithChildren<CreateTrialProps>> = ({ onCh
 
 	return (
 		<Wrapper>
-			<ArrowButton onClick={() => onChangeToDefault()}>
-				{'Go back'}
-			</ArrowButton>
+			<ArrowButton onClick={() => onChangeToDefault()}>{'Go back'}</ArrowButton>
 			<Logo src={'images/logo-tile.png'} />
 			<Title>{'Start your free Beak trial'}</Title>
-			<SubTitle>
-				{'No credit card, no fuss, no limits... Just 14 days of the full Beak experience.'}
-			</SubTitle>
+			<SubTitle>{'No credit card, no fuss, no limits... Just 14 days of the full Beak experience.'}</SubTitle>
 			<ActionContainer>
 				{variant === 'default' && (
 					<RequestTrial
@@ -59,11 +56,7 @@ const CreateTrial: React.FC<React.PropsWithChildren<CreateTrialProps>> = ({ onCh
 					/>
 				)}
 				{variant === 'magic_link' && (
-					<EnterTrialMagicState
-						email={email}
-						reset={() => setVariant('default')}
-						inboundState={inboundState}
-					/>
+					<EnterTrialMagicState email={email} reset={() => setVariant('default')} inboundState={inboundState} />
 				)}
 			</ActionContainer>
 		</Wrapper>
@@ -115,7 +108,7 @@ export function getErrorMessage(error: Squawk) {
 			return 'You already have a subscription';
 
 		case 'trial_already_used':
-			return 'You\'ve already used the trial';
+			return "You've already used the trial";
 
 		default:
 			return `There was a problem sending the magic link (${error.code})`;

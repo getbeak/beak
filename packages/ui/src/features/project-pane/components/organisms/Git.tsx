@@ -1,6 +1,6 @@
-import React from 'react';
 import useSectionBody from '@beak/ui/features/sidebar/hooks/use-section-body';
 import { useAppSelector } from '@beak/ui/store/redux';
+import type React from 'react';
 import styled from 'styled-components';
 
 import NoProjectInformation from '../molecules/NoProjectInformation';
@@ -24,13 +24,13 @@ const Git: React.FC<React.PropsWithChildren<unknown>> = () => {
 	return (
 		<Container>
 			<Item>
-				<GroupName>
-					{'Branch'}
-				</GroupName>
+				<GroupName>{'Branch'}</GroupName>
 
 				<Selector value={selectedBranch}>
 					{branches.map(b => (
-						<option disabled={selectedBranch !== b.name} key={b.name} value={b.name}>{b.name}</option>
+						<option disabled={selectedBranch !== b.name} key={b.name} value={b.name}>
+							{b.name}
+						</option>
 					))}
 				</Selector>
 			</Item>

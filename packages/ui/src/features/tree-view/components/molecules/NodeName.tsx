@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { TreeViewItem } from '../../types';
+import type { TreeViewItem } from '../../types';
 import Chevron from '../atoms/Chevron';
 import NodeRenamer from './NodeRenamer';
 

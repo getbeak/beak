@@ -1,4 +1,4 @@
-import { BeakBase, Providers } from './base';
+import { BeakBase, type Providers } from './base';
 import BeakProject from './project';
 
 export default class BeakHost extends BeakBase {

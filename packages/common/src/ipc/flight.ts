@@ -1,64 +1,90 @@
-import { WebContents } from 'electron';
+import type { WebContents } from 'electron';
+import { z } from 'zod';
 
-import { FlightCompletePayload, FlightFailedPayload, FlightHeartbeatPayload, FlightRequestPayload } from '../types/requester';
-import { IpcServiceMain, IpcServiceRenderer, Listener, PartialIpcMain, PartialIpcRenderer } from './ipc';
+import type {
+	FlightCompletePayload,
+	FlightFailedPayload,
+	FlightHeartbeatPayload,
+	FlightRequestPayload,
+} from '../types/requester';
+import type { PartialIpcMain } from './main';
+import { IpcServiceMain } from './main';
+import type { PartialIpcRenderer } from './renderer';
+import { IpcServiceRenderer } from './renderer';
+import type { IpcListener } from './types';
 
 export const FlightMessages = {
 	StartFlight: 'start_flight',
 	FlightHeartbeat: 'flight_heartbeat',
 	FlightComplete: 'flight_complete',
 	FlightFailed: 'flight_failed',
-};
+} as const;
 
-export class IpcFlightServiceRenderer extends IpcServiceRenderer {
+export type FlightMessageType = (typeof FlightMessages)[keyof typeof FlightMessages];
+
+// Renderer→main validation for inbound requests. Loose on the nested `request`
+// (it grows; `.passthrough()` keeps us forward-compatible) but strict on the
+// envelope so wire-protocol breakage gets caught at the boundary.
+//
+// Outbound events from main→renderer are NOT validated by the listeners: both
+// ends are trusted Beak code, and the existing tests use placeholder payloads
+// that intentionally don't model the wire format.
+const StartFlightSchema = z.object({
+	flightId: z.string().min(1),
+	requestId: z.string().min(1),
+	request: z
+		.object({
+			verb: z.string(),
+			url: z.array(z.unknown()),
+			body: z.object({ type: z.string() }).passthrough(),
+		})
+		.passthrough(),
+});
+
+export class IpcFlightServiceRenderer extends IpcServiceRenderer<'flight'> {
 	constructor(ipc: PartialIpcRenderer) {
 		super('flight', ipc);
 	}
 
 	async startFlight(payload: FlightRequestPayload) {
-		await this.invoke(FlightMessages.StartFlight, payload);
+		return this.invoke(FlightMessages.StartFlight, payload);
 	}
 
-	registerFlightHeartbeat(fn: Listener<FlightHeartbeatPayload>) {
+	registerFlightHeartbeat(fn: IpcListener<FlightHeartbeatPayload>) {
 		this.registerListener(FlightMessages.FlightHeartbeat, fn);
 	}
 
-	registerFlightComplete(fn: Listener<FlightCompletePayload>) {
+	registerFlightComplete(fn: IpcListener<FlightCompletePayload>) {
 		this.registerListener(FlightMessages.FlightComplete, fn);
 	}
 
-	registerFlightFailed(fn: Listener<FlightFailedPayload>) {
+	registerFlightFailed(fn: IpcListener<FlightFailedPayload>) {
 		this.registerListener(FlightMessages.FlightFailed, fn);
+	}
+
+	unregister(message: FlightMessageType): void {
+		this.unregisterListener(message);
 	}
 }
 
-export class IpcFlightServiceMain extends IpcServiceMain {
+export class IpcFlightServiceMain extends IpcServiceMain<'flight'> {
 	constructor(ipc: PartialIpcMain) {
 		super('flight', ipc);
 	}
 
-	registerStartFlight(fn: Listener<FlightRequestPayload, void>) {
-		this.registerListener(FlightMessages.StartFlight, fn);
+	registerStartFlight(fn: IpcListener<FlightRequestPayload>) {
+		this.registerRequestHandler(FlightMessages.StartFlight, fn, StartFlightSchema as never);
 	}
 
 	sendHeartbeat(wc: WebContents, payload: FlightHeartbeatPayload) {
-		wc.send(this.channel, {
-			code: FlightMessages.FlightHeartbeat,
-			payload,
-		});
+		this.sendMessage(wc, FlightMessages.FlightHeartbeat, payload);
 	}
 
 	sendComplete(wc: WebContents, payload: FlightCompletePayload) {
-		wc.send(this.channel, {
-			code: FlightMessages.FlightComplete,
-			payload,
-		});
+		this.sendMessage(wc, FlightMessages.FlightComplete, payload);
 	}
 
 	sendFailed(wc: WebContents, payload: FlightFailedPayload) {
-		wc.send(this.channel, {
-			code: FlightMessages.FlightFailed,
-			payload,
-		});
+		this.sendMessage(wc, FlightMessages.FlightFailed, payload);
 	}
 }

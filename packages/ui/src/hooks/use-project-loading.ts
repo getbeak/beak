@@ -18,8 +18,7 @@ export function useProjectLoading(loaded: boolean, setup: boolean) {
 		return () => window.clearInterval(interval);
 	}, []);
 
-	if (withinMandatoryLoadingTime)
-		return true;
+	if (withinMandatoryLoadingTime) return true;
 
 	return loading || settingUp;
 }

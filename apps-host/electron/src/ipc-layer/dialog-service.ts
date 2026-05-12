@@ -1,5 +1,5 @@
-import { IpcDialogServiceMain, ShowMessageBoxReq } from '@beak/common/ipc/dialog';
-import { dialog, ipcMain, IpcMainInvokeEvent } from 'electron';
+import { IpcDialogServiceMain, type ShowMessageBoxReq } from '@beak/common/ipc/dialog';
+import { dialog, type IpcMainInvokeEvent, ipcMain } from 'electron';
 
 import { windowStack } from '../window-management';
 

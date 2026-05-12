@@ -1,9 +1,9 @@
-import React from 'react';
-import { useDispatch } from 'react-redux';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import Button from '@beak/ui/components/atoms/Button';
 import { useAppSelector } from '@beak/ui/store/redux';
 import type { ValidRequestNode } from '@getbeak/types/nodes';
+import type React from 'react';
+import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 
 import { changeTab } from '../../store/actions';
@@ -15,21 +15,21 @@ const NotTheTabYourLookingFor: React.FC<React.PropsWithChildren<unknown>> = () =
 	function spinThatWheel() {
 		const requests = TypedObject.values(tree).filter(n => n.type === 'request') as ValidRequestNode[];
 
-		dispatch(changeTab({
-			type: 'request',
-			payload: requests[Math.floor(Math.random() * requests.length)].id,
-			temporary: false,
-		}));
+		dispatch(
+			changeTab({
+				type: 'request',
+				payload: requests[Math.floor(Math.random() * requests.length)].id,
+				temporary: false,
+			}),
+		);
 	}
 
 	return (
 		<Wrapper>
-			<Header>{'This is not the tab you\'re looking for'}</Header>
+			<Header>{"This is not the tab you're looking for"}</Header>
 			<Body>{'Why not select a request to get going, or...'}</Body>
 
-			<Button onClick={() => spinThatWheel()}>
-				{'Spin the wheel!'}
-			</Button>
+			<Button onClick={() => spinThatWheel()}>{'Spin the wheel!'}</Button>
 		</Wrapper>
 	);
 };

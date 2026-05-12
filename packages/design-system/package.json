@@ -1,23 +1,25 @@
 {
-  "name": "@beak/design-system",
-  "version": "0.0.0",
-  "private": true,
-  "main": "dist/index",
-  "types": "dist/index",
-  "files": [
-    "dist"
-  ],
-  "type": "module",
-  "scripts": {
-    "build": "yarn clean && yarn compile",
-    "clean": "rm -rf ./dist && rm -rf tsconfig.tsbuildinfo",
-    "compile": "tsc -b tsconfig.json",
-    "typecheck": "tsc",
-    "lint": "eslint .",
-    "start": "tsc -b tsconfig.json -w"
-  },
-  "devDependencies": {
-    "@types/styled-components": "^5.1.34",
-    "styled-components": "^6.1.13"
-  }
+	"name": "@beak/design-system",
+	"version": "0.0.0",
+	"private": true,
+	"main": "dist/index",
+	"types": "dist/index",
+	"files": [
+		"dist"
+	],
+	"type": "module",
+	"scripts": {
+		"build": "pnpm clean && pnpm compile",
+		"clean": "rm -rf ./dist && rm -rf tsconfig.tsbuildinfo",
+		"compile": "tsgo --build tsconfig.json",
+		"typecheck": "tsgo",
+		"lint": "biome lint .",
+		"start": "tsgo --build tsconfig.json --watch"
+	},
+	"dependencies": {
+		"styled-components": "^6.4.1"
+	},
+	"devDependencies": {
+		"@types/styled-components": "^5.1.36"
+	}
 }

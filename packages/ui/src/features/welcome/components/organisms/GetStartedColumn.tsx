@@ -1,9 +1,9 @@
-import React from 'react';
 import { ipcExplorerService, ipcProjectService } from '@beak/ui/lib/ipc';
 import { faBook, faEgg, faEnvelopeOpen, faFolderOpen } from '@fortawesome/free-solid-svg-icons';
+import type React from 'react';
 import styled from 'styled-components';
 
-import { WelcomeViewType } from '../../../../containers/Welcome';
+import type { WelcomeViewType } from '../../../../containers/Welcome';
 import ColumnTitle from '../atoms/ColumnTitle';
 import GetStartedButton from '../molecules/GetStartedButton';
 

@@ -1,8 +1,8 @@
-import BeakHost from '@beak/common-host';
-import { app } from 'electron';
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
+import BeakHost from '@beak/common-host';
+import { app } from 'electron';
 import { Logger } from 'tslog';
 
 import { setupLoggerForFsLogging } from '../lib/logger';

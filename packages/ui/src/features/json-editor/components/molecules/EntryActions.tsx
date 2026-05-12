@@ -1,8 +1,9 @@
-import React, { useContext } from 'react';
-import { useDispatch } from 'react-redux';
 import ActionIconButton from '@beak/ui/components/molecules/ActionIconButton';
 import { faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
 import type { Entries } from '@getbeak/types/body-editor-json';
+import type React from 'react';
+import { useContext } from 'react';
+import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 
 import { JsonEditorContext } from '../../contexts/json-editor-context';
@@ -20,8 +21,7 @@ const EntryActions: React.FC<React.PropsWithChildren<EntryActionsProps>> = props
 	const editorContext = useContext(JsonEditorContext)!;
 
 	// Don't show any icons for root level primitives
-	if (isRoot && !['array', 'object'].includes(entry.type))
-		return null;
+	if (isRoot && !['array', 'object'].includes(entry.type)) return null;
 
 	return (
 		<Wrapper>
@@ -30,10 +30,12 @@ const EntryActions: React.FC<React.PropsWithChildren<EntryActionsProps>> = props
 					tabIndex={-1}
 					icon={faMinus}
 					onClick={() => {
-						dispatch(editorContext.removeEntry({
-							id,
-							requestId,
-						}));
+						dispatch(
+							editorContext.removeEntry({
+								id,
+								requestId,
+							}),
+						);
 					}}
 				/>
 			)}
@@ -41,10 +43,12 @@ const EntryActions: React.FC<React.PropsWithChildren<EntryActionsProps>> = props
 				tabIndex={-1}
 				icon={faPlus}
 				onClick={() => {
-					dispatch(editorContext.addEntry({
-						id,
-						requestId,
-					}));
+					dispatch(
+						editorContext.addEntry({
+							id,
+							requestId,
+						}),
+					);
 				}}
 			/>
 		</Wrapper>

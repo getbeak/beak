@@ -1,8 +1,8 @@
-import { IpcFsWatcherServiceMain, StartWatchingReq } from '@beak/common/ipc/fs-watcher';
+import { IpcFsWatcherServiceMain, type StartWatchingReq } from '@beak/common/ipc/fs-watcher';
 import type { ChokidarOptions } from 'chokidar';
 import chokidar from 'chokidar';
-import { ipcMain, IpcMainInvokeEvent } from 'electron';
-import { FSWatcher } from 'original-fs';
+import { type IpcMainInvokeEvent, ipcMain } from 'electron';
+import type { FSWatcher } from 'original-fs';
 
 import { ensureWithinProject } from './fs-service';
 import { getProjectFilePathWindowMapping, platformNormalizePath, removeProjectPathPrefix } from './fs-shared';
@@ -34,23 +34,20 @@ service.registerStartWatching(async (event, payload: StartWatchingReq) => {
 				});
 			});
 
-			if (destroyed)
-				watcher.close();
+			if (destroyed) watcher.close();
 		})
 		.on('error', error => {
 			const destroyed = checkForDestruction(() => {
 				service.sendWatcherError(sender, payload.sessionIdentifier, error);
 			});
 
-			if (destroyed)
-				watcher.close();
+			if (destroyed) watcher.close();
 		});
 
 	// @ts-expect-error
 	watchers[payload.sessionIdentifier] = watcher;
 
-	if (windowContentsMapping[senderIdStr] === void 0)
-		windowContentsMapping[senderIdStr] = [];
+	if (windowContentsMapping[senderIdStr] === void 0) windowContentsMapping[senderIdStr] = [];
 
 	windowContentsMapping[senderIdStr].push(payload.sessionIdentifier);
 });
@@ -67,8 +64,7 @@ function checkForDestruction(fn: () => void) {
 
 		return false;
 	} catch (error) {
-		if (error instanceof Error && error.message !== 'Object has been destroyed')
-			throw error;
+		if (error instanceof Error && error.message !== 'Object has been destroyed') throw error;
 
 		return true;
 	}
@@ -77,9 +73,7 @@ function checkForDestruction(fn: () => void) {
 export function closeWatchersOnWindow(windowContentsId: number) {
 	const sessionIdentifiers = windowContentsMapping[windowContentsId.toString()];
 
-	if (!sessionIdentifiers || sessionIdentifiers.length === 0)
-		return;
+	if (!sessionIdentifiers || sessionIdentifiers.length === 0) return;
 
-	for (const sessionIdentifier of sessionIdentifiers)
-		watchers[sessionIdentifier]?.close();
+	for (const sessionIdentifier of sessionIdentifiers) watchers[sessionIdentifier]?.close();
 }

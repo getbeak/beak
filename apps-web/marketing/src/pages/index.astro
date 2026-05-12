@@ -1,0 +1,13 @@
+---
+import Layout from '../layouts/Layout.astro';
+import HomePage from '../pages-content/HomePage';
+
+const preloads = [
+	{ href: '/assets/home-trans-light.webp', type: 'image/webp', media: '(prefers-color-scheme: light)' },
+	{ href: '/assets/home-trans-dark.webp', type: 'image/webp', media: '(prefers-color-scheme: dark)' },
+];
+---
+
+<Layout title="Beak :: The feathery cross platform API crafting tool" preloads={preloads}>
+	<HomePage client:load />
+</Layout>

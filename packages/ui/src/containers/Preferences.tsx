@@ -1,7 +1,8 @@
-import React, { useContext, useState } from 'react';
 import { toHexAlpha } from '@beak/design-system/utils';
 import { faMoneyCheck, faPenToSquare, faUserShield, faWindowRestore } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import type React from 'react';
+import { useContext, useState } from 'react';
 import styled, { css, useTheme } from 'styled-components';
 
 import WindowSessionContext from '../contexts/window-session-context';
@@ -24,31 +25,19 @@ const About: React.FC<React.PropsWithChildren<unknown>> = () => {
 				<AccountItem />
 				<SidebarSpacer />
 				<SidebarItem $active={tab === 'general'} onClick={() => setTab('general')}>
-					<FontAwesomeIcon
-						icon={faWindowRestore}
-						color={tab === 'general' ? blankFill : primaryFill}
-					/>
+					<FontAwesomeIcon icon={faWindowRestore} color={tab === 'general' ? blankFill : primaryFill} />
 					<span>{'General'}</span>
 				</SidebarItem>
 				<SidebarItem $active={tab === 'editor'} onClick={() => setTab('editor')}>
-					<FontAwesomeIcon
-						icon={faPenToSquare}
-						color={tab === 'editor' ? blankFill : primaryFill}
-					/>
+					<FontAwesomeIcon icon={faPenToSquare} color={tab === 'editor' ? blankFill : primaryFill} />
 					<span>{'Rich text editor'}</span>
 				</SidebarItem>
 				<SidebarItem $active={tab === 'subscription'} onClick={() => setTab('subscription')}>
-					<FontAwesomeIcon
-						icon={faMoneyCheck}
-						color={tab === 'subscription' ? blankFill : primaryFill}
-					/>
+					<FontAwesomeIcon icon={faMoneyCheck} color={tab === 'subscription' ? blankFill : primaryFill} />
 					<span>{'Subscription'}</span>
 				</SidebarItem>
 				<SidebarItem $active={tab === 'engineering'} onClick={() => setTab('engineering')}>
-					<FontAwesomeIcon
-						icon={faUserShield}
-						color={tab === 'engineering' ? blankFill : primaryFill}
-					/>
+					<FontAwesomeIcon icon={faUserShield} color={tab === 'engineering' ? blankFill : primaryFill} />
 					<span>{'Shhh...'}</span>
 				</SidebarItem>
 			</Sidebar>
@@ -76,7 +65,9 @@ const Sidebar = styled.div<{ $darwin: boolean }>`
 	overflow-y: overlay;
 	-webkit-app-region: drag;
 
-	${p => p.$darwin && css`
+	${p =>
+		p.$darwin &&
+		css`
 		padding-top: 40px;
 		height: calc(100% - 60px);
 	`}
@@ -99,7 +90,9 @@ const SidebarItem = styled.div<{ $active?: boolean }>`
 	margin-bottom: 6px;
 
 	color: ${p => p.theme.ui.textOnSurfaceBackground};
-	${p => p.$active && css`
+	${p =>
+		p.$active &&
+		css`
 		background: ${toHexAlpha(p.theme.ui.primaryFill, 0.75)};
 		color: ${p => p.theme.ui.textOnAction};
 	`}

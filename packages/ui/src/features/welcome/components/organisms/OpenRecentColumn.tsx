@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { RecentProject } from '@beak/common/types/beak-hub';
+import type { RecentProject } from '@beak/common/types/beak-hub';
 import NewsBannerContainer from '@beak/ui/features/news-banner/components/NewsBannerContainer';
 import { ipcBeakHubService, ipcProjectService } from '@beak/ui/lib/ipc';
 import { sortIso8601 } from '@beak/ui/utils/sort';
 import { sentenceCase } from 'change-case';
+import type React from 'react';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 import ColumnTitle from '../atoms/ColumnTitle';
@@ -34,14 +35,16 @@ const OpenRecentColumn: React.FC<React.PropsWithChildren<unknown>> = () => {
 					const unix = new Date(m.accessTime).getTime() / 1000;
 					const diff = now - unix;
 
-					if (diff > 2592000) // 1 month
+					if (diff > 2592000)
+						// 1 month
 						newRecents.older.push(m);
-					else if (diff > 604800) // 1 week
+					else if (diff > 604800)
+						// 1 week
 						newRecents.month.push(m);
-					else if (diff > 86400) // 1 day
+					else if (diff > 86400)
+						// 1 day
 						newRecents.week.push(m);
-					else
-						newRecents.today.push(m);
+					else newRecents.today.push(m);
 				});
 
 			setRecents(newRecents);
@@ -58,27 +61,24 @@ const OpenRecentColumn: React.FC<React.PropsWithChildren<unknown>> = () => {
 			<ScrollViewer tabIndex={-1}>
 				<ScrollViewerInner tabIndex={-1}>
 					{noRecents && 'No recent projects, create one to get started'}
-					{categories.filter(k => recents[k].length > 0).map(k => (
-						<Collapse
-							key={k}
-							startOpen={true}
-							title={sentenceCase(k)}
-						>
-							{recents[k].sort(sortIso8601(r => r.accessTime, 'desc')).map(m => (
-								<RecentEntry
-									key={`${m.name}-${m.path}`}
-									modifiedDate={m.accessTime}
-									name={m.name}
-									path={m.path}
-									type={'local'}
-
-									onClick={() => {
-										ipcProjectService.openFolder(m.path);
-									}}
-								/>
-							))}
-						</Collapse>
-					))}
+					{categories
+						.filter(k => recents[k].length > 0)
+						.map(k => (
+							<Collapse key={k} startOpen={true} title={sentenceCase(k)}>
+								{recents[k].sort(sortIso8601(r => r.accessTime, 'desc')).map(m => (
+									<RecentEntry
+										key={`${m.name}-${m.path}`}
+										modifiedDate={m.accessTime}
+										name={m.name}
+										path={m.path}
+										type={'local'}
+										onClick={() => {
+											ipcProjectService.openFolder(m.path);
+										}}
+									/>
+								))}
+							</Collapse>
+						))}
 				</ScrollViewerInner>
 			</ScrollViewer>
 		</Wrapper>

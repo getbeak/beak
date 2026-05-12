@@ -1,16 +1,12 @@
-import Squawk from '@beak/common/utils/squawk';
-import { ExtractedVariables } from '@beak/ui/features/graphql-editor/types';
-import { ActiveRename } from '@beak/ui/features/tree-view/types';
-import { ValueSections } from '@beak/ui/features/variables/values';
+import type Squawk from '@beak/common/utils/squawk';
+import type { ExtractedVariables } from '@beak/ui/features/graphql-editor/types';
+import type { ValueParts } from '@beak/ui/features/realtime-values/values';
+import type { ActiveRename } from '@beak/ui/features/tree-view/types';
 import type { EntryMap, EntryType } from '@getbeak/types/body-editor-json';
 import type { Tree } from '@getbeak/types/nodes';
 import type { ToggleKeyValue } from '@getbeak/types/request';
 
 export const ActionTypes = {
-	START_PROJECT: '@beak/global/project/START_PROJECT',
-	INSERT_PROJECT_INFO: '@beak/global/project/INSERT_PROJECT_INFO',
-	PROJECT_OPENED: '@beak/global/project/PROJECT_OPENED',
-
 	REQUEST_URI_UPDATED: '@beak/global/project/REQUEST_URI_UPDATED',
 
 	REQUEST_QUERY_ADDED: '@beak/global/project/REQUEST_QUERY_ADDED',
@@ -22,11 +18,7 @@ export const ActionTypes = {
 	REQUEST_HEADER_REMOVED: '@beak/global/project/REQUEST_HEADER_REMOVED',
 
 	DUPLICATE_REQUEST: '@beak/global/project/DUPLICATE_REQUEST',
-	INSERT_REQUEST_NODE: '@beak/global/project/INSERT_REQUEST_NODE',
-	INSERT_FOLDER_NODE: '@beak/global/project/INSERT_FOLDER_NODE',
 
-	REMOVE_NODE_FROM_STORE: '@beak/global/project/REMOVE_NODE_FROM_STORE',
-	REMOVE_NODE_FROM_STORE_BY_PATH: '@beak/global/project/REMOVE_NODE_FROM_STORE_BY_PATH',
 	REMOVE_NODE_FROM_DISK: '@beak/global/project/REMOVE_NODE_FROM_DISK',
 	MOVE_NODE_ON_DISK: '@beak/global/project/MOVE_NODE_ON_DISK',
 
@@ -61,13 +53,19 @@ export const ActionTypes = {
 	REQUEST_BODY_URL_ENCODED_EDITOR_ENABLED_CHANGE: '@beak/global/project/REQUEST_BODY_URL_ENCODED_EDITOR_ENABLED_CHANGE',
 
 	REQUEST_BODY_GRAPHQL_EDITOR_QUERY_CHANGED: '@beak/global/project/REQUEST_BODY_GRAPHQL_EDITOR_QUERY_CHANGED',
-	REQUEST_BODY_GRAPHQL_EDITOR_VARIABLE_NAME_CHANGE: '@beak/global/project/REQUEST_BODY_GRAPHQL_EDITOR_VARIABLE_NAME_CHANGE',
-	REQUEST_BODY_GRAPHQL_EDITOR_VARIABLE_VALUE_CHANGE: '@beak/global/project/REQUEST_BODY_GRAPHQL_EDITOR_VARIABLE_VALUE_CHANGE',
-	REQUEST_BODY_GRAPHQL_EDITOR_VARIABLE_TYPE_CHANGE: '@beak/global/project/REQUEST_BODY_GRAPHQL_EDITOR_VARIABLE_TYPE_CHANGE',
-	REQUEST_BODY_GRAPHQL_EDITOR_VARIABLE_ENABLED_CHANGE: '@beak/global/project/REQUEST_BODY_GRAPHQL_EDITOR_VARIABLE_ENABLED_CHANGE',
+	REQUEST_BODY_GRAPHQL_EDITOR_VARIABLE_NAME_CHANGE:
+		'@beak/global/project/REQUEST_BODY_GRAPHQL_EDITOR_VARIABLE_NAME_CHANGE',
+	REQUEST_BODY_GRAPHQL_EDITOR_VARIABLE_VALUE_CHANGE:
+		'@beak/global/project/REQUEST_BODY_GRAPHQL_EDITOR_VARIABLE_VALUE_CHANGE',
+	REQUEST_BODY_GRAPHQL_EDITOR_VARIABLE_TYPE_CHANGE:
+		'@beak/global/project/REQUEST_BODY_GRAPHQL_EDITOR_VARIABLE_TYPE_CHANGE',
+	REQUEST_BODY_GRAPHQL_EDITOR_VARIABLE_ENABLED_CHANGE:
+		'@beak/global/project/REQUEST_BODY_GRAPHQL_EDITOR_VARIABLE_ENABLED_CHANGE',
 	REQUEST_BODY_GRAPHQL_EDITOR_VARIABLE_ADD_ENTRY: '@beak/global/project/REQUEST_BODY_GRAPHQL_EDITOR_VARIABLE_ADD_ENTRY',
-	REQUEST_BODY_GRAPHQL_EDITOR_VARIABLE_REMOVE_ENTRY: '@beak/global/project/REQUEST_BODY_GRAPHQL_EDITOR_VARIABLE_REMOVE_ENTRY',
-	REQUEST_BODY_GRAPHQL_EDITOR_RECONCILE_VARIABLES: '@beak/global/project/REQUEST_BODY_GRAPHQL_EDITOR_RECONCILE_VARIABLES',
+	REQUEST_BODY_GRAPHQL_EDITOR_VARIABLE_REMOVE_ENTRY:
+		'@beak/global/project/REQUEST_BODY_GRAPHQL_EDITOR_VARIABLE_REMOVE_ENTRY',
+	REQUEST_BODY_GRAPHQL_EDITOR_RECONCILE_VARIABLES:
+		'@beak/global/project/REQUEST_BODY_GRAPHQL_EDITOR_RECONCILE_VARIABLES',
 
 	REQUEST_OPTION_FOLLOW_REDIRECTS: '@beak/global/project/REQUEST_OPTION_FOLLOW_REDIRECTS',
 
@@ -78,8 +76,6 @@ export const ActionTypes = {
 	ALERTS_CLEAR: '@beak/global/project/ALERTS_CLEAR',
 
 	REVEAL_REQUEST_EXTERNAL: '@beak/global/project/REVEAL_REQUEST_EXTERNAL',
-
-	DEFAULT_OR_CREATE_REQUEST: '@beak/global/project/DEFAULT_OR_CREATE_REQUEST',
 };
 
 export interface State {
@@ -105,29 +101,26 @@ export const initialState: State = {
 	alerts: {},
 };
 
-export interface ProjectInfoPayload {
-	name: string;
-	id: string;
+// ProjectInfoPayload + ProjectOpenedPayload moved to @beak/core/project.
+
+export interface RequestIdPayload {
+	requestId: string;
 }
 
-export interface ProjectOpenedPayload { tree: Tree }
-
-export interface RequestIdPayload { requestId: string }
-
 export interface RequestUriUpdatedPayload extends RequestIdPayload {
-	url?: ValueSections;
+	url?: ValueParts;
 	verb?: string;
 }
 
 export interface ToggleableItemAddedPayload extends RequestIdPayload {
 	name?: string;
-	value?: ValueSections;
+	value?: ValueParts;
 }
 
 export interface ToggleableItemUpdatedPayload extends RequestIdPayload {
 	identifier: string;
 	name?: string;
-	value?: ValueSections;
+	value?: ValueParts;
 	enabled?: boolean;
 }
 
@@ -135,13 +128,15 @@ export interface ToggleableItemRemovedPayload extends RequestIdPayload {
 	identifier: string;
 }
 
-export interface RequestRenameStarted extends RequestIdPayload { }
-export interface RequestRenameCancelled extends RequestIdPayload { }
-export interface RequestRenameSubmitted extends RequestIdPayload { }
-export interface RequestRenameResolved extends RequestIdPayload { }
-export interface RequestRenameUpdated extends RequestIdPayload { name: string }
+export interface RequestRenameStarted extends RequestIdPayload {}
+export interface RequestRenameCancelled extends RequestIdPayload {}
+export interface RequestRenameSubmitted extends RequestIdPayload {}
+export interface RequestRenameResolved extends RequestIdPayload {}
+export interface RequestRenameUpdated extends RequestIdPayload {
+	name: string;
+}
 
-export interface DuplicateRequestPayload extends RequestIdPayload { }
+export interface DuplicateRequestPayload extends RequestIdPayload {}
 
 export interface MoveNodeOnDiskPayload {
 	sourceNodeId: string;
@@ -204,7 +199,9 @@ interface RequestBodyTypeToGraphQlPayload extends RequestIdPayload {
 	};
 }
 
-export interface RequestBodyTextChangedPayload extends RequestIdPayload { text: string }
+export interface RequestBodyTextChangedPayload extends RequestIdPayload {
+	text: string;
+}
 
 export interface RequestBodyFileChangedPayload extends RequestIdPayload {
 	fileReferenceId: string | undefined;
@@ -218,7 +215,7 @@ export interface RequestBodyJsonEditorNameChangePayload extends RequestIdPayload
 
 export interface RequestBodyJsonEditorValueChangePayload extends RequestIdPayload {
 	id: string;
-	value: ValueSections | boolean | null;
+	value: ValueParts | boolean | null;
 }
 
 export interface RequestBodyJsonEditorTypeChangePayload extends RequestIdPayload {
@@ -231,8 +228,12 @@ export interface RequestBodyJsonEditorEnabledChangePayload extends RequestIdPayl
 	enabled: boolean;
 }
 
-export interface RequestBodyJsonEditorAddEntryPayload extends RequestIdPayload { id: string }
-export interface RequestBodyJsonEditorRemoveEntryPayload extends RequestIdPayload { id: string }
+export interface RequestBodyJsonEditorAddEntryPayload extends RequestIdPayload {
+	id: string;
+}
+export interface RequestBodyJsonEditorRemoveEntryPayload extends RequestIdPayload {
+	id: string;
+}
 
 export interface RequestBodyUrlEncodedEditorNameChangePayload extends RequestIdPayload {
 	id: string;
@@ -241,7 +242,7 @@ export interface RequestBodyUrlEncodedEditorNameChangePayload extends RequestIdP
 
 export interface RequestBodyUrlEncodedEditorValueChangePayload extends RequestIdPayload {
 	id: string;
-	value: ValueSections;
+	value: ValueParts;
 }
 
 export interface RequestBodyUrlEncodedEditorEnabledChangePayload extends RequestIdPayload {
@@ -249,15 +250,21 @@ export interface RequestBodyUrlEncodedEditorEnabledChangePayload extends Request
 	enabled: boolean;
 }
 
-export interface RequestBodyUrlEncodedEditorAddItemPayload extends RequestIdPayload { }
-export interface RequestBodyUrlEncodedEditorRemoveItemPayload extends RequestIdPayload { id: string }
+export interface RequestBodyUrlEncodedEditorAddItemPayload extends RequestIdPayload {}
+export interface RequestBodyUrlEncodedEditorRemoveItemPayload extends RequestIdPayload {
+	id: string;
+}
 
-export interface RequestBodyGraphQlEditorQueryChangedPayload extends RequestIdPayload { query: string }
+export interface RequestBodyGraphQlEditorQueryChangedPayload extends RequestIdPayload {
+	query: string;
+}
 export interface RequestBodyGraphQlEditorReconcileVariablesPayload extends RequestIdPayload {
 	variables: ExtractedVariables;
 }
 
-export interface RequestOptionFollowRedirects extends RequestIdPayload { followRedirects: boolean }
+export interface RequestOptionFollowRedirects extends RequestIdPayload {
+	followRedirects: boolean;
+}
 
 export type Alert = AlertMissingEncryption | AlertHttpBodyNotAllowed | AlertInvalidExtension;
 

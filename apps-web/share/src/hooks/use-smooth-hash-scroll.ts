@@ -7,8 +7,7 @@ export default function useSmoothHashScroll() {
 				const target = e.target as HTMLElement;
 				const href = target?.getAttribute?.('href');
 
-				if (!href)
-					return;
+				if (!href) return;
 
 				e.preventDefault();
 

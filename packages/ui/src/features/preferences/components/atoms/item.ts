@@ -36,7 +36,9 @@ export const SubItem = styled.div`
 export const SubItemLabel = styled.div<{ $abbr?: boolean }>`
 	margin-bottom: 3px;
 
-	${p => p.$abbr && css`
+	${p =>
+		p.$abbr &&
+		css`
 		text-decoration: underline;
 		text-decoration-style: dotted;
 	`}

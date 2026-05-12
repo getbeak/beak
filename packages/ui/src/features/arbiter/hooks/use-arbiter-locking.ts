@@ -17,9 +17,7 @@ export default function useArbiterLocking() {
 
 			case daysUntilLock === 1:
 				return 'tomorrow';
-
 			default:
-			case daysUntilLock <= 0:
 				return 'today';
 		}
 	})();

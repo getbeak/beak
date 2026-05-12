@@ -5,10 +5,14 @@ const textEncoder = new TextEncoder();
 
 export default class AesProvider extends AesProviderBase {
 	async generateKey(): Promise<string> {
-		const key = await window.crypto.subtle.generateKey({
-			name: 'AES-CTR',
-			length: 256,
-		}, true, ['encrypt', 'decrypt']);
+		const key = await window.crypto.subtle.generateKey(
+			{
+				name: 'AES-CTR',
+				length: 256,
+			},
+			true,
+			['encrypt', 'decrypt'],
+		);
 
 		const exportedKey = await window.crypto.subtle.exportKey('raw', key);
 
@@ -22,37 +26,39 @@ export default class AesProvider extends AesProviderBase {
 	}
 
 	async encrypt(payload: Uint8Array, keyBase64: string, ivBase64: string): Promise<string> {
-		const key = await window.crypto.subtle.importKey(
-			'raw',
-			base64.toByteArray(keyBase64),
-			'AES-CTR',
-			true,
-			['encrypt', 'decrypt'],
-		);
+		const key = await window.crypto.subtle.importKey('raw', base64.toByteArray(keyBase64), 'AES-CTR', true, [
+			'encrypt',
+			'decrypt',
+		]);
 
-		const cipherText = await window.crypto.subtle.encrypt({
-			name: 'AES-CTR',
-			length: 256,
-			counter: base64.toByteArray(ivBase64),
-		}, key, payload);
+		const cipherText = await window.crypto.subtle.encrypt(
+			{
+				name: 'AES-CTR',
+				length: 256,
+				counter: base64.toByteArray(ivBase64),
+			},
+			key,
+			payload,
+		);
 
 		return base64.fromByteArray(new Uint8Array(cipherText));
 	}
 
 	async decrypt(payload: Uint8Array, keyBase64: string, ivBase64: string): Promise<string> {
-		const key = await window.crypto.subtle.importKey(
-			'raw',
-			textEncoder.encode(atob(keyBase64)),
-			'AES-CTR',
-			true,
-			['encrypt', 'decrypt'],
-		);
+		const key = await window.crypto.subtle.importKey('raw', textEncoder.encode(atob(keyBase64)), 'AES-CTR', true, [
+			'encrypt',
+			'decrypt',
+		]);
 
-		const decrypted = await window.crypto.subtle.decrypt({
-			name: 'AES-CTR',
-			length: 256,
-			counter: textEncoder.encode(atob(ivBase64)),
-		}, key, payload);
+		const decrypted = await window.crypto.subtle.decrypt(
+			{
+				name: 'AES-CTR',
+				length: 256,
+				counter: textEncoder.encode(atob(ivBase64)),
+			},
+			key,
+			payload,
+		);
 
 		return base64.fromByteArray(new Uint8Array(decrypted));
 	}
@@ -64,8 +70,7 @@ export default class AesProvider extends AesProviderBase {
 	}
 
 	async decryptString(payload: string, key: string, iv: string): Promise<string> {
-		if (payload === '')
-			return '';
+		if (payload === '') return '';
 
 		const buf = textEncoder.encode(payload);
 

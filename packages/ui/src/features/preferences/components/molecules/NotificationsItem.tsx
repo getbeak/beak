@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { NotificationPreferences } from '@beak/common/types/preferences';
+import type { NotificationPreferences } from '@beak/common/types/preferences';
 import Checkbox from '@beak/ui/components/atoms/Checkbox';
 import { ipcPreferencesService } from '@beak/ui/lib/ipc';
+import type React from 'react';
+import { useEffect, useState } from 'react';
 
 import { ItemGroup, ItemLabel, SubItem, SubItemGroup, SubItemLabel } from '../atoms/item';
 import NotificationStateSelect from '../atoms/NotificationStateSelect';
@@ -16,17 +17,22 @@ const NotificationsItem: React.FC<React.PropsWithChildren<unknown>> = () => {
 	}
 
 	// eslint-disable-next-line max-len
-	function setNotificationValue<Key extends keyof NotificationPreferences>(key: Key, value: NotificationPreferences[Key]) {
+	function setNotificationValue<Key extends keyof NotificationPreferences>(
+		key: Key,
+		value: NotificationPreferences[Key],
+	) {
 		ipcPreferencesService.setNotificationValue(key, value);
 	}
 
 	// eslint-disable-next-line max-len
-	function updateNotificationPreference<Key extends keyof NotificationPreferences>(key: Key, value: NotificationPreferences[Key]) {
+	function updateNotificationPreference<Key extends keyof NotificationPreferences>(
+		key: Key,
+		value: NotificationPreferences[Key],
+	) {
 		ipcPreferencesService.setNotificationValue(key, value).then(getNotificationPreferences);
 	}
 
-	if (!notificationPreferences)
-		return null;
+	if (!notificationPreferences) return null;
 
 	return (
 		<ItemGroup>

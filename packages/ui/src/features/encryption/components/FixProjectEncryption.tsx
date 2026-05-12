@@ -1,4 +1,3 @@
-import React, { useState } from 'react';
 import Button from '@beak/ui/components/atoms/Button';
 import FormError from '@beak/ui/components/atoms/FormError';
 import FormInput from '@beak/ui/components/atoms/FormInput';
@@ -6,6 +5,8 @@ import Input from '@beak/ui/components/atoms/Input';
 import Label from '@beak/ui/components/atoms/Label';
 import Dialog from '@beak/ui/components/molecules/Dialog';
 import { ipcEncryptionService } from '@beak/ui/lib/ipc';
+import type React from 'react';
+import { useState } from 'react';
 import styled from 'styled-components';
 
 const base64regex = /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/;
@@ -20,11 +21,10 @@ const FixProjectEncryption: React.FC<React.PropsWithChildren<FixProjectEncryptio
 	const [disable, setDisable] = useState(false);
 
 	function submit() {
-		if (key === '' || disable)
-			return;
+		if (key === '' || disable) return;
 
 		if (!base64regex.test(key)) {
-			setError('That key doesn\'t quite look right. Check it again');
+			setError("That key doesn't quite look right. Check it again");
 
 			return;
 		}
@@ -44,12 +44,12 @@ const FixProjectEncryption: React.FC<React.PropsWithChildren<FixProjectEncryptio
 				<Title>{'Project encryption'}</Title>
 				<Description>
 					{'Beak projects come with built-in encryption for storing secrets, such as passwords or tokens. '}
-					{'You currently don\'t have the project encryption key stored, so you won\'t be able to use any '}
+					{"You currently don't have the project encryption key stored, so you won't be able to use any "}
 					{'encrypted values.'}
 				</Description>
 
 				<Description>
-					{'Ask for the project encryption key and then enter it below, then you\'ll be good to go!'}
+					{"Ask for the project encryption key and then enter it below, then you'll be good to go!"}
 				</Description>
 
 				<FormInput>
@@ -60,17 +60,13 @@ const FixProjectEncryption: React.FC<React.PropsWithChildren<FixProjectEncryptio
 						value={key}
 						onChange={e => setKey(e.currentTarget.value)}
 						onKeyPress={e => {
-							if (e.key === 'Enter')
-								submit();
+							if (e.key === 'Enter') submit();
 						}}
 					/>
 					{error && <FormError>{error}</FormError>}
 				</FormInput>
 
-				<Button
-					disabled={disable}
-					onClick={() => submit()}
-				>
+				<Button disabled={disable} onClick={() => submit()}>
 					{'Continue'}
 				</Button>
 			</Container>

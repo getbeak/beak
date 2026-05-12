@@ -8,11 +8,11 @@ import { IpcExtensionsServiceRenderer } from '@beak/common/ipc/extensions';
 import { IpcFlightServiceRenderer } from '@beak/common/ipc/flight';
 import { IpcFsServiceRenderer } from '@beak/common/ipc/fs';
 import { IpcFsWatcherServiceRenderer } from '@beak/common/ipc/fs-watcher';
-import { PartialIpcRenderer } from '@beak/common/ipc/ipc';
 import { IpcNestServiceRenderer } from '@beak/common/ipc/nest';
 import { IpcNotificationServiceRenderer } from '@beak/common/ipc/notification';
 import { IpcPreferencesServiceRenderer } from '@beak/common/ipc/preferences';
 import { IpcProjectServiceRenderer } from '@beak/common/ipc/project';
+import type { PartialIpcRenderer } from '@beak/common/ipc/renderer';
 import { IpcWindowServiceRenderer } from '@beak/common/ipc/window';
 
 const partialIpcRenderer: PartialIpcRenderer = {

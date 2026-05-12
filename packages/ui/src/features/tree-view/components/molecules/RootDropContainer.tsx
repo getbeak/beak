@@ -1,5 +1,5 @@
-import React from 'react';
 import { toHexAlpha } from '@beak/design-system/utils';
+import type React from 'react';
 import styled, { css } from 'styled-components';
 
 import { useNodeDrop } from '../../hooks/drag-and-drop';
@@ -14,11 +14,7 @@ const RootDropContainer: React.FC<React.PropsWithChildren<unknown>> = props => {
 	});
 
 	return (
-		<Container
-			$dropAccepted={canDrop}
-			$dropHovering={hovering}
-			ref={dropRef}
-		>
+		<Container $dropAccepted={canDrop} $dropHovering={hovering} ref={dropRef}>
 			{props.children}
 		</Container>
 	);
@@ -36,7 +32,10 @@ const Container = styled.div<ContainerProps>`
 		outline: none;
 	}
 
-	${p => p.$dropAccepted && p.$dropHovering && css`
+	${p =>
+		p.$dropAccepted &&
+		p.$dropHovering &&
+		css`
 		border-radius: 4px;
 		background-color: ${toHexAlpha(p.theme.ui.primaryFill, 0.6)};
 	`}

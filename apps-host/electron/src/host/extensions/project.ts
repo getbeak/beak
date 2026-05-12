@@ -1,20 +1,13 @@
-import { createProjectMainWindow } from '@beak/apps-host-electron/window-management';
-import {
-	app,
-	BrowserWindow,
-	dialog,
-	MessageBoxOptions,
-	OpenDialogOptions,
-} from 'electron';
 import path from 'node:path';
+import { createProjectMainWindow } from '@beak/apps-host-electron/window-management';
+import { app, type BrowserWindow, dialog, type MessageBoxOptions, type OpenDialogOptions } from 'electron';
 
 import getBeakHost from '..';
 
 export async function tryOpenProjectFolder(projectPath: string, silent = false) {
 	let projectFilePath = projectPath;
 
-	if (!projectFilePath.endsWith('.json'))
-		projectFilePath = path.join(projectFilePath, 'project.json');
+	if (!projectFilePath.endsWith('.json')) projectFilePath = path.join(projectFilePath, 'project.json');
 
 	const projectFolderPath = path.parse(projectFilePath).dir;
 	const projectFile = await getBeakHost().project.readProjectFile(projectFolderPath, {
@@ -66,28 +59,23 @@ export async function openProjectDialog(browserWindow?: BrowserWindow) {
 		title: 'Open a Beak project',
 		buttonLabel: 'Open',
 		properties: ['openFile'],
-		filters: [
-			{ name: 'Beak project', extensions: ['json'] },
-		],
+		filters: [{ name: 'Beak project', extensions: ['json'] }],
 	};
 
 	const openDialog = dialog.showOpenDialog;
 	const result = await (browserWindow ? openDialog(browserWindow, openDialogOptions) : openDialog(openDialogOptions));
 
-	if (result.canceled)
-		return;
+	if (result.canceled) return;
 
 	if (result.filePaths.length !== 1) {
 		const showMessageOptions: MessageBoxOptions = {
 			type: 'error',
-			title: 'That shouldn\'t happen',
-			message: 'You managed to select more than 1 file... pls don\'t do that.',
+			title: "That shouldn't happen",
+			message: "You managed to select more than 1 file... pls don't do that.",
 		};
 
-		if (browserWindow)
-			await dialog.showMessageBox(browserWindow, showMessageOptions);
-		else
-			await dialog.showMessageBox(showMessageOptions);
+		if (browserWindow) await dialog.showMessageBox(browserWindow, showMessageOptions);
+		else await dialog.showMessageBox(showMessageOptions);
 
 		return;
 	}

@@ -1,5 +1,5 @@
-import React from 'react';
-import { FlightInProgress as FlightInProgressType } from '@beak/ui/store/flight/types';
+import type { FlightInProgress as FlightInProgressType } from '@beak/core/flight';
+import type React from 'react';
 import styled, { keyframes } from 'styled-components';
 
 const pulseRing = keyframes`
@@ -13,7 +13,7 @@ interface FlightInProgressProps {
 }
 
 const FlightInProgress: React.FC<FlightInProgressProps> = ({ currentFlight, requestId }) => {
-	const shown = Boolean(currentFlight && currentFlight.requestId === requestId && currentFlight.flighting);
+	const shown = Boolean(currentFlight && currentFlight.requestId === requestId);
 
 	return (
 		// <Container $shown={Boolean(currentFlight)}>

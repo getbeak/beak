@@ -1,8 +1,8 @@
-import React from 'react';
 import { toHexAlpha } from '@beak/design-system/utils';
 import { faDiagramProject } from '@fortawesome/free-solid-svg-icons/faDiagramProject';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { format, parseISO } from 'date-fns';
+import type React from 'react';
 import styled from 'styled-components';
 
 export interface RecentEntryProps {
@@ -22,23 +22,17 @@ const RecentEntry: React.FC<React.PropsWithChildren<RecentEntryProps>> = props =
 		<Wrapper
 			onClick={() => props.onClick()}
 			onKeyDown={event => {
-				if (event.key === 'Enter')
-					props.onClick();
+				if (event.key === 'Enter') props.onClick();
 			}}
 			tabIndex={0}
 		>
 			<Icon>
-				<FontAwesomeIcon
-					size={'1x'}
-					icon={faDiagramProject}
-				/>
+				<FontAwesomeIcon size={'1x'} icon={faDiagramProject} />
 			</Icon>
 			<TextWrapper>
 				{/* The "&lrm;" char is a requirement of using RTL to trim the end vs start of the string */}
 				<Name>{props.name}&lrm;</Name>
-				<Path $asshole={pathIsGoingToBeAnAsshole}>
-					{path}
-				</Path>
+				<Path $asshole={pathIsGoingToBeAnAsshole}>{path}</Path>
 			</TextWrapper>
 			<ModifiedDate>{format(date, 'MM/dd/yyyy')}</ModifiedDate>
 		</Wrapper>
@@ -98,7 +92,7 @@ const Path = styled.span<{ $asshole: boolean }>`
 
 	&:after {
 		display: inline-block;
-		content: '${p => p.$asshole ? '/' : ''}';
+		content: '${p => (p.$asshole ? '/' : '')}';
 	}
 `;
 

@@ -13,7 +13,7 @@ on:
     paths:
       - '.github/workflows/beak-host.yml'
       - 'package.json'
-      - 'yarn.lock'
+      - 'pnpm-lock.yaml'
       - 'apps-host/**'
       - 'packages/**'
 
@@ -29,20 +29,25 @@ jobs:
         with:
           length: 6
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.15.1
+
       - name: Setup Node.js
         uses: actions/setup-node@v4.1.0
         with:
           node-version: '22'
-          cache: 'yarn'
-          cache-dependency-path: yarn.lock
+          cache: 'pnpm'
+          cache-dependency-path: pnpm-lock.yaml
 
       - name: Install modules
-        run: yarn install --frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: Lint, typecheck, and test
         run: |
-          yarn lint
-          yarn typecheck:apps-host
+          pnpm lint
+          pnpm typecheck:apps-host
 
       - name: Build and package (release)
         if: startsWith(github.ref, 'refs/tags/beak-app@')
@@ -62,7 +67,7 @@ jobs:
           CSC_FOR_PULL_REQUEST: true
           USE_HARD_LINKS: false
           NODE_OPTIONS: --max-old-space-size=8192
-        run: yarn package:release
+        run: pnpm package:release
 
       - name: Build (non-release)
         if: startsWith(github.ref, 'refs/tags/beak-app@') == false
@@ -79,7 +84,7 @@ jobs:
           CSC_FOR_PULL_REQUEST: true
           USE_HARD_LINKS: false
           NODE_OPTIONS: --max-old-space-size=8192
-        run: yarn package
+        run: pnpm package
 
       - name: Delete un-necessary artifacts
         if: startsWith(github.ref, 'refs/tags/v') == false

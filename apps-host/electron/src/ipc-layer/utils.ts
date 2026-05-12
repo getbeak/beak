@@ -1,6 +1,8 @@
-import { IpcEvent } from '@beak/common/ipc/ipc';
-import { BrowserWindow, IpcMainInvokeEvent } from 'electron';
-import path from 'path';
+import { BrowserWindow, type IpcMainInvokeEvent, type IpcRendererEvent } from 'electron';
+
+type IpcEvent = IpcMainInvokeEvent | IpcRendererEvent;
+
+import path from 'node:path';
 
 import { getProjectFilePathWindowMapping, getProjectIdFromWindowId } from './fs-shared';
 

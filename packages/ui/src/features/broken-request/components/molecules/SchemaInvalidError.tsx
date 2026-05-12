@@ -1,7 +1,7 @@
-import React from 'react';
-import Squawk from '@beak/common/utils/squawk';
+import type Squawk from '@beak/common/utils/squawk';
 import Button from '@beak/ui/components/atoms/Button';
 import { ipcExplorerService } from '@beak/ui/lib/ipc';
+import type React from 'react';
 
 import { Body, Header, Wrapper } from '../atoms';
 import ErrorRenderer from './ErrorRenderer';
@@ -16,9 +16,7 @@ const SchemaInvalidError: React.FC<SchemaInvalidErrorProps> = ({ filePath, error
 		<Header>{'Request file validation has failed'}</Header>
 		<Body>{'The file for this request is corrupt. The error below should help you resolve the issue'}</Body>
 
-		<Button onClick={() => ipcExplorerService.revealFile(filePath)}>
-			{'Show request in finder'}
-		</Button>
+		<Button onClick={() => ipcExplorerService.revealFile(filePath)}>{'Show request in finder'}</Button>
 
 		<ErrorRenderer error={error} />
 	</Wrapper>

@@ -1,6 +1,9 @@
-import type { IpcMain, MenuItemConstructorOptions, WebContents } from 'electron';
-
-import { IpcServiceMain, IpcServiceRenderer, Listener, PartialIpcRenderer } from './ipc';
+import type { MenuItemConstructorOptions, WebContents } from 'electron';
+import type { PartialIpcMain } from './main';
+import { IpcServiceMain } from './main';
+import type { PartialIpcRenderer } from './renderer';
+import { IpcServiceRenderer } from './renderer';
+import type { IpcListener } from './types';
 
 export const ContextMenuMessages = {
 	OpenContextMenu: 'open_context_menu',
@@ -23,7 +26,7 @@ export interface ItemClickEventPayload extends Base {
 	menuItemId: string;
 }
 
-export class IpcContextMenuServiceRenderer extends IpcServiceRenderer {
+export class IpcContextMenuServiceRenderer extends IpcServiceRenderer<'context_menu'> {
 	constructor(ipc: PartialIpcRenderer) {
 		super('context_menu', ipc);
 	}
@@ -32,24 +35,21 @@ export class IpcContextMenuServiceRenderer extends IpcServiceRenderer {
 		await this.invoke(ContextMenuMessages.OpenContextMenu, payload);
 	}
 
-	registerItemClickEvent(fn: Listener<ItemClickEventPayload>) {
+	registerItemClickEvent(fn: IpcListener<ItemClickEventPayload>) {
 		this.registerListener(ContextMenuMessages.ItemClickEvent, fn);
 	}
 }
 
-export class IpcContextMenuServiceMain extends IpcServiceMain {
-	constructor(ipc: IpcMain) {
+export class IpcContextMenuServiceMain extends IpcServiceMain<'context_menu'> {
+	constructor(ipc: PartialIpcMain) {
 		super('context_menu', ipc);
 	}
 
-	registerOpenContextMenu(fn: Listener<OpenContextMenuPayload, void>) {
-		this.registerListener(ContextMenuMessages.OpenContextMenu, fn);
+	registerOpenContextMenu(fn: IpcListener<OpenContextMenuPayload>) {
+		this.registerRequestHandler(ContextMenuMessages.OpenContextMenu, fn);
 	}
 
 	sendItemClickEvent(wc: WebContents, payload: ItemClickEventPayload) {
-		wc.send(this.channel, {
-			code: ContextMenuMessages.ItemClickEvent,
-			payload,
-		});
+		this.sendMessage(wc, ContextMenuMessages.ItemClickEvent, payload);
 	}
 }

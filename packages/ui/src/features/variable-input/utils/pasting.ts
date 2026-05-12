@@ -1,10 +1,6 @@
-import sanitizeHtml, { IOptions } from 'sanitize-html';
+import sanitizeHtml, { type IOptions } from 'sanitize-html';
 
-const requiredDivAttributes = new Set([
-	'class',
-	'data-index',
-	'data-type',
-]);
+const requiredDivAttributes = new Set(['class', 'data-index', 'data-type']);
 const allowedDivAttributes = new Set([
 	...Array.from(requiredDivAttributes),
 	'contenteditable',
@@ -24,12 +20,10 @@ const sanitizerOptions: IOptions = {
 				const attributeSet = new Set(Object.keys(frame.attribs));
 
 				// Check element has all required attributes
-				for (const r of requiredDivAttributes)
-					if (!attributeSet.has(r)) return true;
+				for (const r of requiredDivAttributes) if (!attributeSet.has(r)) return true;
 
 				// Check element doesn't have any verboten attributes
-				for (const r of attributeSet)
-					if (!allowedDivAttributes.has(r)) return true;
+				for (const r of attributeSet) if (!allowedDivAttributes.has(r)) return true;
 
 				return false;
 			}
@@ -47,8 +41,7 @@ const sanitizerOptions: IOptions = {
 export function handlePaste(event: ClipboardEvent) {
 	event.preventDefault();
 
-	if (!event.clipboardData)
-		return;
+	if (!event.clipboardData) return;
 
 	const plainText = event.clipboardData.getData('text/plain');
 	const htmlText = event.clipboardData.getData('text/html');

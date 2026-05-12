@@ -4,8 +4,7 @@ import { ipcContextMenuService } from '../lib/ipc';
 
 export function showContextMenu(id: string, menuItems: MenuItemConstructorOptions[]) {
 	ipcContextMenuService.registerItemClickEvent(async (_event, payload) => {
-		if (payload.id !== id)
-			return;
+		if (payload.id !== id) return;
 
 		const menuItem = menuItems.find(m => m.id === payload.menuItemId);
 

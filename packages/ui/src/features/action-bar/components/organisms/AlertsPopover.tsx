@@ -1,7 +1,7 @@
-import React from 'react';
-import { createPortal } from 'react-dom';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { useAppSelector } from '@beak/ui/store/redux';
+import type React from 'react';
+import { createPortal } from 'react-dom';
 import styled from 'styled-components';
 import * as uuid from 'uuid';
 
@@ -27,9 +27,10 @@ const AlertsPopover: React.FC<React.PropsWithChildren<AlertsPopoverProps>> = pro
 			>
 				{!hasAlerts && <NoAlerts>{'You have no alerts 🎉'}</NoAlerts>}
 
-				{hasAlerts && TypedObject.values(alerts)
-					.filter(Boolean)
-					.map(alert => (<AlertSwitch key={uuid.v4()} alert={alert!} />))}
+				{hasAlerts &&
+					TypedObject.values(alerts)
+						.filter(Boolean)
+						.map(alert => <AlertSwitch key={uuid.v4()} alert={alert!} />)}
 			</Wrapper>
 		</Container>,
 		document.getElementById('action-alerts-popover')!,
