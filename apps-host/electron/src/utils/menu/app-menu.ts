@@ -2,9 +2,9 @@ import { createPreferencesWindow } from '@beak/apps-host-electron/window-managem
 import type { MenuItemConstructorOptions } from 'electron';
 
 import type { Context } from '.';
-import { createUpdateMenuItem } from './shared';
+import { createUpdateMenuItem, isProjectEditor, sendMenuItemClick } from './shared';
 
-export default function generateAppMenu(_ctx: Context): MenuItemConstructorOptions {
+export default function generateAppMenu(ctx: Context): MenuItemConstructorOptions {
 	return {
 		label: 'Beak',
 		submenu: [
@@ -14,7 +14,12 @@ export default function generateAppMenu(_ctx: Context): MenuItemConstructorOptio
 			{
 				label: 'Preferences...',
 				accelerator: 'Cmd+,',
-				click: async () => await createPreferencesWindow(),
+				click: async () => {
+					// If a project window is focused, open preferences as a tab there.
+					// Otherwise fall back to the standalone preferences window.
+					if (isProjectEditor(ctx)) sendMenuItemClick(ctx, 'show_preferences');
+					else await createPreferencesWindow();
+				},
 			},
 			{ type: 'separator' },
 			{ role: 'services' },

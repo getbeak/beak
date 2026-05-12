@@ -42,13 +42,19 @@ describe('preferences schemas', () => {
 		expect(requestPreferenceSchema.safeParse(missingResponse).success).toBe(false);
 	});
 
-	it('tab preferences: discriminates request / variable_group_editor / new_project_intro', () => {
+	it('tab preferences: discriminates request / variable_group_editor / new_project_intro / preferences', () => {
 		const tabs = [
 			{ type: 'request', payload: 'r1', temporary: false },
 			{ type: 'variable_group_editor', payload: 'v1', temporary: true },
 			{ type: 'new_project_intro', payload: 'new_project_intro', temporary: false },
+			{ type: 'preferences', payload: 'preferences', temporary: false },
 		];
 		expect(tabPreferencesSchema.safeParse({ tabs }).success).toBe(true);
+	});
+
+	it('tab preferences: preferences tab rejects an unexpected payload', () => {
+		const tabs = [{ type: 'preferences', payload: 'oops', temporary: false }];
+		expect(tabPreferencesSchema.safeParse({ tabs }).success).toBe(false);
 	});
 
 	it('tab preferences: rejects unknown tab type', () => {

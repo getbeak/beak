@@ -56,7 +56,7 @@ const Wrapper = styled.div`
 	display: grid;
 	grid-template-rows: 1fr;
 	grid-template-columns: .25fr 1px .75fr;
-	height: 100vh;
+	height: 100%;
 `;
 
 const Sidebar = styled.div<{ $darwin: boolean }>`

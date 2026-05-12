@@ -8,6 +8,7 @@ import PendingSlash from '@beak/ui/components/molecules/PendingSplash';
 import { useAppSelector } from '@beak/ui/store/redux';
 import type { RequestNode } from '@getbeak/types/nodes';
 
+import Preferences from '../../../containers/Preferences';
 import BrokenRequest from '../../broken-request/components/BrokenRequest';
 import RequestPane from '../../request-pane/components/RequestPane';
 import ResponsePane from '../../response-pane/components/ResponsePane';
@@ -75,6 +76,9 @@ const Router: React.FC<React.PropsWithChildren<RouterProps>> = ({ selectedTab })
 
 		case 'new_project_intro':
 			return <NewProjectIntro />;
+
+		case 'preferences':
+			return <Preferences />;
 
 		default: return <span>{'Unknown renderer'}</span>;
 	}

@@ -59,6 +59,10 @@ export function useApplicationMenuEventListener() {
 					dispatch(showOmniBar({ mode: 'commands' }));
 					break;
 
+				case 'show_preferences':
+					dispatch(changeTab({ type: 'preferences', temporary: false, payload: 'preferences' }));
+					break;
+
 				default:
 					console.warn('Unknown menu item event', payload);
 					break;

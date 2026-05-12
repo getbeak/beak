@@ -96,10 +96,19 @@ const newProjectIntroTabSchema = z
 	})
 	.strict();
 
+const preferencesTabSchema = z
+	.object({
+		type: z.literal('preferences'),
+		payload: z.literal('preferences'),
+		temporary: z.boolean(),
+	})
+	.strict();
+
 const tabSchema = z.discriminatedUnion('type', [
 	requestTabSchema,
 	variableGroupEditorTabSchema,
 	newProjectIntroTabSchema,
+	preferencesTabSchema,
 ]);
 
 export const tabPreferencesSchema = z

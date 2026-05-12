@@ -16,4 +16,5 @@ export type MenuEventCode =
 	| 'execute_request'
 	| 'view_project_encryption'
 	| 'show_new_project_intro'
-	| 'show_omni_commands';
+	| 'show_omni_commands'
+	| 'show_preferences';

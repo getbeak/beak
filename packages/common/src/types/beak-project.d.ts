@@ -4,7 +4,11 @@ export interface ProjectEncryption {
 }
 
 // NOTE(afr): Adding a new tab item? Don't forget to update tab-preferences schema too!
-export type TabItem = RequestTabItem | VariableSetEditorTabItem | NewProjectIntroTabItem;
+export type TabItem =
+	| RequestTabItem
+	| VariableSetEditorTabItem
+	| NewProjectIntroTabItem
+	| PreferencesTabItem;
 
 export interface TabBase {
 	type: string;
@@ -25,4 +29,14 @@ export interface VariableSetEditorTabItem extends TabBase {
 export interface NewProjectIntroTabItem extends TabBase {
 	type: 'new_project_intro';
 	payload: 'new_project_intro';
+}
+
+/**
+ * Settings/preferences rendered as a tab inside a project window. Replaces the
+ * standalone preferences window for the in-project use case. The standalone
+ * window remains the fallback when no project is open.
+ */
+export interface PreferencesTabItem extends TabBase {
+	type: 'preferences';
+	payload: 'preferences';
 }

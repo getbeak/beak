@@ -59,7 +59,10 @@ export default function generateFileMenu(ctx: Context): MenuItemConstructorOptio
 			{
 				label: 'Preferences...',
 				visible: !ctx.isDarwin,
-				click: async () => await createPreferencesWindow(),
+				click: async () => {
+					if (isProjectEditor(ctx)) sendMenuItemClick(ctx, 'show_preferences');
+					else await createPreferencesWindow();
+				},
 			},
 			{
 				role: ctx.isDarwin ? 'close' : 'quit',
