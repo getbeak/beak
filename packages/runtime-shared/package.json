@@ -1,5 +1,5 @@
 {
-	"name": "@beak/realtime-values",
+	"name": "@beak/runtime-shared",
 	"version": "0.0.0",
 	"private": true,
 	"main": "dist/index",
@@ -20,9 +20,11 @@
 		"test:ui": "vitest --ui"
 	},
 	"dependencies": {
-		"@getbeak/types": "^1.0.0",
-		"@getbeak/types-realtime-value": "*",
-		"base64-js": "^1.5.1"
+		"@beak/common": "*",
+		"@beak/ksuid": "*",
+		"@getbeak/extension-sdk": "*",
+		"@getbeak/types": "^2.1.0",
+		"tslog": "^4.10.2"
 	},
 	"devDependencies": {
 		"vitest": "^4.1.6",

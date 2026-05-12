@@ -1,5 +1,5 @@
-import { ActiveRename } from '@beak/ui/features/tree-view/types';
-import { ValueSections } from '@beak/ui/features/variables/values';
+import type { ActiveRename } from '@beak/ui/features/tree-view/types';
+import type { ValueSections } from '@beak/ui/features/variables/values';
 import type { VariableSet, VariableSets } from '@getbeak/types/variable-sets';
 
 export const ActionTypes = {

@@ -2,10 +2,10 @@ import React, { useEffect, useRef, useState } from 'react';
 import { scaleIn } from '@beak/design-system/animations';
 import Button from '@beak/ui/components/atoms/Button';
 import Input, { Select } from '@beak/ui/components/atoms/Input';
-import { ValueSections } from '@beak/ui/features/variables/values';
+import type { ValueSections } from '@beak/ui/features/variables/values';
 import { faWarning } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { EditableVariable, UISection } from '@getbeak/types-variables';
+import type { EditableVariable, UISection } from '@getbeak/extension-sdk';
 import styled from 'styled-components';
 
 import VariableInput from '../../variable-input/components/VariableInput';

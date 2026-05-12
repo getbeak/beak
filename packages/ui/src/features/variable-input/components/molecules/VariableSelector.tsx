@@ -1,4 +1,5 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { scaleIn } from '@beak/design-system/animations';
 import { VariableManager } from '@beak/ui/features/variables';
@@ -8,13 +9,13 @@ import { useAppSelector } from '@beak/ui/store/redux';
 import { movePosition } from '@beak/ui/utils/arrays';
 import { faPlug } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Variable, VariableStaticInformation } from '@getbeak/types-variables';
+import type { Variable, VariableStaticInformation } from '@getbeak/extension-sdk';
 import Fuse from 'fuse.js';
 import styled from 'styled-components';
 import * as uuid from 'uuid';
 
 import { createFauxValue } from '../../../variables/values/variable-set-item';
-import { NormalizedSelection } from '../../utils/browser-selection';
+import type { NormalizedSelection } from '../../utils/browser-selection';
 
 interface Position {
 	top: number;
@@ -45,12 +46,11 @@ const VariableSelector: React.FC<React.PropsWithChildren<VariableSelectorProps>>
 
 			// Variable sets act a little differently
 			...TypedObject.keys(variableSets)
-				.map(vgKey => {
+				.flatMap(vgKey => {
 					const vg = variableSets[vgKey];
 
 					return TypedObject.keys(vg.items).map(i => createFauxValue({ itemId: i }, variableSets));
-				})
-				.flat(),
+				}),
 		];
 
 		if (!query)

@@ -1,6 +1,6 @@
 import { ChakraProvider } from '@chakra-ui/react';
 import { ThemeProvider } from 'next-themes';
-import type React from 'react';
+import React from 'react';
 
 import { system } from './index';
 

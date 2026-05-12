@@ -31,7 +31,9 @@ export default {
 		alias: {
 			'@beak/ui': path.join(__dirname, './src'),
 			'@beak/common': path.join(__dirname, '../common/src'),
-			'@beak/core': path.join(__dirname, '../core/src'),
+			'@beak/state': path.join(__dirname, '../state/src'),
+			'@beak/runtime-shared': path.join(__dirname, '../runtime-shared/src'),
+			'@getbeak/extension-sdk': path.join(__dirname, '../extension-sdk/src'),
 			'@beak/design-system': path.join(__dirname, '../design-system/src'),
 			'@beak/ksuid': path.join(__dirname, '../ksuid/src'),
 			'@beak/squawk': path.join(__dirname, '../squawk/src'),

@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import ksuid from '@beak/ksuid';
 import EditorView from '@beak/ui/components/atoms/EditorView';
@@ -6,15 +7,15 @@ import BasicTableEditor from '@beak/ui/features/basic-table-editor/components/Ba
 import { convertKeyValueToString, convertStringToKeyValue } from '@beak/ui/features/basic-table-editor/parsers';
 import GraphQlQueryEditor from '@beak/ui/features/graphql-editor/components/GraphQlQueryEditor';
 import GraphQlVariablesEditor from '@beak/ui/features/graphql-editor/components/GraphQlVariablesEditor';
-import { EditorMode } from '@beak/ui/features/graphql-editor/types';
+import type { EditorMode } from '@beak/ui/features/graphql-editor/types';
 import { editorTabSubItems } from '@beak/ui/features/graphql-editor/utils';
 import JsonEditor from '@beak/ui/features/json-editor/components/JsonEditor';
 import { convertToEntryJson, convertToRealJson } from '@beak/ui/features/json-editor/parsers';
 import useVariableContext from '@beak/ui/features/variables/hooks/use-variable-context';
-import { ValueSections } from '@beak/ui/features/variables/values';
+import type { ValueSections } from '@beak/ui/features/variables/values';
 import { ipcDialogService } from '@beak/ui/lib/ipc';
 import actions, { requestBodyTextChanged } from '@beak/ui/store/project/actions';
-import { RequestBodyTypeChangedPayload } from '@beak/ui/store/project/types';
+import type { RequestBodyTypeChangedPayload } from '@beak/ui/store/project/types';
 import { attemptTextToJson } from '@beak/ui/utils/json';
 import type { ValidRequestNode } from '@getbeak/types/nodes';
 import type { RequestBodyJson, RequestBodyType } from '@getbeak/types/request';
@@ -67,7 +68,7 @@ const BodyTab: React.FC<React.PropsWithChildren<BodyTabProps>> = props => {
 				}));
 
 				return;
-			} else if (newType === 'url_encoded_form') {
+			}if (newType === 'url_encoded_form') {
 				dispatch(actions.requestBodyTypeChanged({
 					requestId: node.id,
 					type: 'url_encoded_form',
@@ -75,7 +76,7 @@ const BodyTab: React.FC<React.PropsWithChildren<BodyTabProps>> = props => {
 				}));
 
 				return;
-			} else if (newType === 'graphql') {
+			}if (newType === 'graphql') {
 				dispatch(actions.requestBodyTypeChanged({
 					requestId: node.id,
 					type: 'graphql',
@@ -122,7 +123,7 @@ const BodyTab: React.FC<React.PropsWithChildren<BodyTabProps>> = props => {
 				}));
 
 				return;
-			} else if (body.type === 'url_encoded_form') {
+			}if (body.type === 'url_encoded_form') {
 				dispatch(actions.requestBodyTypeChanged({
 					requestId: node.id,
 					type: 'text',
@@ -130,7 +131,7 @@ const BodyTab: React.FC<React.PropsWithChildren<BodyTabProps>> = props => {
 				}));
 
 				return;
-			} else if (body.type === 'graphql') {
+			}if (body.type === 'graphql') {
 				dispatch(actions.requestBodyTypeChanged({
 					requestId: node.id,
 					type: 'text',

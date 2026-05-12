@@ -1,5 +1,5 @@
 import { Link, type LinkProps } from '@chakra-ui/react';
-import type React from 'react';
+import React from 'react';
 
 type Tone = 'primary' | 'secondary' | 'tertiary';
 

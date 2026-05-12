@@ -1,6 +1,6 @@
 import type { Context } from '@getbeak/types/values';
 
-declare module '@getbeak/types-variables' {
+declare module '@getbeak/extension-sdk' {
 	interface GenericDictionary {
 		[k: string]: any;
 	}

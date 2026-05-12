@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { VariableSetEditorTabItem } from '@beak/common/types/beak-project';
+import type { VariableSetEditorTabItem } from '@beak/common/types/beak-project';
 import { useAppSelector } from '@beak/ui/store/redux';
 
 import TabItem from '../../../../components/atoms/TabItem';

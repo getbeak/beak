@@ -1,6 +1,6 @@
-import { DigestRtv, ValueSections } from '@beak/ui/features/variables/values';
+import type { DigestRtv, ValueSections } from '@beak/ui/features/variables/values';
 import { arrayBufferToHexString } from '@beak/ui/utils/encoding';
-import { EditableVariable } from '@getbeak/types-variables';
+import type { EditableVariable } from '@getbeak/extension-sdk';
 import { Md5 as MD5 } from 'ts-md5';
 
 import { parseValueSections } from '../parser';

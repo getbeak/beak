@@ -1,5 +1,5 @@
 import { Flex } from '@chakra-ui/react';
-import type React from 'react';
+import React from 'react';
 
 import CtaButton from '../../components/CtaButton';
 

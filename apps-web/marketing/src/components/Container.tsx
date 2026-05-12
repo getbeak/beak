@@ -1,5 +1,5 @@
 import { Box, type BoxProps } from '@chakra-ui/react';
-import type React from 'react';
+import React from 'react';
 
 export const Container: React.FC<BoxProps> = props => (
 	<Box mx='auto' px='25px' w='calc(100% - 50px)' maxW='1200px' {...props} />

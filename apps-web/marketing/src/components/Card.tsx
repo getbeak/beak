@@ -1,5 +1,5 @@
 import { Box, type BoxProps, Grid, type GridProps } from '@chakra-ui/react';
-import type React from 'react';
+import React from 'react';
 
 export const CardGrid: React.FC<GridProps> = props => (
 	<Grid templateColumns='repeat(auto-fit, minmax(300px, 1fr))' columnGap='40px' rowGap='30px' {...props} />

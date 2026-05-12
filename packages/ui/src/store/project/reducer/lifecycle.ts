@@ -5,7 +5,7 @@ import type { State } from '../types';
 
 /**
  * UI-coupled lifecycle cases. The pure tree lifecycle (startProject /
- * insertProjectInfo / projectOpened) is registered by @beak/core/project's
+ * insertProjectInfo / projectOpened) is registered by @beak/state/project's
  * builder — see reducer/index.ts.
  */
 export default function buildLifecycle(builder: ActionReducerMapBuilder<State>) {

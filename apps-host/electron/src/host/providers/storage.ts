@@ -1,4 +1,4 @@
-import StorageProviderBase, { type GenericStore } from '@beak/common-host/providers/storage';
+import StorageProviderBase, { type GenericStore } from '@beak/runtime-shared/providers/storage';
 import ElectronStore from 'electron-store';
 
 interface Store extends ElectronStore<GenericStore> {

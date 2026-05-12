@@ -1,6 +1,6 @@
-import '@getbeak/types-variables';
+import '@getbeak/extension-sdk';
 
-declare module '@getbeak/types-variables' {
+declare module '@getbeak/extension-sdk' {
 	interface VariableBase {
 		type: string;
 		external: boolean;

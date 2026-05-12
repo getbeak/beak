@@ -1,6 +1,6 @@
 import { TypedObject } from '@beak/common/helpers/typescript';
-import { RequestHeaderRtv, ValueSections } from '@beak/ui/features/variables/values';
-import { EditableVariable } from '@getbeak/types-variables';
+import type { RequestHeaderRtv, ValueSections } from '@beak/ui/features/variables/values';
+import type { EditableVariable } from '@getbeak/extension-sdk';
 
 import { parseValueSections } from '../parser';
 

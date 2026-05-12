@@ -101,7 +101,7 @@ export const initialState: State = {
 	alerts: {},
 };
 
-// ProjectInfoPayload + ProjectOpenedPayload moved to @beak/core/project.
+// ProjectInfoPayload + ProjectOpenedPayload moved to @beak/state/project.
 
 export interface RequestIdPayload {
 	requestId: string;

@@ -1,4 +1,4 @@
-import { startGit } from '@beak/core/git';
+import { startGit } from '@beak/state/git';
 import createFsEmitter, { type FsSubscription, scanDirectoryRecursively } from '@beak/ui/lib/fs-emitter';
 import { ipcFsService } from '@beak/ui/lib/ipc';
 import path from 'path-browserify';

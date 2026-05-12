@@ -1,7 +1,7 @@
 import { Box } from '@chakra-ui/react';
 import { faQuestionCircle } from '@fortawesome/free-solid-svg-icons/faQuestionCircle';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import type React from 'react';
+import React from 'react';
 
 import { SmallContainer } from '../../components/Container';
 import { BodyRegular, Title, TitleSubtle } from '../../components/Typography';

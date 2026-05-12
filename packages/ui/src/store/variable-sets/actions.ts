@@ -2,7 +2,7 @@
 
 import { createAction } from '@reduxjs/toolkit';
 
-// Reducer-bound actions live in @beak/core/variable-sets — re-export so UI shares
+// Reducer-bound actions live in @beak/state/variable-sets — re-export so UI shares
 // the same action types (otherwise the core reducer never runs).
 import {
 	insertNewGroup,
@@ -16,7 +16,7 @@ import {
 	updateItemName,
 	updateValue,
 	variableSetsOpened,
-} from '@beak/core/variable-sets';
+} from '@beak/state/variable-sets';
 
 export {
 	insertNewGroup,
@@ -34,13 +34,13 @@ export {
 
 import {
 	ActionTypes as AT,
-	CreateNewVariableSetPayload,
-	RemoveVariableSetFromDiskPayload,
-	VariableSetRenameCancelled,
-	VariableSetRenameResolved,
-	VariableSetRenameStarted,
-	VariableSetRenameSubmitted,
-	VariableSetRenameUpdated,
+	type CreateNewVariableSetPayload,
+	type RemoveVariableSetFromDiskPayload,
+	type VariableSetRenameCancelled,
+	type VariableSetRenameResolved,
+	type VariableSetRenameStarted,
+	type VariableSetRenameSubmitted,
+	type VariableSetRenameUpdated,
 } from './types';
 
 // UI-only side-effect triggers — listened to by effects, not reduced.

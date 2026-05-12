@@ -1,7 +1,7 @@
-import { ResponseBodyJsonRtv } from '@beak/ui/features/variables/values';
+import type { ResponseBodyJsonRtv } from '@beak/ui/features/variables/values';
 import binaryStore from '@beak/ui/lib/binary-store';
 import { attemptTextToJson } from '@beak/ui/utils/json';
-import { EditableVariable } from '@getbeak/types-variables';
+import type { EditableVariable } from '@getbeak/extension-sdk';
 import get from 'lodash.get';
 
 import { parseValueSections } from '../parser';

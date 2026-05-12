@@ -3,7 +3,7 @@ import { faApple } from '@fortawesome/free-brands-svg-icons/faApple';
 import { faWindows } from '@fortawesome/free-brands-svg-icons/faWindows';
 import { faDownload } from '@fortawesome/free-solid-svg-icons/faDownload';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import type React from 'react';
+import React from 'react';
 
 import Container from '../../components/Container';
 import ScrollTarget from '../../components/ScrollTarget';

@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import VariableInput from '@beak/ui/features/variable-input/components/VariableInput';
 import useVariableContext from '@beak/ui/features/variables/hooks/use-variable-context';
 import { parseValueSections } from '@beak/ui/features/variables/parser';
-import { ValueSections } from '@beak/ui/features/variables/values';
+import type { ValueSections } from '@beak/ui/features/variables/values';
 import { requestPreferenceSetReqMainTab } from '@beak/ui/store/preferences/actions';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';

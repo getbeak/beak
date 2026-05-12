@@ -1,5 +1,5 @@
-import { ResponseStatusCodeRtv } from '@beak/ui/features/variables/values';
-import { EditableVariable } from '@getbeak/types-variables';
+import type { ResponseStatusCodeRtv } from '@beak/ui/features/variables/values';
+import type { EditableVariable } from '@getbeak/extension-sdk';
 
 import { getRequestNode } from '../utils/request';
 import { getLatestFlight } from '../utils/response';

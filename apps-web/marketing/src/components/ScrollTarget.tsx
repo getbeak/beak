@@ -1,5 +1,5 @@
 import { Box } from '@chakra-ui/react';
-import type React from 'react';
+import React from 'react';
 
 interface ScrollTargetProps {
 	target: string;

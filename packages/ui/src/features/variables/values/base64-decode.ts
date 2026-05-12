@@ -1,5 +1,5 @@
-import { Base64DecodedRtv, ValueSections } from '@beak/ui/features/variables/values';
-import { EditableVariable } from '@getbeak/types-variables';
+import type { Base64DecodedRtv, ValueSections } from '@beak/ui/features/variables/values';
+import type { EditableVariable } from '@getbeak/extension-sdk';
 
 import { parseValueSections } from '../parser';
 

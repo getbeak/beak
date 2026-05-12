@@ -1,7 +1,7 @@
 import { Box, Link, useToken } from '@chakra-ui/react';
 import { faLink } from '@fortawesome/free-solid-svg-icons/faLink';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import type React from 'react';
+import React from 'react';
 
 interface LegalTitleProps {
 	element: 'h2' | 'h3';

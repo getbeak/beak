@@ -1,4 +1,4 @@
-import type { WindowState } from '@beak/common-host/providers/storage';
+import type { WindowState } from '@beak/runtime-shared/providers/storage';
 import { type BrowserWindow, type BrowserWindowConstructorOptions, type Rectangle, screen } from 'electron';
 
 import getBeakHost from '../host';

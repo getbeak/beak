@@ -1,4 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { fadeIn, scaleIn } from '@beak/design-system/animations';
 import { toHexAlpha } from '@beak/design-system/utils';

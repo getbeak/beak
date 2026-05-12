@@ -1,1 +1,1 @@
-export { default } from '@beak/core/extensions';
+export { default } from '@beak/state/extensions';

@@ -1,4 +1,4 @@
-import { Variable } from '@getbeak/types-variables';
+import type { Variable } from '@getbeak/extension-sdk';
 
 const characters = {
 	character_carriage_return: {

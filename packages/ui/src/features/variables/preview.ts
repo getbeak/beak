@@ -1,5 +1,5 @@
 import type { Context } from '@getbeak/types/values';
-import { EditableVariable } from '@getbeak/types-variables';
+import type { EditableVariable } from '@getbeak/extension-sdk';
 
 export async function previewValue<T extends Record<string, any>>(
 	ctx: Context,

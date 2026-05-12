@@ -1,4 +1,4 @@
-// Source of truth is @beak/core/preferences; this re-export keeps existing UI imports working.
+// Source of truth is @beak/state/preferences; this re-export keeps existing UI imports working.
 import {
 	editorPreferencesLoaded,
 	editorPreferencesSetSelectedVariableGroup,
@@ -17,7 +17,7 @@ import {
 	sidebarPreferenceSetCollapse,
 	sidebarPreferenceSetSelected,
 	sidebarPreferencesLoaded,
-} from '@beak/core/preferences';
+} from '@beak/state/preferences';
 
 export {
 	editorPreferencesLoaded,

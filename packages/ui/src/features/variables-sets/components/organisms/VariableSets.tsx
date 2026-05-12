@@ -5,7 +5,7 @@ import ksuid from '@beak/ksuid';
 import WindowSessionContext from '@beak/ui/contexts/window-session-context';
 import { changeTab, makeTabPermanent } from '@beak/ui/features/tabs/store/actions';
 import TreeView from '@beak/ui/features/tree-view/components/TreeView';
-import { TreeViewItem, TreeViewNodes } from '@beak/ui/features/tree-view/types';
+import type { TreeViewItem, TreeViewNodes } from '@beak/ui/features/tree-view/types';
 import { ipcExplorerService } from '@beak/ui/lib/ipc';
 import { checkShortcut } from '@beak/ui/lib/keyboard-shortcuts';
 import { useAppSelector } from '@beak/ui/store/redux';

@@ -14,11 +14,12 @@ export default defineConfig({
 	resolve: {
 		alias: {
 			'@beak/common': pkg('common/src'),
-			'@beak/core': pkg('core/src'),
+			'@beak/state': pkg('state/src'),
+			'@beak/runtime-shared': pkg('runtime-shared/src'),
 			'@beak/design-system': pkg('design-system/src'),
 			'@beak/squawk': pkg('squawk/src/index.ts'),
 			'@beak/ksuid': pkg('ksuid/src/index.ts'),
-			'@beak/realtime-values': pkg('realtime-values/src'),
+			'@getbeak/extension-sdk': pkg('extension-sdk/src'),
 			'@beak/ui': path.resolve(__dirname, 'src'),
 			'@getbeak/types': path.resolve(root, 'packages/types'),
 		},

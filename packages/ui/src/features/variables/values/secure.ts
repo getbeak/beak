@@ -1,6 +1,6 @@
-import { SecureRtv, ValueSections } from '@beak/ui/features/variables/values';
+import type { SecureRtv, ValueSections } from '@beak/ui/features/variables/values';
 import { ipcEncryptionService } from '@beak/ui/lib/ipc';
-import { EditableVariable } from '@getbeak/types-variables';
+import type { EditableVariable } from '@getbeak/extension-sdk';
 
 import { parseValueSections } from '../parser';
 

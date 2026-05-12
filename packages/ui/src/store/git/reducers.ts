@@ -1,1 +1,1 @@
-export { default } from '@beak/core/git';
+export { default } from '@beak/state/git';

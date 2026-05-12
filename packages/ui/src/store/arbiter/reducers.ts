@@ -1,1 +1,1 @@
-export { default } from '@beak/core/arbiter';
+export { default } from '@beak/state/arbiter';

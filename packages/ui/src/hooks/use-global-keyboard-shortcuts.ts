@@ -1,4 +1,4 @@
-import { requestFlight } from '@beak/core/flight';
+import { requestFlight } from '@beak/state/flight';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { checkShortcut } from '../lib/keyboard-shortcuts';

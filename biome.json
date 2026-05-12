@@ -134,10 +134,10 @@
 										"group": [
 											"@beak/ui",
 											"@beak/ui/**",
-											"@beak/core",
-											"@beak/core/**",
-											"@beak/realtime-values",
-											"@beak/realtime-values/**"
+											"@beak/state",
+											"@beak/state/**",
+											"@getbeak/extension-sdk",
+											"@getbeak/extension-sdk/**"
 										],
 										"message": "@beak/common must not depend on higher-layer packages."
 									}
@@ -149,7 +149,7 @@
 			}
 		},
 		{
-			"includes": ["packages/realtime-values/**/*.ts", "packages/realtime-values/**/*.tsx"],
+			"includes": ["packages/extension-sdk/**/*.ts", "packages/extension-sdk/**/*.tsx", "packages/extension-sdk/**/*.d.ts"],
 			"linter": {
 				"rules": {
 					"style": {
@@ -158,8 +158,8 @@
 							"options": {
 								"patterns": [
 									{
-										"group": ["@beak/ui", "@beak/ui/**", "@beak/core", "@beak/core/**", "@beak/common", "@beak/common/**"],
-										"message": "@beak/realtime-values is an extension SDK — keep its dependency surface tiny. No imports from @beak/core, @beak/ui, or @beak/common."
+										"group": ["@beak/ui", "@beak/ui/**", "@beak/state", "@beak/state/**", "@beak/common", "@beak/common/**"],
+										"message": "@getbeak/extension-sdk is the public extension SDK — keep its dependency surface tiny. No imports from @beak/state, @beak/ui, or @beak/common."
 									}
 								]
 							}
@@ -169,7 +169,7 @@
 			}
 		},
 		{
-			"includes": ["packages/core/**/*.ts", "packages/core/**/*.tsx"],
+			"includes": ["packages/state/**/*.ts", "packages/state/**/*.tsx"],
 			"linter": {
 				"rules": {
 					"style": {
@@ -178,12 +178,22 @@
 							"options": {
 								"patterns": [
 									{
-										"group": ["@beak/ui", "@beak/ui/**", "@beak/realtime-values", "@beak/realtime-values/**"],
-										"message": "@beak/core must not depend on @beak/ui or @beak/realtime-values."
+										"group": ["@beak/ui", "@beak/ui/**", "@getbeak/extension-sdk", "@getbeak/extension-sdk/**"],
+										"message": "@beak/state must not depend on @beak/ui or @getbeak/extension-sdk."
 									}
 								]
 							}
 						}
+					}
+				}
+			}
+		},
+		{
+			"includes": ["**/*.tsx"],
+			"linter": {
+				"rules": {
+					"style": {
+						"useImportType": "off"
 					}
 				}
 			}

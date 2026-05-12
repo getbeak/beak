@@ -1,5 +1,5 @@
 import { Link } from '@chakra-ui/react';
-import type React from 'react';
+import React from 'react';
 
 import { SmallContainer } from '../../components/Container';
 import { SubTitle, Title, TitleSubtle } from '../../components/Typography';

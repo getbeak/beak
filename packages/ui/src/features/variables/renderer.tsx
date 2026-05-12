@@ -4,7 +4,7 @@ import type { VariableSets } from '@getbeak/types/variable-sets';
 import * as uuid from 'uuid';
 
 import { VariableManager } from '.';
-import { ValueSections } from './values';
+import type { ValueSections } from './values';
 import { getVariableSetItemName } from './values/variable-set-item';
 
 export default function renderValueSections(parts: ValueSections, variableSets: VariableSets) {

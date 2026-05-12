@@ -11,7 +11,7 @@ import {
 	requestFlight,
 	requestPureFlight,
 	updateFlightProgress,
-} from '@beak/core/flight';
+} from '@beak/state/flight';
 import ksuid from '@beak/ksuid';
 import { instance as windowSessionInstance } from '@beak/ui/contexts/window-session-context';
 import { convertKeyValueToString } from '@beak/ui/features/basic-table-editor/parsers';

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { ValuePart, ValueSections } from '@beak/ui/features/variables/values';
+import type { ValuePart, ValueSections } from '@beak/ui/features/variables/values';
 import VariableEditor from '@beak/ui/features/variables-editor/components/VariableEditor';
 import useForceReRender from '@beak/ui/hooks/use-force-rerender';
 import { checkShortcut } from '@beak/ui/lib/keyboard-shortcuts';
@@ -11,11 +11,11 @@ import styled from 'styled-components';
 import useVariableContext from '../../variables/hooks/use-variable-context';
 import { parseValueSections } from '../../variables/parser';
 import renderValueSections from '../../variables/renderer';
-import { NormalizedSelection, normalizeSelection, trySetSelection } from '../utils/browser-selection';
+import { type NormalizedSelection, normalizeSelection, trySetSelection } from '../utils/browser-selection';
 import { detectRelevantCopiedValueSections } from '../utils/copying';
 import { handlePaste } from '../utils/pasting';
 import { sanitiseValueSections } from '../utils/sanitation';
-import { determineInsertionMode, VariableSelectionState } from '../utils/variables';
+import { determineInsertionMode, type VariableSelectionState } from '../utils/variables';
 import VariableSelector from './molecules/VariableSelector';
 import UnmanagedInput from './organisms/UnmanagedInput';
 

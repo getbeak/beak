@@ -1,7 +1,7 @@
 import { Box, Flex, IconButton, Link } from '@chakra-ui/react';
 import { faBars } from '@fortawesome/free-solid-svg-icons/faBars';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import type React from 'react';
+import React from 'react';
 import { useState } from 'react';
 
 import Container from './Container';

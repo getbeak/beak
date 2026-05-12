@@ -1,5 +1,5 @@
 /**
- * Generates JSON Schema documents from the zod schemas in @beak/core/schemas.
+ * Generates JSON Schema documents from the zod schemas in @beak/state/schemas.
  *
  * Run via `yarn --cwd packages/core schemas:gen`. The output directory is
  * passed as the first argument (defaults to `./generated-schemas`).

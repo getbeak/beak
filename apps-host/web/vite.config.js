@@ -37,10 +37,11 @@ export default {
 
 			'@beak/ui': path.join(__dirname, `../../packages/ui/${sourcePathInDev}`),
 			'@beak/common': path.join(__dirname, '../../packages/common/src'),
-			'@beak/common-host': path.join(__dirname, '../../packages/common-host/src'),
+			'@beak/runtime-shared': path.join(__dirname, '../../packages/runtime-shared/src'),
 			'@beak/design-system': path.join(__dirname, '../../packages/design-system/src'),
 			'@beak/ksuid': path.join(__dirname, '../../packages/ksuid/src'),
 
+			'@getbeak/extension-sdk': path.join(__dirname, '../../packages/extension-sdk/src'),
 			'@getbeak/types': path.join(__dirname, '../../packages/types/src'),
 			path: 'path-browserify',
 		},

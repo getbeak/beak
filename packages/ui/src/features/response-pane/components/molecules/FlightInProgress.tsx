@@ -1,4 +1,4 @@
-import type { FlightInProgress as FlightInProgressType } from '@beak/core/flight';
+import type { FlightInProgress as FlightInProgressType } from '@beak/state/flight';
 import React from 'react';
 import styled, { keyframes } from 'styled-components';
 

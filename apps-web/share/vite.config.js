@@ -47,7 +47,7 @@ export default {
 		}),
 	],
 	build: {
-		target: 'modules',
+		target: 'es2020',
 		outDir: '../dist',
 		emptyOutDir: true,
 		sourcemap: true,

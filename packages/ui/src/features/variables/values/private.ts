@@ -1,7 +1,7 @@
 import ksuid from '@beak/ksuid';
-import { PrivateRtv, ValueSections } from '@beak/ui/features/variables/values';
+import type { PrivateRtv, ValueSections } from '@beak/ui/features/variables/values';
 import { ipcEncryptionService, ipcFsService } from '@beak/ui/lib/ipc';
-import { EditableVariable } from '@getbeak/types-variables';
+import type { EditableVariable } from '@getbeak/extension-sdk';
 import path from 'path-browserify';
 
 import { parseValueSections } from '../parser';

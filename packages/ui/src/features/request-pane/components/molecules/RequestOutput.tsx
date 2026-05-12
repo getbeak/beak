@@ -1,8 +1,9 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { requestBodyContentType } from '@beak/common/helpers/request';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import EditorView from '@beak/ui/components/atoms/EditorView';
-import WindowSessionContext, { WindowSession } from '@beak/ui/contexts/window-session-context';
+import WindowSessionContext, { type WindowSession } from '@beak/ui/contexts/window-session-context';
 import { convertKeyValueToString } from '@beak/ui/features/basic-table-editor/parsers';
 import { convertToRealJson } from '@beak/ui/features/json-editor/parsers';
 import useVariableContext from '@beak/ui/features/variables/hooks/use-variable-context';

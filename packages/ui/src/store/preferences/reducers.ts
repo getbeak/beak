@@ -1,1 +1,1 @@
-export { default } from '@beak/core/preferences';
+export { default } from '@beak/state/preferences';

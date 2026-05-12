@@ -7,7 +7,7 @@ import {
 	removeNodeFromStore,
 	removeNodeFromStoreByPath,
 	startProject,
-} from '@beak/core/project';
+} from '@beak/state/project';
 import ksuid from '@beak/ksuid';
 import {
 	attemptReconciliation,

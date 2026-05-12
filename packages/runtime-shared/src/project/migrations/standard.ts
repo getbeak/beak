@@ -1,15 +1,13 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import { ProjectEncryption } from '@beak/common/types/beak-project';
-import { BeakBase, Providers } from '@beak/common-host/base';
-import { fileExists } from '@beak/common-host/utils/fs';
-import { ProjectFile } from '@getbeak/types/project';
+import type { ProjectEncryption } from '@beak/common/types/beak-project';
+import { BeakBase, type Providers } from '@beak/runtime-shared/base';
+import { fileExists } from '@beak/runtime-shared/utils/fs';
+import type { ProjectFile } from '@getbeak/types/project';
 
-import BeakExtensions from '../extensions';
+import type BeakExtensions from '../extensions';
 
-interface MigrationHandler {
-	(projectFile: ProjectFile, projectFolderPath: string): Promise<void>;
-}
+type MigrationHandler = (projectFile: ProjectFile, projectFolderPath: string) => Promise<void>
 
 interface SupersecretFile {
 	encryption: {

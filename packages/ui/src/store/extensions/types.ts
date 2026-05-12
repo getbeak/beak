@@ -1,11 +1,11 @@
-// Source of truth is @beak/core/extensions.
+// Source of truth is @beak/state/extensions.
 import {
 	type Extension,
 	type ExtensionsOpenedPayload,
 	type ExtensionsState,
 	type FailedExtension,
 	initialExtensionsState,
-} from '@beak/core/extensions';
+} from '@beak/state/extensions';
 
 export type State = ExtensionsState;
 export const initialState: State = initialExtensionsState;

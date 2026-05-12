@@ -6,7 +6,7 @@ import type { State } from '../types';
 /**
  * UI-coupled tree cases (rename editing state). The pure tree mutations
  * (insertRequestNode / insertFolderNode / removeNodeFromStore[ByPath]) are
- * registered by @beak/core/project's builder — see reducer/index.ts.
+ * registered by @beak/state/project's builder — see reducer/index.ts.
  */
 export default function buildTree(builder: ActionReducerMapBuilder<State>) {
 	builder

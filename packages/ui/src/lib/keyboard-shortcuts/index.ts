@@ -1,7 +1,7 @@
 import React from 'react';
 import { instance as windowSessionInstance } from '@beak/ui/contexts/window-session-context';
 
-import { PlatformAgnosticDefinitions, PlatformSpecificDefinitions } from './types';
+import type { PlatformAgnosticDefinitions, PlatformSpecificDefinitions } from './types';
 
 export type Shortcuts =
 	| 'global.execute-request'

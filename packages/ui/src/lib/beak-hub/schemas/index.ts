@@ -1,4 +1,4 @@
-// Schemas live in @beak/core/schemas now (zod-based, with z.infer types).
+// Schemas live in @beak/state/schemas now (zod-based, with z.infer types).
 // This module re-exports them under the legacy names for back-compat.
 export {
 	editorPreferencesSchema as editorPreferences,
@@ -6,4 +6,4 @@ export {
 	requestPreferenceSchema as requestPreference,
 	sidebarPreferencesSchema as sidebarPreferences,
 	tabPreferencesSchema as tabPreferences,
-} from '@beak/core/schemas';
+} from '@beak/state/schemas';

@@ -1,5 +1,5 @@
 import { Box, type BoxProps } from '@chakra-ui/react';
-import type React from 'react';
+import React from 'react';
 
 export const LastUpdated: React.FC<React.PropsWithChildren<BoxProps>> = props => (
 	<Box as='p' color='textMinor' {...props} />

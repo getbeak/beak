@@ -1,5 +1,5 @@
-import { UuidRtv } from '@beak/ui/features/variables/values';
-import { EditableVariable } from '@getbeak/types-variables';
+import type { UuidRtv } from '@beak/ui/features/variables/values';
+import type { EditableVariable } from '@getbeak/extension-sdk';
 import * as uuid from 'uuid';
 
 interface EditorState {

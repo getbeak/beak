@@ -1,4 +1,4 @@
-import { buildProjectTreeReducer } from '@beak/core/project';
+import { buildProjectTreeReducer } from '@beak/state/project';
 import { createReducer } from '@reduxjs/toolkit';
 
 import { initialState } from '../types';
@@ -9,7 +9,7 @@ import buildRequestFields from './request-fields';
 import buildTree from './tree';
 
 const projectReducer = createReducer(initialState, builder => {
-	// Pure project tree state — sourced from @beak/core/project.
+	// Pure project tree state — sourced from @beak/state/project.
 	buildProjectTreeReducer(builder);
 
 	// UI-coupled state.

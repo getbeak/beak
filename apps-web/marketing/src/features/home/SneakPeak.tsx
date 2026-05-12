@@ -1,6 +1,6 @@
 import { Box, Image } from '@chakra-ui/react';
 import { keyframes } from '@emotion/react';
-import type React from 'react';
+import React from 'react';
 
 const pulse = keyframes`
 	0% { transform: scale(0.8); opacity: 1; }

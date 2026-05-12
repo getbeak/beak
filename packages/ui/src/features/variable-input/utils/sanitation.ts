@@ -1,4 +1,4 @@
-import { ValueSections } from '@getbeak/types/values';
+import type { ValueSections } from '@getbeak/types/values';
 
 export function sanitiseValueSections(ValueSections: ValueSections) {
 	// Now we need to slightly sanitise the reconciled state. The outcome of this must:

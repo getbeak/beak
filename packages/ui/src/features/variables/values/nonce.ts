@@ -1,5 +1,5 @@
 import { toWebSafeBase64 } from '@beak/ui/lib/base64';
-import type { Variable } from '@getbeak/types-variables';
+import type { Variable } from '@getbeak/extension-sdk';
 
 const definition: Variable<any> = {
 	type: 'nonce',

@@ -1,6 +1,6 @@
-import { ResponseBodyTextRtv } from '@beak/ui/features/variables/values';
+import type { ResponseBodyTextRtv } from '@beak/ui/features/variables/values';
 import binaryStore from '@beak/ui/lib/binary-store';
-import { EditableVariable } from '@getbeak/types-variables';
+import type { EditableVariable } from '@getbeak/extension-sdk';
 
 import { getRequestNode } from '../utils/request';
 import { getLatestFlight } from '../utils/response';

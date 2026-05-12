@@ -16,7 +16,7 @@ import type { VariableExtension } from '@beak/common/types/extensions';
 import Squawk from '@beak/common/utils/squawk';
 import ksuid from '@beak/ksuid';
 import type { Context, ValueSections } from '@getbeak/types/values';
-import type { EditableVariable } from '@getbeak/types-variables/';
+import type { EditableVariable } from '@getbeak/extension-sdk/';
 import { ipcMain, type WebContents } from 'electron';
 import fs from 'fs-extra';
 import clone from 'lodash.clonedeep';

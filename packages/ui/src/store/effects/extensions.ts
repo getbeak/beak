@@ -1,5 +1,5 @@
 import Squawk from '@beak/common/utils/squawk';
-import { reloadExtensions, startExtensions } from '@beak/core/extensions';
+import { reloadExtensions, startExtensions } from '@beak/state/extensions';
 import ksuid from '@beak/ksuid';
 import { VariableManager } from '@beak/ui/features/variables';
 import createFsEmitter, { type FsSubscription } from '@beak/ui/lib/fs-emitter';

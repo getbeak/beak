@@ -27,9 +27,9 @@
 	"main": "./dist/main/main.js",
 	"dependencies": {
 		"@beak/common": "*",
-		"@beak/common-host": "*",
 		"@beak/ksuid": "*",
 		"@beak/requester-node": "*",
+		"@beak/runtime-shared": "*",
 		"@beak/ui": "*",
 		"@sentry/electron": "^7.13.0",
 		"asar": "^3.2.0",
@@ -52,8 +52,8 @@
 	},
 	"devDependencies": {
 		"@electron/notarize": "^3.1.1",
+		"@getbeak/extension-sdk": "*",
 		"@getbeak/types": "^2.1.0",
-		"@getbeak/types-variables": "^2.1.0",
 		"@sentry/cli": "^3.4.2",
 		"@types/electron-devtools-installer": "^4.0.0",
 		"@types/fs-extra": "^11.0.4",

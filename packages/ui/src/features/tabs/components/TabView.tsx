@@ -1,6 +1,7 @@
-import React, { useEffect } from 'react';
+import React from 'react';
+import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { TabItem } from '@beak/common/types/beak-project';
+import type { TabItem } from '@beak/common/types/beak-project';
 import { checkShortcut } from '@beak/ui/lib/keyboard-shortcuts';
 import styled from 'styled-components';
 

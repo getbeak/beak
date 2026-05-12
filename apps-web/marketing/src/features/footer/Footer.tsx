@@ -1,5 +1,5 @@
 import { Box, Flex, Heading, Link, SimpleGrid, Text } from '@chakra-ui/react';
-import type React from 'react';
+import React from 'react';
 
 import { SmallContainer } from '../../components/Container';
 

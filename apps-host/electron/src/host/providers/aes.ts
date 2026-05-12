@@ -1,5 +1,5 @@
 import crypto, { type Cipheriv as Cipher, type Decipheriv as Decipher } from 'node:crypto';
-import AesProviderBase from '@beak/common-host/providers/encryption-aes';
+import AesProviderBase from '@beak/runtime-shared/providers/encryption-aes';
 
 export default class AesProvider extends AesProviderBase {
 	async generateKey(): Promise<string> {

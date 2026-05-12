@@ -4,7 +4,7 @@ import type { ProjectFile } from '@getbeak/types/project';
 import type { VariableSet } from '@getbeak/types/variable-sets';
 import git from 'isomorphic-git';
 
-import { BeakBase, Providers } from '../base';
+import { BeakBase, type Providers } from '../base';
 import { fileExists } from '../utils/fs';
 import BeakExtensions from './extensions';
 import BeakMigrations from './migrations';

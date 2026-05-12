@@ -1,4 +1,4 @@
-import { nextFlightHistory, previousFlightHistory } from '@beak/core/flight';
+import { nextFlightHistory, previousFlightHistory } from '@beak/state/flight';
 import { useCallback } from 'react';
 import { useAppDispatch, useAppSelector } from '../../store/redux';
 

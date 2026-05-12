@@ -6,7 +6,7 @@ import { faLanguage } from '@fortawesome/free-solid-svg-icons/faLanguage';
 import { faPalette } from '@fortawesome/free-solid-svg-icons/faPalette';
 import { faPeopleCarry } from '@fortawesome/free-solid-svg-icons/faPeopleCarry';
 import { FontAwesomeIcon, type FontAwesomeIconProps } from '@fortawesome/react-fontawesome';
-import type React from 'react';
+import React from 'react';
 import { Card, CardBody, CardGrid, CardIcons, CardTitle } from '../../components/Card';
 import Container from '../../components/Container';
 

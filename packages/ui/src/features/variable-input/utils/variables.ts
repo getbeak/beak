@@ -1,6 +1,6 @@
-import { ValueSections } from '@beak/ui/features/variables/values';
+import type { ValueSections } from '@beak/ui/features/variables/values';
 
-import { NormalizedSelection } from './browser-selection';
+import type { NormalizedSelection } from './browser-selection';
 
 type Mode = 'prepend' | 'append' | 'inject';
 

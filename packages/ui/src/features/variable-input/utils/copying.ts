@@ -1,4 +1,4 @@
-import { ValueSections } from '@beak/ui/features/variables/values';
+import type { ValueSections } from '@beak/ui/features/variables/values';
 
 export function detectRelevantCopiedValueSections(ValueSections: ValueSections) {
 	const sel = window.getSelection()!;

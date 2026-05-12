@@ -1,4 +1,4 @@
-import BeakHost from '@beak/common-host';
+import BeakHost from '@beak/runtime-shared';
 import FS from '@isomorphic-git/lightning-fs';
 import base64 from 'base64-js';
 import path from 'path-browserify';

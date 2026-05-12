@@ -1,5 +1,5 @@
-// Flight slice lives in @beak/core (pure domain), used here as a global state shard.
-import { type FlightSliceState, flightSlice } from '@beak/core/flight';
+// Flight slice lives in @beak/state (pure domain), used here as a global state shard.
+import { type FlightSliceState, flightSlice } from '@beak/state/flight';
 import { applyMiddleware, combineReducers, createStore, type Store } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import * as encryptionStore from '../features/encryption/store';

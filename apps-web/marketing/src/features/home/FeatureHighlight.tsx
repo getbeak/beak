@@ -1,5 +1,5 @@
 import { Box, Flex, Image } from '@chakra-ui/react';
-import type React from 'react';
+import React from 'react';
 
 import Container from '../../components/Container';
 import ScrollTarget from '../../components/ScrollTarget';

@@ -1,4 +1,4 @@
-import { VariableStaticInformation } from '@getbeak/types-variables';
+import { VariableStaticInformation } from '@getbeak/extension-sdk';
 
 export interface VariableExtension {
 	name: string;

@@ -1,4 +1,4 @@
-import { Variable } from '@getbeak/types-variables';
+import type { Variable } from '@getbeak/extension-sdk';
 
 const definition: Variable<any> = {
 	type: 'request_folder',

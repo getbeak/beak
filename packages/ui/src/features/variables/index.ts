@@ -1,7 +1,7 @@
 import { TypedObject } from '@beak/common/helpers/typescript';
-import { VariableExtension } from '@beak/common/types/extensions';
+import type { VariableExtension } from '@beak/common/types/extensions';
 import { ipcExtensionsService } from '@beak/ui/lib/ipc';
-import { EditableVariable, Variable } from '@getbeak/types-variables';
+import type { EditableVariable, Variable } from '@getbeak/extension-sdk';
 
 import './ipc';
 import base64DecodeRtv from './values/base64-decode';
@@ -59,7 +59,7 @@ export class VariableManager {
 	static registerExternalVariable(ext: VariableExtension) {
 		const rtv = ext.variable;
 
-		this.externalVariables[rtv.type] = {
+		VariableManager.externalVariables[rtv.type] = {
 			type: rtv.type,
 			name: rtv.name,
 			description: rtv.description,
@@ -81,7 +81,7 @@ export class VariableManager {
 		if (!rtv.editable)
 			return;
 
-		(this.externalVariables[rtv.type] as EditableVariable<any, any>).editor = {
+		(VariableManager.externalVariables[rtv.type] as EditableVariable<any, any>).editor = {
 			createUserInterface: ctx => ipcExtensionsService.rtvEditorCreateUserInterface({
 				type: rtv.type,
 				context: ctx,
@@ -101,19 +101,19 @@ export class VariableManager {
 	}
 
 	static unregisterExternalVariable(type: string) {
-		delete this.externalVariables[type];
+		delete VariableManager.externalVariables[type];
 	}
 
 	static getVariable(type: string) {
-		return this.internalVariables[type] ?? this.externalVariables[type];
+		return VariableManager.internalVariables[type] ?? VariableManager.externalVariables[type];
 	}
 
 	static getVariables(currentRequestId?: string) {
 		const allVariables = {
-			...this.externalVariables,
+			...VariableManager.externalVariables,
 
 			// Do this second to override any external attempts to override
-			...this.internalVariables,
+			...VariableManager.internalVariables,
 		};
 
 		return TypedObject.values(allVariables)

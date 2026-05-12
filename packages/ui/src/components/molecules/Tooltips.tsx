@@ -1,5 +1,5 @@
 import React from 'react';
-import { PlacesType, Tooltip } from 'react-tooltip';
+import { type PlacesType, Tooltip } from 'react-tooltip';
 
 import 'react-tooltip/dist/react-tooltip.css';
 

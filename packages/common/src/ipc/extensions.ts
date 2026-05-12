@@ -1,5 +1,5 @@
 import type { Context, ValueSections } from '@getbeak/types/values';
-import type { UISection } from '@getbeak/types-variables';
+import type { UISection } from '@getbeak/extension-sdk';
 import type { WebContents } from 'electron';
 
 import type { VariableExtension } from '../types/extensions';

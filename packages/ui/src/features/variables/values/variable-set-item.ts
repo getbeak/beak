@@ -1,7 +1,7 @@
 import { TypedObject } from '@beak/common/helpers/typescript';
-import { VariableSetItemRtv } from '@beak/ui/features/variables/values';
+import type { VariableSetItemRtv } from '@beak/ui/features/variables/values';
 import type { VariableSets } from '@getbeak/types/variable-sets';
-import { Variable } from '@getbeak/types-variables';
+import type { Variable } from '@getbeak/extension-sdk';
 
 import { getValueSections, parseValueSections } from '../parser';
 

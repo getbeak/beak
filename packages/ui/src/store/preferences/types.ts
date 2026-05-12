@@ -1,4 +1,4 @@
-// Source of truth is @beak/core/preferences.
+// Source of truth is @beak/state/preferences.
 import {
 	type EditorPreferencesSetSelectedVariableSetPayload,
 	initialPreferencesState,
@@ -12,7 +12,7 @@ import {
 	type RequestPreferencesSetResPrettyLanguagePayload,
 	type RequestPreferencesSetResSubTabPayload,
 	type SidebarCollapsePayload,
-} from '@beak/core/preferences';
+} from '@beak/state/preferences';
 
 export type State = PreferencesState;
 export const initialState: State = initialPreferencesState;

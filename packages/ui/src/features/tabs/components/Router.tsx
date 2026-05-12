@@ -1,6 +1,6 @@
 import React from 'react';
 import { ReflexContainer } from 'react-reflex';
-import { TabItem } from '@beak/common/types/beak-project';
+import type { TabItem } from '@beak/common/types/beak-project';
 import ReflexElement from '@beak/ui/components/atoms/ReflexElement';
 import ReflexSplitter from '@beak/ui/components/atoms/ReflexSplitter';
 import NewProjectIntro from '@beak/ui/components/molecules/NewProjectIntro';

@@ -7,11 +7,11 @@ import {
 	removeNodeFromStore,
 	removeNodeFromStoreByPath,
 	startProject,
-} from '@beak/core/project';
+} from '@beak/state/project';
 import { createAction } from '@reduxjs/toolkit';
 
-// Pure tree actions live in @beak/core. Re-export them so existing UI imports keep working —
-// new code should import from @beak/core/project directly.
+// Pure tree actions live in @beak/state. Re-export them so existing UI imports keep working —
+// new code should import from @beak/state/project directly.
 export {
 	insertFolderNode,
 	insertProjectInfo,

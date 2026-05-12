@@ -1,6 +1,6 @@
 import * as path from 'node:path';
 import * as url from 'node:url';
-import type { WindowPresence } from '@beak/common-host/providers/storage';
+import type { WindowPresence } from '@beak/runtime-shared/providers/storage';
 import { app, BrowserWindow, type BrowserWindowConstructorOptions, nativeTheme } from 'electron';
 
 import getBeakHost from './host';

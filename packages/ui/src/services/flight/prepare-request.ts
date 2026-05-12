@@ -1,5 +1,5 @@
 import { TypedObject } from '@beak/common/helpers/typescript';
-import type { FlightRequest, FlightRequestKeyValue } from '@beak/core/flight';
+import type { FlightRequest, FlightRequestKeyValue } from '@beak/state/flight';
 import type { RequestBodyFile, RequestBodyText, RequestOverview, ToggleKeyValue } from '@getbeak/types/request';
 import type { Context, ValueSections } from '@getbeak/types/values';
 
