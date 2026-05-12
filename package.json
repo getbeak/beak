@@ -37,7 +37,9 @@
 		"typecheck": "pnpm -r typecheck",
 		"typecheck:apps-host": "pnpm --filter '@beak/apps-host-*...' typecheck",
 		"unfuck": "pnpm -r exec rm -rf node_modules && rm -rf node_modules && pnpm install",
-		"release-safety": "pnpm typecheck && pnpm lint && pnpm build"
+		"release-safety": "pnpm typecheck && pnpm lint && pnpm build",
+		"test:e2e": "playwright test",
+		"test:e2e:install": "playwright install --with-deps chromium"
 	},
 	"pnpm": {
 		"overrides": {
@@ -62,6 +64,7 @@
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.4.15",
+		"@playwright/test": "^1.60.0",
 		"@types/node": "^25.7.0",
 		"@typescript/native-preview": "^7.0.0-dev.20260511.1",
 		"cross-env": "^7.0.3",
