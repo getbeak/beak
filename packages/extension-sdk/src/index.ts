@@ -15,6 +15,20 @@ export type { Context, ValueSection, ValueSections } from '@getbeak/types/values
 export { toWebSafeBase64 } from './utils/base64';
 export { arrayBufferToHexString } from './utils/encoding';
 
+/**
+ * Content-addressed pointer to a binary asset stored under the project's
+ * `_assets/` directory. Variables that produce binary content (file uploads,
+ * decoded response bodies, etc.) return one of these from `getAssetRef`
+ * instead of stringifying through `getValue`. Structurally compatible with
+ * the host-side `AssetRef` defined in `@beak/state/assets` — the canonical
+ * identity is the lowercase-hex sha256.
+ */
+export interface AssetRef {
+	sha256: string;
+	size: number;
+	contentType?: string;
+}
+
 /* biome-ignore lint/suspicious/noEmptyInterface: augmentation target — the host renderer extends this with `type` and `external`. */
 export interface VariableBase {}
 
@@ -26,6 +40,22 @@ interface VariableGetter<TPayload> {
 	 * @param recursiveDepth The current depth of value recursion.
 	 */
 	getValue: (ctx: Context, payload: TPayload, recursiveDepth: number) => Promise<string>;
+
+	/**
+	 * Optional: produce binary content as an {@link AssetRef} pointing at the
+	 * project's `_assets/` store. Implement this for variables that naturally
+	 * resolve to bytes — file uploads, binary response decoding, generated
+	 * archives, etc.
+	 *
+	 * If a variable defines `getAssetRef`, Beak will prefer it when the
+	 * consumer is a binary sink (e.g. a `file` request body). When the
+	 * consumer is a string sink (URL, header), `getValue` is used as before.
+	 * A variable may implement only one of them.
+	 *
+	 * Returning `null` signals "no binary content this time" — Beak will
+	 * fall back to `getValue` (or treat it as an empty body).
+	 */
+	getAssetRef?: (ctx: Context, payload: TPayload, recursiveDepth: number) => Promise<AssetRef | null>;
 }
 
 // biome-ignore lint/suspicious/noEmptyInterface: marker constraint; extensions define their own payload shapes
