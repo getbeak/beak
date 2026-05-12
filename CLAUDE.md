@@ -85,16 +85,46 @@ All cross-process communication goes through `packages/common/src/ipc/`:
 
 `biome.json` enforces import restrictions per package via `noRestrictedImports`. **Do not work around these — they encode the architecture:**
 
-- `@beak/common` — pure cross-process types & IPC schemas. **Cannot import** `@beak/ui`, `@beak/core`, `@beak/realtime-values`.
-- `@beak/realtime-values` — extension-author SDK only (type contracts + a couple of helpers). **Cannot import** `@beak/ui`, `@beak/core`, `@beak/common`. Beak's own realtime-value machinery (registry, parser, built-in handlers) lives in `@beak/ui/src/features/realtime-values/`, **not** in this package, for security/sandbox reasons.
-- `@beak/core` — Redux Toolkit slices and shared store logic (`arbiter`, `extensions`, `flight`, `git`, `preferences`, `project`, `schemas`, `variableGroups`). **Cannot import** `@beak/ui` or `@beak/realtime-values`.
+- `@beak/common` — pure cross-process types & IPC schemas. **Cannot import** `@beak/ui`, `@beak/state`, `@getbeak/extension-sdk`.
+- `@getbeak/extension-sdk` — public SDK for extension authors (variable/RTV type contracts + helpers, plus the `AssetRef` shape and `getAssetRef?` contract). **Cannot import** `@beak/ui`, `@beak/state`, `@beak/common`. Published to npm as v0.1.0; bump versions deliberately. Beak's own variable machinery (registry, parser, built-in handlers) lives in `@beak/ui/src/features/variables/`, **not** in this package, for security/sandbox reasons.
+- `@beak/state` — Redux Toolkit slices and shared store logic (`arbiter`, `assets`, `extensions`, `flight`, `git`, `preferences`, `project`, `schemas`, `sources`, `variableSets`). **Cannot import** `@beak/ui` or `@getbeak/extension-sdk`. Was `@beak/core` before the May 2026 reshuffle.
 - `@beak/ui` — the renderer. May import everything below it.
 
-Other notable packages: `@beak/common-host` (host-side helpers, used by both Electron and web hosts), `@beak/requester-node` (Node HTTP request execution), `@beak/design-system` (styled-components theming), `@beak/ksuid` (KSUID id generation), `@beak/squawk` (internal error/event helper). `@getbeak/types*` packages under `packages/types*` are **published to npm** and form the public contract for extension authors — bump versions deliberately.
+Other notable packages: `@beak/runtime-shared` (was `@beak/common-host`; host-side helpers, exposes `Runtime` + `AssetStore` + `project` to both Electron and web hosts), `@beak/requester-node` (Node HTTP request execution), `@beak/design-system` (styled-components theming), `@beak/ksuid` (KSUID id generation), `@beak/squawk` (internal error/event helper). The extension-sdk replaces the older `@getbeak/types-variables` / `@getbeak/types-realtime-value` / `@beak/realtime-values` trio.
 
 ### State management
 
-Redux Toolkit. Slices live in `@beak/core/src/<domain>/` (e.g. `flight-slice.ts`). The renderer wires them up in `packages/ui/src/store/`, which also hosts side-effect listeners (`store/effects/*.ts`) and the listener middleware (`store/listener.ts`). Async work (running a flight, syncing extensions, git ops) happens in `store/effects/` rather than inside slice reducers.
+Redux Toolkit. Slices live in `@beak/state/src/<domain>/` (e.g. `flight-slice.ts`). The renderer wires them up in `packages/ui/src/store/`, which also hosts side-effect listeners (`store/effects/*.ts`) and the listener middleware (`store/listener.ts`). Async work (running a flight, syncing extensions, git ops) happens in `store/effects/` rather than inside slice reducers.
+
+### Flight architecture
+
+Flights are keyed by **`flightId`**, not requestId — multiple flights can be in flight at once (across different requests *and* the same request).
+
+- `activeFlights: Record<flightId, FlightInProgress>` and `flightsByRequest: Record<requestId, flightId[]>` are the two indexes in `@beak/state/flight/flight-slice.ts`.
+- `selectActiveFlight(requestId)` returns the most recent in-flight flight; `selectActiveFlightsForRequest(requestId)` returns all of them.
+- The "Request already in flight" dialog was removed. Concurrency is the default; if you ever need a per-request cap, add a preference rather than a hard gate.
+
+### Project file format (v0.5.0)
+
+Each folder under `tree/` contains a `_collection.json` (`@beak/state/schemas`'s `collectionFileSchema`). It declares the request `source` (`manual` | `openapi` | `graphql`) and optional `defaults` (`baseUrl`, `verb`, `headers`, `query`, `body`, `options`).
+
+Request files are sparse overrides when a collection declares non-empty defaults. The renderer reads via `mergeCollectionDefaults` and writes via `diffFromDefaults` (both in `@beak/state/schemas`), so routine API edits don't pollute the git diff tree. Empty defaults → byte-identical to the legacy fully-specified file.
+
+The `0.4.0 → 0.5.0` migration in `@beak/runtime-shared/project/migrations/standard.ts` writes a manual-source collection file into every existing folder; sparse mode only kicks in once a user adds defaults.
+
+### OpenAPI sync
+
+`@beak/state/sources/openapi`'s `openapiToCollection(spec, options)` is a pure converter: spec → `{ collection, requests, warnings }`. It resolves `#/components/parameters/*` $refs, falls back to verb-path operationIds with a warning, and seeds parameters from `example`/`default`/`enum`. External $refs and the UI import flow are deferred.
+
+### Asset storage
+
+`@beak/runtime-shared`'s `Runtime.assets` (an `AssetStore`) writes binary blobs to `<projectRoot>/_assets/<sha256-prefix>/<sha256>` and addresses them via `AssetRef` (`{ sha256, size, contentType? }`). Identical bytes share storage. Writes are idempotent; missing-asset reads return `null` rather than throwing.
+
+Variables in the SDK can opt into binary by implementing the optional `getAssetRef?: (ctx, payload, depth) => Promise<AssetRef | null>` alongside their existing `getValue`. The renderer-side resolver lives in `@beak/ui/features/variables/binary.ts` (`resolveValuePartForBinary`, `parseValueSectionsForBinary`); it picks `getAssetRef` when present, falls back to `getValue` otherwise.
+
+### Runtime capabilities
+
+The runtime (was `BeakHost`, now `Runtime`) carries an explicit `capabilities` matrix — `nativeContextMenus`, `extensions`, `multipleWindows`, `systemKeychain`, `fileSystemAccess: 'native' | 'sandboxed'`, `binaryStreaming`. Feature code gates on `runtime.capabilities.X` instead of branching on `if (electron)`.
 
 ## Code style
 
