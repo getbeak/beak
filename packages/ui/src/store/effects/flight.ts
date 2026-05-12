@@ -66,16 +66,9 @@ export function registerFlightEffects(start: AppStartListening) {
 				return;
 			}
 
-			const activeFlight = api.getState().global.flight.activeFlights[requestId];
-			if (activeFlight) {
-				await ipcDialogService.showMessageBox({
-					title: 'Request already in flight',
-					message:
-						"You already have a request currently in flight. You won't be able to run a new request until it has finished.",
-					type: 'warning',
-				});
-				return;
-			}
+			// Concurrent flights are allowed — across different requests and even the same request.
+			// The slice now keys activeFlights by flightId, so a second concurrent flight does not
+			// overwrite the first; both progress independently and both record history entries.
 
 			const state = api.getState();
 			const context: Context = {

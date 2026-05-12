@@ -12,10 +12,17 @@ import {
 import type { FlightHistory, FlightHistoryEntry, FlightInProgress, FlightState } from './types';
 
 export interface FlightSliceState {
+	/** Latest state machine per request (idle / preparing / executing / completed / failed). */
 	flightStates: Record<string, FlightState>;
+	/** Per-request history of completed/failed flights. */
 	flightHistories: Record<string, FlightHistory>;
+	/** All currently in-flight flights keyed by flightId. Multiple per request allowed. */
 	activeFlights: Record<string, FlightInProgress>;
+	/** Index from requestId → ordered list of flightIds currently in flight. */
+	flightsByRequest: Record<string, string[]>;
+	/** Per-request "is anything loading for this request" — true if at least one active flight exists. */
 	loading: Record<string, boolean>;
+	/** Latest error per request (does not block new flights). */
 	errors: Record<string, Error | null>;
 }
 
@@ -23,6 +30,7 @@ const initialState: FlightSliceState = {
 	flightStates: {},
 	flightHistories: {},
 	activeFlights: {},
+	flightsByRequest: {},
 	loading: {},
 	errors: {},
 };
@@ -54,6 +62,17 @@ function recordHistoryEntry(history: FlightHistory, entry: FlightHistoryEntry) {
 	};
 }
 
+function removeFlightFromRequest(state: FlightSliceState, requestId: string, flightId: string) {
+	delete state.activeFlights[flightId];
+	const ids = state.flightsByRequest[requestId];
+	if (ids) {
+		const remaining = ids.filter(id => id !== flightId);
+		if (remaining.length > 0) state.flightsByRequest[requestId] = remaining;
+		else delete state.flightsByRequest[requestId];
+	}
+	state.loading[requestId] = Boolean(state.flightsByRequest[requestId]?.length);
+}
+
 const flightSlice = createSlice({
 	name: 'flight',
 	initialState,
@@ -65,7 +84,8 @@ const flightSlice = createSlice({
 			const { requestId } = action.payload;
 			delete state.flightStates[requestId];
 			delete state.flightHistories[requestId];
-			delete state.activeFlights[requestId];
+			for (const flightId of state.flightsByRequest[requestId] ?? []) delete state.activeFlights[flightId];
+			delete state.flightsByRequest[requestId];
 			delete state.loading[requestId];
 			delete state.errors[requestId];
 		},
@@ -73,6 +93,7 @@ const flightSlice = createSlice({
 			state.flightStates = {};
 			state.flightHistories = {};
 			state.activeFlights = {};
+			state.flightsByRequest = {};
 			state.loading = {};
 			state.errors = {};
 		},
@@ -89,15 +110,17 @@ const flightSlice = createSlice({
 					flighting: true,
 					timing: { beakStart: Date.now() },
 				};
-				state.activeFlights[requestId] = flight;
+				state.activeFlights[flightId] = flight;
+				const existing = state.flightsByRequest[requestId] ?? [];
+				state.flightsByRequest[requestId] = [...existing, flightId];
 				state.flightStates[requestId] = { status: 'executing', flight };
 				state.loading[requestId] = true;
 				state.errors[requestId] = null;
 			})
 			.addCase(updateFlightProgress, (state, action) => {
-				const { requestId, flightId, heartbeat } = action.payload;
-				const flight = state.activeFlights[requestId];
-				if (!flight || flight.flightId !== flightId) return;
+				const { flightId, heartbeat } = action.payload;
+				const flight = state.activeFlights[flightId];
+				if (!flight) return;
 
 				switch (heartbeat.stage) {
 					case 'fetch_response':
@@ -124,8 +147,8 @@ const flightSlice = createSlice({
 			})
 			.addCase(completeFlight, (state, action) => {
 				const { requestId, flightId, response, timestamp } = action.payload;
-				const flight = state.activeFlights[requestId];
-				if (!flight || flight.flightId !== flightId) return;
+				const flight = state.activeFlights[flightId];
+				if (!flight) return;
 
 				flight.response = response;
 				flight.flighting = false;
@@ -145,13 +168,12 @@ const flightSlice = createSlice({
 				recordHistoryEntry(history, entry);
 
 				state.flightStates[requestId] = { status: 'completed', result: entry };
-				state.loading[requestId] = false;
-				delete state.activeFlights[requestId];
+				removeFlightFromRequest(state, requestId, flightId);
 			})
 			.addCase(flightFailure, (state, action) => {
 				const { requestId, flightId, error } = action.payload;
-				const flight = state.activeFlights[requestId];
-				if (!flight || flight.flightId !== flightId) return;
+				const flight = state.activeFlights[flightId];
+				if (!flight) return;
 
 				flight.error = error;
 				flight.flighting = false;
@@ -170,12 +192,12 @@ const flightSlice = createSlice({
 				recordHistoryEntry(history, entry);
 
 				state.errors[requestId] = error;
-				state.loading[requestId] = false;
-				delete state.activeFlights[requestId];
+				removeFlightFromRequest(state, requestId, flightId);
 			})
 			.addCase(cancelFlightRequest, (state, action) => {
 				const requestId = action.payload;
-				delete state.activeFlights[requestId];
+				for (const flightId of state.flightsByRequest[requestId] ?? []) delete state.activeFlights[flightId];
+				delete state.flightsByRequest[requestId];
 				state.loading[requestId] = false;
 			})
 			.addCase(nextFlightHistory, (state, action) => {
@@ -209,8 +231,22 @@ export const selectFlightState = (requestId: string) => (state: { global: { flig
 export const selectFlightHistory = (requestId: string) => (state: { global: { flight: FlightSliceState } }) =>
 	state.global.flight.flightHistories[requestId] || null;
 
-export const selectActiveFlight = (requestId: string) => (state: { global: { flight: FlightSliceState } }) =>
-	state.global.flight.activeFlights[requestId] || null;
+/**
+ * Returns the most recent active flight for a request, or null. With concurrent
+ * flights, prefer `selectActiveFlightsForRequest` to see all of them.
+ */
+export const selectActiveFlight = (requestId: string) => (state: { global: { flight: FlightSliceState } }) => {
+	const ids = state.global.flight.flightsByRequest[requestId];
+	if (!ids?.length) return null;
+	return state.global.flight.activeFlights[ids[ids.length - 1]] || null;
+};
+
+/** All active flights for a given request, in start order. */
+export const selectActiveFlightsForRequest =
+	(requestId: string) => (state: { global: { flight: FlightSliceState } }) => {
+		const ids = state.global.flight.flightsByRequest[requestId] ?? [];
+		return ids.map(id => state.global.flight.activeFlights[id]).filter(Boolean);
+	};
 
 export const selectFlightLoading = (requestId: string) => (state: { global: { flight: FlightSliceState } }) =>
 	state.global.flight.loading[requestId] || false;

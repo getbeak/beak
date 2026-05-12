@@ -73,6 +73,7 @@ function createInitialState(): ApplicationState {
 				flightStates: {},
 				flightHistories: {},
 				activeFlights: {},
+				flightsByRequest: {},
 				loading: {},
 				errors: {},
 			},
