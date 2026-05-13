@@ -203,8 +203,7 @@ const NodeItem: React.FC<React.PropsWithChildren<NodeItemProps>> = props => {
 								bottom={0}
 								width='1px'
 								style={{ left: `${i * INDENT_PX + 9}px` }}
-								bg='border.subtle'
-								opacity={0.6}
+								bg='color-mix(in srgb, var(--beak-colors-border-subtle) 70%, transparent)'
 							/>
 						))}
 					</Box>
