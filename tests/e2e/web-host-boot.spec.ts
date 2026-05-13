@@ -39,3 +39,13 @@ test('web host: renderer mounts something into <body>', async ({ page }) => {
 		)
 		.toBeGreaterThan(0);
 });
+
+test('web host: welcome screen offers project entry points', async ({ page }) => {
+	await page.goto('/');
+	// Boots into WebWelcome → Welcome → GetStartedColumn, which surfaces
+	// "Create a new project" and "Open an existing project". These strings
+	// are stable and reflect the absence of a loaded project — a strong
+	// smoke check that the entire renderer + IPC chain is wired.
+	await expect(page.getByText('Create a new project')).toBeVisible({ timeout: 30_000 });
+	await expect(page.getByText('Open an existing project')).toBeVisible();
+});
