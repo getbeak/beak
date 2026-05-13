@@ -122,7 +122,7 @@ const FileUploadView: React.FC<FileUploadViewProps> = ({ node }) => {
 				borderRadius='xl'
 				borderWidth={preview ? '1px' : '2px'}
 				borderStyle={preview ? 'solid' : 'dashed'}
-				borderColor={preview ? 'border.default' : 'color-mix(in srgb, var(--beak-colors-accent-pink) 25%, var(--beak-colors-border-subtle))'}
+				borderColor={preview ? 'border.subtle' : 'color-mix(in srgb, var(--beak-colors-accent-pink) 25%, var(--beak-colors-border-subtle))'}
 				bg={preview ? 'bg.surface' : 'color-mix(in srgb, var(--beak-colors-accent-pink) 4%, transparent)'}
 				color='fg.muted'
 				fontSize='xs'
