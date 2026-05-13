@@ -15,11 +15,21 @@ interface TypeSelectorProps {
 	onChange?: (entryType: EntryType) => void;
 }
 
+const TYPE_COLOUR: Record<EntryType, string> = {
+	string: 'var(--beak-colors-accent-teal)',
+	number: 'var(--beak-colors-accent-indigo)',
+	boolean: 'var(--beak-colors-accent-alert)',
+	null: 'var(--beak-colors-fg-subtle)',
+	array: 'var(--beak-colors-accent-pink)',
+	object: 'var(--beak-colors-accent-pink)',
+};
+
 const TypeSelector: React.FC<TypeSelectorProps> = ({ disabled, requestId, id, value, onChange }) => {
 	const selectRef = useRef<HTMLSelectElement>(null);
 	const Icon = getIconForType(value);
 	const dispatch = useDispatch();
 	const editorContext = useContext(JsonEditorContext)!;
+	const colour = TYPE_COLOUR[value] ?? 'var(--beak-colors-fg-muted)';
 
 	return (
 		<Box position='relative'>
@@ -33,7 +43,8 @@ const TypeSelector: React.FC<TypeSelectorProps> = ({ disabled, requestId, id, va
 					margin: '0 auto',
 					opacity: 0,
 					width: '100%',
-					height: '20px',
+					height: '22px',
+					cursor: 'pointer',
 				}}
 				onChange={e => {
 					const type = e.currentTarget.value as EntryType;
@@ -56,15 +67,22 @@ const TypeSelector: React.FC<TypeSelectorProps> = ({ disabled, requestId, id, va
 			<Box
 				py='0.5'
 				w='22px'
+				h='22px'
 				mx='auto'
 				mt='0.5'
+				display='inline-flex'
+				alignItems='center'
+				justifyContent='center'
 				pointerEvents='none'
-				textAlign='center'
 				borderRadius='sm'
 				borderWidth='1px'
 				borderColor='border.default'
-				color='fg.muted'
-				css={{ '> svg': { paddingTop: '1px', transform: 'scale(0.9)' } }}
+				transition='border-color .12s ease, background-color .12s ease'
+				style={{
+					color: colour,
+					background: `color-mix(in srgb, ${colour} 12%, transparent)`,
+					borderColor: `color-mix(in srgb, ${colour} 35%, var(--beak-colors-border-default))`,
+				}}
 			>
 				<Icon size={12} />
 			</Box>
