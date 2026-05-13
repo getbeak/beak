@@ -491,8 +491,10 @@ const VariableInput = React.forwardRef<HTMLElement, VariableInputProps>((props, 
 					display={shown ? 'block' : 'none'}
 					position='absolute'
 					top='7px'
-					left='7px'
-					color='fg.muted'
+					left='9px'
+					color='fg.subtle'
+					fontStyle='italic'
+					fontSize='13px'
 					pointerEvents='none'
 				>
 					{placeholder}
