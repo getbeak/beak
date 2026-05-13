@@ -5,7 +5,7 @@ import { getStatusReasonPhrase } from '@beak/ui/utils/http';
 import { convertRequestToUrl } from '@beak/ui/utils/uri';
 import type { Flight } from '@getbeak/types/flight';
 import { motion } from 'framer-motion';
-import { AlertTriangle, CheckCircle2, Copy, XCircle } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, Copy, MoveRight, XCircle } from 'lucide-react';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 
@@ -17,7 +17,7 @@ export interface HeaderProps {
 
 function statusIcon(status: number) {
 	if (status >= 200 && status < 300) return CheckCircle2;
-	if (status >= 300 && status < 400) return AlertTriangle;
+	if (status >= 300 && status < 400) return MoveRight;
 	if (status >= 400 && status < 500) return AlertTriangle;
 	return XCircle;
 }
