@@ -170,17 +170,18 @@ const VariableEditor: React.FC<React.PropsWithChildren<VariableEditorProps>> = p
 				exit={{ opacity: 0, scale: 0.96, y: -4 }}
 				transition={{ type: 'spring', stiffness: 700, damping: 36 }}
 				position='fixed'
-				w='320px'
+				w='340px'
 				p='3'
-				borderRadius='md'
+				borderRadius='xl'
 				borderWidth='1px'
-				borderColor='border.default'
-				bg='bg.surface'
-				boxShadow='0 12px 36px rgba(0,0,0,0.35), 0 2px 8px rgba(0,0,0,0.2)'
+				borderColor='color-mix(in srgb, var(--beak-colors-accent-pink) 24%, var(--beak-colors-border-subtle))'
+				bg='color-mix(in srgb, var(--beak-colors-bg-surface) 70%, transparent)'
+				backdropFilter='blur(24px) saturate(180%)'
+				boxShadow='0 32px 80px rgba(0,0,0,0.38), 0 12px 32px color-mix(in srgb, var(--beak-colors-accent-pink) 18%, rgba(0,0,0,0.18)), inset 0 1px 0 color-mix(in srgb, white 22%, transparent)'
 				zIndex={10000}
 				style={{
 					marginTop: `${boundingRect.top + parent.clientHeight + 10}px`,
-					marginLeft: `${boundingRect.left - 320 / 2}px`,
+					marginLeft: `${boundingRect.left - 340 / 2}px`,
 				}}
 				onClick={(event: React.MouseEvent) => event.stopPropagation()}
 			>
