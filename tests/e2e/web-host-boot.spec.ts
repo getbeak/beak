@@ -24,6 +24,11 @@ test('web host: index.html mentions the renderer entry script', async ({ page })
 	expect(html).toMatch(/<script[^>]+type="module"/);
 });
 
+test('web host: document title is Beak', async ({ page }) => {
+	await page.goto('/');
+	await expect(page).toHaveTitle(/beak/i);
+});
+
 test('web host: renderer mounts something into <body>', async ({ page }) => {
 	await page.goto('/');
 	// Vite's dev server compiles modules lazily; give the renderer a moment
