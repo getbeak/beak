@@ -29,8 +29,8 @@ const ArrowButton: React.FC<React.PropsWithChildren<ArrowButtonProps>> = ({
 		cursor='pointer'
 		transition='color .12s ease, background-color .12s ease, transform .08s ease'
 		_hover={{
-			color: 'fg.default',
-			bg: 'color-mix(in srgb, var(--beak-colors-bg-surface-emphasized) 60%, transparent)',
+			color: 'accent.pink',
+			bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 12%, transparent)',
 		}}
 		_active={{ transform: 'scale(0.96)' }}
 		onClick={onClick}
