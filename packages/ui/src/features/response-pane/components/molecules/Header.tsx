@@ -142,9 +142,9 @@ const Header: React.FC<HeaderProps> = ({ selectedFlight }) => {
 						borderLeft: `3px solid ${statusColor}`,
 					}}
 				>
-					<StatusIcon size={12} />
-					<Box as='span' fontWeight='600'>{response.status}</Box>
-					<Box as='span' opacity={0.85}>{getStatusReasonPhrase(response.status)}</Box>
+					<StatusIcon size={12} strokeWidth={2.2} />
+					<Box as='span' fontWeight='700' fontFamily='mono'>{response.status}</Box>
+					<Box as='span' opacity={0.85} fontWeight='500'>{getStatusReasonPhrase(response.status)}</Box>
 				</MotionFlex>
 			)}
 			{error && (
@@ -162,8 +162,8 @@ const Header: React.FC<HeaderProps> = ({ selectedFlight }) => {
 						borderLeft: '3px solid var(--beak-colors-accent-alert)',
 					}}
 				>
-					<XCircle size={12} />
-					<Box as='span' fontWeight='600'>{'Error'}</Box>
+					<XCircle size={12} strokeWidth={2.2} />
+					<Box as='span' fontWeight='700' letterSpacing='0.04em' textTransform='uppercase' fontSize='10px'>{'Error'}</Box>
 				</Flex>
 			)}
 		</MotionFlex>
