@@ -142,6 +142,22 @@ Deferred: the body-file editor UI button that calls `pickAndAttachAsset` and set
 
 `@beak/common/ipc/`: `app`, `assets`, `beak-hub`, `context-menu`, `dialog`, `encryption`, `explorer`, `extensions`, `flight`, `fs`, `fs-watcher`, `nest`, `notification`, `openapi`, `preferences`, `project`, `window`. Each domain has paired `IpcServiceMain` (host) and `IpcServiceRenderer` (renderer) classes. Both Electron and Web hosts implement every channel that's relevant to them.
 
+### Known infra issues
+
+- **`pnpm build` fails on packages/ui** — `vite-plugin-monaco-editor@1.1.0` calls
+  `require.resolve(process.cwd() + '/node_modules/monaco-editor/esm/vs/language/json/json.worker')`,
+  but pnpm hoists `monaco-editor` to the workspace root and doesn't symlink it
+  into `packages/ui/node_modules`. The fallback `require.resolve(filePath)`
+  branch also fails because monaco-editor is ESM-only and has no `require`
+  exports map. Workarounds (not yet applied):
+  1. Replace `vite-plugin-monaco-editor` with `vite-plugin-monaco-editor-esm`
+     or `@guolao/vite-plugin-monaco-editor` (both handle pnpm + ESM).
+  2. Add `monaco-editor` as a direct workspace dep on `packages/ui` and
+     enable pnpm hoisting (`packageExtensions`).
+  3. Patch the plugin's `resolveMonacoPath` to walk up to the workspace root.
+  Dev server (`pnpm start:apps-host-web`) is unaffected — playwright e2e runs
+  against the dev server, not the built bundle.
+
 ### Tabs
 
 `packages/ui/src/features/tabs/`. The `TabItem` discriminated union lives in `@beak/common/types/beak-project.d.ts`:
