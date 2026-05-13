@@ -1,5 +1,4 @@
 import type { Theme } from '@beak/common/types/theme';
-// import { GlobalStyle } from '@beak/design-system';
 import { DesignSystemProvider } from '@beak/design-system';
 import React from 'react';
 import { useEffect, useState } from 'react';
@@ -28,7 +27,7 @@ const App: React.FC = () => {
 	return (
 		<>
 			<base href={'./'} />
-			<DesignSystemProvider themeKey={theme}>{/* <GlobalStyle $darwin /> */}</DesignSystemProvider>
+			<DesignSystemProvider themeKey={theme} />
 		</>
 	);
 };
