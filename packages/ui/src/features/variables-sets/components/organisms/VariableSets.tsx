@@ -14,7 +14,8 @@ import { removeVariableSetFromDisk } from '@beak/ui/store/variable-sets/actions'
 import { renderAcceleratorDefinition } from '@beak/ui/utils/keyboard-rendering';
 import type { MenuItemConstructorOptions } from 'electron';
 
-import { Box } from '@chakra-ui/react';
+import { Box, Flex } from '@chakra-ui/react';
+import { Table } from 'lucide-react';
 
 const VariableSets: React.FC<React.PropsWithChildren<unknown>> = () => {
 	const dispatch = useDispatch();
@@ -136,7 +137,13 @@ const VariableSets: React.FC<React.PropsWithChildren<unknown>> = () => {
 	return (
 		<React.Fragment>
 			{empty && (
-				<Box color='fg.muted' ml='1.5' fontSize='md'>{"It's looking empty in here..."}</Box>
+				<Flex direction='column' align='center' justify='center' gap='2' py='6' px='3' color='fg.subtle' textAlign='center'>
+					<Box opacity={0.4}>
+						<Table size={28} />
+					</Box>
+					<Box fontSize='sm' color='fg.muted'>{'No variable sets yet'}</Box>
+					<Box fontSize='xs' opacity={0.7}>{'Right-click here to add one'}</Box>
+				</Flex>
 			)}
 
 			<TreeView
