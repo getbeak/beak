@@ -102,13 +102,14 @@ const NotificationRow: React.FC<NotificationRowProps> = ({ icon, iconColor, labe
 			flex='0 0 auto'
 			align='center'
 			justify='center'
-			w='24px'
-			h='24px'
+			w='26px'
+			h='26px'
 			borderRadius='md'
 			style={{
-				background: `color-mix(in srgb, ${iconColor} 16%, transparent)`,
+				background: `color-mix(in srgb, ${iconColor} 14%, transparent)`,
 				color: iconColor,
-				boxShadow: `inset 0 0 0 1px color-mix(in srgb, ${iconColor} 22%, transparent)`,
+				border: `1px solid color-mix(in srgb, ${iconColor} 28%, transparent)`,
+				boxShadow: `0 3px 8px color-mix(in srgb, ${iconColor} 18%, transparent), inset 0 1px 0 color-mix(in srgb, white 14%, transparent)`,
 			}}
 		>
 			{icon}
