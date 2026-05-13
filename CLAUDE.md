@@ -112,15 +112,43 @@ Request files are sparse overrides when a collection declares non-empty defaults
 
 The `0.4.0 → 0.5.0` migration in `@beak/runtime-shared/project/migrations/standard.ts` writes a manual-source collection file into every existing folder; sparse mode only kicks in once a user adds defaults.
 
-### OpenAPI sync
+### OpenAPI sync (end-to-end)
 
-`@beak/state/sources/openapi`'s `openapiToCollection(spec, options)` is a pure converter: spec → `{ collection, requests, warnings }`. It resolves `#/components/parameters/*` $refs, falls back to verb-path operationIds with a warning, and seeds parameters from `example`/`default`/`enum`. External $refs and the UI import flow are deferred.
+The sync chain is wired top to bottom; the user trigger is **File → Import OpenAPI spec…**.
 
-### Asset storage
+- Converter: `@beak/state/sources/openapi` — `openapiToCollection(spec, options)` is pure (spec → `{ collection, requests, warnings }`). Resolves `#/components/parameters/*` $refs, falls back to verb-path operationIds with a warning, seeds parameters from `example`/`default`/`enum`.
+- Writer: `@beak/runtime-shared` — `Runtime.openapi.syncToFolder(targetFolder, conversion)` persists the collection + per-request files. Filenames sanitised + de-duped; `_collection` is reserved.
+- IPC: `@beak/common/ipc/openapi` — `IpcOpenApiServiceRenderer.syncFromSpec({ targetFolder, spec, specPath?, specUrl? })`. Both hosts (electron + web) implement the handler.
+- Renderer: `@beak/ui/features/openapi-import` — `parseSpecSource` accepts JSON **and YAML** (`js-yaml`), `importOpenApi()` calls the IPC, `runOpenApiImportFlow` is the menu hook with success/error dialogs.
+
+Deferred: external (network) $ref resolution; the UI for picking the target folder (today defaults to `tree/openapi`).
+
+### Asset storage (end-to-end)
 
 `@beak/runtime-shared`'s `Runtime.assets` (an `AssetStore`) writes binary blobs to `<projectRoot>/_assets/<sha256-prefix>/<sha256>` and addresses them via `AssetRef` (`{ sha256, size, contentType? }`). Identical bytes share storage. Writes are idempotent; missing-asset reads return `null` rather than throwing.
 
+Around it:
+- `Runtime.gc` (`AssetGc`) — `findReferencedShas(projectRoot)` walks `tree/` and harvests every sha appearing inside an `AssetRef`-shaped object; `findOrphans` returns stored − referenced; `delete(shas)` removes blobs in bulk (idempotent).
+- IPC: `@beak/common/ipc/assets` — `IpcAssetsServiceRenderer.{write,read,exists}`. Renderer uses `ipcAssetsService` (in `@beak/ui/lib/ipc`).
+- Renderer helper: `@beak/ui/features/asset-attachment` — `attachFile({ file })` (pure) + `pickAndAttachAsset(accept?)` (DOM picker → IPC).
+- Schema: `RequestBodyFile.payload.assetRef?` lands the ref on a request body. Backward compatible — the legacy `fileReferenceId` field remains optional and works as before. `mergeCollectionDefaults` / `diffFromDefaults` round-trip the new shape.
+- State introspection: `@beak/state/requests` — `extractAssetRefs(request)`, `countAssetRefs(request)`, `checkAssetIntegrity(request, availableShas)` for inline "missing asset" UI hints and a future `beak doctor` command.
+
 Variables in the SDK can opt into binary by implementing the optional `getAssetRef?: (ctx, payload, depth) => Promise<AssetRef | null>` alongside their existing `getValue`. The renderer-side resolver lives in `@beak/ui/features/variables/binary.ts` (`resolveValuePartForBinary`, `parseValueSectionsForBinary`); it picks `getAssetRef` when present, falls back to `getValue` otherwise.
+
+Deferred: the body-file editor UI button that calls `pickAndAttachAsset` and sets `assetRef` on the body; flight execution reading bytes back via `ipcAssetsService.read` and streaming them into the HTTP request.
+
+### IPC channels (full list)
+
+`@beak/common/ipc/`: `app`, `assets`, `beak-hub`, `context-menu`, `dialog`, `encryption`, `explorer`, `extensions`, `flight`, `fs`, `fs-watcher`, `nest`, `notification`, `openapi`, `preferences`, `project`, `window`. Each domain has paired `IpcServiceMain` (host) and `IpcServiceRenderer` (renderer) classes. Both Electron and Web hosts implement every channel that's relevant to them.
+
+### Tabs
+
+`packages/ui/src/features/tabs/`. The `TabItem` discriminated union lives in `@beak/common/types/beak-project.d.ts`:
+- `request` — opens a request editor.
+- `variable_set_editor` — variable-sets editor.
+- `new_project_intro` — first-run intro.
+- `preferences` — settings as a tab inside a project window (replaces the standalone preferences window for the in-project use case; the standalone window remains the fallback when no project is focused).
 
 ### Runtime capabilities
 
