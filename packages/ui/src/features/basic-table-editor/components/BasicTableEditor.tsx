@@ -113,10 +113,24 @@ const BasicTableEditor: React.FC<BasicTableEditorProps> = ({
 						align='center'
 						justify='center'
 						direction='column'
-						gap='1.5'
+						gap='2'
 						py='6'
 						color='fg.subtle'
 					>
+						<Flex
+							align='center'
+							justify='center'
+							w='34px'
+							h='34px'
+							borderRadius='full'
+							bg='color-mix(in srgb, var(--beak-colors-accent-pink) 12%, transparent)'
+							borderWidth='1px'
+							borderColor='color-mix(in srgb, var(--beak-colors-accent-pink) 26%, transparent)'
+							color='accent.pink'
+							boxShadow='0 4px 12px color-mix(in srgb, var(--beak-colors-accent-pink) 18%, transparent), inset 0 1px 0 color-mix(in srgb, white 14%, transparent)'
+						>
+							<Plus size={15} strokeWidth={2} />
+						</Flex>
 						<Text fontSize='sm' fontWeight='600' color='fg.default'>
 							{readOnly ? 'No entries' : 'No entries yet'}
 						</Text>
