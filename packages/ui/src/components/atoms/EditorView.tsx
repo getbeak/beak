@@ -50,9 +50,9 @@ const EditorView: React.FC<EditorViewProps> = props => {
 };
 
 function getRenderedTheme(theme: 'light' | 'dark', preferenceThemeMode: ThemeMode) {
-	if (preferenceThemeMode === 'system') return theme === 'dark' ? 'vs-dark' : 'light';
+	if (preferenceThemeMode === 'system') return theme === 'dark' ? 'beak-dark' : 'beak-light';
 
-	return preferenceThemeMode === 'dark' ? 'vs-dark' : 'light';
+	return preferenceThemeMode === 'dark' ? 'beak-dark' : 'beak-light';
 }
 
 export default EditorView;
