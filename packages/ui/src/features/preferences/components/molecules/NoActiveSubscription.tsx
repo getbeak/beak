@@ -35,7 +35,7 @@ const NoActiveSubscription: React.FC = () => (
 		<Box fontSize='sm' fontWeight='600' color='fg.default'>
 			{'No active subscription'}
 		</Box>
-		<Box fontSize='xs' opacity={0.8} mb='1'>
+		<Box fontSize='xs' color='fg.subtle' lineHeight='1.5' maxW='280px' mb='1'>
 			{'Pick up a Beak subscription to unlock the full feature set.'}
 		</Box>
 		<Button size='sm' onClick={() => ipcExplorerService.launchUrl('https://getbeak.app')}>

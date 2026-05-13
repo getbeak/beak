@@ -26,14 +26,14 @@ const NotSignedIn: React.FC = () => (
 			borderWidth='1px'
 			borderColor='color-mix(in srgb, var(--beak-colors-accent-pink) 28%, transparent)'
 			color='accent.pink'
-			boxShadow='inset 0 1px 0 color-mix(in srgb, white 18%, transparent)'
+			boxShadow='0 6px 18px color-mix(in srgb, var(--beak-colors-accent-pink) 22%, transparent), inset 0 1px 0 color-mix(in srgb, white 18%, transparent)'
 		>
 			<UserRound size={22} strokeWidth={1.8} />
 		</Flex>
 		<Box fontSize='sm' fontWeight='600' color='fg.default'>
 			{'Not signed in'}
 		</Box>
-		<Box fontSize='xs' opacity={0.8}>
+		<Box fontSize='xs' color='fg.subtle' lineHeight='1.5' maxW='280px'>
 			{'Sign in to your account to view your subscription plan.'}
 		</Box>
 	</Flex>
