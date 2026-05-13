@@ -41,16 +41,17 @@ const UntitledBanner: React.FC = () => {
 			align='center'
 			justify='space-between'
 			gap='3'
-			px='3'
-			py='1.5'
+			px='3.5'
+			py='2'
 			borderBottomWidth='1px'
-			borderColor='border.subtle'
+			borderColor='color-mix(in srgb, var(--beak-colors-accent-pink) 22%, var(--beak-colors-border-subtle))'
 			color='fg.default'
 			fontSize='xs'
 			css={{
 				background:
-					'linear-gradient(90deg, color-mix(in srgb, var(--beak-colors-accent-pink) 22%, transparent), color-mix(in srgb, var(--beak-colors-accent-pink) 8%, transparent))',
+					'linear-gradient(90deg, color-mix(in srgb, var(--beak-colors-accent-pink) 22%, transparent), color-mix(in srgb, var(--beak-colors-accent-pink) 8%, transparent) 60%, transparent)',
 				borderLeft: '3px solid var(--beak-colors-accent-pink)',
+				boxShadow: 'inset 0 -1px 0 color-mix(in srgb, var(--beak-colors-accent-pink) 16%, transparent)',
 			}}
 		>
 			<Box color='accent.pink' flex='0 0 auto'>
