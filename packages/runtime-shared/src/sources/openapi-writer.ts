@@ -1,6 +1,6 @@
 import type { CollectionFile, RequestFileOverride } from '@beak/state/schemas';
 
-import { BeakBase, type Providers } from '../base';
+import { BeakBase } from '../base';
 
 export interface OpenApiSyncInput {
 	collection: CollectionFile;
@@ -25,10 +25,6 @@ export interface OpenApiSyncResult {
  * absolute; callers are responsible for joining the project root.
  */
 export default class OpenApiWriter extends BeakBase {
-	constructor(providers: Providers) {
-		super(providers);
-	}
-
 	async syncToFolder(targetFolderPath: string, input: OpenApiSyncInput): Promise<OpenApiSyncResult> {
 		const path = this.p.node.path;
 		const fs = this.p.node.fs.promises;

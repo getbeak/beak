@@ -1,6 +1,6 @@
 import type { AssetRef } from '@getbeak/extension-sdk';
 
-import { BeakBase, type Providers } from '../base';
+import { BeakBase } from '../base';
 
 export type { AssetRef };
 
@@ -42,10 +42,6 @@ async function sha256Hex(bytes: Uint8Array): Promise<string> {
  * goes through `this.providers.node.path` to stay platform-neutral.
  */
 export default class AssetStore extends BeakBase {
-	constructor(providers: Providers) {
-		super(providers);
-	}
-
 	/**
 	 * Write a buffer to the project's `_assets/` store and return its ref.
 	 * Idempotent — re-writing the same bytes is a no-op. The directory

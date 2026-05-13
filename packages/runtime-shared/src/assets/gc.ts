@@ -1,10 +1,4 @@
-import type { Providers } from '../base';
 import { BeakBase } from '../base';
-
-/** Anything that looks like an `AssetRef` — extracted recursively. */
-interface AssetRefShape {
-	sha256: string;
-}
 
 const SHA256_HEX = /^[0-9a-f]{64}$/;
 const ASSETS_DIRNAME = '_assets';
@@ -19,10 +13,6 @@ const ASSETS_DIRNAME = '_assets';
  * `beak gc` command auditable: list, confirm, delete.
  */
 export default class AssetGc extends BeakBase {
-	constructor(providers: Providers) {
-		super(providers);
-	}
-
 	/**
 	 * Walk the project's `tree/` and gather every `sha256` that appears
 	 * anywhere inside an `AssetRef`-shaped object (`{ sha256: '<hex>', … }`).
