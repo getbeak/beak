@@ -27,16 +27,14 @@ function getSystemTheme(): Theme {
 
 const GLOBAL_CSS = (darwin: boolean) => `
 	:root {
-		--rt-color-white: var(--beak-colors-fg-default);
-		--rt-color-dark: var(--beak-colors-bg-surface-alt);
-		--rt-opacity: .9;
+		--rt-color-white: var(--beak-colors-gray-50);
+		--rt-color-dark: var(--beak-colors-gray-900);
+		--rt-opacity: 1;
 	}
 	${darwin ? 'html, body { background-color: transparent !important; }' : ''}
-	body .react-tooltip {
-		padding: 6px 8px;
-		font-size: 13px;
-		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.27);
-		z-index: 105;
+	@keyframes beakTooltipIn {
+		0% { opacity: 0; transform: translateY(-3px) scale(.96); }
+		100% { opacity: 1; transform: translateY(0) scale(1); }
 	}
 `;
 
