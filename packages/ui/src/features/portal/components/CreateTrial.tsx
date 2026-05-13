@@ -1,6 +1,7 @@
-import { Box, Image } from '@chakra-ui/react';
+import { Box, Flex, Image } from '@chakra-ui/react';
 import type Squawk from '@beak/common/utils/squawk';
 import ArrowButton from '@beak/ui/components/atoms/ArrowButton';
+import { motion } from 'framer-motion';
 import * as React from 'react';
 import { useEffect, useRef, useState } from 'react';
 
@@ -39,20 +40,32 @@ const CreateTrial: React.FC<CreateTrialProps> = ({ onChangeToDefault }) => {
 	}, []);
 
 	return (
-		<Box position='relative' w='100%' ml='-5'>
-			<ArrowButton onClick={() => onChangeToDefault()}>{'Go back'}</ArrowButton>
-			<Image src='images/logo-tile.png' w='50px' h='50px' mx='auto' my='1.5' />
-			<Box fontSize='3xl' fontWeight='medium' mb='0'>{'Start your free Beak trial'}</Box>
-			<Box as='p' fontSize='lg' mt='1.5' color='fg.default'>
-				{'No credit card, no fuss, no limits... Just 14 days of the full Beak experience.'}
+		<Box position='relative' w='100%' mx='auto' maxW='460px'>
+			<Box mb='1'>
+				<ArrowButton onClick={() => onChangeToDefault()}>{'Back'}</ArrowButton>
 			</Box>
-			<Box
-				position='absolute'
-				bottom='0'
-				maxW='450px'
-				style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}
-				css={{ '> button': { marginTop: '5px', width: '100%' } }}
-			>
+			<Flex direction='column' gap='1' mb='3'>
+				<motion.div
+					initial={{ opacity: 0, scale: 0.96 }}
+					animate={{ opacity: 1, scale: 1 }}
+					transition={{ duration: 0.3, ease: 'easeOut' }}
+				>
+					<Image
+						src='images/logo-tile.png'
+						w='48px'
+						h='48px'
+						mb='2'
+						filter='drop-shadow(0px 8px 24px color-mix(in srgb, var(--beak-colors-accent-pink) 30%, transparent))'
+					/>
+				</motion.div>
+				<Box fontSize='2xl' fontWeight='600' color='fg.default' lineHeight='1.2'>
+					{'Start your free Beak trial'}
+				</Box>
+				<Box fontSize='sm' color='fg.muted' mt='1'>
+					{'No credit card, no fuss, no limits — 14 days of the full Beak experience.'}
+				</Box>
+			</Flex>
+			<Box style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}>
 				{variant === 'default' && (
 					<RequestTrial
 						email={email}
