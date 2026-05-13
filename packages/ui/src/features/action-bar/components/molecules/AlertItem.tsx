@@ -31,9 +31,10 @@ const AlertItem: React.FC<AlertItemProps> = ({ title, description, action }) => 
 			w='24px'
 			h='24px'
 			borderRadius='md'
-			bg='color-mix(in srgb, var(--beak-colors-accent-warning) 18%, transparent)'
+			bg='color-mix(in srgb, var(--beak-colors-accent-warning) 16%, transparent)'
 			color='accent.warning'
 			mt='0.5'
+			boxShadow='inset 0 0 0 1px color-mix(in srgb, var(--beak-colors-accent-warning) 25%, transparent)'
 		>
 			<AlertTriangle size={12} strokeWidth={2.2} />
 		</Flex>
