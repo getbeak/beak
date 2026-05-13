@@ -1,5 +1,4 @@
-import { chakra } from '@chakra-ui/react';
-import { motion } from 'framer-motion';
+import { Box, chakra } from '@chakra-ui/react';
 import * as React from 'react';
 import { useContext } from 'react';
 import { useDispatch } from 'react-redux';
@@ -41,18 +40,20 @@ const EntryToggler: React.FC<EntryTogglerProps> = ({ requestId, id, value, onCha
 			tabIndex={0}
 			onClick={() => handle(!value)}
 			onKeyDown={onKeyDown}
+			position='relative'
 			w='26px'
 			h='14px'
 			minW='26px'
-			p='1.5px'
+			p='0'
 			borderRadius='full'
 			borderWidth='1px'
 			borderColor={value ? 'accent.pink' : 'border.emphasized'}
-			bg={value ? 'accent.pink' : 'bg.surface.emphasized'}
+			bg={value ? 'accent.pink' : 'color-mix(in srgb, var(--beak-colors-bg-surface-emphasized) 70%, transparent)'}
+			boxShadow={value ? '0 0 12px color-mix(in srgb, var(--beak-colors-accent-pink) 35%, transparent)' : 'inset 0 1px 2px rgba(0,0,0,0.06)'}
 			display='inline-flex'
 			alignItems='center'
 			cursor='pointer'
-			transition='background-color .18s ease, border-color .18s ease'
+			transition='background-color .18s ease, border-color .18s ease, box-shadow .18s ease'
 			_hover={{
 				borderColor: value ? 'accent.pink' : 'fg.muted',
 			}}
@@ -61,18 +62,17 @@ const EntryToggler: React.FC<EntryTogglerProps> = ({ requestId, id, value, onCha
 				boxShadow: '0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-pink) 50%, transparent)',
 			}}
 		>
-			<motion.span
-				layout
-				transition={{ type: 'spring', stiffness: 700, damping: 32 }}
-				style={{
-					display: 'block',
-					width: 9,
-					height: 9,
-					borderRadius: '50%',
-					background: value ? '#ffffff' : 'var(--beak-colors-fg-subtle)',
-					marginLeft: value ? 'auto' : 0,
-					boxShadow: value ? '0 1px 2px rgba(0,0,0,0.25)' : 'none',
-				}}
+			<Box
+				position='absolute'
+				top='1px'
+				left='1px'
+				w='10px'
+				h='10px'
+				borderRadius='full'
+				bg={value ? 'white' : 'fg.subtle'}
+				boxShadow={value ? '0 1px 3px rgba(0,0,0,0.3), 0 0 0 0.5px rgba(0,0,0,0.08)' : 'none'}
+				transform={value ? 'translateX(12px)' : 'translateX(0)'}
+				transition='transform .2s cubic-bezier(.4, 0, .2, 1), background-color .18s ease'
 			/>
 		</ToggleButton>
 	);
