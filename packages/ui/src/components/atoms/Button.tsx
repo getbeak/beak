@@ -44,11 +44,11 @@ const TONES: Record<Tone, ToneSpec> = {
 	},
 	secondary: {
 		bg: 'transparent',
-		bgHover: 'color-mix(in srgb, var(--beak-colors-bg-surface-emphasized) 70%, transparent)',
-		bgActive: 'color-mix(in srgb, var(--beak-colors-bg-surface-emphasized) 90%, transparent)',
+		bgHover: 'color-mix(in srgb, var(--beak-colors-accent-pink) 10%, transparent)',
+		bgActive: 'color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent)',
 		text: 'var(--beak-colors-fg-default)',
 		border: 'var(--beak-colors-border-default)',
-		borderHover: 'var(--beak-colors-fg-muted)',
+		borderHover: 'var(--beak-colors-accent-pink)',
 		glow: 'var(--beak-colors-accent-pink)',
 	},
 	destructive: {
