@@ -47,9 +47,12 @@ const PrettyViewIneligible: React.FC<PrettyViewIneligibleProps> = ({ eligibility
 					w='48px'
 					h='48px'
 					borderRadius='full'
-					bg='color-mix(in srgb, var(--beak-colors-fg-subtle) 12%, transparent)'
+					bg='color-mix(in srgb, var(--beak-colors-fg-subtle) 10%, transparent)'
+					borderWidth='1px'
+					borderColor='color-mix(in srgb, var(--beak-colors-fg-subtle) 22%, transparent)'
 					color='fg.subtle'
 					mb='2.5'
+					boxShadow='0 4px 12px color-mix(in srgb, var(--beak-colors-fg-subtle) 14%, transparent), inset 0 1px 0 color-mix(in srgb, white 14%, transparent)'
 				>
 					<CircleHelp size={22} strokeWidth={1.8} />
 				</Flex>
