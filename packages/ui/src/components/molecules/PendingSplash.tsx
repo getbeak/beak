@@ -75,7 +75,7 @@ const PendingSplash: React.FC = () => {
 					/>
 				</MotionBox>
 
-				<Box textAlign='center' color='fg.subtle' fontSize='xs' letterSpacing='0.05em'>
+				<Box textAlign='center' color='fg.subtle' fontSize='10px' letterSpacing='0.08em' textTransform='uppercase' fontWeight='700'>
 					{'Make a request to see its details here'}
 				</Box>
 
@@ -85,14 +85,15 @@ const PendingSplash: React.FC = () => {
 					transition={{ duration: 0.4, ease: 'easeOut', delay: 0.12 }}
 					templateColumns='auto auto'
 					columnGap='4'
-					rowGap='2'
-					px='4'
-					py='3'
-					borderRadius='lg'
+					rowGap='2.5'
+					px='5'
+					py='3.5'
+					borderRadius='xl'
 					borderWidth='1px'
-					borderColor='border.subtle'
-					bg='color-mix(in srgb, var(--beak-colors-bg-surface) 70%, transparent)'
-					backdropFilter='blur(8px)'
+					borderColor='color-mix(in srgb, var(--beak-colors-accent-pink) 18%, var(--beak-colors-border-subtle))'
+					bg='color-mix(in srgb, var(--beak-colors-bg-surface) 60%, transparent)'
+					backdropFilter='blur(16px) saturate(150%)'
+					boxShadow='0 16px 40px rgba(0,0,0,0.18), inset 0 1px 0 color-mix(in srgb, white 18%, transparent)'
 				>
 					{TypedObject.keys(displayShortcuts).map(k => {
 						const name = displayShortcuts[k];
