@@ -287,18 +287,16 @@ export default class BeakStandardMigrations extends BeakBase {
 		projectFolderPath: string,
 		newVersion: string,
 	) {
-		const newProjectFile: ProjectFile = {
-			...projectFile,
-			version: newVersion,
-		};
+		// Mutate the caller's reference so readProjectFile's return value
+		// reflects the post-migration state. The previous local re-bind did
+		// nothing for the caller.
+		// eslint-disable-next-line no-param-reassign
+		projectFile.version = newVersion;
 
 		await this.p.node.fs.promises.writeFile(
 			this.p.node.path.join(projectFolderPath, 'project.json'),
-			JSON.stringify(newProjectFile, null, '\t'),
+			JSON.stringify(projectFile, null, '\t'),
 			{ encoding: 'utf8' },
 		);
-
-		// eslint-disable-next-line no-param-reassign
-		projectFile = newProjectFile;
 	}
 }
