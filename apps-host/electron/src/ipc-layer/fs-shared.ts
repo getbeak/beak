@@ -16,6 +16,9 @@ export function setProjectFilePathWindowMapping(windowId: number, projectFilePat
 
 export function getProjectFilePathWindowMapping(event: IpcEvent) {
 	const sender = (event as IpcMainInvokeEvent).sender;
+	// A live IPC sender always has a window; a missing one would mean the
+	// window closed mid-flight (a teardown race), not a normal flow.
+	// biome-ignore lint/style/noNonNullAssertion: see above
 	const window = BrowserWindow.fromWebContents(sender)!;
 
 	return windowIdToProjectFilePathMapping[window.id];
