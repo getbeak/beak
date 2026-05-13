@@ -1,5 +1,6 @@
 import type { NewProjectIntroTabItem } from '@beak/common/types/beak-project';
 import { useAppSelector } from '@beak/ui/store/redux';
+import { Sparkles } from 'lucide-react';
 import React from 'react';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -21,6 +22,8 @@ const NewProjectIntroTab: React.FC<React.PropsWithChildren<NewProjectIntroTabPro
 		<GenericTabContextMenuWrapper tab={tab} target={target}>
 			<TabItem
 				active={selectedTabPayload === tab.payload}
+				variant='card'
+				leading={<Sparkles size={11} color='var(--beak-colors-accent-pink)' />}
 				key={tab.payload}
 				lazyForwardedRef={i => setTarget(i!)}
 				onClick={() => dispatch(changeTab(tab))}

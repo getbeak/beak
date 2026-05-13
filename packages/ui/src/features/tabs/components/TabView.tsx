@@ -1,4 +1,4 @@
-import { Box } from '@chakra-ui/react';
+import { Box, Flex } from '@chakra-ui/react';
 import type { TabItem } from '@beak/common/types/beak-project';
 import { checkShortcut } from '@beak/ui/lib/keyboard-shortcuts';
 import * as React from 'react';
@@ -53,8 +53,16 @@ const TabView: React.FC<TabViewProps> = ({ selectedTab, tabs }) => {
 	}
 
 	return (
-		<Box h='100%' bg='bg.surface.emphasized'>
-			<TabBar bg='bg.surface.emphasized'>
+		<Flex direction='column' h='100%' bg='bg.surface'>
+			<TabBar
+				bg='bg.canvas'
+				borderBottomWidth='1px'
+				borderBottomStyle='solid'
+				borderBottomColor='border.subtle'
+				px='1.5'
+				flexShrink={0}
+				css={{ '& > [role=tab]': { marginRight: '2px' } }}
+			>
 				{tabs.map(t => {
 					if (t.type === 'request') return <RequestTab key={t.payload} tab={t} />;
 					if (t.type === 'variable_set_editor') return <VariableSetEditorTab key={t.payload} tab={t} />;
@@ -63,10 +71,10 @@ const TabView: React.FC<TabViewProps> = ({ selectedTab, tabs }) => {
 				})}
 			</TabBar>
 
-			<Box h='calc(100% - 72px)'>
+			<Box flex='1' minH={0}>
 				<Router selectedTab={selectedTab} />
 			</Box>
-		</Box>
+		</Flex>
 	);
 };
 

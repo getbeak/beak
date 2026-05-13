@@ -1,3 +1,4 @@
+import { Variable } from 'lucide-react';
 import React from 'react';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -21,6 +22,8 @@ const VariableSetEditorTab: React.FC<React.PropsWithChildren<VariableSetEditorTa
 		<TabContextMenuWrapper tab={tab} target={target}>
 			<TabItem
 				active={selectedTabPayload === tab.payload}
+				variant='card'
+				leading={<Variable size={11} color='var(--beak-colors-accent-indigo)' />}
 				key={tab.payload}
 				lazyForwardedRef={i => setTarget(i!)}
 				onClick={() => dispatch(changeTab(tab))}
