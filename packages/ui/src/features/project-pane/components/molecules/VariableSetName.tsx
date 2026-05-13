@@ -63,12 +63,16 @@ export const VariableSetName: React.FC<VariableSetNameProps> = ({ variableSetNam
 				ref={(i: HTMLElement | null) => {
 					targetRef.current = i;
 				}}
-				color='fg.muted'
-				fontSize='sm'
+				color='fg.default'
+				fontSize='xs'
+				fontWeight='500'
 				overflow='hidden'
 				textOverflow='ellipsis'
 				whiteSpace='nowrap'
 				textDecoration='none'
+				cursor='pointer'
+				transition='color .12s ease'
+				_hover={{ color: 'accent.teal' }}
 			>
 				{variableSetName}
 			</Box>
