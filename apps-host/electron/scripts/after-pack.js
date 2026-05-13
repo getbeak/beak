@@ -24,7 +24,7 @@ export default async function afterPack(context) {
 
 	await asar.createPackage(tempDirPath, asarPath);
 
-	// eslint-disable-next-line no-console
+	// biome-ignore lint/suspicious/noConsole: build-script progress output, lands in CI logs.
 	console.log(`  • postpackaging   native keytar injected platform=${platform} arch=${arch}`);
 }
 
