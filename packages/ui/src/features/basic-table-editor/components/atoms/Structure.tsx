@@ -51,7 +51,7 @@ export const Header = chakra('div', {
 		zIndex: 1,
 		backgroundColor: 'bg.surface',
 		'& > div': {
-			borderBottomColor: 'border.default',
+			borderBottomColor: 'border.subtle',
 		},
 	},
 });
