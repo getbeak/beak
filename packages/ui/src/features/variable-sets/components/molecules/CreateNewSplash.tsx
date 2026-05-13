@@ -27,10 +27,13 @@ const CreateNewSplash: React.FC<CreateNewSplashProps> = ({ type, variableSet }) 
 					w='56px'
 					h='56px'
 					borderRadius='full'
-					bg='color-mix(in srgb, var(--beak-colors-accent-pink) 18%, transparent)'
+					bg='color-mix(in srgb, var(--beak-colors-accent-pink) 16%, transparent)'
 					color='accent.pink'
+					borderWidth='1px'
+					borderColor='color-mix(in srgb, var(--beak-colors-accent-pink) 30%, transparent)'
+					boxShadow='0 8px 24px color-mix(in srgb, var(--beak-colors-accent-pink) 30%, transparent), inset 0 1px 0 color-mix(in srgb, white 18%, transparent)'
 				>
-					<Table size={26} />
+					<Table size={24} strokeWidth={1.8} />
 				</Flex>
 			</motion.div>
 			<Box fontSize='md' fontWeight='600' color='fg.default'>
