@@ -20,7 +20,12 @@ const GLOBAL_CSS = `
 		color: var(--beak-colors-fg-default);
 		margin: 0; padding: 0;
 	}
-	a { color: #ffa210; }
+	a { color: var(--beak-colors-accent-pink); }
+	a:hover { color: color-mix(in srgb, var(--beak-colors-accent-pink) 80%, white); }
+	::selection {
+		background-color: color-mix(in srgb, var(--beak-colors-accent-pink) 35%, transparent);
+		color: var(--beak-colors-fg-default);
+	}
 `;
 
 const EntryPoint: React.FC = () => (
