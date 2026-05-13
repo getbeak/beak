@@ -1,13 +1,13 @@
+import { Flex } from '@chakra-ui/react';
 import PendingSlash from '@beak/ui/components/molecules/PendingSplash';
 import { useAppSelector } from '@beak/ui/store/redux';
-import React from 'react';
-import styled from 'styled-components';
+import * as React from 'react';
 
 import FlightInProgress from './molecules/FlightInProgress';
 import Header from './molecules/Header';
 import Inspector from './organisms/Inspector';
 
-const ResponsePane: React.FC<React.PropsWithChildren<unknown>> = () => {
+const ResponsePane: React.FC = () => {
 	const { tree } = useAppSelector(s => s.global.project);
 	const selectedTab = useAppSelector(s => s.features.tabs.selectedTab);
 	const flightHistories = useAppSelector(s => s.global.flight.flightHistories);
@@ -18,7 +18,7 @@ const ResponsePane: React.FC<React.PropsWithChildren<unknown>> = () => {
 	const pending = !selectedNode || !flightHistory || !selectedFlight;
 
 	return (
-		<Container>
+		<Flex position='relative' direction='column' bg='bg.surface' h='100%' w='100%'>
 			{pending && <PendingSlash />}
 			{!pending && (
 				<React.Fragment>
@@ -28,17 +28,8 @@ const ResponsePane: React.FC<React.PropsWithChildren<unknown>> = () => {
 			)}
 
 			<FlightInProgress requestId={selectedTab!} currentFlight={currentFlight} />
-		</Container>
+		</Flex>
 	);
 };
-
-const Container = styled.div`
-	position: relative;
-	display: flex;
-	flex-direction: column;
-	background-color: var(--beak-colors-bg-surface);
-	height: 100%;
-	width: 100%;
-`;
 
 export default ResponsePane;

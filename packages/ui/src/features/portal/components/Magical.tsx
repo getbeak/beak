@@ -1,6 +1,6 @@
-import React from 'react';
+import { Box } from '@chakra-ui/react';
+import * as React from 'react';
 import { useEffect, useState } from 'react';
-import styled from 'styled-components';
 
 import EnterMagicState, { type MagicState } from './organisms/EnterMagicState';
 
@@ -9,13 +9,12 @@ interface MagicalProps {
 	revertFromMagical: () => void;
 }
 
-const Magical: React.FC<React.PropsWithChildren<MagicalProps>> = ({ email, revertFromMagical }) => {
+const Magical: React.FC<MagicalProps> = ({ email, revertFromMagical }) => {
 	const [inboundState, setInboundState] = useState<MagicState | undefined>(void 0);
 
 	useEffect(() => {
 		function listener(_event: unknown, payload: MagicState) {
 			const { code, state } = payload;
-
 			setInboundState({ code, state });
 		}
 
@@ -23,21 +22,11 @@ const Magical: React.FC<React.PropsWithChildren<MagicalProps>> = ({ email, rever
 	}, []);
 
 	return (
-		<Wrapper>
-			<Title>{'Almost there'}</Title>
-
+		<Box m='12'>
+			<Box fontSize='2xl' fontWeight='medium'>{'Almost there'}</Box>
 			<EnterMagicState email={email} inboundState={inboundState} reset={revertFromMagical} />
-		</Wrapper>
+		</Box>
 	);
 };
-
-const Wrapper = styled.div`
-	margin: 50px;
-`;
-
-const Title = styled.div`
-	font-size: 24px;
-	font-weight: 500;
-`;
 
 export default Magical;

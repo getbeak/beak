@@ -1,41 +1,26 @@
-import React from 'react';
-import styled from 'styled-components';
+import { Flex } from '@chakra-ui/react';
+import * as React from 'react';
 
 interface CheckboxProps extends React.HTMLProps<HTMLInputElement> {
 	label: string;
 }
 
 /**
- * Beak's labelled checkbox. Phase B keeps this as a thin styled wrapper
- * over the native input but pulls its accent colour from the new Chakra
- * CSS variables so the brand pink is consistent with the rest of the
- * Chakra-themed chrome.
+ * Beak's labelled checkbox. A native input wrapped in a Chakra Flex so
+ * the accent colour follows the brand pink and the label tracks Chakra
+ * tokens automatically.
  */
-const Checkbox: React.FC<CheckboxProps> = props => {
-	const { label, ...rest } = props;
-
-	return (
-		<Container>
-			<Input type={'checkbox'} {...rest} />
-			<Label htmlFor={props.id}>{label}</Label>
-		</Container>
-	);
-};
-
-const Container = styled.div`
-	display: flex;
-	align-items: center;
-	gap: 6px;
-`;
-
-const Input = styled.input`
-	margin: 0;
-	accent-color: var(--beak-colors-accent-pink);
-`;
-
-const Label = styled.label`
-	color: var(--beak-colors-fg-muted);
-	font-size: 12px;
-`;
+const Checkbox: React.FC<CheckboxProps> = ({ label, ...rest }) => (
+	<Flex align='center' gap='1.5'>
+		<input
+			type='checkbox'
+			{...rest}
+			style={{ margin: 0, accentColor: 'var(--beak-colors-accent-pink)' }}
+		/>
+		<label htmlFor={rest.id} style={{ color: 'var(--beak-colors-fg-muted)', fontSize: '12px' }}>
+			{label}
+		</label>
+	</Flex>
+);
 
 export default Checkbox;

@@ -1,15 +1,15 @@
+import { Box } from '@chakra-ui/react';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { statusToColor } from '@beak/design-system/helpers';
 import type { TreeViewItem } from '@beak/ui/features/tree-view/types';
 import { useAppSelector } from '@beak/ui/store/redux';
-import React from 'react';
-import styled from 'styled-components';
+import * as React from 'react';
 
 interface RequestFlightStatusProps {
 	node: TreeViewItem;
 }
 
-const RequestFlightStatus: React.FC<React.PropsWithChildren<RequestFlightStatusProps>> = ({ node }) => {
+const RequestFlightStatus: React.FC<RequestFlightStatusProps> = ({ node }) => {
 	const flight = useAppSelector(s => s.global.flight.flightHistories[node.id]);
 	let mostRecentFlight: number | undefined;
 
@@ -22,20 +22,16 @@ const RequestFlightStatus: React.FC<React.PropsWithChildren<RequestFlightStatusP
 
 	if (mostRecentFlight === void 0) return null;
 
-	return <RequestStatusBlob $status={mostRecentFlight} />;
+	return (
+		<Box
+			w='9px'
+			h='9px'
+			borderWidth='1px'
+			borderColor='border.subtle'
+			borderRadius='full'
+			style={{ backgroundColor: statusToColor(mostRecentFlight) }}
+		/>
+	);
 };
-
-interface RequestStatusBlobProps {
-	$status: number;
-}
-
-const RequestStatusBlob = styled.div<RequestStatusBlobProps>`
-	width: 9px; height: 9px;
-
-	border: 1px solid var(--beak-colors-border-subtle);
-	border-radius: 100%;
-
-	background-color: ${p => statusToColor(p.$status)};
-`;
 
 export default RequestFlightStatus;

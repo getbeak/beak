@@ -1,17 +1,21 @@
-import styled from 'styled-components';
+import { chakra } from '@chakra-ui/react';
 
-export const Container = styled.div`
-	margin: 0 auto;
-	padding: 0 25px;
-	width: calc(100% - 50px);
-	max-width: 1200px;
-`;
+export const Container = chakra('div', {
+	base: {
+		mx: 'auto',
+		px: '6',
+		w: 'calc(100% - 50px)',
+		maxW: '1200px',
+	},
+});
 
-export const SmallContainer = styled.div`
-	margin: 0 auto;
-	padding: 0 25px;
-	width: calc(100% - 50px);
-	max-width: 800px;
-`;
+export const SmallContainer = chakra('div', {
+	base: {
+		mx: 'auto',
+		px: '6',
+		w: 'calc(100% - 50px)',
+		maxW: '800px',
+	},
+});
 
 export default Container;

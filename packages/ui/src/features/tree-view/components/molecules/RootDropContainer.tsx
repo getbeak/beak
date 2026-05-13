@@ -1,9 +1,9 @@
-import React from 'react';
-import styled, { css } from 'styled-components';
+import { Box } from '@chakra-ui/react';
+import * as React from 'react';
 
 import { useNodeDrop } from '../../hooks/drag-and-drop';
 
-const RootDropContainer: React.FC<React.PropsWithChildren<unknown>> = props => {
+const RootDropContainer: React.FC<React.PropsWithChildren> = ({ children }) => {
 	const [{ canDrop, hovering }, dropRef] = useNodeDrop({
 		id: 'root',
 		filePath: 'tree',
@@ -12,32 +12,19 @@ const RootDropContainer: React.FC<React.PropsWithChildren<unknown>> = props => {
 		type: 'folder',
 	});
 
+	const highlight = canDrop && hovering;
+
 	return (
-		<Container $dropAccepted={canDrop} $dropHovering={hovering} ref={dropRef as unknown as React.Ref<HTMLDivElement>}>
-			{props.children}
-		</Container>
+		<Box
+			ref={dropRef as unknown as React.Ref<HTMLDivElement>}
+			h='100%'
+			_focus={{ outline: 'none' }}
+			borderRadius={highlight ? 'sm' : undefined}
+			bg={highlight ? 'color-mix(in srgb, var(--beak-colors-accent-pink) 60%, transparent)' : undefined}
+		>
+			{children}
+		</Box>
 	);
 };
-
-interface ContainerProps {
-	$dropAccepted: boolean;
-	$dropHovering: boolean;
-}
-
-const Container = styled.div<ContainerProps>`
-	height: 100%;
-
-	&:focus {
-		outline: none;
-	}
-
-	${p =>
-		p.$dropAccepted &&
-		p.$dropHovering &&
-		css`
-		border-radius: 4px;
-		background-color: color-mix(in srgb, var(--beak-colors-accent-pink) 60%, transparent);
-	`}
-`;
 
 export default RootDropContainer;

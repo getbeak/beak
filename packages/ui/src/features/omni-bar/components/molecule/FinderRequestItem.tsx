@@ -1,9 +1,9 @@
+import { Box } from '@chakra-ui/react';
 import { convertRequestToUrl } from '@beak/ui/utils/uri';
 import type { RequestOverview } from '@getbeak/types/request';
 import type { Context } from '@getbeak/types/values';
-import React from 'react';
+import * as React from 'react';
 import { useEffect, useState } from 'react';
-import styled from 'styled-components';
 
 export interface FinderRequestItemProps {
 	context: Context;
@@ -18,20 +18,16 @@ const FinderRequestItem: React.FC<FinderRequestItemProps> = ({ context, info }) 
 	}, [context, info]);
 
 	return (
-		<UriSpan>
+		<Box as='small' opacity={0.4}>
 			<div
-				data-tooltip-id={'tt-omni-bar-finder-request-uri'}
+				data-tooltip-id='tt-omni-bar-finder-request-uri'
 				data-tooltip-content={uri}
 				data-tooltip-hidden={uri.length < 100}
 			>
 				{uri}
 			</div>
-		</UriSpan>
+		</Box>
 	);
 };
-
-const UriSpan = styled.small`
-	opacity: .4;
-`;
 
 export default FinderRequestItem;

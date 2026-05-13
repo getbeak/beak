@@ -1,35 +1,31 @@
-
-import React from 'react';
-import styled from 'styled-components';
+import { Box } from '@chakra-ui/react';
 import { ChevronRight } from 'lucide-react';
+import * as React from 'react';
 
 interface ChevronProps {
 	$collapsed: boolean;
 	$collapsible: boolean;
 }
 
-const Chevron: React.FC<React.PropsWithChildren<ChevronProps>> = props => (
-	<ChevronElement {...props}>
-		<ChevronRight />
-	</ChevronElement>
+const Chevron: React.FC<ChevronProps> = ({ $collapsed, $collapsible }) => (
+	<Box
+		display={$collapsible ? 'inline-block' : 'none'}
+		mr='0.5'
+		ml='1.5'
+		w='10px'
+		fontSize='9px'
+		lineHeight='9px'
+		color='fg.muted'
+		css={{
+			'> svg': {
+				transition: 'transform .2s ease',
+				transformOrigin: 'center center',
+				transform: $collapsed ? 'rotate(0deg)' : 'rotate(90deg)',
+			},
+		}}
+	>
+		<ChevronRight size={9} />
+	</Box>
 );
-
-const ChevronElement = styled.div<ChevronProps>`
-	display: inline-block;
-	${p => !p.$collapsible && 'display: none;'}
-	margin-right: 2px;
-	margin-left: 5px;
-	width: 10px;
-
-	font-size: 9px;
-	line-height: 9px;
-	color: var(--beak-colors-fg-muted);
-
-	> svg {
-		transition: transform .2s ease;
-		transform-origin: center center;
-		transform: rotate(${p => (p.$collapsed ? '0deg' : '90deg')});
-	}
-`;
 
 export default Chevron;

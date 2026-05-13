@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
+import * as React from 'react';
+import { useState } from 'react';
 
 import useArbiterLocking from '../hooks/use-arbiter-locking';
 import WarningLabel from './atoms/WarningLabel';
@@ -13,15 +13,12 @@ const ArbiterOverlayBadge: React.FC = () => {
 
 	return (
 		<React.Fragment>
-			<WarningBanner onClick={() => setShow(true)}>{'Subscription issue'}</WarningBanner>
+			<WarningLabel position='absolute' top='5' right='5' onClick={() => setShow(true)}>
+				{'Subscription issue'}
+			</WarningLabel>
 			<ArbiterDialog open={show} onClose={() => setShow(false)} />
 		</React.Fragment>
 	);
 };
-
-const WarningBanner = styled(WarningLabel)`
-	position: absolute;
-	top: 20px; right: 20px;
-`;
 
 export default ArbiterOverlayBadge;

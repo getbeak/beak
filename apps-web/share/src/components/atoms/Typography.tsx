@@ -1,28 +1,39 @@
-import styled from 'styled-components';
+import { chakra } from '@chakra-ui/react';
 
-export const Title = styled.div`
-	font-size: 30px;
-	font-weight: 700;
-	color: var(--beak-colors-fg-default);
-`;
+export const Title = chakra('div', {
+	base: {
+		fontSize: '30px',
+		fontWeight: 'bold',
+		color: 'fg.default',
+	},
+});
 
-export const TitleSubtle = styled(Title)`
-	font-size: 20px;
-	line-height: 24px;
-	color: var(--beak-colors-fg-muted);
-`;
+export const TitleSubtle = chakra('div', {
+	base: {
+		fontSize: '2xl',
+		fontWeight: 'bold',
+		lineHeight: '24px',
+		color: 'fg.muted',
+	},
+});
 
-export const SubTitle = styled.div`
-	font-size: 16px;
-	margin-top: 5px;
-	color: var(--beak-colors-fg-muted);
-`;
+export const SubTitle = chakra('div', {
+	base: {
+		fontSize: 'xl',
+		mt: '1.5',
+		color: 'fg.muted',
+	},
+});
 
-export const BodyRegular = styled.div`
-	color: var(--beak-colors-fg-default);
-`;
+export const BodyRegular = chakra('div', {
+	base: {
+		color: 'fg.default',
+	},
+});
 
-export const BodyBold = styled.div`
-	font-weight: 600;
-	color: var(--beak-colors-fg-default);
-`;
+export const BodyBold = chakra('div', {
+	base: {
+		fontWeight: 'semibold',
+		color: 'fg.default',
+	},
+});

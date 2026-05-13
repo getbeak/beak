@@ -1,6 +1,6 @@
-import React from 'react';
+import { Box } from '@chakra-ui/react';
+import * as React from 'react';
 import type { MutableRefObject } from 'react';
-import styled from 'styled-components';
 
 import type { TreeViewNode } from '../../types';
 import NodeItem from '../molecules/NodeItem';
@@ -12,18 +12,12 @@ interface NodeProps {
 	hierarchicalParentRef?: MutableRefObject<HTMLElement | null>;
 }
 
-const Node: React.FC<React.PropsWithChildren<NodeProps>> = props => {
-	const { depth, node } = props;
-
-	return (
-		<NodeWrapper>
-			<NodeItem node={node} depth={depth}>
-				<NodeName node={node} collapsed={false} />
-			</NodeItem>
-		</NodeWrapper>
-	);
-};
-
-const NodeWrapper = styled.div``;
+const Node: React.FC<NodeProps> = ({ depth, node }) => (
+	<Box>
+		<NodeItem node={node} depth={depth}>
+			<NodeName node={node} collapsed={false} />
+		</NodeItem>
+	</Box>
+);
 
 export default Node;

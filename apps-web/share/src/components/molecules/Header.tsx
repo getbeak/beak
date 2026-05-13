@@ -1,35 +1,20 @@
-import React from 'react';
-import styled from 'styled-components';
+import { Box, Flex } from '@chakra-ui/react';
+import * as React from 'react';
 
-const Header: React.FC<React.PropsWithChildren<unknown>> = () => (
-	<Container>
-		<Logo />
-		<Brand>{'Beak'}</Brand>
-	</Container>
+const Header: React.FC = () => (
+	<Flex align='center' px='6' py='4'>
+		<Box
+			h='60px'
+			w='60px'
+			bgImage="url('/assets/logo.svg')"
+			bgPos='center'
+			bgRepeat='no-repeat'
+			bgSize='40px'
+		/>
+		<Box textTransform='uppercase' fontWeight='semibold' fontSize='2xl' lineHeight='24px' ml='2.5'>
+			{'Beak'}
+		</Box>
+	</Flex>
 );
-
-const Container = styled.div`
-	display: flex;
-	align-items: center;
-	padding: 15px 25px;
-`;
-
-const Logo = styled.div`
-	height: 60px;
-	width: 60px;
-
-	background: url('/assets/logo.svg');
-	background-position: center;
-	background-repeat: no-repeat;
-	background-size: 40px;
-`;
-
-const Brand = styled.div`
-	text-transform: uppercase;
-	font-weight: 600;
-	font-size: 22px;
-	line-height: 24px;
-	margin-left: 10px;
-`;
 
 export default Header;

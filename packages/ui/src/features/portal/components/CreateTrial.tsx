@@ -1,8 +1,8 @@
+import { Box, Image } from '@chakra-ui/react';
 import type Squawk from '@beak/common/utils/squawk';
 import ArrowButton from '@beak/ui/components/atoms/ArrowButton';
-import React from 'react';
+import * as React from 'react';
 import { useEffect, useRef, useState } from 'react';
-import styled from 'styled-components';
 
 import type { MagicState } from './organisms/EnterMagicState';
 import EnterTrialMagicState from './organisms/EnterTrialMagicState';
@@ -14,7 +14,7 @@ interface CreateTrialProps {
 	onChangeToDefault: () => void;
 }
 
-const CreateTrial: React.FC<React.PropsWithChildren<CreateTrialProps>> = ({ onChangeToDefault }) => {
+const CreateTrial: React.FC<CreateTrialProps> = ({ onChangeToDefault }) => {
 	const inputRef = useRef<HTMLInputElement>(null);
 	const [email, setEmail] = useState('');
 	const [variant, setVariant] = useState<Variant>('default');
@@ -27,7 +27,6 @@ const CreateTrial: React.FC<React.PropsWithChildren<CreateTrialProps>> = ({ onCh
 	useEffect(() => {
 		function listener(_event: unknown, payload: MagicState) {
 			const { code, state } = payload;
-
 			setVariant('magic_link');
 			setInboundState({ code, state });
 		}
@@ -40,12 +39,20 @@ const CreateTrial: React.FC<React.PropsWithChildren<CreateTrialProps>> = ({ onCh
 	}, []);
 
 	return (
-		<Wrapper>
+		<Box position='relative' w='100%' ml='-5'>
 			<ArrowButton onClick={() => onChangeToDefault()}>{'Go back'}</ArrowButton>
-			<Logo src={'images/logo-tile.png'} />
-			<Title>{'Start your free Beak trial'}</Title>
-			<SubTitle>{'No credit card, no fuss, no limits... Just 14 days of the full Beak experience.'}</SubTitle>
-			<ActionContainer>
+			<Image src='images/logo-tile.png' w='50px' h='50px' mx='auto' my='1.5' />
+			<Box fontSize='3xl' fontWeight='medium' mb='0'>{'Start your free Beak trial'}</Box>
+			<Box as='p' fontSize='lg' mt='1.5' color='fg.default'>
+				{'No credit card, no fuss, no limits... Just 14 days of the full Beak experience.'}
+			</Box>
+			<Box
+				position='absolute'
+				bottom='0'
+				maxW='450px'
+				style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}
+				css={{ '> button': { marginTop: '5px', width: '100%' } }}
+			>
 				{variant === 'default' && (
 					<RequestTrial
 						email={email}
@@ -57,46 +64,10 @@ const CreateTrial: React.FC<React.PropsWithChildren<CreateTrialProps>> = ({ onCh
 				{variant === 'magic_link' && (
 					<EnterTrialMagicState email={email} reset={() => setVariant('default')} inboundState={inboundState} />
 				)}
-			</ActionContainer>
-		</Wrapper>
+			</Box>
+		</Box>
 	);
 };
-
-const Wrapper = styled.div`
-	position: relative;
-	width: 100%;
-	margin-left: -20px;
-`;
-
-const Logo = styled.img`
-	width: 50px; height: 50px;
-	text-align: center;
-	margin: 5px auto;
-`;
-
-const Title = styled.div`
-	font-size: 28px;
-	font-weight: 500;
-	margin-bottom: 0px;
-`;
-
-const SubTitle = styled.p`
-	font-size: 14px;
-	margin-top: 5px;
-	color: var(--beak-colors-fg-default);
-`;
-
-const ActionContainer = styled.div`
-	position: absolute;
-	bottom: 0;
-	max-width: 450px;
-	-webkit-app-region: no-drag;
-
-	> button {
-		margin-top: 5px;
-		width: 100%;
-	}
-`;
 
 export function getErrorMessage(error: Squawk) {
 	switch (error.code) {
