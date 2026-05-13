@@ -29,7 +29,8 @@ export const Row = chakra('div', {
 			opacity: 1,
 		},
 		'&:focus-within': {
-			backgroundColor: 'color-mix(in srgb, var(--beak-colors-bg-surface-emphasized) 55%, transparent)',
+			backgroundColor: 'color-mix(in srgb, var(--beak-colors-bg-surface-emphasized) 60%, transparent)',
+			borderColor: 'color-mix(in srgb, var(--beak-colors-accent-pink) 20%, var(--beak-colors-border-subtle))',
 		},
 		'&:hover [data-row-action], &:focus-within [data-row-action]': {
 			opacity: 1,
