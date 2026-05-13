@@ -7,31 +7,33 @@ export const ItemGroup = chakra('div', {
 
 export const ItemLabel = chakra('div', {
 	base: {
-		fontSize: 'lg',
-		fontWeight: 'semibold',
-		color: 'fg.muted',
-		mb: '2.5',
+		fontSize: '10px',
+		fontWeight: '700',
+		color: 'fg.subtle',
+		letterSpacing: '0.06em',
+		textTransform: 'uppercase',
+		mb: '2',
 	},
 });
 
 export const ItemInfo = chakra('div', {
 	base: {
-		fontSize: 'sm',
+		fontSize: 'xs',
 		color: 'fg.subtle',
 		my: '1.5',
 	},
 });
 
 export const ItemSpacer = chakra('div', {
-	base: { h: '1.5' },
+	base: { h: '2' },
 });
 
 export const SubItemGroup = chakra('div', {
 	base: {
 		display: 'flex',
 		flexDirection: 'column',
-		gap: '2',
-		fontSize: 'lg',
+		gap: '2.5',
+		fontSize: 'sm',
 	},
 });
 
@@ -49,6 +51,8 @@ interface SubItemLabelProps extends BoxProps {
 export const SubItemLabel: React.FC<SubItemLabelProps> = ({ $abbr, children, ...rest }) => (
 	<Box
 		mb='1'
+		fontSize='xs'
+		color='fg.default'
 		textDecoration={$abbr ? 'underline' : undefined}
 		textDecorationStyle={$abbr ? 'dotted' : undefined}
 		{...rest}
