@@ -126,9 +126,20 @@ const EnterMagicState: React.FC<EnterMagicStateProps> = ({ email, reset, inbound
 			)}
 
 			{working && (
-				<Flex direction='column' align='center' gap='1.5' py='4' color='fg.muted'>
-					<Loader2 size={20} style={{ animation: 'beakPortalSpin 1s linear infinite' }} />
-					<Box fontSize='sm'>{'Working on your magic link… ✨'}</Box>
+				<Flex direction='column' align='center' gap='3' py='5'>
+					<Flex
+						align='center'
+						justify='center'
+						w='48px'
+						h='48px'
+						borderRadius='full'
+						bg='color-mix(in srgb, var(--beak-colors-accent-pink) 16%, transparent)'
+						color='accent.pink'
+						boxShadow='0 0 20px color-mix(in srgb, var(--beak-colors-accent-pink) 30%, transparent)'
+					>
+						<Loader2 size={20} style={{ animation: 'beakPortalSpin 1s linear infinite' }} />
+					</Flex>
+					<Box fontSize='sm' fontWeight='600' color='fg.default'>{'Working on your magic link… ✨'}</Box>
 				</Flex>
 			)}
 
