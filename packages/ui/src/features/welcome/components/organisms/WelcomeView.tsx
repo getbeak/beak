@@ -1,5 +1,5 @@
+import { Flex } from '@chakra-ui/react';
 import React from 'react';
-import styled from 'styled-components';
 
 import type { WelcomeViewType } from '../../../../containers/Welcome';
 import ViewIntroLine from '../atoms/ViewIntroLine';
@@ -11,29 +11,16 @@ export interface WelcomeViewProps {
 	setView: (view: WelcomeViewType) => void;
 }
 
-const WelcomeView: React.FC<React.PropsWithChildren<WelcomeViewProps>> = ({ setView }) => (
-	<Wrapper>
+const WelcomeView: React.FC<WelcomeViewProps> = ({ setView }) => (
+	<Flex direction='column' h='100%'>
 		<ViewTitle>{'Welcome to Beak!'}</ViewTitle>
 		<ViewIntroLine>{'The feathery cross-platform API crafting tool'}</ViewIntroLine>
 
-		<Grid>
+		<Flex h='calc(100% - 89px)' gap='5'>
 			<OpenRecentColumn />
 			<GetStartedColumn setView={setView} />
-		</Grid>
-	</Wrapper>
+		</Flex>
+	</Flex>
 );
-
-const Wrapper = styled.div`
-	display: flex;
-	flex-direction: column;
-
-	height: 100%;
-`;
-
-const Grid = styled.div`
-	display: flex;
-	height: calc(100% - 89px);
-	gap: 20px;
-`;
 
 export default WelcomeView;

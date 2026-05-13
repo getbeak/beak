@@ -1,10 +1,6 @@
-import styled from 'styled-components';
+import { Box } from '@chakra-ui/react';
+import * as React from 'react';
 
-const ActionBarSeparator = styled.div`
-	height: 20px;
-	background: var(--beak-colors-fg-disabled);
-	width: 1px;
-	margin: 0 5px;
-`;
+const ActionBarSeparator: React.FC = () => <Box h='20px' w='1px' mx='1.5' bg='fg.disabled' />;
 
 export default ActionBarSeparator;

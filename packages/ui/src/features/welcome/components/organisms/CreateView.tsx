@@ -1,9 +1,8 @@
+import { Box, HStack } from '@chakra-ui/react';
 import Input, { InputInvalidText } from '@beak/ui/components/atoms/Input';
 import Label from '@beak/ui/components/atoms/Label';
 import { ipcProjectService } from '@beak/ui/lib/ipc';
-import React from 'react';
-import { useEffect, useRef, useState } from 'react';
-import styled from 'styled-components';
+import React, { useEffect, useRef, useState } from 'react';
 import validFilename from 'valid-filename';
 
 import Button from '../../../../components/atoms/Button';
@@ -15,14 +14,14 @@ export interface CreateViewProps {
 	setView: (view: WelcomeViewType) => void;
 }
 
-const CreateView: React.FC<React.PropsWithChildren<CreateViewProps>> = ({ setView }) => {
+const CreateView: React.FC<CreateViewProps> = ({ setView }) => {
 	const [working, setWorking] = useState(false);
 	const [name, setName] = useState('');
 	const projNameInput = useRef<HTMLInputElement>(null);
 	const [validProjectName, setValidProjectName] = useState(true);
 
 	useEffect(() => {
-		if (projNameInput.current) projNameInput.current.focus();
+		projNameInput.current?.focus();
 	}, []);
 
 	function projectNameChange(name: string) {
@@ -30,7 +29,6 @@ const CreateView: React.FC<React.PropsWithChildren<CreateViewProps>> = ({ setVie
 
 		if (!name.trim()) {
 			setValidProjectName(true);
-
 			return;
 		}
 
@@ -38,7 +36,7 @@ const CreateView: React.FC<React.PropsWithChildren<CreateViewProps>> = ({ setVie
 	}
 
 	return (
-		<Wrapper>
+		<Box position='relative' w='calc(100% - 60px)' h='calc(100% - 80px)'>
 			<ViewTitle>{"Let's get going 🌶"}</ViewTitle>
 			<ViewIntroLine>{'You should be good to go in just a sec...'}</ViewIntroLine>
 
@@ -46,8 +44,8 @@ const CreateView: React.FC<React.PropsWithChildren<CreateViewProps>> = ({ setVie
 			<Input
 				disabled={working}
 				ref={projNameInput}
-				placeholder={''}
-				type={'text'}
+				placeholder=''
+				type='text'
 				value={name}
 				onChange={e => projectNameChange(e.target.value)}
 			/>
@@ -57,7 +55,7 @@ const CreateView: React.FC<React.PropsWithChildren<CreateViewProps>> = ({ setVie
 				</InputInvalidText>
 			)}
 
-			<ActionsWrapper>
+			<HStack position='absolute' bottom='0' right='0' gap='3'>
 				<Button
 					disabled={!name || !validProjectName || working}
 					onClick={async () => {
@@ -75,31 +73,12 @@ const CreateView: React.FC<React.PropsWithChildren<CreateViewProps>> = ({ setVie
 				>
 					{'Select folder'}
 				</Button>
-				<ActionSpacer />
-				<Button colour={'secondary'} onClick={() => setView('main')}>
+				<Button colour='secondary' onClick={() => setView('main')}>
 					{'Cancel'}
 				</Button>
-			</ActionsWrapper>
-		</Wrapper>
+			</HStack>
+		</Box>
 	);
 };
-
-const Wrapper = styled.div`
-	position: relative;
-	top: 0; bottom: 0; left: 0; right: 0;
-	width: calc(100% - 60px);
-	height: calc(100% - 80px);
-`;
-
-const ActionsWrapper = styled.div`
-	position: absolute;
-	bottom: 0;
-	right: 0;
-`;
-
-const ActionSpacer = styled.div`
-	display: inline-block;
-	width: 15px;
-`;
 
 export default CreateView;
