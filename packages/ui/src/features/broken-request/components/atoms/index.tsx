@@ -16,18 +16,22 @@ export const Header = chakra('h1', {
 	base: {
 		m: '0',
 		mt: '3',
-		fontWeight: '500',
-		fontSize: '2xl',
-		lineHeight: '1.2',
+		fontWeight: '600',
+		fontSize: 'xl',
+		lineHeight: '1.15',
+		letterSpacing: '-0.01em',
 		color: 'fg.default',
 	},
 });
 
 export const Body = chakra('p', {
 	base: {
-		mt: '2',
+		mt: '1.5',
 		mb: '4',
 		fontSize: 'sm',
+		lineHeight: '1.5',
 		color: 'fg.muted',
+		maxW: '420px',
+		mx: 'auto',
 	},
 });
