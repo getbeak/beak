@@ -1,73 +1,39 @@
-import { toHexAlpha } from '@beak/design-system/utils';
 import { createGlobalStyle } from 'styled-components';
 
 interface GlobalStyleProps {
 	$darwin: boolean;
 }
 
+/**
+ * Renderer-wide globals that live OUTSIDE the Chakra theme.
+ *
+ * The Chakra theme owns most of what used to be in here (body font,
+ * scrollbar, focus rings, etc. — see `packages/design-system/src/theme.ts`'s
+ * `globalCss`). What remains here is:
+ *
+ *  - react-tooltip's `--rt-color-*` CSS vars (until the tooltip atom is
+ *    migrated off react-tooltip)
+ *  - the macOS vibrancy escape hatch — body background is `transparent`
+ *    on darwin so the Electron BrowserWindow's vibrancy effect shows
+ *    through. Non-darwin gets the canvas colour painted opaquely.
+ *
+ * All colour references resolve through Chakra's CSS variables now, so
+ * this stylesheet no longer needs the styled-components ThemeProvider.
+ */
 const GlobalStyle = createGlobalStyle<GlobalStyleProps>`
 	:root {
-		--rt-color-white: ${p => p.theme.ui.textOnSurfaceBackground};
-		--rt-color-dark: ${p => p.theme.ui.surfaceHighlight};
+		--rt-color-white: var(--beak-colors-fg-default);
+		--rt-color-dark: var(--beak-colors-bg-surface-alt);
 		--rt-opacity: .9;
 	}
 
-	* {
-		-webkit-font-smoothing: subpixel-antialiased;
-	}
-
-	html, body {
-		font-family: ${p => p.theme.fonts.default};
-
-		// This is needed for Vibrancy
-		background-color: ${p => (p.$darwin ? 'transparent' : p.theme.ui.background)};
-
-		color: ${p => p.theme.ui.textOnSurfaceBackground};
-		margin: 0;
-		padding: 0;
-
-		overflow: hidden;
-		-webkit-user-select: none;
-	}
-
-	input[type=text], input[type=number], select, input[type=email], article[contenteditable=true] {
-		&:focus:not(:disabled) {
-			outline: 0;
-			border-color: ${p => p.theme.ui.primaryFill};
-			box-shadow: 0 0 0 3px ${p => p.theme.ui.primaryFill}77;
-			background: ${p => p.theme.ui.surfaceHighlight};
-			border-radius: 4px;
-		}
-
-		&:disabled {
-			cursor: text;
-		}
-	}
+	${p => p.$darwin && 'html, body { background-color: transparent !important; }'}
 
 	body .react-tooltip {
 		padding: 6px 8px;
 		font-size: 13px;
-		box-shadow: ${p => p.theme.ui.textOnSurfaceBackground}44 0px 8px 24px;
+		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.27);
 		z-index: 105;
-	}
-
-	::-webkit-scrollbar {
-		width: 6px;
-		height: 6px;
-	}
-	::-webkit-scrollbar-track {
-		background: transparent;
-	}
-	::-webkit-scrollbar-thumb {
-		background-color: ${p => toHexAlpha(p.theme.ui.secondaryAction, 0.1)};
-		transition: background .1s ease;
-
-		&:hover {
-			background-color: ${p => p.theme.ui.secondaryAction};
-		}
-	}
-	::-webkit-scrollbar-corner {
-		background: transparent;
 	}
 `;
 
