@@ -125,16 +125,18 @@ const Header: React.FC<HeaderProps> = ({ node }) => {
 				<Portal>
 					<Menu.Positioner>
 						<Menu.Content
-							bg='bg.surface'
+							bg='color-mix(in srgb, var(--beak-colors-bg-surface) 75%, transparent)'
 							borderWidth='1px'
-							borderColor='border.default'
-							borderRadius='md'
-							boxShadow='0 8px 32px rgba(0,0,0,0.2)'
+							borderColor='color-mix(in srgb, var(--beak-colors-accent-pink) 22%, var(--beak-colors-border-subtle))'
+							borderRadius='lg'
+							backdropFilter='blur(24px) saturate(180%)'
+							boxShadow='0 24px 56px rgba(0,0,0,0.32), 0 8px 18px color-mix(in srgb, var(--beak-colors-accent-pink) 16%, rgba(0,0,0,0.15)), inset 0 1px 0 color-mix(in srgb, white 22%, transparent)'
 							p='1'
-							minW='120px'
+							minW='140px'
 						>
 							{VERBS.map(v => {
 								const c = VERB_COLOR[v] ?? 'var(--beak-colors-fg-muted)';
+								const isActive = v === verb;
 								return (
 									<Menu.Item
 										key={v}
@@ -145,10 +147,17 @@ const Header: React.FC<HeaderProps> = ({ node }) => {
 										fontSize='xs'
 										fontWeight='700'
 										textTransform='uppercase'
-										letterSpacing='0.05em'
-										style={{ color: c }}
+										letterSpacing='0.06em'
+										borderRadius='md'
+										py='1.5'
+										px='2'
+										style={{
+											color: c,
+											background: isActive ? `color-mix(in srgb, ${c} 16%, transparent)` : undefined,
+											borderLeft: `3px solid ${isActive ? c : 'transparent'}`,
+										}}
 										_hover={{
-											bg: `color-mix(in srgb, ${c} 18%, transparent)`,
+											bg: `color-mix(in srgb, ${c} 16%, transparent)`,
 										}}
 									>
 										{v}
