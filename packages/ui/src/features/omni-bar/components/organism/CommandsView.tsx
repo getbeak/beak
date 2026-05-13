@@ -229,39 +229,38 @@ const CommandsView: React.FC<React.PropsWithChildren<CommandsViewProps>> = ({ co
 										if (isActive) activeRef.current = i;
 									}}
 									tabIndex={0}
-									position='relative'
 									mx='1.5'
 									my='0.5'
-									px='2'
-									py='1.5'
+									px='2.5'
+									py='2'
 									borderRadius='md'
 									cursor='pointer'
-									color={isActive ? 'fg.default' : 'fg.muted'}
-									transition='color .12s ease'
-									_hover={{ color: 'fg.default' }}
+									color={isActive ? 'white' : 'fg.muted'}
+									bg={isActive ? 'accent.teal' : 'transparent'}
+									boxShadow={
+										isActive
+											? '0 0 0 1px color-mix(in srgb, var(--beak-colors-accent-teal) 70%, transparent), 0 6px 14px color-mix(in srgb, var(--beak-colors-accent-teal) 35%, transparent)'
+											: undefined
+									}
+									transition='background-color .14s ease, color .14s ease, box-shadow .14s ease'
+									_hover={{
+										color: 'fg.default',
+										bg: isActive
+											? 'accent.teal'
+											: 'color-mix(in srgb, var(--beak-colors-accent-teal) 14%, transparent)',
+									}}
 									onClick={() => {
 										reset();
 										command.action(dispatch);
 									}}
 								>
-									{isActive && (
-										<motion.div
-											layoutId='omni-active'
-											transition={{ type: 'spring', stiffness: 700, damping: 36 }}
-											style={{
-												position: 'absolute',
-												inset: 0,
-												borderRadius: 6,
-												background: 'color-mix(in srgb, var(--beak-colors-accent-teal) 22%, transparent)',
-												pointerEvents: 'none',
-											}}
-										/>
-									)}
-									<Flex position='relative' align='center' gap='2'>
-										<Box color={isActive ? 'accent.teal' : 'fg.subtle'} flex='0 0 auto'>
+									<Flex align='center' gap='2'>
+										<Box color={isActive ? 'white' : 'fg.subtle'} flex='0 0 auto'>
 											<Icon size={13} />
 										</Box>
-										<Box fontSize='sm'>{command.name}</Box>
+										<Box fontSize='sm' fontWeight={isActive ? '600' : '500'} color={isActive ? 'white' : undefined}>
+											{command.name}
+										</Box>
 									</Flex>
 								</Box>
 							);

@@ -116,37 +116,33 @@ const FinderView: React.FC<FinderViewProps> = ({ content, reset }) => {
 							if (isActive) activeRef.current = i;
 						}}
 						tabIndex={0}
-						position='relative'
 						mx='1.5'
 						my='0.5'
-						px='2'
-						py='1.5'
+						px='2.5'
+						py='2'
 						borderRadius='md'
 						cursor='pointer'
-						color={isActive ? 'fg.default' : 'fg.muted'}
-						transition='color .12s ease'
-						_hover={{ color: 'fg.default' }}
+						color={isActive ? 'white' : 'fg.muted'}
+						bg={isActive ? 'accent.pink' : 'transparent'}
+						boxShadow={
+							isActive
+								? '0 0 0 1px color-mix(in srgb, var(--beak-colors-accent-pink) 70%, transparent), 0 6px 14px color-mix(in srgb, var(--beak-colors-accent-pink) 35%, transparent)'
+								: undefined
+						}
+						transition='background-color .14s ease, color .14s ease, box-shadow .14s ease'
+						_hover={{
+							color: 'fg.default',
+							bg: isActive
+								? 'accent.pink'
+								: 'color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent)',
+						}}
 						onClick={() => {
 							reset();
 							dispatch(changeTab({ type: 'request', payload: k, temporary: true }));
 						}}
 					>
-						{isActive && (
-							<motion.div
-								layoutId='omni-active'
-								transition={{ type: 'spring', stiffness: 700, damping: 36 }}
-								style={{
-									position: 'absolute',
-									inset: 0,
-									borderRadius: 6,
-									background: 'color-mix(in srgb, var(--beak-colors-accent-pink) 22%, transparent)',
-									pointerEvents: 'none',
-								}}
-							/>
-						)}
-
-						<Flex position='relative' align='center' gap='2' minW={0}>
-							<Box flex='0 0 auto' color={isActive ? 'accent.pink' : 'fg.subtle'}>
+						<Flex align='center' gap='2' minW={0}>
+							<Box flex='0 0 auto' color={isActive ? 'white' : 'fg.subtle'}>
 								<FileText size={13} />
 							</Box>
 							<Box
@@ -157,10 +153,17 @@ const FinderView: React.FC<FinderViewProps> = ({ content, reset }) => {
 								fontWeight='700'
 								letterSpacing='0.05em'
 								borderRadius='sm'
-								style={{
-									background: `color-mix(in srgb, ${verbColor} 22%, transparent)`,
-									color: verbColor,
-								}}
+								style={
+									isActive
+										? {
+											background: 'rgba(255,255,255,0.22)',
+											color: 'white',
+										}
+										: {
+											background: `color-mix(in srgb, ${verbColor} 22%, transparent)`,
+											color: verbColor,
+										}
+								}
 							>
 								{verb}
 							</Box>

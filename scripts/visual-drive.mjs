@@ -144,16 +144,16 @@ async function main() {
 
 	// ─── Omni-bar ───────────────────────────────────────────────────
 	await page.keyboard.press('Control+P').catch(() => {});
-	await gentle(700);
+	await gentle(900);
 	await shot(page, '13-omni-finder-empty');
 	await page.keyboard.type('Req', { delay: 40 });
-	await gentle(400);
+	await gentle(1200);
 	await shot(page, '14-omni-finder-query');
 	await page.keyboard.press('Escape');
-	await gentle(300);
+	await gentle(400);
 
 	await page.keyboard.press('Control+Shift+P').catch(() => {});
-	await gentle(700);
+	await gentle(1100);
 	await shot(page, '15-omni-commands');
 	await page.keyboard.press('Escape');
 	await gentle(300);

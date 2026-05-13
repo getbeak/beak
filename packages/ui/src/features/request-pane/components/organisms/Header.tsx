@@ -202,29 +202,30 @@ const Header: React.FC<HeaderProps> = ({ node }) => {
 				display='inline-flex'
 				alignItems='center'
 				justifyContent='center'
-				gap='1'
-				px='3'
+				gap='1.5'
+				px='4'
 				py='1.5'
-				h='32px'
-				minW='80px'
+				h='34px'
+				minW='96px'
 				borderRadius='md'
 				borderWidth='1px'
-				borderColor='accent.teal'
-				bg='color-mix(in srgb, var(--beak-colors-accent-teal) 18%, transparent)'
-				color='accent.teal'
-				fontWeight='700'
-				fontSize='xs'
-				letterSpacing='0.04em'
-				textTransform='uppercase'
+				borderColor='accent.pink'
+				bg='accent.pink'
+				color='white'
+				fontWeight='600'
+				fontSize='sm'
+				letterSpacing='0.01em'
 				cursor='pointer'
-				transition='background-color .12s ease, transform .08s ease, box-shadow .12s ease'
+				boxShadow='0 4px 14px color-mix(in srgb, var(--beak-colors-accent-pink) 35%, transparent)'
+				transition='background-color .14s ease, transform .08s ease, box-shadow .14s ease, filter .14s ease'
 				_hover={{
-					bg: 'color-mix(in srgb, var(--beak-colors-accent-teal) 38%, transparent)',
+					filter: 'brightness(1.06)',
+					boxShadow: '0 6px 18px color-mix(in srgb, var(--beak-colors-accent-pink) 50%, transparent)',
 				}}
-				_active={{ transform: 'scale(0.96)' }}
+				_active={{ transform: 'scale(0.97)' }}
 				_focus={{
 					outline: 'none',
-					boxShadow: '0 0 0 3px color-mix(in srgb, var(--beak-colors-accent-teal) 30%, transparent)',
+					boxShadow: '0 0 0 3px color-mix(in srgb, var(--beak-colors-accent-pink) 40%, transparent)',
 				}}
 				onClick={() => dispatchFlightRequest()}
 			>
@@ -232,18 +233,18 @@ const Header: React.FC<HeaderProps> = ({ node }) => {
 					<motion.span
 						initial={{ opacity: 0 }}
 						animate={{ opacity: 1 }}
-						style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}
+						style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
 					>
-						<Loader2 size={12} style={{ animation: 'spin 1s linear infinite' }} />
+						<Loader2 size={13} style={{ animation: 'spin 1s linear infinite' }} />
 						<Box as='span'>Sending</Box>
 					</motion.span>
 				) : (
 					<motion.span
 						initial={{ opacity: 0, x: -3 }}
 						animate={{ opacity: 1, x: 0 }}
-						style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}
+						style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
 					>
-						<Send size={12} />
+						<Send size={13} />
 						<Box as='span'>Send</Box>
 					</motion.span>
 				)}
