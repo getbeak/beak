@@ -15,6 +15,8 @@ import SidebarMenuItem from './molecules/SidebarMenuItem';
 
 const sidebarVariants: SidebarVariant[] = ['project', 'variables'];
 
+const embedded = Boolean(window.embeddedIndicator);
+
 const Sidebar: React.FC = () => {
 	const selectedSidebar = useAppSelector(s => s.global.preferences.sidebar.selected);
 	const sidebarCollapsed = useAppSelector(s => s.global.preferences.sidebar.collapsed.sidebar);
@@ -81,27 +83,33 @@ const Sidebar: React.FC = () => {
 		}
 	}
 
+	const topSpacer = embedded ? 72 : 8;
+
 	return (
 		<Grid
 			position='relative'
 			templateColumns='40px 1fr'
-			h='calc(100% - 72px)'
-			pt='72px'
-			bg='color-mix(in srgb, var(--beak-colors-bg-canvas) 75%, transparent)'
+			h={`calc(100% - ${topSpacer}px)`}
+			pt={`${topSpacer}px`}
+			bg='color-mix(in srgb, var(--beak-colors-bg-canvas) 85%, transparent)'
+			borderRightWidth='1px'
+			borderRightColor='border.subtle'
 			overflow='hidden'
 		>
-			<Box
-				position='absolute'
-				top='0'
-				left='0'
-				right='0'
-				h='71px'
-				bg={sidebarCollapsed ? 'bg.surface.emphasized' : undefined}
-				borderBottomWidth={sidebarCollapsed ? '1px' : undefined}
-				borderBottomColor={sidebarCollapsed ? 'border.default' : undefined}
-				style={{ WebkitAppRegion: 'drag' } as React.CSSProperties}
-			/>
-			{sidebarCollapsed && (
+			{embedded && (
+				<Box
+					position='absolute'
+					top='0'
+					left='0'
+					right='0'
+					h='71px'
+					bg={sidebarCollapsed ? 'bg.surface.emphasized' : undefined}
+					borderBottomWidth={sidebarCollapsed ? '1px' : undefined}
+					borderBottomColor={sidebarCollapsed ? 'border.default' : undefined}
+					style={{ WebkitAppRegion: 'drag' } as React.CSSProperties}
+				/>
+			)}
+			{embedded && sidebarCollapsed && (
 				<Box
 					position='absolute'
 					top='0'
@@ -118,8 +126,8 @@ const Sidebar: React.FC = () => {
 			<Box
 				position='relative'
 				w='10'
-				borderRightWidth={sidebarCollapsed ? '2px' : undefined}
-				borderRightColor={sidebarCollapsed ? 'border.default' : undefined}
+				borderRightWidth='1px'
+				borderRightColor='border.subtle'
 			>
 				<SidebarMenuHighlighter hidden={sidebarCollapsed} index={variantIndex} />
 				<SidebarMenuItem

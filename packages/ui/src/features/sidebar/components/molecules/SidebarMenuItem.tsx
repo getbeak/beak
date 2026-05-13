@@ -28,24 +28,29 @@ const SidebarMenuItem: React.FC<SidebarMenuItemProps> = props => {
 			data-tooltip-id='tt-sidebar-menu-item'
 			data-tooltip-content={`${name} (${renderPlainTextDefinition(shortcut)})`}
 			position='relative'
+			py='1'
 		>
 			<Flex
 				align='center'
 				justify='center'
 				cursor='pointer'
-				h='10'
+				h='32px'
+				w='32px'
+				mx='auto'
+				borderRadius='md'
 				color={isActive ? 'accent.pink' : 'fg.muted'}
+				bg={isActive ? 'color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent)' : 'transparent'}
 				transition='color .14s ease, background-color .14s ease, transform .08s ease'
 				_hover={{
 					color: isActive ? 'accent.pink' : 'fg.default',
 					bg: isActive
-						? undefined
-						: 'color-mix(in srgb, var(--beak-colors-bg-surface) 60%, transparent)',
+						? 'color-mix(in srgb, var(--beak-colors-accent-pink) 20%, transparent)'
+						: 'color-mix(in srgb, var(--beak-colors-bg-surface) 70%, transparent)',
 				}}
 				_active={{ transform: 'scale(0.92)' }}
 				onClick={() => onClick(item)}
 			>
-				<Icon color='currentColor' size={14} />
+				<Icon color='currentColor' size={15} strokeWidth={isActive ? 2.2 : 1.8} />
 			</Flex>
 		</Box>
 	);
