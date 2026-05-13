@@ -27,7 +27,7 @@ const EntryActions: React.FC<EntryActionsProps> = ({ onRemove }) => (
 		transition='color .12s ease, background .12s ease, transform .08s ease'
 		onClick={() => onRemove()}
 	>
-		<Trash2 size={11} />
+		<Trash2 size={11} strokeWidth={2.2} />
 	</IconButton>
 );
 
