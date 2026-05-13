@@ -29,10 +29,8 @@ const PrettyRenderSelection: React.FC<PrettyRenderSelectionProps> = ({
 				<option value='txt'>{'Text'}</option>
 			</optgroup>
 			<optgroup label='Rich'>
-				<option value='json'>{'JSON'}</option>
-				<option disabled value='json+viewer'>
-					{'JSON viewer'}
-				</option>
+				<option value='json+viewer'>{'JSON tree'}</option>
+				<option value='json'>{'JSON (raw)'}</option>
 				<option value='xml'>{'XML'}</option>
 				<option value='html'>{'HTML'}</option>
 				<option value='css'>{'CSS'}</option>

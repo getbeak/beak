@@ -10,6 +10,7 @@ import xmlFormatter from 'xml-formatter';
 
 import useDetectedFlightFormat from '../../hooks/use-detected-flight-format';
 import useFlightBodyInfo from '../../hooks/use-flight-body-info';
+import JsonTreeViewer from '../molecules/json-tree/JsonTreeViewer';
 import PrettyRenderSelection from '../molecules/PrettyRenderSelection';
 import PrettyViewIneligible from '../molecules/PrettyViewIneligible';
 
@@ -24,7 +25,10 @@ const PrettyViewer: React.FC<PrettyViewerProps> = ({ flight, mode }) => {
 	const preferences = useAppSelector(s => s.global.preferences.requests[requestId].response.pretty[mode]);
 	const [eligibility, body] = useFlightBodyInfo(flight, mode);
 	const [contentType, detectedFormat] = useDetectedFlightFormat(flight, mode);
-	const selectedLanguage = preferences.language ?? detectedFormat;
+	// Prefer the modern tree viewer when JSON is detected; the user can still
+	// switch to the raw editor via the dropdown.
+	const defaultLanguage = detectedFormat === 'json' ? 'json+viewer' : detectedFormat;
+	const selectedLanguage = preferences.language ?? defaultLanguage;
 
 	if (eligibility !== 'eligible') return <PrettyViewIneligible eligibility={eligibility} />;
 
@@ -49,6 +53,16 @@ const PrettyViewer: React.FC<PrettyViewerProps> = ({ flight, mode }) => {
 
 function renderFormat(language: string | null, contentType: string | null, body: Uint8Array) {
 	switch (language) {
+		case 'json+viewer': {
+			const json = new TextDecoder().decode(body);
+			try {
+				const parsed = JSON.parse(json);
+				return <JsonTreeViewer value={parsed} />;
+			} catch {
+				return <EditorView language='json' value={attemptJsonStringFormat(json)} options={{ readOnly: true }} />;
+			}
+		}
+
 		case 'json': {
 			const json = new TextDecoder().decode(body);
 			return <EditorView language='json' value={attemptJsonStringFormat(json)} options={{ readOnly: true }} />;
