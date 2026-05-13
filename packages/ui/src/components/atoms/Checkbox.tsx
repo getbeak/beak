@@ -54,7 +54,7 @@ const Checkbox: React.FC<CheckboxProps> = ({ label, ...rest }) => {
 					<Box
 						as='span'
 						display='inline-flex'
-						color='white'
+						color='fg.onAccent'
 						opacity={isChecked ? 1 : 0}
 						transform={isChecked ? 'scale(1)' : 'scale(0.5)'}
 						transition='opacity .14s ease, transform .14s ease'

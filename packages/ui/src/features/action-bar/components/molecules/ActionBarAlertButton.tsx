@@ -46,7 +46,7 @@ const ActionBarAlertButton: React.FC<ActionBarAlertButtonProps> = ({ id }) => {
 						fontSize='9px'
 						fontWeight='700'
 						bg='accent.alert'
-						color='white'
+						color='fg.onAccent'
 						pointerEvents='none'
 					>
 						{alertCount > 9 ? '9+' : alertCount}

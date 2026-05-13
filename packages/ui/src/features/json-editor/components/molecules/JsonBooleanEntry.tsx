@@ -109,7 +109,7 @@ const JsonBooleanEntry: React.FC<React.PropsWithChildren<JsonBooleanEntryProps>>
 						<Box
 							as='span'
 							display='inline-flex'
-							color='white'
+							color='fg.onAccent'
 							opacity={value.value ? 1 : 0}
 							transform={value.value ? 'scale(1)' : 'scale(0.5)'}
 							transition='opacity .14s ease, transform .14s ease'
