@@ -97,24 +97,25 @@ interface NotificationRowProps {
 }
 
 const NotificationRow: React.FC<NotificationRowProps> = ({ icon, iconColor, label, hint, children }) => (
-	<Flex align='center' gap='2'>
+	<Flex align='center' gap='2.5'>
 		<Flex
 			flex='0 0 auto'
 			align='center'
 			justify='center'
-			w='20px'
-			h='20px'
-			borderRadius='sm'
+			w='24px'
+			h='24px'
+			borderRadius='md'
 			style={{
-				background: `color-mix(in srgb, ${iconColor} 18%, transparent)`,
+				background: `color-mix(in srgb, ${iconColor} 16%, transparent)`,
 				color: iconColor,
+				boxShadow: `inset 0 0 0 1px color-mix(in srgb, ${iconColor} 22%, transparent)`,
 			}}
 		>
 			{icon}
 		</Flex>
 		<Box flex='1 1 auto' minW={0}>
-			<Box fontSize='xs' fontWeight='500' color='fg.default'>{label}</Box>
-			{hint && <Box fontSize='10px' color='fg.subtle'>{hint}</Box>}
+			<Box fontSize='xs' fontWeight='600' color='fg.default'>{label}</Box>
+			{hint && <Box fontSize='10px' color='fg.subtle' mt='0.5'>{hint}</Box>}
 		</Box>
 		<Box flex='0 0 auto' minW='160px'>
 			{children}
