@@ -1,4 +1,5 @@
 import './app-service';
+import './assets-service';
 import './beak-hub-service';
 import './context-menu-service';
 import './dialog-service';

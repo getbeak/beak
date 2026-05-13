@@ -1,4 +1,5 @@
 import { IpcAppServiceRenderer } from '@beak/common/ipc/app';
+import { IpcAssetsServiceRenderer } from '@beak/common/ipc/assets';
 import { IpcBeakHubServiceRenderer } from '@beak/common/ipc/beak-hub';
 import { IpcContextMenuServiceRenderer } from '@beak/common/ipc/context-menu';
 import { IpcDialogServiceRenderer } from '@beak/common/ipc/dialog';
@@ -22,6 +23,7 @@ const partialIpcRenderer: PartialIpcRenderer = {
 };
 
 export const ipcAppService = new IpcAppServiceRenderer(partialIpcRenderer);
+export const ipcAssetsService = new IpcAssetsServiceRenderer(partialIpcRenderer);
 export const ipcBeakHubService = new IpcBeakHubServiceRenderer(partialIpcRenderer);
 export const ipcContextMenuService = new IpcContextMenuServiceRenderer(partialIpcRenderer);
 export const ipcDialogService = new IpcDialogServiceRenderer(partialIpcRenderer);
