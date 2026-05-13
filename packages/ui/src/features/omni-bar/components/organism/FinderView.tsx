@@ -159,7 +159,7 @@ const Container = styled.div`
 
 const Item = styled.div<{ $active: boolean }>`
 	font-size: 13px;
-	color: ${p => p.theme.ui.textOnSurfaceBackground};
+	color: var(--beak-colors-fg-default);
 	padding: 4px 10px;
 	cursor: pointer;
 
@@ -168,8 +168,8 @@ const Item = styled.div<{ $active: boolean }>`
 	text-overflow: ellipsis;
 	text-decoration: none;
 
-	&:hover { background: ${p => p.theme.ui.secondaryActionMuted}; }
-	${p => p.$active ? css`background: ${p => p.theme.ui.secondaryActionMuted};` : ''}
+	&:hover { background: var(--beak-colors-accent-pink-muted); }
+	${p => p.$active ? css`background: var(--beak-colors-accent-pink-muted);` : ''}
 
 	&:last-of-type {
 		padding-bottom: 10px;
@@ -181,7 +181,7 @@ const Item = styled.div<{ $active: boolean }>`
 const ParentChain = styled.span`
 	display: inline-block;
 	font-size: 13px;
-	color: ${p => p.theme.ui.textMinor};
+	color: var(--beak-colors-fg-muted);
 	margin-bottom: 4px;
 
 	&:not(:last-of-type):after {

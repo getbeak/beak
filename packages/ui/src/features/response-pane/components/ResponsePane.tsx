@@ -36,7 +36,7 @@ const Container = styled.div`
 	position: relative;
 	display: flex;
 	flex-direction: column;
-	background-color: ${props => props.theme.ui.surface};
+	background-color: var(--beak-colors-bg-surface);
 	height: 100%;
 	width: 100%;
 `;

@@ -143,9 +143,9 @@ const FileBlob = styled.div`
 	width: 200px;
 	height: 110px;
 	border-radius: 8px;
-	border: 1px solid ${p => p.theme.ui.surfaceBorderSeparator};
-	background: ${p => p.theme.ui.secondarySurface};
-	color: ${p => p.theme.ui.textMinor};
+	border: 1px solid var(--beak-colors-border-subtle);
+	background: var(--beak-colors-bg-surface-emphasized);
+	color: var(--beak-colors-fg-muted);
 	font-size: 12px;
 `;
 
@@ -169,24 +169,24 @@ const AssetBlob = styled.div`
 	width: 200px;
 	padding: 10px;
 	border-radius: 8px;
-	border: 1px dashed ${p => p.theme.ui.surfaceBorderSeparator};
-	background: ${p => p.theme.ui.secondarySurface};
-	color: ${p => p.theme.ui.textMinor};
+	border: 1px dashed var(--beak-colors-border-subtle);
+	background: var(--beak-colors-bg-surface-emphasized);
+	color: var(--beak-colors-fg-muted);
 	font-size: 11px;
 	font-family: monospace;
 `;
 
 const AttachAssetButton = styled.button`
 	background: transparent;
-	border: 1px solid ${p => p.theme.ui.surfaceBorderSeparator};
-	color: ${p => p.theme.ui.textOnSurfaceBackground};
+	border: 1px solid var(--beak-colors-border-subtle);
+	color: var(--beak-colors-fg-default);
 	padding: 6px 12px;
 	border-radius: 6px;
 	font-size: 12px;
 	cursor: pointer;
 
 	&:hover {
-		background: ${p => p.theme.ui.secondarySurface};
+		background: var(--beak-colors-bg-surface-emphasized);
 	}
 `;
 

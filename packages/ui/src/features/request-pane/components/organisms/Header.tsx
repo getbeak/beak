@@ -146,15 +146,15 @@ const VerbPickerRenderer = styled.select`
 	padding-top: 7px;
 	margin-right: 10px;
 	border-radius: 4px;
-	border: 1px solid ${props => props.theme.ui.backgroundBorderSeparator};
-	background: ${props => props.theme.ui.surface};
-	color: ${props => props.theme.ui.primaryFill};
+	border: 1px solid var(--beak-colors-border-default);
+	background: var(--beak-colors-bg-surface);
+	color: var(--beak-colors-accent-pink);
 	text-transform: uppercase;
 	font-weight: 800;
 
 	&:hover, &:focus {
 		outline: none;
-		border: 1px solid ${props => props.theme.ui.primaryFill};
+		border: 1px solid var(--beak-colors-accent-pink);
 	}
 `;
 
@@ -170,7 +170,7 @@ const VerbContainer = styled.div`
 	flex: 0 0 auto;
 
 	&:hover > ${VerbPickerRenderer} {
-		border: 1px solid ${props => props.theme.ui.primaryFill};
+		border: 1px solid var(--beak-colors-accent-pink);
 	}
 `;
 
@@ -181,15 +181,15 @@ const OmniBar = styled.div`
 		padding: 6px 6px;
 		margin-right: 10px;
 		border-radius: 4px;
-		border: 1px solid ${props => props.theme.ui.backgroundBorderSeparator};
-		background: ${props => props.theme.ui.surface};
-		color: ${props => props.theme.ui.textOnSurfaceBackground};
+		border: 1px solid var(--beak-colors-border-default);
+		background: var(--beak-colors-bg-surface);
+		color: var(--beak-colors-fg-default);
 		font-size: 13px;
 		font-weight: 400;
 
 		&:hover, &:focus {
 			outline: none;
-			border: 1px solid ${props => props.theme.ui.primaryFill};
+			border: 1px solid var(--beak-colors-accent-pink);
 		}
 	}
 `;
@@ -200,15 +200,15 @@ const DispatchButton = styled.button`
 	padding: 6px 6px;
 	padding-top: 7px;
 	border-radius: 4px;
-	border: 1px solid ${props => props.theme.ui.backgroundBorderSeparator};
-	background: ${props => props.theme.ui.surface};
+	border: 1px solid var(--beak-colors-border-default);
+	background: var(--beak-colors-bg-surface);
 
-	color: ${props => props.theme.ui.goAction};
+	color: var(--beak-colors-accent-teal);
 	font-weight: 800;
 
 	&:hover, &:focus {
 		outline: none;
-		border: 1px solid ${props => props.theme.ui.goAction};
+		border: 1px solid var(--beak-colors-accent-teal);
 	}
 
 	cursor: pointer;

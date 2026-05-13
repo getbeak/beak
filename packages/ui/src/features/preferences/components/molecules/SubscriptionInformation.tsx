@@ -61,7 +61,7 @@ const Container = styled.div`
 
 	border-radius: 10px;
 	padding: 20px;
-	background: ${p => p.theme.ui.secondarySurface};
+	background: var(--beak-colors-bg-surface-emphasized);
 `;
 
 const LogoSection = styled.div`
@@ -71,7 +71,7 @@ const LogoSection = styled.div`
 const LogoOuter = styled.div`
 	border-radius: 100%;
 	width: 60px; height: 60px;
-	background: ${p => p.theme.ui.secondaryBackground};
+	background: var(--beak-colors-bg-canvas-alt);
 	background-image: url('images/logo.svg');
 	background-repeat: no-repeat;
 	background-position: center;
@@ -85,13 +85,13 @@ const AboutSection = styled.div`
 const Title = styled.div`
 	font-size: 20px;
 	font-weight: 500;
-	color: ${p => p.theme.ui.textOnSurfaceBackground};
+	color: var(--beak-colors-fg-default);
 `;
 const SubTitle = styled.div`
 	font-size: 14px;
 	margin-top: 5px;
 	margin-bottom: 20px;
-	color: ${p => p.theme.ui.textMinor};
+	color: var(--beak-colors-fg-muted);
 `;
 
 const SubscriptionMetaSection = styled.div`
@@ -103,10 +103,10 @@ const SubscriptionMetaSection = styled.div`
 const MetaTitle = styled.span`
 	font-weight: 600;
 	font-size: 18px;
-	color: ${p => p.theme.ui.textOnSurfaceBackground};
+	color: var(--beak-colors-fg-default);
 `;
 const MetaBody = styled.span`
-	color: ${p => p.theme.ui.textMinor};
+	color: var(--beak-colors-fg-muted);
 	font-size: 13px;
 `;
 

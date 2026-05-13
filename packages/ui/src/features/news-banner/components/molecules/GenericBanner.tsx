@@ -44,7 +44,7 @@ const Banner = styled.div`
 	grid-template-columns: 40px 1fr 20px;
 
 	padding: 12px 20px;
-	background: ${p => p.theme.ui.secondaryActionMuted};
+	background: var(--beak-colors-accent-pink-muted);
 	border-radius: 5px;
 `;
 
@@ -65,7 +65,7 @@ const BodyText = styled.div`
 	margin-top: 3px;
 `;
 const ActionButton = styled.button`
-	color: ${p => p.theme.ui.textHighlight};
+	color: var(--beak-colors-accent-pink);
 	background: none;
 	border: none;
 	padding: 0;

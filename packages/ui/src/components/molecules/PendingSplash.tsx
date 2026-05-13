@@ -99,7 +99,7 @@ const SingleShortcut = styled.div`
 
 	font-size: 12px;
 	line-height: 11px;
-	color: ${p => p.theme.ui.textMinor};
+	color: var(--beak-colors-fg-muted);
 `;
 
 const ShortcutName = styled.div`

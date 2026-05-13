@@ -314,8 +314,8 @@ const Wrapper = styled.div<{ $top: number; $left: number }>`
 
 	width: 300px;
 	padding: 8px 12px;
-	border: 1px solid ${p => p.theme.ui.backgroundBorderSeparator};
-	background: ${p => p.theme.ui.surface};
+	border: 1px solid var(--beak-colors-border-default);
+	background: var(--beak-colors-bg-surface);
 	z-index: 10000;
 
 	transform-origin: center;

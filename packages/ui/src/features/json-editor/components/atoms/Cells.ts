@@ -2,7 +2,7 @@ import styled from 'styled-components';
 
 export const HeaderCell = styled.div`
 	padding: 2px 0;
-	color: ${p => p.theme.ui.textOnSurfaceBackground};
+	color: var(--beak-colors-fg-default);
 `;
 export const HeaderKeyCell = styled(HeaderCell)`
 	padding-left: 5px;
@@ -32,7 +32,7 @@ export const BodyInputWrapper = styled(BodyCell)`
 		border: 1px solid transparent;
 		font-size: 12px;
 
-		color: ${props => props.theme.ui.textMinor};
+		color: var(--beak-colors-fg-muted);
 	}
 
 	> input:disabled {

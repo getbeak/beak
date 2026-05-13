@@ -67,7 +67,7 @@ const CollapsedIndicator = styled.div<{ $collapsed?: boolean }>`
 
 	font-size: 9px;
 	line-height: 9px;
-	color: ${p => p.theme.ui.textMinor};
+	color: var(--beak-colors-fg-muted);
 
 	> svg {
 		transition: transform .2s ease;
@@ -81,7 +81,7 @@ const Actions = styled.div`
 	border-radius: 3px;
 
 	&:hover {
-		background: ${p => p.theme.ui.surfaceFill};
+		background: var(--beak-colors-bg-surface);
 	}
 `;
 

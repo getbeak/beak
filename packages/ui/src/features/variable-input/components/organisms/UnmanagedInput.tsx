@@ -32,7 +32,7 @@ export default class UnmanagedInput extends React.Component<UnmanagedInputProps>
 
 const Input = styled.article`
 	font-size: 12px;
-	border: 1px solid ${p => p.theme.ui.backgroundBorderSeparator};
+	border: 1px solid var(--beak-colors-border-default);
 	white-space: nowrap;
 	overflow: hidden;
 
@@ -51,8 +51,8 @@ const Input = styled.article`
 		border-radius: 4px;
 		font-size: 11px;
 		line-height: 15px;
-		background: ${p => p.theme.ui.primaryFill};
-		color: ${p => p.theme.ui.textOnAction};
+		background: var(--beak-colors-accent-pink);
+		color: var(--beak-colors-fg-onAccent);
 		user-select: text;
 
 		> strong {

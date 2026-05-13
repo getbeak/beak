@@ -47,7 +47,7 @@ const Wrapper = styled.div`
 	border-radius: 10px;
 	padding: 10px;
 	background: ${p => toHexAlpha(p.theme.ui.surface, 0.25)};
-	color: ${p => p.theme.ui.textMinor};
+	color: var(--beak-colors-fg-muted);
 `;
 
 const Account = styled.div`
@@ -58,7 +58,7 @@ const Account = styled.div`
 const AccountTop = styled.div`
 	font-size: 16px;
 	font-weight: 500;
-	color: ${p => p.theme.ui.textOnSurfaceBackground};
+	color: var(--beak-colors-fg-default);
 `;
 
 const AccountEmail = styled.abbr`

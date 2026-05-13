@@ -80,5 +80,5 @@ const Wrapper = styled.div`
 	font-size: 12px;
 	font-weight: 400;
 
-	color: ${p => p.theme.ui.textMinor};
+	color: var(--beak-colors-fg-muted);
 `;

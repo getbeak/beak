@@ -30,7 +30,7 @@ const Content = styled.div`
 	flex: 1;
 
 	> svg > path {
-		fill: ${p => p.theme.ui.textMinor};
+		fill: var(--beak-colors-fg-muted);
 	}
 `;
 
@@ -38,12 +38,12 @@ const Title = styled.div`
 	font-size: 23px;
 	margin: 10px 0;
 	font-weight: 300;
-	color: ${p => p.theme.ui.textOnSurfaceBackground};
+	color: var(--beak-colors-fg-default);
 `;
 
 const ErrorMessage = styled.div`
 	font-size: 13px;
-	color: ${p => p.theme.ui.textMinor};
+	color: var(--beak-colors-fg-muted);
 	overflow-wrap: anywhere;
 `;
 

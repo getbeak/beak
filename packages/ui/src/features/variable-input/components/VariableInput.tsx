@@ -520,7 +520,7 @@ const Placeholder = styled.div<{ $shown: boolean }>`
 	display: ${p => p.$shown ? 'block' : 'none'};
 	position: absolute;
 	top: 7px; left: 7px;
-	color: ${p => p.theme.ui.textMinor};
+	color: var(--beak-colors-fg-muted);
 	pointer-events: none;
 `;
 

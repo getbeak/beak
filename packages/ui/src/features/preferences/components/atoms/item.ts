@@ -7,13 +7,13 @@ export const ItemGroup = styled.div`
 export const ItemLabel = styled.div`
 	font-size: 14px;
 	font-weight: 600;
-	color: ${p => p.theme.ui.textMinor};
+	color: var(--beak-colors-fg-muted);
 	margin-bottom: 10px;
 `;
 
 export const ItemInfo = styled.div`
 	font-size: 12px;
-	color: ${p => p.theme.ui.textMinorMuted};
+	color: var(--beak-colors-fg-subtle);
 	margin: 5px 0;
 `;
 
@@ -30,7 +30,7 @@ export const SubItemGroup = styled.div`
 
 export const SubItem = styled.div`
 	font-size: 12px;
-	color: ${p => p.theme.ui.textMinor};
+	color: var(--beak-colors-fg-muted);
 `;
 
 export const SubItemLabel = styled.div<{ $abbr?: boolean }>`

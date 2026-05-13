@@ -85,7 +85,7 @@ const Wrapper = styled.div`
 	justify-content: center;
 	flex-direction: column;
 
-	background-color: ${props => props.theme.ui.surface};
+	background-color: var(--beak-colors-bg-surface);
 
 	overflow-y: scroll;
 `;
@@ -106,14 +106,14 @@ const WelcomeBannerBody = styled.div`
 const WelcomeBannerTitle = styled.div`
 	font-size: 30px;
 	font-weight: 400;
-	color: ${p => p.theme.ui.textOnAction};
+	color: var(--beak-colors-fg-onAccent);
 `;
 
 const WelcomeBannerSummary = styled.div`
 	font-size: 14px;
 	margin-top: 15px;
 	margin-bottom: 15px;
-	color: ${p => p.theme.ui.textOnAction};
+	color: var(--beak-colors-fg-onAccent);
 `;
 
 const Guides = styled.div`
@@ -123,7 +123,7 @@ const Guides = styled.div`
 const GuidesTitle = styled.div`
 	font-size: 20px;
 	margin-bottom: 10px;
-	color: ${p => p.theme.ui.textOnSurfaceBackground};
+	color: var(--beak-colors-fg-default);
 `;
 
 const GuidesGrid = styled.div`
@@ -134,22 +134,22 @@ const GuidesGrid = styled.div`
 `;
 
 const GuidesGridItem = styled.div`
-	background: ${p => p.theme.ui.surfaceFill};
-	border: 1px solid ${p => p.theme.ui.surfaceBorderSeparator};
+	background: var(--beak-colors-bg-surface);
+	border: 1px solid var(--beak-colors-border-subtle);
 	border-radius: 5px;
 	padding: 15px 20px;
 `;
 
 const GuidesGridItemTitle = styled.div`
 	font-size: 18px;
-	color: ${p => p.theme.ui.textOnSurfaceBackground};
+	color: var(--beak-colors-fg-default);
 `;
 
 const GuidesGridItemBody = styled.div`
 	font-size: 14px;
 	margin-top: 10px;
 	margin-bottom: 20px;
-	color: ${p => p.theme.ui.textMinor};
+	color: var(--beak-colors-fg-muted);
 `;
 
 export default NewProjectIntro;

@@ -24,7 +24,7 @@ const Label = styled.div`
 	border-radius: 6px;
 	padding: 2px 4px;
 	font-size: 12px;
-	color: ${p => p.theme.ui.textOnAction};
+	color: var(--beak-colors-fg-onAccent);
 
 	background: ${p => toHexAlpha(p.theme.ui.primaryFill, 0.7)};
 `;

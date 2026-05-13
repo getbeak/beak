@@ -5,7 +5,7 @@ export const Row = styled.div`
 	grid-template-columns: minmax(0, .8fr) minmax(0, 1fr) 25px;
 	grid-template-rows: minmax(0, 1fr);
 
-	border-bottom: 1px solid ${p => p.theme.ui.backgroundBorderSeparator};
+	border-bottom: 1px solid var(--beak-colors-border-default);
 `;
 
 export const Header = styled.div`

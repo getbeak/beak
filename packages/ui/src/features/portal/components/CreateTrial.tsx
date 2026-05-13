@@ -83,7 +83,7 @@ const Title = styled.div`
 const SubTitle = styled.p`
 	font-size: 14px;
 	margin-top: 5px;
-	color: ${p => p.theme.ui.textOnSurfaceBackground};
+	color: var(--beak-colors-fg-default);
 `;
 
 const ActionContainer = styled.div`

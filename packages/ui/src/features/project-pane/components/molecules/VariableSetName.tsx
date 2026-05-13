@@ -64,7 +64,7 @@ export const VariableSetName: React.FC<VariableSetNameProps> = ({ variableSetNam
 };
 
 const Name = styled.abbr`
-	color: ${p => p.theme.ui.textMinor};
+	color: var(--beak-colors-fg-muted);
 	font-size: 12px;
 
 	overflow: hidden;

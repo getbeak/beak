@@ -13,11 +13,11 @@ export const Header = styled.div`
 	position: sticky;
 	top: 0;
 	z-index: 10;
-	background-color: ${props => props.theme.ui.surface};
+	background-color: var(--beak-colors-bg-surface);
 	min-width: 100%;
 
 	${Cell} {
-		background-color: ${props => props.theme.ui.surface};
+		background-color: var(--beak-colors-bg-surface);
 	}
 `;
 

@@ -41,7 +41,7 @@ const Button = styled.button`
 	background: ${props => toHexAlpha(props.theme.ui.secondarySurface, 0.7)};
 	backdrop-filter: blur(5px);
 	border-radius: 5px;
-	color: ${props => props.theme.ui.textOnSurfaceBackground};
+	color: var(--beak-colors-fg-default);
 	border: none;
 	cursor: pointer;
 
@@ -57,11 +57,11 @@ const Button = styled.button`
 
 	&:not(:disabled) {
 		&:hover {
-			background: ${props => props.theme.ui.surfaceHighlight};
+			background: var(--beak-colors-bg-surface-alt);
 		}
 
 		&:active, &:focus {
-			background: ${props => props.theme.ui.background};
+			background: var(--beak-colors-bg-canvas);
 			transform: scale(0.98);
 			outline: 0;
 		}
@@ -94,7 +94,7 @@ const Title = styled.span`
 
 const Description = styled.span`
 	font-size: 13px;
-	color: ${props => props.theme.ui.textMinor};
+	color: var(--beak-colors-fg-muted);
 `;
 
 export default GetStartedButton;

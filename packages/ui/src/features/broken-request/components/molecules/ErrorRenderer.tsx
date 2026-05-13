@@ -27,8 +27,8 @@ const EditorContainer = styled.div`
 	overflow: hidden;
 
 	border-radius: 5px;
-	background: ${p => p.theme.ui.surfaceFill};
-	border: 2px solid ${p => p.theme.ui.surfaceFill};
+	background: var(--beak-colors-bg-surface);
+	border: 2px solid var(--beak-colors-bg-surface);
 `;
 
 const EditorHeader = styled.div`
@@ -37,7 +37,7 @@ const EditorHeader = styled.div`
 
 	font-size: 11px;
 	font-weight: 600;
-	color: ${p => p.theme.ui.textMinor};
+	color: var(--beak-colors-fg-muted);
 	text-transform: uppercase;
 `;
 

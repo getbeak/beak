@@ -60,9 +60,9 @@ const UrlHeaderWrapper = styled.div`
 
 const Section = styled.div`
 	flex: 0 0 auto;
-	background-color: ${p => p.theme.ui.background};
+	background-color: var(--beak-colors-bg-canvas);
 
-	border: 1px solid ${p => p.theme.ui.primaryFill};
+	border: 1px solid var(--beak-colors-accent-pink);
 	border-radius: 4px;
 
 	padding: 5px 8px;
@@ -78,7 +78,7 @@ const UrlSection = styled(Section)`
 `;
 
 const StatusSection = styled(Section)<{ $status: number }>`
-	background-color: ${p => p.theme.ui.background};
+	background-color: var(--beak-colors-bg-canvas);
 	border-color: ${p => statusToColor(p.theme, p.$status)};
 	color: ${p => statusToColor(p.theme, p.$status)};
 

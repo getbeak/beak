@@ -39,7 +39,7 @@ const Header = styled.h1`
 	padding: 10px 25px;
 	font-size: 25px;
 	font-weight: 400;
-	color: ${p => p.theme.ui.textOnFill};
+	color: var(--beak-colors-fg-muted);
 `;
 
 export default CreateNewSplash;

@@ -48,9 +48,9 @@ const Wrapper = styled.div<{ $top: number; $left: number }>`
 	margin-left: ${p => p.$left}px;
 
 	width: 300px;
-	border: 1px solid ${p => p.theme.ui.backgroundBorderSeparator};
+	border: 1px solid var(--beak-colors-border-default);
 	border-radius: 5px;
-	background: ${p => p.theme.ui.surface};
+	background: var(--beak-colors-bg-surface);
 
 	z-index: 101;
 `;

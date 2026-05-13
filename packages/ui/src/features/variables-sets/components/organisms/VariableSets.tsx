@@ -159,7 +159,7 @@ const VariableSets: React.FC<React.PropsWithChildren<unknown>> = () => {
 };
 
 const EmptyWarning = styled.div`
-	color: ${p => p.theme.ui.textMinor};
+	color: var(--beak-colors-fg-muted);
 	margin-left: 5px;
 	font-size: 13px;
 `;

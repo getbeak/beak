@@ -69,7 +69,7 @@ const Wrapper = styled.div`
 	height: 40px;
 
 	-webkit-app-region: drag;
-	background-color: ${props => props.theme.ui.secondarySurface};
+	background-color: var(--beak-colors-bg-surface-emphasized);
 	padding: 0 10px;
 
 	> * {

@@ -88,7 +88,7 @@ const Title = styled.div`
 const Description = styled.p`
 	font-size: 12px;
 	margin: 5px 0;
-	color: ${p => p.theme.ui.textMinor};
+	color: var(--beak-colors-fg-muted);
 `;
 
 export default FixProjectEncryption;

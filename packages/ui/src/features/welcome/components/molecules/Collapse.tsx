@@ -50,7 +50,7 @@ const Arrow = styled.div<{ direction: 'right' | 'down' }>`
 
 	border-top: 5px solid transparent;
 	border-bottom: 5px solid transparent;
-	border-left: 5px solid ${p => p.theme.ui.textOnSurfaceBackground};
+	border-left: 5px solid var(--beak-colors-fg-default);
 
 	${({ direction }) => (direction === 'down' ? css`transform: rotate(90deg);` : '')};
 `;

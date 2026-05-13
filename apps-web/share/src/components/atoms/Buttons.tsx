@@ -7,7 +7,7 @@ interface CtaButtonProps {
 const CtaButton = styled.a<CtaButtonProps>`
 	display: inline-block;
 	border-radius: 5px;
-	color: ${p => p.theme.ui.textOnAction};
+	color: var(--beak-colors-fg-onAccent);
 	padding: 6px 10px;
 	font-size: 14px;
 	cursor: pointer;

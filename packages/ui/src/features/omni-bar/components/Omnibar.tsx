@@ -112,7 +112,7 @@ const Container = styled.div`
 const BarOuter = styled.div`
 	backdrop-filter: blur(100px);
 	background: ${p => toHexAlpha(p.theme.ui.surfaceHighlight, 0.4)};
-	border: 1px solid ${p => p.theme.ui.blankBackground};
+	border: 1px solid var(--beak-colors-bg-canvas);
 	box-shadow: 0px 4px 12px 2px ${p => toHexAlpha(p.theme.ui.surfaceFill, 0.6)};
 
 	position: relative;
@@ -129,14 +129,14 @@ const BarOuter = styled.div`
 `;
 
 const Bar = styled.div`
-	border: 1px solid ${p => p.theme.ui.backgroundBorderSeparator};
+	border: 1px solid var(--beak-colors-border-default);
 	border-radius: 10px;
 `;
 
 const BarInput = styled.input`
 	border: none;
 	background: none;
-	color: ${p => p.theme.ui.textOnSurfaceBackground};
+	color: var(--beak-colors-fg-default);
 
 	font-weight: 300;
 	font-size: 20px;
@@ -152,7 +152,7 @@ const BarInput = styled.input`
 
 const BarContent = styled.div`
 	max-height: min(calc(100vh - 160px - 40px), 400px);
-	border-top: 1px solid ${p => p.theme.ui.backgroundBorderSeparator};
+	border-top: 1px solid var(--beak-colors-border-default);
 	overflow-x: hidden;
 	overflow-y: overlay;
 `;

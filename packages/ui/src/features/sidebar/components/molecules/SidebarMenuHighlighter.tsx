@@ -21,7 +21,7 @@ const Container = styled.div<{ $hidden: boolean }>`
 const HighlightBar = styled.div<{ $index: number }>`
 	width: 2px;
 	height: 40px;
-	background: ${p => p.theme.ui.primaryFill};
+	background: var(--beak-colors-accent-pink);
 
 	transition: margin-top .2s ease;
 

@@ -209,7 +209,7 @@ const Container = styled.div`
 	flex-direction: column;
 	overflow: overlay;
 
-	background-color: ${props => props.theme.ui.surface};
+	background-color: var(--beak-colors-bg-surface);
 
 	height: 100%;
 	width: 100%;
@@ -219,7 +219,7 @@ const inputCss = css<{ $center?: boolean }>`
 	width: calc(100% - 12px);
 	background: none;
 	border: 1px solid transparent;
-	color: ${props => props.theme.ui.textMinor};
+	color: var(--beak-colors-fg-muted);
 	font-size: 13px;
 	font-weight: normal;
 	text-align: ${p => p.$center ? 'center' : 'inherit'};

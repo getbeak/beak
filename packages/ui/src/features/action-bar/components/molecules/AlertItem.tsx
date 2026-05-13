@@ -35,7 +35,7 @@ const Container = styled.div`
 	grid-template-rows: auto auto;
 
 	padding: 8px 12px;
-	border-bottom: 1px solid ${p => p.theme.ui.backgroundBorderSeparator};
+	border-bottom: 1px solid var(--beak-colors-border-default);
 
 	&:last-of-type {
 		border: none;
@@ -54,7 +54,7 @@ const Description = styled.div`
 	grid-column: 1;
 
 	font-size: 12px;
-	color: ${p => p.theme.ui.textMinorMuted};
+	color: var(--beak-colors-fg-subtle);
 `;
 
 const Action = styled.div`

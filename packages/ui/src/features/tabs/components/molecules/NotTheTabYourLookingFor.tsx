@@ -37,7 +37,7 @@ const NotTheTabYourLookingFor: React.FC<React.PropsWithChildren<unknown>> = () =
 const Wrapper = styled.div`
 	height: 100%;
 	text-align: center;
-	background: ${p => p.theme.ui.background};
+	background: var(--beak-colors-bg-canvas);
 	padding: 20px 25px;
 `;
 
@@ -46,12 +46,12 @@ const Header = styled.h1`
 	font-weight: 400;
 	font-size: 35px;
 	line-height: 25px;
-	color: ${p => p.theme.ui.textOnSurfaceBackground};
+	color: var(--beak-colors-fg-default);
 `;
 
 const Body = styled.p`
 	font-size: 14px;
-	color: ${p => p.theme.ui.textOnFill};
+	color: var(--beak-colors-fg-muted);
 `;
 
 export default NotTheTabYourLookingFor;

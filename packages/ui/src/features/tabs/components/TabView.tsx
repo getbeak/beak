@@ -82,7 +82,7 @@ const TabView: React.FC<React.PropsWithChildren<TabViewProps>> = ({ selectedTab,
 
 const Container = styled.div`
 	height: 100%;
-	background-color: ${props => props.theme.ui.secondarySurface};
+	background-color: var(--beak-colors-bg-surface-emphasized);
 `;
 
 const ShortcutContainer = styled.div`
@@ -90,7 +90,7 @@ const ShortcutContainer = styled.div`
 `;
 
 const TabBar = styled(TB)`
-	background-color: ${props => props.theme.ui.secondarySurface};
+	background-color: var(--beak-colors-bg-surface-emphasized);
 `;
 
 export default TabView;

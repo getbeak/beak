@@ -29,7 +29,7 @@ const Container = styled.div<{ $shown: boolean }>`
 	display: flex;
 	top: 0; bottom: 0; left: 0; right: 0;
 	align-items: center; justify-content: center;
-	background: ${p => p.theme.ui.background};
+	background: var(--beak-colors-bg-canvas);
 	text-align: center;
 	transition: opacity .2s ease-out;
 	opacity: 0;
@@ -49,7 +49,7 @@ const PulseOrb = styled.div`
 		margin-left: -100px;
 		margin-top: -100px;
 		border-radius: 100%;
-		background-color: ${p => p.theme.ui.primaryFill};
+		background-color: var(--beak-colors-accent-pink);
 		animation: ${pulseRing} 1.25s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
 	}
 	&:after {

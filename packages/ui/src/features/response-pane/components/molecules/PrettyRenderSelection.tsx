@@ -47,8 +47,8 @@ const Container = styled.div`
 	align-items: stretch;
 	padding: 5px 10px;
 
-	background: ${p => p.theme.ui.surface};
-	border-bottom: 1px solid ${p => p.theme.ui.backgroundBorderSeparator};
+	background: var(--beak-colors-bg-surface);
+	border-bottom: 1px solid var(--beak-colors-border-default);
 
 	font-size: 14px;
 `;

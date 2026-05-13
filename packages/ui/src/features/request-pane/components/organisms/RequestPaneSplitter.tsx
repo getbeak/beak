@@ -46,8 +46,8 @@ const Container = styled.div`
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	background: ${p => p.theme.ui.background};
-	border: 1px solid ${p => p.theme.ui.backgroundBorderSeparator};
+	background: var(--beak-colors-bg-canvas);
+	border: 1px solid var(--beak-colors-border-default);
 	border-left: none;
 	border-right: none;
 
@@ -56,7 +56,7 @@ const Container = styled.div`
 
 const PreviewLabel = styled.div`
 	font-size: 13px;
-	color: ${p => p.theme.ui.textOnSurfaceBackground};
+	color: var(--beak-colors-fg-default);
 `;
 
 const ActionsContainer = styled.div`
@@ -66,7 +66,7 @@ const ActionsContainer = styled.div`
 const ActionButton = styled.button`
 	background: none;
 	border: none;
-	color: ${p => p.theme.ui.textOnSurfaceBackground};
+	color: var(--beak-colors-fg-default);
 	font-size: 11px;
 	line-height: 12px;
 	cursor: pointer;
@@ -75,7 +75,7 @@ const ActionButton = styled.button`
 const ActionSeparator = styled.div`
 	margin: 0 5px;
 	width: 1px;
-	background: ${p => p.theme.ui.backgroundBorderSeparator};
+	background: var(--beak-colors-border-default);
 `;
 
 export default RequestPaneSplitter;

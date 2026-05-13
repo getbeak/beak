@@ -144,8 +144,8 @@ const DragBar = styled.div<{ $collapsed: boolean }>`
 	${p =>
 		p.$collapsed &&
 		css`
-		background: ${p => p.theme.ui.secondarySurface};
-		border-bottom: 1px solid ${p => p.theme.ui.backgroundBorderSeparator};
+		background: var(--beak-colors-bg-surface-emphasized);
+		border-bottom: 1px solid var(--beak-colors-border-default);
 	`}
 `;
 

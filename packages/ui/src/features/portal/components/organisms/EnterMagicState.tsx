@@ -129,13 +129,13 @@ const EnterMagicState: React.FC<React.PropsWithChildren<EnterMagicStateProps>> =
 
 const Paragraph = styled.p<{ $center?: boolean }>`
 	font-size: 14px;
-	color: ${p => p.theme.ui.textOnSurfaceBackground};
+	color: var(--beak-colors-fg-default);
 	text-align: ${p => (p.$center ? 'center' : 'inherit')};
 `;
 
 const HelpButton = styled.span`
 	cursor: pointer;
-	color: ${p => p.theme.ui.textHighlight};
+	color: var(--beak-colors-accent-pink);
 `;
 
 const ManualButton = styled(Button)`

@@ -64,7 +64,7 @@ const Title = styled.div`
 const Body = styled.p`
 	font-size: 13px;
 	margin: 5px 0;
-	color: ${p => p.theme.ui.textMinor};
+	color: var(--beak-colors-fg-muted);
 `;
 
 const ButtonContainer = styled.div`

@@ -242,8 +242,8 @@ const Wrapper = styled.div<{ $top: number; $left: number }>`
 	margin-top: ${p => p.$top}px;
 	margin-left: ${p => p.$left}px;
 
-	border: 1px solid ${p => p.theme.ui.backgroundBorderSeparator};
-	background: ${p => p.theme.ui.surface};
+	border: 1px solid var(--beak-colors-border-default);
+	background: var(--beak-colors-bg-surface);
 
 	transform-origin: center;
 	animation: ${scaleIn} .2s ease;
@@ -261,11 +261,11 @@ const ItemContainer = styled.div`
 const Item = styled.div<{ $active: boolean }>`
 	padding: 2px 4px;
 	cursor: pointer;
-	color: ${p => p.theme.ui.textOnSurfaceBackground};
+	color: var(--beak-colors-fg-default);
 	overflow-x: hidden;
 
 	&:focus {
-		background-color: ${p => p.theme.ui.primaryFill};
+		background-color: var(--beak-colors-accent-pink);
 		outline: none;
 	}
 
@@ -275,7 +275,7 @@ const Item = styled.div<{ $active: boolean }>`
 const NoItems = styled.div`
 	padding: 10px;
 	cursor: pointer;
-	color: ${p => p.theme.ui.textOnSurfaceBackground};
+	color: var(--beak-colors-fg-default);
 	overflow-x: hidden;
 `;
 
@@ -285,8 +285,8 @@ const ExtensionContainer = styled.div`
 `;
 
 const Description = styled.div`
-	border-top: 1px solid ${p => p.theme.ui.backgroundBorderSeparator};
-	background: ${p => p.theme.ui.background};
+	border-top: 1px solid var(--beak-colors-border-default);
+	background: var(--beak-colors-bg-canvas);
 
 	padding: 5px;
 	min-height: 30px;

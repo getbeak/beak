@@ -25,7 +25,7 @@ const IndicatorBar = styled.div`
 	transition: width .1s ease;
 	height: 4px;
 
-	background-color: ${props => props.theme.ui.primaryFill};
+	background-color: var(--beak-colors-accent-pink);
 `;
 
 export default ProgressIndicator;

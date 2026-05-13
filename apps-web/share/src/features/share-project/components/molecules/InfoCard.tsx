@@ -42,7 +42,7 @@ const Card = styled.div`
 	gap: 20px;
 	grid-template-columns: 150px 1fr;
 	border-radius: 10px;
-	background: ${p => p.theme.ui.surface};
+	background: var(--beak-colors-bg-surface);
 	padding: 25px;
 `;
 

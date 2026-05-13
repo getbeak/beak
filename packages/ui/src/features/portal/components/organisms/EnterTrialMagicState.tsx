@@ -130,12 +130,12 @@ const EnterTrialMagicState: React.FC<React.PropsWithChildren<EnterTrialMagicStat
 const Text = styled.div`
 	font-size: 14px;
 	margin: 5px 0;
-	color: ${p => p.theme.ui.textOnSurfaceBackground};
+	color: var(--beak-colors-fg-default);
 `;
 
 const HelpButton = styled.span`
 	cursor: pointer;
-	color: ${p => p.theme.ui.textHighlight};
+	color: var(--beak-colors-accent-pink);
 `;
 
 const ManualButton = styled(Button)`

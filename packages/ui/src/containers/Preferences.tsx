@@ -89,12 +89,12 @@ const SidebarItem = styled.div<{ $active?: boolean }>`
 	border-radius: 10px;
 	margin-bottom: 6px;
 
-	color: ${p => p.theme.ui.textOnSurfaceBackground};
+	color: var(--beak-colors-fg-default);
 	${p =>
 		p.$active &&
 		css`
 		background: ${toHexAlpha(p.theme.ui.primaryFill, 0.75)};
-		color: ${p => p.theme.ui.textOnAction};
+		color: var(--beak-colors-fg-onAccent);
 	`}
 
 	&:last-of-type {
@@ -116,11 +116,11 @@ const SidebarItem = styled.div<{ $active?: boolean }>`
 `;
 
 const Border = styled.div`
-	background: ${p => p.theme.ui.backgroundBorderSeparator};
+	background: var(--beak-colors-border-default);
 `;
 
 const Panel = styled.div`
-	background: ${p => p.theme.ui.background};
+	background: var(--beak-colors-bg-canvas);
 `;
 
 export default About;

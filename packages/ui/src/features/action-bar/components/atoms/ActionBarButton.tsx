@@ -9,7 +9,7 @@ const ActionBarButton = styled.button`
 	pointer-events: auto;
 
 	&:hover:not(:disabled) {
-		background: ${p => p.theme.ui.surface};
+		background: var(--beak-colors-bg-surface);
 	}
 	&:disabled {
 		opacity: 0.5;

@@ -38,8 +38,8 @@ const Wrapper = styled.div`
 
 const Chevron = styled.div<{ expanded: boolean }>`
 	display: inline-block;
-	border-right: 1px solid ${props => props.theme.ui.textOnSurfaceBackground};
-	border-bottom: 1px solid ${props => props.theme.ui.textOnSurfaceBackground};
+	border-right: 1px solid var(--beak-colors-fg-default);
+	border-bottom: 1px solid var(--beak-colors-fg-default);
 	width: 5px;
 	height: 5px;
 	transform: rotate(${props => (props.expanded ? '45deg' : '-45deg')});

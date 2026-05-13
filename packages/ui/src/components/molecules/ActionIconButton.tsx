@@ -25,8 +25,8 @@ const Button = styled.button`
 	padding: 0;
 
 	background: none;
-	border: 1px solid ${p => p.theme.ui.textMinor};
-	color: ${p => p.theme.ui.textMinor};
+	border: 1px solid var(--beak-colors-fg-muted);
+	color: var(--beak-colors-fg-muted);
 	border-radius: 100%;
 	line-height: 15px;
 

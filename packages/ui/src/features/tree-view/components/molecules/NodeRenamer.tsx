@@ -127,9 +127,9 @@ const RenameWrappedText = styled.div`
 `;
 
 const RenameInput = styled.input<{ $error: boolean }>`
-	border: 1px solid ${p => p.theme.ui.primaryFill};
-	background-color: ${p => p.theme.ui.background};
-	color: ${p => p.theme.ui.textOnSurfaceBackground};
+	border: 1px solid var(--beak-colors-accent-pink);
+	background-color: var(--beak-colors-bg-canvas);
+	color: var(--beak-colors-fg-default);
 	width: calc(100% - 4px);
 
 	font-size: 12px;
@@ -142,10 +142,10 @@ const RenameError = styled.div`
 	position: absolute;
 	top: 19px;
 	left: 0; right: 0;
-	background: ${p => p.theme.ui.background};
-	border: 1px solid ${p => p.theme.ui.destructiveAction};
+	background: var(--beak-colors-bg-canvas);
+	border: 1px solid var(--beak-colors-accent-alert);
 	border-top: none;
-	color: ${p => p.theme.ui.textOnSurfaceBackground};
+	color: var(--beak-colors-fg-default);
 
 	padding: 4px 2px;
 	font-size: 12px;

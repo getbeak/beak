@@ -15,7 +15,7 @@ const PreviewContainer: React.FC<PreviewContainerProps> = ({ text }) => (
 const Container = styled.div`
 	position: relative;
 	font-size: 12px;
-	background: ${p => p.theme.ui.secondarySurface};
+	background: var(--beak-colors-bg-surface-emphasized);
 	margin: 10px -12px;
 	margin-bottom: 8px;
 	padding: 10px 12px;

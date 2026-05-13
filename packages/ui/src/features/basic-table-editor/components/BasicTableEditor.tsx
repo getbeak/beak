@@ -106,7 +106,7 @@ const Wrapper = styled.div`
 	font-size: 12px;
 	font-weight: 400;
 
-	color: ${p => p.theme.ui.textMinor};
+	color: var(--beak-colors-fg-muted);
 `;
 
 const AddButtonWrapper = styled.div`
@@ -119,19 +119,19 @@ const AddButtonWrapper = styled.div`
 
 const Button = styled.button`
 	background: transparent;
-	border: 1px solid ${props => props.theme.ui.backgroundBorderSeparator};
+	border: 1px solid var(--beak-colors-border-default);
 	border-radius: 10px;
-	color: ${props => props.theme.ui.textOnSurfaceBackground};
+	color: var(--beak-colors-fg-default);
 
 	padding: 3px 8px;
 	font-size: 11px;
 
 	&:hover, &:focus {
 		outline: none;
-		border-color: ${props => props.theme.ui.primaryFill};
+		border-color: var(--beak-colors-accent-pink);
 	}
 	&:active {
-		background-color: ${props => props.theme.ui.primaryFill};
+		background-color: var(--beak-colors-accent-pink);
 	}
 `;
 

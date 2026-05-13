@@ -63,7 +63,7 @@ const Item = styled.div`
 `;
 
 const GroupName = styled.span`
-	color: ${p => p.theme.ui.textMinor};
+	color: var(--beak-colors-fg-muted);
 	font-size: 12px;
 
 	overflow: hidden;
@@ -77,7 +77,7 @@ const Selector = styled.select`
 	border: 0;
 	border-radius: 4px;
 	background: none;
-	color: ${p => p.theme.ui.textMinor};
+	color: var(--beak-colors-fg-muted);
 	text-align-last: right;
 	text-overflow: ellipsis;
 
@@ -86,7 +86,7 @@ const Selector = styled.select`
 	}
 
 	&:not(:disabled):hover, &:not(:disabled):active, &:not(:disabled):focus {
-		background: ${p => p.theme.ui.surface};
+		background: var(--beak-colors-bg-surface);
 		outline: none;
 	}
 `;

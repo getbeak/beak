@@ -13,9 +13,9 @@ const Kbd = styled.kbd`
 	font-size: 9px;
 	line-height: 8px;
 	
-	color: ${p => p.theme.ui.textOnSurfaceBackground};
-	background-color: ${p => p.theme.ui.secondarySurface};
-	border-color: ${p => p.theme.ui.backgroundBorderSeparator};
+	color: var(--beak-colors-fg-default);
+	background-color: var(--beak-colors-bg-surface-emphasized);
+	border-color: var(--beak-colors-border-default);
 	box-shadow: rgb(0 0 0 / 16%) 0px -1px 0px inset;
 
 	&:first-child {

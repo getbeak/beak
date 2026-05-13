@@ -89,12 +89,12 @@ const Selector = styled.select`
 	border: 0;
 	border-radius: 4px;
 	background: none;
-	color: ${p => p.theme.ui.textMinor};
+	color: var(--beak-colors-fg-muted);
 	text-align-last: right;
 	text-overflow: ellipsis;
 
 	&:hover, &:active, &:focus {
-		background: ${p => p.theme.ui.surface};
+		background: var(--beak-colors-bg-surface);
 		outline: none;
 	}
 `;

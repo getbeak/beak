@@ -53,23 +53,23 @@ const Title = styled.div`
 const Description = styled.p`
 	font-size: 12px;
 	/* margin: 5px 0; */
-	color: ${p => p.theme.ui.textMinor};
+	color: var(--beak-colors-fg-muted);
 `;
 const List = styled.ul`
 	font-size: 12px;
 	/* margin: 5px 0; */
-	color: ${p => p.theme.ui.textMinor};
+	color: var(--beak-colors-fg-muted);
 `;
 const FilePathButton = styled.button`
 	background: none;
 	border: none;
-	border-bottom: 1px dashed ${p => p.theme.ui.primaryFill};
+	border-bottom: 1px dashed var(--beak-colors-accent-pink);
 	display: contents;
 	font-weight: 500;
 	font-size: 12px;
 	padding: 0;
 	overflow: hidden;
-	color: ${p => p.theme.ui.textHighlight};
+	color: var(--beak-colors-accent-pink);
 	cursor: pointer;
 	text-decoration: dashed;
 `;

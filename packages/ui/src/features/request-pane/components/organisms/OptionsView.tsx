@@ -50,7 +50,7 @@ const OptionRow = styled.div`
 const Label = styled.label`
 	display: block;
 	font-size: 14px;
-	color: ${p => p.theme.ui.textOnSurfaceBackground};
+	color: var(--beak-colors-fg-default);
 `;
 const Checkbox = styled.input`
 	margin-left: 0px;

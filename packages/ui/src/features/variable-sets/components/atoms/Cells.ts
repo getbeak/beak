@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 export const Cell = styled.div`
-	border-bottom: 1px solid ${p => p.theme.ui.backgroundBorderSeparator};
+	border-bottom: 1px solid var(--beak-colors-border-default);
 `;
 
 export const CellAction = styled.div`
@@ -11,14 +11,14 @@ export const CellAction = styled.div`
 `;
 
 export const HeaderCell = styled(Cell)`
-	color: ${p => p.theme.ui.textOnSurfaceBackground};
-	border-left: 1px solid ${p => p.theme.ui.backgroundBorderSeparator};
+	color: var(--beak-colors-fg-default);
+	border-left: 1px solid var(--beak-colors-border-default);
 `;
 export const HeaderNameCell = styled(HeaderCell)`
 	border-left: none;
 
 	> input {
-		color: ${p => p.theme.ui.textOnSurfaceBackground};
+		color: var(--beak-colors-fg-default);
 	}
 `;
 export const HeaderGroupNameCell = styled(HeaderCell)`
@@ -27,7 +27,7 @@ export const HeaderGroupNameCell = styled(HeaderCell)`
 `;
 
 export const BodyCell = styled(Cell)`
-	border-left: 1px solid ${p => p.theme.ui.backgroundBorderSeparator};
+	border-left: 1px solid var(--beak-colors-border-default);
 `;
 export const BodyNameCell = styled(BodyCell)`
 	display: flex;
@@ -44,6 +44,6 @@ export const BodyValueCell = styled(BodyCell)`
 		border: 1px solid transparent;
 		font-size: 12px;
 
-		color: ${props => props.theme.ui.textMinor};
+		color: var(--beak-colors-fg-muted);
 	}
 `;

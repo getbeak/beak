@@ -39,11 +39,11 @@ const Wrapper = styled.div`
 	text-align: center;
 	-webkit-app-region: drag;
 
-	background: ${p => p.theme.ui.background};
+	background: var(--beak-colors-bg-canvas);
 `;
 
 const Logo = styled.img`
-	filter: drop-shadow(0px 8px 24px ${p => p.theme.ui.textOnSurfaceBackground}44);
+	filter: drop-shadow(0px 8px 24px var(--beak-colors-fg-default)44);
 	margin-bottom: 20px;
 `;
 

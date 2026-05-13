@@ -32,7 +32,7 @@ interface RequestStatusBlobProps {
 const RequestStatusBlob = styled.div<RequestStatusBlobProps>`
 	width: 9px; height: 9px;
 
-	border: 1px solid ${props => props.theme.ui.surfaceBorderSeparator};
+	border: 1px solid var(--beak-colors-border-subtle);
 	border-radius: 100%;
 
 	background-color: ${p => statusToColor(p.theme, p.$status)};

@@ -2,7 +2,7 @@ import styled from 'styled-components';
 
 const ActionBarSeparator = styled.div`
 	height: 20px;
-	background: ${p => p.theme.ui.textOnSurfaceBackgroundMuted};
+	background: var(--beak-colors-fg-disabled);
 	width: 1px;
 	margin: 0 5px;
 `;

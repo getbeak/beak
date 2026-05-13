@@ -71,7 +71,7 @@ const Wrapper = styled.div`
 	align-items: center;
 
 	svg > path {
-		fill: ${p => p.theme.ui.textMinor};
+		fill: var(--beak-colors-fg-muted);
 	}
 `;
 
@@ -79,12 +79,12 @@ const Title = styled.div`
 	font-size: 18px;
 	margin: 10px 0;
 	font-weight: 300;
-	color: ${p => p.theme.ui.textOnSurfaceBackground};
+	color: var(--beak-colors-fg-default);
 `;
 
 const ErrorMessage = styled.div`
 	font-size: 13px;
-	color: ${p => p.theme.ui.textMinor};
+	color: var(--beak-colors-fg-muted);
 	overflow-wrap: anywhere;
 `;
 
@@ -92,12 +92,12 @@ const Separator = styled.div`
 	width: 250px;
 	height: 1px;
 	margin: 20px 0;
-	background-color: ${p => p.theme.ui.backgroundBorderSeparator};
+	background-color: var(--beak-colors-border-default);
 `;
 
 const Body = styled.div`
 	font-size: 13px;
-	color: ${p => p.theme.ui.textMinor};
+	color: var(--beak-colors-fg-muted);
 `;
 
 const UnstyledList = styled.ul`
@@ -107,11 +107,11 @@ const UnstyledList = styled.ul`
 const ListItem = styled.li`
 	font-size: 12px;
 	margin: 6px;
-	color: ${p => p.theme.ui.textMinor};
+	color: var(--beak-colors-fg-muted);
 `;
 
 const DevToolsToggle = styled.a`
-	color: ${p => p.theme.ui.secondaryAction};
+	color: var(--beak-colors-accent-pink);
 `;
 
 export default GraphQlError;

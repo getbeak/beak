@@ -174,7 +174,7 @@ const NodeItemContainer = styled.div<NodeItemContainerProps>`
 	background-color: ${p => (p.$active ? toVibrancyAlpha(p.theme.ui.surface, 0.8) : 'transparent')};
 
 	&:hover {
-		color: ${p => p.theme.ui.textOnSurfaceBackground};
+		color: var(--beak-colors-fg-default);
 	}
 	&:focus {
 		outline: none;

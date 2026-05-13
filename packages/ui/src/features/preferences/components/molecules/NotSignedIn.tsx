@@ -8,7 +8,7 @@ const NotSignedIn: React.FC<React.PropsWithChildren<unknown>> = () => (
 const Title = styled.div`
 	font-size: 14px;
 	font-weight: 600;
-	color: ${p => p.theme.ui.textMinor};
+	color: var(--beak-colors-fg-muted);
 `;
 
 export default NotSignedIn;

@@ -86,8 +86,8 @@ const Button = styled.div`
 
 	text-align: center;
 	border-radius: 2px;
-	border: 1px solid ${p => p.theme.ui.backgroundBorderSeparator};
-	color: ${p => p.theme.ui.textMinor};
+	border: 1px solid var(--beak-colors-border-default);
+	color: var(--beak-colors-fg-muted);
 
 	> svg {
 		padding-top: 1px;

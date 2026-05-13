@@ -34,7 +34,7 @@ const Header = styled.div`
 	padding-bottom: 80px;
 	overflow: hidden;
 
-	background: ${p => p.theme.ui.background};
+	background: var(--beak-colors-bg-canvas);
 
 	@media (max-width: 850px) {
 		padding-top: 40px;

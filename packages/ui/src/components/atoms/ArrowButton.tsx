@@ -28,14 +28,14 @@ const Button = styled.button`
 	align-items: center;
 	background: none;
 	border: none;
-	color: ${p => p.theme.ui.textOnSurfaceBackground};
+	color: var(--beak-colors-fg-default);
 	padding: 4px;
 	border-radius: 4px;
 	font-size: 14px;
 	cursor: pointer;
 
 	&:hover {
-		background: ${p => p.theme.ui.secondaryActionMuted};
+		background: var(--beak-colors-accent-pink-muted);
 	}
 `;
 

@@ -88,9 +88,9 @@ const Wrapper = styled.div<{ $top: number; $left: number }>`
 	margin-left: ${p => p.$left}px;
 
 	width: 140px;
-	border: 1px solid ${p => p.theme.ui.backgroundBorderSeparator};
+	border: 1px solid var(--beak-colors-border-default);
 	border-radius: 5px;
-	background: ${p => p.theme.ui.background};
+	background: var(--beak-colors-bg-canvas);
 
 	padding: 5px;
 	z-index: 101;
@@ -102,10 +102,10 @@ const WrapperItem = styled.div`
 	cursor: pointer;
 
 	border-radius: 5px;
-	color: ${p => p.theme.ui.textOnSurfaceBackground};
+	color: var(--beak-colors-fg-default);
 
 	&:hover {
-		background: ${p => p.theme.ui.secondarySurface};
+		background: var(--beak-colors-bg-surface-emphasized);
 	}
 `;
 

@@ -7,7 +7,7 @@ export const SelectContainer = styled.div`
 	padding: 20px 25px;
 	padding-bottom: 15px;
 	border-radius: 8px;
-	background: ${p => p.theme.ui.surfaceHighlight};
+	background: var(--beak-colors-bg-surface-alt);
 `;
 
 export const SelectItem = styled.div<{ $active?: boolean }>`
@@ -15,7 +15,7 @@ export const SelectItem = styled.div<{ $active?: boolean }>`
 	flex-direction: column;
 	align-items: center;
 
-	color: ${p => p.theme.ui.textMinor};
+	color: var(--beak-colors-fg-muted);
 	opacity: ${p => (p.$active ? 1 : 0.6)};
 	font-size: 14px;
 	cursor: pointer;
@@ -36,5 +36,5 @@ export const SelectItemPreview = styled.div<{
 	background-position: center;
 	background-size: cover;
 	background-repeat: no-repeat;
-	${p => p.$active && css`border: 2px solid ${p => p.theme.ui.primaryFill}`}
+	${p => p.$active && css`border: 2px solid var(--beak-colors-accent-pink)`}
 `;

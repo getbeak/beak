@@ -82,7 +82,7 @@ const Name = styled.span`
 const Path = styled.span<{ $asshole: boolean }>`
 	display: block;
 	font-size: 12px;
-	color: ${props => props.theme.ui.textMinor};
+	color: var(--beak-colors-fg-muted);
 
 	white-space: nowrap;
 	overflow: hidden;
@@ -98,7 +98,7 @@ const Path = styled.span<{ $asshole: boolean }>`
 
 const ModifiedDate = styled.div`
 	font-size: 12px;
-	color: ${props => props.theme.ui.textMinor};
+	color: var(--beak-colors-fg-muted);
 `;
 
 export default RecentEntry;
