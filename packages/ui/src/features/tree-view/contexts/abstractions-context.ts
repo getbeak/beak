@@ -1,7 +1,7 @@
 import type { ApplicationState } from '@beak/ui/store';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import type { MenuItemConstructorOptions } from 'electron';
-import React from 'react';
+import type React from 'react';
 import { createContext } from 'react';
 
 import type { TreeViewItem } from '../types';

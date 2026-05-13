@@ -96,7 +96,7 @@ export function sanitiseFilename(name: string): string {
 		.replace(/[\\/:*?"<>|]/g, '-')
 		.replace(/\s+/g, '-')
 		.replace(/-+/g, '-')
-		.replace(/^[.\-]+|[.\-]+$/g, '')
+		.replace(/^[.-]+|[.-]+$/g, '')
 		.slice(0, 120);
 }
 

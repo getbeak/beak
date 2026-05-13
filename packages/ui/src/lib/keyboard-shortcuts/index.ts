@@ -1,4 +1,4 @@
-import React from 'react';
+import type React from 'react';
 import { instance as windowSessionInstance } from '@beak/ui/contexts/window-session-context';
 
 import type { PlatformAgnosticDefinitions, PlatformSpecificDefinitions } from './types';
