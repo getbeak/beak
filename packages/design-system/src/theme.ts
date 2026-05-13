@@ -3,27 +3,177 @@ import { createSystem, defaultConfig, defineConfig } from '@chakra-ui/react';
 /**
  * Beak's Chakra v3 design tokens.
  *
- * Brand colours are preserved verbatim from the previous styled-components
- * theme (the pink/teal/indigo triad) so the migration is visually consistent.
- * The spacing scale is compressed compared to Chakra's defaults — Beak is a
- * desktop tool and benefits from denser layout than the mobile-first defaults.
+ * ## Colour system
  *
- * Semantic tokens (`bg.canvas`, `fg.default`, etc.) carry the light/dark
- * resolution so feature components can read them without conditionals.
+ * Each colour family ships as a numbered ramp (50 → 950) so callers can
+ * reach for `gray.300` or `pink.700` directly. The 500 step is the
+ * "core" of the colour. Lower numbers are lighter, higher are darker —
+ * matching Tailwind / Radix conventions, which most contributors
+ * already know.
+ *
+ * Families:
+ *   gray   — neutral, slightly cool (macOS-leaning)
+ *   blue   — system blue (informational)
+ *   pink   — Beak brand pink (primary)
+ *   teal   — Beak brand teal (success / GET)
+ *   indigo — Beak brand indigo (focus / PUT-PATCH)
+ *   red    — alert / DELETE
+ *   green  — success (in addition to teal)
+ *   yellow — warning
+ *   orange — caution (3xx redirects)
+ *
+ * Brand aliases (`brand.pink`, `brand.teal`, …) and accent semantic
+ * tokens (`accent.pink`, `accent.pink.muted`, …) all resolve from these
+ * ramps, so existing call sites keep working without a sweeping rename.
+ *
+ * ## Semantic tokens
+ *
+ * macOS-style layered backgrounds (canvas → surface → emphasized) and a
+ * 4-level foreground hierarchy (default / muted / subtle / disabled) cover
+ * almost every UI need without callers reaching for raw scale values.
+ *
+ * Each semantic token resolves light vs dark via Chakra's `_dark` selector.
+ * Light mode uses near-white backgrounds + near-black text. Dark mode
+ * uses a deep cool gray (gray.950, gray.900) for surfaces — close to
+ * the macOS "vibrant dark" appearance.
  */
+
+const colors = {
+	gray: {
+		'50': { value: '#F7F8FA' },
+		'100': { value: '#EFF1F4' },
+		'200': { value: '#E2E5EA' },
+		'300': { value: '#C9CED7' },
+		'400': { value: '#9AA1AD' },
+		'500': { value: '#6B7280' },
+		'600': { value: '#4A5160' },
+		'700': { value: '#363B49' },
+		'800': { value: '#242838' },
+		'850': { value: '#1B1F2C' },
+		'900': { value: '#141824' },
+		'950': { value: '#0B0E18' },
+	},
+	pink: {
+		'50': { value: '#FDF2F5' },
+		'100': { value: '#FCE4EC' },
+		'200': { value: '#F8C5D2' },
+		'300': { value: '#F19DB0' },
+		'400': { value: '#E58399' },
+		'500': { value: '#D45D80' },
+		'600': { value: '#B84A6C' },
+		'700': { value: '#963A56' },
+		'800': { value: '#6E2A40' },
+		'900': { value: '#4A1B2A' },
+		'950': { value: '#2A0F19' },
+	},
+	teal: {
+		'50': { value: '#ECFDF6' },
+		'100': { value: '#D2F9E5' },
+		'200': { value: '#A5F0CC' },
+		'300': { value: '#6FE3B0' },
+		'400': { value: '#45D9A5' },
+		'500': { value: '#33CC99' },
+		'600': { value: '#29A37B' },
+		'700': { value: '#1F7A5C' },
+		'800': { value: '#155339' },
+		'900': { value: '#0C351F' },
+		'950': { value: '#061D11' },
+	},
+	indigo: {
+		'50': { value: '#EEEEFD' },
+		'100': { value: '#D8D8F9' },
+		'200': { value: '#B2B2F2' },
+		'300': { value: '#8585E5' },
+		'400': { value: '#5C5CC8' },
+		'500': { value: '#4646B0' },
+		'600': { value: '#333399' },
+		'700': { value: '#2A2A7D' },
+		'800': { value: '#20205F' },
+		'900': { value: '#181847' },
+		'950': { value: '#0E0E2A' },
+	},
+	red: {
+		'50': { value: '#FEF2F2' },
+		'100': { value: '#FFE0E0' },
+		'200': { value: '#FFB8B8' },
+		'300': { value: '#FF8585' },
+		'400': { value: '#FF5757' },
+		'500': { value: '#FC3233' },
+		'600': { value: '#DB1F20' },
+		'700': { value: '#B61617' },
+		'800': { value: '#851011' },
+		'900': { value: '#520808' },
+		'950': { value: '#2C0404' },
+	},
+	yellow: {
+		'50': { value: '#FEFCE8' },
+		'100': { value: '#FEF9C3' },
+		'200': { value: '#FEF08A' },
+		'300': { value: '#FDE047' },
+		'400': { value: '#FACC15' },
+		'500': { value: '#EAB308' },
+		'600': { value: '#CA8A04' },
+		'700': { value: '#A16207' },
+		'800': { value: '#854D0E' },
+		'900': { value: '#713F12' },
+		'950': { value: '#422006' },
+	},
+	green: {
+		'50': { value: '#F0FDF4' },
+		'100': { value: '#DCFCE7' },
+		'200': { value: '#BBF7D0' },
+		'300': { value: '#86EFAC' },
+		'400': { value: '#4ADE80' },
+		'500': { value: '#22C55E' },
+		'600': { value: '#16A34A' },
+		'700': { value: '#15803D' },
+		'800': { value: '#166534' },
+		'900': { value: '#14532D' },
+		'950': { value: '#052E16' },
+	},
+	orange: {
+		'50': { value: '#FFF7ED' },
+		'100': { value: '#FFEDD5' },
+		'200': { value: '#FED7AA' },
+		'300': { value: '#FDBA74' },
+		'400': { value: '#FB923C' },
+		'500': { value: '#F97316' },
+		'600': { value: '#EA580C' },
+		'700': { value: '#C2410C' },
+		'800': { value: '#9A3412' },
+		'900': { value: '#7C2D12' },
+		'950': { value: '#431407' },
+	},
+	blue: {
+		'50': { value: '#EFF6FF' },
+		'100': { value: '#DBEAFE' },
+		'200': { value: '#BFDBFE' },
+		'300': { value: '#93C5FD' },
+		'400': { value: '#60A5FA' },
+		'500': { value: '#3B82F6' },
+		'600': { value: '#2563EB' },
+		'700': { value: '#1D4ED8' },
+		'800': { value: '#1E40AF' },
+		'900': { value: '#1E3A8A' },
+		'950': { value: '#172554' },
+	},
+	// Brand aliases — point at the 500 step of each scale. Kept so existing
+	// callers reading `{colors.brand.pink}` keep working unchanged.
+	brand: {
+		pink: { value: '{colors.pink.500}' },
+		teal: { value: '{colors.teal.500}' },
+		indigo: { value: '{colors.indigo.600}' },
+		alert: { value: '{colors.red.500}' },
+		success: { value: '{colors.green.500}' },
+		warning: { value: '{colors.yellow.500}' },
+	},
+};
+
 const config = defineConfig({
 	cssVarsPrefix: 'beak',
 	theme: {
 		tokens: {
-			colors: {
-				brand: {
-					pink: { value: '#d45d80' },
-					teal: { value: '#33CC99' },
-					indigo: { value: '#333399' },
-					alert: { value: '#FC3233' },
-					success: { value: '#33CC99' },
-				},
-			},
+			colors,
 			fonts: {
 				body: {
 					value: '-apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif',
@@ -35,9 +185,6 @@ const config = defineConfig({
 					value: '"SF Mono", "Cascadia Code", "Roboto Mono", "Source Code Pro", monospace',
 				},
 			},
-			// Compact spacing scale. Chakra defaults are mobile-friendly (4px
-			// base unit, large jumps); we shift to a denser scale so the
-			// desktop UI doesn't feel padded.
 			spacing: {
 				'0.5': { value: '2px' },
 				'1': { value: '4px' },
@@ -69,81 +216,92 @@ const config = defineConfig({
 				xl: { value: '16px' },
 				'2xl': { value: '20px' },
 				'3xl': { value: '24px' },
+				'4xl': { value: '30px' },
 			},
 		},
 		semanticTokens: {
 			colors: {
-				// Canvas (window background, vibrancy-aware on macOS via global css)
+				// ─── Backgrounds (layered, macOS-style) ────────────────────
+				// canvas: the window's deepest fill (vibrancy peeks through on darwin)
 				'bg.canvas': {
-					value: { base: '#ffffff', _dark: '#1A1E2D' },
+					value: { base: '{colors.gray.50}', _dark: '{colors.gray.950}' },
 				},
 				'bg.canvas.alt': {
-					value: { base: '#ffffff', _dark: '#181d25' },
+					value: { base: '#FFFFFF', _dark: '{colors.gray.900}' },
 				},
-				// Surface (panels, cards, request editor)
+				// surface: panels, cards, the request editor body
 				'bg.surface': {
-					value: { base: '#ffffff', _dark: '#161824' },
+					value: { base: '#FFFFFF', _dark: '{colors.gray.900}' },
 				},
 				'bg.surface.alt': {
-					value: { base: '#f3f3f3', _dark: '#131824' },
+					value: { base: '{colors.gray.50}', _dark: '{colors.gray.850}' },
 				},
 				'bg.surface.emphasized': {
-					value: { base: '#ececec', _dark: '#242941' },
+					value: { base: '{colors.gray.100}', _dark: '{colors.gray.800}' },
 				},
-				// Inputs / chrome
 				'bg.subtle': {
-					value: { base: '#fafafa', _dark: '#1f2333' },
+					value: { base: '{colors.gray.50}', _dark: '{colors.gray.950}' },
 				},
-				// Foregrounds
+
+				// ─── Foregrounds (4 levels, macOS HIG) ─────────────────────
 				'fg.default': {
-					value: { base: '#2e2e2e', _dark: '#ffffff' },
+					value: { base: '{colors.gray.950}', _dark: '{colors.gray.50}' },
 				},
 				'fg.muted': {
-					value: { base: '#616161', _dark: '#BEBEC6' },
+					value: { base: '{colors.gray.700}', _dark: '{colors.gray.300}' },
 				},
 				'fg.subtle': {
-					value: { base: '#989899', _dark: '#a6accd' },
+					value: { base: '{colors.gray.500}', _dark: '{colors.gray.400}' },
 				},
 				'fg.disabled': {
-					value: { base: '#bdbdbd', _dark: '#4B5178' },
+					value: { base: '{colors.gray.400}', _dark: '{colors.gray.600}' },
 				},
 				'fg.onAccent': {
-					value: '#ffffff',
+					value: '#FFFFFF',
 				},
-				// Borders
-				'border.default': {
-					value: { base: '#dadada', _dark: '#4a4651' },
-				},
+
+				// ─── Borders / separators ──────────────────────────────────
 				'border.subtle': {
-					value: { base: '#e7e7e7', _dark: '#1A1E2D' },
+					value: { base: '{colors.gray.200}', _dark: '{colors.gray.800}' },
+				},
+				'border.default': {
+					value: { base: '{colors.gray.300}', _dark: '{colors.gray.700}' },
 				},
 				'border.emphasized': {
-					value: { base: '#c8c8c8', _dark: '#5b5e74' },
+					value: { base: '{colors.gray.400}', _dark: '{colors.gray.600}' },
 				},
-				// Brand surfaces
-				'accent.pink': {
-					value: '{colors.brand.pink}',
-				},
+
+				// ─── Brand / accent surfaces ────────────────────────────────
+				// Solid accents map to the 500 step.
+				'accent.pink': { value: '{colors.pink.500}' },
+				'accent.teal': { value: '{colors.teal.500}' },
+				'accent.indigo': { value: '{colors.indigo.600}' },
+				'accent.alert': { value: '{colors.red.500}' },
+				'accent.success': { value: '{colors.green.500}' },
+				'accent.warning': { value: '{colors.yellow.500}' },
+				'accent.info': { value: '{colors.blue.500}' },
+
+				// Muted (low-contrast tinted fills for hover/highlight states).
 				'accent.pink.muted': {
-					value: { base: 'rgba(212, 93, 128, 0.12)', _dark: 'rgba(212, 93, 128, 0.18)' },
-				},
-				'accent.teal': {
-					value: '{colors.brand.teal}',
+					value: { base: '{colors.pink.100}', _dark: '{colors.pink.950}' },
 				},
 				'accent.teal.muted': {
-					value: { base: 'rgba(51, 204, 153, 0.12)', _dark: 'rgba(51, 204, 153, 0.18)' },
+					value: { base: '{colors.teal.100}', _dark: '{colors.teal.950}' },
 				},
-				'accent.indigo': {
-					value: '{colors.brand.indigo}',
-				},
-				'accent.alert': {
-					value: '{colors.brand.alert}',
+				'accent.indigo.muted': {
+					value: { base: '{colors.indigo.100}', _dark: '{colors.indigo.950}' },
 				},
 				'accent.alert.muted': {
-					value: { base: 'rgba(252, 50, 51, 0.10)', _dark: 'rgba(252, 50, 51, 0.18)' },
+					value: { base: '{colors.red.100}', _dark: '{colors.red.950}' },
 				},
-				'accent.success': {
-					value: '{colors.brand.success}',
+				'accent.success.muted': {
+					value: { base: '{colors.green.100}', _dark: '{colors.green.950}' },
+				},
+				'accent.warning.muted': {
+					value: { base: '{colors.yellow.100}', _dark: '{colors.yellow.950}' },
+				},
+				'accent.info.muted': {
+					value: { base: '{colors.blue.100}', _dark: '{colors.blue.950}' },
 				},
 			},
 		},
@@ -163,7 +321,7 @@ const config = defineConfig({
 			'&:focus:not(:disabled)': {
 				outline: '0',
 				borderColor: 'accent.pink',
-				boxShadow: '0 0 0 3px rgba(212, 93, 128, 0.47)',
+				boxShadow: '0 0 0 3px color-mix(in srgb, var(--beak-colors-accent-pink) 45%, transparent)',
 				background: 'bg.surface.alt',
 				borderRadius: '4px',
 			},
@@ -185,10 +343,10 @@ const config = defineConfig({
 			background: 'transparent',
 		},
 		'::-webkit-scrollbar-thumb': {
-			backgroundColor: 'rgba(212, 93, 128, 0.10)',
+			backgroundColor: 'color-mix(in srgb, var(--beak-colors-gray-500) 30%, transparent)',
 			transition: 'background .1s ease',
 			'&:hover': {
-				backgroundColor: 'accent.pink',
+				backgroundColor: 'var(--beak-colors-accent-pink)',
 			},
 		},
 		'::-webkit-scrollbar-corner': {
