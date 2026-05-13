@@ -1,10 +1,26 @@
+import { Box, chakra } from '@chakra-ui/react';
 import DebouncedInput from '@beak/ui/components/atoms/DebouncedInput';
 import type { BooleanEntry, NamedBooleanEntry } from '@getbeak/types/body-editor-json';
+import { Check } from 'lucide-react';
 import React from 'react';
 import { useContext } from 'react';
 import { useDispatch } from 'react-redux';
 
 import { JsonEditorContext } from '../../contexts/json-editor-context';
+
+const HiddenInput = chakra('input', {
+	base: {
+		position: 'absolute',
+		opacity: 0,
+		w: '16px',
+		h: '16px',
+		m: 0,
+		cursor: 'pointer',
+		'&:focus + span': {
+			boxShadow: '0 0 0 3px color-mix(in srgb, var(--beak-colors-accent-warning) 30%, transparent)',
+		},
+	},
+});
 import {
 	BodyAction,
 	BodyInputValueCell,
@@ -13,6 +29,7 @@ import {
 	BodyPrimaryCell,
 	BodyTypeCell,
 } from '../atoms/Cells';
+
 import { Row } from '../atoms/Structure';
 import EntryActions from './EntryActions';
 import { EntryFolderIrrelevant } from './EntryFolder';
@@ -60,9 +77,9 @@ const JsonBooleanEntry: React.FC<React.PropsWithChildren<JsonBooleanEntryProps>>
 				<TypeSelector requestId={requestId} id={id} value={value.type} />
 			</BodyTypeCell>
 			<BodyInputValueCell>
-				<BodyInputWrapper>
-					<input
-						type={'checkbox'}
+				<Box position='relative' pl='1.5' pt='1' display='inline-flex'>
+					<HiddenInput
+						type='checkbox'
 						checked={value.value}
 						onChange={e =>
 							dispatch(
@@ -74,7 +91,33 @@ const JsonBooleanEntry: React.FC<React.PropsWithChildren<JsonBooleanEntryProps>>
 							)
 						}
 					/>
-				</BodyInputWrapper>
+					<Box
+						as='span'
+						display='inline-flex'
+						alignItems='center'
+						justifyContent='center'
+						w='16px'
+						h='16px'
+						borderRadius='sm'
+						borderWidth='1px'
+						borderColor={value.value ? 'accent.warning' : 'border.default'}
+						bg={value.value ? 'accent.warning' : 'var(--beak-colors-bg-surface)'}
+						boxShadow={value.value ? '0 0 12px color-mix(in srgb, var(--beak-colors-accent-warning) 30%, transparent)' : 'inset 0 1px 2px rgba(0,0,0,0.04)'}
+						transition='background-color .14s ease, border-color .14s ease, box-shadow .14s ease'
+						pointerEvents='none'
+					>
+						<Box
+							as='span'
+							display='inline-flex'
+							color='white'
+							opacity={value.value ? 1 : 0}
+							transform={value.value ? 'scale(1)' : 'scale(0.5)'}
+							transition='opacity .14s ease, transform .14s ease'
+						>
+							<Check size={11} strokeWidth={3} />
+						</Box>
+					</Box>
+				</Box>
 			</BodyInputValueCell>
 			<BodyAction>
 				<EntryActions id={id} entry={value} requestId={requestId} />
