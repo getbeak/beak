@@ -30,24 +30,39 @@ const AccountItem: React.FC = () => {
 	return (
 		<Flex
 			align='center'
+			gap='2.5'
 			borderRadius='lg'
-			p='2.5'
-			bg='color-mix(in srgb, var(--beak-colors-bg-surface) 25%, transparent)'
+			borderWidth='1px'
+			borderColor='border.subtle'
+			p='3'
+			bg='color-mix(in srgb, var(--beak-colors-bg-surface) 60%, transparent)'
 			color='fg.muted'
 		>
-			<CircleUserRound color='var(--beak-colors-accent-pink)' />
-			<Box ml='2.5' overflow='hidden'>
-				<Box fontSize='xl' fontWeight='medium' color='fg.default'>{'Beak'}</Box>
+			<Flex
+				flex='0 0 auto'
+				align='center'
+				justify='center'
+				w='34px'
+				h='34px'
+				borderRadius='full'
+				bg='color-mix(in srgb, var(--beak-colors-accent-pink) 18%, transparent)'
+				color='accent.pink'
+			>
+				<CircleUserRound size={18} />
+			</Flex>
+			<Box minW={0} flex='1 1 auto'>
+				<Box fontSize='sm' fontWeight='600' color='fg.default'>{'Signed in'}</Box>
 				<Box
 					as='abbr'
 					title={primaryEmail}
 					display='block'
 					overflow='hidden'
-					wordWrap='break-word'
 					whiteSpace='nowrap'
 					textOverflow='ellipsis'
-					fontSize='sm'
+					fontSize='xs'
+					color='fg.muted'
 					textDecoration='none'
+					fontFamily='mono'
 				>
 					{primaryEmail}
 				</Box>
