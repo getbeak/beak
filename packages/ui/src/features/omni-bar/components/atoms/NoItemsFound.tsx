@@ -10,8 +10,11 @@ const NoItemsFound: React.FC<React.PropsWithChildren> = ({ children }) => (
 			w='44px'
 			h='44px'
 			borderRadius='full'
-			bg='color-mix(in srgb, var(--beak-colors-fg-subtle) 12%, transparent)'
+			bg='color-mix(in srgb, var(--beak-colors-fg-subtle) 10%, transparent)'
+			borderWidth='1px'
+			borderColor='color-mix(in srgb, var(--beak-colors-fg-subtle) 22%, transparent)'
 			color='fg.subtle'
+			boxShadow='0 4px 12px color-mix(in srgb, var(--beak-colors-fg-subtle) 14%, transparent), inset 0 1px 0 color-mix(in srgb, white 14%, transparent)'
 		>
 			<SearchX size={20} strokeWidth={1.8} />
 		</Flex>
