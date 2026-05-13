@@ -289,22 +289,42 @@ const OpenApiImportDialog: React.FC = () => {
 							transition={{ duration: 0.14 }}
 						>
 							{state.result.ok ? (
-								<Flex direction='column' gap='2'>
-									<Flex align='center' gap='2' color='accent.teal'>
-										<CheckCircle2 size={18} />
+								<Flex direction='column' gap='2.5'>
+									<Flex align='center' gap='2'>
+										<Flex
+											align='center'
+											justify='center'
+											w='28px'
+											h='28px'
+											borderRadius='full'
+											bg='color-mix(in srgb, var(--beak-colors-accent-teal) 16%, transparent)'
+											color='accent.teal'
+										>
+											<CheckCircle2 size={15} strokeWidth={2.2} />
+										</Flex>
 										<Box fontWeight='600' fontSize='md' color='fg.default'>
 											{'OpenAPI imported'}
 										</Box>
 									</Flex>
-									<Box fontSize='sm' color='fg.muted'>
+									<Box fontSize='sm' color='fg.muted' lineHeight='1.5'>
 										{state.result.notice ??
 											`Imported into ${state.targetFolder}. The collection is ready to edit in the project tree.`}
 									</Box>
 								</Flex>
 							) : (
-								<Flex direction='column' gap='2'>
-									<Flex align='center' gap='2' color='accent.alert'>
-										<AlertOctagon size={18} />
+								<Flex direction='column' gap='2.5'>
+									<Flex align='center' gap='2'>
+										<Flex
+											align='center'
+											justify='center'
+											w='28px'
+											h='28px'
+											borderRadius='full'
+											bg='color-mix(in srgb, var(--beak-colors-accent-alert) 16%, transparent)'
+											color='accent.alert'
+										>
+											<AlertOctagon size={15} strokeWidth={2} />
+										</Flex>
 										<Box fontWeight='600' fontSize='md' color='fg.default'>
 											{'Import failed'}
 										</Box>
@@ -313,12 +333,17 @@ const OpenApiImportDialog: React.FC = () => {
 										fontSize='xs'
 										fontFamily='mono'
 										color='fg.default'
-										bg='bg.canvas'
+										bg='color-mix(in srgb, var(--beak-colors-accent-alert) 6%, var(--beak-colors-bg-surface))'
 										borderWidth='1px'
-										borderColor='border.subtle'
-										borderRadius='sm'
-										p='2'
+										borderColor='color-mix(in srgb, var(--beak-colors-accent-alert) 28%, var(--beak-colors-border-subtle))'
+										borderRadius='md'
+										p='2.5'
+										lineHeight='1.45'
+										overflowWrap='anywhere'
 									>
+										<Box fontSize='10px' fontWeight='700' letterSpacing='0.06em' textTransform='uppercase' color='accent.alert' mb='1' fontFamily='body'>
+											{'Error message'}
+										</Box>
 										{state.result.error}
 									</Box>
 								</Flex>
