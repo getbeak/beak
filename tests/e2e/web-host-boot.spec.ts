@@ -63,3 +63,13 @@ test('web host: "Create a new project" transitions to the create-local view', as
 	await expect(page.getByText('Give your project a name')).toBeVisible();
 	await expect(page.getByText('Select folder')).toBeVisible();
 });
+
+test('web host: Cancel from create-local returns to the welcome view', async ({ page }) => {
+	await page.goto('/');
+	await page.getByText('Create a new project').click({ timeout: 30_000 });
+	await expect(page.getByText('Give your project a name')).toBeVisible();
+	await page.getByRole('button', { name: 'Cancel' }).click();
+	// Back at the welcome entry points.
+	await expect(page.getByText('Create a new project')).toBeVisible();
+	await expect(page.getByText('Open an existing project')).toBeVisible();
+});
