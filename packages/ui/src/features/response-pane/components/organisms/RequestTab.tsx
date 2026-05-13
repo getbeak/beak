@@ -86,13 +86,11 @@ const RequestTab: React.FC<React.PropsWithChildren<RequestTabProps>> = props => 
 					<PrettyViewer flight={flight} mode={'request'} />
 				)}
 				{tab === 'raw' && (
-					<React.Fragment>
-						<EditorView
-							language={'http'}
-							value={output}
-							options={{ readOnly: true }}
-						/>
-					</React.Fragment>
+					<EditorView
+						language={'http'}
+						value={output}
+						options={{ readOnly: true }}
+					/>
 				)}
 			</TabBody>
 		</Container>
