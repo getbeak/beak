@@ -5,7 +5,7 @@ const TabSpacer = chakra('div', {
 		flexGrow: 2,
 		h: 'calc(100% - 1px)',
 		borderBottomWidth: '1px',
-		borderColor: 'border.default',
+		borderColor: 'border.subtle',
 	},
 });
 

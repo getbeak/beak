@@ -32,16 +32,16 @@ const Modifiers: React.FC<React.PropsWithChildren<ModifiersProps>> = props => {
 		<Flex direction='column' overflow='hidden' h='100%'>
 			<TabBar $centered>
 				<TabSpacer />
-				<TabItem active={tab === 'headers'} onClick={() => setTab('headers')}>
+				<TabItem active={tab === 'headers'} size='sm' onClick={() => setTab('headers')}>
 					{'Headers'}
 				</TabItem>
-				<TabItem active={tab === 'url_query'} onClick={() => setTab('url_query')}>
+				<TabItem active={tab === 'url_query'} size='sm' onClick={() => setTab('url_query')}>
 					{'URL query'}
 				</TabItem>
-				<TabItem active={tab === 'body'} onClick={() => setTab('body')}>
+				<TabItem active={tab === 'body'} size='sm' onClick={() => setTab('body')}>
 					{'Body'}
 				</TabItem>
-				<TabItem active={tab === 'options'} onClick={() => setTab('options')}>
+				<TabItem active={tab === 'options'} size='sm' onClick={() => setTab('options')}>
 					{'Options'}
 				</TabItem>
 				<TabSpacer />
