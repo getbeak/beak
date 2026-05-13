@@ -97,7 +97,8 @@ const Header: React.FC<HeaderProps> = ({ node }) => {
 						letterSpacing='0.06em'
 						textTransform='uppercase'
 						cursor='pointer'
-						transition='background-color .12s ease, border-color .12s ease, box-shadow .12s ease'
+						transition='background-color .14s ease, border-color .14s ease, box-shadow .14s ease, transform .08s ease'
+						_active={{ transform: 'scale(0.97)' }}
 						_focus={{
 							outline: 'none',
 							borderColor: verbColor,
@@ -105,13 +106,14 @@ const Header: React.FC<HeaderProps> = ({ node }) => {
 						}}
 						style={{
 							color: verbColor,
-							background: `color-mix(in srgb, ${verbColor} 10%, var(--beak-colors-bg-surface))`,
-							borderColor: `color-mix(in srgb, ${verbColor} 32%, var(--beak-colors-border-subtle))`,
+							background: `color-mix(in srgb, ${verbColor} 12%, var(--beak-colors-bg-surface))`,
+							borderColor: `color-mix(in srgb, ${verbColor} 38%, var(--beak-colors-border-subtle))`,
 							borderLeft: `3px solid ${verbColor}`,
+							boxShadow: `inset 0 1px 0 color-mix(in srgb, white 18%, transparent), 0 1px 2px color-mix(in srgb, ${verbColor} 18%, transparent)`,
 						}}
 					>
 						{verb.toUpperCase()}
-						<ChevronDown size={11} />
+						<ChevronDown size={11} strokeWidth={2.2} />
 					</ChakraButton>
 				</Menu.Trigger>
 				<Portal>
