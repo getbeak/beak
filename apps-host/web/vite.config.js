@@ -3,7 +3,6 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
-import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill';
 import reactPlugin from '@vitejs/plugin-react';
 import mkcert from 'vite-plugin-mkcert';
 import monacoEditorPlugin from 'vite-plugin-monaco-editor';
@@ -38,8 +37,10 @@ export default {
 			'@beak/ui': path.join(__dirname, `../../packages/ui/${sourcePathInDev}`),
 			'@beak/common': path.join(__dirname, '../../packages/common/src'),
 			'@beak/runtime-shared': path.join(__dirname, '../../packages/runtime-shared/src'),
+			'@beak/state': path.join(__dirname, '../../packages/state/src'),
 			'@beak/design-system': path.join(__dirname, '../../packages/design-system/src'),
 			'@beak/ksuid': path.join(__dirname, '../../packages/ksuid/src'),
+			'@beak/squawk': path.join(__dirname, '../../packages/squawk/src'),
 
 			'@getbeak/extension-sdk': path.join(__dirname, '../../packages/extension-sdk/src'),
 			'@getbeak/types': path.join(__dirname, '../../packages/types/src'),
@@ -122,17 +123,13 @@ export default {
 			'import.meta.env.ENVIRONMENT': writeDefinition(environment),
 		},
 	},
-	optimizeDeps: {
-		esbuildOptions: {
-			define: {
-				global: 'globalThis',
-			},
-			plugins: [
-				NodeGlobalsPolyfillPlugin({
-					buffer: true,
-				}),
-			],
-		},
+	// NOTE(2026-05-13): Vite 8 swaps Rolldown for esbuild during optimizeDeps,
+	// so the legacy `optimizeDeps.esbuildOptions` + NodeGlobalsPolyfillPlugin
+	// no longer apply. We drop the block entirely — anything in the renderer
+	// that needs `Buffer` should import it explicitly from `buffer` (the npm
+	// package, already in the tree) rather than relying on a global polyfill.
+	define: {
+		global: 'globalThis',
 	},
 };
 

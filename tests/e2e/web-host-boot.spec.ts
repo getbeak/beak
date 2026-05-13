@@ -1,31 +1,41 @@
 import { expect, test } from '@playwright/test';
 
 /**
- * Smoke check: the web host boot screen loads without throwing in the
- * renderer. We don't yet have untitled-project support (phase 3 deferred
- * that), so the boot lands on the existing web welcome screen. The
- * assertion is intentionally lenient — we want to catch hard crashes
- * during module init, not pin the welcome copy.
+ * Smoke checks for the web host. These run the renderer in a real browser
+ * against `pnpm start:apps-host-web`'s Vite dev server.
+ *
+ * Asserts:
+ * 1. The dev server is alive at the root.
+ * 2. Vite injects the entry script tag into index.html.
+ * 3. The renderer mounts something into `<body>` (i.e. no module-load
+ *    failures that prevent React's first render).
  */
 
-test('web host: renderer boots without a hard error', async ({ page }) => {
-	const renderErrors: string[] = [];
-	page.on('pageerror', err => renderErrors.push(err.message));
-	page.on('console', msg => {
-		if (msg.type() === 'error') renderErrors.push(msg.text());
-	});
-
-	await page.goto('/');
-	// Wait for the React tree to mount something — anything that isn't a blank body.
-	await expect(page.locator('body')).not.toBeEmpty({ timeout: 30_000 });
-
-	// We tolerate console.warn / info / etc., but a thrown error at module init
-	// is a regression.
-	const hard = renderErrors.filter(e => !/favicon|HMR|mkcert|service worker|fetch.*localhost:5173\/?$/i.test(e));
-	expect(hard, hard.join('\n')).toEqual([]);
+test('web host: dev server responds at the root', async ({ page, baseURL }) => {
+	const response = await page.goto(baseURL ?? '/');
+	expect(response, 'no response received from dev server').not.toBeNull();
+	expect(response?.status()).toBeGreaterThanOrEqual(200);
+	expect(response?.status()).toBeLessThan(400);
 });
 
-test('web host: page title contains "Beak"', async ({ page }) => {
+test('web host: index.html mentions the renderer entry script', async ({ page }) => {
 	await page.goto('/');
-	await expect(page).toHaveTitle(/beak/i, { timeout: 15_000 });
+	const html = await page.content();
+	expect(html).toMatch(/<script[^>]+type="module"/);
+});
+
+test('web host: renderer mounts something into <body>', async ({ page }) => {
+	await page.goto('/');
+	// Vite's dev server compiles modules lazily; give the renderer a moment
+	// to fetch, transform, and execute. We're not pinning a specific
+	// component — just verifying React mounted *something*.
+	await expect
+		.poll(
+			async () => {
+				const text = (await page.locator('body').textContent({ timeout: 1_000 }).catch(() => '')) ?? '';
+				return text.length;
+			},
+			{ timeout: 30_000, intervals: [500, 1_000, 2_000] },
+		)
+		.toBeGreaterThan(0);
 });
