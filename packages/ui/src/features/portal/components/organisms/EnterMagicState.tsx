@@ -106,7 +106,7 @@ const EnterMagicState: React.FC<EnterMagicStateProps> = ({ email, reset, inbound
 						{'Magic link is on the way to '}
 						<Box as='strong' color='fg.default'>{email}</Box>
 					</Box>
-					<Box fontSize='xs' mt='1.5' opacity={0.8}>
+					<Box fontSize='xs' mt='1.5' color='fg.subtle' lineHeight='1.5'>
 						{'Clicking the link in the email will finish signing you in. '}
 						<InlineLink
 							type='button'

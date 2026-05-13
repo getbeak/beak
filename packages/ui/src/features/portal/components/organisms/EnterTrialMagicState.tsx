@@ -86,7 +86,7 @@ const EnterTrialMagicState: React.FC<EnterTrialMagicStateProps> = ({ email, rese
 						<Box as='strong' color='fg.default'>{email}</Box>
 						{'.'}
 					</Box>
-					<Box fontSize='xs' mt='1.5' opacity={0.8}>
+					<Box fontSize='xs' mt='1.5' color='fg.subtle' lineHeight='1.5'>
 						{'Clicking it will finish signing you into your trial. '}
 						<InlineLink
 							type='button'
