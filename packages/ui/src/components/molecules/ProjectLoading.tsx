@@ -63,9 +63,17 @@ const ProjectLoading: React.FC = () => {
 					letterSpacing='0.08em'
 					color='accent.pink'
 				>
-					<Box w='14px' h='1px' bg='currentColor' opacity={0.4} />
+					<Box
+						w='18px'
+						h='1px'
+						bg='linear-gradient(to right, transparent, color-mix(in srgb, var(--beak-colors-accent-pink) 55%, transparent))'
+					/>
 					{'Did you know?'}
-					<Box w='14px' h='1px' bg='currentColor' opacity={0.4} />
+					<Box
+						w='18px'
+						h='1px'
+						bg='linear-gradient(to left, transparent, color-mix(in srgb, var(--beak-colors-accent-pink) 55%, transparent))'
+					/>
 				</Flex>
 				<Box mt='2' minH='44px' maxW='340px' mx='auto'>
 					<AnimatePresence mode='wait'>
