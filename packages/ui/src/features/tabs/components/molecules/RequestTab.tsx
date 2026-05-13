@@ -41,9 +41,12 @@ const RequestTab: React.FC<React.PropsWithChildren<RequestTabProps>> = ({ tab })
 						px='1.5'
 						py='0'
 						borderRadius='sm'
+						borderWidth='1px'
+						borderStyle='solid'
 						color={color}
 						bg={`color-mix(in srgb, ${color} 14%, transparent)`}
-						boxShadow={`inset 0 0 0 1px color-mix(in srgb, ${color} 20%, transparent)`}
+						borderColor={`color-mix(in srgb, ${color} 26%, transparent)`}
+						boxShadow={`inset 0 1px 0 color-mix(in srgb, white 14%, transparent)`}
 						lineHeight='1.5'
 					>
 						{label}
