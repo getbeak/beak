@@ -36,7 +36,10 @@ const GraphQlLoading: React.FC = () => (
 				justify='center'
 				borderRadius='full'
 				bg='color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent)'
+				borderWidth='1px'
+				borderColor='color-mix(in srgb, var(--beak-colors-accent-pink) 28%, transparent)'
 				color='accent.pink'
+				boxShadow='inset 0 1px 0 color-mix(in srgb, white 18%, transparent)'
 			>
 				<Hash size={18} strokeWidth={2.2} />
 			</Flex>
