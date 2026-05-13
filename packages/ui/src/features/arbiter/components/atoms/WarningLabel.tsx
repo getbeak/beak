@@ -14,9 +14,9 @@ const WarningLabel: React.FC<WarningLabelProps> = ({ onClick, children }) => (
 			opacity: 1,
 			scale: 1,
 			boxShadow: [
-				'0 0 0 0 rgba(249, 186, 64, 0.0)',
-				'0 0 0 6px rgba(249, 186, 64, 0.18)',
-				'0 0 0 0 rgba(249, 186, 64, 0.0)',
+				'0 0 0 0 color-mix(in srgb, var(--beak-colors-accent-warning) 0%, transparent)',
+				'0 0 0 6px color-mix(in srgb, var(--beak-colors-accent-warning) 22%, transparent)',
+				'0 0 0 0 color-mix(in srgb, var(--beak-colors-accent-warning) 0%, transparent)',
 			],
 		}}
 		transition={{
@@ -24,24 +24,27 @@ const WarningLabel: React.FC<WarningLabelProps> = ({ onClick, children }) => (
 			opacity: { duration: 0.18 },
 			scale: { duration: 0.18 },
 		}}
+		whileHover={{ scale: 1.04 }}
+		whileTap={{ scale: 0.96 }}
 		onClick={onClick}
 		style={{
 			display: 'inline-flex',
 			alignItems: 'center',
 			gap: 4,
-			padding: '2px 6px',
+			padding: '2px 7px',
 			cursor: 'pointer',
 			fontSize: 10,
-			fontWeight: 600,
-			letterSpacing: '0.04em',
+			fontWeight: 700,
+			letterSpacing: '0.05em',
+			textTransform: 'uppercase',
 			borderRadius: 6,
-			border: '1px solid #f9ba40',
-			background: 'color-mix(in srgb, #f9ba40 90%, transparent)',
-			color: '#1a1206',
+			border: '1px solid color-mix(in srgb, var(--beak-colors-accent-warning) 75%, transparent)',
+			background: 'color-mix(in srgb, var(--beak-colors-accent-warning) 22%, transparent)',
+			color: 'var(--beak-colors-accent-warning)',
 			zIndex: 101,
 		}}
 	>
-		<AlertTriangle size={10} />
+		<AlertTriangle size={10} strokeWidth={2.2} />
 		{children}
 	</motion.div>
 );
