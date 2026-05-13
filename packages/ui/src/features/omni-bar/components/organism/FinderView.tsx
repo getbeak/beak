@@ -116,16 +116,16 @@ const FinderView: React.FC<FinderViewProps> = ({ content, reset }) => {
 						py='2'
 						borderRadius='md'
 						cursor='pointer'
-						color={isActive ? 'white' : 'fg.muted'}
+						color={isActive ? 'fg.onAccent' : 'fg.muted'}
 						bg={isActive ? 'accent.pink' : 'transparent'}
 						boxShadow={
 							isActive
-								? '0 0 0 1px color-mix(in srgb, var(--beak-colors-accent-pink) 70%, transparent), 0 6px 14px color-mix(in srgb, var(--beak-colors-accent-pink) 35%, transparent)'
+								? '0 0 0 1px color-mix(in srgb, var(--beak-colors-accent-pink) 70%, transparent), 0 6px 14px color-mix(in srgb, var(--beak-colors-accent-pink) 35%, transparent), inset 0 1px 0 color-mix(in srgb, white 18%, transparent)'
 								: undefined
 						}
 						transition='background-color .14s ease, color .14s ease, box-shadow .14s ease'
 						_hover={{
-							color: 'fg.default',
+							color: isActive ? 'fg.onAccent' : 'fg.default',
 							bg: isActive
 								? 'accent.pink'
 								: 'color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent)',
@@ -136,7 +136,7 @@ const FinderView: React.FC<FinderViewProps> = ({ content, reset }) => {
 						}}
 					>
 						<Flex align='center' gap='2' minW={0}>
-							<Box flex='0 0 auto' color={isActive ? 'white' : 'fg.subtle'}>
+							<Box flex='0 0 auto' color={isActive ? 'fg.onAccent' : 'fg.subtle'}>
 								<FileText size={13} />
 							</Box>
 							<Box
@@ -150,8 +150,8 @@ const FinderView: React.FC<FinderViewProps> = ({ content, reset }) => {
 								style={
 									isActive
 										? {
-											background: 'rgba(255,255,255,0.22)',
-											color: 'white',
+											background: 'color-mix(in srgb, var(--beak-colors-fg-onAccent) 22%, transparent)',
+											color: 'var(--beak-colors-fg-onAccent)',
 										}
 										: {
 											background: `color-mix(in srgb, ${verbColor} 22%, transparent)`,
