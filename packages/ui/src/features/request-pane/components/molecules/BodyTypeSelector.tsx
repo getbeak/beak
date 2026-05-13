@@ -50,6 +50,7 @@ const BodyTypeSelector: React.FC<BodyTypeSelectorProps> = ({
 			borderWidth='1px'
 			borderColor='border.subtle'
 			bg='color-mix(in srgb, var(--beak-colors-bg-surface) 60%, transparent)'
+			boxShadow='inset 0 1px 0 color-mix(in srgb, white 10%, transparent)'
 		>
 			{VARIANTS.map(v => {
 				const active = value === v.key;
@@ -69,7 +70,7 @@ const BodyTypeSelector: React.FC<BodyTypeSelectorProps> = ({
 						bg={active ? 'accent.pink' : 'transparent'}
 						boxShadow={
 							active
-								? '0 2px 8px color-mix(in srgb, var(--beak-colors-accent-pink) 38%, transparent)'
+								? '0 2px 8px color-mix(in srgb, var(--beak-colors-accent-pink) 40%, transparent), inset 0 1px 0 color-mix(in srgb, white 22%, transparent)'
 								: undefined
 						}
 						border='none'
@@ -77,16 +78,17 @@ const BodyTypeSelector: React.FC<BodyTypeSelectorProps> = ({
 						fontSize='xs'
 						fontWeight={active ? '600' : '500'}
 						color={active ? 'white' : 'fg.muted'}
-						transition='background-color .14s ease, color .14s ease, box-shadow .14s ease'
+						transition='background-color .14s ease, color .14s ease, box-shadow .14s ease, transform .08s ease'
 						_hover={{
-							color: active ? 'white' : 'fg.default',
+							color: active ? 'white' : 'accent.pink',
 							bg: active
 								? 'accent.pink'
 								: 'color-mix(in srgb, var(--beak-colors-accent-pink) 12%, transparent)',
 						}}
+						_active={{ transform: 'scale(0.97)' }}
 						onClick={() => onTypeChange(v.key)}
 					>
-						<Icon size={12} />
+						<Icon size={12} strokeWidth={active ? 2.2 : 1.8} />
 						<Box as='span'>{v.label}</Box>
 						{v.key === 'graphql' && active && (
 							<GraphQlModeSwitch mode={graphQlMode} onChange={onGraphQlModeChange} />
