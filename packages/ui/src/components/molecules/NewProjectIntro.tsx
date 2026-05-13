@@ -227,13 +227,16 @@ const GuideCard: React.FC<GuideCardProps> = ({ idx, icon: Icon, title, body, cta
 				flex='0 0 auto'
 				align='center'
 				justify='center'
-				w='32px'
-				h='32px'
-				borderRadius='md'
+				w='36px'
+				h='36px'
+				borderRadius='lg'
 				bg='color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent)'
+				borderWidth='1px'
+				borderColor='color-mix(in srgb, var(--beak-colors-accent-pink) 28%, transparent)'
 				color='accent.pink'
+				boxShadow='0 4px 12px color-mix(in srgb, var(--beak-colors-accent-pink) 22%, transparent), inset 0 1px 0 color-mix(in srgb, white 16%, transparent)'
 			>
-				<Icon size={15} />
+				<Icon size={16} />
 			</Flex>
 			<Box flex='1 1 auto' minW={0}>
 				<Box fontSize='sm' fontWeight='600' color='fg.default' mb='1'>
