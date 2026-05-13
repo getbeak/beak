@@ -138,21 +138,27 @@ const StatCard: React.FC<{
 	return (
 		<Flex
 			direction='column'
-			gap='1'
+			gap='1.5'
 			p='3'
 			borderRadius='lg'
 			borderWidth='1px'
 			borderColor='border.subtle'
 			bg='color-mix(in srgb, var(--beak-colors-bg-surface) 75%, transparent)'
+			transition='border-color .14s ease, transform .14s ease, box-shadow .14s ease'
+			_hover={{
+				borderColor: `color-mix(in srgb, ${t.color} 32%, var(--beak-colors-border-subtle))`,
+				transform: 'translateY(-1px)',
+				boxShadow: `0 6px 18px color-mix(in srgb, ${t.color} 18%, rgba(0,0,0,0.06))`,
+			}}
 		>
 			<Flex align='center' gap='1.5'>
 				<Flex
 					align='center'
 					justify='center'
-					w='20px'
-					h='20px'
+					w='22px'
+					h='22px'
 					borderRadius='md'
-					style={{ color: t.color, background: t.bg }}
+					style={{ color: t.color, background: t.bg, boxShadow: `inset 0 0 0 1px color-mix(in srgb, ${t.color} 25%, transparent)` }}
 				>
 					{icon}
 				</Flex>
@@ -160,7 +166,7 @@ const StatCard: React.FC<{
 					{label}
 				</Box>
 			</Flex>
-			<Box fontSize='sm' fontWeight='600' color='fg.default' fontFamily='mono'>
+			<Box fontSize='md' fontWeight='600' color='fg.default' fontFamily='mono' lineHeight='1.2'>
 				{value}
 			</Box>
 			{sub && <Box fontSize='10px' color='fg.subtle'>{sub}</Box>}
