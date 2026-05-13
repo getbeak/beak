@@ -54,9 +54,19 @@ const UntitledBanner: React.FC = () => {
 				boxShadow: 'inset 0 -1px 0 color-mix(in srgb, var(--beak-colors-accent-pink) 16%, transparent)',
 			}}
 		>
-			<Box color='accent.pink' flex='0 0 auto'>
-				<FileWarning size={13} />
-			</Box>
+			<Flex
+				align='center'
+				justify='center'
+				flexShrink={0}
+				w='22px'
+				h='22px'
+				borderRadius='md'
+				bg='color-mix(in srgb, var(--beak-colors-accent-pink) 18%, transparent)'
+				color='accent.pink'
+				boxShadow='inset 0 0 0 1px color-mix(in srgb, var(--beak-colors-accent-pink) 28%, transparent)'
+			>
+				<FileWarning size={12} strokeWidth={2.2} />
+			</Flex>
 			<Text flex='1 1 auto' truncate>
 				<Text as='span' fontWeight='600'>{'Untitled project.'}</Text>
 				{' Changes are live but in a temporary folder. Save to keep it.'}
