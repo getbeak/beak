@@ -105,10 +105,11 @@ const NewProjectIntro: React.FC = () => {
 									colour='secondary'
 									onClick={() => ipcExplorerService.launchUrl('https://docs.getbeak.app/')}
 									style={{
-										background: 'rgba(255,255,255,0.16)',
+										background: 'rgba(255,255,255,0.14)',
 										color: 'white',
-										borderColor: 'rgba(255,255,255,0.55)',
-										backdropFilter: 'blur(4px)',
+										borderColor: 'rgba(255,255,255,0.5)',
+										backdropFilter: 'blur(8px)',
+										boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.18)',
 									}}
 								>
 									<Flex align='center' gap='1.5'>
