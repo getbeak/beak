@@ -1,5 +1,4 @@
-import { Flex } from '@chakra-ui/react';
-import ActionIconButton from '@beak/ui/components/molecules/ActionIconButton';
+import { Flex, IconButton } from '@chakra-ui/react';
 import { Minus, Plus } from 'lucide-react';
 
 import type { Entries } from '@getbeak/types/body-editor-json';
@@ -24,19 +23,51 @@ const EntryActions: React.FC<EntryActionsProps> = ({ requestId, id, entry }) => 
 	if (isRoot && !['array', 'object'].includes(entry.type)) return null;
 
 	return (
-		<Flex h='100%' direction='row' justify='flex-end' align='center'>
+		<Flex h='100%' direction='row' justify='flex-end' align='center' gap='0.5'>
 			{!isRoot && (
-				<ActionIconButton
+				<IconButton
+					aria-label='Remove entry'
+					title='Remove entry'
+					size='xs'
+					variant='ghost'
+					color='fg.subtle'
 					tabIndex={-1}
-					icon={Minus}
+					h='18px'
+					w='18px'
+					minW='18px'
+					borderRadius='sm'
+					_hover={{
+						color: 'accent.alert',
+						bg: 'color-mix(in srgb, var(--beak-colors-accent-alert) 18%, transparent)',
+					}}
+					_active={{ transform: 'scale(0.92)' }}
+					transition='color .12s ease, background .12s ease, transform .08s ease'
 					onClick={() => dispatch(editorContext.removeEntry({ id, requestId }))}
-				/>
+				>
+					<Minus size={11} />
+				</IconButton>
 			)}
-			<ActionIconButton
+			<IconButton
+				aria-label='Add entry'
+				title='Add entry'
+				size='xs'
+				variant='ghost'
+				color='fg.subtle'
 				tabIndex={-1}
-				icon={Plus}
+				h='18px'
+				w='18px'
+				minW='18px'
+				borderRadius='sm'
+				_hover={{
+					color: 'accent.pink',
+					bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 18%, transparent)',
+				}}
+				_active={{ transform: 'scale(0.92)' }}
+				transition='color .12s ease, background .12s ease, transform .08s ease'
 				onClick={() => dispatch(editorContext.addEntry({ id, requestId }))}
-			/>
+			>
+				<Plus size={11} />
+			</IconButton>
 		</Flex>
 	);
 };

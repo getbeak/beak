@@ -38,8 +38,6 @@ const JsonEditor: React.FC<React.PropsWithChildren<JsonEditorProps>> = props => 
 	const { requestId, editorSelector, value, forceRootObject } = props;
 	const root = TypedObject.values(value).find(e => e.parentId === null);
 
-	// TODO(afr): If there is no root element, create one and return null
-
 	return (
 		<JsonEditorContext.Provider
 			value={{
@@ -56,7 +54,7 @@ const JsonEditor: React.FC<React.PropsWithChildren<JsonEditorProps>> = props => 
 		>
 			<Box mt='1.5' w='100%' fontSize='sm' fontWeight='400' color='fg.muted'>
 				<Header>
-					<Row>
+					<Row data-empty='true'>
 						<HeaderKeyCell>{'Key'}</HeaderKeyCell>
 						<HeaderTypeCell>{'Type'}</HeaderTypeCell>
 						<HeaderValueCell>{'Value'}</HeaderValueCell>
