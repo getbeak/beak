@@ -1,10 +1,13 @@
 import { Box, Flex } from '@chakra-ui/react';
+import { AnimatePresence, motion } from 'framer-motion';
 import * as React from 'react';
 import { useEffect, useRef, useState } from 'react';
 import Button from '@beak/ui/components/atoms/Button';
 import Input, { Select } from '@beak/ui/components/atoms/Input';
 import type { ValueSections } from '@beak/ui/features/variables/values';
-import { TriangleAlert } from 'lucide-react';
+import { Puzzle } from 'lucide-react';
+
+const MotionBox = motion.create(Box);
 
 import type { EditableVariable, UISection } from '@getbeak/extension-sdk';
 
@@ -135,41 +138,49 @@ const VariableEditor: React.FC<React.PropsWithChildren<VariableEditorProps>> = p
 		setEditorContext(void 0);
 	}
 
-	if (!editorContext)
-		return null;
-
-	const { item, state, parent, variable } = editorContext;
-	const boundingRect = parent.getBoundingClientRect();
-	const { save } = variable.editor!;
-
 	return (
-		<Box
-			position='fixed'
-			inset='0'
-			zIndex={101}
-			css={{
-				'@keyframes beakVarEditorScale': {
-					'0%': { transform: 'scale(.97)', opacity: 0 },
-					'100%': { transform: 'scale(1)', opacity: 1 },
-				},
-			}}
-			onClick={() => close(null)}
-		>
-			<Box
+		<AnimatePresence>
+			{editorContext && (
+				<MotionBox
+					initial={{ opacity: 0 }}
+					animate={{ opacity: 1 }}
+					exit={{ opacity: 0 }}
+					transition={{ duration: 0.12 }}
+					position='fixed'
+					inset='0'
+					zIndex={101}
+					onClick={() => close(null)}
+				>
+					{renderEditor()}
+				</MotionBox>
+			)}
+		</AnimatePresence>
+	);
+
+	function renderEditor() {
+		if (!editorContext) return null;
+		const { item, state, parent, variable } = editorContext;
+		const boundingRect = parent.getBoundingClientRect();
+		const { save } = variable.editor!;
+
+		return (
+			<MotionBox
+				initial={{ opacity: 0, scale: 0.96, y: -4 }}
+				animate={{ opacity: 1, scale: 1, y: 0 }}
+				exit={{ opacity: 0, scale: 0.96, y: -4 }}
+				transition={{ type: 'spring', stiffness: 700, damping: 36 }}
 				position='fixed'
-				w='300px'
-				px='3'
-				py='2'
+				w='320px'
+				p='3'
+				borderRadius='md'
 				borderWidth='1px'
 				borderColor='border.default'
 				bg='bg.surface'
+				boxShadow='0 12px 36px rgba(0,0,0,0.35), 0 2px 8px rgba(0,0,0,0.2)'
 				zIndex={10000}
-				transformOrigin='center'
-				animation='beakVarEditorScale .2s ease'
-				transition='transform .1s ease'
 				style={{
 					marginTop: `${boundingRect.top + parent.clientHeight + 10}px`,
-					marginLeft: `${boundingRect.left - 300 / 2}px`,
+					marginLeft: `${boundingRect.left - 320 / 2}px`,
 				}}
 				onClick={(event: React.MouseEvent) => event.stopPropagation()}
 			>
@@ -282,13 +293,22 @@ const VariableEditor: React.FC<React.PropsWithChildren<VariableEditorProps>> = p
 
 				<PreviewContainer text={preview} />
 
-				<Flex justify='space-between' align='center'>
-					<Box>
-						{editorContext.variable.external && (
-							<React.Fragment>
-								<TriangleAlert />
-								{' This is an extension'}
-							</React.Fragment>
+				<Flex justify='space-between' align='center' mt='2'>
+					<Box minW={0} flex='1 1 auto'>
+						{variable.external && (
+							<Flex
+								align='center'
+								gap='1'
+								fontSize='10px'
+								fontWeight='600'
+								color='accent.pink'
+								textTransform='uppercase'
+								letterSpacing='0.06em'
+								data-tooltip-id='tt-variable-input-extension'
+							>
+								<Puzzle size={10} />
+								<Box as='span'>{'Extension'}</Box>
+							</Flex>
 						)}
 					</Box>
 
@@ -306,9 +326,9 @@ const VariableEditor: React.FC<React.PropsWithChildren<VariableEditorProps>> = p
 						{'Save'}
 					</Button>
 				</Flex>
-			</Box>
-		</Box>
-	);
+			</MotionBox>
+		);
+	}
 };
 
 function trySetInitialRef(
