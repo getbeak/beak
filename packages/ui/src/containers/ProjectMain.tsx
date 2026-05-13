@@ -13,6 +13,7 @@ import UntitledBanner from '../components/molecules/UntitledBanner';
 import ActionBar from '../features/action-bar/components/ActionBar';
 import ProjectEncryption from '../features/encryption/components/ProjectEncryption';
 import Omnibar from '../features/omni-bar/components/Omnibar';
+import OpenApiImportDialog from '../features/openapi-import/components/OpenApiImportDialog';
 import Sidebar from '../features/sidebar/components/Sidebar';
 import TabView from '../features/tabs/components/TabView';
 import { useApplicationMenuEventListener } from '../hooks/use-application-menu-event-listener';
@@ -70,6 +71,7 @@ const ProjectMain: React.FC = () => {
 							</ReflexContainer>
 						</Box>
 						<Omnibar />
+						<OpenApiImportDialog />
 					</React.Fragment>
 				)}
 			</Box>
