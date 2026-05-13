@@ -18,6 +18,13 @@ export interface PrepareRequestDeps {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	convertKeyValueToString: (context: Context, payload: any) => Promise<string>;
 	readReferencedFile: (fileReferenceId: string) => Promise<{ body: Uint8Array }>;
+	/**
+	 * Read bytes for a content-addressed asset stored under the project's
+	 * `_assets/` tree. Implementations resolve the project root and call
+	 * `AssetStore.read` (electron) or the equivalent IPC (web). Returns null
+	 * if the asset is missing — caller should fail the request gracefully.
+	 */
+	readAsset?: (ref: { sha256: string; size: number; contentType?: string }) => Promise<{ body: Uint8Array } | null>;
 
 	requestAllowsBody: (verb: string) => boolean;
 	requestBodyContentType: (body: RequestOverview['body']) => string | undefined;
@@ -123,11 +130,30 @@ async function flattenBody(
 			return { type: 'text', payload: await deps.convertKeyValueToString(context, body.payload) };
 		case 'file': {
 			try {
-				const response = await deps.readReferencedFile(body.payload.fileReferenceId!);
-				return {
-					type: 'file',
-					payload: { ...body.payload, __hacky__binaryFileData: response.body },
-				};
+				// Prefer the new content-addressed asset pointer when present;
+				// fall back to the legacy fileReferenceId for projects that
+				// haven't been migrated. If neither is set, send an empty body.
+				if (body.payload.assetRef && deps.readAsset) {
+					const assetResponse = await deps.readAsset(body.payload.assetRef);
+					if (!assetResponse) {
+						console.error('asset missing from project store', body.payload.assetRef.sha256);
+						return { type: 'text', payload: '' };
+					}
+					return {
+						type: 'file',
+						payload: { ...body.payload, __hacky__binaryFileData: assetResponse.body },
+					};
+				}
+
+				if (body.payload.fileReferenceId) {
+					const response = await deps.readReferencedFile(body.payload.fileReferenceId);
+					return {
+						type: 'file',
+						payload: { ...body.payload, __hacky__binaryFileData: response.body },
+					};
+				}
+
+				return { type: 'text', payload: '' };
 			} catch (error) {
 				console.error('unable to read reference file', error);
 				return { type: 'text', payload: '' };

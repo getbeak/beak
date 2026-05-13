@@ -19,6 +19,7 @@ import { convertToRealJson } from '@beak/ui/features/json-editor/parsers';
 import { parseValueSections } from '@beak/ui/features/variables/parser';
 import binaryStore from '@beak/ui/lib/binary-store';
 import {
+	ipcAssetsService,
 	ipcDialogService,
 	ipcFlightService,
 	ipcFsService,
@@ -42,6 +43,11 @@ function buildPrepareDeps(): PrepareRequestDeps {
 		convertToRealJson,
 		convertKeyValueToString,
 		readReferencedFile: id => ipcFsService.readReferencedFile(id),
+		readAsset: async ref => {
+			const res = await ipcAssetsService.read({ ref });
+			if (!res.bytes) return null;
+			return { body: res.bytes };
+		},
 		requestAllowsBody,
 		requestBodyContentType,
 		userAgent: `Beak/${windowSessionInstance.version ?? ''} (${windowSessionInstance.os})`,
