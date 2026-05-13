@@ -1,5 +1,4 @@
 import { Box, Flex, chakra } from '@chakra-ui/react';
-import { motion } from 'framer-motion';
 import { Check } from 'lucide-react';
 import * as React from 'react';
 
@@ -16,15 +15,16 @@ const HiddenInput = chakra('input', {
 		m: 0,
 		cursor: 'pointer',
 		'&:focus + span': {
-			boxShadow: '0 0 0 3px color-mix(in srgb, var(--beak-colors-accent-pink) 30%, transparent)',
+			boxShadow: '0 0 0 3px color-mix(in srgb, var(--beak-colors-accent-pink) 32%, transparent)',
 		},
 	},
 });
 
 /**
- * Beak's labelled checkbox. Hides the native input and renders a custom
- * 14×14 box that paints a check icon on tick (framer-motion entrance).
- * The native input retains keyboard + a11y semantics.
+ * Beak's labelled checkbox. Hides the native input and renders a 16×16
+ * custom box that paints a check icon on tick. The native input retains
+ * keyboard + a11y semantics; the visual box reads as a real toggle with
+ * a soft pink glow when active.
  */
 const Checkbox: React.FC<CheckboxProps> = ({ label, ...rest }) => {
 	const isChecked = Boolean(rest.checked);
@@ -38,29 +38,27 @@ const Checkbox: React.FC<CheckboxProps> = ({ label, ...rest }) => {
 					display='inline-flex'
 					alignItems='center'
 					justifyContent='center'
-					w='14px'
-					h='14px'
+					w='16px'
+					h='16px'
 					borderRadius='sm'
 					borderWidth='1px'
 					borderColor={isChecked ? 'accent.pink' : 'border.default'}
-					bg={
-						isChecked
-							? 'color-mix(in srgb, var(--beak-colors-accent-pink) 80%, transparent)'
-							: 'var(--beak-colors-bg-surface)'
-					}
-					transition='background-color .14s ease, border-color .14s ease, box-shadow .14s ease'
+					bg={isChecked ? 'accent.pink' : 'var(--beak-colors-bg-surface)'}
+					boxShadow={isChecked ? '0 0 0 0.5px color-mix(in srgb, white 22%, transparent) inset, 0 2px 6px color-mix(in srgb, var(--beak-colors-accent-pink) 35%, transparent)' : 'inset 0 1px 2px rgba(0,0,0,0.04)'}
+					transition='background-color .14s ease, border-color .14s ease, box-shadow .14s ease, transform .08s ease'
 					pointerEvents='none'
+					transform={isChecked ? 'scale(1)' : 'scale(1)'}
 				>
-					{isChecked && (
-						<motion.span
-							initial={{ scale: 0.5, opacity: 0 }}
-							animate={{ scale: 1, opacity: 1 }}
-							transition={{ duration: 0.14, ease: 'easeOut' }}
-							style={{ display: 'inline-flex' }}
-						>
-							<Check size={10} strokeWidth={3} color='white' />
-						</motion.span>
-					)}
+					<Box
+						as='span'
+						display='inline-flex'
+						color='white'
+						opacity={isChecked ? 1 : 0}
+						transform={isChecked ? 'scale(1)' : 'scale(0.5)'}
+						transition='opacity .14s ease, transform .14s ease'
+					>
+						<Check size={11} strokeWidth={3} />
+					</Box>
 				</Box>
 			</Box>
 			<label
