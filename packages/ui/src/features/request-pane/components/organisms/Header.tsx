@@ -92,22 +92,23 @@ const Header: React.FC<HeaderProps> = ({ node }) => {
 						py='1.5'
 						borderRadius='md'
 						borderWidth='1px'
-						borderColor='border.default'
-						bg='bg.surface'
-						color='fg.default'
 						fontWeight='700'
 						fontSize='xs'
 						letterSpacing='0.06em'
 						textTransform='uppercase'
 						cursor='pointer'
-						transition='border-color .12s ease, box-shadow .12s ease'
-						_hover={{ borderColor: verbColor }}
+						transition='background-color .12s ease, border-color .12s ease, box-shadow .12s ease'
 						_focus={{
 							outline: 'none',
 							borderColor: verbColor,
 							boxShadow: `0 0 0 3px color-mix(in srgb, ${verbColor} 28%, transparent)`,
 						}}
-						style={{ color: verbColor, borderLeft: `3px solid ${verbColor}` }}
+						style={{
+							color: verbColor,
+							background: `color-mix(in srgb, ${verbColor} 10%, var(--beak-colors-bg-surface))`,
+							borderColor: `color-mix(in srgb, ${verbColor} 32%, var(--beak-colors-border-subtle))`,
+							borderLeft: `3px solid ${verbColor}`,
+						}}
 					>
 						{verb.toUpperCase()}
 						<ChevronDown size={11} />
