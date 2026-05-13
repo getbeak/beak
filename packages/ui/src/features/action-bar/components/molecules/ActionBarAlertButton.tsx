@@ -1,5 +1,7 @@
+import { Box, Flex } from '@chakra-ui/react';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { useAppSelector } from '@beak/ui/store/redux';
+import { motion } from 'framer-motion';
 import { TriangleAlert } from 'lucide-react';
 
 import React, { useRef, useState } from 'react';
@@ -11,10 +13,13 @@ interface ActionBarAlertButtonProps {
 	id: string;
 }
 
+const MotionBox = motion.create(Box);
+
 const ActionBarAlertButton: React.FC<ActionBarAlertButtonProps> = ({ id }) => {
 	const [showPopover, setShowPopover] = useState(false);
 	const alerts = useAppSelector(s => s.global.project.alerts);
-	const hasAlerts = TypedObject.values(alerts).filter(Boolean).length > 0;
+	const alertCount = TypedObject.values(alerts).filter(Boolean).length;
+	const hasAlerts = alertCount > 0;
 	const parentRef = useRef<HTMLButtonElement | null>(null);
 
 	if (!hasAlerts) return null;
@@ -22,7 +27,31 @@ const ActionBarAlertButton: React.FC<ActionBarAlertButtonProps> = ({ id }) => {
 	return (
 		<React.Fragment>
 			<ActionBarButton id={id} ref={parentRef} onClick={() => setShowPopover(true)}>
-				<TriangleAlert color={hasAlerts ? 'orange' : 'var(--beak-colors-fg-muted)'} />
+				<Flex position='relative' align='center' justify='center'>
+					<TriangleAlert color='var(--beak-colors-accent-alert)' />
+					<MotionBox
+						initial={{ scale: 0.6, opacity: 0 }}
+						animate={{ scale: 1, opacity: 1 }}
+						transition={{ type: 'spring', stiffness: 700, damping: 28 }}
+						position='absolute'
+						top='-4px'
+						right='-6px'
+						minW='12px'
+						h='12px'
+						px='3px'
+						borderRadius='full'
+						display='inline-flex'
+						alignItems='center'
+						justifyContent='center'
+						fontSize='9px'
+						fontWeight='700'
+						bg='accent.alert'
+						color='white'
+						pointerEvents='none'
+					>
+						{alertCount > 9 ? '9+' : alertCount}
+					</MotionBox>
+				</Flex>
 			</ActionBarButton>
 
 			{parentRef.current && showPopover && (

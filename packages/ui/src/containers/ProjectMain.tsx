@@ -58,13 +58,13 @@ const ProjectMain: React.FC = () => {
 						<UntitledBanner />
 						<Box flex='1' minH='0'>
 							<ReflexContainer orientation={'vertical'}>
-								<ReflexElement flex={15} minSize={200} $forcedWidth={collapsedSidebar ? 42 : void 0}>
+								<ReflexElement flex={20} minSize={260} $forcedWidth={collapsedSidebar ? 42 : void 0}>
 									<Sidebar />
 								</ReflexElement>
 
 								<ReflexSplitter $disabled={collapsedSidebar} hideVisualIndicator orientation={'vertical'} />
 
-								<ReflexElement flex={80} minSize={902} style={{ overflowY: 'hidden' }}>
+								<ReflexElement flex={80} minSize={800} style={{ overflowY: 'hidden' }}>
 									<ActionBar />
 									<TabView tabs={tabs.activeTabs} selectedTab={activeTab} />
 								</ReflexElement>

@@ -163,7 +163,7 @@ const ProjectPane: React.FC<React.PropsWithChildren<unknown>> = () => {
 
 	return (
 		<SidebarPane>
-			<SidebarPaneSection title={`Project :: ${name!}`} collapseKey={'beak.project.project'}>
+			<SidebarPaneSection title={name ?? 'Project'} collapseKey={'beak.project.project'}>
 				<Git />
 			</SidebarPaneSection>
 			<SidebarPaneSection title={'Variable sets'} collapseKey={'beak.project.variable-sets'}>

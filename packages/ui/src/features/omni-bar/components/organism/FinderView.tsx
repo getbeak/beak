@@ -106,7 +106,7 @@ const FinderView: React.FC<FinderViewProps> = ({ content, reset }) => {
 				}
 
 				const isActive = active === idx;
-				const verb = (reqNode.info.verb ?? 'GET').toUpperCase();
+				const verb = (reqNode.info?.verb ?? 'GET').toUpperCase();
 				const verbColor = VERB_BG[verb] ?? 'var(--beak-colors-fg-muted)';
 
 				return (

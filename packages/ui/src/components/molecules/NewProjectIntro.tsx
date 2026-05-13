@@ -36,14 +36,17 @@ const NewProjectIntro: React.FC = () => {
 						intensity='strong'
 						pointerEvents='none'
 					/>
-					{/* Darken layer so text always has contrast over the shader */}
+					{/* Darken layer so text always has contrast over the shader.
+						Strong gradient from left (where the copy lives) so headlines
+						hit ~7:1 contrast, fading to lighter on the right where the
+						shader bloom is most vivid. */}
 					<Box
 						position='absolute'
 						inset='0'
 						pointerEvents='none'
 						css={{
 							background:
-								'linear-gradient(160deg, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.25) 50%, rgba(0,0,0,0.55) 100%)',
+								'linear-gradient(105deg, rgba(8,10,20,0.72) 0%, rgba(8,10,20,0.55) 45%, rgba(8,10,20,0.20) 100%)',
 						}}
 					/>
 
@@ -102,9 +105,10 @@ const NewProjectIntro: React.FC = () => {
 									colour='secondary'
 									onClick={() => ipcExplorerService.launchUrl('https://docs.getbeak.app/')}
 									style={{
-										background: 'rgba(255,255,255,0.08)',
+										background: 'rgba(255,255,255,0.16)',
 										color: 'white',
-										borderColor: 'rgba(255,255,255,0.35)',
+										borderColor: 'rgba(255,255,255,0.55)',
+										backdropFilter: 'blur(4px)',
 									}}
 								>
 									<Flex align='center' gap='1.5'>
