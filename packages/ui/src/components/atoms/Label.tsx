@@ -2,10 +2,13 @@ import { chakra } from '@chakra-ui/react';
 
 const Label = chakra('label', {
 	base: {
-		fontSize: 'lg',
 		display: 'block',
-		mb: '1.5',
-		color: 'fg.default',
+		mb: '1',
+		fontSize: '10px',
+		fontWeight: '700',
+		color: 'fg.subtle',
+		letterSpacing: '0.06em',
+		textTransform: 'uppercase',
 	},
 });
 

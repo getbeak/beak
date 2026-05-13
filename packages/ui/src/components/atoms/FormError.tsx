@@ -1,11 +1,23 @@
-import { chakra } from '@chakra-ui/react';
+import { Flex } from '@chakra-ui/react';
+import { AlertCircle } from 'lucide-react';
+import * as React from 'react';
 
-const FormError = chakra('div', {
-	base: {
-		py: '1.5',
-		color: 'accent.alert',
-		fontSize: 'sm',
-	},
-});
+interface FormErrorProps {
+	children: React.ReactNode;
+}
+
+const FormError: React.FC<FormErrorProps> = ({ children }) => (
+	<Flex
+		align='center'
+		gap='1'
+		mt='1'
+		fontSize='xs'
+		color='accent.alert'
+		role='alert'
+	>
+		<AlertCircle size={11} />
+		<span>{children}</span>
+	</Flex>
+);
 
 export default FormError;
