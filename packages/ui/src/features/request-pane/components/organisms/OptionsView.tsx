@@ -1,25 +1,26 @@
+import { Box, Flex } from '@chakra-ui/react';
 import { actions } from '@beak/ui/store/project';
 import type { ValidRequestNode } from '@getbeak/types/nodes';
-import React from 'react';
+import * as React from 'react';
 import { useDispatch } from 'react-redux';
-import styled from 'styled-components';
 
 export interface OptionsViewProps {
 	node: ValidRequestNode;
 }
 
-const OptionsView: React.FC<React.PropsWithChildren<OptionsViewProps>> = props => {
-	const { node } = props;
+const OptionsView: React.FC<OptionsViewProps> = ({ node }) => {
 	const options = node.info.options;
 	const dispatch = useDispatch();
 
 	return (
-		<Container>
-			<OptionRow>
-				<Label htmlFor={'followRedirects'}>{'Follow redirects'}</Label>
-				<Checkbox
-					name={'followRedirects'}
-					type={'checkbox'}
+		<Flex direction='column' overflow='hidden' px='5' py='4' h='calc(100% - 40px)'>
+			<Box py='2.5'>
+				<label htmlFor='followRedirects' style={{ display: 'block', fontSize: '13px', color: 'var(--beak-colors-fg-default)' }}>
+					{'Follow redirects'}
+				</label>
+				<input
+					name='followRedirects'
+					type='checkbox'
 					checked={options.followRedirects}
 					onChange={e =>
 						dispatch(
@@ -29,31 +30,11 @@ const OptionsView: React.FC<React.PropsWithChildren<OptionsViewProps>> = props =
 							}),
 						)
 					}
+					style={{ marginLeft: 0, accentColor: 'var(--beak-colors-accent-pink)' }}
 				/>
-			</OptionRow>
-		</Container>
+			</Box>
+		</Flex>
 	);
 };
-
-const Container = styled.div`
-	display: flex;
-	flex-direction: column;
-	overflow: hidden;
-	padding: 15px 20px;
-	height: calc(100% - 40px);
-`;
-
-const OptionRow = styled.div`
-	padding: 10px 0;
-`;
-
-const Label = styled.label`
-	display: block;
-	font-size: 14px;
-	color: var(--beak-colors-fg-default);
-`;
-const Checkbox = styled.input`
-	margin-left: 0px;
-`;
 
 export default OptionsView;

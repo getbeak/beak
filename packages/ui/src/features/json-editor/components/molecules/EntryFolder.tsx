@@ -1,9 +1,9 @@
+import { Box } from '@chakra-ui/react';
 import SelectedNodeContext from '@beak/ui/features/request-pane/contexts/selected-node';
 import { requestPreferenceSetReqJsonExpand } from '@beak/ui/store/preferences/actions';
-import React from 'react';
+import * as React from 'react';
 import { useContext } from 'react';
 import { useDispatch } from 'react-redux';
-import styled from 'styled-components';
 
 interface EntryFolderProps {
 	id: string;
@@ -12,41 +12,36 @@ interface EntryFolderProps {
 	onChange: (expanded: boolean) => void;
 }
 
-const EntryFolder: React.FC<React.PropsWithChildren<EntryFolderProps>> = props => {
-	const { expanded, id, onChange } = props;
+const EntryFolder: React.FC<EntryFolderProps> = ({ expanded, id, onChange }) => {
 	const dispatch = useDispatch();
 	const node = useContext(SelectedNodeContext);
 
 	return (
-		<Wrapper
+		<Box
+			mt='0.5'
+			w='15px'
 			onClick={() => {
 				dispatch(requestPreferenceSetReqJsonExpand({ id: node.id, jsonId: id, expanded: !expanded }));
 				onChange(!expanded);
 			}}
 		>
-			<Chevron expanded={Boolean(expanded)} />
-		</Wrapper>
+			<Box
+				display='inline-block'
+				borderRight='1px solid'
+				borderRightColor='fg.default'
+				borderBottom='1px solid'
+				borderBottomColor='fg.default'
+				w='5px'
+				h='5px'
+				transformOrigin='50%'
+				transform={expanded ? 'rotate(45deg)' : 'rotate(-45deg)'}
+				mb={expanded ? '0.5' : '0'}
+				ml='1.5'
+			/>
+		</Box>
 	);
 };
 
-export const EntryFolderIrrelevant: React.FC<React.PropsWithChildren<unknown>> = () => <Wrapper />;
-
-const Wrapper = styled.div`
-	margin-top: 1px;
-	width: 15px;
-`;
-
-const Chevron = styled.div<{ expanded: boolean }>`
-	display: inline-block;
-	border-right: 1px solid var(--beak-colors-fg-default);
-	border-bottom: 1px solid var(--beak-colors-fg-default);
-	width: 5px;
-	height: 5px;
-	transform: rotate(${props => (props.expanded ? '45deg' : '-45deg')});
-	transform-origin: 50%;
-
-	margin-bottom: ${props => (props.expanded ? '2px' : 0)};
-	margin-left: 5px;
-`;
+export const EntryFolderIrrelevant: React.FC = () => <Box mt='0.5' w='15px' />;
 
 export default EntryFolder;

@@ -1,63 +1,34 @@
+import { Box } from '@chakra-ui/react';
 import { SmallContainer } from '@beak/apps-web-share/components/atoms/Container';
 import { BodyRegular, Title, TitleSubtle } from '@beak/apps-web-share/components/atoms/Typography';
 import { Bug } from 'lucide-react';
+import * as React from 'react';
 
-import React from 'react';
-import styled from 'styled-components';
-
-const ErrorFallback: React.FC<React.PropsWithChildren<unknown>> = () => (
-	<Header>
-		<Container>
-			<IconWrapper>
+const ErrorFallback: React.FC = () => (
+	<Box py={{ base: '10', md: '20' }} overflow='hidden' bg='bg.canvas'>
+		<SmallContainer position='relative'>
+			<Box
+				position='absolute'
+				top='-10'
+				right='-10'
+				opacity={0.05}
+				transform='rotate(20deg)'
+				css={{ '> svg': { width: '300px !important', height: '300px !important' } }}
+			>
 				<Bug />
-			</IconWrapper>
+			</Box>
 
 			<Title>{'This is awkward... something broke'}</Title>
 			<TitleSubtle>{"Wait a minute, how did this happen? We're smarter than this..."}</TitleSubtle>
 
-			<Body>
+			<Box mt='10'>
 				<BodyRegular>
 					{"The error you're encountering has been reported. Please try again or a little bit later if you "}
 					{'keep encountering it.'}
 				</BodyRegular>
-			</Body>
-		</Container>
-	</Header>
+			</Box>
+		</SmallContainer>
+	</Box>
 );
-
-const Container = styled(SmallContainer)`
-	position: relative;
-`;
-
-const Header = styled.div`
-	padding-top: 80px;
-	padding-bottom: 80px;
-	overflow: hidden;
-
-	background: var(--beak-colors-bg-canvas);
-
-	@media (max-width: 850px) {
-		padding-top: 40px;
-		padding-bottom: 40px;
-	}
-`;
-
-const Body = styled.div`
-	margin-top: 40px;
-`;
-
-const IconWrapper = styled.div`
-	position: absolute;
-	top: -40px;
-	right: -40px;
-
-	opacity: .05;
-	transform: rotate(20deg);
-
-	> svg {
-		width: 300px !important;
-		height: 300px !important;
-	}
-`;
 
 export default ErrorFallback;

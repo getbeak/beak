@@ -1,7 +1,7 @@
+import { Box } from '@chakra-ui/react';
 import { useAppSelector } from '@beak/ui/store/redux';
-import React from 'react';
+import * as React from 'react';
 import type { MutableRefObject } from 'react';
-import styled, { css } from 'styled-components';
 
 import { useNodeDrop } from '../../hooks/drag-and-drop';
 import useChildNodes from '../../hooks/use-child-nodes';
@@ -16,40 +16,27 @@ interface FolderNodeProps {
 	hierarchicalParentRef?: MutableRefObject<HTMLElement | null>;
 }
 
-const FolderNode: React.FC<React.PropsWithChildren<FolderNodeProps>> = props => {
-	const { depth, node } = props;
+const FolderNode: React.FC<FolderNodeProps> = ({ depth, node }) => {
 	const collapsed = useAppSelector(s => s.global.preferences.projectPane.collapsed[node.id]);
 	const { folderNodes, nodes } = useChildNodes(node.filePath);
 	const [{ hovering, canDrop }, dropRef] = useNodeDrop(node);
+	const highlight = canDrop && hovering;
 
 	return (
-		<FolderWrapper $dropAccepted={canDrop} $dropHovering={hovering} ref={dropRef as unknown as React.Ref<HTMLDivElement>}>
+		<Box
+			ref={dropRef as unknown as React.Ref<HTMLDivElement>}
+			borderRadius={highlight ? 'sm' : undefined}
+			bg={highlight ? 'color-mix(in srgb, var(--beak-colors-accent-pink) 60%, transparent)' : undefined}
+		>
 			<NodeItem node={node} collapsed={collapsed} collapsible depth={depth}>
 				<NodeName node={node} collapsed={collapsed} collapsible />
 			</NodeItem>
-			<FolderChildren>
+			<Box>
 				{!collapsed && folderNodes.map(n => <FolderNode key={n.id} depth={depth + 1} node={n} />)}
 				{!collapsed && nodes.map(n => <Node key={n.id} depth={depth + 1} node={n} />)}
-			</FolderChildren>
-		</FolderWrapper>
+			</Box>
+		</Box>
 	);
 };
-
-interface FolderWrapperProps {
-	$dropAccepted: boolean;
-	$dropHovering: boolean;
-}
-
-const FolderWrapper = styled.div<FolderWrapperProps>`
-	${p =>
-		p.$dropAccepted &&
-		p.$dropHovering &&
-		css`
-		border-radius: 4px;
-		background-color: color-mix(in srgb, var(--beak-colors-accent-pink) 60%, transparent);
-	`}
-`;
-
-const FolderChildren = styled.div``;
 
 export default FolderNode;

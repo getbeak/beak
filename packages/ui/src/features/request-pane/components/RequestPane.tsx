@@ -7,8 +7,8 @@ import type { ValidRequestNode } from '@getbeak/types/nodes';
 import React from 'react';
 import { useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
+import { Flex } from '@chakra-ui/react';
 import { ReflexContainer, ReflexElement } from 'react-reflex';
-import styled from 'styled-components';
 
 import { HorizontalContextualReflexSplitter } from '../../../components/atoms/ReflexSplitter';
 import SelectedNodeContext from '../contexts/selected-node';
@@ -63,11 +63,12 @@ const RequestPane: React.FC<React.PropsWithChildren<unknown>> = () => {
 		return () => dispatch(alertRemoveDependents({ requestId: selectedNode.id }));
 	}, [selectedNode.id, selectedNode.info]);
 
-	if (!selectedTab || !preferences || !selectedNode) return <Container />;
+	if (!selectedTab || !preferences || !selectedNode)
+		return <Flex direction='column' h='100%' w='100%' bg='bg.surface' />;
 
 	return (
 		<SelectedNodeContext.Provider value={selectedNode}>
-			<Container>
+			<Flex direction='column' h='100%' w='100%' bg='bg.surface'>
 				<Header node={selectedNode} />
 				<ReflexContainer orientation={'horizontal'}>
 					<ReflexElement flex={8} minSize={400}>
@@ -82,19 +83,9 @@ const RequestPane: React.FC<React.PropsWithChildren<unknown>> = () => {
 						<RequestOutput selectedNode={selectedNode} />
 					</ReflexElement>
 				</ReflexContainer>
-			</Container>
+			</Flex>
 		</SelectedNodeContext.Provider>
 	);
 };
-
-const Container = styled.div`
-	display: flex;
-	flex-direction: column;
-
-	height: 100%;
-	width: 100%;
-
-	background-color: var(--beak-colors-bg-surface);
-`;
 
 export default RequestPane;

@@ -1,6 +1,6 @@
+import { Box, Flex, Grid } from '@chakra-ui/react';
 import Button from '@beak/ui/components/atoms/Button';
-import React from 'react';
-import styled from 'styled-components';
+import * as React from 'react';
 
 interface AlertItemProps {
 	title: string;
@@ -11,58 +11,24 @@ interface AlertItemProps {
 	};
 }
 
-const AlertItem: React.FC<React.PropsWithChildren<AlertItemProps>> = props => {
-	const { title, description, action } = props;
-
-	return (
-		<Container>
-			<Title>{title}</Title>
-			<Description>{description}</Description>
-			{action && (
-				<Action>
-					<Button size={'sm'} onClick={action.callback}>
-						{action.cta}
-					</Button>
-				</Action>
-			)}
-		</Container>
-	);
-};
-
-const Container = styled.div`
-	display: grid;
-	grid-template-columns: auto min-content;
-	grid-template-rows: auto auto;
-
-	padding: 8px 12px;
-	border-bottom: 1px solid var(--beak-colors-border-default);
-
-	&:last-of-type {
-		border: none;
-	}
-`;
-
-const Title = styled.div`
-	grid-row: 1;
-	grid-column: 1;
-
-	font-size: 14px;
-`;
-
-const Description = styled.div`
-	grid-row: 2;
-	grid-column: 1;
-
-	font-size: 12px;
-	color: var(--beak-colors-fg-subtle);
-`;
-
-const Action = styled.div`
-	display: flex;
-	align-items: center;
-
-	grid-column: 2;
-	grid-row: 1 / 3;
-`;
+const AlertItem: React.FC<AlertItemProps> = ({ title, description, action }) => (
+	<Grid
+		templateColumns='auto min-content'
+		templateRows='auto auto'
+		px='3'
+		py='2'
+		borderBottomWidth='1px'
+		borderColor='border.default'
+		_last={{ borderBottomWidth: '0' }}
+	>
+		<Box gridRow={1} gridColumn={1} fontSize='lg'>{title}</Box>
+		<Box gridRow={2} gridColumn={1} fontSize='sm' color='fg.subtle'>{description}</Box>
+		{action && (
+			<Flex gridColumn={2} gridRow='1 / 3' align='center'>
+				<Button size='sm' onClick={action.callback}>{action.cta}</Button>
+			</Flex>
+		)}
+	</Grid>
+);
 
 export default AlertItem;

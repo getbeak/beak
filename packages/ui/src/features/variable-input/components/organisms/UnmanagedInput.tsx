@@ -1,5 +1,5 @@
-import React from 'react';
-import styled from 'styled-components';
+import { Box } from '@chakra-ui/react';
+import * as React from 'react';
 
 interface UnmanagedInputProps {
 	innerRef: React.MutableRefObject<HTMLDivElement | null>;
@@ -12,64 +12,47 @@ export default class UnmanagedInput extends React.Component<UnmanagedInputProps>
 
 	render() {
 		return (
-			<Input
+			<Box
+				as='article'
+				ref={this.props.innerRef as unknown as React.Ref<HTMLElement>}
 				contentEditable
 				spellCheck={false}
 				suppressContentEditableWarning
-				onDoubleClick={event => {
+				fontSize='sm'
+				borderWidth='1px'
+				borderColor='border.default'
+				whiteSpace='nowrap'
+				overflow='hidden'
+				css={{
+					'&[disabled="true"]': {
+						userSelect: 'text',
+						cursor: 'text',
+						overflow: 'hidden',
+						textOverflow: 'ellipsis',
+					},
+					'.bvs-blob': {
+						display: 'inline-block',
+						margin: '0 1px',
+						marginBottom: '-1px',
+						borderRadius: '4px',
+						fontSize: '11px',
+						lineHeight: '15px',
+						background: 'var(--beak-colors-accent-pink)',
+						color: 'var(--beak-colors-fg-onAccent)',
+						userSelect: 'text',
+					},
+					'.bvs-blob > strong': { fontWeight: 600 },
+					'.bvs-blob[data-editable="true"]': { cursor: 'pointer' },
+					'> *': { display: 'inline', whiteSpace: 'nowrap' },
+					br: { display: 'none' },
+				}}
+				onDoubleClick={(event: React.MouseEvent<HTMLElement>) => {
 					const disabled = event.currentTarget.getAttribute('disabled') === 'true';
-
 					if (!disabled) return;
-
 					window.getSelection()?.selectAllChildren(event.currentTarget);
 					event.preventDefault();
 				}}
-				ref={this.props.innerRef}
 			/>
 		);
 	}
 }
-
-const Input = styled.article`
-	font-size: 12px;
-	border: 1px solid var(--beak-colors-border-default);
-	white-space: nowrap;
-	overflow: hidden;
-
-	&[disabled="true"] {
-		user-select: text;
-		cursor: text;
-
-		overflow: hidden;
-		text-overflow: ellipsis;
-	}
-
-	.bvs-blob {
-		display: inline-block;
-		margin: 0 1px;
-		margin-bottom: -1px;
-		border-radius: 4px;
-		font-size: 11px;
-		line-height: 15px;
-		background: var(--beak-colors-accent-pink);
-		color: var(--beak-colors-fg-onAccent);
-		user-select: text;
-
-		> strong {
-			font-weight: 600;
-		}
-
-		&[data-editable='true'] {
-			cursor: pointer;
-		}
-	}
-
-	> * {
-		display:inline;
-		white-space:nowrap;
-	}
-
-	br {
-		display: none;
-	}
-`;

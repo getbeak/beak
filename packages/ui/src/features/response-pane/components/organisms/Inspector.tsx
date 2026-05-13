@@ -3,8 +3,8 @@ import { requestPreferenceSetResMainTab } from '@beak/ui/store/preferences/actio
 import { useAppSelector } from '@beak/ui/store/redux';
 import type { Flight } from '@getbeak/types/flight';
 import React from 'react';
+import { Box } from '@chakra-ui/react';
 import { useDispatch } from 'react-redux';
-import styled from 'styled-components';
 
 import TabBar from '../../../../components/atoms/TabBar';
 import TabItem from '../../../../components/atoms/TabItem';
@@ -42,19 +42,13 @@ const Inspector: React.FC<React.PropsWithChildren<InspectorProps>> = props => {
 				<TabSpacer />
 			</TabBar>
 
-			<TabBody>
+			<Box flexGrow={2} overflowY='hidden'>
 				{preferences.mainTab === 'overview' && <OverviewTab flight={props.flight} />}
 				{preferences.mainTab === 'request' && <RequestTab flight={props.flight} />}
 				{preferences.mainTab === 'response' && <ResponseTab flight={props.flight} />}
-			</TabBody>
+			</Box>
 		</React.Fragment>
 	);
 };
-
-const TabBody = styled.div`
-	flex-grow: 2;
-
-	overflow-y: hidden;
-`;
 
 export default Inspector;

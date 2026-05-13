@@ -1,12 +1,12 @@
+import { Box, Button as ChakraButton, Flex } from '@chakra-ui/react';
 import type { LucideIcon } from 'lucide-react';
-import React from 'react';
-import styled from 'styled-components';
+import * as React from 'react';
 
 type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement>;
 
 /** Maps the previous design-system colour-token names that callers pass into
  *  `iconColor` onto Chakra CSS vars so the icon still picks up the brand
- *  palette via the active theme.  Unknown keys fall through to `undefined`. */
+ *  palette via the active theme. */
 const ICON_COLOUR_TOKEN_MAP: Record<string, string> = {
 	primaryFill: 'var(--beak-colors-accent-pink)',
 	secondaryFill: 'var(--beak-colors-accent-indigo)',
@@ -26,86 +26,46 @@ export interface GetStartedButtonProps extends ButtonProps {
 	iconColor?: keyof typeof ICON_COLOUR_TOKEN_MAP;
 }
 
-const GetStartedButton: React.FC<React.PropsWithChildren<GetStartedButtonProps>> = props => {
-	const { title, description, icon: Icon, iconColor, ...passProps } = props;
-
+const GetStartedButton: React.FC<GetStartedButtonProps> = ({
+	title,
+	description,
+	icon: Icon,
+	iconColor,
+	...passProps
+}) => {
 	const color = iconColor ? ICON_COLOUR_TOKEN_MAP[iconColor] : void 0;
 
 	return (
-		<Button {...passProps}>
-			<Container>
-				<IconWrap>
+		<ChakraButton
+			display='block'
+			w='calc(100% - 20px)'
+			bg='color-mix(in srgb, var(--beak-colors-bg-surface-emphasized) 70%, transparent)'
+			backdropFilter='blur(5px)'
+			borderRadius='md'
+			color='fg.default'
+			border='none'
+			cursor='pointer'
+			p='2.5'
+			mb='2.5'
+			h='auto'
+			transition='transform ease .1s'
+			_disabled={{ opacity: 0.7, cursor: 'not-allowed' }}
+			_hover={{ bg: 'bg.surface.alt' }}
+			_active={{ bg: 'bg.canvas', transform: 'scale(0.98)', outline: '0' }}
+			_focus={{ bg: 'bg.canvas', transform: 'scale(0.98)', outline: '0' }}
+			{...(passProps as Record<string, unknown>)}
+		>
+			<Flex>
+				<Flex w='10' align='center' justify='center'>
 					<Icon color={color} size={28} />
-				</IconWrap>
-				<TextParts>
-					<Title>{title}</Title>
-					<Description>{description}</Description>
-				</TextParts>
-			</Container>
-		</Button>
+				</Flex>
+				<Flex direction='column' align='flex-start' ml='2.5'>
+					<Box as='span' fontSize='2xl' fontWeight='300'>{title}</Box>
+					<Box as='span' fontSize='md' color='fg.muted'>{description}</Box>
+				</Flex>
+			</Flex>
+		</ChakraButton>
 	);
 };
-
-const Button = styled.button`
-	display: block;
-	width: calc(100% - 20px);
-	background: color-mix(in srgb, var(--beak-colors-bg-surface-emphasized) 70%, transparent);
-	backdrop-filter: blur(5px);
-	border-radius: 5px;
-	color: var(--beak-colors-fg-default);
-	border: none;
-	cursor: pointer;
-
-	padding: 10px;
-	margin-bottom: 10px;
-
-	transition: transform ease .1s;
-
-	&:disabled {
-		opacity: 0.7;
-		cursor: not-allowed;
-	}
-
-	&:not(:disabled) {
-		&:hover {
-			background: var(--beak-colors-bg-surface-alt);
-		}
-
-		&:active, &:focus {
-			background: var(--beak-colors-bg-canvas);
-			transform: scale(0.98);
-			outline: 0;
-		}
-	}
-`;
-
-const Container = styled.div`
-	display: flex;
-`;
-
-const IconWrap = styled.div`
-	display: flex;
-	width: 40px;
-
-	align-items: center;
-	justify-content: center;
-`;
-
-const TextParts = styled.div`
-	display: flex;
-	flex-direction: column;
-	align-items: flex-start;
-	margin-left: 10px;
-`;
-
-const Title = styled.span`
-	font-size: 19px;
-	font-weight: 300;
-`;
-
-const Description = styled.span`
-	font-size: 13px;
-	color: var(--beak-colors-fg-muted);
-`;
 
 export default GetStartedButton;

@@ -1,11 +1,11 @@
+import { Box, Flex } from '@chakra-ui/react';
 import type { RecentProject } from '@beak/common/types/beak-hub';
 import NewsBannerContainer from '@beak/ui/features/news-banner/components/NewsBannerContainer';
 import { ipcBeakHubService, ipcProjectService } from '@beak/ui/lib/ipc';
 import { sortIso8601 } from '@beak/ui/utils/sort';
 import { sentenceCase } from 'change-case';
-import React from 'react';
+import * as React from 'react';
 import { useEffect, useState } from 'react';
-import styled from 'styled-components';
 
 import ColumnTitle from '../atoms/ColumnTitle';
 import Collapse from '../molecules/Collapse';
@@ -16,7 +16,7 @@ type Recents = Record<TimeCategory, RecentProject[]>;
 
 const categories: TimeCategory[] = ['today', 'week', 'month', 'older'];
 
-const OpenRecentColumn: React.FC<React.PropsWithChildren<unknown>> = () => {
+const OpenRecentColumn: React.FC = () => {
 	const [recents, setRecents] = useState<Recents>({ ...defaultRecents() });
 
 	useEffect(() => {
@@ -28,22 +28,15 @@ const OpenRecentColumn: React.FC<React.PropsWithChildren<unknown>> = () => {
 				.sort((a, b) => {
 					const aD = new Date(a.accessTime).getTime();
 					const bD = new Date(b.accessTime).getTime();
-
 					return Math.sign(aD - bD);
 				})
 				.forEach(m => {
 					const unix = new Date(m.accessTime).getTime() / 1000;
 					const diff = now - unix;
 
-					if (diff > 2592000)
-						// 1 month
-						newRecents.older.push(m);
-					else if (diff > 604800)
-						// 1 week
-						newRecents.month.push(m);
-					else if (diff > 86400)
-						// 1 day
-						newRecents.week.push(m);
+					if (diff > 2592000) newRecents.older.push(m);
+					else if (diff > 604800) newRecents.month.push(m);
+					else if (diff > 86400) newRecents.week.push(m);
 					else newRecents.today.push(m);
 				});
 
@@ -54,12 +47,11 @@ const OpenRecentColumn: React.FC<React.PropsWithChildren<unknown>> = () => {
 	const noRecents = checkIfNoRecents(recents);
 
 	return (
-		<Wrapper>
+		<Flex flexBasis='60%' h='100%' direction='column'>
 			<NewsBannerContainer />
-
 			<ColumnTitle>{'Open recent'}</ColumnTitle>
-			<ScrollViewer tabIndex={-1}>
-				<ScrollViewerInner tabIndex={-1}>
+			<Box flex='1 1 auto' overflowY='scroll' tabIndex={-1}>
+				<Box tabIndex={-1}>
 					{noRecents && 'No recent projects, create one to get started'}
 					{categories
 						.filter(k => recents[k].length > 0)
@@ -71,7 +63,7 @@ const OpenRecentColumn: React.FC<React.PropsWithChildren<unknown>> = () => {
 										modifiedDate={m.accessTime}
 										name={m.name}
 										path={m.path}
-										type={'local'}
+										type='local'
 										onClick={() => {
 											ipcProjectService.openFolder(m.path);
 										}}
@@ -79,44 +71,18 @@ const OpenRecentColumn: React.FC<React.PropsWithChildren<unknown>> = () => {
 								))}
 							</Collapse>
 						))}
-				</ScrollViewerInner>
-			</ScrollViewer>
-		</Wrapper>
+				</Box>
+			</Box>
+		</Flex>
 	);
 };
 
 function defaultRecents(): Recents {
-	return {
-		today: [],
-		week: [],
-		month: [],
-		older: [],
-	};
+	return { today: [], week: [], month: [], older: [] };
 }
 
 function checkIfNoRecents(recents: Recents) {
-	const hasToday = recents.today.length > 0;
-	const hasWeek = recents.week.length > 0;
-	const hasMonth = recents.month.length > 0;
-	const hasOlder = recents.older.length > 0;
-
-	return !hasToday && !hasWeek && !hasMonth && !hasOlder;
+	return !recents.today.length && !recents.week.length && !recents.month.length && !recents.older.length;
 }
-
-const Wrapper = styled.div`
-	flex-basis: 60%;
-	height: 100%;
-	display: flex;
-	flex-direction: column;
-`;
-
-const ScrollViewer = styled.div`
-	flex: 1 1 auto;
-	overflow-y: scroll;
-`;
-
-const ScrollViewerInner = styled.div`
-
-`;
 
 export default OpenRecentColumn;

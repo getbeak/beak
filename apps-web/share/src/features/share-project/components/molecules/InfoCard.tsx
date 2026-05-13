@@ -1,11 +1,11 @@
+import { Box, Grid } from '@chakra-ui/react';
 import CtaButton from '@beak/apps-web-share/components/atoms/Buttons';
 import { SubTitle, Title } from '@beak/apps-web-share/components/atoms/Typography';
 import useBeakProjectUrl from '@beak/apps-web-share/hooks/use-beak-project-url';
-import React from 'react';
+import * as React from 'react';
 import { useEffect } from 'react';
-import styled from 'styled-components';
 
-const InfoCard: React.FC<React.PropsWithChildren<unknown>> = () => {
+const InfoCard: React.FC = () => {
 	const beakUrl = useBeakProjectUrl();
 
 	useEffect(() => {
@@ -13,53 +13,33 @@ const InfoCard: React.FC<React.PropsWithChildren<unknown>> = () => {
 	}, [beakUrl]);
 
 	return (
-		<Card>
-			<Brand />
-			<Ugh>
+		<Grid templateColumns='150px 1fr' gap='5' borderRadius='lg' bg='bg.surface' p='6'>
+			<Box
+				bgImage="url('/assets/logo-tile.png')"
+				bgPos='center'
+				bgRepeat='no-repeat'
+				bgSize='100px'
+				h='100px'
+			/>
+			<Box>
 				<Title>{'Someone has shared a Beak with you'}</Title>
 				<SubTitle>
 					{"Someone has shared a beak project with you, if Beak doesn't launch automatically, you can "}
 					{'tap the button below.'}
 				</SubTitle>
-
-				<Spacer />
-
-				<CtaButton
-					$style={'primary'}
-					onClick={() => {
-						window.location.href = beakUrl;
-					}}
-				>
-					{'Launch Beak'}
-				</CtaButton>
-			</Ugh>
-		</Card>
+				<Box mt='5'>
+					<CtaButton
+						$style='primary'
+						onClick={() => {
+							window.location.href = beakUrl;
+						}}
+					>
+						{'Launch Beak'}
+					</CtaButton>
+				</Box>
+			</Box>
+		</Grid>
 	);
 };
-
-const Card = styled.div`
-	display: grid;
-	gap: 20px;
-	grid-template-columns: 150px 1fr;
-	border-radius: 10px;
-	background: var(--beak-colors-bg-surface);
-	padding: 25px;
-`;
-
-const Brand = styled.div`
-	background-image: url('/assets/logo-tile.png');
-	background-position: center;
-	background-repeat: no-repeat;
-	background-size: 100px;
-	height: 100px;
-`;
-
-const Ugh = styled.div`
-	
-`;
-
-const Spacer = styled.div`
-	margin-top: 20px;
-`;
 
 export default InfoCard;

@@ -1,24 +1,26 @@
+import { Box } from '@chakra-ui/react';
 import BasicTableEditor from '@beak/ui/features/basic-table-editor/components/BasicTableEditor';
 import binaryStore from '@beak/ui/lib/binary-store';
 import { getStatusReasonPhrase } from '@beak/ui/utils/http';
 import type { Flight } from '@getbeak/types/flight';
 import type { ToggleKeyValue } from '@getbeak/types/request';
 import prettyBytes from 'pretty-bytes';
-import React from 'react';
-import styled from 'styled-components';
+import * as React from 'react';
 
 export interface OverviewTabProps {
 	flight: Flight;
 }
 
-const OverviewTab: React.FC<React.PropsWithChildren<OverviewTabProps>> = props => {
-	const { flight } = props;
-
+const OverviewTab: React.FC<OverviewTabProps> = ({ flight }) => {
 	const { requestStart, responseEnd } = flight.timing;
 	const items: Record<string, ToggleKeyValue> = {
 		requestMethod: { name: 'Request method', value: [flight.request.verb.toLocaleUpperCase()], enabled: true },
 		requestUrl: { name: 'Request url', value: flight.request.url, enabled: true },
-		requestStart: { name: 'Request started at', value: [new Date(flight.timing.beakStart).toISOString()], enabled: true },
+		requestStart: {
+			name: 'Request started at',
+			value: [new Date(flight.timing.beakStart).toISOString()],
+			enabled: true,
+		},
 	};
 
 	if (flight.response) {
@@ -57,20 +59,15 @@ const OverviewTab: React.FC<React.PropsWithChildren<OverviewTabProps>> = props =
 	};
 
 	return (
-		<Container>
+		<Box h='100%'>
 			<BasicTableEditor items={items} readOnly />
-		</Container>
+		</Box>
 	);
 };
 
 function calculateDuration(start: number | undefined, end: number | undefined) {
 	if (start === void 0 || end === void 0) return '0 ms';
-
 	return `${end - start} ms`;
 }
-
-const Container = styled.div`
-	height: 100%;
-`;
 
 export default OverviewTab;

@@ -1,9 +1,10 @@
+import { Box } from '@chakra-ui/react';
 import Squawk from '@beak/common/utils/squawk';
 import Button from '@beak/ui/components/atoms/Button';
 import Label from '@beak/ui/components/atoms/Label';
 import { ipcNestService } from '@beak/ui/lib/ipc';
-import React, { useEffect, useRef, useState } from 'react';
-import styled from 'styled-components';
+import * as React from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import FormError from '../../../../components/atoms/FormError';
 import FormInput from '../../../../components/atoms/FormInput';
@@ -16,8 +17,7 @@ interface EnterTrialMagicStateProps {
 	inboundState?: MagicState;
 }
 
-const EnterTrialMagicState: React.FC<React.PropsWithChildren<EnterTrialMagicStateProps>> = props => {
-	const { email, reset, inboundState } = props;
+const EnterTrialMagicState: React.FC<EnterTrialMagicStateProps> = ({ email, reset, inboundState }) => {
 	const [working, setWorking] = useState<boolean>(false);
 	const [error, setError] = useState<Squawk | undefined>(void 0);
 	const [manualState, setManualState] = useState<string | undefined>(void 0);
@@ -28,16 +28,13 @@ const EnterTrialMagicState: React.FC<React.PropsWithChildren<EnterTrialMagicStat
 	useEffect(() => {
 		if (resend >= 1) {
 			window.setTimeout(() => setResend(resend - 1), 1000);
-
 			return;
 		}
-
 		setCanResend(true);
 	}, [resend]);
 
 	useEffect(() => {
 		if (!inboundState) return;
-
 		handleMagicState(inboundState.code, inboundState.state);
 	}, [inboundState]);
 
@@ -77,19 +74,25 @@ const EnterTrialMagicState: React.FC<React.PropsWithChildren<EnterTrialMagicStat
 				<React.Fragment>
 					{!working && (
 						<React.Fragment>
-							<Text>
+							<Box fontSize='lg' my='1.5' color='fg.default'>
 								{'Your magic link is on the way to '}
 								<b>{email}</b>
 								{'.'}
-							</Text>
-							<Text>
+							</Box>
+							<Box fontSize='lg' my='1.5' color='fg.default'>
 								{'Clicking the link in the email will finish signing you into your Beak trial. '}
-								<HelpButton onClick={() => showManualState()}>{'Having trouble with the link?'}</HelpButton>
-							</Text>
+								<Box as='span' cursor='pointer' color='accent.pink' onClick={() => showManualState()}>
+									{'Having trouble with the link?'}
+								</Box>
+							</Box>
 						</React.Fragment>
 					)}
 
-					{working && <Text>{'Working away on your magic link, make a wish 🪄 '}</Text>}
+					{working && (
+						<Box fontSize='lg' my='1.5' color='fg.default'>
+							{'Working away on your magic link, make a wish 🪄 '}
+						</Box>
+					)}
 				</React.Fragment>
 			)}
 
@@ -97,18 +100,18 @@ const EnterTrialMagicState: React.FC<React.PropsWithChildren<EnterTrialMagicStat
 				<FormInput>
 					<Label>{"If the link isn't working, please paste the payload from magic link site below 👇"}</Label>
 					<Input
-						placeholder={'code=xxxx&state=yyyy'}
+						placeholder='code=xxxx&state=yyyy'
 						value={manualState}
-						type={'text'}
+						type='text'
 						ref={manualInputRef}
 						onChange={e => setManualState(e.target.value)}
 						onKeyDown={e => {
 							if (e.key === 'Enter') parseAndHandleMagicState();
 						}}
 					/>
-					<ManualButton disabled={working} size={'sm'} onClick={() => parseAndHandleMagicState()}>
+					<Button disabled={working} size='sm' onClick={() => parseAndHandleMagicState()} style={{ marginTop: 5, width: '100%' }}>
 						{'Submit'}
-					</ManualButton>
+					</Button>
 				</FormInput>
 			)}
 
@@ -116,41 +119,23 @@ const EnterTrialMagicState: React.FC<React.PropsWithChildren<EnterTrialMagicStat
 
 			{!working && (
 				<React.Fragment>
-					<ManualButton disabled={!canResend} onClick={() => reset()}>
+					<Button disabled={!canResend} onClick={() => reset()} style={{ marginTop: 5, width: '100%' }}>
 						{canResend && 'Request new magic link'}
 						{!canResend && `Request new magic link (${resend}s)`}
-					</ManualButton>
-					<ManualButton onClick={() => reset()}>{'Wrong email?'}</ManualButton>
+					</Button>
+					<Button onClick={() => reset()} style={{ marginTop: 5, width: '100%' }}>{'Wrong email?'}</Button>
 				</React.Fragment>
 			)}
 		</React.Fragment>
 	);
 };
 
-const Text = styled.div`
-	font-size: 14px;
-	margin: 5px 0;
-	color: var(--beak-colors-fg-default);
-`;
-
-const HelpButton = styled.span`
-	cursor: pointer;
-	color: var(--beak-colors-accent-pink);
-`;
-
-const ManualButton = styled(Button)`
-	margin-top: 5px;
-	width: 100%;
-`;
-
 function getErrorMessage(error: Squawk) {
 	switch (error.code) {
 		case 'no_active_subscription':
 			return "You don't have an active Beak subscription.";
-
 		case 'token_expired':
 			return 'Your magic link expired. Please request a new one.';
-
 		default:
 			return `There was a problem with that magic link (${error.code})`;
 	}

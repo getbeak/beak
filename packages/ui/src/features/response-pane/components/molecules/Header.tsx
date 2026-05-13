@@ -1,88 +1,83 @@
+import { Box, Flex } from '@chakra-ui/react';
 import { statusToColor } from '@beak/design-system/helpers';
 import useVariableContext from '@beak/ui/features/variables/hooks/use-variable-context';
 import { getStatusReasonPhrase } from '@beak/ui/utils/http';
 import { convertRequestToUrl } from '@beak/ui/utils/uri';
 import type { Flight } from '@getbeak/types/flight';
-import React from 'react';
+import * as React from 'react';
 import { useEffect, useState } from 'react';
-import styled from 'styled-components';
 
 export interface HeaderProps {
 	selectedFlight: Flight;
 }
 
-const Header: React.FC<React.PropsWithChildren<HeaderProps>> = props => {
-	const { error, request, response } = props.selectedFlight;
-	const context = useVariableContext(props.selectedFlight.requestId);
+const sectionBase = {
+	bg: 'bg.canvas',
+	borderWidth: '1px',
+	borderColor: 'accent.pink',
+	borderRadius: 'sm',
+	px: '2',
+	py: '1.5',
+	mx: '1.5',
+} as const;
+
+const Header: React.FC<HeaderProps> = ({ selectedFlight }) => {
+	const { error, request, response } = selectedFlight;
+	const context = useVariableContext(selectedFlight.requestId);
 	const [url, setUrl] = useState('');
 
 	useEffect(() => {
 		convertRequestToUrl(context, request).then(s => setUrl(s.toString()));
 	}, [context, request]);
 
+	const statusColor = response ? statusToColor(response.status) : error ? statusToColor(500) : undefined;
+
 	return (
-		<UrlHeaderWrapper>
-			<Section>
+		<Flex
+			position='relative'
+			justify='space-between'
+			align='center'
+			my='6'
+			mx='auto'
+			px='2.5'
+			fontSize='md'
+			maxW='calc(100% - 20px)'
+		>
+			<Box {...sectionBase} flex='0 0 auto'>
 				<strong>{request.verb.toUpperCase()}</strong>
-			</Section>
-			<UrlSection>
-				<div data-tooltip-id={'tt-response-header-url-bar'} data-tooltip-content={url}>
-					{/* The "&lrm;" char is a requirement of using RTL to trim the end vs start of the string */}
+			</Box>
+			<Box
+				{...sectionBase}
+				flex='1 1 auto'
+				whiteSpace='nowrap'
+				overflow='hidden'
+				textOverflow='ellipsis'
+				direction='rtl'
+			>
+				<div data-tooltip-id='tt-response-header-url-bar' data-tooltip-content={url}>
 					{url}&lrm;
 				</div>
-			</UrlSection>
+			</Box>
 			{response && (
-				<StatusSection $status={response.status}>
+				<Box
+					{...sectionBase}
+					whiteSpace='nowrap'
+					style={{ borderColor: statusColor, color: statusColor }}
+				>
 					<strong>{response.status}</strong> {getStatusReasonPhrase(response.status)}
-				</StatusSection>
+				</Box>
 			)}
 			{error && (
-				<StatusSection $status={500}>
+				<Box
+					{...sectionBase}
+					whiteSpace='nowrap'
+					style={{ borderColor: statusColor, color: statusColor }}
+				>
 					<strong>{'Error'}</strong>
-				</StatusSection>
+				</Box>
 			)}
-		</UrlHeaderWrapper>
+		</Flex>
 	);
 };
-
-const UrlHeaderWrapper = styled.div`
-	position: relative;
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-
-	margin: 25px auto;
-	margin-bottom: 26.5px;
-	padding: 0 10px;
-	font-size: 13px;
-	max-width: calc(100% - 20px);
-`;
-
-const Section = styled.div`
-	flex: 0 0 auto;
-	background-color: var(--beak-colors-bg-canvas);
-
-	border: 1px solid var(--beak-colors-accent-pink);
-	border-radius: 4px;
-
-	padding: 5px 8px;
-	margin: 0 5px;
-`;
-
-const UrlSection = styled(Section)`
-	flex: 1 1 auto;
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	direction: rtl;
-`;
-
-const StatusSection = styled(Section)<{ $status: number }>`
-	background-color: var(--beak-colors-bg-canvas);
-	border-color: ${p => statusToColor(p.$status)};
-	color: ${p => statusToColor(p.$status)};
-
-	white-space: nowrap;
-`;
 
 export default Header;

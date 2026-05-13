@@ -1,5 +1,5 @@
-import React from 'react';
-import styled, { css } from 'styled-components';
+import { Box } from '@chakra-ui/react';
+import * as React from 'react';
 
 import TabItemSubItemsDropdown from './TabItemSubItemsDropdown';
 
@@ -20,8 +20,30 @@ export interface TabItemProps<T = string> extends Omit<React.HTMLProps<HTMLDivEl
 const TabItem = <T = string>(props: React.PropsWithChildren<TabItemProps<T>>): React.ReactElement => {
 	const { active, activeSubItem, children, lazyForwardedRef, onSubItemChanged, size, subItems, ...rest } = props;
 
+	const sm = size === 'sm';
+
 	return (
-		<Wrapper $active={active} $size={size} ref={lazyForwardedRef} {...rest}>
+		<Box
+			ref={lazyForwardedRef as unknown as React.Ref<HTMLDivElement>}
+			display='flex'
+			borderBottomWidth='1px'
+			borderBottomStyle='solid'
+			borderBottomColor={active ? 'accent.pink' : 'border.default'}
+			color={active ? 'accent.pink' : 'fg.muted'}
+			fontSize={sm ? 'sm' : 'md'}
+			px={sm ? '1.5' : '2.5'}
+			py={sm ? '1' : '1.5'}
+			cursor='pointer'
+			whiteSpace='nowrap'
+			transition='color .12s ease, border-bottom-color .12s ease'
+			_hover={
+				active
+					? undefined
+					: { color: 'fg.default', borderBottomColor: 'fg.default' }
+			}
+			css={{ '> svg': { marginLeft: '5px' } }}
+			{...(rest as Record<string, unknown>)}
+		>
 			{children}
 			{subItems && subItems.length > 0 && (
 				<TabItemSubItemsDropdown<T>
@@ -30,54 +52,8 @@ const TabItem = <T = string>(props: React.PropsWithChildren<TabItemProps<T>>): R
 					onSubItemChanged={onSubItemChanged!}
 				/>
 			)}
-		</Wrapper>
+		</Box>
 	);
 };
-
-export interface WrapperProps {
-	$active?: boolean;
-	$size?: 'sm' | 'md';
-}
-
-const Wrapper = styled.div<WrapperProps>`
-	display: flex;
-	border-bottom: 1px solid var(--beak-colors-border-default);
-
-	font-size: 13px;
-	color: var(--beak-colors-fg-muted);
-	padding: 6px 10px;
-	cursor: pointer;
-	white-space: nowrap;
-	transition: color .12s ease, border-bottom-color .12s ease;
-
-	${p => {
-		if (p.$size !== 'sm') return '';
-
-		return css`
-			padding: 4px 7px;
-			font-size: 12px;
-		`;
-	}}
-
-	${({ $active }) => {
-		if (!$active) {
-			return css`
-				&:hover {
-					color: var(--beak-colors-fg-default);
-					border-bottom-color: var(--beak-colors-fg-default);
-				}
-			`;
-		}
-
-		return css`
-			color: var(--beak-colors-accent-pink);
-			border-bottom-color: var(--beak-colors-accent-pink);
-		`;
-	}}
-
-	> svg {
-		margin-left: 5px;
-	}
-`;
 
 export default TabItem;

@@ -1,11 +1,10 @@
+import { Box, Flex } from '@chakra-ui/react';
 import { ipcNestService } from '@beak/ui/lib/ipc';
 import { CircleUserRound } from 'lucide-react';
-
-import React from 'react';
+import * as React from 'react';
 import { useEffect, useState } from 'react';
-import styled from 'styled-components';
 
-const AccountItem: React.FC<React.PropsWithChildren<unknown>> = () => {
+const AccountItem: React.FC = () => {
 	const [primaryEmail, setPrimaryEmail] = useState<string | null>(null);
 
 	useEffect(() => {
@@ -29,44 +28,32 @@ const AccountItem: React.FC<React.PropsWithChildren<unknown>> = () => {
 	if (!primaryEmail) return null;
 
 	return (
-		<Wrapper>
-			<CircleUserRound color={'var(--beak-colors-accent-pink)'} />
-			<Account>
-				<AccountTop>{'Beak'}</AccountTop>
-				<AccountEmail title={primaryEmail}>{primaryEmail}</AccountEmail>
-			</Account>
-		</Wrapper>
+		<Flex
+			align='center'
+			borderRadius='lg'
+			p='2.5'
+			bg='color-mix(in srgb, var(--beak-colors-bg-surface) 25%, transparent)'
+			color='fg.muted'
+		>
+			<CircleUserRound color='var(--beak-colors-accent-pink)' />
+			<Box ml='2.5' overflow='hidden'>
+				<Box fontSize='xl' fontWeight='medium' color='fg.default'>{'Beak'}</Box>
+				<Box
+					as='abbr'
+					title={primaryEmail}
+					display='block'
+					overflow='hidden'
+					wordWrap='break-word'
+					whiteSpace='nowrap'
+					textOverflow='ellipsis'
+					fontSize='sm'
+					textDecoration='none'
+				>
+					{primaryEmail}
+				</Box>
+			</Box>
+		</Flex>
 	);
 };
-
-const Wrapper = styled.div`
-	display: flex;
-	align-items: center;
-	border-radius: 10px;
-	padding: 10px;
-	background: color-mix(in srgb, var(--beak-colors-bg-surface) 25%, transparent);
-	color: var(--beak-colors-fg-muted);
-`;
-
-const Account = styled.div`
-	margin-left: 10px;
-	overflow: hidden;
-`;
-
-const AccountTop = styled.div`
-	font-size: 16px;
-	font-weight: 500;
-	color: var(--beak-colors-fg-default);
-`;
-
-const AccountEmail = styled.abbr`
-	display: block;
-	overflow: hidden;
-	word-wrap: break-word;
-	white-space: nowrap;
-	text-overflow: ellipsis;
-	font-size: 12px;
-	text-decoration: none;
-`;
 
 export default AccountItem;

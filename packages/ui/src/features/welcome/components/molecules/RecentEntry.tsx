@@ -1,8 +1,7 @@
-
+import { Box, Grid } from '@chakra-ui/react';
 import { format, parseISO } from 'date-fns';
-import React from 'react';
-import styled from 'styled-components';
 import { Network } from 'lucide-react';
+import * as React from 'react';
 
 export interface RecentEntryProps {
 	name: string;
@@ -12,92 +11,77 @@ export interface RecentEntryProps {
 	onClick: () => void;
 }
 
-const RecentEntry: React.FC<React.PropsWithChildren<RecentEntryProps>> = props => {
+const RecentEntry: React.FC<RecentEntryProps> = props => {
 	const date = parseISO(props.modifiedDate);
 	const pathIsGoingToBeAnAsshole = props.path.startsWith('/');
 	const path = pathIsGoingToBeAnAsshole ? props.path.substring(1) : props.path;
 
 	return (
-		<Wrapper
+		<Grid
+			p='2.5'
+			templateColumns='40px minmax(0, 1fr) auto'
+			gap='2.5'
+			transition='transform .1s ease'
+			borderRadius='md'
+			tabIndex={0}
 			onClick={() => props.onClick()}
 			onKeyDown={event => {
 				if (event.key === 'Enter') props.onClick();
 			}}
-			tabIndex={0}
+			_hover={{
+				bg: 'color-mix(in srgb, var(--beak-colors-bg-surface-alt) 60%, transparent)',
+				cursor: 'pointer',
+			}}
+			_active={{
+				bg: 'color-mix(in srgb, var(--beak-colors-bg-surface-alt) 80%, transparent)',
+				transform: 'scale(0.99)',
+				outline: '0',
+			}}
+			_focus={{
+				bg: 'color-mix(in srgb, var(--beak-colors-bg-surface-alt) 80%, transparent)',
+				outline: '0',
+			}}
 		>
-			<Icon>
+			<Box w='10' textAlign='center' lineHeight='35px'>
 				<Network />
-			</Icon>
-			<TextWrapper>
-				{/* The "&lrm;" char is a requirement of using RTL to trim the end vs start of the string */}
-				<Name>{props.name}&lrm;</Name>
-				<Path $asshole={pathIsGoingToBeAnAsshole}>{path}</Path>
-			</TextWrapper>
-			<ModifiedDate>{format(date, 'MM/dd/yyyy')}</ModifiedDate>
-		</Wrapper>
+			</Box>
+			<Box>
+				<Box
+					as='span'
+					display='block'
+					fontSize='xl'
+					fontWeight='medium'
+					whiteSpace='nowrap'
+					overflow='hidden'
+					textOverflow='ellipsis'
+					direction='rtl'
+					textAlign='left'
+				>
+					{props.name}&lrm;
+				</Box>
+				<Box
+					as='span'
+					display='block'
+					fontSize='sm'
+					color='fg.muted'
+					whiteSpace='nowrap'
+					overflow='hidden'
+					textOverflow='ellipsis'
+					direction='rtl'
+					textAlign='left'
+					css={{
+						'&:after': {
+							display: 'inline-block',
+							content: pathIsGoingToBeAnAsshole ? "'/'" : "''",
+						},
+					}}
+				>
+					{path}
+				</Box>
+			</Box>
+			<Box fontSize='sm' color='fg.muted'>{format(date, 'MM/dd/yyyy')}</Box>
+		</Grid>
 	);
 };
-
-const Wrapper = styled.div`
-	padding: 10px;
-	display: grid;
-	grid-template-columns: 40px minmax(0, 1fr) auto;
-	gap: 10px;
-	transition: transform .1s ease;
-	border-radius: 5px;
-
-	&:hover {
-		background: color-mix(in srgb, var(--beak-colors-bg-surface-alt) 60%, transparent);
-		cursor: pointer;
-	}
-
-	&:active, &:focus {
-		background: color-mix(in srgb, var(--beak-colors-bg-surface-alt) 80%, transparent);
-		transform: scale(0.99);
-		outline: 0;
-	}
-`;
-
-const Icon = styled.div`
-	width: 40px;
-	text-align: center;
-	line-height: 35px;
-`;
-
-const TextWrapper = styled.div``;
-
-const Name = styled.span`
-	display: block;
-	font-size: 16px;
-	font-weight: 500;
-
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	direction: rtl;
-	text-align: left;
-`;
-
-const Path = styled.span<{ $asshole: boolean }>`
-	display: block;
-	font-size: 12px;
-	color: var(--beak-colors-fg-muted);
-
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	direction: rtl;
-	text-align: left;
-
-	&:after {
-		display: inline-block;
-		content: '${p => (p.$asshole ? '/' : '')}';
-	}
-`;
-
-const ModifiedDate = styled.div`
-	font-size: 12px;
-	color: var(--beak-colors-fg-muted);
-`;
 
 export default RecentEntry;

@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import styled, { css } from 'styled-components';
+import { Box, Grid } from '@chakra-ui/react';
+import * as React from 'react';
+import { useState } from 'react';
 
 import CreateTrial from '../features/portal/components/CreateTrial';
 import Purchase from '../features/portal/components/Purchase';
@@ -7,13 +8,41 @@ import SignIn from '../features/portal/components/SignIn';
 
 type Variant = 'default' | 'trial_creation';
 
-const Portal: React.FC<React.PropsWithChildren<unknown>> = () => {
+const Portal: React.FC = () => {
 	const [variant, setVariant] = useState<Variant>('default');
 
 	return (
-		<Wrapper>
-			<Accent $variant={variant} />
-			<Container $variant={variant}>
+		<Box
+			position='relative'
+			h='100vh'
+			w='100vw'
+			style={{ WebkitAppRegion: 'drag' } as React.CSSProperties}
+		>
+			<Box
+				position='absolute'
+				top='0'
+				bottom='0'
+				left='375px'
+				w='1100px'
+				h='2800px'
+				bg='color-mix(in srgb, var(--beak-colors-accent-pink) 70%, transparent)'
+				transition='transform 0.2s ease'
+				transform={
+					variant === 'trial_creation'
+						? 'rotate(20deg) translateX(-800px)'
+						: 'rotate(20deg) translateX(-350px)'
+				}
+				transformOrigin='center'
+			/>
+			<Grid
+				position='absolute'
+				templateColumns={variant === 'trial_creation' ? '1fr' : 'repeat(2, .5fr)'}
+				templateRows='1fr'
+				gap='12'
+				w='calc(100% - 100px)'
+				h='calc(100% - 100px)'
+				m='12'
+			>
 				{variant === 'default' && (
 					<React.Fragment>
 						<SignIn />
@@ -21,44 +50,9 @@ const Portal: React.FC<React.PropsWithChildren<unknown>> = () => {
 					</React.Fragment>
 				)}
 				{variant === 'trial_creation' && <CreateTrial onChangeToDefault={() => setVariant('default')} />}
-			</Container>
-		</Wrapper>
+			</Grid>
+		</Box>
 	);
 };
-
-const Wrapper = styled.div`
-	position: relative;
-	height: 100vh; width: 100vw;
-	-webkit-app-region: drag;
-`;
-
-const Accent = styled.div<{ $variant: Variant }>`
-	position: absolute;
-	top: 0; bottom: 0; left: 375px;
-
-	width: 1100px; height: 2800px;
-	background: color-mix(in srgb, var(--beak-colors-accent-pink) 70%, transparent);
-
-	transition: transform 0.2s ease;
-
-	transform: rotate(20deg) translateX(-350px);
-	transform-origin: center;
-
-	${p =>
-		p.$variant === 'trial_creation' &&
-		css`
-		transform: rotate(20deg) translateX(-800px);
-	`}
-`;
-
-const Container = styled.div<{ $variant: Variant }>`
-	position: absolute;
-	display: grid;
-	grid-template-columns: ${p => (p.$variant === 'trial_creation' ? '1fr' : 'repeat(2, .5fr)')};
-	grid-template-rows: 1fr;
-	gap: 50px;
-	width: calc(100% - 100px); height: calc(100% - 100px);
-	margin: 50px;
-`;
 
 export default Portal;

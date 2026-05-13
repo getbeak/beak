@@ -1,7 +1,7 @@
+import { Box } from '@chakra-ui/react';
 import Button from '@beak/ui/components/atoms/Button';
 import Dialog from '@beak/ui/components/molecules/Dialog';
-import React from 'react';
-import styled from 'styled-components';
+import * as React from 'react';
 
 import useArbiterLocking from '../../hooks/use-arbiter-locking';
 
@@ -10,65 +10,41 @@ export interface ArbiterDialogProps {
 	onClose: () => void;
 }
 
-export const ArbiterDialog: React.FC<ArbiterDialogProps> = props => {
+export const ArbiterDialog: React.FC<ArbiterDialogProps> = ({ open, onClose }) => {
 	const { friendlyLockNotice, lastSuccessfulCheck } = useArbiterLocking();
 
-	if (!props.open) return null;
+	if (!open) return null;
 
 	return (
-		<Dialog onClose={props.onClose}>
-			<Container>
-				<Title>{'Unable to check subscription status'}</Title>
-
-				<Body>
+		<Dialog onClose={onClose}>
+			<Box w='500px' p='4' fontSize='lg'>
+				<Box fontSize='2xl' fontWeight='300'>{'Unable to check subscription status'}</Box>
+				<Box as='p' fontSize='md' my='1.5' color='fg.muted'>
 					{'Beak is currently unable to check the validity of your subscription. '}
 					{'Due to this, Beak will sign you out '}
 					<strong>{friendlyLockNotice}</strong>
 					{'. If you do '}
 					{'have an active subscription, check your internet connection before '}
 					{'the lock out time to prevent any disruption to your workflow.'}
-				</Body>
-
-				<Body>
+				</Box>
+				<Box as='p' fontSize='md' my='1.5' color='fg.muted'>
 					{'The last successful check was on '}
 					<strong>{lastSuccessfulCheck.toString()}</strong>
 					{'.'}
-				</Body>
-
-				<ButtonContainer>
+				</Box>
+				<Box mt='2.5'>
 					<Button
-						size={'sm'}
+						size='sm'
 						onClick={() => {
 							/* This dialog is disabled currently */
 						}}
 					>
 						{'Check again'}
 					</Button>
-				</ButtonContainer>
-			</Container>
+				</Box>
+			</Box>
 		</Dialog>
 	);
 };
-
-const Container = styled.div`
-	width: 500px;
-
-	padding: 15px;
-	font-size: 14px;
-`;
-
-const Title = styled.div`
-	font-size: 24px;
-	font-weight: 300;
-`;
-const Body = styled.p`
-	font-size: 13px;
-	margin: 5px 0;
-	color: var(--beak-colors-fg-muted);
-`;
-
-const ButtonContainer = styled.div`
-	margin-top: 10px;
-`;
 
 export default ArbiterDialog;
