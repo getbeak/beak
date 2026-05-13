@@ -69,9 +69,17 @@ const sentrySourceMapsPlugin = {
 				return;
 			}
 
+			// Narrow the env-derived values once so the rest of this function is
+			// `!`-free. In CI both are guaranteed by the workflow.
+			if (!releaseIdentifier || !environment) {
+				return;
+			}
+
+			// biome-ignore lint/suspicious/noExplicitAny: Sentry CLI ships untyped CJS interop.
 			const SentryCliCtor = ((SentryCliModule as any).default ?? SentryCliModule) as new (
 				configFile: string | null,
 				options: Record<string, unknown>,
+				// biome-ignore lint/suspicious/noExplicitAny: see above
 			) => any;
 			const cli = new SentryCliCtor(null, {
 				authToken: process.env.SENTRY_AUTH_TOKEN,
@@ -79,18 +87,18 @@ const sentrySourceMapsPlugin = {
 				project: 'apps-host-electron',
 			});
 
-			await cli.releases.new(releaseIdentifier!);
-			await cli.releases.uploadSourceMaps(releaseIdentifier!, {
+			await cli.releases.new(releaseIdentifier);
+			await cli.releases.uploadSourceMaps(releaseIdentifier, {
 				include: ['./dist'],
 				urlPrefix: '~/',
 			});
-			await cli.releases.setCommits(releaseIdentifier!, { auto: true });
-			await cli.releases.newDeploy(releaseIdentifier!, {
-				env: environment!,
+			await cli.releases.setCommits(releaseIdentifier, { auto: true });
+			await cli.releases.newDeploy(releaseIdentifier, {
+				env: environment,
 				url: `https://github.com/getbeak/beak/tree/${commitIdentifier}`,
 			});
 
-			await cli.releases.finalize(releaseIdentifier!);
+			await cli.releases.finalize(releaseIdentifier);
 		});
 	},
 };
