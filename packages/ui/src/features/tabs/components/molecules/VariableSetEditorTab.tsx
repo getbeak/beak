@@ -1,3 +1,4 @@
+import { Box } from '@chakra-ui/react';
 import { Variable } from 'lucide-react';
 import React from 'react';
 import { useState } from 'react';
@@ -23,7 +24,25 @@ const VariableSetEditorTab: React.FC<React.PropsWithChildren<VariableSetEditorTa
 			<TabItem
 				active={selectedTabPayload === tab.payload}
 				variant='card'
-				leading={<Variable size={11} color='var(--beak-colors-accent-indigo)' />}
+				leading={(
+					<Box
+						as='span'
+						display='inline-flex'
+						alignItems='center'
+						justifyContent='center'
+						w='18px'
+						h='18px'
+						borderRadius='sm'
+						borderWidth='1px'
+						borderStyle='solid'
+						color='accent.indigo'
+						bg='color-mix(in srgb, var(--beak-colors-accent-indigo) 14%, transparent)'
+						borderColor='color-mix(in srgb, var(--beak-colors-accent-indigo) 26%, transparent)'
+						boxShadow='inset 0 1px 0 color-mix(in srgb, white 14%, transparent)'
+					>
+						<Variable size={11} strokeWidth={2.2} />
+					</Box>
+				)}
 				key={tab.payload}
 				lazyForwardedRef={i => setTarget(i!)}
 				onClick={() => dispatch(changeTab(tab))}

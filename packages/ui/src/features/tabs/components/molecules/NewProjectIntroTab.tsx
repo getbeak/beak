@@ -1,3 +1,4 @@
+import { Box } from '@chakra-ui/react';
 import type { NewProjectIntroTabItem } from '@beak/common/types/beak-project';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { Sparkles } from 'lucide-react';
@@ -23,7 +24,25 @@ const NewProjectIntroTab: React.FC<React.PropsWithChildren<NewProjectIntroTabPro
 			<TabItem
 				active={selectedTabPayload === tab.payload}
 				variant='card'
-				leading={<Sparkles size={11} color='var(--beak-colors-accent-pink)' />}
+				leading={(
+					<Box
+						as='span'
+						display='inline-flex'
+						alignItems='center'
+						justifyContent='center'
+						w='18px'
+						h='18px'
+						borderRadius='sm'
+						borderWidth='1px'
+						borderStyle='solid'
+						color='accent.pink'
+						bg='color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent)'
+						borderColor='color-mix(in srgb, var(--beak-colors-accent-pink) 26%, transparent)'
+						boxShadow='inset 0 1px 0 color-mix(in srgb, white 14%, transparent)'
+					>
+						<Sparkles size={11} strokeWidth={2.2} />
+					</Box>
+				)}
 				key={tab.payload}
 				lazyForwardedRef={i => setTarget(i!)}
 				onClick={() => dispatch(changeTab(tab))}
