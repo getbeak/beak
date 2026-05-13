@@ -1,8 +1,11 @@
-import { Box } from '@chakra-ui/react';
+import { Box, Flex, chakra } from '@chakra-ui/react';
+
+const InlineLink = chakra('button');
 import Squawk from '@beak/common/utils/squawk';
 import Button from '@beak/ui/components/atoms/Button';
 import Label from '@beak/ui/components/atoms/Label';
 import { ipcNestService } from '@beak/ui/lib/ipc';
+import { Loader2, Mail } from 'lucide-react';
 import * as React from 'react';
 import { useEffect, useRef, useState } from 'react';
 
@@ -75,30 +78,50 @@ const EnterMagicState: React.FC<EnterMagicStateProps> = ({ email, reset, inbound
 	return (
 		<React.Fragment>
 			{!working && (
-				<React.Fragment>
-					<Box as='p' fontSize='lg' color='fg.default' textAlign='center'>
-						{'Your magic link is on the way to'}
-						<br />
-						<b>{email}</b>
+				<Box
+					mx='auto'
+					maxW='340px'
+					textAlign='center'
+					fontSize='sm'
+					color='fg.muted'
+					mb='2'
+				>
+					<Flex align='center' justify='center' gap='1.5' mb='1.5' color='accent.pink'>
+						<Mail size={16} />
+					</Flex>
+					<Box>
+						{'Magic link is on the way to '}
+						<Box as='strong' color='fg.default'>{email}</Box>
 					</Box>
-					<Box as='p' fontSize='lg' color='fg.default'>
-						{'Clicking the link in the email will finish signing you into Beak. '}
-						<Box as='span' cursor='pointer' color='accent.pink' onClick={() => showManualState()}>
-							{'Having trouble with the link?'}
-						</Box>
+					<Box fontSize='xs' mt='1.5' opacity={0.8}>
+						{'Clicking the link in the email will finish signing you in. '}
+						<InlineLink
+							type='button'
+							display='inline'
+							p='0'
+							bg='transparent'
+							border='none'
+							color='accent.pink'
+							cursor='pointer'
+							textDecoration='underline'
+							onClick={() => showManualState()}
+						>
+							{'Having trouble?'}
+						</InlineLink>
 					</Box>
-				</React.Fragment>
+				</Box>
 			)}
 
 			{working && (
-				<Box as='p' fontSize='lg' color='fg.default'>
-					{'Working away on your magic link, make a wish 🪄 '}
-				</Box>
+				<Flex direction='column' align='center' gap='1.5' py='4' color='fg.muted'>
+					<Loader2 size={20} style={{ animation: 'beakPortalSpin 1s linear infinite' }} />
+					<Box fontSize='sm'>{'Working on your magic link… ✨'}</Box>
+				</Flex>
 			)}
 
 			{manualState !== void 0 && (
 				<FormInput>
-					<Label>{"If the link isn't working, please paste the payload from magic link site below 👇"}</Label>
+					<Label>{'Paste the payload from the magic link page'}</Label>
 					<Input
 						placeholder='code=xxxx&state=yyyy'
 						value={manualState}
@@ -109,7 +132,7 @@ const EnterMagicState: React.FC<EnterMagicStateProps> = ({ email, reset, inbound
 							if (e.key === 'Enter') parseAndHandleMagicState();
 						}}
 					/>
-					<Button disabled={working} size='sm' onClick={() => parseAndHandleMagicState()} style={{ marginTop: 5, width: '100%' }}>
+					<Button disabled={working} size='sm' onClick={() => parseAndHandleMagicState()}>
 						{'Submit'}
 					</Button>
 				</FormInput>
@@ -118,13 +141,12 @@ const EnterMagicState: React.FC<EnterMagicStateProps> = ({ email, reset, inbound
 			{error && <FormError>{getErrorMessage(error)}</FormError>}
 
 			{!working && (
-				<React.Fragment>
-					<Button disabled={!canResend} onClick={() => reset()} style={{ marginTop: 5, width: '100%' }}>
-						{canResend && 'Request new magic link'}
-						{!canResend && `Request new magic link (${resend}s)`}
+				<Flex direction='column' gap='2' mt='2' maxW='280px' mx='auto'>
+					<Button size='sm' disabled={!canResend} onClick={() => reset()}>
+						{canResend ? 'Request new magic link' : `Request new magic link (${resend}s)`}
 					</Button>
-					<Button onClick={() => reset()} style={{ marginTop: 5, width: '100%' }}>{'Wrong email?'}</Button>
-				</React.Fragment>
+					<Button size='sm' colour='secondary' onClick={() => reset()}>{'Wrong email?'}</Button>
+				</Flex>
 			)}
 		</React.Fragment>
 	);

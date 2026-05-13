@@ -1,9 +1,12 @@
+import { Flex } from '@chakra-ui/react';
 import Squawk from '@beak/common/utils/squawk';
 import Button from '@beak/ui/components/atoms/Button';
 import FormError from '@beak/ui/components/atoms/FormError';
+import FormInput from '@beak/ui/components/atoms/FormInput';
 import Input from '@beak/ui/components/atoms/Input';
 import Label from '@beak/ui/components/atoms/Label';
 import { ipcDialogService, ipcNestService } from '@beak/ui/lib/ipc';
+import { Loader2, Sparkles } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
 
 const emailRegex = /.+@.+/;
@@ -28,7 +31,6 @@ const RequestTrial: React.FC<React.PropsWithChildren<RequestTrialProps>> = props
 
 		if (!emailRegex.test(email)) {
 			setError(new Squawk('invalid_email'));
-
 			return;
 		}
 
@@ -50,18 +52,17 @@ const RequestTrial: React.FC<React.PropsWithChildren<RequestTrialProps>> = props
 								message: 'You already have a Beak subscription. Just sign in with your email!',
 							})
 							.then(() => onChangeToDefault());
-
 						break;
 
 					case 'trial_already_used':
 						ipcDialogService
 							.showMessageBox({
-								title: "You're already used the trial",
+								title: "You've already used the trial",
 								type: 'info',
-								message: 'You have already used your Beak trial. You can purchase a subscription to continue using Beak.',
+								message:
+									'You have already used your Beak trial. You can purchase a subscription to continue using Beak.',
 							})
 							.then(() => onChangeToDefault());
-
 						break;
 
 					default:
@@ -74,12 +75,12 @@ const RequestTrial: React.FC<React.PropsWithChildren<RequestTrialProps>> = props
 	}
 
 	return (
-		<React.Fragment>
-			<Label>{"Please enter your email to get started (you'll use this to sign in later)"}</Label>
+		<FormInput>
+			<Label>{'Email (you’ll use this to sign in later)'}</Label>
 			<Input
 				disabled={working}
-				type={'email'}
-				placeholder={'taylor.swift@gmail.com'}
+				type='email'
+				placeholder='you@example.com'
 				value={email}
 				ref={inputRef}
 				onChange={e => onEmailChange(e.target.value)}
@@ -87,11 +88,18 @@ const RequestTrial: React.FC<React.PropsWithChildren<RequestTrialProps>> = props
 					if (e.key === 'Enter') requestTrial();
 				}}
 			/>
-			<Button disabled={working} onClick={() => requestTrial()}>
-				{'Continue'}
-			</Button>
 			{error && <FormError>{getErrorMessage(error)}</FormError>}
-		</React.Fragment>
+			<Button disabled={working} onClick={() => requestTrial()}>
+				<Flex align='center' justify='center' gap='1.5'>
+					{working ? (
+						<Loader2 size={13} style={{ animation: 'beakPortalSpin 1s linear infinite' }} />
+					) : (
+						<Sparkles size={13} />
+					)}
+					{working ? 'Starting trial…' : 'Start trial'}
+				</Flex>
+			</Button>
+		</FormInput>
 	);
 };
 
