@@ -44,7 +44,10 @@ const NotTheTabYourLookingFor: React.FC = () => {
 					h='56px'
 					borderRadius='full'
 					bg='color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent)'
+					borderWidth='1px'
+					borderColor='color-mix(in srgb, var(--beak-colors-accent-pink) 28%, transparent)'
 					color='accent.pink'
+					boxShadow='0 8px 24px color-mix(in srgb, var(--beak-colors-accent-pink) 28%, transparent), inset 0 1px 0 color-mix(in srgb, white 18%, transparent)'
 				>
 					<FileQuestion size={26} strokeWidth={1.8} />
 				</Flex>
