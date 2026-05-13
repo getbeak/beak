@@ -145,9 +145,10 @@ The sync chain is wired top to bottom; the user trigger is **File → Import Ope
 - Converter: `@beak/state/sources/openapi` — `openapiToCollection(spec, options)` is pure (spec → `{ collection, requests, warnings }`). Resolves `#/components/parameters/*` $refs, falls back to verb-path operationIds with a warning, seeds parameters from `example`/`default`/`enum`.
 - Writer: `@beak/runtime-shared` — `Runtime.openapi.syncToFolder(targetFolder, conversion)` persists the collection + per-request files. Filenames sanitised + de-duped; `_collection` is reserved.
 - IPC: `@beak/common/ipc/openapi` — `IpcOpenApiServiceRenderer.syncFromSpec({ targetFolder, spec, specPath?, specUrl? })`. Both hosts (electron + web) implement the handler.
-- Renderer: `@beak/ui/features/openapi-import` — `parseSpecSource` accepts JSON **and YAML** (`js-yaml`), `importOpenApi()` calls the IPC, `runOpenApiImportFlow` is the menu hook with success/error dialogs.
+- Renderer: `@beak/ui/features/openapi-import` — `parseSpecSource` accepts JSON **and YAML** (`js-yaml`), `importOpenApi()` calls the IPC, slice + `<OpenApiImportDialog>` drive the menu flow (file pick → folder pick → import → result).
+- UI: `<OpenApiImportDialog>` (mounted in `ProjectMain`) walks the user through a folder picker before invoking `importOpenApi()`. The slice (`features/openapi-import/store`) holds the phase state machine (`idle | picking-file | picking-folder | importing | result`).
 
-Deferred: external (network) $ref resolution; the UI for picking the target folder (today defaults to `tree/openapi`).
+Deferred: external (network) $ref resolution.
 
 ### Asset storage (end-to-end)
 
