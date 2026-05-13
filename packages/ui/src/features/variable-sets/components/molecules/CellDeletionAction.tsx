@@ -45,7 +45,7 @@ const CellDeletionAction: React.FC<React.PropsWithChildren<CellDeletionActionPro
 			onConfirmedDeletion();
 		}}
 	>
-		<Trash2 size={10} />
+		<Trash2 size={11} strokeWidth={2.2} />
 	</IconButton>
 );
 
