@@ -40,25 +40,23 @@ const Router: React.FC<React.PropsWithChildren<RouterProps>> = ({ selectedTab })
 		}
 
 		return (
-			<React.Fragment>
-				<ReflexContainer orientation={'vertical'}>
-					<ReflexElement
-						flex={50}
-						minSize={450}
-					>
-						<RequestPane />
-					</ReflexElement>
+			<ReflexContainer orientation={'vertical'}>
+				<ReflexElement
+					flex={50}
+					minSize={450}
+				>
+					<RequestPane />
+				</ReflexElement>
 
-					<ReflexSplitter orientation={'vertical'} />
+				<ReflexSplitter orientation={'vertical'} />
 
-					<ReflexElement
-						flex={50}
-						minSize={450}
-					>
-						<ResponsePane />
-					</ReflexElement>
-				</ReflexContainer>
-			</React.Fragment>
+				<ReflexElement
+					flex={50}
+					minSize={450}
+				>
+					<ResponsePane />
+				</ReflexElement>
+			</ReflexContainer>
 		);
 	}
 
