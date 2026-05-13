@@ -1,5 +1,5 @@
 import { Box, Flex, IconButton } from '@chakra-ui/react';
-import { statusToColor } from '@beak/design-system/helpers';
+import { statusToColor, verbToColor } from '@beak/design-system/helpers';
 import useVariableContext from '@beak/ui/features/variables/hooks/use-variable-context';
 import { getStatusReasonPhrase } from '@beak/ui/utils/http';
 import { convertRequestToUrl } from '@beak/ui/utils/uri';
@@ -22,14 +22,6 @@ function statusIcon(status: number) {
 	return XCircle;
 }
 
-const VERB_BG: Record<string, string> = {
-	GET: 'var(--beak-colors-accent-teal)',
-	POST: 'var(--beak-colors-accent-pink)',
-	PUT: 'var(--beak-colors-accent-indigo)',
-	PATCH: 'var(--beak-colors-accent-indigo)',
-	DELETE: 'var(--beak-colors-accent-alert)',
-};
-
 const Header: React.FC<HeaderProps> = ({ selectedFlight }) => {
 	const { error, request, response } = selectedFlight;
 	const context = useVariableContext(selectedFlight.requestId);
@@ -41,7 +33,7 @@ const Header: React.FC<HeaderProps> = ({ selectedFlight }) => {
 	}, [context, request]);
 
 	const verb = request.verb.toUpperCase();
-	const verbColor = VERB_BG[verb] ?? 'var(--beak-colors-accent-pink)';
+	const verbColor = verbToColor(verb);
 	const statusColor = response ? statusToColor(response.status) : error ? statusToColor(500) : undefined;
 	const StatusIcon = response ? statusIcon(response.status) : XCircle;
 

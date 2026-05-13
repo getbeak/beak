@@ -1,5 +1,6 @@
 import { Box } from '@chakra-ui/react';
 import type { RequestTabItem } from '@beak/common/types/beak-project';
+import { verbToColor, verbToShortLabel } from '@beak/design-system/helpers';
 import { useAppSelector } from '@beak/ui/store/redux';
 import React from 'react';
 import { useState } from 'react';
@@ -13,26 +14,6 @@ interface RequestTabProps {
 	tab: RequestTabItem;
 }
 
-const VERB_COLOR: Record<string, string> = {
-	get: 'var(--beak-colors-accent-teal)',
-	post: 'var(--beak-colors-accent-pink)',
-	put: 'var(--beak-colors-accent-indigo)',
-	patch: 'var(--beak-colors-accent-indigo)',
-	delete: 'var(--beak-colors-accent-alert)',
-	head: 'var(--beak-colors-fg-muted)',
-	options: 'var(--beak-colors-fg-muted)',
-};
-
-const VERB_LABEL: Record<string, string> = {
-	get: 'GET',
-	post: 'POST',
-	put: 'PUT',
-	patch: 'PATCH',
-	delete: 'DEL',
-	head: 'HEAD',
-	options: 'OPTS',
-};
-
 const RequestTab: React.FC<React.PropsWithChildren<RequestTabProps>> = ({ tab }) => {
 	const dispatch = useDispatch();
 	const node = useAppSelector(s => s.global.project.tree[tab.payload]);
@@ -42,8 +23,8 @@ const RequestTab: React.FC<React.PropsWithChildren<RequestTabProps>> = ({ tab })
 	if (!node || node.type !== 'request') return null;
 
 	const verb = node.mode === 'valid' ? node.info.verb : 'get';
-	const color = VERB_COLOR[verb] ?? 'var(--beak-colors-fg-muted)';
-	const label = VERB_LABEL[verb] ?? verb.toUpperCase();
+	const color = verbToColor(verb);
+	const label = verbToShortLabel(verb);
 
 	return (
 		<TabContextMenuWrapper tab={tab} target={target}>

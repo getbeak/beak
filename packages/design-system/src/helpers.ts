@@ -27,3 +27,40 @@ export function statusToColor(status: number): string {
 			return 'var(--beak-colors-pink-500)';
 	}
 }
+
+/**
+ * Canonical HTTP-verb → accent-colour map. Every surface that paints
+ * a verb pill (request header, response header, tabs, omnibar, overview)
+ * resolves through this so the same verb always wears the same colour.
+ */
+const VERB_COLOR_MAP: Record<string, string> = {
+	get: 'var(--beak-colors-accent-teal)',
+	post: 'var(--beak-colors-accent-pink)',
+	put: 'var(--beak-colors-accent-indigo)',
+	patch: 'var(--beak-colors-accent-indigo)',
+	delete: 'var(--beak-colors-accent-alert)',
+	head: 'var(--beak-colors-fg-muted)',
+	options: 'var(--beak-colors-fg-muted)',
+};
+
+export function verbToColor(verb: string): string {
+	return VERB_COLOR_MAP[verb.toLowerCase()] ?? 'var(--beak-colors-fg-muted)';
+}
+
+/**
+ * Short verb labels for tight chrome (tab chips, omnibar rows).
+ * `DEL`/`OPTS` truncate verbs whose full uppercase form crowds the chip.
+ */
+const VERB_LABEL_MAP: Record<string, string> = {
+	get: 'GET',
+	post: 'POST',
+	put: 'PUT',
+	patch: 'PATCH',
+	delete: 'DEL',
+	head: 'HEAD',
+	options: 'OPTS',
+};
+
+export function verbToShortLabel(verb: string): string {
+	return VERB_LABEL_MAP[verb.toLowerCase()] ?? verb.toUpperCase();
+}

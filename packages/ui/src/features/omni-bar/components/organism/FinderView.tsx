@@ -21,13 +21,7 @@ export interface FinderViewProps {
 	reset: () => void;
 }
 
-const VERB_BG: Record<string, string> = {
-	GET: 'var(--beak-colors-accent-teal)',
-	POST: 'var(--beak-colors-accent-pink)',
-	PUT: 'var(--beak-colors-accent-indigo)',
-	PATCH: 'var(--beak-colors-accent-indigo)',
-	DELETE: 'var(--beak-colors-accent-alert)',
-};
+import { verbToColor } from '@beak/design-system/helpers';
 
 const FinderView: React.FC<FinderViewProps> = ({ content, reset }) => {
 	const dispatch = useDispatch();
@@ -107,7 +101,7 @@ const FinderView: React.FC<FinderViewProps> = ({ content, reset }) => {
 
 				const isActive = active === idx;
 				const verb = (reqNode.info?.verb ?? 'GET').toUpperCase();
-				const verbColor = VERB_BG[verb] ?? 'var(--beak-colors-fg-muted)';
+				const verbColor = verbToColor(verb);
 
 				return (
 					<Box

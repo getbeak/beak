@@ -10,15 +10,7 @@ export interface OverviewTabProps {
 	flight: Flight;
 }
 
-const VERB_COLOR: Record<string, string> = {
-	get: 'var(--beak-colors-accent-teal)',
-	post: 'var(--beak-colors-accent-pink)',
-	put: 'var(--beak-colors-accent-indigo)',
-	patch: 'var(--beak-colors-accent-indigo)',
-	delete: 'var(--beak-colors-accent-alert)',
-	head: 'var(--beak-colors-fg-muted)',
-	options: 'var(--beak-colors-fg-muted)',
-};
+import { verbToColor } from '@beak/design-system/helpers';
 
 function statusToken(status: number) {
 	if (status >= 200 && status < 300) return 'accent.success';
@@ -31,7 +23,7 @@ function statusToken(status: number) {
 const OverviewTab: React.FC<OverviewTabProps> = ({ flight }) => {
 	const { requestStart, responseEnd } = flight.timing;
 	const verb = flight.request.verb.toLocaleUpperCase();
-	const verbColor = VERB_COLOR[flight.request.verb.toLowerCase()] ?? 'var(--beak-colors-fg-muted)';
+	const verbColor = verbToColor(flight.request.verb);
 	const status = flight.response?.status;
 	const bodySize = flight.response?.hasBody ? binaryStore.get(flight.binaryStoreKey).length : 0;
 	const duration = requestStart !== undefined && responseEnd !== undefined ? responseEnd - requestStart : 0;

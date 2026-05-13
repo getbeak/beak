@@ -1,4 +1,5 @@
 import { Box, Flex, Menu, Portal, chakra } from '@chakra-ui/react';
+import { verbToColor } from '@beak/design-system/helpers';
 import VariableInput from '@beak/ui/features/variable-input/components/VariableInput';
 import useVariableContext from '@beak/ui/features/variables/hooks/use-variable-context';
 import { parseValueSections } from '@beak/ui/features/variables/parser';
@@ -19,16 +20,6 @@ export interface HeaderProps {
 	node: ValidRequestNode;
 }
 
-const VERB_COLOR: Record<string, string> = {
-	get: 'var(--beak-colors-accent-teal)',
-	post: 'var(--beak-colors-accent-pink)',
-	put: 'var(--beak-colors-accent-indigo)',
-	patch: 'var(--beak-colors-accent-indigo)',
-	delete: 'var(--beak-colors-accent-alert)',
-	head: 'var(--beak-colors-fg-muted)',
-	options: 'var(--beak-colors-fg-muted)',
-};
-
 const VERBS = ['get', 'post', 'put', 'patch', 'delete', 'head', 'options'];
 
 const ChakraButton = chakra('button');
@@ -39,7 +30,7 @@ const Header: React.FC<HeaderProps> = ({ node }) => {
 	const flighting = Boolean(currentFlight);
 	const context = useVariableContext(node.id);
 	const verb = node.info.verb;
-	const verbColor = VERB_COLOR[verb] ?? 'var(--beak-colors-accent-pink)';
+	const verbColor = verbToColor(verb);
 
 	function dispatchFlightRequest() {
 		dispatch(requestFlight());
@@ -135,7 +126,7 @@ const Header: React.FC<HeaderProps> = ({ node }) => {
 							minW='140px'
 						>
 							{VERBS.map(v => {
-								const c = VERB_COLOR[v] ?? 'var(--beak-colors-fg-muted)';
+								const c = verbToColor(v);
 								const isActive = v === verb;
 								return (
 									<Menu.Item
