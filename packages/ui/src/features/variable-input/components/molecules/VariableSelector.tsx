@@ -178,15 +178,15 @@ const VariableSelector: React.FC<React.PropsWithChildren<VariableSelectorProps>>
 	const cardStyle: React.CSSProperties = {
 		marginTop: `${position.top}px`,
 		marginLeft: `${position.left}px`,
-		width: 380,
-		height: 220,
+		width: 400,
+		height: 240,
 		display: 'flex',
 		flexDirection: 'column',
-		border: '1px solid var(--beak-colors-border-default)',
-		borderRadius: 8,
-		background: 'color-mix(in srgb, var(--beak-colors-bg-surface) 88%, transparent)',
-		backdropFilter: 'blur(12px) saturate(160%)',
-		boxShadow: '0 20px 48px rgba(0,0,0,0.32), 0 2px 6px rgba(0,0,0,0.2)',
+		border: '1px solid color-mix(in srgb, var(--beak-colors-accent-pink) 24%, var(--beak-colors-border-subtle))',
+		borderRadius: 12,
+		background: 'color-mix(in srgb, var(--beak-colors-bg-surface) 70%, transparent)',
+		backdropFilter: 'blur(24px) saturate(180%)',
+		boxShadow: '0 40px 96px rgba(0,0,0,0.38), 0 12px 32px color-mix(in srgb, var(--beak-colors-accent-pink) 18%, rgba(0,0,0,0.18)), inset 0 1px 0 color-mix(in srgb, white 22%, transparent)',
 		overflow: 'hidden',
 		fontSize: 13,
 	};
@@ -237,15 +237,11 @@ const VariableSelector: React.FC<React.PropsWithChildren<VariableSelectorProps>>
 								onDoubleClick={() => createDefaultVariable(i)}
 							>
 								{isActive && (
-									<motion.div
-										layoutId='var-selector-active'
-										transition={{ type: 'spring', stiffness: 700, damping: 36 }}
-										style={{
-											position: 'absolute',
-											inset: 0,
-											background: 'color-mix(in srgb, var(--beak-colors-accent-pink) 22%, transparent)',
-											pointerEvents: 'none',
-										}}
+									<Box
+										position='absolute'
+										inset='0'
+										bg='color-mix(in srgb, var(--beak-colors-accent-pink) 22%, transparent)'
+										pointerEvents='none'
 									/>
 								)}
 								<Flex position='relative' align='center' gap='1.5'>
