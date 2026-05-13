@@ -1,6 +1,8 @@
-import { Box, Heading } from '@chakra-ui/react';
+import { Box, Flex } from '@chakra-ui/react';
 import Button from '@beak/ui/components/atoms/Button';
 import { insertNewGroup } from '@beak/ui/store/variable-sets/actions';
+import { motion } from 'framer-motion';
+import { Plus, Table } from 'lucide-react';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 
@@ -13,27 +15,42 @@ const CreateNewSplash: React.FC<CreateNewSplashProps> = ({ type, variableSet }) 
 	const dispatch = useDispatch();
 
 	return (
-		<Box textAlign='center'>
-			<Heading
-				as='h1'
-				display='block'
-				textAlign='center'
-				py='2.5'
-				px='6'
-				fontSize='2xl'
-				fontWeight='400'
-				color='fg.muted'
+		<Flex direction='column' align='center' justify='center' gap='3' py='12' px='6'>
+			<motion.div
+				initial={{ opacity: 0, scale: 0.92 }}
+				animate={{ opacity: 1, scale: 1 }}
+				transition={{ type: 'spring', stiffness: 600, damping: 28 }}
 			>
-				{'Looks like you have no sets in here?'}
-			</Heading>
+				<Flex
+					align='center'
+					justify='center'
+					w='56px'
+					h='56px'
+					borderRadius='full'
+					bg='color-mix(in srgb, var(--beak-colors-accent-pink) 18%, transparent)'
+					color='accent.pink'
+				>
+					<Table size={26} />
+				</Flex>
+			</motion.div>
+			<Box fontSize='md' fontWeight='600' color='fg.default'>
+				{'No sets yet'}
+			</Box>
+			<Box fontSize='xs' color='fg.muted' textAlign='center' maxW='320px'>
+				{'Variable sets let you switch the same variable between values for different environments (eg. dev / prod).'}
+			</Box>
 			<Button
+				size='sm'
 				onClick={() => {
 					if (type === 'set') dispatch(insertNewGroup({ id: variableSet, setName: '' }));
 				}}
 			>
-				{"Let's create one!"}
+				<Flex align='center' gap='1.5'>
+					<Plus size={12} />
+					{'Create your first set'}
+				</Flex>
 			</Button>
-		</Box>
+		</Flex>
 	);
 };
 
