@@ -44,7 +44,7 @@ const EntryActions: React.FC<EntryActionsProps> = ({ requestId, id, entry }) => 
 					transition='color .12s ease, background .12s ease, transform .08s ease'
 					onClick={() => dispatch(editorContext.removeEntry({ id, requestId }))}
 				>
-					<Minus size={11} />
+					<Minus size={11} strokeWidth={2.4} />
 				</IconButton>
 			)}
 			<IconButton
@@ -66,7 +66,7 @@ const EntryActions: React.FC<EntryActionsProps> = ({ requestId, id, entry }) => 
 				transition='color .12s ease, background .12s ease, transform .08s ease'
 				onClick={() => dispatch(editorContext.addEntry({ id, requestId }))}
 			>
-				<Plus size={11} />
+				<Plus size={11} strokeWidth={2.4} />
 			</IconButton>
 		</Flex>
 	);
