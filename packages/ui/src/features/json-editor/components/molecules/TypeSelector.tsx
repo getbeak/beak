@@ -76,15 +76,15 @@ const TypeSelector: React.FC<TypeSelectorProps> = ({ disabled, requestId, id, va
 				pointerEvents='none'
 				borderRadius='sm'
 				borderWidth='1px'
-				borderColor='border.default'
-				transition='border-color .12s ease, background-color .12s ease'
+				transition='border-color .12s ease, background-color .12s ease, box-shadow .12s ease'
 				style={{
 					color: colour,
-					background: `color-mix(in srgb, ${colour} 12%, transparent)`,
-					borderColor: `color-mix(in srgb, ${colour} 35%, var(--beak-colors-border-default))`,
+					background: `color-mix(in srgb, ${colour} 14%, transparent)`,
+					borderColor: `color-mix(in srgb, ${colour} 38%, var(--beak-colors-border-subtle))`,
+					boxShadow: `0 1px 2px color-mix(in srgb, ${colour} 20%, transparent)`,
 				}}
 			>
-				<Icon size={12} />
+				<Icon size={12} strokeWidth={2} />
 			</Box>
 		</Box>
 	);
