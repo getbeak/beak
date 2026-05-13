@@ -24,7 +24,7 @@ const TabItemSubItemsDropdown = <T = string>(props: TabItemSubItemsDropdownProps
 
 	return (
 		<React.Fragment>
-			<Box as='span' opacity={0.7} ml='1' fontSize='xs'>
+			<Box as='span' color='fg.muted' ml='1' fontSize='xs' fontWeight='500'>
 				{subItems.find(i => i.key === activeSubItem)?.label}
 			</Box>
 			<Box
