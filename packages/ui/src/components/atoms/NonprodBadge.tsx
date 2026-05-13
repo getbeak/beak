@@ -54,7 +54,21 @@ const NonprodBadge: React.FC = () => {
 		>
 			<AlertTriangle size={11} strokeWidth={2.2} />
 			<Box as='span'>{'Non-prod env'}</Box>
-			<Box as='span' opacity={0.7} fontWeight='500' textTransform='none' letterSpacing='0'>
+			<Box
+				as='span'
+				w='1px'
+				h='10px'
+				bg='color-mix(in srgb, var(--beak-colors-accent-alert) 45%, transparent)'
+				display='inline-block'
+				mx='-0.5'
+			/>
+			<Box
+				as='span'
+				color='color-mix(in srgb, var(--beak-colors-accent-alert) 80%, var(--beak-colors-fg-default))'
+				fontWeight='500'
+				textTransform='none'
+				letterSpacing='0'
+			>
 				{'tap to swap back'}
 			</Box>
 		</Flex>
