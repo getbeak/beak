@@ -98,9 +98,24 @@ async function createOrFocusDefaultWindow(initial = false) {
 	if (initial && (await attemptWindowPresenceLoad())) return void 0;
 
 	const openWindow = Object.values(windowStack)[0];
+	if (openWindow) {
+		openWindow.focus();
+		return void 0;
+	}
 
-	if (openWindow) openWindow.focus();
-	else await createWelcomeWindow();
+	// No window-presence to restore; try the most-recent project from
+	// `BeakRecents` so a returning user lands on their last work directly,
+	// not on the welcome dialog. Only on a genuine cold start with no
+	// recents do we fall back to the welcome window.
+	if (initial) {
+		const recents = await getBeakHost().project.recents.listProjects();
+		const mostRecent = [...recents].sort((a, b) => b.accessTime.localeCompare(a.accessTime))[0];
+		if (mostRecent) {
+			const opened = await tryOpenProjectFolder(mostRecent.path, true);
+			if (opened !== null) return void 0;
+		}
+	}
 
+	await createWelcomeWindow();
 	return void 0;
 }
