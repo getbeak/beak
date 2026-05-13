@@ -43,8 +43,8 @@ const AlertSwitch: React.FC<React.PropsWithChildren<AlertSwitchProps>> = ({ aler
 		case 'http_body_not_allowed':
 			return (
 				<AlertItem
-					title={'Invalid HTTP request'}
-					description={'The request has a body, but the selected verb does not support bodies'}
+					title={'HTTP verb doesn\'t allow a body'}
+					description={'GET, HEAD, and OPTIONS requests can\'t include a body. Switch verb or clear the body to send.'}
 				/>
 			);
 
