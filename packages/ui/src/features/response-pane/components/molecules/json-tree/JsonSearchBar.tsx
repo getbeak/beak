@@ -40,67 +40,100 @@ const JsonSearchBar: React.FC<JsonSearchBarProps> = ({
 		}
 	}
 
+	const hasHits = hitCount > 0;
+	const noResults = value.length > 0 && !hasHits;
+
 	return (
 		<Flex
 			align='center'
 			gap='1.5'
-			px='2'
-			py='1'
+			px='2.5'
+			py='1.5'
 			borderBottomWidth='1px'
 			borderColor='border.subtle'
-			bg='bg.surface'
+			bg='color-mix(in srgb, var(--beak-colors-bg-surface) 65%, transparent)'
+			backdropFilter='blur(12px) saturate(140%)'
 		>
-			<Search size={12} color='var(--beak-colors-fg-subtle)' />
-			<Box flex='1 1 auto'>
-				<Input
-					ref={inputRef}
-					size='xs'
-					value={value}
-					placeholder='Search keys & values…'
-					onChange={e => onChange(e.target.value)}
-					onKeyDown={handleKeyDown}
-					bg='transparent'
-					borderWidth='1px'
-					borderColor='border.default'
-					_focus={{ borderColor: 'accent.pink', outline: 'none' }}
-					h='22px'
-					fontSize='xs'
-				/>
-			</Box>
-			<Text fontSize='xs' color='fg.subtle' minW='44px' textAlign='right'>
-				{hitCount === 0 ? '0 hits' : `${hitIndex + 1}/${hitCount}`}
-			</Text>
+			<Flex
+				align='center'
+				flex='1 1 auto'
+				gap='1.5'
+				px='2'
+				h='26px'
+				borderRadius='md'
+				borderWidth='1px'
+				borderColor={noResults ? 'accent.alert' : 'border.default'}
+				bg='bg.canvas'
+				transition='border-color .14s ease, box-shadow .14s ease'
+				_focusWithin={{
+					borderColor: noResults ? 'accent.alert' : 'accent.pink',
+					boxShadow: `0 0 0 2px color-mix(in srgb, ${noResults ? 'var(--beak-colors-accent-alert)' : 'var(--beak-colors-accent-pink)'} 22%, transparent)`,
+				}}
+			>
+				<Search size={11} color='var(--beak-colors-fg-subtle)' />
+				<Box flex='1 1 auto'>
+					<Input
+						ref={inputRef}
+						size='xs'
+						value={value}
+						placeholder='Search keys & values…'
+						onChange={e => onChange(e.target.value)}
+						onKeyDown={handleKeyDown}
+						bg='transparent'
+						border='none'
+						outline='none'
+						p='0'
+						h='auto'
+						fontSize='xs'
+						color='fg.default'
+						_focus={{ borderColor: 'transparent', outline: 'none', boxShadow: 'none' }}
+						_placeholder={{ color: 'fg.subtle' }}
+					/>
+				</Box>
+				<Text fontSize='10px' color={noResults ? 'accent.alert' : 'fg.subtle'} minW='44px' textAlign='right' fontFamily='mono' fontWeight='600'>
+					{value.length === 0 ? '' : hasHits ? `${hitIndex + 1}/${hitCount}` : 'no hits'}
+				</Text>
+			</Flex>
 			<IconButton
 				aria-label='Previous hit'
+				title='Previous hit (Shift+Enter)'
 				size='xs'
 				variant='ghost'
-				h='22px'
-				w='22px'
-				minW='22px'
+				h='26px'
+				w='26px'
+				minW='26px'
+				color='fg.subtle'
+				_hover={{ color: 'accent.pink', bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent)' }}
 				onClick={onPrev}
-				disabled={hitCount === 0}
+				disabled={!hasHits}
 			>
 				<ChevronUp size={12} />
 			</IconButton>
 			<IconButton
 				aria-label='Next hit'
+				title='Next hit (Enter)'
 				size='xs'
 				variant='ghost'
-				h='22px'
-				w='22px'
-				minW='22px'
+				h='26px'
+				w='26px'
+				minW='26px'
+				color='fg.subtle'
+				_hover={{ color: 'accent.pink', bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent)' }}
 				onClick={onNext}
-				disabled={hitCount === 0}
+				disabled={!hasHits}
 			>
 				<ChevronDown size={12} />
 			</IconButton>
 			<IconButton
 				aria-label='Close search'
+				title='Close (Esc)'
 				size='xs'
 				variant='ghost'
-				h='22px'
-				w='22px'
-				minW='22px'
+				h='26px'
+				w='26px'
+				minW='26px'
+				color='fg.subtle'
+				_hover={{ color: 'accent.pink', bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent)' }}
 				onClick={onClose}
 			>
 				<X size={12} />
