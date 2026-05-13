@@ -117,12 +117,11 @@ const GraphQlModeSwitch: React.FC<GraphQlModeSwitchProps> = ({ mode, onChange })
 			ml='0.5'
 			pl='1.5'
 			borderLeftWidth='1px'
-			borderLeftColor='rgba(255,255,255,0.3)'
+			borderLeftColor='color-mix(in srgb, var(--beak-colors-fg-onAccent) 30%, transparent)'
 			cursor='pointer'
 			fontSize='10px'
 			fontWeight='500'
-			color='white'
-			opacity={0.92}
+			color='color-mix(in srgb, var(--beak-colors-fg-onAccent) 92%, transparent)'
 			onClick={event => {
 				event.stopPropagation();
 				setOpen(prev => !prev);
