@@ -77,7 +77,17 @@ export const BodyNameOverrideWrapper: React.FC<BoxProps> = props => (
 export const BodyTypeCell: React.FC<BoxProps> = props => <Box display='flex' alignItems='center' {...props} />;
 export const BodyInputValueCell: React.FC<BoxProps> = props => <Box {...props} />;
 export const BodyLabelValueCell: React.FC<BoxProps> = props => (
-	<Box pt='0.5' pl='1.5' {...props} />
+	<Box
+		pt='0.5'
+		pl='1.5'
+		fontSize='10px'
+		fontWeight='700'
+		letterSpacing='0.06em'
+		textTransform='uppercase'
+		color='fg.subtle'
+		alignSelf='center'
+		{...props}
+	/>
 );
 
 const BodyActionBase = chakra('div', {
