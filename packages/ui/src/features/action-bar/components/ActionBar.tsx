@@ -18,7 +18,13 @@ import ActionBarVersion from './atoms/ActionBarVersion';
 import ActionBarAlertButton from './molecules/ActionBarAlertButton';
 import ActionBarFlightStatus from './molecules/ActionBarFlightStatus';
 
-const ActionBar: React.FC = () => {
+interface ActionBarProps {
+	/** When true, the bar renders as a slim inline strip (no bg, no
+	 *  draggable region) for merging into the tab bar on the web host. */
+	inline?: boolean;
+}
+
+const ActionBar: React.FC<ActionBarProps> = ({ inline }) => {
 	const dispatch = useDispatch();
 
 	const requirements = useSelectedTabFlightRequirements();
@@ -29,12 +35,12 @@ const ActionBar: React.FC = () => {
 			as='div'
 			align='center'
 			justify='flex-end'
-			h='40px'
+			h={inline ? '34px' : '40px'}
 			px='3'
-			bg='bg.surface.emphasized'
+			bg={inline ? 'transparent' : 'bg.surface.emphasized'}
 			gap='0.5'
-			style={{ WebkitAppRegion: 'drag' } as React.CSSProperties}
-			css={{ '& > *': { WebkitAppRegion: 'no-drag' } as React.CSSProperties }}
+			style={inline ? undefined : ({ WebkitAppRegion: 'drag' } as React.CSSProperties)}
+			css={inline ? undefined : { '& > *': { WebkitAppRegion: 'no-drag' } as React.CSSProperties }}
 		>
 			<Box mx='1'><ArbiterBadge /></Box>
 			<Box mx='1'><ActionBarVersion /></Box>

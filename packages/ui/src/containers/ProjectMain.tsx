@@ -21,6 +21,8 @@ import { useGlobalKeyboardShortcuts } from '../hooks/use-global-keyboard-shortcu
 import { useProjectBootstrap } from '../hooks/use-project-bootstrap';
 import { useProjectLoading } from '../hooks/use-project-loading';
 
+const embedded = Boolean(window.embeddedIndicator);
+
 const ProjectMain: React.FC = () => {
 	const [title, setTitle] = useState('Loading... - Beak');
 	const [setup, setSetup] = useState(false);
@@ -65,8 +67,12 @@ const ProjectMain: React.FC = () => {
 								<ReflexSplitter $disabled={collapsedSidebar} hideVisualIndicator orientation={'vertical'} />
 
 								<ReflexElement flex={80} minSize={800} style={{ overflowY: 'hidden' }}>
-									<ActionBar />
-									<TabView tabs={tabs.activeTabs} selectedTab={activeTab} />
+									{embedded && <ActionBar />}
+									<TabView
+										tabs={tabs.activeTabs}
+										selectedTab={activeTab}
+										rightSlot={embedded ? undefined : <ActionBar inline />}
+									/>
 								</ReflexElement>
 							</ReflexContainer>
 						</Box>

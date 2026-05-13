@@ -15,9 +15,10 @@ import Router from './Router';
 interface TabViewProps {
 	tabs: TabItem[];
 	selectedTab: TabItem | undefined;
+	rightSlot?: React.ReactNode;
 }
 
-const TabView: React.FC<TabViewProps> = ({ selectedTab, tabs }) => {
+const TabView: React.FC<TabViewProps> = ({ selectedTab, tabs, rightSlot }) => {
 	const dispatch = useDispatch();
 
 	useEffect(() => {
@@ -54,22 +55,35 @@ const TabView: React.FC<TabViewProps> = ({ selectedTab, tabs }) => {
 
 	return (
 		<Flex direction='column' h='100%' bg='bg.surface'>
-			<TabBar
+			<Flex
+				direction='row'
+				align='flex-end'
 				bg='bg.canvas'
 				borderBottomWidth='1px'
 				borderBottomStyle='solid'
 				borderBottomColor='border.subtle'
-				px='1.5'
 				flexShrink={0}
-				css={{ '& > [role=tab]': { marginRight: '2px' } }}
 			>
-				{tabs.map(t => {
-					if (t.type === 'request') return <RequestTab key={t.payload} tab={t} />;
-					if (t.type === 'variable_set_editor') return <VariableSetEditorTab key={t.payload} tab={t} />;
-					if (t.type === 'new_project_intro') return <NewProjectIntroTab key={t.payload} tab={t} />;
-					return null;
-				})}
-			</TabBar>
+				<TabBar
+					bg='transparent'
+					px='1.5'
+					flex='1'
+					minW={0}
+					css={{ '& > [role=tab]': { marginRight: '2px' } }}
+				>
+					{tabs.map(t => {
+						if (t.type === 'request') return <RequestTab key={t.payload} tab={t} />;
+						if (t.type === 'variable_set_editor') return <VariableSetEditorTab key={t.payload} tab={t} />;
+						if (t.type === 'new_project_intro') return <NewProjectIntroTab key={t.payload} tab={t} />;
+						return null;
+					})}
+				</TabBar>
+				{rightSlot && (
+					<Flex flexShrink={0} align='center' h='100%'>
+						{rightSlot}
+					</Flex>
+				)}
+			</Flex>
 
 			<Box flex='1' minH={0}>
 				<Router selectedTab={selectedTab} />
