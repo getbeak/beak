@@ -235,16 +235,16 @@ const CommandsView: React.FC<React.PropsWithChildren<CommandsViewProps>> = ({ co
 									py='2'
 									borderRadius='md'
 									cursor='pointer'
-									color={isActive ? 'white' : 'fg.muted'}
+									color={isActive ? 'fg.onAccent' : 'fg.muted'}
 									bg={isActive ? 'accent.teal' : 'transparent'}
 									boxShadow={
 										isActive
-											? '0 0 0 1px color-mix(in srgb, var(--beak-colors-accent-teal) 70%, transparent), 0 6px 14px color-mix(in srgb, var(--beak-colors-accent-teal) 35%, transparent)'
+											? '0 0 0 1px color-mix(in srgb, var(--beak-colors-accent-teal) 70%, transparent), 0 6px 14px color-mix(in srgb, var(--beak-colors-accent-teal) 35%, transparent), inset 0 1px 0 color-mix(in srgb, white 18%, transparent)'
 											: undefined
 									}
 									transition='background-color .14s ease, color .14s ease, box-shadow .14s ease'
 									_hover={{
-										color: 'fg.default',
+										color: isActive ? 'fg.onAccent' : 'fg.default',
 										bg: isActive
 											? 'accent.teal'
 											: 'color-mix(in srgb, var(--beak-colors-accent-teal) 14%, transparent)',
@@ -255,10 +255,10 @@ const CommandsView: React.FC<React.PropsWithChildren<CommandsViewProps>> = ({ co
 									}}
 								>
 									<Flex align='center' gap='2'>
-										<Box color={isActive ? 'white' : 'fg.subtle'} flex='0 0 auto'>
+										<Box color={isActive ? 'fg.onAccent' : 'fg.subtle'} flex='0 0 auto'>
 											<Icon size={13} />
 										</Box>
-										<Box fontSize='sm' fontWeight={isActive ? '600' : '500'} color={isActive ? 'white' : undefined}>
+										<Box fontSize='sm' fontWeight={isActive ? '600' : '500'}>
 											{command.name}
 										</Box>
 									</Flex>
