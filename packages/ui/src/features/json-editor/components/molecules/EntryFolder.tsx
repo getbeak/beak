@@ -1,7 +1,6 @@
 import { Box } from '@chakra-ui/react';
 import SelectedNodeContext from '@beak/ui/features/request-pane/contexts/selected-node';
 import { requestPreferenceSetReqJsonExpand } from '@beak/ui/store/preferences/actions';
-import { motion } from 'framer-motion';
 import { ChevronRight } from 'lucide-react';
 import * as React from 'react';
 import { useContext } from 'react';
@@ -26,25 +25,19 @@ const EntryFolder: React.FC<EntryFolderProps> = ({ expanded, id, onChange }) => 
 			w='16px'
 			h='20px'
 			cursor='pointer'
-			color='fg.muted'
+			color='fg.subtle'
 			borderRadius='sm'
-			transition='background-color .12s ease, color .12s ease'
+			transform={expanded ? 'rotate(90deg)' : 'rotate(0deg)'}
+			transition='background-color .12s ease, color .12s ease, transform .14s ease-out'
 			_hover={{
-				color: 'fg.default',
-				bg: 'color-mix(in srgb, var(--beak-colors-bg-surface-emphasized) 50%, transparent)',
+				color: 'accent.pink',
 			}}
 			onClick={() => {
 				dispatch(requestPreferenceSetReqJsonExpand({ id: node.id, jsonId: id, expanded: !expanded }));
 				onChange(!expanded);
 			}}
 		>
-			<motion.span
-				style={{ display: 'inline-flex', transformOrigin: 'center' }}
-				animate={{ rotate: expanded ? 90 : 0 }}
-				transition={{ duration: 0.14, ease: 'easeOut' }}
-			>
-				<ChevronRight size={10} />
-			</motion.span>
+			<ChevronRight size={10} strokeWidth={2.2} />
 		</Box>
 	);
 };
