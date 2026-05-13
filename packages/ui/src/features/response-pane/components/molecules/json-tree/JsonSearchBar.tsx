@@ -90,8 +90,12 @@ const JsonSearchBar: React.FC<JsonSearchBarProps> = ({
 						_placeholder={{ color: 'fg.subtle' }}
 					/>
 				</Box>
-				<Text fontSize='10px' color={noResults ? 'accent.alert' : 'fg.subtle'} minW='44px' textAlign='right' fontFamily='mono' fontWeight='600'>
-					{value.length === 0 ? '' : hasHits ? `${hitIndex + 1}/${hitCount}` : 'no hits'}
+				<Text fontSize='10px' color={noResults ? 'accent.alert' : 'fg.subtle'} minW='48px' textAlign='right' fontFamily='mono' fontWeight='700' letterSpacing='0.04em'>
+					{value.length === 0
+						? ''
+						: hasHits
+							? `${hitIndex + 1}/${hitCount}`
+							: 'NO HITS'}
 				</Text>
 			</Flex>
 			<IconButton
