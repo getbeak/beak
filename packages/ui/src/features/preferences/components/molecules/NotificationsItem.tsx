@@ -1,10 +1,12 @@
+import { Box, Flex } from '@chakra-ui/react';
 import type { NotificationPreferences } from '@beak/common/types/preferences';
 import Checkbox from '@beak/ui/components/atoms/Checkbox';
 import { ipcPreferencesService } from '@beak/ui/lib/ipc';
+import { CheckCircle2, Info, XCircle } from 'lucide-react';
 import React from 'react';
 import { useEffect, useState } from 'react';
 
-import { ItemGroup, ItemLabel, SubItem, SubItemGroup, SubItemLabel } from '../atoms/item';
+import { ItemGroup, ItemLabel } from '../atoms/item';
 import NotificationStateSelect from '../atoms/NotificationStateSelect';
 
 const NotificationsItem: React.FC<React.PropsWithChildren<unknown>> = () => {
@@ -16,7 +18,6 @@ const NotificationsItem: React.FC<React.PropsWithChildren<unknown>> = () => {
 		ipcPreferencesService.getNotificationOverview().then(setNotificationPreferences);
 	}
 
-	// eslint-disable-next-line max-len
 	function setNotificationValue<Key extends keyof NotificationPreferences>(
 		key: Key,
 		value: NotificationPreferences[Key],
@@ -24,7 +25,6 @@ const NotificationsItem: React.FC<React.PropsWithChildren<unknown>> = () => {
 		ipcPreferencesService.setNotificationValue(key, value);
 	}
 
-	// eslint-disable-next-line max-len
 	function updateNotificationPreference<Key extends keyof NotificationPreferences>(
 		key: Key,
 		value: NotificationPreferences[Key],
@@ -36,51 +36,90 @@ const NotificationsItem: React.FC<React.PropsWithChildren<unknown>> = () => {
 
 	return (
 		<ItemGroup>
-			<ItemLabel>{'Notifications:'}</ItemLabel>
+			<ItemLabel>{'Notifications'}</ItemLabel>
 
-			<SubItemGroup>
-				<SubItem>
-					<SubItemLabel>{'Successful requests: '}</SubItemLabel>
+			<Flex direction='column' gap='2.5'>
+				<NotificationRow
+					icon={<CheckCircle2 size={12} />}
+					iconColor='var(--beak-colors-accent-teal)'
+					label='Successful requests'
+				>
 					<NotificationStateSelect
 						value={notificationPreferences.onSuccessfulRequest}
 						onChange={value => updateNotificationPreference('onSuccessfulRequest', value)}
 					/>
-				</SubItem>
-				<SubItem>
-					<SubItemLabel id={'tt-preferences-notifications-information-requests'} $abbr>
-						{'Information & redirect requests: '}
-					</SubItemLabel>
+				</NotificationRow>
+
+				<NotificationRow
+					icon={<Info size={12} />}
+					iconColor='var(--beak-colors-accent-indigo)'
+					label='Information & redirect requests'
+					hint='100–199 and 300–399'
+				>
 					<NotificationStateSelect
 						value={notificationPreferences.onInformationRequest}
 						onChange={value => setNotificationValue('onInformationRequest', value)}
 					/>
-				</SubItem>
-				<SubItem>
-					<SubItemLabel>{'Failed requests: '}</SubItemLabel>
+				</NotificationRow>
+
+				<NotificationRow
+					icon={<XCircle size={12} />}
+					iconColor='var(--beak-colors-accent-alert)'
+					label='Failed requests'
+				>
 					<NotificationStateSelect
 						value={notificationPreferences.onFailedRequest}
 						onChange={value => setNotificationValue('onFailedRequest', value)}
 					/>
-				</SubItem>
-				{/* Disabled for now */}
-				{/* <SubItem>
-					<SubItemLabel>{'Update available: '}</SubItemLabel>
-					<NotificationStateSelect
-						value={notificationPreferences.onUpdateAvailable}
-						onChange={value => setNotificationValue('onUpdateAvailable', value)}
-					/>
-				</SubItem> */}
-				<SubItem>
+				</NotificationRow>
+
+				<Box pt='1'>
 					<Checkbox
-						id={'showRequestNotificationWhenFocused'}
+						id='showRequestNotificationWhenFocused'
 						checked={notificationPreferences.showRequestNotificationWhenFocused}
-						label={'Show notification banners when Beak has focus'}
-						onChange={event => setNotificationValue('showRequestNotificationWhenFocused', event.currentTarget.checked)}
+						label='Show notification banners when Beak has focus'
+						onChange={event =>
+							setNotificationValue('showRequestNotificationWhenFocused', event.currentTarget.checked)
+						}
 					/>
-				</SubItem>
-			</SubItemGroup>
+				</Box>
+			</Flex>
 		</ItemGroup>
 	);
 };
+
+interface NotificationRowProps {
+	icon: React.ReactNode;
+	iconColor: string;
+	label: string;
+	hint?: string;
+	children: React.ReactNode;
+}
+
+const NotificationRow: React.FC<NotificationRowProps> = ({ icon, iconColor, label, hint, children }) => (
+	<Flex align='center' gap='2'>
+		<Flex
+			flex='0 0 auto'
+			align='center'
+			justify='center'
+			w='20px'
+			h='20px'
+			borderRadius='sm'
+			style={{
+				background: `color-mix(in srgb, ${iconColor} 18%, transparent)`,
+				color: iconColor,
+			}}
+		>
+			{icon}
+		</Flex>
+		<Box flex='1 1 auto' minW={0}>
+			<Box fontSize='xs' fontWeight='500' color='fg.default'>{label}</Box>
+			{hint && <Box fontSize='10px' color='fg.subtle'>{hint}</Box>}
+		</Box>
+		<Box flex='0 0 auto' minW='160px'>
+			{children}
+		</Box>
+	</Flex>
+);
 
 export default NotificationsItem;
