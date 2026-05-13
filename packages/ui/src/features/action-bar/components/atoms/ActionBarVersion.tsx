@@ -1,4 +1,4 @@
-import { Badge } from '@chakra-ui/react';
+import { Box } from '@chakra-ui/react';
 import WindowSessionContext from '@beak/ui/contexts/window-session-context';
 import React, { useContext } from 'react';
 import semverParse from 'semver/functions/parse';
@@ -18,19 +18,24 @@ const ActionBarVersion: React.FC = () => {
 };
 
 const VersionBadge: React.FC<{ label: string }> = ({ label }) => (
-	<Badge
+	<Box
+		display='inline-flex'
+		alignItems='center'
 		px='1.5'
-		py='0.5'
-		fontSize='xs'
-		fontWeight='medium'
-		borderRadius='md'
-		borderWidth='2px'
-		borderColor='color-mix(in srgb, var(--beak-colors-accent-pink) 90%, transparent)'
-		bg='color-mix(in srgb, var(--beak-colors-accent-pink) 70%, transparent)'
-		color='fg.onAccent'
+		h='18px'
+		fontSize='9px'
+		fontWeight='700'
+		letterSpacing='0.08em'
+		textTransform='uppercase'
+		borderRadius='sm'
+		borderWidth='1px'
+		borderColor='color-mix(in srgb, var(--beak-colors-accent-pink) 50%, transparent)'
+		bg='color-mix(in srgb, var(--beak-colors-accent-pink) 18%, transparent)'
+		color='accent.pink'
+		boxShadow='inset 0 1px 0 color-mix(in srgb, white 12%, transparent)'
 	>
 		{label}
-	</Badge>
+	</Box>
 );
 
 export default ActionBarVersion;
