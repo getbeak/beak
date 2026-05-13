@@ -1,12 +1,13 @@
 import { Box } from '@chakra-ui/react';
 import { checkShortcut } from '@beak/ui/lib/keyboard-shortcuts';
 import { projectPanePreferenceSetCollapse } from '@beak/ui/store/preferences/actions';
-import { selectNextLogicalNode, selectPreviousLogicalNode } from '@beak/ui/utils/keyboard-dom-node-navigation';
+import { motion } from 'framer-motion';
 import * as React from 'react';
 import { useContext, useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 
 import { TreeViewAbstractionsContext } from '../../contexts/abstractions-context';
+import { TreeViewFlatContext } from '../../contexts/flat-context';
 import { TreeViewFocusContext } from '../../contexts/focus-context';
 import { useNodeDrag } from '../../hooks/drag-and-drop';
 import { useActiveRename } from '../../hooks/use-active-rename';
@@ -20,21 +21,33 @@ interface NodeItemProps {
 	collapsed?: boolean;
 }
 
+const INDENT_PX = 10;
+
 const NodeItem: React.FC<React.PropsWithChildren<NodeItemProps>> = props => {
 	const { node, depth, collapsible, collapsed, children } = props;
 	const dispatch = useDispatch();
 	const absContext = useContext(TreeViewAbstractionsContext);
 	const focusContext = useContext(TreeViewFocusContext);
+	const flatContext = useContext(TreeViewFlatContext);
 	const [, renaming] = useActiveRename(node);
 	const renderer = absContext.nodeFlairRenderers?.[node.type];
 	const element = useRef<HTMLDivElement | null>(null);
 	const [, dragRef] = useNodeDrag(node);
+	const isActive = focusContext.activeNodeId === node.id;
 
 	dragRef(element);
 
 	useEffect(() => {
 		if (focusContext.focusedNodeId === node.id) element.current?.focus();
 	}, [focusContext.focusedNodeInvalidator]);
+
+	function moveTo(targetId: string | undefined) {
+		if (!targetId) return;
+		const idx = flatContext.indexById[targetId];
+		if (idx === undefined) return;
+		flatContext.scrollToIndex(idx);
+		focusContext.setFocusedNodeId(targetId);
+	}
 
 	function handleOnKeyDown(event: React.KeyboardEvent<HTMLDivElement>) {
 		absContext.onNodeKeyDown?.(event, node);
@@ -47,64 +60,48 @@ const NodeItem: React.FC<React.PropsWithChildren<NodeItemProps>> = props => {
 				break;
 
 			case checkShortcut('tree-view.node.left', event): {
-				if (node.type === 'folder' && !collapsed) {
+				if (collapsible && !collapsed) {
 					dispatch(
 						projectPanePreferenceSetCollapse({
 							key: node.id,
-							collapsed: !collapsed,
+							collapsed: true,
 						}),
 					);
-
 					return;
 				}
-
-				const selected = element.current;
-				const root = focusContext.rootRef.current;
-
-				if (!selected || !root) return;
-
-				selectPreviousLogicalNode(root, selected);
+				const currentIdx = flatContext.indexById[node.id];
+				const prev = flatContext.flat[currentIdx - 1];
+				moveTo(prev?.id);
 				break;
 			}
 
 			case checkShortcut('tree-view.node.right', event): {
-				if (node.type === 'folder' && collapsed) {
+				if (collapsible && collapsed) {
 					dispatch(
 						projectPanePreferenceSetCollapse({
 							key: node.id,
-							collapsed: !collapsed,
+							collapsed: false,
 						}),
 					);
-
 					return;
 				}
-
-				const selected = element.current;
-				const root = focusContext.rootRef.current;
-
-				if (!selected || !root) return;
-
-				selectNextLogicalNode(root, selected);
+				const currentIdx = flatContext.indexById[node.id];
+				const next = flatContext.flat[currentIdx + 1];
+				moveTo(next?.id);
 				break;
 			}
 
 			case checkShortcut('tree-view.node.up', event): {
-				const selected = element.current;
-				const root = focusContext.rootRef.current;
-
-				if (!selected || !root) return;
-
-				selectPreviousLogicalNode(root, selected);
+				const currentIdx = flatContext.indexById[node.id];
+				const prev = flatContext.flat[currentIdx - 1];
+				moveTo(prev?.id);
 				break;
 			}
 
 			case checkShortcut('tree-view.node.down', event): {
-				const selected = element.current;
-				const root = focusContext.rootRef.current;
-
-				if (!selected || !root) return;
-
-				selectNextLogicalNode(root, selected);
+				const currentIdx = flatContext.indexById[node.id];
+				const next = flatContext.flat[currentIdx + 1];
+				moveTo(next?.id);
 				break;
 			}
 
@@ -118,7 +115,6 @@ const NodeItem: React.FC<React.PropsWithChildren<NodeItemProps>> = props => {
 	function handleOnClick(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
 		if (event.detail === 2) {
 			absContext.onNodeDoubleClick?.(event, node);
-
 			return;
 		}
 
@@ -139,10 +135,11 @@ const NodeItem: React.FC<React.PropsWithChildren<NodeItemProps>> = props => {
 			<Box
 				ref={element}
 				tabIndex={0}
+				position='relative'
 				display='flex'
 				py='1'
 				pr='1.5'
-				style={{ paddingLeft: `${depth * 8 + 6}px` }}
+				style={{ paddingLeft: `${depth * INDENT_PX + 6}px` }}
 				alignItems='center'
 				justifyContent='space-between'
 				cursor='pointer'
@@ -150,22 +147,81 @@ const NodeItem: React.FC<React.PropsWithChildren<NodeItemProps>> = props => {
 				lineHeight='15px'
 				borderTopLeftRadius='sm'
 				borderBottomLeftRadius='sm'
-				color={focusContext.activeNodeId === node.id ? 'fg.default' : 'fg.muted'}
-				bg={
-					focusContext.activeNodeId === node.id
-						? 'color-mix(in srgb, var(--beak-colors-bg-surface) 80%, transparent)'
-						: 'transparent'
-				}
-				_hover={{ color: 'fg.default' }}
+				color={isActive ? 'fg.default' : 'fg.muted'}
+				transition='color .12s ease, background-color .12s ease'
+				_hover={{
+					color: 'fg.default',
+					bg: isActive
+						? undefined
+						: 'color-mix(in srgb, var(--beak-colors-bg-surface-emphasized) 30%, transparent)',
+				}}
 				_focus={{
 					outline: 'none',
-					bg: 'color-mix(in srgb, var(--beak-colors-bg-surface-emphasized) 100%, transparent)',
+					bg: isActive
+						? undefined
+						: 'color-mix(in srgb, var(--beak-colors-bg-surface-emphasized) 50%, transparent)',
 				}}
 				onKeyDown={handleOnKeyDown}
 				onClick={handleOnClick}
 			>
-				{children}
-				<Box ml='auto' pl='2'>{renderer?.(node)}</Box>
+				{isActive && (
+					<motion.div
+						layoutId='tree-view-active-row'
+						transition={{ type: 'spring', stiffness: 700, damping: 36 }}
+						style={{
+							position: 'absolute',
+							inset: 0,
+							borderRadius: '4px',
+							background: 'color-mix(in srgb, var(--beak-colors-accent-pink) 16%, transparent)',
+							pointerEvents: 'none',
+						}}
+					/>
+				)}
+				{isActive && (
+					<motion.div
+						layoutId='tree-view-active-rail'
+						transition={{ type: 'spring', stiffness: 700, damping: 36 }}
+						style={{
+							position: 'absolute',
+							top: 0,
+							bottom: 0,
+							left: 0,
+							width: 2,
+							background: 'var(--beak-colors-accent-pink)',
+							borderTopRightRadius: 2,
+							borderBottomRightRadius: 2,
+							pointerEvents: 'none',
+						}}
+					/>
+				)}
+				{depth > 0 && (
+					<Box
+						position='absolute'
+						top={0}
+						bottom={0}
+						left={0}
+						pointerEvents='none'
+						aria-hidden
+					>
+						{Array.from({ length: depth }).map((_, i) => (
+							<Box
+								// biome-ignore lint/suspicious/noArrayIndexKey: depth-stable
+								key={i}
+								position='absolute'
+								top={0}
+								bottom={0}
+								width='1px'
+								style={{ left: `${i * INDENT_PX + 9}px` }}
+								bg='border.subtle'
+								opacity={0.6}
+							/>
+						))}
+					</Box>
+				)}
+				<Box position='relative' display='flex' alignItems='center' minW={0}>
+					{children}
+				</Box>
+				<Box ml='auto' pl='2' position='relative'>{renderer?.(node)}</Box>
 			</Box>
 		</NodeContextMenu>
 	);

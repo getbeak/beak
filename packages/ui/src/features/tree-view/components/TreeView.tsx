@@ -1,17 +1,20 @@
-import { TypedObject } from '@beak/common/helpers/typescript';
+import { Box } from '@chakra-ui/react';
 import type { ApplicationState } from '@beak/ui/store';
+import { useVirtualizer } from '@tanstack/react-virtual';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import type { MenuItemConstructorOptions } from 'electron';
 import React from 'react';
-import { type ReactElement, useRef } from 'react';
-import { Box } from '@chakra-ui/react';
+import { type ReactElement, useCallback, useMemo, useRef } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+import { LayoutGroup } from 'framer-motion';
 
 import useSectionBody from '../../sidebar/hooks/use-section-body';
 import { TreeViewAbstractionsContext } from '../contexts/abstractions-context';
+import { TreeViewFlatContext } from '../contexts/flat-context';
 import { TreeViewFocusContext } from '../contexts/focus-context';
 import { TreeViewNodesContext } from '../contexts/nodes-context';
+import useFlattenedTree from '../hooks/use-flattened-tree';
 import useFocusedNodeSetup from '../hooks/use-focused-node-setup';
 import type { TreeViewFolderNode, TreeViewItem, TreeViewNode, TreeViewNodes } from '../types';
 import NodeContextMenu from './molecules/NodeContextMenu';
@@ -43,21 +46,39 @@ interface TreeViewProps {
 	onNodeKeyDown?: (event: React.KeyboardEvent<HTMLDivElement>, node: TreeViewItem) => void;
 }
 
+const ROW_HEIGHT = 24;
+const OVERSCAN = 12;
+
 const TreeView: React.FC<React.PropsWithChildren<TreeViewProps>> = props => {
 	const { tree, rootParentName, allowRootContextMenu } = props;
 	const container = useRef<HTMLDivElement>(null);
+	const scrollRef = useRef<HTMLDivElement>(null);
 	const [focusedNodeId, focusedNodeInvalidator, setFocusedNodeId] = useFocusedNodeSetup(props.focusedNodeId);
-	const formattedNodes = TypedObject.values(tree)
-		.filter(t => t.parent === rootParentName)
-		.sort((a, b) =>
-			a.name.localeCompare(b.name, void 0, {
-				numeric: true,
-				sensitivity: 'base',
-			}),
-		);
+	const { flat, indexById } = useFlattenedTree(tree, rootParentName);
 
-	// A tree view is probably inside a flex body, so let's grooow
+	const virtualizer = useVirtualizer({
+		count: flat.length,
+		getScrollElement: () => scrollRef.current,
+		estimateSize: () => ROW_HEIGHT,
+		overscan: OVERSCAN,
+		getItemKey: index => flat[index]?.id ?? index,
+	});
+
+	const scrollToIndex = useCallback(
+		(index: number) => {
+			virtualizer.scrollToIndex(index, { align: 'auto' });
+		},
+		[virtualizer],
+	);
+
+	const flatContextValue = useMemo(
+		() => ({ flat, indexById, scrollToIndex }),
+		[flat, indexById, scrollToIndex],
+	);
+
 	useSectionBody({ flexGrow: 2 });
+
+	const virtualItems = virtualizer.getVirtualItems();
 
 	return (
 		<TreeViewNodesContext.Provider value={tree}>
@@ -87,34 +108,83 @@ const TreeView: React.FC<React.PropsWithChildren<TreeViewProps>> = props => {
 						setFocusedNodeId,
 					}}
 				>
-					<DndProvider backend={HTML5Backend}>
-						<NodeContextMenu
-							disabled={!allowRootContextMenu}
-							node={{
-								id: 'root',
-								name: 'root',
-								type: 'root',
-								filePath: 'root',
-								parent: null,
-							}}
-							target={container}
-						>
-							<Box ref={container} h='100%' _focus={{ outline: 'none' }}>
-								<RootDropContainer>
-									{formattedNodes
-										.filter(i => i.type === 'folder')
-										.map(i => (
-											<FolderNode key={i.id} depth={0} node={i as TreeViewFolderNode} />
-										))}
-									{formattedNodes
-										.filter(i => i.type !== 'folder')
-										.map(i => (
-											<Node key={i.id} depth={0} node={i as TreeViewNode} />
-										))}
-								</RootDropContainer>
-							</Box>
-						</NodeContextMenu>
-					</DndProvider>
+					<TreeViewFlatContext.Provider value={flatContextValue}>
+						<DndProvider backend={HTML5Backend}>
+							<NodeContextMenu
+								disabled={!allowRootContextMenu}
+								node={{
+									id: 'root',
+									name: 'root',
+									type: 'root',
+									filePath: 'root',
+									parent: null,
+								}}
+								target={container}
+							>
+								<Box
+									ref={container}
+									h='100%'
+									_focus={{ outline: 'none' }}
+								>
+									<RootDropContainer>
+										<Box
+											ref={scrollRef}
+											h='100%'
+											overflowY='auto'
+											overflowX='hidden'
+											css={{
+												'&::-webkit-scrollbar': { width: '6px' },
+												'&::-webkit-scrollbar-track': { background: 'transparent' },
+												'&::-webkit-scrollbar-thumb': {
+													background: 'color-mix(in srgb, var(--beak-colors-fg-muted) 25%, transparent)',
+													borderRadius: '3px',
+												},
+												'&::-webkit-scrollbar-thumb:hover': {
+													background: 'color-mix(in srgb, var(--beak-colors-fg-muted) 45%, transparent)',
+												},
+											}}
+										>
+											<LayoutGroup>
+												<Box
+													position='relative'
+													width='100%'
+													style={{ height: virtualizer.getTotalSize() }}
+												>
+													{virtualItems.map(v => {
+														const item = flat[v.index];
+														if (!item) return null;
+														return (
+															<Box
+																key={item.id}
+																position='absolute'
+																top={0}
+																left={0}
+																width='100%'
+																style={{ transform: `translateY(${v.start}px)` }}
+																data-index={v.index}
+															>
+																{item.isFolder ? (
+																	<FolderNode
+																		depth={item.depth}
+																		node={item.node as TreeViewFolderNode}
+																	/>
+																) : (
+																	<Node
+																		depth={item.depth}
+																		node={item.node as TreeViewNode}
+																	/>
+																)}
+															</Box>
+														);
+													})}
+												</Box>
+											</LayoutGroup>
+										</Box>
+									</RootDropContainer>
+								</Box>
+							</NodeContextMenu>
+						</DndProvider>
+					</TreeViewFlatContext.Provider>
 				</TreeViewFocusContext.Provider>
 			</TreeViewAbstractionsContext.Provider>
 		</TreeViewNodesContext.Provider>
