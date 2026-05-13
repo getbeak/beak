@@ -10,10 +10,11 @@ export const SelectContainer = chakra('div', {
 		px: '5',
 		pt: '4',
 		pb: '3',
-		borderRadius: 'lg',
+		borderRadius: 'xl',
 		borderWidth: '1px',
 		borderColor: 'border.subtle',
 		bg: 'color-mix(in srgb, var(--beak-colors-bg-surface) 60%, transparent)',
+		boxShadow: 'inset 0 1px 0 color-mix(in srgb, white 12%, transparent)',
 	},
 });
 
@@ -26,12 +27,13 @@ export const SelectItem: React.FC<SelectItemProps> = ({ $active, children, ...re
 		display='flex'
 		flexDirection='column'
 		alignItems='center'
-		color={$active ? 'fg.default' : 'fg.muted'}
-		opacity={$active ? 1 : 0.7}
+		color={$active ? 'accent.pink' : 'fg.muted'}
+		fontWeight={$active ? '600' : '500'}
+		opacity={$active ? 1 : 0.85}
 		fontSize='sm'
 		cursor='pointer'
 		transition='opacity .14s ease, color .14s ease, transform .08s ease'
-		_hover={{ opacity: 1, color: 'fg.default' }}
+		_hover={{ opacity: 1, color: $active ? 'accent.pink' : 'fg.default' }}
 		_active={{ transform: 'scale(0.97)' }}
 		{...rest}
 	>
