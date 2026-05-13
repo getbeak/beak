@@ -168,28 +168,27 @@ Deferred: the body-file editor UI button that calls `pickAndAttachAsset` and set
 
 `@beak/common/ipc/`: `app`, `assets`, `beak-hub`, `context-menu`, `dialog`, `encryption`, `explorer`, `extensions`, `flight`, `fs`, `fs-watcher`, `nest`, `notification`, `openapi`, `preferences`, `project`, `window`. Each domain has paired `IpcServiceMain` (host) and `IpcServiceRenderer` (renderer) classes. Both Electron and Web hosts implement every channel that's relevant to them.
 
-### Known infra issues
+### Monaco bundling notes
 
-- **`pnpm build` fails on packages/ui** — two-layer problem:
-  1. `vite-plugin-monaco-editor@1.1.0` calls
-     `require.resolve(process.cwd() + '/node_modules/monaco-editor/esm/vs/language/json/json.worker')`,
-     but pnpm hoists `monaco-editor` to the workspace root and doesn't symlink
-     it into `packages/ui/node_modules`. This layer can be worked around by
-     moving every worker into `customWorkers` with `../../../node_modules/...`
-     entries (which we already do for graphql/scss/less/etc).
-  2. Once the plugin's path resolver works, esbuild bundling
-     `node_modules/monaco-graphql/dist/graphql.worker.js` fails on its
-     transitive `import 'monaco-editor/esm/vs/editor/editor.worker'`. monaco-editor
-     is ESM-only and its `exports` map doesn't expose internal subpaths to
-     bare-specifier imports, so esbuild can't resolve them.
-  Fixing both layers (not yet applied):
-  1. Replace `vite-plugin-monaco-editor` with `vite-plugin-monaco-editor-esm`
-     or `@guolao/vite-plugin-monaco-editor` (both handle pnpm + ESM).
-  2. OR patch monaco-editor's `package.json` exports map via pnpm's
-     `patchedDependencies` to expose `./esm/vs/**/*` paths.
-  Dev server (`pnpm start:apps-host-web`) is unaffected — playwright e2e runs
-  against the dev server, not the built bundle, so the suite stays green
-  even with build broken.
+Both Monaco-related fixes live in `patches/` and are tracked via
+`pnpm.patchedDependencies`:
+
+1. `patches/vite-plugin-monaco-editor.patch` — adds 4 resolution
+   candidates (cwd-rooted ± `.js`, bare ± `.js`) so pnpm's hoisting
+   doesn't break the plugin's `require.resolve` lookups. Also swaps a
+   Node 22+ incompatible `rmdirSync({recursive})` for `rmSync(...)`.
+
+2. `patches/monaco-editor@0.55.1.patch` — extends the `exports` map so
+   bare-specifier imports under `./esm/*` synthesize a `.js` extension.
+   `monaco-graphql/dist/graphql.worker.js` does
+   `require('monaco-editor/esm/vs/editor/editor.worker')` (no
+   extension), and Node/esbuild won't fall back to `.js` on their own.
+   The pattern order (`./esm/*.js` first, then `./esm/*`, then `./*`)
+   means already-extensioned paths skip the synthesis.
+
+If `pnpm build` breaks again on a monaco/monaco-graphql resolution
+error, check that both patches still applied after `pnpm install` and
+that monaco-editor is still at 0.55.1 (the patch is version-pinned).
 
 ### Tabs
 
