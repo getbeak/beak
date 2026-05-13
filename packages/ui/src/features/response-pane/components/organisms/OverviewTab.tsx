@@ -155,10 +155,15 @@ const StatCard: React.FC<{
 				<Flex
 					align='center'
 					justify='center'
-					w='22px'
-					h='22px'
+					w='24px'
+					h='24px'
 					borderRadius='md'
-					style={{ color: t.color, background: t.bg, boxShadow: `inset 0 0 0 1px color-mix(in srgb, ${t.color} 25%, transparent)` }}
+					style={{
+						color: t.color,
+						background: t.bg,
+						border: `1px solid color-mix(in srgb, ${t.color} 28%, transparent)`,
+						boxShadow: `0 3px 8px color-mix(in srgb, ${t.color} 18%, transparent), inset 0 1px 0 color-mix(in srgb, white 14%, transparent)`,
+					}}
 				>
 					{icon}
 				</Flex>
