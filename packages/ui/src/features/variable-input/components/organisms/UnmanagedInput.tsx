@@ -20,7 +20,7 @@ export default class UnmanagedInput extends React.Component<UnmanagedInputProps>
 				suppressContentEditableWarning
 				fontSize='sm'
 				borderWidth='1px'
-				borderColor='border.default'
+				borderColor='border.subtle'
 				whiteSpace='nowrap'
 				overflow='hidden'
 				css={{
