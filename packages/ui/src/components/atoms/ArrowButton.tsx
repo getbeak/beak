@@ -1,5 +1,5 @@
 import { Button, Flex } from '@chakra-ui/react';
-import { ChevronsLeft, ChevronsRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 import * as React from 'react';
 
@@ -15,27 +15,31 @@ const ArrowButton: React.FC<React.PropsWithChildren<ArrowButtonProps>> = ({
 }) => (
 	<Button
 		variant='ghost'
-		size='sm'
+		size='xs'
 		bg='transparent'
 		border='none'
-		color='fg.default'
+		color='fg.muted'
 		px='1.5'
 		py='1'
+		h='auto'
+		minH='22px'
 		borderRadius='sm'
-		fontSize='lg'
+		fontSize='xs'
+		fontWeight='500'
 		cursor='pointer'
-		_hover={{ bg: 'accent.pink.muted' }}
+		transition='color .12s ease, background-color .12s ease, transform .08s ease'
+		_hover={{
+			color: 'fg.default',
+			bg: 'color-mix(in srgb, var(--beak-colors-bg-surface-emphasized) 60%, transparent)',
+		}}
+		_active={{ transform: 'scale(0.96)' }}
 		onClick={onClick}
 	>
-		{direction === 'left' && (
-			<ChevronsLeft color='var(--beak-colors-fg-default)' size={12} />
-		)}
-		<Flex display='inline-flex' mx='1.5'>
-			{children}
+		<Flex align='center' gap='1'>
+			{direction === 'left' && <ChevronLeft size={12} />}
+			<Flex display='inline-flex'>{children}</Flex>
+			{direction === 'right' && <ChevronRight size={12} />}
 		</Flex>
-		{direction === 'right' && (
-			<ChevronsRight color='var(--beak-colors-fg-default)' />
-		)}
 	</Button>
 );
 
