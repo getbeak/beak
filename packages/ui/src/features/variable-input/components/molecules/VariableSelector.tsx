@@ -198,11 +198,13 @@ const VariableSelector: React.FC<React.PropsWithChildren<VariableSelectorProps>>
 					<br />
 					{'You can build your own with an extension, check the '}
 					<a
-						onClick={async () =>
-							void (await ipcExplorerService.launchUrl(
+						href='https://getbeak.notion.site/Extensions-4c16ca640b35460787056f8be815b904'
+						onClick={async event => {
+							event.preventDefault();
+							await ipcExplorerService.launchUrl(
 								'https://getbeak.notion.site/Extensions-4c16ca640b35460787056f8be815b904',
-							))
-						}
+							);
+						}}
 					>
 						{'docs'}
 					</a>

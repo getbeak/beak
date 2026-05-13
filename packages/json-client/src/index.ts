@@ -112,7 +112,7 @@ async function makeRequest<ResT>(
 
 		try {
 			return JSON.parse(responseBody);
-		} catch (e) {
+		} catch {
 			throw new BackendError('invalid_json_response', errorFields);
 		}
 	}

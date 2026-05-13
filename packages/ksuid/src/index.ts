@@ -5,7 +5,10 @@ import Node from './node';
 export { Id, Instance, Node };
 
 let internalNode: Node | undefined;
-const node = (): Node => internalNode ?? (internalNode = new Node());
+const node = (): Node => {
+	if (!internalNode) internalNode = new Node();
+	return internalNode;
+};
 
 export default {
 	parse(input: string): Id {

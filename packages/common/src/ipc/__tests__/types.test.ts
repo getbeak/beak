@@ -150,7 +150,8 @@ describe('IPC Types - Stage 1', () => {
 
 		it('should not allow invalid message types', () => {
 			// @ts-expect-error - should not allow invalid types
-			const invalidType: FlightMessageType = 'invalid_type';
+			const _invalidType: FlightMessageType = 'invalid_type';
+			void _invalidType;
 		});
 	});
 });

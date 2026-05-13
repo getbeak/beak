@@ -110,6 +110,7 @@ function renderFormat(language: string | null, contentType: string | null, body:
 		case 'video': {
 			const blob = URL.createObjectURL(new Blob([body as BlobPart], { type: contentType ?? 'video/mp4' }));
 			return (
+				// biome-ignore lint/a11y/useMediaCaption: response bodies are arbitrary HTTP video responses; no caption track is available.
 				<video controls autoPlay style={{ width: '100%', height: '100%' }}>
 					<source src={blob} />
 				</video>

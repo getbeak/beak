@@ -22,7 +22,9 @@ export default function buildAlerts(builder: ActionReducerMapBuilder<State>) {
 				})
 				.filter(Boolean) as unknown as string[];
 
-			removeIdents.forEach(i => void (state.alerts[i] = void 0));
+			removeIdents.forEach(i => {
+				state.alerts[i] = void 0;
+			});
 		})
 		.addCase(actions.alertRemoveType, (state, { payload }) => {
 			const removeIdents = TypedObject.keys(state.alerts)
@@ -33,7 +35,9 @@ export default function buildAlerts(builder: ActionReducerMapBuilder<State>) {
 				})
 				.filter(Boolean) as unknown as string[];
 
-			removeIdents.forEach(i => void (state.alerts[i] = void 0));
+			removeIdents.forEach(i => {
+				state.alerts[i] = void 0;
+			});
 		})
 		.addCase(actions.alertClear, state => {
 			state.alerts = {};
