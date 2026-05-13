@@ -3,13 +3,12 @@ import * as React from 'react';
 
 export const FormGroup: React.FC<BoxProps> = ({ children, ...rest }) => (
 	<Box
-		mb='2'
+		mb='3'
 		css={{
 			'> div > article': {
 				fontSize: '13px',
-				padding: '3px 5px',
-				paddingBottom: '4px',
-				borderRadius: '3px',
+				padding: '5px 8px',
+				borderRadius: '5px',
 			},
 		}}
 		{...rest}
@@ -21,7 +20,11 @@ export const FormGroup: React.FC<BoxProps> = ({ children, ...rest }) => (
 export const Label = chakra('label', {
 	base: {
 		display: 'block',
-		mb: '1',
-		fontSize: 'md',
+		mb: '1.5',
+		fontSize: '10px',
+		fontWeight: '700',
+		color: 'fg.subtle',
+		letterSpacing: '0.06em',
+		textTransform: 'uppercase',
 	},
 });
