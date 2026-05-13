@@ -204,7 +204,7 @@ async function initialImport(api: {
 
 	const items = await scanDirectoryRecursively('variable-groups');
 	const files = items.filter(i => !i.isDirectory).map(i => i.path);
-	const variableSets = await readVariableSets(files);
+	const { variableSets, failures } = await readVariableSets(files);
 	const editorPreferences = api.getState().global.preferences.editor;
 
 	for (const vgk of TypedObject.keys(variableSets)) {
@@ -219,10 +219,61 @@ async function initialImport(api: {
 		}
 	}
 
+	// Always dispatch `variableSetsOpened` so the project finishes booting
+	// even when some files failed to load — otherwise the loading splash
+	// hangs forever (see `useProjectLoading`).
 	api.dispatch(variableSetsOpened({ variableSets }));
+
+	if (failures.length > 0) {
+		console.warn(`[variable-sets] ${failures.length} file${failures.length === 1 ? '' : 's'} failed to load`, failures);
+		void ipcDialogService.showMessageBox({
+			type: 'warning',
+			title: 'Some variable sets failed to load',
+			message: `${failures.length} variable set file${failures.length === 1 ? '' : 's'} could not be parsed.`,
+			detail: failures
+				.map(f => {
+					const fieldErrors = (f.error.meta.fieldErrors ?? {}) as Record<string, string>;
+					const fieldLines = Object.entries(fieldErrors)
+						.map(([path, msg]) => `  • ${path}: ${msg}`)
+						.join('\n');
+					return `${f.filePath}\n${fieldLines || `  ${f.error.message}`}`;
+				})
+				.join('\n\n'),
+		});
+	}
 }
 
-async function readVariableSets(filePaths: string[]): Promise<VariableSets> {
-	const results = await Promise.all(filePaths.map(f => readVariableSet(f)));
-	return results.reduce((acc, { name, file }) => ({ ...acc, [name]: file as VariableSet }), {} as VariableSets);
+interface ReadFailure {
+	filePath: string;
+	error: import('@beak/common/utils/squawk').BeakError;
+}
+
+async function readVariableSets(filePaths: string[]): Promise<{
+	variableSets: VariableSets;
+	failures: ReadFailure[];
+}> {
+	const results = await Promise.all(
+		filePaths.map(async f => {
+			try {
+				const { name, file } = await readVariableSet(f);
+				return { ok: true as const, name, file };
+			} catch (err) {
+				return { ok: false as const, filePath: f, error: err };
+			}
+		}),
+	);
+
+	const variableSets: VariableSets = {};
+	const failures: ReadFailure[] = [];
+
+	for (const r of results) {
+		if (r.ok) {
+			variableSets[r.name] = r.file as VariableSet;
+		} else {
+			const { BeakError } = await import('@beak/common/utils/squawk');
+			failures.push({ filePath: r.filePath, error: BeakError.coerce(r.error) });
+		}
+	}
+
+	return { variableSets, failures };
 }

@@ -1,3 +1,4 @@
+import { BeakError } from '@beak/common/utils/squawk';
 import { createListenerMiddleware, type TypedStartListening } from '@reduxjs/toolkit';
 
 import type { ApplicationState } from '.';
@@ -13,15 +14,20 @@ import type { ApplicationState } from '.';
  * `listenerApi.fork(...)` or store a cleanup function in module scope.
  *
  * Concrete registrations live in `./effects/*` (one file per domain).
+ *
+ * Errors thrown by effects are caught here. BeakError instances are logged
+ * with their serialised shape (kind + meta + reasons) so console output is
+ * actionable. Native errors are wrapped via `BeakError.coerce` so the log
+ * format stays consistent.
  */
 export const listenerMiddleware = createListenerMiddleware({
 	onError: error => {
-		// eslint-disable-next-line no-console
-		console.error('[listener-middleware]', error);
+		const handled = BeakError.coerce(error);
+		console.error(`[listener-middleware] ${handled.message}`, handled.serialize());
 	},
 });
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// biome-ignore lint/suspicious/noExplicitAny: TypedStartListening's second type param is unused but required.
 export type AppStartListening = TypedStartListening<ApplicationState, any>;
 
 export const startAppListening = listenerMiddleware.startListening as AppStartListening;
