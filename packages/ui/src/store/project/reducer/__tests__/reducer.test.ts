@@ -15,6 +15,8 @@ import {
 	renameCancelled,
 	renameStarted,
 	renameUpdated,
+	requestBodyAssetChanged,
+	requestBodyFileChanged,
 	requestBodyTextChanged,
 	requestBodyTypeChanged,
 	requestHeaderAdded,
@@ -261,6 +263,53 @@ describe('project reducer — body', () => {
 		);
 		const node = next.tree['req-1'] as ValidRequestNode;
 		expect(node.info.body.payload).toBe('updated');
+	});
+
+	it('requestBodyAssetChanged switches to file type and writes an assetRef', () => {
+		const next = projectReducer(
+			seed,
+			requestBodyAssetChanged({
+				requestId: 'req-1',
+				assetRef: {
+					sha256: '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef',
+					size: 42,
+					contentType: 'image/png',
+				},
+			}),
+		);
+		const node = next.tree['req-1'] as ValidRequestNode;
+		expect(node.info.body.type).toBe('file');
+		expect((node.info.body.payload as { assetRef?: { sha256: string } }).assetRef?.sha256)
+			.toBe('0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef');
+	});
+
+	it('requestBodyAssetChanged with undefined clears the ref while keeping legacy fields', () => {
+		// First put a fileReferenceId on, then attach an asset, then clear it.
+		const withLegacy = projectReducer(
+			seed,
+			requestBodyFileChanged({
+				requestId: 'req-1',
+				fileReferenceId: 'legacy-ref',
+				contentType: 'image/png',
+			}),
+		);
+		const withAsset = projectReducer(
+			withLegacy,
+			requestBodyAssetChanged({
+				requestId: 'req-1',
+				assetRef: { sha256: 'f'.repeat(64), size: 1 },
+			}),
+		);
+		const cleared = projectReducer(
+			withAsset,
+			requestBodyAssetChanged({ requestId: 'req-1', assetRef: undefined }),
+		);
+		const payload = (cleared.tree['req-1'] as ValidRequestNode).info.body.payload as {
+			fileReferenceId?: string;
+			assetRef?: unknown;
+		};
+		expect(payload.fileReferenceId).toBe('legacy-ref');
+		expect(payload.assetRef).toBeUndefined();
 	});
 });
 
