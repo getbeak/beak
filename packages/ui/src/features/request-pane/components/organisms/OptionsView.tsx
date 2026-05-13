@@ -1,6 +1,8 @@
 import { Box, Flex } from '@chakra-ui/react';
+import Checkbox from '@beak/ui/components/atoms/Checkbox';
 import { actions } from '@beak/ui/store/project';
 import type { ValidRequestNode } from '@getbeak/types/nodes';
+import { Settings2 } from 'lucide-react';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 
@@ -13,25 +15,36 @@ const OptionsView: React.FC<OptionsViewProps> = ({ node }) => {
 	const dispatch = useDispatch();
 
 	return (
-		<Flex direction='column' overflow='hidden' px='5' py='4' h='calc(100% - 40px)'>
-			<Box py='2.5'>
-				<label htmlFor='followRedirects' style={{ display: 'block', fontSize: '13px', color: 'var(--beak-colors-fg-default)' }}>
-					{'Follow redirects'}
-				</label>
-				<input
-					name='followRedirects'
-					type='checkbox'
+		<Flex direction='column' overflow='hidden' px='5' py='4' h='calc(100% - 40px)' gap='3'>
+			<Flex align='center' gap='2' color='fg.subtle'>
+				<Settings2 size={12} />
+				<Box fontSize='10px' fontWeight='700' textTransform='uppercase' letterSpacing='0.06em'>
+					{'Request options'}
+				</Box>
+			</Flex>
+			<Box
+				borderWidth='1px'
+				borderColor='border.subtle'
+				borderRadius='md'
+				bg='color-mix(in srgb, var(--beak-colors-bg-surface) 50%, transparent)'
+				p='3'
+			>
+				<Checkbox
+					id='followRedirects'
 					checked={options.followRedirects}
+					label='Follow redirects'
 					onChange={e =>
 						dispatch(
 							actions.requestOptionFollowRedirects({
 								requestId: node.id,
-								followRedirects: e.target.checked,
+								followRedirects: e.currentTarget.checked,
 							}),
 						)
 					}
-					style={{ marginLeft: 0, accentColor: 'var(--beak-colors-accent-pink)' }}
 				/>
+				<Box fontSize='10px' color='fg.subtle' mt='1' ml='6'>
+					{'Automatically follow HTTP 3xx Location headers.'}
+				</Box>
 			</Box>
 		</Flex>
 	);

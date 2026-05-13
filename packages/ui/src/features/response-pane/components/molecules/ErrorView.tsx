@@ -1,4 +1,5 @@
 import { Box, Flex } from '@chakra-ui/react';
+import { motion } from 'framer-motion';
 import { CloudLightning } from 'lucide-react';
 import * as React from 'react';
 
@@ -7,16 +8,23 @@ interface ErrorViewProps {
 }
 
 const ErrorView: React.FC<ErrorViewProps> = ({ error }) => (
-	<Flex textAlign='center' px='10' py='5' h='calc(100% - 40px)' align='center'>
-		<Box flex='1' css={{ '> svg > path': { fill: 'var(--beak-colors-fg-muted)' } }}>
-			<CloudLightning opacity={0.4} />
-			<Box fontSize='2xl' my='2.5' fontWeight='300' color='fg.default'>
-				{'There was an error executing this request'}
+	<Flex textAlign='center' px='10' py='5' h='calc(100% - 40px)' align='center' justify='center'>
+		<motion.div
+			initial={{ opacity: 0, y: 6 }}
+			animate={{ opacity: 1, y: 0 }}
+			transition={{ duration: 0.22, ease: 'easeOut' }}
+			style={{ textAlign: 'center', maxWidth: 380 }}
+		>
+			<Flex justify='center' color='accent.alert' opacity={0.85}>
+				<CloudLightning size={32} />
+			</Flex>
+			<Box fontSize='md' fontWeight='600' mt='2' color='fg.default'>
+				{'Request failed'}
 			</Box>
-			<Box fontSize='md' color='fg.muted' overflowWrap='anywhere'>
+			<Box fontSize='xs' color='fg.muted' mt='1' overflowWrap='anywhere' fontFamily='mono'>
 				{error.message}
 			</Box>
-		</Box>
+		</motion.div>
 	</Flex>
 );
 
