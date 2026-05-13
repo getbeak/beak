@@ -41,6 +41,7 @@ export const BodyInputWrapper: React.FC<BoxProps> = ({ children, ...rest }) => (
 				margin: '0',
 				fontSize: '12px',
 				color: 'var(--beak-colors-fg-default)',
+				caretColor: 'var(--beak-colors-accent-pink)',
 				transition: 'background-color .1s ease, border-color .1s ease',
 			},
 			'> div > article:hover, > input[type=text]:hover': {
