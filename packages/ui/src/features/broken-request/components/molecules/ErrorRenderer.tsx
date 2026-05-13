@@ -73,6 +73,16 @@ const ErrorRenderer: React.FC<ErrorRendererProps> = ({ error }) => {
 						color: 'var(--beak-colors-fg-subtle)',
 						textTransform: 'uppercase',
 						letterSpacing: '0.06em',
+						transition: 'color .12s ease, background-color .12s ease',
+					}}
+					onMouseEnter={e => {
+						(e.currentTarget as HTMLElement).style.color = 'var(--beak-colors-accent-pink)';
+						(e.currentTarget as HTMLElement).style.backgroundColor =
+							'color-mix(in srgb, var(--beak-colors-accent-pink) 8%, transparent)';
+					}}
+					onMouseLeave={e => {
+						(e.currentTarget as HTMLElement).style.color = 'var(--beak-colors-fg-subtle)';
+						(e.currentTarget as HTMLElement).style.backgroundColor = 'transparent';
 					}}
 				>
 					{'Raw payload'}
