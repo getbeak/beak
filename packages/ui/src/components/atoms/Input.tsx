@@ -22,6 +22,7 @@ const baseInput = {
 	border: '1px solid var(--beak-colors-border-default)',
 	boxSizing: 'border-box' as const,
 	outline: 'none',
+	caretColor: 'var(--beak-colors-accent-pink)',
 	transition: 'border-color .14s ease, box-shadow .14s ease, background-color .14s ease',
 };
 
