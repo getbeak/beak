@@ -131,43 +131,49 @@ const GraphQlModeSwitch: React.FC<GraphQlModeSwitchProps> = ({ mode, onChange })
 			{open && (
 				<Box
 					position='absolute'
-					top='32px'
+					top='34px'
 					left='50%'
 					transform='translateX(-50%)'
-					bg='bg.surface'
+					bg='color-mix(in srgb, var(--beak-colors-bg-surface) 70%, transparent)'
+					backdropFilter='blur(24px) saturate(180%)'
 					borderWidth='1px'
-					borderColor='border.default'
-					borderRadius='md'
-					boxShadow='0 8px 24px rgba(0,0,0,0.25)'
-					py='1'
-					minW='120px'
+					borderColor='color-mix(in srgb, var(--beak-colors-accent-pink) 26%, var(--beak-colors-border-subtle))'
+					borderRadius='lg'
+					boxShadow='0 28px 64px rgba(0,0,0,0.32), 0 8px 18px color-mix(in srgb, var(--beak-colors-accent-pink) 16%, rgba(0,0,0,0.15)), inset 0 1px 0 color-mix(in srgb, white 22%, transparent)'
+					p='1'
+					minW='140px'
 					zIndex={10}
 					onClick={event => event.stopPropagation()}
 				>
-					{editorTabSubItems.map(s => (
-						<Box
-							key={s.key}
-							as='button'
-							display='block'
-							w='100%'
-							textAlign='left'
-							px='2.5'
-							py='1'
-							bg='transparent'
-							border='none'
-							fontSize='xs'
-							color={s.key === mode ? 'accent.pink' : 'fg.default'}
-							fontWeight={s.key === mode ? '600' : '500'}
-							cursor='pointer'
-							_hover={{ bg: 'bg.surface.emphasized' }}
-							onClick={() => {
-								onChange(s.key);
-								setOpen(false);
-							}}
-						>
-							{s.label}
-						</Box>
-					))}
+					{editorTabSubItems.map(s => {
+						const isActive = s.key === mode;
+						return (
+							<Box
+								key={s.key}
+								as='button'
+								display='block'
+								w='100%'
+								textAlign='left'
+								px='2'
+								py='1.5'
+								borderRadius='md'
+								bg={isActive ? 'color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent)' : 'transparent'}
+								border='none'
+								fontSize='xs'
+								color={isActive ? 'accent.pink' : 'fg.default'}
+								fontWeight={isActive ? '600' : '500'}
+								cursor='pointer'
+								transition='background-color .12s ease, color .12s ease'
+								_hover={{ bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 12%, transparent)', color: 'accent.pink' }}
+								onClick={() => {
+									onChange(s.key);
+									setOpen(false);
+								}}
+							>
+								{s.label}
+							</Box>
+						);
+					})}
 				</Box>
 			)}
 		</Flex>
