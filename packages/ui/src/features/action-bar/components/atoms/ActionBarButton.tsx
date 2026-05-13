@@ -5,12 +5,8 @@ import * as React from 'react';
  * The pill icon-bearing button used throughout the action bar
  * (encryption toggle, flight history controls, omni-search, alerts).
  *
- * Maps to Chakra's `<Button>` with the ghost-style hover treatment the
- * previous styled-components version had. Renders as a `<button>` and
- * accepts the same prop surface (id, onClick, disabled, data-* attrs).
- *
- * Refs are forwarded so anchored popovers (e.g. AlertsPopover) can read
- * the underlying button's bounding box.
+ * Refs are forwarded so anchored popovers (e.g. AlertsPopover) can
+ * read the button's bounding box.
  */
 const ActionBarButton = React.forwardRef<HTMLButtonElement, ButtonProps>(({ children, ...rest }, ref) => (
 	<Button
@@ -18,27 +14,27 @@ const ActionBarButton = React.forwardRef<HTMLButtonElement, ButtonProps>(({ chil
 		variant='ghost'
 		size='xs'
 		px='1.5'
-		h='28px'
-		w='28px'
-		minW='28px'
+		h='26px'
+		w='26px'
+		minW='26px'
 		borderRadius='md'
 		bg='transparent'
-		color='fg.muted'
+		color='fg.subtle'
 		pointerEvents='auto'
-		transition='color .14s ease, background-color .14s ease, transform .08s ease'
+		transition='color .14s ease, background-color .14s ease, transform .08s ease, box-shadow .14s ease'
 		_hover={{
-			color: 'fg.default',
-			bg: 'color-mix(in srgb, var(--beak-colors-bg-surface) 70%, transparent)',
+			color: 'accent.pink',
+			bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent)',
 		}}
 		_active={{ transform: 'scale(0.92)' }}
 		_disabled={{
 			opacity: 0.35,
 			cursor: 'default',
-			_hover: { bg: 'transparent', color: 'fg.muted' },
+			_hover: { bg: 'transparent', color: 'fg.subtle' },
 		}}
 		_focusVisible={{
 			outline: 'none',
-			boxShadow: '0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-pink) 50%, transparent)',
+			boxShadow: '0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-pink) 55%, transparent)',
 		}}
 		{...rest}
 	>

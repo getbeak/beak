@@ -3,11 +3,10 @@ import * as React from 'react';
 
 const ActionBarSeparator: React.FC = () => (
 	<Box
-		h='16px'
+		h='14px'
 		w='1px'
-		mx='1.5'
+		mx='2'
 		bg='border.subtle'
-		opacity={0.6}
 		alignSelf='center'
 	/>
 );
