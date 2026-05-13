@@ -86,8 +86,21 @@ const EnterMagicState: React.FC<EnterMagicStateProps> = ({ email, reset, inbound
 					color='fg.muted'
 					mb='2'
 				>
-					<Flex align='center' justify='center' gap='1.5' mb='1.5' color='accent.pink'>
-						<Mail size={16} />
+					<Flex align='center' justify='center' mb='3'>
+						<Flex
+							align='center'
+							justify='center'
+							w='48px'
+							h='48px'
+							borderRadius='full'
+							bg='color-mix(in srgb, var(--beak-colors-accent-pink) 16%, transparent)'
+							borderWidth='1px'
+							borderColor='color-mix(in srgb, var(--beak-colors-accent-pink) 30%, transparent)'
+							color='accent.pink'
+							boxShadow='0 6px 18px color-mix(in srgb, var(--beak-colors-accent-pink) 25%, transparent), inset 0 1px 0 color-mix(in srgb, white 18%, transparent)'
+						>
+							<Mail size={20} strokeWidth={1.8} />
+						</Flex>
 					</Flex>
 					<Box>
 						{'Magic link is on the way to '}
