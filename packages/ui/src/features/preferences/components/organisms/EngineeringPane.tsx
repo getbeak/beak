@@ -39,10 +39,11 @@ const EngineeringPane: React.FC<React.PropsWithChildren<unknown>> = () => {
 			<ItemGroup>
 				<ItemLabel>{'Maintenance'}</ItemLabel>
 				<Flex gap='2'>
-					<Button size='sm' onClick={() => ipcPreferencesService.resetConfig()}>
+					<Button colour='secondary' size='sm' onClick={() => ipcPreferencesService.resetConfig()}>
 						{'Reset config & cache'}
 					</Button>
 				</Flex>
+				<ItemInfo>{'Clears local preferences and cached responses. Project files are not affected.'}</ItemInfo>
 			</ItemGroup>
 
 			{hasAuth && (
