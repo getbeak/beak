@@ -357,6 +357,10 @@ const config = defineConfig({
 				borderColor: 'color-mix(in srgb, var(--beak-colors-accent-pink) 22%, color-mix(in srgb, var(--beak-colors-gray-700) 55%, transparent))',
 			},
 		},
+		'::selection': {
+			backgroundColor: 'color-mix(in srgb, var(--beak-colors-accent-pink) 35%, transparent)',
+			color: 'var(--beak-colors-fg-default)',
+		},
 		'::-webkit-scrollbar': {
 			width: '6px',
 			height: '6px',
