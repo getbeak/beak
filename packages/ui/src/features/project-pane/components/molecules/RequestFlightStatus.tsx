@@ -22,14 +22,17 @@ const RequestFlightStatus: React.FC<RequestFlightStatusProps> = ({ node }) => {
 
 	if (mostRecentFlight === void 0) return null;
 
+	const color = statusToColor(mostRecentFlight);
+
 	return (
 		<Box
-			w='9px'
-			h='9px'
-			borderWidth='1px'
-			borderColor='border.subtle'
+			w='8px'
+			h='8px'
 			borderRadius='full'
-			style={{ backgroundColor: statusToColor(mostRecentFlight) }}
+			style={{
+				backgroundColor: color,
+				boxShadow: `0 0 0 1.5px color-mix(in srgb, ${color} 24%, transparent), 0 0 6px color-mix(in srgb, ${color} 40%, transparent)`,
+			}}
 		/>
 	);
 };
