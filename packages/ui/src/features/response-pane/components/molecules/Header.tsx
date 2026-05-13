@@ -86,12 +86,12 @@ const Header: React.FC<HeaderProps> = ({ selectedFlight }) => {
 				bg='bg.canvas'
 				borderRadius='md'
 				borderWidth='1px'
-				borderColor='border.default'
+				borderColor='border.subtle'
 				px='2'
 				py='1'
 				transition='border-color .12s ease, box-shadow .12s ease'
-				_hover={{ borderColor: 'border.default' }}
-				_focusWithin={{ borderColor: 'accent.pink' }}
+				_hover={{ borderColor: 'color-mix(in srgb, var(--beak-colors-accent-pink) 35%, var(--beak-colors-border-subtle))' }}
+				_focusWithin={{ borderColor: 'accent.pink', boxShadow: '0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-pink) 22%, transparent)' }}
 			>
 				<Box
 					flex='1 1 auto'
