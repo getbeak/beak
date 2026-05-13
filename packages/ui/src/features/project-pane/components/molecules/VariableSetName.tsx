@@ -50,18 +50,16 @@ export const VariableSetName: React.FC<VariableSetNameProps> = ({ variableSetNam
 	}, [variableSetName]);
 
 	return (
-		<React.Fragment>
-			<ContextMenu menuItems={menuItems} target={targetRef.current ?? undefined}>
-				<Name
-					title={variableSetName}
-					ref={i => {
-						targetRef.current = i;
-					}}
-				>
-					{variableSetName}
-				</Name>
-			</ContextMenu>
-		</React.Fragment>
+		<ContextMenu menuItems={menuItems} target={targetRef.current ?? undefined}>
+			<Name
+				title={variableSetName}
+				ref={i => {
+					targetRef.current = i;
+				}}
+			>
+				{variableSetName}
+			</Name>
+		</ContextMenu>
 	);
 };
 
