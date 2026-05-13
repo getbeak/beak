@@ -60,7 +60,8 @@
 		],
 		"patchedDependencies": {
 			"electron-esbuild@10.0.0": "patches/electron-esbuild@10.0.0.patch",
-			"postcss@8.5.14": "patches/postcss@8.5.14.patch"
+			"postcss@8.5.14": "patches/postcss@8.5.14.patch",
+			"vite-plugin-monaco-editor": "patches/vite-plugin-monaco-editor.patch"
 		}
 	},
 	"devDependencies": {
