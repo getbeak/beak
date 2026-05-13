@@ -25,14 +25,15 @@ const Portal: React.FC = () => {
 				left='375px'
 				w='1100px'
 				h='2800px'
-				bg='color-mix(in srgb, var(--beak-colors-accent-pink) 70%, transparent)'
-				transition='transform 0.2s ease'
+				bg='linear-gradient(135deg, color-mix(in srgb, var(--beak-colors-accent-pink) 80%, transparent), color-mix(in srgb, var(--beak-colors-accent-indigo) 50%, transparent))'
+				transition='transform 0.28s cubic-bezier(.4,0,.2,1)'
 				transform={
 					variant === 'trial_creation'
 						? 'rotate(20deg) translateX(-800px)'
 						: 'rotate(20deg) translateX(-350px)'
 				}
 				transformOrigin='center'
+				css={{ filter: 'blur(0.5px)' }}
 			/>
 			<Grid
 				position='absolute'
