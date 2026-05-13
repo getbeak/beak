@@ -11,8 +11,9 @@ type SelectElProps = React.SelectHTMLAttributes<HTMLSelectElement> & SizingProps
 
 const sizeFor = (s: 'sm' | 'md' | undefined) => ({
 	fontSize: (s || 'md') === 'md' ? '13px' : '12px',
-	padding: (s || 'md') === 'md' ? '3px 6px' : '2px 4px',
-	borderRadius: (s || 'md') === 'md' ? '4px' : '3px',
+	padding: (s || 'md') === 'md' ? '6px 10px' : '4px 8px',
+	borderRadius: (s || 'md') === 'md' ? '6px' : '5px',
+	lineHeight: '1.25',
 });
 
 const baseInput = {
@@ -21,17 +22,24 @@ const baseInput = {
 	border: '1px solid var(--beak-colors-border-default)',
 	boxSizing: 'border-box' as const,
 	outline: 'none',
-	transition: 'border-color .12s ease, box-shadow .12s ease, background-color .12s ease',
+	transition: 'border-color .14s ease, box-shadow .14s ease, background-color .14s ease',
 };
 
 const inputCss = {
-	'&:hover': { borderColor: 'var(--beak-colors-accent-pink)' },
-	'&:focus': {
-		borderColor: 'var(--beak-colors-accent-pink)',
-		boxShadow: '0 0 0 3px color-mix(in srgb, var(--beak-colors-accent-pink) 25%, transparent)',
+	'&:hover:not(:disabled)': {
+		borderColor: 'color-mix(in srgb, var(--beak-colors-accent-pink) 55%, var(--beak-colors-border-default))',
+		backgroundColor: 'color-mix(in srgb, var(--beak-colors-bg-surface) 92%, var(--beak-colors-bg-surface-alt))',
 	},
-	'&:disabled': { opacity: 0.6, cursor: 'not-allowed' },
+	'&:focus, &:focus-visible': {
+		borderColor: 'var(--beak-colors-accent-pink)',
+		boxShadow: '0 0 0 3px color-mix(in srgb, var(--beak-colors-accent-pink) 28%, transparent)',
+	},
+	'&:disabled': { opacity: 0.55, cursor: 'not-allowed' },
 	'&::placeholder': { color: 'var(--beak-colors-fg-subtle)' },
+	'&[aria-invalid="true"]': {
+		borderColor: 'var(--beak-colors-accent-alert)',
+		boxShadow: '0 0 0 3px color-mix(in srgb, var(--beak-colors-accent-alert) 22%, transparent)',
+	},
 };
 
 const ChakraInput = chakra('input', { base: inputCss });
@@ -77,8 +85,8 @@ export const InputInvalidText = chakra('span', {
 	base: {
 		display: 'block',
 		py: '0.5',
-		fontSize: 'md',
-		fontWeight: 'bold',
+		fontSize: 'xs',
+		fontWeight: '500',
 		color: 'accent.alert',
 	},
 });
