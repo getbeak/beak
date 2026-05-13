@@ -1,17 +1,29 @@
 import { Box, Flex } from '@chakra-ui/react';
-import SidebarSectionCard from '@beak/ui/features/sidebar/components/SidebarSectionCard';
 import { GitBranch } from 'lucide-react';
 import * as React from 'react';
 
 const NoProjectInformation: React.FC = () => (
-	<Box mb='2'>
-		<SidebarSectionCard>
-			<Flex align='center' gap='1.5' color='fg.subtle'>
-				<GitBranch size={11} />
-				<Box>{'Not tracked in Git'}</Box>
-			</Flex>
-		</SidebarSectionCard>
-	</Box>
+	<Flex
+		align='center'
+		gap='2'
+		px='2'
+		py='1.5'
+		borderRadius='md'
+		borderWidth='1px'
+		borderColor='border.subtle'
+		bg='color-mix(in srgb, var(--beak-colors-bg-surface) 60%, transparent)'
+		borderStyle='dashed'
+	>
+		<Flex
+			align='center'
+			justify='center'
+			flexShrink={0}
+			color='fg.subtle'
+		>
+			<GitBranch size={11} strokeWidth={2} />
+		</Flex>
+		<Box fontSize='11px' color='fg.muted'>{'Not tracked in Git'}</Box>
+	</Flex>
 );
 
 export default NoProjectInformation;
