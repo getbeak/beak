@@ -75,7 +75,7 @@ const ActionContainer = styled.div`
 	max-width: 250px;
 	-webkit-app-region: no-drag;
 
-	> ${Button} {
+	> button {
 		margin-top: 5px;
 		width: 100%;
 	}

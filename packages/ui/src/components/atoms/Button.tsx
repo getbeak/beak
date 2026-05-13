@@ -1,102 +1,58 @@
-import { toHexAlpha } from '@beak/design-system/utils';
-import styled, { css } from 'styled-components';
+import { Button as ChakraButton, type ButtonProps as ChakraButtonProps } from '@chakra-ui/react';
+import * as React from 'react';
 
-const primaryCss = css`
-	background: ${props => toHexAlpha(props.theme.ui.background, 0.5)};
-	border: 2px solid ${props => props.theme.ui.primaryFill};
-
-	&:not(:disabled) {
-		&:hover {
-			background: ${props => props.theme.ui.primaryFill};
-		}
-
-		&:focus {
-			border-color: ${props => props.theme.ui.primaryFill};
-		}
-	}
-`;
-
-const secondaryCss = css`
-	background: ${props => toHexAlpha(props.theme.ui.background, 0.5)};
-	border: 2px solid ${props => props.theme.ui.secondaryAction};
-
-	&:not(:disabled) {
-		&:hover {
-			background: ${props => props.theme.ui.secondaryAction};
-		}
-
-		&:focus {
-			border-color: ${props => props.theme.ui.secondaryAction};
-		}
-	}
-`;
-
-const destructiveCss = css`
-	background: ${props => toHexAlpha(props.theme.ui.background, 0.5)};
-	border: 2px solid ${props => props.theme.ui.destructiveAction};
-
-	&:not(:disabled) {
-		&:hover {
-			background: ${props => props.theme.ui.destructiveAction};
-		}
-
-		&:focus {
-			border-color: ${props => props.theme.ui.destructiveAction};
-		}
-	}
-`;
-
-const mdCss = css`
-	padding: 5px 10px;
-	font-size: 14px;
-`;
-
-const smCss = css`
-	padding: 4px 8px;
-	font-size: 13px;
-`;
-
-export interface ButtonProps {
+/**
+ * Beak's pill button — Chakra v3 under the hood.
+ *
+ * The visual language stays the same as the previous styled-components
+ * implementation: a transparent background, a 2-px brand-coloured border,
+ * and a fill-on-hover transition. `colour` chooses the brand accent
+ * (`primary` = pink, `secondary` = pink, `destructive` = red) and `size`
+ * controls density. Defaults preserve the old behaviour so call sites
+ * don't need to change.
+ */
+export interface ButtonProps extends Omit<ChakraButtonProps, 'colorScheme' | 'size'> {
 	colour?: 'primary' | 'secondary' | 'destructive';
 	size?: 'md' | 'sm';
 }
 
-const Button = styled.button<ButtonProps>`
-	border-radius: 4px;
-	color: ${props => props.theme.ui.textOnSurfaceBackground};
-	transition: transform ease .1s;
-	cursor: pointer;
+function borderColorFor(colour: ButtonProps['colour']) {
+	if (colour === 'destructive') return 'accent.alert';
+	// Primary and secondary both use the brand pink — the previous
+	// styled-components implementation used different tokens (primaryFill vs
+	// secondaryAction) that resolved to the same hex, so we collapse here.
+	return 'accent.pink';
+}
 
-	&:disabled {
-		opacity: .7;
-		cursor: default;
-	}
+const Button: React.FC<ButtonProps> = ({ colour, size = 'md', children, ...rest }) => {
+	const borderColor = borderColorFor(colour);
+	const isSm = size === 'sm';
 
-	&:not(:disabled) {
-		&:active {
-			transform: scale(.95);
-		}
-
-		&:focus {
-			outline: none;
-		}
-	}
-
-	${({ colour }) => {
-		if (colour === 'primary') return primaryCss;
-		if (!colour || colour === 'secondary') return secondaryCss;
-		if (colour === 'destructive') return destructiveCss;
-
-		return '';
-	}}
-
-	${({ size }) => {
-		if (size === 'sm') return smCss;
-
-		if (!size || size === 'md') return mdCss;
-
-		return '';
-	}}
-`;
+	return (
+		<ChakraButton
+			bg='rgba(0, 0, 0, 0.0)'
+			borderWidth='2px'
+			borderColor={borderColor}
+			color='fg.default'
+			borderRadius='sm'
+			px={isSm ? '2' : '2.5'}
+			py={isSm ? '1' : '1.5'}
+			h='auto'
+			minH={isSm ? '24px' : '28px'}
+			fontSize={isSm ? 'sm' : 'lg'}
+			fontWeight='medium'
+			transitionProperty='transform, background, border-color'
+			transitionDuration='0.1s'
+			transitionTimingFunction='ease'
+			_hover={{ bg: borderColor }}
+			_active={{ transform: 'scale(0.95)' }}
+			_focus={{ outline: 'none', borderColor }}
+			_disabled={{ opacity: 0.7, cursor: 'default', _hover: { bg: 'rgba(0, 0, 0, 0.0)' } }}
+			{...rest}
+		>
+			{children}
+		</ChakraButton>
+	);
+};
 
 export default Button;

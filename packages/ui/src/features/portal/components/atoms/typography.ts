@@ -1,4 +1,3 @@
-import Button from '@beak/ui/components/atoms/Button';
 import styled from 'styled-components';
 
 export const SubTitle = styled.p`
@@ -13,7 +12,7 @@ export const ActionContainer = styled.div`
 	max-width: 250px;
 	-webkit-app-region: no-drag;
 
-	> ${Button} {
+	> button {
 		margin-top: 10px;
 		width: 100%;
 	}

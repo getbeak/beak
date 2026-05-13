@@ -1,6 +1,5 @@
 import type Squawk from '@beak/common/utils/squawk';
 import ArrowButton from '@beak/ui/components/atoms/ArrowButton';
-import Button from '@beak/ui/components/atoms/Button';
 import React from 'react';
 import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
@@ -93,7 +92,7 @@ const ActionContainer = styled.div`
 	max-width: 450px;
 	-webkit-app-region: no-drag;
 
-	> ${Button} {
+	> button {
 		margin-top: 5px;
 		width: 100%;
 	}
