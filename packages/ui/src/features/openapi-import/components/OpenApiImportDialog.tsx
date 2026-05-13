@@ -111,8 +111,18 @@ const OpenApiImportDialog: React.FC = () => {
 							exit={{ opacity: 0, y: -4 }}
 							transition={{ duration: 0.14 }}
 						>
-							<Flex align='center' gap='2' color='accent.pink' mb='2'>
-								<FolderTree size={16} />
+							<Flex align='center' gap='2' mb='3'>
+								<Flex
+									align='center'
+									justify='center'
+									w='28px'
+									h='28px'
+									borderRadius='full'
+									bg='color-mix(in srgb, var(--beak-colors-accent-pink) 16%, transparent)'
+									color='accent.pink'
+								>
+									<FolderTree size={15} strokeWidth={2.2} />
+								</Flex>
 								<Box fontWeight='600' fontSize='md' color='fg.default'>
 									{'Where should this OpenAPI spec land?'}
 								</Box>
