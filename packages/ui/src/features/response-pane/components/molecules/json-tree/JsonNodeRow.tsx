@@ -1,5 +1,4 @@
 import { Box, Flex, chakra } from '@chakra-ui/react';
-import { motion } from 'framer-motion';
 import { ChevronRight, Copy, Link2 } from 'lucide-react';
 import * as React from 'react';
 
@@ -21,7 +20,7 @@ const ChakraButton = chakra('button');
 const TYPE_COLOURS: Record<NonNullable<JsonRow['valueType']>, string> = {
 	string: 'var(--beak-colors-accent-teal)',
 	number: 'var(--beak-colors-accent-indigo)',
-	boolean: 'var(--beak-colors-accent-alert)',
+	boolean: 'var(--beak-colors-accent-warning)',
 	null: 'var(--beak-colors-fg-subtle)',
 };
 
@@ -118,25 +117,25 @@ const JsonNodeRow: React.FC<JsonNodeRowProps> = ({
 					type='button'
 					aria-label={collapsed ? 'Expand' : 'Collapse'}
 					mr='1'
-					w='10px'
-					h='10px'
+					w='12px'
+					h='12px'
+					display='inline-flex'
+					alignItems='center'
+					justifyContent='center'
 					color='fg.subtle'
 					bg='transparent'
 					border='none'
 					p='0'
 					cursor='pointer'
+					transform={collapsed ? 'rotate(0deg)' : 'rotate(90deg)'}
+					transition='transform .14s ease-out, color .12s ease'
+					_hover={{ color: 'accent.pink' }}
 					onClick={() => onToggle(row.id)}
 				>
-					<motion.span
-						style={{ display: 'inline-block', transformOrigin: 'center' }}
-						animate={{ rotate: collapsed ? 0 : 90 }}
-						transition={{ duration: 0.14, ease: 'easeOut' }}
-					>
-						<ChevronRight size={10} />
-					</motion.span>
+					<ChevronRight size={10} strokeWidth={2.2} />
 				</ChakraButton>
 			) : (
-				<Box w='10px' mr='1' aria-hidden />
+				<Box w='12px' mr='1' aria-hidden />
 			)}
 
 			<Box as='span' display='inline-flex' alignItems='center' minW={0} flex='1 1 auto' gap='0'>
