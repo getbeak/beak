@@ -22,16 +22,27 @@ interface SidebarItemProps {
 
 const SidebarItem: React.FC<SidebarItemProps> = ({ active, icon, label, onClick }) => (
 	<Flex
-		w='calc(100% - 20px)'
-		p='2.5'
-		borderRadius='lg'
-		mb='1.5'
+		align='center'
+		gap='2.5'
+		w='100%'
+		px='2.5'
+		py='2'
+		borderRadius='md'
+		mb='1'
+		fontSize='sm'
+		fontWeight={active ? '600' : '500'}
 		color={active ? 'fg.onAccent' : 'fg.default'}
-		bg={active ? 'color-mix(in srgb, var(--beak-colors-accent-pink) 75%, transparent)' : undefined}
+		bg={active ? 'accent.pink' : 'transparent'}
+		boxShadow={active ? '0 4px 14px color-mix(in srgb, var(--beak-colors-accent-pink) 35%, transparent)' : undefined}
 		cursor='pointer'
-		_hover={active ? undefined : { bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 50%, transparent)' }}
+		transition='background-color .14s ease, color .14s ease, box-shadow .14s ease, transform .08s ease'
+		_hover={active ? undefined : {
+			bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 12%, transparent)',
+			color: 'accent.pink',
+		}}
+		_active={{ transform: 'scale(0.99)' }}
 		_last={{ mb: '0' }}
-		css={{ '> svg': { width: '1.25em !important', marginRight: '10px' }, '> span': { marginTop: '-2px' } }}
+		css={{ '> svg': { width: '15px !important', height: '15px !important', flexShrink: 0 } }}
 		onClick={onClick}
 	>
 		{icon}
