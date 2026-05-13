@@ -84,8 +84,8 @@ const Omnibar: React.FC = () => {
 					inset='0'
 					zIndex={100}
 					css={{
-						background: 'rgba(0, 0, 0, 0.4)',
-						backdropFilter: 'blur(4px) saturate(140%)',
+						background: 'color-mix(in srgb, var(--beak-colors-gray-950) 42%, transparent)',
+						backdropFilter: 'blur(16px) saturate(160%)',
 					}}
 					onClick={() => dispatch(actions.hideOmniBar())}
 				>
@@ -97,16 +97,42 @@ const Omnibar: React.FC = () => {
 						position='relative'
 						mx='auto'
 						mt='20'
-						w='560px'
+						w='600px'
 						maxW='calc(100vw - 40px)'
 						borderRadius='xl'
 						borderWidth='1px'
-						borderColor='border.subtle'
-						bg='bg.surface'
-						boxShadow='0 32px 80px rgba(0,0,0,0.45), 0 4px 12px rgba(0,0,0,0.3), 0 0 0 1px color-mix(in srgb, var(--beak-colors-accent-pink) 18%, transparent)'
+						borderColor='color-mix(in srgb, var(--beak-colors-accent-pink) 28%, var(--beak-colors-border-subtle))'
+						bg='color-mix(in srgb, var(--beak-colors-bg-surface) 70%, transparent)'
+						backdropFilter='blur(28px) saturate(180%)'
+						boxShadow='0 50px 120px rgba(0,0,0,0.42), 0 20px 56px color-mix(in srgb, var(--beak-colors-accent-pink) 22%, rgba(0,0,0,0.2)), 0 0 0 1px color-mix(in srgb, white 6%, transparent), inset 0 1px 0 color-mix(in srgb, white 22%, transparent)'
 						overflow='hidden'
 						zIndex={101}
 						onClick={(event: React.MouseEvent) => event.stopPropagation()}
+						css={{
+							'&::before': {
+								content: '""',
+								position: 'absolute',
+								top: 0,
+								left: 0,
+								right: 0,
+								height: '120px',
+								background: 'radial-gradient(60% 100% at 20% 0%, color-mix(in srgb, var(--beak-colors-accent-pink) 28%, transparent), transparent 65%), radial-gradient(70% 110% at 85% 0%, color-mix(in srgb, var(--beak-colors-accent-teal) 18%, transparent), transparent 70%)',
+								pointerEvents: 'none',
+								zIndex: 0,
+							},
+							'&::after': {
+								content: '""',
+								position: 'absolute',
+								top: 0,
+								left: '6%',
+								right: '6%',
+								height: '1px',
+								background: 'linear-gradient(90deg, transparent, color-mix(in srgb, var(--beak-colors-accent-pink) 80%, transparent) 30%, color-mix(in srgb, var(--beak-colors-accent-teal) 70%, transparent) 70%, transparent)',
+								pointerEvents: 'none',
+								zIndex: 1,
+							},
+							'& > *': { position: 'relative', zIndex: 2 },
+						}}
 					>
 						<Flex align='center' px='3' h='44px' gap='2'>
 							<Box color={isCommands ? 'accent.teal' : 'accent.pink'}>
