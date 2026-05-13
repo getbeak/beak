@@ -144,7 +144,10 @@ const FileUploadView: React.FC<FileUploadViewProps> = ({ node }) => {
 							h='44px'
 							borderRadius='full'
 							bg='color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent)'
+							borderWidth='1px'
+							borderColor='color-mix(in srgb, var(--beak-colors-accent-pink) 28%, transparent)'
 							color='accent.pink'
+							boxShadow='0 6px 18px color-mix(in srgb, var(--beak-colors-accent-pink) 22%, transparent), inset 0 1px 0 color-mix(in srgb, white 16%, transparent)'
 						>
 							<Upload size={20} strokeWidth={2} />
 						</Flex>
@@ -164,7 +167,10 @@ const FileUploadView: React.FC<FileUploadViewProps> = ({ node }) => {
 							h='40px'
 							borderRadius='md'
 							bg='color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent)'
+							borderWidth='1px'
+							borderColor='color-mix(in srgb, var(--beak-colors-accent-pink) 28%, transparent)'
 							color='accent.pink'
+							boxShadow='0 4px 12px color-mix(in srgb, var(--beak-colors-accent-pink) 18%, transparent), inset 0 1px 0 color-mix(in srgb, white 14%, transparent)'
 						>
 							<File size={18} strokeWidth={2} />
 						</Flex>
