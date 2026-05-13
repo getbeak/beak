@@ -1,12 +1,19 @@
-import { chakra } from '@chakra-ui/react';
+import { Box, Flex } from '@chakra-ui/react';
+import { SearchX } from 'lucide-react';
+import * as React from 'react';
 
-const NoItemsFound = chakra('div', {
-	base: {
-		fontSize: 'md',
-		ml: '3',
-		py: '3',
-		color: 'fg.muted',
-	},
-});
+const NoItemsFound: React.FC<React.PropsWithChildren> = ({ children }) => (
+	<Flex direction='column' align='center' justify='center' gap='2' py='8' color='fg.subtle'>
+		<Box opacity={0.4}>
+			<SearchX size={28} />
+		</Box>
+		<Box fontSize='sm' color='fg.muted'>
+			{children}
+		</Box>
+		<Box fontSize='xs' opacity={0.7}>
+			{'Try a different query'}
+		</Box>
+	</Flex>
+);
 
 export default NoItemsFound;
