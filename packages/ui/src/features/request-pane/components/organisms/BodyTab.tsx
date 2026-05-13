@@ -311,8 +311,8 @@ function createEmptyBodyPayload(requestId: string, type: RequestBodyType): Reque
 			};
 		}
 
-		case 'text':
 		default:
+			// 'text' (and any future scalar body type) takes the empty-string default.
 			return { requestId, type, payload: '' };
 	}
 }
