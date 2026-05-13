@@ -1,8 +1,8 @@
 import WindowSessionContext from '@beak/ui/contexts/window-session-context';
 import useVariableContext from '@beak/ui/features/variables/hooks/use-variable-context';
 import useShareLink from '@beak/ui/hooks/use-share-link';
-import { faCopy, faShareFromSquare } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Copy, Share } from 'lucide-react';
+
 import type { ValidRequestNode } from '@getbeak/types/nodes';
 import React from 'react';
 import { useContext } from 'react';
@@ -31,11 +31,11 @@ const RequestPaneSplitter: React.FC<RequestPaneSplitterProps> = props => {
 			<PreviewLabel>{'Request preview'}</PreviewLabel>
 			<ActionsContainer>
 				<ActionButton onClick={copyRequestPreview}>
-					<FontAwesomeIcon id={'tt-request-preview-copy'} icon={faCopy} />
+					<Copy id={'tt-request-preview-copy'} />
 				</ActionButton>
 				<ActionSeparator />
 				<ActionButton onClick={() => navigator.clipboard.writeText(shareUrl)}>
-					<FontAwesomeIcon id={'tt-request-preview-share'} icon={faShareFromSquare} />
+					<Share id={'tt-request-preview-share'} />
 				</ActionButton>
 			</ActionsContainer>
 		</Container>

@@ -1,6 +1,6 @@
 import { Box, Flex } from '@chakra-ui/react';
-import { faSpinner } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Loader2 } from 'lucide-react';
+
 import * as React from 'react';
 
 const GraphQlLoading: React.FC = () => (
@@ -15,7 +15,7 @@ const GraphQlLoading: React.FC = () => (
 		align='center'
 		css={{ 'svg > path': { fill: 'var(--beak-colors-fg-muted)' } }}
 	>
-		<FontAwesomeIcon icon={faSpinner} opacity={0.4} spin size='4x' />
+		<Loader2 opacity={0.4} style={{ animation: 'spin 1s linear infinite' }} />
 		<Box fontSize='xl' my='2.5' fontWeight='300' color='fg.default'>
 			{'Fetching GraphQL schema'}
 		</Box>

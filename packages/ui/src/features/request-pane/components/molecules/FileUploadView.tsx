@@ -2,8 +2,8 @@ import type { PreviewReferencedFileRes } from '@beak/common/ipc/fs';
 import { pickAndAttachAsset } from '@beak/ui/features/asset-attachment/pick-and-attach';
 import { ipcFsService } from '@beak/ui/lib/ipc';
 import { requestBodyAssetChanged, requestBodyFileChanged } from '@beak/ui/store/project/actions';
-import { faClose } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { X } from 'lucide-react';
+
 import type { ValidRequestNode } from '@getbeak/types/nodes';
 import type { RequestBodyFile } from '@getbeak/types/request';
 import mime from 'mime-types';
@@ -101,7 +101,7 @@ const FileUploadView: React.FC<FileUploadViewProps> = props => {
 				{preview && (
 					<React.Fragment>
 						<ClearFile onClick={clearFile}>
-							<FontAwesomeIcon icon={faClose} />
+							<X />
 						</ClearFile>
 						<FileName>{preview.fileName}</FileName>
 						<FileSize>{prettyBytes(preview.fileSize)}</FileSize>
@@ -111,7 +111,7 @@ const FileUploadView: React.FC<FileUploadViewProps> = props => {
 			{assetRef && (
 				<AssetBlob>
 					<ClearFile onClick={clearAssetRef}>
-						<FontAwesomeIcon icon={faClose} />
+						<X />
 					</ClearFile>
 					<FileName>{`sha256:${assetRef.sha256.slice(0, 8)}…${assetRef.sha256.slice(-4)}`}</FileName>
 					<FileSize>{prettyBytes(assetRef.size)}</FileSize>

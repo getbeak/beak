@@ -1,8 +1,8 @@
-import { faMoneyCheck, faPenToSquare, faUserShield, faWindowRestore } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
 import React from 'react';
 import { useContext, useState } from 'react';
 import styled, { css } from 'styled-components';
+import { AppWindow, ReceiptText, ShieldUser, SquarePen } from 'lucide-react';
 
 import WindowSessionContext from '../contexts/window-session-context';
 import AccountItem from '../features/preferences/components/molecules/AccountItem';
@@ -24,19 +24,19 @@ const About: React.FC<React.PropsWithChildren<unknown>> = () => {
 				<AccountItem />
 				<SidebarSpacer />
 				<SidebarItem $active={tab === 'general'} onClick={() => setTab('general')}>
-					<FontAwesomeIcon icon={faWindowRestore} color={tab === 'general' ? blankFill : primaryFill} />
+					<AppWindow color={tab === 'general' ? blankFill : primaryFill} />
 					<span>{'General'}</span>
 				</SidebarItem>
 				<SidebarItem $active={tab === 'editor'} onClick={() => setTab('editor')}>
-					<FontAwesomeIcon icon={faPenToSquare} color={tab === 'editor' ? blankFill : primaryFill} />
+					<SquarePen color={tab === 'editor' ? blankFill : primaryFill} />
 					<span>{'Rich text editor'}</span>
 				</SidebarItem>
 				<SidebarItem $active={tab === 'subscription'} onClick={() => setTab('subscription')}>
-					<FontAwesomeIcon icon={faMoneyCheck} color={tab === 'subscription' ? blankFill : primaryFill} />
+					<ReceiptText color={tab === 'subscription' ? blankFill : primaryFill} />
 					<span>{'Subscription'}</span>
 				</SidebarItem>
 				<SidebarItem $active={tab === 'engineering'} onClick={() => setTab('engineering')}>
-					<FontAwesomeIcon icon={faUserShield} color={tab === 'engineering' ? blankFill : primaryFill} />
+					<ShieldUser color={tab === 'engineering' ? blankFill : primaryFill} />
 					<span>{'Shhh...'}</span>
 				</SidebarItem>
 			</Sidebar>

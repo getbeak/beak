@@ -6,8 +6,8 @@ import { parseValueSections } from '@beak/ui/features/variables/parser';
 import type { ValueSections } from '@beak/ui/features/variables/values';
 import { requestPreferenceSetReqMainTab } from '@beak/ui/store/preferences/actions';
 import { useAppSelector } from '@beak/ui/store/redux';
-import { faSpinner } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Loader2 } from 'lucide-react';
+
 import type { ValidRequestNode } from '@getbeak/types/nodes';
 import styled from 'styled-components';
 import URL from 'url-parse';
@@ -111,12 +111,9 @@ const Header: React.FC<React.PropsWithChildren<HeaderProps>> = props => {
 
 			<DispatchButton onClick={() => dispatchFlightRequest()}>
 				{flighting && (
-					<FontAwesomeIcon
-						icon={faSpinner}
-						color={'var(--beak-colors-accent-teal)'}
-						spin
-						fontSize={'13px'}
-					/>
+					<Loader2 color={'var(--beak-colors-accent-teal)'}
+					
+					 size={13} style={{ animation: 'spin 1s linear infinite' }} />
 				)}
 				{!flighting && 'GO'}
 			</DispatchButton>

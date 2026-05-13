@@ -1,47 +1,47 @@
 import { statusToColor } from '@beak/design-system/helpers';
-import { faCircleCheck, faCircleDot, faCircleXmark, faSpinner } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { CircleCheck, CircleDot, CircleX, Loader2 } from 'lucide-react';
 import React from 'react';
 
 import { useSelectedTabFlightStatus } from '../../../../services/flight/tab-integration';
 
-const ActionBarFlightStatus: React.FC<React.PropsWithChildren<unknown>> = () => {
-	// Use new tab-integrated flight status hook
+const ActionBarFlightStatus: React.FC = () => {
 	const flightStatus = useSelectedTabFlightStatus();
 
 	switch (flightStatus.status) {
 		case 'active':
 			return (
-				<FontAwesomeIcon id={'#tt-action-bar-flight-status-active'} icon={faSpinner} size={'1x'} tabIndex={-1} spin />
+				<Loader2
+					id='tt-action-bar-flight-status-active'
+					tabIndex={-1}
+					style={{ animation: 'spin 1s linear infinite' }}
+				/>
 			);
 
 		case 'complete': {
 			const failure = flightStatus.httpStatus > 399;
 			const tooltipId = failure ? 'tt-action-bar-flight-status-server-failed' : 'tt-action-bar-flight-status-success';
+			const Icon = failure ? CircleX : CircleCheck;
 
 			return (
-				<FontAwesomeIcon
+				<Icon
 					id={tooltipId}
-					icon={failure ? faCircleXmark : faCircleCheck}
 					color={statusToColor(flightStatus.httpStatus)}
 					tabIndex={-1}
-					size={'1x'}
 				/>
 			);
 		}
 
 		case 'failed':
 			return (
-				<FontAwesomeIcon
-					id={'tt-action-bar-flight-status-failed'}
-					icon={faCircleXmark}
-					color={'var(--beak-colors-accent-alert)'}
+				<CircleX
+					id='tt-action-bar-flight-status-failed'
+					color='var(--beak-colors-accent-alert)'
 					tabIndex={-1}
-					size={'1x'}
 				/>
 			);
+
 		default:
-			return <FontAwesomeIcon id={'tt-action-bar-flight-status-pending'} icon={faCircleDot} tabIndex={-1} size={'1x'} />;
+			return <CircleDot id='tt-action-bar-flight-status-pending' tabIndex={-1} />;
 	}
 };
 

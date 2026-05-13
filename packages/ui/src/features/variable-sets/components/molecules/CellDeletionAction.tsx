@@ -1,6 +1,6 @@
 import { ipcDialogService } from '@beak/ui/lib/ipc';
-import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Trash2 } from 'lucide-react';
+
 import React from 'react';
 
 import { CellAction } from '../atoms/Cells';
@@ -30,7 +30,7 @@ const CellDeletionAction: React.FC<React.PropsWithChildren<CellDeletionActionPro
 				props.onConfirmedDeletion();
 			}}
 		>
-			<FontAwesomeIcon icon={faTrashAlt} color={'var(--beak-colors-fg-default)'} fontSize={'10px'} />
+			<Trash2 color={'var(--beak-colors-fg-default)'} size={10} />
 		</CellAction>
 	);
 };

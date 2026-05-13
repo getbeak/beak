@@ -1,7 +1,7 @@
-import { faCloudBolt } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
 import React from 'react';
 import styled from 'styled-components';
+import { CloudLightning } from 'lucide-react';
 
 interface ErrorViewProps {
 	error: Error;
@@ -10,7 +10,7 @@ interface ErrorViewProps {
 const ErrorView: React.FC<React.PropsWithChildren<ErrorViewProps>> = ({ error }) => (
 	<Wrapper>
 		<Content>
-			<FontAwesomeIcon icon={faCloudBolt} opacity={0.4} size={'4x'} />
+			<CloudLightning opacity={0.4} />
 			<Title>{'There was an error executing this request'}</Title>
 			<ErrorMessage>{error.message}</ErrorMessage>
 		</Content>

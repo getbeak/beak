@@ -1,6 +1,7 @@
 import { Flex } from '@chakra-ui/react';
 import ActionIconButton from '@beak/ui/components/molecules/ActionIconButton';
-import { faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { Minus, Plus } from 'lucide-react';
+
 import type { Entries } from '@getbeak/types/body-editor-json';
 import * as React from 'react';
 import { useContext } from 'react';
@@ -27,13 +28,13 @@ const EntryActions: React.FC<EntryActionsProps> = ({ requestId, id, entry }) => 
 			{!isRoot && (
 				<ActionIconButton
 					tabIndex={-1}
-					icon={faMinus}
+					icon={Minus}
 					onClick={() => dispatch(editorContext.removeEntry({ id, requestId }))}
 				/>
 			)}
 			<ActionIconButton
 				tabIndex={-1}
-				icon={faPlus}
+				icon={Plus}
 				onClick={() => dispatch(editorContext.addEntry({ id, requestId }))}
 			/>
 		</Flex>

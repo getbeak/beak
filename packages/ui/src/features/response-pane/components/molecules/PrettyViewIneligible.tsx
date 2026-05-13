@@ -1,7 +1,7 @@
-import { faPersonCircleQuestion } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
 import React from 'react';
 import styled from 'styled-components';
+import { CircleHelp } from 'lucide-react';
 
 import type { NotEligible } from '../../hooks/use-flight-body-info';
 
@@ -35,7 +35,7 @@ const PrettyViewIneligible: React.FC<PrettyViewIneligibleProps> = ({ eligibility
 	return (
 		<Container>
 			<ErrorInformation>
-				<FontAwesomeIcon icon={faPersonCircleQuestion} opacity={0.4} size={'4x'} />
+				<CircleHelp opacity={0.4} />
 				<Title>{reason.title}</Title>
 				<Description>{reason.description}</Description>
 			</ErrorInformation>

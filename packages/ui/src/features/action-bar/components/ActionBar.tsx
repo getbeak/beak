@@ -1,8 +1,8 @@
 import { Box, Flex } from '@chakra-ui/react';
 import { actions as omniBarActions } from '@beak/ui/features/omni-bar/store';
 import { renderPlainTextDefinition } from '@beak/ui/utils/keyboard-rendering';
-import { faCaretLeft, faCaretRight, faLock, faSearch } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { ChevronLeft, ChevronRight, Lock, Search } from 'lucide-react';
+
 import React from 'react';
 import { useDispatch } from 'react-redux';
 
@@ -39,7 +39,7 @@ const ActionBar: React.FC = () => {
 			<Box mx='1'><ArbiterBadge /></Box>
 			<Box mx='1'><ActionBarVersion /></Box>
 			<ActionBarButton id='tt-action-bar-encryption-button' onClick={() => dispatch(showEncryptionView())}>
-				<FontAwesomeIcon color='var(--beak-colors-fg-muted)' size='1x' icon={faLock} />
+				<Lock color='var(--beak-colors-fg-muted)' />
 			</ActionBarButton>
 			<ActionBarSeparator />
 			<ActionBarButton
@@ -47,7 +47,7 @@ const ActionBar: React.FC = () => {
 				disabled={!requirements?.canGoBack}
 				onClick={goToPrevious}
 			>
-				<FontAwesomeIcon color='var(--beak-colors-fg-muted)' size='lg' icon={faCaretLeft} />
+				<ChevronLeft color='var(--beak-colors-fg-muted)' />
 			</ActionBarButton>
 			<ActionBarFlightStatus />
 			<ActionBarButton
@@ -55,7 +55,7 @@ const ActionBar: React.FC = () => {
 				disabled={!requirements?.canGoForward}
 				onClick={goToNext}
 			>
-				<FontAwesomeIcon color='var(--beak-colors-fg-muted)' size='lg' icon={faCaretRight} />
+				<ChevronRight color='var(--beak-colors-fg-muted)' />
 			</ActionBarButton>
 			<ActionBarSeparator />
 			<ActionBarAlertButton id='tt-action-bar-alert-button' />
@@ -64,7 +64,7 @@ const ActionBar: React.FC = () => {
 				data-tooltip-content={`Open search bar (${renderPlainTextDefinition('omni-bar.launch.finder')})`}
 				onClick={() => dispatch(omniBarActions.showOmniBar({ mode: 'search' }))}
 			>
-				<FontAwesomeIcon color='var(--beak-colors-fg-muted)' size='1x' icon={faSearch} />
+				<Search color='var(--beak-colors-fg-muted)' />
 			</ActionBarButton>
 		</Flex>
 	);

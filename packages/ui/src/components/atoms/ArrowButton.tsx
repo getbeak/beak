@@ -1,6 +1,6 @@
 import { Button, Flex } from '@chakra-ui/react';
-import { faAnglesLeft, faAnglesRight } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { ChevronsLeft, ChevronsRight } from 'lucide-react';
+
 import * as React from 'react';
 
 interface ArrowButtonProps {
@@ -28,13 +28,13 @@ const ArrowButton: React.FC<React.PropsWithChildren<ArrowButtonProps>> = ({
 		onClick={onClick}
 	>
 		{direction === 'left' && (
-			<FontAwesomeIcon icon={faAnglesLeft} color='var(--beak-colors-fg-default)' fontSize='12px' />
+			<ChevronsLeft color='var(--beak-colors-fg-default)' size={12} />
 		)}
 		<Flex display='inline-flex' mx='1.5'>
 			{children}
 		</Flex>
 		{direction === 'right' && (
-			<FontAwesomeIcon icon={faAnglesRight} color='var(--beak-colors-fg-default)' />
+			<ChevronsRight color='var(--beak-colors-fg-default)' />
 		)}
 	</Button>
 );

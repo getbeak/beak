@@ -1,8 +1,8 @@
-import { faSortDown } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
 import React, { useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import styled from 'styled-components';
+import { ChevronDown } from 'lucide-react';
 
 import type { TabSubItem } from './TabItem';
 
@@ -34,7 +34,7 @@ const TabItemSubItemsDropdown = <T = string>(props: TabItemSubItemsDropdownProps
 					setShowDropdown(true);
 				}}
 			>
-				<FontAwesomeIcon icon={faSortDown} />
+				<ChevronDown />
 			</DropdownButton>
 
 			{parentRef.current &&

@@ -3,8 +3,8 @@ import { scaleIn } from '@beak/design-system/animations';
 import Button from '@beak/ui/components/atoms/Button';
 import Input, { Select } from '@beak/ui/components/atoms/Input';
 import type { ValueSections } from '@beak/ui/features/variables/values';
-import { faWarning } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { TriangleAlert } from 'lucide-react';
+
 import type { EditableVariable, UISection } from '@getbeak/extension-sdk';
 import styled from 'styled-components';
 
@@ -262,7 +262,7 @@ const VariableEditor: React.FC<React.PropsWithChildren<VariableEditorProps>> = p
 					<div>
 						{editorContext.variable.external && (
 							<React.Fragment>
-								<FontAwesomeIcon icon={faWarning} />
+								<TriangleAlert />
 								{' This is an extension'}
 							</React.Fragment>
 						)}

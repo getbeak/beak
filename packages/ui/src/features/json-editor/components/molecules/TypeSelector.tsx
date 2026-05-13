@@ -1,16 +1,6 @@
-import {
-	faBan,
-	faCalculator,
-	faCarCrash,
-	faCheckCircle,
-	faFont,
-	faLayerGroup,
-	faStream,
-} from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { AlignJustify, Ban, Calculator, CircleCheck, Layers, OctagonAlert, Type } from 'lucide-react';
 import type { EntryType } from '@getbeak/types/body-editor-json';
-import React from 'react';
-import { useContext, useRef } from 'react';
+import React, { useContext, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 
@@ -24,10 +14,10 @@ interface TypeSelectorProps {
 	onChange?: (entryType: EntryType) => void;
 }
 
-const TypeSelector: React.FC<React.PropsWithChildren<TypeSelectorProps>> = props => {
+const TypeSelector: React.FC<TypeSelectorProps> = props => {
 	const { disabled, requestId, id, value, onChange } = props;
 	const selectRef = useRef<HTMLSelectElement>(null);
-	const icon = getIconFromType(value);
+	const Icon = getIconForType(value);
 	const dispatch = useDispatch();
 
 	const editorContext = useContext(JsonEditorContext)!;
@@ -55,19 +45,19 @@ const TypeSelector: React.FC<React.PropsWithChildren<TypeSelectorProps>> = props
 					selectRef.current!.blur();
 				}}
 			>
-				<optgroup label={'Primitives'}>
-					<option value={'string'}>{'String'}</option>
-					<option value={'number'}>{'Number'}</option>
-					<option value={'boolean'}>{'Boolean'}</option>
-					<option value={'null'}>{'Null'}</option>
+				<optgroup label='Primitives'>
+					<option value='string'>{'String'}</option>
+					<option value='number'>{'Number'}</option>
+					<option value='boolean'>{'Boolean'}</option>
+					<option value='null'>{'Null'}</option>
 				</optgroup>
-				<optgroup label={'Objects'}>
-					<option value={'array'}>{'Array'}</option>
-					<option value={'object'}>{'Object'}</option>
+				<optgroup label='Objects'>
+					<option value='array'>{'Array'}</option>
+					<option value='object'>{'Object'}</option>
 				</optgroup>
 			</Select>
 			<Button>
-				<FontAwesomeIcon icon={icon} />
+				<Icon size={12} />
 			</Button>
 		</Wrapper>
 	);
@@ -108,24 +98,22 @@ const Select = styled.select`
 	}
 `;
 
-function getIconFromType(type: EntryType) {
+function getIconForType(type: EntryType) {
 	switch (type) {
 		case 'number':
-			return faCalculator;
+			return Calculator;
 		case 'boolean':
-			return faCheckCircle;
+			return CircleCheck;
 		case 'null':
-			return faBan;
+			return Ban;
 		case 'object':
-			return faStream;
+			return AlignJustify;
 		case 'array':
-			return faLayerGroup;
+			return Layers;
 		case 'string':
-			return faFont;
-
-		// This should _never_ happen, so let's have some fun
+			return Type;
 		default:
-			return faCarCrash;
+			return OctagonAlert;
 	}
 }
 

@@ -1,7 +1,7 @@
-import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
 import React from 'react';
 import styled from 'styled-components';
+import { ChevronRight } from 'lucide-react';
 
 interface ChevronProps {
 	$collapsed: boolean;
@@ -10,7 +10,7 @@ interface ChevronProps {
 
 const Chevron: React.FC<React.PropsWithChildren<ChevronProps>> = props => (
 	<ChevronElement {...props}>
-		<FontAwesomeIcon icon={faChevronRight} />
+		<ChevronRight />
 	</ChevronElement>
 );
 

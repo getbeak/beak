@@ -1,7 +1,7 @@
 import Button from '@beak/ui/components/atoms/Button';
 import { ipcExplorerService, ipcPreferencesService } from '@beak/ui/lib/ipc';
-import { faTags } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Tags } from 'lucide-react';
+
 import React from 'react';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
@@ -24,7 +24,7 @@ const Purchase: React.FC<React.PropsWithChildren<PurchaseProps>> = ({ onChangeTo
 	return (
 		<Wrapper>
 			<Logo>
-				<FontAwesomeIcon icon={faTags} />
+				<Tags />
 			</Logo>
 			<Title>{'New to Beak?'}</Title>
 			<SubTitle>{"For just $25 a year, get access to Beak's full set of powerful features."}</SubTitle>

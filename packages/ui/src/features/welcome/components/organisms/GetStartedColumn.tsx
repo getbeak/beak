@@ -1,5 +1,6 @@
 import { ipcExplorerService, ipcProjectService } from '@beak/ui/lib/ipc';
-import { faBook, faEgg, faEnvelopeOpen, faFolderOpen } from '@fortawesome/free-solid-svg-icons';
+import { Book, Egg, FolderOpen, MailOpen } from 'lucide-react';
+
 import React from 'react';
 import styled from 'styled-components';
 
@@ -17,13 +18,13 @@ const GetStartedColumn: React.FC<React.PropsWithChildren<GetStartedColumnProps>>
 		<GetStartedButton
 			title={'Create a new project'}
 			description={'Creates a new local project'}
-			icon={faEgg}
+			icon={Egg}
 			onClick={() => setView('create-local')}
 		/>
 		<GetStartedButton
 			title={'Open an existing project'}
 			description={'Opens an existing local project'}
-			icon={faFolderOpen}
+			icon={FolderOpen}
 			onClick={() => ipcProjectService.openProject()}
 		/>
 
@@ -31,14 +32,14 @@ const GetStartedColumn: React.FC<React.PropsWithChildren<GetStartedColumnProps>>
 		<GetStartedButton
 			title={'View manual'}
 			description={'Get sweet & spicy tips for Beak'}
-			icon={faBook}
+			icon={Book}
 			iconColor={'primaryFill'}
 			onClick={() => ipcExplorerService.launchUrl('https://docs.getbeak.app')}
 		/>
 		<GetStartedButton
 			title={'Get support'}
 			description={'Reach out if you need help'}
-			icon={faEnvelopeOpen}
+			icon={MailOpen}
 			iconColor={'primaryFill'}
 			onClick={() => ipcExplorerService.launchUrl('mailto:support@getbeak.app')}
 		/>

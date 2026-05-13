@@ -1,7 +1,7 @@
 import { ipcWindowService } from '@beak/ui/lib/ipc';
 import { renderPlainTextDefinition } from '@beak/ui/utils/keyboard-rendering';
-import { faCloudBolt, faLightbulb } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { CloudLightning, Lightbulb } from 'lucide-react';
+
 import React from 'react';
 import styled from 'styled-components';
 
@@ -11,7 +11,7 @@ interface GraphQlErrorProps {
 
 const GraphQlError: React.FC<GraphQlErrorProps> = ({ error }) => (
 	<Wrapper>
-		<FontAwesomeIcon icon={faCloudBolt} opacity={0.4} size={'4x'} />
+		<CloudLightning opacity={0.4} />
 		<Title>{'Unable to fetch GraphQL schema'}</Title>
 		<ErrorMessage>
 			{'Error message: '}
@@ -25,23 +25,23 @@ const GraphQlError: React.FC<GraphQlErrorProps> = ({ error }) => (
 		</Body>
 		<UnstyledList>
 			<ListItem>
-				<FontAwesomeIcon icon={faLightbulb} opacity={0.6} size={'1x'} />
+				<Lightbulb opacity={0.6} />
 				{' Check the URL is correct'}
 			</ListItem>
 			<ListItem>
-				<FontAwesomeIcon icon={faLightbulb} opacity={0.6} size={'1x'} />
+				<Lightbulb opacity={0.6} />
 				{' Check that any security headers are provided'}
 			</ListItem>
 			<ListItem>
-				<FontAwesomeIcon icon={faLightbulb} opacity={0.6} size={'1x'} />
+				<Lightbulb opacity={0.6} />
 				{' Check the HTTP method/verb is correct'}
 			</ListItem>
 			<ListItem>
-				<FontAwesomeIcon icon={faLightbulb} opacity={0.6} size={'1x'} />
+				<Lightbulb opacity={0.6} />
 				{` Toggle developer tools from the command search bar ${renderPlainTextDefinition('omni-bar.launch.commands')}`}
 			</ListItem>
 			<ListItem>
-				<FontAwesomeIcon icon={faLightbulb} opacity={0.6} size={'1x'} />
+				<Lightbulb opacity={0.6} />
 				{' Toggle developer tools by clicking '}
 				<DevToolsToggle
 					href={'#'}

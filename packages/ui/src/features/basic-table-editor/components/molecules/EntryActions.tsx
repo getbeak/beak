@@ -1,6 +1,7 @@
 import { Flex } from '@chakra-ui/react';
 import ActionIconButton from '@beak/ui/components/molecules/ActionIconButton';
-import { faMinus } from '@fortawesome/free-solid-svg-icons';
+import { Minus } from 'lucide-react';
+
 import * as React from 'react';
 
 interface EntryActionsProps {
@@ -9,7 +10,7 @@ interface EntryActionsProps {
 
 const EntryActions: React.FC<EntryActionsProps> = ({ onRemove }) => (
 	<Flex h='100%' direction='row' justify='flex-end' align='center'>
-		<ActionIconButton tabIndex={-1} icon={faMinus} onClick={() => onRemove()} />
+		<ActionIconButton tabIndex={-1} icon={Minus} onClick={() => onRemove()} />
 	</Flex>
 );
 

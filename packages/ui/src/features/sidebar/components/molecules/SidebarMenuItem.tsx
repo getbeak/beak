@@ -1,15 +1,13 @@
 import type { SidebarVariant } from '@beak/common/types/beak-hub';
 import type { Shortcuts } from '@beak/ui/lib/keyboard-shortcuts';
 import { renderPlainTextDefinition } from '@beak/ui/utils/keyboard-rendering';
-import { faTable, type IconDefinition } from '@fortawesome/free-solid-svg-icons';
-import { faFolderTree } from '@fortawesome/free-solid-svg-icons/faFolderTree';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { FolderTree, type LucideIcon, Table } from 'lucide-react';
 import React from 'react';
 import styled from 'styled-components';
 
-const icons: Record<SidebarVariant, IconDefinition> = {
-	project: faFolderTree,
-	variables: faTable,
+const icons: Record<SidebarVariant, LucideIcon> = {
+	project: FolderTree,
+	variables: Table,
 };
 
 interface SidebarMenuItemProps {
@@ -20,9 +18,10 @@ interface SidebarMenuItemProps {
 	onClick: (variant: SidebarVariant) => void;
 }
 
-const SidebarMenuItem: React.FC<React.PropsWithChildren<SidebarMenuItemProps>> = props => {
+const SidebarMenuItem: React.FC<SidebarMenuItemProps> = props => {
 	const { item, name, selectedItem, shortcut, onClick } = props;
 	const active = item === selectedItem;
+	const Icon = icons[item];
 
 	return (
 		<FakeAbbr
@@ -30,7 +29,7 @@ const SidebarMenuItem: React.FC<React.PropsWithChildren<SidebarMenuItemProps>> =
 			data-tooltip-content={`${name} (${renderPlainTextDefinition(shortcut)})`}
 		>
 			<Container $active={active} onClick={() => onClick(item)}>
-				<FontAwesomeIcon icon={icons[item]} color={'var(--beak-colors-fg-default)'} fontSize={'14px'} />
+				<Icon color='var(--beak-colors-fg-default)' size={14} />
 			</Container>
 		</FakeAbbr>
 	);

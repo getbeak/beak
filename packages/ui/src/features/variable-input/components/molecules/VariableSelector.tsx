@@ -7,8 +7,8 @@ import useVariableContext from '@beak/ui/features/variables/hooks/use-variable-c
 import { ipcExplorerService, ipcExtensionsService } from '@beak/ui/lib/ipc';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { movePosition } from '@beak/ui/utils/arrays';
-import { faPlug } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Plug } from 'lucide-react';
+
 import type { Variable, VariableStaticInformation } from '@getbeak/extension-sdk';
 import Fuse from 'fuse.js';
 import styled from 'styled-components';
@@ -212,7 +212,7 @@ const VariableSelector: React.FC<React.PropsWithChildren<VariableSelectorProps>>
 						>
 							{i.external && (
 								<ExtensionContainer>
-									<FontAwesomeIcon id={'tt-variable-input-extension'} icon={faPlug} />
+									<Plug id={'tt-variable-input-extension'} />
 								</ExtensionContainer>
 							)}
 							{i.name}

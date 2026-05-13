@@ -1,6 +1,6 @@
 import { showContextMenu } from '@beak/ui/utils/context-menu';
-import { faChevronRight, faEllipsisV } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { ChevronRight, EllipsisVertical } from 'lucide-react';
+
 import type { MenuItemConstructorOptions } from 'electron';
 import React from 'react';
 import styled from 'styled-components';
@@ -19,7 +19,7 @@ const SectionHeader: React.FC<React.PropsWithChildren<SectionHeaderProps>> = pro
 		<Container onClick={onClick} $disableCollapse={disableCollapse}>
 			<Header>
 				<CollapsedIndicator $collapsed={collapsed}>
-					<FontAwesomeIcon icon={faChevronRight} />
+					<ChevronRight />
 				</CollapsedIndicator>
 
 				{children}
@@ -33,7 +33,7 @@ const SectionHeader: React.FC<React.PropsWithChildren<SectionHeaderProps>> = pro
 						showContextMenu('test', actions);
 					}}
 				>
-					<FontAwesomeIcon icon={faEllipsisV} fontSize={'10px'} />
+					<EllipsisVertical fontSize={'10px'} />
 				</Actions>
 			)}
 		</Container>

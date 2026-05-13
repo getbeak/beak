@@ -1,13 +1,12 @@
 import { Button, type ButtonProps } from '@chakra-ui/react';
-import type { IconProp } from '@fortawesome/fontawesome-svg-core';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import type { LucideIcon } from 'lucide-react';
 import * as React from 'react';
 
 interface ActionIconButtonProps extends Omit<ButtonProps, 'children'> {
-	icon: IconProp;
+	icon: LucideIcon;
 }
 
-const ActionIconButton: React.FC<ActionIconButtonProps> = ({ icon, ...buttonProps }) => (
+const ActionIconButton: React.FC<ActionIconButtonProps> = ({ icon: Icon, ...buttonProps }) => (
 	<Button
 		w='15px'
 		h='15px'
@@ -25,7 +24,7 @@ const ActionIconButton: React.FC<ActionIconButtonProps> = ({ icon, ...buttonProp
 		fontSize='8px'
 		{...buttonProps}
 	>
-		<FontAwesomeIcon icon={icon} />
+		<Icon size={8} />
 	</Button>
 );
 

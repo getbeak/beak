@@ -1,7 +1,7 @@
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { useAppSelector } from '@beak/ui/store/redux';
-import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { TriangleAlert } from 'lucide-react';
+
 import React, { useRef, useState } from 'react';
 
 import ActionBarButton from '../atoms/ActionBarButton';
@@ -21,13 +21,8 @@ const ActionBarAlertButton: React.FC<ActionBarAlertButtonProps> = ({ id }) => {
 
 	return (
 		<React.Fragment>
-			<ActionBarButton id={id} ref={parentRef}>
-				<FontAwesomeIcon
-					color={hasAlerts ? 'orange' : 'var(--beak-colors-fg-muted)'}
-					size={'1x'}
-					icon={faExclamationTriangle}
-					onClick={() => setShowPopover(true)}
-				/>
+			<ActionBarButton id={id} ref={parentRef} onClick={() => setShowPopover(true)}>
+				<TriangleAlert color={hasAlerts ? 'orange' : 'var(--beak-colors-fg-muted)'} />
 			</ActionBarButton>
 
 			{parentRef.current && showPopover && (

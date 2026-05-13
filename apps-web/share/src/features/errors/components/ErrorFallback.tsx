@@ -1,7 +1,7 @@
 import { SmallContainer } from '@beak/apps-web-share/components/atoms/Container';
 import { BodyRegular, Title, TitleSubtle } from '@beak/apps-web-share/components/atoms/Typography';
-import { faBug } from '@fortawesome/free-solid-svg-icons/faBug';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Bug } from 'lucide-react';
+
 import React from 'react';
 import styled from 'styled-components';
 
@@ -9,7 +9,7 @@ const ErrorFallback: React.FC<React.PropsWithChildren<unknown>> = () => (
 	<Header>
 		<Container>
 			<IconWrapper>
-				<FontAwesomeIcon icon={faBug} />
+				<Bug />
 			</IconWrapper>
 
 			<Title>{'This is awkward... something broke'}</Title>

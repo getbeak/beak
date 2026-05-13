@@ -1,8 +1,8 @@
-import { faDiagramProject } from '@fortawesome/free-solid-svg-icons/faDiagramProject';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
 import { format, parseISO } from 'date-fns';
 import React from 'react';
 import styled from 'styled-components';
+import { Network } from 'lucide-react';
 
 export interface RecentEntryProps {
 	name: string;
@@ -26,7 +26,7 @@ const RecentEntry: React.FC<React.PropsWithChildren<RecentEntryProps>> = props =
 			tabIndex={0}
 		>
 			<Icon>
-				<FontAwesomeIcon size={'1x'} icon={faDiagramProject} />
+				<Network />
 			</Icon>
 			<TextWrapper>
 				{/* The "&lrm;" char is a requirement of using RTL to trim the end vs start of the string */}

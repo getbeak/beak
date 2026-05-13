@@ -1,6 +1,6 @@
 import { ipcNestService } from '@beak/ui/lib/ipc';
-import { faUserCircle } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { CircleUserRound } from 'lucide-react';
+
 import React from 'react';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
@@ -30,7 +30,7 @@ const AccountItem: React.FC<React.PropsWithChildren<unknown>> = () => {
 
 	return (
 		<Wrapper>
-			<FontAwesomeIcon icon={faUserCircle} size={'3x'} color={'var(--beak-colors-accent-pink)'} />
+			<CircleUserRound color={'var(--beak-colors-accent-pink)'} />
 			<Account>
 				<AccountTop>{'Beak'}</AccountTop>
 				<AccountEmail title={primaryEmail}>{primaryEmail}</AccountEmail>

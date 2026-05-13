@@ -1,8 +1,8 @@
 import { Box, Button, Grid, IconButton } from '@chakra-ui/react';
 import type { NewsItemGenericBanner } from '@beak/common/types/nest';
 import { ipcExplorerService } from '@beak/ui/lib/ipc';
-import { faTimes } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { X } from 'lucide-react';
+
 import * as React from 'react';
 
 interface GenericBannerProps {
@@ -42,7 +42,7 @@ const GenericBanner: React.FC<GenericBannerProps> = ({ item }) => {
 			<Box gridColumn={3} textAlign='right'>
 				{item.dismissible && (
 					<IconButton variant='ghost' size='xs' aria-label='Dismiss' bg='transparent' p='0' minW='auto'>
-						<FontAwesomeIcon icon={faTimes} color='var(--beak-colors-fg-muted)' />
+						<X color='var(--beak-colors-fg-muted)' />
 					</IconButton>
 				)}
 			</Box>

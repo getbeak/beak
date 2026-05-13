@@ -1,5 +1,4 @@
-import type { IconDefinition } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import type { LucideIcon } from 'lucide-react';
 import React from 'react';
 import styled from 'styled-components';
 
@@ -23,21 +22,21 @@ const ICON_COLOUR_TOKEN_MAP: Record<string, string> = {
 export interface GetStartedButtonProps extends ButtonProps {
 	title: string;
 	description: string;
-	icon: IconDefinition;
+	icon: LucideIcon;
 	iconColor?: keyof typeof ICON_COLOUR_TOKEN_MAP;
 }
 
 const GetStartedButton: React.FC<React.PropsWithChildren<GetStartedButtonProps>> = props => {
-	const { title, description, icon, iconColor, ...passProps } = props;
+	const { title, description, icon: Icon, iconColor, ...passProps } = props;
 
 	const color = iconColor ? ICON_COLOUR_TOKEN_MAP[iconColor] : void 0;
 
 	return (
 		<Button {...passProps}>
 			<Container>
-				<Icon>
-					<FontAwesomeIcon icon={icon} color={color} size={'2x'} />
-				</Icon>
+				<IconWrap>
+					<Icon color={color} size={28} />
+				</IconWrap>
 				<TextParts>
 					<Title>{title}</Title>
 					<Description>{description}</Description>
@@ -84,7 +83,7 @@ const Container = styled.div`
 	display: flex;
 `;
 
-const Icon = styled.div`
+const IconWrap = styled.div`
 	display: flex;
 	width: 40px;
 
