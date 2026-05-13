@@ -18,7 +18,7 @@ interface TypeSelectorProps {
 const TYPE_COLOUR: Record<EntryType, string> = {
 	string: 'var(--beak-colors-accent-teal)',
 	number: 'var(--beak-colors-accent-indigo)',
-	boolean: 'var(--beak-colors-accent-alert)',
+	boolean: 'var(--beak-colors-accent-warning)',
 	null: 'var(--beak-colors-fg-subtle)',
 	array: 'var(--beak-colors-accent-pink)',
 	object: 'var(--beak-colors-accent-pink)',
