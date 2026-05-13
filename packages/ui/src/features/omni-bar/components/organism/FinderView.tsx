@@ -134,21 +134,17 @@ const FinderView: React.FC<React.PropsWithChildren<FinderViewProps>> = ({ conten
 							}));
 						}}
 					>
-						<React.Fragment>
-							{parentChain.map(p => (
-								<ParentChain key={p.id}>
-									{p.name}
-								</ParentChain>
-							))}
-						</React.Fragment>
+						{parentChain.map(p => (
+							<ParentChain key={p.id}>
+								{p.name}
+							</ParentChain>
+						))}
 						{match.name}
 						{match.type === 'request' && (
-							<React.Fragment>
-								<FinderRequestItem
-									context={{ ...context, currentRequestId: match.id }}
-									info={reqNode.info}
-								/>
-							</React.Fragment>
+							<FinderRequestItem
+								context={{ ...context, currentRequestId: match.id }}
+								info={reqNode.info}
+							/>
 						)}
 					</Item>
 				);
