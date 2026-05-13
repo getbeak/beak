@@ -25,16 +25,19 @@ export interface MeshGradientProps extends Omit<BoxProps, 'children'> {
 }
 
 const PALETTES: Record<NonNullable<MeshGradientProps['tone']>, string[]> = {
-	welcome: ['#d45d80', '#33CC99', '#333399', '#1a1a2e'],
-	loading: ['#33CC99', '#333399', '#d45d80', '#0e1226'],
-	success: ['#33CC99', '#9be9c8', '#33CC99', '#1a3326'],
-	alert: ['#FC3233', '#d45d80', '#333399', '#2a0e1a'],
+	// More colour stops = a livelier mesh. Each tone repeats its
+	// brand colour in a different position so the shader has more
+	// "anchors" to interpolate between.
+	welcome: ['#d45d80', '#33CC99', '#333399', '#d45d80', '#5C5CC8', '#1a1a2e'],
+	loading: ['#33CC99', '#333399', '#d45d80', '#33CC99', '#0e1226'],
+	success: ['#33CC99', '#9be9c8', '#33CC99', '#22C55E', '#1a3326'],
+	alert: ['#FC3233', '#d45d80', '#333399', '#FF5757', '#2a0e1a'],
 };
 
 const INTENSITY_OPACITY = {
-	subtle: 0.35,
-	normal: 0.55,
-	strong: 0.8,
+	subtle: 0.4,
+	normal: 0.65,
+	strong: 0.95,
 } as const;
 
 const MeshGradient: React.FC<MeshGradientProps> = ({
@@ -57,10 +60,10 @@ const MeshGradient: React.FC<MeshGradientProps> = ({
 			>
 				<PaperMeshGradient
 					colors={colors}
-					distortion={0.85}
-					swirl={0.18}
-					speed={reduced ? 0 : 0.45}
-					grainMixer={0.25}
+					distortion={0.95}
+					swirl={0.35}
+					speed={reduced ? 0 : 0.55}
+					grainMixer={0.18}
 					style={{ width: '100%', height: '100%' }}
 				/>
 			</Box>

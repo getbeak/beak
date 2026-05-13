@@ -40,11 +40,12 @@ const TabItem = <T = string>(props: React.PropsWithChildren<TabItemProps<T>>): R
 			borderBottomColor='border.default'
 			color={active ? 'fg.default' : 'fg.muted'}
 			fontSize={sm ? 'sm' : 'md'}
-			px={sm ? '1.5' : '2.5'}
+			fontWeight={active ? '600' : '500'}
+			px={sm ? '2' : '2.5'}
 			py={sm ? '1' : '1.5'}
 			cursor='pointer'
 			whiteSpace='nowrap'
-			transition='color .12s ease, background-color .12s ease'
+			transition='color .12s ease, background-color .12s ease, font-weight .12s ease'
 			_hover={
 				active
 					? undefined
@@ -65,9 +66,10 @@ const TabItem = <T = string>(props: React.PropsWithChildren<TabItemProps<T>>): R
 						left: 0,
 						right: 0,
 						bottom: -1,
-						height: 2,
+						height: 2.5,
 						background: 'var(--beak-colors-accent-pink)',
-						borderRadius: 1,
+						borderRadius: 2,
+						boxShadow: '0 -1px 6px color-mix(in srgb, var(--beak-colors-accent-pink) 45%, transparent)',
 					}}
 				/>
 			)}
