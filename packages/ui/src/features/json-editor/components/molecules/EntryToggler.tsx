@@ -36,28 +36,29 @@ const EntryToggler: React.FC<EntryTogglerProps> = ({ requestId, id, value, onCha
 			type='button'
 			role='switch'
 			aria-checked={value}
+			aria-label={value ? 'Disable entry' : 'Enable entry'}
+			title={value ? 'Disable entry' : 'Enable entry'}
 			tabIndex={0}
 			onClick={() => handle(!value)}
 			onKeyDown={onKeyDown}
-			w='22px'
-			h='12px'
-			minW='22px'
-			p='1px'
+			w='26px'
+			h='14px'
+			minW='26px'
+			p='1.5px'
 			borderRadius='full'
 			borderWidth='1px'
-			borderColor={value ? 'accent.pink' : 'border.default'}
-			bg={
-				value
-					? 'color-mix(in srgb, var(--beak-colors-accent-pink) 25%, transparent)'
-					: 'transparent'
-			}
+			borderColor={value ? 'accent.pink' : 'border.emphasized'}
+			bg={value ? 'accent.pink' : 'bg.surface.emphasized'}
 			display='inline-flex'
 			alignItems='center'
 			cursor='pointer'
-			transition='background-color .15s ease, border-color .15s ease'
+			transition='background-color .18s ease, border-color .18s ease'
+			_hover={{
+				borderColor: value ? 'accent.pink' : 'fg.muted',
+			}}
 			_focus={{
 				outline: 'none',
-				boxShadow: '0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-pink) 45%, transparent)',
+				boxShadow: '0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-pink) 50%, transparent)',
 			}}
 		>
 			<motion.span
@@ -65,11 +66,12 @@ const EntryToggler: React.FC<EntryTogglerProps> = ({ requestId, id, value, onCha
 				transition={{ type: 'spring', stiffness: 700, damping: 32 }}
 				style={{
 					display: 'block',
-					width: 8,
-					height: 8,
+					width: 9,
+					height: 9,
 					borderRadius: '50%',
-					background: value ? 'var(--beak-colors-accent-pink)' : 'var(--beak-colors-fg-muted)',
+					background: value ? '#ffffff' : 'var(--beak-colors-fg-subtle)',
 					marginLeft: value ? 'auto' : 0,
+					boxShadow: value ? '0 1px 2px rgba(0,0,0,0.25)' : 'none',
 				}}
 			/>
 		</ToggleButton>
