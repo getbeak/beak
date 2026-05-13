@@ -58,12 +58,14 @@ const UntitledBanner: React.FC = () => {
 				align='center'
 				justify='center'
 				flexShrink={0}
-				w='22px'
-				h='22px'
+				w='24px'
+				h='24px'
 				borderRadius='md'
-				bg='color-mix(in srgb, var(--beak-colors-accent-pink) 18%, transparent)'
+				bg='color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent)'
+				borderWidth='1px'
+				borderColor='color-mix(in srgb, var(--beak-colors-accent-pink) 28%, transparent)'
 				color='accent.pink'
-				boxShadow='inset 0 0 0 1px color-mix(in srgb, var(--beak-colors-accent-pink) 28%, transparent)'
+				boxShadow='0 3px 8px color-mix(in srgb, var(--beak-colors-accent-pink) 18%, transparent), inset 0 1px 0 color-mix(in srgb, white 14%, transparent)'
 			>
 				<FileWarning size={12} strokeWidth={2.2} />
 			</Flex>
