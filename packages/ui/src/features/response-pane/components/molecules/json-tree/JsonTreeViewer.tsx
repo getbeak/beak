@@ -201,9 +201,35 @@ const JsonTreeViewer: React.FC<JsonTreeViewerProps> = ({ value }) => {
 					<ChevronsDownUp size={10} strokeWidth={2.2} />
 					{'Collapse'}
 				</ChakraButton>
-				<Box ml='auto' opacity={0.7} fontFamily='mono' letterSpacing='0.04em'>
-					{'⌘F to search'}
-				</Box>
+				<Flex ml='auto' align='center' gap='1' color='fg.subtle' fontSize='10px'>
+					<Box
+						as='kbd'
+						display='inline-flex'
+						alignItems='center'
+						justifyContent='center'
+						h='15px'
+						minW='15px'
+						px='1'
+						fontFamily='mono'
+						fontSize='10px'
+						fontWeight='600'
+						borderRadius='sm'
+						borderWidth='1px'
+						borderColor='border.subtle'
+						bg='color-mix(in srgb, var(--beak-colors-bg-surface-emphasized) 50%, transparent)'
+						color='fg.muted'
+					>
+						{'⌘F'}
+					</Box>
+					<Box
+						as='span'
+						fontWeight='700'
+						letterSpacing='0.06em'
+						textTransform='uppercase'
+					>
+						{'Search'}
+					</Box>
+				</Flex>
 			</Flex>
 
 			<Box
