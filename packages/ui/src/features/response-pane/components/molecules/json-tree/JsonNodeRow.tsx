@@ -106,8 +106,7 @@ const JsonNodeRow: React.FC<JsonNodeRowProps> = ({
 							bottom={0}
 							width='1px'
 							style={{ left: `${i * 12 + 9}px` }}
-							bg='border.subtle'
-							opacity={0.45}
+							bg='color-mix(in srgb, var(--beak-colors-border-subtle) 60%, transparent)'
 						/>
 					))}
 				</Box>
