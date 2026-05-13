@@ -248,19 +248,34 @@ const OpenApiImportDialog: React.FC = () => {
 							animate={{ opacity: 1 }}
 							exit={{ opacity: 0 }}
 						>
-							<Flex direction='column' align='center' py='6' gap='2' color='fg.muted'>
-								<motion.div
-									animate={{ rotate: 360 }}
-									transition={{ duration: 0.9, ease: 'linear', repeat: Number.POSITIVE_INFINITY }}
-									style={{ display: 'inline-flex' }}
+							<Flex direction='column' align='center' py='6' gap='3'>
+								<Flex
+									align='center'
+									justify='center'
+									w='48px'
+									h='48px'
+									borderRadius='full'
+									bg='color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent)'
+									color='accent.pink'
+									boxShadow='0 0 20px color-mix(in srgb, var(--beak-colors-accent-pink) 30%, transparent)'
 								>
-									<FolderTree size={22} />
-								</motion.div>
-								<Box fontSize='sm' fontWeight='500'>
-									{'Importing into '}
-									<Box as='span' fontFamily='mono' color='fg.default'>{state.targetFolder}</Box>
-									{'…'}
-								</Box>
+									<motion.div
+										animate={{ rotate: 360 }}
+										transition={{ duration: 1.1, ease: 'linear', repeat: Number.POSITIVE_INFINITY }}
+										style={{ display: 'inline-flex' }}
+									>
+										<FolderTree size={20} strokeWidth={2} />
+									</motion.div>
+								</Flex>
+								<Flex direction='column' align='center' gap='1'>
+									<Box fontSize='sm' fontWeight='600' color='fg.default'>
+										{'Importing OpenAPI spec'}
+									</Box>
+									<Box fontSize='xs' color='fg.muted'>
+										{'→ '}
+										<Box as='span' fontFamily='mono' color='fg.default'>{state.targetFolder}</Box>
+									</Box>
+								</Flex>
 							</Flex>
 						</motion.div>
 					)}
