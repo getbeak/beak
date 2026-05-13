@@ -53,14 +53,31 @@ const AlertsPopover: React.FC<AlertsPopoverProps> = ({ parent, onClose }) => {
 			>
 				{!hasAlerts && (
 					<Flex direction='column' align='center' gap='2' px='4' py='6' textAlign='center'>
-						<Box color='accent.teal'>
-							<CheckCircle2 size={22} strokeWidth={2} />
-						</Box>
+						<Flex
+							align='center'
+							justify='center'
+							w='40px'
+							h='40px'
+							borderRadius='full'
+							bg='color-mix(in srgb, var(--beak-colors-accent-teal) 14%, transparent)'
+							borderWidth='1px'
+							borderColor='color-mix(in srgb, var(--beak-colors-accent-teal) 28%, transparent)'
+							color='accent.teal'
+							boxShadow='0 6px 18px color-mix(in srgb, var(--beak-colors-accent-teal) 22%, transparent), inset 0 1px 0 color-mix(in srgb, white 16%, transparent)'
+						>
+							<CheckCircle2 size={18} strokeWidth={2} />
+						</Flex>
 						<Box fontSize='sm' fontWeight='600' color='fg.default'>
 							{'You have no alerts'}
 						</Box>
-						<Box fontSize='xs' color='fg.subtle'>
-							{'Everything in this project looks healthy.'}
+						<Box
+							fontSize='10px'
+							fontWeight='700'
+							letterSpacing='0.06em'
+							textTransform='uppercase'
+							color='fg.subtle'
+						>
+							{'Everything in this project looks healthy'}
 						</Box>
 					</Flex>
 				)}
