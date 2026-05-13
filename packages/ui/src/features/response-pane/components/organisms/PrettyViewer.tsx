@@ -1,11 +1,11 @@
+import { Box } from '@chakra-ui/react';
 import EditorView from '@beak/ui/components/atoms/EditorView';
 import actions from '@beak/ui/store/preferences/actions';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { attemptJsonStringFormat } from '@beak/ui/utils/json';
 import type { Flight } from '@getbeak/types/flight';
-import React from 'react';
+import * as React from 'react';
 import { useDispatch } from 'react-redux';
-import styled from 'styled-components';
 import xmlFormatter from 'xml-formatter';
 
 import useDetectedFlightFormat from '../../hooks/use-detected-flight-format';
@@ -18,7 +18,7 @@ interface PrettyViewerProps {
 	mode: 'request' | 'response';
 }
 
-const PrettyViewer: React.FC<React.PropsWithChildren<PrettyViewerProps>> = ({ flight, mode }) => {
+const PrettyViewer: React.FC<PrettyViewerProps> = ({ flight, mode }) => {
 	const dispatch = useDispatch();
 	const requestId = flight.requestId;
 	const preferences = useAppSelector(s => s.global.preferences.requests[requestId].response.pretty[mode]);
@@ -29,7 +29,7 @@ const PrettyViewer: React.FC<React.PropsWithChildren<PrettyViewerProps>> = ({ fl
 	if (eligibility !== 'eligible') return <PrettyViewIneligible eligibility={eligibility} />;
 
 	return (
-		<Container>
+		<Box h='calc(100% - 35px)'>
 			<PrettyRenderSelection
 				selectedLanguage={selectedLanguage}
 				onSelectedLanguageChange={lang =>
@@ -43,7 +43,7 @@ const PrettyViewer: React.FC<React.PropsWithChildren<PrettyViewerProps>> = ({ fl
 				}
 			/>
 			{renderFormat(selectedLanguage, contentType, body)}
-		</Container>
+		</Box>
 	);
 };
 
@@ -51,8 +51,7 @@ function renderFormat(language: string | null, contentType: string | null, body:
 	switch (language) {
 		case 'json': {
 			const json = new TextDecoder().decode(body);
-
-			return <EditorView language={'json'} value={attemptJsonStringFormat(json)} options={{ readOnly: true }} />;
+			return <EditorView language='json' value={attemptJsonStringFormat(json)} options={{ readOnly: true }} />;
 		}
 
 		case 'hex': {
@@ -77,46 +76,49 @@ function renderFormat(language: string | null, contentType: string | null, body:
 				outputParts.push(rowParts.join('  '));
 			}
 
-			return <EditorView language={'text'} value={outputParts.join('\n')} options={{ readOnly: true }} />;
+			return <EditorView language='text' value={outputParts.join('\n')} options={{ readOnly: true }} />;
 		}
 
 		case 'xml': {
 			const xml = new TextDecoder().decode(body);
-
-			return <EditorView language={'xml'} value={tryFormatXml(xml)} options={{ readOnly: true }} />;
+			return <EditorView language='xml' value={tryFormatXml(xml)} options={{ readOnly: true }} />;
 		}
 
 		case 'html': {
 			const html = new TextDecoder().decode(body);
-
-			return <EditorView language={'html'} value={tryFormatXml(html)} options={{ readOnly: true }} />;
+			return <EditorView language='html' value={tryFormatXml(html)} options={{ readOnly: true }} />;
 		}
 
 		case 'css': {
 			const css = new TextDecoder().decode(body);
-
-			return <EditorView language={'css'} value={css} options={{ readOnly: true }} />;
+			return <EditorView language='css' value={css} options={{ readOnly: true }} />;
 		}
 
 		case 'image': {
 			const blob = URL.createObjectURL(new Blob([body as BlobPart], { type: contentType ?? 'image/jpeg' }));
-
-			return <Image $imageBlob={blob} />;
+			return (
+				<Box
+					h='100%'
+					bgPos='center'
+					bgSize='contain'
+					bgRepeat='no-repeat'
+					style={{ backgroundImage: `url(${blob})` }}
+				/>
+			);
 		}
 
 		case 'video': {
 			const blob = URL.createObjectURL(new Blob([body as BlobPart], { type: contentType ?? 'video/mp4' }));
-
 			return (
-				<Video controls autoPlay>
+				<video controls autoPlay style={{ width: '100%', height: '100%' }}>
 					<source src={blob} />
-				</Video>
+				</video>
 			);
 		}
+
 		default: {
 			const text = new TextDecoder().decode(body);
-
-			return <EditorView language={'text'} value={text} options={{ readOnly: true }} />;
+			return <EditorView language='text' value={text} options={{ readOnly: true }} />;
 		}
 	}
 }
@@ -128,22 +130,5 @@ function tryFormatXml(xml: string) {
 		return xml;
 	}
 }
-
-const Container = styled.div`
-	height: calc(100% - 35px);
-`;
-
-const Image = styled.div<{ $imageBlob: string }>`
-	background-image: url(${p => p.$imageBlob});
-	background-position: center;
-	background-size: contain;
-	background-repeat: no-repeat;
-	height: 100%;
-`;
-
-const Video = styled.video`
-	width: 100%;
-	height: 100%;
-`;
 
 export default React.memo(PrettyViewer, (prev, next) => prev.flight.flightId === next.flight.flightId);

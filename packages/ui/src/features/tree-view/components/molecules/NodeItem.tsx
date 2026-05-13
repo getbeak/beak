@@ -1,10 +1,10 @@
+import { Box } from '@chakra-ui/react';
 import { checkShortcut } from '@beak/ui/lib/keyboard-shortcuts';
 import { projectPanePreferenceSetCollapse } from '@beak/ui/store/preferences/actions';
 import { selectNextLogicalNode, selectPreviousLogicalNode } from '@beak/ui/utils/keyboard-dom-node-navigation';
-import React from 'react';
+import * as React from 'react';
 import { useContext, useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
-import styled from 'styled-components';
 
 import { TreeViewAbstractionsContext } from '../../contexts/abstractions-context';
 import { TreeViewFocusContext } from '../../contexts/focus-context';
@@ -136,54 +136,39 @@ const NodeItem: React.FC<React.PropsWithChildren<NodeItemProps>> = props => {
 
 	return (
 		<NodeContextMenu node={node} target={element}>
-			<NodeItemContainer
-				$active={focusContext.activeNodeId === node.id}
-				$depth={depth}
-				tabIndex={0}
+			<Box
 				ref={element}
+				tabIndex={0}
+				display='flex'
+				py='1'
+				pr='1.5'
+				style={{ paddingLeft: `${depth * 8 + 6}px` }}
+				alignItems='center'
+				justifyContent='space-between'
+				cursor='pointer'
+				fontSize='sm'
+				lineHeight='15px'
+				borderTopLeftRadius='sm'
+				borderBottomLeftRadius='sm'
+				color={focusContext.activeNodeId === node.id ? 'fg.default' : 'fg.muted'}
+				bg={
+					focusContext.activeNodeId === node.id
+						? 'color-mix(in srgb, var(--beak-colors-bg-surface) 80%, transparent)'
+						: 'transparent'
+				}
+				_hover={{ color: 'fg.default' }}
+				_focus={{
+					outline: 'none',
+					bg: 'color-mix(in srgb, var(--beak-colors-bg-surface-emphasized) 100%, transparent)',
+				}}
 				onKeyDown={handleOnKeyDown}
 				onClick={handleOnClick}
 			>
 				{children}
-				<FlairRendererContainer>{renderer?.(node)}</FlairRendererContainer>
-			</NodeItemContainer>
+				<Box ml='auto' pl='2'>{renderer?.(node)}</Box>
+			</Box>
 		</NodeContextMenu>
 	);
 };
-
-interface NodeItemContainerProps {
-	$active: boolean;
-	$depth: number;
-}
-
-const NodeItemContainer = styled.div<NodeItemContainerProps>`
-	display: flex;
-	padding: 4px 0;
-	padding-right: 5px;
-	padding-left: ${p => (p.$depth * 8) + 6}px;
-	align-items: center;
-	justify-content: space-between;
-	cursor: pointer;
-	font-size: 12px;
-	line-height: 15px;
-	border-top-left-radius: 4px;
-	border-bottom-left-radius: 4px;
-
-	color: ${p => (p.$active ? 'var(--beak-colors-fg-default)' : 'var(--beak-colors-fg-muted)')};
-	background-color: ${p => (p.$active ? 'color-mix(in srgb, var(--beak-colors-bg-surface) 80%, transparent)' : 'transparent')};
-
-	&:hover {
-		color: var(--beak-colors-fg-default);
-	}
-	&:focus {
-		outline: none;
-		background-color: color-mix(in srgb, var(--beak-colors-bg-surface-emphasized) 100%, transparent);
-	}
-`;
-
-const FlairRendererContainer = styled.div`
-	margin-left: auto;
-	padding-left: 8px;
-`;
 
 export default NodeItem;

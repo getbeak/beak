@@ -19,8 +19,8 @@ import type { RequestBodyTypeChangedPayload } from '@beak/ui/store/project/types
 import { attemptTextToJson } from '@beak/ui/utils/json';
 import type { ValidRequestNode } from '@getbeak/types/nodes';
 import type { RequestBodyJson, RequestBodyType } from '@getbeak/types/request';
-import styled from 'styled-components';
 
+import { Box, Flex } from '@chakra-ui/react';
 import TabBar from '../../../../components/atoms/TabBar';
 import TabItem from '../../../../components/atoms/TabItem';
 import TabSpacer from '../../../../components/atoms/TabSpacer';
@@ -147,7 +147,7 @@ const BodyTab: React.FC<React.PropsWithChildren<BodyTabProps>> = props => {
 	}
 
 	return (
-		<Container>
+		<Flex direction='column' overflow='hidden' h='100%'>
 			<TabBar $centered>
 				<TabSpacer />
 				<TabItem
@@ -191,7 +191,7 @@ const BodyTab: React.FC<React.PropsWithChildren<BodyTabProps>> = props => {
 				<TabSpacer />
 			</TabBar>
 
-			<TabBody $allowVerticalScroll={body.type !== 'text'}>
+			<Box flexGrow={2} overflowY={body.type !== 'text' ? 'auto' : 'hidden'} h='100%'>
 				{body.type === 'text' && (
 					<EditorView
 						language={'text'}
@@ -247,24 +247,10 @@ const BodyTab: React.FC<React.PropsWithChildren<BodyTabProps>> = props => {
 				{body.type === 'graphql' && graphQlMode === 'query' && <GraphQlQueryEditor node={node} />}
 				{body.type === 'graphql' && graphQlMode === 'variables' && <GraphQlVariablesEditor node={node} />}
 				{body.type === 'file' && <FileUploadView node={node} />}
-			</TabBody>
-		</Container>
+			</Box>
+		</Flex>
 	);
 };
-
-const Container = styled.div`
-	display: flex;
-	flex-direction: column;
-	overflow: hidden;
-	height: 100%;
-`;
-
-const TabBody = styled.div<{ $allowVerticalScroll: boolean }>`
-	flex-grow: 2;
-
-	overflow-y: ${p => p.$allowVerticalScroll ? 'auto' : 'hidden'};
-	height: 100%;
-`;
 
 function createEmptyBodyPayload(requestId: string, type: RequestBodyType): RequestBodyTypeChangedPayload {
 	switch (type) {

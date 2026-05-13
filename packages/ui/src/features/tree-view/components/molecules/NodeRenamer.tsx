@@ -1,6 +1,6 @@
-import React from 'react';
+import { Box } from '@chakra-ui/react';
+import * as React from 'react';
 import { useContext, useEffect, useRef, useState } from 'react';
-import styled, { css } from 'styled-components';
 import validFilename from 'valid-filename';
 
 import { TreeViewAbstractionsContext } from '../../contexts/abstractions-context';
@@ -15,11 +15,9 @@ const errors = {
 
 interface NodeRenamerProps {
 	node: TreeViewItem;
-	// parentRef: React.MutableRefObject<HTMLElement | null>;
 }
 
-const NodeRenamer: React.FC<React.PropsWithChildren<NodeRenamerProps>> = props => {
-	const { node } = props;
+const NodeRenamer: React.FC<NodeRenamerProps> = ({ node }) => {
 	const absContext = useContext(TreeViewAbstractionsContext);
 	const focusContext = useContext(TreeViewFocusContext);
 	const [activeRename, renaming] = useActiveRename(node);
@@ -41,8 +39,7 @@ const NodeRenamer: React.FC<React.PropsWithChildren<NodeRenamerProps>> = props =
 		const textOverflowed = element.scrollWidth > element.clientWidth || element.scrollHeight > element.clientHeight;
 
 		const resizeObserver = new ResizeObserver(() => {
-			if (textOverflowed) setCanShowTooltip(true);
-			else setCanShowTooltip(false);
+			setCanShowTooltip(textOverflowed);
 		});
 
 		resizeObserver.observe(element);
@@ -55,15 +52,18 @@ const NodeRenamer: React.FC<React.PropsWithChildren<NodeRenamerProps>> = props =
 
 	if (!renaming) {
 		return (
-			<RenameWrappedText
-				data-tooltip-id={'tt-variables-renderer-extension-missing'}
+			<Box
+				data-tooltip-id='tt-variables-renderer-extension-missing'
 				data-tooltip-content={node.name}
-				data-tooltip-place={'top-end'}
+				data-tooltip-place='top-end'
 				data-tooltip-hidden={!canShowTooltip}
 				ref={wrappedTextRef}
+				overflow='hidden'
+				whiteSpace='nowrap'
+				textOverflow='ellipsis'
 			>
 				{node.name}
-			</RenameWrappedText>
+			</Box>
 		);
 	}
 
@@ -74,11 +74,9 @@ const NodeRenamer: React.FC<React.PropsWithChildren<NodeRenamerProps>> = props =
 			case value === '':
 				setError(errors.noName);
 				break;
-
 			case !validFilename(value):
 				setError(errors.notValid);
 				break;
-
 			default:
 				setError(void 0);
 				break;
@@ -86,69 +84,51 @@ const NodeRenamer: React.FC<React.PropsWithChildren<NodeRenamerProps>> = props =
 	}
 
 	return (
-		<Renamer>
-			<RenameInput
+		<Box position='relative' flexGrow={2} textOverflow='ellipsis'>
+			<input
 				ref={renameInputRef}
-				type={'text'}
+				type='text'
 				value={activeRename!.name}
-				$error={Boolean(error)}
+				style={{
+					border: `1px solid ${error ? 'var(--beak-colors-accent-alert)' : 'var(--beak-colors-accent-pink)'}`,
+					backgroundColor: 'var(--beak-colors-bg-canvas)',
+					color: 'var(--beak-colors-fg-default)',
+					width: 'calc(100% - 4px)',
+					fontSize: '12px',
+					lineHeight: '15px',
+				}}
 				onBlur={() => absContext.onRenameEnded?.(node)}
 				onKeyDown={e => {
 					if (!['Escape', 'Enter'].includes(e.key)) return;
-
 					if (e.key === 'Escape') absContext.onRenameEnded?.(node);
-
 					if (e.key === 'Enter') {
 						if (error !== void 0) return;
-
 						absContext.onRenameSubmitted?.(node);
 					}
-
-					// Return focus to the element behind the input!
 					focusContext.setFocusedNodeId(node.id);
 				}}
 				onChange={e => updateEditValue(e.currentTarget.value)}
 			/>
-			{error && <RenameError>{error}</RenameError>}
-		</Renamer>
+			{error && (
+				<Box
+					position='absolute'
+					top='19px'
+					left='0'
+					right='0'
+					bg='bg.canvas'
+					borderWidth='1px'
+					borderColor='accent.alert'
+					borderTop='none'
+					color='fg.default'
+					px='0.5'
+					py='1'
+					fontSize='sm'
+				>
+					{error}
+				</Box>
+			)}
+		</Box>
 	);
 };
-
-const Renamer = styled.div`
-	position: relative;
-	flex-grow: 2;
-	text-overflow: ellipsis;
-`;
-
-const RenameWrappedText = styled.div`
-	overflow: hidden;
-	white-space: nowrap;
-	text-overflow: ellipsis;
-`;
-
-const RenameInput = styled.input<{ $error: boolean }>`
-	border: 1px solid var(--beak-colors-accent-pink);
-	background-color: var(--beak-colors-bg-canvas);
-	color: var(--beak-colors-fg-default);
-	width: calc(100% - 4px);
-
-	font-size: 12px;
-	line-height: 15px;
-
-	${p => p.$error && css`border-color: var(--beak-colors-accent-alert) !important;`}
-`;
-
-const RenameError = styled.div`
-	position: absolute;
-	top: 19px;
-	left: 0; right: 0;
-	background: var(--beak-colors-bg-canvas);
-	border: 1px solid var(--beak-colors-accent-alert);
-	border-top: none;
-	color: var(--beak-colors-fg-default);
-
-	padding: 4px 2px;
-	font-size: 12px;
-`;
 
 export default NodeRenamer;

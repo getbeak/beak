@@ -1,7 +1,7 @@
 import React from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { Box } from '@chakra-ui/react';
 import { TypedObject } from '@beak/common/helpers/typescript';
-import { scaleIn } from '@beak/design-system/animations';
 import { VariableManager } from '@beak/ui/features/variables';
 import useVariableContext from '@beak/ui/features/variables/hooks/use-variable-context';
 import { ipcExplorerService, ipcExtensionsService } from '@beak/ui/lib/ipc';
@@ -11,7 +11,6 @@ import { Plug } from 'lucide-react';
 
 import type { Variable, VariableStaticInformation } from '@getbeak/extension-sdk';
 import Fuse from 'fuse.js';
-import styled from 'styled-components';
 import * as uuid from 'uuid';
 
 import { createFauxValue } from '../../../variables/values/variable-set-item';
@@ -165,135 +164,132 @@ const VariableSelector: React.FC<React.PropsWithChildren<VariableSelectorProps>>
 	if (!position)
 		return null;
 
+	const wrapperBase = {
+		display: 'flex',
+		h: '160px',
+		w: '375px',
+		flexDirection: 'column' as const,
+		borderWidth: '1px',
+		borderColor: 'border.default',
+		bg: 'bg.surface',
+		transformOrigin: 'center',
+		animation: 'beakVarSelectorScale .2s ease',
+		transition: 'transform .1s ease',
+		fontSize: 'sm',
+	};
+	const wrapperStyle = {
+		marginTop: `${position.top}px`,
+		marginLeft: `${position.left}px`,
+	};
+	const description = (
+		<Box
+			borderTopWidth='1px'
+			borderColor='border.default'
+			bg='bg.canvas'
+			p='1.5'
+			minH='30px'
+			css={{ '> a': { color: '#ffa210' } }}
+		>
+			{items.length > 0 && items[active]?.external && '(Extension) '}
+			{items.length > 0 && items[active]?.description}
+			{items.length === 0 && (
+				<React.Fragment>
+					<strong>{'Missing a variable you would find useful?'}</strong>
+					<br />
+					{'You can build your own with an extension, check the '}
+					<a
+						onClick={async () =>
+							void (await ipcExplorerService.launchUrl(
+								'https://getbeak.notion.site/Extensions-4c16ca640b35460787056f8be815b904',
+							))
+						}
+					>
+						{'docs'}
+					</a>
+					{'.'}
+				</React.Fragment>
+			)}
+		</Box>
+	);
+
 	if (items.length === 0) {
 		return (
-			<Container onClick={event => {
-				event.stopPropagation();
-				onClose();
-			}}>
-				<Wrapper $top={position.top} $left={position.left}>
-					<ItemContainer>
-						<NoItems>
+			<Box
+				position='fixed'
+				inset='0'
+				zIndex={101}
+				css={{
+					'@keyframes beakVarSelectorScale': {
+						'0%': { transform: 'scale(.97)', opacity: 0 },
+						'100%': { transform: 'scale(1)', opacity: 1 },
+					},
+				}}
+				onClick={event => {
+					event.stopPropagation();
+					onClose();
+				}}
+			>
+				<Box {...wrapperBase} style={wrapperStyle}>
+					<Box flexGrow={2} overflowY='auto'>
+						<Box p='2.5' cursor='pointer' color='fg.default' overflowX='hidden'>
 							{'There are no variables matching your search. Try widening '}
 							{'your horizons.'}
-						</NoItems>
-						</ItemContainer>
-						<Description>
-							<strong>{'Missing a variable you would find useful?'}</strong><br />
-							{'You can build your own with an extension, check the '}
-							<a onClick={async () => void await ipcExplorerService.launchUrl("https://getbeak.notion.site/Extensions-4c16ca640b35460787056f8be815b904") }>
-								{'docs'}
-							</a>
-							{'.'}
-						</Description>
-				</Wrapper>
-			</Container>
+						</Box>
+					</Box>
+					{description}
+				</Box>
+			</Box>
 		);
 	}
 
 	return (
-		<Container onClick={event => {
-			event.stopPropagation();
-			onClose();
-		}}>
-			<Wrapper $top={position.top} $left={position.left}>
-				<ItemContainer>
+		<Box
+			position='fixed'
+			inset='0'
+			zIndex={101}
+			css={{
+				'@keyframes beakVarSelectorScale': {
+					'0%': { transform: 'scale(.97)', opacity: 0 },
+					'100%': { transform: 'scale(1)', opacity: 1 },
+				},
+			}}
+			onClick={event => {
+				event.stopPropagation();
+				onClose();
+			}}
+		>
+			<Box {...wrapperBase} style={wrapperStyle}>
+				<Box flexGrow={2} overflowY='auto'>
 					{items.map((i, idx) => (
-						<Item
-							$active={active === idx}
-							ref={i => {
-								if (active === idx)
-									activeRef.current = i;
-							}}
+						<Box
 							key={uuid.v4()}
+							ref={(el: HTMLDivElement | null) => {
+								if (active === idx) activeRef.current = el;
+							}}
 							tabIndex={0}
+							px='1'
+							py='0.5'
+							cursor='pointer'
+							color='fg.default'
+							overflowX='hidden'
+							bg={active === idx ? 'accent.pink' : undefined}
+							_focus={{ bg: 'accent.pink', outline: 'none' }}
 							onClick={() => setActive(idx)}
 							onDoubleClick={() => createDefaultVariable(i)}
 						>
 							{i.external && (
-								<ExtensionContainer>
-									<Plug id={'tt-variable-input-extension'} />
-								</ExtensionContainer>
+								<Box display='inline-block' mr='1.5'>
+									<Plug id='tt-variable-input-extension' />
+								</Box>
 							)}
 							{i.name}
-						</Item>
+						</Box>
 					))}
-				</ItemContainer>
-				<Description>
-					{items[active]?.external && '(Extension) '}
-
-					{items[active]?.description}
-				</Description>
-			</Wrapper>
-		</Container>
+				</Box>
+				{description}
+			</Box>
+		</Box>
 	);
 };
-
-const Container = styled.div`
-	z-index: 101;
-	position: fixed;
-	top: 0; bottom: 0; left: 0; right: 0;
-`;
-
-const Wrapper = styled.div<{ $top: number; $left: number }>`
-	display: flex;
-	height: 160px; width: 375px;
-	flex-direction: column;
-	margin-top: ${p => p.$top}px;
-	margin-left: ${p => p.$left}px;
-
-	border: 1px solid var(--beak-colors-border-default);
-	background: var(--beak-colors-bg-surface);
-
-	transform-origin: center;
-	animation: ${scaleIn} .2s ease;
-	transition: transform .1s ease;
-
-	font-size: 12px;
-`;
-
-const ItemContainer = styled.div`
-	flex-grow: 2;
-
-	overflow-y: overlay;
-`;
-
-const Item = styled.div<{ $active: boolean }>`
-	padding: 2px 4px;
-	cursor: pointer;
-	color: var(--beak-colors-fg-default);
-	overflow-x: hidden;
-
-	&:focus {
-		background-color: var(--beak-colors-accent-pink);
-		outline: none;
-	}
-
-	${p => p.$active ? `background-color: var(--beak-colors-accent-pink);'` : ''}
-`;
-
-const NoItems = styled.div`
-	padding: 10px;
-	cursor: pointer;
-	color: var(--beak-colors-fg-default);
-	overflow-x: hidden;
-`;
-
-const ExtensionContainer = styled.div`
-	display: inline-block;
-	margin-right: 5px;
-`;
-
-const Description = styled.div`
-	border-top: 1px solid var(--beak-colors-border-default);
-	background: var(--beak-colors-bg-canvas);
-
-	padding: 5px;
-	min-height: 30px;
-
-	> a {
-		color: #ffa210;
-	}
-`;
 
 export default VariableSelector;

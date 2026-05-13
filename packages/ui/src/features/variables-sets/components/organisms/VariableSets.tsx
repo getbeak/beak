@@ -13,7 +13,8 @@ import { actions } from '@beak/ui/store/variable-sets';
 import { removeVariableSetFromDisk } from '@beak/ui/store/variable-sets/actions';
 import { renderAcceleratorDefinition } from '@beak/ui/utils/keyboard-rendering';
 import type { MenuItemConstructorOptions } from 'electron';
-import styled from 'styled-components';
+
+import { Box } from '@chakra-ui/react';
 
 const VariableSets: React.FC<React.PropsWithChildren<unknown>> = () => {
 	const dispatch = useDispatch();
@@ -134,7 +135,9 @@ const VariableSets: React.FC<React.PropsWithChildren<unknown>> = () => {
 
 	return (
 		<React.Fragment>
-			{empty && <EmptyWarning>{'It\'s looking empty in here...'}</EmptyWarning>}
+			{empty && (
+				<Box color='fg.muted' ml='1.5' fontSize='md'>{"It's looking empty in here..."}</Box>
+			)}
 
 			<TreeView
 				tree={tree}
@@ -157,11 +160,5 @@ const VariableSets: React.FC<React.PropsWithChildren<unknown>> = () => {
 		</React.Fragment>
 	);
 };
-
-const EmptyWarning = styled.div`
-	color: var(--beak-colors-fg-muted);
-	margin-left: 5px;
-	font-size: 13px;
-`;
 
 export default VariableSets;

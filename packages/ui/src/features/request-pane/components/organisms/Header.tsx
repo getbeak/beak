@@ -1,5 +1,4 @@
-import React from 'react';
-import { useDispatch } from 'react-redux';
+import { Box, Button, Grid } from '@chakra-ui/react';
 import VariableInput from '@beak/ui/features/variable-input/components/VariableInput';
 import useVariableContext from '@beak/ui/features/variables/hooks/use-variable-context';
 import { parseValueSections } from '@beak/ui/features/variables/parser';
@@ -7,9 +6,9 @@ import type { ValueSections } from '@beak/ui/features/variables/values';
 import { requestPreferenceSetReqMainTab } from '@beak/ui/store/preferences/actions';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { Loader2 } from 'lucide-react';
-
 import type { ValidRequestNode } from '@getbeak/types/nodes';
-import styled from 'styled-components';
+import * as React from 'react';
+import { useDispatch } from 'react-redux';
 import URL from 'url-parse';
 
 import { requestFlight } from '../../../../store/flight/actions';
@@ -19,11 +18,24 @@ export interface HeaderProps {
 	node: ValidRequestNode;
 }
 
-const Header: React.FC<React.PropsWithChildren<HeaderProps>> = props => {
+const selectStyle: React.CSSProperties = {
+	WebkitAppearance: 'none' as React.CSSProperties['WebkitAppearance'],
+	MozAppearance: 'none' as React.CSSProperties['MozAppearance'],
+	padding: '6px 6px',
+	paddingTop: '7px',
+	marginRight: '10px',
+	borderRadius: '4px',
+	border: '1px solid var(--beak-colors-border-default)',
+	background: 'var(--beak-colors-bg-surface)',
+	color: 'var(--beak-colors-accent-pink)',
+	textTransform: 'uppercase',
+	fontWeight: 800,
+};
+
+const Header: React.FC<HeaderProps> = ({ node }) => {
 	const dispatch = useDispatch();
-	const currentFlight = useAppSelector(s => s.global.flight.activeFlights[props.node.id]);
+	const currentFlight = useAppSelector(s => s.global.flight.activeFlights[node.id]);
 	const flighting = Boolean(currentFlight);
-	const { node } = props;
 	const context = useVariableContext(node.id);
 	const verb = node.info.verb;
 
@@ -40,7 +52,6 @@ const Header: React.FC<React.PropsWithChildren<HeaderProps>> = props => {
 		let sanitizedParts = [...parts];
 		const parsed = new URL(value, true);
 
-		// If it can be parsed, and there is a query string, strip it out and move to correct part of request info
 		if (Object.keys(parsed.query).length) {
 			Object.keys(parsed.query).forEach(key => {
 				dispatch(requestQueryAdded({
@@ -52,14 +63,12 @@ const Header: React.FC<React.PropsWithChildren<HeaderProps>> = props => {
 		}
 
 		if (value.includes('?')) {
-			// We want to remove the query string from the URL, ofc
 			const searchIndex = parts.findIndex(p => typeof p === 'string' && p.includes('?'));
 			const searchPartIndex = (parts[searchIndex] as string).indexOf('?');
 
 			sanitizedParts = parts.slice(0, searchIndex);
 			sanitizedParts.push((parts[searchIndex] as string).slice(0, searchPartIndex));
 
-			// Move focus to query string editor
 			dispatch(requestPreferenceSetReqMainTab({ id: node.id, tab: 'url_query' }));
 		}
 
@@ -70,144 +79,98 @@ const Header: React.FC<React.PropsWithChildren<HeaderProps>> = props => {
 	}
 
 	return (
-		<Container>
-			<VerbContainer>
-				<VerbPickerRenderer>
+		<Grid
+			templateColumns='auto minmax(0, 1fr) auto'
+			justifyContent='space-between'
+			alignItems='center'
+			my='6'
+			px='2.5'
+			fontSize='md'
+			maxW='calc(100% - 20px)'
+		>
+			<Box position='relative' flex='0 0 auto'>
+				<select value={verb} style={selectStyle} onChange={() => undefined}>
 					<option value={verb}>{verb}</option>
-				</VerbPickerRenderer>
-				<VerbPickerHidden
+				</select>
+				<select
 					value={verb}
-					onChange={e => {
-						dispatch(requestUriUpdated({
-							requestId: node.id,
-							verb: e.currentTarget.value,
-						}));
-					}}
+					style={{ ...selectStyle, position: 'absolute', textTransform: 'none', left: 0, opacity: 0.0000001 }}
+					onChange={e =>
+						dispatch(requestUriUpdated({ requestId: node.id, verb: e.currentTarget.value }))
+					}
 				>
-					<optgroup label={'Standard'}>
-						<option value={'get'}>{'GET'}</option>
-						<option value={'post'}>{'POST'}</option>
-						<option value={'patch'}>{'PATCH'}</option>
-						<option value={'put'}>{'PUT'}</option>
-						<option value={'delete'}>{'DELETE'}</option>
-						<option value={'head'}>{'HEAD'}</option>
-						<option value={'options'}>{'OPTIONS'}</option>
+					<optgroup label='Standard'>
+						<option value='get'>{'GET'}</option>
+						<option value='post'>{'POST'}</option>
+						<option value='patch'>{'PATCH'}</option>
+						<option value='put'>{'PUT'}</option>
+						<option value='delete'>{'DELETE'}</option>
+						<option value='head'>{'HEAD'}</option>
+						<option value='options'>{'OPTIONS'}</option>
 					</optgroup>
-					<optgroup label={'Custom'}>
-						<option value={'custom'} disabled>{'Create...'}</option>
+					<optgroup label='Custom'>
+						<option value='custom' disabled>{'Create...'}</option>
 					</optgroup>
-				</VerbPickerHidden>
-			</VerbContainer>
+				</select>
+			</Box>
 
-			<OmniBar>
+			<Box
+				flex='1 1 auto'
+				css={{
+					'> div > article': {
+						padding: '6px 6px',
+						marginRight: '10px',
+						borderRadius: '4px',
+						border: '1px solid var(--beak-colors-border-default)',
+						background: 'var(--beak-colors-bg-surface)',
+						color: 'var(--beak-colors-fg-default)',
+						fontSize: '13px',
+						fontWeight: 400,
+					},
+					'> div > article:hover, > div > article:focus': {
+						outline: 'none',
+						border: '1px solid var(--beak-colors-accent-pink)',
+					},
+				}}
+			>
 				<VariableInput
 					requestId={node.id}
 					parts={node.info.url}
-					placeholder={'httpbin.org'}
+					placeholder='httpbin.org'
 					onChange={e => handleUrlChange(e)}
 					onUrlQueryStringDetection={urlQueryStringDetected}
 				/>
-			</OmniBar>
+			</Box>
 
-			<DispatchButton onClick={() => dispatchFlightRequest()}>
+			<Button
+				flex='0 0 auto'
+				w='35px'
+				h='auto'
+				px='1.5'
+				py='1.5'
+				pt='2'
+				borderRadius='sm'
+				borderWidth='1px'
+				borderColor='border.default'
+				bg='bg.surface'
+				color='accent.teal'
+				fontWeight='800'
+				cursor='pointer'
+				_hover={{ outline: 'none', borderColor: 'accent.teal' }}
+				_focus={{ outline: 'none', borderColor: 'accent.teal' }}
+				onClick={() => dispatchFlightRequest()}
+			>
 				{flighting && (
-					<Loader2 color={'var(--beak-colors-accent-teal)'}
-					
-					 size={13} style={{ animation: 'spin 1s linear infinite' }} />
+					<Loader2
+						color='var(--beak-colors-accent-teal)'
+						size={13}
+						style={{ animation: 'spin 1s linear infinite' }}
+					/>
 				)}
 				{!flighting && 'GO'}
-			</DispatchButton>
-		</Container>
+			</Button>
+		</Grid>
 	);
 };
-
-const Container = styled.div`
-	display: grid;
-	grid-template-columns: auto minmax(0, 1fr) auto;
-	justify-content: space-between;
-	align-items: center;
-
-	margin: 25px 0;
-	padding: 0 10px;
-	font-size: 13px;
-	max-width: calc(100% - 20px);
-`;
-
-const VerbPickerRenderer = styled.select`
-	-webkit-appearance: none;
-	-moz-appearance: none;
-	text-overflow: '';
-
-	padding: 6px 6px;
-	padding-top: 7px;
-	margin-right: 10px;
-	border-radius: 4px;
-	border: 1px solid var(--beak-colors-border-default);
-	background: var(--beak-colors-bg-surface);
-	color: var(--beak-colors-accent-pink);
-	text-transform: uppercase;
-	font-weight: 800;
-
-	&:hover, &:focus {
-		outline: none;
-		border: 1px solid var(--beak-colors-accent-pink);
-	}
-`;
-
-const VerbPickerHidden = styled(VerbPickerRenderer)`
-	position: absolute;
-	text-transform: none;
-	left: 0;
-	opacity: 0.0000001; /* lol */
-`;
-
-const VerbContainer = styled.div`
-	position: relative;
-	flex: 0 0 auto;
-
-	&:hover > ${VerbPickerRenderer} {
-		border: 1px solid var(--beak-colors-accent-pink);
-	}
-`;
-
-const OmniBar = styled.div`
-	flex: 1 1 auto;
-
-	> div > article {
-		padding: 6px 6px;
-		margin-right: 10px;
-		border-radius: 4px;
-		border: 1px solid var(--beak-colors-border-default);
-		background: var(--beak-colors-bg-surface);
-		color: var(--beak-colors-fg-default);
-		font-size: 13px;
-		font-weight: 400;
-
-		&:hover, &:focus {
-			outline: none;
-			border: 1px solid var(--beak-colors-accent-pink);
-		}
-	}
-`;
-
-const DispatchButton = styled.button`
-	flex: 0 0 auto;
-	width: 35px;
-	padding: 6px 6px;
-	padding-top: 7px;
-	border-radius: 4px;
-	border: 1px solid var(--beak-colors-border-default);
-	background: var(--beak-colors-bg-surface);
-
-	color: var(--beak-colors-accent-teal);
-	font-weight: 800;
-
-	&:hover, &:focus {
-		outline: none;
-		border: 1px solid var(--beak-colors-accent-teal);
-	}
-
-	cursor: pointer;
-`;
 
 export default Header;

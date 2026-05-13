@@ -1,12 +1,12 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { scaleIn } from '@beak/design-system/animations';
+import { Box, Flex } from '@chakra-ui/react';
+import * as React from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Button from '@beak/ui/components/atoms/Button';
 import Input, { Select } from '@beak/ui/components/atoms/Input';
 import type { ValueSections } from '@beak/ui/features/variables/values';
 import { TriangleAlert } from 'lucide-react';
 
 import type { EditableVariable, UISection } from '@getbeak/extension-sdk';
-import styled from 'styled-components';
 
 import VariableInput from '../../variable-input/components/VariableInput';
 import { VariableManager } from '../../variables';
@@ -143,11 +143,35 @@ const VariableEditor: React.FC<React.PropsWithChildren<VariableEditorProps>> = p
 	const { save } = variable.editor!;
 
 	return (
-		<Container onClick={() => close(null)}>
-			<Wrapper
-				$top={boundingRect.top + parent.clientHeight + 10}
-				$left={boundingRect.left - (300 / 2)}
-				onClick={event => void event.stopPropagation()}
+		<Box
+			position='fixed'
+			inset='0'
+			zIndex={101}
+			css={{
+				'@keyframes beakVarEditorScale': {
+					'0%': { transform: 'scale(.97)', opacity: 0 },
+					'100%': { transform: 'scale(1)', opacity: 1 },
+				},
+			}}
+			onClick={() => close(null)}
+		>
+			<Box
+				position='fixed'
+				w='300px'
+				px='3'
+				py='2'
+				borderWidth='1px'
+				borderColor='border.default'
+				bg='bg.surface'
+				zIndex={10000}
+				transformOrigin='center'
+				animation='beakVarEditorScale .2s ease'
+				transition='transform .1s ease'
+				style={{
+					marginTop: `${boundingRect.top + parent.clientHeight + 10}px`,
+					marginLeft: `${boundingRect.left - 300 / 2}px`,
+				}}
+				onClick={(event: React.MouseEvent) => event.stopPropagation()}
 			>
 				{uiSections.map((section, i) => {
 					const first = i === 0;
@@ -258,34 +282,32 @@ const VariableEditor: React.FC<React.PropsWithChildren<VariableEditorProps>> = p
 
 				<PreviewContainer text={preview} />
 
-				<ButtonContainer>
-					<div>
+				<Flex justify='space-between' align='center'>
+					<Box>
 						{editorContext.variable.external && (
 							<React.Fragment>
 								<TriangleAlert />
 								{' This is an extension'}
 							</React.Fragment>
 						)}
-					</div>
+					</Box>
 
 					<Button
-						size={'sm'}
-						colour={'primary'}
+						size='sm'
+						colour='primary'
 						onClick={() => {
 							if (!save) {
 								close(state);
-
 								return;
 							}
-
 							save(context, item, state).then(updatedItem => close(updatedItem));
 						}}
 					>
 						{'Save'}
 					</Button>
-				</ButtonContainer>
-			</Wrapper>
-		</Container>
+				</Flex>
+			</Box>
+		</Box>
 	);
 };
 
@@ -300,33 +322,5 @@ function trySetInitialRef(
 	// eslint-disable-next-line no-param-reassign
 	ref.current = instance;
 }
-
-const Container = styled.div`
-	z-index: 101;
-	position: fixed;
-	top: 0; bottom: 0; left: 0; right: 0;
-`;
-
-const Wrapper = styled.div<{ $top: number; $left: number }>`
-	position: fixed;
-	margin-top: ${p => p.$top}px;
-	margin-left: ${p => p.$left}px;
-
-	width: 300px;
-	padding: 8px 12px;
-	border: 1px solid var(--beak-colors-border-default);
-	background: var(--beak-colors-bg-surface);
-	z-index: 10000;
-
-	transform-origin: center;
-	animation: ${scaleIn} .2s ease;
-	transition: transform .1s ease;
-`;
-
-const ButtonContainer = styled.div`
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-`;
 
 export default VariableEditor;

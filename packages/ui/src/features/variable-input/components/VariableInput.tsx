@@ -6,8 +6,8 @@ import useForceReRender from '@beak/ui/hooks/use-force-rerender';
 import { checkShortcut } from '@beak/ui/lib/keyboard-shortcuts';
 import { requestFlight } from '@beak/ui/store/flight/actions';
 import { useAppSelector } from '@beak/ui/store/redux';
-import styled from 'styled-components';
 
+import { Box } from '@chakra-ui/react';
 import useVariableContext from '../../variables/hooks/use-variable-context';
 import { parseValueSections } from '../../variables/parser';
 import renderValueSections from '../../variables/renderer';
@@ -480,16 +480,23 @@ const VariableInput = React.forwardRef<HTMLElement, VariableInputProps>((props, 
 		unmanagedStateRef.current.variableSelectionState = void 0;
 	}
 
+	const shown = unmanagedStateRef.current.ValueSections.length === 0;
+
 	return (
-		<Wrapper>
+		<Box position='relative'>
 			<UnmanagedInput innerRef={editableRef} />
 			{placeholder && (
-				<Placeholder
+				<Box
 					ref={placeholderRef}
-					$shown={unmanagedStateRef.current.ValueSections.length === 0}
+					display={shown ? 'block' : 'none'}
+					position='absolute'
+					top='7px'
+					left='7px'
+					color='fg.muted'
+					pointerEvents='none'
 				>
 					{placeholder}
-				</Placeholder>
+				</Box>
 			)}
 			{showSelector && editableRef && (
 				<VariableSelector
@@ -508,20 +515,8 @@ const VariableInput = React.forwardRef<HTMLElement, VariableInputProps>((props, 
 					onSave={variableEditSaved}
 				/>
 			)}
-		</Wrapper>
+		</Box>
 	);
 });
-
-const Wrapper = styled.div`
-	position: relative;
-`;
-
-const Placeholder = styled.div<{ $shown: boolean }>`
-	display: ${p => p.$shown ? 'block' : 'none'};
-	position: absolute;
-	top: 7px; left: 7px;
-	color: var(--beak-colors-fg-muted);
-	pointer-events: none;
-`;
 
 export default VariableInput;

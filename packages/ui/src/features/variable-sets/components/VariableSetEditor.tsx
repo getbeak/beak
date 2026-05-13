@@ -1,12 +1,13 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { Flex } from '@chakra-ui/react';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import DebouncedInput from '@beak/ui/components/atoms/DebouncedInput';
 import { generateValueIdent } from '@beak/ui/lib/beak-variable-set/utils';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { actions } from '@beak/ui/store/variable-sets';
 import { insertNewGroup, insertNewItem, removeGroup, removeItem } from '@beak/ui/store/variable-sets/actions';
-import styled, { css } from 'styled-components';
+import * as React from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useDispatch } from 'react-redux';
 
 import VariableInput from '../../variable-input/components/VariableInput';
 import { BodyNameCell, BodyValueCell, HeaderGroupNameCell, HeaderNameCell } from './atoms/Cells';
@@ -64,7 +65,7 @@ const VariableSetEditor: React.FC<React.PropsWithChildren<VariableSetEditorProps
 		return null;
 
 	return (
-		<Container>
+		<Flex direction='column' overflow='auto' bg='bg.surface' h='100%' w='100%'>
 			{variableSet && setKeys.length === 0 && (
 				<CreateNewSplash type={'set'} variableSet={variableSetName} />
 			)}
@@ -200,35 +201,40 @@ const VariableSetEditor: React.FC<React.PropsWithChildren<VariableSetEditorProps
 					</Body>
 				</React.Fragment>
 			)}
-		</Container>
+		</Flex>
 	);
 };
 
-const Container = styled.div`
-	display: flex;
-	flex-direction: column;
-	overflow: overlay;
+const INPUT_STYLE = (center?: boolean): React.CSSProperties => ({
+	width: 'calc(100% - 12px)',
+	background: 'none',
+	border: '1px solid transparent',
+	color: 'var(--beak-colors-fg-muted)',
+	fontSize: '13px',
+	fontWeight: 'normal',
+	textAlign: center ? 'center' : 'inherit',
+	padding: '3px 5px',
+});
 
-	background-color: var(--beak-colors-bg-surface);
+interface StyledDebounceProps {
+	$center?: boolean;
+	innerRef?: React.Ref<HTMLInputElement> | null;
+	type: 'text';
+	value: string;
+	disabled?: boolean;
+	onChange: (v: string) => void;
+}
 
-	height: 100%;
-	width: 100%;
-`;
+const StyledDebounce: React.FC<StyledDebounceProps> = ({ $center, ...rest }) => (
+	<DebouncedInput {...rest} style={INPUT_STYLE($center)} />
+);
 
-const inputCss = css<{ $center?: boolean }>`
-	width: calc(100% - 12px);
-	background: none;
-	border: 1px solid transparent;
-	color: var(--beak-colors-fg-muted);
-	font-size: 13px;
-	font-weight: normal;
-	text-align: ${p => p.$center ? 'center' : 'inherit'};
-	padding: 3px 5px;
+interface EmptyInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+	$center?: boolean;
+}
 
-	&:disabled { user-select: none; }
-`;
-
-const StyledDebounce = styled(DebouncedInput)<{ $center?: boolean }>`${inputCss}`;
-const EmptyInput = styled.input<{ $center?: boolean }>`${inputCss}`;
+const EmptyInput: React.FC<EmptyInputProps> = ({ $center, style, ...rest }) => (
+	<input {...rest} style={{ ...INPUT_STYLE($center), ...(style as React.CSSProperties) }} />
+);
 
 export default VariableSetEditor;

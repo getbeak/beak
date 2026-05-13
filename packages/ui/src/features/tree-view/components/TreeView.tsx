@@ -4,9 +4,9 @@ import type { PayloadAction } from '@reduxjs/toolkit';
 import type { MenuItemConstructorOptions } from 'electron';
 import React from 'react';
 import { type ReactElement, useRef } from 'react';
+import { Box } from '@chakra-ui/react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import styled from 'styled-components';
 
 import useSectionBody from '../../sidebar/hooks/use-section-body';
 import { TreeViewAbstractionsContext } from '../contexts/abstractions-context';
@@ -99,7 +99,7 @@ const TreeView: React.FC<React.PropsWithChildren<TreeViewProps>> = props => {
 							}}
 							target={container}
 						>
-							<Container ref={container}>
+							<Box ref={container} h='100%' _focus={{ outline: 'none' }}>
 								<RootDropContainer>
 									{formattedNodes
 										.filter(i => i.type === 'folder')
@@ -112,7 +112,7 @@ const TreeView: React.FC<React.PropsWithChildren<TreeViewProps>> = props => {
 											<Node key={i.id} depth={0} node={i as TreeViewNode} />
 										))}
 								</RootDropContainer>
-							</Container>
+							</Box>
 						</NodeContextMenu>
 					</DndProvider>
 				</TreeViewFocusContext.Provider>
@@ -120,13 +120,5 @@ const TreeView: React.FC<React.PropsWithChildren<TreeViewProps>> = props => {
 		</TreeViewNodesContext.Provider>
 	);
 };
-
-const Container = styled.div`
-	height: 100%;
-
-	&:focus {
-		outline: none;
-	}
-`;
 
 export default TreeView;

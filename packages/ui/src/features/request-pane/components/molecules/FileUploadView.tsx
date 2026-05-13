@@ -1,23 +1,22 @@
+import { Box, Button, Flex } from '@chakra-ui/react';
 import type { PreviewReferencedFileRes } from '@beak/common/ipc/fs';
 import { pickAndAttachAsset } from '@beak/ui/features/asset-attachment/pick-and-attach';
 import { ipcFsService } from '@beak/ui/lib/ipc';
 import { requestBodyAssetChanged, requestBodyFileChanged } from '@beak/ui/store/project/actions';
 import { X } from 'lucide-react';
-
 import type { ValidRequestNode } from '@getbeak/types/nodes';
 import type { RequestBodyFile } from '@getbeak/types/request';
 import mime from 'mime-types';
 import prettyBytes from 'pretty-bytes';
-import React, { useEffect, useState } from 'react';
+import * as React from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import styled from 'styled-components';
 
 export interface FileUploadViewProps {
 	node: ValidRequestNode;
 }
 
-const FileUploadView: React.FC<FileUploadViewProps> = props => {
-	const { node } = props;
+const FileUploadView: React.FC<FileUploadViewProps> = ({ node }) => {
 	const dispatch = useDispatch();
 	const body = node.info.body as RequestBodyFile;
 	const [preview, setPreview] = useState<PreviewReferencedFileRes>();
@@ -28,7 +27,6 @@ const FileUploadView: React.FC<FileUploadViewProps> = props => {
 
 	async function clearFile(event: React.MouseEvent) {
 		event.stopPropagation();
-
 		setPreview(void 0);
 		dispatch(
 			requestBodyFileChanged({
@@ -53,7 +51,6 @@ const FileUploadView: React.FC<FileUploadViewProps> = props => {
 					contentType: void 0,
 				}),
 			);
-
 			return;
 		}
 
@@ -69,9 +66,7 @@ const FileUploadView: React.FC<FileUploadViewProps> = props => {
 
 	async function openFile() {
 		const response = await ipcFsService.openReferenceFile();
-
 		if (!response) return;
-
 		await openPreview(response.fileReferenceId);
 	}
 
@@ -81,12 +76,7 @@ const FileUploadView: React.FC<FileUploadViewProps> = props => {
 		event.stopPropagation();
 		const outcome = await pickAndAttachAsset();
 		if (!outcome || !outcome.ok) return;
-		dispatch(
-			requestBodyAssetChanged({
-				requestId: node.id,
-				assetRef: outcome.ref,
-			}),
-		);
+		dispatch(requestBodyAssetChanged({ requestId: node.id, assetRef: outcome.ref }));
 	}
 
 	function clearAssetRef(event: React.MouseEvent) {
@@ -94,100 +84,81 @@ const FileUploadView: React.FC<FileUploadViewProps> = props => {
 		dispatch(requestBodyAssetChanged({ requestId: node.id, assetRef: void 0 }));
 	}
 
+	const closeBtn = (onClick: (e: React.MouseEvent) => void) => (
+		<Box position='absolute' right='1.5' top='1' bg='transparent' p='1' onClick={onClick}>
+			<X />
+		</Box>
+	);
+
 	return (
-		<Container>
-			<FileBlob onClick={openFile}>
+		<Flex py='5' direction='column' align='center' gap='2.5'>
+			<Flex
+				position='relative'
+				direction='column'
+				align='center'
+				justify='center'
+				cursor='pointer'
+				gap='1'
+				w='200px'
+				h='110px'
+				borderRadius='lg'
+				borderWidth='1px'
+				borderColor='border.subtle'
+				bg='bg.surface.emphasized'
+				color='fg.muted'
+				fontSize='sm'
+				onClick={openFile}
+			>
 				{!preview && !assetRef && 'No file selected...'}
 				{preview && (
 					<React.Fragment>
-						<ClearFile onClick={clearFile}>
-							<X />
-						</ClearFile>
-						<FileName>{preview.fileName}</FileName>
-						<FileSize>{prettyBytes(preview.fileSize)}</FileSize>
+						{closeBtn(clearFile)}
+						<Box>{preview.fileName}</Box>
+						<Box>{prettyBytes(preview.fileSize)}</Box>
 					</React.Fragment>
 				)}
-			</FileBlob>
+			</Flex>
 			{assetRef && (
-				<AssetBlob>
-					<ClearFile onClick={clearAssetRef}>
-						<X />
-					</ClearFile>
-					<FileName>{`sha256:${assetRef.sha256.slice(0, 8)}…${assetRef.sha256.slice(-4)}`}</FileName>
-					<FileSize>{prettyBytes(assetRef.size)}</FileSize>
-				</AssetBlob>
+				<Flex
+					position='relative'
+					direction='column'
+					align='center'
+					justify='center'
+					gap='1'
+					w='200px'
+					p='2.5'
+					borderRadius='lg'
+					borderWidth='1px'
+					borderStyle='dashed'
+					borderColor='border.subtle'
+					bg='bg.surface.emphasized'
+					color='fg.muted'
+					fontSize='xs'
+					fontFamily='mono'
+				>
+					{closeBtn(clearAssetRef)}
+					<Box>{`sha256:${assetRef.sha256.slice(0, 8)}…${assetRef.sha256.slice(-4)}`}</Box>
+					<Box>{prettyBytes(assetRef.size)}</Box>
+				</Flex>
 			)}
-			<AttachAssetButton type='button' onClick={attachAsAsset}>
+			<Button
+				bg='transparent'
+				borderWidth='1px'
+				borderColor='border.subtle'
+				color='fg.default'
+				px='3'
+				py='1.5'
+				borderRadius='md'
+				fontSize='sm'
+				cursor='pointer'
+				h='auto'
+				_hover={{ bg: 'bg.surface.emphasized' }}
+				onClick={attachAsAsset}
+			>
 				{assetRef ? 'Replace asset…' : 'Attach as asset…'}
-			</AttachAssetButton>
-		</Container>
+			</Button>
+		</Flex>
 	);
 };
-
-const Container = styled.div`
-	padding: 20px 0;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	gap: 10px;
-`;
-
-const FileBlob = styled.div`
-	position: relative;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: center;
-	cursor: pointer;
-	gap: 3px;
-	width: 200px;
-	height: 110px;
-	border-radius: 8px;
-	border: 1px solid var(--beak-colors-border-subtle);
-	background: var(--beak-colors-bg-surface-emphasized);
-	color: var(--beak-colors-fg-muted);
-	font-size: 12px;
-`;
-
-const ClearFile = styled.div`
-	position: absolute;
-	right: 5px;
-	top: 3px;
-	background: transparent;
-	padding: 4px;
-`;
-const FileName = styled.div``;
-const FileSize = styled.div``;
-
-const AssetBlob = styled.div`
-	position: relative;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: center;
-	gap: 3px;
-	width: 200px;
-	padding: 10px;
-	border-radius: 8px;
-	border: 1px dashed var(--beak-colors-border-subtle);
-	background: var(--beak-colors-bg-surface-emphasized);
-	color: var(--beak-colors-fg-muted);
-	font-size: 11px;
-	font-family: monospace;
-`;
-
-const AttachAssetButton = styled.button`
-	background: transparent;
-	border: 1px solid var(--beak-colors-border-subtle);
-	color: var(--beak-colors-fg-default);
-	padding: 6px 12px;
-	border-radius: 6px;
-	font-size: 12px;
-	cursor: pointer;
-
-	&:hover {
-		background: var(--beak-colors-bg-surface-emphasized);
-	}
-`;
 
 export default FileUploadView;

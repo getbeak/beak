@@ -4,9 +4,9 @@ import { requestPreferenceSetReqMainTab } from '@beak/ui/store/preferences/actio
 import actions from '@beak/ui/store/project/actions';
 import { useAppSelector } from '@beak/ui/store/redux';
 import type { ValidRequestNode } from '@getbeak/types/nodes';
-import React from 'react';
+import { Box, Flex } from '@chakra-ui/react';
+import * as React from 'react';
 import { useDispatch } from 'react-redux';
-import styled from 'styled-components';
 
 import TabBar from '../../../../components/atoms/TabBar';
 import TabItem from '../../../../components/atoms/TabItem';
@@ -29,7 +29,7 @@ const Modifiers: React.FC<React.PropsWithChildren<ModifiersProps>> = props => {
 	}
 
 	return (
-		<Container>
+		<Flex direction='column' overflow='hidden' h='100%'>
 			<TabBar $centered>
 				<TabSpacer />
 				<TabItem active={tab === 'headers'} onClick={() => setTab('headers')}>
@@ -47,7 +47,7 @@ const Modifiers: React.FC<React.PropsWithChildren<ModifiersProps>> = props => {
 				<TabSpacer />
 			</TabBar>
 
-			<TabBody>
+			<Box flexGrow={2} overflowY='auto' h='100%'>
 				{tab === 'headers' && (
 					<BasicTableEditor
 						items={node.info.headers}
@@ -98,23 +98,9 @@ const Modifiers: React.FC<React.PropsWithChildren<ModifiersProps>> = props => {
 				)}
 				{tab === 'body' && <BodyTab node={node} />}
 				{tab === 'options' && <OptionsView node={node} />}
-			</TabBody>
-		</Container>
+			</Box>
+		</Flex>
 	);
 };
-
-const Container = styled.div`
-	display: flex;
-	flex-direction: column;
-	overflow: hidden;
-	height: 100%;
-`;
-
-const TabBody = styled.div`
-	flex-grow: 2;
-
-	overflow-y: overlay;
-	height: 100%;
-`;
 
 export default Modifiers;
