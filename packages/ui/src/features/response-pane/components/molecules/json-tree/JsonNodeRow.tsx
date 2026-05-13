@@ -87,7 +87,8 @@ const JsonNodeRow: React.FC<JsonNodeRowProps> = ({
 				'&:hover .json-row-actions': { opacity: 1 },
 				...(highlightSearch
 					? {
-						background: 'color-mix(in srgb, var(--beak-colors-accent-pink) 22%, transparent)',
+						background: 'color-mix(in srgb, var(--beak-colors-accent-pink) 24%, transparent)',
+						boxShadow: 'inset 2px 0 0 var(--beak-colors-accent-pink)',
 					}
 					: {}),
 			}}
