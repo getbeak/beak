@@ -1,5 +1,5 @@
-import { openProjectDialog } from '@beak/apps-host-electron/host/extensions/project';
-import { createPreferencesWindow, createWelcomeWindow } from '@beak/apps-host-electron/window-management';
+import { openProjectDialog, openUntitledProject } from '@beak/apps-host-electron/host/extensions/project';
+import { createPreferencesWindow } from '@beak/apps-host-electron/window-management';
 import type { MenuItemConstructorOptions } from 'electron';
 
 import type { Context } from '.';
@@ -22,8 +22,9 @@ export default function generateFileMenu(ctx: Context): MenuItemConstructorOptio
 				click: async () => sendMenuItemClick(ctx, 'new_folder'),
 			},
 			{
-				label: 'New Window...',
-				click: async () => createWelcomeWindow(),
+				label: 'New Window',
+				accelerator: 'CmdOrCtrl+Shift+M',
+				click: async () => openUntitledProject(),
 			},
 			{
 				type: 'separator',
@@ -35,7 +36,6 @@ export default function generateFileMenu(ctx: Context): MenuItemConstructorOptio
 			},
 			{
 				label: 'Open Recent',
-				// accelerator: 'CmdOrCtrl+Alt+O',
 				role: 'recentDocuments',
 				submenu: [
 					{

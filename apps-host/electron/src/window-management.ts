@@ -11,7 +11,7 @@ import WindowStateManager from './lib/window-state-manager';
 import { screenshotSizing } from './main';
 import { staticPath } from './utils/static-path';
 
-export type Container = 'project-main' | 'welcome' | 'preferences' | 'portal';
+export type Container = 'project-main' | 'preferences' | 'portal';
 
 // This is pretty lame, there should be a better way
 export const projectIdToWindowIdMapping: Record<string, number> = {};
@@ -81,13 +81,9 @@ export async function attemptWindowPresenceLoad() {
 					success = true;
 					break;
 
-				case 'welcome':
-					await createWelcomeWindow();
-
-					success = true;
-					break;
-
 				default:
+					// 'welcome' / unknown payloads — no-op. Cold boot will fall
+					// back to opening the most-recent project or an untitled one.
 					return;
 			}
 		}),
@@ -175,19 +171,14 @@ async function createWindow(
 	return window;
 }
 
+/**
+ * Welcome screens were removed in May 2026 — Beak now boots straight into
+ * a project window (most-recent or untitled). This stub is kept temporarily
+ * so call sites that used to close the welcome window during project-open
+ * flows are no-ops instead of throwing during the migration.
+ */
 export function tryCloseWelcomeWindow() {
-	const windowId = stackMap.welcome;
-
-	if (windowId === void 0) return;
-
-	const window = windowStack[windowId];
-
-	if (!window) return;
-
-	window.close();
-
-	delete windowStack[windowId];
-	delete stackMap.welcome;
+	// Intentionally empty — see comment above.
 }
 
 export function closeWindow(windowId: number) {
@@ -205,40 +196,6 @@ export function reloadWindow(windowId: number) {
 	if (!window) return; // probs already closed...
 
 	window.reload();
-}
-
-export async function createWelcomeWindow() {
-	const existing = stackMap.welcome;
-
-	if (existing && windowStack[existing]) {
-		if (windowStack[existing].isMinimized()) windowStack[existing].restore();
-
-		windowStack[existing].focus();
-
-		return existing;
-	}
-
-	const windowOpts: BrowserWindowConstructorOptions & { width: number; height: number } = {
-		height: 500,
-		width: 900,
-		resizable: false,
-		title: 'Welcome to Beak!',
-		autoHideMenuBar: true,
-		transparent: true,
-		visualEffectState: 'active',
-		vibrancy: 'under-window',
-	};
-
-	if (process.platform === 'darwin') windowOpts.frame = false;
-
-	if (process.platform === 'darwin') windowOpts.frame = false;
-	if (process.platform !== 'darwin') windowOpts.height = 550;
-
-	const window = await createWindow(windowOpts, 'welcome');
-
-	stackMap.welcome = window.id;
-
-	return window.id;
 }
 
 export async function createPreferencesWindow() {

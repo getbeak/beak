@@ -4,7 +4,6 @@ import React from 'react';
 import Portal from '../containers/Portal';
 import Preferences from '../containers/Preferences';
 import ProjectMain from '../containers/ProjectMain';
-import Welcome from '../containers/Welcome';
 
 if (import.meta.env.MODE !== 'development') {
 	init({
@@ -16,9 +15,6 @@ if (import.meta.env.MODE !== 'development') {
 
 function getComponent(container: string | null) {
 	switch (container) {
-		case 'welcome':
-			return <Welcome />;
-
 		case 'project-main':
 			return <ProjectMain />;
 

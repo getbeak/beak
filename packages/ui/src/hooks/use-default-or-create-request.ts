@@ -6,11 +6,9 @@ import { createNewRequest } from '../store/project/actions';
 import { useAppSelector } from '../store/redux';
 
 /**
- * When the welcome screen's "Get started" button is clicked: open the first
- * existing request if there is one, otherwise spawn a new request to edit.
- *
- * Replaces the legacy `defaultOrCreateRequest` saga. The saga was just a
- * select + put chain — direct hook usage is simpler.
+ * When the "Getting started" tab's "Get started" button is clicked: open the
+ * first existing request if there is one, otherwise spawn a new request to
+ * edit. Replaces the legacy `defaultOrCreateRequest` saga.
  */
 export function useDefaultOrCreateRequest() {
 	const dispatch = useDispatch();

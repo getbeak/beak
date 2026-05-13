@@ -1,6 +1,6 @@
 /* eslint-disable global-require, no-process-env */
 import { init } from '@sentry/electron';
-import { app } from 'electron';
+import { app, dialog } from 'electron';
 import electronDebug from 'electron-debug';
 import { autoUpdater } from 'electron-updater';
 
@@ -11,12 +11,7 @@ import handleUrlEvent from './protocol';
 import { attemptShowPostUpdateWelcome } from './updater';
 import { createAndSetMenu } from './utils/menu';
 import { appIsPackaged } from './utils/static-path';
-import {
-	attemptWindowPresenceLoad,
-	createWelcomeWindow,
-	generateWindowPresence,
-	windowStack,
-} from './window-management';
+import { attemptWindowPresenceLoad, generateWindowPresence, windowStack } from './window-management';
 
 if (process.env.NODE_ENV !== 'development') {
 	init({
@@ -106,10 +101,11 @@ async function createOrFocusDefaultWindow(initial = false) {
 	// No window-presence to restore. Boot order:
 	//  1. Most-recent project from BeakRecents, so a returning user lands on
 	//     their last work directly.
-	//  2. Otherwise, spin up an untitled scratch project (skipping the welcome
-	//     dialog entirely). The user can promote it later via "Save Project As…".
-	//  3. If even untitled creation fails (e.g. userData is read-only), fall
-	//     back to the welcome window as a last resort.
+	//  2. Otherwise, spin up an untitled scratch project. The user can promote
+	//     it later via "Save Project As…".
+	//  3. If even untitled creation fails (e.g. userData is read-only), bail
+	//     with an error dialog rather than hanging — there's no welcome
+	//     window to fall back to anymore.
 	if (initial) {
 		const recents = await getBeakHost().project.recents.listProjects();
 		const mostRecent = [...recents].sort((a, b) => b.accessTime.localeCompare(a.accessTime))[0];
@@ -117,15 +113,20 @@ async function createOrFocusDefaultWindow(initial = false) {
 			const opened = await tryOpenProjectFolder(mostRecent.path, true);
 			if (opened !== null) return void 0;
 		}
-
-		try {
-			await openUntitledProject();
-			return void 0;
-		} catch (err) {
-			console.warn('[main] failed to open untitled project, falling back to welcome window', err);
-		}
 	}
 
-	await createWelcomeWindow();
+	try {
+		await openUntitledProject();
+	} catch (err) {
+		console.warn('[main] failed to open untitled project', err);
+		const { dialog } = await import('electron');
+		await dialog.showMessageBox({
+			type: 'error',
+			title: 'Could not start Beak',
+			message: 'Beak could not open a project.',
+			detail: err instanceof Error ? err.message : String(err),
+		});
+	}
+
 	return void 0;
 }
