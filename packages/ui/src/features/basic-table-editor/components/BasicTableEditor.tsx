@@ -134,26 +134,32 @@ const BasicTableEditor: React.FC<BasicTableEditorProps> = ({
 					<Button
 						bg='transparent'
 						borderWidth='1px'
-						borderColor='border.default'
+						borderColor='border.subtle'
 						borderRadius='md'
-						color='fg.default'
+						color='fg.muted'
 						gap='1'
-						px='2'
+						px='2.5'
 						py='1'
 						fontSize='xs'
+						fontWeight='600'
 						h='auto'
-						minH='22px'
-						transition='border-color .12s ease, background-color .12s ease, transform .08s ease'
+						minH='24px'
+						transition='border-color .12s ease, background-color .12s ease, color .12s ease, transform .08s ease'
 						_hover={{
 							outline: 'none',
 							borderColor: 'accent.pink',
-							bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 8%, transparent)',
+							color: 'accent.pink',
+							bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 10%, transparent)',
 						}}
-						_focus={{ outline: 'none', borderColor: 'accent.pink' }}
+						_focus={{
+							outline: 'none',
+							borderColor: 'accent.pink',
+							boxShadow: '0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-pink) 22%, transparent)',
+						}}
 						_active={{ transform: 'scale(0.97)' }}
 						onClick={() => addItem?.()}
 					>
-						<Plus size={11} />
+						<Plus size={11} strokeWidth={2.4} />
 						{'Add row'}
 					</Button>
 				</Flex>
