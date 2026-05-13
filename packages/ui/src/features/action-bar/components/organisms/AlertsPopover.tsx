@@ -1,6 +1,7 @@
-import { Box } from '@chakra-ui/react';
+import { Box, Flex } from '@chakra-ui/react';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { useAppSelector } from '@beak/ui/store/redux';
+import { CheckCircle2 } from 'lucide-react';
 import * as React from 'react';
 import { createPortal } from 'react-dom';
 import * as uuid from 'uuid';
@@ -21,22 +22,47 @@ const AlertsPopover: React.FC<AlertsPopoverProps> = ({ parent, onClose }) => {
 		<Box position='fixed' inset='0' onClick={() => onClose()}>
 			<Box
 				position='fixed'
-				w='300px'
+				w='320px'
 				borderWidth='1px'
-				borderColor='border.default'
-				borderRadius='md'
-				bg='bg.surface'
+				borderColor='color-mix(in srgb, var(--beak-colors-accent-pink) 24%, var(--beak-colors-border-subtle))'
+				borderRadius='xl'
+				bg='color-mix(in srgb, var(--beak-colors-bg-surface) 70%, transparent)'
+				backdropFilter='blur(24px) saturate(180%)'
+				boxShadow='0 40px 96px rgba(0,0,0,0.38), 0 12px 32px color-mix(in srgb, var(--beak-colors-accent-pink) 18%, rgba(0,0,0,0.18)), inset 0 1px 0 color-mix(in srgb, white 22%, transparent)'
+				overflow='hidden'
 				zIndex={101}
 				style={{
-					marginTop: `${boundingRect.top + parent.clientHeight + 5}px`,
-					marginLeft: `${boundingRect.left - 300 + 30}px`,
+					marginTop: `${boundingRect.top + parent.clientHeight + 6}px`,
+					marginLeft: `${boundingRect.left - 320 + 30}px`,
+				}}
+				css={{
+					'&::before': {
+						content: '""',
+						position: 'absolute',
+						top: 0,
+						left: 0,
+						right: 0,
+						height: '64px',
+						background: 'radial-gradient(80% 100% at 50% 0%, color-mix(in srgb, var(--beak-colors-accent-pink) 24%, transparent), transparent 70%)',
+						pointerEvents: 'none',
+						zIndex: 0,
+					},
+					'& > *': { position: 'relative', zIndex: 1 },
 				}}
 				onClick={event => event.stopPropagation()}
 			>
 				{!hasAlerts && (
-					<Box as='span' display='block' px='3' py='2' fontSize='lg'>
-						{'You have no alerts 🎉'}
-					</Box>
+					<Flex direction='column' align='center' gap='2' px='4' py='6' textAlign='center'>
+						<Box color='accent.teal'>
+							<CheckCircle2 size={22} strokeWidth={2} />
+						</Box>
+						<Box fontSize='sm' fontWeight='600' color='fg.default'>
+							{'You have no alerts'}
+						</Box>
+						<Box fontSize='xs' color='fg.subtle'>
+							{'Everything in this project looks healthy.'}
+						</Box>
+					</Flex>
 				)}
 				{hasAlerts &&
 					TypedObject.values(alerts)
