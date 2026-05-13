@@ -53,27 +53,25 @@ export const SelectItemPreview: React.FC<SelectItemPreviewProps> = ({
 }) => (
 	<Box position='relative' mb='2' {...rest}>
 		{$active && (
-			<motion.div
-				layoutId='preferences-active-theme-ring'
-				transition={{ type: 'spring', stiffness: 600, damping: 30 }}
-				style={{
-					position: 'absolute',
-					inset: -3,
-					borderRadius: 10,
-					border: '2px solid var(--beak-colors-accent-pink)',
-					pointerEvents: 'none',
-				}}
+			<Box
+				position='absolute'
+				inset='-4px'
+				borderRadius='10px'
+				border='2px solid'
+				borderColor='accent.pink'
+				pointerEvents='none'
+				boxShadow='0 0 16px color-mix(in srgb, var(--beak-colors-accent-pink) 45%, transparent)'
 			/>
 		)}
 		<motion.div
-			whileHover={{ scale: 1.02 }}
+			whileHover={{ scale: 1.03 }}
 			transition={{ duration: 0.14 }}
 			style={{
 				width: 90,
 				height: 56,
 				borderRadius: 6,
 				border: '1px solid var(--beak-colors-border-subtle)',
-				boxShadow: '0 2px 12px rgba(0,0,0,0.25)',
+				boxShadow: '0 4px 14px rgba(0,0,0,0.25)',
 				backgroundImage: `url('images/${$themeType === 'editor' ? 'editor-' : ''}theme-switcher/${$themeMode}.jpg')`,
 				backgroundPosition: 'center',
 				backgroundSize: 'cover',
