@@ -1,7 +1,6 @@
 import { Box } from '@chakra-ui/react';
 import { checkShortcut } from '@beak/ui/lib/keyboard-shortcuts';
 import { projectPanePreferenceSetCollapse } from '@beak/ui/store/preferences/actions';
-import { motion } from 'framer-motion';
 import * as React from 'react';
 import { useContext, useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
@@ -165,33 +164,25 @@ const NodeItem: React.FC<React.PropsWithChildren<NodeItemProps>> = props => {
 				onClick={handleOnClick}
 			>
 				{isActive && (
-					<motion.div
-						layoutId='tree-view-active-row'
-						transition={{ type: 'spring', stiffness: 700, damping: 36 }}
-						style={{
-							position: 'absolute',
-							inset: 0,
-							borderRadius: '4px',
-							background: 'color-mix(in srgb, var(--beak-colors-accent-pink) 16%, transparent)',
-							pointerEvents: 'none',
-						}}
+					<Box
+						position='absolute'
+						inset='0'
+						borderRadius='sm'
+						bg='color-mix(in srgb, var(--beak-colors-accent-pink) 16%, transparent)'
+						pointerEvents='none'
 					/>
 				)}
 				{isActive && (
-					<motion.div
-						layoutId='tree-view-active-rail'
-						transition={{ type: 'spring', stiffness: 700, damping: 36 }}
-						style={{
-							position: 'absolute',
-							top: 0,
-							bottom: 0,
-							left: 0,
-							width: 2,
-							background: 'var(--beak-colors-accent-pink)',
-							borderTopRightRadius: 2,
-							borderBottomRightRadius: 2,
-							pointerEvents: 'none',
-						}}
+					<Box
+						position='absolute'
+						top='0'
+						bottom='0'
+						left='0'
+						w='2px'
+						bg='accent.pink'
+						borderTopRightRadius='2px'
+						borderBottomRightRadius='2px'
+						pointerEvents='none'
 					/>
 				)}
 				{depth > 0 && (
