@@ -397,6 +397,18 @@ importers:
 
   packages/design-system:
     dependencies:
+      '@chakra-ui/react':
+        specifier: ^3.35.0
+        version: 3.35.0(@emotion/react@11.14.0(@types/react@19.2.14)(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      '@emotion/react':
+        specifier: ^11.14.0
+        version: 11.14.0(@types/react@19.2.14)(react@19.2.6)
+      framer-motion:
+        specifier: ^11.18.2
+        version: 11.18.2(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      next-themes:
+        specifier: ^0.4.6
+        version: 0.4.6(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       styled-components:
         specifier: ^6.4.1
         version: 6.4.1(react-dom@19.2.6(react@19.2.6))(react-native@0.85.3(@babel/core@7.29.0)(@types/react@19.2.14)(react@19.2.6))(react@19.2.6)
@@ -502,7 +514,7 @@ importers:
         version: link:../types
       '@reduxjs/toolkit':
         specifier: ^2.11.2
-        version: 2.11.2(react-redux@9.2.0(@types/react@19.2.14)(react@19.2.6))(react@19.2.6)
+        version: 2.11.2(react-redux@9.2.0(@types/react@19.2.14)(react@19.2.6)(redux@5.0.1))(react@19.2.6)
       zod:
         specifier: ^4.4.3
         version: 4.4.3
@@ -533,6 +545,12 @@ importers:
       '@beak/state':
         specifier: '*'
         version: link:../state
+      '@chakra-ui/react':
+        specifier: ^3.35.0
+        version: 3.35.0(@emotion/react@11.14.0(@types/react@19.2.14)(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      '@emotion/react':
+        specifier: ^11.14.0
+        version: 11.14.0(@types/react@19.2.14)(react@19.2.6)
       '@getbeak/extension-sdk':
         specifier: '*'
         version: link:../extension-sdk
@@ -545,9 +563,15 @@ importers:
       chokidar:
         specifier: ^5.0.0
         version: 5.0.0
+      framer-motion:
+        specifier: ^11.18.2
+        version: 11.18.2(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       js-yaml:
         specifier: ^4.1.1
         version: 4.1.1
+      next-themes:
+        specifier: ^0.4.6
+        version: 0.4.6(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       pretty-bytes:
         specifier: ^7.1.0
         version: 7.1.0
@@ -593,7 +617,7 @@ importers:
         version: 4.7.0(monaco-editor@0.55.1)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       '@reduxjs/toolkit':
         specifier: ^2.11.2
-        version: 2.11.2(react-redux@9.2.0(@types/react@19.2.14)(react@19.2.6))(react@19.2.6)
+        version: 2.11.2(react-redux@9.2.0(@types/react@19.2.14)(react@19.2.6)(redux@5.0.1))(react@19.2.6)
       '@types/base64-js':
         specifier: ^1.5.0
         version: 1.5.0
@@ -668,7 +692,7 @@ importers:
         version: 4.1.0
       electron-redux-devtools:
         specifier: ^0.3.4
-        version: 0.3.4
+        version: 0.3.4(redux@5.0.1)
       fuse.js:
         specifier: ^7.3.0
         version: 7.3.0
@@ -4415,6 +4439,20 @@ packages:
   forwarded-parse@2.1.2:
     resolution: {integrity: sha512-alTFZZQDKMporBH77856pXgzhEzaUVmLCDk+egLgIgHst3Tpndzz8MnKe+GzRJRfvVdn69HhpW7cmXzvtLvJAw==}
 
+  framer-motion@11.18.2:
+    resolution: {integrity: sha512-5F5Och7wrvtLVElIpclDT0CBzMVg3dL22B64aZwHtsIY8RB4mXICLrkajK4G9R+ieSAGcgrLeae2SeUTg2pr6w==}
+    peerDependencies:
+      '@emotion/is-prop-valid': '*'
+      react: ^18.0.0 || ^19.0.0
+      react-dom: ^18.0.0 || ^19.0.0
+    peerDependenciesMeta:
+      '@emotion/is-prop-valid':
+        optional: true
+      react:
+        optional: true
+      react-dom:
+        optional: true
+
   fresh@0.5.2:
     resolution: {integrity: sha512-zJ2mQYM18rEFOudeV4GShTGIQ7RbzA7ozbU9I/XBpm7kqgMywgmylMwXHxZJmkVoYkna9d2pVXVXPdYTP9ej8Q==}
     engines: {node: '>= 0.6'}
@@ -5692,6 +5730,12 @@ packages:
       graphql: ^15.5.0 || ^16.0.0 || ^17.0.0
       monaco-editor: '>= 0.20.0 < 0.53'
       prettier: ^2.8.0 || ^3.0.0
+
+  motion-dom@11.18.1:
+    resolution: {integrity: sha512-g76KvA001z+atjfxczdRtw/RXOM3OMSdd1f4DL77qCTF/+avrRJiawSG4yDibEQ215sr9kpinSlX2pCTJ9zbhw==}
+
+  motion-utils@11.18.1:
+    resolution: {integrity: sha512-49Kt+HKjtbJKLtgO/LKj9Ld+6vw9BjH5d9sc40R/kVyH8GLAXgT42M2NnuPcJNuA3s9ZfZBUcwIgpmZWGEE+hA==}
 
   mrmime@2.0.1:
     resolution: {integrity: sha512-Y3wQdFg2Va6etvQ5I82yUhGdsKrcYox6p7FfL1LbK2J4V01F9TGlepTIhnK24t7koZibmg82KGglhA1XK5IsLQ==}
@@ -9208,7 +9252,7 @@ snapshots:
       '@types/react': 19.2.14
     optional: true
 
-  '@reduxjs/toolkit@2.11.2(react-redux@9.2.0(@types/react@19.2.14)(react@19.2.6))(react@19.2.6)':
+  '@reduxjs/toolkit@2.11.2(react-redux@9.2.0(@types/react@19.2.14)(react@19.2.6)(redux@5.0.1))(react@19.2.6)':
     dependencies:
       '@standard-schema/spec': 1.1.0
       '@standard-schema/utils': 0.3.0
@@ -11942,7 +11986,9 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  electron-redux-devtools@0.3.4: {}
+  electron-redux-devtools@0.3.4(redux@5.0.1):
+    dependencies:
+      redux: 5.0.1
 
   electron-releases@3.1171.0: {}
 
@@ -12369,6 +12415,16 @@ snapshots:
       fetch-blob: 3.2.0
 
   forwarded-parse@2.1.2: {}
+
+  framer-motion@11.18.2(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6):
+    dependencies:
+      motion-dom: 11.18.1
+      motion-utils: 11.18.1
+      tslib: 2.8.1
+    optionalDependencies:
+      '@emotion/is-prop-valid': 1.4.0
+      react: 19.2.6
+      react-dom: 19.2.6(react@19.2.6)
 
   fresh@0.5.2:
     optional: true
@@ -14058,6 +14114,12 @@ snapshots:
       monaco-editor: 0.55.1
       picomatch-browser: 2.2.6
       prettier: 3.8.3
+
+  motion-dom@11.18.1:
+    dependencies:
+      motion-utils: 11.18.1
+
+  motion-utils@11.18.1: {}
 
   mrmime@2.0.1: {}
 

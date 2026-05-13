@@ -17,6 +17,10 @@
 		"start": "tsgo --build tsconfig.json --watch"
 	},
 	"dependencies": {
+		"@chakra-ui/react": "^3.35.0",
+		"@emotion/react": "^11.14.0",
+		"framer-motion": "^11.18.2",
+		"next-themes": "^0.4.6",
 		"styled-components": "^6.4.1"
 	},
 	"devDependencies": {

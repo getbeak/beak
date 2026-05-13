@@ -1,21 +1,8 @@
-import * as React from 'react';
-import { ThemeProvider } from 'styled-components';
+// The design-system package now exports a Chakra UI v3 theme + provider.
+// The legacy styled-components-only `DesignSystemProvider` is kept as an
+// alias for `BeakChakraProvider` so existing call sites continue to work
+// during the migration window. Both names will resolve to the same
+// Chakra-aware provider — pick `BeakChakraProvider` in new code.
 
-import fonts from './fonts';
-import { createUiColors } from './themes';
-import type { DesignSystem, Theme } from './types';
-
-function createDesignSystem(themeKey: Theme): DesignSystem {
-	return {
-		theme: themeKey,
-		ui: createUiColors(themeKey),
-
-		fonts,
-	};
-}
-
-const DesignSystemProvider: React.FC<React.PropsWithChildren<{ themeKey: Theme }>> = ({ children, themeKey }) => (
-	<ThemeProvider theme={createDesignSystem(themeKey)}>{children}</ThemeProvider>
-);
-
-export { DesignSystemProvider };
+export { BeakChakraProvider, BeakChakraProvider as DesignSystemProvider } from './provider';
+export { system as chakraSystem } from './theme';
