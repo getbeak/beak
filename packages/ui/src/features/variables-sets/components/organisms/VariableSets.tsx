@@ -137,12 +137,22 @@ const VariableSets: React.FC<React.PropsWithChildren<unknown>> = () => {
 	return (
 		<React.Fragment>
 			{empty && (
-				<Flex direction='column' align='center' justify='center' gap='2' py='6' px='3' color='fg.subtle' textAlign='center'>
-					<Box opacity={0.4}>
-						<Table size={28} />
+				<Flex direction='column' align='center' justify='center' gap='2.5' py='5' px='3' textAlign='center'>
+					<Flex
+						align='center'
+						justify='center'
+						w='40px'
+						h='40px'
+						borderRadius='lg'
+						bg='color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent)'
+						color='accent.pink'
+					>
+						<Table size={18} strokeWidth={2} />
+					</Flex>
+					<Box fontSize='xs' fontWeight='600' color='fg.default'>{'No variable sets yet'}</Box>
+					<Box fontSize='10px' color='fg.subtle' fontWeight='700' letterSpacing='0.06em' textTransform='uppercase'>
+						{'Right-click to add one'}
 					</Box>
-					<Box fontSize='sm' color='fg.muted'>{'No variable sets yet'}</Box>
-					<Box fontSize='xs' opacity={0.7}>{'Right-click here to add one'}</Box>
 				</Flex>
 			)}
 
