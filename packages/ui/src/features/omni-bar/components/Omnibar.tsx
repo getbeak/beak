@@ -2,7 +2,6 @@ import React from 'react';
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { fadeIn, scaleIn } from '@beak/design-system/animations';
-import { toHexAlpha } from '@beak/design-system/utils';
 import { checkShortcut } from '@beak/ui/lib/keyboard-shortcuts';
 import { useAppSelector } from '@beak/ui/store/redux';
 import styled from 'styled-components';

@@ -1,4 +1,3 @@
-import { toHexAlpha } from '@beak/design-system/utils';
 import styled from 'styled-components';
 
 const SidebarSectionCard = styled.div`

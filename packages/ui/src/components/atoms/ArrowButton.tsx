@@ -1,7 +1,7 @@
 import { faAnglesLeft, faAnglesRight } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
-import styled, { useTheme } from 'styled-components';
+import styled from 'styled-components';
 
 interface ArrowButtonProps {
 	direction?: 'left' | 'right';
@@ -10,7 +10,6 @@ interface ArrowButtonProps {
 
 const ArrowButton: React.FC<React.PropsWithChildren<ArrowButtonProps>> = props => {
 	const { direction = 'left', children, onClick } = props;
-	const theme = useTheme();
 
 	return (
 		<Button onClick={onClick}>

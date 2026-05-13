@@ -9,7 +9,7 @@ import { useAppSelector } from '@beak/ui/store/redux';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import type { ValidRequestNode } from '@getbeak/types/nodes';
-import styled, { useTheme } from 'styled-components';
+import styled from 'styled-components';
 import URL from 'url-parse';
 
 import { requestFlight } from '../../../../store/flight/actions';
@@ -21,7 +21,6 @@ export interface HeaderProps {
 
 const Header: React.FC<React.PropsWithChildren<HeaderProps>> = props => {
 	const dispatch = useDispatch();
-	const theme = useTheme();
 	const currentFlight = useAppSelector(s => s.global.flight.activeFlights[props.node.id]);
 	const flighting = Boolean(currentFlight);
 	const { node } = props;

@@ -5,7 +5,7 @@ import { faTable, type IconDefinition } from '@fortawesome/free-solid-svg-icons'
 import { faFolderTree } from '@fortawesome/free-solid-svg-icons/faFolderTree';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
-import styled, { useTheme } from 'styled-components';
+import styled from 'styled-components';
 
 const icons: Record<SidebarVariant, IconDefinition> = {
 	project: faFolderTree,
@@ -21,7 +21,6 @@ interface SidebarMenuItemProps {
 }
 
 const SidebarMenuItem: React.FC<React.PropsWithChildren<SidebarMenuItemProps>> = props => {
-	const theme = useTheme();
 	const { item, name, selectedItem, shortcut, onClick } = props;
 	const active = item === selectedItem;
 

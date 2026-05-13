@@ -1,4 +1,3 @@
-import { toHexAlpha } from '@beak/design-system/utils';
 import { useAppSelector } from '@beak/ui/store/redux';
 import React from 'react';
 import type { MutableRefObject } from 'react';

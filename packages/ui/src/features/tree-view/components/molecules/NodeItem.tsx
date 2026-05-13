@@ -1,4 +1,3 @@
-import { toVibrancyAlpha } from '@beak/ui/design-system/utils';
 import { checkShortcut } from '@beak/ui/lib/keyboard-shortcuts';
 import { projectPanePreferenceSetCollapse } from '@beak/ui/store/preferences/actions';
 import { selectNextLogicalNode, selectPreviousLogicalNode } from '@beak/ui/utils/keyboard-dom-node-navigation';

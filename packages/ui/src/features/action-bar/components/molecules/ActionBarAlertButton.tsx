@@ -3,7 +3,6 @@ import { useAppSelector } from '@beak/ui/store/redux';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useRef, useState } from 'react';
-import { useTheme } from 'styled-components';
 
 import ActionBarButton from '../atoms/ActionBarButton';
 import AlertsPopover from '../organisms/AlertsPopover';
@@ -13,7 +12,6 @@ interface ActionBarAlertButtonProps {
 }
 
 const ActionBarAlertButton: React.FC<ActionBarAlertButtonProps> = ({ id }) => {
-	const theme = useTheme();
 	const [showPopover, setShowPopover] = useState(false);
 	const alerts = useAppSelector(s => s.global.project.alerts);
 	const hasAlerts = TypedObject.values(alerts).filter(Boolean).length > 0;

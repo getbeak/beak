@@ -5,7 +5,7 @@ import { faCaretLeft, faCaretRight, faLock, faSearch } from '@fortawesome/free-s
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import styled, { useTheme } from 'styled-components';
+import styled from 'styled-components';
 import {
 	useNavigateFlightHistoryForSelectedTab,
 	useSelectedTabFlightRequirements,
@@ -19,7 +19,6 @@ import ActionBarAlertButton from './molecules/ActionBarAlertButton';
 import ActionBarFlightStatus from './molecules/ActionBarFlightStatus';
 
 const ActionBar: React.FC<React.PropsWithChildren<unknown>> = () => {
-	const theme = useTheme();
 	const dispatch = useDispatch();
 
 	// Use new tab-integrated flight hooks

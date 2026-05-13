@@ -1,4 +1,3 @@
-import { toHexAlpha } from '@beak/design-system/utils';
 import { faDiagramProject } from '@fortawesome/free-solid-svg-icons/faDiagramProject';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { format, parseISO } from 'date-fns';

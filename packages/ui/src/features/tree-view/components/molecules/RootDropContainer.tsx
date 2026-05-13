@@ -1,4 +1,3 @@
-import { toHexAlpha } from '@beak/design-system/utils';
 import React from 'react';
 import styled, { css } from 'styled-components';
 

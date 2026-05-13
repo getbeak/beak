@@ -1,7 +1,6 @@
 import type { SidebarVariant } from '@beak/common/types/beak-hub';
 import type { MenuEventPayload } from '@beak/common/web-contents/types';
 import WindowSessionContext from '@beak/ui/contexts/window-session-context';
-import { toVibrancyAlpha } from '@beak/ui/design-system/utils';
 import { checkShortcut } from '@beak/ui/lib/keyboard-shortcuts';
 import { sidebarPreferenceSetCollapse, sidebarPreferenceSetSelected } from '@beak/ui/store/preferences/actions';
 import { useAppSelector } from '@beak/ui/store/redux';

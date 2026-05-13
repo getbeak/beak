@@ -1,4 +1,3 @@
-import { toHexAlpha } from '@beak/design-system/utils';
 import WindowSessionContext from '@beak/ui/contexts/window-session-context';
 import React from 'react';
 import { useContext } from 'react';

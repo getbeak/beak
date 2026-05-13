@@ -1,13 +1,11 @@
-import { toHexAlpha } from '@beak/design-system/utils';
 import { ipcNestService } from '@beak/ui/lib/ipc';
 import { faUserCircle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 import { useEffect, useState } from 'react';
-import styled, { useTheme } from 'styled-components';
+import styled from 'styled-components';
 
 const AccountItem: React.FC<React.PropsWithChildren<unknown>> = () => {
-	const theme = useTheme();
 	const [primaryEmail, setPrimaryEmail] = useState<string | null>(null);
 
 	useEffect(() => {

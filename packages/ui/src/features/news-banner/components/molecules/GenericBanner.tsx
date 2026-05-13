@@ -3,7 +3,7 @@ import { ipcExplorerService } from '@beak/ui/lib/ipc';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
-import styled, { useTheme } from 'styled-components';
+import styled from 'styled-components';
 
 interface GenericBannerProps {
 	item: NewsItemGenericBanner;
@@ -11,7 +11,6 @@ interface GenericBannerProps {
 
 const GenericBanner: React.FC<React.PropsWithChildren<GenericBannerProps>> = ({ item }) => {
 	const { action, body, emoji, title } = item.payload;
-	const theme = useTheme();
 
 	function visitAction() {
 		if (!action) return;
