@@ -1,8 +1,10 @@
+import { load as yamlLoad, YAMLException } from 'js-yaml';
+
 /**
  * Parse a user-supplied OpenAPI spec source (the raw text of a `.json` or
- * `.yaml` file) into a plain JS object. JSON is parsed natively; YAML is
- * NOT handled here yet — we surface a friendly error so the UI can guide
- * the user to convert to JSON until we wire `js-yaml` in.
+ * `.yaml` file) into a plain JS object. Tries JSON first when the content
+ * looks like JSON; otherwise falls back to YAML. Filename extension is
+ * used as a hint but never overrides the content sniff.
  *
  * Returns either `{ ok: true, spec }` or `{ ok: false, error }`. Pure
  * function; no IO. The structural shape isn't validated — that's the
@@ -19,22 +21,38 @@ export function parseSpecSource(source: string, filename?: string): ParseSpecRes
 	const looksJson = trimmed.startsWith('{') || trimmed.startsWith('[');
 	const extYaml = filename ? /\.(ya?ml)$/i.test(filename) : false;
 
-	if (extYaml && !looksJson) {
-		return {
-			ok: false,
-			error: 'YAML spec imports are not supported yet — convert the spec to JSON and try again.',
-		};
+	if (looksJson) {
+		try {
+			const parsed = JSON.parse(trimmed);
+			if (parsed === null || typeof parsed !== 'object') {
+				return { ok: false, error: 'Spec must parse to a JSON object.' };
+			}
+			return { ok: true, spec: parsed };
+		} catch (err) {
+			const message = err instanceof Error ? err.message : String(err);
+			return { ok: false, error: `Failed to parse spec as JSON — ${message}` };
+		}
 	}
 
+	// YAML branch — covers `.yaml` files and JSON-via-YAML (YAML is a JSON
+	// superset, so even a typo'd JSON file may parse here as YAML).
 	try {
-		const parsed = JSON.parse(trimmed);
-		if (parsed === null || typeof parsed !== 'object') {
-			return { ok: false, error: 'Spec must parse to a JSON object.' };
+		const parsed = yamlLoad(trimmed);
+		if (parsed === null || typeof parsed !== 'object' || Array.isArray(parsed)) {
+			return {
+				ok: false,
+				error: extYaml
+					? 'YAML spec did not parse to an object.'
+					: 'Spec did not parse to a JSON or YAML object.',
+			};
 		}
 		return { ok: true, spec: parsed };
 	} catch (err) {
-		const message = err instanceof Error ? err.message : String(err);
-		return { ok: false, error: `Failed to parse spec as JSON — ${message}` };
+		const message = err instanceof YAMLException ? err.message : err instanceof Error ? err.message : String(err);
+		return {
+			ok: false,
+			error: extYaml ? `Failed to parse spec as YAML — ${message}` : `Failed to parse spec — ${message}`,
+		};
 	}
 }
 

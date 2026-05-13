@@ -542,6 +542,9 @@ importers:
       chokidar:
         specifier: ^5.0.0
         version: 5.0.0
+      js-yaml:
+        specifier: ^4.1.1
+        version: 4.1.1
       pretty-bytes:
         specifier: ^7.1.0
         version: 7.1.0
@@ -600,6 +603,9 @@ importers:
       '@types/fs-extra':
         specifier: ^11.0.4
         version: 11.0.4
+      '@types/js-yaml':
+        specifier: ^4.0.9
+        version: 4.0.9
       '@types/lodash.get':
         specifier: ^4.4.9
         version: 4.4.9

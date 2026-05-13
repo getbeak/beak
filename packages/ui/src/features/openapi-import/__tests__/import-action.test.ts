@@ -46,15 +46,21 @@ describe('importOpenApi', () => {
 		expect(result.notice).toMatch(/Wrote 1 request/);
 	});
 
-	it('rejects YAML input with a friendly error before hitting IPC', async () => {
+	it('parses YAML input and forwards to IPC', async () => {
+		syncFromSpec.mockResolvedValueOnce({
+			collectionPath: 'x',
+			requestPaths: [],
+			overwritten: [],
+			skipped: [],
+			warnings: [],
+		});
 		const r = await importOpenApi({
-			source: 'openapi: 3.0.0\ninfo:\n  title: x',
+			source: ['openapi: 3.0.0', 'info: { title: x, version: "1" }'].join('\n'),
 			filename: 'spec.yaml',
 			targetFolder: 'tree/pets',
 		});
-		expect(r.ok).toBe(false);
-		if (!r.ok) expect(r.error).toMatch(/YAML/);
-		expect(syncFromSpec).not.toHaveBeenCalled();
+		expect(r.ok).toBe(true);
+		expect(syncFromSpec).toHaveBeenCalledTimes(1);
 	});
 
 	it("rejects non-OpenAPI-3 specs before hitting IPC", async () => {
