@@ -1,13 +1,14 @@
 import React from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Box } from '@chakra-ui/react';
+import { Box, Flex } from '@chakra-ui/react';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { VariableManager } from '@beak/ui/features/variables';
 import useVariableContext from '@beak/ui/features/variables/hooks/use-variable-context';
 import { ipcExplorerService, ipcExtensionsService } from '@beak/ui/lib/ipc';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { movePosition } from '@beak/ui/utils/arrays';
-import { Plug } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Plug, SearchX } from 'lucide-react';
 
 import type { Variable, VariableStaticInformation } from '@getbeak/extension-sdk';
 import Fuse from 'fuse.js';
@@ -52,151 +53,111 @@ const VariableSelector: React.FC<React.PropsWithChildren<VariableSelectorProps>>
 				}),
 		];
 
-		if (!query)
-			return all;
+		if (!query) return all;
 
 		const fuse = new Fuse(all, {
 			includeScore: true,
-			keys: [
-				'name',
-				'description',
-				'keywords',
-			],
+			keys: ['name', 'description', 'keywords'],
 		});
 
-		return fuse.search(query)
-			.sort()
-			.map(r => r.item)
-			.sort();
+		return fuse.search(query).sort().map(r => r.item).sort();
 	}, [variableSets, query]);
 
 	useEffect(() => {
-		if (!sel)
-			return;
-
+		if (!sel) return;
 		const node = editableElement.childNodes[sel.partIndex];
-
-		if (!node)
-			return;
-
+		if (!node) return;
 		const range = new Range();
-
 		range.selectNode(node);
-
 		const rect = range.getBoundingClientRect();
-
 		const contentLength = (node.textContent ?? '').length;
-		const positionOffset = sel.offset / contentLength;
+		const positionOffset = sel.offset / Math.max(contentLength, 1);
 		const width = rect.width;
 		const offsetDelta = width * positionOffset;
-
-		setPosition({
-			left: rect.left + offsetDelta,
-			top: rect.top + rect.height + 5,
-		});
+		setPosition({ left: rect.left + offsetDelta, top: rect.top + rect.height + 6 });
 	}, [Boolean(sel), editableElement]);
 
 	useEffect(() => {
-		// This actually exists
-		// @ts-expect-error
+		// @ts-expect-error scrollIntoViewIfNeeded exists in Chromium
 		activeRef.current?.scrollIntoViewIfNeeded(false);
 	}, [activeRef, active]);
 
 	useEffect(() => {
 		function onKeyDown(event: KeyboardEvent) {
-			if (event.shiftKey || event.metaKey || event.altKey || event.ctrlKey)
-				return;
-
-			if (!['ArrowDown', 'ArrowUp', 'Enter', 'Escape'].includes(event.key))
-				return;
+			if (event.shiftKey || event.metaKey || event.altKey || event.ctrlKey) return;
+			if (!['ArrowDown', 'ArrowUp', 'Enter', 'Escape'].includes(event.key)) return;
 
 			switch (event.key) {
 				case 'ArrowUp':
 				case 'ArrowDown': {
-					let newIndex = active;
-
-					if (event.key === 'ArrowUp')
-						newIndex = movePosition(items, active, 'backward');
-					else if (event.key === 'ArrowDown')
-						newIndex = movePosition(items, active, 'forward');
-
+					const newIndex = event.key === 'ArrowUp'
+						? movePosition(items, active, 'backward')
+						: movePosition(items, active, 'forward');
 					setActive(newIndex);
 					break;
 				}
 
 				case 'Enter': {
 					const item = items[active];
-
-					if (!item)
-						return;
-
+					if (!item) return;
 					createDefaultVariable(item);
 					break;
 				}
 
 				case 'Escape':
 					onClose();
-
 					break;
 
-				default: return;
+				default:
+					return;
 			}
 
 			event.preventDefault();
 		}
 
 		window.addEventListener('keydown', onKeyDown);
-
 		return () => window.removeEventListener('keydown', onKeyDown);
 	}, [active, items]);
 
 	async function createDefaultVariable(item: VariableStaticInformation) {
 		let payload: any;
-
-		if (item.external)
+		if (item.external) {
 			payload = await ipcExtensionsService.rtvCreateDefaultPayload({ type: item.type, context });
-		else
+		} else {
 			payload = await (item as Variable<any>).createDefaultPayload(context);
-
+		}
 		onDone({ type: item.type, payload });
 	}
 
-	if (!position)
-		return null;
+	if (!position) return null;
 
-	const wrapperBase = {
-		display: 'flex',
-		h: '160px',
-		w: '375px',
-		flexDirection: 'column' as const,
-		borderWidth: '1px',
-		borderColor: 'border.default',
-		bg: 'bg.surface',
-		transformOrigin: 'center',
-		animation: 'beakVarSelectorScale .2s ease',
-		transition: 'transform .1s ease',
-		fontSize: 'sm',
-	};
-	const wrapperStyle = {
-		marginTop: `${position.top}px`,
-		marginLeft: `${position.left}px`,
-	};
+	const descriptionItem = items[active];
+
 	const description = (
 		<Box
 			borderTopWidth='1px'
-			borderColor='border.default'
-			bg='bg.canvas'
-			p='1.5'
-			minH='30px'
-			css={{ '> a': { color: '#ffa210' } }}
+			borderColor='border.subtle'
+			bg='color-mix(in srgb, var(--beak-colors-bg-canvas) 70%, transparent)'
+			px='2'
+			py='1.5'
+			minH='32px'
+			fontSize='xs'
+			color='fg.muted'
+			css={{ '> a': { color: 'var(--beak-colors-accent-pink)', textDecoration: 'underline' } }}
 		>
-			{items.length > 0 && items[active]?.external && '(Extension) '}
-			{items.length > 0 && items[active]?.description}
+			{items.length > 0 && descriptionItem?.external && (
+				<Flex as='span' display='inline-flex' align='center' gap='1' mr='1' color='accent.pink'>
+					<Plug size={10} />
+					<Box as='span' fontWeight='600' fontSize='9px' textTransform='uppercase' letterSpacing='0.06em'>
+						{'Extension'}
+					</Box>
+				</Flex>
+			)}
+			{items.length > 0 && descriptionItem?.description}
 			{items.length === 0 && (
 				<React.Fragment>
-					<strong>{'Missing a variable you would find useful?'}</strong>
-					<br />
-					{'You can build your own with an extension, check the '}
+					<Box as='strong' color='fg.default'>{'Missing a variable?'}</Box>{' '}
+					{'Build your own with an extension — check the '}
 					<a
 						href='https://getbeak.notion.site/Extensions-4c16ca640b35460787056f8be815b904'
 						onClick={async event => {
@@ -214,82 +175,95 @@ const VariableSelector: React.FC<React.PropsWithChildren<VariableSelectorProps>>
 		</Box>
 	);
 
-	if (items.length === 0) {
-		return (
-			<Box
-				position='fixed'
-				inset='0'
-				zIndex={101}
-				css={{
-					'@keyframes beakVarSelectorScale': {
-						'0%': { transform: 'scale(.97)', opacity: 0 },
-						'100%': { transform: 'scale(1)', opacity: 1 },
-					},
-				}}
-				onClick={event => {
-					event.stopPropagation();
-					onClose();
-				}}
-			>
-				<Box {...wrapperBase} style={wrapperStyle}>
-					<Box flexGrow={2} overflowY='auto'>
-						<Box p='2.5' cursor='pointer' color='fg.default' overflowX='hidden'>
-							{'There are no variables matching your search. Try widening '}
-							{'your horizons.'}
-						</Box>
-					</Box>
-					{description}
-				</Box>
-			</Box>
-		);
-	}
+	const cardStyle: React.CSSProperties = {
+		marginTop: `${position.top}px`,
+		marginLeft: `${position.left}px`,
+		width: 380,
+		height: 220,
+		display: 'flex',
+		flexDirection: 'column',
+		border: '1px solid var(--beak-colors-border-default)',
+		borderRadius: 8,
+		background: 'color-mix(in srgb, var(--beak-colors-bg-surface) 88%, transparent)',
+		backdropFilter: 'blur(12px) saturate(160%)',
+		boxShadow: '0 20px 48px rgba(0,0,0,0.32), 0 2px 6px rgba(0,0,0,0.2)',
+		overflow: 'hidden',
+		fontSize: 13,
+	};
 
 	return (
 		<Box
 			position='fixed'
 			inset='0'
 			zIndex={101}
-			css={{
-				'@keyframes beakVarSelectorScale': {
-					'0%': { transform: 'scale(.97)', opacity: 0 },
-					'100%': { transform: 'scale(1)', opacity: 1 },
-				},
-			}}
 			onClick={event => {
 				event.stopPropagation();
 				onClose();
 			}}
 		>
-			<Box {...wrapperBase} style={wrapperStyle}>
-				<Box flexGrow={2} overflowY='auto'>
-					{items.map((i, idx) => (
-						<Box
-							key={uuid.v4()}
-							ref={(el: HTMLDivElement | null) => {
-								if (active === idx) activeRef.current = el;
-							}}
-							tabIndex={0}
-							px='1'
-							py='0.5'
-							cursor='pointer'
-							color='fg.default'
-							overflowX='hidden'
-							bg={active === idx ? 'accent.pink' : undefined}
-							_focus={{ bg: 'accent.pink', outline: 'none' }}
-							onClick={() => setActive(idx)}
-							onDoubleClick={() => createDefaultVariable(i)}
-						>
-							{i.external && (
-								<Box display='inline-block' mr='1.5'>
-									<Plug id='tt-variable-input-extension' />
-								</Box>
-							)}
-							{i.name}
-						</Box>
-					))}
+			<motion.div
+				initial={{ opacity: 0, scale: 0.96, y: -4 }}
+				animate={{ opacity: 1, scale: 1, y: 0 }}
+				exit={{ opacity: 0, scale: 0.96, y: -4 }}
+				transition={{ type: 'spring', stiffness: 700, damping: 36 }}
+				style={cardStyle}
+				onClick={event => event.stopPropagation()}
+			>
+				<Box flex='1 1 auto' overflowY='auto'>
+					{items.length === 0 && (
+						<Flex direction='column' align='center' gap='2' py='6' color='fg.subtle'>
+							<Box opacity={0.4}><SearchX size={22} /></Box>
+							<Box fontSize='sm' color='fg.muted'>{'No matching variables'}</Box>
+							<Box fontSize='xs' opacity={0.7}>{'Try a different query'}</Box>
+						</Flex>
+					)}
+					{items.map((i, idx) => {
+						const isActive = active === idx;
+						return (
+							<Box
+								key={uuid.v4()}
+								ref={(el: HTMLDivElement | null) => {
+									if (isActive) activeRef.current = el;
+								}}
+								tabIndex={0}
+								position='relative'
+								px='2'
+								py='1'
+								cursor='pointer'
+								color={isActive ? 'fg.default' : 'fg.muted'}
+								transition='color .12s ease'
+								_hover={{ color: 'fg.default' }}
+								onClick={() => setActive(idx)}
+								onDoubleClick={() => createDefaultVariable(i)}
+							>
+								{isActive && (
+									<motion.div
+										layoutId='var-selector-active'
+										transition={{ type: 'spring', stiffness: 700, damping: 36 }}
+										style={{
+											position: 'absolute',
+											inset: 0,
+											background: 'color-mix(in srgb, var(--beak-colors-accent-pink) 22%, transparent)',
+											pointerEvents: 'none',
+										}}
+									/>
+								)}
+								<Flex position='relative' align='center' gap='1.5'>
+									{i.external && (
+										<Box color={isActive ? 'accent.pink' : 'fg.subtle'} flex='0 0 auto'>
+											<Plug size={11} />
+										</Box>
+									)}
+									<Box overflow='hidden' textOverflow='ellipsis' whiteSpace='nowrap'>
+										{i.name}
+									</Box>
+								</Flex>
+							</Box>
+						);
+					})}
 				</Box>
 				{description}
-			</Box>
+			</motion.div>
 		</Box>
 	);
 };
