@@ -1,29 +1,49 @@
-import { Box, type BoxProps } from '@chakra-ui/react';
+import { motion } from 'framer-motion';
+import { AlertTriangle } from 'lucide-react';
 import * as React from 'react';
 
-const WarningLabel: React.FC<BoxProps> = ({ children, ...rest }) => (
-	<Box
-		bg='#f9ba40'
-		cursor='pointer'
-		px='1'
-		py='0.5'
-		fontSize='11px'
-		borderRadius='md'
-		borderWidth='2px'
-		borderColor='#f9ba40e6'
-		zIndex={101}
-		animation='beakWarningPulse 8s infinite'
-		css={{
-			'@keyframes beakWarningPulse': {
-				'0%': { backgroundColor: '#f9ba40d3' },
-				'50%': { backgroundColor: '#e09e3aaa' },
-				'100%': { backgroundColor: '#f9ba40d8' },
-			},
+interface WarningLabelProps {
+	onClick?: () => void;
+	children: React.ReactNode;
+}
+
+const WarningLabel: React.FC<WarningLabelProps> = ({ onClick, children }) => (
+	<motion.div
+		initial={{ opacity: 0, scale: 0.96 }}
+		animate={{
+			opacity: 1,
+			scale: 1,
+			boxShadow: [
+				'0 0 0 0 rgba(249, 186, 64, 0.0)',
+				'0 0 0 6px rgba(249, 186, 64, 0.18)',
+				'0 0 0 0 rgba(249, 186, 64, 0.0)',
+			],
 		}}
-		{...rest}
+		transition={{
+			boxShadow: { duration: 3.2, repeat: Number.POSITIVE_INFINITY, ease: 'easeInOut' },
+			opacity: { duration: 0.18 },
+			scale: { duration: 0.18 },
+		}}
+		onClick={onClick}
+		style={{
+			display: 'inline-flex',
+			alignItems: 'center',
+			gap: 4,
+			padding: '2px 6px',
+			cursor: 'pointer',
+			fontSize: 10,
+			fontWeight: 600,
+			letterSpacing: '0.04em',
+			borderRadius: 6,
+			border: '1px solid #f9ba40',
+			background: 'color-mix(in srgb, #f9ba40 90%, transparent)',
+			color: '#1a1206',
+			zIndex: 101,
+		}}
 	>
+		<AlertTriangle size={10} />
 		{children}
-	</Box>
+	</motion.div>
 );
 
 export default WarningLabel;

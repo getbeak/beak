@@ -13,9 +13,9 @@ const ArbiterOverlayBadge: React.FC = () => {
 
 	return (
 		<React.Fragment>
-			<WarningLabel position='absolute' top='5' right='5' onClick={() => setShow(true)}>
-				{'Subscription issue'}
-			</WarningLabel>
+			<div style={{ position: 'absolute', top: 20, right: 20, zIndex: 102 }}>
+				<WarningLabel onClick={() => setShow(true)}>{'Subscription issue'}</WarningLabel>
+			</div>
 			<ArbiterDialog open={show} onClose={() => setShow(false)} />
 		</React.Fragment>
 	);
