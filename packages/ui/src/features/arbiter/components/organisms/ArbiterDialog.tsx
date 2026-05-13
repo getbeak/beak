@@ -19,8 +19,21 @@ export const ArbiterDialog: React.FC<ArbiterDialogProps> = ({ open, onClose }) =
 	return (
 		<Dialog onClose={onClose} tone='alert'>
 			<Box w='520px' p='5'>
-				<Flex align='center' gap='2' mb='3' color='accent.warning'>
-					<AlertTriangle size={16} strokeWidth={2.2} />
+				<Flex align='center' gap='2.5' mb='3'>
+					<Flex
+						align='center'
+						justify='center'
+						w='32px'
+						h='32px'
+						borderRadius='full'
+						bg='color-mix(in srgb, var(--beak-colors-accent-warning) 14%, transparent)'
+						borderWidth='1px'
+						borderColor='color-mix(in srgb, var(--beak-colors-accent-warning) 28%, transparent)'
+						color='accent.warning'
+						boxShadow='0 4px 12px color-mix(in srgb, var(--beak-colors-accent-warning) 22%, transparent), inset 0 1px 0 color-mix(in srgb, white 16%, transparent)'
+					>
+						<AlertTriangle size={14} strokeWidth={2} />
+					</Flex>
 					<Box fontSize='md' fontWeight='600' color='fg.default'>
 						{'Subscription check failed'}
 					</Box>
