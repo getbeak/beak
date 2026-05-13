@@ -34,17 +34,18 @@ export default function renderValueSections(parts: ValueSections, variableSets: 
 							contentEditable={false}
 							data-index={idx}
 							data-editable={false}
+							data-missing='true'
 							data-type={p.type}
 							data-payload={void 0}
 							key={uuid.v4()}
 						>
 							&nbsp;
-							<div
+							<span
 								data-tooltip-id={'tt-variable-renderer-extension-missing'}
-								data-tooltip-content={`Name ${p.type}`}
+								data-tooltip-content={`Missing extension: ${p.type}`}
 							>
-								{'[Extension missing]'}
-							</div>
+								{'⚠ extension missing'}
+							</span>
 							&nbsp;
 						</div>
 					);
