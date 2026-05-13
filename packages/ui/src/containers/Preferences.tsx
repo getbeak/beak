@@ -94,7 +94,7 @@ const About: React.FC = () => {
 					onClick={() => setTab('engineering')}
 				/>
 			</Box>
-			<Box bg='border.default' />
+			<Box bg='linear-gradient(to bottom, transparent, color-mix(in srgb, var(--beak-colors-border-default) 70%, transparent) 12%, color-mix(in srgb, var(--beak-colors-border-default) 70%, transparent) 88%, transparent)' />
 			<Box bg='bg.canvas'>
 				{tab === 'general' && <GeneralPane />}
 				{tab === 'editor' && <EditorPane />}
