@@ -40,12 +40,13 @@ const SidebarMenuItem: React.FC<SidebarMenuItemProps> = props => {
 				borderRadius='md'
 				color={isActive ? 'accent.pink' : 'fg.muted'}
 				bg={isActive ? 'color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent)' : 'transparent'}
-				transition='color .14s ease, background-color .14s ease, transform .08s ease'
+				boxShadow={isActive ? 'inset 0 0 0 1px color-mix(in srgb, var(--beak-colors-accent-pink) 22%, transparent)' : undefined}
+				transition='color .14s ease, background-color .14s ease, transform .08s ease, box-shadow .14s ease'
 				_hover={{
-					color: isActive ? 'accent.pink' : 'fg.default',
+					color: isActive ? 'accent.pink' : 'accent.pink',
 					bg: isActive
-						? 'color-mix(in srgb, var(--beak-colors-accent-pink) 20%, transparent)'
-						: 'color-mix(in srgb, var(--beak-colors-bg-surface) 70%, transparent)',
+						? 'color-mix(in srgb, var(--beak-colors-accent-pink) 22%, transparent)'
+						: 'color-mix(in srgb, var(--beak-colors-accent-pink) 12%, transparent)',
 				}}
 				_active={{ transform: 'scale(0.92)' }}
 				onClick={() => onClick(item)}
