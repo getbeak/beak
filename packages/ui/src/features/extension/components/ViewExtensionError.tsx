@@ -16,8 +16,21 @@ interface ViewExtensionErrorProps {
 const ViewExtensionError: React.FC<ViewExtensionErrorProps> = props => (
 	<Dialog onClose={props.onClose}>
 		<Box w='520px' p='4'>
-			<Flex align='center' gap='2' mb='2' color='accent.alert'>
-				<Puzzle size={16} />
+			<Flex align='center' gap='2.5' mb='3'>
+				<Flex
+					align='center'
+					justify='center'
+					w='32px'
+					h='32px'
+					borderRadius='full'
+					bg='color-mix(in srgb, var(--beak-colors-accent-alert) 14%, transparent)'
+					borderWidth='1px'
+					borderColor='color-mix(in srgb, var(--beak-colors-accent-alert) 28%, transparent)'
+					color='accent.alert'
+					boxShadow='0 4px 12px color-mix(in srgb, var(--beak-colors-accent-alert) 22%, transparent), inset 0 1px 0 color-mix(in srgb, white 16%, transparent)'
+				>
+					<Puzzle size={14} strokeWidth={2} />
+				</Flex>
 				<Box fontSize='md' fontWeight='600' color='fg.default'>
 					{'Unable to load extension'}
 				</Box>
