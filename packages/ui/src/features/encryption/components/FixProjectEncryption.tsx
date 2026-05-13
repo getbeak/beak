@@ -1,4 +1,4 @@
-import { Box } from '@chakra-ui/react';
+import { Box, Flex } from '@chakra-ui/react';
 import Button from '@beak/ui/components/atoms/Button';
 import FormError from '@beak/ui/components/atoms/FormError';
 import FormInput from '@beak/ui/components/atoms/FormInput';
@@ -6,6 +6,7 @@ import Input from '@beak/ui/components/atoms/Input';
 import Label from '@beak/ui/components/atoms/Label';
 import Dialog from '@beak/ui/components/molecules/Dialog';
 import { ipcEncryptionService } from '@beak/ui/lib/ipc';
+import { KeyRound, Lock } from 'lucide-react';
 import * as React from 'react';
 import { useState } from 'react';
 
@@ -39,24 +40,36 @@ const FixProjectEncryption: React.FC<FixProjectEncryptionProps> = ({ onClose }) 
 
 	return (
 		<Dialog onClose={() => onClose(false)}>
-			<Box w='500px' p='4' fontSize='lg'>
-				<Box fontSize='2xl' fontWeight='300'>{'Project encryption'}</Box>
-				<Box as='p' fontSize='sm' color='fg.muted' my='1.5'>
-					{'Beak projects come with built-in encryption for storing secrets, such as passwords or tokens. '}
-					{"You currently don't have the project encryption key stored, so you won't be able to use any "}
-					{'encrypted values.'}
+			<Box w='480px' p='4'>
+				<Flex align='center' gap='2' mb='2' color='accent.pink'>
+					<Lock size={16} />
+					<Box fontSize='md' fontWeight='600' color='fg.default'>
+						{'Project encryption'}
+					</Box>
+				</Flex>
+				<Box as='p' fontSize='sm' color='fg.muted' mb='2'>
+					{'Beak projects come with built-in encryption for storing secrets like passwords and tokens. '}
+					{"You don't currently have the project encryption key stored, so encrypted values can't be read."}
 				</Box>
-				<Box as='p' fontSize='sm' color='fg.muted' my='1.5'>
-					{"Ask for the project encryption key and then enter it below, then you'll be good to go!"}
+				<Box as='p' fontSize='xs' color='fg.subtle' mb='3'>
+					{'Ask a teammate for the project key, paste it below, and continue.'}
 				</Box>
 
 				<FormInput>
-					<Label>{'Encryption key'}</Label>
+					<Label>
+						<Flex align='center' gap='1'>
+							<KeyRound size={11} />
+							{'Encryption key'}
+						</Flex>
+					</Label>
 					<Input
 						type='text'
-						placeholder='example: d2h5IGJvdGhlciBkZWNvZGluZyB0aGlzPw=='
+						placeholder='d2h5IGJvdGhlciBkZWNvZGluZyB0aGlzPw=='
 						value={key}
-						onChange={e => setKey(e.currentTarget.value)}
+						onChange={e => {
+							if (error) setError('');
+							setKey(e.currentTarget.value);
+						}}
 						onKeyPress={e => {
 							if (e.key === 'Enter') submit();
 						}}
@@ -64,9 +77,12 @@ const FixProjectEncryption: React.FC<FixProjectEncryptionProps> = ({ onClose }) 
 					{error && <FormError>{error}</FormError>}
 				</FormInput>
 
-				<Button disabled={disable} onClick={() => submit()}>
-					{'Continue'}
-				</Button>
+				<Flex justify='flex-end' gap='2' mt='3'>
+					<Button colour='secondary' size='sm' onClick={() => onClose(false)}>{'Cancel'}</Button>
+					<Button size='sm' disabled={disable} onClick={submit}>
+						{disable ? 'Saving…' : 'Continue'}
+					</Button>
+				</Flex>
 			</Box>
 		</Dialog>
 	);
