@@ -220,16 +220,17 @@ const Header: React.FC<HeaderProps> = ({ node }) => {
 				fontSize='sm'
 				letterSpacing='0.01em'
 				cursor='pointer'
-				boxShadow='0 4px 14px color-mix(in srgb, var(--beak-colors-accent-pink) 35%, transparent)'
-				transition='background-color .14s ease, transform .08s ease, box-shadow .14s ease, filter .14s ease'
+				boxShadow='0 4px 14px color-mix(in srgb, var(--beak-colors-accent-pink) 35%, transparent), inset 0 1px 0 color-mix(in srgb, white 22%, transparent)'
+				transition='background-color .14s ease, transform .1s cubic-bezier(.4,0,.2,1), box-shadow .14s ease, filter .14s ease'
 				_hover={{
 					filter: 'brightness(1.06)',
-					boxShadow: '0 6px 18px color-mix(in srgb, var(--beak-colors-accent-pink) 50%, transparent)',
+					transform: 'translateY(-1px)',
+					boxShadow: '0 8px 22px color-mix(in srgb, var(--beak-colors-accent-pink) 55%, transparent), inset 0 1px 0 color-mix(in srgb, white 26%, transparent)',
 				}}
-				_active={{ transform: 'scale(0.97)' }}
+				_active={{ transform: 'translateY(0) scale(0.97)' }}
 				_focus={{
 					outline: 'none',
-					boxShadow: '0 0 0 3px color-mix(in srgb, var(--beak-colors-accent-pink) 40%, transparent)',
+					boxShadow: '0 0 0 3px color-mix(in srgb, var(--beak-colors-accent-pink) 40%, transparent), inset 0 1px 0 color-mix(in srgb, white 22%, transparent)',
 				}}
 				onClick={() => dispatchFlightRequest()}
 			>
