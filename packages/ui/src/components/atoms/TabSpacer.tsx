@@ -1,9 +1,12 @@
-import styled from 'styled-components';
+import { chakra } from '@chakra-ui/react';
 
-const TabSpacer = styled.div`
-	flex-grow: 2;
-	height: calc(100% - 1px); /* lol 🤷‍♂️ */
-	border-bottom: 1px solid var(--beak-colors-border-default);
-`;
+const TabSpacer = chakra('div', {
+	base: {
+		flexGrow: 2,
+		h: 'calc(100% - 1px)',
+		borderBottomWidth: '1px',
+		borderColor: 'border.default',
+	},
+});
 
 export default TabSpacer;
