@@ -42,7 +42,7 @@ const SubscriptionInformation: React.FC<SubscriptionInformationProps> = ({ subsc
 				bgSize='30px'
 				borderWidth='1px'
 				borderColor='color-mix(in srgb, var(--beak-colors-accent-pink) 30%, var(--beak-colors-border-subtle))'
-				boxShadow='inset 0 1px 0 color-mix(in srgb, white 22%, transparent)'
+				boxShadow='0 6px 18px color-mix(in srgb, var(--beak-colors-accent-pink) 24%, transparent), inset 0 1px 0 color-mix(in srgb, white 22%, transparent)'
 			/>
 			<Box flex='1 1 auto' minW={0}>
 				<Box fontSize='md' fontWeight='600' color='fg.default'>
