@@ -112,6 +112,17 @@ Request files are sparse overrides when a collection declares non-empty defaults
 
 The `0.4.0 → 0.5.0` migration in `@beak/runtime-shared/project/migrations/standard.ts` writes a manual-source collection file into every existing folder; sparse mode only kicks in once a user adds defaults.
 
+### Untitled projects (cold-start UX)
+
+The electron host's `createOrFocusDefaultWindow` picks a landing window in this order:
+
+1. **Window-presence restore** — if the previous session saved a presence map, reload those windows verbatim.
+2. **Most-recent project** — pick the top of `BeakRecents.listProjects()` and `tryOpenProjectFolder` it; the user lands on their last work.
+3. **Untitled scratch project** — `openUntitledProject()` (in `apps-host/electron/src/host/extensions/project.ts`) creates a fresh project under `userData/untitled-projects/<ksuid>/` with `untitled: true` in `project.json`, opens it directly. Untitled projects are NOT added to recents.
+4. **Welcome window** — fallback only if untitled creation throws (e.g., read-only userData).
+
+Untitled projects can be promoted to a real location via `ipcProjectService.promoteUntitled({})` — exposed in the renderer as the **File → Save Project As…** menu item (CmdOrCtrl+Shift+S) and a banner above the project's sidebar (`packages/ui/src/components/molecules/UntitledBanner.tsx`). The runtime helper `BeakProject.promoteUntitled(currentFolder, targetFolder, newName?)` renames the folder, clears the `untitled` flag, and adds the new location to recents. The web host returns null from this IPC for now — OPFS / File System Access Save-As is a follow-up.
+
 ### OpenAPI sync (end-to-end)
 
 The sync chain is wired top to bottom; the user trigger is **File → Import OpenAPI spec…**.
