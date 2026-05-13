@@ -23,7 +23,13 @@ const OmniFooter: React.FC<OmniFooterProps> = ({ mode }) => (
 			<HintRow keys={['↵']}>{mode === 'finder' ? 'Open' : 'Run'}</HintRow>
 			<HintRow keys={['Esc']}>{'Close'}</HintRow>
 		</Flex>
-		<Box opacity={0.65}>
+		<Box
+			fontSize='10px'
+			fontWeight='700'
+			letterSpacing='0.06em'
+			textTransform='uppercase'
+			color='color-mix(in srgb, var(--beak-colors-accent-pink) 75%, var(--beak-colors-fg-subtle))'
+		>
 			{mode === 'commands' ? 'Commands' : 'Finder'}
 		</Box>
 	</Flex>
@@ -34,7 +40,7 @@ const HintRow: React.FC<React.PropsWithChildren<{ keys: string[] }>> = ({ keys, 
 		{keys.map(k => (
 			<Kbd key={k}>{k}</Kbd>
 		))}
-		<Box as='span' opacity={0.75}>{children}</Box>
+		<Box as='span' color='fg.muted'>{children}</Box>
 	</Flex>
 );
 
