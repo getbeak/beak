@@ -109,7 +109,25 @@ const bodySchema = z.discriminatedUnion('type', [
 			type: z.literal('file'),
 			payload: z
 				.object({
+					/**
+					 * Legacy file pointer — the renderer's old "reference file" system.
+					 * Kept optional so existing projects keep loading. New uploads go
+					 * through `assetRef`.
+					 */
 					fileReferenceId: z.string().optional(),
+					/**
+					 * Content-addressed pointer into the project's `_assets/` store.
+					 * Phase 7+8 store. When present this is the canonical body source
+					 * for flight execution; `fileReferenceId` is read-only legacy.
+					 */
+					assetRef: z
+						.object({
+							sha256: z.string().regex(/^[0-9a-f]{64}$/),
+							size: z.number().int().nonnegative(),
+							contentType: z.string().optional(),
+						})
+						.strict()
+						.optional(),
 					contentType: z.string().optional(),
 				})
 				.strict(),
