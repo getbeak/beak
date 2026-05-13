@@ -11,13 +11,15 @@ import VariableSetName from '../molecules/VariableSetName';
 
 const selectStyle: React.CSSProperties = {
 	width: '100%',
-	fontSize: '12px',
+	fontSize: '11px',
+	fontWeight: 600,
 	border: 0,
 	borderRadius: '4px',
 	background: 'none',
-	color: 'var(--beak-colors-fg-muted)',
+	color: 'var(--beak-colors-fg-default)',
 	textAlignLast: 'right',
 	textOverflow: 'ellipsis',
+	cursor: 'pointer',
 };
 
 const VariableSets: React.FC = () => {
