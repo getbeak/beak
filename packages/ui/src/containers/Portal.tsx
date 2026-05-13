@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import styled, { css } from 'styled-components';
 
-import { toVibrancyAlpha } from '../design-system/utils';
 import CreateTrial from '../features/portal/components/CreateTrial';
 import Purchase from '../features/portal/components/Purchase';
 import SignIn from '../features/portal/components/SignIn';
