@@ -25,8 +25,9 @@ const SubscriptionInformation: React.FC<SubscriptionInformationProps> = ({ subsc
 			p='4'
 			borderRadius='lg'
 			borderWidth='1px'
-			borderColor='border.subtle'
+			borderColor='color-mix(in srgb, var(--beak-colors-accent-pink) 24%, var(--beak-colors-border-subtle))'
 			bg='color-mix(in srgb, var(--beak-colors-bg-surface) 60%, transparent)'
+			boxShadow='0 8px 24px color-mix(in srgb, var(--beak-colors-accent-pink) 12%, rgba(0,0,0,0.06)), inset 0 1px 0 color-mix(in srgb, white 14%, transparent)'
 			css={{ borderLeft: '3px solid var(--beak-colors-accent-pink)' }}
 		>
 			<Box
@@ -34,13 +35,14 @@ const SubscriptionInformation: React.FC<SubscriptionInformationProps> = ({ subsc
 				borderRadius='full'
 				w='52px'
 				h='52px'
-				bg='bg.canvas'
+				bg='color-mix(in srgb, var(--beak-colors-accent-pink) 12%, var(--beak-colors-bg-canvas))'
 				bgImage="url('images/logo.svg')"
 				bgRepeat='no-repeat'
 				bgPos='center'
 				bgSize='30px'
 				borderWidth='1px'
-				borderColor='border.subtle'
+				borderColor='color-mix(in srgb, var(--beak-colors-accent-pink) 30%, var(--beak-colors-border-subtle))'
+				boxShadow='inset 0 1px 0 color-mix(in srgb, white 22%, transparent)'
 			/>
 			<Box flex='1 1 auto' minW={0}>
 				<Box fontSize='md' fontWeight='600' color='fg.default'>
