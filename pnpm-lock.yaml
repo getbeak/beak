@@ -455,6 +455,9 @@ importers:
       '@beak/ksuid':
         specifier: '*'
         version: link:../ksuid
+      '@beak/state':
+        specifier: '*'
+        version: link:../state
       '@getbeak/extension-sdk':
         specifier: '*'
         version: link:../extension-sdk

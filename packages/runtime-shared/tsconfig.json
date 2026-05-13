@@ -11,6 +11,9 @@
 		},
 		{
 			"path": "../ksuid"
+		},
+		{
+			"path": "../state"
 		}
 	],
 	"include": ["src/**/*.ts"],

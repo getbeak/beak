@@ -22,6 +22,7 @@
 	"dependencies": {
 		"@beak/common": "*",
 		"@beak/ksuid": "*",
+		"@beak/state": "*",
 		"@getbeak/extension-sdk": "*",
 		"@getbeak/types": "^2.1.0",
 		"tslog": "^4.10.2"
