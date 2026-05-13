@@ -166,9 +166,10 @@ const Header: React.FC<HeaderProps> = ({ node }) => {
 				minW={0}
 				borderRadius='md'
 				borderWidth='1px'
-				borderColor='border.default'
+				borderColor='border.subtle'
 				bg='bg.surface'
 				transition='border-color .12s ease, box-shadow .12s ease'
+				_hover={{ borderColor: 'color-mix(in srgb, var(--beak-colors-accent-pink) 30%, var(--beak-colors-border-subtle))' }}
 				_focusWithin={{
 					borderColor: 'accent.pink',
 					boxShadow: '0 0 0 3px color-mix(in srgb, var(--beak-colors-accent-pink) 22%, transparent)',
