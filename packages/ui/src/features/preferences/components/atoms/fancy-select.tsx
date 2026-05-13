@@ -29,11 +29,10 @@ export const SelectItem: React.FC<SelectItemProps> = ({ $active, children, ...re
 		alignItems='center'
 		color={$active ? 'accent.pink' : 'fg.muted'}
 		fontWeight={$active ? '600' : '500'}
-		opacity={$active ? 1 : 0.85}
 		fontSize='sm'
 		cursor='pointer'
-		transition='opacity .14s ease, color .14s ease, transform .08s ease'
-		_hover={{ opacity: 1, color: $active ? 'accent.pink' : 'fg.default' }}
+		transition='color .14s ease, transform .08s ease'
+		_hover={{ color: $active ? 'accent.pink' : 'fg.default' }}
 		_active={{ transform: 'scale(0.97)' }}
 		{...rest}
 	>
