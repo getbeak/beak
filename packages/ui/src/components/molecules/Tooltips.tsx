@@ -28,11 +28,11 @@ const tooltips: TooltipDefinition[] = [{
 }, {
 	anchor: '#tt-action-bar-flight-status-pending',
 	placement: 'bottom',
-	content: 'Awaiting flight...',
+	content: 'Awaiting flight…',
 }, {
 	anchor: '#tt-action-bar-flight-status-failed',
 	placement: 'bottom',
-	content: 'Flight failed',
+	content: 'Flight failed — request could not be sent',
 }, {
 	anchor: '#tt-action-bar-flight-status-success',
 	placement: 'bottom',
@@ -40,7 +40,7 @@ const tooltips: TooltipDefinition[] = [{
 }, {
 	anchor: '#tt-action-bar-flight-status-server-failed',
 	placement: 'bottom',
-	content: 'Flight complete',
+	content: 'Server returned an error response',
 }, {
 	anchor: '#tt-action-bar-flight-status-active',
 	placement: 'bottom',
