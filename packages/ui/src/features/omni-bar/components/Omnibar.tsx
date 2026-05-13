@@ -84,9 +84,8 @@ const Omnibar: React.FC = () => {
 					inset='0'
 					zIndex={100}
 					css={{
-						background:
-							'color-mix(in srgb, var(--beak-colors-bg-canvas) 55%, transparent)',
-						backdropFilter: 'blur(2px)',
+						background: 'rgba(0, 0, 0, 0.4)',
+						backdropFilter: 'blur(4px) saturate(140%)',
 					}}
 					onClick={() => dispatch(actions.hideOmniBar())}
 				>
@@ -98,14 +97,13 @@ const Omnibar: React.FC = () => {
 						position='relative'
 						mx='auto'
 						mt='20'
-						w='540px'
+						w='560px'
 						maxW='calc(100vw - 40px)'
 						borderRadius='xl'
 						borderWidth='1px'
-						borderColor='border.default'
-						bg='color-mix(in srgb, var(--beak-colors-bg-surface) 80%, transparent)'
-						boxShadow='0 24px 64px rgba(0,0,0,0.35), 0 2px 8px rgba(0,0,0,0.25)'
-						css={{ backdropFilter: 'blur(24px) saturate(160%)' }}
+						borderColor='border.subtle'
+						bg='bg.surface'
+						boxShadow='0 32px 80px rgba(0,0,0,0.45), 0 4px 12px rgba(0,0,0,0.3), 0 0 0 1px color-mix(in srgb, var(--beak-colors-accent-pink) 18%, transparent)'
 						overflow='hidden'
 						zIndex={101}
 						onClick={(event: React.MouseEvent) => event.stopPropagation()}
