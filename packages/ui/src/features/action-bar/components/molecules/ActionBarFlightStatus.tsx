@@ -24,6 +24,7 @@ const ActionBarFlightStatus: React.FC = () => {
 						<Loader2
 							id='tt-action-bar-flight-status-active'
 							tabIndex={-1}
+							size={14}
 							style={{ animation: 'spin 1s linear infinite' }}
 						/>
 					</motion.div>
@@ -42,7 +43,8 @@ const ActionBarFlightStatus: React.FC = () => {
 						transition={{ type: 'spring', stiffness: 700, damping: 26 }}
 						style={{ display: 'inline-flex' }}
 					>
-						<Icon id={tooltipId} color={statusToColor(flightStatus.httpStatus)} tabIndex={-1} />
+						<Icon id={tooltipId} color={statusToColor(flightStatus.httpStatus)} tabIndex={-1}
+							size={14} />
 					</motion.div>
 				);
 			}
@@ -61,6 +63,7 @@ const ActionBarFlightStatus: React.FC = () => {
 							id='tt-action-bar-flight-status-failed'
 							color='var(--beak-colors-accent-alert)'
 							tabIndex={-1}
+							size={14}
 						/>
 					</motion.div>
 				);
@@ -75,7 +78,8 @@ const ActionBarFlightStatus: React.FC = () => {
 						transition={{ duration: 0.12 }}
 						style={{ display: 'inline-flex', color: 'var(--beak-colors-fg-muted)' }}
 					>
-						<CircleDot id='tt-action-bar-flight-status-pending' tabIndex={-1} />
+						<CircleDot id='tt-action-bar-flight-status-pending' tabIndex={-1}
+							size={14} />
 					</motion.div>
 				);
 		}
