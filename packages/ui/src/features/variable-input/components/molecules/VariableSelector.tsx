@@ -211,10 +211,31 @@ const VariableSelector: React.FC<React.PropsWithChildren<VariableSelectorProps>>
 			>
 				<Box flex='1 1 auto' overflowY='auto'>
 					{items.length === 0 && (
-						<Flex direction='column' align='center' gap='2' py='6' color='fg.subtle'>
-							<Box opacity={0.4}><SearchX size={22} /></Box>
-							<Box fontSize='sm' color='fg.muted'>{'No matching variables'}</Box>
-							<Box fontSize='xs' opacity={0.7}>{'Try a different query'}</Box>
+						<Flex direction='column' align='center' gap='2' py='6' textAlign='center'>
+							<Flex
+								align='center'
+								justify='center'
+								w='40px'
+								h='40px'
+								borderRadius='full'
+								bg='color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent)'
+								borderWidth='1px'
+								borderColor='color-mix(in srgb, var(--beak-colors-accent-pink) 28%, transparent)'
+								color='accent.pink'
+								boxShadow='0 6px 18px color-mix(in srgb, var(--beak-colors-accent-pink) 22%, transparent), inset 0 1px 0 color-mix(in srgb, white 16%, transparent)'
+							>
+								<SearchX size={18} strokeWidth={1.8} />
+							</Flex>
+							<Box fontSize='sm' color='fg.default' fontWeight='600'>{'No matching variables'}</Box>
+							<Box
+								fontSize='10px'
+								fontWeight='700'
+								letterSpacing='0.06em'
+								textTransform='uppercase'
+								color='fg.subtle'
+							>
+								{'Try a different query'}
+							</Box>
 						</Flex>
 					)}
 					{items.map((i, idx) => {
