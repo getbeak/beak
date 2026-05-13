@@ -4,7 +4,7 @@ export const Row = chakra('div', {
 	base: {
 		position: 'relative',
 		display: 'grid',
-		gridTemplateColumns: 'minmax(0, .9fr) 35px minmax(0, 1fr) 45px',
+		gridTemplateColumns: 'minmax(0, .9fr) 56px minmax(0, 1fr) 45px',
 		gridTemplateRows: 'minmax(0, 1fr)',
 		alignItems: 'stretch',
 		borderBottomWidth: '1px',

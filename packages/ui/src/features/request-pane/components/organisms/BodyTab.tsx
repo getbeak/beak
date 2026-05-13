@@ -8,7 +8,6 @@ import { convertKeyValueToString, convertStringToKeyValue } from '@beak/ui/featu
 import GraphQlQueryEditor from '@beak/ui/features/graphql-editor/components/GraphQlQueryEditor';
 import GraphQlVariablesEditor from '@beak/ui/features/graphql-editor/components/GraphQlVariablesEditor';
 import type { EditorMode } from '@beak/ui/features/graphql-editor/types';
-import { editorTabSubItems } from '@beak/ui/features/graphql-editor/utils';
 import JsonEditor from '@beak/ui/features/json-editor/components/JsonEditor';
 import { convertToEntryJson, convertToRealJson } from '@beak/ui/features/json-editor/parsers';
 import useVariableContext from '@beak/ui/features/variables/hooks/use-variable-context';
@@ -21,9 +20,7 @@ import type { ValidRequestNode } from '@getbeak/types/nodes';
 import type { RequestBodyJson, RequestBodyType } from '@getbeak/types/request';
 
 import { Box, Flex } from '@chakra-ui/react';
-import TabBar from '../../../../components/atoms/TabBar';
-import TabItem from '../../../../components/atoms/TabItem';
-import TabSpacer from '../../../../components/atoms/TabSpacer';
+import BodyTypeSelector from '../molecules/BodyTypeSelector';
 import FileUploadView from '../molecules/FileUploadView';
 
 export interface BodyTabProps {
@@ -148,48 +145,12 @@ const BodyTab: React.FC<React.PropsWithChildren<BodyTabProps>> = props => {
 
 	return (
 		<Flex direction='column' overflow='hidden' h='100%'>
-			<TabBar $centered>
-				<TabSpacer />
-				<TabItem
-					active={body.type === 'text'}
-					size={'sm'}
-					onClick={() => changeRequestBodyType('text')}
-				>
-					{'Text'}
-				</TabItem>
-				<TabItem
-					active={body.type === 'json'}
-					size={'sm'}
-					onClick={() => changeRequestBodyType('json')}
-				>
-					{'JSON'}
-				</TabItem>
-				<TabItem
-					active={body.type === 'url_encoded_form'}
-					size={'sm'}
-					onClick={() => changeRequestBodyType('url_encoded_form')}
-				>
-					{'URL encoded form'}
-				</TabItem>
-				<TabItem<EditorMode>
-					active={body.type === 'graphql'}
-					activeSubItem={graphQlMode}
-					subItems={editorTabSubItems}
-					size={'sm'}
-					onClick={() => changeRequestBodyType('graphql')}
-					onSubItemChanged={setGraphQlMode}
-				>
-					{'GraphQL'}
-				</TabItem>
-				<TabItem
-					active={body.type === 'file'}
-					size={'sm'}
-					onClick={() => changeRequestBodyType('file')}
-				>
-					{'File'}
-				</TabItem>
-				<TabSpacer />
-			</TabBar>
+			<BodyTypeSelector
+				value={body.type}
+				graphQlMode={graphQlMode}
+				onTypeChange={changeRequestBodyType}
+				onGraphQlModeChange={setGraphQlMode}
+			/>
 
 			<Box flexGrow={2} overflowY={body.type !== 'text' ? 'auto' : 'hidden'} h='100%'>
 				{body.type === 'text' && (
