@@ -1,28 +1,51 @@
-import { Box, Button, Grid, IconButton } from '@chakra-ui/react';
+import { Box, Button, Flex, IconButton } from '@chakra-ui/react';
 import type { NewsItemGenericBanner } from '@beak/common/types/nest';
 import { ipcExplorerService } from '@beak/ui/lib/ipc';
+import { motion } from 'framer-motion';
 import { X } from 'lucide-react';
 
 import * as React from 'react';
+import { useState } from 'react';
 
 interface GenericBannerProps {
 	item: NewsItemGenericBanner;
 }
 
+const MotionFlex = motion.create(Flex);
+
 const GenericBanner: React.FC<GenericBannerProps> = ({ item }) => {
 	const { action, body, emoji, title } = item.payload;
+	const [dismissed, setDismissed] = useState(false);
 
 	function visitAction() {
 		if (!action) return;
 		ipcExplorerService.launchUrl(action.url);
 	}
 
+	if (dismissed) return null;
+
 	return (
-		<Grid templateColumns='40px 1fr 20px' px='5' py='3' bg='accent.pink.muted' borderRadius='md'>
-			<Box gridColumn={1} fontSize='2xl'>{emoji}</Box>
-			<Box gridColumn={2}>
-				<Box fontSize='lg' fontWeight='bold'>{title}</Box>
-				<Box fontSize='sm' mt='0.5'>
+		<MotionFlex
+			initial={{ opacity: 0, y: -6 }}
+			animate={{ opacity: 1, y: 0 }}
+			exit={{ opacity: 0, y: -6 }}
+			transition={{ duration: 0.2, ease: 'easeOut' }}
+			align='center'
+			gap='3'
+			px='4'
+			py='2.5'
+			borderRadius='md'
+			borderWidth='1px'
+			borderColor='border.subtle'
+			bg='color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent)'
+			style={{ borderLeft: '3px solid var(--beak-colors-accent-pink)' }}
+		>
+			<Box fontSize='2xl' flex='0 0 auto' aria-hidden>
+				{emoji}
+			</Box>
+			<Box flex='1 1 auto' minW={0}>
+				<Box fontSize='sm' fontWeight='600' color='fg.default'>{title}</Box>
+				<Box fontSize='xs' color='fg.muted' mt='0.5'>
 					{body}
 					{action && (
 						<Button
@@ -31,7 +54,9 @@ const GenericBanner: React.FC<GenericBannerProps> = ({ item }) => {
 							color='accent.pink'
 							p='0'
 							ml='1'
-							fontSize='sm'
+							fontSize='xs'
+							fontWeight='600'
+							_hover={{ textDecoration: 'underline' }}
 							onClick={visitAction}
 						>
 							{action.cta}
@@ -39,14 +64,28 @@ const GenericBanner: React.FC<GenericBannerProps> = ({ item }) => {
 					)}
 				</Box>
 			</Box>
-			<Box gridColumn={3} textAlign='right'>
-				{item.dismissible && (
-					<IconButton variant='ghost' size='xs' aria-label='Dismiss' bg='transparent' p='0' minW='auto'>
-						<X color='var(--beak-colors-fg-muted)' />
-					</IconButton>
-				)}
-			</Box>
-		</Grid>
+			{item.dismissible && (
+				<IconButton
+					variant='ghost'
+					size='xs'
+					aria-label='Dismiss'
+					bg='transparent'
+					p='0'
+					h='18px'
+					w='18px'
+					minW='18px'
+					borderRadius='sm'
+					color='fg.subtle'
+					_hover={{
+						color: 'fg.default',
+						bg: 'color-mix(in srgb, var(--beak-colors-bg-surface-emphasized) 60%, transparent)',
+					}}
+					onClick={() => setDismissed(true)}
+				>
+					<X size={11} />
+				</IconButton>
+			)}
+		</MotionFlex>
 	);
 };
 
