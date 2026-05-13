@@ -1,8 +1,9 @@
+import { Box } from '@chakra-ui/react';
 import { AlignJustify, Ban, Calculator, CircleCheck, Layers, OctagonAlert, Type } from 'lucide-react';
 import type { EntryType } from '@getbeak/types/body-editor-json';
-import React, { useContext, useRef } from 'react';
+import * as React from 'react';
+import { useContext, useRef } from 'react';
 import { useDispatch } from 'react-redux';
-import styled from 'styled-components';
 
 import { JsonEditorContext } from '../../contexts/json-editor-context';
 
@@ -14,34 +15,30 @@ interface TypeSelectorProps {
 	onChange?: (entryType: EntryType) => void;
 }
 
-const TypeSelector: React.FC<TypeSelectorProps> = props => {
-	const { disabled, requestId, id, value, onChange } = props;
+const TypeSelector: React.FC<TypeSelectorProps> = ({ disabled, requestId, id, value, onChange }) => {
 	const selectRef = useRef<HTMLSelectElement>(null);
 	const Icon = getIconForType(value);
 	const dispatch = useDispatch();
-
 	const editorContext = useContext(JsonEditorContext)!;
 
 	return (
-		<Wrapper>
-			<Select
-				disabled={disabled}
+		<Box position='relative'>
+			<select
 				ref={selectRef}
+				disabled={disabled}
 				value={value}
 				tabIndex={-1}
+				style={{
+					position: 'absolute',
+					margin: '0 auto',
+					opacity: 0,
+					width: '100%',
+					height: '20px',
+				}}
 				onChange={e => {
 					const type = e.currentTarget.value as EntryType;
-
-					dispatch(
-						editorContext.typeChange({
-							requestId,
-							id,
-							type,
-						}),
-					);
-
-					if (onChange) onChange(type);
-
+					dispatch(editorContext.typeChange({ requestId, id, type }));
+					onChange?.(type);
 					selectRef.current!.blur();
 				}}
 			>
@@ -55,48 +52,25 @@ const TypeSelector: React.FC<TypeSelectorProps> = props => {
 					<option value='array'>{'Array'}</option>
 					<option value='object'>{'Object'}</option>
 				</optgroup>
-			</Select>
-			<Button>
+			</select>
+			<Box
+				py='0.5'
+				w='22px'
+				mx='auto'
+				mt='0.5'
+				pointerEvents='none'
+				textAlign='center'
+				borderRadius='sm'
+				borderWidth='1px'
+				borderColor='border.default'
+				color='fg.muted'
+				css={{ '> svg': { paddingTop: '1px', transform: 'scale(0.9)' } }}
+			>
 				<Icon size={12} />
-			</Button>
-		</Wrapper>
+			</Box>
+		</Box>
 	);
 };
-
-const Wrapper = styled.div`
-	position: relative;
-`;
-
-const Button = styled.div`
-	padding: 1px 0;
-	width: 22px;
-	margin: 0 auto;
-	margin-top: 1px;
-	pointer-events: none;
-
-	text-align: center;
-	border-radius: 2px;
-	border: 1px solid var(--beak-colors-border-default);
-	color: var(--beak-colors-fg-muted);
-
-	> svg {
-		padding-top: 1px;
-		transform: scale(0.9);
-	}
-`;
-
-const Select = styled.select`
-	position: absolute;
-
-	margin: 0 auto;
-	opacity: 0;
-	width: 100%;
-	height: 20px;
-
-	&:disabled {
-		cursor: not-allowed;
-	}
-`;
 
 function getIconForType(type: EntryType) {
 	switch (type) {

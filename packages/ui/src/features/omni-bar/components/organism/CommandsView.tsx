@@ -5,12 +5,12 @@ import { reloadExtensions } from '@beak/ui/store/extensions/actions';
 import { sidebarPreferenceSetCollapse, sidebarPreferenceSetSelected } from '@beak/ui/store/preferences/actions';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { movePosition } from '@beak/ui/utils/arrays';
+import { Box } from '@chakra-ui/react';
 import Fuse from 'fuse.js';
-import React from 'react';
+import * as React from 'react';
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import type { Dispatch } from 'redux';
-import styled, { css } from 'styled-components';
 
 import NoItemsFound from '../atoms/NoItemsFound';
 
@@ -252,55 +252,42 @@ const CommandsView: React.FC<React.PropsWithChildren<CommandsViewProps>> = ({ co
 	}, [content, pureContent]);
 
 	return (
-		<Container tabIndex={0}>
+		<Box tabIndex={0}>
 			{matches.length === 0 && <NoItemsFound>{'No matching commands found'}</NoItemsFound>}
 			{matches.map((k, idx) => {
 				const command = commands.find(c => c.id === k);
-
 				if (!command) return null;
 
 				return (
-					<Item
-						$active={active === idx}
+					<Box
 						key={k}
-						ref={i => {
+						ref={(i: HTMLElement | null) => {
 							if (active === idx) activeRef.current = i;
 						}}
 						tabIndex={0}
+						fontSize='md'
+						color='fg.default'
+						px='2.5'
+						py='1'
+						cursor='pointer'
+						whiteSpace='nowrap'
+						overflow='hidden'
+						textOverflow='ellipsis'
+						textDecoration='none'
+						bg={active === idx ? 'accent.pink.muted' : undefined}
+						_hover={{ bg: 'accent.pink.muted' }}
+						_last={{ pb: '2.5', borderBottomLeftRadius: 'lg', borderBottomRightRadius: 'lg' }}
 						onClick={() => {
 							reset();
 							command.action(dispatch);
 						}}
 					>
 						{command.name}
-					</Item>
+					</Box>
 				);
 			})}
-		</Container>
+		</Box>
 	);
 };
-
-const Container = styled.div``;
-
-const Item = styled.div<{ $active: boolean }>`
-	font-size: 13px;
-	color: var(--beak-colors-fg-default);
-	padding: 4px 10px;
-	cursor: pointer;
-
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	text-decoration: none;
-
-	&:hover { background: var(--beak-colors-accent-pink-muted); }
-	${p => (p.$active ? css`background: var(--beak-colors-accent-pink-muted);` : '')}
-
-	&:last-of-type {
-		padding-bottom: 10px;
-		border-bottom-left-radius: 10px;
-		border-bottom-right-radius: 10px;
-	}
-`;
 
 export default CommandsView;

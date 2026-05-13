@@ -1,5 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { Box } from '@chakra-ui/react';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { changeTab } from '@beak/ui/features/tabs/store/actions';
 import useVariableContext from '@beak/ui/features/variables/hooks/use-variable-context';
@@ -8,7 +7,9 @@ import { useAppSelector } from '@beak/ui/store/redux';
 import { movePosition } from '@beak/ui/utils/arrays';
 import type { FolderNode, Nodes, Tree, ValidRequestNode } from '@getbeak/types/nodes';
 import Fuse from 'fuse.js';
-import styled, { css } from 'styled-components';
+import * as React from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useDispatch } from 'react-redux';
 
 import NoItemsFound from '../atoms/NoItemsFound';
 import FinderRequestItem from '../molecule/FinderRequestItem';
@@ -18,7 +19,7 @@ export interface FinderViewProps {
 	reset: () => void;
 }
 
-const FinderView: React.FC<React.PropsWithChildren<FinderViewProps>> = ({ content, reset }) => {
+const FinderView: React.FC<FinderViewProps> = ({ content, reset }) => {
 	const dispatch = useDispatch();
 	const tree = useAppSelector(s => s.global.project.tree) || ({} as Tree);
 	const flattened = TypedObject.values(tree).filter(t => t.type === 'request') as ValidRequestNode[];
@@ -29,11 +30,7 @@ const FinderView: React.FC<React.PropsWithChildren<FinderViewProps>> = ({ conten
 
 	const fuse = new Fuse(flattened, {
 		includeScore: true,
-		keys: [
-			'name',
-			'info.uri.host',
-			'info.uri.path',
-		],
+		keys: ['name', 'info.uri.host', 'info.uri.path'],
 	});
 
 	useEffect(() => {
@@ -42,64 +39,41 @@ const FinderView: React.FC<React.PropsWithChildren<FinderViewProps>> = ({ conten
 				case checkShortcut('omni-bar.finder.down', event):
 					setActive(movePosition(matches, active, 'forward'));
 					setTimeout(() => {
-						// This actually exists
-						// @ts-expect-error
+						// @ts-expect-error scrollIntoViewIfNeeded exists in Chromium
 						activeRef.current?.scrollIntoViewIfNeeded(false);
 					}, 0);
-
 					break;
-
 				case checkShortcut('omni-bar.finder.up', event):
 					setActive(movePosition(matches, active, 'backward'));
 					setTimeout(() => {
-						// This actually exists
-						// @ts-expect-error
+						// @ts-expect-error see above
 						activeRef.current?.scrollIntoViewIfNeeded(false);
 					}, 0);
-
 					break;
-
 				case checkShortcut('omni-bar.finder.open', event):
-					if (active < 0)
-						break;
-
+					if (active < 0) break;
 					reset();
-					dispatch(changeTab({
-						type: 'request',
-						payload: matches[active],
-						temporary: true,
-					}));
-
+					dispatch(changeTab({ type: 'request', payload: matches[active], temporary: true }));
 					break;
-
 				default:
 					return;
 			}
-
 			event.preventDefault();
 		}
 
 		window.addEventListener('keydown', onKeyDown);
-
 		return () => window.removeEventListener('keydown', onKeyDown);
 	}, [matches, active, reset]);
 
 	useEffect(() => {
 		const matchedIds = fuse.search(content).map(s => s.item.id);
-
 		setMatches(matchedIds);
-
-		if (active === -1 && matchedIds.length > 0)
-			setActive(0);
+		if (active === -1 && matchedIds.length > 0) setActive(0);
 	}, [content]);
 
 	return (
-		<Container tabIndex={0}>
-			{matches.length === 0 && (
-				<NoItemsFound>
-					{'No matching requests found'}
-				</NoItemsFound>
-			)}
+		<Box tabIndex={0}>
+			{matches.length === 0 && <NoItemsFound>{'No matching requests found'}</NoItemsFound>}
 			{matches.map((k, idx) => {
 				const match = tree[k];
 				const reqNode = match as ValidRequestNode;
@@ -108,36 +82,48 @@ const FinderView: React.FC<React.PropsWithChildren<FinderViewProps>> = ({ conten
 
 				while (parentFinderNode.parent) {
 					const parent = tree[parentFinderNode.parent] as FolderNode | undefined;
-
-					if (!parent)
-						break;
-
+					if (!parent) break;
 					parentChain.unshift(parent);
 					parentFinderNode = parent;
 				}
 
 				return (
-					<Item
-						$active={active === idx}
-						ref={i => {
-							if (active === idx)
-								activeRef.current = i;
-						}}
+					<Box
 						key={k}
+						ref={(i: HTMLElement | null) => {
+							if (active === idx) activeRef.current = i;
+						}}
 						tabIndex={0}
+						fontSize='md'
+						color='fg.default'
+						px='2.5'
+						py='1'
+						cursor='pointer'
+						whiteSpace='nowrap'
+						overflow='hidden'
+						textOverflow='ellipsis'
+						textDecoration='none'
+						bg={active === idx ? 'accent.pink.muted' : undefined}
+						_hover={{ bg: 'accent.pink.muted' }}
+						_last={{ pb: '2.5', borderBottomLeftRadius: 'lg', borderBottomRightRadius: 'lg' }}
 						onClick={() => {
 							reset();
-							dispatch(changeTab({
-								type: 'request',
-								payload: k,
-								temporary: true,
-							}));
+							dispatch(changeTab({ type: 'request', payload: k, temporary: true }));
 						}}
 					>
 						{parentChain.map(p => (
-							<ParentChain key={p.id}>
+							<Box
+								as='span'
+								key={p.id}
+								display='inline-block'
+								fontSize='md'
+								color='fg.muted'
+								mb='1'
+								_notLast={{ _after: { content: "'/'", margin: '0 2px' } }}
+								_last={{ mr: '1' }}
+							>
 								{p.name}
-							</ParentChain>
+							</Box>
 						))}
 						{match.name}
 						{match.type === 'request' && (
@@ -146,52 +132,11 @@ const FinderView: React.FC<React.PropsWithChildren<FinderViewProps>> = ({ conten
 								info={reqNode.info}
 							/>
 						)}
-					</Item>
+					</Box>
 				);
 			})}
-		</Container>
+		</Box>
 	);
 };
-
-const Container = styled.div`
-	overflow: none;
-`;
-
-const Item = styled.div<{ $active: boolean }>`
-	font-size: 13px;
-	color: var(--beak-colors-fg-default);
-	padding: 4px 10px;
-	cursor: pointer;
-
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	text-decoration: none;
-
-	&:hover { background: var(--beak-colors-accent-pink-muted); }
-	${p => p.$active ? css`background: var(--beak-colors-accent-pink-muted);` : ''}
-
-	&:last-of-type {
-		padding-bottom: 10px;
-		border-bottom-left-radius: 10px;
-		border-bottom-right-radius: 10px;
-	}
-`;
-
-const ParentChain = styled.span`
-	display: inline-block;
-	font-size: 13px;
-	color: var(--beak-colors-fg-muted);
-	margin-bottom: 4px;
-
-	&:not(:last-of-type):after {
-		content: '/';
-		margin: 0 2px;
-	}
-
-	&:last-of-type {
-		margin-right: 4px;
-	}
-`;
 
 export default FinderView;

@@ -1,3 +1,4 @@
+import { Box, Flex, Grid } from '@chakra-ui/react';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import Kbd from '@beak/ui/components/atoms/Kbd';
 import shortcutDefinitions, { type Shortcuts } from '@beak/ui/lib/keyboard-shortcuts';
@@ -7,8 +8,7 @@ import type {
 	ShortcutDefinition,
 } from '@beak/ui/lib/keyboard-shortcuts/types';
 import { renderSimpleKey } from '@beak/ui/utils/keyboard-rendering';
-import React from 'react';
-import styled from 'styled-components';
+import * as React from 'react';
 
 const displayShortcuts: Partial<Record<Shortcuts, string>> = {
 	'menu-bar.file.new-request': 'Create new request',
@@ -18,24 +18,43 @@ const displayShortcuts: Partial<Record<Shortcuts, string>> = {
 	'sidebar.toggle-view': 'Toggle sidebar',
 };
 
-const PendingSlash: React.FC<React.PropsWithChildren<unknown>> = () => (
-	<Wrapper>
-		<FadedLogo />
-		<ShortcutContainer>
+const PendingSlash: React.FC = () => (
+	<Flex w='100%' h='100%' align='center' justify='center' direction='column'>
+		<Box
+			w='200px'
+			h='200px'
+			bgImage="url('images/logo-blank.png')"
+			bgRepeat='no-repeat'
+			bgPos='center'
+			bgSize='contain'
+			opacity={0.15}
+			css={{ 'html.light &': { opacity: 0.3 } }}
+		/>
+		<Box>
 			{TypedObject.keys(displayShortcuts).map(k => {
 				const name = displayShortcuts[k];
 				const definition = shortcutDefinition(shortcutDefinitions[k]);
 
 				return (
-					<SingleShortcut key={k}>
-						<ShortcutName>{name}</ShortcutName>
-						<NonCommandKeys>
+					<Grid
+						key={k}
+						templateColumns='1fr 1fr'
+						gap='2.5'
+						mb='2.5'
+						fontSize='sm'
+						lineHeight='11px'
+						color='fg.muted'
+					>
+						<Flex align='center' justify='right'>{name}</Flex>
+						<Box display='inline-block'>
 							{Array.isArray(definition.key) &&
 								definition.key.map(k => (
 									<React.Fragment key={k}>
 										<CommandKeys definition={definition} />
 										<Kbd>{renderSimpleKey(k)}</Kbd>
-										<KbdOption>{'|'}</KbdOption>
+										<Box as='span' display='inline-block' mx='0.5' _last={{ display: 'none' }}>
+											{'|'}
+										</Box>
 									</React.Fragment>
 								))}
 							{typeof definition.key === 'string' && (
@@ -44,12 +63,12 @@ const PendingSlash: React.FC<React.PropsWithChildren<unknown>> = () => (
 									<Kbd>{renderSimpleKey(definition.key)}</Kbd>
 								</React.Fragment>
 							)}
-						</NonCommandKeys>
-					</SingleShortcut>
+						</Box>
+					</Grid>
 				);
 			})}
-		</ShortcutContainer>
-	</Wrapper>
+		</Box>
+	</Flex>
 );
 
 const CommandKeys: React.FC<{ definition: ShortcutDefinition }> = ({ definition }) => (
@@ -64,66 +83,7 @@ const CommandKeys: React.FC<{ definition: ShortcutDefinition }> = ({ definition 
 
 function shortcutDefinition(definition: PlatformSpecificDefinitions | PlatformAgnosticDefinitions) {
 	if (definition.type === 'agnostic') return definition;
-
-	// return definition[windowSessionInstance.getPlatform()];
 	return definition.darwin;
 }
-
-const Wrapper = styled.div`
-	display: flex;
-	width: 100%;
-	height: 100%;
-
-	align-items: center;
-	justify-content: center;
-	flex-direction: column;
-`;
-
-const FadedLogo = styled.div`
-	width: 200px;
-	height: 200px;
-	background: url('images/logo-blank.png');
-	background-repeat: no-repeat;
-	background-position: center;
-	background-size: contain;
-	opacity: 0.15;
-
-	html.light & {
-		opacity: 0.3;
-	}
-`;
-
-const ShortcutContainer = styled.div``;
-
-const SingleShortcut = styled.div`
-	display: grid;
-	grid-template-columns: 1fr 1fr;
-	gap: 10px;
-	margin-bottom: 10px;
-
-	font-size: 12px;
-	line-height: 11px;
-	color: var(--beak-colors-fg-muted);
-`;
-
-const ShortcutName = styled.div`
-	display: flex;
-	align-items: center;
-	justify-content: right;
-`;
-
-const NonCommandKeys = styled.div`
-	display: inline-block;
-`;
-
-const KbdOption = styled.div`
-	display: inline-block;
-	content: '|';
-	margin: 0 2px;
-
-	&:last-child {
-		display: none;
-	}
-`;
 
 export default PendingSlash;

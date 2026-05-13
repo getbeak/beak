@@ -1,159 +1,90 @@
-import React from 'react';
+import { Box, SimpleGrid } from '@chakra-ui/react';
 import { ipcExplorerService } from '@beak/ui/lib/ipc';
-import styled from 'styled-components';
+import * as React from 'react';
 
 import { useDefaultOrCreateRequest } from '../../hooks/use-default-or-create-request';
 import Button from '../atoms/Button';
 
-const NewProjectIntro: React.FC<React.PropsWithChildren<unknown>> = () => {
+const NewProjectIntro: React.FC = () => {
 	const defaultOrCreateRequest = useDefaultOrCreateRequest();
 
 	return (
-		<Wrapper>
-			<WelcomeBanner>
-				<WelcomeBannerBody>
-					<WelcomeBannerTitle>{'Welcome to your Beak project'}</WelcomeBannerTitle>
-					<WelcomeBannerSummary>
-						{'Welcome to your Beak project. Beak\'s provides a comprehensive'}
+		<Box
+			w='calc(100% - 300px)'
+			h='calc(100% - 200px)'
+			px='150px'
+			py='100px'
+			alignItems='center'
+			justifyContent='center'
+			flexDirection='column'
+			bg='bg.surface'
+			overflowY='scroll'
+		>
+			<Box
+				borderRadius='lg'
+				py='6'
+				px='12'
+				bgImage="url('./images/backgrounds/dark-waves.jpg')"
+				bgPos='center'
+				bgSize='cover'
+				bgRepeat='no-repeat'
+				css={{ 'html.light &': { backgroundImage: "url('./images/backgrounds/light-waves.jpg')" } }}
+			>
+				<Box maxW='700px'>
+					<Box fontSize='3xl' fontWeight='400' color='fg.onAccent'>{'Welcome to your Beak project'}</Box>
+					<Box fontSize='lg' my='4' color='fg.onAccent'>
+						{"Welcome to your Beak project. Beak's provides a comprehensive"}
 						{'toolkit that will make building, editing, testing, and '}
-						{'researching API\'s super simple.'}
+						{"researching API's super simple."}
 						<br />
 						<br />
 						{'Click the button below to get started with making a request, '}
 						{'or you can browse the guides below to learn more about the '}
 						{'features Beak has to offer.'}
-					</WelcomeBannerSummary>
+					</Box>
 					<Button onClick={defaultOrCreateRequest}>{'Get started'}</Button>
-				</WelcomeBannerBody>
-			</WelcomeBanner>
+				</Box>
+			</Box>
 
-			<Guides>
-				<GuidesTitle>{'Learn how to get the most out of Beak'}</GuidesTitle>
-				<GuidesGrid>
-					<GuidesGridItem>
-						<GuidesGridItemTitle>{'Visit the documentation'}</GuidesGridItemTitle>
-						<GuidesGridItemBody>
-							{'Read and explore about all the features that Beak has to offer.'}
-						</GuidesGridItemBody>
-						<Button onClick={() => ipcExplorerService.launchUrl('https://docs.getbeak.app/')}>
-							{'View Beak manual'}
-						</Button>
-					</GuidesGridItem>
-					<GuidesGridItem>
-						<GuidesGridItemTitle>{'Variable sets'}</GuidesGridItemTitle>
-						<GuidesGridItemBody>
-							{'Easily share common variables between requests, and group them '}
-							{'in sets.'}
-						</GuidesGridItemBody>
-						<Button onClick={() => ipcExplorerService.launchUrl('https://getbeak.notion.site/Variable-sets-b5e2083aa597496b89006e1a48acf5fb?pvs=74')}>
-							{'Read about variable sets'}
-						</Button>
-					</GuidesGridItem>
-					<GuidesGridItem>
-						<GuidesGridItemTitle>{'Versioning'}</GuidesGridItemTitle>
-						<GuidesGridItemBody>
-							{'Learn how to easily sync changes to your Beak project with '}
-							{'your team or community.'}
-						</GuidesGridItemBody>
-						<Button onClick={() => ipcExplorerService.launchUrl('https://getbeak.notion.site/Source-control-versioning-aa9b4d423e614148a10f69d42b3bc746')}>
-							{'Read about versioning'}
-						</Button>
-					</GuidesGridItem>
-					<GuidesGridItem>
-						<GuidesGridItemTitle>{'Variables'}</GuidesGridItemTitle>
-						<GuidesGridItemBody>
-							{'Variables can be inserted into your request, and are '}
-							{'calculated for every request.'}
-						</GuidesGridItemBody>
-						<Button onClick={() => ipcExplorerService.launchUrl('https://www.notion.so/getbeak/Variables-e569e07fec964859926edcab2a3351ac')}>
-							{'Read more'}
-						</Button>
-					</GuidesGridItem>
-				</GuidesGrid>
-			</Guides>
-		</Wrapper>
+			<Box mt='8'>
+				<Box fontSize='2xl' mb='2.5' color='fg.default'>{'Learn how to get the most out of Beak'}</Box>
+				<SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} gap='10' rowGap='8'>
+					<GuidesGridItem
+						title='Visit the documentation'
+						body='Read and explore about all the features that Beak has to offer.'
+						cta='View Beak manual'
+						url='https://docs.getbeak.app/'
+					/>
+					<GuidesGridItem
+						title='Variable sets'
+						body='Easily share common variables between requests, and group them in sets.'
+						cta='Read about variable sets'
+						url='https://getbeak.notion.site/Variable-sets-b5e2083aa597496b89006e1a48acf5fb?pvs=74'
+					/>
+					<GuidesGridItem
+						title='Versioning'
+						body='Learn how to easily sync changes to your Beak project with your team or community.'
+						cta='Read about versioning'
+						url='https://getbeak.notion.site/Source-control-versioning-aa9b4d423e614148a10f69d42b3bc746'
+					/>
+					<GuidesGridItem
+						title='Variables'
+						body='Variables can be inserted into your request, and are calculated for every request.'
+						cta='Read more'
+						url='https://www.notion.so/getbeak/Variables-e569e07fec964859926edcab2a3351ac'
+					/>
+				</SimpleGrid>
+			</Box>
+		</Box>
 	);
 };
 
-const Wrapper = styled.div`
-	width: calc(100% - 300px);
-	height: calc(100% - 200px);
-
-	padding: 100px 150px;
-
-	align-items: center;
-	justify-content: center;
-	flex-direction: column;
-
-	background-color: var(--beak-colors-bg-surface);
-
-	overflow-y: scroll;
-`;
-
-const WelcomeBanner = styled.div`
-	border-radius: 10px;
-	padding: 25px 50px;
-	background: url('./images/backgrounds/dark-waves.jpg');
-	background-position: center;
-	background-size: cover;
-	background-repeat: no-repeat;
-
-	html.light & {
-		background-image: url('./images/backgrounds/light-waves.jpg');
-	}
-`;
-
-const WelcomeBannerBody = styled.div`
-	max-width: 700px;
-`;
-
-const WelcomeBannerTitle = styled.div`
-	font-size: 30px;
-	font-weight: 400;
-	color: var(--beak-colors-fg-onAccent);
-`;
-
-const WelcomeBannerSummary = styled.div`
-	font-size: 14px;
-	margin-top: 15px;
-	margin-bottom: 15px;
-	color: var(--beak-colors-fg-onAccent);
-`;
-
-const Guides = styled.div`
-	margin-top: 30px;
-`;
-
-const GuidesTitle = styled.div`
-	font-size: 20px;
-	margin-bottom: 10px;
-	color: var(--beak-colors-fg-default);
-`;
-
-const GuidesGrid = styled.div`
-	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-	column-gap: 40px;
-	row-gap: 30px;
-`;
-
-const GuidesGridItem = styled.div`
-	background: var(--beak-colors-bg-surface);
-	border: 1px solid var(--beak-colors-border-subtle);
-	border-radius: 5px;
-	padding: 15px 20px;
-`;
-
-const GuidesGridItemTitle = styled.div`
-	font-size: 18px;
-	color: var(--beak-colors-fg-default);
-`;
-
-const GuidesGridItemBody = styled.div`
-	font-size: 14px;
-	margin-top: 10px;
-	margin-bottom: 20px;
-	color: var(--beak-colors-fg-muted);
-`;
+const GuidesGridItem: React.FC<{ title: string; body: string; cta: string; url: string }> = ({ title, body, cta, url }) => (
+	<Box bg='bg.surface' borderWidth='1px' borderColor='border.subtle' borderRadius='md' px='5' py='4'>
+		<Box fontSize='xl' color='fg.default'>{title}</Box>
+		<Box fontSize='lg' mt='2.5' mb='5' color='fg.muted'>{body}</Box>
+		<Button onClick={() => ipcExplorerService.launchUrl(url)}>{cta}</Button>
+	</Box>
+);
 
 export default NewProjectIntro;

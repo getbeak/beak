@@ -1,8 +1,8 @@
-
-import React, { useRef, useState } from 'react';
-import { createPortal } from 'react-dom';
-import styled from 'styled-components';
+import { Box } from '@chakra-ui/react';
 import { ChevronDown } from 'lucide-react';
+import * as React from 'react';
+import { useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 import type { TabSubItem } from './TabItem';
 
@@ -25,88 +25,72 @@ const TabItemSubItemsDropdown = <T = string>(props: TabItemSubItemsDropdownProps
 	return (
 		<React.Fragment>
 			{` (${subItems.find(i => i.key === activeSubItem)?.label})`}
-			<DropdownButton
-				ref={parentRef}
-				onClick={event => {
+			<Box
+				as='button'
+				ref={parentRef as unknown as React.Ref<HTMLElement>}
+				display='flow-root'
+				border='none'
+				bg='none'
+				color='inherit'
+				m='0'
+				p='0'
+				ml='1.5'
+				mt='-2px'
+				cursor='pointer'
+				onClick={(event: React.MouseEvent) => {
 					event.stopPropagation();
 					event.preventDefault();
-
 					setShowDropdown(true);
 				}}
 			>
 				<ChevronDown />
-			</DropdownButton>
+			</Box>
 
 			{parentRef.current &&
 				showDropdown &&
 				createPortal(
-					<Container onClick={() => setShowDropdown(false)}>
-						<Wrapper
-							$top={parentRef.current!.getBoundingClientRect().top + parentRef.current!.clientHeight + 6}
-							$left={parentRef.current!.getBoundingClientRect().left - 140 + 10}
-							onClick={event => void event.stopPropagation()}
+					<Box position='fixed' inset='0' onClick={() => setShowDropdown(false)}>
+						<Box
+							position='fixed'
+							w='140px'
+							borderWidth='1px'
+							borderColor='border.default'
+							borderRadius='md'
+							bg='bg.canvas'
+							p='1.5'
+							zIndex={101}
+							style={{
+								marginTop: `${parentRef.current!.getBoundingClientRect().top + parentRef.current!.clientHeight + 6}px`,
+								marginLeft: `${parentRef.current!.getBoundingClientRect().left - 140 + 10}px`,
+							}}
+							onClick={event => event.stopPropagation()}
 						>
 							{subItems.map(i => (
-								<WrapperItem
+								<Box
 									tabIndex={0}
-									role={'button'}
+									role='button'
 									key={i.key as string}
+									px='1.5'
+									py='1'
+									fontSize='lg'
+									cursor='pointer'
+									borderRadius='md'
+									color='fg.default'
+									_hover={{ bg: 'bg.surface.emphasized' }}
 									onClick={() => setSubItem(i.key)}
-									onKeyDown={event => {
+									onKeyDown={(event: React.KeyboardEvent) => {
 										if (event.key === 'Enter') setSubItem(i.key);
 									}}
 								>
 									{i.label}
-								</WrapperItem>
+								</Box>
 							))}
-						</Wrapper>
-					</Container>,
+						</Box>
+					</Box>,
 					document.getElementById('tab-item-sub-items-popover')!,
 				)}
 		</React.Fragment>
 	);
 };
-
-const DropdownButton = styled.button`
-	display: flow-root;
-	border: none; background: none; color: inherit;
-	margin: 0; padding: 0;
-
-	margin-left: 5px;
-	margin-top: -2px;
-	cursor: pointer;
-`;
-
-const Container = styled.div`
-	position: fixed;
-	top: 0; bottom: 0; left: 0; right: 0;
-`;
-
-const Wrapper = styled.div<{ $top: number; $left: number }>`
-	position: fixed;
-	margin-top: ${p => p.$top}px;
-	margin-left: ${p => p.$left}px;
-
-	width: 140px;
-	border: 1px solid var(--beak-colors-border-default);
-	border-radius: 5px;
-	background: var(--beak-colors-bg-canvas);
-
-	padding: 5px;
-	z-index: 101;
-`;
-
-const WrapperItem = styled.div`
-	padding: 4px 6px;
-	font-size: 15px;
-	cursor: pointer;
-
-	border-radius: 5px;
-	color: var(--beak-colors-fg-default);
-
-	&:hover {
-		background: var(--beak-colors-bg-surface-emphasized);
-	}
-`;
 
 export default TabItemSubItemsDropdown;

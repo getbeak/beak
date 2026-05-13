@@ -1,8 +1,7 @@
-
-import React from 'react';
-import { useContext, useState } from 'react';
-import styled, { css } from 'styled-components';
+import { Box, Flex, Grid } from '@chakra-ui/react';
 import { AppWindow, ReceiptText, ShieldUser, SquarePen } from 'lucide-react';
+import * as React from 'react';
+import { useContext, useState } from 'react';
 
 import WindowSessionContext from '../contexts/window-session-context';
 import AccountItem from '../features/preferences/components/molecules/AccountItem';
@@ -11,115 +10,88 @@ import EngineeringPane from '../features/preferences/components/organisms/Engine
 import GeneralPane from '../features/preferences/components/organisms/GeneralPane';
 import SubscriptionPane from '../features/preferences/components/organisms/SubscriptionPane';
 
-const About: React.FC<React.PropsWithChildren<unknown>> = () => {
+const blankFill = 'var(--beak-colors-fg-onAccent)';
+const primaryFill = 'var(--beak-colors-accent-pink)';
+
+interface SidebarItemProps {
+	active: boolean;
+	icon: React.ReactNode;
+	label: string;
+	onClick: () => void;
+}
+
+const SidebarItem: React.FC<SidebarItemProps> = ({ active, icon, label, onClick }) => (
+	<Flex
+		w='calc(100% - 20px)'
+		p='2.5'
+		borderRadius='lg'
+		mb='1.5'
+		color={active ? 'fg.onAccent' : 'fg.default'}
+		bg={active ? 'color-mix(in srgb, var(--beak-colors-accent-pink) 75%, transparent)' : undefined}
+		cursor='pointer'
+		_hover={active ? undefined : { bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 50%, transparent)' }}
+		_last={{ mb: '0' }}
+		css={{ '> svg': { width: '1.25em !important', marginRight: '10px' }, '> span': { marginTop: '-2px' } }}
+		onClick={onClick}
+	>
+		{icon}
+		<span>{label}</span>
+	</Flex>
+);
+
+const About: React.FC = () => {
 	const windowSession = useContext(WindowSessionContext);
 	const [tab, setTab] = useState('general');
-	const blankFill = 'var(--beak-colors-fg-onAccent)';
-	const primaryFill = 'var(--beak-colors-accent-pink)';
+	const darwin = windowSession.isDarwin();
 
 	return (
-		<Wrapper>
-			<Sidebar $darwin={windowSession.isDarwin()}>
-				<SidebarSpacer />
+		<Grid templateRows='1fr' templateColumns='.25fr 1px .75fr' h='100%'>
+			<Box
+				px='2.5'
+				pt={darwin ? '10' : '5'}
+				pb='5'
+				h={darwin ? 'calc(100% - 60px)' : '100%'}
+				overflowY='auto'
+				style={{ WebkitAppRegion: 'drag' } as React.CSSProperties}
+				css={{ '> *': { WebkitAppRegion: 'no-drag' } }}
+			>
+				<Box h='2.5' />
 				<AccountItem />
-				<SidebarSpacer />
-				<SidebarItem $active={tab === 'general'} onClick={() => setTab('general')}>
-					<AppWindow color={tab === 'general' ? blankFill : primaryFill} />
-					<span>{'General'}</span>
-				</SidebarItem>
-				<SidebarItem $active={tab === 'editor'} onClick={() => setTab('editor')}>
-					<SquarePen color={tab === 'editor' ? blankFill : primaryFill} />
-					<span>{'Rich text editor'}</span>
-				</SidebarItem>
-				<SidebarItem $active={tab === 'subscription'} onClick={() => setTab('subscription')}>
-					<ReceiptText color={tab === 'subscription' ? blankFill : primaryFill} />
-					<span>{'Subscription'}</span>
-				</SidebarItem>
-				<SidebarItem $active={tab === 'engineering'} onClick={() => setTab('engineering')}>
-					<ShieldUser color={tab === 'engineering' ? blankFill : primaryFill} />
-					<span>{'Shhh...'}</span>
-				</SidebarItem>
-			</Sidebar>
-			<Border />
-			<Panel>
+				<Box h='2.5' />
+				<SidebarItem
+					active={tab === 'general'}
+					icon={<AppWindow color={tab === 'general' ? blankFill : primaryFill} />}
+					label='General'
+					onClick={() => setTab('general')}
+				/>
+				<SidebarItem
+					active={tab === 'editor'}
+					icon={<SquarePen color={tab === 'editor' ? blankFill : primaryFill} />}
+					label='Rich text editor'
+					onClick={() => setTab('editor')}
+				/>
+				<SidebarItem
+					active={tab === 'subscription'}
+					icon={<ReceiptText color={tab === 'subscription' ? blankFill : primaryFill} />}
+					label='Subscription'
+					onClick={() => setTab('subscription')}
+				/>
+				<SidebarItem
+					active={tab === 'engineering'}
+					icon={<ShieldUser color={tab === 'engineering' ? blankFill : primaryFill} />}
+					label='Shhh...'
+					onClick={() => setTab('engineering')}
+				/>
+			</Box>
+			<Box bg='border.default' />
+			<Box bg='bg.canvas'>
 				{tab === 'general' && <GeneralPane />}
 				{tab === 'editor' && <EditorPane />}
 				{tab === 'subscription' && <SubscriptionPane />}
 				{tab === 'engineering' && <EngineeringPane />}
-			</Panel>
-		</Wrapper>
+			</Box>
+		</Grid>
 	);
 };
-
-const Wrapper = styled.div`
-	display: grid;
-	grid-template-rows: 1fr;
-	grid-template-columns: .25fr 1px .75fr;
-	height: 100%;
-`;
-
-const Sidebar = styled.div<{ $darwin: boolean }>`
-	padding: 20px 10px;
-	height: 100%;
-	overflow-y: overlay;
-	-webkit-app-region: drag;
-
-	${p =>
-		p.$darwin &&
-		css`
-		padding-top: 40px;
-		height: calc(100% - 60px);
-	`}
-
-	> * {
-		-webkit-app-region: no-drag;
-	}
-`;
-
-const SidebarSpacer = styled.div`
-	height: 10px;
-`;
-
-const SidebarItem = styled.div<{ $active?: boolean }>`
-	display: flex;
-
-	width: calc(100% - 20px);
-	padding: 10px;
-	border-radius: 10px;
-	margin-bottom: 6px;
-
-	color: var(--beak-colors-fg-default);
-	${p =>
-		p.$active &&
-		css`
-		background: color-mix(in srgb, var(--beak-colors-accent-pink) 75%, transparent);
-		color: var(--beak-colors-fg-onAccent);
-	`}
-
-	&:last-of-type {
-		margin-bottom: 0;
-	}
-
-	&:hover {
-		cursor: pointer;
-		background: ${p => !p.$active && 'color-mix(in srgb, var(--beak-colors-accent-pink) 50%, transparent)'}
-	}
-
-	> svg {
-		width: 1.25em !important;
-		margin-right: 10px;
-	}
-	> span {
-		margin-top: -2px;
-	}
-`;
-
-const Border = styled.div`
-	background: var(--beak-colors-border-default);
-`;
-
-const Panel = styled.div`
-	background: var(--beak-colors-bg-canvas);
-`;
 
 export default About;

@@ -1,9 +1,9 @@
-import React from 'react';
+import { Box, Button, Flex } from '@chakra-ui/react';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import DebouncedInput from '@beak/ui/components/atoms/DebouncedInput';
 import type { ValueSections } from '@beak/ui/features/variables/values';
 import type { ToggleKeyValue } from '@getbeak/types/request';
-import styled from 'styled-components';
+import * as React from 'react';
 
 import VariableInput from '../../variable-input/components/VariableInput';
 import {
@@ -22,22 +22,27 @@ import EntryToggler from './molecules/EntryToggler';
 interface BasicTableEditorProps {
 	items: Record<string, ToggleKeyValue>;
 	requestId?: string;
-
 	readOnly?: boolean;
 	disableItemToggle?: boolean;
-
 	addItem?: () => void;
 	updateItem?: (type: keyof ToggleKeyValue, ident: string, value: string | boolean | ValueSections) => void;
 	removeItem?: (ident: string) => void;
 }
 
-const BasicTableEditor: React.FC<React.PropsWithChildren<BasicTableEditorProps>> = props => {
-	const { items, requestId, readOnly, disableItemToggle, addItem, updateItem, removeItem } = props;
+const BasicTableEditor: React.FC<BasicTableEditorProps> = ({
+	items,
+	requestId,
+	readOnly,
+	disableItemToggle,
+	addItem,
+	updateItem,
+	removeItem,
+}) => {
 	const editable = !readOnly;
 	const showToggle = !disableItemToggle;
 
 	return (
-		<Wrapper>
+		<Box mt='1.5' w='100%' fontSize='sm' fontWeight='400' color='fg.muted'>
 			<Header>
 				<Row>
 					<HeaderKeyCell>{'Key'}</HeaderKeyCell>
@@ -60,7 +65,7 @@ const BasicTableEditor: React.FC<React.PropsWithChildren<BasicTableEditorProps>>
 								)}
 								<BodyInputWrapper>
 									<DebouncedInput
-										type={'text'}
+										type='text'
 										value={item.name}
 										disabled={readOnly}
 										onChange={v => updateItem?.('name', k, v)}
@@ -89,50 +94,28 @@ const BasicTableEditor: React.FC<React.PropsWithChildren<BasicTableEditorProps>>
 			</Body>
 
 			{editable && (
-				<AddButtonWrapper>
-					<Button onClick={() => addItem?.()}>
+				<Flex justify='flex-end' mt='2.5' mr='0.5'>
+					<Button
+						bg='transparent'
+						borderWidth='1px'
+						borderColor='border.default'
+						borderRadius='lg'
+						color='fg.default'
+						px='2'
+						py='0.5'
+						fontSize='xs'
+						h='auto'
+						_hover={{ outline: 'none', borderColor: 'accent.pink' }}
+						_focus={{ outline: 'none', borderColor: 'accent.pink' }}
+						_active={{ bg: 'accent.pink' }}
+						onClick={() => addItem?.()}
+					>
 						{'Add'}
 					</Button>
-				</AddButtonWrapper>
+				</Flex>
 			)}
-		</Wrapper>
+		</Box>
 	);
 };
-
-const Wrapper = styled.div`
-	margin-top: 5px;
-	width: 100%;
-
-	font-size: 12px;
-	font-weight: 400;
-
-	color: var(--beak-colors-fg-muted);
-`;
-
-const AddButtonWrapper = styled.div`
-	display: flex;
-	justify-content: flex-end;
-
-	margin-top: 10px;
-	margin-right: 2px;
-`;
-
-const Button = styled.button`
-	background: transparent;
-	border: 1px solid var(--beak-colors-border-default);
-	border-radius: 10px;
-	color: var(--beak-colors-fg-default);
-
-	padding: 3px 8px;
-	font-size: 11px;
-
-	&:hover, &:focus {
-		outline: none;
-		border-color: var(--beak-colors-accent-pink);
-	}
-	&:active {
-		background-color: var(--beak-colors-accent-pink);
-	}
-`;
 
 export default BasicTableEditor;

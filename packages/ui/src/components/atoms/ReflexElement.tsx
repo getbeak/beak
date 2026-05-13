@@ -1,21 +1,26 @@
-import React from 'react';
+import * as React from 'react';
 import { ReflexElement as RE, type ReflexElementProps as REP } from 'react-reflex';
-import styled, { css } from 'styled-components';
 
 export interface ReflexElementProps extends REP {
 	$forcedWidth?: number;
 }
 
-const ReflexElement: React.FC<ReflexElementProps> = styled(RE)<ReflexElementProps>`
-	${p => p.minSize && `min-width: ${p.minSize}px;`}
-
-	${p =>
-		p.$forcedWidth !== void 0 &&
-		css`
-		width: ${p.$forcedWidth}px;
-		min-width: ${p.$forcedWidth}px;
-		max-width: ${p.$forcedWidth}px;
-	`}
-`;
+const ReflexElement: React.FC<ReflexElementProps> = ({ $forcedWidth, minSize, style, ...rest }) => {
+	const forced = $forcedWidth !== void 0;
+	return (
+		<RE
+			minSize={minSize}
+			{...rest}
+			style={{
+				...(forced
+					? { width: `${$forcedWidth}px`, minWidth: `${$forcedWidth}px`, maxWidth: `${$forcedWidth}px` }
+					: minSize
+						? { minWidth: `${minSize}px` }
+						: {}),
+				...(style as React.CSSProperties),
+			}}
+		/>
+	);
+};
 
 export default ReflexElement;
