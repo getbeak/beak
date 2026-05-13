@@ -41,9 +41,22 @@ const GenericBanner: React.FC<GenericBannerProps> = ({ item }) => {
 			boxShadow='0 6px 18px color-mix(in srgb, var(--beak-colors-accent-pink) 14%, rgba(0,0,0,0.06)), inset 0 1px 0 color-mix(in srgb, white 14%, transparent)'
 			style={{ borderLeft: '3px solid var(--beak-colors-accent-pink)' }}
 		>
-			<Box fontSize='2xl' flex='0 0 auto' aria-hidden>
+			<Flex
+				flex='0 0 auto'
+				align='center'
+				justify='center'
+				w='32px'
+				h='32px'
+				borderRadius='full'
+				fontSize='lg'
+				bg='color-mix(in srgb, var(--beak-colors-accent-pink) 12%, transparent)'
+				borderWidth='1px'
+				borderColor='color-mix(in srgb, var(--beak-colors-accent-pink) 24%, transparent)'
+				boxShadow='inset 0 1px 0 color-mix(in srgb, white 18%, transparent)'
+				aria-hidden
+			>
 				{emoji}
-			</Box>
+			</Flex>
 			<Box flex='1 1 auto' minW={0}>
 				<Box fontSize='sm' fontWeight='600' color='fg.default'>{title}</Box>
 				<Box fontSize='xs' color='fg.muted' mt='0.5'>
