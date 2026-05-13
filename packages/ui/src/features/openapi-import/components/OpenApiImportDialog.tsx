@@ -156,7 +156,7 @@ const OpenApiImportDialog: React.FC = () => {
 
 							{folders.length > 0 && (
 								<Box mt='3'>
-									<Box fontSize='10px' fontWeight='600' textTransform='uppercase' letterSpacing='0.06em' color='fg.subtle' mb='1'>
+									<Box fontSize='10px' fontWeight='700' textTransform='uppercase' letterSpacing='0.06em' color='fg.subtle' mb='1.5'>
 										{'Existing folders'}
 									</Box>
 									<Box
@@ -194,8 +194,8 @@ const OpenApiImportDialog: React.FC = () => {
 													color={isPicked ? 'accent.pink' : 'fg.muted'}
 													cursor='pointer'
 													_hover={{
-														bg: 'color-mix(in srgb, var(--beak-colors-bg-surface-emphasized) 40%, transparent)',
-														color: 'fg.default',
+														bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 12%, transparent)',
+														color: 'accent.pink',
 													}}
 													onClick={() => setFolderInput(path)}
 												>
@@ -222,7 +222,7 @@ const OpenApiImportDialog: React.FC = () => {
 											color='fg.subtle'
 											cursor='pointer'
 											_hover={{
-												bg: 'color-mix(in srgb, var(--beak-colors-bg-surface-emphasized) 40%, transparent)',
+												bg: 'color-mix(in srgb, var(--beak-colors-accent-teal) 12%, transparent)',
 												color: 'accent.teal',
 											}}
 											onClick={() => setFolderInput(DEFAULT_FOLDER)}
