@@ -138,6 +138,7 @@ const NewProjectIntro: React.FC = () => {
 					</Flex>
 					<SimpleGrid columns={{ base: 1, md: 2 }} gap='4'>
 						<GuideCard
+							idx={0}
 							icon={BookOpen}
 							title='Documentation'
 							body='Read and explore all the features Beak has to offer.'
@@ -145,6 +146,7 @@ const NewProjectIntro: React.FC = () => {
 							url='https://docs.getbeak.app/'
 						/>
 						<GuideCard
+							idx={1}
 							icon={Layers}
 							title='Variable sets'
 							body='Share common variables between requests and switch between environments instantly.'
@@ -152,6 +154,7 @@ const NewProjectIntro: React.FC = () => {
 							url='https://getbeak.notion.site/Variable-sets-b5e2083aa597496b89006e1a48acf5fb?pvs=74'
 						/>
 						<GuideCard
+							idx={2}
 							icon={GitBranch}
 							title='Versioning'
 							body='Sync changes to your Beak project with your team via plain Git — no proprietary cloud.'
@@ -159,6 +162,7 @@ const NewProjectIntro: React.FC = () => {
 							url='https://getbeak.notion.site/Source-control-versioning-aa9b4d423e614148a10f69d42b3bc746'
 						/>
 						<GuideCard
+							idx={3}
 							icon={Hash}
 							title='Variables'
 							body='Inject dynamic values into any request — recomputed every send.'
@@ -173,6 +177,7 @@ const NewProjectIntro: React.FC = () => {
 };
 
 interface GuideCardProps {
+	idx: number;
 	icon: React.ComponentType<{ size?: number }>;
 	title: string;
 	body: string;
@@ -181,8 +186,15 @@ interface GuideCardProps {
 }
 
 const ChakraButton = chakra('button');
+const MotionDiv = motion.div;
 
-const GuideCard: React.FC<GuideCardProps> = ({ icon: Icon, title, body, cta, url }) => (
+const GuideCard: React.FC<GuideCardProps> = ({ idx, icon: Icon, title, body, cta, url }) => (
+	<MotionDiv
+		initial={{ opacity: 0, y: 12 }}
+		animate={{ opacity: 1, y: 0 }}
+		transition={{ duration: 0.32, ease: 'easeOut', delay: 0.18 + idx * 0.06 }}
+		style={{ display: 'block', width: '100%' }}
+	>
 	<ChakraButton
 		type='button'
 		display='block'
@@ -234,6 +246,7 @@ const GuideCard: React.FC<GuideCardProps> = ({ icon: Icon, title, body, cta, url
 			</Box>
 		</Flex>
 	</ChakraButton>
+	</MotionDiv>
 );
 
 export default NewProjectIntro;
