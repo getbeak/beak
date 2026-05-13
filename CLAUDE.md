@@ -144,19 +144,26 @@ Deferred: the body-file editor UI button that calls `pickAndAttachAsset` and set
 
 ### Known infra issues
 
-- **`pnpm build` fails on packages/ui** — `vite-plugin-monaco-editor@1.1.0` calls
-  `require.resolve(process.cwd() + '/node_modules/monaco-editor/esm/vs/language/json/json.worker')`,
-  but pnpm hoists `monaco-editor` to the workspace root and doesn't symlink it
-  into `packages/ui/node_modules`. The fallback `require.resolve(filePath)`
-  branch also fails because monaco-editor is ESM-only and has no `require`
-  exports map. Workarounds (not yet applied):
+- **`pnpm build` fails on packages/ui** — two-layer problem:
+  1. `vite-plugin-monaco-editor@1.1.0` calls
+     `require.resolve(process.cwd() + '/node_modules/monaco-editor/esm/vs/language/json/json.worker')`,
+     but pnpm hoists `monaco-editor` to the workspace root and doesn't symlink
+     it into `packages/ui/node_modules`. This layer can be worked around by
+     moving every worker into `customWorkers` with `../../../node_modules/...`
+     entries (which we already do for graphql/scss/less/etc).
+  2. Once the plugin's path resolver works, esbuild bundling
+     `node_modules/monaco-graphql/dist/graphql.worker.js` fails on its
+     transitive `import 'monaco-editor/esm/vs/editor/editor.worker'`. monaco-editor
+     is ESM-only and its `exports` map doesn't expose internal subpaths to
+     bare-specifier imports, so esbuild can't resolve them.
+  Fixing both layers (not yet applied):
   1. Replace `vite-plugin-monaco-editor` with `vite-plugin-monaco-editor-esm`
      or `@guolao/vite-plugin-monaco-editor` (both handle pnpm + ESM).
-  2. Add `monaco-editor` as a direct workspace dep on `packages/ui` and
-     enable pnpm hoisting (`packageExtensions`).
-  3. Patch the plugin's `resolveMonacoPath` to walk up to the workspace root.
+  2. OR patch monaco-editor's `package.json` exports map via pnpm's
+     `patchedDependencies` to expose `./esm/vs/**/*` paths.
   Dev server (`pnpm start:apps-host-web`) is unaffected — playwright e2e runs
-  against the dev server, not the built bundle.
+  against the dev server, not the built bundle, so the suite stays green
+  even with build broken.
 
 ### Tabs
 
