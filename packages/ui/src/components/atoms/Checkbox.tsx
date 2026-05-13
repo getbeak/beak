@@ -17,6 +17,9 @@ const HiddenInput = chakra('input', {
 		'&:focus + span': {
 			boxShadow: '0 0 0 3px color-mix(in srgb, var(--beak-colors-accent-pink) 32%, transparent)',
 		},
+		'&:hover:not(:checked) + span': {
+			borderColor: 'var(--beak-colors-accent-pink)',
+		},
 	},
 });
 
@@ -47,7 +50,6 @@ const Checkbox: React.FC<CheckboxProps> = ({ label, ...rest }) => {
 					boxShadow={isChecked ? '0 0 0 0.5px color-mix(in srgb, white 22%, transparent) inset, 0 2px 6px color-mix(in srgb, var(--beak-colors-accent-pink) 35%, transparent)' : 'inset 0 1px 2px rgba(0,0,0,0.04)'}
 					transition='background-color .14s ease, border-color .14s ease, box-shadow .14s ease, transform .08s ease'
 					pointerEvents='none'
-					transform={isChecked ? 'scale(1)' : 'scale(1)'}
 				>
 					<Box
 						as='span'
