@@ -1,11 +1,6 @@
+import { Box, Flex } from '@chakra-ui/react';
 import type { FlightInProgress as FlightInProgressType } from '@beak/state/flight';
-import React from 'react';
-import styled, { keyframes } from 'styled-components';
-
-const pulseRing = keyframes`
-	0% { transform: scale(.33); }
-	80%, 100% { opacity: 0; }
-`;
+import * as React from 'react';
 
 interface FlightInProgressProps {
 	requestId: string;
@@ -16,54 +11,50 @@ const FlightInProgress: React.FC<FlightInProgressProps> = ({ currentFlight, requ
 	const shown = Boolean(currentFlight && currentFlight.requestId === requestId);
 
 	return (
-		// <Container $shown={Boolean(currentFlight)}>
-		<Container $shown={shown}>
-			<PulseOrb />
-		</Container>
+		<Flex
+			position='absolute'
+			pointerEvents='none'
+			inset='0'
+			align='center'
+			justify='center'
+			bg='bg.canvas'
+			textAlign='center'
+			transition='opacity .2s ease-out'
+			opacity={shown ? 1 : 0}
+			css={{
+				'@keyframes beakFlightPulse': {
+					'0%': { transform: 'scale(.33)' },
+					'80%': { opacity: 0 },
+					'100%': { opacity: 0 },
+				},
+			}}
+		>
+			<Box w='50px' h='50px' position='relative'>
+				<Box
+					position='absolute'
+					top='-100px'
+					left='-100px'
+					w='250px'
+					h='250px'
+					borderRadius='full'
+					bg='accent.pink'
+					animation='beakFlightPulse 1.25s cubic-bezier(0.215, 0.61, 0.355, 1) infinite'
+				/>
+				<Box
+					position='absolute'
+					top='0'
+					left='0'
+					w='50px'
+					h='50px'
+					bgImage="url('images/logo.svg')"
+					bgSize='45px'
+					bgPos='center'
+					bgRepeat='no-repeat'
+					opacity={0.8}
+				/>
+			</Box>
+		</Flex>
 	);
 };
-
-const Container = styled.div<{ $shown: boolean }>`
-	position: absolute;
-	pointer-events: none;
-	display: flex;
-	top: 0; bottom: 0; left: 0; right: 0;
-	align-items: center; justify-content: center;
-	background: var(--beak-colors-bg-canvas);
-	text-align: center;
-	transition: opacity .2s ease-out;
-	opacity: 0;
-
-	${p => p.$shown && 'opacity: 1;'}
-`;
-
-const PulseOrb = styled.div`
-	width: 50px; height: 50px;
-
-	&:before {
-		content: '';
-		position: relative;
-		display: block;
-		width: 250px; height: 250px;
-		box-sizing: border-box;
-		margin-left: -100px;
-		margin-top: -100px;
-		border-radius: 100%;
-		background-color: var(--beak-colors-accent-pink);
-		animation: ${pulseRing} 1.25s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
-	}
-	&:after {
-		content: '';
-		display: block;
-		position: relative;
-		background-size: 45px;
-		background-position: center;
-		background-repeat: no-repeat;
-		background-image: url('images/logo.svg');
-		opacity: .8;
-		margin-top: -150px;
-		width: 50px; height: 50px;
-	}
-`;
 
 export default FlightInProgress;

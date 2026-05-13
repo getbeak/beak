@@ -1,8 +1,8 @@
-import React from 'react';
-import { useDispatch } from 'react-redux';
+import { Box, Heading } from '@chakra-ui/react';
 import Button from '@beak/ui/components/atoms/Button';
 import { insertNewGroup } from '@beak/ui/store/variable-sets/actions';
-import styled from 'styled-components';
+import * as React from 'react';
+import { useDispatch } from 'react-redux';
 
 interface CreateNewSplashProps {
 	type: 'set';
@@ -13,33 +13,28 @@ const CreateNewSplash: React.FC<CreateNewSplashProps> = ({ type, variableSet }) 
 	const dispatch = useDispatch();
 
 	return (
-		<Wrapper>
-			<Header>
+		<Box textAlign='center'>
+			<Heading
+				as='h1'
+				display='block'
+				textAlign='center'
+				py='2.5'
+				px='6'
+				fontSize='2xl'
+				fontWeight='400'
+				color='fg.muted'
+			>
 				{'Looks like you have no sets in here?'}
-			</Header>
+			</Heading>
 			<Button
 				onClick={() => {
-					if (type === 'set')
-						dispatch(insertNewGroup({ id: variableSet!, setName: '' }));
+					if (type === 'set') dispatch(insertNewGroup({ id: variableSet, setName: '' }));
 				}}
 			>
-				{'Let\'s create one!'}
+				{"Let's create one!"}
 			</Button>
-		</Wrapper>
+		</Box>
 	);
 };
-
-const Wrapper = styled.div`
-	text-align: center;
-`;
-
-const Header = styled.h1`
-	display: block;
-	text-align: center;
-	padding: 10px 25px;
-	font-size: 25px;
-	font-weight: 400;
-	color: var(--beak-colors-fg-muted);
-`;
 
 export default CreateNewSplash;

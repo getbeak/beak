@@ -1,50 +1,23 @@
-
-import React from 'react';
-import styled from 'styled-components';
+import { Box, Flex } from '@chakra-ui/react';
 import { CloudLightning } from 'lucide-react';
+import * as React from 'react';
 
 interface ErrorViewProps {
 	error: Error;
 }
 
-const ErrorView: React.FC<React.PropsWithChildren<ErrorViewProps>> = ({ error }) => (
-	<Wrapper>
-		<Content>
+const ErrorView: React.FC<ErrorViewProps> = ({ error }) => (
+	<Flex textAlign='center' px='10' py='5' h='calc(100% - 40px)' align='center'>
+		<Box flex='1' css={{ '> svg > path': { fill: 'var(--beak-colors-fg-muted)' } }}>
 			<CloudLightning opacity={0.4} />
-			<Title>{'There was an error executing this request'}</Title>
-			<ErrorMessage>{error.message}</ErrorMessage>
-		</Content>
-	</Wrapper>
+			<Box fontSize='2xl' my='2.5' fontWeight='300' color='fg.default'>
+				{'There was an error executing this request'}
+			</Box>
+			<Box fontSize='md' color='fg.muted' overflowWrap='anywhere'>
+				{error.message}
+			</Box>
+		</Box>
+	</Flex>
 );
-
-const Wrapper = styled.div`
-	display: flex;
-	text-align: center;
-	padding: 20px 40px;
-	height: calc(100% - 40px);
-
-	align-items: center;
-`;
-
-const Content = styled.div`
-	flex: 1;
-
-	> svg > path {
-		fill: var(--beak-colors-fg-muted);
-	}
-`;
-
-const Title = styled.div`
-	font-size: 23px;
-	margin: 10px 0;
-	font-weight: 300;
-	color: var(--beak-colors-fg-default);
-`;
-
-const ErrorMessage = styled.div`
-	font-size: 13px;
-	color: var(--beak-colors-fg-muted);
-	overflow-wrap: anywhere;
-`;
 
 export default ErrorView;

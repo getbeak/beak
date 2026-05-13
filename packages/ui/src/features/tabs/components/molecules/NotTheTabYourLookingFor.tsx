@@ -1,14 +1,14 @@
+import { Box, Heading, Text } from '@chakra-ui/react';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import Button from '@beak/ui/components/atoms/Button';
 import { useAppSelector } from '@beak/ui/store/redux';
 import type { ValidRequestNode } from '@getbeak/types/nodes';
-import React from 'react';
+import * as React from 'react';
 import { useDispatch } from 'react-redux';
-import styled from 'styled-components';
 
 import { changeTab } from '../../store/actions';
 
-const NotTheTabYourLookingFor: React.FC<React.PropsWithChildren<unknown>> = () => {
+const NotTheTabYourLookingFor: React.FC = () => {
 	const tree = useAppSelector(s => s.global.project.tree);
 	const dispatch = useDispatch();
 
@@ -25,33 +25,16 @@ const NotTheTabYourLookingFor: React.FC<React.PropsWithChildren<unknown>> = () =
 	}
 
 	return (
-		<Wrapper>
-			<Header>{"This is not the tab you're looking for"}</Header>
-			<Body>{'Why not select a request to get going, or...'}</Body>
-
+		<Box h='100%' textAlign='center' bg='bg.canvas' px='6' py='5'>
+			<Heading as='h1' m='0' fontWeight='400' fontSize='3xl' lineHeight='25px' color='fg.default'>
+				{"This is not the tab you're looking for"}
+			</Heading>
+			<Text fontSize='lg' color='fg.muted'>
+				{'Why not select a request to get going, or...'}
+			</Text>
 			<Button onClick={() => spinThatWheel()}>{'Spin the wheel!'}</Button>
-		</Wrapper>
+		</Box>
 	);
 };
-
-const Wrapper = styled.div`
-	height: 100%;
-	text-align: center;
-	background: var(--beak-colors-bg-canvas);
-	padding: 20px 25px;
-`;
-
-const Header = styled.h1`
-	margin: 0;
-	font-weight: 400;
-	font-size: 35px;
-	line-height: 25px;
-	color: var(--beak-colors-fg-default);
-`;
-
-const Body = styled.p`
-	font-size: 14px;
-	color: var(--beak-colors-fg-muted);
-`;
 
 export default NotTheTabYourLookingFor;

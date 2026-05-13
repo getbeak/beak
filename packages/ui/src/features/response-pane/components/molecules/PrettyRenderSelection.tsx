@@ -1,56 +1,52 @@
+import { Flex } from '@chakra-ui/react';
 import { Select } from '@beak/ui/components/atoms/Input';
-import React from 'react';
-import styled from 'styled-components';
+import * as React from 'react';
 
 interface PrettyRenderSelectionProps {
 	selectedLanguage: string | null;
 	onSelectedLanguageChange: (lang: string) => void;
 }
 
-const PrettyRenderSelection: React.FC<React.PropsWithChildren<PrettyRenderSelectionProps>> = props => {
-	const { selectedLanguage, onSelectedLanguageChange } = props;
-
-	return (
-		<Container>
-			<Select
-				$beakSize={'sm'}
-				value={selectedLanguage ?? 'text/plain'}
-				onChange={e => onSelectedLanguageChange(e.currentTarget.value)}
-			>
-				<optgroup label={'Basic'}>
-					<option value={'txt'}>{'Text'}</option>
-				</optgroup>
-				<optgroup label={'Rich'}>
-					<option value={'json'}>{'JSON'}</option>
-					<option disabled value={'json+viewer'}>
-						{'JSON viewer'}
-					</option>
-					<option value={'xml'}>{'XML'}</option>
-					<option value={'html'}>{'HTML'}</option>
-					<option value={'css'}>{'CSS'}</option>
-				</optgroup>
-				<optgroup label={'Media'}>
-					<option value={'image'}>{'Image'}</option>
-					<option value={'video'}>{'Video'}</option>
-				</optgroup>
-				<optgroup label={'Other'}>
-					<option disabled>{'Web'}</option>
-					<option value={'hex'}>{'Hex'}</option>
-				</optgroup>
-			</Select>
-		</Container>
-	);
-};
-
-const Container = styled.div`
-	display: flex;
-	align-items: stretch;
-	padding: 5px 10px;
-
-	background: var(--beak-colors-bg-surface);
-	border-bottom: 1px solid var(--beak-colors-border-default);
-
-	font-size: 14px;
-`;
+const PrettyRenderSelection: React.FC<PrettyRenderSelectionProps> = ({
+	selectedLanguage,
+	onSelectedLanguageChange,
+}) => (
+	<Flex
+		align='stretch'
+		px='2.5'
+		py='1.5'
+		bg='bg.surface'
+		borderBottomWidth='1px'
+		borderColor='border.default'
+		fontSize='lg'
+	>
+		<Select
+			$beakSize='sm'
+			value={selectedLanguage ?? 'text/plain'}
+			onChange={e => onSelectedLanguageChange(e.currentTarget.value)}
+		>
+			<optgroup label='Basic'>
+				<option value='txt'>{'Text'}</option>
+			</optgroup>
+			<optgroup label='Rich'>
+				<option value='json'>{'JSON'}</option>
+				<option disabled value='json+viewer'>
+					{'JSON viewer'}
+				</option>
+				<option value='xml'>{'XML'}</option>
+				<option value='html'>{'HTML'}</option>
+				<option value='css'>{'CSS'}</option>
+			</optgroup>
+			<optgroup label='Media'>
+				<option value='image'>{'Image'}</option>
+				<option value='video'>{'Video'}</option>
+			</optgroup>
+			<optgroup label='Other'>
+				<option disabled>{'Web'}</option>
+				<option value='hex'>{'Hex'}</option>
+			</optgroup>
+		</Select>
+	</Flex>
+);
 
 export default PrettyRenderSelection;

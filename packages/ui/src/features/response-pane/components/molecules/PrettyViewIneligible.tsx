@@ -1,7 +1,6 @@
-
-import React from 'react';
-import styled from 'styled-components';
+import { Box, Flex } from '@chakra-ui/react';
 import { CircleHelp } from 'lucide-react';
+import * as React from 'react';
 
 import type { NotEligible } from '../../hooks/use-flight-body-info';
 
@@ -33,37 +32,14 @@ const PrettyViewIneligible: React.FC<PrettyViewIneligibleProps> = ({ eligibility
 	const reason = reasons[eligibility];
 
 	return (
-		<Container>
-			<ErrorInformation>
+		<Flex align='center' justify='center' h='100%' px='10'>
+			<Box textAlign='center'>
 				<CircleHelp opacity={0.4} />
-				<Title>{reason.title}</Title>
-				<Description>{reason.description}</Description>
-			</ErrorInformation>
-		</Container>
+				<Box fontSize='2xl' my='2.5' fontWeight='300' color='fg.default'>{reason.title}</Box>
+				<Box fontSize='md' color='fg.muted'>{reason.description}</Box>
+			</Box>
+		</Flex>
 	);
 };
-
-const Container = styled.div`
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	height: 100%;
-	padding: 0 40px;
-`;
-
-const ErrorInformation = styled.div`
-	text-align: center;
-`;
-
-const Title = styled.div`
-	font-size: 23px;
-	margin: 10px 0;
-	font-weight: 300;
-	color: var(--beak-colors-fg-default);
-`;
-const Description = styled.div`
-	font-size: 13px;
-	color: var(--beak-colors-fg-muted);
-`;
 
 export default PrettyViewIneligible;

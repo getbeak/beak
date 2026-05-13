@@ -1,68 +1,41 @@
-import React from 'react';
+import { Box, Flex } from '@chakra-ui/react';
+import * as React from 'react';
 import { useState } from 'react';
-import styled, { css } from 'styled-components';
 
 export interface CollapseProps {
 	startOpen: boolean;
 	title: string;
 }
 
-const Collapse: React.FC<React.PropsWithChildren<CollapseProps>> = props => {
-	const { children, startOpen, title } = props;
+const Collapse: React.FC<React.PropsWithChildren<CollapseProps>> = ({ children, startOpen, title }) => {
 	const [show, setShow] = useState(startOpen);
 
 	return (
-		<Wrapper>
-			<ActionBar
-				onClick={() => {
-					setShow(!show);
-				}}
-			>
-				<ArrowWrapper>
-					<Arrow direction={show ? 'down' : 'right'} />
-				</ArrowWrapper>
-				<Title>{title}</Title>
-			</ActionBar>
-			{show && <ChildrenWrapper>{children}</ChildrenWrapper>}
-		</Wrapper>
+		<Box>
+			<Flex cursor='pointer' align='center' onClick={() => setShow(!show)}>
+				<Box display='inline-flex' justifyContent='center' w='5'>
+					<Box
+						display='inline-block'
+						w='0'
+						h='0'
+						borderTop='5px solid transparent'
+						borderBottom='5px solid transparent'
+						borderLeft='5px solid'
+						borderLeftColor='fg.default'
+						transform={show ? 'rotate(90deg)' : undefined}
+					/>
+				</Box>
+				<Box as='span' fontSize='lg' fontWeight='medium'>
+					{title}
+				</Box>
+			</Flex>
+			{show && (
+				<Box mx='1.5'>
+					{children}
+				</Box>
+			)}
+		</Box>
 	);
 };
-
-const Wrapper = styled.div`
-
-`;
-
-const ActionBar = styled.div`
-	cursor: pointer;
-`;
-
-const ArrowWrapper = styled.div`
-	display: inline-flex;
-	justify-content: center;
-
-	width: 20px;
-`;
-
-const Arrow = styled.div<{ direction: 'right' | 'down' }>`
-	display: inline-block;
-	width: 0;
-	height: 0;
-
-	border-top: 5px solid transparent;
-	border-bottom: 5px solid transparent;
-	border-left: 5px solid var(--beak-colors-fg-default);
-
-	${({ direction }) => (direction === 'down' ? css`transform: rotate(90deg);` : '')};
-`;
-
-const Title = styled.span`
-	font-size: 14px;
-	font-weight: 500;
-`;
-
-const ChildrenWrapper = styled.div`
-	margin-left: 5px;
-	margin-right: 5px;
-`;
 
 export default Collapse;

@@ -6,9 +6,9 @@ import binaryStore from '@beak/ui/lib/binary-store';
 import { requestPreferenceSetResSubTab } from '@beak/ui/store/preferences/actions';
 import { useAppSelector } from '@beak/ui/store/redux';
 import type { Flight } from '@getbeak/types/flight';
+import { Box, Flex } from '@chakra-ui/react';
 import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import styled from 'styled-components';
 
 import TabBar from '../../../../components/atoms/TabBar';
 import TabItem from '../../../../components/atoms/TabItem';
@@ -61,7 +61,7 @@ const ResponseTab: React.FC<React.PropsWithChildren<ResponseTabProps>> = props =
 	}
 
 	return (
-		<Container>
+		<Flex direction='column' overflow='hidden' h='100%'>
 			<TabBar $centered>
 				<TabSpacer />
 				{!hasErrored && (
@@ -80,7 +80,7 @@ const ResponseTab: React.FC<React.PropsWithChildren<ResponseTabProps>> = props =
 				<TabSpacer />
 			</TabBar>
 
-			<TabBody>
+			<Box flexGrow={2} overflowY='hidden' h='100%'>
 				{tab === 'headers' && <BasicTableEditor items={convertHeaderFormat()} readOnly />}
 				{tab === 'pretty' && <PrettyViewer flight={flight} mode={'response'} />}
 				{tab === 'raw' && (
@@ -91,24 +91,10 @@ const ResponseTab: React.FC<React.PropsWithChildren<ResponseTabProps>> = props =
 						{error && <ErrorView error={error} />}
 					</React.Fragment>
 				)}
-			</TabBody>
-		</Container>
+			</Box>
+		</Flex>
 	);
 };
-
-const Container = styled.div`
-	display: flex;
-	flex-direction: column;
-	overflow: hidden;
-	height: 100%;
-`;
-
-const TabBody = styled.div`
-	flex-grow: 2;
-
-	overflow-y: hidden;
-	height: 100%;
-`;
 
 function createHttpResponseMessage(flight: Flight) {
 	const { binaryStoreKey, response } = flight;

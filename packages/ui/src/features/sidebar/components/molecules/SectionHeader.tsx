@@ -1,9 +1,8 @@
+import { Box, Flex } from '@chakra-ui/react';
 import { showContextMenu } from '@beak/ui/utils/context-menu';
 import { ChevronRight, EllipsisVertical } from 'lucide-react';
-
 import type { MenuItemConstructorOptions } from 'electron';
-import React from 'react';
-import styled from 'styled-components';
+import * as React from 'react';
 
 interface SectionHeaderProps {
 	actions?: MenuItemConstructorOptions[];
@@ -16,73 +15,54 @@ const SectionHeader: React.FC<React.PropsWithChildren<SectionHeaderProps>> = pro
 	const { actions, children, collapsed, disableCollapse, onClick } = props;
 
 	return (
-		<Container onClick={onClick} $disableCollapse={disableCollapse}>
-			<Header>
-				<CollapsedIndicator $collapsed={collapsed}>
-					<ChevronRight />
-				</CollapsedIndicator>
-
+		<Flex
+			justify='space-between'
+			align='center'
+			px='1.5'
+			py='1.5'
+			textTransform='uppercase'
+			fontSize='xs'
+			fontWeight='semibold'
+			cursor={disableCollapse ? 'default' : 'pointer'}
+			onClick={onClick}
+		>
+			<Box textOverflow='ellipsis' whiteSpace='nowrap' overflow='hidden'>
+				<Box
+					display='inline-block'
+					mr='0.5'
+					pl='0.5'
+					w='10px'
+					fontSize='9px'
+					lineHeight='9px'
+					color='fg.muted'
+					css={{
+						'> svg': {
+							transition: 'transform .2s ease',
+							transformOrigin: 'center center',
+							transform: collapsed ? 'rotate(0deg)' : 'rotate(90deg)',
+						},
+					}}
+				>
+					<ChevronRight size={9} />
+				</Box>
 				{children}
-			</Header>
+			</Box>
 			{actions && actions.length > 0 && (
-				<Actions
+				<Box
+					px='1.5'
+					borderRadius='sm'
+					_hover={{ bg: 'bg.surface' }}
 					onClick={event => {
 						event.preventDefault();
 						event.stopPropagation();
-
 						showContextMenu('test', actions);
 					}}
 				>
-					<EllipsisVertical fontSize={'10px'} />
-				</Actions>
+					<EllipsisVertical size={10} />
+				</Box>
 			)}
-		</Container>
+		</Flex>
 	);
 };
-
-const Container = styled.div<{ $disableCollapse?: boolean }>`
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	padding: 6px 5px;
-
-	text-transform: uppercase;
-	font-size: 11px;
-	font-weight: 600;
-
-	cursor: ${p => (p.$disableCollapse ? 'default' : 'pointer')};
-`;
-
-const Header = styled.div`
-	text-overflow: ellipsis;
-	white-space: nowrap;
-	overflow: hidden;
-`;
-
-const CollapsedIndicator = styled.div<{ $collapsed?: boolean }>`
-	display: inline-block;
-	margin-right: 3px;
-	padding-left: 2px;
-	width: 10px;
-
-	font-size: 9px;
-	line-height: 9px;
-	color: var(--beak-colors-fg-muted);
-
-	> svg {
-		transition: transform .2s ease;
-		transform-origin: center center;
-		transform: rotate(${p => (p.$collapsed ? '0deg' : '90deg')});
-	}
-`;
-
-const Actions = styled.div`
-	padding: 0 6px;
-	border-radius: 3px;
-
-	&:hover {
-		background: var(--beak-colors-bg-surface);
-	}
-`;
 
 export default SectionHeader;
