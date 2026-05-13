@@ -86,7 +86,11 @@ const FadedLogo = styled.div`
 	background-repeat: no-repeat;
 	background-position: center;
 	background-size: contain;
-	opacity: ${p => (p.theme.theme === 'light' ? 0.3 : 0.15)};
+	opacity: 0.15;
+
+	html.light & {
+		opacity: 0.3;
+	}
 `;
 
 const ShortcutContainer = styled.div``;

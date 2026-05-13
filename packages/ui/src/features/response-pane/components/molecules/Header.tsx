@@ -79,8 +79,8 @@ const UrlSection = styled(Section)`
 
 const StatusSection = styled(Section)<{ $status: number }>`
 	background-color: var(--beak-colors-bg-canvas);
-	border-color: ${p => statusToColor(p.theme, p.$status)};
-	color: ${p => statusToColor(p.theme, p.$status)};
+	border-color: ${p => statusToColor(p.$status)};
+	color: ${p => statusToColor(p.$status)};
 
 	white-space: nowrap;
 `;

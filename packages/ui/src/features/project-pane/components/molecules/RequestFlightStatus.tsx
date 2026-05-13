@@ -35,7 +35,7 @@ const RequestStatusBlob = styled.div<RequestStatusBlobProps>`
 	border: 1px solid var(--beak-colors-border-subtle);
 	border-radius: 100%;
 
-	background-color: ${p => statusToColor(p.theme, p.$status)};
+	background-color: ${p => statusToColor(p.$status)};
 `;
 
 export default RequestFlightStatus;

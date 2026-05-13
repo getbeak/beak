@@ -93,10 +93,14 @@ const Wrapper = styled.div`
 const WelcomeBanner = styled.div`
 	border-radius: 10px;
 	padding: 25px 50px;
-	background: url('${p => `./images/backgrounds/${p.theme.theme}-waves.jpg`}');
+	background: url('./images/backgrounds/dark-waves.jpg');
 	background-position: center;
 	background-size: cover;
 	background-repeat: no-repeat;
+
+	html.light & {
+		background-image: url('./images/backgrounds/light-waves.jpg');
+	}
 `;
 
 const WelcomeBannerBody = styled.div`

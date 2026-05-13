@@ -1,24 +1,36 @@
-import type { UIColors } from '@beak/design-system/types';
-import { toHexAlpha } from '@beak/design-system/utils';
 import type { IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
-import styled, { useTheme } from 'styled-components';
+import styled from 'styled-components';
 
 type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement>;
+
+/** Maps the previous design-system colour-token names that callers pass into
+ *  `iconColor` onto Chakra CSS vars so the icon still picks up the brand
+ *  palette via the active theme.  Unknown keys fall through to `undefined`. */
+const ICON_COLOUR_TOKEN_MAP: Record<string, string> = {
+	primaryFill: 'var(--beak-colors-accent-pink)',
+	secondaryFill: 'var(--beak-colors-accent-indigo)',
+	tertiaryFill: 'var(--beak-colors-accent-teal)',
+	goAction: 'var(--beak-colors-accent-teal)',
+	secondaryAction: 'var(--beak-colors-accent-pink)',
+	destructiveAction: 'var(--beak-colors-accent-alert)',
+	textHighlight: 'var(--beak-colors-accent-pink)',
+	textSuccess: 'var(--beak-colors-accent-teal)',
+	textAlert: 'var(--beak-colors-accent-alert)',
+};
 
 export interface GetStartedButtonProps extends ButtonProps {
 	title: string;
 	description: string;
 	icon: IconDefinition;
-	iconColor?: keyof UIColors;
+	iconColor?: keyof typeof ICON_COLOUR_TOKEN_MAP;
 }
 
 const GetStartedButton: React.FC<React.PropsWithChildren<GetStartedButtonProps>> = props => {
-	const theme = useTheme();
 	const { title, description, icon, iconColor, ...passProps } = props;
 
-	const color = iconColor ? theme.ui[iconColor] : void 0;
+	const color = iconColor ? ICON_COLOUR_TOKEN_MAP[iconColor] : void 0;
 
 	return (
 		<Button {...passProps}>

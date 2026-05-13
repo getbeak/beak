@@ -1,9 +1,8 @@
-import { toHexAlpha } from '@beak/design-system/utils';
 import { faMoneyCheck, faPenToSquare, faUserShield, faWindowRestore } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 import { useContext, useState } from 'react';
-import styled, { css, useTheme } from 'styled-components';
+import styled, { css } from 'styled-components';
 
 import WindowSessionContext from '../contexts/window-session-context';
 import AccountItem from '../features/preferences/components/molecules/AccountItem';
@@ -15,8 +14,8 @@ import SubscriptionPane from '../features/preferences/components/organisms/Subsc
 const About: React.FC<React.PropsWithChildren<unknown>> = () => {
 	const windowSession = useContext(WindowSessionContext);
 	const [tab, setTab] = useState('general');
-	const theme = useTheme();
-	const { blankFill, primaryFill } = theme.ui;
+	const blankFill = 'var(--beak-colors-fg-onAccent)';
+	const primaryFill = 'var(--beak-colors-accent-pink)';
 
 	return (
 		<Wrapper>

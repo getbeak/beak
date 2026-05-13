@@ -2,13 +2,10 @@ import { statusToColor } from '@beak/design-system/helpers';
 import { faCircleCheck, faCircleDot, faCircleXmark, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
-import { useTheme } from 'styled-components';
 
 import { useSelectedTabFlightStatus } from '../../../../services/flight/tab-integration';
 
 const ActionBarFlightStatus: React.FC<React.PropsWithChildren<unknown>> = () => {
-	const theme = useTheme();
-
 	// Use new tab-integrated flight status hook
 	const flightStatus = useSelectedTabFlightStatus();
 
@@ -26,7 +23,7 @@ const ActionBarFlightStatus: React.FC<React.PropsWithChildren<unknown>> = () => 
 				<FontAwesomeIcon
 					id={tooltipId}
 					icon={failure ? faCircleXmark : faCircleCheck}
-					color={statusToColor(theme, flightStatus.httpStatus)}
+					color={statusToColor(flightStatus.httpStatus)}
 					tabIndex={-1}
 					size={'1x'}
 				/>
