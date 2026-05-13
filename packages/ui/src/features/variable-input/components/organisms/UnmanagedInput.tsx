@@ -54,7 +54,7 @@ export default class UnmanagedInput extends React.Component<UnmanagedInputProps>
 					},
 					'.bvs-blob[data-missing="true"]': {
 						background: 'color-mix(in srgb, var(--beak-colors-accent-alert) 82%, transparent)',
-						color: '#ffffff',
+						color: 'var(--beak-colors-fg-onAccent)',
 						fontWeight: 600,
 						letterSpacing: '0.01em',
 						boxShadow: '0 1px 2px color-mix(in srgb, var(--beak-colors-accent-alert) 32%, transparent), inset 0 1px 0 color-mix(in srgb, white 22%, transparent)',
