@@ -18,9 +18,20 @@ const NoActiveSubscription: React.FC = () => (
 		color='fg.muted'
 		textAlign='center'
 	>
-		<Box opacity={0.5} color='accent.pink'>
-			<CreditCard size={32} />
-		</Box>
+		<Flex
+			align='center'
+			justify='center'
+			w='52px'
+			h='52px'
+			borderRadius='full'
+			bg='color-mix(in srgb, var(--beak-colors-accent-pink) 16%, transparent)'
+			borderWidth='1px'
+			borderColor='color-mix(in srgb, var(--beak-colors-accent-pink) 30%, transparent)'
+			color='accent.pink'
+			boxShadow='0 6px 18px color-mix(in srgb, var(--beak-colors-accent-pink) 25%, transparent), inset 0 1px 0 color-mix(in srgb, white 18%, transparent)'
+		>
+			<CreditCard size={22} strokeWidth={1.8} />
+		</Flex>
 		<Box fontSize='sm' fontWeight='600' color='fg.default'>
 			{'No active subscription'}
 		</Box>

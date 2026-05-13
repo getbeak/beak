@@ -16,9 +16,20 @@ const NotSignedIn: React.FC = () => (
 		color='fg.muted'
 		textAlign='center'
 	>
-		<Box opacity={0.45} color='accent.pink'>
-			<UserRound size={32} />
-		</Box>
+		<Flex
+			align='center'
+			justify='center'
+			w='52px'
+			h='52px'
+			borderRadius='full'
+			bg='color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent)'
+			borderWidth='1px'
+			borderColor='color-mix(in srgb, var(--beak-colors-accent-pink) 28%, transparent)'
+			color='accent.pink'
+			boxShadow='inset 0 1px 0 color-mix(in srgb, white 18%, transparent)'
+		>
+			<UserRound size={22} strokeWidth={1.8} />
+		</Flex>
 		<Box fontSize='sm' fontWeight='600' color='fg.default'>
 			{'Not signed in'}
 		</Box>
