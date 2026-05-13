@@ -109,46 +109,67 @@ const FileUploadView: React.FC<FileUploadViewProps> = ({ node }) => {
 	);
 
 	return (
-		<Flex py='5' direction='column' align='center' gap='3'>
+		<Flex py='6' direction='column' align='center' gap='3'>
 			<Flex
 				position='relative'
 				direction='column'
 				align='center'
 				justify='center'
 				cursor='pointer'
-				gap='1'
-				w='220px'
-				h='110px'
-				borderRadius='lg'
-				borderWidth='1px'
+				gap='2'
+				w='280px'
+				h='140px'
+				borderRadius='xl'
+				borderWidth={preview ? '1px' : '2px'}
 				borderStyle={preview ? 'solid' : 'dashed'}
-				borderColor={preview ? 'border.default' : 'border.subtle'}
-				bg='color-mix(in srgb, var(--beak-colors-bg-surface) 50%, transparent)'
+				borderColor={preview ? 'border.default' : 'color-mix(in srgb, var(--beak-colors-accent-pink) 25%, var(--beak-colors-border-subtle))'}
+				bg={preview ? 'bg.surface' : 'color-mix(in srgb, var(--beak-colors-accent-pink) 4%, transparent)'}
 				color='fg.muted'
 				fontSize='xs'
-				transition='border-color .12s ease, background-color .12s ease'
+				transition='border-color .14s ease, background-color .14s ease, box-shadow .14s ease, transform .08s ease'
 				_hover={{
 					borderColor: 'accent.pink',
-					bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 8%, transparent)',
+					bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 10%, transparent)',
+					boxShadow: '0 8px 20px color-mix(in srgb, var(--beak-colors-accent-pink) 18%, transparent)',
 				}}
+				_active={{ transform: 'scale(0.99)' }}
 				onClick={openFile}
 			>
 				{!preview && !assetRef && (
 					<React.Fragment>
-						<Box opacity={0.45} color='fg.subtle'>
-							<Upload size={20} />
+						<Flex
+							align='center'
+							justify='center'
+							w='44px'
+							h='44px'
+							borderRadius='full'
+							bg='color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent)'
+							color='accent.pink'
+						>
+							<Upload size={20} strokeWidth={2} />
+						</Flex>
+						<Box color='fg.default' fontSize='sm' fontWeight='600'>{'Click to pick a file'}</Box>
+						<Box fontSize='10px' color='fg.subtle' letterSpacing='0.04em' textTransform='uppercase' fontWeight='700'>
+							{'Any binary up to ~10 MB'}
 						</Box>
-						<Box>{'Click to pick a file'}</Box>
 					</React.Fragment>
 				)}
 				{preview && (
 					<React.Fragment>
 						{closeBtn(clearFile)}
-						<Box color='accent.pink'>
-							<File size={18} />
-						</Box>
-						<Box color='fg.default' fontWeight='500'>{preview.fileName}</Box>
-						<Box fontSize='10px' color='fg.subtle'>{prettyBytes(preview.fileSize)}</Box>
+						<Flex
+							align='center'
+							justify='center'
+							w='40px'
+							h='40px'
+							borderRadius='md'
+							bg='color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent)'
+							color='accent.pink'
+						>
+							<File size={18} strokeWidth={2} />
+						</Flex>
+						<Box color='fg.default' fontWeight='600' fontSize='sm' textAlign='center' px='2' overflow='hidden' textOverflow='ellipsis' maxW='240px' whiteSpace='nowrap'>{preview.fileName}</Box>
+						<Box fontSize='10px' color='fg.subtle' fontFamily='mono'>{prettyBytes(preview.fileSize)}</Box>
 					</React.Fragment>
 				)}
 			</Flex>
@@ -158,23 +179,25 @@ const FileUploadView: React.FC<FileUploadViewProps> = ({ node }) => {
 					direction='column'
 					align='center'
 					justify='center'
-					gap='1'
-					w='220px'
-					p='2.5'
+					gap='1.5'
+					w='280px'
+					p='3'
 					borderRadius='lg'
 					borderWidth='1px'
-					borderStyle='dashed'
-					borderColor='border.subtle'
-					bg='color-mix(in srgb, var(--beak-colors-bg-surface) 60%, transparent)'
+					borderColor='color-mix(in srgb, var(--beak-colors-accent-teal) 30%, var(--beak-colors-border-subtle))'
+					bg='color-mix(in srgb, var(--beak-colors-accent-teal) 8%, var(--beak-colors-bg-surface))'
 					color='fg.muted'
 					fontSize='xs'
 					fontFamily='mono'
 				>
 					{closeBtn(clearAssetRef)}
-					<Box color='accent.teal'>
-						<FileBox size={16} />
-					</Box>
-					<Box color='fg.default'>{`sha256:${assetRef.sha256.slice(0, 8)}…${assetRef.sha256.slice(-4)}`}</Box>
+					<Flex align='center' gap='1.5' color='accent.teal'>
+						<FileBox size={14} strokeWidth={2} />
+						<Box fontSize='10px' fontWeight='700' letterSpacing='0.06em' textTransform='uppercase' fontFamily='body'>
+							{'Asset attached'}
+						</Box>
+					</Flex>
+					<Box color='fg.default' fontSize='xs'>{`sha256:${assetRef.sha256.slice(0, 8)}…${assetRef.sha256.slice(-4)}`}</Box>
 					<Box fontSize='10px' color='fg.subtle'>{prettyBytes(assetRef.size)}</Box>
 				</Flex>
 			)}
