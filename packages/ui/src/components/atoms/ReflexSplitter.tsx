@@ -19,11 +19,11 @@ const splitterStyle = (
 	customChildren: boolean,
 	disabled: boolean,
 ): React.CSSProperties => ({
-	width: orientation === 'vertical' ? '2px' : 'auto',
-	height: customChildren ? 'auto' : orientation === 'horizontal' ? '2px' : 'auto',
-	backgroundColor: 'var(--beak-colors-border-default)',
+	width: orientation === 'vertical' ? '1px' : 'auto',
+	height: customChildren ? 'auto' : orientation === 'horizontal' ? '1px' : 'auto',
+	backgroundColor: 'var(--beak-colors-border-subtle)',
 	border: 'none',
-	transition: 'background .2s, box-shadow .2s',
+	transition: 'background .18s ease, box-shadow .18s ease',
 	display: disabled ? 'none' : undefined,
 	pointerEvents: disabled ? 'none' : undefined,
 	cursor: disabled ? 'default' : undefined,
@@ -74,9 +74,22 @@ if (typeof document !== 'undefined' && !document.getElementById('beak-reflex-spl
 	const styleEl = document.createElement('style');
 	styleEl.id = 'beak-reflex-splitter-styles';
 	styleEl.textContent = `
+		.beak-reflex-splitter {
+			position: relative;
+		}
+		.beak-reflex-splitter::before {
+			content: '';
+			position: absolute;
+			inset: -3px;
+			cursor: inherit;
+		}
 		.beak-reflex-splitter:hover {
 			background-color: var(--beak-colors-accent-pink) !important;
-			box-shadow: 0px 0px 0px 1px var(--beak-colors-accent-pink) !important;
+			box-shadow: 0 0 0 1px var(--beak-colors-accent-pink), 0 0 8px color-mix(in srgb, var(--beak-colors-accent-pink) 35%, transparent) !important;
+		}
+		.beak-reflex-splitter.active {
+			background-color: var(--beak-colors-accent-pink) !important;
+			box-shadow: 0 0 0 1px var(--beak-colors-accent-pink), 0 0 12px color-mix(in srgb, var(--beak-colors-accent-pink) 55%, transparent) !important;
 		}
 	`;
 	document.head.appendChild(styleEl);
