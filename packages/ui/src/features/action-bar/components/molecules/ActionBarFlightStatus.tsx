@@ -19,7 +19,11 @@ const ActionBarFlightStatus: React.FC = () => {
 						animate={{ opacity: 1, scale: 1 }}
 						exit={{ opacity: 0, scale: 0.8 }}
 						transition={{ duration: 0.12 }}
-						style={{ display: 'inline-flex', color: 'var(--beak-colors-accent-pink)' }}
+						style={{
+							display: 'inline-flex',
+							color: 'var(--beak-colors-accent-pink)',
+							filter: 'drop-shadow(0 0 4px color-mix(in srgb, var(--beak-colors-accent-pink) 55%, transparent))',
+						}}
 					>
 						<Loader2
 							id='tt-action-bar-flight-status-active'
