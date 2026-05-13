@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 
 import TabItem from '../../../../components/atoms/TabItem';
-import { changeTab, makeTabPermanent } from '../../store/actions';
+import { changeTab, closeTab, makeTabPermanent } from '../../store/actions';
 import TabContextMenuWrapper from '../atoms/RequestTabContextMenuWrapper';
 
 interface RequestTabProps {
@@ -32,6 +32,7 @@ const RequestTab: React.FC<React.PropsWithChildren<RequestTabProps>> = ({ tab })
 
 					dispatch(makeTabPermanent(tab.payload));
 				}}
+				onClose={() => dispatch(closeTab(tab.payload))}
 			>
 				{tab.temporary && <em>{node.name}</em>}
 				{!tab.temporary && node.name}

@@ -5,7 +5,7 @@ import type { VariableSetEditorTabItem } from '@beak/common/types/beak-project';
 import { useAppSelector } from '@beak/ui/store/redux';
 
 import TabItem from '../../../../components/atoms/TabItem';
-import { changeTab, makeTabPermanent } from '../../store/actions';
+import { changeTab, closeTab, makeTabPermanent } from '../../store/actions';
 import TabContextMenuWrapper from '../atoms/GenericTabContextMenuWrapper';
 
 interface VariableSetEditorTabProps {
@@ -30,6 +30,7 @@ const VariableSetEditorTab: React.FC<React.PropsWithChildren<VariableSetEditorTa
 
 					dispatch(makeTabPermanent(tab.payload));
 				}}
+				onClose={() => dispatch(closeTab(tab.payload))}
 			>
 				{tab.temporary && <em>{rendererToName(tab)}</em>}
 				{!tab.temporary && rendererToName(tab)}

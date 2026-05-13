@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 
 import TabItem from '../../../../components/atoms/TabItem';
-import { changeTab, makeTabPermanent } from '../../store/actions';
+import { changeTab, closeTab, makeTabPermanent } from '../../store/actions';
 import GenericTabContextMenuWrapper from '../atoms/GenericTabContextMenuWrapper';
 
 interface NewProjectIntroTabProps {
@@ -29,6 +29,7 @@ const NewProjectIntroTab: React.FC<React.PropsWithChildren<NewProjectIntroTabPro
 
 					dispatch(makeTabPermanent(tab.payload));
 				}}
+				onClose={() => dispatch(closeTab(tab.payload))}
 			>
 				{tab.temporary && <em>{'Getting started'}</em>}
 				{!tab.temporary && 'Getting started'}
