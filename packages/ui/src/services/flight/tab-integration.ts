@@ -13,7 +13,7 @@ export function useSelectedTabFlightRequirements() {
 	if (!selectedTabId || !history) return null;
 
 	const keys = Object.keys(history.history);
-	const selectedIndex = keys.findIndex(i => i === history.selected);
+	const selectedIndex = history.selected ? keys.indexOf(history.selected) : -1;
 
 	return {
 		canGoBack: selectedIndex > 0,
