@@ -13,7 +13,7 @@ const Pane: React.FC<React.PropsWithChildren<PaneProps>> = ({ title, children })
 		px='8'
 		pt='8'
 		pb='6'
-		h='calc(100% - 50px)'
+		h='100%'
 		overflowY='auto'
 		style={{ WebkitAppRegion: 'drag' } as React.CSSProperties}
 	>
@@ -25,12 +25,14 @@ const Pane: React.FC<React.PropsWithChildren<PaneProps>> = ({ title, children })
 			fontWeight='600'
 			color='fg.default'
 			letterSpacing='-0.01em'
+			lineHeight='1.1'
 		>
 			{title}
 		</MotionBox>
 		<Box
+			mt='4'
+			mb='4'
 			h='1px'
-			my='3'
 			bg='border.subtle'
 			style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}
 		/>
