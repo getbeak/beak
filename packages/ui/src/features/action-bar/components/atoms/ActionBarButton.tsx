@@ -17,16 +17,29 @@ const ActionBarButton = React.forwardRef<HTMLButtonElement, ButtonProps>(({ chil
 		ref={ref}
 		variant='ghost'
 		size='xs'
-		px='2'
-		h='25px'
-		minW='auto'
-		borderRadius='sm'
+		px='1.5'
+		h='28px'
+		w='28px'
+		minW='28px'
+		borderRadius='md'
 		bg='transparent'
 		color='fg.muted'
 		pointerEvents='auto'
-		_hover={{ bg: 'bg.surface' }}
-		_disabled={{ opacity: 0.5, cursor: 'default', _hover: { bg: 'transparent' } }}
-		_focusVisible={{ outline: '1px solid', outlineColor: 'accent.pink', outlineOffset: '1px' }}
+		transition='color .14s ease, background-color .14s ease, transform .08s ease'
+		_hover={{
+			color: 'fg.default',
+			bg: 'color-mix(in srgb, var(--beak-colors-bg-surface) 70%, transparent)',
+		}}
+		_active={{ transform: 'scale(0.92)' }}
+		_disabled={{
+			opacity: 0.35,
+			cursor: 'default',
+			_hover: { bg: 'transparent', color: 'fg.muted' },
+		}}
+		_focusVisible={{
+			outline: 'none',
+			boxShadow: '0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-pink) 50%, transparent)',
+		}}
 		{...rest}
 	>
 		{children}

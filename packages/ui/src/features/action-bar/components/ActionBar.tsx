@@ -38,33 +38,52 @@ const ActionBar: React.FC = () => {
 		>
 			<Box mx='1'><ArbiterBadge /></Box>
 			<Box mx='1'><ActionBarVersion /></Box>
-			<ActionBarButton id='tt-action-bar-encryption-button' onClick={() => dispatch(showEncryptionView())}>
-				<Lock color='var(--beak-colors-fg-muted)' />
+
+			<ActionBarButton
+				id='tt-action-bar-encryption-button'
+				title='View project encryption'
+				aria-label='View project encryption'
+				onClick={() => dispatch(showEncryptionView())}
+			>
+				<Lock size={14} />
 			</ActionBarButton>
+
 			<ActionBarSeparator />
+
 			<ActionBarButton
 				id='tt-action-bar-previous-flight-history'
+				title='Previous flight'
+				aria-label='Previous flight in history'
 				disabled={!requirements?.canGoBack}
 				onClick={goToPrevious}
 			>
-				<ChevronLeft color='var(--beak-colors-fg-muted)' />
+				<ChevronLeft size={14} />
 			</ActionBarButton>
+
 			<ActionBarFlightStatus />
+
 			<ActionBarButton
 				id='tt-action-bar-next-flight-history'
+				title='Next flight'
+				aria-label='Next flight in history'
 				disabled={!requirements?.canGoForward}
 				onClick={goToNext}
 			>
-				<ChevronRight color='var(--beak-colors-fg-muted)' />
+				<ChevronRight size={14} />
 			</ActionBarButton>
+
 			<ActionBarSeparator />
+
 			<ActionBarAlertButton id='tt-action-bar-alert-button' />
+
 			<ActionBarButton
 				data-tooltip-id='tt-action-bar-omni-search'
 				data-tooltip-content={`Open search bar (${renderPlainTextDefinition('omni-bar.launch.finder')})`}
+				title={`Search (${renderPlainTextDefinition('omni-bar.launch.finder')})`}
+				aria-label='Open omni search bar'
 				onClick={() => dispatch(omniBarActions.showOmniBar({ mode: 'search' }))}
 			>
-				<Search color='var(--beak-colors-fg-muted)' />
+				<Search size={14} />
 			</ActionBarButton>
 		</Flex>
 	);
