@@ -5,7 +5,7 @@ import React from 'react';
 import { useEffect, useState } from 'react';
 
 import { SelectContainer, SelectItem, SelectItemPreview } from '../atoms/fancy-select';
-import { ItemGroup, ItemInfo, ItemLabel, SubItem, SubItemGroup, SubItemLabel } from '../atoms/item';
+import { ItemGroup, ItemInfo, ItemLabel } from '../atoms/item';
 import Pane from '../molecules/Pane';
 
 const EditorPane: React.FC<React.PropsWithChildren<unknown>> = () => {
@@ -66,19 +66,18 @@ const EditorPane: React.FC<React.PropsWithChildren<unknown>> = () => {
 			</ItemGroup>
 
 			<ItemGroup>
-				<ItemLabel>{'Font size:'}</ItemLabel>
-
-				<SubItemGroup>
-					<SubItem>
-						<SubItemLabel>{'Font size: '}</SubItemLabel>
-						<Input
-							$beakSize={'sm'}
-							type={'number'}
-							value={editorPreferences.fontSize}
-							onChange={event => updateEditorPreference('fontSize', Number(event.currentTarget.value ?? 0))}
-						/>
-					</SubItem>
-				</SubItemGroup>
+				<ItemLabel>{'Font size'}</ItemLabel>
+				<Input
+					$beakSize='sm'
+					$noStretch
+					type='number'
+					min={8}
+					max={32}
+					style={{ width: '90px' }}
+					value={editorPreferences.fontSize}
+					onChange={event => updateEditorPreference('fontSize', Number(event.currentTarget.value ?? 0))}
+				/>
+				<ItemInfo>{'Applies to the Monaco editor inside Beak (request/response bodies, raw views).'}</ItemInfo>
 			</ItemGroup>
 		</Pane>
 	);
