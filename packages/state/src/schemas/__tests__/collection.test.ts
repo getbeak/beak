@@ -6,7 +6,6 @@ import {
 	diffFromDefaults,
 	mergeCollectionDefaults,
 	type RequestFile,
-	type RequestFileOverride,
 	requestFileOverrideSchema,
 } from '..';
 

@@ -4,11 +4,13 @@ import { type BrowserWindow, type BrowserWindowConstructorOptions, type Rectangl
 import getBeakHost from '../host';
 import { screenshotSizing } from '../main';
 
+type SizedWindowOptions = BrowserWindowConstructorOptions & { width: number; height: number };
+
 export default class WindowStateManager {
 	private windowKey: string;
 	private window: BrowserWindow | undefined;
 	private state: WindowState;
-	private windowOptions: BrowserWindowConstructorOptions;
+	private windowOptions: SizedWindowOptions;
 
 	// eslint-disable-next-line
 	private stateChangeTimer: NodeJS.Timeout | undefined;
@@ -16,7 +18,7 @@ export default class WindowStateManager {
 	constructor(
 		existingWindowState: WindowState | undefined,
 		windowKey: string,
-		windowOptions: BrowserWindowConstructorOptions,
+		windowOptions: SizedWindowOptions,
 	) {
 		this.windowKey = windowKey;
 		this.windowOptions = windowOptions;
@@ -28,8 +30,8 @@ export default class WindowStateManager {
 			const display = screen.getDisplayNearestPoint(cursor);
 
 			this.state = {
-				height: windowOptions.height!,
-				width: windowOptions.width!,
+				height: windowOptions.height,
+				width: windowOptions.width,
 				x: 0,
 				y: 0,
 				isFullScreen: false,
@@ -42,7 +44,7 @@ export default class WindowStateManager {
 		}
 	}
 
-	static async create(windowKey: string, windowOptions: BrowserWindowConstructorOptions) {
+	static async create(windowKey: string, windowOptions: SizedWindowOptions) {
 		const windowStates = await getBeakHost().providers.storage.get('windowStates');
 		const windowState = windowStates[windowKey];
 
@@ -60,7 +62,7 @@ export default class WindowStateManager {
 		this.window.setPosition(this.state.x, this.state.y);
 
 		if (this.windowOptions.resizable) this.window.setSize(this.state.width, this.state.height);
-		else this.window.setSize(this.windowOptions.width!, this.windowOptions.height!);
+		else this.window.setSize(this.windowOptions.width, this.windowOptions.height);
 
 		this.window.on('resize', () => this.stateChangedHandler());
 		this.window.on('move', () => this.stateChangedHandler());

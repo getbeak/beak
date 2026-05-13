@@ -28,7 +28,7 @@ import {
 	renameRequestNode,
 	writeRequestNode,
 } from '@beak/ui/lib/beak-project/request';
-import createFsEmitter, { type FsSubscription, scanDirectoryRecursively } from '@beak/ui/lib/fs-emitter';
+import createFsEmitter, { scanDirectoryRecursively } from '@beak/ui/lib/fs-emitter';
 import { ipcDialogService, ipcEncryptionService, ipcWindowService } from '@beak/ui/lib/ipc';
 import type { FolderNode, RequestNode, Tree } from '@getbeak/types/nodes';
 import type { ProjectFile } from '@getbeak/types/project';
@@ -55,7 +55,6 @@ export function registerProjectEffects(start: AppStartListening) {
 		actionCreator: startProject,
 		effect: async (_action, api) => {
 			let project: ProjectFile;
-			let subscription: FsSubscription | undefined;
 
 			try {
 				project = await readProjectFile();
@@ -108,7 +107,7 @@ export function registerProjectEffects(start: AppStartListening) {
 			// Long-running fs subscription. Lives for the life of the project window
 			// — it's not unsubscribed because the project is open for the window's
 			// entire lifetime.
-			subscription = createFsEmitter(
+			const subscription = createFsEmitter(
 				'tree',
 				async event => {
 					const isDirectory = ['addDir', 'unlinkDir'].includes(event.type);

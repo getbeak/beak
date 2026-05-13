@@ -126,7 +126,7 @@ function generateLoadUrl(container: Container, windowId: number, additionalParam
 }
 
 async function createWindow(
-	windowOpts: BrowserWindowConstructorOptions,
+	windowOpts: BrowserWindowConstructorOptions & { width: number; height: number },
 	container: Container,
 	additionalParams?: Record<string, string>,
 ) {
@@ -218,7 +218,7 @@ export async function createWelcomeWindow() {
 		return existing;
 	}
 
-	const windowOpts: BrowserWindowConstructorOptions = {
+	const windowOpts: BrowserWindowConstructorOptions & { width: number; height: number } = {
 		height: 500,
 		width: 900,
 		resizable: false,
@@ -252,7 +252,7 @@ export async function createPreferencesWindow() {
 		return existing;
 	}
 
-	const windowOpts: BrowserWindowConstructorOptions = {
+	const windowOpts: BrowserWindowConstructorOptions & { width: number; height: number } = {
 		height: 550,
 		width: 900,
 		resizable: false,
@@ -274,7 +274,7 @@ export async function createPreferencesWindow() {
 }
 
 export async function createProjectMainWindow(projectId: string, projectFilePath: string) {
-	const windowOpts: BrowserWindowConstructorOptions = {
+	const windowOpts: BrowserWindowConstructorOptions & { width: number; height: number } = {
 		height: 850,
 		width: 1400,
 		minHeight: 450,
@@ -317,7 +317,7 @@ export async function createPortalWindow() {
 		return existing;
 	}
 
-	const windowOpts: BrowserWindowConstructorOptions = {
+	const windowOpts: BrowserWindowConstructorOptions & { width: number; height: number } = {
 		height: 400,
 		width: 800,
 		resizable: false,

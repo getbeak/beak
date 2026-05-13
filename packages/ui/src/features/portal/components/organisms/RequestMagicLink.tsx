@@ -1,10 +1,11 @@
 import Squawk from '@beak/common/utils/squawk';
 import Button from '@beak/ui/components/atoms/Button';
+import FormError from '@beak/ui/components/atoms/FormError';
 import Input from '@beak/ui/components/atoms/Input';
 import { ipcNestService } from '@beak/ui/lib/ipc';
 import React, { useEffect, useRef, useState } from 'react';
 
-import { ActionContainer, Error, SubTitle } from '../atoms/typography';
+import { ActionContainer, SubTitle } from '../atoms/typography';
 
 const emailRegex = /.+@.+/;
 
@@ -55,7 +56,7 @@ const RequestMagicLink: React.FC<React.PropsWithChildren<RequestMagicLinkProps>>
 						if (e.key === 'Enter') sendMagicLink();
 					}}
 				/>
-				{error && <Error>{getErrorMessage(error)}</Error>}
+				{error && <FormError>{getErrorMessage(error)}</FormError>}
 				<Button disabled={working} onClick={() => sendMagicLink()}>
 					{'Continue'}
 				</Button>

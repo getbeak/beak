@@ -1,11 +1,10 @@
 import Squawk from '@beak/common/utils/squawk';
 import Button from '@beak/ui/components/atoms/Button';
+import FormError from '@beak/ui/components/atoms/FormError';
 import Input from '@beak/ui/components/atoms/Input';
 import Label from '@beak/ui/components/atoms/Label';
 import { ipcDialogService, ipcNestService } from '@beak/ui/lib/ipc';
 import React, { useEffect, useRef, useState } from 'react';
-
-import { Error } from '../atoms/typography';
 
 const emailRegex = /.+@.+/;
 
@@ -91,7 +90,7 @@ const RequestTrial: React.FC<React.PropsWithChildren<RequestTrialProps>> = props
 			<Button disabled={working} onClick={() => requestTrial()}>
 				{'Continue'}
 			</Button>
-			{error && <Error>{getErrorMessage(error)}</Error>}
+			{error && <FormError>{getErrorMessage(error)}</FormError>}
 		</React.Fragment>
 	);
 };

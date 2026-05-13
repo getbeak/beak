@@ -39,6 +39,5 @@ for (const [name, schema] of Object.entries(targets)) {
 	const file = resolve(outDir, `${name}.json`);
 	const json = toJsonSchema(schema, { name, $refStrategy: 'none' });
 	writeFileSync(file, `${JSON.stringify(json, null, '\t')}\n`, 'utf-8');
-	// eslint-disable-next-line no-console
-	console.log(`wrote ${file}`);
+	console.info(`wrote ${file}`);
 }

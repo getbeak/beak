@@ -163,14 +163,18 @@ export default class ExtensionManager {
 
 	async rtvEditorLoad(projectId: string, type: string, context: Context, payload: unknown) {
 		const { extension } = this.getExtensionContext(projectId, type);
-		const editorState = await extension.editor!.load!(context, payload);
+		const load = extension.editor.load;
+		if (!load) throw new Squawk('extension_editor_missing_method', { projectId, type, method: 'load' });
+		const editorState = await load(context, payload);
 
 		return clone(editorState);
 	}
 
 	async rtvEditorSave(projectId: string, type: string, context: Context, existingPayload: unknown, state: unknown) {
 		const { extension } = this.getExtensionContext(projectId, type);
-		const payload = await extension.editor!.save!(context, existingPayload, state);
+		const save = extension.editor.save;
+		if (!save) throw new Squawk('extension_editor_missing_method', { projectId, type, method: 'save' });
+		const payload = await save(context, existingPayload, state);
 
 		return clone(payload);
 	}

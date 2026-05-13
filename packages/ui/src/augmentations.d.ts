@@ -1,5 +1,4 @@
-import { Store } from 'react-redux';
-import type { Context } from '@getbeak/types/values';
+import type { Store } from 'react-redux';
 import type { IpcRendererEvent } from 'electron';
 import type { Worker } from 'monaco-editor';
 

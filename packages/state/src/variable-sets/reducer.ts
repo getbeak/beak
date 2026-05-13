@@ -59,13 +59,17 @@ export function buildVariableSetsReducer<S extends VariableSetsState>(builder: A
 
 			TypedObject.keys(state.variableSets[payload.id].values)
 				.filter(k => k.startsWith(`${payload.setId}&`))
-				.forEach(k => delete state.variableSets[payload.id].values[k]);
+				.forEach(k => {
+				delete state.variableSets[payload.id].values[k];
+			});
 		})
 		.addCase(actions.removeItem, (state, { payload }) => {
 			delete state.variableSets[payload.id].items[payload.itemId];
 
 			TypedObject.keys(state.variableSets[payload.id].values)
 				.filter(k => k.endsWith(`&${payload.itemId}`))
-				.forEach(k => delete state.variableSets[payload.id].values[k]);
+				.forEach(k => {
+				delete state.variableSets[payload.id].values[k];
+			});
 		});
 }

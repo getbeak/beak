@@ -23,7 +23,9 @@ function useSmoothHashScroll() {
 		});
 
 		return () => {
-			handlers.forEach(([anchor, handler]) => anchor.removeEventListener('click', handler));
+			handlers.forEach(([anchor, handler]) => {
+				anchor.removeEventListener('click', handler);
+			});
 		};
 	}, []);
 }

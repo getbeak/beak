@@ -51,8 +51,7 @@ export default function buildRequestFields(builder: ActionReducerMapBuilder<Stat
 			const existingItem = node.info.headers[payload.identifier];
 
 			if (!existingItem) {
-				// eslint-disable-next-line no-console
-				console.log('Header not found', payload, node.info.headers);
+				console.warn('Header not found', payload, node.info.headers);
 				return;
 			}
 

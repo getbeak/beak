@@ -10,7 +10,7 @@ import './ipc/services';
 function getSystemTheme(): Theme {
 	let theme: Theme = 'light';
 
-	if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) theme = 'dark';
+	if (window.matchMedia?.('(prefers-color-scheme: dark)').matches) theme = 'dark';
 
 	return theme;
 }

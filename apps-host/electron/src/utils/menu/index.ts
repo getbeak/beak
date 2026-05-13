@@ -19,7 +19,7 @@ export interface Context {
 }
 
 export function createAndSetMenu(browserWindow?: BrowserWindow) {
-	const container = windowType[browserWindow?.id!];
+	const container = browserWindow ? windowType[browserWindow.id] : undefined;
 	const context: Context = {
 		browserWindow,
 		container,

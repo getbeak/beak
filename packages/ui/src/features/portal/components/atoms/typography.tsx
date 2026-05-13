@@ -29,10 +29,3 @@ export const ActionContainer: React.FC<BoxProps> = ({ children, ...rest }) => (
 	</Box>
 );
 
-export const Error = chakra('div', {
-	base: {
-		py: '1.5',
-		color: 'accent.alert',
-		fontSize: 'sm',
-	},
-});

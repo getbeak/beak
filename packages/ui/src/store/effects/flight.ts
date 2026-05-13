@@ -20,7 +20,6 @@ import { parseValueSections } from '@beak/ui/features/variables/parser';
 import binaryStore from '@beak/ui/lib/binary-store';
 import {
 	ipcAssetsService,
-	ipcDialogService,
 	ipcFlightService,
 	ipcFsService,
 	ipcNotificationService,
