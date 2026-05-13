@@ -1,18 +1,17 @@
-import { toHexAlpha } from '@beak/design-system/utils';
 import { ipcPreferencesService } from '@beak/ui/lib/ipc';
 import React from 'react';
 import { useEffect, useState } from 'react';
-import styled, { type DefaultTheme, keyframes } from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 
-const pulse = (theme: DefaultTheme) => keyframes`
+const pulse = keyframes`
 	0% {
-		background-color: ${toHexAlpha(theme.ui.destructiveAction, 1)};
+		background-color: color-mix(in srgb, var(--beak-colors-accent-alert) 100%, transparent);
 	}
 	50% {
-		background-color: ${toHexAlpha(theme.ui.destructiveAction, 0.6)};
+		background-color: color-mix(in srgb, var(--beak-colors-accent-alert) 60%, transparent);
 	}
 	100% {
-		background-color: ${toHexAlpha(theme.ui.destructiveAction, 1)};
+		background-color: color-mix(in srgb, var(--beak-colors-accent-alert) 100%, transparent);
 	}
 `;
 
@@ -42,8 +41,8 @@ const Badge = styled.div`
 	text-align: center;
 	cursor: pointer;
 
-	background: ${p => toHexAlpha(p.theme.ui.destructiveAction, 1)};
-	animation: ${p => pulse(p.theme)} 3s infinite;
+	background: color-mix(in srgb, var(--beak-colors-accent-alert) 100%, transparent);
+	animation: ${pulse} 3s infinite;
 `;
 
 export default NonprodBadge;

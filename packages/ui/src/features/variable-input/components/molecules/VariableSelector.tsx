@@ -269,7 +269,7 @@ const Item = styled.div<{ $active: boolean }>`
 		outline: none;
 	}
 
-	${p => p.$active ? `background-color: ${p.theme.ui.primaryFill};'` : ''}
+	${p => p.$active ? `background-color: var(--beak-colors-accent-pink);'` : ''}
 `;
 
 const NoItems = styled.div`

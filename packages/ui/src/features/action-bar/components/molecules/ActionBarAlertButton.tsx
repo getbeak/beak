@@ -25,7 +25,7 @@ const ActionBarAlertButton: React.FC<ActionBarAlertButtonProps> = ({ id }) => {
 		<React.Fragment>
 			<ActionBarButton id={id} ref={parentRef}>
 				<FontAwesomeIcon
-					color={hasAlerts ? 'orange' : theme.ui.textMinor}
+					color={hasAlerts ? 'orange' : 'var(--beak-colors-fg-muted)'}
 					size={'1x'}
 					icon={faExclamationTriangle}
 					onClick={() => setShowPopover(true)}

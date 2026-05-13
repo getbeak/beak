@@ -170,15 +170,15 @@ const NodeItemContainer = styled.div<NodeItemContainerProps>`
 	border-top-left-radius: 4px;
 	border-bottom-left-radius: 4px;
 
-	color: ${p => (p.$active ? p.theme.ui.textOnSurfaceBackground : p.theme.ui.textMinor)};
-	background-color: ${p => (p.$active ? toVibrancyAlpha(p.theme.ui.surface, 0.8) : 'transparent')};
+	color: ${p => (p.$active ? 'var(--beak-colors-fg-default)' : 'var(--beak-colors-fg-muted)')};
+	background-color: ${p => (p.$active ? 'color-mix(in srgb, var(--beak-colors-bg-surface) 80%, transparent)' : 'transparent')};
 
 	&:hover {
 		color: var(--beak-colors-fg-default);
 	}
 	&:focus {
 		outline: none;
-		background-color: ${p => toVibrancyAlpha(p.theme.ui.secondarySurface, 1)};
+		background-color: color-mix(in srgb, var(--beak-colors-bg-surface-emphasized) 100%, transparent);
 	}
 `;
 

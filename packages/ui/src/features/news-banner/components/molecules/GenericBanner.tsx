@@ -31,7 +31,7 @@ const GenericBanner: React.FC<React.PropsWithChildren<GenericBannerProps>> = ({ 
 			<Dismiss>
 				{item.dismissible && (
 					<BlankButton>
-						<FontAwesomeIcon icon={faTimes} color={theme.ui.textOnFill} />
+						<FontAwesomeIcon icon={faTimes} color={'var(--beak-colors-fg-muted)'} />
 					</BlankButton>
 				)}
 			</Dismiss>

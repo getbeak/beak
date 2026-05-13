@@ -32,7 +32,7 @@ const CellDeletionAction: React.FC<React.PropsWithChildren<CellDeletionActionPro
 				props.onConfirmedDeletion();
 			}}
 		>
-			<FontAwesomeIcon icon={faTrashAlt} color={theme.ui.textOnSurfaceBackground} fontSize={'10px'} />
+			<FontAwesomeIcon icon={faTrashAlt} color={'var(--beak-colors-fg-default)'} fontSize={'10px'} />
 		</CellAction>
 	);
 };

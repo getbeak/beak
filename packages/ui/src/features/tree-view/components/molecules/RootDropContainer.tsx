@@ -37,7 +37,7 @@ const Container = styled.div<ContainerProps>`
 		p.$dropHovering &&
 		css`
 		border-radius: 4px;
-		background-color: ${toHexAlpha(p.theme.ui.primaryFill, 0.6)};
+		background-color: color-mix(in srgb, var(--beak-colors-accent-pink) 60%, transparent);
 	`}
 `;
 

@@ -135,7 +135,7 @@ const RenameInput = styled.input<{ $error: boolean }>`
 	font-size: 12px;
 	line-height: 15px;
 
-	${p => p.$error && css`border-color: ${p.theme.ui.destructiveAction} !important;`}
+	${p => p.$error && css`border-color: var(--beak-colors-accent-alert) !important;`}
 `;
 
 const RenameError = styled.div`

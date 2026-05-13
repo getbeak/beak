@@ -15,10 +15,10 @@ const ArrowButton: React.FC<React.PropsWithChildren<ArrowButtonProps>> = props =
 	return (
 		<Button onClick={onClick}>
 			{direction === 'left' && (
-				<FontAwesomeIcon icon={faAnglesLeft} color={theme.ui.textOnSurfaceBackground} fontSize={'12px'} />
+				<FontAwesomeIcon icon={faAnglesLeft} color={'var(--beak-colors-fg-default)'} fontSize={'12px'} />
 			)}
 			<Children>{children}</Children>
-			{direction === 'right' && <FontAwesomeIcon icon={faAnglesRight} color={theme.ui.textOnSurfaceBackground} />}
+			{direction === 'right' && <FontAwesomeIcon icon={faAnglesRight} color={'var(--beak-colors-fg-default)'} />}
 		</Button>
 	);
 };

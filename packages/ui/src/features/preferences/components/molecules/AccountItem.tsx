@@ -32,7 +32,7 @@ const AccountItem: React.FC<React.PropsWithChildren<unknown>> = () => {
 
 	return (
 		<Wrapper>
-			<FontAwesomeIcon icon={faUserCircle} size={'3x'} color={theme.ui.primaryFill} />
+			<FontAwesomeIcon icon={faUserCircle} size={'3x'} color={'var(--beak-colors-accent-pink)'} />
 			<Account>
 				<AccountTop>{'Beak'}</AccountTop>
 				<AccountEmail title={primaryEmail}>{primaryEmail}</AccountEmail>
@@ -46,7 +46,7 @@ const Wrapper = styled.div`
 	align-items: center;
 	border-radius: 10px;
 	padding: 10px;
-	background: ${p => toHexAlpha(p.theme.ui.surface, 0.25)};
+	background: color-mix(in srgb, var(--beak-colors-bg-surface) 25%, transparent);
 	color: var(--beak-colors-fg-muted);
 `;
 

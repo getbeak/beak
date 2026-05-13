@@ -31,7 +31,7 @@ const SidebarMenuItem: React.FC<React.PropsWithChildren<SidebarMenuItemProps>> =
 			data-tooltip-content={`${name} (${renderPlainTextDefinition(shortcut)})`}
 		>
 			<Container $active={active} onClick={() => onClick(item)}>
-				<FontAwesomeIcon icon={icons[item]} color={theme.ui.textOnSurfaceBackground} fontSize={'14px'} />
+				<FontAwesomeIcon icon={icons[item]} color={'var(--beak-colors-fg-default)'} fontSize={'14px'} />
 			</Container>
 		</FakeAbbr>
 	);

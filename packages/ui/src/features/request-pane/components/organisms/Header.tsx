@@ -114,7 +114,7 @@ const Header: React.FC<React.PropsWithChildren<HeaderProps>> = props => {
 				{flighting && (
 					<FontAwesomeIcon
 						icon={faSpinner}
-						color={theme.ui.goAction}
+						color={'var(--beak-colors-accent-teal)'}
 						spin
 						fontSize={'13px'}
 					/>

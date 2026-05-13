@@ -38,7 +38,7 @@ const GetStartedButton: React.FC<React.PropsWithChildren<GetStartedButtonProps>>
 const Button = styled.button`
 	display: block;
 	width: calc(100% - 20px);
-	background: ${props => toHexAlpha(props.theme.ui.secondarySurface, 0.7)};
+	background: color-mix(in srgb, var(--beak-colors-bg-surface-emphasized) 70%, transparent);
 	backdrop-filter: blur(5px);
 	border-radius: 5px;
 	color: var(--beak-colors-fg-default);

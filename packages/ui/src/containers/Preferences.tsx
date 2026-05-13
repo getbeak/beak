@@ -93,7 +93,7 @@ const SidebarItem = styled.div<{ $active?: boolean }>`
 	${p =>
 		p.$active &&
 		css`
-		background: ${toHexAlpha(p.theme.ui.primaryFill, 0.75)};
+		background: color-mix(in srgb, var(--beak-colors-accent-pink) 75%, transparent);
 		color: var(--beak-colors-fg-onAccent);
 	`}
 
@@ -103,7 +103,7 @@ const SidebarItem = styled.div<{ $active?: boolean }>`
 
 	&:hover {
 		cursor: pointer;
-		background: ${p => !p.$active && toHexAlpha(p.theme.ui.primaryFill, 0.5)}
+		background: ${p => !p.$active && 'color-mix(in srgb, var(--beak-colors-accent-pink) 50%, transparent)'}
 	}
 
 	> svg {

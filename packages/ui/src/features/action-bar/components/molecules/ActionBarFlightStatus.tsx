@@ -38,7 +38,7 @@ const ActionBarFlightStatus: React.FC<React.PropsWithChildren<unknown>> = () => 
 				<FontAwesomeIcon
 					id={'tt-action-bar-flight-status-failed'}
 					icon={faCircleXmark}
-					color={theme.ui.destructiveAction}
+					color={'var(--beak-colors-accent-alert)'}
 					tabIndex={-1}
 					size={'1x'}
 				/>

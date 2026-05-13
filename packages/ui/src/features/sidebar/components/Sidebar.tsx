@@ -131,7 +131,7 @@ const Container = styled.div<{ $darwin: boolean }>`
 	grid-template-columns: 40px 1fr;
 	height: calc(100% - 72px);
 	padding-top: 72px;
-	background: ${p => toVibrancyAlpha(p.theme.ui.background, 0.75)};
+	background: color-mix(in srgb, var(--beak-colors-bg-canvas) 75%, transparent);
 	overflow: hidden;
 `;
 
@@ -166,7 +166,7 @@ const SidebarMenu = styled.div<{ $collapsed: boolean }>`
 	position: relative;
 	width: 40px;
 
-	${p => p.$collapsed && css`border-right: 2px solid ${p.theme.ui.backgroundBorderSeparator};`}
+	${p => p.$collapsed && css`border-right: 2px solid var(--beak-colors-border-default);`}
 `;
 
 export default Sidebar;

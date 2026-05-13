@@ -38,7 +38,7 @@ const Accent = styled.div<{ $variant: Variant }>`
 	top: 0; bottom: 0; left: 375px;
 
 	width: 1100px; height: 2800px;
-	background: ${p => toVibrancyAlpha(p.theme.ui.primaryFill, 0.7)};
+	background: color-mix(in srgb, var(--beak-colors-accent-pink) 70%, transparent);
 
 	transition: transform 0.2s ease;
 

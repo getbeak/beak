@@ -35,7 +35,7 @@ const ActionBar: React.FC<React.PropsWithChildren<unknown>> = () => {
 				<ActionBarVersion />
 			</Spacer>
 			<ActionBarButton id={'tt-action-bar-encryption-button'} onClick={() => dispatch(showEncryptionView())}>
-				<FontAwesomeIcon color={theme.ui.textMinor} size={'1x'} icon={faLock} />
+				<FontAwesomeIcon color={'var(--beak-colors-fg-muted)'} size={'1x'} icon={faLock} />
 			</ActionBarButton>
 			<ActionBarSeparator />
 			<ActionBarButton
@@ -43,11 +43,11 @@ const ActionBar: React.FC<React.PropsWithChildren<unknown>> = () => {
 				disabled={!requirements?.canGoBack}
 				onClick={goToPrevious}
 			>
-				<FontAwesomeIcon color={theme.ui.textMinor} size={'lg'} icon={faCaretLeft} />
+				<FontAwesomeIcon color={'var(--beak-colors-fg-muted)'} size={'lg'} icon={faCaretLeft} />
 			</ActionBarButton>
 			<ActionBarFlightStatus />
 			<ActionBarButton id={'tt-action-bar-next-flight-history'} disabled={!requirements?.canGoForward} onClick={goToNext}>
-				<FontAwesomeIcon color={theme.ui.textMinor} size={'lg'} icon={faCaretRight} />
+				<FontAwesomeIcon color={'var(--beak-colors-fg-muted)'} size={'lg'} icon={faCaretRight} />
 			</ActionBarButton>
 			<ActionBarSeparator />
 			<ActionBarAlertButton id={'tt-action-bar-alert-button'} />
@@ -56,7 +56,7 @@ const ActionBar: React.FC<React.PropsWithChildren<unknown>> = () => {
 				data-tooltip-content={`Open search bar (${renderPlainTextDefinition('omni-bar.launch.finder')})`}
 				onClick={() => dispatch(omniBarActions.showOmniBar({ mode: 'search' }))}
 			>
-				<FontAwesomeIcon color={theme.ui.textMinor} size={'1x'} icon={faSearch} />
+				<FontAwesomeIcon color={'var(--beak-colors-fg-muted)'} size={'1x'} icon={faSearch} />
 			</ActionBarButton>
 		</Wrapper>
 	);

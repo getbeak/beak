@@ -20,13 +20,13 @@ const ActionBarVersion: React.FC<React.PropsWithChildren<unknown>> = () => {
 };
 
 const Label = styled.div`
-	border: 2px solid ${p => toHexAlpha(p.theme.ui.primaryFill, 0.9)};
+	border: 2px solid color-mix(in srgb, var(--beak-colors-accent-pink) 90%, transparent);
 	border-radius: 6px;
 	padding: 2px 4px;
 	font-size: 12px;
 	color: var(--beak-colors-fg-onAccent);
 
-	background: ${p => toHexAlpha(p.theme.ui.primaryFill, 0.7)};
+	background: color-mix(in srgb, var(--beak-colors-accent-pink) 70%, transparent);
 `;
 
 export default ActionBarVersion;

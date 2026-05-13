@@ -8,7 +8,7 @@ const SidebarSectionCard = styled.div`
 	text-align: center;
 	font-size: 13px;
 
-	background: ${p => toHexAlpha(p.theme.ui.surface, 0.5)};
+	background: color-mix(in srgb, var(--beak-colors-bg-surface) 50%, transparent);
 	backdrop-filter: blur(10px);
 `;
 

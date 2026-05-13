@@ -101,7 +101,7 @@ const Omnibar: React.FC<React.PropsWithChildren<unknown>> = () => {
 };
 
 const Container = styled.div`
-	background: ${p => toHexAlpha(p.theme.ui.surfaceHighlight, 0.6)};
+	background: color-mix(in srgb, var(--beak-colors-bg-surface-alt) 60%, transparent);
 	position: absolute;
 	top: 0; bottom: 0; left: 0; right: 0;
 	z-index: 100;
@@ -111,9 +111,9 @@ const Container = styled.div`
 
 const BarOuter = styled.div`
 	backdrop-filter: blur(100px);
-	background: ${p => toHexAlpha(p.theme.ui.surfaceHighlight, 0.4)};
+	background: color-mix(in srgb, var(--beak-colors-bg-surface-alt) 40%, transparent);
 	border: 1px solid var(--beak-colors-bg-canvas);
-	box-shadow: 0px 4px 12px 2px ${p => toHexAlpha(p.theme.ui.surfaceFill, 0.6)};
+	box-shadow: 0px 4px 12px 2px color-mix(in srgb, var(--beak-colors-bg-surface) 60%, transparent);
 
 	position: relative;
 	margin: 0 auto;

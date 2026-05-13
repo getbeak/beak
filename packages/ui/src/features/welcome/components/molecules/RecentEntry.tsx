@@ -48,12 +48,12 @@ const Wrapper = styled.div`
 	border-radius: 5px;
 
 	&:hover {
-		background: ${props => toHexAlpha(props.theme.ui.surfaceHighlight, 0.6)};
+		background: color-mix(in srgb, var(--beak-colors-bg-surface-alt) 60%, transparent);
 		cursor: pointer;
 	}
 
 	&:active, &:focus {
-		background: ${props => toHexAlpha(props.theme.ui.surfaceHighlight, 0.8)};
+		background: color-mix(in srgb, var(--beak-colors-bg-surface-alt) 80%, transparent);
 		transform: scale(0.99);
 		outline: 0;
 	}

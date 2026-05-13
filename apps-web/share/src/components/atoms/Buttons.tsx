@@ -15,28 +15,28 @@ const CtaButton = styled.a<CtaButtonProps>`
 	${p =>
 		p.$style === 'primary' &&
 		css`
-		background: ${p.theme.ui.primaryFill};
+		background: var(--beak-colors-accent-pink);
 
 		&:hover {
-			box-shadow: 0 0 20px 2px ${p.theme.ui.primaryFill}99;
+			box-shadow: 0 0 20px 2px var(--beak-colors-accent-pink)99;
 		}
 	`}
 	${p =>
 		p.$style === 'secondary' &&
 		css`
-		background: ${p.theme.ui.surfaceFill};
+		background: var(--beak-colors-bg-surface);
 
 		&:hover {
-			box-shadow: 0 0 20px 2px ${p.theme.ui.surfaceFill}99;
+			box-shadow: 0 0 20px 2px var(--beak-colors-bg-surface)99;
 		}
 	`}
 	${p =>
 		p.$style === 'tertiary' &&
 		css`
-		background: ${p.theme.ui.secondaryBackground};
+		background: var(--beak-colors-bg-canvas-alt);
 
 		&:hover {
-			box-shadow: 0 0 20px 2px ${p.theme.ui.secondaryBackground}99;
+			box-shadow: 0 0 20px 2px var(--beak-colors-bg-canvas-alt)99;
 		}
 	`}
 
