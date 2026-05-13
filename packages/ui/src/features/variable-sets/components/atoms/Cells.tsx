@@ -65,7 +65,7 @@ export const BodyValueCell: React.FC<BoxProps> = props => (
 				margin: '0',
 				fontSize: '12px',
 				color: 'var(--beak-colors-fg-default)',
-				transition: 'background-color .12s ease, border-color .12s ease',
+				transition: 'background-color .12s ease, border-color .12s ease, box-shadow .12s ease',
 			},
 			'> div > article:hover': {
 				background: 'color-mix(in srgb, var(--beak-colors-bg-surface-emphasized) 45%, transparent)',
@@ -74,6 +74,7 @@ export const BodyValueCell: React.FC<BoxProps> = props => (
 				outline: 'none',
 				background: 'var(--beak-colors-bg-surface)',
 				borderColor: 'var(--beak-colors-accent-pink)',
+				boxShadow: '0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-pink) 22%, transparent)',
 			},
 		}}
 		{...props}
