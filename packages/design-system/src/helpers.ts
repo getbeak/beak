@@ -17,10 +17,10 @@ export function statusToColor(status: number): string {
 			// Redirect — orange.500.
 			return 'var(--beak-colors-orange-500)';
 		case status >= 400 && status < 500:
-			// Client error — indigo.600 (the brand "thinking" colour).
-			return 'var(--beak-colors-indigo-600)';
+			// Client error — yellow.500 (your request was wrong, not the server).
+			return 'var(--beak-colors-yellow-500)';
 		case status >= 500 && status < 600:
-			// Server error — red.500.
+			// Server error — red.500 (full alert, server is broken).
 			return 'var(--beak-colors-red-500)';
 
 		default:

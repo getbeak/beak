@@ -23,7 +23,8 @@ const VERB_COLOR: Record<string, string> = {
 function statusToken(status: number) {
 	if (status >= 200 && status < 300) return 'accent.success';
 	if (status >= 300 && status < 400) return 'accent.warning';
-	if (status >= 400) return 'accent.alert';
+	if (status >= 400 && status < 500) return 'accent.warning';
+	if (status >= 500) return 'accent.alert';
 	return 'fg.muted';
 }
 
