@@ -1,8 +1,10 @@
 import { Box, Flex } from '@chakra-ui/react';
+import ksuid from '@beak/ksuid';
 import { showContextMenu } from '@beak/ui/utils/context-menu';
 import { ChevronRight, EllipsisVertical } from 'lucide-react';
 import type { MenuItemConstructorOptions } from 'electron';
 import * as React from 'react';
+import { useMemo } from 'react';
 
 interface SectionHeaderProps {
 	actions?: MenuItemConstructorOptions[];
@@ -13,6 +15,7 @@ interface SectionHeaderProps {
 
 const SectionHeader: React.FC<React.PropsWithChildren<SectionHeaderProps>> = props => {
 	const { actions, children, collapsed, disableCollapse, onClick } = props;
+	const ctxMenuId = useMemo(() => ksuid.generate('ctxmenu').toString(), []);
 
 	return (
 		<Flex
@@ -70,7 +73,7 @@ const SectionHeader: React.FC<React.PropsWithChildren<SectionHeaderProps>> = pro
 					onClick={event => {
 						event.preventDefault();
 						event.stopPropagation();
-						showContextMenu('test', actions);
+						showContextMenu(ctxMenuId, actions);
 					}}
 				>
 					<EllipsisVertical size={11} />
