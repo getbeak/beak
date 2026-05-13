@@ -1,5 +1,6 @@
 import { Box, Flex } from '@chakra-ui/react';
 import { showContextMenu } from '@beak/ui/utils/context-menu';
+import { motion } from 'framer-motion';
 import { ChevronRight, EllipsisVertical } from 'lucide-react';
 import type { MenuItemConstructorOptions } from 'electron';
 import * as React from 'react';
@@ -21,44 +22,49 @@ const SectionHeader: React.FC<React.PropsWithChildren<SectionHeaderProps>> = pro
 			px='1.5'
 			py='1.5'
 			textTransform='uppercase'
-			fontSize='xs'
-			fontWeight='semibold'
+			fontSize='10px'
+			fontWeight='700'
+			letterSpacing='0.06em'
+			color='fg.subtle'
 			cursor={disableCollapse ? 'default' : 'pointer'}
+			transition='color .12s ease'
+			_hover={{ color: 'fg.default' }}
 			onClick={onClick}
 		>
-			<Box textOverflow='ellipsis' whiteSpace='nowrap' overflow='hidden'>
-				<Box
-					display='inline-block'
-					mr='0.5'
-					pl='0.5'
-					w='10px'
-					fontSize='9px'
-					lineHeight='9px'
-					color='fg.muted'
-					css={{
-						'> svg': {
-							transition: 'transform .2s ease',
-							transformOrigin: 'center center',
-							transform: collapsed ? 'rotate(0deg)' : 'rotate(90deg)',
-						},
-					}}
-				>
-					<ChevronRight size={9} />
+			<Flex align='center' gap='1' minW={0}>
+				{!disableCollapse && (
+					<Box display='inline-flex' alignItems='center' w='10px' h='10px' color='fg.muted'>
+						<motion.span
+							style={{ display: 'inline-flex', transformOrigin: 'center' }}
+							animate={{ rotate: collapsed ? 0 : 90 }}
+							transition={{ duration: 0.14, ease: 'easeOut' }}
+						>
+							<ChevronRight size={9} />
+						</motion.span>
+					</Box>
+				)}
+				<Box overflow='hidden' textOverflow='ellipsis' whiteSpace='nowrap'>
+					{children}
 				</Box>
-				{children}
-			</Box>
+			</Flex>
 			{actions && actions.length > 0 && (
 				<Box
-					px='1.5'
+					px='1'
+					py='0.5'
 					borderRadius='sm'
-					_hover={{ bg: 'bg.surface' }}
+					color='fg.subtle'
+					transition='color .12s ease, background-color .12s ease'
+					_hover={{
+						color: 'fg.default',
+						bg: 'color-mix(in srgb, var(--beak-colors-bg-surface) 60%, transparent)',
+					}}
 					onClick={event => {
 						event.preventDefault();
 						event.stopPropagation();
 						showContextMenu('test', actions);
 					}}
 				>
-					<EllipsisVertical size={10} />
+					<EllipsisVertical size={11} />
 				</Box>
 			)}
 		</Flex>
