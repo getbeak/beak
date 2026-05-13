@@ -18,7 +18,14 @@ const FinderRequestItem: React.FC<FinderRequestItemProps> = ({ context, info }) 
 	}, [context, info]);
 
 	return (
-		<Box as='small' opacity={0.4}>
+		<Box
+			as='small'
+			color='fg.subtle'
+			fontFamily='mono'
+			fontSize='10px'
+			letterSpacing='0.01em'
+			lineHeight='1.4'
+		>
 			<div
 				data-tooltip-id='tt-omni-bar-finder-request-uri'
 				data-tooltip-content={uri}

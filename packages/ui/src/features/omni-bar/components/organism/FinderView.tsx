@@ -187,7 +187,7 @@ const FinderView: React.FC<FinderViewProps> = ({ content, reset }) => {
 									</Box>
 								</Flex>
 								{match.type === 'request' && (
-									<Box mt='0.5' opacity={0.7}>
+									<Box mt='0.5'>
 										<FinderRequestItem
 											context={{ ...context, currentRequestId: match.id }}
 											info={reqNode.info}
