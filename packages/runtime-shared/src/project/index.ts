@@ -16,6 +16,14 @@ interface CreateProjectOptions {
 	skipRecents?: boolean;
 	/** Mark the resulting project.json with `untitled: true`. */
 	untitled?: boolean;
+	/**
+	 * Skip the `git init` + initial commit step. The web host's
+	 * lightning-fs filesystem can take 10+ seconds to commit even a tiny
+	 * project (each blob hash + tree write is round-tripped through an
+	 * IndexedDB transaction), so the web host opts out and treats git
+	 * features as out-of-scope.
+	 */
+	skipGit?: boolean;
 }
 
 interface ReadProjectFileOptions {
@@ -156,7 +164,7 @@ export default class BeakProject extends BeakBase {
 		const [projectFile, projectFilePath] = project;
 
 		await this.createProjectEncryption(projectFile.id);
-		await this.setupGit(projectFolderPath);
+		if (!options.skipGit) await this.setupGit(projectFolderPath);
 
 		if (!options.skipRecents) {
 			await this.beakRecents.addProject({

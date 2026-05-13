@@ -1,20 +1,91 @@
-import { Flex } from '@chakra-ui/react';
+import { Box, Flex, Spinner } from '@chakra-ui/react';
+import { ipcFsService, ipcProjectService } from '@beak/ui/lib/ipc';
 import * as React from 'react';
+import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 
+import MeshGradient from '../components/molecules/MeshGradient';
 import ProjectMain from './ProjectMain';
 
-const WebProjectMain: React.FC = () => (
-	<Flex
-		align='center'
-		justify='center'
-		h='100vh'
-		w='100vw'
-		bgImage="url('images/backgrounds/temp.jpg')"
-		bgRepeat='no-repeat'
-		bgSize='cover'
-	>
-		<ProjectMain />
-	</Flex>
-);
+type BootState = 'checking' | 'ready' | 'creating';
+
+/**
+ * Web host shell. Wraps ProjectMain in a fullscreen Flex.
+ *
+ * Cold boot: when the route's `projectId` doesn't resolve to a real project
+ * on the in-browser filesystem (e.g. the user landed on `/project/default`
+ * via the root redirect), we create a fresh project, get its KSUID, and
+ * replace-navigate to `/project/<ksuid>` so subsequent boots land directly.
+ */
+const WebProjectMain: React.FC = () => {
+	const { projectId } = useParams<{ projectId: string }>();
+	const [state, setState] = useState<BootState>('checking');
+
+	useEffect(() => {
+		let cancelled = false;
+
+		async function bootstrap() {
+			if (!projectId) return;
+
+			let exists = false;
+			try {
+				exists = await ipcFsService.pathExists('project.json');
+			} catch {
+				exists = false;
+			}
+
+			if (cancelled) return;
+
+			if (exists) {
+				setState('ready');
+				return;
+			}
+
+			setState('creating');
+			try {
+				await ipcProjectService.createProject({ projectName: 'My project' });
+				// createProject reassigns window.location after creation; nothing else to do.
+			} catch (err) {
+				console.warn('[WebProjectMain] failed to create default project', err);
+				if (!cancelled) setState('ready');
+			}
+		}
+
+		bootstrap();
+
+		return () => {
+			cancelled = true;
+		};
+	}, [projectId]);
+
+	if (state !== 'ready') {
+		return (
+			<Box position='relative' h='100vh' w='100vw' bg='bg.canvas' overflow='hidden'>
+				<MeshGradient position='absolute' inset='0' tone='loading' intensity='normal' pointerEvents='none' />
+				<Flex
+					position='relative'
+					h='100%'
+					w='100%'
+					align='center'
+					justify='center'
+					direction='column'
+					gap='3'
+					color='fg.muted'
+				>
+					<Spinner size='lg' color='accent.pink' />
+					<Box fontSize='sm'>
+						{state === 'creating' ? 'Creating your first project…' : 'Loading Beak…'}
+					</Box>
+				</Flex>
+			</Box>
+		);
+	}
+
+	return (
+		<Flex h='100vh' w='100vw' overflow='hidden'>
+			<ProjectMain />
+		</Flex>
+	);
+};
 
 export default WebProjectMain;
