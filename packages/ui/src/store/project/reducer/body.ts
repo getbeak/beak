@@ -25,6 +25,17 @@ export default function buildBody(builder: ActionReducerMapBuilder<State>) {
 				fileReferenceId: action.payload.fileReferenceId,
 				contentType: action.payload.contentType,
 			};
+		})
+		.addCase(actions.requestBodyAssetChanged, (state, action) => {
+			const node = state.tree[action.payload.requestId] as ValidRequestNode;
+			// Preserve the existing payload (so legacy fileReferenceId / contentType
+			// stay put if present) and mutate only the assetRef slot.
+			const existing = (node.info.body.payload as Record<string, unknown> | undefined) ?? {};
+			node.info.body.type = 'file';
+			node.info.body.payload = {
+				...existing,
+				...(action.payload.assetRef ? { assetRef: action.payload.assetRef } : { assetRef: undefined }),
+			};
 		});
 
 	buildJsonEditor(builder);

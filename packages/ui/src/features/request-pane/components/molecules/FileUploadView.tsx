@@ -1,6 +1,7 @@
 import type { PreviewReferencedFileRes } from '@beak/common/ipc/fs';
+import { pickAndAttachAsset } from '@beak/ui/features/asset-attachment/pick-and-attach';
 import { ipcFsService } from '@beak/ui/lib/ipc';
-import { requestBodyFileChanged } from '@beak/ui/store/project/actions';
+import { requestBodyAssetChanged, requestBodyFileChanged } from '@beak/ui/store/project/actions';
 import { faClose } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import type { ValidRequestNode } from '@getbeak/types/nodes';
@@ -74,10 +75,29 @@ const FileUploadView: React.FC<FileUploadViewProps> = props => {
 		await openPreview(response.fileReferenceId);
 	}
 
+	const assetRef = body.payload.assetRef;
+
+	async function attachAsAsset(event: React.MouseEvent) {
+		event.stopPropagation();
+		const outcome = await pickAndAttachAsset();
+		if (!outcome || !outcome.ok) return;
+		dispatch(
+			requestBodyAssetChanged({
+				requestId: node.id,
+				assetRef: outcome.ref,
+			}),
+		);
+	}
+
+	function clearAssetRef(event: React.MouseEvent) {
+		event.stopPropagation();
+		dispatch(requestBodyAssetChanged({ requestId: node.id, assetRef: void 0 }));
+	}
+
 	return (
 		<Container>
 			<FileBlob onClick={openFile}>
-				{!preview && 'No file selected...'}
+				{!preview && !assetRef && 'No file selected...'}
 				{preview && (
 					<React.Fragment>
 						<ClearFile onClick={clearFile}>
@@ -88,6 +108,18 @@ const FileUploadView: React.FC<FileUploadViewProps> = props => {
 					</React.Fragment>
 				)}
 			</FileBlob>
+			{assetRef && (
+				<AssetBlob>
+					<ClearFile onClick={clearAssetRef}>
+						<FontAwesomeIcon icon={faClose} />
+					</ClearFile>
+					<FileName>{`sha256:${assetRef.sha256.slice(0, 8)}…${assetRef.sha256.slice(-4)}`}</FileName>
+					<FileSize>{prettyBytes(assetRef.size)}</FileSize>
+				</AssetBlob>
+			)}
+			<AttachAssetButton type='button' onClick={attachAsAsset}>
+				{assetRef ? 'Replace asset…' : 'Attach as asset…'}
+			</AttachAssetButton>
 		</Container>
 	);
 };
@@ -126,5 +158,36 @@ const ClearFile = styled.div`
 `;
 const FileName = styled.div``;
 const FileSize = styled.div``;
+
+const AssetBlob = styled.div`
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 3px;
+	width: 200px;
+	padding: 10px;
+	border-radius: 8px;
+	border: 1px dashed ${p => p.theme.ui.surfaceBorderSeparator};
+	background: ${p => p.theme.ui.secondarySurface};
+	color: ${p => p.theme.ui.textMinor};
+	font-size: 11px;
+	font-family: monospace;
+`;
+
+const AttachAssetButton = styled.button`
+	background: transparent;
+	border: 1px solid ${p => p.theme.ui.surfaceBorderSeparator};
+	color: ${p => p.theme.ui.textOnSurfaceBackground};
+	padding: 6px 12px;
+	border-radius: 6px;
+	font-size: 12px;
+	cursor: pointer;
+
+	&:hover {
+		background: ${p => p.theme.ui.secondarySurface};
+	}
+`;
 
 export default FileUploadView;

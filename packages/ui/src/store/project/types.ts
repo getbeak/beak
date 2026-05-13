@@ -38,6 +38,7 @@ export const ActionTypes = {
 	REQUEST_BODY_TEXT_CHANGED: '@beak/global/project/REQUEST_BODY_TEXT_CHANGED',
 
 	REQUEST_BODY_FILE_CHANGED: '@beak/global/project/REQUEST_BODY_FILE_CHANGED',
+	REQUEST_BODY_ASSET_CHANGED: '@beak/global/project/REQUEST_BODY_ASSET_CHANGED',
 
 	REQUEST_BODY_JSON_EDITOR_NAME_CHANGE: '@beak/global/project/REQUEST_BODY_JSON_EDITOR_NAME_CHANGE',
 	REQUEST_BODY_JSON_EDITOR_VALUE_CHANGE: '@beak/global/project/REQUEST_BODY_JSON_EDITOR_VALUE_CHANGE',
@@ -206,6 +207,17 @@ export interface RequestBodyTextChangedPayload extends RequestIdPayload {
 export interface RequestBodyFileChangedPayload extends RequestIdPayload {
 	fileReferenceId: string | undefined;
 	contentType: string | undefined;
+}
+
+export interface RequestBodyAssetRef {
+	sha256: string;
+	size: number;
+	contentType?: string;
+}
+
+export interface RequestBodyAssetChangedPayload extends RequestIdPayload {
+	/** `undefined` clears the asset; supplying a ref attaches it. */
+	assetRef: RequestBodyAssetRef | undefined;
 }
 
 export interface RequestBodyJsonEditorNameChangePayload extends RequestIdPayload {

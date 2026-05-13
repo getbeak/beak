@@ -40,6 +40,16 @@ export interface RequestBodyFile {
 		fileReferenceId?: string;
 		contentType?: string;
 		__hacky__binaryFileData?: Uint8Array;
+		/**
+		 * Content-addressed pointer into the project's `_assets/` store. When
+		 * present, this is the canonical source of bytes for flight execution;
+		 * `fileReferenceId` stays for legacy projects but is read-only.
+		 */
+		assetRef?: {
+			sha256: string;
+			size: number;
+			contentType?: string;
+		};
 	};
 }
 
