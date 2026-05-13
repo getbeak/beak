@@ -34,10 +34,11 @@ const GenericBanner: React.FC<GenericBannerProps> = ({ item }) => {
 			gap='3'
 			px='4'
 			py='2.5'
-			borderRadius='md'
+			borderRadius='lg'
 			borderWidth='1px'
-			borderColor='border.subtle'
+			borderColor='color-mix(in srgb, var(--beak-colors-accent-pink) 26%, var(--beak-colors-border-subtle))'
 			bg='color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent)'
+			boxShadow='0 6px 18px color-mix(in srgb, var(--beak-colors-accent-pink) 14%, rgba(0,0,0,0.06)), inset 0 1px 0 color-mix(in srgb, white 14%, transparent)'
 			style={{ borderLeft: '3px solid var(--beak-colors-accent-pink)' }}
 		>
 			<Box fontSize='2xl' flex='0 0 auto' aria-hidden>
