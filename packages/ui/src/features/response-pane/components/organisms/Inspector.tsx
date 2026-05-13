@@ -30,13 +30,13 @@ const Inspector: React.FC<React.PropsWithChildren<InspectorProps>> = props => {
 		<React.Fragment>
 			<TabBar $centered>
 				<TabSpacer />
-				<TabItem active={preferences.mainTab === 'overview'} onClick={() => setTab('overview')}>
+				<TabItem active={preferences.mainTab === 'overview'} size='sm' onClick={() => setTab('overview')}>
 					{'Overview'}
 				</TabItem>
-				<TabItem active={preferences.mainTab === 'request'} onClick={() => setTab('request')}>
+				<TabItem active={preferences.mainTab === 'request'} size='sm' onClick={() => setTab('request')}>
 					{'Request'}
 				</TabItem>
-				<TabItem active={preferences.mainTab === 'response'} onClick={() => setTab('response')}>
+				<TabItem active={preferences.mainTab === 'response'} size='sm' onClick={() => setTab('response')}>
 					{'Response'}
 				</TabItem>
 				<TabSpacer />
