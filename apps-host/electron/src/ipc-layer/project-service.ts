@@ -6,6 +6,7 @@ import { dialog, type IpcMainInvokeEvent, ipcMain } from 'electron';
 import getBeakHost from '../host';
 import { openProjectDialog, tryOpenProjectFolder } from '../host/extensions/project';
 import { closeWindow, createProjectMainWindow, tryCloseWelcomeWindow, windowStack } from '../window-management';
+import { getProjectFolder } from './utils';
 
 const service = new IpcProjectServiceMain(ipcMain);
 
@@ -74,6 +75,7 @@ service.registerCreateProject(async (event, payload) => {
 
 service.registerPromoteUntitled(async (event, payload) => {
 	const window = windowStack[(event as IpcMainInvokeEvent).sender.id]!;
+	const currentFolderPath = getProjectFolder(event);
 
 	const result = await dialog.showOpenDialog(window, {
 		title: 'Save this project as…',
@@ -87,7 +89,7 @@ service.registerPromoteUntitled(async (event, payload) => {
 	const newName = payload.newName ?? path.basename(targetFolderPath);
 
 	try {
-		const promoted = await getBeakHost().project.promoteUntitled(payload.currentFolderPath, targetFolderPath, newName);
+		const promoted = await getBeakHost().project.promoteUntitled(currentFolderPath, targetFolderPath, newName);
 
 		const projectMappings = await getBeakHost().providers.storage.get('projectMappings');
 		await getBeakHost().providers.storage.set('projectMappings', {

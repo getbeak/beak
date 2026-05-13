@@ -45,6 +45,12 @@ export default function generateFileMenu(ctx: Context): MenuItemConstructorOptio
 				],
 			},
 			{
+				label: 'Save Project As…',
+				accelerator: 'CmdOrCtrl+Shift+S',
+				enabled: isProjectEditor(ctx),
+				click: async () => sendMenuItemClick(ctx, 'save_project_as'),
+			},
+			{
 				type: 'separator',
 			},
 			{

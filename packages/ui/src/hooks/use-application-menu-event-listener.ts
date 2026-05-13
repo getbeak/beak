@@ -13,7 +13,7 @@ import {
 	closeTabsAll,
 	closeTabsOther,
 } from '../features/tabs/store/actions';
-import { ipcDialogService } from '../lib/ipc';
+import { ipcDialogService, ipcProjectService } from '../lib/ipc';
 import { createNewFolder, createNewRequest } from '../store/project/actions';
 
 export function useApplicationMenuEventListener() {
@@ -67,6 +67,12 @@ export function useApplicationMenuEventListener() {
 
 				case 'import_openapi_spec':
 					void runOpenApiImportFlow({ dialog: ipcDialogService });
+					break;
+
+				case 'save_project_as':
+					void ipcProjectService.promoteUntitled({}).catch(err => {
+						console.warn('Save Project As… failed', err);
+					});
 					break;
 
 				default:

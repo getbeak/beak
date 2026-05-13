@@ -18,4 +18,5 @@ export type MenuEventCode =
 	| 'show_new_project_intro'
 	| 'show_omni_commands'
 	| 'show_preferences'
-	| 'import_openapi_spec';
+	| 'import_openapi_spec'
+	| 'save_project_as';

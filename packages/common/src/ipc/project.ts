@@ -16,8 +16,6 @@ export interface CreateProjectReq {
 }
 
 export interface PromoteUntitledReq {
-	/** Folder of the current untitled project (the one to move). */
-	currentFolderPath: string;
 	/** Optional new name; defaults to the destination folder's basename. */
 	newName?: string;
 }
