@@ -1,16 +1,19 @@
 import { Box, type BoxProps, chakra } from '@chakra-ui/react';
 import type { ThemeMode } from '@beak/common/types/theme';
+import { motion } from 'framer-motion';
 import * as React from 'react';
 
 export const SelectContainer = chakra('div', {
 	base: {
 		display: 'inline-flex',
-		gap: '9',
-		px: '6',
-		pt: '5',
-		pb: '4',
+		gap: '6',
+		px: '5',
+		pt: '4',
+		pb: '3',
 		borderRadius: 'lg',
-		bg: 'bg.surface.alt',
+		borderWidth: '1px',
+		borderColor: 'border.subtle',
+		bg: 'color-mix(in srgb, var(--beak-colors-bg-surface) 60%, transparent)',
 	},
 });
 
@@ -23,10 +26,13 @@ export const SelectItem: React.FC<SelectItemProps> = ({ $active, children, ...re
 		display='flex'
 		flexDirection='column'
 		alignItems='center'
-		color='fg.muted'
-		opacity={$active ? 1 : 0.6}
-		fontSize='lg'
+		color={$active ? 'fg.default' : 'fg.muted'}
+		opacity={$active ? 1 : 0.7}
+		fontSize='sm'
 		cursor='pointer'
+		transition='opacity .14s ease, color .14s ease, transform .08s ease'
+		_hover={{ opacity: 1, color: 'fg.default' }}
+		_active={{ transform: 'scale(0.97)' }}
 		{...rest}
 	>
 		{children}
@@ -45,18 +51,34 @@ export const SelectItemPreview: React.FC<SelectItemPreviewProps> = ({
 	$themeType,
 	...rest
 }) => (
-	<Box
-		w='90px'
-		h='56px'
-		borderRadius='md'
-		bg='pink'
-		mb='2.5'
-		borderWidth='2px'
-		borderColor={$active ? 'accent.pink' : 'transparent'}
-		bgImage={`url('images/${$themeType === 'editor' ? 'editor-' : ''}theme-switcher/${$themeMode}.jpg')`}
-		bgPos='center'
-		bgSize='cover'
-		bgRepeat='no-repeat'
-		{...rest}
-	/>
+	<Box position='relative' mb='2' {...rest}>
+		{$active && (
+			<motion.div
+				layoutId='preferences-active-theme-ring'
+				transition={{ type: 'spring', stiffness: 600, damping: 30 }}
+				style={{
+					position: 'absolute',
+					inset: -3,
+					borderRadius: 10,
+					border: '2px solid var(--beak-colors-accent-pink)',
+					pointerEvents: 'none',
+				}}
+			/>
+		)}
+		<motion.div
+			whileHover={{ scale: 1.02 }}
+			transition={{ duration: 0.14 }}
+			style={{
+				width: 90,
+				height: 56,
+				borderRadius: 6,
+				border: '1px solid var(--beak-colors-border-subtle)',
+				boxShadow: '0 2px 12px rgba(0,0,0,0.25)',
+				backgroundImage: `url('images/${$themeType === 'editor' ? 'editor-' : ''}theme-switcher/${$themeMode}.jpg')`,
+				backgroundPosition: 'center',
+				backgroundSize: 'cover',
+				backgroundRepeat: 'no-repeat',
+			}}
+		/>
+	</Box>
 );
