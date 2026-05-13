@@ -30,6 +30,7 @@
 		"@beak/ksuid": "*",
 		"@beak/requester-node": "*",
 		"@beak/runtime-shared": "*",
+		"@beak/state": "*",
 		"@beak/ui": "*",
 		"@sentry/electron": "^7.13.0",
 		"asar": "^3.2.0",

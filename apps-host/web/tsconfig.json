@@ -25,6 +25,9 @@
 			"path": "../../packages/runtime-shared"
 		},
 		{
+			"path": "../../packages/state"
+		},
+		{
 			"path": "../../packages/ksuid"
 		},
 		{

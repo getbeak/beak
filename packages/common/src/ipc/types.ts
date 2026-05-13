@@ -12,7 +12,8 @@ export type IpcChannel =
 	| 'explorer'
 	| 'beak-hub'
 	| 'context-menu'
-	| 'fs-watcher';
+	| 'fs-watcher'
+	| 'openapi';
 
 export interface IpcMessage<T = unknown> {
 	code: string;

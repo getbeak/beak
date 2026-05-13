@@ -56,6 +56,9 @@ importers:
       '@beak/runtime-shared':
         specifier: '*'
         version: link:../../packages/runtime-shared
+      '@beak/state':
+        specifier: '*'
+        version: link:../../packages/state
       '@beak/ui':
         specifier: '*'
         version: link:../../packages/ui
@@ -174,6 +177,9 @@ importers:
       '@beak/runtime-shared':
         specifier: '*'
         version: link:../../packages/runtime-shared
+      '@beak/state':
+        specifier: '*'
+        version: link:../../packages/state
       '@beak/ui':
         specifier: '*'
         version: link:../../packages/ui

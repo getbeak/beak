@@ -27,6 +27,7 @@
 		"@beak/design-system": "*",
 		"@beak/ksuid": "*",
 		"@beak/runtime-shared": "*",
+		"@beak/state": "*",
 		"@beak/ui": "*",
 		"@esbuild-plugins/node-globals-polyfill": "^0.2.3",
 		"@getbeak/extension-sdk": "*",

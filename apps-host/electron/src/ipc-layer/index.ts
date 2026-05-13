@@ -10,6 +10,7 @@ import './fs-service';
 import './fs-watcher-service';
 import './nest-service';
 import './notification-service';
+import './openapi-service';
 import './project-service';
 import './preferences-service';
 import './window-service';
