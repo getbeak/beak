@@ -84,6 +84,8 @@ export interface State {
 
 	id?: string;
 	name?: string;
+	folderPath?: string;
+	untitled?: boolean;
 	tree: Tree;
 
 	activeRename?: ActiveRename;

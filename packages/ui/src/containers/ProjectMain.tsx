@@ -9,6 +9,7 @@ import ReflexSplitter from '../components/atoms/ReflexSplitter';
 import ReflexStyles from '../components/atoms/ReflexStyles';
 import ProgressIndicator from '../components/molecules/ProgressIndicator';
 import ProjectLoading from '../components/molecules/ProjectLoading';
+import UntitledBanner from '../components/molecules/UntitledBanner';
 import ActionBar from '../features/action-bar/components/ActionBar';
 import ProjectEncryption from '../features/encryption/components/ProjectEncryption';
 import Omnibar from '../features/omni-bar/components/Omnibar';
@@ -53,6 +54,7 @@ const ProjectMain: React.FC = () => {
 				<ReflexStyles />
 				{setup && loaded && (
 					<React.Fragment>
+						<UntitledBanner />
 						<ReflexContainer orientation={'vertical'}>
 							<ReflexElement flex={15} minSize={200} $forcedWidth={collapsedSidebar ? 42 : void 0}>
 								<Sidebar />
