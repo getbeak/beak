@@ -15,9 +15,12 @@ export default defineConfig({
 	timeout: 60_000,
 	expect: { timeout: 10_000 },
 	fullyParallel: false,
-	retries: 0,
+	// On CI the dev server boots fresh per run and can be slow on the first
+	// module compile — one retry covers the rare flake without masking real
+	// regressions. Locally we keep retries off so failures fire immediately.
+	retries: process.env.CI ? 1 : 0,
 	workers: 1,
-	reporter: 'list',
+	reporter: process.env.CI ? [['list'], ['github']] : 'list',
 	use: {
 		baseURL: 'https://localhost:5173',
 		ignoreHTTPSErrors: true,
