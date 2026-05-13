@@ -53,16 +53,21 @@ const ProjectLoading: React.FC = () => {
 						filter='drop-shadow(0px 8px 24px color-mix(in srgb, var(--beak-colors-accent-pink) 40%, transparent))'
 					/>
 				</motion.div>
-				<Box
+				<Flex
+					align='center'
+					justify='center'
+					gap='1.5'
 					textTransform='uppercase'
 					fontSize='10px'
 					fontWeight='700'
 					letterSpacing='0.08em'
 					color='accent.pink'
 				>
+					<Box w='14px' h='1px' bg='currentColor' opacity={0.4} />
 					{'Did you know?'}
-				</Box>
-				<Box mt='2' minH='40px' maxW='320px' mx='auto'>
+					<Box w='14px' h='1px' bg='currentColor' opacity={0.4} />
+				</Flex>
+				<Box mt='2' minH='44px' maxW='340px' mx='auto'>
 					<AnimatePresence mode='wait'>
 						<motion.div
 							key={hintIndex}
@@ -71,7 +76,7 @@ const ProjectLoading: React.FC = () => {
 							exit={{ opacity: 0, y: -4 }}
 							transition={{ duration: 0.22, ease: 'easeOut' }}
 						>
-							<Box fontSize='sm' lineHeight='20px' color='fg.muted'>
+							<Box fontSize='sm' lineHeight='1.5' color='fg.muted'>
 								{hints[hintIndex]}
 							</Box>
 						</motion.div>
