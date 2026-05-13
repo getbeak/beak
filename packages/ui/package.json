@@ -13,7 +13,7 @@
 		"test:run": "vitest run --passWithNoTests",
 		"test:coverage": "vitest run --coverage --passWithNoTests"
 	},
-	"main": "dist/index.es.min.js",
+	"main": "dist/index.esm.min.js",
 	"browserslist": {
 		"production": [
 			"last 1 chrome version"

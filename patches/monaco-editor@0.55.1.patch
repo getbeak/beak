@@ -1,0 +1,13 @@
+diff --git a/package.json b/package.json
+index 6bea0ff3f836b47d3ff7db80a26f257cb4e998dd..09d45943376a58ac83137f7558ba038cfbc1aa92 100644
+--- a/package.json
++++ b/package.json
+@@ -41,6 +41,8 @@
+       "import": "./esm/vs/editor/editor.main.js",
+       "require": "./min/vs/editor/editor.main.js"
+     },
++    "./esm/*.js": "./esm/*.js",
++    "./esm/*": "./esm/*.js",
+     "./*": "./*"
+   },
+   "repository": {
