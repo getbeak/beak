@@ -23,6 +23,7 @@ export default class UnmanagedInput extends React.Component<UnmanagedInputProps>
 				borderColor='border.subtle'
 				whiteSpace='nowrap'
 				overflow='hidden'
+				style={{ caretColor: 'var(--beak-colors-accent-pink)' }}
 				css={{
 					'&[disabled="true"]': {
 						userSelect: 'text',
