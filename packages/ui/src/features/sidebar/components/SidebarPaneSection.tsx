@@ -51,7 +51,7 @@ const SidebarPaneSection: React.FC<React.PropsWithChildren<SidebarPaneSectionPro
 			</SectionHeader>
 			<SectionBodyContext.Provider value={setBodyOptions}>
 				<Box
-					transition='height .3s ease, min-height .3s ease, flex-grow .3s ease, flex-shrink .3s ease, opacity .2s ease'
+					transition='height .28s cubic-bezier(.4,0,.2,1), min-height .28s cubic-bezier(.4,0,.2,1), flex-grow .28s cubic-bezier(.4,0,.2,1), flex-shrink .28s cubic-bezier(.4,0,.2,1), opacity .18s ease'
 					flexGrow={uiCollapsed ? 0.00001 : bodyOptions.flexGrow}
 					flexShrink={uiCollapsed ? 0.00001 : bodyOptions.flexShrink}
 					maxH={uiCollapsed ? '0' : bodyOptions.maxHeight}
