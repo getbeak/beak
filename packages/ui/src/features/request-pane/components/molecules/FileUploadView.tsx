@@ -1,9 +1,10 @@
-import { Box, Button, Flex } from '@chakra-ui/react';
+import { Box, Flex, IconButton } from '@chakra-ui/react';
 import type { PreviewReferencedFileRes } from '@beak/common/ipc/fs';
+import Button from '@beak/ui/components/atoms/Button';
 import { pickAndAttachAsset } from '@beak/ui/features/asset-attachment/pick-and-attach';
 import { ipcFsService } from '@beak/ui/lib/ipc';
 import { requestBodyAssetChanged, requestBodyFileChanged } from '@beak/ui/store/project/actions';
-import { X } from 'lucide-react';
+import { File, FileBox, Upload, X } from 'lucide-react';
 import type { ValidRequestNode } from '@getbeak/types/nodes';
 import type { RequestBodyFile } from '@getbeak/types/request';
 import mime from 'mime-types';
@@ -85,13 +86,30 @@ const FileUploadView: React.FC<FileUploadViewProps> = ({ node }) => {
 	}
 
 	const closeBtn = (onClick: (e: React.MouseEvent) => void) => (
-		<Box position='absolute' right='1.5' top='1' bg='transparent' p='1' onClick={onClick}>
-			<X />
-		</Box>
+		<IconButton
+			aria-label='Remove'
+			size='xs'
+			variant='ghost'
+			position='absolute'
+			top='1'
+			right='1'
+			h='18px'
+			w='18px'
+			minW='18px'
+			borderRadius='sm'
+			color='fg.subtle'
+			_hover={{
+				color: 'accent.alert',
+				bg: 'color-mix(in srgb, var(--beak-colors-accent-alert) 18%, transparent)',
+			}}
+			onClick={onClick}
+		>
+			<X size={11} />
+		</IconButton>
 	);
 
 	return (
-		<Flex py='5' direction='column' align='center' gap='2.5'>
+		<Flex py='5' direction='column' align='center' gap='3'>
 			<Flex
 				position='relative'
 				direction='column'
@@ -99,22 +117,38 @@ const FileUploadView: React.FC<FileUploadViewProps> = ({ node }) => {
 				justify='center'
 				cursor='pointer'
 				gap='1'
-				w='200px'
+				w='220px'
 				h='110px'
 				borderRadius='lg'
 				borderWidth='1px'
-				borderColor='border.subtle'
-				bg='bg.surface.emphasized'
+				borderStyle={preview ? 'solid' : 'dashed'}
+				borderColor={preview ? 'border.default' : 'border.subtle'}
+				bg='color-mix(in srgb, var(--beak-colors-bg-surface) 50%, transparent)'
 				color='fg.muted'
-				fontSize='sm'
+				fontSize='xs'
+				transition='border-color .12s ease, background-color .12s ease'
+				_hover={{
+					borderColor: 'accent.pink',
+					bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 8%, transparent)',
+				}}
 				onClick={openFile}
 			>
-				{!preview && !assetRef && 'No file selected...'}
+				{!preview && !assetRef && (
+					<React.Fragment>
+						<Box opacity={0.45} color='fg.subtle'>
+							<Upload size={20} />
+						</Box>
+						<Box>{'Click to pick a file'}</Box>
+					</React.Fragment>
+				)}
 				{preview && (
 					<React.Fragment>
 						{closeBtn(clearFile)}
-						<Box>{preview.fileName}</Box>
-						<Box>{prettyBytes(preview.fileSize)}</Box>
+						<Box color='accent.pink'>
+							<File size={18} />
+						</Box>
+						<Box color='fg.default' fontWeight='500'>{preview.fileName}</Box>
+						<Box fontSize='10px' color='fg.subtle'>{prettyBytes(preview.fileSize)}</Box>
 					</React.Fragment>
 				)}
 			</Flex>
@@ -125,36 +159,26 @@ const FileUploadView: React.FC<FileUploadViewProps> = ({ node }) => {
 					align='center'
 					justify='center'
 					gap='1'
-					w='200px'
+					w='220px'
 					p='2.5'
 					borderRadius='lg'
 					borderWidth='1px'
 					borderStyle='dashed'
 					borderColor='border.subtle'
-					bg='bg.surface.emphasized'
+					bg='color-mix(in srgb, var(--beak-colors-bg-surface) 60%, transparent)'
 					color='fg.muted'
 					fontSize='xs'
 					fontFamily='mono'
 				>
 					{closeBtn(clearAssetRef)}
-					<Box>{`sha256:${assetRef.sha256.slice(0, 8)}…${assetRef.sha256.slice(-4)}`}</Box>
-					<Box>{prettyBytes(assetRef.size)}</Box>
+					<Box color='accent.teal'>
+						<FileBox size={16} />
+					</Box>
+					<Box color='fg.default'>{`sha256:${assetRef.sha256.slice(0, 8)}…${assetRef.sha256.slice(-4)}`}</Box>
+					<Box fontSize='10px' color='fg.subtle'>{prettyBytes(assetRef.size)}</Box>
 				</Flex>
 			)}
-			<Button
-				bg='transparent'
-				borderWidth='1px'
-				borderColor='border.subtle'
-				color='fg.default'
-				px='3'
-				py='1.5'
-				borderRadius='md'
-				fontSize='sm'
-				cursor='pointer'
-				h='auto'
-				_hover={{ bg: 'bg.surface.emphasized' }}
-				onClick={attachAsAsset}
-			>
+			<Button size='sm' colour='secondary' onClick={attachAsAsset}>
 				{assetRef ? 'Replace asset…' : 'Attach as asset…'}
 			</Button>
 		</Flex>
