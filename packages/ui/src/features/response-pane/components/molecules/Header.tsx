@@ -64,15 +64,19 @@ const Header: React.FC<HeaderProps> = ({ selectedFlight }) => {
 				display='inline-flex'
 				alignItems='center'
 				borderRadius='md'
+				borderWidth='1px'
 				px='2'
 				py='1'
-				fontWeight='600'
+				fontWeight='700'
 				fontSize='xs'
-				letterSpacing='0.04em'
-				color='fg.default'
+				letterSpacing='0.06em'
+				textTransform='uppercase'
 				style={{
-					background: `color-mix(in srgb, ${verbColor} 22%, transparent)`,
+					color: verbColor,
+					background: `color-mix(in srgb, ${verbColor} 12%, var(--beak-colors-bg-surface))`,
+					borderColor: `color-mix(in srgb, ${verbColor} 35%, var(--beak-colors-border-subtle))`,
 					borderLeft: `3px solid ${verbColor}`,
+					boxShadow: `inset 0 1px 0 color-mix(in srgb, white 16%, transparent)`,
 				}}
 			>
 				{verb}
