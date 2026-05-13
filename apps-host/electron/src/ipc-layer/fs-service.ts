@@ -90,6 +90,7 @@ service.registerReadDir(async (event, payload: ReadDirReq) => {
 
 service.registerOpenReferenceFile(async event => {
 	const sender = (event as IpcMainInvokeEvent).sender;
+	// biome-ignore lint/style/noNonNullAssertion: a live IPC sender always has a window
 	const window = BrowserWindow.fromWebContents(sender)!;
 
 	return await openReferenceFile(window);
@@ -97,6 +98,7 @@ service.registerOpenReferenceFile(async event => {
 
 service.registerPreviewReferencedFile(async (event, payload) => {
 	const sender = (event as IpcMainInvokeEvent).sender;
+	// biome-ignore lint/style/noNonNullAssertion: a live IPC sender always has a window
 	const window = BrowserWindow.fromWebContents(sender)!;
 	const filePath = await previewReferencedFile(window, payload.fileReferenceId);
 
@@ -115,6 +117,7 @@ service.registerPreviewReferencedFile(async (event, payload) => {
 
 service.registerReadReferencedFile(async (event, payload) => {
 	const sender = (event as IpcMainInvokeEvent).sender;
+	// biome-ignore lint/style/noNonNullAssertion: a live IPC sender always has a window
 	const window = BrowserWindow.fromWebContents(sender)!;
 	const filePath = await previewReferencedFile(window, payload.fileReferenceId);
 
