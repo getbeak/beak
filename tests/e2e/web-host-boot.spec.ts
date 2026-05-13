@@ -73,3 +73,20 @@ test('web host: Cancel from create-local returns to the welcome view', async ({ 
 	await expect(page.getByText('Create a new project')).toBeVisible();
 	await expect(page.getByText('Open an existing project')).toBeVisible();
 });
+
+test('web host: project name input drives the Select folder button', async ({ page }) => {
+	await page.goto('/');
+	await page.getByText('Create a new project').click({ timeout: 30_000 });
+	const selectFolder = page.getByRole('button', { name: 'Select folder' });
+	// The input has no accessible label (it's a styled-component <Label> div, not
+	// a real <label for=…>), so target by role. CreateView has one textbox.
+	const nameInput = page.getByRole('textbox');
+	// Empty name → button disabled.
+	await expect(selectFolder).toBeDisabled();
+	// Type a valid name → button enables.
+	await nameInput.fill('hello-project');
+	await expect(selectFolder).toBeEnabled();
+	// Clear → disabled again.
+	await nameInput.fill('');
+	await expect(selectFolder).toBeDisabled();
+});
