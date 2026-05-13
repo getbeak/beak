@@ -1,8 +1,8 @@
+import { Box } from '@chakra-ui/react';
 import { useAppSelector } from '@beak/ui/store/redux';
 import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { ReflexContainer } from 'react-reflex';
-import styled from 'styled-components';
 
 import ReflexElement from '../components/atoms/ReflexElement';
 import ReflexSplitter from '../components/atoms/ReflexSplitter';
@@ -50,27 +50,29 @@ const ProjectMain: React.FC = () => {
 				<title>{title}</title>
 			</Helmet>
 			<ProgressIndicator />
-			<Container>
+			<Box position='absolute' inset='0' display='flex' flexDirection='column'>
 				<ReflexStyles />
 				{setup && loaded && (
 					<React.Fragment>
 						<UntitledBanner />
-						<ReflexContainer orientation={'vertical'}>
-							<ReflexElement flex={15} minSize={200} $forcedWidth={collapsedSidebar ? 42 : void 0}>
-								<Sidebar />
-							</ReflexElement>
+						<Box flex='1' minH='0'>
+							<ReflexContainer orientation={'vertical'}>
+								<ReflexElement flex={15} minSize={200} $forcedWidth={collapsedSidebar ? 42 : void 0}>
+									<Sidebar />
+								</ReflexElement>
 
-							<ReflexSplitter $disabled={collapsedSidebar} hideVisualIndicator orientation={'vertical'} />
+								<ReflexSplitter $disabled={collapsedSidebar} hideVisualIndicator orientation={'vertical'} />
 
-							<ReflexElement flex={80} minSize={902} style={{ overflowY: 'hidden' }}>
-								<ActionBar />
-								<TabView tabs={tabs.activeTabs} selectedTab={activeTab} />
-							</ReflexElement>
-						</ReflexContainer>
+								<ReflexElement flex={80} minSize={902} style={{ overflowY: 'hidden' }}>
+									<ActionBar />
+									<TabView tabs={tabs.activeTabs} selectedTab={activeTab} />
+								</ReflexElement>
+							</ReflexContainer>
+						</Box>
 						<Omnibar />
 					</React.Fragment>
 				)}
-			</Container>
+			</Box>
 
 			<ProjectEncryption />
 
@@ -78,10 +80,5 @@ const ProjectMain: React.FC = () => {
 		</React.Fragment>
 	);
 };
-
-const Container = styled.div`
-	position: absolute;
-	top: 0; bottom: 0; left: 0; right: 0;
-`;
 
 export default ProjectMain;

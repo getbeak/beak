@@ -1,17 +1,17 @@
+import { Button, Flex, Text } from '@chakra-ui/react';
 import { useAppSelector } from '@beak/ui/store/redux';
-import React from 'react';
-import styled from 'styled-components';
+import * as React from 'react';
 
 import { ipcProjectService } from '../../lib/ipc';
 
 /**
- * Renders a thin strip at the top of a project window when the active
- * project is an untitled scratch project (created in
- * userData/untitled-projects/). The CTA fires the same IPC as the
- * application menu's "Save Project As…" item — promoteUntitled — which
- * moves the folder to the user-chosen location and re-opens the window.
+ * Thin strip rendered above the sidebar/main split when the active project
+ * is an untitled scratch project (created under
+ * userData/untitled-projects/). The CTA fires the same IPC as the File
+ * menu's "Save Project As…" item — promoteUntitled — which moves the
+ * folder to the user-chosen location and re-opens the window.
  *
- * Returns null for non-untitled projects so production projects pay no
+ * Returns null for non-untitled projects so production workspaces pay no
  * layout cost.
  */
 const UntitledBanner: React.FC = () => {
@@ -23,54 +23,44 @@ const UntitledBanner: React.FC = () => {
 		try {
 			await ipcProjectService.promoteUntitled({});
 		} catch (err) {
-			// Dialog surface lives host-side; renderer just logs.
 			console.warn('Save Project As… failed', err);
 		}
 	}
 
 	return (
-		<Bar role={'status'} aria-label={'untitled-project'}>
-			<Message>
-				<strong>{'Untitled project.'}</strong>
+		<Flex
+			role='status'
+			aria-label='untitled-project'
+			align='center'
+			justify='space-between'
+			gap='3'
+			px='3'
+			py='1.5'
+			bg='accent.pink.muted'
+			borderBottomWidth='1px'
+			borderColor='border.subtle'
+			color='fg.default'
+			fontSize='xs'
+			bgGradient='linear-gradient(90deg, accent.pink.muted, transparent)'
+		>
+			<Text flex='1' truncate>
+				<Text as='span' fontWeight='semibold'>{'Untitled project.'}</Text>
 				{' Your changes are live but in a temporary folder. Save the project to keep it.'}
-			</Message>
-			<SaveAsButton type={'button'} onClick={onSaveAs}>
+			</Text>
+			<Button
+				type='button'
+				size='xs'
+				bg='accent.pink'
+				color='fg.onAccent'
+				borderRadius='sm'
+				px='3'
+				_hover={{ filter: 'brightness(1.1)' }}
+				onClick={onSaveAs}
+			>
 				{'Save Project As…'}
-			</SaveAsButton>
-		</Bar>
+			</Button>
+		</Flex>
 	);
 };
-
-const Bar = styled.div`
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	gap: 12px;
-	padding: 6px 12px;
-	background: ${p => p.theme.ui.surface};
-	border-bottom: 1px solid ${p => p.theme.ui.primaryFill};
-	font-size: 12px;
-	color: ${p => p.theme.ui.textOnAction};
-`;
-
-const Message = styled.span`
-	flex: 1;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-`;
-
-const SaveAsButton = styled.button`
-	cursor: pointer;
-	padding: 4px 10px;
-	font-size: 12px;
-	background: ${p => p.theme.ui.primaryFill};
-	color: ${p => p.theme.ui.textOnAction};
-	border: 1px solid ${p => p.theme.ui.primaryFill};
-	border-radius: 4px;
-
-	&:hover { filter: brightness(1.1); }
-	&:focus-visible { outline: 2px solid ${p => p.theme.ui.primaryFill}; outline-offset: 2px; }
-`;
 
 export default UntitledBanner;

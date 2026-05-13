@@ -100,3 +100,14 @@ test('web host: reload re-mounts the welcome screen cleanly', async ({ page }) =
 	await page.reload();
 	await expect(page.getByText('Create a new project')).toBeVisible({ timeout: 30_000 });
 });
+
+test('web host: welcome screen has a mesh-gradient backdrop', async ({ page }) => {
+	await page.goto('/');
+	await expect(page.getByText('Create a new project')).toBeVisible({ timeout: 30_000 });
+	// The MeshGradient component renders a Box with a `data-testid` we can
+	// assert against. The actual gradient stops are baked into a Chakra
+	// style class so we don't read them back here — just confirm the
+	// component is mounted and visible.
+	const gradient = page.getByTestId('mesh-gradient');
+	await expect(gradient).toBeVisible();
+});
