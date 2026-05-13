@@ -209,11 +209,13 @@ const INPUT_STYLE = (center?: boolean): React.CSSProperties => ({
 	width: 'calc(100% - 12px)',
 	background: 'none',
 	border: '1px solid transparent',
-	color: 'var(--beak-colors-fg-muted)',
+	borderRadius: '4px',
+	color: 'var(--beak-colors-fg-default)',
 	fontSize: '13px',
-	fontWeight: 'normal',
+	fontWeight: 500,
 	textAlign: center ? 'center' : 'inherit',
-	padding: '3px 5px',
+	padding: '4px 6px',
+	transition: 'background-color .12s ease, border-color .12s ease',
 });
 
 interface StyledDebounceProps {
