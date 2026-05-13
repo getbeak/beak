@@ -1,8 +1,10 @@
+import { Flex } from '@chakra-ui/react';
 import Squawk from '@beak/common/utils/squawk';
 import Button from '@beak/ui/components/atoms/Button';
 import FormError from '@beak/ui/components/atoms/FormError';
 import Input from '@beak/ui/components/atoms/Input';
 import { ipcNestService } from '@beak/ui/lib/ipc';
+import { Loader2, Mail } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
 
 import { ActionContainer, SubTitle } from '../atoms/typography';
@@ -28,7 +30,6 @@ const RequestMagicLink: React.FC<React.PropsWithChildren<RequestMagicLinkProps>>
 
 		if (!emailRegex.test(email)) {
 			setError(new Squawk('invalid_email'));
-
 			return;
 		}
 
@@ -44,11 +45,11 @@ const RequestMagicLink: React.FC<React.PropsWithChildren<RequestMagicLinkProps>>
 
 	return (
 		<React.Fragment>
-			<SubTitle>{'Enter your Beak email address:'}</SubTitle>
+			<SubTitle>{"We'll send a magic link to your inbox."}</SubTitle>
 			<ActionContainer>
 				<Input
-					type={'email'}
-					placeholder={'taylor.swift@gmail.com'}
+					type='email'
+					placeholder='you@example.com'
 					value={email}
 					ref={inputRef}
 					onChange={e => onEmailChange(e.target.value)}
@@ -58,9 +59,17 @@ const RequestMagicLink: React.FC<React.PropsWithChildren<RequestMagicLinkProps>>
 				/>
 				{error && <FormError>{getErrorMessage(error)}</FormError>}
 				<Button disabled={working} onClick={() => sendMagicLink()}>
-					{'Continue'}
+					<Flex align='center' justify='center' gap='1.5'>
+						{working ? (
+							<Loader2 size={13} style={{ animation: 'beakPortalSpin 1s linear infinite' }} />
+						) : (
+							<Mail size={13} />
+						)}
+						{working ? 'Sending…' : 'Send magic link'}
+					</Flex>
 				</Button>
 			</ActionContainer>
+			<style dangerouslySetInnerHTML={{ __html: '@keyframes beakPortalSpin { to { transform: rotate(360deg); } }' }} />
 		</React.Fragment>
 	);
 };
