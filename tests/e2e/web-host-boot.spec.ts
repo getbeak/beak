@@ -54,3 +54,12 @@ test('web host: welcome screen offers project entry points', async ({ page }) =>
 	await expect(page.getByText('Create a new project')).toBeVisible({ timeout: 30_000 });
 	await expect(page.getByText('Open an existing project')).toBeVisible();
 });
+
+test('web host: "Create a new project" transitions to the create-local view', async ({ page }) => {
+	await page.goto('/');
+	await expect(page.getByText('Create a new project')).toBeVisible({ timeout: 30_000 });
+	await page.getByText('Create a new project').click();
+	// CreateView shows a "Give your project a name" label and a "Select folder" button.
+	await expect(page.getByText('Give your project a name')).toBeVisible();
+	await expect(page.getByText('Select folder')).toBeVisible();
+});
