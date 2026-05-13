@@ -113,16 +113,16 @@ const BasicTableEditor: React.FC<BasicTableEditorProps> = ({
 						align='center'
 						justify='center'
 						direction='column'
-						gap='1'
-						py='5'
+						gap='1.5'
+						py='6'
 						color='fg.subtle'
 					>
-						<Text fontSize='xs' fontStyle='italic'>
+						<Text fontSize='sm' fontWeight='600' color='fg.default'>
 							{readOnly ? 'No entries' : 'No entries yet'}
 						</Text>
 						{editable && (
-							<Text fontSize='xs' opacity={0.7}>
-								{'Use Add to create your first row'}
+							<Text fontSize='10px' fontWeight='700' letterSpacing='0.06em' textTransform='uppercase' color='fg.subtle'>
+								{'Use Add row to create one'}
 							</Text>
 						)}
 					</Flex>
