@@ -8,23 +8,33 @@ interface ActionIconButtonProps extends Omit<ButtonProps, 'children'> {
 
 const ActionIconButton: React.FC<ActionIconButtonProps> = ({ icon: Icon, ...buttonProps }) => (
 	<Button
-		w='15px'
-		h='15px'
-		minW='15px'
-		textAlign='center'
-		mr='1.5'
+		display='inline-flex'
+		alignItems='center'
+		justifyContent='center'
+		w='16px'
+		h='16px'
+		minW='16px'
 		p='0'
+		mr='1.5'
 		bg='transparent'
 		borderWidth='1px'
-		borderColor='fg.muted'
-		color='fg.muted'
+		borderColor='border.default'
+		color='fg.subtle'
 		borderRadius='full'
-		lineHeight='15px'
-		boxShadow='0 0 1px 0px white inset, 0 0 1px 0px white'
-		fontSize='8px'
+		transition='border-color .12s ease, color .12s ease, background-color .12s ease, transform .08s ease'
+		_hover={{
+			color: 'accent.pink',
+			borderColor: 'accent.pink',
+			bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent)',
+		}}
+		_active={{ transform: 'scale(0.92)' }}
+		_focusVisible={{
+			outline: 'none',
+			boxShadow: '0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-pink) 35%, transparent)',
+		}}
 		{...buttonProps}
 	>
-		<Icon size={8} />
+		<Icon size={9} strokeWidth={2.4} />
 	</Button>
 );
 
