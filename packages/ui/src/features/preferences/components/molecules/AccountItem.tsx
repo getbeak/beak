@@ -45,10 +45,13 @@ const AccountItem: React.FC = () => {
 				w='34px'
 				h='34px'
 				borderRadius='full'
-				bg='color-mix(in srgb, var(--beak-colors-accent-pink) 18%, transparent)'
+				bg='color-mix(in srgb, var(--beak-colors-accent-pink) 16%, transparent)'
+				borderWidth='1px'
+				borderColor='color-mix(in srgb, var(--beak-colors-accent-pink) 28%, transparent)'
 				color='accent.pink'
+				boxShadow='inset 0 1px 0 color-mix(in srgb, white 18%, transparent)'
 			>
-				<CircleUserRound size={18} />
+				<CircleUserRound size={17} strokeWidth={1.8} />
 			</Flex>
 			<Box minW={0} flex='1 1 auto'>
 				<Box fontSize='sm' fontWeight='600' color='fg.default'>{'Signed in'}</Box>
