@@ -90,7 +90,22 @@ All cross-process communication goes through `packages/common/src/ipc/`:
 - `@beak/state` — Redux Toolkit slices and shared store logic (`arbiter`, `assets`, `extensions`, `flight`, `git`, `preferences`, `project`, `schemas`, `sources`, `variableSets`). **Cannot import** `@beak/ui` or `@getbeak/extension-sdk`. Was `@beak/core` before the May 2026 reshuffle.
 - `@beak/ui` — the renderer. May import everything below it.
 
-Other notable packages: `@beak/runtime-shared` (was `@beak/common-host`; host-side helpers, exposes `Runtime` + `AssetStore` + `project` to both Electron and web hosts), `@beak/requester-node` (Node HTTP request execution), `@beak/design-system` (styled-components theming), `@beak/ksuid` (KSUID id generation), `@beak/squawk` (internal error/event helper). The extension-sdk replaces the older `@getbeak/types-variables` / `@getbeak/types-realtime-value` / `@beak/realtime-values` trio.
+Other notable packages: `@beak/runtime-shared` (was `@beak/common-host`; host-side helpers, exposes `Runtime` + `AssetStore` + `project` to both Electron and web hosts), `@beak/requester-node` (Node HTTP request execution), `@beak/design-system` (Chakra v3 theme + provider — see "Design system" below), `@beak/ksuid` (KSUID id generation), `@beak/squawk` (internal error/event helper). The extension-sdk replaces the older `@getbeak/types-variables` / `@getbeak/types-realtime-value` / `@beak/realtime-values` trio.
+
+### Design system (Chakra UI v3)
+
+The renderer is built on **Chakra UI v3** with a custom theme defined in `packages/design-system/src/theme.ts`. The previous styled-components-only design-system was migrated in a multi-phase sweep (commits prefixed `chakra-phase-*` on `chore/improve-flight-architecture`).
+
+Key bits:
+
+- **Tokens** (`theme.ts`) — brand palette (`brand.pink #d45d80`, `brand.teal #33CC99`, `brand.indigo #333399`, `brand.alert #FC3233`), compressed spacing scale (1=4px → 6=24px) for desktop density, system font stack on `fonts.body`, monospace stack on `fonts.mono`.
+- **Semantic tokens** — `bg.canvas`, `bg.surface`, `bg.surface.alt`, `bg.surface.emphasized`, `fg.default`, `fg.muted`, `fg.subtle`, `border.default`, `border.subtle`, plus the `accent.*` + `accent.*.muted` family. Each resolves light vs dark via Chakra's `_dark` selector.
+- **Provider** (`packages/design-system/src/provider.tsx`) — `BeakChakraProvider` composes `next-themes` (drives `class="light"` / `class="dark"` on `<html>`) → Chakra v3 `ChakraProvider` → a styled-components `ThemeProvider` (compat shim for any unmigrated `styled.X` that doesn't read the theme; will be removed when styled-components is uninstalled).
+- **Colour usage in styled-components** — every theme-aware style uses `var(--beak-colors-<token>)` (e.g., `var(--beak-colors-accent-pink)`). Alpha shades are spelled `color-mix(in srgb, var(--beak-colors-<X>) <pct>%, transparent)` rather than the old `toHexAlpha(theme.X, A)` helper.
+- **Mesh-gradient backdrop** — `packages/ui/src/components/molecules/MeshGradient.tsx` composes layered radial gradients from the brand palette, animated via framer-motion on a 30s loop (honours `prefers-reduced-motion`). The welcome screen uses it (`<MeshGradient tone='welcome' />`) — same component is reusable for loading splashes, alerts, etc.
+- **Mode override** — the user preference (system/light/dark) is read from IPC preferences and fed to `BeakChakraProvider` via the resolved `themeKey` prop, same plumbing as before.
+
+When writing new components in `@beak/ui`, prefer Chakra primitives (`Box`, `Flex`, `Stack`, `Grid`, `HStack`, `VStack`, `Button`, `Input`, `Tabs.*`, `Dialog.*`, `Tooltip`). For desktop chrome use `size='xs'` or `size='sm'`. Reach for `var(--beak-colors-…)` directly only when you need to colour a non-Chakra element (e.g., FontAwesome icon `color` prop, Monaco editor token).
 
 ### State management
 
