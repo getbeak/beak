@@ -33,7 +33,7 @@ const Pane: React.FC<React.PropsWithChildren<PaneProps>> = ({ title, children })
 			mt='4'
 			mb='4'
 			h='1px'
-			bg='border.subtle'
+			bg='linear-gradient(to right, color-mix(in srgb, var(--beak-colors-accent-pink) 35%, transparent), color-mix(in srgb, var(--beak-colors-border-default) 70%, transparent) 40%, transparent 100%)'
 			style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}
 		/>
 		<Box style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}>
