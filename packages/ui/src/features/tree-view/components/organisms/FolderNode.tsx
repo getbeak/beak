@@ -20,13 +20,15 @@ const FolderNode: React.FC<FolderNodeProps> = ({ depth, node }) => {
 	return (
 		<Box
 			ref={dropRef as unknown as React.Ref<HTMLDivElement>}
+			position='relative'
 			borderRadius={highlight ? 'sm' : undefined}
 			bg={
 				highlight
-					? 'color-mix(in srgb, var(--beak-colors-accent-pink) 28%, transparent)'
+					? 'color-mix(in srgb, var(--beak-colors-accent-pink) 16%, transparent)'
 					: undefined
 			}
-			transition='background-color .12s ease'
+			boxShadow={highlight ? 'inset 0 0 0 1px color-mix(in srgb, var(--beak-colors-accent-pink) 45%, transparent)' : undefined}
+			transition='background-color .14s ease, box-shadow .14s ease'
 		>
 			<NodeItem node={node} collapsed={collapsed} collapsible depth={depth}>
 				<NodeName node={node} collapsed={collapsed} collapsible />
