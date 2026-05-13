@@ -1,5 +1,4 @@
 import { Box } from '@chakra-ui/react';
-import { motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import * as React from 'react';
 
@@ -58,19 +57,15 @@ const TabItem = <T = string>(props: React.PropsWithChildren<TabItemProps<T>>): R
 			{...(rest as Record<string, unknown>)}
 		>
 			{active && (
-				<motion.div
-					layoutId='tab-active-underline'
-					transition={{ type: 'spring', stiffness: 700, damping: 36 }}
-					style={{
-						position: 'absolute',
-						left: 0,
-						right: 0,
-						bottom: -1,
-						height: 2.5,
-						background: 'var(--beak-colors-accent-pink)',
-						borderRadius: 2,
-						boxShadow: '0 -1px 6px color-mix(in srgb, var(--beak-colors-accent-pink) 45%, transparent)',
-					}}
+				<Box
+					position='absolute'
+					left='0'
+					right='0'
+					bottom='-1px'
+					h='2.5px'
+					bg='accent.pink'
+					borderRadius='2px'
+					boxShadow='0 -1px 6px color-mix(in srgb, var(--beak-colors-accent-pink) 45%, transparent)'
 				/>
 			)}
 			<Box as='span' position='relative'>{children}</Box>
