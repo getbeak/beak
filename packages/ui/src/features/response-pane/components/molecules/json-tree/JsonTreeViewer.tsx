@@ -1,5 +1,6 @@
-import { Box, chakra } from '@chakra-ui/react';
+import { Box, Flex, chakra } from '@chakra-ui/react';
 import { useVirtualizer } from '@tanstack/react-virtual';
+import { ChevronsDownUp, ChevronsUpDown } from 'lucide-react';
 import * as React from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
@@ -143,45 +144,67 @@ const JsonTreeViewer: React.FC<JsonTreeViewerProps> = ({ value }) => {
 				/>
 			)}
 
-			<Box
-				display='flex'
-				alignItems='center'
-				gap='2'
+			<Flex
+				align='center'
+				gap='1'
 				px='2'
-				py='0.5'
+				py='1'
 				fontSize='10px'
 				color='fg.subtle'
 				borderBottomWidth='1px'
 				borderColor='border.subtle'
+				bg='color-mix(in srgb, var(--beak-colors-bg-surface) 50%, transparent)'
 			>
 				<ChakraButton
 					type='button'
+					display='inline-flex'
+					alignItems='center'
+					gap='1'
+					px='1.5'
+					py='1'
+					borderRadius='sm'
 					color='fg.subtle'
 					bg='transparent'
 					border='none'
-					p='0.5'
+					fontSize='10px'
+					fontWeight='600'
+					letterSpacing='0.04em'
+					textTransform='uppercase'
 					cursor='pointer'
-					_hover={{ color: 'fg.default' }}
+					transition='color .12s ease, background-color .12s ease'
+					_hover={{ color: 'accent.pink', bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 12%, transparent)' }}
 					onClick={expandAll}
 				>
-					{'Expand all'}
+					<ChevronsUpDown size={10} strokeWidth={2.2} />
+					{'Expand'}
 				</ChakraButton>
 				<ChakraButton
 					type='button'
+					display='inline-flex'
+					alignItems='center'
+					gap='1'
+					px='1.5'
+					py='1'
+					borderRadius='sm'
 					color='fg.subtle'
 					bg='transparent'
 					border='none'
-					p='0.5'
+					fontSize='10px'
+					fontWeight='600'
+					letterSpacing='0.04em'
+					textTransform='uppercase'
 					cursor='pointer'
-					_hover={{ color: 'fg.default' }}
+					transition='color .12s ease, background-color .12s ease'
+					_hover={{ color: 'accent.pink', bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 12%, transparent)' }}
 					onClick={collapseAll}
 				>
-					{'Collapse all'}
+					<ChevronsDownUp size={10} strokeWidth={2.2} />
+					{'Collapse'}
 				</ChakraButton>
-				<Box ml='auto'>
-					<Box as='span' opacity={0.7}>{'⌘F to search'}</Box>
+				<Box ml='auto' opacity={0.7} fontFamily='mono' letterSpacing='0.04em'>
+					{'⌘F to search'}
 				</Box>
-			</Box>
+			</Flex>
 
 			<Box
 				ref={scrollRef}
