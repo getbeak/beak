@@ -1,3 +1,4 @@
+import { Box } from '@chakra-ui/react';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import type { ApplicationState } from '@beak/ui/store';
 import { actions } from '@beak/ui/store/project';
@@ -11,8 +12,7 @@ import type {
 } from '@beak/ui/store/project/types';
 import type { EntryMap } from '@getbeak/types/body-editor-json';
 import type { AnyAction } from '@reduxjs/toolkit';
-import React from 'react';
-import styled from 'styled-components';
+import * as React from 'react';
 
 import { JsonEditorContext } from '../contexts/json-editor-context';
 import { HeaderAction, HeaderKeyCell, HeaderTypeCell, HeaderValueCell } from './atoms/Cells';
@@ -54,7 +54,7 @@ const JsonEditor: React.FC<React.PropsWithChildren<JsonEditorProps>> = props => 
 				removeEntry: props.removedEntry ?? actions.requestBodyJsonEditorRemoveEntry,
 			}}
 		>
-			<Wrapper>
+			<Box mt='1.5' w='100%' fontSize='sm' fontWeight='400' color='fg.muted'>
 				<Header>
 					<Row>
 						<HeaderKeyCell>{'Key'}</HeaderKeyCell>
@@ -66,19 +66,9 @@ const JsonEditor: React.FC<React.PropsWithChildren<JsonEditorProps>> = props => 
 				<Body>
 					<JsonEntry forceRootObject={forceRootObject} requestId={requestId} depth={0} value={root!} />
 				</Body>
-			</Wrapper>
+			</Box>
 		</JsonEditorContext.Provider>
 	);
 };
 
 export default JsonEditor;
-
-const Wrapper = styled.div`
-	margin-top: 5px;
-	width: 100%;
-
-	font-size: 12px;
-	font-weight: 400;
-
-	color: var(--beak-colors-fg-muted);
-`;

@@ -33,7 +33,6 @@ const BeakChakraProvider: React.FC<BeakChakraProviderProps> = ({ themeKey, child
 		defaultTheme={themeKey}
 		forcedTheme={themeKey}
 		enableSystem={false}
-		disableTransitionOnChange
 	>
 		<ChakraProvider value={system}>{children}</ChakraProvider>
 	</NextThemesProvider>

@@ -1,33 +1,22 @@
-import React from 'react';
-import styled from 'styled-components';
+import { Box } from '@chakra-ui/react';
+import * as React from 'react';
 
 interface PaneProps {
 	title: string;
 }
 
 const Pane: React.FC<React.PropsWithChildren<PaneProps>> = ({ title, children }) => (
-	<Wrapper>
-		<Title>{title}</Title>
-		<Container>{children}</Container>
-	</Wrapper>
+	<Box
+		px='10'
+		pt='12'
+		h='calc(100% - 50px)'
+		style={{ WebkitAppRegion: 'drag' } as React.CSSProperties}
+	>
+		<Box fontSize='2xl' fontWeight='medium'>{title}</Box>
+		<Box mt='5' bg='transparent' style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}>
+			{children}
+		</Box>
+	</Box>
 );
-
-const Wrapper = styled.div`
-	padding: 50px 40px;
-	padding-bottom: 0;
-	height: calc(100% - 50px);
-	-webkit-app-region: drag;
-`;
-
-const Title = styled.div`
-	font-size: 25px;
-	font-weight: 500;
-`;
-
-const Container = styled.div`
-	background: transparent;
-	-webkit-app-region: no-drag;
-	margin-top: 20px;
-`;
 
 export default Pane;

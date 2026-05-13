@@ -1,7 +1,7 @@
-import React from 'react';
+import { Box } from '@chakra-ui/react';
+import * as React from 'react';
 import { useContext } from 'react';
 import { useDispatch } from 'react-redux';
-import styled from 'styled-components';
 
 import { JsonEditorContext } from '../../contexts/json-editor-context';
 
@@ -12,15 +12,14 @@ interface EntryTogglerProps {
 	onChange?: (enabled: boolean) => void;
 }
 
-const EntryToggler: React.FC<React.PropsWithChildren<EntryTogglerProps>> = props => {
-	const { requestId, id, value, onChange } = props;
+const EntryToggler: React.FC<EntryTogglerProps> = ({ requestId, id, value, onChange }) => {
 	const editorContext = useContext(JsonEditorContext)!;
 	const dispatch = useDispatch();
 
 	return (
-		<Wrapper>
-			<Checkbox
-				type={'checkbox'}
+		<Box mt='0.5'>
+			<input
+				type='checkbox'
 				checked={value}
 				onChange={e => {
 					dispatch(
@@ -31,17 +30,12 @@ const EntryToggler: React.FC<React.PropsWithChildren<EntryTogglerProps>> = props
 						}),
 					);
 
-					if (onChange) onChange(e.target.checked);
+					onChange?.(e.target.checked);
 				}}
+				style={{ accentColor: 'var(--beak-colors-accent-pink)' }}
 			/>
-		</Wrapper>
+		</Box>
 	);
 };
-
-const Wrapper = styled.div`
-	margin-top: 1px;
-`;
-
-const Checkbox = styled.input``;
 
 export default EntryToggler;

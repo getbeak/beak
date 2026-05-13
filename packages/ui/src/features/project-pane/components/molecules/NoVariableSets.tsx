@@ -1,38 +1,29 @@
-import React from 'react';
-import { useDispatch } from 'react-redux';
+import { Box } from '@chakra-ui/react';
 import Button from '@beak/ui/components/atoms/Button';
 import SidebarSectionCard from '@beak/ui/features/sidebar/components/SidebarSectionCard';
 import { sidebarPreferenceSetSelected } from '@beak/ui/store/preferences/actions';
 import { createNewVariableSet } from '@beak/ui/store/variable-sets/actions';
-import styled from 'styled-components';
+import * as React from 'react';
+import { useDispatch } from 'react-redux';
 
-const NoVariableSets: React.FC<React.PropsWithChildren<unknown>> = () => {
+const NoVariableSets: React.FC = () => {
 	const dispatch = useDispatch();
 
 	function createVariableSet() {
 		dispatch(sidebarPreferenceSetSelected('variables'));
-		dispatch(createNewVariableSet({ }));
+		dispatch(createNewVariableSet({}));
 	}
 
 	return (
-		<Container>
+		<Box mb='2.5'>
 			<SidebarSectionCard>
-				<Title>{'You have no variable sets'}</Title>
-
-				<Button size={'sm'} onClick={createVariableSet}>
+				<Box mb='1'>{'You have no variable sets'}</Box>
+				<Button size='sm' onClick={createVariableSet}>
 					{'Make one'}
 				</Button>
 			</SidebarSectionCard>
-		</Container>
+		</Box>
 	);
 };
-
-const Container = styled.div`
-	margin-bottom: 10px;
-`;
-
-const Title = styled.div`
-	margin-bottom: 5px;
-`;
 
 export default NoVariableSets;

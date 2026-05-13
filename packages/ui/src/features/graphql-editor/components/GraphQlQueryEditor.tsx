@@ -15,7 +15,7 @@ import type { FetcherParams } from '@graphiql/toolkit';
 import { getIntrospectionQuery, type IntrospectionQuery, parse } from 'graphql';
 import { Uri } from 'monaco-editor';
 import { initializeMode } from 'monaco-graphql/initializeMode';
-import styled from 'styled-components';
+import { Box } from '@chakra-ui/react';
 
 import useVariableContext from '../../variables/hooks/use-variable-context';
 import { parseValueSections } from '../../variables/parser';
@@ -160,17 +160,17 @@ const GraphQlQueryEditor: React.FC<GraphQlQueryEditorProps> = props => {
 
 	if (!hasSchema && loading) {
 		return (
-			<Container>
+			<Box h='100%'>
 				<GraphQlLoading />
-			</Container>
+			</Box>
 		);
 	}
 
 	if (schemaFetchError) {
 		return (
-			<Container>
+			<Box h='100%'>
 				<GraphQlError error={schemaFetchError} />
-			</Container>
+			</Box>
 		);
 	}
 
@@ -199,19 +199,15 @@ const GraphQlQueryEditor: React.FC<GraphQlQueryEditorProps> = props => {
 	}
 
 	return (
-		<Container>
+		<Box h='100%'>
 			<EditorView
 				language={'graphql'}
 				value={body.payload.query}
 				path={operationsUri}
 				onChange={updateGraphQlQuery}
 			/>
-		</Container>
+		</Box>
 	);
 };
-
-const Container = styled.div`
-	height: 100%;
-`;
 
 export default GraphQlQueryEditor;

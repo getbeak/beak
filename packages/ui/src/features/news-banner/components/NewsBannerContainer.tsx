@@ -1,14 +1,13 @@
+import { Box } from '@chakra-ui/react';
 import type { NewsItem, NewsItemType } from '@beak/common/types/nest';
 import { ipcNestService } from '@beak/ui/lib/ipc';
-import React from 'react';
-import { useEffect, useState } from 'react';
-import styled from 'styled-components';
+import React, { useEffect, useState } from 'react';
 
 import GenericBanner from './molecules/GenericBanner';
 
 const supportedCodes = ['generic_banner'];
 
-const NewsBannerContainer: React.FC<React.PropsWithChildren<unknown>> = () => {
+const NewsBannerContainer: React.FC = () => {
 	const [newsItems, setNewsItems] = useState<NewsItem[]>([]);
 
 	useEffect(() => {
@@ -23,7 +22,7 @@ const NewsBannerContainer: React.FC<React.PropsWithChildren<unknown>> = () => {
 	if (newsItems.length === 0) return null;
 
 	return (
-		<Container>
+		<Box>
 			{newsItems.map(n => {
 				let renderItem: NewsItemType | undefined = void 0;
 				const primaryCode = n.primary.code;
@@ -38,15 +37,12 @@ const NewsBannerContainer: React.FC<React.PropsWithChildren<unknown>> = () => {
 				switch (renderItem.code) {
 					case 'generic_banner':
 						return <GenericBanner key={n.id} item={renderItem} />;
-
 					default:
 						return null;
 				}
 			})}
-		</Container>
+		</Box>
 	);
 };
-
-const Container = styled.div``;
 
 export default NewsBannerContainer;

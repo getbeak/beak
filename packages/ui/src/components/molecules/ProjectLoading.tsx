@@ -1,9 +1,9 @@
+import { Box, Flex, Image } from '@chakra-ui/react';
 import { renderPlainTextDefinition } from '@beak/ui/utils/keyboard-rendering';
-import React from 'react';
+import * as React from 'react';
 import { useState } from 'react';
-import styled from 'styled-components';
 
-const ProjectLoading: React.FC<React.PropsWithChildren<unknown>> = () => {
+const ProjectLoading: React.FC = () => {
 	const hints: string[] = [
 		`You can collapse the sidebar by clicking the same icon again, or pressing ${renderPlainTextDefinition('sidebar.toggle-view')}`,
 		'You can use variables to make request bodies more dynamic',
@@ -18,48 +18,32 @@ const ProjectLoading: React.FC<React.PropsWithChildren<unknown>> = () => {
 	const [hintIndex] = useState<number>(() => Math.floor(Math.random() * hints.length));
 
 	return (
-		<Wrapper>
-			<div>
-				<Logo width={60} src={'images/logo-tile.png'} />
-
-				<Header>{'Did you know?'}</Header>
-				<Body>{hints[hintIndex]}</Body>
-			</div>
-		</Wrapper>
+		<Flex
+			position='absolute'
+			inset='0'
+			zIndex={100}
+			align='center'
+			justify='center'
+			textAlign='center'
+			bg='bg.canvas'
+			style={{ WebkitAppRegion: 'drag' } as React.CSSProperties}
+		>
+			<Box>
+				<Image
+					w='60px'
+					src='images/logo-tile.png'
+					mb='5'
+					filter='drop-shadow(0px 8px 24px var(--beak-colors-fg-default)44)'
+				/>
+				<Box textTransform='uppercase' fontSize='md' fontWeight='bold'>
+					{'Did you know?'}
+				</Box>
+				<Box mx='10' mt='1' maxW='250px' fontSize='md' lineHeight='18px'>
+					{hints[hintIndex]}
+				</Box>
+			</Box>
+		</Flex>
 	);
 };
-
-const Wrapper = styled.div`
-	position: absolute;
-	top: 0; bottom: 0; left: 0; right: 0;
-	z-index: 100;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	text-align: center;
-	-webkit-app-region: drag;
-
-	background: var(--beak-colors-bg-canvas);
-`;
-
-const Logo = styled.img`
-	filter: drop-shadow(0px 8px 24px var(--beak-colors-fg-default)44);
-	margin-bottom: 20px;
-`;
-
-const Header = styled.div`
-	text-transform: uppercase;
-	font-size: 13px;
-	font-weight: 700;
-`;
-
-const Body = styled.div`
-	margin: 0 40px;
-	margin-top: 4px;
-	max-width: 250px;
-
-	font-size: 13px;
-	line-height: 18px;
-`;
 
 export default ProjectLoading;

@@ -1,15 +1,11 @@
+import { Box } from '@chakra-ui/react';
 import SidebarSectionCard from '@beak/ui/features/sidebar/components/SidebarSectionCard';
-import React from 'react';
-import styled from 'styled-components';
+import * as React from 'react';
 
-const NoProjectInformation: React.FC<React.PropsWithChildren<unknown>> = () => (
-	<Container>
+const NoProjectInformation: React.FC = () => (
+	<Box mb='2.5'>
 		<SidebarSectionCard>{"This project isn't tracked in Git"}</SidebarSectionCard>
-	</Container>
+	</Box>
 );
-
-const Container = styled.div`
-	margin-bottom: 10px;
-`;
 
 export default NoProjectInformation;

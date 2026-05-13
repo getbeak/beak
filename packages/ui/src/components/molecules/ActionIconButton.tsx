@@ -1,38 +1,32 @@
+import { Button, type ButtonProps } from '@chakra-ui/react';
 import type { IconProp } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React from 'react';
-import styled from 'styled-components';
+import * as React from 'react';
 
-interface ActionIconButtonProps extends React.HTMLProps<HTMLButtonElement> {
+interface ActionIconButtonProps extends Omit<ButtonProps, 'children'> {
 	icon: IconProp;
 }
 
-const ActionIconButton: React.FC<React.PropsWithChildren<ActionIconButtonProps>> = props => {
-	const { icon, ...buttonProps } = props;
-
-	return (
-		// @ts-expect-error
-		<Button {...buttonProps}>
-			<FontAwesomeIcon icon={icon} />
-		</Button>
-	);
-};
-
-const Button = styled.button`
-	width: 15px; height: 15px;
-	text-align: center;
-	margin-right: 5px;
-	padding: 0;
-
-	background: none;
-	border: 1px solid var(--beak-colors-fg-muted);
-	color: var(--beak-colors-fg-muted);
-	border-radius: 100%;
-	line-height: 15px;
-
-	box-shadow: 0 0 1px 0px white inset, 0 0 1px 0px white;
-
-	font-size: 8px;
-`;
+const ActionIconButton: React.FC<ActionIconButtonProps> = ({ icon, ...buttonProps }) => (
+	<Button
+		w='15px'
+		h='15px'
+		minW='15px'
+		textAlign='center'
+		mr='1.5'
+		p='0'
+		bg='transparent'
+		borderWidth='1px'
+		borderColor='fg.muted'
+		color='fg.muted'
+		borderRadius='full'
+		lineHeight='15px'
+		boxShadow='0 0 1px 0px white inset, 0 0 1px 0px white'
+		fontSize='8px'
+		{...buttonProps}
+	>
+		<FontAwesomeIcon icon={icon} />
+	</Button>
+);
 
 export default ActionIconButton;

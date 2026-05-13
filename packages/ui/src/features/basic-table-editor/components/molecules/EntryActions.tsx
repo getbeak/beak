@@ -1,25 +1,16 @@
+import { Flex } from '@chakra-ui/react';
 import ActionIconButton from '@beak/ui/components/molecules/ActionIconButton';
 import { faMinus } from '@fortawesome/free-solid-svg-icons';
-import React from 'react';
-import styled from 'styled-components';
+import * as React from 'react';
 
 interface EntryActionsProps {
 	onRemove: () => void;
 }
 
-const EntryActions: React.FC<React.PropsWithChildren<EntryActionsProps>> = ({ onRemove }) => (
-	<Wrapper>
+const EntryActions: React.FC<EntryActionsProps> = ({ onRemove }) => (
+	<Flex h='100%' direction='row' justify='flex-end' align='center'>
 		<ActionIconButton tabIndex={-1} icon={faMinus} onClick={() => onRemove()} />
-	</Wrapper>
+	</Flex>
 );
-
-const Wrapper = styled.div`
-	display: flex;
-	height: 100%;
-
-	flex-direction: row;
-	justify-content: flex-end;
-	align-items: center;
-`;
 
 export default EntryActions;

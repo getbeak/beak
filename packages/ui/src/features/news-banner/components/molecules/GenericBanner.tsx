@@ -1,91 +1,53 @@
+import { Box, Button, Grid, IconButton } from '@chakra-ui/react';
 import type { NewsItemGenericBanner } from '@beak/common/types/nest';
 import { ipcExplorerService } from '@beak/ui/lib/ipc';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React from 'react';
-import styled from 'styled-components';
+import * as React from 'react';
 
 interface GenericBannerProps {
 	item: NewsItemGenericBanner;
 }
 
-const GenericBanner: React.FC<React.PropsWithChildren<GenericBannerProps>> = ({ item }) => {
+const GenericBanner: React.FC<GenericBannerProps> = ({ item }) => {
 	const { action, body, emoji, title } = item.payload;
 
 	function visitAction() {
 		if (!action) return;
-
 		ipcExplorerService.launchUrl(action.url);
 	}
 
 	return (
-		<Banner>
-			<Emoji>{emoji}</Emoji>
-			<Body>
-				<TitleText>{title}</TitleText>
-				<BodyText>
-					{body} {action && <ActionButton onClick={visitAction}>{action.cta}</ActionButton>}
-				</BodyText>
-			</Body>
-			<Dismiss>
+		<Grid templateColumns='40px 1fr 20px' px='5' py='3' bg='accent.pink.muted' borderRadius='md'>
+			<Box gridColumn={1} fontSize='2xl'>{emoji}</Box>
+			<Box gridColumn={2}>
+				<Box fontSize='lg' fontWeight='bold'>{title}</Box>
+				<Box fontSize='sm' mt='0.5'>
+					{body}
+					{action && (
+						<Button
+							variant='plain'
+							size='xs'
+							color='accent.pink'
+							p='0'
+							ml='1'
+							fontSize='sm'
+							onClick={visitAction}
+						>
+							{action.cta}
+						</Button>
+					)}
+				</Box>
+			</Box>
+			<Box gridColumn={3} textAlign='right'>
 				{item.dismissible && (
-					<BlankButton>
-						<FontAwesomeIcon icon={faTimes} color={'var(--beak-colors-fg-muted)'} />
-					</BlankButton>
+					<IconButton variant='ghost' size='xs' aria-label='Dismiss' bg='transparent' p='0' minW='auto'>
+						<FontAwesomeIcon icon={faTimes} color='var(--beak-colors-fg-muted)' />
+					</IconButton>
 				)}
-			</Dismiss>
-		</Banner>
+			</Box>
+		</Grid>
 	);
 };
-
-const Banner = styled.div`
-	display: grid;
-	grid-template-columns: 40px 1fr 20px;
-
-	padding: 12px 20px;
-	background: var(--beak-colors-accent-pink-muted);
-	border-radius: 5px;
-`;
-
-const Emoji = styled.div`
-	grid-column: 1;
-	font-size: 20px;
-`;
-
-const Body = styled.div`
-	grid-column: 2;
-`;
-const TitleText = styled.div`
-	font-size: 14px;
-	font-weight: bold;
-`;
-const BodyText = styled.div`
-	font-size: 12px;
-	margin-top: 3px;
-`;
-const ActionButton = styled.button`
-	color: var(--beak-colors-accent-pink);
-	background: none;
-	border: none;
-	padding: 0;
-	margin: 0;
-	cursor: pointer;
-
-	font-size: 12px;
-	padding-top: 3px;
-`;
-
-const Dismiss = styled.div`
-	grid-column: 3;
-	text-align: right;
-`;
-
-const BlankButton = styled.button`
-	background: none;
-	border: none;
-	padding: 0;
-	margin: 0;
-	cursor: pointer;
-`;
 
 export default GenericBanner;

@@ -1,44 +1,42 @@
+import { Box } from '@chakra-ui/react';
 import type Squawk from '@beak/common/utils/squawk';
 import EditorView from '@beak/ui/components/atoms/EditorView';
-import React from 'react';
-import styled from 'styled-components';
+import * as React from 'react';
 
 interface ErrorRendererProps {
 	error: Squawk;
 }
 
-const ErrorRenderer: React.FC<React.PropsWithChildren<ErrorRendererProps>> = ({ error }) => (
-	<EditorContainer>
-		<EditorHeader>{'Error body'}</EditorHeader>
+const ErrorRenderer: React.FC<ErrorRendererProps> = ({ error }) => (
+	<Box
+		mx='auto'
+		mt='5'
+		h='100%'
+		maxW='700px'
+		maxH='450px'
+		overflow='hidden'
+		borderRadius='md'
+		bg='bg.surface'
+		borderWidth='2px'
+		borderColor='bg.surface'
+	>
+		<Box
+			textAlign='left'
+			px='1'
+			py='1.5'
+			fontSize='xs'
+			fontWeight='semibold'
+			color='fg.muted'
+			textTransform='uppercase'
+		>
+			{'Error body'}
+		</Box>
 		<EditorView
-			language={'json'}
+			language='json'
 			value={JSON.stringify(error, null, '\t')}
 			options={{ readOnly: true, lineNumbers: 'off' }}
 		/>
-	</EditorContainer>
+	</Box>
 );
-
-const EditorContainer = styled.div`
-	margin: 0 auto;
-	margin-top: 20px;
-	height: 100%;
-	max-width: 700px;
-	max-height: 450px;
-	overflow: hidden;
-
-	border-radius: 5px;
-	background: var(--beak-colors-bg-surface);
-	border: 2px solid var(--beak-colors-bg-surface);
-`;
-
-const EditorHeader = styled.div`
-	text-align: left;
-	padding: 6px 4px;
-
-	font-size: 11px;
-	font-weight: 600;
-	color: var(--beak-colors-fg-muted);
-	text-transform: uppercase;
-`;
 
 export default ErrorRenderer;

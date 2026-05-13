@@ -1,10 +1,10 @@
+import { Flex } from '@chakra-ui/react';
 import ActionIconButton from '@beak/ui/components/molecules/ActionIconButton';
 import { faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
 import type { Entries } from '@getbeak/types/body-editor-json';
-import React from 'react';
+import * as React from 'react';
 import { useContext } from 'react';
 import { useDispatch } from 'react-redux';
-import styled from 'styled-components';
 
 import { JsonEditorContext } from '../../contexts/json-editor-context';
 
@@ -14,8 +14,7 @@ interface EntryActionsProps {
 	entry: Entries;
 }
 
-const EntryActions: React.FC<React.PropsWithChildren<EntryActionsProps>> = props => {
-	const { requestId, id, entry } = props;
+const EntryActions: React.FC<EntryActionsProps> = ({ requestId, id, entry }) => {
 	const isRoot = entry.parentId === null;
 	const dispatch = useDispatch();
 	const editorContext = useContext(JsonEditorContext)!;
@@ -24,44 +23,21 @@ const EntryActions: React.FC<React.PropsWithChildren<EntryActionsProps>> = props
 	if (isRoot && !['array', 'object'].includes(entry.type)) return null;
 
 	return (
-		<Wrapper>
+		<Flex h='100%' direction='row' justify='flex-end' align='center'>
 			{!isRoot && (
 				<ActionIconButton
 					tabIndex={-1}
 					icon={faMinus}
-					onClick={() => {
-						dispatch(
-							editorContext.removeEntry({
-								id,
-								requestId,
-							}),
-						);
-					}}
+					onClick={() => dispatch(editorContext.removeEntry({ id, requestId }))}
 				/>
 			)}
 			<ActionIconButton
 				tabIndex={-1}
 				icon={faPlus}
-				onClick={() => {
-					dispatch(
-						editorContext.addEntry({
-							id,
-							requestId,
-						}),
-					);
-				}}
+				onClick={() => dispatch(editorContext.addEntry({ id, requestId }))}
 			/>
-		</Wrapper>
+		</Flex>
 	);
 };
-
-const Wrapper = styled.div`
-	display: flex;
-	height: 100%;
-
-	flex-direction: row;
-	justify-content: flex-end;
-	align-items: center;
-`;
 
 export default EntryActions;

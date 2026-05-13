@@ -1,21 +1,20 @@
-import React from 'react';
-import styled from 'styled-components';
+import { Box } from '@chakra-ui/react';
+import * as React from 'react';
 
 interface EntryTogglerProps {
 	value: boolean;
 	onChange: (enabled: boolean) => void;
 }
 
-const EntryToggler: React.FC<React.PropsWithChildren<EntryTogglerProps>> = ({ value, onChange }) => (
-	<Wrapper>
-		<Checkbox type={'checkbox'} checked={value} onChange={e => onChange(e.target.checked)} />
-	</Wrapper>
+const EntryToggler: React.FC<EntryTogglerProps> = ({ value, onChange }) => (
+	<Box mt='0.5'>
+		<input
+			type='checkbox'
+			checked={value}
+			onChange={e => onChange(e.target.checked)}
+			style={{ accentColor: 'var(--beak-colors-accent-pink)' }}
+		/>
+	</Box>
 );
-
-const Wrapper = styled.div`
-	margin-top: 1px;
-`;
-
-const Checkbox = styled.input``;
 
 export default EntryToggler;

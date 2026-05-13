@@ -1,46 +1,42 @@
+import { Button, Flex } from '@chakra-ui/react';
 import { faAnglesLeft, faAnglesRight } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React from 'react';
-import styled from 'styled-components';
+import * as React from 'react';
 
 interface ArrowButtonProps {
 	direction?: 'left' | 'right';
 	onClick: () => void;
 }
 
-const ArrowButton: React.FC<React.PropsWithChildren<ArrowButtonProps>> = props => {
-	const { direction = 'left', children, onClick } = props;
-
-	return (
-		<Button onClick={onClick}>
-			{direction === 'left' && (
-				<FontAwesomeIcon icon={faAnglesLeft} color={'var(--beak-colors-fg-default)'} fontSize={'12px'} />
-			)}
-			<Children>{children}</Children>
-			{direction === 'right' && <FontAwesomeIcon icon={faAnglesRight} color={'var(--beak-colors-fg-default)'} />}
-		</Button>
-	);
-};
-
-const Button = styled.button`
-	display: flex;
-	align-items: center;
-	background: none;
-	border: none;
-	color: var(--beak-colors-fg-default);
-	padding: 4px;
-	border-radius: 4px;
-	font-size: 14px;
-	cursor: pointer;
-
-	&:hover {
-		background: var(--beak-colors-accent-pink-muted);
-	}
-`;
-
-const Children = styled.div`
-	display: inline-block;
-	margin: 0 5px;
-`;
+const ArrowButton: React.FC<React.PropsWithChildren<ArrowButtonProps>> = ({
+	direction = 'left',
+	children,
+	onClick,
+}) => (
+	<Button
+		variant='ghost'
+		size='sm'
+		bg='transparent'
+		border='none'
+		color='fg.default'
+		px='1.5'
+		py='1'
+		borderRadius='sm'
+		fontSize='lg'
+		cursor='pointer'
+		_hover={{ bg: 'accent.pink.muted' }}
+		onClick={onClick}
+	>
+		{direction === 'left' && (
+			<FontAwesomeIcon icon={faAnglesLeft} color='var(--beak-colors-fg-default)' fontSize='12px' />
+		)}
+		<Flex display='inline-flex' mx='1.5'>
+			{children}
+		</Flex>
+		{direction === 'right' && (
+			<FontAwesomeIcon icon={faAnglesRight} color='var(--beak-colors-fg-default)' />
+		)}
+	</Button>
+);
 
 export default ArrowButton;

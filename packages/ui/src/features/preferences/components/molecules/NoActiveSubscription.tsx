@@ -1,14 +1,10 @@
-import React from 'react';
-import styled from 'styled-components';
+import { Box } from '@chakra-ui/react';
+import * as React from 'react';
 
-const NoActiveSubscription: React.FC<React.PropsWithChildren<unknown>> = () => (
-	<Title>{'Please visit https://getbeak.app to purchase a subscription'}</Title>
+const NoActiveSubscription: React.FC = () => (
+	<Box fontSize='lg' fontWeight='semibold' color='fg.muted'>
+		{'Please visit https://getbeak.app to purchase a subscription'}
+	</Box>
 );
-
-const Title = styled.div`
-	font-size: 14px;
-	font-weight: 600;
-	color: var(--beak-colors-fg-muted);
-`;
 
 export default NoActiveSubscription;

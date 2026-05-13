@@ -1,14 +1,10 @@
-import React from 'react';
-import styled from 'styled-components';
+import { Box } from '@chakra-ui/react';
+import * as React from 'react';
 
-const NotSignedIn: React.FC<React.PropsWithChildren<unknown>> = () => (
-	<Title>{'Please sign into your account to view your subscription plan'}</Title>
+const NotSignedIn: React.FC = () => (
+	<Box fontSize='lg' fontWeight='semibold' color='fg.muted'>
+		{'Please sign into your account to view your subscription plan'}
+	</Box>
 );
-
-const Title = styled.div`
-	font-size: 14px;
-	font-weight: 600;
-	color: var(--beak-colors-fg-muted);
-`;
 
 export default NotSignedIn;
