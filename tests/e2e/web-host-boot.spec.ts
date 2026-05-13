@@ -90,3 +90,13 @@ test('web host: project name input drives the Select folder button', async ({ pa
 	await nameInput.fill('');
 	await expect(selectFolder).toBeDisabled();
 });
+
+test('web host: reload re-mounts the welcome screen cleanly', async ({ page }) => {
+	await page.goto('/');
+	await expect(page.getByText('Create a new project')).toBeVisible({ timeout: 30_000 });
+	// Reload exercises the full module + state reinit path — anything that
+	// installs a side effect at module top-level and breaks on second-init
+	// would manifest here.
+	await page.reload();
+	await expect(page.getByText('Create a new project')).toBeVisible({ timeout: 30_000 });
+});
