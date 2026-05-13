@@ -206,12 +206,14 @@ const GuideCard: React.FC<GuideCardProps> = ({ idx, icon: Icon, title, body, cta
 		borderColor='border.subtle'
 		bg='bg.surface'
 		cursor='pointer'
-		transition='border-color .14s ease, background-color .14s ease, transform .08s ease'
+		transition='border-color .14s ease, background-color .14s ease, transform .08s ease, box-shadow .14s ease'
 		_hover={{
 			borderColor: 'accent.pink',
 			bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 6%, var(--beak-colors-bg-surface))',
+			transform: 'translateY(-2px)',
+			boxShadow: '0 12px 28px color-mix(in srgb, var(--beak-colors-accent-pink) 18%, rgba(0,0,0,0.06))',
 		}}
-		_active={{ transform: 'scale(0.99)' }}
+		_active={{ transform: 'translateY(-1px) scale(0.99)' }}
 		_focus={{
 			outline: 'none',
 			borderColor: 'accent.pink',
