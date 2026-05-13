@@ -34,11 +34,13 @@ const GraphQlError: React.FC<GraphQlErrorProps> = ({ error }) => (
 			h='52px'
 			borderRadius='full'
 			bg='color-mix(in srgb, var(--beak-colors-accent-alert) 14%, transparent)'
+			borderWidth='1px'
+			borderColor='color-mix(in srgb, var(--beak-colors-accent-alert) 28%, transparent)'
 			color='accent.alert'
 			mb='1'
-			boxShadow='0 8px 24px color-mix(in srgb, var(--beak-colors-accent-alert) 22%, transparent)'
+			boxShadow='0 8px 24px color-mix(in srgb, var(--beak-colors-accent-alert) 24%, transparent), inset 0 1px 0 color-mix(in srgb, white 18%, transparent)'
 		>
-			<CloudLightning size={26} strokeWidth={1.8} />
+			<CloudLightning size={24} strokeWidth={1.8} />
 		</Flex>
 
 		<Flex direction='column' gap='1'>
