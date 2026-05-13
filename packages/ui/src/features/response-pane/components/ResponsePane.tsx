@@ -20,7 +20,15 @@ const ResponsePane: React.FC = () => {
 	const pending = !selectedNode || !flightHistory || !selectedFlight;
 
 	return (
-		<Flex position='relative' direction='column' bg='bg.surface' h='100%' w='100%'>
+		<Flex
+			position='relative'
+			direction='column'
+			bg='bg.surface'
+			h='100%'
+			w='100%'
+			borderLeftWidth='1px'
+			borderLeftColor='border.subtle'
+		>
 			{pending && <PendingSlash />}
 			{!pending && (
 				<React.Fragment>
