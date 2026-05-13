@@ -83,6 +83,9 @@ const NodeRenamer: React.FC<NodeRenamerProps> = ({ node }) => {
 		}
 	}
 
+	const borderColor = error ? 'var(--beak-colors-accent-alert)' : 'var(--beak-colors-accent-pink)';
+	const ringColor = error ? 'var(--beak-colors-accent-alert)' : 'var(--beak-colors-accent-pink)';
+
 	return (
 		<Box position='relative' flexGrow={2} textOverflow='ellipsis'>
 			<input
@@ -90,12 +93,16 @@ const NodeRenamer: React.FC<NodeRenamerProps> = ({ node }) => {
 				type='text'
 				value={activeRename!.name}
 				style={{
-					border: `1px solid ${error ? 'var(--beak-colors-accent-alert)' : 'var(--beak-colors-accent-pink)'}`,
-					backgroundColor: 'var(--beak-colors-bg-canvas)',
+					border: `1px solid ${borderColor}`,
+					borderRadius: '4px',
+					backgroundColor: 'var(--beak-colors-bg-surface)',
 					color: 'var(--beak-colors-fg-default)',
 					width: 'calc(100% - 4px)',
+					padding: '2px 6px',
 					fontSize: '12px',
-					lineHeight: '15px',
+					lineHeight: '16px',
+					outline: 'none',
+					boxShadow: `0 0 0 2px color-mix(in srgb, ${ringColor} 22%, transparent)`,
 				}}
 				onBlur={() => absContext.onRenameEnded?.(node)}
 				onKeyDown={e => {
@@ -112,17 +119,21 @@ const NodeRenamer: React.FC<NodeRenamerProps> = ({ node }) => {
 			{error && (
 				<Box
 					position='absolute'
-					top='19px'
+					top='28px'
 					left='0'
-					right='0'
-					bg='bg.canvas'
+					right='4px'
+					bg='color-mix(in srgb, var(--beak-colors-accent-alert) 10%, var(--beak-colors-bg-surface))'
 					borderWidth='1px'
 					borderColor='accent.alert'
-					borderTop='none'
-					color='fg.default'
-					px='0.5'
+					borderRadius='md'
+					color='accent.alert'
+					px='2'
 					py='1'
-					fontSize='sm'
+					fontSize='10px'
+					fontWeight='600'
+					letterSpacing='0.02em'
+					zIndex={2}
+					boxShadow='0 6px 14px color-mix(in srgb, var(--beak-colors-accent-alert) 20%, transparent)'
 				>
 					{error}
 				</Box>
