@@ -138,8 +138,8 @@ const TabItem = <T = string>(props: React.PropsWithChildren<TabItemProps<T>>): R
 					opacity={active ? 0.7 : 0}
 					transition='opacity .12s ease, background-color .12s ease, color .12s ease'
 					_hover={{
-						color: 'fg.default',
-						bg: 'color-mix(in srgb, var(--beak-colors-bg-surface-emphasized) 80%, transparent)',
+						color: 'accent.alert',
+						bg: 'color-mix(in srgb, var(--beak-colors-accent-alert) 14%, transparent)',
 					}}
 					css={{
 						'[role=tab]:hover &, [role=tab]:focus-within &': { opacity: 1 },
@@ -150,7 +150,7 @@ const TabItem = <T = string>(props: React.PropsWithChildren<TabItemProps<T>>): R
 						onClose(event);
 					}}
 				>
-					<X size={10} />
+					<X size={11} strokeWidth={2.4} />
 				</Box>
 			)}
 		</Box>
