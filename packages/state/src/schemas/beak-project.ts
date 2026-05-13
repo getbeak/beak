@@ -8,6 +8,7 @@ export const projectFileSchema = z
 		id: z.string().min(1),
 		version: z.string().min(1),
 		name: z.string().min(1),
+		untitled: z.boolean().optional(),
 	})
 	.strict();
 

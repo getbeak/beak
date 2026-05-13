@@ -6,7 +6,7 @@ import { autoUpdater } from 'electron-updater';
 
 import './ipc-layer';
 import getBeakHost from './host';
-import { tryOpenProjectFolder } from './host/extensions/project';
+import { openUntitledProject, tryOpenProjectFolder } from './host/extensions/project';
 import handleUrlEvent from './protocol';
 import { attemptShowPostUpdateWelcome } from './updater';
 import { createAndSetMenu } from './utils/menu';
@@ -103,16 +103,26 @@ async function createOrFocusDefaultWindow(initial = false) {
 		return void 0;
 	}
 
-	// No window-presence to restore; try the most-recent project from
-	// `BeakRecents` so a returning user lands on their last work directly,
-	// not on the welcome dialog. Only on a genuine cold start with no
-	// recents do we fall back to the welcome window.
+	// No window-presence to restore. Boot order:
+	//  1. Most-recent project from BeakRecents, so a returning user lands on
+	//     their last work directly.
+	//  2. Otherwise, spin up an untitled scratch project (skipping the welcome
+	//     dialog entirely). The user can promote it later via "Save Project As…".
+	//  3. If even untitled creation fails (e.g. userData is read-only), fall
+	//     back to the welcome window as a last resort.
 	if (initial) {
 		const recents = await getBeakHost().project.recents.listProjects();
 		const mostRecent = [...recents].sort((a, b) => b.accessTime.localeCompare(a.accessTime))[0];
 		if (mostRecent) {
 			const opened = await tryOpenProjectFolder(mostRecent.path, true);
 			if (opened !== null) return void 0;
+		}
+
+		try {
+			await openUntitledProject();
+			return void 0;
+		} catch (err) {
+			console.warn('[main] failed to open untitled project, falling back to welcome window', err);
 		}
 	}
 

@@ -1,4 +1,4 @@
-import { BeakBase, type Providers } from '@beak/runtime-shared/base';
+import { BeakBase, type Providers } from '../../base';
 import type { ProjectFile } from '@getbeak/types/project';
 
 import type BeakExtensions from '../extensions';

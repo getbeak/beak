@@ -8,10 +8,23 @@ export const ProjectMessages = {
 	OpenFolder: 'open_folder',
 	OpenProject: 'open_project',
 	CreateProject: 'create_project',
+	PromoteUntitled: 'promote_untitled',
 };
 
 export interface CreateProjectReq {
 	projectName: string;
+}
+
+export interface PromoteUntitledReq {
+	/** Folder of the current untitled project (the one to move). */
+	currentFolderPath: string;
+	/** Optional new name; defaults to the destination folder's basename. */
+	newName?: string;
+}
+
+export interface PromoteUntitledRes {
+	projectId: string;
+	projectFilePath: string;
 }
 
 export class IpcProjectServiceRenderer extends IpcServiceRenderer<'project'> {
@@ -30,6 +43,10 @@ export class IpcProjectServiceRenderer extends IpcServiceRenderer<'project'> {
 	async createProject(payload: CreateProjectReq) {
 		return await this.invoke(ProjectMessages.CreateProject, payload);
 	}
+
+	async promoteUntitled(payload: PromoteUntitledReq): Promise<PromoteUntitledRes | null> {
+		return await this.invoke<PromoteUntitledRes | null>(ProjectMessages.PromoteUntitled, payload);
+	}
 }
 
 export class IpcProjectServiceMain extends IpcServiceMain<'project'> {
@@ -47,5 +64,9 @@ export class IpcProjectServiceMain extends IpcServiceMain<'project'> {
 
 	registerCreateProject(fn: IpcListener<CreateProjectReq>) {
 		this.registerRequestHandler(ProjectMessages.CreateProject, fn);
+	}
+
+	registerPromoteUntitled(fn: IpcListener<PromoteUntitledReq>) {
+		this.registerRequestHandler(ProjectMessages.PromoteUntitled, fn);
 	}
 }

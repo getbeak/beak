@@ -9,6 +9,10 @@ export interface ProjectTreeState {
 	loaded: boolean;
 	id?: string;
 	name?: string;
+	/** Folder path on disk; used by IPC calls like promoteUntitled. */
+	folderPath?: string;
+	/** True if this is a scratch project created in userData/untitled-projects/. */
+	untitled?: boolean;
 	tree: Tree;
 }
 
@@ -20,6 +24,8 @@ export const initialProjectTreeState: ProjectTreeState = {
 export interface ProjectInfoPayload {
 	id: string;
 	name: string;
+	folderPath?: string;
+	untitled?: boolean;
 }
 
 export interface ProjectOpenedPayload {

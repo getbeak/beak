@@ -1,6 +1,6 @@
 import type { ProjectEncryption } from '@beak/common/types/beak-project';
-import { BeakBase } from '@beak/runtime-shared/base';
-import { fileExists } from '@beak/runtime-shared/utils/fs';
+import { BeakBase } from '../../base';
+import { fileExists } from '../../utils/fs';
 import type { ProjectFile } from '@getbeak/types/project';
 
 interface SupersecretFile {

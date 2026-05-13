@@ -59,7 +59,7 @@ export function registerProjectEffects(start: AppStartListening) {
 
 			try {
 				project = await readProjectFile();
-				api.dispatch(insertProjectInfo({ id: project.id, name: project.name }));
+				api.dispatch(insertProjectInfo({ id: project.id, name: project.name, untitled: project.untitled }));
 				api.dispatch(startVariableSets());
 				await initialImport(api, 'tree');
 				api.dispatch(loadTabState());

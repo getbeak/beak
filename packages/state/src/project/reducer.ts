@@ -18,6 +18,8 @@ export function buildProjectTreeReducer<S extends ProjectTreeState>(builder: Act
 		.addCase(actions.insertProjectInfo, (state, { payload }) => {
 			state.name = payload.name;
 			state.id = payload.id;
+			state.folderPath = payload.folderPath;
+			state.untitled = payload.untitled;
 		})
 		.addCase(actions.projectOpened, (state, { payload }) => {
 			state.tree = payload.tree;

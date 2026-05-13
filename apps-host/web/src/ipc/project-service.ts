@@ -41,3 +41,10 @@ service.registerCreateProject(async (_event, payload) => {
 
 	// TODO(afr): Set active project variable?
 });
+
+service.registerPromoteUntitled(async (_event, _payload) => {
+	// Web host has no concept of moving folders across the user's real filesystem.
+	// Until we wire OPFS / File System Access to a "Save As…" picker the renderer
+	// just gets a null result, which it should surface as "not supported here".
+	return null;
+});

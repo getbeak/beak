@@ -1,3 +1,4 @@
+import path from 'node:path';
 import { IpcProjectServiceMain } from '@beak/common/ipc/project';
 import Squawk from '@beak/common/utils/squawk';
 import { dialog, type IpcMainInvokeEvent, ipcMain } from 'electron';
@@ -68,5 +69,43 @@ service.registerCreateProject(async (event, payload) => {
 		} else {
 			throw sqk;
 		}
+	}
+});
+
+service.registerPromoteUntitled(async (event, payload) => {
+	const window = windowStack[(event as IpcMainInvokeEvent).sender.id]!;
+
+	const result = await dialog.showOpenDialog(window, {
+		title: 'Save this project as…',
+		buttonLabel: 'Save here',
+		properties: ['openDirectory', 'createDirectory', 'promptToCreate'],
+	});
+
+	if (result.canceled || result.filePaths.length !== 1) return null;
+
+	const targetFolderPath = result.filePaths[0];
+	const newName = payload.newName ?? path.basename(targetFolderPath);
+
+	try {
+		const promoted = await getBeakHost().project.promoteUntitled(payload.currentFolderPath, targetFolderPath, newName);
+
+		const projectMappings = await getBeakHost().providers.storage.get('projectMappings');
+		await getBeakHost().providers.storage.set('projectMappings', {
+			...projectMappings,
+			[promoted.projectId]: targetFolderPath,
+		});
+
+		closeWindow((event as IpcMainInvokeEvent).sender.id);
+		await createProjectMainWindow(promoted.projectId, promoted.projectFilePath);
+
+		return promoted;
+	} catch (error) {
+		const sqk = Squawk.coerce(error);
+		await dialog.showMessageBox(window, {
+			type: 'error',
+			title: 'Could not save project',
+			message: sqk.message ?? 'Unexpected error while saving the untitled project.',
+		});
+		return null;
 	}
 });

@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
 import type { ProjectEncryption } from '@beak/common/types/beak-project';
-import { BeakBase, type Providers } from '@beak/runtime-shared/base';
-import { fileExists } from '@beak/runtime-shared/utils/fs';
+import { BeakBase, type Providers } from '../../base';
+import { fileExists } from '../../utils/fs';
 import type { ProjectFile } from '@getbeak/types/project';
 
 import type BeakExtensions from '../extensions';
