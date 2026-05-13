@@ -69,13 +69,29 @@ const WebProjectMain: React.FC = () => {
 					align='center'
 					justify='center'
 					direction='column'
-					gap='3'
-					color='fg.muted'
+					gap='4'
 				>
-					<Spinner size='lg' color='accent.pink' />
-					<Box fontSize='sm'>
-						{state === 'creating' ? 'Creating your first project…' : 'Loading Beak…'}
-					</Box>
+					<Flex
+						align='center'
+						justify='center'
+						w='64px'
+						h='64px'
+						borderRadius='full'
+						bg='color-mix(in srgb, var(--beak-colors-accent-pink) 16%, transparent)'
+						borderWidth='1px'
+						borderColor='color-mix(in srgb, var(--beak-colors-accent-pink) 35%, transparent)'
+						boxShadow='0 0 32px color-mix(in srgb, var(--beak-colors-accent-pink) 40%, transparent), inset 0 1px 0 color-mix(in srgb, white 22%, transparent)'
+					>
+						<Spinner size='lg' color='accent.pink' />
+					</Flex>
+					<Flex direction='column' align='center' gap='1'>
+						<Box fontSize='sm' fontWeight='600' color='fg.default' letterSpacing='-0.005em'>
+							{state === 'creating' ? 'Creating your first project…' : 'Loading Beak…'}
+						</Box>
+						<Box fontSize='10px' fontWeight='700' letterSpacing='0.06em' textTransform='uppercase' color='fg.subtle'>
+							{state === 'creating' ? 'Setting up the workspace' : 'Initialising'}
+						</Box>
+					</Flex>
 				</Flex>
 			</Box>
 		);
