@@ -1,4 +1,5 @@
-import { Box } from '@chakra-ui/react';
+import { Box, Flex, Image } from '@chakra-ui/react';
+import { motion } from 'framer-motion';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 
@@ -28,18 +29,33 @@ const SignIn: React.FC = () => {
 
 	return (
 		<Box w='100%'>
-			<Box
-				w='70px'
-				h='70px'
-				mx='auto'
-				mb='1.5'
-				bgImage="url('images/logo-tile.png')"
-				bgPos='center'
-				bgSize='contain'
-			/>
-			<Box textAlign='center' fontSize='2xl' fontWeight='medium' mb='2.5'>
-				{'Welcome to Beak!'}
-			</Box>
+			<Flex direction='column' align='center' gap='1' mb='3'>
+				<motion.div
+					initial={{ opacity: 0, scale: 0.96 }}
+					animate={{ opacity: 1, scale: 1 }}
+					transition={{ duration: 0.3, ease: 'easeOut' }}
+				>
+					<Image
+						src='images/logo-tile.png'
+						w='64px'
+						h='64px'
+						filter='drop-shadow(0px 8px 24px color-mix(in srgb, var(--beak-colors-accent-pink) 35%, transparent))'
+					/>
+				</motion.div>
+				<Box
+					textTransform='uppercase'
+					fontSize='10px'
+					fontWeight='700'
+					letterSpacing='0.08em'
+					color='accent.pink'
+					mt='1'
+				>
+					{'Beak'}
+				</Box>
+				<Box fontSize='xl' fontWeight='600' color='fg.default'>
+					{'Welcome back'}
+				</Box>
+			</Flex>
 
 			{mode === 'request_magic_link' && (
 				<RequestMagicLink email={email} onEmailChange={setEmail} onMagicLinkSent={() => setMode('use_magic_link')} />

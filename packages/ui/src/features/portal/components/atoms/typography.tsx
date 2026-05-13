@@ -4,8 +4,9 @@ import * as React from 'react';
 export const SubTitle = chakra('p', {
 	base: {
 		textAlign: 'center',
-		fontSize: 'lg',
+		fontSize: 'sm',
 		color: 'fg.muted',
+		mb: '2',
 	},
 });
 
@@ -18,14 +19,15 @@ export const SubTitle = chakra('p', {
 export const ActionContainer: React.FC<BoxProps> = ({ children, ...rest }) => (
 	<Box
 		mx='auto'
-		my='2.5'
-		h='150px'
-		maxW='250px'
+		my='2'
+		maxW='280px'
+		display='flex'
+		flexDirection='column'
+		gap='2'
 		style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}
-		css={{ '> button': { marginTop: '10px', width: '100%' } }}
+		css={{ '> button': { width: '100%' } }}
 		{...rest}
 	>
 		{children}
 	</Box>
 );
-

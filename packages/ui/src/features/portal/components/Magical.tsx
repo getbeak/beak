@@ -1,4 +1,5 @@
-import { Box } from '@chakra-ui/react';
+import { Box, Flex } from '@chakra-ui/react';
+import { Sparkles } from 'lucide-react';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 
@@ -22,8 +23,11 @@ const Magical: React.FC<MagicalProps> = ({ email, revertFromMagical }) => {
 	}, []);
 
 	return (
-		<Box m='12'>
-			<Box fontSize='2xl' fontWeight='medium'>{'Almost there'}</Box>
+		<Box m='10'>
+			<Flex align='center' gap='2' mb='2' color='accent.pink'>
+				<Sparkles size={18} />
+				<Box fontSize='xl' fontWeight='600' color='fg.default'>{'Almost there'}</Box>
+			</Flex>
 			<EnterMagicState email={email} inboundState={inboundState} reset={revertFromMagical} />
 		</Box>
 	);
