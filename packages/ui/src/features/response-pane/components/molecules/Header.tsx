@@ -139,11 +139,14 @@ const Header: React.FC<HeaderProps> = ({ selectedFlight }) => {
 					px='2'
 					py='1'
 					borderRadius='md'
+					borderWidth='1px'
 					whiteSpace='nowrap'
 					style={{
-						background: `color-mix(in srgb, ${statusColor} 18%, transparent)`,
+						background: `color-mix(in srgb, ${statusColor} 12%, var(--beak-colors-bg-surface))`,
 						color: statusColor,
+						borderColor: `color-mix(in srgb, ${statusColor} 35%, var(--beak-colors-border-subtle))`,
 						borderLeft: `3px solid ${statusColor}`,
+						boxShadow: 'inset 0 1px 0 color-mix(in srgb, white 16%, transparent)',
 					}}
 				>
 					<StatusIcon size={12} strokeWidth={2.2} />
@@ -159,11 +162,14 @@ const Header: React.FC<HeaderProps> = ({ selectedFlight }) => {
 					px='2'
 					py='1'
 					borderRadius='md'
+					borderWidth='1px'
 					whiteSpace='nowrap'
 					style={{
-						background: 'color-mix(in srgb, var(--beak-colors-accent-alert) 18%, transparent)',
+						background: 'color-mix(in srgb, var(--beak-colors-accent-alert) 12%, var(--beak-colors-bg-surface))',
 						color: 'var(--beak-colors-accent-alert)',
+						borderColor: 'color-mix(in srgb, var(--beak-colors-accent-alert) 35%, var(--beak-colors-border-subtle))',
 						borderLeft: '3px solid var(--beak-colors-accent-alert)',
+						boxShadow: 'inset 0 1px 0 color-mix(in srgb, white 16%, transparent)',
 					}}
 				>
 					<XCircle size={12} strokeWidth={2.2} />
