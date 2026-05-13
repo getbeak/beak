@@ -1,68 +1,48 @@
-import ksuid from '@beak/ksuid';
+import { Dialog as ChakraDialog, Portal } from '@chakra-ui/react';
 import React from 'react';
-import { useEffect, useRef, useState } from 'react';
-import { createPortal } from 'react-dom';
-import styled from 'styled-components';
-
-const dialogContainerId = 'generic-dialog-container';
-let dialogStack = 0;
 
 interface DialogProps {
 	onClose: () => void;
 }
 
-const Dialog: React.FC<React.PropsWithChildren<DialogProps>> = props => {
-	const { children, onClose } = props;
-	const [identifier, setIdentifier] = useState<string>();
-	const stackIndex = useRef(dialogStack + 1);
-
-	useEffect(() => {
-		const ident = ksuid.generate('dialog').toString();
-		const container = document.getElementById(dialogContainerId);
-		const element = document.createElement('div');
-
-		element.setAttribute('id', ident);
-		container!.appendChild(element);
-		setIdentifier(ident);
-
-		// eslint-disable-next-line no-plusplus
-		dialogStack++;
-
-		return () => {
-			const element = document.getElementById(identifier!);
-
-			element?.remove();
-
-			// eslint-disable-next-line no-plusplus
-			dialogStack--;
-		};
-	}, []);
-
-	if (!identifier) return null;
-
-	return createPortal(
-		<Container backdrop={stackIndex.current === 1} onClick={() => onClose()}>
-			<Wrapper onClick={e => e.stopPropagation()}>{children}</Wrapper>
-		</Container>,
-		document.getElementById(identifier!)!,
-	);
-};
-
-const Container = styled.div<{ backdrop?: boolean }>`
-	position: fixed;
-	top: 0; bottom: 0; left: 0; right: 0;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	background: ${p => p.theme.ui.surface}AA;
-
-	z-index: 102;
-`;
-
-const Wrapper = styled.div`
-	border: 1px solid ${p => p.theme.ui.backgroundBorderSeparator};
-	border-radius: 5px;
-	background: ${p => p.theme.ui.surface};
-`;
+/**
+ * Beak's modal dialog — Chakra v3 `Dialog.Root` under the hood, but the
+ * legacy "always-open-while-mounted" API is preserved so consumers don't
+ * need to flip a controlled `open` flag. The consumer renders <Dialog/>
+ * to show it and unmounts to close. Backdrop click + Escape both fire
+ * `onClose`.
+ *
+ * The chrome (subtle border, surface background, slight backdrop blur)
+ * uses the new Chakra semantic tokens (`bg.surface`, `border.subtle`)
+ * so it switches with the theme automatically.
+ */
+const Dialog: React.FC<React.PropsWithChildren<DialogProps>> = ({ children, onClose }) => (
+	<ChakraDialog.Root
+		open
+		onOpenChange={details => {
+			if (!details.open) onClose();
+		}}
+		motionPreset='scale'
+		size='md'
+		placement='center'
+		closeOnInteractOutside
+	>
+		<Portal>
+			<ChakraDialog.Backdrop bg='blackAlpha.500' backdropFilter='blur(4px)' />
+			<ChakraDialog.Positioner>
+				<ChakraDialog.Content
+					bg='bg.surface'
+					borderWidth='1px'
+					borderColor='border.subtle'
+					borderRadius='md'
+					boxShadow='0 12px 48px rgba(0, 0, 0, 0.35)'
+					p='0'
+				>
+					{children}
+				</ChakraDialog.Content>
+			</ChakraDialog.Positioner>
+		</Portal>
+	</ChakraDialog.Root>
+);
 
 export default Dialog;

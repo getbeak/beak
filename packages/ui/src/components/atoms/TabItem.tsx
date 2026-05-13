@@ -41,36 +41,37 @@ export interface WrapperProps {
 
 const Wrapper = styled.div<WrapperProps>`
 	display: flex;
-	border-bottom: 1px solid ${props => props.theme.ui.backgroundBorderSeparator};
+	border-bottom: 1px solid var(--beak-colors-border-default);
 
 	font-size: 13px;
-	color: ${props => props.theme.ui.textMinor};
-	padding: 8px 12px;
+	color: var(--beak-colors-fg-muted);
+	padding: 6px 10px;
 	cursor: pointer;
 	white-space: nowrap;
+	transition: color .12s ease, border-bottom-color .12s ease;
 
 	${p => {
 		if (p.$size !== 'sm') return '';
 
 		return css`
-			padding: 6px 8px;
+			padding: 4px 7px;
 			font-size: 12px;
 		`;
 	}}
 
-	${({ $active, theme }) => {
+	${({ $active }) => {
 		if (!$active) {
 			return css`
 				&:hover {
-					color: ${theme.ui.textOnSurfaceBackground};
-					border-bottom-color: ${theme.ui.textOnSurfaceBackground};
+					color: var(--beak-colors-fg-default);
+					border-bottom-color: var(--beak-colors-fg-default);
 				}
 			`;
 		}
 
 		return css`
-			color: ${theme.ui.textHighlight};
-			border-bottom-color: ${theme.ui.primaryFill};
+			color: var(--beak-colors-accent-pink);
+			border-bottom-color: var(--beak-colors-accent-pink);
 		`;
 	}}
 

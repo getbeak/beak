@@ -2,7 +2,9 @@ import React from 'react';
 import { ReflexSplitter as RS, type ReflexSplitterProps as RSP } from 'react-reflex';
 import styled, { css } from 'styled-components';
 
-// TODO(afr): Get rid of important's when css import is removed
+// react-reflex applies inline styles on its own root element, so every rule
+// here needs `!important` to win specificity. The colours read from the
+// new Chakra CSS variables so the splitter follows the active theme.
 
 export interface ReflexSplitterProps extends RSP {
 	orientation: 'horizontal' | 'vertical';
@@ -14,13 +16,13 @@ export interface ReflexSplitterProps extends RSP {
 const ReflexSplitter: React.FC<ReflexSplitterProps> = styled(RS)<ReflexSplitterProps>`
 	width: ${props => (props.orientation === 'vertical' ? '2px' : 'auto')} !important;
 	height: ${props => (props.orientation === 'horizontal' ? '2px' : 'auto')} !important;
-	background-color: ${props => props.theme.ui.backgroundBorderSeparator} !important;
+	background-color: var(--beak-colors-border-default) !important;
 	border: none !important;
 	transition: background .2s, box-shadow .2s !important;
 
 	&:hover {
-		background-color: ${props => props.theme.ui.primaryFill} !important;
-		box-shadow: 0px 0px 0px 1px ${props => props.theme.ui.primaryFill} !important;
+		background-color: var(--beak-colors-accent-pink) !important;
+		box-shadow: 0px 0px 0px 1px var(--beak-colors-accent-pink) !important;
 	}
 
 	${p => p.$customChildren && 'height: auto !important;'}
@@ -49,7 +51,7 @@ export const HorizontalContextualReflexSplitter: React.FC<HorizontalContextualRe
 )<HorizontalContextualReflexSplitterProps>`
 	width: auto !important;
 	height: auto !important;
-	background-color: ${props => props.theme.ui.backgroundBorderSeparator} !important;
+	background-color: var(--beak-colors-border-default) !important;
 	border: none !important;
 `;
 
