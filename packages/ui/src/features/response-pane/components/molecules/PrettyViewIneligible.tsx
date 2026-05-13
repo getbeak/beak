@@ -38,13 +38,23 @@ const PrettyViewIneligible: React.FC<PrettyViewIneligibleProps> = ({ eligibility
 				initial={{ opacity: 0, y: 6 }}
 				animate={{ opacity: 1, y: 0 }}
 				transition={{ duration: 0.22, ease: 'easeOut' }}
-				style={{ textAlign: 'center' }}
+				style={{ textAlign: 'center', maxWidth: 380 }}
 			>
-				<Box opacity={0.45} color='fg.subtle' display='inline-flex'>
-					<CircleHelp size={32} />
-				</Box>
-				<Box fontSize='md' fontWeight='600' mt='2' color='fg.default'>{reason.title}</Box>
-				<Box fontSize='xs' color='fg.muted' mt='1' maxW='340px'>{reason.description}</Box>
+				<Flex
+					align='center'
+					justify='center'
+					mx='auto'
+					w='48px'
+					h='48px'
+					borderRadius='full'
+					bg='color-mix(in srgb, var(--beak-colors-fg-subtle) 12%, transparent)'
+					color='fg.subtle'
+					mb='2.5'
+				>
+					<CircleHelp size={22} strokeWidth={1.8} />
+				</Flex>
+				<Box fontSize='md' fontWeight='600' color='fg.default'>{reason.title}</Box>
+				<Box fontSize='xs' color='fg.muted' mt='1.5' lineHeight='1.5'>{reason.description}</Box>
 			</motion.div>
 		</Flex>
 	);
