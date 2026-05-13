@@ -7,7 +7,7 @@ import * as React from 'react';
 const cellBase = {
 	className: 'beak-vs-cell',
 	borderBottomWidth: '1px',
-	borderColor: 'border.default',
+	borderColor: 'border.subtle',
 } as const;
 
 export const Cell: React.FC<BoxProps> = props => <Box {...cellBase} {...props} />;
@@ -17,7 +17,7 @@ export const CellAction: React.FC<BoxProps> = props => (
 );
 
 export const HeaderCell: React.FC<BoxProps> = props => (
-	<Box {...cellBase} color='fg.default' borderLeftWidth='1px' borderLeftColor='border.default' {...props} />
+	<Box {...cellBase} color='fg.default' borderLeftWidth='1px' borderLeftColor='border.subtle' {...props} />
 );
 
 export const HeaderNameCell: React.FC<BoxProps> = props => (
@@ -35,7 +35,7 @@ export const HeaderGroupNameCell: React.FC<BoxProps> = props => (
 		{...cellBase}
 		color='fg.default'
 		borderLeftWidth='1px'
-		borderLeftColor='border.default'
+		borderLeftColor='border.subtle'
 		display='flex'
 		flexDirection='row'
 		{...props}
@@ -43,7 +43,7 @@ export const HeaderGroupNameCell: React.FC<BoxProps> = props => (
 );
 
 export const BodyCell: React.FC<BoxProps> = props => (
-	<Box {...cellBase} borderLeftWidth='1px' borderLeftColor='border.default' {...props} />
+	<Box {...cellBase} borderLeftWidth='1px' borderLeftColor='border.subtle' {...props} />
 );
 
 export const BodyNameCell: React.FC<BoxProps> = props => (
@@ -54,16 +54,26 @@ export const BodyValueCell: React.FC<BoxProps> = props => (
 	<Box
 		{...cellBase}
 		borderLeftWidth='1px'
-		borderLeftColor='border.default'
+		borderLeftColor='border.subtle'
 		css={{
 			'> div > article': {
 				width: 'calc(100% - 12px)',
 				border: '1px solid transparent',
+				borderRadius: '4px',
 				background: 'none',
-				padding: '3px 5px',
+				padding: '3px 6px',
 				margin: '0',
 				fontSize: '12px',
-				color: 'var(--beak-colors-fg-muted)',
+				color: 'var(--beak-colors-fg-default)',
+				transition: 'background-color .12s ease, border-color .12s ease',
+			},
+			'> div > article:hover': {
+				background: 'color-mix(in srgb, var(--beak-colors-bg-surface-emphasized) 45%, transparent)',
+			},
+			'> div > article:focus-within': {
+				outline: 'none',
+				background: 'var(--beak-colors-bg-surface)',
+				borderColor: 'var(--beak-colors-accent-pink)',
 			},
 		}}
 		{...props}
