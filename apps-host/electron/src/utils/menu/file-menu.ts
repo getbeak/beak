@@ -48,6 +48,14 @@ export default function generateFileMenu(ctx: Context): MenuItemConstructorOptio
 				type: 'separator',
 			},
 			{
+				label: 'Import OpenAPI spec…',
+				enabled: isProjectEditor(ctx),
+				click: async () => sendMenuItemClick(ctx, 'import_openapi_spec'),
+			},
+			{
+				type: 'separator',
+			},
+			{
 				label: 'View project encryption',
 				enabled: isProjectEditor(ctx),
 				click: async () => sendMenuItemClick(ctx, 'view_project_encryption'),

@@ -3,6 +3,7 @@ import { requestFlight } from '@beak/state/flight';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { showEncryptionView } from '../features/encryption/store/actions';
+import { runOpenApiImportFlow } from '../features/openapi-import/menu-flow';
 import { showOmniBar } from '../features/omni-bar/store/actions';
 import {
 	changeTab,
@@ -12,6 +13,7 @@ import {
 	closeTabsAll,
 	closeTabsOther,
 } from '../features/tabs/store/actions';
+import { ipcDialogService } from '../lib/ipc';
 import { createNewFolder, createNewRequest } from '../store/project/actions';
 
 export function useApplicationMenuEventListener() {
@@ -61,6 +63,10 @@ export function useApplicationMenuEventListener() {
 
 				case 'show_preferences':
 					dispatch(changeTab({ type: 'preferences', temporary: false, payload: 'preferences' }));
+					break;
+
+				case 'import_openapi_spec':
+					void runOpenApiImportFlow({ dialog: ipcDialogService });
 					break;
 
 				default:

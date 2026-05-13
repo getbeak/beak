@@ -17,4 +17,5 @@ export type MenuEventCode =
 	| 'view_project_encryption'
 	| 'show_new_project_intro'
 	| 'show_omni_commands'
-	| 'show_preferences';
+	| 'show_preferences'
+	| 'import_openapi_spec';
