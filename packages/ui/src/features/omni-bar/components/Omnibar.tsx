@@ -156,8 +156,18 @@ const Omnibar: React.FC = () => {
 								_placeholder={{ color: 'fg.subtle' }}
 								css={{ caretColor: 'var(--beak-colors-accent-pink)' }}
 							/>
-							<Box fontSize='10px' color='fg.subtle' opacity={0.65}>
-								{isCommands ? 'Cmd mode' : 'Find mode'}
+							<Box
+								fontSize='10px'
+								fontWeight='700'
+								letterSpacing='0.06em'
+								textTransform='uppercase'
+								px='1.5'
+								py='0.5'
+								borderRadius='sm'
+								color={isCommands ? 'accent.teal' : 'accent.pink'}
+								bg={`color-mix(in srgb, var(--beak-colors-${isCommands ? 'accent-teal' : 'accent-pink'}) 14%, transparent)`}
+							>
+								{isCommands ? 'Cmd' : 'Find'}
 							</Box>
 						</Flex>
 
