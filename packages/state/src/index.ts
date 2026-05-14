@@ -7,5 +7,6 @@ export * as preferences from './preferences';
 export * as project from './project';
 export * as requests from './requests';
 export * as schemas from './schemas';
+export * as sockets from './sockets';
 export * as sources from './sources';
 export * as variableSets from './variable-sets';
