@@ -6,7 +6,7 @@ const Label = chakra('label', {
 		mb: '1',
 		fontSize: '10px',
 		fontWeight: '700',
-		color: 'fg.subtle',
+		color: 'accent.pink',
 		letterSpacing: '0.06em',
 		textTransform: 'uppercase',
 	},
