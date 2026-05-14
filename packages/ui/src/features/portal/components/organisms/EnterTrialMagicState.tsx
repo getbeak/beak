@@ -30,10 +30,11 @@ const EnterTrialMagicState: React.FC<EnterTrialMagicStateProps> = ({ email, rese
 
 	useEffect(() => {
 		if (resend >= 1) {
-			window.setTimeout(() => setResend(resend - 1), 1000);
-			return;
+			const id = window.setTimeout(() => setResend(resend - 1), 1000);
+			return () => window.clearTimeout(id);
 		}
 		setCanResend(true);
+		return void 0;
 	}, [resend]);
 
 	useEffect(() => {
