@@ -15,6 +15,7 @@ import {
 	FolderOpen,
 	Layers,
 	type LucideIcon,
+	Monitor,
 	Moon,
 	PanelLeft,
 	Pin,
@@ -22,7 +23,6 @@ import {
 	Puzzle,
 	Sun,
 	Table,
-	Terminal,
 	Trash2,
 	X,
 } from 'lucide-react';
@@ -65,7 +65,7 @@ function generateCommands(context: GenerateContext): Command[] {
 
 		{ id: 'preferences:switch_to_light_theme', category: 'Preferences', name: 'Switch to light theme', icon: Sun, keywords: ['theme', 'mode'], action: () => ipcPreferencesService.switchThemeMode('light') },
 		{ id: 'preferences:switch_to_dark_theme', category: 'Preferences', name: 'Switch to dark theme', icon: Moon, keywords: ['theme', 'mode'], action: () => ipcPreferencesService.switchThemeMode('dark') },
-		{ id: 'preferences:switch_to_system_theme', category: 'Preferences', name: 'Switch to system theme', icon: Terminal, keywords: ['theme', 'mode'], action: () => ipcPreferencesService.switchThemeMode('system') },
+		{ id: 'preferences:switch_to_system_theme', category: 'Preferences', name: 'Switch to system theme', icon: Monitor, keywords: ['theme', 'mode'], action: () => ipcPreferencesService.switchThemeMode('system') },
 
 		{ id: 'tabs:visit_next_tab', category: 'Tabs', name: 'Next tab', icon: ArrowRight, keywords: [], action: dispatch => dispatch(tabActions.changeTabNext()) },
 		{ id: 'tabs:visit_previous_tab', category: 'Tabs', name: 'Previous tab', icon: ArrowLeft, keywords: [], action: dispatch => dispatch(tabActions.changeTabPrevious()) },
