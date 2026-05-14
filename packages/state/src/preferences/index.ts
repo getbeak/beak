@@ -97,24 +97,34 @@ const preferencesReducer = createReducer(initialPreferencesState, builder => {
 			state.requests[payload.id] = payload.preferences;
 		})
 		.addCase(requestPreferenceSetReqMainTab, (state, { payload }) => {
-			state.requests[payload.id].request.mainTab = payload.tab;
+			const prefs = state.requests[payload.id];
+			if (!prefs) return;
+			prefs.request.mainTab = payload.tab;
 		})
 		.addCase(requestPreferenceSetReqJsonExpand, (state, { payload }) => {
-			state.requests[payload.id].request.jsonEditor = {
+			const prefs = state.requests[payload.id];
+			if (!prefs) return;
+			prefs.request.jsonEditor = {
 				expanded: {
-					...state.requests[payload.id].request.jsonEditor?.expanded,
+					...prefs.request.jsonEditor?.expanded,
 					[payload.jsonId]: payload.expanded,
 				},
 			};
 		})
 		.addCase(requestPreferenceSetResMainTab, (state, { payload }) => {
-			state.requests[payload.id].response.mainTab = payload.tab;
+			const prefs = state.requests[payload.id];
+			if (!prefs) return;
+			prefs.response.mainTab = payload.tab;
 		})
 		.addCase(requestPreferenceSetResSubTab, (state, { payload }) => {
-			state.requests[payload.id].response.subTab[payload.tab] = payload.subTab;
+			const prefs = state.requests[payload.id];
+			if (!prefs) return;
+			prefs.response.subTab[payload.tab] = payload.subTab;
 		})
 		.addCase(requestPreferenceSetResPrettyLanguage, (state, { payload }) => {
-			state.requests[payload.id].response.pretty[payload.mode].language = payload.language;
+			const prefs = state.requests[payload.id];
+			if (!prefs) return;
+			prefs.response.pretty[payload.mode].language = payload.language;
 		})
 
 		.addCase(editorPreferencesLoaded, (state, { payload }) => {
