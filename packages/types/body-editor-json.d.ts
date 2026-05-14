@@ -7,6 +7,9 @@ export interface Base {
 	id: string;
 	parentId: string | null;
 	enabled: boolean;
+	/** Schema metadata — set in schema mode, ignored at flight time. */
+	required?: boolean;
+	description?: string;
 }
 
 export interface NamedEntryBase {

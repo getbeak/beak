@@ -1,9 +1,29 @@
 import ksuid from '@beak/ksuid';
 import type { ValidRequestNode } from '@getbeak/types/nodes';
+import type { ToggleKeyValue } from '@getbeak/types/request';
 import type { ActionReducerMapBuilder } from '@reduxjs/toolkit';
 
 import * as actions from '../actions';
-import type { State } from '../types';
+import type { State, ToggleableItemUpdatedPayload } from '../types';
+
+/**
+ * Apply schema-side metadata (type / required / description) from an
+ * update payload. `null` clears the field; `undefined` leaves it untouched.
+ */
+function applySchemaMetadata(item: ToggleKeyValue, payload: ToggleableItemUpdatedPayload) {
+	if (payload.type !== void 0) {
+		if (payload.type === null) delete item.type;
+		else item.type = payload.type;
+	}
+	if (payload.required !== void 0) {
+		if (payload.required === null) delete item.required;
+		else item.required = payload.required;
+	}
+	if (payload.description !== void 0) {
+		if (payload.description === null) delete item.description;
+		else item.description = payload.description;
+	}
+}
 
 export default function buildRequestFields(builder: ActionReducerMapBuilder<State>) {
 	builder
@@ -31,6 +51,7 @@ export default function buildRequestFields(builder: ActionReducerMapBuilder<Stat
 			if (payload.name !== void 0) existingItem.name = payload.name;
 			if (payload.value !== void 0) existingItem.value = payload.value;
 			if (payload.enabled !== void 0) existingItem.enabled = payload.enabled;
+			applySchemaMetadata(existingItem, payload);
 		})
 		.addCase(actions.requestQueryRemoved, (state, action) => {
 			const node = state.tree[action.payload.requestId] as ValidRequestNode;
@@ -59,6 +80,7 @@ export default function buildRequestFields(builder: ActionReducerMapBuilder<Stat
 			if (payload.name !== void 0) existingItem.name = payload.name;
 			if (payload.value !== void 0) existingItem.value = payload.value;
 			if (payload.enabled !== void 0) existingItem.enabled = payload.enabled;
+			applySchemaMetadata(existingItem, payload);
 		})
 		.addCase(actions.requestHeaderRemoved, (state, action) => {
 			const node = state.tree[action.payload.requestId] as ValidRequestNode;
@@ -68,5 +90,17 @@ export default function buildRequestFields(builder: ActionReducerMapBuilder<Stat
 		.addCase(actions.requestOptionFollowRedirects, (state, { payload }) => {
 			const node = state.tree[payload.requestId] as ValidRequestNode;
 			node.info.options.followRedirects = payload.followRedirects;
+		})
+		.addCase(actions.requestOptionDecompressResponse, (state, { payload }) => {
+			const node = state.tree[payload.requestId] as ValidRequestNode;
+			node.info.options.decompressResponse = payload.decompressResponse;
+		})
+		.addCase(actions.requestOptionTimeoutMs, (state, { payload }) => {
+			const node = state.tree[payload.requestId] as ValidRequestNode;
+			node.info.options.timeoutMs = payload.timeoutMs;
+		})
+		.addCase(actions.requestOptionMaxRedirects, (state, { payload }) => {
+			const node = state.tree[payload.requestId] as ValidRequestNode;
+			node.info.options.maxRedirects = payload.maxRedirects;
 		});
 }

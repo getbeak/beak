@@ -4,7 +4,7 @@ import type { ActiveRename } from '@beak/ui/features/tree-view/types';
 import type { ValueSections } from '@beak/ui/features/variables/values';
 import type { EntryMap, EntryType } from '@getbeak/types/body-editor-json';
 import type { Tree } from '@getbeak/types/nodes';
-import type { ToggleKeyValue } from '@getbeak/types/request';
+import type { ScalarPropertyType, ToggleKeyValue } from '@getbeak/types/request';
 
 export const ActionTypes = {
 	REQUEST_URI_UPDATED: '@beak/global/project/REQUEST_URI_UPDATED',
@@ -36,6 +36,7 @@ export const ActionTypes = {
 
 	REQUEST_BODY_TYPE_CHANGED: '@beak/global/project/REQUEST_BODY_TYPE_CHANGED',
 	REQUEST_BODY_TEXT_CHANGED: '@beak/global/project/REQUEST_BODY_TEXT_CHANGED',
+	REQUEST_BODY_JSON_RAW_CHANGED: '@beak/global/project/REQUEST_BODY_JSON_RAW_CHANGED',
 
 	REQUEST_BODY_FILE_CHANGED: '@beak/global/project/REQUEST_BODY_FILE_CHANGED',
 	REQUEST_BODY_ASSET_CHANGED: '@beak/global/project/REQUEST_BODY_ASSET_CHANGED',
@@ -70,6 +71,9 @@ export const ActionTypes = {
 		'@beak/global/project/REQUEST_BODY_GRAPHQL_EDITOR_RECONCILE_VARIABLES',
 
 	REQUEST_OPTION_FOLLOW_REDIRECTS: '@beak/global/project/REQUEST_OPTION_FOLLOW_REDIRECTS',
+	REQUEST_OPTION_DECOMPRESS_RESPONSE: '@beak/global/project/REQUEST_OPTION_DECOMPRESS_RESPONSE',
+	REQUEST_OPTION_TIMEOUT_MS: '@beak/global/project/REQUEST_OPTION_TIMEOUT_MS',
+	REQUEST_OPTION_MAX_REDIRECTS: '@beak/global/project/REQUEST_OPTION_MAX_REDIRECTS',
 
 	ALERTS_INSERT: '@beak/global/project/ALERTS_INSERT',
 	ALERTS_REMOVE: '@beak/global/project/ALERTS_REMOVE',
@@ -126,6 +130,10 @@ export interface ToggleableItemUpdatedPayload extends RequestIdPayload {
 	name?: string;
 	value?: ValueSections;
 	enabled?: boolean;
+	/** Schema metadata — set in schema mode. `null` clears the field. */
+	type?: ScalarPropertyType | null;
+	required?: boolean | null;
+	description?: string | null;
 }
 
 export interface ToggleableItemRemovedPayload extends RequestIdPayload {
@@ -167,6 +175,7 @@ export interface WriteDebouncePayload extends RequestIdPayload {
 
 export type RequestBodyTypeChangedPayload =
 	| RequestBodyTypeToJsonPayload
+	| RequestBodyTypeToJsonRawPayload
 	| RequestBodyTypeToTextPayload
 	| RequestBodyTypeToUrlEncodedFormPayload
 	| RequestBodyTypeToFilePayload
@@ -175,6 +184,11 @@ export type RequestBodyTypeChangedPayload =
 interface RequestBodyTypeToJsonPayload extends RequestIdPayload {
 	type: 'json';
 	payload: EntryMap;
+}
+
+interface RequestBodyTypeToJsonRawPayload extends RequestIdPayload {
+	type: 'json_raw';
+	payload: string;
 }
 
 interface RequestBodyTypeToTextPayload extends RequestIdPayload {
@@ -204,6 +218,10 @@ interface RequestBodyTypeToGraphQlPayload extends RequestIdPayload {
 }
 
 export interface RequestBodyTextChangedPayload extends RequestIdPayload {
+	text: string;
+}
+
+export interface RequestBodyJsonRawChangedPayload extends RequestIdPayload {
 	text: string;
 }
 
@@ -292,6 +310,18 @@ export interface RequestBodyGraphQlEditorReconcileVariablesPayload extends Reque
 
 export interface RequestOptionFollowRedirects extends RequestIdPayload {
 	followRedirects: boolean;
+}
+
+export interface RequestOptionDecompressResponse extends RequestIdPayload {
+	decompressResponse: boolean;
+}
+
+export interface RequestOptionTimeoutMs extends RequestIdPayload {
+	timeoutMs: number;
+}
+
+export interface RequestOptionMaxRedirects extends RequestIdPayload {
+	maxRedirects: number;
 }
 
 export type Alert = AlertMissingEncryption | AlertHttpBodyNotAllowed | AlertInvalidExtension;

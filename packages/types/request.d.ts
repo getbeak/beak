@@ -13,11 +13,12 @@ export interface RequestOverview {
 export type RequestBody =
 	| RequestBodyText
 	| RequestBodyJson
+	| RequestBodyJsonRaw
 	| RequestBodyUrlEncodedForm
 	| RequestBodyFile
 	| RequestBodyGraphQl;
 
-export type RequestBodyType = 'text' | 'json' | 'url_encoded_form' | 'file' | 'graphql';
+export type RequestBodyType = 'text' | 'json' | 'json_raw' | 'url_encoded_form' | 'file' | 'graphql';
 
 export interface RequestBodyText {
 	type: 'text';
@@ -27,6 +28,18 @@ export interface RequestBodyText {
 export interface RequestBodyJson {
 	type: 'json';
 	payload: EntryMap;
+}
+
+/**
+ * JSON body authored as a raw string. Equivalent in payload terms to a
+ * `text` body, but carries an `application/json` content type by default
+ * and renders in a Monaco editor with JSON language highlighting. Pick this
+ * when you want full control over the JSON text (and you're fine losing
+ * Beak's structured-edit affordances + variable insertion).
+ */
+export interface RequestBodyJsonRaw {
+	type: 'json_raw';
+	payload: string;
 }
 
 export interface RequestBodyUrlEncodedForm {
@@ -63,10 +76,27 @@ export interface RequestBodyGraphQl {
 
 export interface RequestOptions {
 	followRedirects: boolean;
+	/** When true, the requester accepts gzip/deflate/br and decodes the body. */
+	decompressResponse?: boolean;
+	/** Request timeout in milliseconds; `0` (default) disables the timeout. */
+	timeoutMs?: number;
+	/** Cap on redirects followed when `followRedirects` is true. */
+	maxRedirects?: number;
 }
+
+/**
+ * Limited type set for scalar properties (headers, query, url-encoded form).
+ * `token` is a UX hint that the editor should mask the value; on the wire
+ * it serialises as a plain string.
+ */
+export type ScalarPropertyType = 'string' | 'number' | 'boolean' | 'enum' | 'token';
 
 export interface ToggleKeyValue {
 	name: string;
 	value: ValueSections;
 	enabled: boolean;
+	/** Schema metadata — set in schema mode, ignored at flight time. */
+	type?: ScalarPropertyType;
+	required?: boolean;
+	description?: string;
 }
