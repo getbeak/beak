@@ -82,7 +82,11 @@ const WebProjectMain: React.FC = () => {
 						borderColor='color-mix(in srgb, var(--beak-colors-accent-pink) 35%, transparent)'
 						boxShadow='0 0 32px color-mix(in srgb, var(--beak-colors-accent-pink) 40%, transparent), inset 0 1px 0 color-mix(in srgb, white 22%, transparent)'
 					>
-						<Spinner size='lg' color='accent.pink' />
+						<Spinner
+							size='lg'
+							color='accent.pink'
+							style={{ filter: 'drop-shadow(0 0 6px color-mix(in srgb, var(--beak-colors-accent-pink) 50%, transparent))' }}
+						/>
 					</Flex>
 					<Flex direction='column' align='center' gap='1'>
 						<Box fontSize='sm' fontWeight='600' color='fg.default' letterSpacing='-0.005em'>
