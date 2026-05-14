@@ -116,8 +116,6 @@ export default class BeakProject extends BeakBase {
 			'utf8',
 		);
 
-		await this.p.node.fs.promises.readFile(this.p.node.path.join(projectFolderPath, 'tree', 'Request.json'), 'utf8');
-
 		// Create variable sets structure
 		await this.p.node.fs.promises.mkdir(
 			this.p.node.path.join(projectFolderPath, 'variable-sets'),
