@@ -1,4 +1,3 @@
-import ksuid from '@beak/ksuid';
 import WindowSessionContext from '@beak/ui/contexts/window-session-context';
 import { ipcExplorerService } from '@beak/ui/lib/ipc';
 import { checkShortcut } from '@beak/ui/lib/keyboard-shortcuts';
@@ -29,7 +28,7 @@ const ProjectPane: React.FC<React.PropsWithChildren<unknown>> = () => {
 	function generateContextMenu(node: TreeViewItem): MenuItemConstructorOptions[] {
 		return [
 			{
-				id: ksuid.generate('ctxmenuitem').toString(),
+				id: 'project-tree-ctx:new-request',
 				accelerator: renderAcceleratorDefinition('menu-bar.file.new-request'),
 				label: 'New Request',
 				click: () => {
@@ -37,7 +36,7 @@ const ProjectPane: React.FC<React.PropsWithChildren<unknown>> = () => {
 				},
 			},
 			{
-				id: ksuid.generate('ctxmenuitem').toString(),
+				id: 'project-tree-ctx:duplicate-request',
 				label: 'Duplicate Request',
 				accelerator: renderAcceleratorDefinition('project-explorer.request.duplicate'),
 				enabled: node.type === 'request',
@@ -46,7 +45,7 @@ const ProjectPane: React.FC<React.PropsWithChildren<unknown>> = () => {
 				},
 			},
 			{
-				id: ksuid.generate('ctxmenuitem').toString(),
+				id: 'project-tree-ctx:new-folder',
 				label: 'New Folder',
 				accelerator: renderAcceleratorDefinition('menu-bar.file.new-folder'),
 				click: () => {
@@ -54,7 +53,7 @@ const ProjectPane: React.FC<React.PropsWithChildren<unknown>> = () => {
 				},
 			},
 			{
-				id: ksuid.generate('ctxmenuitem').toString(),
+				id: 'project-tree-ctx:reveal',
 				label: `Reveal in ${darwin ? 'Finder' : 'Explorer'}`,
 				enabled: node.id !== 'root',
 				click: () => {
@@ -62,10 +61,10 @@ const ProjectPane: React.FC<React.PropsWithChildren<unknown>> = () => {
 				},
 			},
 
-			{ id: ksuid.generate('ctxmenuitem').toString(), type: 'separator' },
+			{ id: 'project-tree-ctx:sep-1', type: 'separator' },
 
 			{
-				id: ksuid.generate('ctxmenuitem').toString(),
+				id: 'project-tree-ctx:share-link',
 				label: 'Copy Request Share Link',
 				enabled: node.type === 'request',
 				click: async () => {
@@ -79,31 +78,31 @@ const ProjectPane: React.FC<React.PropsWithChildren<unknown>> = () => {
 				},
 			},
 
-			{ id: ksuid.generate('ctxmenuitem').toString(), type: 'separator' },
+			{ id: 'project-tree-ctx:sep-2', type: 'separator' },
 
-			{ id: ksuid.generate('ctxmenuitem').toString(), label: 'Copy', enabled: false },
-			{ id: ksuid.generate('ctxmenuitem').toString(), label: 'Cut', enabled: false },
-			{ id: ksuid.generate('ctxmenuitem').toString(), label: 'Paste', enabled: false },
+			{ id: 'project-tree-ctx:copy', label: 'Copy', enabled: false },
+			{ id: 'project-tree-ctx:cut', label: 'Cut', enabled: false },
+			{ id: 'project-tree-ctx:paste', label: 'Paste', enabled: false },
 
-			{ id: ksuid.generate('ctxmenuitem').toString(), type: 'separator' },
+			{ id: 'project-tree-ctx:sep-3', type: 'separator' },
 
 			{
-				id: ksuid.generate('ctxmenuitem').toString(),
+				id: 'project-tree-ctx:copy-path',
 				label: 'Copy Path',
 				enabled: node.id !== 'root',
 				click: () => ipcExplorerService.copyFullNodePath(node.filePath),
 			},
 			{
-				id: ksuid.generate('ctxmenuitem').toString(),
+				id: 'project-tree-ctx:copy-relative-path',
 				label: 'Copy Relative Path',
 				enabled: node.id !== 'root',
 				click: () => navigator.clipboard.writeText(node.filePath),
 			},
 
-			{ id: ksuid.generate('ctxmenuitem').toString(), type: 'separator' },
+			{ id: 'project-tree-ctx:sep-4', type: 'separator' },
 
 			{
-				id: ksuid.generate('ctxmenuitem').toString(),
+				id: 'project-tree-ctx:rename',
 				label: 'Rename',
 				accelerator: renderAcceleratorDefinition('tree-view.node.rename'),
 				enabled: node.id !== 'root',
@@ -114,7 +113,7 @@ const ProjectPane: React.FC<React.PropsWithChildren<unknown>> = () => {
 				},
 			},
 			{
-				id: ksuid.generate('ctxmenuitem').toString(),
+				id: 'project-tree-ctx:delete',
 				label: 'Delete',
 				accelerator: renderAcceleratorDefinition('tree-view.node.delete'),
 				enabled: node.id !== 'root',
