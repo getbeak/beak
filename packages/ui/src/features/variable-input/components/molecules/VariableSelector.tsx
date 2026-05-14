@@ -12,7 +12,6 @@ import { Plug, SearchX } from 'lucide-react';
 
 import type { Variable, VariableStaticInformation } from '@getbeak/extension-sdk';
 import Fuse from 'fuse.js';
-import * as uuid from 'uuid';
 
 import { createFauxValue } from '../../../variables/values/variable-set-item';
 import type { NormalizedSelection } from '../../utils/browser-selection';
@@ -263,7 +262,7 @@ const VariableSelector: React.FC<React.PropsWithChildren<VariableSelectorProps>>
 						const isActive = active === idx;
 						return (
 							<Box
-								key={uuid.v4()}
+								key={i.type}
 								ref={(el: HTMLDivElement | null) => {
 									if (isActive) activeRef.current = el;
 								}}
