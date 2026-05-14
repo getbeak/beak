@@ -51,6 +51,19 @@ const GLOBAL_CSS = (darwin: boolean) => `
 		0% { opacity: 0; transform: translateY(-3px) scale(.96); }
 		100% { opacity: 1; transform: translateY(0) scale(1); }
 	}
+	*::-webkit-scrollbar { width: 8px; height: 8px; }
+	*::-webkit-scrollbar-track { background: transparent; }
+	*::-webkit-scrollbar-thumb {
+		background: color-mix(in srgb, var(--beak-colors-fg-muted) 22%, transparent);
+		border-radius: 4px;
+		border: 2px solid transparent;
+		background-clip: padding-box;
+	}
+	*::-webkit-scrollbar-thumb:hover {
+		background: color-mix(in srgb, var(--beak-colors-accent-pink) 60%, transparent);
+		background-clip: padding-box;
+	}
+	*::-webkit-scrollbar-corner { background: transparent; }
 `;
 
 const App: React.FC = () => {
