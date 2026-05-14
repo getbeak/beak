@@ -135,7 +135,7 @@ const BasicTableEditor: React.FC<BasicTableEditorProps> = ({
 							{readOnly ? 'No entries' : 'No entries yet'}
 						</Text>
 						{editable && (
-							<Text fontSize='10px' fontWeight='700' letterSpacing='0.06em' textTransform='uppercase' color='fg.subtle'>
+							<Text fontSize='10px' fontWeight='700' letterSpacing='0.06em' textTransform='uppercase' color='accent.pink'>
 								{'Use Add row to create one'}
 							</Text>
 						)}

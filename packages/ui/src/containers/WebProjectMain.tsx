@@ -88,7 +88,7 @@ const WebProjectMain: React.FC = () => {
 						<Box fontSize='sm' fontWeight='600' color='fg.default' letterSpacing='-0.005em'>
 							{state === 'creating' ? 'Creating your first project…' : 'Loading Beak…'}
 						</Box>
-						<Box fontSize='10px' fontWeight='700' letterSpacing='0.06em' textTransform='uppercase' color='fg.subtle'>
+						<Box fontSize='10px' fontWeight='700' letterSpacing='0.06em' textTransform='uppercase' color='accent.pink'>
 							{state === 'creating' ? 'Setting up the workspace' : 'Initialising'}
 						</Box>
 					</Flex>
