@@ -10,6 +10,6 @@ export function attemptTextToJson(input: string) {
 	try {
 		return JSON.parse(input);
 	} catch {
-		return JSON.stringify(input);
+		return input;
 	}
 }
