@@ -40,6 +40,11 @@ const EntryActions: React.FC<EntryActionsProps> = ({ requestId, id, entry }) => 
 						color: 'accent.alert',
 						bg: 'color-mix(in srgb, var(--beak-colors-accent-alert) 18%, transparent)',
 					}}
+					_focusVisible={{
+						outline: 'none',
+						color: 'accent.alert',
+						boxShadow: '0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-alert) 45%, transparent)',
+					}}
 					_active={{ transform: 'scale(0.92)' }}
 					transition='color .12s ease, background-color .12s ease, transform .08s ease'
 					onClick={() => dispatch(editorContext.removeEntry({ id, requestId }))}
@@ -61,6 +66,11 @@ const EntryActions: React.FC<EntryActionsProps> = ({ requestId, id, entry }) => 
 				_hover={{
 					color: 'accent.pink',
 					bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 18%, transparent)',
+				}}
+				_focusVisible={{
+					outline: 'none',
+					color: 'accent.pink',
+					boxShadow: '0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-pink) 45%, transparent)',
 				}}
 				_active={{ transform: 'scale(0.92)' }}
 				transition='color .12s ease, background-color .12s ease, transform .08s ease'
