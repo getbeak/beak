@@ -62,10 +62,12 @@ const tabsReducer = createReducer(initialState, builder => {
 			updateRecentlyClosed(state, targetTab);
 
 			if (selectedIsTarget) {
-				const newIndex = movePosition(state.activeTabs, targetIndex, 'backward');
-				const tab = state.activeTabs[newIndex];
-
-				if (tab) state.selectedTab = tab.payload;
+				if (state.activeTabs.length === 0) {
+					state.selectedTab = void 0;
+				} else {
+					const newIndex = movePosition(state.activeTabs, targetIndex, 'backward');
+					state.selectedTab = state.activeTabs[newIndex]?.payload;
+				}
 			}
 		})
 		.addCase(actions.closeTabsAll, state => {
