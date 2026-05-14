@@ -29,7 +29,6 @@ export class IpcServiceRenderer<T extends string> extends IpcServiceBase<T> {
 	private setupMessageHandling(): void {
 		this.ipc.on(this.channel, (event, message: IpcMessage) => {
 			if (!message || !message.code) {
-				// eslint-disable-next-line no-console
 				console.warn('Malformed IPC message received:', message);
 				return;
 			}
@@ -38,7 +37,6 @@ export class IpcServiceRenderer<T extends string> extends IpcServiceBase<T> {
 			if (listener) {
 				listener(event, message.payload);
 			} else {
-				// eslint-disable-next-line no-console
 				console.warn(`No listener for message: ${message.code}`);
 			}
 		});

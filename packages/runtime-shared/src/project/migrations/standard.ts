@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
-
 import type { ProjectEncryption } from '@beak/common/types/beak-project';
 import { BeakBase, type Providers } from '../../base';
 import { fileExists } from '../../utils/fs';
@@ -53,7 +51,6 @@ export default class BeakStandardMigrations extends BeakBase {
 				break;
 			}
 
-			// eslint-disable-next-line no-await-in-loop
 			await migration(projectFile, projectFolderPath);
 		}
 	}
@@ -253,7 +250,6 @@ export default class BeakStandardMigrations extends BeakBase {
 		const entries = await this.p.node.fs.promises.readdir(folderPath, { withFileTypes: true });
 		for (const entry of entries) {
 			if (!entry.isDirectory()) continue;
-			// eslint-disable-next-line no-await-in-loop
 			await this.writeCollectionFilesRecursively(this.p.node.path.join(folderPath, entry.name));
 		}
 	}
@@ -290,7 +286,6 @@ export default class BeakStandardMigrations extends BeakBase {
 		// Mutate the caller's reference so readProjectFile's return value
 		// reflects the post-migration state. The previous local re-bind did
 		// nothing for the caller.
-		// eslint-disable-next-line no-param-reassign
 		projectFile.version = newVersion;
 
 		await this.p.node.fs.promises.writeFile(

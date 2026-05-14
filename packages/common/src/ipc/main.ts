@@ -51,7 +51,6 @@ export class IpcServiceMain<T extends string> extends IpcServiceBase<T> {
 				const result = await handler(event, message.payload);
 				return { response: result };
 			} catch (error) {
-				// eslint-disable-next-line no-console
 				console.error(`IPC Error in ${this.channel}:`, error);
 				return { error: this.normalizeError(error) };
 			}

@@ -325,7 +325,6 @@ export default class BeakProject extends BeakBase {
 			const direntPath = typeof dirent === 'string' ? dirent : dirent.name;
 			const resolvedPath = this.p.node.path.resolve(dir, direntPath);
 
-			// eslint-disable-next-line no-await-in-loop
 			const stat = await this.p.node.fs.promises.stat(resolvedPath);
 
 			if (direntPath === '.git')

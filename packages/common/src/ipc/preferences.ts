@@ -55,7 +55,6 @@ export class IpcPreferencesServiceRenderer extends IpcServiceRenderer<'preferenc
 		return this.invoke<NotificationPreferences[Key]>(PreferencesMessages.GetNotificationValue, key);
 	}
 
-	// eslint-disable-next-line max-len
 	async setNotificationValue<Key extends keyof NotificationPreferences>(key: Key, value: NotificationPreferences[Key]) {
 		return this.invoke(PreferencesMessages.SetNotificationValue, { key, value });
 	}
@@ -68,7 +67,6 @@ export class IpcPreferencesServiceRenderer extends IpcServiceRenderer<'preferenc
 		return this.invoke<EditorPreferences[Key]>(PreferencesMessages.GetEditorValue, key);
 	}
 
-	// eslint-disable-next-line max-len
 	async setEditorValue<Key extends keyof EditorPreferences>(key: Key, value: EditorPreferences[Key]) {
 		return this.invoke(PreferencesMessages.SetEditorValue, { key, value });
 	}

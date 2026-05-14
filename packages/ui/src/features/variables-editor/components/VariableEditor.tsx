@@ -93,7 +93,8 @@ const VariableEditor: React.FC<React.PropsWithChildren<VariableEditorProps>> = p
 			if (!variable.editor)
 				return;
 
-			let item: unknown;
+			// biome-ignore lint/suspicious/noExplicitAny: matches VariableEditorContext.item's `any` shape — the payload schema is owned by the variable definition
+			let item: any;
 			try {
 				item = JSON.parse(payload!);
 			} catch (err) {
