@@ -18,6 +18,7 @@ const Kbd = chakra('kbd', {
 		fontWeight: '600',
 		lineHeight: '1',
 		letterSpacing: '0.02em',
+		fontVariantNumeric: 'tabular-nums',
 		color: 'fg.muted',
 		bg: 'color-mix(in srgb, var(--beak-colors-bg-surface) 60%, var(--beak-colors-bg-surface-alt))',
 		borderColor: 'border.subtle',
