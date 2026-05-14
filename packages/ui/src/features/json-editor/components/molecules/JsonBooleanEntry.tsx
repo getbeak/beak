@@ -80,6 +80,7 @@ const JsonBooleanEntry: React.FC<React.PropsWithChildren<JsonBooleanEntryProps>>
 				<Box position='relative' pl='1.5' pt='1' display='inline-flex'>
 					<HiddenInput
 						type='checkbox'
+						aria-label={`${detectName(depth, value) || 'Value'} (boolean)`}
 						checked={value.value}
 						onChange={e =>
 							dispatch(
