@@ -116,16 +116,19 @@ function buildUrlEncodedEditor(builder: ActionReducerMapBuilder<State>) {
 		.addCase(actions.requestBodyUrlEncodedEditorNameChange, (state, { payload }) => {
 			const node = state.tree[payload.requestId] as ValidRequestNode;
 			const body = node.info.body as RequestBodyUrlEncodedForm;
+			if (!body.payload[payload.id]) return;
 			body.payload[payload.id].name = payload.name;
 		})
 		.addCase(actions.requestBodyUrlEncodedEditorValueChange, (state, { payload }) => {
 			const node = state.tree[payload.requestId] as ValidRequestNode;
 			const body = node.info.body as RequestBodyUrlEncodedForm;
+			if (!body.payload[payload.id]) return;
 			body.payload[payload.id].value = payload.value;
 		})
 		.addCase(actions.requestBodyUrlEncodedEditorEnabledChange, (state, { payload }) => {
 			const node = state.tree[payload.requestId] as ValidRequestNode;
 			const body = node.info.body as RequestBodyUrlEncodedForm;
+			if (!body.payload[payload.id]) return;
 			body.payload[payload.id].enabled = payload.enabled;
 		})
 		.addCase(actions.requestBodyUrlEncodedEditorAddItem, (state, { payload }) => {
