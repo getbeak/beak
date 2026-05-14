@@ -27,6 +27,7 @@ export default function buildRequestFields(builder: ActionReducerMapBuilder<Stat
 			const { payload } = action;
 			const node = state.tree[payload.requestId] as ValidRequestNode;
 			const existingItem = node.info.query[payload.identifier];
+			if (!existingItem) return;
 			if (payload.name !== void 0) existingItem.name = payload.name;
 			if (payload.value !== void 0) existingItem.value = payload.value;
 			if (payload.enabled !== void 0) existingItem.enabled = payload.enabled;
