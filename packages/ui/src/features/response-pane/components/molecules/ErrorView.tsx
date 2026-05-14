@@ -47,6 +47,8 @@ const ErrorView: React.FC<ErrorViewProps> = ({ error }) => (
 				borderWidth='1px'
 				borderColor='color-mix(in srgb, var(--beak-colors-accent-alert) 32%, var(--beak-colors-border-subtle))'
 				bg='color-mix(in srgb, var(--beak-colors-accent-alert) 6%, var(--beak-colors-bg-surface))'
+				boxShadow='0 4px 12px color-mix(in srgb, var(--beak-colors-accent-alert) 10%, rgba(0,0,0,0.04)), inset 0 1px 0 color-mix(in srgb, white 14%, transparent)'
+				css={{ borderLeft: '3px solid var(--beak-colors-accent-alert)' }}
 			>
 				<Box fontSize='10px' fontWeight='700' letterSpacing='0.06em' textTransform='uppercase' color='accent.alert' mb='1'>
 					{'Error message'}
