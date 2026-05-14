@@ -71,6 +71,8 @@ const TabItemSubItemsDropdown = <T = string>(props: TabItemSubItemsDropdownProps
 				createPortal(
 					<Box position='fixed' inset='0' onClick={() => setShowDropdown(false)} zIndex={101}>
 						<Box
+							role='listbox'
+							aria-label='Sub-tab'
 							position='fixed'
 							w='160px'
 							borderWidth='1px'
@@ -92,7 +94,8 @@ const TabItemSubItemsDropdown = <T = string>(props: TabItemSubItemsDropdownProps
 								return (
 									<Flex
 										tabIndex={0}
-										role='button'
+										role='option'
+										aria-selected={isActive}
 										key={i.key as string}
 										align='center'
 										justify='space-between'
