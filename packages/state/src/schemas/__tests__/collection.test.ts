@@ -102,9 +102,9 @@ describe('mergeCollectionDefaults', () => {
 		expect(out.url).toEqual(['https://override.example.com/x']);
 	});
 
-	it('falls back to GET / [""] when neither defaults nor override declare them', () => {
+	it('falls back to get / [""] when neither defaults nor override declare them', () => {
 		const out = mergeCollectionDefaults(undefined, { id: 'r1' });
-		expect(out.verb).toBe('GET');
+		expect(out.verb).toBe('get');
 		expect(out.url).toEqual(['']);
 	});
 

@@ -21,7 +21,10 @@ export function mergeCollectionDefaults(
 
 	return {
 		id: override.id,
-		verb: override.verb ?? d.verb ?? 'GET',
+		// Lowercase matches how new requests are created (lib/beak-project/request.ts)
+		// and how the rest of the storage shape is stored. Display layers
+		// call .toUpperCase() when rendering.
+		verb: override.verb ?? d.verb ?? 'get',
 		url: override.url ?? d.baseUrl ?? [''],
 		query: shallowMergeRecord(d.query, override.query),
 		headers: shallowMergeRecord(d.headers, override.headers),
