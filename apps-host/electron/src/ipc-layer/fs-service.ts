@@ -138,7 +138,6 @@ async function ensureParentDirectoryExists(filePath: string) {
 async function backoffJsonRead(filePath: string, options?: JFReadOptions) {
 	let latestError: unknown = null;
 
-	/* eslint-disable no-await-in-loop */
 	for (let i = 0; i < 3; i++) {
 		try {
 			return await fs.readJson(filePath, options);
@@ -148,7 +147,6 @@ async function backoffJsonRead(filePath: string, options?: JFReadOptions) {
 			await new Promise(resolve => setTimeout(resolve, 50));
 		}
 	}
-	/* eslint-enable no-await-in-loop */
 
 	throw latestError;
 }

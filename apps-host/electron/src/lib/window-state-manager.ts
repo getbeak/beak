@@ -12,7 +12,6 @@ export default class WindowStateManager {
 	private state: WindowState;
 	private windowOptions: SizedWindowOptions;
 
-	// eslint-disable-next-line
 	private stateChangeTimer: NodeJS.Timeout | undefined;
 
 	constructor(
@@ -129,14 +128,12 @@ export default class WindowStateManager {
 	}
 
 	private windowWithinBounds(bounds: Rectangle) {
-		/* eslint-disable operator-linebreak */
 		return (
 			this.state.x >= bounds.x &&
 			this.state.y >= bounds.y &&
 			this.state.x + this.state.width <= bounds.x + bounds.width &&
 			this.state.y + this.state.height <= bounds.y + bounds.height
 		);
-		/* eslint-enable operator-linebreak */
 	}
 
 	private ensureWindowBoundsAcceptable() {

@@ -1,5 +1,3 @@
-/* eslint-disable no-process-env */
-
 import fs from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import path from 'node:path';
@@ -59,7 +57,6 @@ const sentrySourceMapsPlugin = {
 	name: 'sentry-source-maps',
 	setup: (build: PluginBuild) => {
 		// Needs to be set again, electron-esbuild overrides it. stupid.
-		// eslint-disable-next-line no-param-reassign
 		build.initialOptions.sourcemap = true;
 
 		build.onEnd(async () => {

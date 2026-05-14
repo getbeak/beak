@@ -1,4 +1,3 @@
-/* eslint-disable global-require, no-process-env */
 import { init } from '@sentry/electron';
 import { app, dialog } from 'electron';
 import electronDebug from 'electron-debug';
@@ -66,7 +65,6 @@ app.on('ready', () => {
 		default: installExtension,
 		REDUX_DEVTOOLS,
 		REACT_DEVELOPER_TOOLS,
-		// eslint-disable-next-line @typescript-eslint/no-var-requires
 	} = require('electron-devtools-installer');
 
 	electronDebug({ showDevTools: false });

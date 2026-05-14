@@ -23,7 +23,6 @@ export const windowType: Record<number, Container> = {};
 export const stackMap: Record<string, number> = {};
 
 const DEV_URL = 'http://localhost:5173';
-// eslint-disable-next-line no-process-env
 const environment = process.env.NODE_ENV;
 
 export function generateWindowPresence() {
@@ -129,12 +128,10 @@ async function createWindow(
 	nativeTheme.themeSource = await getBeakHost().providers.storage.get('themeMode');
 
 	if (screenshotSizing && container === 'project-main') {
-		/* eslint-disable no-param-reassign */
 		windowOpts.minWidth = 1300;
 		windowOpts.maxWidth = 1300;
 		windowOpts.minHeight = 800;
 		windowOpts.maxHeight = 800;
-		/* eslint-enable no-param-reassign */
 	}
 
 	const windowStateManager = await WindowStateManager.create(container, windowOpts);
