@@ -1,7 +1,7 @@
 import { Box, Flex } from '@chakra-ui/react';
 import Button from '@beak/ui/components/atoms/Button';
 import { Select } from '@beak/ui/components/atoms/Input';
-import { ipcNestService, ipcPreferencesService } from '@beak/ui/lib/ipc';
+import { ipcDialogService, ipcNestService, ipcPreferencesService } from '@beak/ui/lib/ipc';
 import { AlertTriangle } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 
@@ -48,7 +48,23 @@ const EngineeringPane: React.FC<React.PropsWithChildren<unknown>> = () => {
 			<ItemGroup>
 				<ItemLabel>{'Maintenance'}</ItemLabel>
 				<Flex gap='2'>
-					<Button colour='secondary' size='sm' onClick={() => ipcPreferencesService.resetConfig()}>
+					<Button
+						colour='secondary'
+						size='sm'
+						onClick={async () => {
+							const result = await ipcDialogService.showMessageBox({
+								title: 'Reset config & cache?',
+								message: 'This clears all local preferences and cached responses.',
+								detail: 'Project files are not affected.',
+								type: 'warning',
+								buttons: ['Reset', 'Cancel'],
+								defaultId: 1,
+								cancelId: 1,
+							});
+							if (result.response === 1) return;
+							ipcPreferencesService.resetConfig();
+						}}
+					>
 						{'Reset config & cache'}
 					</Button>
 				</Flex>
