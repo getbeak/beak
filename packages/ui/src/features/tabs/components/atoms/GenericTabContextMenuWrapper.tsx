@@ -1,5 +1,4 @@
 import type { TabItem } from '@beak/common/types/beak-project';
-import ksuid from '@beak/ksuid';
 import ContextMenu from '@beak/ui/components/atoms/ContextMenu';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { renderAcceleratorDefinition } from '@beak/ui/utils/keyboard-rendering';
@@ -28,7 +27,7 @@ const GenericTabContextMenuWrapper: React.FC<React.PropsWithChildren<GenericTabC
 
 		setMenuItems([
 			{
-				id: ksuid.generate('ctxmenuitem').toString(),
+				id: 'tab-ctx:close',
 				accelerator: renderAcceleratorDefinition('tab-bar.current.close'),
 				label: 'Close',
 				click: () => {
@@ -36,7 +35,7 @@ const GenericTabContextMenuWrapper: React.FC<React.PropsWithChildren<GenericTabC
 				},
 			},
 			{
-				id: ksuid.generate('ctxmenuitem').toString(),
+				id: 'tab-ctx:close-others',
 				accelerator: renderAcceleratorDefinition('tab-bar.all.close-others'),
 				label: 'Close Others',
 				click: () => {
@@ -44,7 +43,7 @@ const GenericTabContextMenuWrapper: React.FC<React.PropsWithChildren<GenericTabC
 				},
 			},
 			{
-				id: ksuid.generate('ctxmenuitem').toString(),
+				id: 'tab-ctx:close-right',
 				label: 'Close to the Right',
 				enabled: !endTab,
 				click: () => {
@@ -52,7 +51,7 @@ const GenericTabContextMenuWrapper: React.FC<React.PropsWithChildren<GenericTabC
 				},
 			},
 			{
-				id: ksuid.generate('ctxmenuitem').toString(),
+				id: 'tab-ctx:close-left',
 				label: 'Close to the Left',
 				enabled: !startTab,
 				click: () => {
@@ -60,7 +59,7 @@ const GenericTabContextMenuWrapper: React.FC<React.PropsWithChildren<GenericTabC
 				},
 			},
 			{
-				id: ksuid.generate('ctxmenuitem').toString(),
+				id: 'tab-ctx:close-all',
 				accelerator: renderAcceleratorDefinition('tab-bar.all.close'),
 				label: 'Close All',
 				click: () => {
@@ -68,7 +67,7 @@ const GenericTabContextMenuWrapper: React.FC<React.PropsWithChildren<GenericTabC
 				},
 			},
 		]);
-	}, [tab, activeTabs]);
+	}, [tab, activeTabs, dispatch]);
 
 	return (
 		<ContextMenu menuItems={menuItems} target={target}>

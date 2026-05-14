@@ -1,5 +1,4 @@
 import type { TabItem } from '@beak/common/types/beak-project';
-import ksuid from '@beak/ksuid';
 import ContextMenu from '@beak/ui/components/atoms/ContextMenu';
 import WindowSessionContext from '@beak/ui/contexts/window-session-context';
 import { ipcExplorerService } from '@beak/ui/lib/ipc';
@@ -35,7 +34,7 @@ const RequestTabContextMenuWrapper: React.FC<React.PropsWithChildren<RequestTabC
 
 		setMenuItems([
 			{
-				id: ksuid.generate('ctxmenuitem').toString(),
+				id: 'request-tab-ctx:close',
 				accelerator: renderAcceleratorDefinition('tab-bar.current.close'),
 				label: 'Close',
 				click: () => {
@@ -43,7 +42,7 @@ const RequestTabContextMenuWrapper: React.FC<React.PropsWithChildren<RequestTabC
 				},
 			},
 			{
-				id: ksuid.generate('ctxmenuitem').toString(),
+				id: 'request-tab-ctx:close-others',
 				accelerator: renderAcceleratorDefinition('tab-bar.all.close-others'),
 				label: 'Close Others',
 				click: () => {
@@ -51,7 +50,7 @@ const RequestTabContextMenuWrapper: React.FC<React.PropsWithChildren<RequestTabC
 				},
 			},
 			{
-				id: ksuid.generate('ctxmenuitem').toString(),
+				id: 'request-tab-ctx:close-right',
 				label: 'Close to the Right',
 				enabled: !endTab,
 				click: () => {
@@ -59,7 +58,7 @@ const RequestTabContextMenuWrapper: React.FC<React.PropsWithChildren<RequestTabC
 				},
 			},
 			{
-				id: ksuid.generate('ctxmenuitem').toString(),
+				id: 'request-tab-ctx:close-left',
 				label: 'Close to the Left',
 				enabled: !startTab,
 				click: () => {
@@ -67,7 +66,7 @@ const RequestTabContextMenuWrapper: React.FC<React.PropsWithChildren<RequestTabC
 				},
 			},
 			{
-				id: ksuid.generate('ctxmenuitem').toString(),
+				id: 'request-tab-ctx:close-all',
 				accelerator: renderAcceleratorDefinition('tab-bar.all.close'),
 				label: 'Close All',
 				click: () => {
@@ -75,25 +74,25 @@ const RequestTabContextMenuWrapper: React.FC<React.PropsWithChildren<RequestTabC
 				},
 			},
 
-			{ id: ksuid.generate('ctxmenuitem').toString(), type: 'separator' },
+			{ id: 'request-tab-ctx:sep-1', type: 'separator' },
 
 			{
-				id: ksuid.generate('ctxmenuitem').toString(),
+				id: 'request-tab-ctx:copy-path',
 				label: 'Copy Path',
 				enabled: isRequestTab,
 				click: () => ipcExplorerService.copyFullNodePath(node.filePath),
 			},
 			{
-				id: ksuid.generate('ctxmenuitem').toString(),
+				id: 'request-tab-ctx:copy-relative-path',
 				label: 'Copy Relative Path',
 				enabled: isRequestTab,
 				click: () => navigator.clipboard.writeText(node.filePath),
 			},
 
-			{ id: ksuid.generate('ctxmenuitem').toString(), type: 'separator' },
+			{ id: 'request-tab-ctx:sep-2', type: 'separator' },
 
 			{
-				id: ksuid.generate('ctxmenuitem').toString(),
+				id: 'request-tab-ctx:reveal',
 				label: `Reveal in ${windowSession.isDarwin() ? 'Finder' : 'Explorer'}`,
 				enabled: isRequestTab,
 				click: () => {
@@ -101,7 +100,7 @@ const RequestTabContextMenuWrapper: React.FC<React.PropsWithChildren<RequestTabC
 				},
 			},
 		]);
-	}, [tab, node, activeTabs]);
+	}, [tab, node, activeTabs, dispatch, windowSession]);
 
 	return (
 		<ContextMenu menuItems={menuItems} target={target}>
