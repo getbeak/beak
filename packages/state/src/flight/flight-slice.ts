@@ -181,6 +181,8 @@ const flightSlice = createSlice({
 					response,
 					binaryStoreKey: flight.binaryStoreKey,
 					timing: { ...flight.timing },
+					sseEvents: flight.sseEvents ? [...flight.sseEvents] : undefined,
+					streamKind: flight.head?.streamKind,
 				};
 
 				const history = ensureHistory(state, requestId);
@@ -205,6 +207,8 @@ const flightSlice = createSlice({
 					error,
 					binaryStoreKey: flight.binaryStoreKey,
 					timing: { ...flight.timing },
+					sseEvents: flight.sseEvents ? [...flight.sseEvents] : undefined,
+					streamKind: flight.head?.streamKind,
 				};
 
 				const history = ensureHistory(state, requestId);

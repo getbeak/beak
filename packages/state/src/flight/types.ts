@@ -46,6 +46,10 @@ export interface FlightHistoryEntry {
 	error?: Error;
 	binaryStoreKey: string;
 	timing: FlightTiming;
+	/** For text/event-stream responses, the parsed event log accumulated during the flight. */
+	sseEvents?: SseEvent[];
+	/** Stream classification from the head — kept on the history entry so the inspector can pick the right viewer post-completion. */
+	streamKind?: ResponseStreamKind;
 }
 
 export interface FlightHistoryMetadata {

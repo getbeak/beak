@@ -14,9 +14,10 @@ import TabItem from '../../../../components/atoms/TabItem';
 import TabSpacer from '../../../../components/atoms/TabSpacer';
 import ErrorView from '../molecules/ErrorView';
 import PrettyViewer from './PrettyViewer';
+import SseTab from './SseTab';
 
 type Tab = (typeof tabs)[number];
-const tabs = ['headers', 'pretty', 'raw'] as const;
+const tabs = ['headers', 'pretty', 'raw', 'events'] as const;
 
 export interface ResponseTabProps {
 	flight: Flight;
@@ -28,6 +29,16 @@ const ResponseTab: React.FC<React.PropsWithChildren<ResponseTabProps>> = props =
 	const { error, response, requestId } = flight;
 	const hasErrored = Boolean(error);
 	const tab = useAppSelector(s => s.global.preferences.requests[requestId]?.response.subTab.response) as Tab | undefined;
+
+	// Show the Events tab whenever the flight is (or was) an SSE stream — we
+	// check live state for in-progress flights and the persisted streamKind on
+	// completed history entries so the tab persists post-completion.
+	const showSseTab = useAppSelector(s => {
+		const live = s.global.flight.activeFlights[flight.flightId]?.head?.streamKind;
+		if (live) return live === 'sse';
+		const historic = s.global.flight.flightHistories[requestId]?.history[flight.flightId]?.streamKind;
+		return historic === 'sse';
+	});
 
 	const headerItems = useMemo(() => {
 		if (!flight.response) return {};
@@ -53,9 +64,15 @@ const ResponseTab: React.FC<React.PropsWithChildren<ResponseTabProps>> = props =
 			return;
 		}
 
-		if (!tab || !tabs.includes(tab))
+		if (!tab || !tabs.includes(tab)) {
+			// SSE responses default to the events tab — that's the meaningful view.
+			const initial: Tab = showSseTab ? 'events' : 'pretty';
+			dispatch(requestPreferenceSetResSubTab({ id: requestId, tab: 'response', subTab: initial }));
+		} else if (tab === 'events' && !showSseTab) {
+			// Tab was remembered from a prior SSE flight but this one is standard.
 			dispatch(requestPreferenceSetResSubTab({ id: requestId, tab: 'response', subTab: 'pretty' }));
-	}, [tab, flight.flightId, hasErrored, requestId, dispatch]);
+		}
+	}, [tab, flight.flightId, hasErrored, requestId, dispatch, showSseTab]);
 
 	function setTab(tab: Tab) {
 		dispatch(requestPreferenceSetResSubTab({ id: requestId, tab: 'response', subTab: tab }));
@@ -70,6 +87,11 @@ const ResponseTab: React.FC<React.PropsWithChildren<ResponseTabProps>> = props =
 						<TabItem active={tab === 'headers'} size={'sm'} onClick={() => setTab('headers')}>
 							{'Headers'}
 						</TabItem>
+						{showSseTab && (
+							<TabItem active={tab === 'events'} size={'sm'} onClick={() => setTab('events')}>
+								{'Events'}
+							</TabItem>
+						)}
 						<TabItem active={tab === 'pretty'} size={'sm'} onClick={() => setTab('pretty')}>
 							{'Pretty'}
 						</TabItem>
@@ -83,6 +105,7 @@ const ResponseTab: React.FC<React.PropsWithChildren<ResponseTabProps>> = props =
 
 			<Box flexGrow={2} overflowY='hidden' h='100%'>
 				{tab === 'headers' && <BasicTableEditor items={headerItems} readOnly />}
+				{tab === 'events' && showSseTab && <SseTab flight={flight} />}
 				{tab === 'pretty' && <PrettyViewer flight={flight} mode={'response'} />}
 				{tab === 'raw' && (
 					<React.Fragment>
