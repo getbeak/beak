@@ -76,7 +76,7 @@ export function registerProjectEffects(start: AppStartListening) {
 							type: 'warning',
 							title: 'Unsupported project version',
 							message:
-								"The project you opened can't be opened by this version of Beak. Please check for updates and try again.",
+								'The project you opened can’t be opened by this version of Beak. Please check for updates and try again.',
 							detail: 'Message @beakapp on twitter for support.',
 						});
 					}
