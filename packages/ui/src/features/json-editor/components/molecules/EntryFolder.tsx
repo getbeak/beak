@@ -17,8 +17,17 @@ const EntryFolder: React.FC<EntryFolderProps> = ({ expanded, id, onChange }) => 
 	const dispatch = useDispatch();
 	const node = useContext(SelectedNodeContext);
 
+	function toggle() {
+		dispatch(requestPreferenceSetReqJsonExpand({ id: node.id, jsonId: id, expanded: !expanded }));
+		onChange(!expanded);
+	}
+
 	return (
 		<Box
+			role='button'
+			tabIndex={0}
+			aria-label={expanded ? 'Collapse' : 'Expand'}
+			aria-expanded={expanded}
 			display='inline-flex'
 			alignItems='center'
 			justifyContent='center'
@@ -32,9 +41,17 @@ const EntryFolder: React.FC<EntryFolderProps> = ({ expanded, id, onChange }) => 
 			_hover={{
 				color: 'accent.pink',
 			}}
-			onClick={() => {
-				dispatch(requestPreferenceSetReqJsonExpand({ id: node.id, jsonId: id, expanded: !expanded }));
-				onChange(!expanded);
+			_focusVisible={{
+				outline: 'none',
+				color: 'accent.pink',
+				boxShadow: '0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-pink) 35%, transparent)',
+			}}
+			onClick={toggle}
+			onKeyDown={event => {
+				if (event.key === 'Enter' || event.key === ' ') {
+					event.preventDefault();
+					toggle();
+				}
 			}}
 		>
 			<ChevronRight size={10} strokeWidth={2.2} />
