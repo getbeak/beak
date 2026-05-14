@@ -134,6 +134,8 @@ const Sidebar: React.FC = () => {
 				/>
 			)}
 			<Box
+				as='nav'
+				aria-label='Sidebar'
 				position='relative'
 				w='10'
 				css={{
