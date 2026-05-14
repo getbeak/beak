@@ -90,7 +90,7 @@ const OverviewTab: React.FC<OverviewTabProps> = ({ flight }) => {
 							</Box>
 						</Flex>
 					)}
-					<Box ml='auto' fontSize='xs' color='fg.subtle' fontFamily='mono'>
+					<Box ml='auto' fontSize='xs' color='fg.subtle' fontFamily='mono' style={{ fontVariantNumeric: 'tabular-nums' }}>
 						{duration}ms
 					</Box>
 				</Flex>
