@@ -67,9 +67,11 @@ async function initialImport(api: { dispatch: (a: { type: string; [k: string]: u
 
 async function parsePointerFile(p: string) {
 	const file = await ipcFsService.readText(p);
-	const parts = file.trim().match(/^(.+): (.+)\/(.+)\/(.+)$/);
+	// Match `ref: refs/heads/<branch>` — the branch capture is allowed to
+	// contain `/` so feature-branch names like `feature/foo` still parse.
+	const parts = file.trim().match(/^ref:\s*refs\/heads\/(.+)$/);
 
-	if (!parts || parts[1] !== 'ref' || parts[3] !== 'heads') return void 0;
+	if (!parts) return void 0;
 
-	return parts[4];
+	return parts[1];
 }
