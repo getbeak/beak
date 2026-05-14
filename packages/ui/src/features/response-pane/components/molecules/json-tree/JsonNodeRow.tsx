@@ -92,7 +92,7 @@ const JsonNodeRow: React.FC<JsonNodeRowProps> = ({
 					}
 					: {}),
 			}}
-			style={{ paddingLeft: `${indent}px` }}
+			style={{ paddingLeft: `${indent}px`, fontVariantNumeric: 'tabular-nums' }}
 		>
 			{/* depth guides */}
 			{row.depth > 0 && (
