@@ -31,7 +31,7 @@ const OptionsView: React.FC<OptionsViewProps> = ({ node }) => {
 				>
 					<Settings2 size={11} strokeWidth={2.2} />
 				</Flex>
-				<Box fontSize='10px' fontWeight='700' textTransform='uppercase' letterSpacing='0.06em' color='fg.subtle'>
+				<Box fontSize='10px' fontWeight='700' textTransform='uppercase' letterSpacing='0.06em' color='accent.pink'>
 					{'Request options'}
 				</Box>
 			</Flex>
