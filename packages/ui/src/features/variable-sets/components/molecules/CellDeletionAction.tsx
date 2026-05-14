@@ -23,7 +23,7 @@ const CellDeletionAction: React.FC<React.PropsWithChildren<CellDeletionActionPro
 		w='18px'
 		minW='18px'
 		borderRadius='sm'
-		transition='color .12s ease, background .12s ease, transform .08s ease'
+		transition='color .12s ease, background-color .12s ease, transform .08s ease'
 		_hover={{
 			color: 'accent.alert',
 			bg: 'color-mix(in srgb, var(--beak-colors-accent-alert) 18%, transparent)',

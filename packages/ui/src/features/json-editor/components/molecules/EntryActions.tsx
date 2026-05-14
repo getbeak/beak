@@ -41,7 +41,7 @@ const EntryActions: React.FC<EntryActionsProps> = ({ requestId, id, entry }) => 
 						bg: 'color-mix(in srgb, var(--beak-colors-accent-alert) 18%, transparent)',
 					}}
 					_active={{ transform: 'scale(0.92)' }}
-					transition='color .12s ease, background .12s ease, transform .08s ease'
+					transition='color .12s ease, background-color .12s ease, transform .08s ease'
 					onClick={() => dispatch(editorContext.removeEntry({ id, requestId }))}
 				>
 					<Minus size={11} strokeWidth={2.4} />
@@ -63,7 +63,7 @@ const EntryActions: React.FC<EntryActionsProps> = ({ requestId, id, entry }) => 
 					bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 18%, transparent)',
 				}}
 				_active={{ transform: 'scale(0.92)' }}
-				transition='color .12s ease, background .12s ease, transform .08s ease'
+				transition='color .12s ease, background-color .12s ease, transform .08s ease'
 				onClick={() => dispatch(editorContext.addEntry({ id, requestId }))}
 			>
 				<Plus size={11} strokeWidth={2.4} />

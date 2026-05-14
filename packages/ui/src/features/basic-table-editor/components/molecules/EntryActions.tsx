@@ -24,7 +24,7 @@ const EntryActions: React.FC<EntryActionsProps> = ({ onRemove }) => (
 		}}
 		_focus={{ outline: 'none', color: 'accent.alert' }}
 		_active={{ transform: 'scale(0.92)' }}
-		transition='color .12s ease, background .12s ease, transform .08s ease'
+		transition='color .12s ease, background-color .12s ease, transform .08s ease'
 		onClick={() => onRemove()}
 	>
 		<Trash2 size={11} strokeWidth={2.2} />
