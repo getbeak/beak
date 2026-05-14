@@ -54,7 +54,16 @@ const AccountItem: React.FC = () => {
 				<CircleUserRound size={17} strokeWidth={1.8} />
 			</Flex>
 			<Box minW={0} flex='1 1 auto'>
-				<Box fontSize='sm' fontWeight='600' color='fg.default'>{'Signed in'}</Box>
+				<Box
+					fontSize='10px'
+					fontWeight='700'
+					letterSpacing='0.06em'
+					textTransform='uppercase'
+					color='accent.teal'
+					mb='0.5'
+				>
+					{'Signed in'}
+				</Box>
 				<Box
 					as='abbr'
 					title={primaryEmail}
@@ -62,8 +71,9 @@ const AccountItem: React.FC = () => {
 					overflow='hidden'
 					whiteSpace='nowrap'
 					textOverflow='ellipsis'
-					fontSize='xs'
-					color='fg.muted'
+					fontSize='sm'
+					fontWeight='500'
+					color='fg.default'
 					textDecoration='none'
 					fontFamily='mono'
 				>
