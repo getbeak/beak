@@ -63,17 +63,18 @@ const Checkbox: React.FC<CheckboxProps> = ({ label, ...rest }) => {
 					</Box>
 				</Box>
 			</Box>
-			<label
+			<Box
+				as='label'
 				htmlFor={rest.id}
-				style={{
-					color: 'var(--beak-colors-fg-default)',
-					fontSize: '12px',
-					cursor: 'pointer',
-					userSelect: 'none',
-				}}
+				color='fg.default'
+				fontSize='xs'
+				cursor='pointer'
+				userSelect='none'
+				transition='color .12s ease'
+				_hover={{ color: 'accent.pink' }}
 			>
 				{label}
-			</label>
+			</Box>
 		</Flex>
 	);
 };
