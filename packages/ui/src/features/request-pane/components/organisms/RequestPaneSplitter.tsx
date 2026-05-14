@@ -5,7 +5,7 @@ import useShareLink from '@beak/ui/hooks/use-share-link';
 import { Check, Copy, Share2, Terminal } from 'lucide-react';
 import type { ValidRequestNode } from '@getbeak/types/nodes';
 import * as React from 'react';
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 
 import { createBasicHttpOutput } from '../molecules/RequestOutput';
 
@@ -18,22 +18,38 @@ const RequestPaneSplitter: React.FC<RequestPaneSplitterProps> = ({ selectedNode 
 	const windowSession = useContext(WindowSessionContext);
 	const shareUrl = useShareLink(selectedNode.id);
 	const [copied, setCopied] = useState<'preview' | 'share' | null>(null);
+	const flashTimerRef = useRef<number | null>(null);
+
+	useEffect(() => () => {
+		if (flashTimerRef.current !== null) window.clearTimeout(flashTimerRef.current);
+	}, []);
 
 	function flash(kind: 'preview' | 'share') {
 		setCopied(kind);
-		window.setTimeout(() => setCopied(c => (c === kind ? null : c)), 1400);
+		if (flashTimerRef.current !== null) window.clearTimeout(flashTimerRef.current);
+		flashTimerRef.current = window.setTimeout(() => {
+			setCopied(c => (c === kind ? null : c));
+			flashTimerRef.current = null;
+		}, 1400);
 	}
 
-	function copyRequestPreview() {
-		createBasicHttpOutput(selectedNode.info, context, windowSession).then(output =>
-			navigator.clipboard.writeText(output),
-		);
-		flash('preview');
+	async function copyRequestPreview() {
+		try {
+			const output = await createBasicHttpOutput(selectedNode.info, context, windowSession);
+			await navigator.clipboard.writeText(output);
+			flash('preview');
+		} catch (err) {
+			console.warn('copy request preview failed', err);
+		}
 	}
 
-	function copyShareLink() {
-		navigator.clipboard.writeText(shareUrl);
-		flash('share');
+	async function copyShareLink() {
+		try {
+			await navigator.clipboard.writeText(shareUrl);
+			flash('share');
+		} catch (err) {
+			console.warn('copy share link failed', err);
+		}
 	}
 
 	return (
