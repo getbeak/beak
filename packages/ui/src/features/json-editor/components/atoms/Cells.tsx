@@ -58,6 +58,7 @@ export const BodyInputWrapper: React.FC<BoxProps> = props => (
 				outline: 'none',
 				background: 'var(--beak-colors-bg-surface)',
 				borderColor: 'var(--beak-colors-accent-pink)',
+				boxShadow: '0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-pink) 22%, transparent)',
 			},
 			'> input:disabled': {
 				color: 'inherit',
