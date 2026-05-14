@@ -69,9 +69,11 @@ const UntitledBanner: React.FC = () => {
 			>
 				<FileWarning size={12} strokeWidth={2.2} />
 			</Flex>
-			<Text flex='1 1 auto' truncate>
-				<Text as='span' fontWeight='600'>{'Untitled project.'}</Text>
-				{' Changes are live but in a temporary folder. Save to keep it.'}
+			<Text flex='1 1 auto' truncate lineHeight='1.4'>
+				<Text as='span' fontWeight='700' color='accent.pink' textTransform='uppercase' fontSize='10px' letterSpacing='0.06em' mr='1'>
+					{'Untitled'}
+				</Text>
+				{'Changes are live but in a temporary folder. Save to keep it.'}
 			</Text>
 			<Button
 				type='button'
