@@ -8,8 +8,7 @@ export function showContextMenu(id: string, menuItems: MenuItemConstructorOption
 
 		const menuItem = menuItems.find(m => m.id === payload.menuItemId);
 
-		// @ts-expect-error
-		menuItem?.click?.();
+		(menuItem?.click as (() => void) | undefined)?.();
 	});
 
 	ipcContextMenuService.openContextMenu({
