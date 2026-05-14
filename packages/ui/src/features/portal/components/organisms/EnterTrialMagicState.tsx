@@ -137,6 +137,7 @@ const EnterTrialMagicState: React.FC<EnterTrialMagicStateProps> = ({ email, rese
 				<FormInput>
 					<Label>{'Paste the payload from the magic link page'}</Label>
 					<Input
+						aria-label='Magic link payload'
 						placeholder='code=xxxx&state=yyyy'
 						value={manualState}
 						type='text'

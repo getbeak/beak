@@ -77,6 +77,7 @@ const FixProjectEncryption: React.FC<FixProjectEncryptionProps> = ({ onClose }) 
 					</Label>
 					<Input
 						type='text'
+						aria-label='Encryption key'
 						placeholder='d2h5IGJvdGhlciBkZWNvZGluZyB0aGlzPw=='
 						value={key}
 						onChange={e => {
