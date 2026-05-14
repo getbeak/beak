@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 const Redirect: React.FC<React.PropsWithChildren<unknown>> = () => {
-	window.location.href = 'https://getbeak.app';
+	useEffect(() => {
+		window.location.href = 'https://getbeak.app';
+	}, []);
 
 	return null;
 };
