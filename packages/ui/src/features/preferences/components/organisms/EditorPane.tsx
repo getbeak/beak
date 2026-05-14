@@ -84,7 +84,12 @@ const EditorPane: React.FC<React.PropsWithChildren<unknown>> = () => {
 					max={32}
 					style={{ width: '90px' }}
 					value={editorPreferences.fontSize}
-					onChange={event => updateEditorPreference('fontSize', Number(event.currentTarget.value ?? 0))}
+					onChange={event => {
+						const raw = Number(event.currentTarget.value);
+						if (!Number.isFinite(raw)) return;
+						const clamped = Math.min(32, Math.max(8, Math.round(raw)));
+						updateEditorPreference('fontSize', clamped);
+					}}
 				/>
 				<ItemInfo>{'Applies to the Monaco editor inside Beak (request/response bodies, raw views).'}</ItemInfo>
 			</ItemGroup>
