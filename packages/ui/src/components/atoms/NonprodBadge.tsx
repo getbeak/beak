@@ -1,10 +1,12 @@
 import { Box, Flex } from '@chakra-ui/react';
 import { ipcPreferencesService } from '@beak/ui/lib/ipc';
+import { useReducedMotion } from 'framer-motion';
 import { AlertTriangle } from 'lucide-react';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 
 const NonprodBadge: React.FC = () => {
+	const reduced = useReducedMotion();
 	const [show, setShow] = useState(false);
 
 	useEffect(() => {
@@ -36,7 +38,7 @@ const NonprodBadge: React.FC = () => {
 			textTransform='uppercase'
 			cursor='pointer'
 			transform='translateX(-50%)'
-			animation='beakNonprodPulse 2.4s ease-in-out infinite'
+			animation={reduced ? undefined : 'beakNonprodPulse 2.4s ease-in-out infinite'}
 			transition='filter .14s ease, transform .08s ease'
 			_hover={{ filter: 'brightness(1.08)' }}
 			_active={{ transform: 'translateX(-50%) scale(0.97)' }}
