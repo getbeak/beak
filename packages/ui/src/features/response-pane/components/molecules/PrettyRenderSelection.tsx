@@ -61,7 +61,7 @@ const PrettyRenderSelection: React.FC<PrettyRenderSelectionProps> = ({
 			</Box>
 			<select
 				aria-label='Response viewer format'
-				value={selectedLanguage ?? 'text/plain'}
+				value={selectedLanguage ?? 'txt'}
 				onChange={e => onSelectedLanguageChange(e.currentTarget.value)}
 				style={{
 					flex: '1 1 auto',
