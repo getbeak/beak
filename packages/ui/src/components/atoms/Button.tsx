@@ -100,10 +100,7 @@ const Button: React.FC<ButtonProps> = ({ colour = 'primary', size = 'md', childr
 						: `0 8px 22px color-mix(in srgb, ${tone.glow} 45%, transparent), inset 0 1px 0 color-mix(in srgb, white 22%, transparent)`,
 			}}
 			_active={{ transform: 'translateY(0) scale(0.97)', bg: tone.bgActive }}
-			_focus={{
-				outline: 'none',
-				boxShadow: `0 0 0 3px color-mix(in srgb, ${tone.glow} 32%, transparent)`,
-			}}
+			_focus={{ outline: 'none' }}
 			_focusVisible={{
 				outline: 'none',
 				boxShadow: `0 0 0 3px color-mix(in srgb, ${tone.glow} 32%, transparent)`,
