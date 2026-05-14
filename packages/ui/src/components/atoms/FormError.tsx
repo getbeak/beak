@@ -24,7 +24,7 @@ const FormError: React.FC<FormErrorProps> = ({ children }) => (
 		role='alert'
 	>
 		<AlertCircle size={11} strokeWidth={2.2} style={{ marginTop: '1px', flexShrink: 0 }} />
-		<span>{children}</span>
+		<span style={{ lineHeight: 1.45 }}>{children}</span>
 	</Flex>
 );
 
