@@ -90,6 +90,14 @@ const GLOBAL_CSS = (darwin: boolean) => `
 		background-clip: padding-box;
 	}
 	*::-webkit-scrollbar-corner { background: transparent; }
+	@media (prefers-reduced-motion: reduce) {
+		*, *::before, *::after {
+			animation-duration: 0.01ms !important;
+			animation-iteration-count: 1 !important;
+			transition-duration: 0.01ms !important;
+			scroll-behavior: auto !important;
+		}
+	}
 `;
 
 const App: React.FC = () => {
