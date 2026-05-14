@@ -41,7 +41,7 @@ const EditorView: React.FC<EditorViewProps> = props => {
 		return () => {
 			window.secureBridge.ipc.off('editor_preferences_updated', listener);
 		};
-	}, []);
+	}, [forceRerender]);
 
 	if (!preferences) return null;
 
