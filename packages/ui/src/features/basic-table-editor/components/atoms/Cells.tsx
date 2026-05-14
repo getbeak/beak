@@ -6,7 +6,7 @@ const headerBase = {
 	px: '1.5',
 	color: 'fg.subtle',
 	fontSize: '10px',
-	fontWeight: '600',
+	fontWeight: '700',
 	letterSpacing: '0.06em',
 	textTransform: 'uppercase',
 } as const;
