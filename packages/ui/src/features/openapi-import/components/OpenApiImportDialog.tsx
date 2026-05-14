@@ -289,7 +289,7 @@ const OpenApiImportDialog: React.FC = () => {
 									<Box fontSize='sm' fontWeight='600' color='fg.default' letterSpacing='-0.005em'>
 										{'Importing OpenAPI spec'}
 									</Box>
-									<Box fontSize='xs' color='fg.muted'>
+									<Box fontSize='xs' color='fg.muted' lineHeight='1.5'>
 										{'→ '}
 										<Box as='span' fontFamily='mono' color='fg.default'>{state.targetFolder}</Box>
 									</Box>

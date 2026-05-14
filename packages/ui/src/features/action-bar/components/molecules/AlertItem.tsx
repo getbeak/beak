@@ -42,7 +42,7 @@ const AlertItem: React.FC<AlertItemProps> = ({ title, description, action }) => 
 		</Flex>
 		<Box flex='1 1 auto' minW={0}>
 			<Box fontSize='sm' fontWeight='600' color='fg.default' letterSpacing='-0.005em' lineHeight='1.3'>{title}</Box>
-			<Box fontSize='xs' color='fg.muted' mt='0.5' lineHeight='1.45'>{description}</Box>
+			<Box fontSize='xs' color='fg.muted' mt='0.5' lineHeight='1.5'>{description}</Box>
 		</Box>
 		{action && (
 			<Flex flexShrink={0} align='center' alignSelf='center'>
