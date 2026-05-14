@@ -215,6 +215,11 @@ const UrlPill: React.FC<{ url: string }> = ({ url }) => (
 		overflow='hidden'
 		textOverflow='ellipsis'
 		whiteSpace='nowrap'
+		transition='border-color .14s ease, background-color .14s ease'
+		_hover={{
+			borderColor: 'color-mix(in srgb, var(--beak-colors-accent-pink) 35%, var(--beak-colors-border-subtle))',
+			bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 4%, var(--beak-colors-bg-canvas))',
+		}}
 	>
 		{url}
 	</Box>
