@@ -86,7 +86,6 @@ function getUint48BE(view: DataView, offset: number): number {
 }
 
 function setUint48BE(view: DataView, offset: number, value: number) {
-	// eslint-disable-next-line no-bitwise
 	const lower = value & (2 ** 32 - 1);
 	const upper = (value - lower) / 2 ** 32;
 

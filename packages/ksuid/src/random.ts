@@ -24,7 +24,6 @@ function getWebCrypto(): Crypto | undefined {
 	if (typeof window !== 'undefined' && window.crypto) return window.crypto;
 
 	if (typeof crypto !== 'undefined') {
-		// eslint-disable-next-line no-undef
 		return crypto;
 	}
 
