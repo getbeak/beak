@@ -36,7 +36,6 @@ export function buildProjectTreeReducer<S extends ProjectTreeState>(builder: Act
 		})
 
 		.addCase(actions.removeNodeFromStore, (state, { payload }) => {
-			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 			const { [payload]: _remove, ...rest } = state.tree;
 			state.tree = rest;
 		})
@@ -44,7 +43,6 @@ export function buildProjectTreeReducer<S extends ProjectTreeState>(builder: Act
 			const node = Object.values(state.tree).find(n => n.filePath === payload);
 			if (!node) return;
 
-			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 			const { [node.id]: _remove, ...rest } = state.tree;
 			state.tree = rest;
 		});
