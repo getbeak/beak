@@ -74,7 +74,7 @@ const EnterTrialMagicState: React.FC<EnterTrialMagicStateProps> = ({ email, rese
 	return (
 		<React.Fragment>
 			{manualState === void 0 && !working && (
-				<Box maxW='340px' fontSize='sm' color='fg.muted' mb='2'>
+				<Box maxW='340px' fontSize='sm' color='fg.muted' mb='2' lineHeight='1.5'>
 					<Flex align='center' gap='1.5' mb='1.5' color='accent.pink'>
 						<Mail size={16} />
 						<Box fontSize='xs' fontWeight='600' textTransform='uppercase' letterSpacing='0.06em'>

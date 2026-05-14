@@ -47,7 +47,7 @@ const Purchase: React.FC<PurchaseProps> = ({ onChangeToTrial }) => {
 				<Box fontSize='xl' fontWeight='700' color='fg.default' letterSpacing='-0.02em' mt='1'>
 					{'New to Beak?'}
 				</Box>
-				<Box fontSize='sm' color='fg.muted' textAlign='center' maxW='340px'>
+				<Box fontSize='sm' color='fg.muted' textAlign='center' maxW='340px' lineHeight='1.5'>
 					{"For $25 a year, get access to Beak's full set of powerful features. "}
 					{'No hidden fees, no pricing tiers.'}
 				</Box>
