@@ -63,10 +63,10 @@ const SubscriptionInformation: React.FC<SubscriptionInformationProps> = ({ subsc
 			<Box flex='0 0 auto' textAlign='right'>
 				{trial ? (
 					<React.Fragment>
-						<Box fontSize='10px' fontWeight='700' textTransform='uppercase' letterSpacing='0.06em' color='fg.subtle'>
+						<Box fontSize='10px' fontWeight='700' textTransform='uppercase' letterSpacing='0.06em' color='accent.warning'>
 							{'Trial ends'}
 						</Box>
-						<Box fontSize='sm' color='fg.default' fontWeight='500'>
+						<Box fontSize='sm' color='fg.default' fontWeight='600' style={{ fontVariantNumeric: 'tabular-nums' }}>
 							{formatDistance(new Date(subscription.endDate!), new Date(), { addSuffix: true })}
 						</Box>
 					</React.Fragment>
