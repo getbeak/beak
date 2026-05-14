@@ -40,11 +40,13 @@ const ProjectMain: React.FC = () => {
 	useGlobalKeyboardShortcuts(loaded && setup);
 
 	useEffect(() => {
-		if (!loaded || setup) return;
+		if (!loaded || setup) return void 0;
 
-		window.setTimeout(() => setSetup(true), 300);
+		const id = window.setTimeout(() => setSetup(true), 300);
 
 		setTitle(`${project.name} - Beak`);
+
+		return () => window.clearTimeout(id);
 	}, [setup, project, project.name, loaded]);
 
 	return (
