@@ -127,13 +127,26 @@ const flightSlice = createSlice({
 						flight.timing.requestStart = heartbeat.payload.timestamp;
 						flight.lastUpdate = heartbeat.payload.timestamp;
 						return;
-					case 'parsing_response':
-						flight.contentLength = heartbeat.payload.contentLength;
+					case 'head_received': {
+						const { contentLength, headers, status, url, redirected, contentType, streamKind, timestamp } =
+							heartbeat.payload;
+						flight.contentLength = contentLength;
 						flight.bodyTransferred = 0;
 						flight.bodyTransferPercentage = 0;
-						flight.lastUpdate = heartbeat.payload.timestamp;
-						flight.timing.headersEnd = heartbeat.payload.timestamp;
+						flight.lastUpdate = timestamp;
+						flight.timing.headersEnd = timestamp;
+						flight.head = {
+							receivedAt: timestamp,
+							status,
+							headers,
+							url,
+							redirected,
+							contentType,
+							contentLength,
+							streamKind,
+						};
 						return;
+					}
 					case 'reading_body': {
 						const total = flight.contentLength ?? 0;
 						const transferred = (flight.bodyTransferred ?? 0) + heartbeat.payload.buffer.length;
@@ -141,6 +154,12 @@ const flightSlice = createSlice({
 						flight.bodyTransferPercentage = total > 0 ? (transferred / total) * 100 : 0;
 						flight.lastUpdate = heartbeat.payload.timestamp;
 						flight.timing.responseEnd = heartbeat.payload.timestamp;
+						return;
+					}
+					case 'sse_event': {
+						if (!flight.sseEvents) flight.sseEvents = [];
+						flight.sseEvents.push(heartbeat.payload.event);
+						flight.lastUpdate = heartbeat.payload.timestamp;
 						return;
 					}
 				}

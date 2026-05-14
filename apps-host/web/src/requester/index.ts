@@ -1,10 +1,12 @@
 import { requestBodyContentType } from '@beak/common/helpers/request';
+import { SseParser, isSseContentType } from '@beak/common/helpers/sse-parser';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import type {
 	FlightCompletePayload,
 	FlightFailedPayload,
 	FlightHeartbeatPayload,
 	FlightRequestPayload,
+	ResponseStreamKind,
 } from '@beak/common/types/requester';
 import type { RequestBodyFile, RequestOverview } from '@getbeak/types/request';
 
@@ -23,9 +25,10 @@ export interface RequesterOptions {
 
 /*
 Stages:
-	00%-025%: fetch response
-	25%-026%: parsing response
-	27%-100%: reading response body
+	fetch_response   — about to fire fetch
+	head_received    — fetch resolved; headers/status/url available
+	reading_body     — one body chunk arrived
+	sse_event        — fired when the response is text/event-stream
 */
 
 export async function startRequester(options: RequesterOptions) {
@@ -34,38 +37,43 @@ export async function startRequester(options: RequesterOptions) {
 	const { flightId, request } = payload;
 	const start = Date.now();
 
-	heartbeat({
-		flightId,
-		stage: 'fetch_response',
-		payload: { timestamp: start },
-	});
+	heartbeat({ flightId, stage: 'fetch_response', payload: { timestamp: start } });
 
 	let response: Response;
-
 	try {
 		response = await runRequest(request);
 	} catch (error) {
 		failed({ flightId, error: error as Error });
-
 		return;
 	}
 
-	const contentLengthUnstable = response.headers.get('content-length') ?? '0';
-	const contentLength = Number.parseInt(contentLengthUnstable, 10) || 0;
-
-	let hasBody = contentLength > 0;
+	const headers = headersToObject(response.headers);
+	const contentType = response.headers.get('content-type');
+	const contentLength = Number.parseInt(response.headers.get('content-length') ?? '0', 10) || 0;
+	const streamKind = classifyStream(contentType, response.headers.get('transfer-encoding'));
 
 	heartbeat({
 		flightId,
-		stage: 'parsing_response',
-		payload: { contentLength, timestamp: Date.now() },
+		stage: 'head_received',
+		payload: {
+			timestamp: Date.now(),
+			status: response.status,
+			headers,
+			url: response.url,
+			redirected: response.redirected,
+			contentType,
+			contentLength,
+			streamKind,
+		},
 	});
 
 	if (response.bodyUsed) {
 		failed({ flightId, error: new Error('body already used') });
-
 		return;
 	}
+
+	let hasBody = contentLength > 0;
+	const sseParser = streamKind === 'sse' ? new SseParser() : null;
 
 	if (response.body !== null) {
 		const reader = response.body.getReader();
@@ -73,31 +81,44 @@ export async function startRequester(options: RequesterOptions) {
 		// Read to completion before signalling complete — the previous
 		// fire-and-forget `reader.read().then(...)` chain returned immediately
 		// and `complete()` ran with zero body chunks delivered.
-		while (true) {
-			const { done, value } = await reader.read();
-			if (value) {
-				hasBody = true;
-				heartbeat({
-					flightId,
-					stage: 'reading_body',
-					payload: { buffer: value, timestamp: Date.now() },
-				});
+		try {
+			while (true) {
+				const { done, value } = await reader.read();
+				if (value) {
+					hasBody = true;
+					heartbeat({ flightId, stage: 'reading_body', payload: { buffer: value, timestamp: Date.now() } });
+
+					if (sseParser) {
+						for (const event of sseParser.push(value)) {
+							heartbeat({ flightId, stage: 'sse_event', payload: { timestamp: Date.now(), event } });
+						}
+					}
+				}
+				if (done) break;
 			}
-			if (done) break;
+		} catch (error) {
+			failed({ flightId, error: error as Error });
+			return;
+		}
+
+		if (sseParser) {
+			for (const event of sseParser.flush()) {
+				heartbeat({ flightId, stage: 'sse_event', payload: { timestamp: Date.now(), event } });
+			}
 		}
 	}
 
 	complete({
 		flightId,
 		timestamp: Date.now(),
-		overview: {
-			headers: headersToObject(response.headers),
-			redirected: response.redirected,
-			status: response.status,
-			url: response.url,
-			hasBody,
-		},
+		overview: { headers, redirected: response.redirected, status: response.status, url: response.url, hasBody },
 	});
+}
+
+function classifyStream(contentType: string | null, transferEncoding: string | null): ResponseStreamKind {
+	if (isSseContentType(contentType)) return 'sse';
+	if (transferEncoding && transferEncoding.toLowerCase().includes('chunked')) return 'chunked';
+	return 'standard';
 }
 
 async function runRequest(overview: RequestOverview) {

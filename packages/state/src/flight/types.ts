@@ -62,6 +62,34 @@ export interface FlightHistory {
 	metadata: FlightHistoryMetadata;
 }
 
+/** Stream classification reported with the response head. */
+export type ResponseStreamKind = 'standard' | 'sse' | 'chunked';
+
+/**
+ * The response head — everything we know the instant `fetch()` resolves but
+ * before any body bytes arrive. Persisted on the in-progress flight so the
+ * Inspector can render headers/status before the body finishes streaming.
+ */
+export interface ResponseHead {
+	receivedAt: number;
+	status: number;
+	headers: Record<string, string>;
+	url: string;
+	redirected: boolean;
+	contentType: string | null;
+	contentLength: number;
+	streamKind: ResponseStreamKind;
+}
+
+/** One parsed Server-Sent Events frame appended to a flight's event log. */
+export interface SseEvent {
+	receivedAt: number;
+	id?: string;
+	event?: string;
+	data: string;
+	retry?: number;
+}
+
 /** A flight currently in progress (mutable). */
 export interface FlightInProgress {
 	requestId: string;
@@ -74,6 +102,10 @@ export interface FlightInProgress {
 	contentLength?: number;
 	bodyTransferred?: number;
 	bodyTransferPercentage?: number;
+	/** Set as soon as the host emits `head_received`. */
+	head?: ResponseHead;
+	/** Server-Sent Events accumulated when the response is `text/event-stream`. */
+	sseEvents?: SseEvent[];
 	response?: ResponseOverview;
 	error?: Error;
 }
@@ -98,16 +130,26 @@ export interface FlightOptions {
 }
 
 // IPC heartbeat payload variants (inlined to avoid coupling core to @beak/common).
-export type HeartbeatStage = 'fetch_response' | 'parsing_response' | 'reading_body';
+// Must stay in sync with packages/common/src/types/requester.ts.
+export type HeartbeatStage = 'fetch_response' | 'head_received' | 'reading_body' | 'sse_event';
 
 export interface FlightHeartbeatFetchResponse {
 	stage: 'fetch_response';
 	payload: { timestamp: number };
 }
 
-export interface FlightHeartbeatParsingResponse {
-	stage: 'parsing_response';
-	payload: { timestamp: number; contentLength: number };
+export interface FlightHeartbeatHeadReceived {
+	stage: 'head_received';
+	payload: {
+		timestamp: number;
+		status: number;
+		headers: Record<string, string>;
+		url: string;
+		redirected: boolean;
+		contentType: string | null;
+		contentLength: number;
+		streamKind: ResponseStreamKind;
+	};
 }
 
 export interface FlightHeartbeatReadingBody {
@@ -115,10 +157,16 @@ export interface FlightHeartbeatReadingBody {
 	payload: { timestamp: number; buffer: Uint8Array };
 }
 
+export interface FlightHeartbeatSseEvent {
+	stage: 'sse_event';
+	payload: { timestamp: number; event: SseEvent };
+}
+
 export type FlightHeartbeatPayload =
 	| FlightHeartbeatFetchResponse
-	| FlightHeartbeatParsingResponse
-	| FlightHeartbeatReadingBody;
+	| FlightHeartbeatHeadReceived
+	| FlightHeartbeatReadingBody
+	| FlightHeartbeatSseEvent;
 
 // Action payloads.
 

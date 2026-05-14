@@ -7,7 +7,25 @@ export const FlightMessages = {
 	failed: 'flight_failed',
 };
 
-export type HeartbeatStage = 'fetch_response' | 'parsing_response' | 'reading_body';
+/**
+ * Stream classification reported alongside the response head. The renderer
+ * uses this to pick a viewer (raw bytes, SSE event log, chunked accumulation).
+ */
+export type ResponseStreamKind = 'standard' | 'sse' | 'chunked';
+
+/**
+ * One parsed Server-Sent Events frame (per https://html.spec.whatwg.org/multipage/server-sent-events.html#parsing-an-event-stream).
+ * Emitted by the requester when the response content-type is `text/event-stream`.
+ */
+export interface SseEvent {
+	receivedAt: number;
+	id?: string;
+	event?: string;
+	data: string;
+	retry?: number;
+}
+
+export type HeartbeatStage = 'fetch_response' | 'head_received' | 'reading_body' | 'sse_event';
 
 export interface FlightRequestPayload {
 	flightId: string;
@@ -17,8 +35,9 @@ export interface FlightRequestPayload {
 
 export type FlightHeartbeatPayload =
 	| FlightHeartbeatFetchResponse
-	| FlightHeartbeatParsingResponse
-	| FlightHeartbeatReadingBody;
+	| FlightHeartbeatHeadReceived
+	| FlightHeartbeatReadingBody
+	| FlightHeartbeatSseEvent;
 
 export interface FlightHeartbeatFetchResponse {
 	flightId: string;
@@ -28,12 +47,24 @@ export interface FlightHeartbeatFetchResponse {
 	};
 }
 
-export interface FlightHeartbeatParsingResponse {
+/**
+ * Fired the moment `fetch()` resolves — carries the full response head (status,
+ * headers, URL, content-type). Lets the renderer render the headers/status tab
+ * before any body bytes arrive, which is essential for long responses, SSE
+ * streams, and ranged downloads.
+ */
+export interface FlightHeartbeatHeadReceived {
 	flightId: string;
-	stage: 'parsing_response';
+	stage: 'head_received';
 	payload: {
 		timestamp: number;
+		status: number;
+		headers: Record<string, string>;
+		url: string;
+		redirected: boolean;
+		contentType: string | null;
 		contentLength: number;
+		streamKind: ResponseStreamKind;
 	};
 }
 
@@ -43,6 +74,15 @@ export interface FlightHeartbeatReadingBody {
 	payload: {
 		timestamp: number;
 		buffer: Uint8Array;
+	};
+}
+
+export interface FlightHeartbeatSseEvent {
+	flightId: string;
+	stage: 'sse_event';
+	payload: {
+		timestamp: number;
+		event: SseEvent;
 	};
 }
 

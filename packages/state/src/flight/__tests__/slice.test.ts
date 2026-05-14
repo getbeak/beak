@@ -62,18 +62,33 @@ describe('flightSlice', () => {
 		expect(next.loading.r1).toBe(true);
 	});
 
-	it('updateFlightProgress mutates active flight on parsing_response', () => {
+	it('updateFlightProgress lands the full head on head_received', () => {
 		const begun = flightReducer(emptyState, beginFlightRequest(beginPayload('r1', 'f1')));
 		const next = flightReducer(
 			begun,
 			updateFlightProgress({
 				requestId: 'r1',
 				flightId: 'f1',
-				heartbeat: { stage: 'parsing_response', payload: { timestamp: 1234, contentLength: 100 } },
+				heartbeat: {
+					stage: 'head_received',
+					payload: {
+						timestamp: 1234,
+						contentLength: 100,
+						status: 200,
+						headers: { 'Content-Type': 'application/json' },
+						url: 'https://example.com/foo',
+						redirected: false,
+						contentType: 'application/json',
+						streamKind: 'standard',
+					},
+				},
 			}),
 		);
 		expect(next.activeFlights.f1?.contentLength).toBe(100);
 		expect(next.activeFlights.f1?.timing.headersEnd).toBe(1234);
+		expect(next.activeFlights.f1?.head?.status).toBe(200);
+		expect(next.activeFlights.f1?.head?.streamKind).toBe('standard');
+		expect(next.activeFlights.f1?.head?.headers['Content-Type']).toBe('application/json');
 	});
 
 	it('updateFlightProgress accumulates reading_body bytes', () => {
@@ -83,7 +98,19 @@ describe('flightSlice', () => {
 			updateFlightProgress({
 				requestId: 'r1',
 				flightId: 'f1',
-				heartbeat: { stage: 'parsing_response', payload: { timestamp: 1, contentLength: 100 } },
+				heartbeat: {
+					stage: 'head_received',
+					payload: {
+						timestamp: 1,
+						contentLength: 100,
+						status: 200,
+						headers: {},
+						url: 'https://example.com',
+						redirected: false,
+						contentType: null,
+						streamKind: 'standard',
+					},
+				},
 			}),
 		);
 		const chunk = flightReducer(
@@ -96,6 +123,34 @@ describe('flightSlice', () => {
 		);
 		expect(chunk.activeFlights.f1?.bodyTransferred).toBe(30);
 		expect(chunk.activeFlights.f1?.bodyTransferPercentage).toBe(30);
+	});
+
+	it('updateFlightProgress appends sse_event frames to a per-flight log', () => {
+		const begun = flightReducer(emptyState, beginFlightRequest(beginPayload('r1', 'f1')));
+		const first = flightReducer(
+			begun,
+			updateFlightProgress({
+				requestId: 'r1',
+				flightId: 'f1',
+				heartbeat: {
+					stage: 'sse_event',
+					payload: { timestamp: 10, event: { receivedAt: 10, event: 'tick', data: '1' } },
+				},
+			}),
+		);
+		const second = flightReducer(
+			first,
+			updateFlightProgress({
+				requestId: 'r1',
+				flightId: 'f1',
+				heartbeat: {
+					stage: 'sse_event',
+					payload: { timestamp: 20, event: { receivedAt: 20, event: 'tick', data: '2', id: 'evt-2' } },
+				},
+			}),
+		);
+		expect(second.activeFlights.f1?.sseEvents).toHaveLength(2);
+		expect(second.activeFlights.f1?.sseEvents?.[1].id).toBe('evt-2');
 	});
 
 	it('updateFlightProgress ignores mismatched flightId', () => {
