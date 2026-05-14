@@ -123,7 +123,7 @@ service.registerReadReferencedFile(async (event, payload) => {
 
 	const file = await fs.readFile(filePath);
 
-	if (payload.truncatedLength === void 0) return { body: file.slice(0, payload.truncatedLength) };
+	if (payload.truncatedLength !== void 0) return { body: file.slice(0, payload.truncatedLength) };
 
 	return { body: file };
 });
@@ -163,9 +163,13 @@ export async function ensureWithinProject(projectFilePath: string, inputPath: st
 	if (!project.id || !project.version || !project.name)
 		throw new Squawk('path_project_invalid', { projectFilePath, inputPath });
 
-	const projectDir = path.join(projectFilePath, '..');
+	const projectDir = path.resolve(path.join(projectFilePath, '..'));
 	const resolved = path.resolve(path.join(projectDir, inputPath));
-	const isWithinProject = resolved.startsWith(projectDir) && path.isAbsolute(resolved);
+	// Match either an exact dir hit OR a true descendant. The previous
+	// `startsWith(projectDir)` check accepted siblings whose name shared a
+	// prefix (`/p/Cool` matched `/p/Cool-evil/...`), letting a compromised
+	// renderer read out-of-project files via the fs IPC.
+	const isWithinProject = resolved === projectDir || resolved.startsWith(projectDir + path.sep);
 
 	if (!isWithinProject) throw new Squawk('path_not_within_project', { projectFilePath, inputPath });
 
