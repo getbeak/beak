@@ -130,6 +130,12 @@ const FinderView: React.FC<FinderViewProps> = ({ content, reset }) => {
 								? 'accent.pink'
 								: 'color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent)',
 						}}
+						_focusVisible={{
+							outline: 'none',
+							boxShadow: isActive
+								? '0 0 0 1px color-mix(in srgb, var(--beak-colors-accent-pink) 70%, transparent), 0 6px 14px color-mix(in srgb, var(--beak-colors-accent-pink) 35%, transparent), inset 0 1px 0 color-mix(in srgb, white 18%, transparent)'
+								: 'inset 0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-pink) 50%, transparent)',
+						}}
 						onClick={() => {
 							reset();
 							dispatch(changeTab({ type: 'request', payload: k, temporary: true }));

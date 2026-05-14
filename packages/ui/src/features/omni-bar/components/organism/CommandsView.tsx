@@ -249,6 +249,12 @@ const CommandsView: React.FC<React.PropsWithChildren<CommandsViewProps>> = ({ co
 											? 'accent.teal'
 											: 'color-mix(in srgb, var(--beak-colors-accent-teal) 14%, transparent)',
 									}}
+									_focusVisible={{
+										outline: 'none',
+										boxShadow: isActive
+											? '0 0 0 1px color-mix(in srgb, var(--beak-colors-accent-teal) 70%, transparent), 0 6px 14px color-mix(in srgb, var(--beak-colors-accent-teal) 35%, transparent), inset 0 1px 0 color-mix(in srgb, white 18%, transparent)'
+											: 'inset 0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-teal) 50%, transparent)',
+									}}
 									onClick={() => {
 										reset();
 										command.action(dispatch);
