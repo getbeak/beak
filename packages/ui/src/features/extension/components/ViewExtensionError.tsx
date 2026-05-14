@@ -31,7 +31,7 @@ const ViewExtensionError: React.FC<ViewExtensionErrorProps> = props => (
 				>
 					<Puzzle size={14} strokeWidth={2} />
 				</Flex>
-				<Box fontSize='md' fontWeight='600' color='fg.default'>
+				<Box fontSize='md' fontWeight='600' color='fg.default' letterSpacing='-0.005em'>
 					{'Unable to load extension'}
 				</Box>
 			</Flex>

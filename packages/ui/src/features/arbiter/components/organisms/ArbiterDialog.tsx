@@ -34,7 +34,7 @@ export const ArbiterDialog: React.FC<ArbiterDialogProps> = ({ open, onClose }) =
 					>
 						<AlertTriangle size={14} strokeWidth={2} />
 					</Flex>
-					<Box fontSize='md' fontWeight='600' color='fg.default'>
+					<Box fontSize='md' fontWeight='600' color='fg.default' letterSpacing='-0.005em'>
 						{'Subscription check failed'}
 					</Box>
 				</Flex>

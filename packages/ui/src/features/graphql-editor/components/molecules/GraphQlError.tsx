@@ -44,7 +44,7 @@ const GraphQlError: React.FC<GraphQlErrorProps> = ({ error }) => (
 		</Flex>
 
 		<Flex direction='column' gap='1'>
-			<Box fontSize='md' fontWeight='600' color='fg.default'>
+			<Box fontSize='md' fontWeight='600' color='fg.default' letterSpacing='-0.005em'>
 				{'Unable to fetch GraphQL schema'}
 			</Box>
 			<Box fontSize='10px' color='fg.subtle' letterSpacing='0.06em' textTransform='uppercase' fontWeight='700'>

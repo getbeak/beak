@@ -38,7 +38,7 @@ const ViewProjectEncryption: React.FC<ViewProjectEncryptionProps> = ({ onClose }
 					>
 						<KeyRound size={14} strokeWidth={2} />
 					</Flex>
-					<Box fontSize='md' fontWeight='600' color='fg.default'>
+					<Box fontSize='md' fontWeight='600' color='fg.default' letterSpacing='-0.005em'>
 						{'Project encryption'}
 					</Box>
 				</Flex>
