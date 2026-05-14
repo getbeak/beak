@@ -49,6 +49,7 @@ const RequestMagicLink: React.FC<React.PropsWithChildren<RequestMagicLinkProps>>
 			<ActionContainer>
 				<Input
 					type='email'
+					aria-label='Email'
 					placeholder='you@example.com'
 					value={email}
 					ref={inputRef}
