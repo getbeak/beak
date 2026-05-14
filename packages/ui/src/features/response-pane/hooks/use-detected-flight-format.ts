@@ -18,7 +18,7 @@ export default function useDetectedFlightFormat(
 			default:
 				return [contentType, mime.extension(contentType) || null];
 		}
-	}, [flight.flightId]);
+	}, [flight.flightId, mode]);
 }
 
 function getContentType(flight: Flight, mode: 'request' | 'response') {
