@@ -60,13 +60,13 @@ interface PrettyViewerProps {
 const PrettyViewer: React.FC<PrettyViewerProps> = ({ flight, mode }) => {
 	const dispatch = useDispatch();
 	const requestId = flight.requestId;
-	const preferences = useAppSelector(s => s.global.preferences.requests[requestId].response.pretty[mode]);
+	const preferences = useAppSelector(s => s.global.preferences.requests[requestId]?.response.pretty[mode]);
 	const [eligibility, body] = useFlightBodyInfo(flight, mode);
 	const [contentType, detectedFormat] = useDetectedFlightFormat(flight, mode);
 	// Prefer the modern tree viewer when JSON is detected; the user can still
 	// switch to the raw editor via the dropdown.
 	const defaultLanguage = detectedFormat === 'json' ? 'json+viewer' : detectedFormat;
-	const selectedLanguage = preferences.language ?? defaultLanguage;
+	const selectedLanguage = preferences?.language ?? defaultLanguage;
 
 	if (eligibility !== 'eligible') return <PrettyViewIneligible eligibility={eligibility} />;
 
@@ -167,4 +167,7 @@ function tryFormatXml(xml: string) {
 	}
 }
 
-export default React.memo(PrettyViewer, (prev, next) => prev.flight.flightId === next.flight.flightId);
+export default React.memo(
+	PrettyViewer,
+	(prev, next) => prev.flight.flightId === next.flight.flightId && prev.mode === next.mode,
+);
