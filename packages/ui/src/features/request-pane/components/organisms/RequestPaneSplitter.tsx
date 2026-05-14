@@ -83,10 +83,12 @@ const RequestPaneSplitter: React.FC<RequestPaneSplitterProps> = ({ selectedNode 
 					minW='22px'
 					borderRadius='sm'
 					color={copied === 'preview' ? 'accent.teal' : 'fg.subtle'}
+					transition='color .12s ease, background-color .12s ease, transform .08s ease'
 					_hover={{ color: copied === 'preview' ? 'accent.teal' : 'accent.pink', bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent)' }}
+					_active={{ transform: 'scale(0.9)' }}
 					onClick={copyRequestPreview}
 				>
-					{copied === 'preview' ? <Check size={12} /> : <Copy size={12} />}
+					{copied === 'preview' ? <Check size={12} strokeWidth={3} /> : <Copy size={12} />}
 				</IconButton>
 				<IconButton
 					aria-label='Copy share link'
@@ -98,10 +100,12 @@ const RequestPaneSplitter: React.FC<RequestPaneSplitterProps> = ({ selectedNode 
 					minW='22px'
 					borderRadius='sm'
 					color={copied === 'share' ? 'accent.teal' : 'fg.subtle'}
+					transition='color .12s ease, background-color .12s ease, transform .08s ease'
 					_hover={{ color: copied === 'share' ? 'accent.teal' : 'accent.pink', bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent)' }}
+					_active={{ transform: 'scale(0.9)' }}
 					onClick={copyShareLink}
 				>
-					{copied === 'share' ? <Check size={12} /> : <Share2 size={12} />}
+					{copied === 'share' ? <Check size={12} strokeWidth={3} /> : <Share2 size={12} />}
 				</IconButton>
 			</Flex>
 		</Flex>
