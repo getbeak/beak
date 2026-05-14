@@ -46,6 +46,7 @@ const NotificationsItem: React.FC<React.PropsWithChildren<unknown>> = () => {
 					label='Successful requests'
 				>
 					<NotificationStateSelect
+						label='Successful requests'
 						value={notificationPreferences.onSuccessfulRequest}
 						onChange={value => updateNotificationPreference('onSuccessfulRequest', value)}
 					/>
@@ -58,6 +59,7 @@ const NotificationsItem: React.FC<React.PropsWithChildren<unknown>> = () => {
 					hint='100–199 and 300–399'
 				>
 					<NotificationStateSelect
+						label='Information and redirect requests'
 						value={notificationPreferences.onInformationRequest}
 						onChange={value => updateNotificationPreference('onInformationRequest', value)}
 					/>
@@ -69,6 +71,7 @@ const NotificationsItem: React.FC<React.PropsWithChildren<unknown>> = () => {
 					label='Failed requests'
 				>
 					<NotificationStateSelect
+						label='Failed requests'
 						value={notificationPreferences.onFailedRequest}
 						onChange={value => updateNotificationPreference('onFailedRequest', value)}
 					/>
