@@ -9,11 +9,10 @@ const development = import.meta.env.MODE === 'development';
 let failure = false;
 
 export async function handleUnhandledError(error: Error) {
-	captureException(error);
-
 	if (!error || failure) return;
-
 	failure = true;
+
+	captureException(error);
 
 	if (!development) window.setTimeout(() => ipcWindowService.reloadSelfWindow(), 0);
 
@@ -25,4 +24,9 @@ export async function handleUnhandledError(error: Error) {
 		buttons: [development ? 'Ignore' : 'Restart'],
 		defaultId: 0,
 	});
+
+	// In dev we don't auto-reload, so reset the flag once the user has
+	// acknowledged this error — otherwise every subsequent error stays
+	// silenced for the rest of the session.
+	if (development) failure = false;
 }
