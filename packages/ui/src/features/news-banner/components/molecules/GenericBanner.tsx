@@ -30,6 +30,8 @@ const GenericBanner: React.FC<GenericBannerProps> = ({ item }) => {
 			animate={{ opacity: 1, y: 0 }}
 			exit={{ opacity: 0, y: -6 }}
 			transition={{ duration: 0.2, ease: 'easeOut' }}
+			role='status'
+			aria-live='polite'
 			align='center'
 			gap='3'
 			px='4'
@@ -82,7 +84,7 @@ const GenericBanner: React.FC<GenericBannerProps> = ({ item }) => {
 				<IconButton
 					variant='ghost'
 					size='xs'
-					aria-label='Dismiss'
+					aria-label={`Dismiss "${title}"`}
 					bg='transparent'
 					p='0'
 					h='18px'
