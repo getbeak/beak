@@ -1,7 +1,6 @@
 import React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import type { VariableSets } from '@getbeak/types/variable-sets';
-import * as uuid from 'uuid';
 
 import { VariableManager } from '.';
 import type { ValueSections } from './values';
@@ -30,6 +29,8 @@ export default function renderValueSections(parts: ValueSections, variableSets: 
 				if (!rtv) {
 					return (
 						<div
+							// biome-ignore lint/suspicious/noArrayIndexKey: renderToStaticMarkup, no reconciliation
+							key={`missing-${idx}`}
 							className={'bvs-blob'}
 							contentEditable={false}
 							data-index={idx}
@@ -37,7 +38,6 @@ export default function renderValueSections(parts: ValueSections, variableSets: 
 							data-missing='true'
 							data-type={p.type}
 							data-payload={void 0}
-							key={uuid.v4()}
 						>
 							&nbsp;
 							<span
@@ -67,13 +67,14 @@ export default function renderValueSections(parts: ValueSections, variableSets: 
 
 				return (
 					<div
+						// biome-ignore lint/suspicious/noArrayIndexKey: renderToStaticMarkup, no reconciliation
+						key={`blob-${idx}`}
 						className={'bvs-blob'}
 						contentEditable={false}
 						data-index={idx}
 						data-editable={editable}
 						data-type={p.type}
 						data-payload={p.payload ? JSON.stringify(p.payload) : void 0}
-						key={uuid.v4()}
 					>
 						&nbsp;
 						{name}
