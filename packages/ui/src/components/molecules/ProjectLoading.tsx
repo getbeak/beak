@@ -51,6 +51,9 @@ const ProjectLoading: React.FC = () => {
 						src='images/logo-tile.png'
 						mb='5'
 						filter='drop-shadow(0px 8px 24px color-mix(in srgb, var(--beak-colors-accent-pink) 40%, transparent))'
+						style={{
+							animation: 'beakLogoFloat 4s ease-in-out infinite',
+						}}
 					/>
 				</motion.div>
 				<Flex

@@ -58,6 +58,10 @@ const GLOBAL_CSS = (darwin: boolean) => `
 		from { transform: rotate(0deg); }
 		to { transform: rotate(360deg); }
 	}
+	@keyframes beakLogoFloat {
+		0%, 100% { transform: translateY(0); }
+		50% { transform: translateY(-4px); }
+	}
 	*::-webkit-scrollbar { width: 8px; height: 8px; }
 	*::-webkit-scrollbar-track { background: transparent; }
 	*::-webkit-scrollbar-thumb {
