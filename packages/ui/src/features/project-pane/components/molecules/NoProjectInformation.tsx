@@ -29,7 +29,7 @@ const NoProjectInformation: React.FC = () => (
 		>
 			<GitBranch size={10} strokeWidth={2} />
 		</Flex>
-		<Box fontSize='11px' color='fg.muted'>{'Not tracked in Git'}</Box>
+		<Box fontSize='xs' color='fg.muted'>{'Not tracked in Git'}</Box>
 	</Flex>
 );
 
