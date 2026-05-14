@@ -145,7 +145,7 @@ const FinderView: React.FC<FinderViewProps> = ({ content, reset }) => {
 								py='0.5'
 								fontSize='9px'
 								fontWeight='700'
-								letterSpacing='0.05em'
+								letterSpacing='0.06em'
 								borderRadius='sm'
 								style={
 									isActive
