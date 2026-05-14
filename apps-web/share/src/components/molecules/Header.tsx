@@ -2,21 +2,24 @@ import { Box, Flex } from '@chakra-ui/react';
 import * as React from 'react';
 
 const Header: React.FC = () => (
-	<Flex align='center' px='6' py='4' gap='2.5'>
+	<Flex as='header' align='center' px='6' py='4' gap='2.5' role='banner'>
 		<Box
+			role='img'
+			aria-label='Beak logo'
 			h='56px'
 			w='56px'
-			bgImage="url('/assets/logo.svg')"
-			bgPos='center'
-			bgRepeat='no-repeat'
-			bgSize='34px'
 			borderRadius='lg'
-			bg='color-mix(in srgb, var(--beak-colors-accent-pink) 12%, transparent)'
+			bgColor='color-mix(in srgb, var(--beak-colors-accent-pink) 12%, transparent)'
 			borderWidth='1px'
 			borderColor='color-mix(in srgb, var(--beak-colors-accent-pink) 26%, transparent)'
 			style={{
-				boxShadow: '0 6px 18px color-mix(in srgb, var(--beak-colors-accent-pink) 22%, transparent), inset 0 1px 0 color-mix(in srgb, white 18%, transparent)',
-				backgroundImage: "url('/assets/logo.svg'), radial-gradient(circle at center, color-mix(in srgb, var(--beak-colors-accent-pink) 18%, transparent), transparent 80%)",
+				backgroundImage:
+					"url('/assets/logo.svg'), radial-gradient(circle at center, color-mix(in srgb, var(--beak-colors-accent-pink) 18%, transparent), transparent 80%)",
+				backgroundRepeat: 'no-repeat, no-repeat',
+				backgroundPosition: 'center, center',
+				backgroundSize: '34px, 100%',
+				boxShadow:
+					'0 6px 18px color-mix(in srgb, var(--beak-colors-accent-pink) 22%, transparent), inset 0 1px 0 color-mix(in srgb, white 18%, transparent)',
 			}}
 		/>
 		<Box>

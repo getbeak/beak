@@ -26,19 +26,22 @@ const InfoCard: React.FC = () => {
 			}}
 		>
 			<Box
-				bgImage="url('/assets/logo-tile.png')"
-				bgPos='center'
-				bgRepeat='no-repeat'
-				bgSize='100px'
+				role='img'
+				aria-label='Beak logo'
 				h='100px'
 				w='100px'
 				mx='auto'
 				borderRadius='lg'
-				bg='color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent)'
+				bgColor='color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent)'
 				borderWidth='1px'
 				borderColor='color-mix(in srgb, var(--beak-colors-accent-pink) 28%, transparent)'
 				style={{
-					boxShadow: '0 8px 24px color-mix(in srgb, var(--beak-colors-accent-pink) 28%, transparent), inset 0 1px 0 color-mix(in srgb, white 18%, transparent)',
+					backgroundImage: "url('/assets/logo-tile.png')",
+					backgroundRepeat: 'no-repeat',
+					backgroundPosition: 'center',
+					backgroundSize: '100px',
+					boxShadow:
+						'0 8px 24px color-mix(in srgb, var(--beak-colors-accent-pink) 28%, transparent), inset 0 1px 0 color-mix(in srgb, white 18%, transparent)',
 				}}
 			/>
 			<Box>
