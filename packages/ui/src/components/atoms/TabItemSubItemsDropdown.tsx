@@ -94,6 +94,12 @@ const TabItemSubItemsDropdown = <T = string>(props: TabItemSubItemsDropdownProps
 										color={isActive ? 'accent.pink' : 'fg.default'}
 										bg={isActive ? 'color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent)' : 'transparent'}
 										_hover={{ bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 12%, transparent)', color: 'accent.pink' }}
+										_focusVisible={{
+											outline: 'none',
+											bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 18%, transparent)',
+											color: 'accent.pink',
+											boxShadow: '0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-pink) 35%, transparent)',
+										}}
 										onClick={() => setSubItem(i.key)}
 										onKeyDown={(event: React.KeyboardEvent) => {
 											if (event.key === 'Enter') setSubItem(i.key);
