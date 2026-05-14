@@ -300,14 +300,22 @@ const VariableEditor: React.FC<React.PropsWithChildren<VariableEditorProps>> = p
 							<Flex
 								align='center'
 								gap='1'
-								fontSize='10px'
-								fontWeight='600'
+								px='1.5'
+								py='0.5'
+								borderRadius='sm'
+								borderWidth='1px'
+								borderStyle='solid'
+								fontSize='9px'
+								fontWeight='700'
 								color='accent.pink'
+								bg='color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent)'
+								borderColor='color-mix(in srgb, var(--beak-colors-accent-pink) 28%, transparent)'
+								boxShadow='inset 0 1px 0 color-mix(in srgb, white 14%, transparent)'
 								textTransform='uppercase'
 								letterSpacing='0.06em'
 								data-tooltip-id='tt-variable-input-extension'
 							>
-								<Puzzle size={10} />
+								<Puzzle size={9} strokeWidth={2.2} />
 								<Box as='span'>{'Extension'}</Box>
 							</Flex>
 						)}
