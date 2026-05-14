@@ -26,8 +26,19 @@ const ResponsePane: React.FC = () => {
 			bg='bg.surface'
 			h='100%'
 			w='100%'
-			borderLeftWidth='1px'
-			borderLeftColor='border.subtle'
+			css={{
+				'&::before': {
+					content: '""',
+					position: 'absolute',
+					top: '8%',
+					bottom: '8%',
+					left: 0,
+					width: '1px',
+					background: 'linear-gradient(to bottom, transparent, color-mix(in srgb, var(--beak-colors-border-default) 65%, transparent) 8%, color-mix(in srgb, var(--beak-colors-border-default) 65%, transparent) 92%, transparent)',
+					pointerEvents: 'none',
+					zIndex: 1,
+				},
+			}}
 		>
 			{pending && <PendingSlash />}
 			{!pending && (
