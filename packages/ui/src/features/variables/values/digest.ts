@@ -34,18 +34,18 @@ const definition: EditableVariable<DigestRtv, EditorState> = {
 		if (algorithm === 'MD5')
 			return MD5.hashStr(parsed);
 
-		const buf = new ArrayBuffer(parsed.length * 2);
-		const bufView = new Uint16Array(buf);
-
-		for (let i = 0, strLen = parsed.length; i < strLen; i++)
-			bufView[i] = parsed.charCodeAt(i);
+		// Hash the UTF-8 bytes — matches openssl/curl/etc. so digests are
+		// interoperable with other tooling. Encoding via Uint16Array (the
+		// previous approach) hashed the JS UTF-16 representation, which
+		// produced different output for any non-ASCII input.
+		const bytes = new TextEncoder().encode(parsed);
 
 		if (hmac) {
-			// return crypto.subtle.sign(algorithm, key, buf);
+			// return crypto.subtle.sign(algorithm, key, bytes);
 			return '';
 		}
 
-		const digest = await crypto.subtle.digest(algorithm, buf);
+		const digest = await crypto.subtle.digest(algorithm, bytes);
 
 		return arrayBufferToHexString(digest);
 	},
