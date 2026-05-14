@@ -20,7 +20,8 @@ export interface InspectorProps {
 const Inspector: React.FC<React.PropsWithChildren<InspectorProps>> = props => {
 	const dispatch = useDispatch();
 	// Don't need to fetch these as it's done by the request
-	const preferences = useAppSelector(s => s.global.preferences.requests[props.flight.requestId].response);
+	const preferences = useAppSelector(s => s.global.preferences.requests[props.flight.requestId]?.response);
+	const mainTab = preferences?.mainTab ?? 'overview';
 
 	function setTab(tab: ResponsePreferenceMainTab) {
 		dispatch(requestPreferenceSetResMainTab({ id: props.flight.requestId, tab }));
@@ -30,22 +31,22 @@ const Inspector: React.FC<React.PropsWithChildren<InspectorProps>> = props => {
 		<React.Fragment>
 			<TabBar $centered>
 				<TabSpacer />
-				<TabItem active={preferences.mainTab === 'overview'} size='sm' onClick={() => setTab('overview')}>
+				<TabItem active={mainTab === 'overview'} size='sm' onClick={() => setTab('overview')}>
 					{'Overview'}
 				</TabItem>
-				<TabItem active={preferences.mainTab === 'request'} size='sm' onClick={() => setTab('request')}>
+				<TabItem active={mainTab === 'request'} size='sm' onClick={() => setTab('request')}>
 					{'Request'}
 				</TabItem>
-				<TabItem active={preferences.mainTab === 'response'} size='sm' onClick={() => setTab('response')}>
+				<TabItem active={mainTab === 'response'} size='sm' onClick={() => setTab('response')}>
 					{'Response'}
 				</TabItem>
 				<TabSpacer />
 			</TabBar>
 
 			<Box flexGrow={2} overflowY='hidden'>
-				{preferences.mainTab === 'overview' && <OverviewTab flight={props.flight} />}
-				{preferences.mainTab === 'request' && <RequestTab flight={props.flight} />}
-				{preferences.mainTab === 'response' && <ResponseTab flight={props.flight} />}
+				{mainTab === 'overview' && <OverviewTab flight={props.flight} />}
+				{mainTab === 'request' && <RequestTab flight={props.flight} />}
+				{mainTab === 'response' && <ResponseTab flight={props.flight} />}
 			</Box>
 		</React.Fragment>
 	);
