@@ -39,7 +39,7 @@ const CreateNewSplash: React.FC<CreateNewSplashProps> = ({ type, variableSet }) 
 			<Box fontSize='md' fontWeight='600' color='fg.default' letterSpacing='-0.005em'>
 				{'No sets yet'}
 			</Box>
-			<Box fontSize='xs' color='fg.muted' textAlign='center' maxW='320px'>
+			<Box fontSize='xs' color='fg.muted' textAlign='center' maxW='320px' lineHeight='1.5'>
 				{'Variable sets let you switch the same variable between values for different environments (eg. dev / prod).'}
 			</Box>
 			<Button
