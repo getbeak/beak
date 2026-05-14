@@ -145,7 +145,10 @@ const VariableSets: React.FC<React.PropsWithChildren<unknown>> = () => {
 						h='40px'
 						borderRadius='lg'
 						bg='color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent)'
+						borderWidth='1px'
+						borderColor='color-mix(in srgb, var(--beak-colors-accent-pink) 28%, transparent)'
 						color='accent.pink'
+						boxShadow='0 4px 12px color-mix(in srgb, var(--beak-colors-accent-pink) 22%, transparent), inset 0 1px 0 color-mix(in srgb, white 14%, transparent)'
 					>
 						<Table size={18} strokeWidth={2} />
 					</Flex>
