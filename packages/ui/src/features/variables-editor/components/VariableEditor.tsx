@@ -331,6 +331,7 @@ const VariableEditor: React.FC<React.PropsWithChildren<VariableEditorProps>> = p
 								textTransform='uppercase'
 								letterSpacing='0.06em'
 								data-tooltip-id='tt-variable-input-extension'
+								data-tooltip-content='This value is provided by an extension'
 							>
 								<Puzzle size={9} strokeWidth={2.2} />
 								<Box as='span'>{'Extension'}</Box>

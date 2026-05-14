@@ -46,8 +46,7 @@ const tooltips: TooltipDefinition[] = [{
 	placement: 'bottom',
 	content: 'Flight in progress',
 }, {
-	anchor: '#tt-variable-input-extension',
-	content: 'This value is an extension',
+	anchor: 'tt-variable-input-extension',
 }, {
 	anchor: 'tt-response-header-url-bar',
 }, {
