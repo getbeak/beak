@@ -62,6 +62,16 @@ const GLOBAL_CSS = (darwin: boolean) => `
 		0%, 100% { transform: translateY(0); }
 		50% { transform: translateY(-4px); }
 	}
+	@keyframes beakFlightOuter {
+		0% { transform: scale(.55); opacity: 0.55; }
+		70% { transform: scale(1.7); opacity: 0; }
+		100% { transform: scale(1.7); opacity: 0; }
+	}
+	@keyframes beakFlightInner {
+		0% { transform: scale(.7); opacity: 0.75; }
+		70% { transform: scale(1.35); opacity: 0; }
+		100% { transform: scale(1.35); opacity: 0; }
+	}
 	*::-webkit-scrollbar { width: 8px; height: 8px; }
 	*::-webkit-scrollbar-track { background: transparent; }
 	*::-webkit-scrollbar-thumb {

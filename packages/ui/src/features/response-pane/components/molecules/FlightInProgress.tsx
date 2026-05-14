@@ -33,16 +33,6 @@ const FlightInProgress: React.FC<FlightInProgressProps> = ({ currentFlight, requ
 						background:
 							'color-mix(in srgb, var(--beak-colors-bg-canvas) 58%, transparent)',
 						backdropFilter: 'blur(14px) saturate(160%)',
-						'@keyframes beakFlightOuter': {
-							'0%': { transform: 'scale(.55)', opacity: 0.55 },
-							'70%': { transform: 'scale(1.7)', opacity: 0 },
-							'100%': { transform: 'scale(1.7)', opacity: 0 },
-						},
-						'@keyframes beakFlightInner': {
-							'0%': { transform: 'scale(.7)', opacity: 0.75 },
-							'70%': { transform: 'scale(1.35)', opacity: 0 },
-							'100%': { transform: 'scale(1.35)', opacity: 0 },
-						},
 					}}
 				>
 					<Flex direction='column' align='center' gap='4'>
