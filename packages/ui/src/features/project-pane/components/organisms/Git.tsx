@@ -56,9 +56,21 @@ const Git: React.FC = () => {
 					boxShadow: '0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-pink) 22%, transparent)',
 				}}
 			>
-				<Box color='accent.pink' flexShrink={0} display='inline-flex'>
-					<GitBranch size={11} strokeWidth={2.2} />
-				</Box>
+				<Flex
+					flexShrink={0}
+					align='center'
+					justify='center'
+					w='18px'
+					h='18px'
+					borderRadius='sm'
+					bg='color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent)'
+					borderWidth='1px'
+					borderColor='color-mix(in srgb, var(--beak-colors-accent-pink) 28%, transparent)'
+					color='accent.pink'
+					boxShadow='inset 0 1px 0 color-mix(in srgb, white 14%, transparent)'
+				>
+					<GitBranch size={10} strokeWidth={2.2} />
+				</Flex>
 				<select
 					value={selectedBranch}
 					style={selectStyle}
