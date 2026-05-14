@@ -144,6 +144,7 @@ const Header: React.FC<HeaderProps> = ({ node }) => {
 										borderRadius='md'
 										py='1.5'
 										px='2'
+										transition='background-color .12s ease, border-color .12s ease'
 										style={{
 											color: c,
 											background: isActive ? `color-mix(in srgb, ${c} 16%, transparent)` : undefined,
@@ -151,6 +152,7 @@ const Header: React.FC<HeaderProps> = ({ node }) => {
 										}}
 										_hover={{
 											bg: `color-mix(in srgb, ${c} 16%, transparent)`,
+											borderLeft: `3px solid ${c}`,
 										}}
 									>
 										{v}
