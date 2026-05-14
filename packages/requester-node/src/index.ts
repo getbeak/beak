@@ -35,10 +35,11 @@ Stages:
 export async function startRequester(options: RequesterOptions) {
 	const { payload, callbacks } = options;
 	const { complete, failed, heartbeat } = callbacks;
-	const { request } = payload;
+	const { flightId, request } = payload;
 	const start = Date.now();
 
 	heartbeat({
+		flightId,
 		stage: 'fetch_response',
 		payload: { timestamp: start },
 	});
@@ -48,7 +49,7 @@ export async function startRequester(options: RequesterOptions) {
 	try {
 		response = await runRequest(request);
 	} catch (error) {
-		failed({ error: error as Error });
+		failed({ flightId, error: error as Error });
 
 		return;
 	}
@@ -59,12 +60,13 @@ export async function startRequester(options: RequesterOptions) {
 	let hasBody = contentLength > 0;
 
 	heartbeat({
+		flightId,
 		stage: 'parsing_response',
 		payload: { contentLength, timestamp: Date.now() },
 	});
 
 	if (response.bodyUsed) {
-		failed({ error: new Error('body already used') });
+		failed({ flightId, error: new Error('body already used') });
 
 		return;
 	}
@@ -74,6 +76,7 @@ export async function startRequester(options: RequesterOptions) {
 			hasBody = true;
 
 			heartbeat({
+				flightId,
 				stage: 'reading_body',
 				payload: { buffer: chunk as Buffer, timestamp: Date.now() },
 			});
@@ -81,6 +84,7 @@ export async function startRequester(options: RequesterOptions) {
 	}
 
 	complete({
+		flightId,
 		timestamp: Date.now(),
 		overview: {
 			headers: headersToObject(response.headers),

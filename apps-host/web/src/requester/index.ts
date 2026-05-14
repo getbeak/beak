@@ -8,7 +8,9 @@ import type {
 } from '@beak/common/types/requester';
 import type { RequestBodyFile, RequestOverview } from '@getbeak/types/request';
 
-const bodyFreeVerbs = ['get', 'head', 'delete'];
+// Matches the renderer-side `requestAllowsBody` and the Node requester.
+// RFC 9110 only strips bodies on GET/HEAD/OPTIONS — DELETE keeps its body.
+const bodyFreeVerbs = ['get', 'head', 'options'];
 
 export interface RequesterOptions {
 	payload: FlightRequestPayload;
@@ -29,10 +31,11 @@ Stages:
 export async function startRequester(options: RequesterOptions) {
 	const { payload, callbacks } = options;
 	const { complete, failed, heartbeat } = callbacks;
-	const { request } = payload;
+	const { flightId, request } = payload;
 	const start = Date.now();
 
 	heartbeat({
+		flightId,
 		stage: 'fetch_response',
 		payload: { timestamp: start },
 	});
@@ -42,7 +45,7 @@ export async function startRequester(options: RequesterOptions) {
 	try {
 		response = await runRequest(request);
 	} catch (error) {
-		failed({ error: error as Error });
+		failed({ flightId, error: error as Error });
 
 		return;
 	}
@@ -53,12 +56,13 @@ export async function startRequester(options: RequesterOptions) {
 	let hasBody = contentLength > 0;
 
 	heartbeat({
+		flightId,
 		stage: 'parsing_response',
 		payload: { contentLength, timestamp: Date.now() },
 	});
 
 	if (response.bodyUsed) {
-		failed({ error: new Error('body already used') });
+		failed({ flightId, error: new Error('body already used') });
 
 		return;
 	}
@@ -66,23 +70,25 @@ export async function startRequester(options: RequesterOptions) {
 	if (response.body !== null) {
 		const reader = response.body.getReader();
 
-		reader.read().then(function processBody({ done, value }) {
+		// Read to completion before signalling complete — the previous
+		// fire-and-forget `reader.read().then(...)` chain returned immediately
+		// and `complete()` ran with zero body chunks delivered.
+		while (true) {
+			const { done, value } = await reader.read();
 			if (value) {
 				hasBody = true;
-
 				heartbeat({
+					flightId,
 					stage: 'reading_body',
 					payload: { buffer: value, timestamp: Date.now() },
 				});
 			}
-
-			if (done) return;
-
-			reader.read().then(processBody);
-		});
+			if (done) break;
+		}
 	}
 
 	complete({
+		flightId,
 		timestamp: Date.now(),
 		overview: {
 			headers: headersToObject(response.headers),
@@ -112,7 +118,7 @@ async function runRequest(overview: RequestOverview) {
 		redirect: 'manual',
 	};
 
-	if (!bodyFreeVerbs.includes(verb)) {
+	if (!bodyFreeVerbs.includes(verb.toLowerCase())) {
 		switch (body.type) {
 			case 'text':
 				init.body = body.payload as string;

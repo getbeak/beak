@@ -1,6 +1,10 @@
 import { requestBodyContentType } from '@beak/common/helpers/request';
 import { TypedObject } from '@beak/common/helpers/typescript';
-import { FlightMessages } from '@beak/common/ipc/flight';
+import type {
+	FlightCompletePayload,
+	FlightFailedPayload,
+	FlightHeartbeatPayload,
+} from '@beak/common/types/requester';
 import type { NotificationPreferences } from '@beak/common/types/preferences';
 import {
 	type BeginFlightPayload,
@@ -34,6 +38,42 @@ import type { Context } from '@getbeak/types/values';
 import { type PrepareRequestDeps, prepareRequest } from '../../services/flight/prepare-request';
 import { getStatusReasonPhrase } from '../../utils/http';
 import type { AppStartListening } from '../listener';
+
+/**
+ * Concurrent flights all share three IPC channels (heartbeat / complete /
+ * failed). `IpcServiceRenderer.registerListener` stores one handler per
+ * channel, so a per-flight register-then-unregister loop would either
+ * trample a sibling flight's handler or unregister it mid-stream when the
+ * first flight settled. Instead we install a single permanent listener at
+ * boot and route each event to the owning flight by `payload.flightId`.
+ */
+interface FlightCallbacks {
+	onHeartbeat: (payload: FlightHeartbeatPayload) => void;
+	onComplete: (payload: FlightCompletePayload) => void;
+	onFailed: (payload: FlightFailedPayload) => void;
+}
+const pendingFlights = new Map<string, FlightCallbacks>();
+let flightListenersInstalled = false;
+
+function ensureFlightListenersInstalled() {
+	if (flightListenersInstalled) return;
+	flightListenersInstalled = true;
+	ipcFlightService.registerFlightHeartbeat(async (_event, payload) => {
+		pendingFlights.get(payload.flightId)?.onHeartbeat(payload);
+	});
+	ipcFlightService.registerFlightComplete(async (_event, payload) => {
+		const handler = pendingFlights.get(payload.flightId);
+		if (!handler) return;
+		pendingFlights.delete(payload.flightId);
+		handler.onComplete(payload);
+	});
+	ipcFlightService.registerFlightFailed(async (_event, payload) => {
+		const handler = pendingFlights.get(payload.flightId);
+		if (!handler) return;
+		pendingFlights.delete(payload.flightId);
+		handler.onFailed(payload);
+	});
+}
 
 function buildPrepareDeps(): PrepareRequestDeps {
 	return {
@@ -148,27 +188,32 @@ export function registerFlightEffects(start: AppStartListening) {
 			let response: ResponseOverview | null = null;
 			let error: Error | null = null;
 
+			ensureFlightListenersInstalled();
+
 			const settled = new Promise<void>(resolve => {
-				ipcFlightService.registerFlightHeartbeat(async (_event, heartbeat) => {
-					if (heartbeat.stage === 'reading_body') binaryStore.append(binaryStoreKey, heartbeat.payload.buffer);
-					api.dispatch(updateFlightProgress({ requestId, flightId, heartbeat }));
-				});
-				ipcFlightService.registerFlightComplete(async (_event, completePayload) => {
-					response = completePayload.overview;
-					api.dispatch(
-						completeFlight({
-							flightId,
-							requestId,
-							response: completePayload.overview,
-							timestamp: completePayload.timestamp,
-						}),
-					);
-					resolve();
-				});
-				ipcFlightService.registerFlightFailed(async (_event, failedPayload) => {
-					error = failedPayload.error;
-					api.dispatch(flightFailure({ flightId, requestId, error: failedPayload.error }));
-					resolve();
+				pendingFlights.set(flightId, {
+					onHeartbeat: heartbeat => {
+						if (heartbeat.stage === 'reading_body')
+							binaryStore.append(binaryStoreKey, heartbeat.payload.buffer);
+						api.dispatch(updateFlightProgress({ requestId, flightId, heartbeat }));
+					},
+					onComplete: completePayload => {
+						response = completePayload.overview;
+						api.dispatch(
+							completeFlight({
+								flightId,
+								requestId,
+								response: completePayload.overview,
+								timestamp: completePayload.timestamp,
+							}),
+						);
+						resolve();
+					},
+					onFailed: failedPayload => {
+						error = failedPayload.error;
+						api.dispatch(flightFailure({ flightId, requestId, error: failedPayload.error }));
+						resolve();
+					},
 				});
 			});
 
@@ -177,9 +222,7 @@ export function registerFlightEffects(start: AppStartListening) {
 			try {
 				await settled;
 			} finally {
-				ipcFlightService.unregister(FlightMessages.FlightHeartbeat);
-				ipcFlightService.unregister(FlightMessages.FlightComplete);
-				ipcFlightService.unregister(FlightMessages.FlightFailed);
+				pendingFlights.delete(flightId);
 
 				if (requestNode) {
 					await notifyOutcome(requestNode, request, response, error, payload, api);

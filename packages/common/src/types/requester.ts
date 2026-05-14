@@ -21,6 +21,7 @@ export type FlightHeartbeatPayload =
 	| FlightHeartbeatReadingBody;
 
 export interface FlightHeartbeatFetchResponse {
+	flightId: string;
 	stage: 'fetch_response';
 	payload: {
 		timestamp: number;
@@ -28,6 +29,7 @@ export interface FlightHeartbeatFetchResponse {
 }
 
 export interface FlightHeartbeatParsingResponse {
+	flightId: string;
 	stage: 'parsing_response';
 	payload: {
 		timestamp: number;
@@ -36,6 +38,7 @@ export interface FlightHeartbeatParsingResponse {
 }
 
 export interface FlightHeartbeatReadingBody {
+	flightId: string;
 	stage: 'reading_body';
 	payload: {
 		timestamp: number;
@@ -44,10 +47,12 @@ export interface FlightHeartbeatReadingBody {
 }
 
 export interface FlightCompletePayload {
+	flightId: string;
 	timestamp: number;
 	overview: ResponseOverview;
 }
 
 export interface FlightFailedPayload {
+	flightId: string;
 	error: Error;
 }
