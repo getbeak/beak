@@ -65,11 +65,12 @@ const SectionHeader: React.FC<React.PropsWithChildren<SectionHeaderProps>> = pro
 					borderRadius='sm'
 					color='fg.subtle'
 					opacity={0}
-					transition='color .12s ease, background-color .12s ease, opacity .14s ease'
+					transition='color .12s ease, background-color .12s ease, opacity .14s ease, transform .08s ease'
 					_hover={{
-						color: 'fg.default',
-						bg: 'color-mix(in srgb, var(--beak-colors-bg-surface) 80%, transparent)',
+						color: 'accent.pink',
+						bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent)',
 					}}
+					_active={{ transform: 'scale(0.92)' }}
 					onClick={event => {
 						event.preventDefault();
 						event.stopPropagation();
