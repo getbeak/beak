@@ -193,7 +193,9 @@ const JsonNodeRow: React.FC<JsonNodeRowProps> = ({
 					p='1'
 					borderRadius='sm'
 					cursor='pointer'
+					transition='color .12s ease, background-color .12s ease, transform .08s ease'
 					_hover={{ color: 'accent.pink', bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 15%, transparent)' }}
+					_active={{ transform: 'scale(0.9)' }}
 					onClick={() => onCopyPath(row.path)}
 				>
 					<Link2 size={10} />
@@ -209,7 +211,9 @@ const JsonNodeRow: React.FC<JsonNodeRowProps> = ({
 						p='1'
 						borderRadius='sm'
 						cursor='pointer'
+						transition='color .12s ease, background-color .12s ease, transform .08s ease'
 						_hover={{ color: 'accent.teal', bg: 'color-mix(in srgb, var(--beak-colors-accent-teal) 18%, transparent)' }}
+						_active={{ transform: 'scale(0.9)' }}
 						onClick={() => onCopyValue(row)}
 					>
 						<Copy size={10} />
