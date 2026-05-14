@@ -84,6 +84,8 @@ const Header: React.FC<HeaderProps> = ({ node }) => {
 				<Menu.Trigger asChild>
 					<ChakraButton
 						type='button'
+						aria-label={`HTTP verb: ${verb.toUpperCase()}`}
+						title={`HTTP verb: ${verb.toUpperCase()}`}
 						display='inline-flex'
 						alignItems='center'
 						gap='1'
