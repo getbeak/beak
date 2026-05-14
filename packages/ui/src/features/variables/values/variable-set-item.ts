@@ -10,7 +10,7 @@ const type = 'variable_set_item';
 const definition: Variable<VariableSetItemRtv> = {
 	type,
 	name: 'Variable set item',
-	description: 'A variable from a variable set, you can edit it\'s value from the Variable Group editor',
+	description: 'A variable from a variable set; edit its value in the Variable Set editor',
 	sensitive: false,
 	external: false,
 
@@ -34,7 +34,7 @@ export function createFauxValue(
 	return {
 		type,
 		name: getVariableSetItemName(item, variableSets),
-		description: 'A variable from a variable set, you can edit it\'s value from the Variable Group editor',
+		description: 'A variable from a variable set; edit its value in the Variable Set editor',
 		sensitive: false,
 		external: false,
 
