@@ -79,13 +79,13 @@ const RequestTabContextMenuWrapper: React.FC<React.PropsWithChildren<RequestTabC
 
 			{
 				id: ksuid.generate('ctxmenuitem').toString(),
-				label: 'Copy path',
+				label: 'Copy Path',
 				enabled: isRequestTab,
 				click: () => ipcExplorerService.copyFullNodePath(node.filePath),
 			},
 			{
 				id: ksuid.generate('ctxmenuitem').toString(),
-				label: 'Copy relative path',
+				label: 'Copy Relative Path',
 				enabled: isRequestTab,
 				click: () => navigator.clipboard.writeText(node.filePath),
 			},
