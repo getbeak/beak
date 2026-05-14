@@ -14,6 +14,8 @@ import type { EntryMap } from '@getbeak/types/body-editor-json';
 import type { AnyAction } from '@reduxjs/toolkit';
 import * as React from 'react';
 
+import { useMemo } from 'react';
+
 import { JsonEditorContext } from '../contexts/json-editor-context';
 import { HeaderAction, HeaderKeyCell, HeaderTypeCell, HeaderValueCell } from './atoms/Cells';
 import { Body, Header, Row } from './atoms/Structure';
@@ -38,20 +40,31 @@ const JsonEditor: React.FC<React.PropsWithChildren<JsonEditorProps>> = props => 
 	const { requestId, editorSelector, value, forceRootObject } = props;
 	const root = TypedObject.values(value).find(e => e.parentId === null);
 
-	return (
-		<JsonEditorContext.Provider
-			value={{
-				requestId,
-				editorSelector,
+	const ctxValue = useMemo(
+		() => ({
+			requestId,
+			editorSelector,
+			nameChange: props.nameChanged ?? actions.requestBodyJsonEditorNameChange,
+			valueChange: props.valueChanged ?? actions.requestBodyJsonEditorValueChange,
+			typeChange: props.typeChanged ?? actions.requestBodyJsonEditorTypeChange,
+			enabledChange: props.enabledChanged ?? actions.requestBodyJsonEditorEnabledChange,
+			addEntry: props.addedEntry ?? actions.requestBodyJsonEditorAddEntry,
+			removeEntry: props.removedEntry ?? actions.requestBodyJsonEditorRemoveEntry,
+		}),
+		[
+			requestId,
+			editorSelector,
+			props.nameChanged,
+			props.valueChanged,
+			props.typeChanged,
+			props.enabledChanged,
+			props.addedEntry,
+			props.removedEntry,
+		],
+	);
 
-				nameChange: props.nameChanged ?? actions.requestBodyJsonEditorNameChange,
-				valueChange: props.valueChanged ?? actions.requestBodyJsonEditorValueChange,
-				typeChange: props.typeChanged ?? actions.requestBodyJsonEditorTypeChange,
-				enabledChange: props.enabledChanged ?? actions.requestBodyJsonEditorEnabledChange,
-				addEntry: props.addedEntry ?? actions.requestBodyJsonEditorAddEntry,
-				removeEntry: props.removedEntry ?? actions.requestBodyJsonEditorRemoveEntry,
-			}}
-		>
+	return (
+		<JsonEditorContext.Provider value={ctxValue}>
 			<Box mt='1.5' w='100%' fontSize='sm' fontWeight='400' color='fg.muted'>
 				<Header>
 					<Row data-empty='true'>
