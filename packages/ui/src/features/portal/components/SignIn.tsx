@@ -53,7 +53,7 @@ const SignIn: React.FC = () => {
 				>
 					{'Beak'}
 				</Box>
-				<Box fontSize='xl' fontWeight='700' color='fg.default' letterSpacing='-0.02em'>
+				<Box fontSize='xl' fontWeight='700' color='fg.default' letterSpacing='-0.02em' lineHeight='1.1'>
 					{'Welcome back'}
 				</Box>
 			</Flex>
