@@ -85,6 +85,7 @@ const RequestPaneSplitter: React.FC<RequestPaneSplitterProps> = ({ selectedNode 
 					color={copied === 'preview' ? 'accent.teal' : 'fg.subtle'}
 					transition='color .12s ease, background-color .12s ease, transform .08s ease'
 					_hover={{ color: copied === 'preview' ? 'accent.teal' : 'accent.pink', bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent)' }}
+					_focusVisible={{ outline: 'none', boxShadow: '0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-pink) 45%, transparent)' }}
 					_active={{ transform: 'scale(0.9)' }}
 					onClick={copyRequestPreview}
 				>
@@ -102,6 +103,7 @@ const RequestPaneSplitter: React.FC<RequestPaneSplitterProps> = ({ selectedNode 
 					color={copied === 'share' ? 'accent.teal' : 'fg.subtle'}
 					transition='color .12s ease, background-color .12s ease, transform .08s ease'
 					_hover={{ color: copied === 'share' ? 'accent.teal' : 'accent.pink', bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent)' }}
+					_focusVisible={{ outline: 'none', boxShadow: '0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-pink) 45%, transparent)' }}
 					_active={{ transform: 'scale(0.9)' }}
 					onClick={copyShareLink}
 				>

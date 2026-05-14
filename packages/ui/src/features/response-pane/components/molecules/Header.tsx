@@ -126,6 +126,7 @@ const Header: React.FC<HeaderProps> = ({ selectedFlight }) => {
 						color: justCopied ? 'accent.teal' : 'accent.pink',
 						bg: `color-mix(in srgb, var(--beak-colors-${justCopied ? 'accent-teal' : 'accent-pink'}) 14%, transparent)`,
 					}}
+					_focusVisible={{ outline: 'none', boxShadow: '0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-pink) 45%, transparent)' }}
 					_active={{ transform: 'scale(0.9)' }}
 					onClick={copyUrl}
 				>
