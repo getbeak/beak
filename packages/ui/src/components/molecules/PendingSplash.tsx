@@ -75,7 +75,7 @@ const PendingSplash: React.FC = () => {
 					/>
 				</MotionBox>
 
-				<Box textAlign='center' color='fg.subtle' fontSize='10px' letterSpacing='0.08em' textTransform='uppercase' fontWeight='700'>
+				<Box textAlign='center' color='accent.pink' fontSize='10px' letterSpacing='0.08em' textTransform='uppercase' fontWeight='700'>
 					{'Make a request to see its details here'}
 				</Box>
 
