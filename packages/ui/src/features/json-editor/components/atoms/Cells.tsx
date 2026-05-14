@@ -71,7 +71,15 @@ export const BodyInputWrapper: React.FC<BoxProps> = props => (
 );
 
 export const BodyNullWrapper: React.FC<BoxProps> = props => (
-	<Box pl='1.5' lineHeight='24px' color='fg.subtle' fontStyle='italic' {...props} />
+	<Box
+		pl='1.5'
+		lineHeight='24px'
+		fontFamily='mono'
+		fontSize='12px'
+		color='fg.subtle'
+		fontStyle='italic'
+		{...props}
+	/>
 );
 export const BodyNameOverrideWrapper: React.FC<BoxProps> = props => (
 	<Box pl='1.5' lineHeight='24px' {...props} />
