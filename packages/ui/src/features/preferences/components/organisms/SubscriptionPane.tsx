@@ -21,7 +21,13 @@ const SubscriptionPane: React.FC<React.PropsWithChildren<unknown>> = () => {
 	const unknownError = error && !notSignedIn && !noActiveSubscription;
 
 	useEffect(() => {
-		ipcNestService.getSubscriptionState().then(setResponse).catch(setError);
+		let cancelled = false;
+		ipcNestService.getSubscriptionState()
+			.then(r => { if (!cancelled) setResponse(r); })
+			.catch(e => { if (!cancelled) setError(e); });
+		return () => {
+			cancelled = true;
+		};
 	}, []);
 
 	return (

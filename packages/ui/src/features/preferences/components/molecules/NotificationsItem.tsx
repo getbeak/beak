@@ -12,7 +12,15 @@ import NotificationStateSelect from '../atoms/NotificationStateSelect';
 const NotificationsItem: React.FC<React.PropsWithChildren<unknown>> = () => {
 	const [notificationPreferences, setNotificationPreferences] = useState<NotificationPreferences>();
 
-	useEffect(() => void getNotificationPreferences(), []);
+	useEffect(() => {
+		let cancelled = false;
+		ipcPreferencesService.getNotificationOverview().then(prefs => {
+			if (!cancelled) setNotificationPreferences(prefs);
+		});
+		return () => {
+			cancelled = true;
+		};
+	}, []);
 
 	function getNotificationPreferences() {
 		ipcPreferencesService.getNotificationOverview().then(setNotificationPreferences);

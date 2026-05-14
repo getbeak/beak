@@ -11,7 +11,15 @@ import Pane from '../molecules/Pane';
 const EditorPane: React.FC<React.PropsWithChildren<unknown>> = () => {
 	const [editorPreferences, setEditorPreferences] = useState<EditorPreferences>();
 
-	useEffect(() => void getEditorPreferences(), []);
+	useEffect(() => {
+		let cancelled = false;
+		ipcPreferencesService.getEditorOverview().then(prefs => {
+			if (!cancelled) setEditorPreferences(prefs);
+		});
+		return () => {
+			cancelled = true;
+		};
+	}, []);
 
 	function getEditorPreferences() {
 		ipcPreferencesService.getEditorOverview().then(setEditorPreferences);

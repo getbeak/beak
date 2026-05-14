@@ -13,8 +13,16 @@ const EngineeringPane: React.FC<React.PropsWithChildren<unknown>> = () => {
 	const [hasAuth, setHasAuth] = useState(false);
 
 	useEffect(() => {
-		ipcPreferencesService.getEnvironment().then(setEnvironment);
-		ipcNestService.hasAuth().then(setHasAuth);
+		let cancelled = false;
+		ipcPreferencesService.getEnvironment().then(env => {
+			if (!cancelled) setEnvironment(env);
+		});
+		ipcNestService.hasAuth().then(auth => {
+			if (!cancelled) setHasAuth(auth);
+		});
+		return () => {
+			cancelled = true;
+		};
 	}, []);
 
 	return (
