@@ -45,11 +45,11 @@ const AccountItem: React.FC = () => {
 				w='34px'
 				h='34px'
 				borderRadius='full'
-				bg='color-mix(in srgb, var(--beak-colors-accent-pink) 16%, transparent)'
+				bg='color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent)'
 				borderWidth='1px'
 				borderColor='color-mix(in srgb, var(--beak-colors-accent-pink) 28%, transparent)'
 				color='accent.pink'
-				boxShadow='inset 0 1px 0 color-mix(in srgb, white 18%, transparent)'
+				boxShadow='0 4px 12px color-mix(in srgb, var(--beak-colors-accent-pink) 22%, transparent), inset 0 1px 0 color-mix(in srgb, white 18%, transparent)'
 			>
 				<CircleUserRound size={17} strokeWidth={1.8} />
 			</Flex>
