@@ -31,10 +31,10 @@ const ErrorView: React.FC<ErrorViewProps> = ({ error }) => (
 			>
 				<CloudLightning size={24} strokeWidth={1.8} />
 			</Flex>
-			<Box fontSize='md' fontWeight='600' color='fg.default' letterSpacing='-0.005em'>
+			<Box fontSize='xl' fontWeight='700' color='fg.default' letterSpacing='-0.02em' lineHeight='1.1'>
 				{'Request failed'}
 			</Box>
-			<Box fontSize='xs' color='fg.subtle' mt='1' mb='3'>
+			<Box fontSize='xs' color='fg.muted' mt='1.5' mb='3' lineHeight='1.5' maxW='360px' mx='auto'>
 				{"The network call didn't complete. Check the message below for details."}
 			</Box>
 			<Box
