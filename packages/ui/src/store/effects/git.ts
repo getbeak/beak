@@ -38,7 +38,13 @@ export function registerGitEffects(start: AppStartListening) {
 						api.dispatch(removeBranch(branch));
 					}
 				},
-				{ depth: 0, followSymlinks: false },
+				// Was `depth: 0` which stopped chokidar at the immediate children
+				// of `.git/` — so `.git/refs/heads/<branch>` and nested
+				// `.git/refs/heads/<scope>/<branch>` files were never observed
+				// and runtime branch add/remove via the git CLI never reached
+				// the UI. `depth: 5` comfortably covers nested branch names; the
+				// handler already filters non-relevant paths.
+				{ depth: 5, followSymlinks: false },
 			);
 
 			void subscription;
