@@ -45,7 +45,17 @@ const SubscriptionInformation: React.FC<SubscriptionInformationProps> = ({ subsc
 				boxShadow='0 6px 18px color-mix(in srgb, var(--beak-colors-accent-pink) 24%, transparent), inset 0 1px 0 color-mix(in srgb, white 22%, transparent)'
 			/>
 			<Box flex='1 1 auto' minW={0}>
-				<Box fontSize='md' fontWeight='600' color='fg.default'>
+				<Box
+					fontSize='10px'
+					fontWeight='700'
+					letterSpacing='0.06em'
+					textTransform='uppercase'
+					color={trial ? 'accent.warning' : 'accent.teal'}
+					mb='0.5'
+				>
+					{trial ? 'Trial active' : 'Active'}
+				</Box>
+				<Box fontSize='md' fontWeight='600' color='fg.default' letterSpacing='-0.005em'>
 					{trial ? 'Beak subscription trial' : 'Beak subscription'}
 				</Box>
 				<Box fontSize='xs' color='fg.muted' mt='0.5' mb='2'>
