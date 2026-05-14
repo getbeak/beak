@@ -1,6 +1,7 @@
 import { Box, Flex, Grid } from '@chakra-ui/react';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import Kbd from '@beak/ui/components/atoms/Kbd';
+import { instance as windowSessionInstance } from '@beak/ui/contexts/window-session-context';
 import shortcutDefinitions, { type Shortcuts } from '@beak/ui/lib/keyboard-shortcuts';
 import type {
 	PlatformAgnosticDefinitions,
@@ -133,19 +134,22 @@ const PendingSplash: React.FC = () => {
 	);
 };
 
-const CommandKeys: React.FC<{ definition: ShortcutDefinition }> = ({ definition }) => (
-	<>
-		{definition.ctrlOrMeta && <Kbd>{'⌘'}</Kbd>}
-		{definition.ctrl && <Kbd>{'⌃'}</Kbd>}
-		{definition.alt && <Kbd>{'⌥'}</Kbd>}
-		{definition.meta && <Kbd>{'⌘'}</Kbd>}
-		{definition.shift && <Kbd>{'⇧'}</Kbd>}
-	</>
-);
+const CommandKeys: React.FC<{ definition: ShortcutDefinition }> = ({ definition }) => {
+	const darwin = windowSessionInstance.isDarwin();
+	return (
+		<>
+			{definition.ctrlOrMeta && <Kbd>{darwin ? '⌘' : '⌃'}</Kbd>}
+			{definition.ctrl && <Kbd>{'⌃'}</Kbd>}
+			{definition.alt && <Kbd>{darwin ? '⌥' : 'Alt'}</Kbd>}
+			{definition.meta && <Kbd>{'⌘'}</Kbd>}
+			{definition.shift && <Kbd>{'⇧'}</Kbd>}
+		</>
+	);
+};
 
 function shortcutDefinition(definition: PlatformSpecificDefinitions | PlatformAgnosticDefinitions) {
 	if (definition.type === 'agnostic') return definition;
-	return definition.darwin;
+	return windowSessionInstance.isDarwin() ? definition.darwin : definition.windows;
 }
 
 export default PendingSplash;
