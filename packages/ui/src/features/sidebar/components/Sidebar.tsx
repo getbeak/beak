@@ -126,8 +126,18 @@ const Sidebar: React.FC = () => {
 			<Box
 				position='relative'
 				w='10'
-				borderRightWidth='1px'
-				borderRightColor='border.subtle'
+				css={{
+					'&::after': {
+						content: '""',
+						position: 'absolute',
+						top: '12%',
+						bottom: '12%',
+						right: 0,
+						width: '1px',
+						background: 'linear-gradient(to bottom, transparent, color-mix(in srgb, var(--beak-colors-border-default) 70%, transparent) 12%, color-mix(in srgb, var(--beak-colors-border-default) 70%, transparent) 88%, transparent)',
+						pointerEvents: 'none',
+					},
+				}}
 			>
 				<SidebarMenuHighlighter hidden={sidebarCollapsed} index={variantIndex} />
 				<SidebarMenuItem
