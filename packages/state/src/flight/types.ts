@@ -83,7 +83,7 @@ export type FlightState =
 	| { status: 'preparing'; request: FlightRequest }
 	| { status: 'executing'; flight: FlightInProgress }
 	| { status: 'completed'; result: FlightHistoryEntry }
-	| { status: 'failed'; error: FlightError };
+	| { status: 'failed'; error: Error };
 
 export interface FlightOptions {
 	showProgress: boolean;

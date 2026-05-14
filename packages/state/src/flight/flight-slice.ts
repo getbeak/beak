@@ -191,6 +191,7 @@ const flightSlice = createSlice({
 				const history = ensureHistory(state, requestId);
 				recordHistoryEntry(history, entry);
 
+				state.flightStates[requestId] = { status: 'failed', error };
 				state.errors[requestId] = error;
 				removeFlightFromRequest(state, requestId, flightId);
 			})
@@ -199,6 +200,8 @@ const flightSlice = createSlice({
 				for (const flightId of state.flightsByRequest[requestId] ?? []) delete state.activeFlights[flightId];
 				delete state.flightsByRequest[requestId];
 				state.loading[requestId] = false;
+				state.flightStates[requestId] = { status: 'idle' };
+				state.errors[requestId] = null;
 			})
 			.addCase(nextFlightHistory, (state, action) => {
 				const { requestId } = action.payload;
