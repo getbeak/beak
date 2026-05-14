@@ -1,5 +1,7 @@
-import { Box, type BoxProps, chakra } from '@chakra-ui/react';
+import { Box, type BoxProps } from '@chakra-ui/react';
 import * as React from 'react';
+
+export { default as Label } from '@beak/ui/components/atoms/Label';
 
 export const FormGroup: React.FC<BoxProps> = ({ children, ...rest }) => (
 	<Box
@@ -16,15 +18,3 @@ export const FormGroup: React.FC<BoxProps> = ({ children, ...rest }) => (
 		{children}
 	</Box>
 );
-
-export const Label = chakra('label', {
-	base: {
-		display: 'block',
-		mb: '1.5',
-		fontSize: '10px',
-		fontWeight: '700',
-		color: 'accent.pink',
-		letterSpacing: '0.06em',
-		textTransform: 'uppercase',
-	},
-});
