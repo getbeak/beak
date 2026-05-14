@@ -36,7 +36,7 @@ const CreateNewSplash: React.FC<CreateNewSplashProps> = ({ type, variableSet }) 
 					<Table size={24} strokeWidth={1.8} />
 				</Flex>
 			</motion.div>
-			<Box fontSize='md' fontWeight='600' color='fg.default' letterSpacing='-0.005em'>
+			<Box fontSize='xl' fontWeight='700' color='fg.default' letterSpacing='-0.02em' lineHeight='1.1'>
 				{'No sets yet'}
 			</Box>
 			<Box fontSize='xs' color='fg.muted' textAlign='center' maxW='320px' lineHeight='1.5'>
