@@ -27,9 +27,21 @@ const SubscriptionPane: React.FC<React.PropsWithChildren<unknown>> = () => {
 	return (
 		<Pane title={'Subscription'}>
 			{fetching && (
-				<Flex align='center' gap='2' py='4' color='fg.muted'>
-					<Spinner size='sm' color='accent.pink' />
-					<Box fontSize='sm'>{'Checking subscription…'}</Box>
+				<Flex align='center' gap='2' py='4'>
+					<Spinner
+						size='sm'
+						color='accent.pink'
+						style={{ filter: 'drop-shadow(0 0 4px color-mix(in srgb, var(--beak-colors-accent-pink) 50%, transparent))' }}
+					/>
+					<Box
+						fontSize='10px'
+						fontWeight='700'
+						letterSpacing='0.06em'
+						textTransform='uppercase'
+						color='accent.pink'
+					>
+						{'Checking subscription…'}
+					</Box>
 				</Flex>
 			)}
 			{response && <SubscriptionInformation subscription={response} />}
