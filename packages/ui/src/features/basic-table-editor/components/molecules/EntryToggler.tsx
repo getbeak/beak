@@ -43,7 +43,7 @@ const EntryToggler: React.FC<EntryTogglerProps> = ({ value, onChange }) => {
 			_hover={{
 				borderColor: value ? 'accent.pink' : 'fg.muted',
 			}}
-			_focus={{
+			_focusVisible={{
 				outline: 'none',
 				boxShadow: '0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-pink) 50%, transparent)',
 			}}
