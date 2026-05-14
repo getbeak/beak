@@ -117,7 +117,6 @@ async function createOrFocusDefaultWindow(initial = false) {
 		await openUntitledProject();
 	} catch (err) {
 		console.warn('[main] failed to open untitled project', err);
-		const { dialog } = await import('electron');
 		await dialog.showMessageBox({
 			type: 'error',
 			title: 'Could not start Beak',

@@ -94,8 +94,8 @@ export async function openProjectDialog(browserWindow?: BrowserWindow) {
 	if (result.filePaths.length !== 1) {
 		const showMessageOptions: MessageBoxOptions = {
 			type: 'error',
-			title: "That shouldn't happen",
-			message: "You managed to select more than 1 file... pls don't do that.",
+			title: 'Unable to open project',
+			message: 'Please select a single Beak project file.',
 		};
 
 		if (browserWindow) await dialog.showMessageBox(browserWindow, showMessageOptions);
