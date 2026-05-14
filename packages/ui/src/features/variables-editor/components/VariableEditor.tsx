@@ -149,6 +149,8 @@ const VariableEditor: React.FC<React.PropsWithChildren<VariableEditorProps>> = p
 					position='fixed'
 					inset='0'
 					zIndex={101}
+					bg='color-mix(in srgb, var(--beak-colors-gray-950) 18%, transparent)'
+					backdropFilter='blur(2px)'
 					onClick={() => close(null)}
 				>
 					{renderEditor()}
