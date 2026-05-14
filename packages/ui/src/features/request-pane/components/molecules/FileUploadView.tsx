@@ -111,6 +111,9 @@ const FileUploadView: React.FC<FileUploadViewProps> = ({ node }) => {
 	return (
 		<Flex py='6' direction='column' align='center' gap='3'>
 			<Flex
+				role='button'
+				tabIndex={0}
+				aria-label={preview ? 'Replace file' : 'Pick a file'}
 				position='relative'
 				direction='column'
 				align='center'
@@ -132,8 +135,19 @@ const FileUploadView: React.FC<FileUploadViewProps> = ({ node }) => {
 					bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 10%, transparent)',
 					boxShadow: '0 8px 20px color-mix(in srgb, var(--beak-colors-accent-pink) 18%, transparent)',
 				}}
+				_focusVisible={{
+					outline: 'none',
+					borderColor: 'accent.pink',
+					boxShadow: '0 0 0 3px color-mix(in srgb, var(--beak-colors-accent-pink) 32%, transparent)',
+				}}
 				_active={{ transform: 'scale(0.99)' }}
 				onClick={openFile}
+				onKeyDown={(event: React.KeyboardEvent) => {
+					if (event.key === 'Enter' || event.key === ' ') {
+						event.preventDefault();
+						openFile();
+					}
+				}}
 			>
 				{!preview && !assetRef && (
 					<React.Fragment>
