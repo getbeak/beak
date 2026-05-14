@@ -19,6 +19,9 @@ const FlightInProgress: React.FC<FlightInProgressProps> = ({ currentFlight, requ
 		<AnimatePresence>
 			{shown && (
 				<MotionFlex
+					role='status'
+					aria-live='polite'
+					aria-label='Sending request'
 					initial={{ opacity: 0 }}
 					animate={{ opacity: 1 }}
 					exit={{ opacity: 0 }}
