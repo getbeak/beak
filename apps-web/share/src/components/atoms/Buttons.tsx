@@ -9,15 +9,18 @@ interface CtaButtonProps extends Omit<BoxProps, 'as'> {
 const STYLES = {
 	primary: {
 		bg: 'accent.pink',
-		shadow: 'var(--beak-colors-accent-pink)99',
+		halo: 'color-mix(in srgb, var(--beak-colors-accent-pink) 40%, transparent)',
+		haloHover: 'color-mix(in srgb, var(--beak-colors-accent-pink) 55%, transparent)',
 	},
 	secondary: {
 		bg: 'bg.surface',
-		shadow: 'var(--beak-colors-bg-surface)99',
+		halo: 'color-mix(in srgb, var(--beak-colors-fg-default) 15%, transparent)',
+		haloHover: 'color-mix(in srgb, var(--beak-colors-fg-default) 25%, transparent)',
 	},
 	tertiary: {
 		bg: 'bg.canvas.alt',
-		shadow: 'var(--beak-colors-bg-canvas-alt)99',
+		halo: 'color-mix(in srgb, var(--beak-colors-fg-default) 10%, transparent)',
+		haloHover: 'color-mix(in srgb, var(--beak-colors-fg-default) 18%, transparent)',
 	},
 } as const;
 
@@ -29,14 +32,24 @@ const CtaButton: React.FC<CtaButtonProps> = ({ $style, children, ...rest }) => {
 			display='inline-block'
 			borderRadius='md'
 			color='fg.onAccent'
-			px='2.5'
-			py='1.5'
-			fontSize='lg'
+			px='3.5'
+			py='2'
+			fontSize='md'
+			fontWeight='600'
+			letterSpacing='0.01em'
 			cursor='pointer'
 			textDecoration='none'
-			transition='box-shadow .2s ease'
+			transition='box-shadow .2s ease, transform .12s cubic-bezier(.4,0,.2,1), filter .14s ease'
 			bg={s.bg}
-			_hover={{ boxShadow: `0 0 20px 2px ${s.shadow}` }}
+			style={{
+				boxShadow: `0 6px 18px ${s.halo}, inset 0 1px 0 color-mix(in srgb, white 22%, transparent)`,
+			}}
+			_hover={{
+				filter: 'brightness(1.06)',
+				transform: 'translateY(-1px)',
+				boxShadow: `0 10px 26px ${s.haloHover}, inset 0 1px 0 color-mix(in srgb, white 26%, transparent)`,
+			}}
+			_active={{ transform: 'translateY(0) scale(0.97)' }}
 			{...rest}
 		>
 			{children}
