@@ -245,7 +245,21 @@ const GuideCard: React.FC<GuideCardProps> = ({ idx, icon: Icon, title, body, cta
 				<Box fontSize='xs' color='fg.muted' lineHeight='1.45' mb='2'>
 					{body}
 				</Box>
-				<Flex align='center' gap='1' color='accent.pink' fontSize='xs' fontWeight='600'>
+				<Flex
+					align='center'
+					gap='1'
+					color='accent.pink'
+					fontSize='xs'
+					fontWeight='600'
+					css={{
+						'a:hover & svg, button:hover & svg': {
+							transform: 'translate(1.5px, -1.5px)',
+						},
+						'& svg': {
+							transition: 'transform .14s cubic-bezier(.4,0,.2,1)',
+						},
+					}}
+				>
 					{cta}
 					<ArrowUpRight size={11} />
 				</Flex>
