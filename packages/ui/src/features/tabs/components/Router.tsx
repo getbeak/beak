@@ -78,7 +78,20 @@ const Router: React.FC<React.PropsWithChildren<RouterProps>> = ({ selectedTab })
 		case 'preferences':
 			return <Preferences />;
 
-		default: return <span>{'Unknown renderer'}</span>;
+		default: return (
+			<span
+				style={{
+					display: 'inline-flex',
+					alignItems: 'center',
+					padding: '8px 12px',
+					color: 'var(--beak-colors-fg-subtle)',
+					fontSize: 12,
+					fontStyle: 'italic',
+				}}
+			>
+				{'Unknown renderer'}
+			</span>
+		);
 	}
 };
 
