@@ -40,7 +40,7 @@ const BodyTab: React.FC<React.PropsWithChildren<BodyTabProps>> = props => {
 
 		if (body.type !== 'text') {
 			const result = await ipcDialogService.showMessageBox({
-				title: 'Are you sure?',
+				title: 'Change body type?',
 				message: 'Are you sure you want to change body type?',
 				detail: newType === 'text' ? 'Changing to text could cause data loss from disabled values!' : 'Changing editor will cause your existing body to be lost.',
 				type: 'warning',

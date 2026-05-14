@@ -36,7 +36,7 @@ const CellDeletionAction: React.FC<React.PropsWithChildren<CellDeletionActionPro
 		_active={{ transform: 'scale(0.92)' }}
 		onClick={async () => {
 			const result = await ipcDialogService.showMessageBox({
-				title: 'Are you sure?',
+				title: `Remove ${name}?`,
 				message: `Are you sure you want to remove ${name}?`,
 				detail: 'This action cannot be undone from inside Beak.',
 				type: 'warning',
