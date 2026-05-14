@@ -31,8 +31,6 @@ export const Header: React.FC<BoxProps> = ({ children, ...rest }) => (
 	</Box>
 );
 
-export const HeaderAction: React.FC<BoxProps> = props => (
-	<Box display='inline-block' ml='2' {...props} />
-);
+export const HeaderAction: React.FC<BoxProps> = props => <Box display='inline-block' ml='2' {...props} />;
 
 export const Body: React.FC<BoxProps> = props => <Box zIndex={9} {...props} />;

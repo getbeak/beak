@@ -1,10 +1,11 @@
-import { Flex } from '@chakra-ui/react';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import DebouncedInput from '@beak/ui/components/atoms/DebouncedInput';
 import { generateValueIdent } from '@beak/ui/lib/beak-variable-set/utils';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { actions } from '@beak/ui/store/variable-sets';
 import { insertNewGroup, insertNewItem, removeGroup, removeItem } from '@beak/ui/store/variable-sets/actions';
+import { Box, Flex } from '@chakra-ui/react';
+import { Layers, Variable as VariableIcon } from 'lucide-react';
 import * as React from 'react';
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -31,28 +32,22 @@ const VariableSetEditor: React.FC<React.PropsWithChildren<VariableSetEditorProps
 	const newGroupRef = useRef<HTMLInputElement>(null);
 
 	useEffect(() => {
-		if (!newItem)
-			return;
+		if (!newItem) return;
 
-		if (!TypedObject.values(variableSet.items).includes(newItem))
-			return;
+		if (!TypedObject.values(variableSet.items).includes(newItem)) return;
 
-		if (newItemRef?.current === null)
-			return;
+		if (newItemRef?.current === null) return;
 
 		newItemRef.current.focus();
 		setNewItem(void 0);
 	}, [newItem, setNewItem, variableSet?.items, newItemRef]);
 
 	useEffect(() => {
-		if (!newGroup)
-			return;
+		if (!newGroup) return;
 
-		if (!TypedObject.values(variableSet.sets).includes(newGroup))
-			return;
+		if (!TypedObject.values(variableSet.sets).includes(newGroup)) return;
 
-		if (newGroupRef?.current === null)
-			return;
+		if (newGroupRef?.current === null) return;
 
 		newGroupRef.current.focus();
 		setNewGroup(void 0);
@@ -61,148 +56,242 @@ const VariableSetEditor: React.FC<React.PropsWithChildren<VariableSetEditorProps
 	const setKeys = variableSet && TypedObject.keys(variableSet.sets);
 	const itemKeys = variableSet && TypedObject.keys(variableSet.items);
 
-	if (!variableSet)
-		return null;
+	if (!variableSet) return null;
 
 	return (
-		<Flex direction='column' overflow='auto' bg='bg.surface' h='100%' w='100%'>
-			{variableSet && setKeys.length === 0 && (
-				<CreateNewSplash type={'set'} variableSet={variableSetName} />
-			)}
+		<Flex direction='column' bg='bg.surface' h='100%' w='100%'>
+			<Flex
+				align='center'
+				gap='2'
+				px='3'
+				py='2'
+				borderBottomWidth='1px'
+				borderColor='border.subtle'
+				bg='bg.surface'
+				flex='0 0 auto'
+			>
+				<Flex
+					align='center'
+					justify='center'
+					w='22px'
+					h='22px'
+					borderRadius='md'
+					bg='color-mix(in srgb, var(--beak-colors-accent-pink) 12%, transparent)'
+					borderWidth='1px'
+					borderColor='color-mix(in srgb, var(--beak-colors-accent-pink) 26%, transparent)'
+					color='accent.pink'
+					flex='0 0 auto'
+				>
+					<Layers size={11} strokeWidth={2.2} />
+				</Flex>
+				<Box
+					fontSize='12px'
+					fontWeight='600'
+					color='fg.default'
+					letterSpacing='-0.005em'
+					minW={0}
+					overflow='hidden'
+					textOverflow='ellipsis'
+					whiteSpace='nowrap'
+				>
+					{variableSetName}
+				</Box>
+				<Flex align='center' gap='1.5' ml='2' color='fg.subtle' fontSize='10px' fontWeight='600'>
+					<Flex
+						align='center'
+						gap='1'
+						px='1.5'
+						py='0.5'
+						borderRadius='sm'
+						borderWidth='1px'
+						borderColor='border.subtle'
+						bg='color-mix(in srgb, var(--beak-colors-bg-surface-alt) 60%, transparent)'
+						fontVariantNumeric='tabular-nums'
+					>
+						<VariableIcon size={10} strokeWidth={2.2} />
+						<Box as='span'>{itemKeys.length}</Box>
+						<Box as='span' color='fg.disabled'>
+							{'items'}
+						</Box>
+					</Flex>
+					<Flex
+						align='center'
+						gap='1'
+						px='1.5'
+						py='0.5'
+						borderRadius='sm'
+						borderWidth='1px'
+						borderColor='border.subtle'
+						bg='color-mix(in srgb, var(--beak-colors-bg-surface-alt) 60%, transparent)'
+						fontVariantNumeric='tabular-nums'
+					>
+						<Layers size={10} strokeWidth={2.2} />
+						<Box as='span'>{setKeys.length}</Box>
+						<Box as='span' color='fg.disabled'>
+							{'sets'}
+						</Box>
+					</Flex>
+				</Flex>
+			</Flex>
 
-			{variableSet && setKeys.length > 0 && (
-				<React.Fragment>
-					<Header>
-						<Row $cols={setKeys.length}>
-							<HeaderNameCell>
-								<EmptyInput $center disabled value={'Name'} aria-hidden tabIndex={-1} />
-							</HeaderNameCell>
-							{variableSet && setKeys.map(k => (
-								<HeaderGroupNameCell key={k}>
-									<StyledDebounce
-										innerRef={variableSet.sets[k] === newGroup ? newGroupRef : null}
-										$center
+			<Box flex='1 1 auto' overflow='auto'>
+				{variableSet && setKeys.length === 0 && <CreateNewSplash type={'set'} variableSet={variableSetName} />}
+
+				{variableSet && setKeys.length > 0 && (
+					<React.Fragment>
+						<Header>
+							<Row $cols={setKeys.length}>
+								<HeaderNameCell>
+									<EmptyInput $center disabled value={'Name'} aria-hidden tabIndex={-1} />
+								</HeaderNameCell>
+								{variableSet &&
+									setKeys.map(k => (
+										<HeaderGroupNameCell key={k}>
+											<StyledDebounce
+												innerRef={variableSet.sets[k] === newGroup ? newGroupRef : null}
+												$center
+												type={'text'}
+												value={variableSet.sets[k]}
+												onChange={v => {
+													dispatch(
+														actions.updateGroupName({
+															id: variableSetName,
+															setId: k,
+															updatedName: v,
+														}),
+													);
+												}}
+											/>
+
+											<CellDeletionAction
+												name={variableSet.sets[k]}
+												onConfirmedDeletion={() =>
+													dispatch(
+														removeGroup({
+															id: variableSetName,
+															setId: k,
+														}),
+													)
+												}
+											/>
+										</HeaderGroupNameCell>
+									))}
+								<HeaderGroupNameCell>
+									<EmptyInput
+										aria-label='New group'
+										placeholder={'New group…'}
 										type={'text'}
-										value={variableSet.sets[k]}
-										onChange={v => {
-											dispatch(actions.updateGroupName({
-												id: variableSetName,
-												setId: k,
-												updatedName: v,
-											}));
+										value={''}
+										onChange={e => {
+											setNewGroup(e.target.value);
+											dispatch(
+												insertNewGroup({
+													id: variableSetName,
+													setName: e.target.value,
+												}),
+											);
 										}}
-									/>
-
-									<CellDeletionAction
-										name={variableSet.sets[k]}
-										onConfirmedDeletion={() => dispatch(removeGroup({
-											id: variableSetName,
-											setId: k,
-										}))}
 									/>
 								</HeaderGroupNameCell>
-							))}
-							<HeaderGroupNameCell>
-								<EmptyInput
-									aria-label='New group'
-									placeholder={'New group…'}
-									type={'text'}
-									value={''}
-									onChange={e => {
-										setNewGroup(e.target.value);
-										dispatch(insertNewGroup({
-											id: variableSetName,
-											setName: e.target.value,
-										}));
-									}}
-								/>
-							</HeaderGroupNameCell>
-						</Row>
-					</Header>
+							</Row>
+						</Header>
 
-					<Body>
-						{variableSet && itemKeys.map(ik => (
-							<Row key={ik} $cols={setKeys.length}>
+						<Body>
+							{variableSet &&
+								itemKeys.map(ik => (
+									<Row key={ik} $cols={setKeys.length}>
+										<BodyNameCell>
+											<StyledDebounce
+												innerRef={variableSet.items[ik] === newItem ? newItemRef : null}
+												type={'text'}
+												value={variableSet.items[ik]}
+												onChange={v => {
+													dispatch(
+														actions.updateItemName({
+															id: variableSetName,
+															itemId: ik,
+															updatedName: v,
+														}),
+													);
+												}}
+											/>
+
+											<CellDeletionAction
+												name={variableSet.items[ik]}
+												onConfirmedDeletion={() =>
+													dispatch(
+														removeItem({
+															id: variableSetName,
+															itemId: ik,
+														}),
+													)
+												}
+											/>
+										</BodyNameCell>
+
+										{setKeys.map(gk => {
+											const key = generateValueIdent(gk, ik);
+											const value = variableSet.values[key];
+
+											return (
+												<BodyValueCell key={gk}>
+													<VariableInput
+														parts={value || ['']}
+														onChange={parts => {
+															dispatch(
+																actions.updateValue({
+																	id: variableSetName,
+																	setId: gk,
+																	itemId: ik,
+																	updated: parts,
+																}),
+															);
+														}}
+													/>
+												</BodyValueCell>
+											);
+										})}
+
+										<BodyValueCell>
+											<EmptyInput disabled aria-hidden tabIndex={-1} />
+										</BodyValueCell>
+									</Row>
+								))}
+
+							<Row $cols={setKeys.length}>
 								<BodyNameCell>
-									<StyledDebounce
-										innerRef={variableSet.items[ik] === newItem ? newItemRef : null}
+									<EmptyInput
+										aria-label='New item'
+										placeholder={'New item…'}
 										type={'text'}
-										value={variableSet.items[ik]}
-										onChange={v => {
-											dispatch(actions.updateItemName({
-												id: variableSetName,
-												itemId: ik,
-												updatedName: v,
-											}));
+										value={''}
+										onChange={e => {
+											setNewItem(e.target.value);
+											dispatch(
+												insertNewItem({
+													id: variableSetName,
+													itemName: e.target.value,
+												}),
+											);
 										}}
-									/>
-
-									<CellDeletionAction
-										name={variableSet.items[ik]}
-										onConfirmedDeletion={() => dispatch(removeItem({
-											id: variableSetName,
-											itemId: ik,
-										}))}
 									/>
 								</BodyNameCell>
 
-								{setKeys.map(gk => {
-									const key = generateValueIdent(gk, ik);
-									const value = variableSet.values[key];
-
-									return (
-										<BodyValueCell key={gk}>
-											<VariableInput
-												parts={value || ['']}
-												onChange={parts => {
-													dispatch(actions.updateValue({
-														id: variableSetName,
-														setId: gk,
-														itemId: ik,
-														updated: parts,
-													}));
-												}}
-											/>
+								{variableSet &&
+									setKeys.map(k => (
+										<BodyValueCell key={k}>
+											<EmptyInput disabled aria-hidden tabIndex={-1} />
 										</BodyValueCell>
-									);
-								})}
+									))}
 
 								<BodyValueCell>
 									<EmptyInput disabled aria-hidden tabIndex={-1} />
 								</BodyValueCell>
 							</Row>
-						))}
-
-						<Row $cols={setKeys.length}>
-							<BodyNameCell>
-								<EmptyInput
-									aria-label='New item'
-									placeholder={'New item…'}
-									type={'text'}
-									value={''}
-									onChange={e => {
-										setNewItem(e.target.value);
-										dispatch(insertNewItem({
-											id: variableSetName,
-											itemName: e.target.value,
-										}));
-									}}
-								/>
-							</BodyNameCell>
-
-							{variableSet && setKeys.map(k => (
-								<BodyValueCell key={k}>
-									<EmptyInput disabled aria-hidden tabIndex={-1} />
-								</BodyValueCell>
-							))}
-
-							<BodyValueCell>
-								<EmptyInput disabled aria-hidden tabIndex={-1} />
-							</BodyValueCell>
-						</Row>
-					</Body>
-				</React.Fragment>
-			)}
+						</Body>
+					</React.Fragment>
+				)}
+			</Box>
 		</Flex>
 	);
 };

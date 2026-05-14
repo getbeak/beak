@@ -1,5 +1,5 @@
-import { IconButton } from '@chakra-ui/react';
 import { ipcDialogService } from '@beak/ui/lib/ipc';
+import { IconButton } from '@chakra-ui/react';
 import { Trash2 } from 'lucide-react';
 
 import React from 'react';

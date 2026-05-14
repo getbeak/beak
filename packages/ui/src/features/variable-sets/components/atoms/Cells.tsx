@@ -8,7 +8,10 @@ const cellBase = {
 	className: 'beak-vs-cell',
 	borderBottomWidth: '1px',
 	borderColor: 'border.subtle',
+	minH: '32px',
 } as const;
+
+const headerCellBg = 'color-mix(in srgb, var(--beak-colors-bg-surface-alt) 60%, var(--beak-colors-bg-surface))';
 
 export const Cell: React.FC<BoxProps> = props => <Box {...cellBase} {...props} />;
 
@@ -23,9 +26,20 @@ export const HeaderCell: React.FC<BoxProps> = props => (
 export const HeaderNameCell: React.FC<BoxProps> = props => (
 	<Box
 		{...cellBase}
-		color='fg.default'
+		color='fg.subtle'
 		borderLeft='none'
-		css={{ '> input': { color: 'var(--beak-colors-fg-default)' } }}
+		bg={headerCellBg}
+		display='flex'
+		alignItems='center'
+		css={{
+			'> input': {
+				color: 'var(--beak-colors-fg-subtle)',
+				fontSize: '10px',
+				fontWeight: '700',
+				textTransform: 'uppercase',
+				letterSpacing: '0.06em',
+			},
+		}}
 		{...props}
 	/>
 );
@@ -36,8 +50,10 @@ export const HeaderGroupNameCell: React.FC<BoxProps> = props => (
 		color='fg.default'
 		borderLeftWidth='1px'
 		borderLeftColor='border.subtle'
+		bg={headerCellBg}
 		display='flex'
 		flexDirection='row'
+		alignItems='center'
 		{...props}
 	/>
 );

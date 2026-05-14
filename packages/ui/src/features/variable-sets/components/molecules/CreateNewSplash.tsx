@@ -1,6 +1,6 @@
-import { Box, Flex } from '@chakra-ui/react';
 import Button from '@beak/ui/components/atoms/Button';
 import { insertNewGroup } from '@beak/ui/store/variable-sets/actions';
+import { Box, Flex } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 import { Plus, Table } from 'lucide-react';
 import * as React from 'react';
