@@ -82,5 +82,8 @@ export function useApplicationMenuEventListener() {
 		}
 
 		window.secureBridge.ipc.on('menu:menu_item_click', listener);
-	}, []);
+		return () => {
+			window.secureBridge.ipc.off('menu:menu_item_click', listener);
+		};
+	}, [dispatch]);
 }
