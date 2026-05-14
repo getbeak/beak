@@ -94,6 +94,8 @@ const BodyTab: React.FC<React.PropsWithChildren<BodyTabProps>> = props => {
 				type: 'json',
 				payload: body.payload.variables,
 			}));
+
+			return;
 		}
 
 		// Changing from json to graphql
@@ -106,6 +108,8 @@ const BodyTab: React.FC<React.PropsWithChildren<BodyTabProps>> = props => {
 					variables: body.payload,
 				},
 			}));
+
+			return;
 		}
 
 		// Changing from lang specific editor to text
