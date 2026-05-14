@@ -213,6 +213,7 @@ const VariableEditor: React.FC<React.PropsWithChildren<VariableEditorProps>> = p
 									<Input
 										ref={i => trySetInitialRef(first, i, initialInputRef)}
 										$beakSize={'sm'}
+										aria-label={section.label ?? stateBinding}
 										type={'text'}
 										value={state[stateBinding] as string || ''}
 										onChange={e => updateState({
@@ -230,6 +231,7 @@ const VariableEditor: React.FC<React.PropsWithChildren<VariableEditorProps>> = p
 										ref={i => trySetInitialRef(first, i, initialInputRef)}
 										$beakSize={'sm'}
 										$noStretch
+										aria-label={section.label ?? stateBinding}
 										type={'checkbox'}
 										checked={state[stateBinding] as boolean}
 										onChange={e => updateState({
@@ -246,6 +248,7 @@ const VariableEditor: React.FC<React.PropsWithChildren<VariableEditorProps>> = p
 									<Input
 										ref={i => trySetInitialRef(first, i, initialInputRef)}
 										$beakSize={'sm'}
+										aria-label={section.label ?? stateBinding}
 										type={'number'}
 										value={(state[stateBinding] as number).toString(10)}
 										onChange={e => updateState({
@@ -262,6 +265,7 @@ const VariableEditor: React.FC<React.PropsWithChildren<VariableEditorProps>> = p
 									<Select
 										ref={i => trySetInitialRef(first, i, initialInputRef)}
 										$beakSize={'sm'}
+										aria-label={section.label ?? stateBinding}
 										value={state[stateBinding] as string ?? ''}
 										onChange={e => updateState({
 											[stateBinding]: e.currentTarget.value,
@@ -279,6 +283,7 @@ const VariableEditor: React.FC<React.PropsWithChildren<VariableEditorProps>> = p
 									<Select
 										ref={i => trySetInitialRef(first, i, initialInputRef)}
 										$beakSize={'sm'}
+										aria-label={section.label ?? stateBinding}
 										value={state[stateBinding] as string ?? ''}
 										onChange={e => updateState({
 											[stateBinding]: e.currentTarget.value,
