@@ -80,9 +80,9 @@ const requestTabSchema = z
 	})
 	.strict();
 
-const variableGroupEditorTabSchema = z
+const variableSetEditorTabSchema = z
 	.object({
-		type: z.literal('variable_group_editor'),
+		type: z.literal('variable_set_editor'),
 		payload: z.string().min(1),
 		temporary: z.boolean(),
 	})
@@ -106,7 +106,7 @@ const preferencesTabSchema = z
 
 const tabSchema = z.discriminatedUnion('type', [
 	requestTabSchema,
-	variableGroupEditorTabSchema,
+	variableSetEditorTabSchema,
 	newProjectIntroTabSchema,
 	preferencesTabSchema,
 ]);

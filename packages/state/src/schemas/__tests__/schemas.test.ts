@@ -42,10 +42,10 @@ describe('preferences schemas', () => {
 		expect(requestPreferenceSchema.safeParse(missingResponse).success).toBe(false);
 	});
 
-	it('tab preferences: discriminates request / variable_group_editor / new_project_intro / preferences', () => {
+	it('tab preferences: discriminates request / variable_set_editor / new_project_intro / preferences', () => {
 		const tabs = [
 			{ type: 'request', payload: 'r1', temporary: false },
-			{ type: 'variable_group_editor', payload: 'v1', temporary: true },
+			{ type: 'variable_set_editor', payload: 'v1', temporary: true },
 			{ type: 'new_project_intro', payload: 'new_project_intro', temporary: false },
 			{ type: 'preferences', payload: 'preferences', temporary: false },
 		];
