@@ -7,7 +7,7 @@ import type { Flight } from '@getbeak/types/flight';
 import { motion } from 'framer-motion';
 import { AlertTriangle, Check, CheckCircle2, Copy, MoveRight, XCircle } from 'lucide-react';
 import * as React from 'react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 const MotionFlex = motion.create(Flex);
 
@@ -27,6 +27,7 @@ const Header: React.FC<HeaderProps> = ({ selectedFlight }) => {
 	const context = useVariableContext(selectedFlight.requestId);
 	const [url, setUrl] = useState('');
 	const [justCopied, setJustCopied] = useState(false);
+	const copiedTimerRef = useRef<number | null>(null);
 
 	useEffect(() => {
 		let cancelled = false;
@@ -38,6 +39,10 @@ const Header: React.FC<HeaderProps> = ({ selectedFlight }) => {
 		};
 	}, [context, request]);
 
+	useEffect(() => () => {
+		if (copiedTimerRef.current !== null) window.clearTimeout(copiedTimerRef.current);
+	}, []);
+
 	const verb = request.verb.toUpperCase();
 	const verbColor = verbToColor(verb);
 	const statusColor = response ? statusToColor(response.status) : error ? statusToColor(500) : undefined;
@@ -45,9 +50,13 @@ const Header: React.FC<HeaderProps> = ({ selectedFlight }) => {
 
 	function copyUrl() {
 		if (typeof navigator !== 'undefined' && navigator.clipboard) {
-			navigator.clipboard.writeText(url).catch(() => {});
+			navigator.clipboard.writeText(url).catch(() => { /* clipboard refused */ });
 			setJustCopied(true);
-			setTimeout(() => setJustCopied(false), 1200);
+			if (copiedTimerRef.current !== null) window.clearTimeout(copiedTimerRef.current);
+			copiedTimerRef.current = window.setTimeout(() => {
+				setJustCopied(false);
+				copiedTimerRef.current = null;
+			}, 1200);
 		}
 	}
 
