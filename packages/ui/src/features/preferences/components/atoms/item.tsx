@@ -19,8 +19,10 @@ export const ItemInfo = chakra('div', {
 	base: {
 		fontSize: 'xs',
 		color: 'fg.subtle',
-		my: '1.5',
+		mt: '1.5',
+		mb: '0.5',
 		lineHeight: '1.5',
+		maxW: '420px',
 	},
 });
 
