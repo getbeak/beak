@@ -3,7 +3,7 @@ import { sidebarPreferenceSetCollapse } from '@beak/ui/store/preferences/actions
 import { useAppSelector } from '@beak/ui/store/redux';
 import type { MenuItemConstructorOptions } from 'electron';
 import * as React from 'react';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
 import { SectionBodyContext, type SectionBodyOptions } from '../context/section-body-context';
@@ -23,15 +23,33 @@ const SidebarPaneSection: React.FC<React.PropsWithChildren<SidebarPaneSectionPro
 
 	const collapsed = useAppSelector(s => s.global.preferences.sidebar.collapsed[collapseKey]);
 	const [uiCollapsed, setUiCollapsed] = useState(collapsed);
+	const persistTimerRef = useRef<number | null>(null);
+
+	// Mirror external (Redux-driven) collapse changes — e.g. when the omni-bar
+	// "Toggle sidebar" command flips the preference. Without this sync the
+	// section's local animation state would diverge from the persisted value.
+	useEffect(() => {
+		setUiCollapsed(collapsed);
+	}, [collapsed]);
+
+	useEffect(() => () => {
+		if (persistTimerRef.current !== null) window.clearTimeout(persistTimerRef.current);
+	}, []);
 
 	function setCollapsedProxy() {
 		if (disableCollapse) return;
 
-		const collapsing = !collapsed;
+		const collapsing = !uiCollapsed;
 		setUiCollapsed(collapsing);
 
+		if (persistTimerRef.current !== null) {
+			window.clearTimeout(persistTimerRef.current);
+			persistTimerRef.current = null;
+		}
+
 		if (collapsing) {
-			window.setTimeout(() => {
+			persistTimerRef.current = window.setTimeout(() => {
+				persistTimerRef.current = null;
 				dispatch(sidebarPreferenceSetCollapse({ key: collapseKey, collapsed: collapsing }));
 			}, 200);
 		} else {
