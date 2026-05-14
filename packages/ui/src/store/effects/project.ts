@@ -314,7 +314,8 @@ export function registerProjectEffects(start: AppStartListening) {
 					detail: 'This action is irreversible inside Beak!',
 					type: 'warning',
 					buttons: ['Remove', 'Cancel'],
-					defaultId: 0,
+					defaultId: 1,
+					cancelId: 1,
 				});
 				if (response.response === 1) return;
 			}
