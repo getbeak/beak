@@ -85,7 +85,7 @@ const FinderView: React.FC<FinderViewProps> = ({ content, reset }) => {
 	if (matches.length === 0) return <NoItemsFound>{'No matching requests'}</NoItemsFound>;
 
 	return (
-		<Box py='1'>
+		<Box py='1' role='listbox' aria-label='Matching requests'>
 			{matches.map((k, idx) => {
 				const match = tree[k];
 				const reqNode = match as ValidRequestNode;
@@ -109,6 +109,8 @@ const FinderView: React.FC<FinderViewProps> = ({ content, reset }) => {
 						ref={(i: HTMLElement | null) => {
 							if (isActive) activeRef.current = i;
 						}}
+						role='option'
+						aria-selected={isActive}
 						tabIndex={0}
 						mx='1.5'
 						my='0.5'

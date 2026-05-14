@@ -207,7 +207,7 @@ const CommandsView: React.FC<React.PropsWithChildren<CommandsViewProps>> = ({ co
 	let runningIdx = 0;
 
 	return (
-		<Box py='1'>
+		<Box py='1' role='listbox' aria-label='Available commands'>
 			{orderedCats.map((cat, ci) => {
 				const ids = groups.get(cat)!;
 				return (
@@ -228,6 +228,8 @@ const CommandsView: React.FC<React.PropsWithChildren<CommandsViewProps>> = ({ co
 									ref={(i: HTMLElement | null) => {
 										if (isActive) activeRef.current = i;
 									}}
+									role='option'
+									aria-selected={isActive}
 									tabIndex={0}
 									mx='1.5'
 									my='0.5'
