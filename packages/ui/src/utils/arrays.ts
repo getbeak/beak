@@ -1,7 +1,7 @@
 type Direction = 'forward' | 'backward';
 
 interface MovePositionOptions {
-	allowWrapping: true;
+	allowWrapping: boolean;
 }
 
 export function movePosition(arr: unknown[], currentIndex: number, direction: Direction, opts?: MovePositionOptions) {
