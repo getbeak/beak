@@ -81,7 +81,7 @@ const TypeSelector: React.FC<TypeSelectorProps> = ({ disabled, requestId, id, va
 					color: colour,
 					background: `color-mix(in srgb, ${colour} 14%, transparent)`,
 					borderColor: `color-mix(in srgb, ${colour} 38%, var(--beak-colors-border-subtle))`,
-					boxShadow: `0 1px 2px color-mix(in srgb, ${colour} 20%, transparent)`,
+					boxShadow: `0 1px 2px color-mix(in srgb, ${colour} 20%, transparent), inset 0 1px 0 color-mix(in srgb, white 14%, transparent)`,
 				}}
 			>
 				<Icon size={12} strokeWidth={2} />
