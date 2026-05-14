@@ -116,6 +116,7 @@ const JsonNodeRow: React.FC<JsonNodeRowProps> = ({
 				<ChakraButton
 					type='button'
 					aria-label={collapsed ? 'Expand' : 'Collapse'}
+					aria-expanded={!collapsed}
 					mr='1'
 					w='12px'
 					h='12px'
@@ -130,6 +131,11 @@ const JsonNodeRow: React.FC<JsonNodeRowProps> = ({
 					transform={collapsed ? 'rotate(0deg)' : 'rotate(90deg)'}
 					transition='transform .14s ease-out, color .12s ease'
 					_hover={{ color: 'accent.pink' }}
+					_focusVisible={{
+						outline: 'none',
+						color: 'accent.pink',
+						boxShadow: '0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-pink) 35%, transparent)',
+					}}
 					onClick={() => onToggle(row.id)}
 				>
 					<ChevronRight size={10} strokeWidth={2.2} />
@@ -195,6 +201,11 @@ const JsonNodeRow: React.FC<JsonNodeRowProps> = ({
 					cursor='pointer'
 					transition='color .12s ease, background-color .12s ease, transform .08s ease'
 					_hover={{ color: 'accent.pink', bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 15%, transparent)' }}
+					_focusVisible={{
+						outline: 'none',
+						color: 'accent.pink',
+						boxShadow: '0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-pink) 40%, transparent)',
+					}}
 					_active={{ transform: 'scale(0.9)' }}
 					onClick={() => onCopyPath(row.path)}
 				>
@@ -213,6 +224,11 @@ const JsonNodeRow: React.FC<JsonNodeRowProps> = ({
 						cursor='pointer'
 						transition='color .12s ease, background-color .12s ease, transform .08s ease'
 						_hover={{ color: 'accent.teal', bg: 'color-mix(in srgb, var(--beak-colors-accent-teal) 18%, transparent)' }}
+						_focusVisible={{
+							outline: 'none',
+							color: 'accent.teal',
+							boxShadow: '0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-teal) 40%, transparent)',
+						}}
 						_active={{ transform: 'scale(0.9)' }}
 						onClick={() => onCopyValue(row)}
 					>
