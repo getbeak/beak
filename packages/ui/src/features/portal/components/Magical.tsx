@@ -39,7 +39,7 @@ const Magical: React.FC<MagicalProps> = ({ email, revertFromMagical }) => {
 				>
 					<Sparkles size={15} strokeWidth={2} />
 				</Flex>
-				<Box fontSize='xl' fontWeight='600' color='fg.default' letterSpacing='-0.01em'>{'Almost there'}</Box>
+				<Box fontSize='xl' fontWeight='700' color='fg.default' letterSpacing='-0.02em'>{'Almost there'}</Box>
 			</Flex>
 			<EnterMagicState email={email} inboundState={inboundState} reset={revertFromMagical} />
 		</Box>

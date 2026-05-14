@@ -44,7 +44,7 @@ const Purchase: React.FC<PurchaseProps> = ({ onChangeToTrial }) => {
 						<Tags size={22} strokeWidth={1.8} />
 					</Flex>
 				</motion.div>
-				<Box fontSize='xl' fontWeight='600' color='fg.default' letterSpacing='-0.01em' mt='1'>
+				<Box fontSize='xl' fontWeight='700' color='fg.default' letterSpacing='-0.02em' mt='1'>
 					{'New to Beak?'}
 				</Box>
 				<Box fontSize='sm' color='fg.muted' textAlign='center' maxW='340px'>
