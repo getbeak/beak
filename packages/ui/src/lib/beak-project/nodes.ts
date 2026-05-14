@@ -13,11 +13,12 @@ export async function moveNodesOnDisk(sourceNode: Nodes, destinationNode: Nodes 
 	if (await ipcFsService.pathExists(destinationPath)) {
 		const { response } = await ipcDialogService.showMessageBox({
 			type: 'warning',
-			title: 'Unable to move file or folder',
+			title: `Replace ${sourceBasename}?`,
 			message: `A file or folder with the name '${sourceBasename}' already exists in the destination folder. Do you want to replace it?`,
 			detail: 'This action is irreversible inside Beak!',
 			buttons: ['Replace', 'Cancel'],
-			defaultId: 0,
+			defaultId: 1,
+			cancelId: 1,
 		});
 
 		if (response === 1) return;
