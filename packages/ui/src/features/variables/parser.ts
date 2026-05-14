@@ -33,12 +33,11 @@ export async function parseValueSections(
 			// Easier than using an abort controller
 			let complete = false;
 
-			const value = Promise.race([
+			const value = await Promise.race([
 				rtv.getValue(ctx, p.payload, depth + 1),
 				new Promise(resolve => {
 					window.setTimeout(() => {
 						if (!complete)
-
 							console.error(`Fetching value for ${rtv.type} exceeded 600ms`);
 
 						resolve('');
