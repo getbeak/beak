@@ -1,7 +1,8 @@
 import { Flex } from '@chakra-ui/react';
-import { selectActiveFlight } from '@beak/state/flight';
+import { type FlightInProgress as FlightInProgressType, selectActiveFlight } from '@beak/state/flight';
 import PendingSlash from '@beak/ui/components/molecules/PendingSplash';
 import { useAppSelector } from '@beak/ui/store/redux';
+import type { Flight } from '@getbeak/types/flight';
 import * as React from 'react';
 
 import FlightInProgress from './molecules/FlightInProgress';
@@ -18,7 +19,17 @@ const ResponsePane: React.FC = () => {
 	const selectedFlight = flightHistory?.selected !== undefined
 		? flightHistory.history[flightHistory.selected]
 		: undefined;
-	const pending = !selectedNode || !flightHistory || !selectedFlight;
+
+	// Prefer the live, in-progress flight once its head has landed — that lets the
+	// Inspector render status, headers, and a streaming body before `complete`
+	// fires (essential for SSE, long bodies, ranged downloads). Until then we
+	// fall back to the most recent completed flight in history, if any.
+	const liveFlight = React.useMemo(
+		() => (currentFlight?.head ? synthesizeFlight(currentFlight) : null),
+		[currentFlight],
+	);
+	const displayedFlight = liveFlight ?? selectedFlight;
+	const pending = !selectedNode || !displayedFlight;
 
 	return (
 		<Flex
@@ -42,10 +53,10 @@ const ResponsePane: React.FC = () => {
 			}}
 		>
 			{pending && <PendingSlash />}
-			{!pending && (
+			{!pending && displayedFlight && (
 				<React.Fragment>
-					<Header selectedFlight={selectedFlight} />
-					<Inspector flight={selectedFlight} />
+					<Header selectedFlight={displayedFlight} />
+					<Inspector flight={displayedFlight} />
 				</React.Fragment>
 			)}
 
@@ -53,5 +64,31 @@ const ResponsePane: React.FC = () => {
 		</Flex>
 	);
 };
+
+/**
+ * Build a {@link Flight}-shape from a live {@link FlightInProgress} so the Inspector
+ * can render before the body completes. Mirrors what the slice would persist on
+ * `completeFlight`; the difference is `hasBody` is `true` once any bytes have
+ * arrived (not just when content-length was advertised), which keeps the raw
+ * viewer accurate during streaming.
+ */
+function synthesizeFlight(f: FlightInProgressType): Flight {
+	const head = f.head!;
+	const transferred = f.bodyTransferred ?? 0;
+	return {
+		requestId: f.requestId,
+		flightId: f.flightId,
+		request: f.request as unknown as Flight['request'],
+		response: {
+			headers: head.headers,
+			redirected: head.redirected,
+			status: head.status,
+			url: head.url,
+			hasBody: head.contentLength > 0 || transferred > 0,
+		},
+		binaryStoreKey: f.binaryStoreKey,
+		timing: f.timing,
+	};
+}
 
 export default ResponsePane;
