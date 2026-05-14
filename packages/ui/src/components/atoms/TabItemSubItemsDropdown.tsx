@@ -102,7 +102,7 @@ const TabItemSubItemsDropdown = <T = string>(props: TabItemSubItemsDropdownProps
 										<Box>{i.label}</Box>
 										{isActive && (
 											<Box color='accent.pink' display='inline-flex'>
-												<Check size={11} strokeWidth={2.5} />
+												<Check size={11} strokeWidth={3} />
 											</Box>
 										)}
 									</Flex>
