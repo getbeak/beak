@@ -10,11 +10,20 @@ export class LocalStorage {
 	}
 
 	getJsonItem<T>(key: string) {
-		const value = window.localStorage.getItem(this.generateKey(key));
+		const fullKey = this.generateKey(key);
+		const value = window.localStorage.getItem(fullKey);
 
 		if (!value) return null;
 
-		return JSON.parse(value) as T;
+		try {
+			return JSON.parse(value) as T;
+		} catch (err) {
+			// Corrupted entry — drop it so the next session starts clean instead
+			// of crashing every load with the same bad blob.
+			console.warn(`localStorage.${fullKey} contained invalid JSON; dropping`, err);
+			window.localStorage.removeItem(fullKey);
+			return null;
+		}
 	}
 
 	setJsonItem<T>(key: string, value: T): void {
