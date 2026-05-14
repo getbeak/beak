@@ -92,9 +92,19 @@ const Sidebar: React.FC = () => {
 			h={`calc(100% - ${topSpacer}px)`}
 			pt={`${topSpacer}px`}
 			bg='color-mix(in srgb, var(--beak-colors-bg-canvas) 85%, transparent)'
-			borderRightWidth='1px'
-			borderRightColor='border.subtle'
 			overflow='hidden'
+			css={{
+				'&::after': {
+					content: '""',
+					position: 'absolute',
+					top: '8%',
+					bottom: '8%',
+					right: 0,
+					width: '1px',
+					background: 'linear-gradient(to bottom, transparent, color-mix(in srgb, var(--beak-colors-border-default) 65%, transparent) 8%, color-mix(in srgb, var(--beak-colors-border-default) 65%, transparent) 92%, transparent)',
+					pointerEvents: 'none',
+				},
+			}}
 		>
 			{embedded && (
 				<Box
