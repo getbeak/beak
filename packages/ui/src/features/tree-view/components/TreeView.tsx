@@ -123,6 +123,8 @@ const TreeView: React.FC<React.PropsWithChildren<TreeViewProps>> = props => {
 							>
 								<Box
 									ref={container}
+									role='tree'
+									aria-label='Project tree'
 									h='100%'
 									_focus={{ outline: 'none' }}
 								>

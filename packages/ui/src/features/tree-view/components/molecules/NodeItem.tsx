@@ -133,6 +133,10 @@ const NodeItem: React.FC<React.PropsWithChildren<NodeItemProps>> = props => {
 		<NodeContextMenu node={node} target={element}>
 			<Box
 				ref={element}
+				role='treeitem'
+				aria-selected={isActive}
+				aria-level={depth + 1}
+				aria-expanded={collapsible ? !collapsed : undefined}
 				tabIndex={0}
 				position='relative'
 				display='flex'
