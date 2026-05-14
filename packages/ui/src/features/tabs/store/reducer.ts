@@ -74,6 +74,7 @@ const tabsReducer = createReducer(initialState, builder => {
 			updateRecentlyClosed(state, ...state.activeTabs);
 
 			state.activeTabs = [];
+			state.selectedTab = void 0;
 		})
 		.addCase(actions.closeTabsLeft, (state, { payload }) => {
 			const targetTab = getTargetTab(state, payload);
