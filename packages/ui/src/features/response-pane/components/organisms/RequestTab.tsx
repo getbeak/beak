@@ -47,7 +47,13 @@ const RequestTab: React.FC<RequestTabProps> = ({ flight }) => {
 	}
 
 	useEffect(() => {
-		createBasicHttpOutput(flight.request, context, windowSession).then(setOutput);
+		let cancelled = false;
+		createBasicHttpOutput(flight.request, context, windowSession).then(value => {
+			if (!cancelled) setOutput(value);
+		});
+		return () => {
+			cancelled = true;
+		};
 	}, [flight.request, selectedSets, variableSets]);
 
 	return (
