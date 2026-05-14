@@ -10,7 +10,7 @@ export default function buildAlerts(builder: ActionReducerMapBuilder<State>) {
 			state.alerts[payload.ident] = payload.alert;
 		})
 		.addCase(actions.alertRemove, (state, { payload }) => {
-			state.alerts[payload] = void 0;
+			delete state.alerts[payload];
 		})
 		.addCase(actions.alertRemoveDependents, (state, { payload }) => {
 			const removeIdents = TypedObject.keys(state.alerts)
@@ -23,20 +23,21 @@ export default function buildAlerts(builder: ActionReducerMapBuilder<State>) {
 				.filter(Boolean) as unknown as string[];
 
 			removeIdents.forEach(i => {
-				state.alerts[i] = void 0;
+				delete state.alerts[i];
 			});
 		})
 		.addCase(actions.alertRemoveType, (state, { payload }) => {
 			const removeIdents = TypedObject.keys(state.alerts)
 				.map(i => {
-					const alert = state.alerts[i]!;
+					const alert = state.alerts[i];
+					if (!alert) return null;
 					if (alert.type === payload) return i;
 					return null;
 				})
 				.filter(Boolean) as unknown as string[];
 
 			removeIdents.forEach(i => {
-				state.alerts[i] = void 0;
+				delete state.alerts[i];
 			});
 		})
 		.addCase(actions.alertClear, state => {
