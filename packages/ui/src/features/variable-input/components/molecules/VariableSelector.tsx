@@ -1,6 +1,6 @@
 import React from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Box, Flex } from '@chakra-ui/react';
+import { Box, Flex, chakra } from '@chakra-ui/react';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { VariableManager } from '@beak/ui/features/variables';
 import useVariableContext from '@beak/ui/features/variables/hooks/use-variable-context';
@@ -172,8 +172,7 @@ const VariableSelector: React.FC<React.PropsWithChildren<VariableSelectorProps>>
 				<React.Fragment>
 					<Box as='strong' color='fg.default'>{'Missing a variable?'}</Box>{' '}
 					{'Build your own with an extension — check the '}
-					<Box
-						as='a'
+					<chakra.a
 						href='https://getbeak.notion.site/Extensions-4c16ca640b35460787056f8be815b904'
 						color='accent.pink'
 						fontWeight='600'
@@ -188,7 +187,7 @@ const VariableSelector: React.FC<React.PropsWithChildren<VariableSelectorProps>>
 						}}
 					>
 						{'docs'}
-					</Box>
+					</chakra.a>
 					{'.'}
 				</React.Fragment>
 			)}

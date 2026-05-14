@@ -25,7 +25,7 @@ const OverviewTab: React.FC<OverviewTabProps> = ({ flight }) => {
 	const verb = flight.request.verb.toLocaleUpperCase();
 	const verbColor = verbToColor(flight.request.verb);
 	const status = flight.response?.status;
-	const bodySize = flight.response?.hasBody ? binaryStore.get(flight.binaryStoreKey).length : 0;
+	const bodySize = flight.response?.hasBody ? (binaryStore.get(flight.binaryStoreKey)?.length ?? 0) : 0;
 	const duration = requestStart !== undefined && responseEnd !== undefined ? responseEnd - requestStart : 0;
 	const startedAt = new Date(flight.timing.beakStart);
 

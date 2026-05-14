@@ -47,7 +47,7 @@ export const SelectItem: React.FC<SelectItemProps> = ({ $active, children, onCli
 		}}
 		_active={{ transform: 'scale(0.97)' }}
 		onClick={onClick}
-		onKeyDown={(event: React.KeyboardEvent) => {
+		onKeyDown={(event: React.KeyboardEvent<HTMLDivElement>) => {
 			onKeyDown?.(event);
 			if (event.defaultPrevented) return;
 			if (event.key === 'Enter' || event.key === ' ') {

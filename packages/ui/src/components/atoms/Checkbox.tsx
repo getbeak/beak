@@ -24,6 +24,17 @@ const HiddenInput = chakra('input', {
 	},
 });
 
+const Label = chakra('label', {
+	base: {
+		color: 'fg.default',
+		fontSize: 'xs',
+		cursor: 'pointer',
+		userSelect: 'none',
+		transition: 'color .12s ease',
+		_hover: { color: 'accent.pink' },
+	},
+});
+
 /**
  * Beak's labelled checkbox. Hides the native input and renders a 16×16
  * custom box that paints a check icon on tick. The native input retains
@@ -66,18 +77,7 @@ const Checkbox: React.FC<CheckboxProps> = ({ label, ...rest }) => {
 					</Box>
 				</Box>
 			</Box>
-			<Box
-				as='label'
-				htmlFor={id}
-				color='fg.default'
-				fontSize='xs'
-				cursor='pointer'
-				userSelect='none'
-				transition='color .12s ease'
-				_hover={{ color: 'accent.pink' }}
-			>
-				{label}
-			</Box>
+			<Label htmlFor={id}>{label}</Label>
 		</Flex>
 	);
 };
