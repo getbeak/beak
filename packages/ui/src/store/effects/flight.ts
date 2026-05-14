@@ -66,7 +66,6 @@ export function registerFlightEffects(start: AppStartListening) {
 			const flightId = ksuid.generate('flight').toString();
 			const node = api.getState().global.project.tree[requestId] as ValidRequestNode | undefined;
 			if (!node) {
-				// eslint-disable-next-line no-console
 				console.error('Node not found for flight request', requestId);
 				return;
 			}

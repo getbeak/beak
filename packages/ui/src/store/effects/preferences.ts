@@ -136,7 +136,6 @@ async function loadRequestPreferencesFile(id: string) {
 		const preferenceFile = await readJsonAndValidate<RequestPreference>(preferencesPath, requestPreference);
 		return preferenceFile.file;
 	} catch (error) {
-		// eslint-disable-next-line no-console
 		console.warn('Request preferences invalid:', error);
 		return defaultPreferences;
 	}
@@ -152,7 +151,6 @@ async function loadEditorPreferencesFile() {
 		const preferenceFile = await readJsonAndValidate<EditorPreferences>(preferencesPath, editorPreferences);
 		return preferenceFile.file;
 	} catch (error) {
-		// eslint-disable-next-line no-console
 		console.warn('Editor preferences invalid:', error);
 		return defaultPreferences;
 	}
@@ -168,7 +166,6 @@ async function loadSidebarPreferencesFile() {
 		const preferenceFile = await readJsonAndValidate<SidebarPreferences>(preferencesPath, sidebarPreferences);
 		return preferenceFile.file;
 	} catch (error) {
-		// eslint-disable-next-line no-console
 		console.warn('Sidebar preferences invalid:', error);
 		return defaultPreferences;
 	}
@@ -184,7 +181,6 @@ async function loadProjectPanePreferencesFile() {
 		const preferenceFile = await readJsonAndValidate<ProjectPanePreferences>(preferencesPath, projectPanePreferences);
 		return preferenceFile.file;
 	} catch (error) {
-		// eslint-disable-next-line no-console
 		console.warn('Project preferences invalid:', error);
 		return defaultPreferences;
 	}

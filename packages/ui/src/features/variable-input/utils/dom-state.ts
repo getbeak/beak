@@ -61,7 +61,6 @@ export function parseDomState(root: HTMLElement | null, opts: ParseDomStateOptio
 
 		// Anything that isn't a token DIV is an anomaly.
 		if (n.nodeName !== 'DIV') {
-			// eslint-disable-next-line no-console
 			console.error(`Unknown node detected in variable input ${n.nodeName}`);
 			anomalyDetected = true;
 			return;
