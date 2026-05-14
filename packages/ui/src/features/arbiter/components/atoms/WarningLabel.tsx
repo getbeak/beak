@@ -35,7 +35,7 @@ const WarningLabel: React.FC<WarningLabelProps> = ({ onClick, children }) => (
 			cursor: 'pointer',
 			fontSize: 10,
 			fontWeight: 700,
-			letterSpacing: '0.05em',
+			letterSpacing: '0.06em',
 			textTransform: 'uppercase',
 			borderRadius: 6,
 			border: '1px solid color-mix(in srgb, var(--beak-colors-accent-warning) 75%, transparent)',
