@@ -90,6 +90,9 @@ const Omnibar: React.FC = () => {
 					onClick={() => dispatch(actions.hideOmniBar())}
 				>
 					<MotionBox
+						role='dialog'
+						aria-modal='true'
+						aria-label={isCommands ? 'Command palette' : 'Find requests'}
 						initial={{ opacity: 0, y: -8, scale: 0.98 }}
 						animate={{ opacity: 1, y: 0, scale: 1 }}
 						exit={{ opacity: 0, y: -8, scale: 0.98 }}
