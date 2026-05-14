@@ -9,7 +9,12 @@ import type {
 import type { RequestBodyFile, RequestOverview } from '@getbeak/types/request';
 import fetch, { type RequestInit, type Response } from 'node-fetch';
 
-const bodyFreeVerbs = ['get', 'head', 'delete'];
+// Verbs that semantically don't carry a body. Matches the renderer-side
+// `requestAllowsBody` so both layers agree on which verbs get a body
+// stripped — historically the two diverged on DELETE (renderer dropped,
+// requester also dropped) and OPTIONS (neither dropped), which is wrong
+// per RFC 9110 and inconsistent. Aligning on GET/HEAD/OPTIONS.
+const bodyFreeVerbs = ['get', 'head', 'options'];
 
 export interface RequesterOptions {
 	payload: FlightRequestPayload;
