@@ -205,6 +205,7 @@ const Header: React.FC<HeaderProps> = ({ node }) => {
 
 			<ChakraButton
 				type='button'
+				aria-label={flighting ? 'Sending request' : 'Send request'}
 				flex='0 0 auto'
 				display='inline-flex'
 				alignItems='center'
