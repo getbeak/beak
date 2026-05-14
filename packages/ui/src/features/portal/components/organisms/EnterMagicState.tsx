@@ -139,7 +139,7 @@ const EnterMagicState: React.FC<EnterMagicStateProps> = ({ email, reset, inbound
 						color='accent.pink'
 						boxShadow='0 6px 22px color-mix(in srgb, var(--beak-colors-accent-pink) 32%, transparent), inset 0 1px 0 color-mix(in srgb, white 18%, transparent)'
 					>
-						<Loader2 size={20} style={{ animation: 'beakPortalSpin 1s linear infinite' }} />
+						<Loader2 size={20} style={{ animation: 'beakSpin 1s linear infinite' }} />
 					</Flex>
 					<Box fontSize='sm' fontWeight='600' color='fg.default' letterSpacing='-0.005em'>{'Working on your magic link… ✨'}</Box>
 				</Flex>

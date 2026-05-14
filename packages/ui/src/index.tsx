@@ -51,9 +51,6 @@ const GLOBAL_CSS = (darwin: boolean) => `
 		0% { opacity: 0; transform: translateY(-3px) scale(.96); }
 		100% { opacity: 1; transform: translateY(0) scale(1); }
 	}
-	@keyframes beakPortalSpin {
-		to { transform: rotate(360deg); }
-	}
 	@keyframes beakSpin {
 		from { transform: rotate(0deg); }
 		to { transform: rotate(360deg); }

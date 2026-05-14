@@ -61,7 +61,7 @@ const RequestMagicLink: React.FC<React.PropsWithChildren<RequestMagicLinkProps>>
 				<Button disabled={working} onClick={() => sendMagicLink()}>
 					<Flex align='center' justify='center' gap='1.5'>
 						{working ? (
-							<Loader2 size={13} style={{ animation: 'beakPortalSpin 1s linear infinite' }} />
+							<Loader2 size={13} style={{ animation: 'beakSpin 1s linear infinite' }} />
 						) : (
 							<Mail size={13} />
 						)}

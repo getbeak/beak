@@ -92,7 +92,7 @@ const RequestTrial: React.FC<React.PropsWithChildren<RequestTrialProps>> = props
 			<Button disabled={working} onClick={() => requestTrial()}>
 				<Flex align='center' justify='center' gap='1.5'>
 					{working ? (
-						<Loader2 size={13} style={{ animation: 'beakPortalSpin 1s linear infinite' }} />
+						<Loader2 size={13} style={{ animation: 'beakSpin 1s linear infinite' }} />
 					) : (
 						<Sparkles size={13} />
 					)}
