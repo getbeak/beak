@@ -173,9 +173,15 @@ const VariableSelector: React.FC<React.PropsWithChildren<VariableSelectorProps>>
 				<React.Fragment>
 					<Box as='strong' color='fg.default'>{'Missing a variable?'}</Box>{' '}
 					{'Build your own with an extension — check the '}
-					<a
+					<Box
+						as='a'
 						href='https://getbeak.notion.site/Extensions-4c16ca640b35460787056f8be815b904'
-						onClick={async event => {
+						color='accent.pink'
+						fontWeight='600'
+						textDecoration='underline'
+						textDecorationStyle='dotted'
+						_hover={{ textDecorationStyle: 'solid' }}
+						onClick={async (event: React.MouseEvent) => {
 							event.preventDefault();
 							await ipcExplorerService.launchUrl(
 								'https://getbeak.notion.site/Extensions-4c16ca640b35460787056f8be815b904',
@@ -183,7 +189,7 @@ const VariableSelector: React.FC<React.PropsWithChildren<VariableSelectorProps>>
 						}}
 					>
 						{'docs'}
-					</a>
+					</Box>
 					{'.'}
 				</React.Fragment>
 			)}
