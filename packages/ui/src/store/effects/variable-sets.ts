@@ -29,14 +29,14 @@ import {
 } from '../variable-sets/actions';
 
 export function registerVariableSetsEffects(start: AppStartListening) {
-	// start: initial import + long-running fs watcher on variable-groups/.
+	// start: initial import + long-running fs watcher on variable-sets/.
 	start({
 		actionCreator: startVariableSets,
 		effect: async (_action, api) => {
 			await initialImport(api);
 
 			const subscription: FsSubscription = createFsEmitter(
-				'variable-groups',
+				'variable-sets',
 				async event => {
 					if (!['add', 'change', 'unlink'].includes(event.type)) return;
 					if (path.extname(event.path) !== '.json') return;
@@ -122,7 +122,7 @@ export function registerVariableSetsEffects(start: AppStartListening) {
 	start({
 		actionCreator: createNewVariableSet,
 		effect: async ({ payload }, api) => {
-			const id = await createVariableSet('variable-groups', payload.name);
+			const id = await createVariableSet('variable-sets', payload.name);
 			api.dispatch(changeTab({ type: 'variable_set_editor', payload: id, temporary: true }));
 			await api.take(insertNewVariableSet.match, 250);
 			api.dispatch(vgActions.renameStarted({ id }));
@@ -196,14 +196,14 @@ async function initialImport(api: {
 	getState: () => { global: { preferences: { editor: { selectedVariableSets: Record<string, string> } } } };
 	dispatch: (action: { type: string; [k: string]: unknown }) => unknown;
 }) {
-	const folderExists = await ipcFsService.pathExists('variable-groups');
+	const folderExists = await ipcFsService.pathExists('variable-sets');
 
 	if (!folderExists) {
 		api.dispatch(variableSetsOpened({ variableSets: {} }));
 		return;
 	}
 
-	const items = await scanDirectoryRecursively('variable-groups');
+	const items = await scanDirectoryRecursively('variable-sets');
 	const files = items.filter(i => !i.isDirectory).map(i => i.path);
 	const { variableSets, failures } = await readVariableSets(files);
 	const editorPreferences = api.getState().global.preferences.editor;
