@@ -62,6 +62,7 @@ const VariableSets: React.FC = () => {
 					>
 						<VariableSetName variableSetName={k} />
 						<select
+							aria-label={`Active set for ${k}`}
 							value={value}
 							style={selectStyle}
 							onChange={e => {

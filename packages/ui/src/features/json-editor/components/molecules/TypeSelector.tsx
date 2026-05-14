@@ -35,6 +35,7 @@ const TypeSelector: React.FC<TypeSelectorProps> = ({ disabled, requestId, id, va
 		<Box position='relative'>
 			<select
 				ref={selectRef}
+				aria-label={`Type: ${value}`}
 				disabled={disabled}
 				value={value}
 				tabIndex={-1}

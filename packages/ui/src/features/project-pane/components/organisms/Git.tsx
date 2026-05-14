@@ -72,6 +72,7 @@ const Git: React.FC = () => {
 					<GitBranch size={10} strokeWidth={2.2} />
 				</Flex>
 				<select
+					aria-label='Current Git branch'
 					value={selectedBranch}
 					style={selectStyle}
 					onChange={() => undefined}

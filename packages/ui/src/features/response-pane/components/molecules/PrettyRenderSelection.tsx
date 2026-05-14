@@ -60,6 +60,7 @@ const PrettyRenderSelection: React.FC<PrettyRenderSelectionProps> = ({
 				<Braces size={11} strokeWidth={2.2} />
 			</Box>
 			<select
+				aria-label='Response viewer format'
 				value={selectedLanguage ?? 'text/plain'}
 				onChange={e => onSelectedLanguageChange(e.currentTarget.value)}
 				style={{
