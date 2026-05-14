@@ -152,7 +152,7 @@ const FileUploadView: React.FC<FileUploadViewProps> = ({ node }) => {
 							<Upload size={20} strokeWidth={2} />
 						</Flex>
 						<Box color='fg.default' fontSize='sm' fontWeight='600' letterSpacing='-0.005em'>{'Click to pick a file'}</Box>
-						<Box fontSize='10px' color='fg.subtle' letterSpacing='0.06em' textTransform='uppercase' fontWeight='700'>
+						<Box fontSize='10px' color='accent.pink' letterSpacing='0.06em' textTransform='uppercase' fontWeight='700'>
 							{'Any binary up to ~10 MB'}
 						</Box>
 					</React.Fragment>
