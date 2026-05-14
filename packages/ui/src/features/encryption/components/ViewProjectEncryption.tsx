@@ -5,7 +5,7 @@ import { ipcEncryptionService } from '@beak/ui/lib/ipc';
 import { motion } from 'framer-motion';
 import { Check, Copy, KeyRound } from 'lucide-react';
 import * as React from 'react';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 interface ViewProjectEncryptionProps {
 	onClose: (resolved: boolean) => void;
@@ -13,11 +13,20 @@ interface ViewProjectEncryptionProps {
 
 const ViewProjectEncryption: React.FC<ViewProjectEncryptionProps> = ({ onClose }) => {
 	const [copied, setCopied] = useState(false);
+	const copiedTimerRef = useRef<number | null>(null);
+
+	useEffect(() => () => {
+		if (copiedTimerRef.current !== null) window.clearTimeout(copiedTimerRef.current);
+	}, []);
 
 	function copy() {
 		ipcEncryptionService.copyEncryptionKey();
 		setCopied(true);
-		window.setTimeout(() => setCopied(false), 1500);
+		if (copiedTimerRef.current !== null) window.clearTimeout(copiedTimerRef.current);
+		copiedTimerRef.current = window.setTimeout(() => {
+			setCopied(false);
+			copiedTimerRef.current = null;
+		}, 1500);
 	}
 
 	return (
