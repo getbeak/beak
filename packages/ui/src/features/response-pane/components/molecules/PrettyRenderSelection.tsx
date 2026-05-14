@@ -21,9 +21,22 @@ const PrettyRenderSelection: React.FC<PrettyRenderSelectionProps> = ({
 		borderBottomWidth='1px'
 		borderColor='border.subtle'
 	>
-		<Flex align='center' gap='1.5' color='fg.subtle'>
-			<Eye size={11} />
-			<Box fontSize='10px' fontWeight='700' letterSpacing='0.06em' textTransform='uppercase'>
+		<Flex align='center' gap='1.5'>
+			<Flex
+				align='center'
+				justify='center'
+				w='20px'
+				h='20px'
+				borderRadius='sm'
+				bg='color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent)'
+				borderWidth='1px'
+				borderColor='color-mix(in srgb, var(--beak-colors-accent-pink) 28%, transparent)'
+				color='accent.pink'
+				boxShadow='inset 0 1px 0 color-mix(in srgb, white 14%, transparent)'
+			>
+				<Eye size={11} strokeWidth={2.2} />
+			</Flex>
+			<Box fontSize='10px' fontWeight='700' letterSpacing='0.06em' textTransform='uppercase' color='fg.subtle'>
 				{'View as'}
 			</Box>
 		</Flex>
