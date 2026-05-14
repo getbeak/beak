@@ -23,7 +23,36 @@ const FileUploadView: React.FC<FileUploadViewProps> = ({ node }) => {
 	const [preview, setPreview] = useState<PreviewReferencedFileRes>();
 
 	useEffect(() => {
-		openPreview(body.payload.fileReferenceId);
+		let cancelled = false;
+		openPreviewFor(body.payload.fileReferenceId).catch(() => { /* ignore */ });
+		return () => {
+			cancelled = true;
+		};
+
+		async function openPreviewFor(fileReferenceId: string | undefined) {
+			if (!fileReferenceId) return;
+			const result = await ipcFsService.previewReferencedFile(fileReferenceId);
+			if (cancelled) return;
+			if (!result) {
+				setPreview(void 0);
+				dispatch(
+					requestBodyFileChanged({
+						requestId: node.id,
+						fileReferenceId: void 0,
+						contentType: void 0,
+					}),
+				);
+				return;
+			}
+			setPreview(result);
+			dispatch(
+				requestBodyFileChanged({
+					requestId: node.id,
+					fileReferenceId,
+					contentType: mime.lookup(result.fileExtension) || '',
+				}),
+			);
+		}
 	}, [body.payload.fileReferenceId]);
 
 	async function clearFile(event: React.MouseEvent) {
