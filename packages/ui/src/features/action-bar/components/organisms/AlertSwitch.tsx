@@ -72,8 +72,7 @@ const AlertSwitch: React.FC<React.PropsWithChildren<AlertSwitchProps>> = ({ aler
 			);
 
 		default:
-			// @ts-expect-error
-			return <AlertItem title={'Unknown alert'} description={`Alert renderer missing for ${alert.type}`} />;
+			return <AlertItem title={'Unknown alert'} description={`Alert renderer missing for ${(alert as { type: string }).type}`} />;
 	}
 };
 
