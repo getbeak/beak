@@ -55,10 +55,10 @@ export const ArbiterDialog: React.FC<ArbiterDialogProps> = ({ open, onClose }) =
 					bg='color-mix(in srgb, var(--beak-colors-bg-surface) 60%, transparent)'
 					mb='4'
 				>
-					<Box fontSize='10px' fontWeight='700' letterSpacing='0.06em' textTransform='uppercase' color='fg.subtle' mb='1'>
+					<Box fontSize='10px' fontWeight='700' letterSpacing='0.06em' textTransform='uppercase' color='accent.pink' mb='1'>
 						{'Last successful check'}
 					</Box>
-					<Box fontSize='xs' fontFamily='mono' color='fg.default'>
+					<Box fontSize='xs' fontFamily='mono' color='fg.default' style={{ fontVariantNumeric: 'tabular-nums' }}>
 						{lastSuccessfulCheck.toString()}
 					</Box>
 				</Box>
