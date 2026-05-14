@@ -27,7 +27,13 @@ const definition: EditableVariable<Base64EncodedRtv, EditorState> = {
 		const input = isArray ? payload.input : [payload.input as unknown as string];
 
 		const parsed = await parseValueSections(ctx, input, recursiveDepth);
-		let encoded = btoa(parsed);
+		// Encode UTF-8 → base64. btoa alone throws on any non-Latin-1
+		// codepoint (emoji, Cyrillic, CJK, etc.), so first convert to
+		// a binary string of UTF-8 bytes.
+		const bytes = new TextEncoder().encode(parsed);
+		let binary = '';
+		for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+		let encoded = btoa(binary);
 
 		if (payload.characterSet === 'websafe_base64')
 			encoded = encoded.replaceAll('/', '_').replaceAll('+', '-');

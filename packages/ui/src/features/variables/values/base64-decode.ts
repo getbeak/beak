@@ -3,8 +3,6 @@ import type { EditableVariable } from '@getbeak/extension-sdk';
 
 import { parseValueSections } from '../parser';
 
-const invalidBase64Error = 'Failed to execute \'atob\' on \'Window\': The string to be decoded is not correctly encoded.';
-
 interface EditorState {
 	input: ValueSections;
 	characterSet: Base64DecodedRtv['characterSet'];
@@ -32,9 +30,15 @@ const definition: EditableVariable<Base64DecodedRtv, EditorState> = {
 			encoded = encoded.replaceAll('_', '/').replaceAll('-', '+');
 
 		try {
-			return atob(encoded);
+			const binary = atob(encoded);
+			// atob returns a Latin-1 string of the raw bytes. Decode those
+			// bytes as UTF-8 so a base64'd UTF-8 source round-trips back
+			// to its original Unicode string (emoji, non-Latin scripts).
+			const bytes = new Uint8Array(binary.length);
+			for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+			return new TextDecoder().decode(bytes);
 		} catch (error) {
-			if (error instanceof Error && error.name === 'InvalidCharacterError' && error.message.includes(invalidBase64Error))
+			if (error instanceof Error && error.name === 'InvalidCharacterError')
 				return '';
 
 			throw error;
