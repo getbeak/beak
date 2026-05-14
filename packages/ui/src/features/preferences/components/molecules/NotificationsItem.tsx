@@ -115,7 +115,7 @@ const NotificationRow: React.FC<NotificationRowProps> = ({ icon, iconColor, labe
 			{icon}
 		</Flex>
 		<Box flex='1 1 auto' minW={0}>
-			<Box fontSize='xs' fontWeight='600' color='fg.default'>{label}</Box>
+			<Box fontSize='xs' fontWeight='600' color='fg.default' letterSpacing='-0.005em'>{label}</Box>
 			{hint && (
 				<Box
 					fontSize='10px'
