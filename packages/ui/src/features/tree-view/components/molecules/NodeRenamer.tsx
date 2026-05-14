@@ -97,6 +97,7 @@ const NodeRenamer: React.FC<NodeRenamerProps> = ({ node }) => {
 					borderRadius: '4px',
 					backgroundColor: 'var(--beak-colors-bg-surface)',
 					color: 'var(--beak-colors-fg-default)',
+					caretColor: 'var(--beak-colors-accent-pink)',
 					width: 'calc(100% - 4px)',
 					padding: '2px 6px',
 					fontSize: '12px',
