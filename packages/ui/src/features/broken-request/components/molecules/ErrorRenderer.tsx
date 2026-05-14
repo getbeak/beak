@@ -51,10 +51,30 @@ const ErrorRenderer: React.FC<ErrorRendererProps> = ({ error }) => {
 					<Box fontSize='10px' fontWeight='700' color='fg.subtle' textTransform='uppercase' letterSpacing='0.06em' mb='1.5'>
 						{'Field errors'}
 					</Box>
-					<Flex direction='column' gap='1'>
+					<Flex direction='column' gap='1.5'>
 						{fieldEntries.map(([fieldPath, msg]) => (
-							<Flex key={fieldPath} align='flex-start' gap='2' fontSize='xs' fontFamily='mono'>
-								<Box flex='0 0 auto' color='accent.pink' minW='120px' maxW='220px' overflow='hidden' textOverflow='ellipsis' whiteSpace='nowrap'>
+							<Flex
+								key={fieldPath}
+								align='flex-start'
+								gap='2'
+								fontSize='xs'
+								fontFamily='mono'
+								pl='2'
+								position='relative'
+								css={{
+									'&::before': {
+										content: '""',
+										position: 'absolute',
+										top: '4px',
+										bottom: '4px',
+										left: 0,
+										width: '2px',
+										background: 'color-mix(in srgb, var(--beak-colors-accent-pink) 38%, transparent)',
+										borderRadius: '1px',
+									},
+								}}
+							>
+								<Box flex='0 0 auto' color='accent.pink' fontWeight='600' minW='120px' maxW='220px' overflow='hidden' textOverflow='ellipsis' whiteSpace='nowrap'>
 									{fieldPath}
 								</Box>
 								<Box color='fg.default' wordBreak='break-word'>{msg}</Box>
