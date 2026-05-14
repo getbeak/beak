@@ -74,7 +74,7 @@ const ViewProjectEncryption: React.FC<ViewProjectEncryptionProps> = ({ onClose }
 							animate={{ opacity: 1, y: 0 }}
 							style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
 						>
-							{copied ? <Check size={12} /> : <Copy size={12} />}
+							{copied ? <Check size={12} strokeWidth={3} /> : <Copy size={12} />}
 							{copied ? 'Copied!' : 'Copy encryption key'}
 						</motion.span>
 					</Button>
