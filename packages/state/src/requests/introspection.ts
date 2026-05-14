@@ -41,6 +41,7 @@ export function extractAssetRefs(request: RequestFile | RequestFileOverride): As
 export function countAssetRefs(request: RequestFile | RequestFileOverride): number {
 	const body = request.body;
 	if (body?.type !== 'file') return 0;
+	if (!body.payload || typeof body.payload !== 'object') return 0;
 	const ref = (body.payload as { assetRef?: unknown }).assetRef;
 	return ref && isAssetRef(ref) ? 1 : 0;
 }
