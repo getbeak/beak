@@ -126,7 +126,7 @@ const OpenApiImportDialog: React.FC = () => {
 								>
 									<FolderTree size={14} strokeWidth={2} />
 								</Flex>
-								<Box fontWeight='600' fontSize='md' color='fg.default'>
+								<Box fontWeight='600' fontSize='md' color='fg.default' letterSpacing='-0.005em'>
 									{'Where should this OpenAPI spec land?'}
 								</Box>
 							</Flex>
@@ -323,7 +323,7 @@ const OpenApiImportDialog: React.FC = () => {
 										>
 											<CheckCircle2 size={14} strokeWidth={2} />
 										</Flex>
-										<Box fontWeight='600' fontSize='md' color='fg.default'>
+										<Box fontWeight='600' fontSize='md' color='fg.default' letterSpacing='-0.005em'>
 											{'OpenAPI imported'}
 										</Box>
 									</Flex>
@@ -349,7 +349,7 @@ const OpenApiImportDialog: React.FC = () => {
 										>
 											<AlertOctagon size={14} strokeWidth={2} />
 										</Flex>
-										<Box fontWeight='600' fontSize='md' color='fg.default'>
+										<Box fontWeight='600' fontSize='md' color='fg.default' letterSpacing='-0.005em'>
 											{'Import failed'}
 										</Box>
 									</Flex>
