@@ -71,16 +71,13 @@ const AccountItem: React.FC = () => {
 					{'Signed in'}
 				</Box>
 				<Box
-					as='abbr'
 					title={primaryEmail}
-					display='block'
 					overflow='hidden'
 					whiteSpace='nowrap'
 					textOverflow='ellipsis'
 					fontSize='sm'
 					fontWeight='600'
 					color='fg.default'
-					textDecoration='none'
 					fontFamily='mono'
 				>
 					{primaryEmail}
