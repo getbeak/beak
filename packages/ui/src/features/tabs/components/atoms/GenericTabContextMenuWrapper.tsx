@@ -67,8 +67,6 @@ const GenericTabContextMenuWrapper: React.FC<React.PropsWithChildren<GenericTabC
 					dispatch(closeTabsAll());
 				},
 			},
-
-			{ type: 'separator' },
 		]);
 	}, [tab, activeTabs]);
 
