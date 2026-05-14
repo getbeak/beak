@@ -79,7 +79,6 @@ const Header: React.FC<HeaderProps> = ({ node }) => {
 			px='2.5'
 			fontSize='md'
 			maxW='calc(100% - 20px)'
-			css={{ '@keyframes spin': { '0%': { transform: 'rotate(0deg)' }, '100%': { transform: 'rotate(360deg)' } } }}
 		>
 			<Menu.Root>
 				<Menu.Trigger asChild>
@@ -240,7 +239,7 @@ const Header: React.FC<HeaderProps> = ({ node }) => {
 						animate={{ opacity: 1 }}
 						style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
 					>
-						<Loader2 size={13} style={{ animation: 'spin 1s linear infinite' }} />
+						<Loader2 size={13} style={{ animation: 'beakSpin 1s linear infinite' }} />
 						<Box as='span'>Sending</Box>
 					</motion.span>
 				) : (

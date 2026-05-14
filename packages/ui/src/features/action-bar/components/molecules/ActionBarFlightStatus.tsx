@@ -29,7 +29,7 @@ const ActionBarFlightStatus: React.FC = () => {
 							id='tt-action-bar-flight-status-active'
 							tabIndex={-1}
 							size={14}
-							style={{ animation: 'spin 1s linear infinite' }}
+							style={{ animation: 'beakSpin 1s linear infinite' }}
 						/>
 					</motion.div>
 				);
@@ -90,7 +90,7 @@ const ActionBarFlightStatus: React.FC = () => {
 	}
 
 	return (
-		<Box display='inline-flex' alignItems='center' mx='1' css={{ '@keyframes spin': { '0%': { transform: 'rotate(0deg)' }, '100%': { transform: 'rotate(360deg)' } } }}>
+		<Box display='inline-flex' alignItems='center' mx='1'>
 			<AnimatePresence mode='wait'>{renderInner()}</AnimatePresence>
 		</Box>
 	);
