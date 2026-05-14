@@ -278,6 +278,10 @@ const VariableSelector: React.FC<React.PropsWithChildren<VariableSelectorProps>>
 									color: 'fg.default',
 									bg: isActive ? undefined : 'color-mix(in srgb, var(--beak-colors-accent-pink) 10%, transparent)',
 								}}
+								_focusVisible={{
+									outline: 'none',
+									boxShadow: 'inset 0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-pink) 35%, transparent)',
+								}}
 								onClick={() => setActive(idx)}
 								onDoubleClick={() => createDefaultVariable(i)}
 							>
