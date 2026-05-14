@@ -40,16 +40,6 @@ const NonprodBadge: React.FC = () => {
 			transition='filter .14s ease, transform .08s ease'
 			_hover={{ filter: 'brightness(1.08)' }}
 			_active={{ transform: 'translateX(-50%) scale(0.97)' }}
-			css={{
-				'@keyframes beakNonprodPulse': {
-					'0%, 100%': {
-						boxShadow: '0 8px 24px color-mix(in srgb, var(--beak-colors-accent-alert) 30%, transparent), inset 0 1px 0 color-mix(in srgb, white 18%, transparent)',
-					},
-					'50%': {
-						boxShadow: '0 8px 30px color-mix(in srgb, var(--beak-colors-accent-alert) 60%, transparent), inset 0 1px 0 color-mix(in srgb, white 22%, transparent)',
-					},
-				},
-			}}
 			onClick={() => ipcPreferencesService.switchEnvironment('prod')}
 		>
 			<AlertTriangle size={11} strokeWidth={2.2} />

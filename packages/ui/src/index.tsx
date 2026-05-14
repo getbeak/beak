@@ -76,6 +76,10 @@ const GLOBAL_CSS = (darwin: boolean) => `
 		0% { background-position: 0% 0; }
 		100% { background-position: 300% 0; }
 	}
+	@keyframes beakNonprodPulse {
+		0%, 100% { box-shadow: 0 8px 24px color-mix(in srgb, var(--beak-colors-accent-alert) 30%, transparent), inset 0 1px 0 color-mix(in srgb, white 18%, transparent); }
+		50% { box-shadow: 0 8px 30px color-mix(in srgb, var(--beak-colors-accent-alert) 60%, transparent), inset 0 1px 0 color-mix(in srgb, white 22%, transparent); }
+	}
 	*::-webkit-scrollbar { width: 8px; height: 8px; }
 	*::-webkit-scrollbar-track { background: transparent; }
 	*::-webkit-scrollbar-thumb {
