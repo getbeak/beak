@@ -105,6 +105,9 @@ export function registerTabsEffects(start: AppStartListening) {
 						break;
 					}
 					case 'new_project_intro':
+					case 'preferences':
+						// Both are project-window-scoped, not tied to tree/variable-set
+						// state, so reconciliation should leave them alone.
 						break;
 					default:
 						api.dispatch(closeTab((tab as { payload: string }).payload));
