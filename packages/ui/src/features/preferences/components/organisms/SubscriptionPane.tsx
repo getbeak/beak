@@ -27,7 +27,7 @@ const SubscriptionPane: React.FC<React.PropsWithChildren<unknown>> = () => {
 	return (
 		<Pane title={'Subscription'}>
 			{fetching && (
-				<Flex align='center' gap='2' py='4'>
+				<Flex align='center' gap='2' py='4' role='status' aria-live='polite'>
 					<Spinner
 						size='sm'
 						color='accent.pink'

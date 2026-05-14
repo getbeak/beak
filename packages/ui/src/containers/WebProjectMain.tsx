@@ -63,6 +63,8 @@ const WebProjectMain: React.FC = () => {
 			<Box position='relative' h='100vh' w='100vw' bg='bg.canvas' overflow='hidden'>
 				<MeshGradient position='absolute' inset='0' tone='loading' intensity='normal' pointerEvents='none' />
 				<Flex
+					role='status'
+					aria-live='polite'
 					position='relative'
 					h='100%'
 					w='100%'
