@@ -83,8 +83,9 @@ export async function createBasicHttpOutput(overview: RequestOverview, context: 
 	if (!requestAllowsBody(verb) && body.type === 'graphql')
 		queryBuilder.append('query', body.payload.query);
 
-	if (queryBuilder.values.length > 0)
-		firstLine.push(`?${queryBuilder.toString()}`);
+	const queryString = queryBuilder.toString();
+	if (queryString.length > 0)
+		firstLine.push(`?${queryString}`);
 
 	if (url.hash)
 		firstLine.push(url.hash);
