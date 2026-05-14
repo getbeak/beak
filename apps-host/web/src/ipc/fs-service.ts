@@ -207,9 +207,7 @@ async function ensureParentDirectoryExists(filePath: string) {
 		.filter(Boolean);
 
 	for (const iteration of directoryIterations) {
-		// eslint-disable-next-line no-await-in-loop
 		if (!(await fileOrFolderExists(iteration))) {
-			// eslint-disable-next-line no-await-in-loop
 			await getBeakHost().p.node.fs.promises.mkdir(iteration);
 		}
 	}

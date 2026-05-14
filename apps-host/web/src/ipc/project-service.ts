@@ -11,14 +11,12 @@ service.registerOpenFolder(async (_event, projectPath) => {
 	});
 
 	if (!project) {
-		// eslint-disable-next-line no-alert
 		alert('Unable to load project, the project you tried to open could not be found.');
 
 		return;
 	}
 
 	if (!project.name) {
-		// eslint-disable-next-line no-alert
 		alert('Unable to load project, please check it is not corrupt and try again');
 
 		return;
@@ -28,7 +26,6 @@ service.registerOpenFolder(async (_event, projectPath) => {
 });
 
 service.registerOpenProject(async _event => {
-	// eslint-disable-next-line no-alert
 	alert('Not implemented: `registerOpenProject`');
 });
 
