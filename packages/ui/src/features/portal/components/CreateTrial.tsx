@@ -61,7 +61,7 @@ const CreateTrial: React.FC<CreateTrialProps> = ({ onChangeToDefault }) => {
 				<Box fontSize='2xl' fontWeight='700' color='fg.default' letterSpacing='-0.02em' lineHeight='1.1'>
 					{'Start your free Beak trial'}
 				</Box>
-				<Box fontSize='sm' color='fg.muted' mt='1'>
+				<Box fontSize='sm' color='fg.muted' mt='1' lineHeight='1.5' maxW='420px'>
 					{'No credit card, no fuss, no limits — 14 days of the full Beak experience.'}
 				</Box>
 			</Flex>
