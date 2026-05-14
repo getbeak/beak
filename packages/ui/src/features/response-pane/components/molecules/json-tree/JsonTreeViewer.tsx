@@ -1,4 +1,5 @@
 import { Box, Flex, chakra } from '@chakra-ui/react';
+import Kbd from '@beak/ui/components/atoms/Kbd';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { ChevronsDownUp, ChevronsUpDown } from 'lucide-react';
 import * as React from 'react';
@@ -212,25 +213,7 @@ const JsonTreeViewer: React.FC<JsonTreeViewerProps> = ({ value }) => {
 					{'Collapse'}
 				</ChakraButton>
 				<Flex ml='auto' align='center' gap='1' color='fg.subtle' fontSize='10px'>
-					<Box
-						as='kbd'
-						display='inline-flex'
-						alignItems='center'
-						justifyContent='center'
-						h='15px'
-						minW='15px'
-						px='1'
-						fontFamily='mono'
-						fontSize='10px'
-						fontWeight='600'
-						borderRadius='sm'
-						borderWidth='1px'
-						borderColor='border.subtle'
-						bg='color-mix(in srgb, var(--beak-colors-bg-surface-emphasized) 50%, transparent)'
-						color='fg.muted'
-					>
-						{'⌘F'}
-					</Box>
+					<Kbd>{'⌘F'}</Kbd>
 					<Box
 						as='span'
 						fontWeight='700'
