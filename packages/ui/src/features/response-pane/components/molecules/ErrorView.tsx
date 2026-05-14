@@ -35,7 +35,7 @@ const ErrorView: React.FC<ErrorViewProps> = ({ error }) => (
 				{'Request failed'}
 			</Box>
 			<Box fontSize='xs' color='fg.muted' mt='1.5' mb='3' lineHeight='1.5' maxW='360px' mx='auto'>
-				{"The network call didn't complete. Check the message below for details."}
+				{'The network call didn’t complete. Check the message below for details.'}
 			</Box>
 			<Box
 				display='inline-block'

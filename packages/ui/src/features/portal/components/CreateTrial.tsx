@@ -93,7 +93,7 @@ export function getErrorMessage(error: Squawk) {
 			return 'You already have a subscription';
 
 		case 'trial_already_used':
-			return "You've already used the trial";
+			return 'You’ve already used the trial';
 
 		default:
 			return `There was a problem sending the magic link (${error.code})`;

@@ -47,7 +47,7 @@ const RequestTrial: React.FC<React.PropsWithChildren<RequestTrialProps>> = props
 					case 'already_subscribed':
 						ipcDialogService
 							.showMessageBox({
-								title: "You're already subscribed",
+								title: 'You’re already subscribed',
 								type: 'info',
 								message: 'You already have a Beak subscription. Just sign in with your email!',
 							})
@@ -57,7 +57,7 @@ const RequestTrial: React.FC<React.PropsWithChildren<RequestTrialProps>> = props
 					case 'trial_already_used':
 						ipcDialogService
 							.showMessageBox({
-								title: "You've already used the trial",
+								title: 'You’ve already used the trial',
 								type: 'info',
 								message:
 									'You have already used your Beak trial. You can purchase a subscription to continue using Beak.',

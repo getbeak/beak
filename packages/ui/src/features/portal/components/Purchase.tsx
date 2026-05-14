@@ -48,7 +48,7 @@ const Purchase: React.FC<PurchaseProps> = ({ onChangeToTrial }) => {
 					{'New to Beak?'}
 				</Box>
 				<Box fontSize='sm' color='fg.muted' textAlign='center' maxW='340px' lineHeight='1.5'>
-					{"For $25 a year, get access to Beak's full set of powerful features. "}
+					{'For $25 a year, get access to Beak’s full set of powerful features. '}
 					{'No hidden fees, no pricing tiers.'}
 				</Box>
 			</Flex>

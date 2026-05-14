@@ -62,7 +62,7 @@ const EditorPane: React.FC<React.PropsWithChildren<unknown>> = () => {
 						{'Dark'}
 					</SelectItem>
 				</SelectContainer>
-				<ItemInfo>{"By default, the editor theme will use Beak's current theme."}</ItemInfo>
+				<ItemInfo>{'By default, the editor theme will use Beak’s current theme.'}</ItemInfo>
 			</ItemGroup>
 
 			<ItemGroup>
