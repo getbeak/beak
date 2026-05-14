@@ -20,6 +20,9 @@ const SectionHeader: React.FC<React.PropsWithChildren<SectionHeaderProps>> = pro
 	return (
 		<Flex
 			role='button'
+			aria-expanded={!collapsed}
+			aria-disabled={disableCollapse}
+			tabIndex={disableCollapse ? -1 : 0}
 			justify='space-between'
 			align='center'
 			px='2'
@@ -35,7 +38,19 @@ const SectionHeader: React.FC<React.PropsWithChildren<SectionHeaderProps>> = pro
 				color: 'fg.default',
 				bg: disableCollapse ? undefined : 'color-mix(in srgb, var(--beak-colors-bg-surface) 35%, transparent)',
 			}}
+			_focusVisible={{
+				outline: 'none',
+				color: 'fg.default',
+				boxShadow: 'inset 0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-pink) 35%, transparent)',
+			}}
 			onClick={onClick}
+			onKeyDown={(event: React.KeyboardEvent) => {
+				if (disableCollapse) return;
+				if (event.key === 'Enter' || event.key === ' ') {
+					event.preventDefault();
+					onClick();
+				}
+			}}
 			css={{ '&:hover [data-section-actions]': { opacity: 1 } }}
 		>
 			<Flex align='center' gap='1.5' minW={0}>
