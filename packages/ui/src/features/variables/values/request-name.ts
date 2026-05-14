@@ -3,7 +3,7 @@ import type { Variable } from '@getbeak/extension-sdk';
 const definition: Variable<any> = {
 	type: 'request_name',
 	name: 'Request name',
-	description: 'Returns the name of the this request',
+	description: 'Returns the name of this request',
 	sensitive: false,
 	external: false,
 

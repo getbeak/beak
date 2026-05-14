@@ -3,7 +3,7 @@ import type { Variable } from '@getbeak/extension-sdk';
 const definition: Variable<any> = {
 	type: 'request_method',
 	name: 'Request method',
-	description: 'Returns the HTTP method of the this request',
+	description: 'Returns the HTTP method of this request',
 	sensitive: false,
 	external: false,
 
@@ -15,7 +15,7 @@ const definition: Variable<any> = {
 		if (!node || node.type !== 'request' || node.mode !== 'valid')
 			return '';
 
-		return node.info.verb;
+		return node.info.verb.toUpperCase();
 	},
 
 	attributes: {
