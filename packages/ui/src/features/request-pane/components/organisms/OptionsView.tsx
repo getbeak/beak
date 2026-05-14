@@ -26,11 +26,6 @@ const HiddenCheckbox = chakra('input', {
 		h: '100%',
 		m: 0,
 		cursor: 'pointer',
-		_focus: {
-			'+ * [data-toggle-track]': {
-				boxShadow: '0 0 0 3px color-mix(in srgb, var(--beak-colors-accent-pink) 32%, transparent)',
-			},
-		},
 	},
 });
 
@@ -74,22 +69,30 @@ const ToggleSwitch: React.FC<ToggleSwitchProps> = ({ checked }) => (
 	</Box>
 );
 
+const RowLabel = chakra('label', {
+	base: {
+		display: 'flex',
+		alignItems: 'center',
+		gap: '3',
+		px: '3',
+		py: '2.5',
+		position: 'relative',
+		cursor: 'pointer',
+		borderRadius: 'md',
+		transition: 'background-color .12s ease',
+		_hover: { bg: 'color-mix(in srgb, var(--beak-colors-bg-surface-alt) 60%, transparent)' },
+		_focusWithin: {
+			'& [data-toggle-track]': {
+				boxShadow: '0 0 0 3px color-mix(in srgb, var(--beak-colors-accent-pink) 32%, transparent)',
+			},
+		},
+	},
+});
+
 const OptionRow: React.FC<OptionRowProps> = ({ icon, title, description, checked, onChange }) => {
 	const id = useId();
 	return (
-		<Flex
-			as='label'
-			htmlFor={id}
-			align='center'
-			gap='3'
-			px='3'
-			py='2.5'
-			position='relative'
-			cursor='pointer'
-			borderRadius='md'
-			transition='background-color .12s ease'
-			_hover={{ bg: 'color-mix(in srgb, var(--beak-colors-bg-surface-alt) 60%, transparent)' }}
-		>
+		<RowLabel htmlFor={id}>
 			<HiddenCheckbox
 				type='checkbox'
 				id={id}
@@ -124,7 +127,7 @@ const OptionRow: React.FC<OptionRowProps> = ({ icon, title, description, checked
 				</Box>
 			</Box>
 			<ToggleSwitch checked={checked} />
-		</Flex>
+		</RowLabel>
 	);
 };
 

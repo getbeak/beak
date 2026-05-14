@@ -1,17 +1,16 @@
-import React from 'react';
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { Box, Flex, chakra } from '@chakra-ui/react';
 import { TypedObject } from '@beak/common/helpers/typescript';
+import Kbd from '@beak/ui/components/atoms/Kbd';
 import { VariableManager } from '@beak/ui/features/variables';
 import useVariableContext from '@beak/ui/features/variables/hooks/use-variable-context';
 import { ipcExplorerService, ipcExtensionsService } from '@beak/ui/lib/ipc';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { movePosition } from '@beak/ui/utils/arrays';
-import { motion } from 'framer-motion';
-import { Plug, SearchX } from 'lucide-react';
-
+import { Box, chakra, Flex } from '@chakra-ui/react';
 import type { Variable, VariableStaticInformation } from '@getbeak/extension-sdk';
+import { motion } from 'framer-motion';
 import Fuse from 'fuse.js';
+import { Plug, SearchX } from 'lucide-react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 
 import { createFauxValue } from '../../../variables/values/variable-set-item';
 import type { NormalizedSelection } from '../../utils/browser-selection';
@@ -44,12 +43,11 @@ const VariableSelector: React.FC<React.PropsWithChildren<VariableSelectorProps>>
 			...VariableManager.getVariables(requestId),
 
 			// Variable sets act a little differently
-			...TypedObject.keys(variableSets)
-				.flatMap(vgKey => {
-					const vg = variableSets[vgKey];
+			...TypedObject.keys(variableSets).flatMap(vgKey => {
+				const vg = variableSets[vgKey];
 
-					return TypedObject.keys(vg.items).map(i => createFauxValue({ itemId: i }, variableSets));
-				}),
+				return TypedObject.keys(vg.items).map(i => createFauxValue({ itemId: i }, variableSets));
+			}),
 		];
 
 		if (!query) return all;
@@ -81,6 +79,12 @@ const VariableSelector: React.FC<React.PropsWithChildren<VariableSelectorProps>>
 		activeRef.current?.scrollIntoViewIfNeeded(false);
 	}, [activeRef, active]);
 
+	// When the query changes, snap the highlight back to the first result so
+	// Enter inserts what the user is actually looking at.
+	useEffect(() => {
+		setActive(0);
+	}, [query]);
+
 	useEffect(() => {
 		function onKeyDown(event: KeyboardEvent) {
 			if (event.shiftKey || event.metaKey || event.altKey || event.ctrlKey) return;
@@ -89,9 +93,8 @@ const VariableSelector: React.FC<React.PropsWithChildren<VariableSelectorProps>>
 			switch (event.key) {
 				case 'ArrowUp':
 				case 'ArrowDown': {
-					const newIndex = event.key === 'ArrowUp'
-						? movePosition(items, active, 'backward')
-						: movePosition(items, active, 'forward');
+					const newIndex =
+						event.key === 'ArrowUp' ? movePosition(items, active, 'backward') : movePosition(items, active, 'forward');
 					setActive(newIndex);
 					break;
 				}
@@ -170,7 +173,9 @@ const VariableSelector: React.FC<React.PropsWithChildren<VariableSelectorProps>>
 			{items.length > 0 && descriptionItem?.description}
 			{items.length === 0 && (
 				<React.Fragment>
-					<Box as='strong' color='fg.default'>{'Missing a variable?'}</Box>{' '}
+					<Box as='strong' color='fg.default'>
+						{'Missing a variable?'}
+					</Box>{' '}
 					{'Build your own with an extension — check the '}
 					<chakra.a
 						href='https://getbeak.notion.site/Extensions-4c16ca640b35460787056f8be815b904'
@@ -181,9 +186,7 @@ const VariableSelector: React.FC<React.PropsWithChildren<VariableSelectorProps>>
 						_hover={{ textDecorationStyle: 'solid' }}
 						onClick={async (event: React.MouseEvent) => {
 							event.preventDefault();
-							await ipcExplorerService.launchUrl(
-								'https://getbeak.notion.site/Extensions-4c16ca640b35460787056f8be815b904',
-							);
+							await ipcExplorerService.launchUrl('https://getbeak.notion.site/Extensions-4c16ca640b35460787056f8be815b904');
 						}}
 					>
 						{'docs'}
@@ -197,18 +200,21 @@ const VariableSelector: React.FC<React.PropsWithChildren<VariableSelectorProps>>
 	const cardStyle: React.CSSProperties = {
 		marginTop: `${position.top}px`,
 		marginLeft: `${position.left}px`,
-		width: 400,
-		height: 240,
+		width: 360,
+		maxHeight: 280,
 		display: 'flex',
 		flexDirection: 'column',
 		border: '1px solid color-mix(in srgb, var(--beak-colors-accent-pink) 24%, var(--beak-colors-border-subtle))',
-		borderRadius: 12,
-		background: 'color-mix(in srgb, var(--beak-colors-bg-surface) 70%, transparent)',
+		borderRadius: 10,
+		background: 'color-mix(in srgb, var(--beak-colors-bg-surface) 72%, transparent)',
 		backdropFilter: 'blur(24px) saturate(180%)',
-		boxShadow: '0 40px 96px rgba(0,0,0,0.38), 0 12px 32px color-mix(in srgb, var(--beak-colors-accent-pink) 18%, rgba(0,0,0,0.18)), inset 0 1px 0 color-mix(in srgb, white 22%, transparent)',
+		boxShadow:
+			'0 40px 96px rgba(0,0,0,0.38), 0 12px 32px color-mix(in srgb, var(--beak-colors-accent-pink) 18%, rgba(0,0,0,0.18)), inset 0 1px 0 color-mix(in srgb, white 22%, transparent)',
 		overflow: 'hidden',
 		fontSize: 13,
 	};
+
+	const matchCountLabel = items.length === 0 ? 'No matches' : items.length === 1 ? '1 match' : `${items.length} matches`;
 
 	return (
 		<Box
@@ -230,7 +236,43 @@ const VariableSelector: React.FC<React.PropsWithChildren<VariableSelectorProps>>
 				style={cardStyle}
 				onClick={event => event.stopPropagation()}
 			>
-				<Box flex='1 1 auto' overflowY='auto'>
+				<Flex
+					align='center'
+					justify='space-between'
+					gap='2'
+					px='2.5'
+					py='1.5'
+					borderBottomWidth='1px'
+					borderColor='border.subtle'
+					bg='color-mix(in srgb, var(--beak-colors-bg-canvas) 50%, transparent)'
+					fontSize='10px'
+					letterSpacing='0.06em'
+					textTransform='uppercase'
+					fontWeight='700'
+					color='fg.subtle'
+				>
+					<Flex align='center' gap='1.5'>
+						<Box color='accent.pink'>{'{'}</Box>
+						<Box>{'Insert variable'}</Box>
+					</Flex>
+					<Box color={items.length === 0 ? 'fg.disabled' : 'fg.subtle'}>{matchCountLabel}</Box>
+				</Flex>
+				<Box flex='1 1 auto' overflowY='auto' py='1'>
+					{query && (
+						<Box
+							px='2'
+							py='1'
+							fontSize='11px'
+							color='fg.subtle'
+							borderBottomWidth='1px'
+							borderColor='border.subtle'
+							mb='1'
+							css={{ '> strong': { color: 'var(--beak-colors-fg-default)', fontWeight: 600 } }}
+						>
+							{'Searching '}
+							<strong>{`"${query}"`}</strong>
+						</Box>
+					)}
 					{items.length === 0 && (
 						<Flex direction='column' align='center' gap='2' py='6' textAlign='center'>
 							<Flex
@@ -247,14 +289,10 @@ const VariableSelector: React.FC<React.PropsWithChildren<VariableSelectorProps>>
 							>
 								<SearchX size={18} strokeWidth={1.8} />
 							</Flex>
-							<Box fontSize='sm' color='fg.default' fontWeight='600' letterSpacing='-0.005em'>{'No matching variables'}</Box>
-							<Box
-								fontSize='10px'
-								fontWeight='700'
-								letterSpacing='0.06em'
-								textTransform='uppercase'
-								color='accent.pink'
-							>
+							<Box fontSize='sm' color='fg.default' fontWeight='600' letterSpacing='-0.005em'>
+								{'No matching variables'}
+							</Box>
+							<Box fontSize='10px' fontWeight='700' letterSpacing='0.06em' textTransform='uppercase' color='accent.pink'>
 								{'Try a different query'}
 							</Box>
 						</Flex>
@@ -323,6 +361,32 @@ const VariableSelector: React.FC<React.PropsWithChildren<VariableSelectorProps>>
 					})}
 				</Box>
 				{description}
+				<Flex
+					align='center'
+					justify='flex-end'
+					gap='3'
+					px='2'
+					py='1.5'
+					borderTopWidth='1px'
+					borderColor='border.subtle'
+					bg='color-mix(in srgb, var(--beak-colors-bg-canvas) 50%, transparent)'
+					fontSize='10px'
+					color='fg.subtle'
+				>
+					<Flex align='center' gap='1'>
+						<Kbd>{'↑'}</Kbd>
+						<Kbd>{'↓'}</Kbd>
+						<Box as='span'>{'navigate'}</Box>
+					</Flex>
+					<Flex align='center' gap='1'>
+						<Kbd>{'↵'}</Kbd>
+						<Box as='span'>{'insert'}</Box>
+					</Flex>
+					<Flex align='center' gap='1'>
+						<Kbd>{'esc'}</Kbd>
+						<Box as='span'>{'close'}</Box>
+					</Flex>
+				</Flex>
 			</motion.div>
 		</Box>
 	);

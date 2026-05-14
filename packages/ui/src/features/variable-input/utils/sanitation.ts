@@ -6,23 +6,19 @@ export function sanitiseValueSections(ValueSections: ValueSections) {
 	// - Remove trailing empty string parts
 	// - Collapse 2 or more consecutive empty string parts into one
 	const sanitisedParts: ValueSections = ValueSections.reduce((acc, value) => {
-		if (typeof value !== 'string')
-			return [...acc, value];
+		if (typeof value !== 'string') return [...acc, value];
 
 		// Check if last item was a string too
-		if (typeof acc[acc.length - 1] !== 'string')
-			return [...acc, value];
+		if (typeof acc[acc.length - 1] !== 'string') return [...acc, value];
 
 		acc[acc.length - 1] = `${acc[acc.length - 1]}${value}`;
 
 		return acc;
 	}, [] as ValueSections);
 
-	if (sanitisedParts[0] === '')
-		sanitisedParts.shift();
+	if (sanitisedParts[0] === '') sanitisedParts.shift();
 
-	if (sanitisedParts[sanitisedParts.length - 1] === '')
-		sanitisedParts.pop();
+	if (sanitisedParts[sanitisedParts.length - 1] === '') sanitisedParts.pop();
 
 	return sanitisedParts;
 }

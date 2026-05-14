@@ -18,14 +18,12 @@ export function determineInsertionMode(
 	const { offset, partIndex } = queryStartSelection;
 
 	// Offset is 1 due to the `{` prefix
-	if (partIndex === 0 && offset === 1)
-		return 'prepend';
+	if (partIndex === 0 && offset === 1) return 'prepend';
 
 	if (partIndex === ValueSections.length - 1) {
 		const part = ValueSections[partIndex] as string;
 
-		if (part.length - queryLength === offset + 1)
-			return 'append';
+		if (part.length - queryLength === offset + 1) return 'append';
 	}
 
 	return 'inject';

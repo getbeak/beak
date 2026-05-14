@@ -3,14 +3,19 @@ import * as React from 'react';
 
 interface UnmanagedInputProps {
 	innerRef: React.MutableRefObject<HTMLDivElement | null>;
+	placeholder?: string;
 }
 
 export default class UnmanagedInput extends React.Component<UnmanagedInputProps> {
-	shouldComponentUpdate() {
-		return false;
+	shouldComponentUpdate(nextProps: UnmanagedInputProps) {
+		// Only re-render when the placeholder text changes. The actual editable
+		// content is managed imperatively via innerHTML in VariableInput, so we
+		// continue to skip re-renders triggered by upstream state churn.
+		return nextProps.placeholder !== this.props.placeholder;
 	}
 
 	render() {
+		const { placeholder } = this.props;
 		return (
 			<Box
 				as='article'
@@ -18,6 +23,7 @@ export default class UnmanagedInput extends React.Component<UnmanagedInputProps>
 				contentEditable
 				spellCheck={false}
 				suppressContentEditableWarning
+				data-placeholder={placeholder ?? ''}
 				fontSize='sm'
 				borderWidth='1px'
 				borderColor='border.subtle'
@@ -25,6 +31,15 @@ export default class UnmanagedInput extends React.Component<UnmanagedInputProps>
 				overflow='hidden'
 				style={{ caretColor: 'var(--beak-colors-accent-pink)' }}
 				css={{
+					// CSS-driven placeholder follows the host's padding naturally and
+					// avoids the previous absolute-positioned overlay with hardcoded
+					// `top: 7px / left: 9px` that broke when the URL field tightened.
+					'&:empty::before': {
+						content: 'attr(data-placeholder)',
+						color: 'var(--beak-colors-fg-subtle)',
+						fontStyle: 'italic',
+						pointerEvents: 'none',
+					},
 					'&[disabled="true"]': {
 						userSelect: 'text',
 						cursor: 'text',
@@ -43,7 +58,8 @@ export default class UnmanagedInput extends React.Component<UnmanagedInputProps>
 						background: 'color-mix(in srgb, var(--beak-colors-accent-pink) 88%, transparent)',
 						color: 'var(--beak-colors-fg-onAccent)',
 						userSelect: 'text',
-						boxShadow: '0 1px 2px color-mix(in srgb, var(--beak-colors-accent-pink) 30%, transparent), inset 0 1px 0 color-mix(in srgb, white 22%, transparent)',
+						boxShadow:
+							'0 1px 2px color-mix(in srgb, var(--beak-colors-accent-pink) 30%, transparent), inset 0 1px 0 color-mix(in srgb, white 22%, transparent)',
 						transition: 'background-color .12s ease, transform .08s ease',
 					},
 					'.bvs-blob > strong': { fontWeight: 700, letterSpacing: '-0.005em' },
@@ -57,7 +73,8 @@ export default class UnmanagedInput extends React.Component<UnmanagedInputProps>
 						color: 'var(--beak-colors-fg-onAccent)',
 						fontWeight: 600,
 						letterSpacing: '0.01em',
-						boxShadow: '0 1px 2px color-mix(in srgb, var(--beak-colors-accent-alert) 32%, transparent), inset 0 1px 0 color-mix(in srgb, white 22%, transparent)',
+						boxShadow:
+							'0 1px 2px color-mix(in srgb, var(--beak-colors-accent-alert) 32%, transparent), inset 0 1px 0 color-mix(in srgb, white 22%, transparent)',
 					},
 					'> *': { display: 'inline', whiteSpace: 'nowrap' },
 					br: { display: 'none' },
