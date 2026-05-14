@@ -32,6 +32,8 @@ const AlertsPopover: React.FC<AlertsPopoverProps> = ({ parent, onClose }) => {
 	return createPortal(
 		<Box position='fixed' inset='0' onClick={() => onClose()}>
 			<Box
+				role='dialog'
+				aria-label='Project alerts'
 				position='fixed'
 				w='320px'
 				borderWidth='1px'
