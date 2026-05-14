@@ -40,7 +40,7 @@ export const ArbiterDialog: React.FC<ArbiterDialogProps> = ({ open, onClose }) =
 				</Flex>
 
 				<Box as='p' fontSize='sm' color='fg.muted' lineHeight='1.55' mb='3'>
-					{'Beak can\'t reach our subscription service right now. To stay safe, '}
+					{'Beak can’t reach our subscription service right now. To stay safe, '}
 					{'you\'ll be signed out '}
 					<Box as='strong' color='fg.default' fontWeight='600'>{friendlyLockNotice}</Box>
 					{'. If your subscription is active, getting back online before then will keep '}
