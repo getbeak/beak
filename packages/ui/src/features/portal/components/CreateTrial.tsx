@@ -56,6 +56,7 @@ const CreateTrial: React.FC<CreateTrialProps> = ({ onChangeToDefault }) => {
 						h='48px'
 						mb='2'
 						filter='drop-shadow(0px 8px 24px color-mix(in srgb, var(--beak-colors-accent-pink) 30%, transparent))'
+						style={{ animation: 'beakLogoFloat 4s ease-in-out infinite' }}
 					/>
 				</motion.div>
 				<Box fontSize='2xl' fontWeight='700' color='fg.default' letterSpacing='-0.02em' lineHeight='1.1'>
