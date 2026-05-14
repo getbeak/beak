@@ -25,7 +25,7 @@ const FixProjectEncryption: React.FC<FixProjectEncryptionProps> = ({ onClose }) 
 		if (key === '' || disable) return;
 
 		if (!base64regex.test(key)) {
-			setError("That key doesn't quite look right. Check it again");
+			setError('That key doesn’t quite look right. Check it again');
 			return;
 		}
 
@@ -62,7 +62,7 @@ const FixProjectEncryption: React.FC<FixProjectEncryptionProps> = ({ onClose }) 
 				</Flex>
 				<Box as='p' fontSize='sm' color='fg.muted' mb='2' lineHeight='1.55'>
 					{'Beak projects come with built-in encryption for storing secrets like passwords and tokens. '}
-					{"You don't currently have the project encryption key stored, so encrypted values can't be read."}
+					{'You don’t currently have the project encryption key stored, so encrypted values can’t be read.'}
 				</Box>
 				<Box as='p' fontSize='xs' color='fg.subtle' mb='4' lineHeight='1.5'>
 					{'Ask a teammate for the project key, paste it below, and continue.'}

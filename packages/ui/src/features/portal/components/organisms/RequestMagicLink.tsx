@@ -45,7 +45,7 @@ const RequestMagicLink: React.FC<React.PropsWithChildren<RequestMagicLinkProps>>
 
 	return (
 		<React.Fragment>
-			<SubTitle>{"We'll send a magic link to your inbox."}</SubTitle>
+			<SubTitle>{'We’ll send a magic link to your inbox.'}</SubTitle>
 			<ActionContainer>
 				<Input
 					type='email'

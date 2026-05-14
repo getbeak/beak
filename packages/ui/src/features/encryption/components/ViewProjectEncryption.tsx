@@ -44,7 +44,7 @@ const ViewProjectEncryption: React.FC<ViewProjectEncryptionProps> = ({ onClose }
 				</Flex>
 				<Box as='p' fontSize='sm' color='fg.muted' lineHeight='1.55' mb='2'>
 					{"Share the key below with your team to unlock your project's secrets. "}
-					{"Be careful — don't post it anywhere permanent or public."}
+					{'Be careful — don’t post it anywhere permanent or public.'}
 				</Box>
 				<Flex
 					align='center'

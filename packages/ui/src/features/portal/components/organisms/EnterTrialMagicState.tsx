@@ -169,7 +169,7 @@ const EnterTrialMagicState: React.FC<EnterTrialMagicStateProps> = ({ email, rese
 function getErrorMessage(error: Squawk) {
 	switch (error.code) {
 		case 'no_active_subscription':
-			return "You don't have an active Beak subscription.";
+			return 'You don’t have an active Beak subscription.';
 		case 'token_expired':
 			return 'Your magic link expired. Please request a new one.';
 		default:

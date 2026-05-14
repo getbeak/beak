@@ -54,7 +54,7 @@ const NotTheTabYourLookingFor: React.FC = () => {
 			</MotionBox>
 			<Box>
 				<Box fontSize='md' fontWeight='600' color='fg.default' letterSpacing='-0.005em'>
-					{"This isn't the tab you're looking for"}
+					{'This isn’t the tab you’re looking for'}
 				</Box>
 				<Box fontSize='xs' color='fg.muted' mt='1.5' maxW='320px' mx='auto' lineHeight='1.5'>
 					{'Pick a request from the sidebar — or feel lucky?'}
