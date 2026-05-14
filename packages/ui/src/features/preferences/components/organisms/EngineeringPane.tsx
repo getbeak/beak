@@ -105,7 +105,22 @@ const EngineeringPane: React.FC<React.PropsWithChildren<unknown>> = () => {
 						{'Signing out will clear your authentication tokens and require re-authentication on next launch.'}
 					</Box>
 					<ItemSpacer />
-					<Button colour='destructive' size='sm' onClick={() => ipcPreferencesService.signOut()}>
+					<Button
+						colour='destructive'
+						size='sm'
+						onClick={async () => {
+							const result = await ipcDialogService.showMessageBox({
+								title: 'Sign out?',
+								message: 'You will need to sign in again on next launch.',
+								type: 'warning',
+								buttons: ['Sign out', 'Cancel'],
+								defaultId: 1,
+								cancelId: 1,
+							});
+							if (result.response === 1) return;
+							ipcPreferencesService.signOut();
+						}}
+					>
 						{'Sign out'}
 					</Button>
 				</Box>
