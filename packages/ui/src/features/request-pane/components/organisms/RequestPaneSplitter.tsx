@@ -47,13 +47,27 @@ const RequestPaneSplitter: React.FC<RequestPaneSplitterProps> = ({ selectedNode 
 			px='3'
 			py='1.5'
 		>
-			<Flex align='center' gap='1.5' color='fg.subtle'>
-				<Terminal size={11} />
+			<Flex align='center' gap='1.5'>
+				<Flex
+					align='center'
+					justify='center'
+					w='20px'
+					h='20px'
+					borderRadius='sm'
+					bg='color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent)'
+					borderWidth='1px'
+					borderColor='color-mix(in srgb, var(--beak-colors-accent-pink) 28%, transparent)'
+					color='accent.pink'
+					boxShadow='inset 0 1px 0 color-mix(in srgb, white 14%, transparent)'
+				>
+					<Terminal size={10} strokeWidth={2.2} />
+				</Flex>
 				<Box
 					fontSize='10px'
 					fontWeight='700'
 					textTransform='uppercase'
 					letterSpacing='0.06em'
+					color='fg.subtle'
 				>
 					{'Request preview'}
 				</Box>
