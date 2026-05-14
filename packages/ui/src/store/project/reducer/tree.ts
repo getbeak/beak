@@ -13,6 +13,7 @@ export default function buildTree(builder: ActionReducerMapBuilder<State>) {
 		.addCase(actions.renameStarted, (state, action) => {
 			const { requestId } = action.payload;
 			const node = state.tree[requestId];
+			if (!node) return;
 			state.activeRename = { id: requestId, name: node.name };
 		})
 		.addCase(actions.renameUpdated, (state, action) => {
