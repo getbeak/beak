@@ -10,13 +10,22 @@ const NonprodBadge: React.FC = () => {
 	const [show, setShow] = useState(false);
 
 	useEffect(() => {
-		ipcPreferencesService.getEnvironment().then(e => setShow(e === 'nonprod'));
+		let cancelled = false;
+		ipcPreferencesService.getEnvironment().then(e => {
+			if (!cancelled) setShow(e === 'nonprod');
+		});
+		return () => {
+			cancelled = true;
+		};
 	}, []);
 
 	if (!show) return null;
 
 	return (
 		<Flex
+			role='button'
+			tabIndex={0}
+			aria-label='Currently in non-production environment, click to switch back to production'
 			position='fixed'
 			zIndex={100000}
 			top='3'
@@ -41,8 +50,18 @@ const NonprodBadge: React.FC = () => {
 			animation={reduced ? undefined : 'beakNonprodPulse 2.4s ease-in-out infinite'}
 			transition='filter .14s ease, transform .08s ease'
 			_hover={{ filter: 'brightness(1.08)' }}
+			_focusVisible={{
+				outline: 'none',
+				boxShadow: '0 0 0 3px color-mix(in srgb, var(--beak-colors-accent-alert) 45%, transparent)',
+			}}
 			_active={{ transform: 'translateX(-50%) scale(0.97)' }}
 			onClick={() => ipcPreferencesService.switchEnvironment('prod')}
+			onKeyDown={event => {
+				if (event.key === 'Enter' || event.key === ' ') {
+					event.preventDefault();
+					ipcPreferencesService.switchEnvironment('prod');
+				}
+			}}
 		>
 			<AlertTriangle size={11} strokeWidth={2.2} />
 			<Box as='span'>{'Non-prod env'}</Box>
