@@ -168,10 +168,11 @@ const FinderView: React.FC<FinderViewProps> = ({ content, reset }) => {
 											as='span'
 											align='center'
 											gap='0.5'
-											color='fg.subtle'
+											color={isActive ? 'fg.onAccent' : 'fg.subtle'}
 											fontSize='xs'
 											overflow='hidden'
 											textOverflow='ellipsis'
+											opacity={isActive ? 0.78 : 1}
 										>
 											{parentChain.map((p, i) => (
 												<React.Fragment key={p.id}>
