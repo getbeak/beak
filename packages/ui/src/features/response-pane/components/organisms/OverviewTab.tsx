@@ -48,13 +48,16 @@ const OverviewTab: React.FC<OverviewTabProps> = ({ flight }) => {
 						px='2'
 						py='1'
 						borderRadius='md'
+						borderWidth='1px'
 						fontSize='xs'
 						fontWeight='700'
 						letterSpacing='0.05em'
-						color='fg.default'
 						style={{
-							background: `color-mix(in srgb, ${verbColor} 18%, transparent)`,
+							color: verbColor,
+							background: `color-mix(in srgb, ${verbColor} 12%, var(--beak-colors-bg-surface))`,
+							borderColor: `color-mix(in srgb, ${verbColor} 35%, var(--beak-colors-border-subtle))`,
 							borderLeft: `3px solid ${verbColor}`,
+							boxShadow: 'inset 0 1px 0 color-mix(in srgb, white 16%, transparent)',
 						}}
 					>
 						{verb}
