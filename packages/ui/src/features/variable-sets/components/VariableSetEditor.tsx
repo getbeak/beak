@@ -75,7 +75,7 @@ const VariableSetEditor: React.FC<React.PropsWithChildren<VariableSetEditorProps
 					<Header>
 						<Row $cols={setKeys.length}>
 							<HeaderNameCell>
-								<EmptyInput $center disabled value={'Name'} />
+								<EmptyInput $center disabled value={'Name'} aria-hidden tabIndex={-1} />
 							</HeaderNameCell>
 							{variableSet && setKeys.map(k => (
 								<HeaderGroupNameCell key={k}>
