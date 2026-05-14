@@ -101,15 +101,15 @@ const GraphQlError: React.FC<GraphQlErrorProps> = ({ error }) => (
 					{'Troubleshooting'}
 				</Box>
 			</Flex>
-			<Flex direction='column' gap='1' as='ul' listStyleType='none' fontSize='xs' color='fg.muted'>
+			<Flex direction='column' gap='1.5' as='ul' listStyleType='none' fontSize='xs' color='fg.muted' lineHeight='1.5'>
 				{HINTS.map(hint => (
 					<Box as='li' key={String(hint)} pl='4' position='relative'>
-						<Box position='absolute' left='0' top='5px' w='4px' h='4px' borderRadius='full' bg='color-mix(in srgb, var(--beak-colors-accent-pink) 60%, transparent)' />
+						<Box position='absolute' left='0' top='7px' w='4px' h='4px' borderRadius='full' bg='color-mix(in srgb, var(--beak-colors-accent-pink) 60%, transparent)' />
 						{hint}
 					</Box>
 				))}
 				<Box as='li' pl='4' position='relative'>
-					<Box position='absolute' left='0' top='5px' w='4px' h='4px' borderRadius='full' bg='color-mix(in srgb, var(--beak-colors-accent-pink) 60%, transparent)' />
+					<Box position='absolute' left='0' top='7px' w='4px' h='4px' borderRadius='full' bg='color-mix(in srgb, var(--beak-colors-accent-pink) 60%, transparent)' />
 					{`Toggle developer tools from the command bar (${renderPlainTextDefinition('omni-bar.launch.commands')}) or `}
 					<Link
 						href='#'
