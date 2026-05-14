@@ -33,7 +33,7 @@ const AccountItem: React.FC = () => {
 			gap='2.5'
 			borderRadius='lg'
 			borderWidth='1px'
-			borderColor='border.subtle'
+			borderColor='color-mix(in srgb, var(--beak-colors-accent-pink) 14%, var(--beak-colors-border-subtle))'
 			p='3'
 			bg='color-mix(in srgb, var(--beak-colors-bg-surface) 60%, transparent)'
 			color='fg.muted'
