@@ -8,9 +8,11 @@ const AccountItem: React.FC = () => {
 	const [primaryEmail, setPrimaryEmail] = useState<string | null>(null);
 
 	useEffect(() => {
+		let cancelled = false;
 		ipcNestService
 			.getUser()
 			.then(user => {
+				if (cancelled) return;
 				const identifiers = user.identifiers
 					.filter(i => i.identifierType === 'email' && i.removedAt === null)
 					.sort((a, b) => a.createdAt.localeCompare(b.createdAt));
@@ -22,7 +24,10 @@ const AccountItem: React.FC = () => {
 
 				setPrimaryEmail((verifiedEmail ?? backup).identifierValue);
 			})
-			.catch(() => setPrimaryEmail(null));
+			.catch(() => { if (!cancelled) setPrimaryEmail(null); });
+		return () => {
+			cancelled = true;
+		};
 	}, []);
 
 	if (!primaryEmail) return null;

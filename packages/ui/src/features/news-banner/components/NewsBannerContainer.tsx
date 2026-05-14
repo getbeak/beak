@@ -11,12 +11,18 @@ const NewsBannerContainer: React.FC = () => {
 	const [newsItems, setNewsItems] = useState<NewsItem[]>([]);
 
 	useEffect(() => {
+		let cancelled = false;
 		ipcNestService
 			.listNewsItems()
-			.then(setNewsItems)
+			.then(items => {
+				if (!cancelled) setNewsItems(items);
+			})
 			.catch(() => {
 				/*  */
 			});
+		return () => {
+			cancelled = true;
+		};
 	}, []);
 
 	if (newsItems.length === 0) return null;
