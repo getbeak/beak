@@ -50,7 +50,7 @@ const JsonTreeViewer: React.FC<JsonTreeViewerProps> = ({ value }) => {
 
 	useEffect(() => {
 		if (hitIndex >= hits.length) setHitIndex(Math.max(0, hits.length - 1));
-	}, [hits.length]);
+	}, [hits.length, hitIndex]);
 
 	const virtualizer = useVirtualizer({
 		count: rows.length,
@@ -62,8 +62,10 @@ const JsonTreeViewer: React.FC<JsonTreeViewerProps> = ({ value }) => {
 
 	useEffect(() => {
 		if (hits.length === 0) return;
-		virtualizer.scrollToIndex(hits[hitIndex], { align: 'center' });
-	}, [hitIndex, hits.length]);
+		const target = hits[hitIndex];
+		if (target === undefined) return;
+		virtualizer.scrollToIndex(target, { align: 'center' });
+	}, [hitIndex, hits, virtualizer]);
 
 	const toggle = useCallback((id: string) => {
 		setCollapsed(prev => ({ ...prev, [id]: !prev[id] }));
