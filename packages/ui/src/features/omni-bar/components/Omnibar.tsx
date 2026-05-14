@@ -55,7 +55,7 @@ const Omnibar: React.FC = () => {
 					setContent('>');
 				}
 				break;
-			case event.key === 'Escape':
+			case event.key === 'Escape' && open:
 				reset();
 				break;
 			default:
