@@ -22,7 +22,15 @@ const EditorView: React.FC<EditorViewProps> = props => {
 	const [preferences, setPreferences] = useState<EditorPreferences>();
 	const [latestRender, forceRerender] = useForceReRender();
 
-	useEffect(() => void ipcPreferencesService.getEditorOverview().then(setPreferences), [latestRender]);
+	useEffect(() => {
+		let cancelled = false;
+		ipcPreferencesService.getEditorOverview().then(prefs => {
+			if (!cancelled) setPreferences(prefs);
+		});
+		return () => {
+			cancelled = true;
+		};
+	}, [latestRender]);
 	useEffect(() => {
 		function listener() {
 			forceRerender();
