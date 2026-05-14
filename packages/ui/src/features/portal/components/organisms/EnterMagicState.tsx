@@ -117,6 +117,8 @@ const EnterMagicState: React.FC<EnterMagicStateProps> = ({ email, reset, inbound
 							color='accent.pink'
 							cursor='pointer'
 							textDecoration='underline'
+							textDecorationStyle='dotted'
+							_hover={{ textDecorationStyle: 'solid' }}
 							onClick={() => showManualState()}
 						>
 							{'Having trouble?'}

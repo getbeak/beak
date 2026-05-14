@@ -97,6 +97,8 @@ const EnterTrialMagicState: React.FC<EnterTrialMagicStateProps> = ({ email, rese
 							color='accent.pink'
 							cursor='pointer'
 							textDecoration='underline'
+							textDecorationStyle='dotted'
+							_hover={{ textDecorationStyle: 'solid' }}
 							onClick={() => showManualState()}
 						>
 							{'Having trouble?'}
