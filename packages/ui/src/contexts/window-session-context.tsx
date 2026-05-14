@@ -35,7 +35,16 @@ export class WindowSession {
 	}
 
 	isDarwin() {
-		return this.platform === 'darwin';
+		if (this.platform === 'darwin') return true;
+		// In the browser host we don't get a `platform` query string from
+		// electron, but the user still expects macOS shortcut glyphs when
+		// they're on a Mac. Sniff the UA so the web host renders the right
+		// keymap.
+		if (this.platform === 'browser') {
+			const ua = new UAParser(window.navigator.userAgent);
+			return ua.getOS().name === 'macOS';
+		}
+		return false;
 	}
 
 	isBrowser() {
