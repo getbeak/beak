@@ -35,12 +35,15 @@ import {
 	type RequestBodyGraphQlEditorQueryChangedPayload,
 	type RequestBodyGraphQlEditorReconcileVariablesPayload,
 	type RequestBodyJsonEditorAddEntryPayload,
+	type RequestBodyJsonEditorDescriptionChangePayload,
 	type RequestBodyJsonEditorEnabledChangePayload,
 	type RequestBodyJsonEditorMoveEntryPayload,
 	type RequestBodyJsonEditorNameChangePayload,
 	type RequestBodyJsonEditorRemoveEntryPayload,
+	type RequestBodyJsonEditorRequiredChangePayload,
 	type RequestBodyJsonEditorTypeChangePayload,
 	type RequestBodyJsonEditorValueChangePayload,
+	type RequestBodyJsonRawChangedPayload,
 	type RequestBodyTextChangedPayload,
 	type RequestBodyTypeChangedPayload,
 	type RequestBodyUrlEncodedEditorAddItemPayload,
@@ -48,7 +51,10 @@ import {
 	type RequestBodyUrlEncodedEditorNameChangePayload,
 	type RequestBodyUrlEncodedEditorRemoveItemPayload,
 	type RequestBodyUrlEncodedEditorValueChangePayload,
+	type RequestOptionDecompressResponse,
 	type RequestOptionFollowRedirects,
+	type RequestOptionMaxRedirects,
+	type RequestOptionTimeoutMs,
 	type RequestRenameCancelled,
 	type RequestRenameResolved,
 	type RequestRenameStarted,
@@ -90,6 +96,9 @@ export const setWriteDebounce = createAction<WriteDebouncePayload>(AT.SET_WRITE_
 
 export const requestBodyTypeChanged = createAction<RequestBodyTypeChangedPayload>(AT.REQUEST_BODY_TYPE_CHANGED);
 export const requestBodyTextChanged = createAction<RequestBodyTextChangedPayload>(AT.REQUEST_BODY_TEXT_CHANGED);
+export const requestBodyJsonRawChanged = createAction<RequestBodyJsonRawChangedPayload>(
+	AT.REQUEST_BODY_JSON_RAW_CHANGED,
+);
 export const requestBodyFileChanged = createAction<RequestBodyFileChangedPayload>(AT.REQUEST_BODY_FILE_CHANGED);
 export const requestBodyAssetChanged = createAction<RequestBodyAssetChangedPayload>(AT.REQUEST_BODY_ASSET_CHANGED);
 
@@ -104,6 +113,12 @@ export const requestBodyJsonEditorTypeChange = createAction<RequestBodyJsonEdito
 );
 export const requestBodyJsonEditorEnabledChange = createAction<RequestBodyJsonEditorEnabledChangePayload>(
 	AT.REQUEST_BODY_JSON_EDITOR_ENABLED_CHANGE,
+);
+export const requestBodyJsonEditorDescriptionChange = createAction<RequestBodyJsonEditorDescriptionChangePayload>(
+	AT.REQUEST_BODY_JSON_EDITOR_DESCRIPTION_CHANGE,
+);
+export const requestBodyJsonEditorRequiredChange = createAction<RequestBodyJsonEditorRequiredChangePayload>(
+	AT.REQUEST_BODY_JSON_EDITOR_REQUIRED_CHANGE,
 );
 export const requestBodyJsonEditorAddEntry = createAction<RequestBodyJsonEditorAddEntryPayload>(
 	AT.REQUEST_BODY_JSON_EDITOR_ADD_ENTRY,
@@ -158,6 +173,11 @@ export const requestBodyGraphQlEditorReconcileVariables =
 export const requestOptionFollowRedirects = createAction<RequestOptionFollowRedirects>(
 	AT.REQUEST_OPTION_FOLLOW_REDIRECTS,
 );
+export const requestOptionDecompressResponse = createAction<RequestOptionDecompressResponse>(
+	AT.REQUEST_OPTION_DECOMPRESS_RESPONSE,
+);
+export const requestOptionTimeoutMs = createAction<RequestOptionTimeoutMs>(AT.REQUEST_OPTION_TIMEOUT_MS);
+export const requestOptionMaxRedirects = createAction<RequestOptionMaxRedirects>(AT.REQUEST_OPTION_MAX_REDIRECTS);
 
 export const alertInsert = createAction<AlertInsertPayload>(AT.ALERTS_INSERT);
 export const alertRemove = createAction<string>(AT.ALERTS_REMOVE);
@@ -205,6 +225,7 @@ export default {
 
 	requestBodyTypeChanged,
 	requestBodyTextChanged,
+	requestBodyJsonRawChanged,
 	requestBodyFileChanged,
 	requestBodyAssetChanged,
 
@@ -212,6 +233,8 @@ export default {
 	requestBodyJsonEditorValueChange,
 	requestBodyJsonEditorTypeChange,
 	requestBodyJsonEditorEnabledChange,
+	requestBodyJsonEditorDescriptionChange,
+	requestBodyJsonEditorRequiredChange,
 	requestBodyJsonEditorAddEntry,
 	requestBodyJsonEditorRemoveEntry,
 	requestBodyJsonEditorMoveEntry,
@@ -232,6 +255,9 @@ export default {
 	requestBodyUrlEncodedEditorRemoveItem,
 
 	requestOptionFollowRedirects,
+	requestOptionDecompressResponse,
+	requestOptionTimeoutMs,
+	requestOptionMaxRedirects,
 
 	alertInsert,
 	alertRemove,

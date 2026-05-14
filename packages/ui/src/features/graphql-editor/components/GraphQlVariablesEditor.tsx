@@ -7,16 +7,18 @@ import JsonEditor from '../../json-editor/components/JsonEditor';
 
 export interface GraphQlVariablesEditorProps {
 	node: ValidRequestNode;
+	schemaMode?: boolean;
 }
 
 const GraphQlVariablesEditor: React.FC<GraphQlVariablesEditorProps> = props => {
-	const { node } = props;
+	const { node, schemaMode } = props;
 	const body = node.info.body as RequestBodyGraphQl;
 
 	return (
 		<JsonEditor
 			requestId={node.id}
 			value={body.payload.variables}
+			schemaMode={schemaMode}
 			forceRootObject
 			editorSelector={state => {
 				// Type hell

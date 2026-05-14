@@ -1,3 +1,4 @@
+import DebouncedInput from '@beak/ui/components/atoms/DebouncedInput';
 import { useAppSelector } from '@beak/ui/store/redux';
 import * as React from 'react';
 import { useContext, useMemo, useRef } from 'react';
@@ -141,7 +142,26 @@ const EntryRow: React.FC<EntryRowProps> = ({
 			<BodyToggleCell>{toggle}</BodyToggleCell>
 			<BodyPrimaryCell depth={depth}>{primary}</BodyPrimaryCell>
 			<BodyTypeCell>{type}</BodyTypeCell>
-			<BodyInputValueCell>{value}</BodyInputValueCell>
+			<BodyInputValueCell>
+				{editorContext.schemaMode ? (
+					<DebouncedInput
+						type='text'
+						placeholder='What is this for?'
+						value={entries[id]?.description ?? ''}
+						onChange={next =>
+							dispatch(
+								editorContext.descriptionChange({
+									id,
+									requestId: editorContext.requestId,
+									description: next || null,
+								}),
+							)
+						}
+					/>
+				) : (
+					value
+				)}
+			</BodyInputValueCell>
 			<BodyAction>{actions}</BodyAction>
 			<EntryDragHandle id={id} disabled={!canDrag} dragRef={dragRef as unknown as (el: HTMLElement | null) => void} />
 		</Row>

@@ -14,6 +14,8 @@ import * as React from 'react';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 
+import SchemaTableEditor from '@beak/ui/features/basic-table-editor/components/SchemaTableEditor';
+
 import { useChangeBodyType } from '../../use-change-body-type';
 import BodyTypeSelector from '../molecules/BodyTypeSelector';
 import EditorModeToggle from '../molecules/EditorModeToggle';
@@ -167,7 +169,30 @@ const Modifiers: React.FC<React.PropsWithChildren<ModifiersProps>> = props => {
 			</Flex>
 
 			<Box flexGrow={2} overflowY='auto' h='100%'>
-				{tab === 'headers' && (
+				{tab === 'headers' && editorMode === 'schema' && (
+					<SchemaTableEditor
+						items={node.info.headers}
+						addItem={() => dispatch(actions.requestHeaderAdded({ requestId: node.id }))}
+						removeItem={id =>
+							dispatch(
+								actions.requestHeaderRemoved({
+									requestId: node.id,
+									identifier: id,
+								}),
+							)
+						}
+						updateItem={(field, id, value) =>
+							dispatch(
+								actions.requestHeaderUpdated({
+									requestId: node.id,
+									identifier: id,
+									[field]: value,
+								}),
+							)
+						}
+					/>
+				)}
+				{tab === 'headers' && editorMode === 'values' && (
 					<BasicTableEditor
 						items={node.info.headers}
 						requestId={node.id}
@@ -191,7 +216,30 @@ const Modifiers: React.FC<React.PropsWithChildren<ModifiersProps>> = props => {
 						}
 					/>
 				)}
-				{tab === 'url_query' && (
+				{tab === 'url_query' && editorMode === 'schema' && (
+					<SchemaTableEditor
+						items={node.info.query}
+						addItem={() => dispatch(actions.requestQueryAdded({ requestId: node.id }))}
+						removeItem={id =>
+							dispatch(
+								actions.requestQueryRemoved({
+									requestId: node.id,
+									identifier: id,
+								}),
+							)
+						}
+						updateItem={(field, id, value) =>
+							dispatch(
+								actions.requestQueryUpdated({
+									requestId: node.id,
+									identifier: id,
+									[field]: value,
+								}),
+							)
+						}
+					/>
+				)}
+				{tab === 'url_query' && editorMode === 'values' && (
 					<BasicTableEditor
 						items={node.info.query}
 						requestId={node.id}
@@ -215,7 +263,7 @@ const Modifiers: React.FC<React.PropsWithChildren<ModifiersProps>> = props => {
 						}
 					/>
 				)}
-				{tab === 'body' && <BodyTab node={node} graphQlMode={graphQlMode} />}
+				{tab === 'body' && <BodyTab node={node} graphQlMode={graphQlMode} editorMode={editorMode} />}
 				{tab === 'options' && <OptionsView node={node} />}
 			</Box>
 		</Flex>

@@ -19,6 +19,10 @@ export default function buildBody(builder: ActionReducerMapBuilder<State>) {
 			const node = state.tree[action.payload.requestId] as ValidRequestNode;
 			node.info.body.payload = action.payload.text;
 		})
+		.addCase(actions.requestBodyJsonRawChanged, (state, action) => {
+			const node = state.tree[action.payload.requestId] as ValidRequestNode;
+			node.info.body.payload = action.payload.text;
+		})
 		.addCase(actions.requestBodyFileChanged, (state, action) => {
 			const node = state.tree[action.payload.requestId] as ValidRequestNode;
 			node.info.body.payload = {
@@ -82,6 +86,22 @@ function buildJsonEditor(builder: ActionReducerMapBuilder<State>) {
 			const body = node.info.body as RequestBodyJson;
 			if (!body.payload[payload.id]) return;
 			body.payload[payload.id].enabled = payload.enabled;
+		})
+		.addCase(actions.requestBodyJsonEditorDescriptionChange, (state, { payload }) => {
+			const node = state.tree[payload.requestId] as ValidRequestNode;
+			const body = node.info.body as RequestBodyJson;
+			const entry = body.payload[payload.id];
+			if (!entry) return;
+			if (payload.description === null) delete entry.description;
+			else entry.description = payload.description;
+		})
+		.addCase(actions.requestBodyJsonEditorRequiredChange, (state, { payload }) => {
+			const node = state.tree[payload.requestId] as ValidRequestNode;
+			const body = node.info.body as RequestBodyJson;
+			const entry = body.payload[payload.id];
+			if (!entry) return;
+			if (payload.required === null) delete entry.required;
+			else entry.required = payload.required;
 		})
 		.addCase(actions.requestBodyJsonEditorAddEntry, (state, { payload }) => {
 			const node = state.tree[payload.requestId] as ValidRequestNode;

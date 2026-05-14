@@ -38,6 +38,13 @@ interface JsonEditorProps {
 	value: EntryMap;
 
 	forceRootObject?: boolean;
+	/**
+	 * When true, render the schema-authoring view: hide value cells and
+	 * show description / required affordances. The structural editing
+	 * (name, type, add, remove, move) stays available; only value entry
+	 * is hidden so the user is focused on shaping the contract.
+	 */
+	schemaMode?: boolean;
 
 	nameChanged?: (payload: RequestBodyJsonEditorNameChangePayload) => AnyAction;
 	valueChanged?: (payload: RequestBodyJsonEditorValueChangePayload) => AnyAction;
@@ -49,17 +56,20 @@ interface JsonEditorProps {
 }
 
 const JsonEditor: React.FC<React.PropsWithChildren<JsonEditorProps>> = props => {
-	const { requestId, editorSelector, value, forceRootObject } = props;
+	const { requestId, editorSelector, value, forceRootObject, schemaMode } = props;
 	const root = TypedObject.values(value).find(e => e.parentId === null);
 
 	const ctxValue = useMemo(
 		() => ({
 			requestId,
 			editorSelector,
+			schemaMode: Boolean(schemaMode),
 			nameChange: props.nameChanged ?? actions.requestBodyJsonEditorNameChange,
 			valueChange: props.valueChanged ?? actions.requestBodyJsonEditorValueChange,
 			typeChange: props.typeChanged ?? actions.requestBodyJsonEditorTypeChange,
 			enabledChange: props.enabledChanged ?? actions.requestBodyJsonEditorEnabledChange,
+			descriptionChange: actions.requestBodyJsonEditorDescriptionChange,
+			requiredChange: actions.requestBodyJsonEditorRequiredChange,
 			addEntry: props.addedEntry ?? actions.requestBodyJsonEditorAddEntry,
 			removeEntry: props.removedEntry ?? actions.requestBodyJsonEditorRemoveEntry,
 			moveEntry: props.movedEntry ?? actions.requestBodyJsonEditorMoveEntry,
@@ -67,6 +77,7 @@ const JsonEditor: React.FC<React.PropsWithChildren<JsonEditorProps>> = props => 
 		[
 			requestId,
 			editorSelector,
+			schemaMode,
 			props.nameChanged,
 			props.valueChanged,
 			props.typeChanged,
@@ -82,12 +93,13 @@ const JsonEditor: React.FC<React.PropsWithChildren<JsonEditorProps>> = props => 
 			<JsonEditorContext.Provider value={ctxValue}>
 				<Box mt='1.5' w='100%' fontSize='sm' fontWeight='400' color='fg.muted'>
 					<Header>
-						<Row data-empty='true'>
+						<Row data-empty='true' data-schema-mode={schemaMode ? 'true' : undefined}>
 							<HeaderFolderCell />
 							<HeaderToggleCell />
 							<HeaderKeyCell>{'Key'}</HeaderKeyCell>
 							<HeaderTypeCell>{'Type'}</HeaderTypeCell>
-							<HeaderValueCell>{'Value'}</HeaderValueCell>
+							{!schemaMode && <HeaderValueCell>{'Value'}</HeaderValueCell>}
+							{schemaMode && <HeaderValueCell>{'Description'}</HeaderValueCell>}
 							<HeaderAction />
 							<HeaderDragCell />
 						</Row>
