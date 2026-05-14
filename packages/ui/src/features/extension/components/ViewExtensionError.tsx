@@ -35,7 +35,7 @@ const ViewExtensionError: React.FC<ViewExtensionErrorProps> = props => (
 					{'Unable to load extension'}
 				</Box>
 			</Flex>
-			<Box as='p' fontSize='sm' color='fg.muted' mb='3'>
+			<Box as='p' fontSize='sm' color='fg.muted' mb='3' lineHeight='1.55'>
 				{'There was an issue while trying to load one of the installed extensions.'}
 			</Box>
 
