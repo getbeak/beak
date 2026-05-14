@@ -239,7 +239,7 @@ const GuideCard: React.FC<GuideCardProps> = ({ idx, icon: Icon, title, body, cta
 				<Icon size={16} />
 			</Flex>
 			<Box flex='1 1 auto' minW={0}>
-				<Box fontSize='sm' fontWeight='600' color='fg.default' mb='1'>
+				<Box fontSize='sm' fontWeight='600' color='fg.default' letterSpacing='-0.005em' mb='1'>
 					{title}
 				</Box>
 				<Box fontSize='xs' color='fg.muted' lineHeight='1.45' mb='2'>
