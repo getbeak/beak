@@ -7,7 +7,6 @@ import { parseValueSections } from '../features/variables/parser';
 
 interface Options {
 	includeQuery: boolean;
-	includeHash: boolean;
 }
 
 export async function convertRequestToUrl(
@@ -30,13 +29,18 @@ export async function convertRequestToUrl(
 	url.set('query', void 0);
 
 	if (options.includeQuery && info.query) {
-		const outQuery: Record<string, string> = {};
+		const entries = TypedObject.values(info.query).filter(q => q.enabled);
+		const resolved = await Promise.all(
+			entries.map(async q => [q.name, await parseValueSections(context, q.value)] as const),
+		);
 
-		for (const query of TypedObject.values(info.query).filter(q => q.enabled)) {
-			outQuery[query.name] = await parseValueSections(context, query.value);
-		}
+		// URLSearchParams.append (not set) so two params with the same name
+		// both appear in the resulting `?foo=1&foo=2` — the previous
+		// object-keyed accumulator silently dropped duplicates.
+		const params = new URLSearchParams();
+		for (const [name, val] of resolved) params.append(name, val);
 
-		url.set('query', outQuery);
+		url.set('query', params.toString());
 	}
 
 	return url;
