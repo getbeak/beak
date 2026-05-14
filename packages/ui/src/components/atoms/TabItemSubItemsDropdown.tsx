@@ -117,7 +117,10 @@ const TabItemSubItemsDropdown = <T = string>(props: TabItemSubItemsDropdownProps
 										}}
 										onClick={() => setSubItem(i.key)}
 										onKeyDown={(event: React.KeyboardEvent) => {
-											if (event.key === 'Enter') setSubItem(i.key);
+											if (event.key === 'Enter' || event.key === ' ') {
+												event.preventDefault();
+												setSubItem(i.key);
+											}
 										}}
 									>
 										<Box>{i.label}</Box>
