@@ -85,6 +85,12 @@ const BodyTypeSelector: React.FC<BodyTypeSelectorProps> = ({
 								? 'accent.pink'
 								: 'color-mix(in srgb, var(--beak-colors-accent-pink) 12%, transparent)',
 						}}
+						_focusVisible={{
+							outline: 'none',
+							boxShadow: active
+								? '0 2px 8px color-mix(in srgb, var(--beak-colors-accent-pink) 40%, transparent), inset 0 1px 0 color-mix(in srgb, white 22%, transparent), 0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-pink) 55%, transparent)'
+								: '0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-pink) 45%, transparent)',
+						}}
 						_active={{ transform: 'scale(0.97)' }}
 						onClick={() => onTypeChange(v.key)}
 					>
@@ -178,6 +184,12 @@ const GraphQlModeSwitch: React.FC<GraphQlModeSwitchProps> = ({ mode, onChange })
 								cursor='pointer'
 								transition='background-color .12s ease, color .12s ease'
 								_hover={{ bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 12%, transparent)', color: 'accent.pink' }}
+								_focusVisible={{
+									outline: 'none',
+									bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 18%, transparent)',
+									color: 'accent.pink',
+									boxShadow: 'inset 0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-pink) 40%, transparent)',
+								}}
 								onClick={() => {
 									onChange(s.key);
 									setOpen(false);
