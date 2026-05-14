@@ -69,6 +69,17 @@ const About: React.FC = () => {
 				<Box h='2.5' />
 				<AccountItem />
 				<Box h='2.5' />
+				<Box
+					mb='1.5'
+					fontSize='10px'
+					fontWeight='700'
+					letterSpacing='0.06em'
+					textTransform='uppercase'
+					color='fg.subtle'
+					px='1'
+				>
+					{'Settings'}
+				</Box>
 				<SidebarItem
 					active={tab === 'general'}
 					icon={<AppWindow color={tab === 'general' ? blankFill : primaryFill} />}
