@@ -309,7 +309,7 @@ export function registerProjectEffects(start: AppStartListening) {
 
 			if (withConfirmation) {
 				const response = await ipcDialogService.showMessageBox({
-					title: 'Deleting file or folder',
+					title: 'Delete file or folder',
 					message: `You are about to delete '${node.name}' from your machine. Are you sure you want to continue?`,
 					detail: 'This action is irreversible inside Beak!',
 					type: 'warning',
