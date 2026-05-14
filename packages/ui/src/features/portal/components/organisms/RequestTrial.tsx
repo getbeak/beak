@@ -52,7 +52,7 @@ const RequestTrial: React.FC<React.PropsWithChildren<RequestTrialProps>> = props
 								message: 'You already have a Beak subscription. Just sign in with your email!',
 							})
 							.then(() => onChangeToDefault());
-						break;
+						return;
 
 					case 'trial_already_used':
 						ipcDialogService
@@ -63,13 +63,11 @@ const RequestTrial: React.FC<React.PropsWithChildren<RequestTrialProps>> = props
 									'You have already used your Beak trial. You can purchase a subscription to continue using Beak.',
 							})
 							.then(() => onChangeToDefault());
-						break;
+						return;
 
 					default:
-						break;
+						setError(squawk);
 				}
-
-				setError(squawk);
 			})
 			.finally(() => setWorking(false));
 	}
