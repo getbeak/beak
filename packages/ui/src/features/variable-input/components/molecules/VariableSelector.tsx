@@ -241,13 +241,13 @@ const VariableSelector: React.FC<React.PropsWithChildren<VariableSelectorProps>>
 							>
 								<SearchX size={18} strokeWidth={1.8} />
 							</Flex>
-							<Box fontSize='sm' color='fg.default' fontWeight='600'>{'No matching variables'}</Box>
+							<Box fontSize='sm' color='fg.default' fontWeight='600' letterSpacing='-0.005em'>{'No matching variables'}</Box>
 							<Box
 								fontSize='10px'
 								fontWeight='700'
 								letterSpacing='0.06em'
 								textTransform='uppercase'
-								color='fg.subtle'
+								color='accent.pink'
 							>
 								{'Try a different query'}
 							</Box>
