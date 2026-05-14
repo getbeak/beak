@@ -30,7 +30,7 @@ const RequestTab: React.FC<RequestTabProps> = ({ flight }) => {
 	const { variableSets } = useAppSelector(s => s.global.variableSets);
 	const selectedSets = useAppSelector(s => s.global.preferences.editor.selectedVariableSets);
 	const tab = useAppSelector(
-		s => s.global.preferences.requests[requestId].response.subTab.request,
+		s => s.global.preferences.requests[requestId]?.response.subTab.request,
 	) as Tab | undefined;
 
 	const windowSession = useContext(WindowSessionContext);
