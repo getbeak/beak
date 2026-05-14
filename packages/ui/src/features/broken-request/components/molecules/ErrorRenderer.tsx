@@ -34,13 +34,14 @@ const ErrorRenderer: React.FC<ErrorRendererProps> = ({ error }) => {
 				bg='color-mix(in srgb, var(--beak-colors-accent-alert) 12%, transparent)'
 				borderBottomWidth='1px'
 				borderColor='border.subtle'
+				css={{ borderLeft: '3px solid var(--beak-colors-accent-alert)' }}
 				color='accent.alert'
 			>
-				<AlertCircle size={14} />
-				<Box fontSize='xs' fontWeight='700' textTransform='uppercase' letterSpacing='0.06em'>
+				<AlertCircle size={14} strokeWidth={2.2} />
+				<Box fontSize='10px' fontWeight='700' textTransform='uppercase' letterSpacing='0.06em'>
 					{serialised.kind}
 				</Box>
-				<Box flex='1 1 auto' color='fg.muted' fontSize='xs' fontWeight='500'>
+				<Box flex='1 1 auto' color='fg.muted' fontSize='xs' fontWeight='500' overflowWrap='anywhere'>
 					{serialised.message}
 				</Box>
 			</Flex>
