@@ -36,6 +36,7 @@ const AccountItem: React.FC = () => {
 			borderColor='color-mix(in srgb, var(--beak-colors-accent-pink) 14%, var(--beak-colors-border-subtle))'
 			p='3'
 			bg='color-mix(in srgb, var(--beak-colors-bg-surface) 60%, transparent)'
+			boxShadow='0 4px 12px color-mix(in srgb, var(--beak-colors-accent-pink) 8%, rgba(0,0,0,0.04)), inset 0 1px 0 color-mix(in srgb, white 14%, transparent)'
 			color='fg.muted'
 		>
 			<Flex
