@@ -27,6 +27,9 @@ export default function useFlightBodyInfo(flight: Flight, mode: 'request' | 'res
 
 		if (!response || !response.hasBody) return ['response_no_body', null];
 
-		return ['eligible', binaryStore.get(flight.binaryStoreKey)];
-	}, [flight.flightId]);
+		const bytes = binaryStore.get(flight.binaryStoreKey);
+		if (!bytes) return ['response_no_body', null];
+
+		return ['eligible', bytes];
+	}, [flight.flightId, mode]);
 }
