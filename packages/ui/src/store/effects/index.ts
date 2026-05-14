@@ -4,6 +4,7 @@ import { registerFlightEffects } from './flight';
 import { registerGitEffects } from './git';
 import { registerPreferencesEffects } from './preferences';
 import { registerProjectEffects } from './project';
+import { registerSocketEffects } from './sockets';
 import { registerTabsEffects } from './tabs';
 import { registerVariableSetsEffects } from './variable-sets';
 
@@ -18,6 +19,7 @@ export function registerAllEffects(): void {
 	registerGitEffects(startAppListening);
 	registerPreferencesEffects(startAppListening);
 	registerProjectEffects(startAppListening);
+	registerSocketEffects(startAppListening);
 	registerTabsEffects(startAppListening);
 	registerVariableSetsEffects(startAppListening);
 }

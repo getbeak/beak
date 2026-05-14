@@ -1,6 +1,7 @@
 import './app-service';
 import './assets-service';
 import './beak-hub-service';
+import './context-menu-service';
 import './dialog-service';
 import './explorer-service';
 import './encryption-service';
@@ -12,4 +13,5 @@ import './notification-service';
 import './openapi-service';
 import './preferences-service';
 import './project-service';
+import './socket-service';
 import './window-service';

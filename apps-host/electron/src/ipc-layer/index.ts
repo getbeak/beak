@@ -14,4 +14,5 @@ import './notification-service';
 import './openapi-service';
 import './project-service';
 import './preferences-service';
+import './socket-service';
 import './window-service';

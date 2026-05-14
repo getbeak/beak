@@ -15,6 +15,7 @@ import { IpcOpenApiServiceRenderer } from '@beak/common/ipc/openapi';
 import { IpcPreferencesServiceRenderer } from '@beak/common/ipc/preferences';
 import { IpcProjectServiceRenderer } from '@beak/common/ipc/project';
 import type { PartialIpcRenderer } from '@beak/common/ipc/renderer';
+import { IpcSocketServiceRenderer } from '@beak/common/ipc/socket';
 import { IpcWindowServiceRenderer } from '@beak/common/ipc/window';
 
 const partialIpcRenderer: PartialIpcRenderer = {
@@ -38,4 +39,5 @@ export const ipcNotificationService = new IpcNotificationServiceRenderer(partial
 export const ipcOpenApiService = new IpcOpenApiServiceRenderer(partialIpcRenderer);
 export const ipcPreferencesService = new IpcPreferencesServiceRenderer(partialIpcRenderer);
 export const ipcProjectService = new IpcProjectServiceRenderer(partialIpcRenderer);
+export const ipcSocketService = new IpcSocketServiceRenderer(partialIpcRenderer);
 export const ipcWindowService = new IpcWindowServiceRenderer(partialIpcRenderer);
