@@ -1,5 +1,3 @@
-/* eslint-disable max-len */
-
 import { createAction } from '@reduxjs/toolkit';
 
 // Reducer-bound actions live in @beak/state/variable-sets — re-export so UI shares

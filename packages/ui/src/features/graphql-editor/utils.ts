@@ -26,7 +26,6 @@ export const editorTabSubItems: TabSubItem<EditorMode>[] = [
 export function extractVariableNamesFromQuery(document: DocumentNode): ExtractedVariables | null {
 	if (document.kind !== 'Document') return null;
 
-	/* eslint-disable no-param-reassign */
 	return document.definitions
 		.filter(d => d.kind === Kind.OPERATION_DEFINITION)
 		.map(d => d as OperationDefinitionNode)
@@ -40,7 +39,6 @@ export function extractVariableNamesFromQuery(document: DocumentNode): Extracted
 
 			return acc;
 		}, {});
-	/* eslint-enable no-param-reassign */
 }
 
 function detectKnownJsonType(node: ASTNode): EntryType {

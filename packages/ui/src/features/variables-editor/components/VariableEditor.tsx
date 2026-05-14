@@ -365,7 +365,6 @@ function trySetInitialRef(
 	if (!first)
 		return;
 
-	// eslint-disable-next-line no-param-reassign
 	ref.current = instance;
 }
 

@@ -44,7 +44,6 @@ export function parseDomState(root: HTMLElement | null, opts: ParseDomStateOptio
 			if (opts.onUrlQueryStringDetection && originalTextContent.includes('?')) {
 				const textContext = originalTextContent.replaceAll('?', '');
 
-				// eslint-disable-next-line no-param-reassign
 				n.textContent = textContext;
 				originalTextContent = textContext;
 

@@ -230,7 +230,6 @@ const VariableInput = React.forwardRef<HTMLElement, VariableInputProps>((props, 
 			if (n.nodeName === '#text' || n.nodeName === 'SPAN') {
 				let originalTextContent = (n.textContent || '').replaceAll(
 					/(?:[\u00a0]+)/g,
-					// eslint-disable-next-line newline-per-chained-call
 					substring => new Array(substring.length).fill(' ').join(''),
 				);
 
@@ -239,7 +238,6 @@ const VariableInput = React.forwardRef<HTMLElement, VariableInputProps>((props, 
 				if (props.onUrlQueryStringDetection && originalTextContent.includes('?')) {
 					const textContext = originalTextContent.replaceAll('?', '');
 
-					// eslint-disable-next-line no-param-reassign
 					n.textContent = textContext;
 					originalTextContent = textContext;
 
@@ -448,7 +446,6 @@ const VariableInput = React.forwardRef<HTMLElement, VariableInputProps>((props, 
 			variableSets,
 		);
 
-		// eslint-disable-next-line no-new
 		new Promise(() => {
 			trySetSelection(editableRef.current, unmanagedStateRef.current.lastSelectionPosition);
 		});

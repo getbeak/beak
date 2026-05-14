@@ -129,17 +129,14 @@ export function checkShortcut(shortcutKey: Shortcuts, event: React.KeyboardEvent
 		const useMeta = windowSessionInstance.getPlatform() === 'darwin';
 		const useCtrl = !useMeta;
 
-		/* eslint-disable operator-linebreak */
 		return (
 			((useMeta && metaKey) || (useCtrl && ctrlKey)) &&
 			Boolean(shortcutDefinition.alt) === altKey &&
 			Boolean(shortcutDefinition.shift) === shiftKey &&
 			(typeof shortcutDefinition.key === 'string' ? shortcutDefinition.key === key : shortcutDefinition.key.includes(modifiedKey))
 		);
-		/* eslint-enable operator-linebreak */
 	}
 
-	/* eslint-disable operator-linebreak */
 	return (
 		Boolean(shortcutDefinition.alt) === altKey &&
 		Boolean(shortcutDefinition.ctrl) === ctrlKey &&
@@ -147,7 +144,6 @@ export function checkShortcut(shortcutKey: Shortcuts, event: React.KeyboardEvent
 		Boolean(shortcutDefinition.shift) === shiftKey &&
 		(typeof shortcutDefinition.key === 'string' ? shortcutDefinition.key === key : shortcutDefinition.key.includes(modifiedKey))
 	);
-	/* eslint-enable operator-linebreak */
 }
 
 export default shortcutDefinitions;

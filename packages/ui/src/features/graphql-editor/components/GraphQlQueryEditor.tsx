@@ -124,7 +124,6 @@ const GraphQlQueryEditor: React.FC<GraphQlQueryEditorProps> = props => {
 			url: [resolvedSchemaUrl.toString()],
 
 			headers: resolvedHeaders.reduce<Record<string, FlightRequestKeyValue>>((acc, val) => {
-				// eslint-disable-next-line no-param-reassign
 				acc[val.key] = {
 					enabled: true,
 					name: val.key,

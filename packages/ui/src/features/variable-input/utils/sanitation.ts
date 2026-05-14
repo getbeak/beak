@@ -13,7 +13,6 @@ export function sanitiseValueSections(ValueSections: ValueSections) {
 		if (typeof acc[acc.length - 1] !== 'string')
 			return [...acc, value];
 
-		// eslint-disable-next-line no-param-reassign
 		acc[acc.length - 1] = `${acc[acc.length - 1]}${value}`;
 
 		return acc;

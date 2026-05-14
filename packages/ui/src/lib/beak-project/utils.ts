@@ -23,7 +23,6 @@ export async function generateSafeNewPath(name: string, directory: string, exten
 	while (true) {
 		const full = createPath(`${useableName} (${index})`);
 
-		// eslint-disable-next-line no-await-in-loop
 		if (!(await ipcFsService.pathExists(full))) {
 			return {
 				name: `${useableName} (${index})${extension ?? ''}`,

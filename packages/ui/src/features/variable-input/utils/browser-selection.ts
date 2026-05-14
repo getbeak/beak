@@ -69,7 +69,6 @@ export function setSelection(elem: HTMLElement, selection: NormalizedSelection) 
 		range.setStart(elem.childNodes[finalIndex], 0);
 	}
 
-	// eslint-disable-next-line no-new
 	new Promise(() => {
 		sel?.removeAllRanges();
 		sel?.addRange(range);

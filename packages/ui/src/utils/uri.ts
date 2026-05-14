@@ -33,7 +33,6 @@ export async function convertRequestToUrl(
 		const outQuery: Record<string, string> = {};
 
 		for (const query of TypedObject.values(info.query).filter(q => q.enabled)) {
-			// eslint-disable-next-line no-await-in-loop
 			outQuery[query.name] = await parseValueSections(context, query.value);
 		}
 
