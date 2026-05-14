@@ -58,7 +58,7 @@ const SubscriptionInformation: React.FC<SubscriptionInformationProps> = ({ subsc
 				<Box fontSize='md' fontWeight='600' color='fg.default' letterSpacing='-0.005em'>
 					{trial ? 'Beak subscription trial' : 'Beak subscription'}
 				</Box>
-				<Box fontSize='xs' color='fg.muted' mt='0.5' mb='2'>
+				<Box fontSize='xs' color='fg.muted' mt='0.5' mb='2' lineHeight='1.5'>
 					{trial ? 'Your free trial is active' : 'Your active Beak subscription'}
 				</Box>
 				{subscription.billingPortalUrl && (

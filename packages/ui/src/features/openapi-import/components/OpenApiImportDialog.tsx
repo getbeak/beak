@@ -130,7 +130,7 @@ const OpenApiImportDialog: React.FC = () => {
 									{'Where should this OpenAPI spec land?'}
 								</Box>
 							</Flex>
-							<Box fontSize='xs' color='fg.muted' mb='3'>
+							<Box fontSize='xs' color='fg.muted' mb='3' lineHeight='1.5'>
 								{state.file?.filename ? (
 									<>
 										{'Importing '}
