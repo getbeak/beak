@@ -164,8 +164,12 @@ const Omnibar: React.FC = () => {
 								px='1.5'
 								py='0.5'
 								borderRadius='sm'
+								borderWidth='1px'
+								borderStyle='solid'
 								color={isCommands ? 'accent.teal' : 'accent.pink'}
 								bg={`color-mix(in srgb, var(--beak-colors-${isCommands ? 'accent-teal' : 'accent-pink'}) 14%, transparent)`}
+								borderColor={`color-mix(in srgb, var(--beak-colors-${isCommands ? 'accent-teal' : 'accent-pink'}) 28%, transparent)`}
+								boxShadow='inset 0 1px 0 color-mix(in srgb, white 14%, transparent)'
 							>
 								{isCommands ? 'Cmd' : 'Find'}
 							</Box>
