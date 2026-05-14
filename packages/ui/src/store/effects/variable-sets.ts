@@ -138,7 +138,7 @@ export function registerVariableSetsEffects(start: AppStartListening) {
 			if (withConfirmation) {
 				const response = await ipcDialogService.showMessageBox({
 					title: 'Delete variable set',
-					message: `You are about to delete '${id}' from your machine. Are you sure you want to continue?`,
+					message: `You are about to delete “${id}” from your machine. Are you sure you want to continue?`,
 					detail: 'This action is irreversible inside Beak!',
 					type: 'warning',
 					buttons: ['Remove', 'Cancel'],
