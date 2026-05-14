@@ -75,6 +75,7 @@ const JsonSearchBar: React.FC<JsonSearchBarProps> = ({
 					<Input
 						ref={inputRef}
 						size='xs'
+						aria-label='Search JSON tree'
 						value={value}
 						placeholder='Search keys & values…'
 						onChange={e => onChange(e.target.value)}

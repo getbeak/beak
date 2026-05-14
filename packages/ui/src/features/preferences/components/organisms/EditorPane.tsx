@@ -70,6 +70,7 @@ const EditorPane: React.FC<React.PropsWithChildren<unknown>> = () => {
 				<Input
 					$beakSize='sm'
 					$noStretch
+					aria-label='Editor font size'
 					type='number'
 					min={8}
 					max={32}
