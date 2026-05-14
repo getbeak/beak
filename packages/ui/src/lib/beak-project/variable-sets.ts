@@ -29,7 +29,7 @@ const variableSetNameWordlist = [
 	'Gull',
 	'Hawk',
 	'Ibis',
-	'Ibis',
+	'Jay',
 	'Kestrel',
 	'Killdeer',
 	'Kite',
