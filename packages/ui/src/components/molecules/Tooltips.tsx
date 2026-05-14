@@ -46,18 +46,8 @@ const tooltips: TooltipDefinition[] = [{
 	placement: 'bottom',
 	content: 'Flight in progress',
 }, {
-	anchor: '#tt-preferences-notifications-information-requests',
-	placement: 'bottom',
-	content: 'Requests where the HTTP status code is in the information range (100-199) or in the redirection range (300-399).',
-}, {
 	anchor: '#tt-variable-input-extension',
 	content: 'This value is an extension',
-}, {
-	anchor: '#tt-request-preview-copy',
-	content: 'Copy request preview',
-}, {
-	anchor: '#tt-request-preview-share',
-	content: 'Create request share link',
 }, {
 	anchor: 'tt-response-header-url-bar',
 }, {
