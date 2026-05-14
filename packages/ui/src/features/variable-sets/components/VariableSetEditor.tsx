@@ -104,7 +104,7 @@ const VariableSetEditor: React.FC<React.PropsWithChildren<VariableSetEditorProps
 							))}
 							<HeaderGroupNameCell>
 								<EmptyInput
-									placeholder={'New group...'}
+									placeholder={'New group…'}
 									type={'text'}
 									value={''}
 									onChange={e => {
@@ -175,7 +175,7 @@ const VariableSetEditor: React.FC<React.PropsWithChildren<VariableSetEditorProps
 						<Row $cols={setKeys.length}>
 							<BodyNameCell>
 								<EmptyInput
-									placeholder={'New item...'}
+									placeholder={'New item…'}
 									type={'text'}
 									value={''}
 									onChange={e => {

@@ -116,7 +116,7 @@ const About: React.FC = () => {
 				<SidebarItem
 					active={tab === 'engineering'}
 					icon={<ShieldUser color={tab === 'engineering' ? blankFill : primaryFill} />}
-					label='Shhh...'
+					label='Shhh…'
 					onClick={() => setTab('engineering')}
 				/>
 			</Box>

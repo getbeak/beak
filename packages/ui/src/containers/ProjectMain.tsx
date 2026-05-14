@@ -24,7 +24,7 @@ import { useProjectLoading } from '../hooks/use-project-loading';
 const embedded = Boolean(window.embeddedIndicator);
 
 const ProjectMain: React.FC = () => {
-	const [title, setTitle] = useState('Loading... - Beak');
+	const [title, setTitle] = useState('Loading… - Beak');
 	const [setup, setSetup] = useState(false);
 	const collapsedSidebar = useAppSelector(s => s.global.preferences.sidebar.collapsed.sidebar);
 	const project = useAppSelector(s => s.global.project);
