@@ -16,7 +16,13 @@ const ProjectEncryption: React.FC<React.PropsWithChildren<unknown>> = () => {
 	const [status, setStatus] = useState<Status>('pending');
 
 	useEffect(() => {
-		ipcEncryptionService.checkStatus().then(check => setStatus(check ? 'has_key' : 'needs_key'));
+		let cancelled = false;
+		ipcEncryptionService.checkStatus().then(check => {
+			if (!cancelled) setStatus(check ? 'has_key' : 'needs_key');
+		});
+		return () => {
+			cancelled = true;
+		};
 	}, [open]);
 
 	function close() {
