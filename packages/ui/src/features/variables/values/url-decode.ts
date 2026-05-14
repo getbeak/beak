@@ -19,7 +19,13 @@ const definition: EditableVariable<EditorState, EditorState> = {
 	getValue: async (ctx, payload, recursiveDepth) => {
 		const parsed = await parseValueSections(ctx, payload.input, recursiveDepth);
 
-		return decodeURIComponent(parsed);
+		try {
+			return decodeURIComponent(parsed);
+		} catch {
+			// Malformed escape sequence — surface empty rather than crashing
+			// the whole value-section parse.
+			return '';
+		}
 	},
 
 	attributes: {},
