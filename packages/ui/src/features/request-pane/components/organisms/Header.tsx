@@ -215,7 +215,7 @@ const Header: React.FC<HeaderProps> = ({ node }) => {
 				borderWidth='1px'
 				borderColor='accent.pink'
 				bg='accent.pink'
-				color='white'
+				color='fg.onAccent'
 				fontWeight='600'
 				fontSize='sm'
 				letterSpacing='0.01em'
