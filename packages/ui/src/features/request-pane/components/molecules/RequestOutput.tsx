@@ -8,7 +8,6 @@ import { convertKeyValueToString } from '@beak/ui/features/basic-table-editor/pa
 import { convertToRealJson } from '@beak/ui/features/json-editor/parsers';
 import useVariableContext from '@beak/ui/features/variables/hooks/use-variable-context';
 import { parseValueSections } from '@beak/ui/features/variables/parser';
-import useComponentMounted from '@beak/ui/hooks/use-component-mounted';
 import { ipcFsService } from '@beak/ui/lib/ipc';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { requestAllowsBody } from '@beak/ui/utils/http';
@@ -27,17 +26,17 @@ const RequestOutput: React.FC<React.PropsWithChildren<RequestOutputProps>> = pro
 	const selectedSets = useAppSelector(s => s.global.preferences.editor.selectedVariableSets);
 	const windowSession = useContext(WindowSessionContext);
 	const [output, setOutput] = useState('');
-	const mounted = useComponentMounted();
 	const context = useVariableContext(node.id);
 
 	useEffect(() => {
+		let cancelled = false;
 		createBasicHttpOutput(node.info, context, windowSession)
 			.then(response => {
-				if (!mounted)
-					return;
-
-				setOutput(response);
+				if (!cancelled) setOutput(response);
 			});
+		return () => {
+			cancelled = true;
+		};
 	}, [node, selectedSets, variableSets]);
 
 	return (
