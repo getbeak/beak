@@ -124,7 +124,9 @@ function getTargetTab(state: State, tab: string | undefined) {
 
 function updateRecentlyClosed(state: State, ...tabs: TabItem[]) {
 	state.recentlyClosedTabs.unshift(...tabs);
-	state.recentlyClosedTabs.length = 10;
+	// Cap at 10. Setting .length = 10 unconditionally would pad with holes
+	// when fewer than 10 tabs have been closed in this session.
+	if (state.recentlyClosedTabs.length > 10) state.recentlyClosedTabs.length = 10;
 }
 
 export default tabsReducer;
