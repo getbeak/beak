@@ -102,7 +102,7 @@ const JsonBooleanEntry: React.FC<React.PropsWithChildren<JsonBooleanEntryProps>>
 						borderWidth='1px'
 						borderColor={value.value ? 'accent.warning' : 'border.default'}
 						bg={value.value ? 'accent.warning' : 'var(--beak-colors-bg-surface)'}
-						boxShadow={value.value ? '0 0 12px color-mix(in srgb, var(--beak-colors-accent-warning) 30%, transparent)' : 'inset 0 1px 2px rgba(0,0,0,0.04)'}
+						boxShadow={value.value ? '0 2px 6px color-mix(in srgb, var(--beak-colors-accent-warning) 35%, transparent), inset 0 0 0 0.5px color-mix(in srgb, white 22%, transparent)' : 'inset 0 1px 2px rgba(0,0,0,0.04)'}
 						transition='background-color .14s ease, border-color .14s ease, box-shadow .14s ease'
 						pointerEvents='none'
 					>
