@@ -1,4 +1,5 @@
 import { Flex } from '@chakra-ui/react';
+import { selectActiveFlight } from '@beak/state/flight';
 import PendingSlash from '@beak/ui/components/molecules/PendingSplash';
 import { useAppSelector } from '@beak/ui/store/redux';
 import * as React from 'react';
@@ -11,7 +12,7 @@ const ResponsePane: React.FC = () => {
 	const { tree } = useAppSelector(s => s.global.project);
 	const selectedTab = useAppSelector(s => s.features.tabs.selectedTab);
 	const flightHistories = useAppSelector(s => s.global.flight.flightHistories);
-	const currentFlight = useAppSelector(s => (selectedTab ? s.global.flight.activeFlights[selectedTab] : undefined));
+	const currentFlight = useAppSelector(s => (selectedTab ? selectActiveFlight(selectedTab)(s) : null)) ?? undefined;
 	const selectedNode = tree![selectedTab!];
 	const flightHistory = flightHistories[selectedTab!];
 	const selectedFlight = flightHistory?.selected !== undefined
