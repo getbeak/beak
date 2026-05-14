@@ -14,9 +14,10 @@ const FormError: React.FC<FormErrorProps> = ({ children }) => (
 		px='2'
 		py='1'
 		borderRadius='sm'
-		borderLeftWidth='2px'
-		borderLeftColor='accent.alert'
+		borderWidth='1px'
+		borderColor='color-mix(in srgb, var(--beak-colors-accent-alert) 28%, transparent)'
 		bg='color-mix(in srgb, var(--beak-colors-accent-alert) 8%, transparent)'
+		css={{ borderLeft: '2px solid var(--beak-colors-accent-alert)' }}
 		fontSize='xs'
 		fontWeight='500'
 		color='accent.alert'
