@@ -286,7 +286,7 @@ const OpenApiImportDialog: React.FC = () => {
 									</motion.div>
 								</Flex>
 								<Flex direction='column' align='center' gap='1'>
-									<Box fontSize='sm' fontWeight='600' color='fg.default'>
+									<Box fontSize='sm' fontWeight='600' color='fg.default' letterSpacing='-0.005em'>
 										{'Importing OpenAPI spec'}
 									</Box>
 									<Box fontSize='xs' color='fg.muted'>

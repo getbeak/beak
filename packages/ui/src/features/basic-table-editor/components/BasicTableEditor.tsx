@@ -131,7 +131,7 @@ const BasicTableEditor: React.FC<BasicTableEditorProps> = ({
 						>
 							<Plus size={15} strokeWidth={2} />
 						</Flex>
-						<Text fontSize='sm' fontWeight='600' color='fg.default'>
+						<Text fontSize='sm' fontWeight='600' color='fg.default' letterSpacing='-0.005em'>
 							{readOnly ? 'No entries' : 'No entries yet'}
 						</Text>
 						{editable && (

@@ -67,7 +67,7 @@ const AlertsPopover: React.FC<AlertsPopoverProps> = ({ parent, onClose }) => {
 						>
 							<CheckCircle2 size={18} strokeWidth={2} />
 						</Flex>
-						<Box fontSize='sm' fontWeight='600' color='fg.default'>
+						<Box fontSize='sm' fontWeight='600' color='fg.default' letterSpacing='-0.005em'>
 							{'You have no alerts'}
 						</Box>
 						<Box

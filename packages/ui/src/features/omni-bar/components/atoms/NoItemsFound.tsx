@@ -18,7 +18,7 @@ const NoItemsFound: React.FC<React.PropsWithChildren> = ({ children }) => (
 		>
 			<SearchX size={20} strokeWidth={1.8} />
 		</Flex>
-		<Box fontSize='sm' fontWeight='600' color='fg.default'>
+		<Box fontSize='sm' fontWeight='600' color='fg.default' letterSpacing='-0.005em'>
 			{children}
 		</Box>
 		<Box fontSize='10px' color='fg.subtle' fontWeight='700' letterSpacing='0.06em' textTransform='uppercase'>

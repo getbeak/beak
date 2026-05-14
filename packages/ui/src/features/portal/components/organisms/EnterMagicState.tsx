@@ -141,7 +141,7 @@ const EnterMagicState: React.FC<EnterMagicStateProps> = ({ email, reset, inbound
 					>
 						<Loader2 size={20} style={{ animation: 'beakPortalSpin 1s linear infinite' }} />
 					</Flex>
-					<Box fontSize='sm' fontWeight='600' color='fg.default'>{'Working on your magic link… ✨'}</Box>
+					<Box fontSize='sm' fontWeight='600' color='fg.default' letterSpacing='-0.005em'>{'Working on your magic link… ✨'}</Box>
 				</Flex>
 			)}
 

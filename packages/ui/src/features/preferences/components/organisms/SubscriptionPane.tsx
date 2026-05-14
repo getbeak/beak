@@ -73,7 +73,7 @@ const SubscriptionPane: React.FC<React.PropsWithChildren<unknown>> = () => {
 						<AlertOctagon size={14} strokeWidth={2} />
 					</Flex>
 					<Box flex='1 1 auto' minW={0}>
-						<Box fontSize='sm' fontWeight='600' color='fg.default'>
+						<Box fontSize='sm' fontWeight='600' color='fg.default' letterSpacing='-0.005em'>
 							{'Unable to load subscription'}
 						</Box>
 						<Box fontSize='10px' fontWeight='700' letterSpacing='0.06em' textTransform='uppercase' color='accent.alert' fontFamily='mono' mt='0.5'>

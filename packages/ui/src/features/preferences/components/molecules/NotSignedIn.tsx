@@ -30,7 +30,7 @@ const NotSignedIn: React.FC = () => (
 		>
 			<UserRound size={22} strokeWidth={1.8} />
 		</Flex>
-		<Box fontSize='sm' fontWeight='600' color='fg.default'>
+		<Box fontSize='sm' fontWeight='600' color='fg.default' letterSpacing='-0.005em'>
 			{'Not signed in'}
 		</Box>
 		<Box fontSize='xs' color='fg.subtle' lineHeight='1.5' maxW='280px'>
