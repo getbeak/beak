@@ -6,15 +6,15 @@ import type { ValidRequestNode } from '@getbeak/types/nodes';
 import React from 'react';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { Flex } from '@chakra-ui/react';
+import { Box, Flex } from '@chakra-ui/react';
 import { ReflexContainer, ReflexElement } from 'react-reflex';
 
-import { HorizontalContextualReflexSplitter } from '../../../components/atoms/ReflexSplitter';
+import ReflexSplitter from '../../../components/atoms/ReflexSplitter';
 import SelectedNodeContext from '../contexts/selected-node';
 import RequestOutput from './molecules/RequestOutput';
 import Header from './organisms/Header';
 import Modifiers from './organisms/Modifiers';
-import RequestPaneSplitter from './organisms/RequestPaneSplitter';
+import RequestPaneToolbar from './organisms/RequestPaneToolbar';
 
 const RequestPane: React.FC<React.PropsWithChildren<unknown>> = () => {
 	const dispatch = useDispatch();
@@ -61,16 +61,17 @@ const RequestPane: React.FC<React.PropsWithChildren<unknown>> = () => {
 			<Flex direction='column' h='100%' w='100%' bg='bg.surface'>
 				<Header node={selectedNode} />
 				<ReflexContainer orientation={'horizontal'}>
-					<ReflexElement flex={8} minSize={400}>
+					<ReflexElement flex={8} minSize={300}>
 						<Modifiers node={selectedNode} />
 					</ReflexElement>
 
-					<HorizontalContextualReflexSplitter orientation={'horizontal'}>
-						<RequestPaneSplitter selectedNode={selectedNode} />
-					</HorizontalContextualReflexSplitter>
+					<ReflexSplitter orientation={'horizontal'} />
 
 					<ReflexElement flex={2} style={{ overflowY: 'hidden' }}>
-						<RequestOutput selectedNode={selectedNode} />
+						<Box position='relative' h='100%' w='100%'>
+							<RequestPaneToolbar selectedNode={selectedNode} />
+							<RequestOutput selectedNode={selectedNode} />
+						</Box>
 					</ReflexElement>
 				</ReflexContainer>
 			</Flex>
