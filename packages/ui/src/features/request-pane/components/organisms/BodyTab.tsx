@@ -1,271 +1,87 @@
 import React from 'react';
-import { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import ksuid from '@beak/ksuid';
 import EditorView from '@beak/ui/components/atoms/EditorView';
 import BasicTableEditor from '@beak/ui/features/basic-table-editor/components/BasicTableEditor';
-import { convertKeyValueToString, convertStringToKeyValue } from '@beak/ui/features/basic-table-editor/parsers';
 import GraphQlQueryEditor from '@beak/ui/features/graphql-editor/components/GraphQlQueryEditor';
 import GraphQlVariablesEditor from '@beak/ui/features/graphql-editor/components/GraphQlVariablesEditor';
 import type { EditorMode } from '@beak/ui/features/graphql-editor/types';
 import JsonEditor from '@beak/ui/features/json-editor/components/JsonEditor';
-import { convertToEntryJson, convertToRealJson } from '@beak/ui/features/json-editor/parsers';
-import useVariableContext from '@beak/ui/features/variables/hooks/use-variable-context';
 import type { ValueSections } from '@beak/ui/features/variables/values';
-import { ipcDialogService } from '@beak/ui/lib/ipc';
 import actions, { requestBodyTextChanged } from '@beak/ui/store/project/actions';
-import type { RequestBodyTypeChangedPayload } from '@beak/ui/store/project/types';
-import { attemptTextToJson } from '@beak/ui/utils/json';
 import type { ValidRequestNode } from '@getbeak/types/nodes';
-import type { RequestBodyJson, RequestBodyType } from '@getbeak/types/request';
+import type { RequestBodyJson } from '@getbeak/types/request';
 
-import { Box, Flex } from '@chakra-ui/react';
-import BodyTypeSelector from '../molecules/BodyTypeSelector';
+import { Box } from '@chakra-ui/react';
 import FileUploadView from '../molecules/FileUploadView';
 
 export interface BodyTabProps {
 	node: ValidRequestNode;
+	graphQlMode: EditorMode;
 }
 
 const BodyTab: React.FC<React.PropsWithChildren<BodyTabProps>> = props => {
 	const dispatch = useDispatch();
-	const context = useVariableContext();
-	const { node } = props;
+	const { node, graphQlMode } = props;
 	const { body } = node.info;
-	const [graphQlMode, setGraphQlMode] = useState<EditorMode>('query');
-
-	async function changeRequestBodyType(newType: RequestBodyType) {
-		if (newType === body.type)
-			return;
-
-		if (body.type !== 'text') {
-			const result = await ipcDialogService.showMessageBox({
-				title: 'Change body type?',
-				message: 'Are you sure you want to change body type?',
-				detail: newType === 'text' ? 'Changing to text could cause data loss from disabled values!' : 'Changing editor will cause your existing body to be lost.',
-				type: 'warning',
-				buttons: ['Change', 'Cancel'],
-				defaultId: 1,
-				cancelId: 1,
-			});
-
-			if (result.response === 1)
-				return;
-		}
-
-		// TODO(afr): Abstract this out somewhere more fitting
-
-		// Changing from text to lang specific editor
-		if (body.type === 'text') {
-			if (newType === 'json') {
-				dispatch(actions.requestBodyTypeChanged({
-					requestId: node.id,
-					type: 'json',
-					payload: convertToEntryJson(attemptTextToJson(body.payload)),
-				}));
-
-				return;
-			}if (newType === 'url_encoded_form') {
-				dispatch(actions.requestBodyTypeChanged({
-					requestId: node.id,
-					type: 'url_encoded_form',
-					payload: convertStringToKeyValue(body.payload, 'urlencodeditem'),
-				}));
-
-				return;
-			}if (newType === 'graphql') {
-				dispatch(actions.requestBodyTypeChanged({
-					requestId: node.id,
-					type: 'graphql',
-					payload: {
-						query: body.payload,
-						variables: { },
-					},
-				}));
-
-				return;
-			}
-		}
-
-		// Changing from graphql to json
-		if (newType === 'json' && body.type === 'graphql') {
-			dispatch(actions.requestBodyTypeChanged({
-				requestId: node.id,
-				type: 'json',
-				payload: body.payload.variables,
-			}));
-
-			return;
-		}
-
-		// Changing from json to graphql
-		if (newType === 'graphql' && body.type === 'json') {
-			dispatch(actions.requestBodyTypeChanged({
-				requestId: node.id,
-				type: 'graphql',
-				payload: {
-					query: '',
-					variables: body.payload,
-				},
-			}));
-
-			return;
-		}
-
-		// Changing from lang specific editor to text
-		if (newType === 'text') {
-			if (body.type === 'json') {
-				const normalised = JSON.stringify(await convertToRealJson(context, body.payload), null, '\t');
-
-				dispatch(actions.requestBodyTypeChanged({
-					requestId: node.id,
-					type: 'text',
-					payload: normalised === '""' ? '' : normalised,
-				}));
-
-				return;
-			}if (body.type === 'url_encoded_form') {
-				dispatch(actions.requestBodyTypeChanged({
-					requestId: node.id,
-					type: 'text',
-					payload: await convertKeyValueToString(context, body.payload),
-				}));
-
-				return;
-			}if (body.type === 'graphql') {
-				dispatch(actions.requestBodyTypeChanged({
-					requestId: node.id,
-					type: 'text',
-					payload: body.payload.query,
-				}));
-
-				return;
-			}
-		}
-
-		// Catch all cross-fancy editor switching and just reset
-		dispatch(actions.requestBodyTypeChanged(createEmptyBodyPayload(node.id, newType)));
-	}
 
 	return (
-		<Flex direction='column' overflow='hidden' h='100%'>
-			<BodyTypeSelector
-				value={body.type}
-				graphQlMode={graphQlMode}
-				onTypeChange={changeRequestBodyType}
-				onGraphQlModeChange={setGraphQlMode}
-			/>
+		<Box h='100%' overflowY={body.type !== 'text' ? 'auto' : 'hidden'}>
+			{body.type === 'text' && (
+				<EditorView
+					language={'text'}
+					value={body.payload}
+					onChange={text => dispatch(requestBodyTextChanged({ requestId: node.id, text: text ?? '' }))}
+				/>
+			)}
+			{body.type === 'json' && (
+				<JsonEditor
+					requestId={node.id}
+					value={body.payload}
+					editorSelector={state => {
+						const requestNode = state.global.project.tree[node.id] as ValidRequestNode;
+						const jsonBody = requestNode.info.body as RequestBodyJson;
 
-			<Box flexGrow={2} overflowY={body.type !== 'text' ? 'auto' : 'hidden'} h='100%'>
-				{body.type === 'text' && (
-					<EditorView
-						language={'text'}
-						value={body.payload}
-						onChange={text => dispatch(requestBodyTextChanged({ requestId: node.id, text: text ?? '' }))}
-					/>
-				)}
-				{body.type === 'json' && (
-					<JsonEditor
-						requestId={node.id}
-						value={body.payload}
-						editorSelector={state => {
-							// Type hell
-							const requestNode = state.global.project.tree[node.id] as ValidRequestNode;
-							const jsonBody = requestNode.info.body as RequestBodyJson;
-
-							return jsonBody.payload;
-						}}
-					/>
-				)}
-				{body.type === 'url_encoded_form' && (
-					<BasicTableEditor
-						items={body.payload}
-						requestId={node.id}
-						addItem={() => dispatch(actions.requestBodyUrlEncodedEditorAddItem({ requestId: node.id }))}
-						removeItem={id => dispatch(actions.requestBodyUrlEncodedEditorRemoveItem({
-							requestId: node.id,
-							id,
-						}))}
-						updateItem={(type, id, value) => {
-							if (type === 'name') {
-								dispatch(actions.requestBodyUrlEncodedEditorNameChange({
-									requestId: node.id,
-									id,
-									name: value as string,
-								}));
-							} else if (type === 'enabled') {
-								dispatch(actions.requestBodyUrlEncodedEditorEnabledChange({
-									requestId: node.id,
-									id,
-									enabled: value as boolean,
-								}));
-							} else if (type === 'value') {
-								dispatch(actions.requestBodyUrlEncodedEditorValueChange({
-									requestId: node.id,
-									id,
-									value: value as ValueSections,
-								}));
-							}
-						}}
-					/>
-				)}
-				{body.type === 'graphql' && graphQlMode === 'query' && <GraphQlQueryEditor node={node} />}
-				{body.type === 'graphql' && graphQlMode === 'variables' && <GraphQlVariablesEditor node={node} />}
-				{body.type === 'file' && <FileUploadView node={node} />}
-			</Box>
-		</Flex>
+						return jsonBody.payload;
+					}}
+				/>
+			)}
+			{body.type === 'url_encoded_form' && (
+				<BasicTableEditor
+					items={body.payload}
+					requestId={node.id}
+					addItem={() => dispatch(actions.requestBodyUrlEncodedEditorAddItem({ requestId: node.id }))}
+					removeItem={id => dispatch(actions.requestBodyUrlEncodedEditorRemoveItem({
+						requestId: node.id,
+						id,
+					}))}
+					updateItem={(type, id, value) => {
+						if (type === 'name') {
+							dispatch(actions.requestBodyUrlEncodedEditorNameChange({
+								requestId: node.id,
+								id,
+								name: value as string,
+							}));
+						} else if (type === 'enabled') {
+							dispatch(actions.requestBodyUrlEncodedEditorEnabledChange({
+								requestId: node.id,
+								id,
+								enabled: value as boolean,
+							}));
+						} else if (type === 'value') {
+							dispatch(actions.requestBodyUrlEncodedEditorValueChange({
+								requestId: node.id,
+								id,
+								value: value as ValueSections,
+							}));
+						}
+					}}
+				/>
+			)}
+			{body.type === 'graphql' && graphQlMode === 'query' && <GraphQlQueryEditor node={node} />}
+			{body.type === 'graphql' && graphQlMode === 'variables' && <GraphQlVariablesEditor node={node} />}
+			{body.type === 'file' && <FileUploadView node={node} />}
+		</Box>
 	);
 };
-
-function createEmptyBodyPayload(requestId: string, type: RequestBodyType): RequestBodyTypeChangedPayload {
-	switch (type) {
-		case 'url_encoded_form':
-			return { requestId, type, payload: {} };
-
-		case 'json': {
-			const id = ksuid.generate('jsonentry').toString() as string;
-
-			return {
-				requestId,
-				type,
-				payload: {
-					[id]: {
-						id,
-						parentId: null,
-						type: 'object',
-						enabled: true,
-					},
-				},
-			};
-		}
-
-		case 'file':
-			return { requestId, type, payload: { fileReferenceId: void 0, contentType: void 0 } };
-
-		case 'graphql': {
-			const id = ksuid.generate('jsonentry').toString() as string;
-
-			return {
-				requestId,
-				type,
-				payload: {
-					query: '',
-					variables: {
-						[id]: {
-							id,
-							parentId: null,
-							type: 'object',
-							enabled: true,
-						},
-					},
-				},
-			};
-		}
-
-		default:
-			// 'text' (and any future scalar body type) takes the empty-string default.
-			return { requestId, type, payload: '' };
-	}
-}
 
 export default BodyTab;
