@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { FileWarning } from 'lucide-react';
 import * as React from 'react';
 
-import { ipcProjectService } from '../../lib/ipc';
+import { ipcDialogService, ipcProjectService } from '../../lib/ipc';
 
 /**
  * Thin strip rendered above the sidebar/main split when the active project
@@ -28,6 +28,12 @@ const UntitledBanner: React.FC = () => {
 			await ipcProjectService.promoteUntitled({});
 		} catch (err) {
 			console.warn('Save Project As… failed', err);
+			await ipcDialogService.showMessageBox({
+				type: 'error',
+				title: 'Save Project As… failed',
+				message: 'Beak couldn’t save this untitled project.',
+				detail: err instanceof Error ? err.message : String(err),
+			});
 		}
 	}
 
