@@ -35,7 +35,11 @@ const inputCss = {
 		borderColor: 'var(--beak-colors-accent-pink)',
 		boxShadow: '0 0 0 3px color-mix(in srgb, var(--beak-colors-accent-pink) 28%, transparent)',
 	},
-	'&:disabled': { opacity: 0.55, cursor: 'not-allowed' },
+	'&:disabled': {
+		opacity: 0.55,
+		cursor: 'not-allowed',
+		backgroundColor: 'color-mix(in srgb, var(--beak-colors-bg-surface) 60%, transparent)',
+	},
 	'&::placeholder': { color: 'var(--beak-colors-fg-subtle)' },
 	'&[aria-invalid="true"]': {
 		borderColor: 'var(--beak-colors-accent-alert)',
