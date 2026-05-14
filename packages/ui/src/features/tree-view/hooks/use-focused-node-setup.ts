@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 
 type ReturnType = [string | undefined, string, (nodeId: string) => void];
 
@@ -6,10 +6,10 @@ export default function useFocusedNodeSetup(defaultNodeId: string | undefined): 
 	const [focusedNodeId, setFocusedNodeId] = useState(defaultNodeId);
 	const [invalidator, setInvalidator] = useState(new Date().toISOString());
 
-	function setFocusedNodeIdProxy(nodeId: string) {
+	const setFocusedNodeIdProxy = useCallback((nodeId: string) => {
 		setFocusedNodeId(nodeId);
 		setInvalidator(new Date().toISOString());
-	}
+	}, []);
 
 	return [focusedNodeId, invalidator, setFocusedNodeIdProxy];
 }
