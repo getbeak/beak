@@ -175,7 +175,7 @@ const FileUploadView: React.FC<FileUploadViewProps> = ({ node }) => {
 							<File size={18} strokeWidth={2} />
 						</Flex>
 						<Box color='fg.default' fontWeight='600' fontSize='sm' textAlign='center' px='2' overflow='hidden' textOverflow='ellipsis' maxW='240px' whiteSpace='nowrap'>{preview.fileName}</Box>
-						<Box fontSize='10px' color='fg.subtle' fontFamily='mono'>{prettyBytes(preview.fileSize)}</Box>
+						<Box fontSize='10px' color='fg.subtle' fontFamily='mono' style={{ fontVariantNumeric: 'tabular-nums' }}>{prettyBytes(preview.fileSize)}</Box>
 					</React.Fragment>
 				)}
 			</Flex>
@@ -203,8 +203,8 @@ const FileUploadView: React.FC<FileUploadViewProps> = ({ node }) => {
 							{'Asset attached'}
 						</Box>
 					</Flex>
-					<Box color='fg.default' fontSize='xs'>{`sha256:${assetRef.sha256.slice(0, 8)}…${assetRef.sha256.slice(-4)}`}</Box>
-					<Box fontSize='10px' color='fg.subtle'>{prettyBytes(assetRef.size)}</Box>
+					<Box color='fg.default' fontSize='xs' style={{ fontVariantNumeric: 'tabular-nums' }}>{`sha256:${assetRef.sha256.slice(0, 8)}…${assetRef.sha256.slice(-4)}`}</Box>
+					<Box fontSize='10px' color='fg.subtle' style={{ fontVariantNumeric: 'tabular-nums' }}>{prettyBytes(assetRef.size)}</Box>
 				</Flex>
 			)}
 			<Button size='sm' colour='secondary' onClick={attachAsAsset}>
