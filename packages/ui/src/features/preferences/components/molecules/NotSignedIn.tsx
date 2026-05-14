@@ -11,7 +11,7 @@ const NotSignedIn: React.FC = () => (
 		px='4'
 		borderRadius='lg'
 		borderWidth='1px'
-		borderColor='border.subtle'
+		borderColor='color-mix(in srgb, var(--beak-colors-accent-pink) 14%, var(--beak-colors-border-subtle))'
 		bg='color-mix(in srgb, var(--beak-colors-bg-surface) 50%, transparent)'
 		color='fg.muted'
 		textAlign='center'
