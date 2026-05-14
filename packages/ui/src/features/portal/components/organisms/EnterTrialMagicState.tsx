@@ -83,7 +83,7 @@ const EnterTrialMagicState: React.FC<EnterTrialMagicStateProps> = ({ email, rese
 					</Flex>
 					<Box>
 						{'Magic link is on the way to '}
-						<Box as='strong' color='fg.default'>{email}</Box>
+						<Box as='strong' color='fg.default' fontWeight='600' fontFamily='mono'>{email}</Box>
 						{'.'}
 					</Box>
 					<Box fontSize='xs' mt='1.5' color='fg.subtle' lineHeight='1.5'>
