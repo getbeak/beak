@@ -48,7 +48,7 @@ const ErrorRenderer: React.FC<ErrorRendererProps> = ({ error }) => {
 
 			{fieldEntries.length > 0 && (
 				<Box px='3' py='2' borderBottomWidth='1px' borderColor='border.subtle'>
-					<Box fontSize='10px' fontWeight='700' color='fg.subtle' textTransform='uppercase' letterSpacing='0.06em' mb='1.5'>
+					<Box fontSize='10px' fontWeight='700' color='accent.alert' textTransform='uppercase' letterSpacing='0.06em' mb='1.5'>
 						{'Field errors'}
 					</Box>
 					<Flex direction='column' gap='1.5'>
