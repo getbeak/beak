@@ -92,7 +92,7 @@ const ViewExtensionError: React.FC<ViewExtensionErrorProps> = props => (
 				</Flex>
 			</Flex>
 
-			<Box fontSize='10px' fontWeight='700' color='fg.subtle' textTransform='uppercase' letterSpacing='0.06em' mb='1'>
+			<Box fontSize='10px' fontWeight='700' color='accent.alert' textTransform='uppercase' letterSpacing='0.06em' mb='1'>
 				{'Error details'}
 			</Box>
 			<Box borderRadius='md' borderWidth='1px' borderColor='border.subtle' overflow='hidden'>
