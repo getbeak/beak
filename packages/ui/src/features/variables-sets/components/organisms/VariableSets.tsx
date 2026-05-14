@@ -1,7 +1,6 @@
 import React, { useContext } from 'react';
 import { useDispatch } from 'react-redux';
 import { TypedObject } from '@beak/common/helpers/typescript';
-import ksuid from '@beak/ksuid';
 import WindowSessionContext from '@beak/ui/contexts/window-session-context';
 import { changeTab, makeTabPermanent } from '@beak/ui/features/tabs/store/actions';
 import TreeView from '@beak/ui/features/tree-view/components/TreeView';
@@ -42,13 +41,13 @@ const VariableSets: React.FC<React.PropsWithChildren<unknown>> = () => {
 
 	function generateContextMenu(node: TreeViewItem): MenuItemConstructorOptions[] {
 		return [{
-			id: ksuid.generate('ctxmenuitem').toString(),
+			id: 'variable-sets-ctx:new',
 			label: 'New Variable Set',
 			click: () => {
 				dispatch(actions.createNewVariableSet({ }));
 			},
 		}, {
-			id: ksuid.generate('ctxmenuitem').toString(),
+			id: 'variable-sets-ctx:reveal',
 			label: `Reveal in ${darwin ? 'Finder' : 'Explorer'}`,
 			enabled: node.id !== 'root',
 			click: () => {
@@ -56,31 +55,31 @@ const VariableSets: React.FC<React.PropsWithChildren<unknown>> = () => {
 			},
 		},
 
-		{ id: ksuid.generate('ctxmenuitem').toString(), type: 'separator' },
+		{ id: 'variable-sets-ctx:sep-1', type: 'separator' },
 
-		{ id: ksuid.generate('ctxmenuitem').toString(), label: 'Copy', enabled: false },
-		{ id: ksuid.generate('ctxmenuitem').toString(), label: 'Cut', enabled: false },
-		{ id: ksuid.generate('ctxmenuitem').toString(), label: 'Paste', enabled: false },
+		{ id: 'variable-sets-ctx:copy', label: 'Copy', enabled: false },
+		{ id: 'variable-sets-ctx:cut', label: 'Cut', enabled: false },
+		{ id: 'variable-sets-ctx:paste', label: 'Paste', enabled: false },
 
-		{ id: ksuid.generate('ctxmenuitem').toString(), type: 'separator' },
+		{ id: 'variable-sets-ctx:sep-2', type: 'separator' },
 
 		{
-			id: ksuid.generate('ctxmenuitem').toString(),
+			id: 'variable-sets-ctx:copy-path',
 			label: 'Copy Path',
 			enabled: node.id !== 'root',
 			click: () => ipcExplorerService.copyFullNodePath(node.filePath),
 		},
 		{
-			id: ksuid.generate('ctxmenuitem').toString(),
+			id: 'variable-sets-ctx:copy-relative-path',
 			label: 'Copy Relative Path',
 			enabled: node.id !== 'root',
 			click: () => navigator.clipboard.writeText(node.filePath),
 		},
 
-		{ id: ksuid.generate('ctxmenuitem').toString(), type: 'separator' },
+		{ id: 'variable-sets-ctx:sep-3', type: 'separator' },
 
 		{
-			id: ksuid.generate('ctxmenuitem').toString(),
+			id: 'variable-sets-ctx:rename',
 			label: 'Rename',
 			accelerator: renderAcceleratorDefinition('tree-view.node.rename'),
 			enabled: node.id !== 'root',
@@ -91,7 +90,7 @@ const VariableSets: React.FC<React.PropsWithChildren<unknown>> = () => {
 				dispatch(actions.renameStarted({ id: node.id }));
 			},
 		}, {
-			id: ksuid.generate('ctxmenuitem').toString(),
+			id: 'variable-sets-ctx:delete',
 			label: 'Delete',
 			accelerator: renderAcceleratorDefinition('tree-view.node.delete'),
 			enabled: node.id !== 'root',
