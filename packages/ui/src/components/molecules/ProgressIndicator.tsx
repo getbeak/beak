@@ -40,13 +40,6 @@ const ProgressIndicator: React.FC = () => {
 					/>
 				)}
 			</AnimatePresence>
-			<Box
-				as='style'
-				dangerouslySetInnerHTML={{
-					__html:
-						'@keyframes beakProgressShimmer { 0% { background-position: 0% 0; } 100% { background-position: 300% 0; } }',
-				}}
-			/>
 		</Box>
 	);
 };

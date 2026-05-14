@@ -72,6 +72,10 @@ const GLOBAL_CSS = (darwin: boolean) => `
 		70% { transform: scale(1.35); opacity: 0; }
 		100% { transform: scale(1.35); opacity: 0; }
 	}
+	@keyframes beakProgressShimmer {
+		0% { background-position: 0% 0; }
+		100% { background-position: 300% 0; }
+	}
 	*::-webkit-scrollbar { width: 8px; height: 8px; }
 	*::-webkit-scrollbar-track { background: transparent; }
 	*::-webkit-scrollbar-thumb {
