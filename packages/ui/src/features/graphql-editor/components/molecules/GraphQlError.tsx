@@ -47,7 +47,7 @@ const GraphQlError: React.FC<GraphQlErrorProps> = ({ error }) => (
 			<Box fontSize='md' fontWeight='600' color='fg.default' letterSpacing='-0.005em'>
 				{'Unable to fetch GraphQL schema'}
 			</Box>
-			<Box fontSize='10px' color='fg.subtle' letterSpacing='0.06em' textTransform='uppercase' fontWeight='700'>
+			<Box fontSize='10px' color='accent.alert' letterSpacing='0.06em' textTransform='uppercase' fontWeight='700'>
 				{'Introspection failed'}
 			</Box>
 		</Flex>
