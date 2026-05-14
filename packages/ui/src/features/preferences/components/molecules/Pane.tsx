@@ -22,9 +22,9 @@ const Pane: React.FC<React.PropsWithChildren<PaneProps>> = ({ title, children })
 			animate={{ opacity: 1, y: 0 }}
 			transition={{ duration: 0.18, ease: 'easeOut' }}
 			fontSize='2xl'
-			fontWeight='600'
+			fontWeight='700'
 			color='fg.default'
-			letterSpacing='-0.01em'
+			letterSpacing='-0.02em'
 			lineHeight='1.1'
 		>
 			{title}
