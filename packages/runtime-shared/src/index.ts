@@ -3,6 +3,7 @@ import AssetGc from './assets/gc';
 import { RuntimeBase, type RuntimeCapabilities, type RuntimeOptions } from './base';
 import BeakProject from './project';
 import OpenApiWriter from './sources/openapi-writer';
+import ValueStore from './values';
 
 export { RuntimeBase } from './base';
 export type { Providers, RuntimeCapabilities, RuntimeOptions } from './base';
@@ -11,6 +12,7 @@ export { default as AssetGc } from './assets/gc';
 export type { AssetRef } from './assets';
 export { default as OpenApiWriter } from './sources/openapi-writer';
 export type { OpenApiSyncInput, OpenApiSyncResult } from './sources/openapi-writer';
+export { default as ValueStore } from './values';
 
 /**
  * Top-level handle that both hosts (electron, web) instantiate. The renderer
@@ -24,6 +26,7 @@ export default class Runtime extends RuntimeBase {
 	private readonly assetStore: AssetStore;
 	private readonly assetGc: AssetGc;
 	private readonly openApiWriter: OpenApiWriter;
+	private readonly valueStore: ValueStore;
 
 	constructor(options: RuntimeOptions) {
 		super(options.providers);
@@ -33,6 +36,7 @@ export default class Runtime extends RuntimeBase {
 		this.assetStore = new AssetStore(this.providers);
 		this.assetGc = new AssetGc(this.providers);
 		this.openApiWriter = new OpenApiWriter(this.providers);
+		this.valueStore = new ValueStore(this.providers);
 	}
 
 	get project() {
@@ -52,5 +56,10 @@ export default class Runtime extends RuntimeBase {
 	/** OpenAPI-sync helpers — turn a converter result into files under tree/. */
 	get openapi() {
 		return this.openApiWriter;
+	}
+
+	/** Per-project request values store (`.beak/values.json`). */
+	get values() {
+		return this.valueStore;
 	}
 }

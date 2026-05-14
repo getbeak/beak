@@ -6,6 +6,7 @@ export * as git from './git';
 export * as preferences from './preferences';
 export * as project from './project';
 export * as requests from './requests';
+export * as requestValues from './request-values';
 export * as schemas from './schemas';
 export * as sockets from './sockets';
 export * as sources from './sources';

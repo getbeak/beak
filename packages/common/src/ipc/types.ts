@@ -14,7 +14,10 @@ export type IpcChannel =
 	| 'context-menu'
 	| 'fs-watcher'
 	| 'openapi'
-	| 'assets';
+	| 'assets'
+	| 'values'
+	| 'http'
+	| 'socket';
 
 export interface IpcMessage<T = unknown> {
 	code: string;

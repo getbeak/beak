@@ -1,5 +1,6 @@
 // Flight slice lives in @beak/state (pure domain), used here as a global state shard.
 import { type FlightSliceState, flightSlice } from '@beak/state/flight';
+import { type RequestValuesSliceState, requestValuesSlice } from '@beak/state/request-values';
 import { type SocketsSliceState, socketsSlice } from '@beak/state/sockets';
 import { applyMiddleware, combineReducers, createStore, type Store } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
@@ -40,6 +41,7 @@ export interface ApplicationState {
 		git: GitState;
 		preferences: PreferencesState;
 		project: ProjectState;
+		requestValues: RequestValuesSliceState;
 		sockets: SocketsSliceState;
 		variableSets: VariableSetState;
 	};
@@ -60,6 +62,7 @@ function createRootReducer() {
 			git: gitStore.reducers,
 			preferences: preferencesStore.reducers,
 			project: projectStore.reducers,
+			requestValues: requestValuesSlice,
 			sockets: socketsSlice,
 			variableSets: variableSetsStore.reducers,
 		}),
@@ -88,6 +91,7 @@ function createInitialState(): ApplicationState {
 			git: gitStore.types.initialState,
 			preferences: preferencesStore.types.initialState,
 			project: projectStore.types.initialState,
+			requestValues: { loaded: false, requests: {} },
 			sockets: { sessions: {}, socketsByRequest: {} },
 			variableSets: variableSetsStore.types.initialState,
 		},
