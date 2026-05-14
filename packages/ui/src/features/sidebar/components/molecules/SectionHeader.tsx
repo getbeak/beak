@@ -51,7 +51,9 @@ const SectionHeader: React.FC<React.PropsWithChildren<SectionHeaderProps>> = pro
 					onClick();
 				}
 			}}
-			css={{ '&:hover [data-section-actions]': { opacity: 1 } }}
+			css={{
+				'&:hover [data-section-actions], &:focus-within [data-section-actions]': { opacity: 1 },
+			}}
 		>
 			<Flex align='center' gap='1.5' minW={0}>
 				{!disableCollapse && (
