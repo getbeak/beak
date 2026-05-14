@@ -87,7 +87,7 @@ const UntitledBanner: React.FC = () => {
 				transitionDuration='0.12s'
 				_hover={{ filter: 'brightness(1.1)' }}
 				_active={{ transform: 'scale(0.97)' }}
-				_focus={{
+				_focusVisible={{
 					outline: 'none',
 					boxShadow: '0 0 0 3px color-mix(in srgb, var(--beak-colors-accent-pink) 30%, transparent)',
 				}}

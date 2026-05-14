@@ -98,7 +98,7 @@ const Header: React.FC<HeaderProps> = ({ node }) => {
 						cursor='pointer'
 						transition='background-color .14s ease, border-color .14s ease, box-shadow .14s ease, transform .08s ease'
 						_active={{ transform: 'scale(0.97)' }}
-						_focus={{
+						_focusVisible={{
 							outline: 'none',
 							borderColor: verbColor,
 							boxShadow: `0 0 0 3px color-mix(in srgb, ${verbColor} 28%, transparent)`,
@@ -229,7 +229,7 @@ const Header: React.FC<HeaderProps> = ({ node }) => {
 					boxShadow: '0 8px 22px color-mix(in srgb, var(--beak-colors-accent-pink) 55%, transparent), inset 0 1px 0 color-mix(in srgb, white 26%, transparent)',
 				}}
 				_active={{ transform: 'translateY(0) scale(0.97)' }}
-				_focus={{
+				_focusVisible={{
 					outline: 'none',
 					boxShadow: '0 0 0 3px color-mix(in srgb, var(--beak-colors-accent-pink) 40%, transparent), inset 0 1px 0 color-mix(in srgb, white 22%, transparent)',
 				}}
