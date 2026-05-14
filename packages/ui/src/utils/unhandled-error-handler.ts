@@ -18,9 +18,9 @@ export async function handleUnhandledError(error: Error) {
 	if (!development) window.setTimeout(() => ipcWindowService.reloadSelfWindow(), 0);
 
 	await ipcDialogService.showMessageBox({
-		title: 'Beak messed up...',
+		title: 'Beak messed up…',
 		type: 'error',
-		message: "Beak encountered an unknown error. If restarting doesn't resolve the issue, please contact support.",
+		message: 'Beak encountered an unknown error. If restarting doesn’t resolve the issue, please contact support.',
 		detail: [error.name ?? '', error.message ?? '', error.stack ?? ''].join('\n'),
 		buttons: [development ? 'Ignore' : 'Restart'],
 		defaultId: 0,
