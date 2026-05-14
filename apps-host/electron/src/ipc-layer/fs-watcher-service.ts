@@ -24,6 +24,17 @@ service.registerStartWatching(async (event, payload: StartWatchingReq) => {
 		atomic: true,
 	};
 
+	const closeAndForget = () => {
+		watcher.close();
+		delete watchers[payload.sessionIdentifier];
+		const sessions = windowContentsMapping[senderIdStr];
+		if (sessions) {
+			const next = sessions.filter(s => s !== payload.sessionIdentifier);
+			if (next.length === 0) delete windowContentsMapping[senderIdStr];
+			else windowContentsMapping[senderIdStr] = next;
+		}
+	};
+
 	const watcher = chokidar
 		.watch(filePath, options)
 		.on('all', (eventName, path) => {
@@ -35,14 +46,14 @@ service.registerStartWatching(async (event, payload: StartWatchingReq) => {
 				});
 			});
 
-			if (destroyed) watcher.close();
+			if (destroyed) closeAndForget();
 		})
 		.on('error', error => {
 			const destroyed = checkForDestruction(() => {
 				service.sendWatcherError(sender, payload.sessionIdentifier, error instanceof Error ? error : new Error(String(error)));
 			});
 
-			if (destroyed) watcher.close();
+			if (destroyed) closeAndForget();
 		});
 
 	// @ts-expect-error
@@ -54,7 +65,16 @@ service.registerStartWatching(async (event, payload: StartWatchingReq) => {
 });
 
 service.registerStopWatching(async (_event, sessionIdentifier: string) => {
-	watchers[sessionIdentifier]?.close();
+	const watcher = watchers[sessionIdentifier];
+	if (!watcher) return;
+	watcher.close();
+	delete watchers[sessionIdentifier];
+	for (const [winId, sessions] of Object.entries(windowContentsMapping)) {
+		const next = sessions.filter(s => s !== sessionIdentifier);
+		if (next.length === sessions.length) continue;
+		if (next.length === 0) delete windowContentsMapping[winId];
+		else windowContentsMapping[winId] = next;
+	}
 });
 
 // If the window has been closed then the WebContents sender will have been destroyed, in
@@ -72,9 +92,14 @@ function checkForDestruction(fn: () => void) {
 }
 
 export function closeWatchersOnWindow(windowContentsId: number) {
-	const sessionIdentifiers = windowContentsMapping[windowContentsId.toString()];
+	const key = windowContentsId.toString();
+	const sessionIdentifiers = windowContentsMapping[key];
 
 	if (!sessionIdentifiers || sessionIdentifiers.length === 0) return;
 
-	for (const sessionIdentifier of sessionIdentifiers) watchers[sessionIdentifier]?.close();
+	for (const sessionIdentifier of sessionIdentifiers) {
+		watchers[sessionIdentifier]?.close();
+		delete watchers[sessionIdentifier];
+	}
+	delete windowContentsMapping[key];
 }
