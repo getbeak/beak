@@ -1,6 +1,7 @@
 import { Box, Flex, chakra } from '@chakra-ui/react';
 import { Check } from 'lucide-react';
 import * as React from 'react';
+import { useId } from 'react';
 
 interface CheckboxProps extends Omit<React.HTMLProps<HTMLInputElement>, 'as' | 'label'> {
 	label: string;
@@ -31,11 +32,13 @@ const HiddenInput = chakra('input', {
  */
 const Checkbox: React.FC<CheckboxProps> = ({ label, ...rest }) => {
 	const isChecked = Boolean(rest.checked);
+	const generatedId = useId();
+	const id = rest.id ?? generatedId;
 
 	return (
 		<Flex align='center' gap='2'>
 			<Box position='relative' display='inline-flex' alignItems='center' justifyContent='center'>
-				<HiddenInput type='checkbox' {...rest} />
+				<HiddenInput type='checkbox' {...rest} id={id} />
 				<Box
 					as='span'
 					display='inline-flex'
@@ -65,7 +68,7 @@ const Checkbox: React.FC<CheckboxProps> = ({ label, ...rest }) => {
 			</Box>
 			<Box
 				as='label'
-				htmlFor={rest.id}
+				htmlFor={id}
 				color='fg.default'
 				fontSize='xs'
 				cursor='pointer'
