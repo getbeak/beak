@@ -5,6 +5,7 @@ import { useAppSelector } from '@beak/ui/store/redux';
 import { attemptJsonStringFormat } from '@beak/ui/utils/json';
 import type { Flight } from '@getbeak/types/flight';
 import * as React from 'react';
+import { useEffect, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
 import xmlFormatter from 'xml-formatter';
 
@@ -13,6 +14,43 @@ import useFlightBodyInfo from '../../hooks/use-flight-body-info';
 import JsonTreeViewer from '../molecules/json-tree/JsonTreeViewer';
 import PrettyRenderSelection from '../molecules/PrettyRenderSelection';
 import PrettyViewIneligible from '../molecules/PrettyViewIneligible';
+
+interface BlobViewerProps {
+	body: Uint8Array;
+	contentType: string | null;
+	kind: 'image' | 'video';
+}
+
+const BlobViewer: React.FC<BlobViewerProps> = ({ body, contentType, kind }) => {
+	const url = useMemo(() => {
+		const fallback = kind === 'image' ? 'image/jpeg' : 'video/mp4';
+		return URL.createObjectURL(new Blob([body as BlobPart], { type: contentType ?? fallback }));
+	}, [body, contentType, kind]);
+
+	useEffect(() => () => URL.revokeObjectURL(url), [url]);
+
+	if (kind === 'image') {
+		return (
+			<Box
+				h='100%'
+				bgPos='center'
+				bgSize='contain'
+				bgRepeat='no-repeat'
+				bg='color-mix(in srgb, var(--beak-colors-bg-canvas) 80%, transparent)'
+				style={{
+					backgroundImage: `radial-gradient(circle at center, transparent 50%, color-mix(in srgb, var(--beak-colors-bg-canvas) 35%, transparent) 100%), url(${url})`,
+				}}
+			/>
+		);
+	}
+
+	return (
+		// biome-ignore lint/a11y/useMediaCaption: response bodies are arbitrary HTTP video responses; no caption track is available.
+		<video controls autoPlay style={{ width: '100%', height: '100%' }}>
+			<source src={url} />
+		</video>
+	);
+};
 
 interface PrettyViewerProps {
 	flight: Flight;
@@ -108,31 +146,11 @@ function renderFormat(language: string | null, contentType: string | null, body:
 			return <EditorView language='css' value={css} options={{ readOnly: true }} />;
 		}
 
-		case 'image': {
-			const blob = URL.createObjectURL(new Blob([body as BlobPart], { type: contentType ?? 'image/jpeg' }));
-			return (
-				<Box
-					h='100%'
-					bgPos='center'
-					bgSize='contain'
-					bgRepeat='no-repeat'
-					bg='color-mix(in srgb, var(--beak-colors-bg-canvas) 80%, transparent)'
-					style={{
-						backgroundImage: `radial-gradient(circle at center, transparent 50%, color-mix(in srgb, var(--beak-colors-bg-canvas) 35%, transparent) 100%), url(${blob})`,
-					}}
-				/>
-			);
-		}
+		case 'image':
+			return <BlobViewer body={body} contentType={contentType} kind='image' />;
 
-		case 'video': {
-			const blob = URL.createObjectURL(new Blob([body as BlobPart], { type: contentType ?? 'video/mp4' }));
-			return (
-				// biome-ignore lint/a11y/useMediaCaption: response bodies are arbitrary HTTP video responses; no caption track is available.
-				<video controls autoPlay style={{ width: '100%', height: '100%' }}>
-					<source src={blob} />
-				</video>
-			);
-		}
+		case 'video':
+			return <BlobViewer body={body} contentType={contentType} kind='video' />;
 
 		default: {
 			const text = new TextDecoder().decode(body);
