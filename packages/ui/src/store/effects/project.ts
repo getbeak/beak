@@ -63,32 +63,30 @@ export function registerProjectEffects(start: AppStartListening) {
 				await initialImport(api, 'tree');
 				api.dispatch(loadTabState());
 			} catch (error) {
-				if (error instanceof Error) {
-					if (error.message === 'Legacy project detected') {
-						await ipcDialogService.showMessageBox({
-							type: 'warning',
-							title: 'Unsupported project version',
-							message: 'The project you opened is no longer supported by Beak, it should have been automatically updated.',
-							detail: 'Message @beakapp on twitter for support.',
-						});
-					} else if (error.message === 'Future project detected') {
-						await ipcDialogService.showMessageBox({
-							type: 'warning',
-							title: 'Unsupported project version',
-							message:
-								'The project you opened can’t be opened by this version of Beak. Please check for updates and try again.',
-							detail: 'Message @beakapp on twitter for support.',
-						});
-					}
+				if (error instanceof Error && error.message === 'Legacy project detected') {
+					await ipcDialogService.showMessageBox({
+						type: 'warning',
+						title: 'Unsupported project version',
+						message: 'The project you opened is no longer supported by Beak, it should have been automatically updated.',
+						detail: 'Message @beakapp on twitter for support.',
+					});
+				} else if (error instanceof Error && error.message === 'Future project detected') {
+					await ipcDialogService.showMessageBox({
+						type: 'warning',
+						title: 'Unsupported project version',
+						message:
+							'The project you opened can’t be opened by this version of Beak. Please check for updates and try again.',
+						detail: 'Message @beakapp on twitter for support.',
+					});
+				} else {
+					const squawk = Squawk.coerce(error);
+					await ipcDialogService.showMessageBox({
+						type: 'error',
+						title: 'Project failed to open',
+						message: 'There was a problem loading the Beak project.',
+						detail: [squawk.message, squawk.stack].join('\n'),
+					});
 				}
-
-				const squawk = Squawk.coerce(error);
-				await ipcDialogService.showMessageBox({
-					type: 'error',
-					title: 'Project failed to open',
-					message: 'There was a problem loading the Beak project.',
-					detail: [squawk.message, squawk.stack].join('\n'),
-				});
 
 				await ipcWindowService.closeSelfWindow();
 				return;
@@ -306,6 +304,7 @@ export function registerProjectEffects(start: AppStartListening) {
 		effect: async ({ payload }, api) => {
 			const { requestId, withConfirmation } = payload;
 			const node = api.getState().global.project.tree[requestId];
+			if (!node) return;
 
 			if (withConfirmation) {
 				const response = await ipcDialogService.showMessageBox({
@@ -336,6 +335,7 @@ export function registerProjectEffects(start: AppStartListening) {
 			const node = api.getState().global.project.tree[payload.requestId];
 
 			if (!activeRename || activeRename.id !== payload.requestId) return;
+			if (!node) return;
 
 			if (activeRename.name === node.name) {
 				api.dispatch(projectActions.renameResolved({ requestId: payload.requestId }));
