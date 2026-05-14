@@ -215,7 +215,7 @@ const GuideCard: React.FC<GuideCardProps> = ({ idx, icon: Icon, title, body, cta
 			boxShadow: '0 12px 28px color-mix(in srgb, var(--beak-colors-accent-pink) 18%, rgba(0,0,0,0.06))',
 		}}
 		_active={{ transform: 'translateY(-1px) scale(0.99)' }}
-		_focus={{
+		_focusVisible={{
 			outline: 'none',
 			borderColor: 'accent.pink',
 			boxShadow: '0 0 0 3px color-mix(in srgb, var(--beak-colors-accent-pink) 28%, transparent)',

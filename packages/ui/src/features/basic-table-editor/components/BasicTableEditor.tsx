@@ -165,7 +165,7 @@ const BasicTableEditor: React.FC<BasicTableEditorProps> = ({
 							color: 'accent.pink',
 							bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 10%, transparent)',
 						}}
-						_focus={{
+						_focusVisible={{
 							outline: 'none',
 							borderColor: 'accent.pink',
 							boxShadow: '0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-pink) 22%, transparent)',

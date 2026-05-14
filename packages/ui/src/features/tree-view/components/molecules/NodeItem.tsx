@@ -154,7 +154,7 @@ const NodeItem: React.FC<React.PropsWithChildren<NodeItemProps>> = props => {
 						? undefined
 						: 'color-mix(in srgb, var(--beak-colors-bg-surface-emphasized) 30%, transparent)',
 				}}
-				_focus={{
+				_focusVisible={{
 					outline: 'none',
 					bg: isActive
 						? undefined
