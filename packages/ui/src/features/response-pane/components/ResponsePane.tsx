@@ -8,6 +8,7 @@ import * as React from 'react';
 import FlightInProgress from './molecules/FlightInProgress';
 import Header from './molecules/Header';
 import Inspector from './organisms/Inspector';
+import SocketPanel, { useSocketForRequest } from './organisms/SocketPanel';
 
 const ResponsePane: React.FC = () => {
 	const { tree } = useAppSelector(s => s.global.project);
@@ -29,7 +30,13 @@ const ResponsePane: React.FC = () => {
 		[currentFlight],
 	);
 	const displayedFlight = liveFlight ?? selectedFlight;
-	const pending = !selectedNode || !displayedFlight;
+	const socketSession = useSocketForRequest(selectedTab ?? undefined);
+
+	// When a socket exists for this request, take over the response pane —
+	// the HTTP inspector is irrelevant and the socket panel owns the
+	// connection lifecycle, message log, and send box.
+	const showSocket = Boolean(selectedNode && socketSession);
+	const pending = !selectedNode || (!displayedFlight && !showSocket);
 
 	return (
 		<Flex
@@ -53,14 +60,15 @@ const ResponsePane: React.FC = () => {
 			}}
 		>
 			{pending && <PendingSlash />}
-			{!pending && displayedFlight && (
+			{showSocket && socketSession && <SocketPanel session={socketSession} />}
+			{!showSocket && !pending && displayedFlight && (
 				<React.Fragment>
 					<Header selectedFlight={displayedFlight} />
 					<Inspector flight={displayedFlight} />
 				</React.Fragment>
 			)}
 
-			<FlightInProgress requestId={selectedTab!} currentFlight={currentFlight} />
+			{!showSocket && <FlightInProgress requestId={selectedTab!} currentFlight={currentFlight} />}
 		</Flex>
 	);
 };
