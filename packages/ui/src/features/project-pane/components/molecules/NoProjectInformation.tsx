@@ -18,9 +18,16 @@ const NoProjectInformation: React.FC = () => (
 			align='center'
 			justify='center'
 			flexShrink={0}
+			w='18px'
+			h='18px'
+			borderRadius='sm'
+			bg='color-mix(in srgb, var(--beak-colors-fg-subtle) 10%, transparent)'
+			borderWidth='1px'
+			borderColor='color-mix(in srgb, var(--beak-colors-fg-subtle) 22%, transparent)'
 			color='fg.subtle'
+			boxShadow='inset 0 1px 0 color-mix(in srgb, white 14%, transparent)'
 		>
-			<GitBranch size={11} strokeWidth={2} />
+			<GitBranch size={10} strokeWidth={2} />
 		</Flex>
 		<Box fontSize='11px' color='fg.muted'>{'Not tracked in Git'}</Box>
 	</Flex>
