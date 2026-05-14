@@ -45,7 +45,7 @@ const GraphQlLoading: React.FC = () => (
 			</Flex>
 		</Box>
 		<Flex direction='column' gap='1'>
-			<Box fontSize='md' fontWeight='600' color='fg.default' letterSpacing='-0.005em'>
+			<Box fontSize='xl' fontWeight='700' color='fg.default' letterSpacing='-0.02em' lineHeight='1.1'>
 				{'Fetching GraphQL schema'}
 			</Box>
 			<Box fontSize='10px' color='accent.pink' letterSpacing='0.06em' textTransform='uppercase' fontWeight='700'>
