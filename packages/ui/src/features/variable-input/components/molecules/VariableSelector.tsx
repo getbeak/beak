@@ -9,7 +9,7 @@ import { Box, chakra, Flex } from '@chakra-ui/react';
 import type { Variable, VariableStaticInformation } from '@getbeak/extension-sdk';
 import { motion } from 'framer-motion';
 import Fuse from 'fuse.js';
-import { Plug, SearchX } from 'lucide-react';
+import { Lock, Plug, SearchX } from 'lucide-react';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 
 import { createFauxValue } from '../../../variables/values/variable-set-item';
@@ -71,7 +71,14 @@ const VariableSelector: React.FC<React.PropsWithChildren<VariableSelectorProps>>
 		const positionOffset = sel.offset / Math.max(contentLength, 1);
 		const width = rect.width;
 		const offsetDelta = width * positionOffset;
-		setPosition({ left: rect.left + offsetDelta, top: rect.top + rect.height + 6 });
+		// Clamp the popup so the right edge stays a few pixels inside the
+		// viewport — without this the dialog can hang off-screen for URLs
+		// that approach the right side of a project window.
+		const cardWidth = 360;
+		const margin = 12;
+		const rawLeft = rect.left + offsetDelta - 18;
+		const left = Math.min(Math.max(margin, rawLeft), window.innerWidth - cardWidth - margin);
+		setPosition({ left, top: rect.top + rect.height + 6 });
 	}, [Boolean(sel), editableElement]);
 
 	useEffect(() => {
@@ -131,6 +138,38 @@ const VariableSelector: React.FC<React.PropsWithChildren<VariableSelectorProps>>
 		onDone({ type: item.type, payload });
 	}
 
+	/**
+	 * Render the matched substring of the query inside a name with a pink
+	 * highlight chip. Bare-bones case-insensitive prefix/substring match —
+	 * matches what the user expects from typeahead, and gracefully falls
+	 * back to plain text if there is no overlap.
+	 */
+	function renderHighlightedName(name: string) {
+		if (!query) return name;
+		const lower = name.toLowerCase();
+		const q = query.toLowerCase();
+		const start = lower.indexOf(q);
+		if (start < 0) return name;
+		const end = start + q.length;
+		return (
+			<React.Fragment>
+				{name.slice(0, start)}
+				<Box
+					as='mark'
+					px='0.5'
+					mx='-0.5'
+					borderRadius='2px'
+					bg='color-mix(in srgb, var(--beak-colors-accent-pink) 32%, transparent)'
+					color='fg.default'
+					fontWeight='600'
+				>
+					{name.slice(start, end)}
+				</Box>
+				{name.slice(end)}
+			</React.Fragment>
+		);
+	}
+
 	if (!position) return null;
 
 	const descriptionItem = items[active];
@@ -139,13 +178,15 @@ const VariableSelector: React.FC<React.PropsWithChildren<VariableSelectorProps>>
 		<Box
 			borderTopWidth='1px'
 			borderColor='border.subtle'
-			bg='color-mix(in srgb, var(--beak-colors-bg-canvas) 70%, transparent)'
-			px='2'
+			bg='color-mix(in srgb, var(--beak-colors-bg-canvas) 72%, transparent)'
+			px='2.5'
 			py='1.5'
-			minH='32px'
-			fontSize='xs'
+			minH='36px'
+			fontSize='11.5px'
+			lineHeight='1.45'
 			color='fg.muted'
-			css={{ '> a': { color: 'var(--beak-colors-accent-pink)', textDecoration: 'underline' } }}
+			fontStyle={items.length > 0 ? 'italic' : 'normal'}
+			css={{ '& > a': { color: 'var(--beak-colors-accent-pink)', textDecoration: 'underline' } }}
 		>
 			{items.length > 0 && descriptionItem?.external && (
 				<Flex
@@ -163,6 +204,7 @@ const VariableSelector: React.FC<React.PropsWithChildren<VariableSelectorProps>>
 					bg='color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent)'
 					borderColor='color-mix(in srgb, var(--beak-colors-accent-pink) 28%, transparent)'
 					boxShadow='inset 0 1px 0 color-mix(in srgb, white 14%, transparent)'
+					fontStyle='normal'
 				>
 					<Plug size={9} strokeWidth={2.2} />
 					<Box as='span' fontWeight='700' fontSize='9px' textTransform='uppercase' letterSpacing='0.06em'>
@@ -244,15 +286,31 @@ const VariableSelector: React.FC<React.PropsWithChildren<VariableSelectorProps>>
 					py='1.5'
 					borderBottomWidth='1px'
 					borderColor='border.subtle'
-					bg='color-mix(in srgb, var(--beak-colors-bg-canvas) 50%, transparent)'
+					bg='color-mix(in srgb, var(--beak-colors-bg-canvas) 55%, transparent)'
 					fontSize='10px'
-					letterSpacing='0.06em'
+					letterSpacing='0.07em'
 					textTransform='uppercase'
 					fontWeight='700'
 					color='fg.subtle'
 				>
 					<Flex align='center' gap='1.5'>
-						<Box color='accent.pink'>{'{'}</Box>
+						<Box
+							display='inline-flex'
+							alignItems='center'
+							justifyContent='center'
+							w='14px'
+							h='14px'
+							borderRadius='sm'
+							bg='color-mix(in srgb, var(--beak-colors-accent-pink) 22%, transparent)'
+							color='accent.pink'
+							fontFamily='var(--beak-fonts-mono)'
+							fontWeight='700'
+							fontSize='11px'
+							lineHeight='1'
+							boxShadow='inset 0 0 0 1px color-mix(in srgb, var(--beak-colors-accent-pink) 30%, transparent)'
+						>
+							{'{'}
+						</Box>
 						<Box>{'Insert variable'}</Box>
 					</Flex>
 					<Box color={items.length === 0 ? 'fg.disabled' : 'fg.subtle'}>{matchCountLabel}</Box>
@@ -309,18 +367,20 @@ const VariableSelector: React.FC<React.PropsWithChildren<VariableSelectorProps>>
 								aria-selected={isActive}
 								tabIndex={0}
 								position='relative'
-								px='2'
-								py='1'
+								px='2.5'
+								py='1.5'
+								mx='1'
+								borderRadius='md'
 								cursor='pointer'
 								color={isActive ? 'fg.default' : 'fg.muted'}
-								transition='color .12s ease, background-color .12s ease'
+								transition='color .12s ease, background-color .12s ease, transform .08s ease'
 								_hover={{
 									color: 'fg.default',
-									bg: isActive ? undefined : 'color-mix(in srgb, var(--beak-colors-accent-pink) 10%, transparent)',
+									bg: isActive ? undefined : 'color-mix(in srgb, var(--beak-colors-fg-default) 6%, transparent)',
 								}}
 								_focusVisible={{
 									outline: 'none',
-									boxShadow: 'inset 0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-pink) 35%, transparent)',
+									boxShadow: 'inset 0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-pink) 38%, transparent)',
 								}}
 								onClick={() => setActive(idx)}
 								onDoubleClick={() => createDefaultVariable(i)}
@@ -329,32 +389,53 @@ const VariableSelector: React.FC<React.PropsWithChildren<VariableSelectorProps>>
 									<Box
 										position='absolute'
 										inset='0'
-										bg='color-mix(in srgb, var(--beak-colors-accent-pink) 18%, transparent)'
+										borderRadius='md'
+										bg='color-mix(in srgb, var(--beak-colors-accent-pink) 20%, transparent)'
+										boxShadow='inset 0 0 0 1px color-mix(in srgb, var(--beak-colors-accent-pink) 32%, transparent)'
 										pointerEvents='none'
 									/>
 								)}
 								{isActive && (
 									<Box
 										position='absolute'
-										top='0'
-										bottom='0'
-										left='0'
-										w='2px'
+										top='4px'
+										bottom='4px'
+										left='-1px'
+										w='3px'
 										bg='accent.pink'
-										borderTopRightRadius='2px'
-										borderBottomRightRadius='2px'
+										borderRadius='full'
+										boxShadow='0 0 8px color-mix(in srgb, var(--beak-colors-accent-pink) 60%, transparent)'
 										pointerEvents='none'
 									/>
 								)}
-								<Flex position='relative' align='center' gap='1.5'>
+								<Flex position='relative' align='center' gap='2'>
 									{i.external && (
-										<Box color={isActive ? 'accent.pink' : 'fg.subtle'} flex='0 0 auto'>
-											<Plug size={11} />
+										<Box color={isActive ? 'accent.pink' : 'fg.subtle'} flex='0 0 auto' display='inline-flex'>
+											<Plug size={11} strokeWidth={2.1} />
 										</Box>
 									)}
-									<Box overflow='hidden' textOverflow='ellipsis' whiteSpace='nowrap'>
-										{i.name}
+									<Box
+										flex='1 1 auto'
+										overflow='hidden'
+										textOverflow='ellipsis'
+										whiteSpace='nowrap'
+										fontSize='sm'
+										fontWeight={isActive ? '600' : '500'}
+										letterSpacing='-0.005em'
+									>
+										{renderHighlightedName(i.name)}
 									</Box>
+									{i.sensitive && (
+										<Box
+											display='inline-flex'
+											alignItems='center'
+											flex='0 0 auto'
+											color={isActive ? 'accent.warning' : 'fg.subtle'}
+											title='Sensitive: value is hidden by default'
+										>
+											<Lock size={10} strokeWidth={2.2} />
+										</Box>
+									)}
 								</Flex>
 							</Box>
 						);
@@ -364,13 +445,14 @@ const VariableSelector: React.FC<React.PropsWithChildren<VariableSelectorProps>>
 				<Flex
 					align='center'
 					justify='flex-end'
-					gap='3'
+					gap='2.5'
 					px='2'
 					py='1.5'
 					borderTopWidth='1px'
 					borderColor='border.subtle'
-					bg='color-mix(in srgb, var(--beak-colors-bg-canvas) 50%, transparent)'
+					bg='color-mix(in srgb, var(--beak-colors-bg-canvas) 55%, transparent)'
 					fontSize='10px'
+					letterSpacing='0.04em'
 					color='fg.subtle'
 				>
 					<Flex align='center' gap='1'>
@@ -378,10 +460,12 @@ const VariableSelector: React.FC<React.PropsWithChildren<VariableSelectorProps>>
 						<Kbd>{'↓'}</Kbd>
 						<Box as='span'>{'navigate'}</Box>
 					</Flex>
+					<Box w='1px' h='10px' bg='border.subtle' />
 					<Flex align='center' gap='1'>
 						<Kbd>{'↵'}</Kbd>
 						<Box as='span'>{'insert'}</Box>
 					</Flex>
+					<Box w='1px' h='10px' bg='border.subtle' />
 					<Flex align='center' gap='1'>
 						<Kbd>{'esc'}</Kbd>
 						<Box as='span'>{'close'}</Box>
