@@ -80,6 +80,7 @@ const RequestTrial: React.FC<React.PropsWithChildren<RequestTrialProps>> = props
 			<Input
 				disabled={working}
 				type='email'
+				aria-label='Email'
 				placeholder='you@example.com'
 				value={email}
 				ref={inputRef}
