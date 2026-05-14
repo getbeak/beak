@@ -58,7 +58,7 @@ const CreateTrial: React.FC<CreateTrialProps> = ({ onChangeToDefault }) => {
 						filter='drop-shadow(0px 8px 24px color-mix(in srgb, var(--beak-colors-accent-pink) 30%, transparent))'
 					/>
 				</motion.div>
-				<Box fontSize='2xl' fontWeight='600' color='fg.default' lineHeight='1.2'>
+				<Box fontSize='2xl' fontWeight='700' color='fg.default' letterSpacing='-0.02em' lineHeight='1.1'>
 					{'Start your free Beak trial'}
 				</Box>
 				<Box fontSize='sm' color='fg.muted' mt='1'>
