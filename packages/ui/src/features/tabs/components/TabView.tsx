@@ -8,6 +8,7 @@ import { useDispatch } from 'react-redux';
 import TabBar from '../../../components/atoms/TabBar';
 import { changeTabNext, changeTabPrevious, closeTab, closeTabsAll, closeTabsOther } from '../store/actions';
 import NewProjectIntroTab from './molecules/NewProjectIntroTab';
+import PreferencesTab from './molecules/PreferencesTab';
 import RequestTab from './molecules/RequestTab';
 import VariableSetEditorTab from './molecules/VariableSetEditorTab';
 import Router from './Router';
@@ -75,6 +76,7 @@ const TabView: React.FC<TabViewProps> = ({ selectedTab, tabs, rightSlot }) => {
 						if (t.type === 'request') return <RequestTab key={t.payload} tab={t} />;
 						if (t.type === 'variable_set_editor') return <VariableSetEditorTab key={t.payload} tab={t} />;
 						if (t.type === 'new_project_intro') return <NewProjectIntroTab key={t.payload} tab={t} />;
+						if (t.type === 'preferences') return <PreferencesTab key={t.payload} tab={t} />;
 						return null;
 					})}
 				</TabBar>
