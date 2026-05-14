@@ -1,3 +1,4 @@
+import type { ValueSections } from '@getbeak/types/values';
 import { z } from 'zod';
 
 /**
@@ -10,7 +11,7 @@ import { z } from 'zod';
  * at flight time.
  */
 
-const valuePartsSchema: z.ZodType = z.array(
+const valuePartsSchema = z.array(
 	z.union([
 		z.string(),
 		z
@@ -52,12 +53,24 @@ export const propertyValueSchema = z.discriminatedUnion('kind', [
 	}),
 ]);
 
-export type PropertyValue = z.infer<typeof propertyValueSchema>;
+/**
+ * One cell of concrete value in the request values store. Type-declared
+ * explicitly (rather than inferred from `propertyValueSchema`) so the
+ * `value` fields resolve to `ValueSections` from `@getbeak/types/values`
+ * instead of Zod's structurally-equivalent-but-not-identical inferred
+ * shape. The Zod schema is still the runtime gate; this type is the
+ * TypeScript handshake with the rest of the codebase.
+ */
+export type PropertyValue =
+	| { kind: 'string'; value: ValueSections; enabled: boolean }
+	| { kind: 'number'; value: ValueSections; enabled: boolean }
+	| { kind: 'boolean'; value: boolean; enabled: boolean }
+	| { kind: 'null'; enabled: boolean };
 
 /** Map of property values keyed by the schema property's `id`. */
 export const propertyValueMapSchema = z.record(z.string(), propertyValueSchema);
 
-export type PropertyValueMap = z.infer<typeof propertyValueMapSchema>;
+export type PropertyValueMap = Record<string, PropertyValue>;
 
 // ─── Body value ───────────────────────────────────────────────────────────
 
@@ -115,7 +128,19 @@ export const bodyValueSchema = z.discriminatedUnion('type', [
 		.strict(),
 ]);
 
-export type BodyValue = z.infer<typeof bodyValueSchema>;
+export type BodyValue =
+	| { type: 'none' }
+	| { type: 'text'; payload: string }
+	| { type: 'json_raw'; payload: string }
+	| { type: 'json'; values: PropertyValueMap }
+	| { type: 'url_encoded_form'; values: PropertyValueMap }
+	| {
+			type: 'file';
+			fileReferenceId?: string;
+			contentType?: string;
+			assetRef?: { sha256: string; size: number; contentType?: string };
+	  }
+	| { type: 'graphql'; query: string; variables: PropertyValueMap };
 
 // ─── Request values ───────────────────────────────────────────────────────
 
@@ -132,12 +157,16 @@ export const requestValuesSchema = z
 	})
 	.strict();
 
-export type RequestValues = z.infer<typeof requestValuesSchema>;
+export interface RequestValues {
+	headers: PropertyValueMap;
+	query: PropertyValueMap;
+	body: BodyValue;
+}
 
 /** Map of `requestId → values`. Persisted to `.beak/values.json`. */
 export const projectRequestValuesSchema = z.record(z.string(), requestValuesSchema);
 
-export type ProjectRequestValues = z.infer<typeof projectRequestValuesSchema>;
+export type ProjectRequestValues = Record<string, RequestValues>;
 
 /**
  * On-disk shape of `.beak/values.json`. Versioned so future migrations have
@@ -150,7 +179,10 @@ export const projectValuesFileSchema = z
 	})
 	.strict();
 
-export type ProjectValuesFile = z.infer<typeof projectValuesFileSchema>;
+export interface ProjectValuesFile {
+	version: 1;
+	requests: ProjectRequestValues;
+}
 
 /** Empty request values — body absent, no headers, no query. */
 export function emptyRequestValues(): RequestValues {

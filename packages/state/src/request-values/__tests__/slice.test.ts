@@ -50,7 +50,9 @@ describe('request-values slice', () => {
 				},
 			}),
 		);
-		expect(next.requests.r1?.headers.h1?.value).toEqual(['x']);
+		const cell = next.requests.r1?.headers.h1;
+		if (cell?.kind !== 'string') throw new Error('expected string cell');
+		expect(cell.value).toEqual(['x']);
 	});
 
 	it('remove drops the request', () => {
@@ -72,7 +74,9 @@ describe('request-values slice', () => {
 				value: { kind: 'string', value: ['hello'], enabled: true },
 			}),
 		);
-		expect(next.requests.r1?.headers.h1?.value).toEqual(['hello']);
+		const cell = next.requests.r1?.headers.h1;
+		if (cell?.kind !== 'string') throw new Error('expected string cell');
+		expect(cell.value).toEqual(['hello']);
 		expect(next.requests.r1?.body.type).toBe('none');
 	});
 

@@ -8,11 +8,13 @@ import {
 	setBodyPropertyValue,
 	setBodyValue,
 	setScalarValue,
+	splitRequestIntoSchemaAndValues,
 	toggleScalarEnabled,
 } from '@beak/state/request-values';
-import { emptyProjectValuesFile, projectValuesFileSchema } from '@beak/state/schemas';
+import { projectValuesFileSchema, type ProjectRequestValues } from '@beak/state/schemas';
 import type { ApplicationState } from '@beak/ui/store';
 import { ipcValuesService } from '@beak/ui/lib/ipc';
+import type { Tree, ValidRequestNode } from '@getbeak/types/nodes';
 
 import type { AppStartListening } from '../listener';
 
@@ -44,31 +46,51 @@ function scheduleSave(getState: () => ApplicationState) {
 	}, SAVE_DEBOUNCE_MS);
 }
 
+function isValidRequest(node: Tree[string]): node is ValidRequestNode {
+	return node?.type === 'request' && 'info' in node && Boolean((node as ValidRequestNode).info);
+}
+
+/**
+ * Backfill values for any request in the tree that doesn't yet have an
+ * entry in the loaded values doc. New projects (no `.beak/values.json`)
+ * land in this branch with an empty `loaded` map; pre-existing projects
+ * land with their saved values + any new requests added since the last
+ * save. Either way we end up with values for every request before the UI
+ * starts rendering.
+ */
+function backfillFromTree(tree: Tree, loaded: ProjectRequestValues): ProjectRequestValues {
+	const next: ProjectRequestValues = { ...loaded };
+	for (const node of Object.values(tree)) {
+		if (!isValidRequest(node)) continue;
+		if (next[node.id]) continue;
+		const { values } = splitRequestIntoSchemaAndValues(node.info);
+		next[node.id] = values;
+	}
+	return next;
+}
+
 export function registerRequestValuesEffects(start: AppStartListening) {
 	start({
 		actionCreator: projectOpened,
-		effect: async (_action, api) => {
+		effect: async (action, api) => {
+			let loaded: ProjectRequestValues = {};
+
 			try {
 				const { values } = await ipcValuesService.load();
-				if (values === null) {
-					api.dispatch(hydrateRequestValues({ requests: emptyProjectValuesFile().requests }));
-					return;
+				if (values !== null) {
+					const parsed = projectValuesFileSchema.safeParse(values);
+					if (parsed.success) {
+						loaded = parsed.data.requests as unknown as ProjectRequestValues;
+					} else {
+						console.warn('values.json failed schema validation, ignoring', parsed.error);
+					}
 				}
-
-				const parsed = projectValuesFileSchema.safeParse(values);
-				if (!parsed.success) {
-					// On a corrupt file fall back to an empty hydrate so the renderer
-					// keeps working; the next save will overwrite the bad doc.
-					console.warn('values.json failed schema validation, ignoring', parsed.error);
-					api.dispatch(hydrateRequestValues({ requests: {} }));
-					return;
-				}
-
-				api.dispatch(hydrateRequestValues({ requests: parsed.data.requests }));
 			} catch (error) {
 				console.warn('values.json load failed', error);
-				api.dispatch(hydrateRequestValues({ requests: {} }));
 			}
+
+			const seeded = backfillFromTree(action.payload.tree, loaded);
+			api.dispatch(hydrateRequestValues({ requests: seeded }));
 		},
 	});
 
