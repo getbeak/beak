@@ -17,7 +17,15 @@ const GeneralPane: React.FC<React.PropsWithChildren<unknown>> = () => {
 		setSelectedTheme(themeMode);
 	}
 
-	useEffect(() => void updateSelected(), []);
+	useEffect(() => {
+		let cancelled = false;
+		ipcPreferencesService.getThemeMode().then(themeMode => {
+			if (!cancelled) setSelectedTheme(themeMode);
+		});
+		return () => {
+			cancelled = true;
+		};
+	}, []);
 
 	return (
 		<Pane title={'General'}>
