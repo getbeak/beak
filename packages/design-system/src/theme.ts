@@ -362,17 +362,21 @@ const config = defineConfig({
 			color: 'var(--beak-colors-fg-default)',
 		},
 		'::-webkit-scrollbar': {
-			width: '6px',
-			height: '6px',
+			width: '8px',
+			height: '8px',
 		},
 		'::-webkit-scrollbar-track': {
 			background: 'transparent',
 		},
 		'::-webkit-scrollbar-thumb': {
-			backgroundColor: 'color-mix(in srgb, var(--beak-colors-gray-500) 30%, transparent)',
-			transition: 'background .1s ease',
+			backgroundColor: 'color-mix(in srgb, var(--beak-colors-fg-muted) 22%, transparent)',
+			borderRadius: '4px',
+			border: '2px solid transparent',
+			backgroundClip: 'padding-box',
+			transition: 'background-color .12s ease',
 			'&:hover': {
-				backgroundColor: 'var(--beak-colors-accent-pink)',
+				backgroundColor: 'color-mix(in srgb, var(--beak-colors-accent-pink) 60%, transparent)',
+				backgroundClip: 'padding-box',
 			},
 		},
 		'::-webkit-scrollbar-corner': {
