@@ -41,7 +41,7 @@ export default function renderValueSections(parts: ValueSections, variableSets: 
 						>
 							&nbsp;
 							<span
-								data-tooltip-id={'tt-variable-renderer-extension-missing'}
+								data-tooltip-id={'tt-variables-renderer-extension-missing'}
 								data-tooltip-content={`Missing extension: ${p.type}`}
 							>
 								{'⚠ extension missing'}
