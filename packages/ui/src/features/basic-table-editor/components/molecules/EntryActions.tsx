@@ -22,7 +22,11 @@ const EntryActions: React.FC<EntryActionsProps> = ({ onRemove }) => (
 			color: 'accent.alert',
 			bg: 'color-mix(in srgb, var(--beak-colors-accent-alert) 18%, transparent)',
 		}}
-		_focus={{ outline: 'none', color: 'accent.alert' }}
+		_focusVisible={{
+			outline: 'none',
+			color: 'accent.alert',
+			boxShadow: '0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-alert) 45%, transparent)',
+		}}
 		_active={{ transform: 'scale(0.92)' }}
 		transition='color .12s ease, background-color .12s ease, transform .08s ease'
 		onClick={() => onRemove()}
