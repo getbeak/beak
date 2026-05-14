@@ -26,7 +26,7 @@ const EditorPane: React.FC<React.PropsWithChildren<unknown>> = () => {
 	return (
 		<Pane title={'Rich text editor'}>
 			<ItemGroup>
-				<ItemLabel>{'Theme override:'}</ItemLabel>
+				<ItemLabel>{'Theme override'}</ItemLabel>
 				<SelectContainer>
 					<SelectItem
 						$active={editorPreferences.themeOverride === 'system'}

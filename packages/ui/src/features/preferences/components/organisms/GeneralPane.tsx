@@ -22,7 +22,7 @@ const GeneralPane: React.FC<React.PropsWithChildren<unknown>> = () => {
 	return (
 		<Pane title={'General'}>
 			<ItemGroup>
-				<ItemLabel>{'Theme:'}</ItemLabel>
+				<ItemLabel>{'Theme'}</ItemLabel>
 				<SelectContainer>
 					<SelectItem
 						$active={selectedTheme === 'system'}
