@@ -261,7 +261,20 @@ const VariableSelector: React.FC<React.PropsWithChildren<VariableSelectorProps>>
 									<Box
 										position='absolute'
 										inset='0'
-										bg='color-mix(in srgb, var(--beak-colors-accent-pink) 22%, transparent)'
+										bg='color-mix(in srgb, var(--beak-colors-accent-pink) 18%, transparent)'
+										pointerEvents='none'
+									/>
+								)}
+								{isActive && (
+									<Box
+										position='absolute'
+										top='0'
+										bottom='0'
+										left='0'
+										w='2px'
+										bg='accent.pink'
+										borderTopRightRadius='2px'
+										borderBottomRightRadius='2px'
 										pointerEvents='none'
 									/>
 								)}
