@@ -51,38 +51,78 @@ export default class UnmanagedInput extends React.Component<UnmanagedInputProps>
 					// blob, placeholder, and reset rules actually emit.
 					'& > *': { display: 'inline', whiteSpace: 'nowrap', verticalAlign: 'baseline' },
 					'& br': { display: 'none' },
+					// Caret-landing anchors: the renderer drops zero-width sentinels
+					// next to and between blobs so Chromium has something to draw the
+					// caret against. They contribute no visible glyph; just enough box
+					// for the caret to sit on.
+					'& span[data-anchor]': {
+						display: 'inline-block',
+						verticalAlign: 'middle',
+						width: '0px',
+						minWidth: '1px',
+						lineHeight: 'inherit',
+					},
+					// Base blob — used for generated/computed values (uuid, nonce, hash,
+					// timestamp, …). The `--blob-accent` custom property is recoloured by
+					// the category overrides further down for environment / sensitive /
+					// missing variants. Everything else (gradient, shadow, hover lift)
+					// derives from that variable so the visual language stays consistent.
 					'& .bvs-blob': {
+						'--blob-accent': 'var(--beak-colors-accent-pink)',
 						display: 'inline-block',
 						verticalAlign: 'middle',
 						margin: '0 2px',
 						marginBottom: '0px',
-						padding: '1px 5px',
+						padding: '1px 5px 1px 5px',
 						borderRadius: '5px',
 						fontSize: '10.5px',
 						fontWeight: 500,
+						letterSpacing: '0.005em',
 						lineHeight: '15px',
-						background: 'color-mix(in srgb, var(--beak-colors-accent-pink) 88%, transparent)',
+						background:
+							'linear-gradient(180deg, color-mix(in srgb, var(--blob-accent) 100%, white 8%) 0%, color-mix(in srgb, var(--blob-accent) 88%, transparent) 100%)',
 						color: 'var(--beak-colors-fg-onAccent)',
 						userSelect: 'text',
 						boxShadow:
-							'0 1px 2px color-mix(in srgb, var(--beak-colors-accent-pink) 30%, transparent), inset 0 1px 0 color-mix(in srgb, white 22%, transparent)',
-						transition: 'background-color .14s ease, transform .1s ease, box-shadow .14s ease',
+							'0 1px 2px color-mix(in srgb, var(--blob-accent) 30%, transparent), inset 0 1px 0 color-mix(in srgb, white 22%, transparent)',
+						transition:
+							'background .14s ease, transform .12s cubic-bezier(0.16, 1, 0.3, 1), box-shadow .14s ease, filter .14s ease',
 					},
 					'& .bvs-blob > strong': { fontWeight: 700, letterSpacing: '-0.005em' },
 					'& .bvs-blob[data-editable="true"]': { cursor: 'pointer' },
 					'& .bvs-blob[data-editable="true"]:hover': {
-						background: 'var(--beak-colors-accent-pink)',
+						filter: 'brightness(1.06)',
 						transform: 'translateY(-1px)',
 						boxShadow:
-							'0 2px 6px color-mix(in srgb, var(--beak-colors-accent-pink) 40%, transparent), inset 0 1px 0 color-mix(in srgb, white 28%, transparent)',
+							'0 3px 8px color-mix(in srgb, var(--blob-accent) 42%, transparent), inset 0 1px 0 color-mix(in srgb, white 30%, transparent)',
 					},
+					'& .bvs-blob[data-editable="true"]:active': {
+						transform: 'translateY(0px)',
+						filter: 'brightness(0.95)',
+					},
+					// Environment values resolve per active variable-set; tint indigo so
+					// the user can see at a glance which blobs swap with the environment.
+					'& .bvs-blob[data-category="env"]': {
+						'--blob-accent': 'var(--beak-colors-accent-indigo)',
+					},
+					// Sensitive values (secure, private) wear an amber-warning tint and a
+					// lock-gradient hint so they don't blend with the regular values.
+					'& .bvs-blob[data-sensitive="true"]': {
+						'--blob-accent': 'var(--beak-colors-accent-warning)',
+						color: 'var(--beak-colors-gray-950)',
+						fontWeight: 600,
+					},
+					// Missing variables — extension uninstalled, type unknown. Loud red
+					// fill, no hover lift since clicking won't do anything useful.
 					'& .bvs-blob[data-missing="true"]': {
-						background: 'color-mix(in srgb, var(--beak-colors-accent-alert) 82%, transparent)',
+						'--blob-accent': 'var(--beak-colors-accent-alert)',
 						color: 'var(--beak-colors-fg-onAccent)',
 						fontWeight: 600,
 						letterSpacing: '0.01em',
-						boxShadow:
-							'0 1px 2px color-mix(in srgb, var(--beak-colors-accent-alert) 32%, transparent), inset 0 1px 0 color-mix(in srgb, white 22%, transparent)',
+					},
+					'& .bvs-blob[data-missing="true"]:hover': {
+						transform: 'none',
+						filter: 'brightness(1.02)',
 					},
 				}}
 				onDoubleClick={(event: React.MouseEvent<HTMLElement>) => {
