@@ -32,6 +32,7 @@ const gitReducer = createReducer(initialGitState, builder => {
 			state.selectedBranch = payload.selectedBranch;
 		})
 		.addCase(addBranch, (state, { payload }) => {
+			if (state.branches.some(b => b.name === payload)) return;
 			state.branches.push({ name: payload });
 		})
 		.addCase(removeBranch, (state, { payload }) => {
