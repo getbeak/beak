@@ -26,13 +26,6 @@ const NotificationsItem: React.FC<React.PropsWithChildren<unknown>> = () => {
 		ipcPreferencesService.getNotificationOverview().then(setNotificationPreferences);
 	}
 
-	function setNotificationValue<Key extends keyof NotificationPreferences>(
-		key: Key,
-		value: NotificationPreferences[Key],
-	) {
-		ipcPreferencesService.setNotificationValue(key, value);
-	}
-
 	function updateNotificationPreference<Key extends keyof NotificationPreferences>(
 		key: Key,
 		value: NotificationPreferences[Key],
@@ -66,7 +59,7 @@ const NotificationsItem: React.FC<React.PropsWithChildren<unknown>> = () => {
 				>
 					<NotificationStateSelect
 						value={notificationPreferences.onInformationRequest}
-						onChange={value => setNotificationValue('onInformationRequest', value)}
+						onChange={value => updateNotificationPreference('onInformationRequest', value)}
 					/>
 				</NotificationRow>
 
@@ -77,7 +70,7 @@ const NotificationsItem: React.FC<React.PropsWithChildren<unknown>> = () => {
 				>
 					<NotificationStateSelect
 						value={notificationPreferences.onFailedRequest}
-						onChange={value => setNotificationValue('onFailedRequest', value)}
+						onChange={value => updateNotificationPreference('onFailedRequest', value)}
 					/>
 				</NotificationRow>
 
@@ -87,7 +80,7 @@ const NotificationsItem: React.FC<React.PropsWithChildren<unknown>> = () => {
 						checked={notificationPreferences.showRequestNotificationWhenFocused}
 						label='Show notification banners when Beak has focus'
 						onChange={event =>
-							setNotificationValue('showRequestNotificationWhenFocused', event.currentTarget.checked)
+							updateNotificationPreference('showRequestNotificationWhenFocused', event.currentTarget.checked)
 						}
 					/>
 				</Box>
