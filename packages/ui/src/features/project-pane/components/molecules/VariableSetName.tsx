@@ -1,5 +1,4 @@
 import { Box } from '@chakra-ui/react';
-import ksuid from '@beak/ksuid';
 import ContextMenu from '@beak/ui/components/atoms/ContextMenu';
 import tabActions from '@beak/ui/features/tabs/store/actions';
 import sidebarActions from '@beak/ui/store/preferences/actions';
@@ -21,14 +20,14 @@ export const VariableSetName: React.FC<VariableSetNameProps> = ({ variableSetNam
 	useEffect(() => {
 		setMenuItems([
 			{
-				id: ksuid.generate('ctxmenuitem').toString(),
+				id: 'variable-set-name-ctx:reveal',
 				label: 'Reveal in Sidebar',
 				click: () => {
 					dispatch(sidebarActions.sidebarPreferenceSetSelected('variables'));
 				},
 			},
 			{
-				id: ksuid.generate('ctxmenuitem').toString(),
+				id: 'variable-set-name-ctx:open',
 				label: 'Open in Editor',
 				click: () => {
 					dispatch(tabActions.changeTab({
@@ -39,11 +38,11 @@ export const VariableSetName: React.FC<VariableSetNameProps> = ({ variableSetNam
 				},
 			},
 			{
-				id: ksuid.generate('ctxmenuitem').toString(),
+				id: 'variable-set-name-ctx:sep',
 				type: 'separator',
 			},
 			{
-				id: ksuid.generate('ctxmenuitem').toString(),
+				id: 'variable-set-name-ctx:delete',
 				label: 'Delete',
 				click: () => {
 					dispatch(vgActions.removeVariableSetFromDisk({
@@ -53,12 +52,11 @@ export const VariableSetName: React.FC<VariableSetNameProps> = ({ variableSetNam
 				},
 			},
 		]);
-	}, [variableSetName]);
+	}, [variableSetName, dispatch]);
 
 	return (
 		<ContextMenu menuItems={menuItems} target={targetRef.current ?? undefined}>
 			<Box
-				as='abbr'
 				title={variableSetName}
 				ref={(i: HTMLElement | null) => {
 					targetRef.current = i;
@@ -69,7 +67,6 @@ export const VariableSetName: React.FC<VariableSetNameProps> = ({ variableSetNam
 				overflow='hidden'
 				textOverflow='ellipsis'
 				whiteSpace='nowrap'
-				textDecoration='none'
 				cursor='pointer'
 				transition='color .12s ease'
 				_hover={{ color: 'accent.teal' }}
