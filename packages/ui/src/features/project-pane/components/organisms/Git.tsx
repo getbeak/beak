@@ -11,6 +11,7 @@ const selectStyle: React.CSSProperties = {
 	minWidth: 0,
 	fontSize: '12px',
 	fontWeight: 600,
+	fontFamily: 'var(--beak-fonts-mono)',
 	border: 0,
 	background: 'transparent',
 	color: 'var(--beak-colors-fg-default)',
