@@ -51,13 +51,29 @@ const ViewExtensionError: React.FC<ViewExtensionErrorProps> = props => (
 				mb='3'
 			>
 				<Flex justify='space-between' gap='2'>
-					<Box color='fg.subtle'>{'Name'}</Box>
+					<Box
+						fontSize='10px'
+						fontWeight='700'
+						letterSpacing='0.06em'
+						textTransform='uppercase'
+						color='fg.subtle'
+					>
+						{'Name'}
+					</Box>
 					<Box fontWeight='600' color='fg.default' fontFamily='mono' textAlign='right'>
 						{props.assumedName}
 					</Box>
 				</Flex>
 				<Flex justify='space-between' gap='2'>
-					<Box color='fg.subtle'>{'Path'}</Box>
+					<Box
+						fontSize='10px'
+						fontWeight='700'
+						letterSpacing='0.06em'
+						textTransform='uppercase'
+						color='fg.subtle'
+					>
+						{'Path'}
+					</Box>
 					<Button
 						variant='plain'
 						p='0'
