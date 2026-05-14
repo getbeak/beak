@@ -8,7 +8,7 @@ import { parseValueSections } from '../parser';
 import { getRequestNode } from '../utils/request';
 import { getLatestFlight } from '../utils/response';
 
-const allowedRawJson = ['string', 'bool', 'number'];
+const allowedRawJson = ['string', 'boolean', 'number'];
 
 const definition: EditableVariable<ResponseBodyJsonRtv, ResponseBodyJsonRtv> = {
 	type: 'response_body_json',
@@ -48,7 +48,7 @@ const definition: EditableVariable<ResponseBodyJsonRtv, ResponseBodyJsonRtv> = {
 			return '';
 
 		if (allowedRawJson.includes(typeof resolved))
-			return resolved;
+			return String(resolved);
 
 		return JSON.stringify(resolved);
 	},
