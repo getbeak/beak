@@ -53,6 +53,8 @@ const ProjectLoading: React.FC = () => {
 						w='64px'
 						mx='auto'
 						src='images/logo-tile.png'
+						alt=''
+						aria-hidden
 						mb='5'
 						filter='drop-shadow(0px 8px 24px color-mix(in srgb, var(--beak-colors-accent-pink) 40%, transparent))'
 						style={reduced ? undefined : {

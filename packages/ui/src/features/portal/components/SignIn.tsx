@@ -38,6 +38,8 @@ const SignIn: React.FC = () => {
 				>
 					<Image
 						src='images/logo-tile.png'
+						alt=''
+						aria-hidden
 						w='64px'
 						h='64px'
 						filter='drop-shadow(0px 8px 24px color-mix(in srgb, var(--beak-colors-accent-pink) 35%, transparent))'

@@ -53,6 +53,8 @@ const CreateTrial: React.FC<CreateTrialProps> = ({ onChangeToDefault }) => {
 				>
 					<Image
 						src='images/logo-tile.png'
+						alt=''
+						aria-hidden
 						w='48px'
 						h='48px'
 						mb='2'
