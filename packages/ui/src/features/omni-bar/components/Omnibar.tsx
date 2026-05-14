@@ -185,8 +185,11 @@ const Omnibar: React.FC = () => {
 								css={{
 									'&::-webkit-scrollbar': { width: '6px' },
 									'&::-webkit-scrollbar-thumb': {
-										background: 'color-mix(in srgb, var(--beak-colors-fg-muted) 25%, transparent)',
+										background: 'color-mix(in srgb, var(--beak-colors-fg-muted) 22%, transparent)',
 										borderRadius: '3px',
+									},
+									'&::-webkit-scrollbar-thumb:hover': {
+										background: 'color-mix(in srgb, var(--beak-colors-accent-pink) 55%, transparent)',
 									},
 								}}
 							>
