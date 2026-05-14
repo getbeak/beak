@@ -211,6 +211,7 @@ const INPUT_STYLE = (center?: boolean): React.CSSProperties => ({
 	border: '1px solid transparent',
 	borderRadius: '4px',
 	color: 'var(--beak-colors-fg-default)',
+	caretColor: 'var(--beak-colors-accent-pink)',
 	fontSize: '13px',
 	fontWeight: 500,
 	textAlign: center ? 'center' : 'inherit',
