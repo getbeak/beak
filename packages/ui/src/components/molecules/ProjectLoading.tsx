@@ -30,6 +30,9 @@ const ProjectLoading: React.FC = () => {
 
 	return (
 		<Flex
+			role='status'
+			aria-live='polite'
+			aria-label='Loading project'
 			position='absolute'
 			inset='0'
 			zIndex={100}
