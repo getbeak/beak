@@ -179,7 +179,7 @@ const Header: React.FC<HeaderProps> = ({ selectedFlight }) => {
 					}}
 				>
 					<XCircle size={12} strokeWidth={2.2} />
-					<Box as='span' fontWeight='700' letterSpacing='0.04em' textTransform='uppercase' fontSize='10px'>{'Error'}</Box>
+					<Box as='span' fontWeight='700' letterSpacing='0.06em' textTransform='uppercase' fontSize='10px'>{'Error'}</Box>
 				</Flex>
 			)}
 		</MotionFlex>
