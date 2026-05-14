@@ -22,6 +22,9 @@ interface SidebarItemProps {
 
 const SidebarItem: React.FC<SidebarItemProps> = ({ active, icon, label, onClick }) => (
 	<Flex
+		role='tab'
+		tabIndex={0}
+		aria-selected={active}
 		align='center'
 		gap='2.5'
 		w='100%'
@@ -40,10 +43,22 @@ const SidebarItem: React.FC<SidebarItemProps> = ({ active, icon, label, onClick 
 			bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 12%, transparent)',
 			color: 'accent.pink',
 		}}
+		_focusVisible={{
+			outline: 'none',
+			boxShadow: active
+				? '0 4px 14px color-mix(in srgb, var(--beak-colors-accent-pink) 35%, transparent), 0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-pink) 55%, transparent)'
+				: '0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-pink) 45%, transparent)',
+		}}
 		_active={{ transform: 'scale(0.99)' }}
 		_last={{ mb: '0' }}
 		css={{ '> svg': { width: '15px !important', height: '15px !important', flexShrink: 0 } }}
 		onClick={onClick}
+		onKeyDown={(event: React.KeyboardEvent) => {
+			if (event.key === 'Enter' || event.key === ' ') {
+				event.preventDefault();
+				onClick();
+			}
+		}}
 	>
 		{icon}
 		<span>{label}</span>
