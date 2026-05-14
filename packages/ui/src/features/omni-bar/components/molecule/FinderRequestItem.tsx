@@ -14,7 +14,13 @@ const FinderRequestItem: React.FC<FinderRequestItemProps> = ({ context, info }) 
 	const [uri, setUri] = useState('');
 
 	useEffect(() => {
-		convertRequestToUrl(context, info).then(s => setUri(s.toString()));
+		let cancelled = false;
+		convertRequestToUrl(context, info).then(s => {
+			if (!cancelled) setUri(s.toString());
+		});
+		return () => {
+			cancelled = true;
+		};
 	}, [context, info]);
 
 	return (

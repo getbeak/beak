@@ -29,7 +29,13 @@ const Header: React.FC<HeaderProps> = ({ selectedFlight }) => {
 	const [justCopied, setJustCopied] = useState(false);
 
 	useEffect(() => {
-		convertRequestToUrl(context, request).then(s => setUrl(s.toString()));
+		let cancelled = false;
+		convertRequestToUrl(context, request).then(s => {
+			if (!cancelled) setUrl(s.toString());
+		});
+		return () => {
+			cancelled = true;
+		};
 	}, [context, request]);
 
 	const verb = request.verb.toUpperCase();
