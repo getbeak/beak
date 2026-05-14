@@ -212,7 +212,7 @@ const CommandsView: React.FC<React.PropsWithChildren<CommandsViewProps>> = ({ co
 				const ids = groups.get(cat)!;
 				return (
 					<Box key={cat} mb={ci === orderedCats.length - 1 ? '0' : '1'}>
-						<Box px='3' pt='1.5' pb='0.5' fontSize='9px' fontWeight='700' color='fg.subtle' letterSpacing='0.06em' textTransform='uppercase'>
+						<Box px='3' pt='2' pb='0.5' fontSize='9px' fontWeight='700' color='accent.pink' letterSpacing='0.08em' textTransform='uppercase'>
 							{cat}
 						</Box>
 						{ids.map(id => {
