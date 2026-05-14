@@ -222,6 +222,8 @@ const VariableSelector: React.FC<React.PropsWithChildren<VariableSelectorProps>>
 			}}
 		>
 			<motion.div
+				role='listbox'
+				aria-label='Variable suggestions'
 				initial={{ opacity: 0, scale: 0.96, y: -4 }}
 				animate={{ opacity: 1, scale: 1, y: 0 }}
 				exit={{ opacity: 0, scale: 0.96, y: -4 }}
@@ -266,6 +268,8 @@ const VariableSelector: React.FC<React.PropsWithChildren<VariableSelectorProps>>
 								ref={(el: HTMLDivElement | null) => {
 									if (isActive) activeRef.current = el;
 								}}
+								role='option'
+								aria-selected={isActive}
 								tabIndex={0}
 								position='relative'
 								px='2'
