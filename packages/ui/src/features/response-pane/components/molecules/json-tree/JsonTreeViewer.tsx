@@ -173,6 +173,11 @@ const JsonTreeViewer: React.FC<JsonTreeViewerProps> = ({ value }) => {
 					cursor='pointer'
 					transition='color .12s ease, background-color .12s ease'
 					_hover={{ color: 'accent.pink', bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 12%, transparent)' }}
+					_focusVisible={{
+						outline: 'none',
+						color: 'accent.pink',
+						boxShadow: '0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-pink) 35%, transparent)',
+					}}
 					onClick={expandAll}
 				>
 					<ChevronsUpDown size={10} strokeWidth={2.2} />
@@ -196,6 +201,11 @@ const JsonTreeViewer: React.FC<JsonTreeViewerProps> = ({ value }) => {
 					cursor='pointer'
 					transition='color .12s ease, background-color .12s ease'
 					_hover={{ color: 'accent.pink', bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 12%, transparent)' }}
+					_focusVisible={{
+						outline: 'none',
+						color: 'accent.pink',
+						boxShadow: '0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-pink) 35%, transparent)',
+					}}
 					onClick={collapseAll}
 				>
 					<ChevronsDownUp size={10} strokeWidth={2.2} />
