@@ -49,7 +49,7 @@ const InfoCard: React.FC = () => {
 				</SubTitle>
 				<Box mt='5'>
 					<CtaButton
-						$style='primary'
+						tone='primary'
 						onClick={() => {
 							window.location.href = beakUrl;
 						}}

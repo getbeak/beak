@@ -2,7 +2,7 @@ import { Box, type BoxProps } from '@chakra-ui/react';
 import * as React from 'react';
 
 interface CtaButtonProps extends Omit<BoxProps, 'as'> {
-	$style: 'primary' | 'secondary' | 'tertiary';
+	tone: 'primary' | 'secondary' | 'tertiary';
 	href?: string;
 }
 
@@ -24,12 +24,15 @@ const STYLES = {
 	},
 } as const;
 
-const CtaButton: React.FC<CtaButtonProps> = ({ $style, children, ...rest }) => {
-	const s = STYLES[$style];
+const CtaButton: React.FC<CtaButtonProps> = ({ tone, children, href, ...rest }) => {
+	const s = STYLES[tone];
 	return (
 		<Box
-			as='a'
+			as={href ? 'a' : 'button'}
+			type={href ? undefined : 'button'}
+			href={href}
 			display='inline-block'
+			borderWidth='0'
 			borderRadius='md'
 			color='fg.onAccent'
 			px='3.5'
@@ -50,6 +53,10 @@ const CtaButton: React.FC<CtaButtonProps> = ({ $style, children, ...rest }) => {
 				boxShadow: `0 10px 26px ${s.haloHover}, inset 0 1px 0 color-mix(in srgb, white 26%, transparent)`,
 			}}
 			_active={{ transform: 'translateY(0) scale(0.97)' }}
+			_focusVisible={{
+				outline: 'none',
+				boxShadow: `0 0 0 3px ${s.haloHover}, 0 6px 18px ${s.halo}, inset 0 1px 0 color-mix(in srgb, white 22%, transparent)`,
+			}}
 			{...rest}
 		>
 			{children}
