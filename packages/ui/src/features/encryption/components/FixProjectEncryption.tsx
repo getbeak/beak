@@ -21,7 +21,7 @@ const FixProjectEncryption: React.FC<FixProjectEncryptionProps> = ({ onClose }) 
 	const [error, setError] = useState('');
 	const [disable, setDisable] = useState(false);
 
-	function submit() {
+	async function submit() {
 		if (key === '' || disable) return;
 
 		if (!base64regex.test(key)) {
@@ -31,11 +31,14 @@ const FixProjectEncryption: React.FC<FixProjectEncryptionProps> = ({ onClose }) 
 
 		setDisable(true);
 
-		ipcEncryptionService
-			.submitKey({ key })
-			.catch(() => setError('Unknown error saving encryption key'))
-			.then(() => onClose(true))
-			.finally(() => setDisable(false));
+		try {
+			await ipcEncryptionService.submitKey({ key });
+			onClose(true);
+		} catch {
+			setError('Unknown error saving encryption key');
+		} finally {
+			setDisable(false);
+		}
 	}
 
 	return (
@@ -84,7 +87,7 @@ const FixProjectEncryption: React.FC<FixProjectEncryptionProps> = ({ onClose }) 
 							if (error) setError('');
 							setKey(e.currentTarget.value);
 						}}
-						onKeyPress={e => {
+						onKeyDown={e => {
 							if (e.key === 'Enter') submit();
 						}}
 					/>
