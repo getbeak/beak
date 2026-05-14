@@ -116,7 +116,10 @@ function renderFormat(language: string | null, contentType: string | null, body:
 					bgPos='center'
 					bgSize='contain'
 					bgRepeat='no-repeat'
-					style={{ backgroundImage: `url(${blob})` }}
+					bg='color-mix(in srgb, var(--beak-colors-bg-canvas) 80%, transparent)'
+					style={{
+						backgroundImage: `radial-gradient(circle at center, transparent 50%, color-mix(in srgb, var(--beak-colors-bg-canvas) 35%, transparent) 100%), url(${blob})`,
+					}}
 				/>
 			);
 		}
