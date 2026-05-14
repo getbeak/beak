@@ -116,7 +116,19 @@ const NotificationRow: React.FC<NotificationRowProps> = ({ icon, iconColor, labe
 		</Flex>
 		<Box flex='1 1 auto' minW={0}>
 			<Box fontSize='xs' fontWeight='600' color='fg.default'>{label}</Box>
-			{hint && <Box fontSize='10px' color='fg.subtle' mt='0.5'>{hint}</Box>}
+			{hint && (
+				<Box
+					fontSize='10px'
+					fontWeight='600'
+					fontFamily='mono'
+					letterSpacing='0.02em'
+					color='fg.subtle'
+					mt='0.5'
+					style={{ fontVariantNumeric: 'tabular-nums' }}
+				>
+					{hint}
+				</Box>
+			)}
 		</Box>
 		<Box flex='0 0 auto' minW='160px'>
 			{children}
