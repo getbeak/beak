@@ -1,5 +1,4 @@
 import { TypedObject } from '@beak/common/helpers/typescript';
-import ksuid from '@beak/ksuid';
 import EditorView from '@beak/ui/components/atoms/EditorView';
 import BasicTableEditor from '@beak/ui/features/basic-table-editor/components/BasicTableEditor';
 import binaryStore from '@beak/ui/lib/binary-store';
@@ -7,7 +6,7 @@ import { requestPreferenceSetResSubTab } from '@beak/ui/store/preferences/action
 import { useAppSelector } from '@beak/ui/store/redux';
 import type { Flight } from '@getbeak/types/flight';
 import { Box, Flex } from '@chakra-ui/react';
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
 
 import TabBar from '../../../../components/atoms/TabBar';
@@ -30,19 +29,21 @@ const ResponseTab: React.FC<React.PropsWithChildren<ResponseTabProps>> = props =
 	const hasErrored = Boolean(error);
 	const tab = useAppSelector(s => s.global.preferences.requests[requestId]?.response.subTab.response) as Tab | undefined;
 
-	function convertHeaderFormat() {
-		return Object.keys(flight.response!.headers).reduce(
-			(acc, val) => ({
+	const headerItems = useMemo(() => {
+		if (!flight.response) return {};
+		const headers = flight.response.headers;
+		return Object.keys(headers).reduce(
+			(acc, name, idx) => ({
 				...acc,
-				[ksuid.generate('header').toString()]: {
-					name: val,
-					value: [flight.response!.headers[val]],
+				[`header-${idx}-${name.toLowerCase()}`]: {
+					name,
+					value: [headers[name]],
 					enabled: true,
 				},
 			}),
 			{},
 		);
-	}
+	}, [flight.response]);
 
 	// Ensure we have a valid tab
 	useEffect(() => {
@@ -54,7 +55,7 @@ const ResponseTab: React.FC<React.PropsWithChildren<ResponseTabProps>> = props =
 
 		if (!tab || !tabs.includes(tab))
 			dispatch(requestPreferenceSetResSubTab({ id: requestId, tab: 'response', subTab: 'pretty' }));
-	}, [tab, flight.flightId]);
+	}, [tab, flight.flightId, hasErrored, requestId, dispatch]);
 
 	function setTab(tab: Tab) {
 		dispatch(requestPreferenceSetResSubTab({ id: requestId, tab: 'response', subTab: tab }));
@@ -81,7 +82,7 @@ const ResponseTab: React.FC<React.PropsWithChildren<ResponseTabProps>> = props =
 			</TabBar>
 
 			<Box flexGrow={2} overflowY='hidden' h='100%'>
-				{tab === 'headers' && <BasicTableEditor items={convertHeaderFormat()} readOnly />}
+				{tab === 'headers' && <BasicTableEditor items={headerItems} readOnly />}
 				{tab === 'pretty' && <PrettyViewer flight={flight} mode={'response'} />}
 				{tab === 'raw' && (
 					<React.Fragment>
