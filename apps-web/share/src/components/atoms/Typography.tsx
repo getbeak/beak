@@ -3,7 +3,9 @@ import { chakra } from '@chakra-ui/react';
 export const Title = chakra('div', {
 	base: {
 		fontSize: '30px',
-		fontWeight: 'bold',
+		fontWeight: '700',
+		letterSpacing: '-0.02em',
+		lineHeight: '1.1',
 		color: 'fg.default',
 	},
 });
@@ -11,8 +13,9 @@ export const Title = chakra('div', {
 export const TitleSubtle = chakra('div', {
 	base: {
 		fontSize: '2xl',
-		fontWeight: 'bold',
-		lineHeight: '24px',
+		fontWeight: '600',
+		letterSpacing: '-0.01em',
+		lineHeight: '1.2',
 		color: 'fg.muted',
 	},
 });
@@ -21,6 +24,7 @@ export const SubTitle = chakra('div', {
 	base: {
 		fontSize: 'xl',
 		mt: '1.5',
+		lineHeight: '1.5',
 		color: 'fg.muted',
 	},
 });
