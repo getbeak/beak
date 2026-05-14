@@ -83,8 +83,8 @@ const FlightInProgress: React.FC<FlightInProgressProps> = ({ currentFlight, requ
 							<Box fontSize='sm' fontWeight='600' color='fg.default' letterSpacing='-0.005em'>
 								{'Sending request…'}
 							</Box>
-							<Box fontSize='10px' color='fg.subtle' letterSpacing='0.08em' textTransform='uppercase' fontWeight='700'>
-								{'awaiting response'}
+							<Box fontSize='10px' color='accent.pink' letterSpacing='0.08em' textTransform='uppercase' fontWeight='700'>
+								{'Awaiting response'}
 							</Box>
 						</Flex>
 					</Flex>
