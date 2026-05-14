@@ -85,6 +85,7 @@ const About: React.FC = () => {
 				<AccountItem />
 				<Box h='2.5' />
 				<Box
+					id='preferences-section-heading'
 					mb='1.5'
 					fontSize='10px'
 					fontWeight='700'
@@ -95,6 +96,7 @@ const About: React.FC = () => {
 				>
 					{'Settings'}
 				</Box>
+				<Box role='tablist' aria-labelledby='preferences-section-heading'>
 				<SidebarItem
 					active={tab === 'general'}
 					icon={<AppWindow color={tab === 'general' ? blankFill : primaryFill} />}
@@ -119,9 +121,10 @@ const About: React.FC = () => {
 					label='Shhh…'
 					onClick={() => setTab('engineering')}
 				/>
+				</Box>
 			</Box>
 			<Box bg='linear-gradient(to bottom, transparent, color-mix(in srgb, var(--beak-colors-border-default) 70%, transparent) 12%, color-mix(in srgb, var(--beak-colors-border-default) 70%, transparent) 88%, transparent)' />
-			<Box bg='bg.canvas'>
+			<Box role='tabpanel' bg='bg.canvas'>
 				{tab === 'general' && <GeneralPane />}
 				{tab === 'editor' && <EditorPane />}
 				{tab === 'subscription' && <SubscriptionPane />}
