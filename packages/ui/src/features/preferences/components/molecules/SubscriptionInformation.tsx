@@ -31,18 +31,22 @@ const SubscriptionInformation: React.FC<SubscriptionInformationProps> = ({ subsc
 			css={{ borderLeft: '3px solid var(--beak-colors-accent-pink)' }}
 		>
 			<Box
+				role='img'
+				aria-label='Beak logo'
 				flex='0 0 auto'
 				borderRadius='full'
 				w='52px'
 				h='52px'
-				bg='color-mix(in srgb, var(--beak-colors-accent-pink) 12%, var(--beak-colors-bg-canvas))'
-				bgImage="url('images/logo.svg')"
-				bgRepeat='no-repeat'
-				bgPos='center'
-				bgSize='30px'
+				bgColor='color-mix(in srgb, var(--beak-colors-accent-pink) 12%, var(--beak-colors-bg-canvas))'
 				borderWidth='1px'
 				borderColor='color-mix(in srgb, var(--beak-colors-accent-pink) 30%, var(--beak-colors-border-subtle))'
-				boxShadow='0 6px 18px color-mix(in srgb, var(--beak-colors-accent-pink) 24%, transparent), inset 0 1px 0 color-mix(in srgb, white 22%, transparent)'
+				style={{
+					backgroundImage: "url('images/logo.svg')",
+					backgroundRepeat: 'no-repeat',
+					backgroundPosition: 'center',
+					backgroundSize: '30px',
+					boxShadow: '0 6px 18px color-mix(in srgb, var(--beak-colors-accent-pink) 24%, transparent), inset 0 1px 0 color-mix(in srgb, white 22%, transparent)',
+				}}
 			/>
 			<Box flex='1 1 auto' minW={0}>
 				<Box
