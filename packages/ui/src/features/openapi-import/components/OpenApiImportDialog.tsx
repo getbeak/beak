@@ -144,7 +144,7 @@ const OpenApiImportDialog: React.FC = () => {
 							</Box>
 
 							<Box mb='2'>
-								<Box fontSize='10px' fontWeight='600' textTransform='uppercase' letterSpacing='0.06em' color='fg.subtle' mb='1'>
+								<Box fontSize='10px' fontWeight='700' textTransform='uppercase' letterSpacing='0.06em' color='accent.pink' mb='1'>
 									{'Target folder'}
 								</Box>
 								<Input
@@ -169,7 +169,7 @@ const OpenApiImportDialog: React.FC = () => {
 
 							{folders.length > 0 && (
 								<Box mt='3'>
-									<Box fontSize='10px' fontWeight='700' textTransform='uppercase' letterSpacing='0.06em' color='fg.subtle' mb='1.5'>
+									<Box fontSize='10px' fontWeight='700' textTransform='uppercase' letterSpacing='0.06em' color='accent.pink' mb='1.5'>
 										{'Existing folders'}
 									</Box>
 									<Box
