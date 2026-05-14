@@ -1,5 +1,5 @@
 import { Box, Flex, Image } from '@chakra-ui/react';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 
@@ -9,6 +9,7 @@ import RequestMagicLink from './organisms/RequestMagicLink';
 type Mode = 'request_magic_link' | 'use_magic_link';
 
 const SignIn: React.FC = () => {
+	const reduced = useReducedMotion();
 	const [email, setEmail] = useState('');
 	const [mode, setMode] = useState<Mode>('request_magic_link');
 	const [inboundState, setInboundState] = useState<MagicState | undefined>(void 0);
@@ -40,7 +41,7 @@ const SignIn: React.FC = () => {
 						w='64px'
 						h='64px'
 						filter='drop-shadow(0px 8px 24px color-mix(in srgb, var(--beak-colors-accent-pink) 35%, transparent))'
-						style={{ animation: 'beakLogoFloat 4s ease-in-out infinite' }}
+						style={reduced ? undefined : { animation: 'beakLogoFloat 4s ease-in-out infinite' }}
 					/>
 				</motion.div>
 				<Box

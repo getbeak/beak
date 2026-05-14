@@ -1,12 +1,13 @@
 import { Box, Flex, Image } from '@chakra-ui/react';
 import { renderPlainTextDefinition } from '@beak/ui/utils/keyboard-rendering';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 
 import MeshGradient from './MeshGradient';
 
 const ProjectLoading: React.FC = () => {
+	const reduced = useReducedMotion();
 	const hints: string[] = [
 		`Collapse the sidebar by pressing ${renderPlainTextDefinition('sidebar.toggle-view')}`,
 		'Variables make request bodies dynamic',
@@ -51,7 +52,7 @@ const ProjectLoading: React.FC = () => {
 						src='images/logo-tile.png'
 						mb='5'
 						filter='drop-shadow(0px 8px 24px color-mix(in srgb, var(--beak-colors-accent-pink) 40%, transparent))'
-						style={{
+						style={reduced ? undefined : {
 							animation: 'beakLogoFloat 4s ease-in-out infinite',
 						}}
 					/>
