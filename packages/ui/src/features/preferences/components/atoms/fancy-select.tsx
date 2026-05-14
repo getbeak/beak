@@ -72,7 +72,7 @@ export const SelectItemPreview: React.FC<SelectItemPreviewProps> = ({
 				height: 56,
 				borderRadius: 6,
 				border: '1px solid var(--beak-colors-border-subtle)',
-				boxShadow: '0 4px 14px rgba(0,0,0,0.25)',
+				boxShadow: '0 4px 14px rgba(0,0,0,0.25), inset 0 1px 0 color-mix(in srgb, white 14%, transparent)',
 				backgroundImage: `url('images/${$themeType === 'editor' ? 'editor-' : ''}theme-switcher/${$themeMode}.jpg')`,
 				backgroundPosition: 'center',
 				backgroundSize: 'cover',
