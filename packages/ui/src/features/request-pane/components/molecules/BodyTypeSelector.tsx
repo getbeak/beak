@@ -77,10 +77,10 @@ const BodyTypeSelector: React.FC<BodyTypeSelectorProps> = ({
 						cursor='pointer'
 						fontSize='xs'
 						fontWeight={active ? '600' : '500'}
-						color={active ? 'white' : 'fg.muted'}
+						color={active ? 'fg.onAccent' : 'fg.muted'}
 						transition='background-color .14s ease, color .14s ease, box-shadow .14s ease, transform .08s ease'
 						_hover={{
-							color: active ? 'white' : 'accent.pink',
+							color: active ? 'fg.onAccent' : 'accent.pink',
 							bg: active
 								? 'accent.pink'
 								: 'color-mix(in srgb, var(--beak-colors-accent-pink) 12%, transparent)',
