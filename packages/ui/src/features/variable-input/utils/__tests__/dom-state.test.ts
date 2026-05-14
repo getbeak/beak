@@ -87,4 +87,29 @@ describe('parseDomState', () => {
 		expect(parts[1]).toEqual({ type: 'uuid', payload: {} });
 		expect(parts[2]).toBe('b');
 	});
+
+	it('strips the zero-width caret anchor from string parts', () => {
+		const root = makeRoot('<span data-index="0">​hello​</span>');
+		expect(parseDomState(root).valueParts).toEqual(['hello']);
+	});
+
+	it('skips an untouched tail caret anchor', () => {
+		const root = makeRoot('<div data-type="uuid" data-payload="{}"></div><span data-anchor="tail">​</span>');
+		expect(parseDomState(root).valueParts).toEqual([{ type: 'uuid', payload: {} }]);
+	});
+
+	it('treats a typed-into tail anchor as a normal string part', () => {
+		const root = makeRoot('<div data-type="uuid" data-payload="{}"></div><span data-anchor="tail">​/profile</span>');
+		expect(parseDomState(root).valueParts).toEqual([{ type: 'uuid', payload: {} }, '/profile']);
+	});
+
+	it('skips a gap anchor between two consecutive blobs', () => {
+		const root = makeRoot(
+			'<div data-type="uuid" data-payload="{}"></div><span data-anchor="gap">​</span><div data-type="nonce" data-payload="{}"></div>',
+		);
+		expect(parseDomState(root).valueParts).toEqual([
+			{ type: 'uuid', payload: {} },
+			{ type: 'nonce', payload: {} },
+		]);
+	});
 });

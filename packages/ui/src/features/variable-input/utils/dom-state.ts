@@ -35,10 +35,12 @@ export function parseDomState(root: HTMLElement | null, opts: ParseDomStateOptio
 	Array.from(children).forEach(n => {
 		// Simple text content (text node or SPAN).
 		if (n.nodeName === '#text' || n.nodeName === 'SPAN') {
-			// Normalize NBSPs to regular spaces.
-			let originalTextContent = (n.textContent || '').replaceAll(/(?:[ ]+)/g, substring =>
-				new Array(substring.length).fill(' ').join(''),
-			);
+			// Normalize NBSPs to regular spaces; strip the zero-width caret
+			// anchor sentinel the renderer drops to keep the caret visible
+			// next to `contenteditable=false` blobs.
+			let originalTextContent = (n.textContent || '')
+				.replaceAll(/​/g, '')
+				.replaceAll(/(?:[ ]+)/g, substring => new Array(substring.length).fill(' ').join(''));
 
 			// Detect inline `?` — caller routes to the query editor.
 			if (opts.onUrlQueryStringDetection && originalTextContent.includes('?')) {
@@ -50,6 +52,13 @@ export function parseDomState(root: HTMLElement | null, opts: ParseDomStateOptio
 				opts.onUrlQueryStringDetection();
 				opts.onQueryStringBlur?.();
 			}
+
+			// Synthetic gap/tail caret anchors hold no user content unless typed
+			// into. If untouched (post-strip empty), skip so the parts array
+			// round-trips; if typed into, treat as a normal string part.
+			const elem = n as HTMLElement;
+			const anchor = elem.nodeName === 'SPAN' ? elem.dataset?.anchor : void 0;
+			if ((anchor === 'gap' || anchor === 'tail') && originalTextContent.length === 0) return;
 
 			reconciledParts.push(originalTextContent);
 			return;

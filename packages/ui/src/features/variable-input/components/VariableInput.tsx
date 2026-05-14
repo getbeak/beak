@@ -214,9 +214,10 @@ const VariableInput = React.forwardRef<HTMLElement, VariableInputProps>((props, 
 		Array.from(children).forEach(n => {
 			// Detect simple text content
 			if (n.nodeName === '#text' || n.nodeName === 'SPAN') {
-				let originalTextContent = (n.textContent || '').replaceAll(/(?:[\u00a0]+)/g, substring =>
-					new Array(substring.length).fill(' ').join(''),
-				);
+				let originalTextContent = (n.textContent || '')
+					// Strip zero-width caret anchors emitted by the renderer.
+					.replaceAll(/\u200b/g, '')
+					.replaceAll(/(?:[\u00a0]+)/g, substring => new Array(substring.length).fill(' ').join(''));
 
 				// Handle optional query string detection here
 				// TODO(afr): Pass query body back to parent component
@@ -229,6 +230,13 @@ const VariableInput = React.forwardRef<HTMLElement, VariableInputProps>((props, 
 					props.onUrlQueryStringDetection();
 					editableRef.current?.blur();
 				}
+
+				// Synthetic gap/tail anchors hold no user content unless typed
+				// into. If untouched (post-strip empty), skip so the parts array
+				// round-trips. If typed into, treat as a normal string part.
+				const elem = n as HTMLElement;
+				const anchor = elem.nodeName === 'SPAN' ? elem.dataset?.anchor : void 0;
+				if ((anchor === 'gap' || anchor === 'tail') && originalTextContent.length === 0) return;
 
 				reconciledParts.push(originalTextContent);
 
