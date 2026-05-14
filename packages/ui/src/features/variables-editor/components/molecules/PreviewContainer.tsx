@@ -41,7 +41,15 @@ const PreviewContainer: React.FC<PreviewContainerProps> = ({ text }) => (
 			>
 				<Eye size={10} strokeWidth={2.2} />
 			</Flex>
-			<Box as='span' textTransform='uppercase' fontSize='9px' fontWeight='700' letterSpacing='0.06em' fontFamily='body' color='accent.pink'>
+			<Box
+				as='span'
+				textTransform='uppercase'
+				fontSize='9px'
+				fontWeight='700'
+				letterSpacing='0.06em'
+				fontFamily='body'
+				color='accent.pink'
+			>
 				{'Preview'}
 			</Box>
 		</Flex>
