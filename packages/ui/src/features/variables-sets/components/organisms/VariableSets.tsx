@@ -42,7 +42,7 @@ const VariableSets: React.FC<React.PropsWithChildren<unknown>> = () => {
 	function generateContextMenu(node: TreeViewItem): MenuItemConstructorOptions[] {
 		return [{
 			id: ksuid.generate('ctxmenuitem').toString(),
-			label: 'New variable group',
+			label: 'New Variable Group',
 			click: () => {
 				dispatch(actions.createNewVariableSet({ }));
 			},
@@ -65,13 +65,13 @@ const VariableSets: React.FC<React.PropsWithChildren<unknown>> = () => {
 
 		{
 			id: ksuid.generate('ctxmenuitem').toString(),
-			label: 'Copy path',
+			label: 'Copy Path',
 			enabled: node.id !== 'root',
 			click: () => ipcExplorerService.copyFullNodePath(node.filePath),
 		},
 		{
 			id: ksuid.generate('ctxmenuitem').toString(),
-			label: 'Copy relative path',
+			label: 'Copy Relative Path',
 			enabled: node.id !== 'root',
 			click: () => navigator.clipboard.writeText(node.filePath),
 		},

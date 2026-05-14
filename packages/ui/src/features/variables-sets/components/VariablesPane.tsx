@@ -19,7 +19,7 @@ const VariablesPane: React.FC<React.PropsWithChildren<unknown>> = () => {
 				disableCollapse
 				actions={[{
 					id: ksuid.generate('ctxmenuitem').toString(),
-					label: 'New variable set',
+					label: 'New Variable Set',
 					click: () => {
 						dispatch(actions.createNewVariableSet({ }));
 						dispatch(changeTab({

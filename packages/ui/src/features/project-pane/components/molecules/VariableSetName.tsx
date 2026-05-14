@@ -22,14 +22,14 @@ export const VariableSetName: React.FC<VariableSetNameProps> = ({ variableSetNam
 		setMenuItems([
 			{
 				id: ksuid.generate('ctxmenuitem').toString(),
-				label: 'Reveal in sidebar',
+				label: 'Reveal in Sidebar',
 				click: () => {
 					dispatch(sidebarActions.sidebarPreferenceSetSelected('variables'));
 				},
 			},
 			{
 				id: ksuid.generate('ctxmenuitem').toString(),
-				label: 'Open in editor',
+				label: 'Open in Editor',
 				click: () => {
 					dispatch(tabActions.changeTab({
 						type: 'variable_set_editor',
