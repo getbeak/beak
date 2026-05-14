@@ -143,6 +143,10 @@ const TabItem = <T = string>(props: React.PropsWithChildren<TabItemProps<T>>): R
 			{onClose && (
 				<Box
 					as='span'
+					role='button'
+					tabIndex={-1}
+					aria-label='Close tab'
+					title='Close tab'
 					position='relative'
 					display='inline-flex'
 					alignItems='center'
