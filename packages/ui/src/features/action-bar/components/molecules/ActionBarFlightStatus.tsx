@@ -38,6 +38,7 @@ const ActionBarFlightStatus: React.FC = () => {
 				const failure = flightStatus.httpStatus > 399;
 				const tooltipId = failure ? 'tt-action-bar-flight-status-server-failed' : 'tt-action-bar-flight-status-success';
 				const Icon = failure ? CircleX : CircleCheck;
+				const statusColor = statusToColor(flightStatus.httpStatus);
 				return (
 					<motion.div
 						key={`complete-${flightStatus.httpStatus}`}
@@ -45,9 +46,12 @@ const ActionBarFlightStatus: React.FC = () => {
 						animate={{ opacity: 1, scale: 1 }}
 						exit={{ opacity: 0, scale: 0.8 }}
 						transition={{ type: 'spring', stiffness: 700, damping: 26 }}
-						style={{ display: 'inline-flex' }}
+						style={{
+							display: 'inline-flex',
+							filter: `drop-shadow(0 0 4px color-mix(in srgb, ${statusColor} 50%, transparent))`,
+						}}
 					>
-						<Icon id={tooltipId} color={statusToColor(flightStatus.httpStatus)} tabIndex={-1}
+						<Icon id={tooltipId} color={statusColor} tabIndex={-1}
 							size={14} />
 					</motion.div>
 				);
@@ -61,7 +65,10 @@ const ActionBarFlightStatus: React.FC = () => {
 						animate={{ opacity: 1, scale: 1 }}
 						exit={{ opacity: 0, scale: 0.8 }}
 						transition={{ type: 'spring', stiffness: 700, damping: 26 }}
-						style={{ display: 'inline-flex' }}
+						style={{
+							display: 'inline-flex',
+							filter: 'drop-shadow(0 0 4px color-mix(in srgb, var(--beak-colors-accent-alert) 50%, transparent))',
+						}}
 					>
 						<CircleX
 							id='tt-action-bar-flight-status-failed'
