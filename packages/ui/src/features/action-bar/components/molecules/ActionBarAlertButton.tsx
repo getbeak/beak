@@ -48,6 +48,8 @@ const ActionBarAlertButton: React.FC<ActionBarAlertButtonProps> = ({ id }) => {
 						bg='accent.alert'
 						color='fg.onAccent'
 						pointerEvents='none'
+						style={{ fontVariantNumeric: 'tabular-nums' }}
+						boxShadow='0 0 0 1.5px var(--beak-colors-bg-canvas), 0 3px 8px color-mix(in srgb, var(--beak-colors-accent-alert) 40%, transparent)'
 					>
 						{alertCount > 9 ? '9+' : alertCount}
 					</MotionBox>
