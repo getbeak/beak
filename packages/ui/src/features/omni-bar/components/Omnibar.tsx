@@ -24,7 +24,10 @@ const Omnibar: React.FC = () => {
 	useEffect(() => {
 		window.addEventListener('keydown', onKeyDown);
 		return () => window.removeEventListener('keydown', onKeyDown);
-	}, []);
+		// onKeyDown closes over `open` — re-register when it flips so the
+		// shortcut sees current state rather than the initial `false`.
+		// biome-ignore lint/correctness/useExhaustiveDependencies: see comment
+	}, [open]);
 
 	useEffect(() => {
 		if (open) inputRef?.current?.focus();
