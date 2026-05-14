@@ -267,8 +267,11 @@ const VariableSelector: React.FC<React.PropsWithChildren<VariableSelectorProps>>
 								py='1'
 								cursor='pointer'
 								color={isActive ? 'fg.default' : 'fg.muted'}
-								transition='color .12s ease'
-								_hover={{ color: 'fg.default' }}
+								transition='color .12s ease, background-color .12s ease'
+								_hover={{
+									color: 'fg.default',
+									bg: isActive ? undefined : 'color-mix(in srgb, var(--beak-colors-accent-pink) 10%, transparent)',
+								}}
 								onClick={() => setActive(idx)}
 								onDoubleClick={() => createDefaultVariable(i)}
 							>
