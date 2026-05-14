@@ -159,7 +159,8 @@ function buildRequestOverride({
 	const override: RequestFileOverride = {
 		id,
 		operationId,
-		verb: method.toUpperCase(),
+		// Storage convention is lowercase — display layers uppercase on render.
+		verb: method.toLowerCase(),
 		url: [url],
 	};
 

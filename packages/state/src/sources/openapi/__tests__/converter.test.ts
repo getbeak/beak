@@ -59,7 +59,7 @@ describe('openapiToCollection', () => {
 		expect(opIds).toContain('getUser');
 
 		const listUsers = result.requests.find(r => r.override.operationId === 'listUsers')!;
-		expect(listUsers.override.verb).toBe('GET');
+		expect(listUsers.override.verb).toBe('get');
 		expect(listUsers.override.url).toEqual(['/users']);
 		expect(listUsers.override.query?.limit).toMatchObject({
 			name: 'limit',
