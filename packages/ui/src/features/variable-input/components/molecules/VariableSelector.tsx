@@ -59,7 +59,7 @@ const VariableSelector: React.FC<React.PropsWithChildren<VariableSelectorProps>>
 			keys: ['name', 'description', 'keywords'],
 		});
 
-		return fuse.search(query).sort().map(r => r.item).sort();
+		return fuse.search(query).map(r => r.item);
 	}, [variableSets, query]);
 
 	useEffect(() => {
