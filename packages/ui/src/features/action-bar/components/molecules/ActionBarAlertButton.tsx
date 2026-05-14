@@ -26,9 +26,17 @@ const ActionBarAlertButton: React.FC<ActionBarAlertButtonProps> = ({ id }) => {
 
 	return (
 		<React.Fragment>
-			<ActionBarButton id={id} ref={parentRef} onClick={() => setShowPopover(true)}>
+			<ActionBarButton
+				id={id}
+				ref={parentRef}
+				title={`${alertCount} project alert${alertCount === 1 ? '' : 's'}`}
+				aria-label={`Show ${alertCount} project alert${alertCount === 1 ? '' : 's'}`}
+				aria-haspopup='dialog'
+				aria-expanded={showPopover}
+				onClick={() => setShowPopover(true)}
+			>
 				<Flex position='relative' align='center' justify='center'>
-					<TriangleAlert color='var(--beak-colors-accent-alert)' />
+					<TriangleAlert color='var(--beak-colors-accent-alert)' aria-hidden />
 					<MotionBox
 						initial={{ scale: 0.6, opacity: 0 }}
 						animate={{ scale: 1, opacity: 1 }}
