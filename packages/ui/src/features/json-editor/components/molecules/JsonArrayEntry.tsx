@@ -30,7 +30,7 @@ const JsonArrayEntry: React.FC<React.PropsWithChildren<JsonArrayEntryProps>> = p
 	const { depth, requestId, nameOverride, value } = props;
 	const { id } = value;
 	const preferences = useAppSelector(s => s.global.preferences.requests[requestId]);
-	const [expanded, setExpanded] = useState(preferences.request.jsonEditor?.expanded[id] !== false);
+	const [expanded, setExpanded] = useState(preferences?.request.jsonEditor?.expanded[id] !== false);
 	const editorContext = useContext(JsonEditorContext)!;
 
 	const entries = useAppSelector(editorContext.editorSelector);

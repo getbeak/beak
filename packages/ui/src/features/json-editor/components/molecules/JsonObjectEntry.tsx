@@ -33,7 +33,7 @@ const JsonObjectEntry: React.FC<React.PropsWithChildren<JsonObjectEntryProps>> =
 
 	const editorContext = useContext(JsonEditorContext)!;
 	const preferences = useAppSelector(s => s.global.preferences.requests[requestId]);
-	const [expanded, setExpanded] = useState(preferences.request.jsonEditor?.expanded[id] !== false);
+	const [expanded, setExpanded] = useState(preferences?.request.jsonEditor?.expanded[id] !== false);
 
 	const entries = useAppSelector(editorContext.editorSelector);
 	const children = TypedObject.values(entries).filter(e => e.parentId === id);
