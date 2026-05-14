@@ -28,7 +28,7 @@ const ContextMenu: React.FC<React.PropsWithChildren<ContextMenuProps>> = props =
 		return () => {
 			target?.removeEventListener('contextmenu', handleContextMenu);
 		};
-	}, [children, target, menuItems]);
+	}, [target, menuItems]);
 
 	return <React.Fragment>{children}</React.Fragment>;
 };
