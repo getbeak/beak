@@ -135,7 +135,10 @@ const Omnibar: React.FC = () => {
 						}}
 					>
 						<Flex align='center' px='3' h='44px' gap='2'>
-							<Box color={isCommands ? 'accent.teal' : 'accent.pink'}>
+							<Box
+								color={isCommands ? 'accent.teal' : 'accent.pink'}
+								filter={`drop-shadow(0 0 4px color-mix(in srgb, var(--beak-colors-${isCommands ? 'accent-teal' : 'accent-pink'}) 45%, transparent))`}
+							>
 								<ModeIcon size={16} />
 							</Box>
 							<ChakraInput
