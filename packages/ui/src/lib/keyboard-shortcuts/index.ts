@@ -118,7 +118,11 @@ export function checkShortcut(shortcutKey: Shortcuts, event: React.KeyboardEvent
 
 		const platform = windowSessionInstance.getPlatform();
 
-		if (platform === 'browser') return platformDefinition.darwin;
+		if (platform === 'browser') {
+			// Web host: pick the keymap that matches the user's OS rather
+			// than always darwin (the legacy default).
+			return windowSessionInstance.isDarwin() ? platformDefinition.darwin : platformDefinition.windows;
+		}
 
 		return platformDefinition[platform];
 	})();
@@ -126,7 +130,7 @@ export function checkShortcut(shortcutKey: Shortcuts, event: React.KeyboardEvent
 	if (!shortcutDefinition) return false;
 
 	if (shortcutDefinition.ctrlOrMeta) {
-		const useMeta = windowSessionInstance.getPlatform() === 'darwin';
+		const useMeta = windowSessionInstance.isDarwin();
 		const useCtrl = !useMeta;
 
 		return (
