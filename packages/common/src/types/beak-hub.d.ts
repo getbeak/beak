@@ -8,10 +8,13 @@ export interface RecentProject {
 
 export type RequestPreferenceMainTab = 'headers' | 'url_query' | 'body' | 'options';
 export type ResponsePreferenceMainTab = 'overview' | 'request' | 'response';
+export type RequestEditorMode = 'schema' | 'values';
 
 export interface RequestPreference {
 	request: {
 		mainTab: RequestPreferenceMainTab;
+		/** Current editor mode — defaults to 'values' when unset. */
+		editorMode?: RequestEditorMode;
 
 		jsonEditor?: {
 			expanded: Record<string, boolean>;

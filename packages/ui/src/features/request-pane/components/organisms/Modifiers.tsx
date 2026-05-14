@@ -1,8 +1,11 @@
 import { TypedObject } from '@beak/common/helpers/typescript';
-import type { RequestPreferenceMainTab } from '@beak/common/types/beak-hub';
+import type { RequestEditorMode, RequestPreferenceMainTab } from '@beak/common/types/beak-hub';
 import BasicTableEditor from '@beak/ui/features/basic-table-editor/components/BasicTableEditor';
 import type { EditorMode } from '@beak/ui/features/graphql-editor/types';
-import { requestPreferenceSetReqMainTab } from '@beak/ui/store/preferences/actions';
+import {
+	requestPreferenceSetReqEditorMode,
+	requestPreferenceSetReqMainTab,
+} from '@beak/ui/store/preferences/actions';
 import actions from '@beak/ui/store/project/actions';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { Box, chakra, Flex } from '@chakra-ui/react';
@@ -13,6 +16,7 @@ import { useDispatch } from 'react-redux';
 
 import { useChangeBodyType } from '../../use-change-body-type';
 import BodyTypeSelector from '../molecules/BodyTypeSelector';
+import EditorModeToggle from '../molecules/EditorModeToggle';
 import BodyTab from './BodyTab';
 import OptionsView from './OptionsView';
 
@@ -33,6 +37,8 @@ function bodyTypeLabel(type: string): string {
 			return 'Text';
 		case 'json':
 			return 'JSON';
+		case 'json_raw':
+			return 'JSON (raw)';
 		case 'url_encoded_form':
 			return 'Form';
 		case 'graphql':
@@ -51,6 +57,7 @@ const Modifiers: React.FC<React.PropsWithChildren<ModifiersProps>> = props => {
 	const { node } = props;
 	const preferences = useAppSelector(s => s.global.preferences.requests[node.id])!;
 	const tab = preferences.request.mainTab;
+	const editorMode: RequestEditorMode = preferences.request.editorMode ?? 'values';
 	const [graphQlMode, setGraphQlMode] = useState<EditorMode>('query');
 	const changeBodyType = useChangeBodyType(node);
 
@@ -62,6 +69,12 @@ const Modifiers: React.FC<React.PropsWithChildren<ModifiersProps>> = props => {
 	function setTab(tab: RequestPreferenceMainTab) {
 		dispatch(requestPreferenceSetReqMainTab({ id: node.id, tab }));
 	}
+
+	function setEditorMode(mode: RequestEditorMode) {
+		dispatch(requestPreferenceSetReqEditorMode({ id: node.id, mode }));
+	}
+
+	const showModeToggle = tab !== 'options';
 
 	function counterFor(tabKey: RequestPreferenceMainTab): React.ReactNode {
 		switch (tabKey) {
@@ -122,42 +135,26 @@ const Modifiers: React.FC<React.PropsWithChildren<ModifiersProps>> = props => {
 										minW={isNumericCounter ? '16px' : undefined}
 										h='16px'
 										px={isNumericCounter ? '1' : '1.5'}
-										borderRadius='full'
 										fontSize='10px'
 										fontWeight='600'
 										fontVariantNumeric='tabular-nums'
 										letterSpacing={isNumericCounter ? undefined : '0.04em'}
 										textTransform={isNumericCounter ? undefined : 'uppercase'}
-										color={active ? 'accent.pink' : 'fg.subtle'}
-										bg={
-											active
-												? 'color-mix(in srgb, var(--beak-colors-accent-pink) 16%, transparent)'
-												: 'color-mix(in srgb, var(--beak-colors-bg-surface-alt) 80%, transparent)'
-										}
-										borderWidth='1px'
-										borderColor={active ? 'color-mix(in srgb, var(--beak-colors-accent-pink) 28%, transparent)' : 'border.subtle'}
+										color={active ? 'fg.default' : 'fg.subtle'}
+										opacity={active ? 1 : 0.7}
 									>
 										{counter}
 									</Box>
 								)}
-								{active && (
-									<Box
-										position='absolute'
-										left='2'
-										right='2'
-										bottom='-1px'
-										h='2px'
-										bg='accent.pink'
-										borderRadius='2px'
-										boxShadow='0 -1px 6px color-mix(in srgb, var(--beak-colors-accent-pink) 45%, transparent)'
-									/>
-								)}
+								{active && <Box position='absolute' left='2.5' right='2.5' bottom='-1px' h='2px' bg='accent.pink' />}
 							</ChakraButton>
 						);
 					})}
 				</Flex>
 
 				<Box flex='1 1 auto' />
+
+				{showModeToggle && <EditorModeToggle mode={editorMode} onChange={setEditorMode} />}
 
 				{tab === 'body' && (
 					<BodyTypeSelector

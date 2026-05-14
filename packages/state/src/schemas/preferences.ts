@@ -42,6 +42,12 @@ export const requestPreferenceSchema = z
 		request: z
 			.object({
 				mainTab: z.enum(['headers', 'url_query', 'body', 'options']),
+				/**
+				 * Editor mode for the active sub-tab. `values` (default) is the
+				 * familiar fill-in-the-blanks view; `schema` shows + edits the
+				 * structural contract (names, types, required, description).
+				 */
+				editorMode: z.enum(['schema', 'values']).optional(),
 				jsonEditor: z
 					.object({
 						expanded: z.record(z.string(), z.boolean()),
@@ -104,11 +110,20 @@ const preferencesTabSchema = z
 	})
 	.strict();
 
+const projectHomeTabSchema = z
+	.object({
+		type: z.literal('project_home'),
+		payload: z.literal('project_home'),
+		temporary: z.boolean(),
+	})
+	.strict();
+
 const tabSchema = z.discriminatedUnion('type', [
 	requestTabSchema,
 	variableSetEditorTabSchema,
 	newProjectIntroTabSchema,
 	preferencesTabSchema,
+	projectHomeTabSchema,
 ]);
 
 export const tabPreferencesSchema = z

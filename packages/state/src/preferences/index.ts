@@ -1,6 +1,7 @@
 import type {
 	EditorPreferences,
 	ProjectPanePreferences,
+	RequestEditorMode,
 	RequestPreference,
 	RequestPreferenceMainTab,
 	ResponsePreferenceMainTab,
@@ -26,6 +27,7 @@ export const initialPreferencesState: PreferencesState = {
 export type RequestPreferencePayload<T = void> = T extends void ? { id: string } : { id: string } & T;
 export type RequestPreferencesLoadedPayload = RequestPreferencePayload<{ preferences: RequestPreference }>;
 export type RequestPreferencesSetReqMainTabPayload = RequestPreferencePayload<{ tab: RequestPreferenceMainTab }>;
+export type RequestPreferencesSetReqEditorModePayload = RequestPreferencePayload<{ mode: RequestEditorMode }>;
 export type RequestPreferencesSetReqJsonExpandPayload = RequestPreferencePayload<{
 	jsonId: string;
 	expanded: boolean;
@@ -67,6 +69,8 @@ export const requestPreferencesLoaded = createAction<RequestPreferencesLoadedPay
 );
 export const requestPreferenceSetReqMainTab =
 	createAction<RequestPreferencesSetReqMainTabPayload>('preferences/setReqMainTab');
+export const requestPreferenceSetReqEditorMode =
+	createAction<RequestPreferencesSetReqEditorModePayload>('preferences/setReqEditorMode');
 export const requestPreferenceSetReqJsonExpand =
 	createAction<RequestPreferencesSetReqJsonExpandPayload>('preferences/setReqJsonExpand');
 export const requestPreferenceSetResMainTab =
@@ -100,6 +104,11 @@ const preferencesReducer = createReducer(initialPreferencesState, builder => {
 			const prefs = state.requests[payload.id];
 			if (!prefs) return;
 			prefs.request.mainTab = payload.tab;
+		})
+		.addCase(requestPreferenceSetReqEditorMode, (state, { payload }) => {
+			const prefs = state.requests[payload.id];
+			if (!prefs) return;
+			prefs.request.editorMode = payload.mode;
 		})
 		.addCase(requestPreferenceSetReqJsonExpand, (state, { payload }) => {
 			const prefs = state.requests[payload.id];
