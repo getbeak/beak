@@ -5,7 +5,7 @@ import { getStatusReasonPhrase } from '@beak/ui/utils/http';
 import { convertRequestToUrl } from '@beak/ui/utils/uri';
 import type { Flight } from '@getbeak/types/flight';
 import { motion } from 'framer-motion';
-import { AlertTriangle, CheckCircle2, Copy, MoveRight, XCircle } from 'lucide-react';
+import { AlertTriangle, Check, CheckCircle2, Copy, MoveRight, XCircle } from 'lucide-react';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 
@@ -116,14 +116,20 @@ const Header: React.FC<HeaderProps> = ({ selectedFlight }) => {
 					title={justCopied ? 'Copied!' : 'Copy URL'}
 					size='xs'
 					variant='ghost'
-					h='18px'
-					w='18px'
-					minW='18px'
+					h='20px'
+					w='20px'
+					minW='20px'
+					borderRadius='sm'
 					color={justCopied ? 'accent.teal' : 'fg.subtle'}
-					_hover={{ color: 'accent.pink' }}
+					transition='color .12s ease, background-color .12s ease, transform .08s ease'
+					_hover={{
+						color: justCopied ? 'accent.teal' : 'accent.pink',
+						bg: `color-mix(in srgb, var(--beak-colors-${justCopied ? 'accent-teal' : 'accent-pink'}) 14%, transparent)`,
+					}}
+					_active={{ transform: 'scale(0.9)' }}
 					onClick={copyUrl}
 				>
-					<Copy size={11} />
+					{justCopied ? <Check size={11} strokeWidth={3} /> : <Copy size={11} />}
 				</IconButton>
 			</Flex>
 
