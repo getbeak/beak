@@ -16,10 +16,10 @@ export const Header = chakra('h1', {
 	base: {
 		m: '0',
 		mt: '3',
-		fontWeight: '600',
+		fontWeight: '700',
 		fontSize: 'xl',
-		lineHeight: '1.15',
-		letterSpacing: '-0.01em',
+		lineHeight: '1.1',
+		letterSpacing: '-0.02em',
 		color: 'fg.default',
 	},
 });
