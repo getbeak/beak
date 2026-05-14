@@ -1,4 +1,5 @@
 import { Box } from '@chakra-ui/react';
+import { selectActiveFlight } from '@beak/state/flight';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import * as React from 'react';
@@ -8,7 +9,7 @@ const MotionDiv = motion.div;
 const ProgressIndicator: React.FC = () => {
 	const reduced = useReducedMotion();
 	const selectedTab = useAppSelector(s => s.features.tabs.selectedTab);
-	const activeFlight = useAppSelector(s => (selectedTab ? s.global.flight.activeFlights[selectedTab] : undefined));
+	const activeFlight = useAppSelector(s => (selectedTab ? selectActiveFlight(selectedTab)(s) : null));
 
 	const percentage = activeFlight?.bodyTransferPercentage ?? 0;
 

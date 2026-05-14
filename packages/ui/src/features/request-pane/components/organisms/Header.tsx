@@ -1,4 +1,5 @@
 import { Box, Flex, Menu, Portal, chakra } from '@chakra-ui/react';
+import { selectActiveFlight } from '@beak/state/flight';
 import { verbToColor } from '@beak/design-system/helpers';
 import VariableInput from '@beak/ui/features/variable-input/components/VariableInput';
 import useVariableContext from '@beak/ui/features/variables/hooks/use-variable-context';
@@ -26,7 +27,7 @@ const ChakraButton = chakra('button');
 
 const Header: React.FC<HeaderProps> = ({ node }) => {
 	const dispatch = useDispatch();
-	const currentFlight = useAppSelector(s => s.global.flight.activeFlights[node.id]);
+	const currentFlight = useAppSelector(s => selectActiveFlight(node.id)(s));
 	const flighting = Boolean(currentFlight);
 	const context = useVariableContext(node.id);
 	const verb = node.info.verb;
