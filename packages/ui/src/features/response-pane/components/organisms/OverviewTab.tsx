@@ -80,7 +80,7 @@ const OverviewTab: React.FC<OverviewTabProps> = ({ flight }) => {
 								boxShadow: 'inset 0 1px 0 color-mix(in srgb, white 16%, transparent)',
 							}}
 						>
-							<Box as='span' fontWeight='700' fontFamily='mono'>{status}</Box>
+							<Box as='span' fontWeight='700' fontFamily='mono' style={{ fontVariantNumeric: 'tabular-nums' }}>{status}</Box>
 							<Box
 								as='span'
 								fontWeight='500'
@@ -186,10 +186,10 @@ const StatCard: React.FC<{
 					{label}
 				</Box>
 			</Flex>
-			<Box fontSize='md' fontWeight='600' color='fg.default' fontFamily='mono' lineHeight='1.2'>
+			<Box fontSize='md' fontWeight='600' color='fg.default' fontFamily='mono' lineHeight='1.2' style={{ fontVariantNumeric: 'tabular-nums' }}>
 				{value}
 			</Box>
-			{sub && <Box fontSize='10px' color='fg.subtle'>{sub}</Box>}
+			{sub && <Box fontSize='10px' color='fg.subtle' style={{ fontVariantNumeric: 'tabular-nums' }}>{sub}</Box>}
 		</Flex>
 	);
 };

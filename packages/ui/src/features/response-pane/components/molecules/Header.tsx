@@ -150,7 +150,7 @@ const Header: React.FC<HeaderProps> = ({ selectedFlight }) => {
 					}}
 				>
 					<StatusIcon size={12} strokeWidth={2.2} />
-					<Box as='span' fontWeight='700' fontFamily='mono'>{response.status}</Box>
+					<Box as='span' fontWeight='700' fontFamily='mono' style={{ fontVariantNumeric: 'tabular-nums' }}>{response.status}</Box>
 					<Box
 						as='span'
 						fontWeight='500'
