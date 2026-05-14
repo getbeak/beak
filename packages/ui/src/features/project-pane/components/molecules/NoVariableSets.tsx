@@ -28,9 +28,22 @@ const NoVariableSets: React.FC = () => {
 				borderColor='border.subtle'
 				bg='color-mix(in srgb, var(--beak-colors-bg-surface) 50%, transparent)'
 			>
-				<Flex align='center' gap='1.5' color='accent.teal'>
-					<Table size={11} strokeWidth={2.2} />
-					<Box fontSize='10px' fontWeight='700' letterSpacing='0.06em' textTransform='uppercase'>
+				<Flex align='center' gap='1.5'>
+					<Flex
+						align='center'
+						justify='center'
+						w='18px'
+						h='18px'
+						borderRadius='sm'
+						bg='color-mix(in srgb, var(--beak-colors-accent-teal) 14%, transparent)'
+						borderWidth='1px'
+						borderColor='color-mix(in srgb, var(--beak-colors-accent-teal) 28%, transparent)'
+						color='accent.teal'
+						boxShadow='inset 0 1px 0 color-mix(in srgb, white 14%, transparent)'
+					>
+						<Table size={10} strokeWidth={2.2} />
+					</Flex>
+					<Box fontSize='10px' fontWeight='700' letterSpacing='0.06em' textTransform='uppercase' color='accent.teal'>
 						{'No variable sets yet'}
 					</Box>
 				</Flex>
