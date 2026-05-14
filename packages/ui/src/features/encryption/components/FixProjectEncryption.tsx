@@ -64,7 +64,7 @@ const FixProjectEncryption: React.FC<FixProjectEncryptionProps> = ({ onClose }) 
 					{'Beak projects come with built-in encryption for storing secrets like passwords and tokens. '}
 					{"You don't currently have the project encryption key stored, so encrypted values can't be read."}
 				</Box>
-				<Box as='p' fontSize='xs' color='fg.subtle' mb='4'>
+				<Box as='p' fontSize='xs' color='fg.subtle' mb='4' lineHeight='1.5'>
 					{'Ask a teammate for the project key, paste it below, and continue.'}
 				</Box>
 
