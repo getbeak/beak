@@ -46,13 +46,19 @@ export default class UnmanagedInput extends React.Component<UnmanagedInputProps>
 						overflow: 'hidden',
 						textOverflow: 'ellipsis',
 					},
-					'.bvs-blob': {
+					// Nested selectors MUST use `&` in Chakra v3's `css` prop, otherwise
+					// emotion silently drops them. We use leading-`&` everywhere so the
+					// blob, placeholder, and reset rules actually emit.
+					'& > *': { display: 'inline', whiteSpace: 'nowrap', verticalAlign: 'baseline' },
+					'& br': { display: 'none' },
+					'& .bvs-blob': {
 						display: 'inline-block',
+						verticalAlign: 'middle',
 						margin: '0 2px',
-						marginBottom: '-1px',
-						padding: '0 4px',
-						borderRadius: '4px',
-						fontSize: '11px',
+						marginBottom: '0px',
+						padding: '1px 5px',
+						borderRadius: '5px',
+						fontSize: '10.5px',
 						fontWeight: 500,
 						lineHeight: '15px',
 						background: 'color-mix(in srgb, var(--beak-colors-accent-pink) 88%, transparent)',
@@ -60,15 +66,17 @@ export default class UnmanagedInput extends React.Component<UnmanagedInputProps>
 						userSelect: 'text',
 						boxShadow:
 							'0 1px 2px color-mix(in srgb, var(--beak-colors-accent-pink) 30%, transparent), inset 0 1px 0 color-mix(in srgb, white 22%, transparent)',
-						transition: 'background-color .12s ease, transform .08s ease',
+						transition: 'background-color .14s ease, transform .1s ease, box-shadow .14s ease',
 					},
-					'.bvs-blob > strong': { fontWeight: 700, letterSpacing: '-0.005em' },
-					'.bvs-blob[data-editable="true"]': { cursor: 'pointer' },
-					'.bvs-blob[data-editable="true"]:hover': {
+					'& .bvs-blob > strong': { fontWeight: 700, letterSpacing: '-0.005em' },
+					'& .bvs-blob[data-editable="true"]': { cursor: 'pointer' },
+					'& .bvs-blob[data-editable="true"]:hover': {
 						background: 'var(--beak-colors-accent-pink)',
 						transform: 'translateY(-1px)',
+						boxShadow:
+							'0 2px 6px color-mix(in srgb, var(--beak-colors-accent-pink) 40%, transparent), inset 0 1px 0 color-mix(in srgb, white 28%, transparent)',
 					},
-					'.bvs-blob[data-missing="true"]': {
+					'& .bvs-blob[data-missing="true"]': {
 						background: 'color-mix(in srgb, var(--beak-colors-accent-alert) 82%, transparent)',
 						color: 'var(--beak-colors-fg-onAccent)',
 						fontWeight: 600,
@@ -76,8 +84,6 @@ export default class UnmanagedInput extends React.Component<UnmanagedInputProps>
 						boxShadow:
 							'0 1px 2px color-mix(in srgb, var(--beak-colors-accent-alert) 32%, transparent), inset 0 1px 0 color-mix(in srgb, white 22%, transparent)',
 					},
-					'> *': { display: 'inline', whiteSpace: 'nowrap' },
-					br: { display: 'none' },
 				}}
 				onDoubleClick={(event: React.MouseEvent<HTMLElement>) => {
 					const disabled = event.currentTarget.getAttribute('disabled') === 'true';
