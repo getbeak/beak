@@ -36,12 +36,19 @@ const NodeRenamer: React.FC<NodeRenamerProps> = ({ node }) => {
 		if (activeRename || !wrappedTextRef.current) return void 0;
 
 		const element = wrappedTextRef.current;
-		const textOverflowed = element.scrollWidth > element.clientWidth || element.scrollHeight > element.clientHeight;
 
-		const resizeObserver = new ResizeObserver(() => {
-			setCanShowTooltip(textOverflowed);
-		});
+		// Recompute overflow on each resize tick — capturing it once during
+		// effect setup left the tooltip flag stuck on whatever the initial
+		// layout said, regardless of later width changes.
+		const update = () => {
+			setCanShowTooltip(
+				element.scrollWidth > element.clientWidth || element.scrollHeight > element.clientHeight,
+			);
+		};
 
+		update();
+
+		const resizeObserver = new ResizeObserver(update);
 		resizeObserver.observe(element);
 
 		return () => {
