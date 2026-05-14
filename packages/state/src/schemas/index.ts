@@ -4,6 +4,8 @@ export * from './beak-project';
 export * from './beak-variable-group';
 export * from './collection-merge';
 export * from './preferences';
+export * from './request-schema';
+export * from './request-values';
 
 /**
  * Convert a zod schema to a JSON Schema document. Useful for publishing
