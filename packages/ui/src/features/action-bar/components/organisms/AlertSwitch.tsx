@@ -53,7 +53,7 @@ const AlertSwitch: React.FC<React.PropsWithChildren<AlertSwitchProps>> = ({ aler
 				<React.Fragment>
 					<AlertItem
 						title={'Unable to load extension'}
-						description={`"${alert.payload.assumedName}" has encountered an error`}
+						description={`“${alert.payload.assumedName}” has encountered an error`}
 						action={{
 							cta: 'View',
 							callback: () => setFixer('extension_issue'),
