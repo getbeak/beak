@@ -69,7 +69,6 @@ const RequestMagicLink: React.FC<React.PropsWithChildren<RequestMagicLinkProps>>
 					</Flex>
 				</Button>
 			</ActionContainer>
-			<style dangerouslySetInnerHTML={{ __html: '@keyframes beakPortalSpin { to { transform: rotate(360deg); } }' }} />
 		</React.Fragment>
 	);
 };
