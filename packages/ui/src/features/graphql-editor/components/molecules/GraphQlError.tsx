@@ -117,6 +117,9 @@ const GraphQlError: React.FC<GraphQlErrorProps> = ({ error }) => (
 						href='#'
 						color='accent.pink'
 						fontWeight='600'
+						textDecoration='underline'
+						textDecorationStyle='dotted'
+						_hover={{ textDecorationStyle: 'solid' }}
 						onClick={event => {
 							event.preventDefault();
 							event.stopPropagation();
