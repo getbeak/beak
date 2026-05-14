@@ -134,7 +134,7 @@ const EnterMagicState: React.FC<EnterMagicStateProps> = ({ email, reset, inbound
 			)}
 
 			{working && (
-				<Flex direction='column' align='center' gap='3' py='5'>
+				<Flex role='status' aria-live='polite' direction='column' align='center' gap='3' py='5'>
 					<Flex
 						align='center'
 						justify='center'
