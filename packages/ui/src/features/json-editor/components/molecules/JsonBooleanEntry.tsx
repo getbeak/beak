@@ -1,13 +1,12 @@
-import DebouncedInput from '@beak/ui/components/atoms/DebouncedInput';
 import { Box, chakra } from '@chakra-ui/react';
-import type { BooleanEntry, NamedBooleanEntry } from '@getbeak/types/body-editor-json';
+import type { BooleanEntry, EntryType, NamedBooleanEntry } from '@getbeak/types/body-editor-json';
 import { Check } from 'lucide-react';
 import React, { useContext } from 'react';
 import { useDispatch } from 'react-redux';
 
 import { JsonEditorContext } from '../../contexts/json-editor-context';
-import { BodyInputWrapper, BodyNameOverrideWrapper } from '../atoms/Cells';
 import EntryActions from './EntryActions';
+import EntryPrimary from './EntryPrimary';
 import EntryRow from './EntryRow';
 import EntryToggler from './EntryToggler';
 import { detectName, type JsonEntryProps } from './JsonEntry';
@@ -31,42 +30,32 @@ interface JsonBooleanEntryProps extends JsonEntryProps {
 	value: BooleanEntry | NamedBooleanEntry;
 }
 
+const ROOT_CONTAINER_TYPES: EntryType[] = ['object', 'array'];
+
 const JsonBooleanEntry: React.FC<React.PropsWithChildren<JsonBooleanEntryProps>> = props => {
 	const { depth, requestId, value, nameOverride } = props;
 	const { id } = value;
 	const dispatch = useDispatch();
 
 	const editorContext = useContext(JsonEditorContext)!;
+	const isRoot = depth === 0;
 
 	return (
 		<EntryRow
 			id={id}
 			depth={depth}
 			parentId={value.parentId}
-			canDrag={depth > 0}
+			canDrag={!isRoot}
 			toggle={<EntryToggler id={id} requestId={requestId} value={value.enabled} />}
-			primary={
-				<BodyInputWrapper>
-					{nameOverride === void 0 && (
-						<DebouncedInput
-							disabled={depth === 0}
-							type={'text'}
-							value={detectName(depth, value)}
-							onChange={name =>
-								dispatch(
-									editorContext.nameChange({
-										id,
-										requestId,
-										name,
-									}),
-								)
-							}
-						/>
-					)}
-					{nameOverride !== void 0 && <BodyNameOverrideWrapper>{nameOverride}</BodyNameOverrideWrapper>}
-				</BodyInputWrapper>
+			primary={<EntryPrimary depth={depth} requestId={requestId} value={value} nameOverride={nameOverride} />}
+			type={
+				<TypeSelector
+					allowedTypes={isRoot ? ROOT_CONTAINER_TYPES : void 0}
+					requestId={requestId}
+					id={id}
+					value={value.type}
+				/>
 			}
-			type={<TypeSelector requestId={requestId} id={id} value={value.type} />}
 			value={
 				<Box display='flex' alignItems='center' pl='2'>
 					<Box position='relative' display='inline-flex'>

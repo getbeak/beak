@@ -12,8 +12,18 @@ interface TypeSelectorProps {
 	requestId: string;
 	id: string;
 	value: EntryType;
+	/**
+	 * Restrict which types appear in the dropdown. The root of a JSON body
+	 * passes `['object', 'array']` so users can't accidentally turn the whole
+	 * body into a bare primitive — primitives at root make sense in the
+	 * spec but almost never match what an API request actually wants to send.
+	 */
+	allowedTypes?: EntryType[];
 	onChange?: (entryType: EntryType) => void;
 }
+
+const PRIMITIVE_TYPES: EntryType[] = ['string', 'number', 'boolean', 'null'];
+const CONTAINER_TYPES: EntryType[] = ['array', 'object'];
 
 const TYPE_COLOUR: Record<EntryType, string> = {
 	string: 'var(--beak-colors-accent-teal)',
@@ -30,12 +40,15 @@ const TYPE_COLOUR: Record<EntryType, string> = {
  * cell, sitting invisibly above the chip. This way the user can hit anywhere
  * in the Type column rather than fishing for the tiny icon button.
  */
-const TypeSelector: React.FC<TypeSelectorProps> = ({ disabled, requestId, id, value, onChange }) => {
+const TypeSelector: React.FC<TypeSelectorProps> = ({ disabled, requestId, id, value, allowedTypes, onChange }) => {
 	const selectRef = useRef<HTMLSelectElement>(null);
 	const Icon = getIconForType(value);
 	const dispatch = useDispatch();
 	const editorContext = useContext(JsonEditorContext)!;
 	const colour = TYPE_COLOUR[value] ?? 'var(--beak-colors-fg-muted)';
+	const allowedSet = allowedTypes ? new Set(allowedTypes) : null;
+	const showPrimitives = !allowedSet || PRIMITIVE_TYPES.some(t => allowedSet.has(t));
+	const showContainers = !allowedSet || CONTAINER_TYPES.some(t => allowedSet.has(t));
 
 	return (
 		<Box
@@ -70,16 +83,20 @@ const TypeSelector: React.FC<TypeSelectorProps> = ({ disabled, requestId, id, va
 					selectRef.current!.blur();
 				}}
 			>
-				<optgroup label='Primitives'>
-					<option value='string'>{'String'}</option>
-					<option value='number'>{'Number'}</option>
-					<option value='boolean'>{'Boolean'}</option>
-					<option value='null'>{'Null'}</option>
-				</optgroup>
-				<optgroup label='Objects'>
-					<option value='array'>{'Array'}</option>
-					<option value='object'>{'Object'}</option>
-				</optgroup>
+				{showPrimitives && (
+					<optgroup label='Primitives'>
+						{(!allowedSet || allowedSet.has('string')) && <option value='string'>{'String'}</option>}
+						{(!allowedSet || allowedSet.has('number')) && <option value='number'>{'Number'}</option>}
+						{(!allowedSet || allowedSet.has('boolean')) && <option value='boolean'>{'Boolean'}</option>}
+						{(!allowedSet || allowedSet.has('null')) && <option value='null'>{'Null'}</option>}
+					</optgroup>
+				)}
+				{showContainers && (
+					<optgroup label='Objects'>
+						{(!allowedSet || allowedSet.has('array')) && <option value='array'>{'Array'}</option>}
+						{(!allowedSet || allowedSet.has('object')) && <option value='object'>{'Object'}</option>}
+					</optgroup>
+				)}
 			</select>
 			<Box
 				w='22px'

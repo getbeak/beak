@@ -1,17 +1,17 @@
 import { TypedObject } from '@beak/common/helpers/typescript';
-import DebouncedInput from '@beak/ui/components/atoms/DebouncedInput';
 import { useAppSelector } from '@beak/ui/store/redux';
-import type { NamedObjectEntry, ObjectEntry } from '@getbeak/types/body-editor-json';
+import type { EntryType, NamedObjectEntry, ObjectEntry } from '@getbeak/types/body-editor-json';
 import React, { useContext, useState } from 'react';
-import { useDispatch } from 'react-redux';
 
 import { JsonEditorContext } from '../../contexts/json-editor-context';
-import { BodyInputWrapper, BodyLabelValueCell, BodyNameOverrideWrapper } from '../atoms/Cells';
+import { BodyLabelValueCell } from '../atoms/Cells';
 import EntryActions from './EntryActions';
+import EntryEmptyState from './EntryEmptyState';
 import EntryFolder from './EntryFolder';
+import EntryPrimary from './EntryPrimary';
 import EntryRow from './EntryRow';
 import EntryToggler from './EntryToggler';
-import { detectName, JsonEntry, type JsonEntryProps } from './JsonEntry';
+import { JsonEntry, type JsonEntryProps } from './JsonEntry';
 import TypeSelector from './TypeSelector';
 
 interface JsonObjectEntryProps extends JsonEntryProps {
@@ -19,10 +19,11 @@ interface JsonObjectEntryProps extends JsonEntryProps {
 	forceRootObject?: boolean;
 }
 
+const ROOT_CONTAINER_TYPES: EntryType[] = ['object', 'array'];
+
 const JsonObjectEntry: React.FC<React.PropsWithChildren<JsonObjectEntryProps>> = props => {
 	const { depth, requestId, value, nameOverride, forceRootObject } = props;
 	const { id } = value;
-	const dispatch = useDispatch();
 
 	const editorContext = useContext(JsonEditorContext)!;
 	const preferences = useAppSelector(s => s.global.preferences.requests[requestId]);
@@ -30,6 +31,7 @@ const JsonObjectEntry: React.FC<React.PropsWithChildren<JsonObjectEntryProps>> =
 
 	const entries = useAppSelector(editorContext.editorSelector);
 	const children = TypedObject.values(entries).filter(e => e.parentId === id);
+	const isRoot = depth === 0;
 
 	return (
 		<React.Fragment>
@@ -37,33 +39,21 @@ const JsonObjectEntry: React.FC<React.PropsWithChildren<JsonObjectEntryProps>> =
 				id={id}
 				depth={depth}
 				parentId={value.parentId}
-				canDrag={depth > 0}
+				canDrag={!isRoot}
 				folder={
 					<EntryFolder id={id} expanded={expanded} requestId={requestId} onChange={expanded => setExpanded(expanded)} />
 				}
 				toggle={<EntryToggler id={id} requestId={requestId} value={value.enabled} />}
-				primary={
-					<BodyInputWrapper>
-						{nameOverride === void 0 && (
-							<DebouncedInput
-								disabled={depth === 0}
-								type={'text'}
-								value={detectName(depth, value)}
-								onChange={name =>
-									dispatch(
-										editorContext.nameChange({
-											id,
-											requestId,
-											name,
-										}),
-									)
-								}
-							/>
-						)}
-						{nameOverride !== void 0 && <BodyNameOverrideWrapper>{nameOverride}</BodyNameOverrideWrapper>}
-					</BodyInputWrapper>
+				primary={<EntryPrimary depth={depth} requestId={requestId} value={value} nameOverride={nameOverride} />}
+				type={
+					<TypeSelector
+						disabled={forceRootObject}
+						allowedTypes={isRoot ? ROOT_CONTAINER_TYPES : void 0}
+						id={id}
+						requestId={requestId}
+						value={value.type}
+					/>
 				}
-				type={<TypeSelector disabled={forceRootObject} id={id} requestId={requestId} value={value.type} />}
 				value={
 					<BodyLabelValueCell style={{ fontVariantNumeric: 'tabular-nums' }}>
 						{`${children.length} ${children.length === 1 ? 'key' : 'keys'}`}
@@ -71,6 +61,7 @@ const JsonObjectEntry: React.FC<React.PropsWithChildren<JsonObjectEntryProps>> =
 				}
 				actions={<EntryActions id={id} entry={value} requestId={requestId} />}
 			/>
+			{expanded && children.length === 0 && <EntryEmptyState parentId={id} parentType='object' depth={depth} />}
 			{expanded && children.map(c => <JsonEntry depth={depth + 1} key={c.id} requestId={requestId} value={c} />)}
 		</React.Fragment>
 	);
