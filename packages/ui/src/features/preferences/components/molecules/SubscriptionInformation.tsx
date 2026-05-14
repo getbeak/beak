@@ -82,7 +82,7 @@ const SubscriptionInformation: React.FC<SubscriptionInformationProps> = ({ subsc
 					</React.Fragment>
 				) : (
 					<React.Fragment>
-						<Box fontSize='lg' fontWeight='700' color='fg.default' letterSpacing='-0.01em' fontVariantNumeric='tabular-nums'>{'$25.00'}</Box>
+						<Box fontSize='lg' fontWeight='700' color='fg.default' letterSpacing='-0.02em' fontVariantNumeric='tabular-nums'>{'$25.00'}</Box>
 						<Box fontSize='10px' fontWeight='700' letterSpacing='0.06em' textTransform='uppercase' color='fg.subtle'>{'/ year'}</Box>
 					</React.Fragment>
 				)}
