@@ -1,3 +1,4 @@
+import { selectActiveFlight } from '@beak/state/flight';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { useMemo } from 'react';
 
@@ -21,7 +22,7 @@ type FlightStatus = PendingFlightStatus | ActiveFlightStatus | FailedFlightStatu
 
 export default function useFlightStatus(): FlightStatus {
 	const selectedTab = useAppSelector(s => s.features.tabs.selectedTab);
-	const activeFlight = useAppSelector(s => (selectedTab ? s.global.flight.activeFlights[selectedTab] : undefined));
+	const activeFlight = useAppSelector(s => (selectedTab ? selectActiveFlight(selectedTab)(s) : null));
 	const flightState = useAppSelector(s => (selectedTab ? s.global.flight.flightStates[selectedTab] : undefined));
 
 	return useMemo((): FlightStatus => {
