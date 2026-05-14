@@ -20,6 +20,10 @@ const Magical: React.FC<MagicalProps> = ({ email, revertFromMagical }) => {
 		}
 
 		window.secureBridge.ipc.on('inbound_magic_link', listener);
+
+		return () => {
+			window.secureBridge.ipc.off('inbound_magic_link', listener);
+		};
 	}, []);
 
 	return (
