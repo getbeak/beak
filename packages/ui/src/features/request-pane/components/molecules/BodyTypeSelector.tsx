@@ -109,6 +109,18 @@ const GraphQlModeSwitch: React.FC<GraphQlModeSwitchProps> = ({ mode, onChange })
 	const [open, setOpen] = React.useState(false);
 	const label = editorTabSubItems.find(s => s.key === mode)?.label ?? mode;
 
+	React.useEffect(() => {
+		if (!open) return void 0;
+		function onKeyDown(event: KeyboardEvent) {
+			if (event.key === 'Escape') {
+				event.preventDefault();
+				setOpen(false);
+			}
+		}
+		window.addEventListener('keydown', onKeyDown);
+		return () => window.removeEventListener('keydown', onKeyDown);
+	}, [open]);
+
 	return (
 		<Flex
 			as='span'
