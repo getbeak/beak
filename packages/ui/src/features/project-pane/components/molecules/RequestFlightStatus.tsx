@@ -26,6 +26,9 @@ const RequestFlightStatus: React.FC<RequestFlightStatusProps> = ({ node }) => {
 
 	return (
 		<Box
+			role='img'
+			aria-label={`Last response status ${mostRecentFlight}`}
+			title={`Last response: HTTP ${mostRecentFlight}`}
 			w='8px'
 			h='8px'
 			borderRadius='full'
