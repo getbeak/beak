@@ -75,7 +75,7 @@ const AlertsPopover: React.FC<AlertsPopoverProps> = ({ parent, onClose }) => {
 							fontWeight='700'
 							letterSpacing='0.06em'
 							textTransform='uppercase'
-							color='fg.subtle'
+							color='accent.teal'
 						>
 							{'Everything in this project looks healthy'}
 						</Box>
