@@ -93,7 +93,13 @@ const VariableEditor: React.FC<React.PropsWithChildren<VariableEditorProps>> = p
 			if (!variable.editor)
 				return;
 
-			const item = JSON.parse(payload!);
+			let item: unknown;
+			try {
+				item = JSON.parse(payload!);
+			} catch (err) {
+				console.warn('variable editor: invalid payload on blob', err);
+				return;
+			}
 			const partIndex = Number(index!);
 
 			if (!variable.editor.load) {
@@ -260,10 +266,14 @@ const VariableEditor: React.FC<React.PropsWithChildren<VariableEditorProps>> = p
 										$beakSize={'sm'}
 										aria-label={section.label ?? stateBinding}
 										type={'number'}
-										value={(state[stateBinding] as number).toString(10)}
-										onChange={e => updateState({
-											[stateBinding]: parseInt(e.currentTarget.value, 10),
-										})}
+										value={Number.isFinite(state[stateBinding] as number)
+											? (state[stateBinding] as number).toString(10)
+											: ''}
+										onChange={e => {
+											const raw = e.currentTarget.value;
+											const parsed = raw === '' ? 0 : parseInt(raw, 10);
+											if (Number.isFinite(parsed)) updateState({ [stateBinding]: parsed });
+										}}
 									/>
 								</FormGroup>
 							);
@@ -347,7 +357,12 @@ const VariableEditor: React.FC<React.PropsWithChildren<VariableEditorProps>> = p
 								close(state);
 								return;
 							}
-							save(context, item, state).then(updatedItem => close(updatedItem));
+							save(context, item, state)
+								.then(updatedItem => close(updatedItem))
+								.catch(err => {
+									console.warn('variable editor: save failed', err);
+									close(null);
+								});
 						}}
 					>
 						{'Save'}
