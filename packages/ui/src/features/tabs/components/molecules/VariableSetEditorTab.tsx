@@ -35,9 +35,9 @@ const VariableSetEditorTab: React.FC<React.PropsWithChildren<VariableSetEditorTa
 						borderRadius='sm'
 						borderWidth='1px'
 						borderStyle='solid'
-						color='accent.indigo'
-						bg='color-mix(in srgb, var(--beak-colors-accent-indigo) 14%, transparent)'
-						borderColor='color-mix(in srgb, var(--beak-colors-accent-indigo) 26%, transparent)'
+						color='accent.teal'
+						bg='color-mix(in srgb, var(--beak-colors-accent-teal) 14%, transparent)'
+						borderColor='color-mix(in srgb, var(--beak-colors-accent-teal) 26%, transparent)'
 						boxShadow='inset 0 1px 0 color-mix(in srgb, white 14%, transparent)'
 					>
 						<Variable size={11} strokeWidth={2.2} />
