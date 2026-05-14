@@ -1,7 +1,6 @@
 import type { ValidRequestNode } from '@getbeak/types/nodes';
 import React from 'react';
 
-// @ts-expect-error
-const SelectedNodeContext = React.createContext<ValidRequestNode>(null);
+const SelectedNodeContext = React.createContext<ValidRequestNode | null>(null);
 
 export default SelectedNodeContext;

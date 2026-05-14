@@ -18,6 +18,7 @@ const EntryFolder: React.FC<EntryFolderProps> = ({ expanded, id, onChange }) => 
 	const node = useContext(SelectedNodeContext);
 
 	function toggle() {
+		if (!node) return;
 		dispatch(requestPreferenceSetReqJsonExpand({ id: node.id, jsonId: id, expanded: !expanded }));
 		onChange(!expanded);
 	}
