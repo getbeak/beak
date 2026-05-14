@@ -195,7 +195,7 @@ const StatCard: React.FC<{
 };
 
 const Eyebrow: React.FC<React.PropsWithChildren<{ icon: React.ReactNode }>> = ({ icon, children }) => (
-	<Flex align='center' gap='1.5' color='fg.subtle' fontSize='10px' fontWeight='700' letterSpacing='0.06em' textTransform='uppercase'>
+	<Flex align='center' gap='1.5' color='accent.pink' fontSize='10px' fontWeight='700' letterSpacing='0.06em' textTransform='uppercase'>
 		{icon}
 		{children}
 	</Flex>
