@@ -36,7 +36,7 @@ const PrettyRenderSelection: React.FC<PrettyRenderSelectionProps> = ({
 			>
 				<Eye size={11} strokeWidth={2.2} />
 			</Flex>
-			<Box fontSize='10px' fontWeight='700' letterSpacing='0.06em' textTransform='uppercase' color='fg.subtle'>
+			<Box fontSize='10px' fontWeight='700' letterSpacing='0.06em' textTransform='uppercase' color='accent.pink'>
 				{'View as'}
 			</Box>
 		</Flex>
