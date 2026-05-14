@@ -3,6 +3,7 @@ import { TypedObject } from '@beak/common/helpers/typescript';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { CheckCircle2 } from 'lucide-react';
 import * as React from 'react';
+import { useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import * as uuid from 'uuid';
 
@@ -17,6 +18,17 @@ const AlertsPopover: React.FC<AlertsPopoverProps> = ({ parent, onClose }) => {
 	const alerts = useAppSelector(s => s.global.project.alerts);
 	const hasAlerts = TypedObject.values(alerts).filter(Boolean).length > 0;
 	const boundingRect = parent.getBoundingClientRect();
+
+	useEffect(() => {
+		function onKeyDown(event: KeyboardEvent) {
+			if (event.key === 'Escape') {
+				event.preventDefault();
+				onClose();
+			}
+		}
+		window.addEventListener('keydown', onKeyDown);
+		return () => window.removeEventListener('keydown', onKeyDown);
+	}, [onClose]);
 
 	return createPortal(
 		<Box position='fixed' inset='0' onClick={() => onClose()}>
