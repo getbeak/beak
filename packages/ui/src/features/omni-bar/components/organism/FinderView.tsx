@@ -1,12 +1,12 @@
-import { Box, Flex } from '@chakra-ui/react';
 import { TypedObject } from '@beak/common/helpers/typescript';
+import { verbToColor } from '@beak/design-system/helpers';
 import { changeTab } from '@beak/ui/features/tabs/store/actions';
 import useVariableContext from '@beak/ui/features/variables/hooks/use-variable-context';
 import { checkShortcut } from '@beak/ui/lib/keyboard-shortcuts';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { movePosition } from '@beak/ui/utils/arrays';
+import { Box, Flex } from '@chakra-ui/react';
 import type { FolderNode, Nodes, Tree, ValidRequestNode } from '@getbeak/types/nodes';
-import { motion } from 'framer-motion';
 import Fuse from 'fuse.js';
 import { ChevronRight, FileText } from 'lucide-react';
 import * as React from 'react';
@@ -20,8 +20,6 @@ export interface FinderViewProps {
 	content: string;
 	reset: () => void;
 }
-
-import { verbToColor } from '@beak/design-system/helpers';
 
 const FinderView: React.FC<FinderViewProps> = ({ content, reset }) => {
 	const dispatch = useDispatch();
@@ -128,9 +126,7 @@ const FinderView: React.FC<FinderViewProps> = ({ content, reset }) => {
 						transition='background-color .14s ease, color .14s ease, box-shadow .14s ease'
 						_hover={{
 							color: isActive ? 'fg.onAccent' : 'fg.default',
-							bg: isActive
-								? 'accent.pink'
-								: 'color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent)',
+							bg: isActive ? 'accent.pink' : 'color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent)',
 						}}
 						_focusVisible={{
 							outline: 'none',
@@ -158,13 +154,13 @@ const FinderView: React.FC<FinderViewProps> = ({ content, reset }) => {
 								style={
 									isActive
 										? {
-											background: 'color-mix(in srgb, var(--beak-colors-fg-onAccent) 22%, transparent)',
-											color: 'var(--beak-colors-fg-onAccent)',
-										}
+												background: 'color-mix(in srgb, var(--beak-colors-fg-onAccent) 22%, transparent)',
+												color: 'var(--beak-colors-fg-onAccent)',
+											}
 										: {
-											background: `color-mix(in srgb, ${verbColor} 22%, transparent)`,
-											color: verbColor,
-										}
+												background: `color-mix(in srgb, ${verbColor} 22%, transparent)`,
+												color: verbColor,
+											}
 								}
 							>
 								{verb}
@@ -197,10 +193,7 @@ const FinderView: React.FC<FinderViewProps> = ({ content, reset }) => {
 								</Flex>
 								{match.type === 'request' && (
 									<Box mt='0.5'>
-										<FinderRequestItem
-											context={{ ...context, currentRequestId: match.id }}
-											info={reqNode.info}
-										/>
+										<FinderRequestItem context={{ ...context, currentRequestId: match.id }} info={reqNode.info} />
 									</Box>
 								)}
 							</Box>
