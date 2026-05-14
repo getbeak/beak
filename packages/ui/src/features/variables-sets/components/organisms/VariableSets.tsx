@@ -43,7 +43,7 @@ const VariableSets: React.FC<React.PropsWithChildren<unknown>> = () => {
 	function generateContextMenu(node: TreeViewItem): MenuItemConstructorOptions[] {
 		return [{
 			id: ksuid.generate('ctxmenuitem').toString(),
-			label: 'New Variable Group',
+			label: 'New Variable Set',
 			click: () => {
 				dispatch(actions.createNewVariableSet({ }));
 			},
