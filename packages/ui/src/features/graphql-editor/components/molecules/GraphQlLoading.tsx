@@ -7,6 +7,9 @@ const MotionBox = motion.create(Box);
 
 const GraphQlLoading: React.FC = () => (
 	<Flex
+		role='status'
+		aria-live='polite'
+		aria-label='Fetching GraphQL schema'
 		direction='column'
 		textAlign='center'
 		px='10'
