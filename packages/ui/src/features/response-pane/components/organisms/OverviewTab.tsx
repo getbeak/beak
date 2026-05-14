@@ -66,13 +66,25 @@ const OverviewTab: React.FC<OverviewTabProps> = ({ flight }) => {
 							px='2'
 							py='1'
 							borderRadius='md'
+							borderWidth='1px'
 							fontSize='xs'
 							fontWeight='600'
 							color={statusToken(status)}
-							bg={`color-mix(in srgb, var(--beak-colors-${statusToken(status).replace('accent.', 'accent-')}) 16%, transparent)`}
+							style={{
+								background: `color-mix(in srgb, var(--beak-colors-${statusToken(status).replace('accent.', 'accent-')}) 12%, var(--beak-colors-bg-surface))`,
+								borderColor: `color-mix(in srgb, var(--beak-colors-${statusToken(status).replace('accent.', 'accent-')}) 35%, var(--beak-colors-border-subtle))`,
+								borderLeft: `3px solid var(--beak-colors-${statusToken(status).replace('accent.', 'accent-')})`,
+								boxShadow: 'inset 0 1px 0 color-mix(in srgb, white 16%, transparent)',
+							}}
 						>
-							<Box as='span' fontWeight='700'>{status}</Box>
-							<Box as='span' opacity={0.85}>{getStatusReasonPhrase(status)}</Box>
+							<Box as='span' fontWeight='700' fontFamily='mono'>{status}</Box>
+							<Box
+								as='span'
+								fontWeight='500'
+								style={{ color: `color-mix(in srgb, var(--beak-colors-${statusToken(status).replace('accent.', 'accent-')}) 75%, var(--beak-colors-fg-default))` }}
+							>
+								{getStatusReasonPhrase(status)}
+							</Box>
 						</Flex>
 					)}
 					<Box ml='auto' fontSize='xs' color='fg.subtle' fontFamily='mono'>
