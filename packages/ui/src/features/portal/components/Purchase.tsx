@@ -15,10 +15,15 @@ const Purchase: React.FC<PurchaseProps> = ({ onChangeToTrial }) => {
 	const [, setPricingUrl] = useState('https://getbeak.app/pricing');
 
 	useEffect(() => {
+		let cancelled = false;
 		getPurchaseInformation().then(({ buyUrl, pricingUrl }) => {
+			if (cancelled) return;
 			setBuyUrl(buyUrl);
 			setPricingUrl(pricingUrl);
 		});
+		return () => {
+			cancelled = true;
+		};
 	}, []);
 
 	return (
