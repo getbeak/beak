@@ -67,7 +67,7 @@ const RequestPaneSplitter: React.FC<RequestPaneSplitterProps> = ({ selectedNode 
 					fontWeight='700'
 					textTransform='uppercase'
 					letterSpacing='0.06em'
-					color='fg.subtle'
+					color='accent.pink'
 				>
 					{'Request preview'}
 				</Box>
