@@ -1,7 +1,7 @@
 import type Squawk from '@beak/common/utils/squawk';
 import type { ExtractedVariables } from '@beak/ui/features/graphql-editor/types';
-import type { ValueSections } from '@beak/ui/features/variables/values';
 import type { ActiveRename } from '@beak/ui/features/tree-view/types';
+import type { ValueSections } from '@beak/ui/features/variables/values';
 import type { EntryMap, EntryType } from '@getbeak/types/body-editor-json';
 import type { Tree } from '@getbeak/types/nodes';
 import type { ToggleKeyValue } from '@getbeak/types/request';
@@ -46,6 +46,7 @@ export const ActionTypes = {
 	REQUEST_BODY_JSON_EDITOR_ENABLED_CHANGE: '@beak/global/project/REQUEST_BODY_JSON_EDITOR_ENABLED_CHANGE',
 	REQUEST_BODY_JSON_EDITOR_ADD_ENTRY: '@beak/global/project/REQUEST_BODY_JSON_EDITOR_ADD_ENTRY',
 	REQUEST_BODY_JSON_EDITOR_REMOVE_ENTRY: '@beak/global/project/REQUEST_BODY_JSON_EDITOR_REMOVE_ENTRY',
+	REQUEST_BODY_JSON_EDITOR_MOVE_ENTRY: '@beak/global/project/REQUEST_BODY_JSON_EDITOR_MOVE_ENTRY',
 
 	REQUEST_BODY_URL_ENCODED_EDITOR_NAME_CHANGE: '@beak/global/project/REQUEST_BODY_URL_ENCODED_EDITOR_NAME_CHANGE',
 	REQUEST_BODY_URL_ENCODED_EDITOR_VALUE_CHANGE: '@beak/global/project/REQUEST_BODY_URL_ENCODED_EDITOR_VALUE_CHANGE',
@@ -247,6 +248,19 @@ export interface RequestBodyJsonEditorAddEntryPayload extends RequestIdPayload {
 }
 export interface RequestBodyJsonEditorRemoveEntryPayload extends RequestIdPayload {
 	id: string;
+}
+
+export type JsonEntryMoveOp = 'before' | 'after' | 'inside';
+
+/**
+ * Move a JSON entry. `before` / `after` reorder relative to a sibling
+ * `targetId`; `inside` reparents into the (object/array) target. Self-drops
+ * and descendant-drops are rejected in the reducer.
+ */
+export interface RequestBodyJsonEditorMoveEntryPayload extends RequestIdPayload {
+	id: string;
+	targetId: string;
+	op: JsonEntryMoveOp;
 }
 
 export interface RequestBodyUrlEncodedEditorNameChangePayload extends RequestIdPayload {

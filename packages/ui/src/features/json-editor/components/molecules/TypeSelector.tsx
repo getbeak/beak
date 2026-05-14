@@ -1,6 +1,6 @@
 import { Box } from '@chakra-ui/react';
-import { AlignJustify, Ban, Calculator, CircleCheck, Layers, OctagonAlert, Type } from 'lucide-react';
 import type { EntryType } from '@getbeak/types/body-editor-json';
+import { AlignJustify, Ban, Calculator, CircleCheck, Layers, OctagonAlert, Type } from 'lucide-react';
 import * as React from 'react';
 import { useContext, useRef } from 'react';
 import { useDispatch } from 'react-redux';
@@ -24,6 +24,12 @@ const TYPE_COLOUR: Record<EntryType, string> = {
 	object: 'var(--beak-colors-accent-pink)',
 };
 
+/**
+ * Type selector renders a coloured chip showing the entry's type. The whole
+ * column is clickable — the native `<select>` stretches to fill the parent
+ * cell, sitting invisibly above the chip. This way the user can hit anywhere
+ * in the Type column rather than fishing for the tiny icon button.
+ */
 const TypeSelector: React.FC<TypeSelectorProps> = ({ disabled, requestId, id, value, onChange }) => {
 	const selectRef = useRef<HTMLSelectElement>(null);
 	const Icon = getIconForType(value);
@@ -32,7 +38,15 @@ const TypeSelector: React.FC<TypeSelectorProps> = ({ disabled, requestId, id, va
 	const colour = TYPE_COLOUR[value] ?? 'var(--beak-colors-fg-muted)';
 
 	return (
-		<Box position='relative'>
+		<Box
+			position='relative'
+			w='100%'
+			h='100%'
+			display='flex'
+			alignItems='center'
+			justifyContent='center'
+			cursor={disabled ? 'default' : 'pointer'}
+		>
 			<select
 				ref={selectRef}
 				aria-label={`Type: ${value}`}
@@ -41,11 +55,13 @@ const TypeSelector: React.FC<TypeSelectorProps> = ({ disabled, requestId, id, va
 				tabIndex={-1}
 				style={{
 					position: 'absolute',
-					margin: '0 auto',
+					inset: 0,
+					margin: 0,
+					padding: 0,
 					opacity: 0,
 					width: '100%',
-					height: '22px',
-					cursor: 'pointer',
+					height: '100%',
+					cursor: disabled ? 'default' : 'pointer',
 				}}
 				onChange={e => {
 					const type = e.currentTarget.value as EntryType;
@@ -66,11 +82,8 @@ const TypeSelector: React.FC<TypeSelectorProps> = ({ disabled, requestId, id, va
 				</optgroup>
 			</select>
 			<Box
-				py='0.5'
 				w='22px'
 				h='22px'
-				mx='auto'
-				mt='0.5'
 				display='inline-flex'
 				alignItems='center'
 				justifyContent='center'
@@ -82,7 +95,7 @@ const TypeSelector: React.FC<TypeSelectorProps> = ({ disabled, requestId, id, va
 					color: colour,
 					background: `color-mix(in srgb, ${colour} 14%, transparent)`,
 					borderColor: `color-mix(in srgb, ${colour} 38%, var(--beak-colors-border-subtle))`,
-					boxShadow: `0 1px 2px color-mix(in srgb, ${colour} 20%, transparent), inset 0 1px 0 color-mix(in srgb, white 14%, transparent)`,
+					boxShadow: `0 1px 2px color-mix(in srgb, ${colour} 18%, transparent), inset 0 1px 0 color-mix(in srgb, white 14%, transparent)`,
 				}}
 			>
 				<Icon size={12} strokeWidth={2} />

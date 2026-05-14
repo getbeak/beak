@@ -1,22 +1,13 @@
 import DebouncedInput from '@beak/ui/components/atoms/DebouncedInput';
 import VariableInput from '@beak/ui/features/variable-input/components/VariableInput';
 import type { NamedStringEntry, StringEntry } from '@getbeak/types/body-editor-json';
-import React from 'react';
-import { useContext } from 'react';
+import React, { useContext } from 'react';
 import { useDispatch } from 'react-redux';
 
 import { JsonEditorContext } from '../../contexts/json-editor-context';
-import {
-	BodyAction,
-	BodyInputValueCell,
-	BodyInputWrapper,
-	BodyNameOverrideWrapper,
-	BodyPrimaryCell,
-	BodyTypeCell,
-} from '../atoms/Cells';
-import { Row } from '../atoms/Structure';
+import { BodyInputWrapper, BodyNameOverrideWrapper } from '../atoms/Cells';
 import EntryActions from './EntryActions';
-import { EntryFolderIrrelevant } from './EntryFolder';
+import EntryRow from './EntryRow';
 import EntryToggler from './EntryToggler';
 import { detectName, type JsonEntryProps } from './JsonEntry';
 import TypeSelector from './TypeSelector';
@@ -33,10 +24,13 @@ const JsonStringEntry: React.FC<React.PropsWithChildren<JsonStringEntryProps>> =
 	const editorContext = useContext(JsonEditorContext)!;
 
 	return (
-		<Row>
-			<BodyPrimaryCell depth={depth}>
-				<EntryFolderIrrelevant />
-				<EntryToggler id={id} requestId={requestId} value={value.enabled} />
+		<EntryRow
+			id={id}
+			depth={depth}
+			parentId={value.parentId}
+			canDrag={depth > 0}
+			toggle={<EntryToggler id={id} requestId={requestId} value={value.enabled} />}
+			primary={
 				<BodyInputWrapper>
 					{nameOverride === void 0 && (
 						<DebouncedInput
@@ -56,11 +50,9 @@ const JsonStringEntry: React.FC<React.PropsWithChildren<JsonStringEntryProps>> =
 					)}
 					{nameOverride !== void 0 && <BodyNameOverrideWrapper>{nameOverride}</BodyNameOverrideWrapper>}
 				</BodyInputWrapper>
-			</BodyPrimaryCell>
-			<BodyTypeCell>
-				<TypeSelector requestId={requestId} id={id} value={value.type} />
-			</BodyTypeCell>
-			<BodyInputValueCell>
+			}
+			type={<TypeSelector requestId={requestId} id={id} value={value.type} />}
+			value={
 				<BodyInputWrapper>
 					<VariableInput
 						requestId={props.requestId}
@@ -76,11 +68,9 @@ const JsonStringEntry: React.FC<React.PropsWithChildren<JsonStringEntryProps>> =
 						}
 					/>
 				</BodyInputWrapper>
-			</BodyInputValueCell>
-			<BodyAction>
-				<EntryActions id={id} entry={value} requestId={requestId} />
-			</BodyAction>
-		</Row>
+			}
+			actions={<EntryActions id={id} entry={value} requestId={requestId} />}
+		/>
 	);
 };
 

@@ -1,23 +1,34 @@
-import { Box } from '@chakra-ui/react';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import type { ApplicationState } from '@beak/ui/store';
 import { actions } from '@beak/ui/store/project';
 import type {
 	RequestBodyJsonEditorAddEntryPayload,
 	RequestBodyJsonEditorEnabledChangePayload,
+	RequestBodyJsonEditorMoveEntryPayload,
 	RequestBodyJsonEditorNameChangePayload,
 	RequestBodyJsonEditorRemoveEntryPayload,
 	RequestBodyJsonEditorTypeChangePayload,
 	RequestBodyJsonEditorValueChangePayload,
 } from '@beak/ui/store/project/types';
+import { Box } from '@chakra-ui/react';
 import type { EntryMap } from '@getbeak/types/body-editor-json';
 import type { AnyAction } from '@reduxjs/toolkit';
 import * as React from 'react';
 
 import { useMemo } from 'react';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 
 import { JsonEditorContext } from '../contexts/json-editor-context';
-import { HeaderAction, HeaderKeyCell, HeaderTypeCell, HeaderValueCell } from './atoms/Cells';
+import {
+	HeaderAction,
+	HeaderDragCell,
+	HeaderFolderCell,
+	HeaderKeyCell,
+	HeaderToggleCell,
+	HeaderTypeCell,
+	HeaderValueCell,
+} from './atoms/Cells';
 import { Body, Header, Row } from './atoms/Structure';
 import { JsonEntry } from './molecules/JsonEntry';
 
@@ -34,6 +45,7 @@ interface JsonEditorProps {
 	enabledChanged?: (payload: RequestBodyJsonEditorEnabledChangePayload) => AnyAction;
 	addedEntry?: (payload: RequestBodyJsonEditorAddEntryPayload) => AnyAction;
 	removedEntry?: (payload: RequestBodyJsonEditorRemoveEntryPayload) => AnyAction;
+	movedEntry?: (payload: RequestBodyJsonEditorMoveEntryPayload) => AnyAction;
 }
 
 const JsonEditor: React.FC<React.PropsWithChildren<JsonEditorProps>> = props => {
@@ -50,6 +62,7 @@ const JsonEditor: React.FC<React.PropsWithChildren<JsonEditorProps>> = props => 
 			enabledChange: props.enabledChanged ?? actions.requestBodyJsonEditorEnabledChange,
 			addEntry: props.addedEntry ?? actions.requestBodyJsonEditorAddEntry,
 			removeEntry: props.removedEntry ?? actions.requestBodyJsonEditorRemoveEntry,
+			moveEntry: props.movedEntry ?? actions.requestBodyJsonEditorMoveEntry,
 		}),
 		[
 			requestId,
@@ -60,25 +73,31 @@ const JsonEditor: React.FC<React.PropsWithChildren<JsonEditorProps>> = props => 
 			props.enabledChanged,
 			props.addedEntry,
 			props.removedEntry,
+			props.movedEntry,
 		],
 	);
 
 	return (
-		<JsonEditorContext.Provider value={ctxValue}>
-			<Box mt='1.5' w='100%' fontSize='sm' fontWeight='400' color='fg.muted'>
-				<Header>
-					<Row data-empty='true'>
-						<HeaderKeyCell>{'Key'}</HeaderKeyCell>
-						<HeaderTypeCell>{'Type'}</HeaderTypeCell>
-						<HeaderValueCell>{'Value'}</HeaderValueCell>
-						<HeaderAction />
-					</Row>
-				</Header>
-				<Body>
-					<JsonEntry forceRootObject={forceRootObject} requestId={requestId} depth={0} value={root!} />
-				</Body>
-			</Box>
-		</JsonEditorContext.Provider>
+		<DndProvider backend={HTML5Backend}>
+			<JsonEditorContext.Provider value={ctxValue}>
+				<Box mt='1.5' w='100%' fontSize='sm' fontWeight='400' color='fg.muted'>
+					<Header>
+						<Row data-empty='true'>
+							<HeaderFolderCell />
+							<HeaderToggleCell />
+							<HeaderKeyCell>{'Key'}</HeaderKeyCell>
+							<HeaderTypeCell>{'Type'}</HeaderTypeCell>
+							<HeaderValueCell>{'Value'}</HeaderValueCell>
+							<HeaderAction />
+							<HeaderDragCell />
+						</Row>
+					</Header>
+					<Body>
+						<JsonEntry forceRootObject={forceRootObject} requestId={requestId} depth={0} value={root!} />
+					</Body>
+				</Box>
+			</JsonEditorContext.Provider>
+		</DndProvider>
 	);
 };
 

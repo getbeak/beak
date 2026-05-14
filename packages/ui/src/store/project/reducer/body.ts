@@ -108,6 +108,11 @@ function buildJsonEditor(builder: ActionReducerMapBuilder<State>) {
 			const body = node.info.body as RequestBodyJson;
 			delete body.payload[payload.id];
 			body.payload = removeOrphanedJsonEntries(body.payload);
+		})
+		.addCase(actions.requestBodyJsonEditorMoveEntry, (state, { payload }) => {
+			const node = state.tree[payload.requestId] as ValidRequestNode;
+			const body = node.info.body as RequestBodyJson;
+			body.payload = moveJsonEntry(body.payload, payload.id, payload.targetId, payload.op);
 		});
 }
 
@@ -259,6 +264,69 @@ function buildGraphQlEditor(builder: ActionReducerMapBuilder<State>) {
 				};
 			});
 		});
+}
+
+/**
+ * Move a JSON entry inside the EntryMap. The map's natural iteration order is
+ * the *visual* order of children, so reordering = rebuilding the map with the
+ * desired key order while updating the moved entry's `parentId` where needed.
+ *
+ * Guard rails:
+ * - Root entries can't be moved.
+ * - Self-drops are no-ops.
+ * - Dropping into the entry's own descendant subtree is rejected (would orphan
+ *   the moved subtree).
+ * - 'inside' is only honoured when target is an object or array.
+ */
+function moveJsonEntry(
+	body: EntryMap,
+	sourceId: string,
+	targetId: string,
+	op: 'before' | 'after' | 'inside',
+): EntryMap {
+	const source = body[sourceId];
+	const target = body[targetId];
+	if (!source || !target) return body;
+	if (sourceId === targetId) return body;
+	if (source.parentId === null) return body;
+	if (op === 'inside' && !['array', 'object'].includes(target.type)) return body;
+
+	// Build set of source's descendants so we can reject illegal drops.
+	const descendants = new Set<string>([sourceId]);
+	let changed = true;
+	while (changed) {
+		changed = false;
+		for (const key of TypedObject.keys(body)) {
+			const entry = body[key];
+			if (entry.parentId && descendants.has(entry.parentId) && !descendants.has(key)) {
+				descendants.add(key);
+				changed = true;
+			}
+		}
+	}
+	if (descendants.has(targetId)) return body;
+
+	const newParentId = op === 'inside' ? targetId : target.parentId;
+	const movedEntry = { ...source, parentId: newParentId };
+
+	// Rebuild the EntryMap. Keep every other entry in its current insertion
+	// order so unrelated siblings don't shuffle. Drop `sourceId` from its old
+	// position, then re-insert it at the right slot relative to `targetId`.
+	const result: EntryMap = {};
+	const keys = TypedObject.keys(body).filter(k => k !== sourceId);
+	for (const key of keys) {
+		if (key === targetId && op === 'before') result[sourceId] = movedEntry;
+		result[key] = body[key];
+		if (key === targetId && op === 'after') result[sourceId] = movedEntry;
+	}
+	if (op === 'inside') {
+		// `inside` slots the moved entry as the last child of `targetId`. Drop it
+		// after every existing child so users get an obvious "appended here"
+		// signal — re-ordering within can happen with another drag.
+		result[sourceId] = movedEntry;
+	}
+
+	return result;
 }
 
 function removeOrphanedJsonEntries(body: EntryMap) {

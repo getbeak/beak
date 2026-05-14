@@ -1,7 +1,6 @@
 import { Flex, IconButton } from '@chakra-ui/react';
-import { Minus, Plus } from 'lucide-react';
-
 import type { Entries } from '@getbeak/types/body-editor-json';
+import { Minus, Plus } from 'lucide-react';
 import * as React from 'react';
 import { useContext } from 'react';
 import { useDispatch } from 'react-redux';

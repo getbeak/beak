@@ -1,22 +1,12 @@
 import DebouncedInput from '@beak/ui/components/atoms/DebouncedInput';
 import type { NamedNullEntry, NullEntry } from '@getbeak/types/body-editor-json';
-import React from 'react';
-import { useContext } from 'react';
+import React, { useContext } from 'react';
 import { useDispatch } from 'react-redux';
 
 import { JsonEditorContext } from '../../contexts/json-editor-context';
-import {
-	BodyAction,
-	BodyInputValueCell,
-	BodyInputWrapper,
-	BodyNameOverrideWrapper,
-	BodyNullWrapper,
-	BodyPrimaryCell,
-	BodyTypeCell,
-} from '../atoms/Cells';
-import { Row } from '../atoms/Structure';
+import { BodyInputWrapper, BodyNameOverrideWrapper, BodyNullWrapper } from '../atoms/Cells';
 import EntryActions from './EntryActions';
-import { EntryFolderIrrelevant } from './EntryFolder';
+import EntryRow from './EntryRow';
 import EntryToggler from './EntryToggler';
 import { detectName, type JsonEntryProps } from './JsonEntry';
 import TypeSelector from './TypeSelector';
@@ -33,10 +23,13 @@ const JsonNullEntry: React.FC<React.PropsWithChildren<JsonNullEntryProps>> = pro
 	const editorContext = useContext(JsonEditorContext)!;
 
 	return (
-		<Row>
-			<BodyPrimaryCell depth={depth}>
-				<EntryFolderIrrelevant />
-				<EntryToggler id={id} requestId={requestId} value={value.enabled} />
+		<EntryRow
+			id={id}
+			depth={depth}
+			parentId={value.parentId}
+			canDrag={depth > 0}
+			toggle={<EntryToggler id={id} requestId={requestId} value={value.enabled} />}
+			primary={
 				<BodyInputWrapper>
 					{nameOverride === void 0 && (
 						<DebouncedInput
@@ -56,17 +49,11 @@ const JsonNullEntry: React.FC<React.PropsWithChildren<JsonNullEntryProps>> = pro
 					)}
 					{nameOverride !== void 0 && <BodyNameOverrideWrapper>{nameOverride}</BodyNameOverrideWrapper>}
 				</BodyInputWrapper>
-			</BodyPrimaryCell>
-			<BodyTypeCell>
-				<TypeSelector requestId={requestId} id={id} value={value.type} />
-			</BodyTypeCell>
-			<BodyInputValueCell>
-				<BodyNullWrapper>{'null'}</BodyNullWrapper>
-			</BodyInputValueCell>
-			<BodyAction>
-				<EntryActions id={id} entry={value} requestId={requestId} />
-			</BodyAction>
-		</Row>
+			}
+			type={<TypeSelector requestId={requestId} id={id} value={value.type} />}
+			value={<BodyNullWrapper>{'null'}</BodyNullWrapper>}
+			actions={<EntryActions id={id} entry={value} requestId={requestId} />}
+		/>
 	);
 };
 

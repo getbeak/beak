@@ -2,8 +2,10 @@ import { Box, type BoxProps, chakra } from '@chakra-ui/react';
 import * as React from 'react';
 
 const headerBase = {
-	py: '1',
-	px: '1.5',
+	display: 'flex',
+	alignItems: 'center',
+	height: '100%',
+	px: '2',
 	color: 'fg.subtle',
 	fontSize: '10px',
 	fontWeight: '700',
@@ -12,55 +14,89 @@ const headerBase = {
 } as const;
 
 export const HeaderCell: React.FC<BoxProps> = props => <Box {...headerBase} {...props} />;
+// Folder / disclosure column — no header label, but reserve the gutter so
+// the grid lines up between the header and body rows.
+export const HeaderFolderCell: React.FC<BoxProps> = props => <Box {...headerBase} px={0} {...props} />;
+// Toggle column — same reasoning as the folder gutter.
+export const HeaderToggleCell: React.FC<BoxProps> = props => <Box {...headerBase} px={0} {...props} />;
 export const HeaderKeyCell: React.FC<BoxProps> = props => <Box {...headerBase} {...props} />;
-export const HeaderTypeCell: React.FC<BoxProps> = props => <Box {...headerBase} {...props} />;
+export const HeaderTypeCell: React.FC<BoxProps> = props => (
+	<Box {...headerBase} px='0' justifyContent='center' textAlign='center' {...props} />
+);
 export const HeaderValueCell: React.FC<BoxProps> = props => <Box {...headerBase} {...props} />;
 export const HeaderAction: React.FC<BoxProps> = props => <Box {...headerBase} px={0} {...props} />;
+export const HeaderDragCell: React.FC<BoxProps> = props => <Box {...headerBase} px={0} {...props} />;
 
 export const BodyCell: React.FC<BoxProps> = props => <Box {...props} />;
+
+/**
+ * Folder column — the disclosure chevron for object/array entries. Always
+ * 18px wide so the indent rhythm matches the grid template column above.
+ */
+export const BodyFolderCell: React.FC<BoxProps> = props => (
+	<Box display='flex' alignItems='center' justifyContent='center' {...props} />
+);
+
+/**
+ * Toggle column — same 28px gutter as the key/value editor, centred.
+ */
+export const BodyToggleCell: React.FC<BoxProps> = props => (
+	<Box display='flex' alignItems='center' justifyContent='center' {...props} />
+);
 
 interface BodyPrimaryCellProps extends BoxProps {
 	depth: number;
 }
 
+/**
+ * Key cell — the only place where depth shows. We indent the *contents* of
+ * the cell so the cell itself stays flush with the column edge (the row's
+ * pink stripe and the left grid line still hit the same x).
+ */
 export const BodyPrimaryCell: React.FC<BodyPrimaryCellProps> = ({ depth, ...rest }) => (
-	<Box
-		display='flex'
-		flexDirection='row'
-		alignItems='center'
-		style={{ paddingLeft: `${depth * 10 + 4}px` }}
-		gap='4px'
-		{...rest}
-	/>
+	<Box display='flex' flexDirection='row' alignItems='stretch' style={{ paddingLeft: `${depth * 12}px` }} {...rest} />
 );
 
+/**
+ * Input chrome inside the JSON editor — same idea as the key/value editor:
+ * no border at rest, a soft pink fill + underline on focus, and a hover tint
+ * so the user can see what's interactive without painting in every row.
+ */
 export const BodyInputWrapper: React.FC<BoxProps> = props => (
 	<Box
 		flexGrow={1}
+		display='flex'
+		alignItems='stretch'
 		css={{
-			'> div > article, > input[type=text]': {
+			'& > div, & > input[type=text]': {
 				width: '100%',
-				height: '24px',
-				border: '1px solid transparent',
-				borderRadius: '4px',
+				display: 'flex',
+				alignItems: 'center',
+			},
+			'& > div > article, & > input[type=text]': {
+				width: '100%',
+				height: '100%',
+				minHeight: '28px',
+				border: 'none',
+				borderRadius: '0',
 				background: 'transparent',
-				padding: '2px 6px',
+				padding: '0 8px',
 				margin: '0',
 				fontSize: '12px',
+				lineHeight: '28px',
 				color: 'var(--beak-colors-fg-default)',
 				caretColor: 'var(--beak-colors-accent-pink)',
-				transition: 'background-color .1s ease, border-color .1s ease',
+				transition: 'background-color .12s ease, box-shadow .12s ease',
 			},
-			'> div > article:hover, > input[type=text]:hover': {
-				background: 'color-mix(in srgb, var(--beak-colors-bg-surface-emphasized) 50%, transparent)',
+			'& > div > article:hover, & > input[type=text]:hover': {
+				background: 'color-mix(in srgb, var(--beak-colors-fg-default) 3%, transparent)',
 			},
-			'> div > article:focus-within, > input[type=text]:focus': {
+			'& > div > article:focus-within, & > input[type=text]:focus': {
 				outline: 'none',
-				background: 'var(--beak-colors-bg-surface)',
-				borderColor: 'var(--beak-colors-accent-pink)',
-				boxShadow: '0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-pink) 22%, transparent)',
+				background: 'color-mix(in srgb, var(--beak-colors-accent-pink) 5%, transparent)',
+				boxShadow: 'inset 0 -1px 0 var(--beak-colors-accent-pink)',
 			},
-			'> input:disabled': {
+			'& > input:disabled': {
 				color: 'inherit',
 				userSelect: 'none',
 				background: 'transparent',
@@ -72,8 +108,9 @@ export const BodyInputWrapper: React.FC<BoxProps> = props => (
 
 export const BodyNullWrapper: React.FC<BoxProps> = props => (
 	<Box
-		pl='1.5'
-		lineHeight='24px'
+		display='flex'
+		alignItems='center'
+		pl='2'
 		fontFamily='mono'
 		fontSize='12px'
 		color='fg.subtle'
@@ -82,20 +119,22 @@ export const BodyNullWrapper: React.FC<BoxProps> = props => (
 	/>
 );
 export const BodyNameOverrideWrapper: React.FC<BoxProps> = props => (
-	<Box pl='1.5' lineHeight='24px' {...props} />
+	<Box display='flex' alignItems='center' pl='2' fontSize='12px' color='fg.muted' {...props} />
 );
-export const BodyTypeCell: React.FC<BoxProps> = props => <Box display='flex' alignItems='center' {...props} />;
-export const BodyInputValueCell: React.FC<BoxProps> = props => <Box {...props} />;
+export const BodyTypeCell: React.FC<BoxProps> = props => (
+	<Box display='flex' alignItems='stretch' justifyContent='stretch' {...props} />
+);
+export const BodyInputValueCell: React.FC<BoxProps> = props => <Box display='flex' alignItems='stretch' {...props} />;
 export const BodyLabelValueCell: React.FC<BoxProps> = props => (
 	<Box
-		pt='0.5'
-		pl='1.5'
+		display='flex'
+		alignItems='center'
+		pl='2'
 		fontSize='10px'
 		fontWeight='700'
 		letterSpacing='0.06em'
 		textTransform='uppercase'
 		color='fg.subtle'
-		alignSelf='center'
 		{...props}
 	/>
 );

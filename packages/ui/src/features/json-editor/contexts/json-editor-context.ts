@@ -3,6 +3,7 @@ import { actions } from '@beak/ui/store/project';
 import type {
 	RequestBodyJsonEditorAddEntryPayload,
 	RequestBodyJsonEditorEnabledChangePayload,
+	RequestBodyJsonEditorMoveEntryPayload,
 	RequestBodyJsonEditorNameChangePayload,
 	RequestBodyJsonEditorRemoveEntryPayload,
 	RequestBodyJsonEditorTypeChangePayload,
@@ -22,6 +23,7 @@ interface Context {
 	enabledChange: (payload: RequestBodyJsonEditorEnabledChangePayload) => AnyAction;
 	addEntry: (payload: RequestBodyJsonEditorAddEntryPayload) => AnyAction;
 	removeEntry: (payload: RequestBodyJsonEditorRemoveEntryPayload) => AnyAction;
+	moveEntry: (payload: RequestBodyJsonEditorMoveEntryPayload) => AnyAction;
 }
 
 export const JsonEditorContext = createContext<Context>({
@@ -43,4 +45,5 @@ export const JsonEditorContext = createContext<Context>({
 	enabledChange: actions.requestBodyJsonEditorEnabledChange,
 	addEntry: actions.requestBodyJsonEditorAddEntry,
 	removeEntry: actions.requestBodyJsonEditorRemoveEntry,
+	moveEntry: actions.requestBodyJsonEditorMoveEntry,
 });

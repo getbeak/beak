@@ -6,17 +6,10 @@ import React, { useContext, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
 import { JsonEditorContext } from '../../contexts/json-editor-context';
-import {
-	BodyAction,
-	BodyInputWrapper,
-	BodyLabelValueCell,
-	BodyNameOverrideWrapper,
-	BodyPrimaryCell,
-	BodyTypeCell,
-} from '../atoms/Cells';
-import { Row } from '../atoms/Structure';
+import { BodyInputWrapper, BodyLabelValueCell, BodyNameOverrideWrapper } from '../atoms/Cells';
 import EntryActions from './EntryActions';
 import EntryFolder from './EntryFolder';
+import EntryRow from './EntryRow';
 import EntryToggler from './EntryToggler';
 import { detectName, JsonEntry, type JsonEntryProps } from './JsonEntry';
 import TypeSelector from './TypeSelector';
@@ -38,10 +31,16 @@ const JsonArrayEntry: React.FC<React.PropsWithChildren<JsonArrayEntryProps>> = p
 
 	return (
 		<React.Fragment>
-			<Row>
-				<BodyPrimaryCell depth={depth}>
+			<EntryRow
+				id={id}
+				depth={depth}
+				parentId={value.parentId}
+				canDrag={depth > 0}
+				folder={
 					<EntryFolder id={id} expanded={expanded} requestId={requestId} onChange={expanded => setExpanded(expanded)} />
-					<EntryToggler id={id} requestId={requestId} value={value.enabled} />
+				}
+				toggle={<EntryToggler id={id} requestId={requestId} value={value.enabled} />}
+				primary={
 					<BodyInputWrapper>
 						{nameOverride === void 0 && (
 							<DebouncedInput
@@ -61,15 +60,15 @@ const JsonArrayEntry: React.FC<React.PropsWithChildren<JsonArrayEntryProps>> = p
 						)}
 						{nameOverride !== void 0 && <BodyNameOverrideWrapper>{nameOverride}</BodyNameOverrideWrapper>}
 					</BodyInputWrapper>
-				</BodyPrimaryCell>
-				<BodyTypeCell>
-					<TypeSelector requestId={requestId} id={id} value={value.type} />
-				</BodyTypeCell>
-				<BodyLabelValueCell style={{ fontVariantNumeric: 'tabular-nums' }}>{`${children.length} ${children.length === 1 ? 'item' : 'items'}`}</BodyLabelValueCell>
-				<BodyAction>
-					<EntryActions id={id} entry={value} requestId={requestId} />
-				</BodyAction>
-			</Row>
+				}
+				type={<TypeSelector requestId={requestId} id={id} value={value.type} />}
+				value={
+					<BodyLabelValueCell style={{ fontVariantNumeric: 'tabular-nums' }}>
+						{`${children.length} ${children.length === 1 ? 'item' : 'items'}`}
+					</BodyLabelValueCell>
+				}
+				actions={<EntryActions id={id} entry={value} requestId={requestId} />}
+			/>
 			{expanded &&
 				children.map((c, i) => (
 					<JsonEntry depth={depth + 1} key={c.id} requestId={requestId} value={c} nameOverride={`Index ${i}`} />

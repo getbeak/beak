@@ -36,6 +36,7 @@ import {
 	type RequestBodyGraphQlEditorReconcileVariablesPayload,
 	type RequestBodyJsonEditorAddEntryPayload,
 	type RequestBodyJsonEditorEnabledChangePayload,
+	type RequestBodyJsonEditorMoveEntryPayload,
 	type RequestBodyJsonEditorNameChangePayload,
 	type RequestBodyJsonEditorRemoveEntryPayload,
 	type RequestBodyJsonEditorTypeChangePayload,
@@ -109,6 +110,9 @@ export const requestBodyJsonEditorAddEntry = createAction<RequestBodyJsonEditorA
 );
 export const requestBodyJsonEditorRemoveEntry = createAction<RequestBodyJsonEditorRemoveEntryPayload>(
 	AT.REQUEST_BODY_JSON_EDITOR_REMOVE_ENTRY,
+);
+export const requestBodyJsonEditorMoveEntry = createAction<RequestBodyJsonEditorMoveEntryPayload>(
+	AT.REQUEST_BODY_JSON_EDITOR_MOVE_ENTRY,
 );
 
 export const requestBodyUrlEncodedEditorNameChange = createAction<RequestBodyUrlEncodedEditorNameChangePayload>(
@@ -210,6 +214,7 @@ export default {
 	requestBodyJsonEditorEnabledChange,
 	requestBodyJsonEditorAddEntry,
 	requestBodyJsonEditorRemoveEntry,
+	requestBodyJsonEditorMoveEntry,
 
 	requestBodyGraphQlEditorQueryChanged,
 	requestBodyGraphQlEditorNameChange,

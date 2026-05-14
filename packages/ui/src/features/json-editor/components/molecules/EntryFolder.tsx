@@ -1,6 +1,6 @@
-import { Box } from '@chakra-ui/react';
 import SelectedNodeContext from '@beak/ui/features/request-pane/contexts/selected-node';
 import { requestPreferenceSetReqJsonExpand } from '@beak/ui/store/preferences/actions';
+import { Box } from '@chakra-ui/react';
 import { ChevronRight } from 'lucide-react';
 import * as React from 'react';
 import { useContext } from 'react';
@@ -59,7 +59,5 @@ const EntryFolder: React.FC<EntryFolderProps> = ({ expanded, id, onChange }) => 
 		</Box>
 	);
 };
-
-export const EntryFolderIrrelevant: React.FC = () => <Box display='inline-block' w='16px' h='20px' />;
 
 export default EntryFolder;
