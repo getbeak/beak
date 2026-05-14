@@ -21,7 +21,7 @@ const NoItemsFound: React.FC<React.PropsWithChildren> = ({ children }) => (
 		<Box fontSize='sm' fontWeight='600' color='fg.default' letterSpacing='-0.005em'>
 			{children}
 		</Box>
-		<Box fontSize='10px' color='fg.subtle' fontWeight='700' letterSpacing='0.06em' textTransform='uppercase'>
+		<Box fontSize='10px' color='accent.pink' fontWeight='700' letterSpacing='0.06em' textTransform='uppercase'>
 			{'Try a different query'}
 		</Box>
 	</Flex>

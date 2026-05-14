@@ -152,8 +152,8 @@ const VariableSets: React.FC<React.PropsWithChildren<unknown>> = () => {
 					>
 						<Table size={18} strokeWidth={2} />
 					</Flex>
-					<Box fontSize='xs' fontWeight='600' color='fg.default'>{'No variable sets yet'}</Box>
-					<Box fontSize='10px' color='fg.subtle' fontWeight='700' letterSpacing='0.06em' textTransform='uppercase'>
+					<Box fontSize='sm' fontWeight='600' color='fg.default' letterSpacing='-0.005em' lineHeight='1.2'>{'No variable sets yet'}</Box>
+					<Box fontSize='10px' color='accent.pink' fontWeight='700' letterSpacing='0.06em' textTransform='uppercase'>
 						{'Right-click to add one'}
 					</Box>
 				</Flex>
