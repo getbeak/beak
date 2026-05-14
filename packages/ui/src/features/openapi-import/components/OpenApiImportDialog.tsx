@@ -276,7 +276,15 @@ const OpenApiImportDialog: React.FC = () => {
 							animate={{ opacity: 1 }}
 							exit={{ opacity: 0 }}
 						>
-							<Flex direction='column' align='center' py='6' gap='3'>
+							<Flex
+								role='status'
+								aria-live='polite'
+								aria-label='Importing OpenAPI spec'
+								direction='column'
+								align='center'
+								py='6'
+								gap='3'
+							>
 								<Flex
 									align='center'
 									justify='center'
