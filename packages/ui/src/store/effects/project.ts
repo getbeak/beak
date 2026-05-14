@@ -266,7 +266,7 @@ export function registerProjectEffects(start: AppStartListening) {
 				await ipcDialogService.showMessageBox({
 					type: 'error',
 					title: 'Unable to duplicate broken request',
-					message: "You can't duplicate a request which has validation errors. Once they are fixed please try again",
+					message: 'You can’t duplicate a request which has validation errors. Once they are fixed please try again.',
 					detail: 'Message @beakapp on twitter for support.',
 				});
 				return;
@@ -310,7 +310,7 @@ export function registerProjectEffects(start: AppStartListening) {
 			if (withConfirmation) {
 				const response = await ipcDialogService.showMessageBox({
 					title: 'Delete file or folder',
-					message: `You are about to delete '${node.name}' from your machine. Are you sure you want to continue?`,
+					message: `You are about to delete “${node.name}” from your machine. Are you sure you want to continue?`,
 					detail: 'This action is irreversible inside Beak!',
 					type: 'warning',
 					buttons: ['Remove', 'Cancel'],
