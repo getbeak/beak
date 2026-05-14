@@ -97,7 +97,7 @@ const ActionBarFlightStatus: React.FC = () => {
 	}
 
 	return (
-		<Box display='inline-flex' alignItems='center' mx='1'>
+		<Box display='inline-flex' alignItems='center' mx='1' role='status' aria-live='polite' aria-label='Flight status'>
 			<AnimatePresence mode='wait'>{renderInner()}</AnimatePresence>
 		</Box>
 	);
