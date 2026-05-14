@@ -65,7 +65,7 @@ const JsonArrayEntry: React.FC<React.PropsWithChildren<JsonArrayEntryProps>> = p
 				<BodyTypeCell>
 					<TypeSelector requestId={requestId} id={id} value={value.type} />
 				</BodyTypeCell>
-				<BodyLabelValueCell>{`${children.length} ${children.length === 1 ? 'item' : 'items'}`}</BodyLabelValueCell>
+				<BodyLabelValueCell style={{ fontVariantNumeric: 'tabular-nums' }}>{`${children.length} ${children.length === 1 ? 'item' : 'items'}`}</BodyLabelValueCell>
 				<BodyAction>
 					<EntryActions id={id} entry={value} requestId={requestId} />
 				</BodyAction>

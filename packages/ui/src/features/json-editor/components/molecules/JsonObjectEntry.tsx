@@ -67,7 +67,7 @@ const JsonObjectEntry: React.FC<React.PropsWithChildren<JsonObjectEntryProps>> =
 				<BodyTypeCell>
 					<TypeSelector disabled={forceRootObject} id={id} requestId={requestId} value={value.type} />
 				</BodyTypeCell>
-				<BodyLabelValueCell>{`${children.length} ${children.length === 1 ? 'key' : 'keys'}`}</BodyLabelValueCell>
+				<BodyLabelValueCell style={{ fontVariantNumeric: 'tabular-nums' }}>{`${children.length} ${children.length === 1 ? 'key' : 'keys'}`}</BodyLabelValueCell>
 				<BodyAction>
 					<EntryActions id={id} entry={value} requestId={requestId} />
 				</BodyAction>
