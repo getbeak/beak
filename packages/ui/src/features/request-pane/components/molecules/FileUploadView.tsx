@@ -1,5 +1,5 @@
 import type { PreviewReferencedFileRes } from '@beak/common/ipc/fs';
-import Button from '@beak/ui/components/atoms/Button';
+import { attachFile } from '@beak/ui/features/asset-attachment/attach-file';
 import { pickAndAttachAsset } from '@beak/ui/features/asset-attachment/pick-and-attach';
 import { ipcFsService } from '@beak/ui/lib/ipc';
 import { requestBodyAssetChanged, requestBodyFileChanged } from '@beak/ui/store/project/actions';
@@ -21,6 +21,8 @@ const FileUploadView: React.FC<FileUploadViewProps> = ({ node }) => {
 	const dispatch = useDispatch();
 	const body = node.info.body as RequestBodyFile;
 	const [preview, setPreview] = useState<PreviewReferencedFileRes>();
+	const [dragOver, setDragOver] = useState(false);
+	const [busy, setBusy] = useState(false);
 
 	useEffect(() => {
 		let cancelled = false;
@@ -104,7 +106,7 @@ const FileUploadView: React.FC<FileUploadViewProps> = ({ node }) => {
 
 	const assetRef = body.payload.assetRef;
 
-	async function attachAsAsset(event: React.MouseEvent) {
+	async function attachAsAsset(event: React.MouseEvent | React.KeyboardEvent) {
 		event.stopPropagation();
 		const outcome = await pickAndAttachAsset();
 		if (!outcome || !outcome.ok) return;
@@ -116,17 +118,43 @@ const FileUploadView: React.FC<FileUploadViewProps> = ({ node }) => {
 		dispatch(requestBodyAssetChanged({ requestId: node.id, assetRef: void 0 }));
 	}
 
+	async function handleDrop(event: React.DragEvent<HTMLDivElement>) {
+		event.preventDefault();
+		event.stopPropagation();
+		setDragOver(false);
+
+		const droppedFile = event.dataTransfer.files?.[0];
+		if (!droppedFile) return;
+
+		setBusy(true);
+		try {
+			const bytes = new Uint8Array(await droppedFile.arrayBuffer());
+			const outcome = await attachFile({
+				file: { name: droppedFile.name, type: droppedFile.type, bytes },
+			});
+			if (outcome.ok) {
+				dispatch(requestBodyAssetChanged({ requestId: node.id, assetRef: outcome.ref }));
+			} else {
+				console.warn('drop attach failed', outcome.error);
+			}
+		} catch (err) {
+			console.warn('drop attach failed', err);
+		} finally {
+			setBusy(false);
+		}
+	}
+
 	const closeBtn = (onClick: (e: React.MouseEvent) => void) => (
 		<IconButton
 			aria-label='Remove'
 			size='xs'
 			variant='ghost'
 			position='absolute'
-			top='1'
-			right='1'
-			h='18px'
-			w='18px'
-			minW='18px'
+			top='1.5'
+			right='1.5'
+			h='20px'
+			w='20px'
+			minW='20px'
 			borderRadius='sm'
 			color='fg.subtle'
 			_hover={{
@@ -139,43 +167,137 @@ const FileUploadView: React.FC<FileUploadViewProps> = ({ node }) => {
 		</IconButton>
 	);
 
+	const hasAnything = Boolean(preview || assetRef);
+
 	return (
-		<Flex py='6' direction='column' align='center' gap='3'>
+		<Flex direction='column' gap='2' p='3'>
+			{/* Primary dropzone — defaults to the content-addressed asset flow.
+			    Click attaches as asset; drag/drop attaches as asset; the legacy
+			    external-file row below pivots to the path-based flow for users
+			    that need to point at bytes outside the project. */}
 			<Flex
 				role='button'
 				tabIndex={0}
-				aria-label={preview ? 'Replace file' : 'Pick a file'}
+				aria-label={hasAnything ? 'Replace file' : 'Drop a file here or click to choose'}
+				aria-busy={busy}
 				position='relative'
-				direction='column'
+				direction='row'
 				align='center'
-				justify='center'
+				gap='2.5'
 				cursor='pointer'
-				gap='2'
-				w='280px'
-				h='140px'
-				borderRadius='xl'
-				borderWidth={preview ? '1px' : '2px'}
-				borderStyle={preview ? 'solid' : 'dashed'}
+				w='100%'
+				minH='64px'
+				px='3'
+				py='2.5'
+				borderRadius='lg'
+				borderWidth='1px'
+				borderStyle={hasAnything ? 'solid' : 'dashed'}
 				borderColor={
-					preview
-						? 'border.subtle'
-						: 'color-mix(in srgb, var(--beak-colors-accent-pink) 25%, var(--beak-colors-border-subtle))'
+					dragOver
+						? 'accent.pink'
+						: hasAnything
+							? 'border.subtle'
+							: 'color-mix(in srgb, var(--beak-colors-accent-pink) 28%, var(--beak-colors-border-subtle))'
 				}
-				bg={preview ? 'bg.surface' : 'color-mix(in srgb, var(--beak-colors-accent-pink) 4%, transparent)'}
+				bg={
+					dragOver
+						? 'color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent)'
+						: hasAnything
+							? 'bg.surface'
+							: 'color-mix(in srgb, var(--beak-colors-accent-pink) 5%, transparent)'
+				}
 				color='fg.muted'
 				fontSize='xs'
 				transition='border-color .14s ease, background-color .14s ease, box-shadow .14s ease, transform .08s ease'
 				_hover={{
 					borderColor: 'accent.pink',
 					bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 10%, transparent)',
-					boxShadow: '0 8px 20px color-mix(in srgb, var(--beak-colors-accent-pink) 18%, transparent)',
+					boxShadow: '0 4px 16px color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent)',
 				}}
 				_focusVisible={{
 					outline: 'none',
 					borderColor: 'accent.pink',
-					boxShadow: '0 0 0 3px color-mix(in srgb, var(--beak-colors-accent-pink) 32%, transparent)',
+					boxShadow: '0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-pink) 32%, transparent)',
 				}}
-				_active={{ transform: 'scale(0.99)' }}
+				_active={{ transform: 'scale(0.998)' }}
+				onClick={(event: React.MouseEvent) => attachAsAsset(event)}
+				onKeyDown={(event: React.KeyboardEvent) => {
+					if (event.key === 'Enter' || event.key === ' ') {
+						event.preventDefault();
+						attachAsAsset(event);
+					}
+				}}
+				onDragOver={(event: React.DragEvent<HTMLDivElement>) => {
+					event.preventDefault();
+					setDragOver(true);
+				}}
+				onDragLeave={() => setDragOver(false)}
+				onDrop={handleDrop}
+			>
+				<Flex
+					align='center'
+					justify='center'
+					flex='0 0 auto'
+					w='36px'
+					h='36px'
+					borderRadius='md'
+					bg='color-mix(in srgb, var(--beak-colors-accent-pink) 12%, transparent)'
+					borderWidth='1px'
+					borderColor='color-mix(in srgb, var(--beak-colors-accent-pink) 26%, transparent)'
+					color='accent.pink'
+					boxShadow='inset 0 1px 0 color-mix(in srgb, white 14%, transparent)'
+				>
+					{assetRef ? <FileBox size={16} strokeWidth={2} /> : <Upload size={16} strokeWidth={2} />}
+				</Flex>
+				<Box flex='1 1 auto' minW={0}>
+					<Box color='fg.default' fontSize='sm' fontWeight='600' letterSpacing='-0.005em' lineHeight='1.2'>
+						{busy
+							? 'Attaching…'
+							: assetRef
+								? 'Asset attached'
+								: dragOver
+									? 'Drop to attach'
+									: 'Drop a file here, or click to choose'}
+					</Box>
+					<Box fontSize='11px' color='fg.subtle' mt='0.5' fontVariantNumeric='tabular-nums'>
+						{assetRef
+							? `sha256:${assetRef.sha256.slice(0, 10)}…${assetRef.sha256.slice(-4)} · ${prettyBytes(assetRef.size)}`
+							: 'Content-addressed asset · idempotent · stored in this project'}
+					</Box>
+				</Box>
+				{assetRef && closeBtn(clearAssetRef)}
+			</Flex>
+
+			{/* Legacy file-reference (path-based) flow */}
+			<Flex
+				role='button'
+				tabIndex={0}
+				aria-label={preview ? 'Replace external file reference' : 'Reference an external file'}
+				position='relative'
+				direction='row'
+				align='center'
+				gap='2.5'
+				cursor='pointer'
+				w='100%'
+				minH='52px'
+				px='3'
+				py='2'
+				borderRadius='lg'
+				borderWidth='1px'
+				borderColor='border.subtle'
+				bg='color-mix(in srgb, var(--beak-colors-bg-surface-alt) 40%, transparent)'
+				color='fg.muted'
+				fontSize='xs'
+				transition='border-color .14s ease, background-color .14s ease'
+				_hover={{
+					borderColor: 'color-mix(in srgb, var(--beak-colors-accent-teal) 40%, var(--beak-colors-border-default))',
+					bg: 'color-mix(in srgb, var(--beak-colors-accent-teal) 6%, transparent)',
+				}}
+				_focusVisible={{
+					outline: 'none',
+					borderColor: 'accent.teal',
+					boxShadow: '0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-teal) 32%, transparent)',
+				}}
 				onClick={openFile}
 				onKeyDown={(event: React.KeyboardEvent) => {
 					if (event.key === 'Enter' || event.key === ' ') {
@@ -184,104 +306,39 @@ const FileUploadView: React.FC<FileUploadViewProps> = ({ node }) => {
 					}
 				}}
 			>
-				{!preview && !assetRef && (
-					<React.Fragment>
-						<Flex
-							align='center'
-							justify='center'
-							w='44px'
-							h='44px'
-							borderRadius='full'
-							bg='color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent)'
-							borderWidth='1px'
-							borderColor='color-mix(in srgb, var(--beak-colors-accent-pink) 28%, transparent)'
-							color='accent.pink'
-							boxShadow='0 6px 18px color-mix(in srgb, var(--beak-colors-accent-pink) 22%, transparent), inset 0 1px 0 color-mix(in srgb, white 16%, transparent)'
-						>
-							<Upload size={20} strokeWidth={2} />
-						</Flex>
-						<Box color='fg.default' fontSize='sm' fontWeight='600' letterSpacing='-0.005em'>
-							{'Click to pick a file'}
-						</Box>
-						<Box fontSize='10px' color='accent.pink' letterSpacing='0.06em' textTransform='uppercase' fontWeight='700'>
-							{'Any binary up to ~10 MB'}
-						</Box>
-					</React.Fragment>
-				)}
-				{preview && (
-					<React.Fragment>
-						{closeBtn(clearFile)}
-						<Flex
-							align='center'
-							justify='center'
-							w='40px'
-							h='40px'
-							borderRadius='md'
-							bg='color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent)'
-							borderWidth='1px'
-							borderColor='color-mix(in srgb, var(--beak-colors-accent-pink) 28%, transparent)'
-							color='accent.pink'
-							boxShadow='0 4px 12px color-mix(in srgb, var(--beak-colors-accent-pink) 18%, transparent), inset 0 1px 0 color-mix(in srgb, white 14%, transparent)'
-						>
-							<File size={18} strokeWidth={2} />
-						</Flex>
-						<Box
-							color='fg.default'
-							fontWeight='600'
-							fontSize='sm'
-							letterSpacing='-0.005em'
-							textAlign='center'
-							px='2'
-							overflow='hidden'
-							textOverflow='ellipsis'
-							maxW='240px'
-							whiteSpace='nowrap'
-						>
-							{preview.fileName}
-						</Box>
-						<Box fontSize='10px' color='fg.subtle' fontFamily='mono' style={{ fontVariantNumeric: 'tabular-nums' }}>
-							{prettyBytes(preview.fileSize)}
-						</Box>
-					</React.Fragment>
-				)}
-			</Flex>
-			{assetRef && (
 				<Flex
-					position='relative'
-					direction='column'
 					align='center'
 					justify='center'
-					gap='1.5'
-					w='280px'
-					p='3'
-					borderRadius='lg'
+					flex='0 0 auto'
+					w='28px'
+					h='28px'
+					borderRadius='md'
+					bg='color-mix(in srgb, var(--beak-colors-accent-teal) 12%, transparent)'
 					borderWidth='1px'
-					borderColor='color-mix(in srgb, var(--beak-colors-accent-teal) 30%, var(--beak-colors-border-subtle))'
-					bg='color-mix(in srgb, var(--beak-colors-accent-teal) 8%, var(--beak-colors-bg-surface))'
-					color='fg.muted'
-					fontSize='xs'
-					fontFamily='mono'
+					borderColor='color-mix(in srgb, var(--beak-colors-accent-teal) 26%, transparent)'
+					color='accent.teal'
 				>
-					{closeBtn(clearAssetRef)}
-					<Flex align='center' gap='1.5' color='accent.teal'>
-						<FileBox size={14} strokeWidth={2} />
-						<Box fontSize='10px' fontWeight='700' letterSpacing='0.06em' textTransform='uppercase' fontFamily='body'>
-							{'Asset attached'}
-						</Box>
-					</Flex>
+					<File size={14} strokeWidth={2} />
+				</Flex>
+				<Box flex='1 1 auto' minW={0}>
 					<Box
 						color='fg.default'
-						fontSize='xs'
-						style={{ fontVariantNumeric: 'tabular-nums' }}
-					>{`sha256:${assetRef.sha256.slice(0, 8)}…${assetRef.sha256.slice(-4)}`}</Box>
-					<Box fontSize='10px' color='fg.subtle' style={{ fontVariantNumeric: 'tabular-nums' }}>
-						{prettyBytes(assetRef.size)}
+						fontSize='12px'
+						fontWeight='600'
+						letterSpacing='-0.005em'
+						lineHeight='1.2'
+						overflow='hidden'
+						textOverflow='ellipsis'
+						whiteSpace='nowrap'
+					>
+						{preview ? preview.fileName : 'External file reference'}
 					</Box>
-				</Flex>
-			)}
-			<Button size='sm' colour='secondary' onClick={attachAsAsset}>
-				{assetRef ? 'Replace asset…' : 'Attach as asset…'}
-			</Button>
+					<Box fontSize='10px' color='fg.subtle' mt='0.5' fontVariantNumeric='tabular-nums'>
+						{preview ? prettyBytes(preview.fileSize) : 'Stream from a path on disk · live re-read on each send'}
+					</Box>
+				</Box>
+				{preview && closeBtn(clearFile)}
+			</Flex>
 		</Flex>
 	);
 };
