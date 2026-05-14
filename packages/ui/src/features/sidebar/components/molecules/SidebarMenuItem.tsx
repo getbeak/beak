@@ -31,6 +31,10 @@ const SidebarMenuItem: React.FC<SidebarMenuItemProps> = props => {
 			py='1'
 		>
 			<Flex
+				role='button'
+				tabIndex={0}
+				aria-label={name}
+				aria-pressed={isActive}
 				align='center'
 				justify='center'
 				cursor='pointer'
@@ -51,8 +55,20 @@ const SidebarMenuItem: React.FC<SidebarMenuItemProps> = props => {
 						? 'color-mix(in srgb, var(--beak-colors-accent-pink) 22%, transparent)'
 						: 'color-mix(in srgb, var(--beak-colors-accent-pink) 12%, transparent)',
 				}}
+				_focusVisible={{
+					outline: 'none',
+					boxShadow: isActive
+						? '0 4px 12px color-mix(in srgb, var(--beak-colors-accent-pink) 18%, transparent), inset 0 1px 0 color-mix(in srgb, white 14%, transparent), 0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-pink) 50%, transparent)'
+						: '0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-pink) 50%, transparent)',
+				}}
 				_active={{ transform: 'scale(0.92)' }}
 				onClick={() => onClick(item)}
+				onKeyDown={(event: React.KeyboardEvent) => {
+					if (event.key === 'Enter' || event.key === ' ') {
+						event.preventDefault();
+						onClick(item);
+					}
+				}}
 			>
 				<Icon color='currentColor' size={15} strokeWidth={isActive ? 2.2 : 1.8} />
 			</Flex>
