@@ -61,6 +61,7 @@ const ViewProjectEncryption: React.FC<ViewProjectEncryptionProps> = ({ onClose }
 					fontWeight='700'
 					letterSpacing='0.06em'
 					textTransform='uppercase'
+					css={{ borderLeft: '3px solid var(--beak-colors-accent-warning)' }}
 				>
 					<KeyRound size={11} strokeWidth={2.2} />
 					{'Treat this as a password'}
