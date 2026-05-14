@@ -44,6 +44,9 @@ const RequestPaneSplitter: React.FC<RequestPaneSplitterProps> = ({ selectedNode 
 	}
 
 	async function copyShareLink() {
+		// useShareLink returns '' until the project id is loaded; copying an
+		// empty string and flashing 'Copied!' is misleading.
+		if (!shareUrl) return;
 		try {
 			await navigator.clipboard.writeText(shareUrl);
 			flash('share');
@@ -109,7 +112,7 @@ const RequestPaneSplitter: React.FC<RequestPaneSplitterProps> = ({ selectedNode 
 				</IconButton>
 				<IconButton
 					aria-label='Copy share link'
-					title='Copy share link'
+					title={shareUrl ? 'Copy share link' : 'Share link unavailable until project loads'}
 					size='xs'
 					variant='ghost'
 					h='22px'
@@ -121,6 +124,7 @@ const RequestPaneSplitter: React.FC<RequestPaneSplitterProps> = ({ selectedNode 
 					_hover={{ color: copied === 'share' ? 'accent.teal' : 'accent.pink', bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent)' }}
 					_focusVisible={{ outline: 'none', boxShadow: '0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-pink) 45%, transparent)' }}
 					_active={{ transform: 'scale(0.9)' }}
+					disabled={!shareUrl}
 					onClick={copyShareLink}
 				>
 					{copied === 'share' ? <Check size={12} strokeWidth={3} /> : <Share2 size={12} />}
