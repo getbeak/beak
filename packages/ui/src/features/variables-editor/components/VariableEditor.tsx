@@ -54,15 +54,23 @@ const VariableEditor: React.FC<React.PropsWithChildren<VariableEditorProps>> = p
 			setUiSections([]);
 			setPreview('');
 
-			return;
+			return void 0;
 		}
 
+		let cancelled = false;
+
 		previewValue(context, editorContext.variable, editorContext.item, editorContext.state)
-			.then(setPreview);
+			.then(preview => { if (!cancelled) setPreview(preview); });
 
 		const { createUserInterface } = editorContext.variable.editor;
 
-		createUserInterface(context).then(setUiSections);
+		createUserInterface(context).then(sections => {
+			if (!cancelled) setUiSections(sections);
+		});
+
+		return () => {
+			cancelled = true;
+		};
 	}, [editorContext]);
 
 	useEffect(() => {
