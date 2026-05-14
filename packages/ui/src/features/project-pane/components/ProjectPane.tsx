@@ -69,10 +69,13 @@ const ProjectPane: React.FC<React.PropsWithChildren<unknown>> = () => {
 				label: 'Copy Request Share Link',
 				enabled: node.type === 'request',
 				click: async () => {
+					if (!id) return;
 					const search = new URLSearchParams({ requestId: node.id });
-					const url = `https://share.getbeak.app/projects/${encodeURIComponent(id!)}?${search.toString()}`;
+					const url = `https://share.getbeak.app/projects/${encodeURIComponent(id)}?${search.toString()}`;
 
-					await navigator.clipboard.writeText(url);
+					await navigator.clipboard.writeText(url).catch(err => {
+						console.warn('clipboard write failed', err);
+					});
 				},
 			},
 
