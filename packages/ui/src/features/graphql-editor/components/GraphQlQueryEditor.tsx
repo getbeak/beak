@@ -81,7 +81,7 @@ const GraphQlQueryEditor: React.FC<GraphQlQueryEditorProps> = props => {
 		if (!schemaFlight) return;
 
 		const textDecoder = new TextDecoder();
-		const binaryData = binaryStore.get(schemaFlight.binaryStoreKey) ?? [];
+		const binaryData = binaryStore.get(schemaFlight.binaryStoreKey) ?? new Uint8Array(0);
 		const decodedText = textDecoder.decode(binaryData);
 
 		if (schemaFlight.error || !schemaFlight.response || !schemaFlight.response.hasBody || !decodedText) {
@@ -92,11 +92,20 @@ const GraphQlQueryEditor: React.FC<GraphQlQueryEditorProps> = props => {
 		}
 
 		// TODO(afr): Validating this would be a good idea
-		const jsonResponse = JSON.parse(decodedText);
-
-		schemaCache[node.id] = jsonResponse.data as unknown as IntrospectionQuery;
-		setSchemaFetchError(null);
-		setHasSchema(true);
+		try {
+			const jsonResponse = JSON.parse(decodedText);
+			if (!jsonResponse?.data) {
+				setSchemaFetchError(new Error('Schema response missing `data` field'));
+				setHasSchema(false);
+				return;
+			}
+			schemaCache[node.id] = jsonResponse.data as IntrospectionQuery;
+			setSchemaFetchError(null);
+			setHasSchema(true);
+		} catch (err) {
+			setSchemaFetchError(err instanceof Error ? err : new Error(String(err)));
+			setHasSchema(false);
+		}
 	}, [schemaFlight?.flightId]);
 
 	useDebounce(async () => {
