@@ -108,6 +108,7 @@ const JsonSearchBar: React.FC<JsonSearchBarProps> = ({
 				minW='26px'
 				color='fg.subtle'
 				_hover={{ color: 'accent.pink', bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent)' }}
+				_focusVisible={{ outline: 'none', boxShadow: '0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-pink) 45%, transparent)' }}
 				onClick={onPrev}
 				disabled={!hasHits}
 			>
@@ -123,6 +124,7 @@ const JsonSearchBar: React.FC<JsonSearchBarProps> = ({
 				minW='26px'
 				color='fg.subtle'
 				_hover={{ color: 'accent.pink', bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent)' }}
+				_focusVisible={{ outline: 'none', boxShadow: '0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-pink) 45%, transparent)' }}
 				onClick={onNext}
 				disabled={!hasHits}
 			>
@@ -138,6 +140,7 @@ const JsonSearchBar: React.FC<JsonSearchBarProps> = ({
 				minW='26px'
 				color='fg.subtle'
 				_hover={{ color: 'accent.pink', bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent)' }}
+				_focusVisible={{ outline: 'none', boxShadow: '0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-pink) 45%, transparent)' }}
 				onClick={onClose}
 			>
 				<X size={12} />
