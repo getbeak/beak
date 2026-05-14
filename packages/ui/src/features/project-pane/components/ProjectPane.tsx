@@ -31,14 +31,14 @@ const ProjectPane: React.FC<React.PropsWithChildren<unknown>> = () => {
 			{
 				id: ksuid.generate('ctxmenuitem').toString(),
 				accelerator: renderAcceleratorDefinition('menu-bar.file.new-request'),
-				label: 'New request',
+				label: 'New Request',
 				click: () => {
 					dispatch(actions.createNewRequest({ highlightedNodeId: node.id }));
 				},
 			},
 			{
 				id: ksuid.generate('ctxmenuitem').toString(),
-				label: 'Duplicate request',
+				label: 'Duplicate Request',
 				accelerator: renderAcceleratorDefinition('project-explorer.request.duplicate'),
 				enabled: node.type === 'request',
 				click: () => {
@@ -47,7 +47,7 @@ const ProjectPane: React.FC<React.PropsWithChildren<unknown>> = () => {
 			},
 			{
 				id: ksuid.generate('ctxmenuitem').toString(),
-				label: 'New folder',
+				label: 'New Folder',
 				accelerator: renderAcceleratorDefinition('menu-bar.file.new-folder'),
 				click: () => {
 					dispatch(actions.createNewFolder({ highlightedNodeId: node?.id }));
@@ -66,7 +66,7 @@ const ProjectPane: React.FC<React.PropsWithChildren<unknown>> = () => {
 
 			{
 				id: ksuid.generate('ctxmenuitem').toString(),
-				label: 'Copy request share link',
+				label: 'Copy Request Share Link',
 				enabled: node.type === 'request',
 				click: async () => {
 					const search = new URLSearchParams({ requestId: node.id });
@@ -86,13 +86,13 @@ const ProjectPane: React.FC<React.PropsWithChildren<unknown>> = () => {
 
 			{
 				id: ksuid.generate('ctxmenuitem').toString(),
-				label: 'Copy path',
+				label: 'Copy Path',
 				enabled: node.id !== 'root',
 				click: () => ipcExplorerService.copyFullNodePath(node.filePath),
 			},
 			{
 				id: ksuid.generate('ctxmenuitem').toString(),
-				label: 'Copy relative path',
+				label: 'Copy Relative Path',
 				enabled: node.id !== 'root',
 				click: () => navigator.clipboard.writeText(node.filePath),
 			},
