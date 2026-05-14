@@ -1,7 +1,7 @@
 import { Box, Flex } from '@chakra-ui/react';
 import { Check, ChevronDown } from 'lucide-react';
 import * as React from 'react';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 import type { TabSubItem } from './TabItem';
@@ -21,6 +21,18 @@ const TabItemSubItemsDropdown = <T = string>(props: TabItemSubItemsDropdownProps
 		onSubItemChanged(subItem);
 		setShowDropdown(false);
 	}
+
+	useEffect(() => {
+		if (!showDropdown) return void 0;
+		function onKeyDown(event: KeyboardEvent) {
+			if (event.key === 'Escape') {
+				event.preventDefault();
+				setShowDropdown(false);
+			}
+		}
+		window.addEventListener('keydown', onKeyDown);
+		return () => window.removeEventListener('keydown', onKeyDown);
+	}, [showDropdown]);
 
 	return (
 		<React.Fragment>
