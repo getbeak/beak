@@ -38,7 +38,7 @@ const GenericTabContextMenuWrapper: React.FC<React.PropsWithChildren<GenericTabC
 			{
 				id: ksuid.generate('ctxmenuitem').toString(),
 				accelerator: renderAcceleratorDefinition('tab-bar.all.close-others'),
-				label: 'Close others',
+				label: 'Close Others',
 				click: () => {
 					dispatch(closeTabsOther(tab.payload));
 				},
