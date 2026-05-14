@@ -22,8 +22,11 @@ interface SelectItemProps extends BoxProps {
 	$active?: boolean;
 }
 
-export const SelectItem: React.FC<SelectItemProps> = ({ $active, children, ...rest }) => (
+export const SelectItem: React.FC<SelectItemProps> = ({ $active, children, onClick, onKeyDown, ...rest }) => (
 	<Box
+		role='radio'
+		aria-checked={$active}
+		tabIndex={0}
 		display='flex'
 		flexDirection='column'
 		alignItems='center'
@@ -32,8 +35,22 @@ export const SelectItem: React.FC<SelectItemProps> = ({ $active, children, ...re
 		fontSize='sm'
 		cursor='pointer'
 		transition='color .14s ease, transform .08s ease'
+		borderRadius='md'
 		_hover={{ color: $active ? 'accent.pink' : 'fg.default' }}
+		_focusVisible={{
+			outline: 'none',
+			boxShadow: '0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-pink) 40%, transparent)',
+		}}
 		_active={{ transform: 'scale(0.97)' }}
+		onClick={onClick}
+		onKeyDown={(event: React.KeyboardEvent) => {
+			onKeyDown?.(event);
+			if (event.defaultPrevented) return;
+			if (event.key === 'Enter' || event.key === ' ') {
+				event.preventDefault();
+				onClick?.(event as unknown as React.MouseEvent<HTMLDivElement>);
+			}
+		}}
 		{...rest}
 	>
 		{children}
