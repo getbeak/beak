@@ -3,7 +3,7 @@ import type { ThemeMode } from '@beak/common/types/theme';
 import { motion } from 'framer-motion';
 import * as React from 'react';
 
-export const SelectContainer = chakra('div', {
+const SelectContainerBase = chakra('div', {
 	base: {
 		display: 'inline-flex',
 		gap: '6',
@@ -17,6 +17,10 @@ export const SelectContainer = chakra('div', {
 		boxShadow: '0 4px 12px color-mix(in srgb, var(--beak-colors-accent-pink) 10%, rgba(0,0,0,0.04)), inset 0 1px 0 color-mix(in srgb, white 14%, transparent)',
 	},
 });
+
+export const SelectContainer: React.FC<BoxProps> = props => (
+	<SelectContainerBase role='radiogroup' {...props} />
+);
 
 interface SelectItemProps extends BoxProps {
 	$active?: boolean;
