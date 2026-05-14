@@ -77,6 +77,10 @@ const SectionHeader: React.FC<React.PropsWithChildren<SectionHeaderProps>> = pro
 			{actions && actions.length > 0 && (
 				<Box
 					data-section-actions
+					role='button'
+					tabIndex={0}
+					aria-label='Section actions'
+					title='Section actions'
 					px='1'
 					py='0.5'
 					borderRadius='sm'
@@ -87,11 +91,23 @@ const SectionHeader: React.FC<React.PropsWithChildren<SectionHeaderProps>> = pro
 						color: 'accent.pink',
 						bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent)',
 					}}
+					_focusVisible={{
+						outline: 'none',
+						color: 'accent.pink',
+						boxShadow: '0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-pink) 40%, transparent)',
+					}}
 					_active={{ transform: 'scale(0.92)' }}
 					onClick={event => {
 						event.preventDefault();
 						event.stopPropagation();
 						showContextMenu(ctxMenuId, actions);
+					}}
+					onKeyDown={event => {
+						if (event.key === 'Enter' || event.key === ' ') {
+							event.preventDefault();
+							event.stopPropagation();
+							showContextMenu(ctxMenuId, actions);
+						}
 					}}
 				>
 					<EllipsisVertical size={11} />
