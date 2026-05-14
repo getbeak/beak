@@ -6,9 +6,14 @@ import * as actions from './actions';
 import { generateValueIdent, type VariableSetsState } from './types';
 
 /**
- * Attaches the pure variable-groups reducer cases to the given builder. The
+ * Attaches the pure variable-sets reducer cases to the given builder. The
  * builder's state type only needs to be a subtype of VariableSetsState — UI
  * packages compose this into a wider state shape (rename, file-watch, etc.).
+ *
+ * Every mutating case guards the target set first: a stale rename/remove can
+ * easily arrive after `removeVariableSetFromStore` has fired (file-watch
+ * deletion, undo replay), and crashing the store on a no-op is worse than
+ * dropping the action.
  */
 export function buildVariableSetsReducer<S extends VariableSetsState>(builder: ActionReducerMapBuilder<S>) {
 	builder
@@ -24,30 +29,40 @@ export function buildVariableSetsReducer<S extends VariableSetsState>(builder: A
 			state.variableSets[payload.id] = payload.variableSet;
 		})
 		.addCase(actions.insertNewGroup, (state, { payload }) => {
-			state.variableSets[payload.id].sets[ksuid.generate('set').toString()] = payload.setName;
+			const variableSet = state.variableSets[payload.id];
+			if (!variableSet) return;
+			variableSet.sets[ksuid.generate('set').toString()] = payload.setName;
 		})
 		.addCase(actions.insertNewItem, (state, { payload }) => {
-			state.variableSets[payload.id].items[ksuid.generate('item').toString()] = payload.itemName;
+			const variableSet = state.variableSets[payload.id];
+			if (!variableSet) return;
+			variableSet.items[ksuid.generate('item').toString()] = payload.itemName;
 		})
 
 		.addCase(actions.updateGroupName, (state, { payload }) => {
-			state.variableSets[payload.id].sets[payload.setId] = payload.updatedName;
+			const variableSet = state.variableSets[payload.id];
+			if (!variableSet || !(payload.setId in variableSet.sets)) return;
+			variableSet.sets[payload.setId] = payload.updatedName;
 		})
 		.addCase(actions.updateItemName, (state, { payload }) => {
-			state.variableSets[payload.id].items[payload.itemId] = payload.updatedName;
+			const variableSet = state.variableSets[payload.id];
+			if (!variableSet || !(payload.itemId in variableSet.items)) return;
+			variableSet.items[payload.itemId] = payload.updatedName;
 		})
 		.addCase(actions.updateValue, (state, { payload }) => {
 			const { id, setId, itemId, updated } = payload;
+			const variableSet = state.variableSets[id];
+			if (!variableSet) return;
+
 			const valueIdentifier = generateValueIdent(setId, itemId);
-			const variableGroup = state.variableSets[id];
 			const empty = updated.length === 0 || (updated.length === 1 && updated[0] === '');
 
 			if (empty) {
-				delete variableGroup.values[valueIdentifier];
+				delete variableSet.values[valueIdentifier];
 				return;
 			}
 
-			variableGroup.values[valueIdentifier] = updated;
+			variableSet.values[valueIdentifier] = updated;
 		})
 
 		.addCase(actions.removeVariableSetFromStore, (state, { payload }) => {
@@ -55,21 +70,27 @@ export function buildVariableSetsReducer<S extends VariableSetsState>(builder: A
 		})
 
 		.addCase(actions.removeGroup, (state, { payload }) => {
-			delete state.variableSets[payload.id].sets[payload.setId];
+			const variableSet = state.variableSets[payload.id];
+			if (!variableSet) return;
 
-			TypedObject.keys(state.variableSets[payload.id].values)
+			delete variableSet.sets[payload.setId];
+
+			TypedObject.keys(variableSet.values)
 				.filter(k => k.startsWith(`${payload.setId}&`))
 				.forEach(k => {
-				delete state.variableSets[payload.id].values[k];
-			});
+					delete variableSet.values[k];
+				});
 		})
 		.addCase(actions.removeItem, (state, { payload }) => {
-			delete state.variableSets[payload.id].items[payload.itemId];
+			const variableSet = state.variableSets[payload.id];
+			if (!variableSet) return;
 
-			TypedObject.keys(state.variableSets[payload.id].values)
+			delete variableSet.items[payload.itemId];
+
+			TypedObject.keys(variableSet.values)
 				.filter(k => k.endsWith(`&${payload.itemId}`))
 				.forEach(k => {
-				delete state.variableSets[payload.id].values[k];
-			});
+					delete variableSet.values[k];
+				});
 		});
 }
