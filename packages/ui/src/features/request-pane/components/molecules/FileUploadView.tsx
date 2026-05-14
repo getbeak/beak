@@ -151,7 +151,7 @@ const FileUploadView: React.FC<FileUploadViewProps> = ({ node }) => {
 						>
 							<Upload size={20} strokeWidth={2} />
 						</Flex>
-						<Box color='fg.default' fontSize='sm' fontWeight='600'>{'Click to pick a file'}</Box>
+						<Box color='fg.default' fontSize='sm' fontWeight='600' letterSpacing='-0.005em'>{'Click to pick a file'}</Box>
 						<Box fontSize='10px' color='fg.subtle' letterSpacing='0.06em' textTransform='uppercase' fontWeight='700'>
 							{'Any binary up to ~10 MB'}
 						</Box>
@@ -174,7 +174,7 @@ const FileUploadView: React.FC<FileUploadViewProps> = ({ node }) => {
 						>
 							<File size={18} strokeWidth={2} />
 						</Flex>
-						<Box color='fg.default' fontWeight='600' fontSize='sm' textAlign='center' px='2' overflow='hidden' textOverflow='ellipsis' maxW='240px' whiteSpace='nowrap'>{preview.fileName}</Box>
+						<Box color='fg.default' fontWeight='600' fontSize='sm' letterSpacing='-0.005em' textAlign='center' px='2' overflow='hidden' textOverflow='ellipsis' maxW='240px' whiteSpace='nowrap'>{preview.fileName}</Box>
 						<Box fontSize='10px' color='fg.subtle' fontFamily='mono' style={{ fontVariantNumeric: 'tabular-nums' }}>{prettyBytes(preview.fileSize)}</Box>
 					</React.Fragment>
 				)}
