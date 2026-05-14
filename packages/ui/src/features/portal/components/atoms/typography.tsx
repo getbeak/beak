@@ -6,6 +6,7 @@ export const SubTitle = chakra('p', {
 		textAlign: 'center',
 		fontSize: 'sm',
 		color: 'fg.muted',
+		mt: '0.5',
 		mb: '3',
 		lineHeight: '1.5',
 		maxW: '320px',
