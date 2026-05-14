@@ -33,6 +33,8 @@ const ActionBar: React.FC<ActionBarProps> = ({ inline }) => {
 	return (
 		<Flex
 			as='div'
+			role='toolbar'
+			aria-label='Action bar'
 			align='center'
 			justify='flex-end'
 			h={inline ? '34px' : '40px'}
