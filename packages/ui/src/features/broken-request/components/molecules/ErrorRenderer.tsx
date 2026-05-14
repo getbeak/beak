@@ -85,9 +85,10 @@ const ErrorRenderer: React.FC<ErrorRendererProps> = ({ error }) => {
 				</Box>
 			)}
 
-			<details>
-				<summary
-					style={{
+			<Box
+				as='details'
+				css={{
+					'& > summary': {
 						cursor: 'pointer',
 						padding: '8px 12px',
 						fontSize: 10,
@@ -96,17 +97,14 @@ const ErrorRenderer: React.FC<ErrorRendererProps> = ({ error }) => {
 						textTransform: 'uppercase',
 						letterSpacing: '0.06em',
 						transition: 'color .12s ease, background-color .12s ease',
-					}}
-					onMouseEnter={e => {
-						(e.currentTarget as HTMLElement).style.color = 'var(--beak-colors-accent-pink)';
-						(e.currentTarget as HTMLElement).style.backgroundColor =
-							'color-mix(in srgb, var(--beak-colors-accent-pink) 8%, transparent)';
-					}}
-					onMouseLeave={e => {
-						(e.currentTarget as HTMLElement).style.color = 'var(--beak-colors-fg-subtle)';
-						(e.currentTarget as HTMLElement).style.backgroundColor = 'transparent';
-					}}
-				>
+					},
+					'& > summary:hover': {
+						color: 'var(--beak-colors-accent-pink)',
+						backgroundColor: 'color-mix(in srgb, var(--beak-colors-accent-pink) 8%, transparent)',
+					},
+				}}
+			>
+				<summary>
 					{'Raw payload'}
 				</summary>
 				<Box h='240px'>
@@ -116,7 +114,7 @@ const ErrorRenderer: React.FC<ErrorRendererProps> = ({ error }) => {
 						options={{ readOnly: true, lineNumbers: 'off' }}
 					/>
 				</Box>
-			</details>
+			</Box>
 		</Box>
 	);
 };
