@@ -463,20 +463,6 @@ const VariableInput = React.forwardRef<HTMLElement, VariableInputProps>((props, 
 
 		// const { queryStartSelection } = unmanagedStateRef.current.variableSelectionState;
 
-		// if (editableRef.current) {
-		// 	const node = editableRef.current.childNodes[queryStartSelection.partIndex];
-
-		// 	if (node && node.nodeName === 'SPAN') {
-		// 		const span = node as HTMLSpanElement;
-
-		// 		console.log('span', span.innerText);
-		// 		console.log('queryStartSelection.offset', queryStartSelection.offset);
-		// 		console.log('queryStartSelection.partIndex', queryStartSelection.partIndex);
-
-		// 		span.innerText = span.innerText.substring(0, queryStartSelection.offset);
-		// 	}
-		// }
-
 		unmanagedStateRef.current.variableSelectionState = void 0;
 	}
 
