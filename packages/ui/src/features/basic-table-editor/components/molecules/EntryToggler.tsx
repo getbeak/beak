@@ -55,7 +55,7 @@ const EntryToggler: React.FC<EntryTogglerProps> = ({ value, onChange }) => {
 				w='10px'
 				h='10px'
 				borderRadius='full'
-				bg={value ? 'white' : 'fg.subtle'}
+				bg={value ? 'fg.onAccent' : 'fg.subtle'}
 				boxShadow={value ? '0 1px 3px rgba(0,0,0,0.3), 0 0 0 0.5px rgba(0,0,0,0.08)' : 'none'}
 				transform={value ? 'translateX(12px)' : 'translateX(0)'}
 				transition='transform .2s cubic-bezier(.4, 0, .2, 1), background-color .18s ease'
