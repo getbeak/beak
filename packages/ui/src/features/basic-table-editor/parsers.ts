@@ -16,7 +16,7 @@ export async function convertKeyValueToString(context: Context, items: Record<st
 	})));
 
 	for (const resolve of resolved)
-		params.set(resolve.name, resolve.value);
+		params.append(resolve.name, resolve.value);
 
 	return params.toString();
 }
