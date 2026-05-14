@@ -176,10 +176,12 @@ const config = defineConfig({
 			colors,
 			fonts: {
 				body: {
-					value: '-apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif',
+					value:
+						'-apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif',
 				},
 				heading: {
-					value: '-apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif',
+					value:
+						'-apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif',
 				},
 				mono: {
 					value: '"SF Mono", "Cascadia Code", "Roboto Mono", "Source Code Pro", monospace',
@@ -307,6 +309,22 @@ const config = defineConfig({
 		},
 	},
 	globalCss: {
+		// Chakra v3 emits custom semantic tokens with their literal token name
+		// (`'accent.pink' → --beak-colors-accent\.pink` with an escaped dot), but
+		// virtually every call site in the renderer references them with dashes
+		// (`var(--beak-colors-accent-pink)`). That dash form never resolved, so the
+		// references silently fell back to `currentColor`. We publish dash-form
+		// aliases here so existing code works without sweeping refactors.
+		':where(html, .chakra-theme)': {
+			'--beak-colors-accent-pink': 'var(--beak-colors-pink-500)',
+			'--beak-colors-accent-teal': 'var(--beak-colors-teal-500)',
+			'--beak-colors-accent-indigo': 'var(--beak-colors-indigo-600)',
+			'--beak-colors-accent-alert': 'var(--beak-colors-red-500)',
+			'--beak-colors-accent-success': 'var(--beak-colors-green-500)',
+			'--beak-colors-accent-warning': 'var(--beak-colors-yellow-500)',
+			'--beak-colors-accent-info': 'var(--beak-colors-blue-500)',
+			'--beak-colors-fg-onAccent': 'var(--beak-colors-gray-50)',
+		},
 		'html, body': {
 			margin: 0,
 			padding: 0,
@@ -340,8 +358,10 @@ const config = defineConfig({
 			color: 'var(--beak-colors-gray-50)',
 			borderWidth: '1px',
 			borderStyle: 'solid',
-			borderColor: 'color-mix(in srgb, var(--beak-colors-accent-pink) 22%, color-mix(in srgb, var(--beak-colors-gray-700) 55%, transparent))',
-			boxShadow: '0 14px 38px rgba(0, 0, 0, 0.4), 0 4px 10px color-mix(in srgb, var(--beak-colors-accent-pink) 14%, rgba(0, 0, 0, 0.18)), inset 0 1px 0 color-mix(in srgb, white 12%, transparent)',
+			borderColor:
+				'color-mix(in srgb, var(--beak-colors-accent-pink) 22%, color-mix(in srgb, var(--beak-colors-gray-700) 55%, transparent))',
+			boxShadow:
+				'0 14px 38px rgba(0, 0, 0, 0.4), 0 4px 10px color-mix(in srgb, var(--beak-colors-accent-pink) 14%, rgba(0, 0, 0, 0.18)), inset 0 1px 0 color-mix(in srgb, white 12%, transparent)',
 			backdropFilter: 'blur(14px) saturate(160%)',
 			opacity: '1 !important' as unknown as string,
 			zIndex: 105,
@@ -354,7 +374,8 @@ const config = defineConfig({
 				width: '9px',
 				height: '9px',
 				background: 'color-mix(in srgb, var(--beak-colors-gray-950) 82%, transparent)',
-				borderColor: 'color-mix(in srgb, var(--beak-colors-accent-pink) 22%, color-mix(in srgb, var(--beak-colors-gray-700) 55%, transparent))',
+				borderColor:
+					'color-mix(in srgb, var(--beak-colors-accent-pink) 22%, color-mix(in srgb, var(--beak-colors-gray-700) 55%, transparent))',
 			},
 		},
 		'::selection': {
