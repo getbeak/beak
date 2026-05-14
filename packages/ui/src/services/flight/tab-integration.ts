@@ -1,4 +1,4 @@
-import { nextFlightHistory, previousFlightHistory } from '@beak/state/flight';
+import { nextFlightHistory, previousFlightHistory, selectActiveFlight } from '@beak/state/flight';
 import { useCallback } from 'react';
 import { useAppDispatch, useAppSelector } from '../../store/redux';
 
@@ -45,7 +45,7 @@ export function useSelectedTabFlightStatus():
 	| { status: 'failed'; error: Error }
 	| { status: 'complete'; httpStatus: number; flightId: string } {
 	const selectedTabId = useSelectedTabId();
-	const activeFlight = useAppSelector(s => (selectedTabId ? s.global.flight.activeFlights[selectedTabId] : undefined));
+	const activeFlight = useAppSelector(s => (selectedTabId ? selectActiveFlight(selectedTabId)(s) : null));
 	const flightState = useAppSelector(s => (selectedTabId ? s.global.flight.flightStates[selectedTabId] : undefined));
 
 	if (!selectedTabId) return { status: 'pending' };
