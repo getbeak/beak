@@ -23,6 +23,7 @@ const EngineeringPane: React.FC<React.PropsWithChildren<unknown>> = () => {
 				<ItemLabel>{'Environment'}</ItemLabel>
 				<Select
 					$beakSize='md'
+					aria-label='Environment'
 					disabled={environment === void 0}
 					value={environment}
 					onChange={e => {
