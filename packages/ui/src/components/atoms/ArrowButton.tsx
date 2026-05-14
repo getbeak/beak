@@ -32,6 +32,11 @@ const ArrowButton: React.FC<React.PropsWithChildren<ArrowButtonProps>> = ({
 			color: 'accent.pink',
 			bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 12%, transparent)',
 		}}
+		_focusVisible={{
+			outline: 'none',
+			color: 'accent.pink',
+			boxShadow: '0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-pink) 40%, transparent)',
+		}}
 		_active={{ transform: 'scale(0.96)' }}
 		onClick={onClick}
 	>
