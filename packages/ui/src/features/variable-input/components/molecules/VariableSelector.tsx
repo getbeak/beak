@@ -146,9 +146,24 @@ const VariableSelector: React.FC<React.PropsWithChildren<VariableSelectorProps>>
 			css={{ '> a': { color: 'var(--beak-colors-accent-pink)', textDecoration: 'underline' } }}
 		>
 			{items.length > 0 && descriptionItem?.external && (
-				<Flex as='span' display='inline-flex' align='center' gap='1' mr='1' color='accent.pink'>
-					<Plug size={10} />
-					<Box as='span' fontWeight='600' fontSize='9px' textTransform='uppercase' letterSpacing='0.06em'>
+				<Flex
+					as='span'
+					display='inline-flex'
+					align='center'
+					gap='1'
+					mr='1.5'
+					px='1.5'
+					py='0.5'
+					borderRadius='sm'
+					borderWidth='1px'
+					borderStyle='solid'
+					color='accent.pink'
+					bg='color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent)'
+					borderColor='color-mix(in srgb, var(--beak-colors-accent-pink) 28%, transparent)'
+					boxShadow='inset 0 1px 0 color-mix(in srgb, white 14%, transparent)'
+				>
+					<Plug size={9} strokeWidth={2.2} />
+					<Box as='span' fontWeight='700' fontSize='9px' textTransform='uppercase' letterSpacing='0.06em'>
 						{'Extension'}
 					</Box>
 				</Flex>
