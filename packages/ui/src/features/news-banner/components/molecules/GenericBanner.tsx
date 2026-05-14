@@ -94,6 +94,7 @@ const GenericBanner: React.FC<GenericBannerProps> = ({ item }) => {
 						color: 'fg.default',
 						bg: 'color-mix(in srgb, var(--beak-colors-bg-surface-emphasized) 60%, transparent)',
 					}}
+					_focusVisible={{ outline: 'none', boxShadow: '0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-pink) 45%, transparent)' }}
 					onClick={() => setDismissed(true)}
 				>
 					<X size={11} />
