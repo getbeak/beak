@@ -168,7 +168,7 @@ const VariableSetEditor: React.FC<React.PropsWithChildren<VariableSetEditorProps
 								})}
 
 								<BodyValueCell>
-									<EmptyInput disabled />
+									<EmptyInput disabled aria-hidden tabIndex={-1} />
 								</BodyValueCell>
 							</Row>
 						))}
@@ -192,12 +192,12 @@ const VariableSetEditor: React.FC<React.PropsWithChildren<VariableSetEditorProps
 
 							{variableSet && setKeys.map(k => (
 								<BodyValueCell key={k}>
-									<EmptyInput disabled />
+									<EmptyInput disabled aria-hidden tabIndex={-1} />
 								</BodyValueCell>
 							))}
 
 							<BodyValueCell>
-								<EmptyInput disabled />
+								<EmptyInput disabled aria-hidden tabIndex={-1} />
 							</BodyValueCell>
 						</Row>
 					</Body>
