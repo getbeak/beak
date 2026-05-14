@@ -111,17 +111,20 @@ const OpenApiImportDialog: React.FC = () => {
 							exit={{ opacity: 0, y: -4 }}
 							transition={{ duration: 0.14 }}
 						>
-							<Flex align='center' gap='2' mb='3'>
+							<Flex align='center' gap='2.5' mb='3'>
 								<Flex
 									align='center'
 									justify='center'
-									w='28px'
-									h='28px'
+									w='32px'
+									h='32px'
 									borderRadius='full'
-									bg='color-mix(in srgb, var(--beak-colors-accent-pink) 16%, transparent)'
+									bg='color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent)'
+									borderWidth='1px'
+									borderColor='color-mix(in srgb, var(--beak-colors-accent-pink) 28%, transparent)'
 									color='accent.pink'
+									boxShadow='0 4px 12px color-mix(in srgb, var(--beak-colors-accent-pink) 22%, transparent), inset 0 1px 0 color-mix(in srgb, white 16%, transparent)'
 								>
-									<FolderTree size={15} strokeWidth={2.2} />
+									<FolderTree size={14} strokeWidth={2} />
 								</Flex>
 								<Box fontWeight='600' fontSize='md' color='fg.default'>
 									{'Where should this OpenAPI spec land?'}
@@ -266,8 +269,10 @@ const OpenApiImportDialog: React.FC = () => {
 									h='48px'
 									borderRadius='full'
 									bg='color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent)'
+									borderWidth='1px'
+									borderColor='color-mix(in srgb, var(--beak-colors-accent-pink) 28%, transparent)'
 									color='accent.pink'
-									boxShadow='0 0 20px color-mix(in srgb, var(--beak-colors-accent-pink) 30%, transparent)'
+									boxShadow='0 6px 22px color-mix(in srgb, var(--beak-colors-accent-pink) 32%, transparent), inset 0 1px 0 color-mix(in srgb, white 18%, transparent)'
 								>
 									<motion.div
 										animate={{ rotate: 360 }}
@@ -300,17 +305,20 @@ const OpenApiImportDialog: React.FC = () => {
 						>
 							{state.result.ok ? (
 								<Flex direction='column' gap='2.5'>
-									<Flex align='center' gap='2'>
+									<Flex align='center' gap='2.5'>
 										<Flex
 											align='center'
 											justify='center'
-											w='28px'
-											h='28px'
+											w='32px'
+											h='32px'
 											borderRadius='full'
-											bg='color-mix(in srgb, var(--beak-colors-accent-teal) 16%, transparent)'
+											bg='color-mix(in srgb, var(--beak-colors-accent-teal) 14%, transparent)'
+											borderWidth='1px'
+											borderColor='color-mix(in srgb, var(--beak-colors-accent-teal) 28%, transparent)'
 											color='accent.teal'
+											boxShadow='0 4px 12px color-mix(in srgb, var(--beak-colors-accent-teal) 22%, transparent), inset 0 1px 0 color-mix(in srgb, white 16%, transparent)'
 										>
-											<CheckCircle2 size={15} strokeWidth={2.2} />
+											<CheckCircle2 size={14} strokeWidth={2} />
 										</Flex>
 										<Box fontWeight='600' fontSize='md' color='fg.default'>
 											{'OpenAPI imported'}
@@ -323,17 +331,20 @@ const OpenApiImportDialog: React.FC = () => {
 								</Flex>
 							) : (
 								<Flex direction='column' gap='2.5'>
-									<Flex align='center' gap='2'>
+									<Flex align='center' gap='2.5'>
 										<Flex
 											align='center'
 											justify='center'
-											w='28px'
-											h='28px'
+											w='32px'
+											h='32px'
 											borderRadius='full'
-											bg='color-mix(in srgb, var(--beak-colors-accent-alert) 16%, transparent)'
+											bg='color-mix(in srgb, var(--beak-colors-accent-alert) 14%, transparent)'
+											borderWidth='1px'
+											borderColor='color-mix(in srgb, var(--beak-colors-accent-alert) 28%, transparent)'
 											color='accent.alert'
+											boxShadow='0 4px 12px color-mix(in srgb, var(--beak-colors-accent-alert) 22%, transparent), inset 0 1px 0 color-mix(in srgb, white 16%, transparent)'
 										>
-											<AlertOctagon size={15} strokeWidth={2} />
+											<AlertOctagon size={14} strokeWidth={2} />
 										</Flex>
 										<Box fontWeight='600' fontSize='md' color='fg.default'>
 											{'Import failed'}
