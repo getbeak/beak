@@ -104,9 +104,12 @@ const App: React.FC = () => {
 	const [theme, setTheme] = useState<Theme>(getSystemTheme());
 
 	useEffect(() => {
-		window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+		const query = window.matchMedia('(prefers-color-scheme: dark)');
+		const onChange = (event: MediaQueryListEvent) => {
 			setTheme(event.matches ? 'dark' : 'light');
-		});
+		};
+		query.addEventListener('change', onChange);
+		return () => query.removeEventListener('change', onChange);
 	}, []);
 
 	return (
