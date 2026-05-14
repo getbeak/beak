@@ -213,6 +213,12 @@ const OpenApiImportDialog: React.FC = () => {
 														bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 12%, transparent)',
 														color: 'accent.pink',
 													}}
+													_focusVisible={{
+														outline: 'none',
+														bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 18%, transparent)',
+														color: 'accent.pink',
+														boxShadow: 'inset 0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-pink) 40%, transparent)',
+													}}
 													onClick={() => setFolderInput(path)}
 												>
 													<FolderTree size={10} />
@@ -240,6 +246,12 @@ const OpenApiImportDialog: React.FC = () => {
 											_hover={{
 												bg: 'color-mix(in srgb, var(--beak-colors-accent-teal) 12%, transparent)',
 												color: 'accent.teal',
+											}}
+											_focusVisible={{
+												outline: 'none',
+												bg: 'color-mix(in srgb, var(--beak-colors-accent-teal) 18%, transparent)',
+												color: 'accent.teal',
+												boxShadow: 'inset 0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-teal) 40%, transparent)',
 											}}
 											onClick={() => setFolderInput(DEFAULT_FOLDER)}
 										>
