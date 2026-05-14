@@ -81,7 +81,20 @@ const Header: React.FC<HeaderProps> = ({ node }) => {
 	}
 
 	return (
-		<Flex align='center' gap='1.5' px='3' py='2' borderBottomWidth='1px' borderColor='border.subtle' bg='bg.surface'>
+		<Flex
+			align='center'
+			gap='1.5'
+			px='3'
+			py='2'
+			borderBottomWidth='1px'
+			borderColor='border.default'
+			bg='bg.surface'
+			css={{
+				backgroundImage:
+					'linear-gradient(180deg, color-mix(in srgb, var(--beak-colors-bg-canvas) 22%, transparent) 0%, transparent 100%)',
+				boxShadow: 'inset 0 1px 0 color-mix(in srgb, white 5%, transparent)',
+			}}
+		>
 			<Menu.Root>
 				<Menu.Trigger asChild>
 					<ChakraButton
@@ -91,52 +104,71 @@ const Header: React.FC<HeaderProps> = ({ node }) => {
 						display='inline-flex'
 						alignItems='center'
 						justifyContent='center'
-						gap='1'
+						gap='1.5'
 						h='30px'
 						px='2.5'
-						minW='74px'
-						borderTopLeftRadius='md'
-						borderBottomLeftRadius='md'
-						borderTopRightRadius='none'
-						borderBottomRightRadius='none'
+						minW='84px'
+						borderRadius='md'
 						borderWidth='1px'
-						borderRightWidth='0'
 						fontWeight='700'
 						fontSize='11px'
-						letterSpacing='0.06em'
+						letterSpacing='0.07em'
 						textTransform='uppercase'
 						cursor='pointer'
 						fontVariantNumeric='tabular-nums'
-						transition='background-color .14s ease, border-color .14s ease, box-shadow .14s ease, transform .08s ease'
-						_active={{ transform: 'scale(0.97)' }}
+						transition='background-color .14s ease, border-color .14s ease, box-shadow .14s ease, transform .08s ease, filter .14s ease'
+						_active={{ transform: 'translateY(0.5px)' }}
 						_focusVisible={{
 							outline: 'none',
-							borderColor: verbColor,
-							boxShadow: `0 0 0 2px color-mix(in srgb, ${verbColor} 35%, transparent)`,
+							boxShadow: `0 0 0 3px color-mix(in srgb, ${verbColor} 38%, transparent)`,
 							zIndex: 1,
 						}}
 						style={{
 							color: verbColor,
-							background: `color-mix(in srgb, ${verbColor} 10%, var(--beak-colors-bg-surface))`,
-							borderColor: `color-mix(in srgb, ${verbColor} 32%, var(--beak-colors-border-subtle))`,
-							boxShadow: `inset 0 1px 0 color-mix(in srgb, white 14%, transparent)`,
+							background: `color-mix(in srgb, ${verbColor} 13%, transparent)`,
+							borderColor: `color-mix(in srgb, ${verbColor} 22%, transparent)`,
+							boxShadow: `inset 0 1px 0 color-mix(in srgb, white 14%, transparent), inset 0 -6px 12px -8px color-mix(in srgb, ${verbColor} 24%, transparent)`,
+						}}
+						css={{
+							'&:hover': {
+								background: `color-mix(in srgb, ${verbColor} 20%, transparent)`,
+								borderColor: `color-mix(in srgb, ${verbColor} 38%, transparent)`,
+							},
+							'&[data-state="open"]': {
+								background: `color-mix(in srgb, ${verbColor} 26%, transparent)`,
+								borderColor: `color-mix(in srgb, ${verbColor} 48%, transparent)`,
+							},
+							'&[data-state="open"] svg.lucide-chevron-down': {
+								transform: 'rotate(180deg)',
+							},
+							'svg.lucide-chevron-down': {
+								transition: 'transform .18s cubic-bezier(0.16, 1, 0.3, 1)',
+							},
 						}}
 					>
 						<Box as='span'>{verb.toUpperCase()}</Box>
-						<ChevronDown size={11} strokeWidth={2.2} style={{ opacity: 0.7 }} />
+						<ChevronDown size={12} strokeWidth={2.4} style={{ opacity: 0.75 }} />
 					</ChakraButton>
 				</Menu.Trigger>
 				<Portal>
 					<Menu.Positioner>
 						<Menu.Content
-							bg='color-mix(in srgb, var(--beak-colors-bg-surface) 78%, transparent)'
+							bg='color-mix(in srgb, var(--beak-colors-bg-surface-emphasized) 92%, transparent)'
+							backdropFilter='blur(12px) saturate(140%)'
 							borderWidth='1px'
-							borderColor='color-mix(in srgb, var(--beak-colors-border-default) 80%, transparent)'
+							borderColor='border.default'
 							borderRadius='lg'
-							backdropFilter='blur(24px) saturate(180%)'
-							boxShadow='0 24px 56px rgba(0,0,0,0.32), 0 8px 18px rgba(0,0,0,0.16), inset 0 1px 0 color-mix(in srgb, white 18%, transparent)'
+							boxShadow='0 12px 32px rgba(0,0,0,0.32), 0 2px 6px rgba(0,0,0,0.18)'
 							p='1'
-							minW='140px'
+							minW='150px'
+							css={{
+								'@keyframes verbMenuIn': {
+									from: { opacity: 0, transform: 'translateY(-4px) scale(0.97)' },
+									to: { opacity: 1, transform: 'translateY(0) scale(1)' },
+								},
+								animation: 'verbMenuIn 120ms cubic-bezier(0.16, 1, 0.3, 1)',
+								transformOrigin: 'top left',
+							}}
 						>
 							{VERBS.map(v => {
 								const c = verbToColor(v);
@@ -149,22 +181,34 @@ const Header: React.FC<HeaderProps> = ({ node }) => {
 										fontSize='xs'
 										fontWeight='700'
 										textTransform='uppercase'
-										letterSpacing='0.06em'
+										letterSpacing='0.07em'
 										borderRadius='md'
 										py='1.5'
-										px='2'
-										transition='background-color .12s ease, border-color .12s ease'
+										pl='2.5'
+										pr='2'
+										gap='2'
+										display='flex'
+										alignItems='center'
+										justifyContent='space-between'
+										transition='background-color .12s ease, padding-left .12s ease'
 										style={{
 											color: c,
-											background: isActive ? `color-mix(in srgb, ${c} 16%, transparent)` : undefined,
-											borderLeft: `3px solid ${isActive ? c : 'transparent'}`,
+											background: isActive ? `color-mix(in srgb, ${c} 18%, transparent)` : undefined,
 										}}
 										_hover={{
-											bg: `color-mix(in srgb, ${c} 16%, transparent)`,
-											borderLeft: `3px solid ${c}`,
+											bg: `color-mix(in srgb, ${c} 14%, transparent)`,
 										}}
 									>
-										{v}
+										<Box as='span'>{v}</Box>
+										{isActive && (
+											<Box
+												as='span'
+												w='6px'
+												h='6px'
+												borderRadius='full'
+												style={{ background: c, boxShadow: `0 0 0 3px color-mix(in srgb, ${c} 22%, transparent)` }}
+											/>
+										)}
 									</Menu.Item>
 								);
 							})}
@@ -179,35 +223,43 @@ const Header: React.FC<HeaderProps> = ({ node }) => {
 				h='30px'
 				display='flex'
 				alignItems='stretch'
-				borderRadius='none'
+				borderRadius='md'
 				borderWidth='1px'
 				borderColor='border.subtle'
 				bg='bg.canvas'
-				transition='border-color .12s ease, box-shadow .12s ease'
+				transition='border-color .14s ease, box-shadow .14s ease, background-color .14s ease'
 				position='relative'
 				_hover={{
-					borderColor: 'color-mix(in srgb, var(--beak-colors-accent-pink) 32%, var(--beak-colors-border-default))',
+					borderColor: 'border.default',
 				}}
 				_focusWithin={{
 					borderColor: 'accent.pink',
-					boxShadow: '0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-pink) 22%, transparent)',
+					bg: 'bg.canvas',
+					boxShadow:
+						'0 0 0 3px color-mix(in srgb, var(--beak-colors-accent-pink) 22%, transparent), inset 0 0 0 1px color-mix(in srgb, var(--beak-colors-accent-pink) 12%, transparent)',
 					zIndex: 1,
 				}}
 				css={{
-					'> div': { display: 'flex', alignItems: 'center', width: '100%' },
-					'> div > article': {
-						padding: '0 10px',
+					'& > div': { display: 'flex', alignItems: 'center', width: '100%' },
+					'& > div > article': {
+						padding: '0 11px',
 						background: 'transparent',
 						border: 'none',
 						color: 'var(--beak-colors-fg-default)',
-						fontSize: '13px',
+						fontFamily: 'var(--beak-fonts-mono)',
+						fontSize: '12.5px',
 						fontWeight: 400,
+						letterSpacing: '0.005em',
 						outline: 'none',
 						width: '100%',
 						lineHeight: '28px',
 					},
-					'> div > article:focus-within': {
+					'& > div > article:focus-within': {
 						outline: 'none',
+					},
+					'& > div > article:empty::before': {
+						fontFamily: 'var(--beak-fonts-mono)',
+						fontSize: '12.5px',
 					},
 				}}
 			>
@@ -230,33 +282,35 @@ const Header: React.FC<HeaderProps> = ({ node }) => {
 				justifyContent='center'
 				gap='1.5'
 				h='30px'
-				px='3'
-				minW='92px'
-				borderTopRightRadius='md'
-				borderBottomRightRadius='md'
-				borderTopLeftRadius='none'
-				borderBottomLeftRadius='none'
+				px='3.5'
+				ml='0.5'
+				minW='96px'
+				borderRadius='md'
 				borderWidth='1px'
-				borderLeftWidth='0'
-				borderColor='accent.pink'
-				bg='accent.pink'
+				borderColor='color-mix(in srgb, var(--beak-colors-accent-pink) 70%, transparent)'
 				color='fg.onAccent'
 				fontWeight='600'
 				fontSize='12px'
-				letterSpacing='0.005em'
+				letterSpacing='0.01em'
 				cursor='pointer'
-				boxShadow='inset 0 1px 0 color-mix(in srgb, white 22%, transparent)'
-				transition='background-color .14s ease, box-shadow .14s ease, filter .14s ease'
+				position='relative'
+				overflow='hidden'
+				transition='filter .12s ease, box-shadow .14s ease, transform .08s ease'
+				style={{
+					background:
+						'linear-gradient(180deg, color-mix(in srgb, var(--beak-colors-accent-pink) 100%, white 12%) 0%, var(--beak-colors-accent-pink) 100%)',
+					boxShadow:
+						'0 1px 0 inset color-mix(in srgb, white 24%, transparent), 0 1px 2px rgba(0,0,0,0.18), 0 0 0 0 color-mix(in srgb, var(--beak-colors-accent-pink) 0%, transparent)',
+				}}
 				_hover={{
 					filter: 'brightness(1.06)',
 					boxShadow:
-						'0 0 14px color-mix(in srgb, var(--beak-colors-accent-pink) 35%, transparent), inset 0 1px 0 color-mix(in srgb, white 26%, transparent)',
+						'0 1px 0 inset color-mix(in srgb, white 28%, transparent), 0 2px 6px rgba(0,0,0,0.22), 0 0 0 4px color-mix(in srgb, var(--beak-colors-accent-pink) 22%, transparent)',
 				}}
-				_active={{ filter: 'brightness(0.96)' }}
+				_active={{ filter: 'brightness(0.94)', transform: 'translateY(0.5px)' }}
 				_focusVisible={{
 					outline: 'none',
-					boxShadow:
-						'0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-pink) 45%, transparent), inset 0 1px 0 color-mix(in srgb, white 22%, transparent)',
+					boxShadow: '0 0 0 3px color-mix(in srgb, var(--beak-colors-accent-pink) 45%, transparent)',
 					zIndex: 1,
 				}}
 				onClick={() => dispatchFlightRequest()}
@@ -265,10 +319,10 @@ const Header: React.FC<HeaderProps> = ({ node }) => {
 					{flighting ? (
 						<motion.span
 							key='sending'
-							initial={{ opacity: 0 }}
-							animate={{ opacity: 1 }}
-							exit={{ opacity: 0 }}
-							transition={{ duration: 0.12 }}
+							initial={{ opacity: 0, y: 6 }}
+							animate={{ opacity: 1, y: 0 }}
+							exit={{ opacity: 0, y: -6 }}
+							transition={{ duration: 0.16, ease: [0.16, 1, 0.3, 1] }}
 							style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
 						>
 							<Loader2 size={13} style={{ animation: 'beakSpin 1s linear infinite' }} />
@@ -277,13 +331,13 @@ const Header: React.FC<HeaderProps> = ({ node }) => {
 					) : (
 						<motion.span
 							key='send'
-							initial={{ opacity: 0, x: -3 }}
-							animate={{ opacity: 1, x: 0 }}
-							exit={{ opacity: 0 }}
-							transition={{ duration: 0.12 }}
+							initial={{ opacity: 0, y: -6 }}
+							animate={{ opacity: 1, y: 0 }}
+							exit={{ opacity: 0, y: 6 }}
+							transition={{ duration: 0.16, ease: [0.16, 1, 0.3, 1] }}
 							style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
 						>
-							<Send size={12} />
+							<Send size={12} strokeWidth={2.2} />
 							<Box as='span'>Send</Box>
 						</motion.span>
 					)}
