@@ -1,6 +1,5 @@
-import { Box, Flex, Menu, Portal, chakra } from '@chakra-ui/react';
-import { selectActiveFlight } from '@beak/state/flight';
 import { verbToColor } from '@beak/design-system/helpers';
+import { selectActiveFlight } from '@beak/state/flight';
 import WindowSessionContext from '@beak/ui/contexts/window-session-context';
 import VariableInput from '@beak/ui/features/variable-input/components/VariableInput';
 import useVariableContext from '@beak/ui/features/variables/hooks/use-variable-context';
@@ -8,9 +7,10 @@ import { parseValueSections } from '@beak/ui/features/variables/parser';
 import type { ValueSections } from '@beak/ui/features/variables/values';
 import { requestPreferenceSetReqMainTab } from '@beak/ui/store/preferences/actions';
 import { useAppSelector } from '@beak/ui/store/redux';
+import { Box, chakra, Flex, Menu, Portal } from '@chakra-ui/react';
+import type { ValidRequestNode } from '@getbeak/types/nodes';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronDown, Loader2, Send } from 'lucide-react';
-import type { ValidRequestNode } from '@getbeak/types/nodes';
 import * as React from 'react';
 import { useContext } from 'react';
 import { useDispatch } from 'react-redux';
@@ -52,11 +52,13 @@ const Header: React.FC<HeaderProps> = ({ node }) => {
 
 		if (Object.keys(parsed.query).length) {
 			Object.keys(parsed.query).forEach(key => {
-				dispatch(requestQueryAdded({
-					requestId: node.id,
-					name: key,
-					value: [parsed.query[key]!],
-				}));
+				dispatch(
+					requestQueryAdded({
+						requestId: node.id,
+						name: key,
+						value: [parsed.query[key]!],
+					}),
+				);
 			});
 		}
 
@@ -70,22 +72,16 @@ const Header: React.FC<HeaderProps> = ({ node }) => {
 			dispatch(requestPreferenceSetReqMainTab({ id: node.id, tab: 'url_query' }));
 		}
 
-		dispatch(requestUriUpdated({
-			requestId: node.id,
-			url: sanitizedParts,
-		}));
+		dispatch(
+			requestUriUpdated({
+				requestId: node.id,
+				url: sanitizedParts,
+			}),
+		);
 	}
 
 	return (
-		<Flex
-			align='center'
-			gap='1.5'
-			px='3'
-			py='2'
-			borderBottomWidth='1px'
-			borderColor='border.subtle'
-			bg='bg.surface'
-		>
+		<Flex align='center' gap='1.5' px='3' py='2' borderBottomWidth='1px' borderColor='border.subtle' bg='bg.surface'>
 			<Menu.Root>
 				<Menu.Trigger asChild>
 					<ChakraButton
@@ -149,9 +145,7 @@ const Header: React.FC<HeaderProps> = ({ node }) => {
 									<Menu.Item
 										key={v}
 										value={v}
-										onClick={() =>
-											dispatch(requestUriUpdated({ requestId: node.id, verb: v }))
-										}
+										onClick={() => dispatch(requestUriUpdated({ requestId: node.id, verb: v }))}
 										fontSize='xs'
 										fontWeight='700'
 										textTransform='uppercase'
@@ -191,7 +185,9 @@ const Header: React.FC<HeaderProps> = ({ node }) => {
 				bg='bg.canvas'
 				transition='border-color .12s ease, box-shadow .12s ease'
 				position='relative'
-				_hover={{ borderColor: 'color-mix(in srgb, var(--beak-colors-accent-pink) 32%, var(--beak-colors-border-default))' }}
+				_hover={{
+					borderColor: 'color-mix(in srgb, var(--beak-colors-accent-pink) 32%, var(--beak-colors-border-default))',
+				}}
 				_focusWithin={{
 					borderColor: 'accent.pink',
 					boxShadow: '0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-pink) 22%, transparent)',
@@ -253,12 +249,14 @@ const Header: React.FC<HeaderProps> = ({ node }) => {
 				transition='background-color .14s ease, box-shadow .14s ease, filter .14s ease'
 				_hover={{
 					filter: 'brightness(1.06)',
-					boxShadow: '0 0 14px color-mix(in srgb, var(--beak-colors-accent-pink) 35%, transparent), inset 0 1px 0 color-mix(in srgb, white 26%, transparent)',
+					boxShadow:
+						'0 0 14px color-mix(in srgb, var(--beak-colors-accent-pink) 35%, transparent), inset 0 1px 0 color-mix(in srgb, white 26%, transparent)',
 				}}
 				_active={{ filter: 'brightness(0.96)' }}
 				_focusVisible={{
 					outline: 'none',
-					boxShadow: '0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-pink) 45%, transparent), inset 0 1px 0 color-mix(in srgb, white 22%, transparent)',
+					boxShadow:
+						'0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-pink) 45%, transparent), inset 0 1px 0 color-mix(in srgb, white 22%, transparent)',
 					zIndex: 1,
 				}}
 				onClick={() => dispatchFlightRequest()}

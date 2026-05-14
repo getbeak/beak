@@ -1,9 +1,9 @@
-import { Box, Flex, IconButton } from '@chakra-ui/react';
 import WindowSessionContext from '@beak/ui/contexts/window-session-context';
 import useVariableContext from '@beak/ui/features/variables/hooks/use-variable-context';
 import useShareLink from '@beak/ui/hooks/use-share-link';
-import { Check, Copy, Share2, Terminal } from 'lucide-react';
+import { Box, Flex, IconButton } from '@chakra-ui/react';
 import type { ValidRequestNode } from '@getbeak/types/nodes';
+import { Check, Copy, Share2, Terminal } from 'lucide-react';
 import * as React from 'react';
 import { useContext, useEffect, useRef, useState } from 'react';
 
@@ -20,9 +20,12 @@ const RequestPaneToolbar: React.FC<RequestPaneToolbarProps> = ({ selectedNode })
 	const [copied, setCopied] = useState<'preview' | 'share' | null>(null);
 	const flashTimerRef = useRef<number | null>(null);
 
-	useEffect(() => () => {
-		if (flashTimerRef.current !== null) window.clearTimeout(flashTimerRef.current);
-	}, []);
+	useEffect(
+		() => () => {
+			if (flashTimerRef.current !== null) window.clearTimeout(flashTimerRef.current);
+		},
+		[],
+	);
 
 	function flash(kind: 'preview' | 'share') {
 		setCopied(kind);
@@ -56,15 +59,7 @@ const RequestPaneToolbar: React.FC<RequestPaneToolbarProps> = ({ selectedNode })
 	}
 
 	return (
-		<Flex
-			position='absolute'
-			top='2'
-			right='2'
-			align='center'
-			gap='1'
-			zIndex={2}
-			pointerEvents='auto'
-		>
+		<Flex position='absolute' top='2' right='2' align='center' gap='1' zIndex={2} pointerEvents='auto'>
 			<Flex
 				align='center'
 				gap='1.5'
@@ -80,12 +75,7 @@ const RequestPaneToolbar: React.FC<RequestPaneToolbarProps> = ({ selectedNode })
 			>
 				<Flex align='center' gap='1' color='fg.subtle'>
 					<Terminal size={10} strokeWidth={2.2} />
-					<Box
-						fontSize='9px'
-						fontWeight='700'
-						textTransform='uppercase'
-						letterSpacing='0.08em'
-					>
+					<Box fontSize='9px' fontWeight='700' textTransform='uppercase' letterSpacing='0.08em'>
 						{'Preview'}
 					</Box>
 				</Flex>

@@ -2,11 +2,10 @@ import { loadRequestPreferences } from '@beak/ui/store/preferences/actions';
 import { alertInsert, alertRemoveDependents } from '@beak/ui/store/project/actions';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { requestAllowsBody } from '@beak/ui/utils/http';
-import type { ValidRequestNode } from '@getbeak/types/nodes';
-import React from 'react';
-import { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
 import { Box, Flex } from '@chakra-ui/react';
+import type { ValidRequestNode } from '@getbeak/types/nodes';
+import React, { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 import { ReflexContainer, ReflexElement } from 'react-reflex';
 
 import ReflexSplitter from '../../../components/atoms/ReflexSplitter';

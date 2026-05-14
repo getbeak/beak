@@ -1,12 +1,12 @@
-import { Box, Flex, IconButton } from '@chakra-ui/react';
 import type { PreviewReferencedFileRes } from '@beak/common/ipc/fs';
 import Button from '@beak/ui/components/atoms/Button';
 import { pickAndAttachAsset } from '@beak/ui/features/asset-attachment/pick-and-attach';
 import { ipcFsService } from '@beak/ui/lib/ipc';
 import { requestBodyAssetChanged, requestBodyFileChanged } from '@beak/ui/store/project/actions';
-import { File, FileBox, Upload, X } from 'lucide-react';
+import { Box, Flex, IconButton } from '@chakra-ui/react';
 import type { ValidRequestNode } from '@getbeak/types/nodes';
 import type { RequestBodyFile } from '@getbeak/types/request';
+import { File, FileBox, Upload, X } from 'lucide-react';
 import mime from 'mime-types';
 import prettyBytes from 'pretty-bytes';
 import * as React from 'react';
@@ -24,7 +24,9 @@ const FileUploadView: React.FC<FileUploadViewProps> = ({ node }) => {
 
 	useEffect(() => {
 		let cancelled = false;
-		openPreviewFor(body.payload.fileReferenceId).catch(() => { /* ignore */ });
+		openPreviewFor(body.payload.fileReferenceId).catch(() => {
+			/* ignore */
+		});
 		return () => {
 			cancelled = true;
 		};
@@ -154,7 +156,11 @@ const FileUploadView: React.FC<FileUploadViewProps> = ({ node }) => {
 				borderRadius='xl'
 				borderWidth={preview ? '1px' : '2px'}
 				borderStyle={preview ? 'solid' : 'dashed'}
-				borderColor={preview ? 'border.subtle' : 'color-mix(in srgb, var(--beak-colors-accent-pink) 25%, var(--beak-colors-border-subtle))'}
+				borderColor={
+					preview
+						? 'border.subtle'
+						: 'color-mix(in srgb, var(--beak-colors-accent-pink) 25%, var(--beak-colors-border-subtle))'
+				}
 				bg={preview ? 'bg.surface' : 'color-mix(in srgb, var(--beak-colors-accent-pink) 4%, transparent)'}
 				color='fg.muted'
 				fontSize='xs'
@@ -194,7 +200,9 @@ const FileUploadView: React.FC<FileUploadViewProps> = ({ node }) => {
 						>
 							<Upload size={20} strokeWidth={2} />
 						</Flex>
-						<Box color='fg.default' fontSize='sm' fontWeight='600' letterSpacing='-0.005em'>{'Click to pick a file'}</Box>
+						<Box color='fg.default' fontSize='sm' fontWeight='600' letterSpacing='-0.005em'>
+							{'Click to pick a file'}
+						</Box>
 						<Box fontSize='10px' color='accent.pink' letterSpacing='0.06em' textTransform='uppercase' fontWeight='700'>
 							{'Any binary up to ~10 MB'}
 						</Box>
@@ -217,8 +225,23 @@ const FileUploadView: React.FC<FileUploadViewProps> = ({ node }) => {
 						>
 							<File size={18} strokeWidth={2} />
 						</Flex>
-						<Box color='fg.default' fontWeight='600' fontSize='sm' letterSpacing='-0.005em' textAlign='center' px='2' overflow='hidden' textOverflow='ellipsis' maxW='240px' whiteSpace='nowrap'>{preview.fileName}</Box>
-						<Box fontSize='10px' color='fg.subtle' fontFamily='mono' style={{ fontVariantNumeric: 'tabular-nums' }}>{prettyBytes(preview.fileSize)}</Box>
+						<Box
+							color='fg.default'
+							fontWeight='600'
+							fontSize='sm'
+							letterSpacing='-0.005em'
+							textAlign='center'
+							px='2'
+							overflow='hidden'
+							textOverflow='ellipsis'
+							maxW='240px'
+							whiteSpace='nowrap'
+						>
+							{preview.fileName}
+						</Box>
+						<Box fontSize='10px' color='fg.subtle' fontFamily='mono' style={{ fontVariantNumeric: 'tabular-nums' }}>
+							{prettyBytes(preview.fileSize)}
+						</Box>
 					</React.Fragment>
 				)}
 			</Flex>
@@ -246,8 +269,14 @@ const FileUploadView: React.FC<FileUploadViewProps> = ({ node }) => {
 							{'Asset attached'}
 						</Box>
 					</Flex>
-					<Box color='fg.default' fontSize='xs' style={{ fontVariantNumeric: 'tabular-nums' }}>{`sha256:${assetRef.sha256.slice(0, 8)}…${assetRef.sha256.slice(-4)}`}</Box>
-					<Box fontSize='10px' color='fg.subtle' style={{ fontVariantNumeric: 'tabular-nums' }}>{prettyBytes(assetRef.size)}</Box>
+					<Box
+						color='fg.default'
+						fontSize='xs'
+						style={{ fontVariantNumeric: 'tabular-nums' }}
+					>{`sha256:${assetRef.sha256.slice(0, 8)}…${assetRef.sha256.slice(-4)}`}</Box>
+					<Box fontSize='10px' color='fg.subtle' style={{ fontVariantNumeric: 'tabular-nums' }}>
+						{prettyBytes(assetRef.size)}
+					</Box>
 				</Flex>
 			)}
 			<Button size='sm' colour='secondary' onClick={attachAsAsset}>

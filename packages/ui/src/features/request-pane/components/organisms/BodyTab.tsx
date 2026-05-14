@@ -1,5 +1,3 @@
-import React from 'react';
-import { useDispatch } from 'react-redux';
 import EditorView from '@beak/ui/components/atoms/EditorView';
 import BasicTableEditor from '@beak/ui/features/basic-table-editor/components/BasicTableEditor';
 import GraphQlQueryEditor from '@beak/ui/features/graphql-editor/components/GraphQlQueryEditor';
@@ -8,10 +6,11 @@ import type { EditorMode } from '@beak/ui/features/graphql-editor/types';
 import JsonEditor from '@beak/ui/features/json-editor/components/JsonEditor';
 import type { ValueSections } from '@beak/ui/features/variables/values';
 import actions, { requestBodyTextChanged } from '@beak/ui/store/project/actions';
+import { Box } from '@chakra-ui/react';
 import type { ValidRequestNode } from '@getbeak/types/nodes';
 import type { RequestBodyJson } from '@getbeak/types/request';
-
-import { Box } from '@chakra-ui/react';
+import React from 'react';
+import { useDispatch } from 'react-redux';
 import FileUploadView from '../molecules/FileUploadView';
 
 export interface BodyTabProps {
@@ -50,29 +49,39 @@ const BodyTab: React.FC<React.PropsWithChildren<BodyTabProps>> = props => {
 					items={body.payload}
 					requestId={node.id}
 					addItem={() => dispatch(actions.requestBodyUrlEncodedEditorAddItem({ requestId: node.id }))}
-					removeItem={id => dispatch(actions.requestBodyUrlEncodedEditorRemoveItem({
-						requestId: node.id,
-						id,
-					}))}
+					removeItem={id =>
+						dispatch(
+							actions.requestBodyUrlEncodedEditorRemoveItem({
+								requestId: node.id,
+								id,
+							}),
+						)
+					}
 					updateItem={(type, id, value) => {
 						if (type === 'name') {
-							dispatch(actions.requestBodyUrlEncodedEditorNameChange({
-								requestId: node.id,
-								id,
-								name: value as string,
-							}));
+							dispatch(
+								actions.requestBodyUrlEncodedEditorNameChange({
+									requestId: node.id,
+									id,
+									name: value as string,
+								}),
+							);
 						} else if (type === 'enabled') {
-							dispatch(actions.requestBodyUrlEncodedEditorEnabledChange({
-								requestId: node.id,
-								id,
-								enabled: value as boolean,
-							}));
+							dispatch(
+								actions.requestBodyUrlEncodedEditorEnabledChange({
+									requestId: node.id,
+									id,
+									enabled: value as boolean,
+								}),
+							);
 						} else if (type === 'value') {
-							dispatch(actions.requestBodyUrlEncodedEditorValueChange({
-								requestId: node.id,
-								id,
-								value: value as ValueSections,
-							}));
+							dispatch(
+								actions.requestBodyUrlEncodedEditorValueChange({
+									requestId: node.id,
+									id,
+									value: value as ValueSections,
+								}),
+							);
 						}
 					}}
 				/>

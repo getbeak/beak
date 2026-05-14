@@ -1,6 +1,6 @@
-import { Box, Flex } from '@chakra-ui/react';
 import Checkbox from '@beak/ui/components/atoms/Checkbox';
 import { actions } from '@beak/ui/store/project';
+import { Box, Flex } from '@chakra-ui/react';
 import type { ValidRequestNode } from '@getbeak/types/nodes';
 import { Settings2 } from 'lucide-react';
 import * as React from 'react';

@@ -1,5 +1,3 @@
-import React from 'react';
-import { useContext, useEffect, useState } from 'react';
 import { requestBodyContentType } from '@beak/common/helpers/request';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import EditorView from '@beak/ui/components/atoms/EditorView';
@@ -15,6 +13,7 @@ import { convertRequestToUrl } from '@beak/ui/utils/uri';
 import type { ValidRequestNode } from '@getbeak/types/nodes';
 import type { RequestBody, RequestOverview, ToggleKeyValue } from '@getbeak/types/request';
 import type { Context } from '@getbeak/types/values';
+import React, { useContext, useEffect, useState } from 'react';
 
 export interface RequestOutputProps {
 	selectedNode: ValidRequestNode;
@@ -30,27 +29,19 @@ const RequestOutput: React.FC<React.PropsWithChildren<RequestOutputProps>> = pro
 
 	useEffect(() => {
 		let cancelled = false;
-		createBasicHttpOutput(node.info, context, windowSession)
-			.then(response => {
-				if (!cancelled) setOutput(response);
-			});
+		createBasicHttpOutput(node.info, context, windowSession).then(response => {
+			if (!cancelled) setOutput(response);
+		});
 		return () => {
 			cancelled = true;
 		};
 	}, [node, selectedSets, variableSets]);
 
-	return (
-		<EditorView
-			language={'http'}
-			value={output}
-			options={{ readOnly: true }}
-		/>
-	);
+	return <EditorView language={'http'} value={output} options={{ readOnly: true }} />;
 };
 
 function createBodySection(verb: string, body: RequestBody) {
-	if (!requestAllowsBody(verb))
-		return null;
+	if (!requestAllowsBody(verb)) return null;
 
 	switch (body.type) {
 		case 'text':
@@ -67,48 +58,41 @@ function createBodySection(verb: string, body: RequestBody) {
 export async function createBasicHttpOutput(overview: RequestOverview, context: Context, windowSession: WindowSession) {
 	const url = await convertRequestToUrl(context, overview);
 	const { headers, verb, body } = overview;
-	const firstLine = [
-		`${verb.toUpperCase()} `,
-		url.pathname,
-	];
+	const firstLine = [`${verb.toUpperCase()} `, url.pathname];
 
 	const queryBuilder = new URLSearchParams();
 
-	await Promise.all(TypedObject
-		.values(overview.query)
-		.filter(q => q.enabled)
-		.map(async value => queryBuilder.append(value.name, await parseValueSections(context, value.value))),
+	await Promise.all(
+		TypedObject.values(overview.query)
+			.filter(q => q.enabled)
+			.map(async value => queryBuilder.append(value.name, await parseValueSections(context, value.value))),
 	);
 
-	if (!requestAllowsBody(verb) && body.type === 'graphql')
-		queryBuilder.append('query', body.payload.query);
+	if (!requestAllowsBody(verb) && body.type === 'graphql') queryBuilder.append('query', body.payload.query);
 
 	const queryString = queryBuilder.toString();
-	if (queryString.length > 0)
-		firstLine.push(`?${queryString}`);
+	if (queryString.length > 0) firstLine.push(`?${queryString}`);
 
-	if (url.hash)
-		firstLine.push(url.hash);
+	if (url.hash) firstLine.push(url.hash);
 
 	const out = [`${firstLine.join('')} HTTP/1.1`];
 
-	if (!hasHeader('host', headers))
-		out.push(`Host: ${url.hostname}${url.port ? `:${url.port}` : ''}`);
+	if (!hasHeader('host', headers)) out.push(`Host: ${url.hostname}${url.port ? `:${url.port}` : ''}`);
 
-	if (!hasHeader('connection', headers))
-		out.push('Connection: close');
+	if (!hasHeader('connection', headers)) out.push('Connection: close');
 
-	if (!hasHeader('accept', headers))
-		out.push('Accept: */*');
+	if (!hasHeader('accept', headers)) out.push('Accept: */*');
 
 	if (!hasHeader('user-agent', headers))
 		out.push(`User-Agent: Beak/${windowSession.version ?? ''} (${windowSession.os})`);
 
 	if (headers) {
-		out.push(...(await Promise.all(
-			TypedObject.values(headers)
-				.filter(h => h.enabled)
-				.map(async ({ name, value }) => `${name}: ${await parseValueSections(context, value)}`))),
+		out.push(
+			...(await Promise.all(
+				TypedObject.values(headers)
+					.filter(h => h.enabled)
+					.map(async ({ name, value }) => `${name}: ${await parseValueSections(context, value)}`),
+			)),
 		);
 	}
 
@@ -122,8 +106,7 @@ export async function createBasicHttpOutput(overview: RequestOverview, context: 
 		if (!hasContentTypeHeader) {
 			const contentType = requestBodyContentType(body);
 
-			if (contentType)
-				out.push(`Content-Type: ${contentType}`);
+			if (contentType) out.push(`Content-Type: ${contentType}`);
 		}
 
 		// Padding between headers/body
@@ -140,10 +123,16 @@ export async function createBasicHttpOutput(overview: RequestOverview, context: 
 		} else if (!requestAllowsBody(verb) && body.type === 'graphql') {
 			// Do nothing here, the graphql body on a get/head is set in the query
 		} else if (requestAllowsBody(verb) && body.type === 'graphql') {
-			out.push(JSON.stringify({
-				query: body.payload.query,
-				variables: await convertToRealJson(context, body.payload.variables),
-			}, null, '\t'));
+			out.push(
+				JSON.stringify(
+					{
+						query: body.payload.query,
+						variables: await convertToRealJson(context, body.payload.variables),
+					},
+					null,
+					'\t',
+				),
+			);
 		} else {
 			out.push('[Unknown body type]');
 		}
@@ -153,8 +142,7 @@ export async function createBasicHttpOutput(overview: RequestOverview, context: 
 }
 
 async function readReferencedFile(fileReferenceId: string | undefined) {
-	if (!fileReferenceId)
-		return '';
+	if (!fileReferenceId) return '';
 
 	try {
 		const response = await ipcFsService.readReferencedFile(fileReferenceId, 1000);

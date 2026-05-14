@@ -1,8 +1,8 @@
-import { Box, Flex, Menu, Portal, chakra } from '@chakra-ui/react';
 import type { EditorMode } from '@beak/ui/features/graphql-editor/types';
 import { editorTabSubItems } from '@beak/ui/features/graphql-editor/utils';
-import { Braces, ChevronDown, FileText, Hash, Network, Type, type LucideIcon } from 'lucide-react';
+import { Box, chakra, Flex, Menu, Portal } from '@chakra-ui/react';
 import type { RequestBodyType } from '@getbeak/types/request';
+import { Braces, ChevronDown, FileText, Hash, type LucideIcon, Network, Type } from 'lucide-react';
 import * as React from 'react';
 
 interface BodyTypeSelectorProps {
@@ -99,9 +99,7 @@ const BodyTypeSelector: React.FC<BodyTypeSelectorProps> = ({
 											borderRadius='md'
 											py='1.5'
 											px='2'
-											bg={isActive
-												? 'color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent)'
-												: undefined}
+											bg={isActive ? 'color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent)' : undefined}
 											color={isActive ? 'accent.pink' : 'fg.default'}
 											_hover={{
 												bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 12%, transparent)',
@@ -177,9 +175,7 @@ const BodyTypeSelector: React.FC<BodyTypeSelectorProps> = ({
 										py='1.5'
 										px='2'
 										gap='2'
-										bg={isActive
-											? 'color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent)'
-											: undefined}
+										bg={isActive ? 'color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent)' : undefined}
 										color={isActive ? 'accent.pink' : 'fg.default'}
 										_hover={{
 											bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 12%, transparent)',

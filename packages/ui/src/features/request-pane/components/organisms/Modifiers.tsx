@@ -1,12 +1,12 @@
-import type { RequestPreferenceMainTab } from '@beak/common/types/beak-hub';
 import { TypedObject } from '@beak/common/helpers/typescript';
+import type { RequestPreferenceMainTab } from '@beak/common/types/beak-hub';
 import BasicTableEditor from '@beak/ui/features/basic-table-editor/components/BasicTableEditor';
 import type { EditorMode } from '@beak/ui/features/graphql-editor/types';
 import { requestPreferenceSetReqMainTab } from '@beak/ui/store/preferences/actions';
 import actions from '@beak/ui/store/project/actions';
 import { useAppSelector } from '@beak/ui/store/redux';
+import { Box, chakra, Flex } from '@chakra-ui/react';
 import type { ValidRequestNode } from '@getbeak/types/nodes';
-import { Box, Flex, chakra } from '@chakra-ui/react';
 import * as React from 'react';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -27,13 +27,22 @@ const TABS: { key: RequestPreferenceMainTab; label: string }[] = [
 	{ key: 'options', label: 'Options' },
 ];
 
-const BODY_TYPE_LABELS: Record<string, string> = {
-	text: 'Text',
-	json: 'JSON',
-	url_encoded_form: 'Form',
-	graphql: 'GraphQL',
-	file: 'File',
-};
+function bodyTypeLabel(type: string): string {
+	switch (type) {
+		case 'text':
+			return 'Text';
+		case 'json':
+			return 'JSON';
+		case 'url_encoded_form':
+			return 'Form';
+		case 'graphql':
+			return 'GraphQL';
+		case 'file':
+			return 'File';
+		default:
+			return type;
+	}
+}
 
 const ChakraButton = chakra('button');
 
@@ -48,7 +57,7 @@ const Modifiers: React.FC<React.PropsWithChildren<ModifiersProps>> = props => {
 	const headerCount = TypedObject.values(node.info.headers).filter(h => h.enabled).length;
 	const queryCount = TypedObject.values(node.info.query).filter(q => q.enabled).length;
 	const bodyType = node.info.body.type;
-	const bodyLabel = BODY_TYPE_LABELS[bodyType] ?? bodyType;
+	const bodyLabel = bodyTypeLabel(bodyType);
 
 	function setTab(tab: RequestPreferenceMainTab) {
 		dispatch(requestPreferenceSetReqMainTab({ id: node.id, tab }));
@@ -69,14 +78,7 @@ const Modifiers: React.FC<React.PropsWithChildren<ModifiersProps>> = props => {
 
 	return (
 		<Flex direction='column' overflow='hidden' h='100%'>
-			<Flex
-				align='center'
-				h='34px'
-				px='2'
-				borderBottomWidth='1px'
-				borderColor='border.subtle'
-				bg='bg.surface'
-			>
+			<Flex align='center' h='34px' px='2' borderBottomWidth='1px' borderColor='border.subtle' bg='bg.surface'>
 				<Flex align='stretch' h='100%' gap='0.5' role='tablist'>
 					{TABS.map(t => {
 						const active = tab === t.key;
@@ -108,7 +110,9 @@ const Modifiers: React.FC<React.PropsWithChildren<ModifiersProps>> = props => {
 									borderRadius: '4px',
 								}}
 							>
-								<Box as='span' position='relative'>{t.label}</Box>
+								<Box as='span' position='relative'>
+									{t.label}
+								</Box>
 								{counter !== undefined && (
 									<Box
 										as='span'
@@ -131,9 +135,7 @@ const Modifiers: React.FC<React.PropsWithChildren<ModifiersProps>> = props => {
 												: 'color-mix(in srgb, var(--beak-colors-bg-surface-alt) 80%, transparent)'
 										}
 										borderWidth='1px'
-										borderColor={active
-											? 'color-mix(in srgb, var(--beak-colors-accent-pink) 28%, transparent)'
-											: 'border.subtle'}
+										borderColor={active ? 'color-mix(in srgb, var(--beak-colors-accent-pink) 28%, transparent)' : 'border.subtle'}
 									>
 										{counter}
 									</Box>
