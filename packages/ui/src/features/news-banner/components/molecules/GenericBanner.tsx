@@ -58,8 +58,8 @@ const GenericBanner: React.FC<GenericBannerProps> = ({ item }) => {
 				{emoji}
 			</Flex>
 			<Box flex='1 1 auto' minW={0}>
-				<Box fontSize='sm' fontWeight='600' color='fg.default'>{title}</Box>
-				<Box fontSize='xs' color='fg.muted' mt='0.5'>
+				<Box fontSize='sm' fontWeight='600' color='fg.default' letterSpacing='-0.005em'>{title}</Box>
+				<Box fontSize='xs' color='fg.muted' mt='0.5' lineHeight='1.45'>
 					{body}
 					{action && (
 						<Button
