@@ -85,6 +85,7 @@ const ViewExtensionError: React.FC<ViewExtensionErrorProps> = props => (
 						color='accent.pink'
 						textDecoration='underline'
 						textDecorationStyle='dotted'
+						_hover={{ textDecorationStyle: 'solid' }}
 						onClick={() => ipcExplorerService.revealFile(props.filePath)}
 					>
 						{props.filePath}
