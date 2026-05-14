@@ -31,5 +31,5 @@ export function useGlobalKeyboardShortcuts(enabled: boolean) {
 
 		window.addEventListener('keydown', onKeyDown);
 		return () => window.removeEventListener('keydown', onKeyDown);
-	}, [enabled]);
+	}, [enabled, dispatch]);
 }

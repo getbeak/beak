@@ -28,9 +28,14 @@ export function useProjectBootstrap() {
 		dispatch(startExtensions());
 		dispatch(startGit());
 
-		window.secureBridge.ipc.on('reveal_request', (_event, payload) => {
+		function onRevealRequest(_event: unknown, payload: unknown) {
 			const typed = payload as { requestId: string };
 			dispatch(revealRequestExternal(typed.requestId));
-		});
-	}, []);
+		}
+
+		window.secureBridge.ipc.on('reveal_request', onRevealRequest);
+		return () => {
+			window.secureBridge.ipc.off('reveal_request', onRevealRequest);
+		};
+	}, [dispatch]);
 }
