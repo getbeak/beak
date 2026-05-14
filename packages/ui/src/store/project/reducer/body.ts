@@ -66,7 +66,7 @@ function buildJsonEditor(builder: ActionReducerMapBuilder<State>) {
 			entry.type = payload.type;
 
 			if (['array', 'object'].includes(payload.type)) {
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				// biome-ignore lint/suspicious/noExplicitAny: array/object entries don't carry a value field; container entries store their children separately
 				(entry as any).value = void 0;
 				return;
 			}
@@ -169,7 +169,7 @@ function buildGraphQlEditor(builder: ActionReducerMapBuilder<State>) {
 			entry.type = payload.type;
 
 			if (['array', 'object'].includes(payload.type)) {
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				// biome-ignore lint/suspicious/noExplicitAny: array/object entries don't carry a value field; container entries store their children separately
 				(entry as any).value = void 0;
 				return;
 			}

@@ -13,9 +13,9 @@ export interface PrepareRequestDeps {
 	parseValueSections: (context: Context, valueParts: ValueSections) => Promise<string>;
 	// URL result only needs to be stringifiable — both the native `URL` and `url-parse`'s `URLParse` satisfy this.
 	convertRequestToUrl: (context: Context, overview: RequestOverview) => Promise<{ toString(): string }>;
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	// biome-ignore lint/suspicious/noExplicitAny: payload is an arbitrarily-nested JSON tree with embedded value-section parts
 	convertToRealJson: (context: Context, payload: any) => Promise<unknown>;
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	// biome-ignore lint/suspicious/noExplicitAny: payload is an arbitrarily-nested JSON tree with embedded value-section parts
 	convertKeyValueToString: (context: Context, payload: any) => Promise<string>;
 	readReferencedFile: (fileReferenceId: string) => Promise<{ body: Uint8Array }>;
 	/**
