@@ -111,7 +111,7 @@ async function runRequest(overview: RequestOverview) {
 		compress: false,
 	};
 
-	if (!bodyFreeVerbs.includes(verb)) {
+	if (!bodyFreeVerbs.includes(verb.toLowerCase())) {
 		switch (body.type) {
 			case 'text':
 				init.body = body.payload as string;
