@@ -151,7 +151,13 @@ const Header: React.FC<HeaderProps> = ({ selectedFlight }) => {
 				>
 					<StatusIcon size={12} strokeWidth={2.2} />
 					<Box as='span' fontWeight='700' fontFamily='mono'>{response.status}</Box>
-					<Box as='span' opacity={0.85} fontWeight='500'>{getStatusReasonPhrase(response.status)}</Box>
+					<Box
+						as='span'
+						fontWeight='500'
+						style={{ color: `color-mix(in srgb, ${statusColor} 75%, var(--beak-colors-fg-default))` }}
+					>
+						{getStatusReasonPhrase(response.status)}
+					</Box>
 				</MotionFlex>
 			)}
 			{error && (
