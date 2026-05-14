@@ -20,6 +20,9 @@ const selectStyle: React.CSSProperties = {
 	textAlignLast: 'right',
 	textOverflow: 'ellipsis',
 	cursor: 'pointer',
+	appearance: 'none',
+	WebkitAppearance: 'none',
+	MozAppearance: 'none',
 };
 
 const VariableSets: React.FC = () => {
