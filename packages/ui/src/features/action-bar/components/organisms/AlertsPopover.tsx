@@ -5,7 +5,6 @@ import { CheckCircle2 } from 'lucide-react';
 import * as React from 'react';
 import { useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import * as uuid from 'uuid';
 
 import AlertSwitch from './AlertSwitch';
 
@@ -96,7 +95,7 @@ const AlertsPopover: React.FC<AlertsPopoverProps> = ({ parent, onClose }) => {
 				{hasAlerts &&
 					TypedObject.values(alerts)
 						.filter(Boolean)
-						.map(alert => <AlertSwitch key={uuid.v4()} alert={alert!} />)}
+						.map(alert => <AlertSwitch key={alert!.type} alert={alert!} />)}
 			</Box>
 		</Box>,
 		document.getElementById('action-alerts-popover')!,
