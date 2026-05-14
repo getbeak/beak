@@ -15,7 +15,8 @@ import { renderAcceleratorDefinition } from '@beak/ui/utils/keyboard-rendering';
 import type { MenuItemConstructorOptions } from 'electron';
 
 import { Box, Flex } from '@chakra-ui/react';
-import { Table } from 'lucide-react';
+import Button from '@beak/ui/components/atoms/Button';
+import { Plus, Table } from 'lucide-react';
 
 const VariableSets: React.FC<React.PropsWithChildren<unknown>> = () => {
 	const dispatch = useDispatch();
@@ -154,8 +155,14 @@ const VariableSets: React.FC<React.PropsWithChildren<unknown>> = () => {
 					</Flex>
 					<Box fontSize='sm' fontWeight='600' color='fg.default' letterSpacing='-0.005em' lineHeight='1.2'>{'No variable sets yet'}</Box>
 					<Box fontSize='10px' color='accent.pink' fontWeight='700' letterSpacing='0.06em' textTransform='uppercase'>
-						{'Right-click to add one'}
+						{'Variable sets group your envs'}
 					</Box>
+					<Button size='sm' onClick={() => dispatch(actions.createNewVariableSet({}))}>
+						<Flex align='center' gap='1.5'>
+							<Plus size={12} />
+							{'Create one'}
+						</Flex>
+					</Button>
 				</Flex>
 			)}
 
