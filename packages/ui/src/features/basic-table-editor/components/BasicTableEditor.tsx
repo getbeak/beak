@@ -1,7 +1,7 @@
-import { Box, Button, Flex, Text } from '@chakra-ui/react';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import DebouncedInput from '@beak/ui/components/atoms/DebouncedInput';
 import type { ValueSections } from '@beak/ui/features/variables/values';
+import { Button, Flex, Text } from '@chakra-ui/react';
 import type { ToggleKeyValue } from '@getbeak/types/request';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Plus } from 'lucide-react';
@@ -13,8 +13,10 @@ import {
 	BodyInputValueCell,
 	BodyInputWrapper,
 	BodyPrimaryCell,
+	BodyToggleCell,
 	HeaderAction,
 	HeaderKeyCell,
+	HeaderToggleCell,
 	HeaderValueCell,
 } from './atoms/Cells';
 import { Body, Header, Row } from './atoms/Structure';
@@ -48,15 +50,18 @@ const BasicTableEditor: React.FC<BasicTableEditorProps> = ({
 	const hasRows = keys.length > 0;
 
 	return (
-		<Box mt='1.5' w='100%' fontSize='sm' fontWeight='400' color='fg.muted'>
-			<Header>
-				<Row data-empty='true'>
-					<HeaderKeyCell>{'Key'}</HeaderKeyCell>
-					<HeaderValueCell>{'Value'}</HeaderValueCell>
-					{editable && <HeaderAction />}
-				</Row>
-			</Header>
-			<Body>
+		<Flex direction='column' h='100%' w='100%' fontSize='sm' fontWeight='400' color='fg.muted'>
+			{hasRows && (
+				<Header>
+					<Row data-empty='true'>
+						<HeaderToggleCell />
+						<HeaderKeyCell>{'Key'}</HeaderKeyCell>
+						<HeaderValueCell>{'Value'}</HeaderValueCell>
+						{editable && <HeaderAction />}
+					</Row>
+				</Header>
+			)}
+			<Body flex='1' display='flex' flexDirection='column' minH={0}>
 				<AnimatePresence initial={false}>
 					{keys.map(k => {
 						const item = items[k];
@@ -70,13 +75,12 @@ const BasicTableEditor: React.FC<BasicTableEditorProps> = ({
 								exit={{ opacity: 0, height: 0 }}
 								transition={{ duration: 0.16, ease: 'easeOut' }}
 							>
-								<BodyPrimaryCell>
+								<BodyToggleCell>
 									{editable && showToggle && (
-										<EntryToggler
-											value={item.enabled}
-											onChange={enabled => updateItem?.('enabled', k, enabled)}
-										/>
+										<EntryToggler value={item.enabled} onChange={enabled => updateItem?.('enabled', k, enabled)} />
 									)}
+								</BodyToggleCell>
+								<BodyPrimaryCell>
 									<BodyInputWrapper>
 										<DebouncedInput
 											type='text'
@@ -109,76 +113,80 @@ const BasicTableEditor: React.FC<BasicTableEditorProps> = ({
 				</AnimatePresence>
 
 				{!hasRows && (
-					<Flex
-						align='center'
-						justify='center'
-						direction='column'
-						gap='2'
-						py='6'
-						color='fg.subtle'
-					>
+					<Flex flex='1' align='center' justify='center' direction='column' gap='3' color='fg.subtle'>
 						<Flex
 							align='center'
 							justify='center'
-							w='34px'
-							h='34px'
+							w='32px'
+							h='32px'
 							borderRadius='full'
-							bg='color-mix(in srgb, var(--beak-colors-accent-pink) 12%, transparent)'
-							borderWidth='1px'
-							borderColor='color-mix(in srgb, var(--beak-colors-accent-pink) 26%, transparent)'
-							color='accent.pink'
-							boxShadow='0 4px 12px color-mix(in srgb, var(--beak-colors-accent-pink) 18%, transparent), inset 0 1px 0 color-mix(in srgb, white 14%, transparent)'
+							bg='color-mix(in srgb, var(--beak-colors-fg-default) 6%, transparent)'
+							color='fg.subtle'
 						>
-							<Plus size={15} strokeWidth={2} />
+							<Plus size={14} strokeWidth={1.8} />
 						</Flex>
-						<Text fontSize='sm' fontWeight='600' color='fg.default' letterSpacing='-0.005em'>
+						<Text fontSize='sm' fontWeight='500' color='fg.muted'>
 							{readOnly ? 'No entries' : 'No entries yet'}
 						</Text>
 						{editable && (
-							<Text fontSize='10px' fontWeight='700' letterSpacing='0.06em' textTransform='uppercase' color='accent.pink'>
-								{'Use Add row to create one'}
-							</Text>
+							<Button
+								size='xs'
+								variant='outline'
+								borderColor='border.default'
+								color='fg.default'
+								gap='1'
+								fontSize='xs'
+								fontWeight='500'
+								_hover={{
+									borderColor: 'accent.pink',
+									color: 'accent.pink',
+									bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 10%, transparent)',
+								}}
+								onClick={() => addItem?.()}
+							>
+								<Plus size={11} strokeWidth={2} />
+								{'Add your first row'}
+							</Button>
 						)}
 					</Flex>
 				)}
 			</Body>
 
-			{editable && (
-				<Flex justify='flex-end' mt='2' mr='0.5'>
+			{hasRows && editable && (
+				<Flex justify='flex-end' mt='2' mb='2' mr='2'>
 					<Button
 						bg='transparent'
 						borderWidth='1px'
 						borderColor='border.subtle'
-						borderRadius='md'
+						borderRadius='sm'
 						color='fg.muted'
 						gap='1'
 						px='2.5'
 						py='1'
 						fontSize='xs'
-						fontWeight='600'
+						fontWeight='500'
 						h='auto'
 						minH='24px'
-						transition='border-color .12s ease, background-color .12s ease, color .12s ease, transform .08s ease'
+						transition='border-color .1s linear, background-color .1s linear, color .1s linear'
 						_hover={{
 							outline: 'none',
-							borderColor: 'accent.pink',
-							color: 'accent.pink',
-							bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 10%, transparent)',
+							borderColor: 'color-mix(in srgb, var(--beak-colors-fg-default) 25%, transparent)',
+							color: 'fg.default',
+							bg: 'color-mix(in srgb, var(--beak-colors-fg-default) 6%, transparent)',
 						}}
 						_focusVisible={{
 							outline: 'none',
 							borderColor: 'accent.pink',
 							boxShadow: '0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-pink) 22%, transparent)',
 						}}
-						_active={{ transform: 'scale(0.97)' }}
 						onClick={() => addItem?.()}
 					>
-						<Plus size={11} strokeWidth={2.4} />
+						<Plus size={11} strokeWidth={2} />
 						{'Add row'}
 					</Button>
 				</Flex>
 			)}
-		</Box>
+		</Flex>
 	);
 };
 

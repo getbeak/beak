@@ -1,15 +1,26 @@
 import { chakra } from '@chakra-ui/react';
 
+/**
+ * Visual columns for the key/value editor:
+ *  - 28px gutter for the toggle switch (kept flush so toggle aligns column)
+ *  - .8fr key
+ *  - 1fr value
+ *  - 28px gutter for the row-action menu
+ *
+ * Every cell sits inside this grid so the column rhythm holds whether the row
+ * is the header (just labels) or a body row (toggle + inputs + actions).
+ */
 export const Row = chakra('div', {
 	base: {
 		position: 'relative',
 		display: 'grid',
-		gridTemplateColumns: 'minmax(0, .8fr) minmax(0, 1fr) 28px',
+		gridTemplateColumns: '28px minmax(0, .8fr) minmax(0, 1fr) 28px',
 		gridTemplateRows: 'minmax(0, 1fr)',
 		alignItems: 'stretch',
+		minHeight: '32px',
 		borderBottomWidth: '1px',
 		borderColor: 'border.subtle',
-		transition: 'background-color .1s ease',
+		transition: 'background-color .12s ease',
 		'&::before': {
 			content: '""',
 			position: 'absolute',
@@ -23,27 +34,27 @@ export const Row = chakra('div', {
 			pointerEvents: 'none',
 		},
 		'&:hover': {
-			backgroundColor: 'color-mix(in srgb, var(--beak-colors-bg-surface-emphasized) 35%, transparent)',
-		},
-		'&:hover::before, &:focus-within::before': {
-			opacity: 1,
+			backgroundColor: 'color-mix(in srgb, var(--beak-colors-fg-default) 4%, transparent)',
 		},
 		'&:focus-within': {
-			backgroundColor: 'color-mix(in srgb, var(--beak-colors-bg-surface-emphasized) 60%, transparent)',
-			borderColor: 'color-mix(in srgb, var(--beak-colors-accent-pink) 20%, var(--beak-colors-border-subtle))',
+			backgroundColor: 'color-mix(in srgb, var(--beak-colors-fg-default) 6%, transparent)',
 		},
-		'&:hover [data-row-action], &:focus-within [data-row-action]': {
-			opacity: 1,
+		'&:hover::before, &:focus-within::before': { opacity: 1 },
+		'&:hover [data-row-action], &:focus-within [data-row-action]': { opacity: 1 },
+		'&[data-empty="true"]': {
+			minHeight: '28px',
 		},
 		'&[data-empty="true"]:hover, &[data-empty="true"]:focus-within': {
 			backgroundColor: 'transparent',
 		},
-		'&[data-empty="true"]::before': {
-			display: 'none',
-		},
+		'&[data-empty="true"]::before': { display: 'none' },
 	},
 });
 
+/**
+ * Sticky column-header band. Sits flush against the top of the body so the
+ * KEY / VALUE labels read as the column starts, not as a floating banner.
+ */
 export const Header = chakra('div', {
 	base: {
 		position: 'sticky',
@@ -51,7 +62,8 @@ export const Header = chakra('div', {
 		zIndex: 1,
 		backgroundColor: 'bg.surface',
 		'& > div': {
-			borderBottomColor: 'border.subtle',
+			borderBottomColor: 'border.default',
+			minHeight: '26px',
 		},
 	},
 });

@@ -35,7 +35,11 @@ const EntryToggler: React.FC<EntryTogglerProps> = ({ value, onChange }) => {
 			borderWidth='1px'
 			borderColor={value ? 'accent.pink' : 'border.emphasized'}
 			bg={value ? 'accent.pink' : 'color-mix(in srgb, var(--beak-colors-bg-surface-emphasized) 70%, transparent)'}
-			boxShadow={value ? '0 0 12px color-mix(in srgb, var(--beak-colors-accent-pink) 35%, transparent)' : 'inset 0 1px 2px rgba(0,0,0,0.06)'}
+			boxShadow={
+				value
+					? '0 0 12px color-mix(in srgb, var(--beak-colors-accent-pink) 35%, transparent)'
+					: 'inset 0 1px 2px rgba(0,0,0,0.06)'
+			}
 			display='inline-flex'
 			alignItems='center'
 			cursor='pointer'
