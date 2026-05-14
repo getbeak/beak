@@ -73,7 +73,7 @@ const AccountItem: React.FC = () => {
 					whiteSpace='nowrap'
 					textOverflow='ellipsis'
 					fontSize='sm'
-					fontWeight='500'
+					fontWeight='600'
 					color='fg.default'
 					textDecoration='none'
 					fontFamily='mono'
