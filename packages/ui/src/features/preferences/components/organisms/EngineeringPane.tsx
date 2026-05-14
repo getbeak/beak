@@ -51,18 +51,32 @@ const EngineeringPane: React.FC<React.PropsWithChildren<unknown>> = () => {
 					mt='6'
 					borderRadius='md'
 					borderWidth='1px'
-					borderColor='border.subtle'
+					borderColor='color-mix(in srgb, var(--beak-colors-accent-alert) 22%, var(--beak-colors-border-subtle))'
 					bg='color-mix(in srgb, var(--beak-colors-accent-alert) 6%, transparent)'
 					p='3'
+					boxShadow='0 4px 12px color-mix(in srgb, var(--beak-colors-accent-alert) 10%, rgba(0,0,0,0.04)), inset 0 1px 0 color-mix(in srgb, white 12%, transparent)'
 					css={{ borderLeft: '3px solid var(--beak-colors-accent-alert)' }}
 				>
-					<Flex align='center' gap='1.5' mb='1.5' color='accent.alert'>
-						<AlertTriangle size={13} />
-						<Box fontSize='10px' fontWeight='700' textTransform='uppercase' letterSpacing='0.06em'>
+					<Flex align='center' gap='1.5' mb='1.5'>
+						<Flex
+							align='center'
+							justify='center'
+							w='20px'
+							h='20px'
+							borderRadius='sm'
+							bg='color-mix(in srgb, var(--beak-colors-accent-alert) 14%, transparent)'
+							borderWidth='1px'
+							borderColor='color-mix(in srgb, var(--beak-colors-accent-alert) 28%, transparent)'
+							color='accent.alert'
+							boxShadow='inset 0 1px 0 color-mix(in srgb, white 14%, transparent)'
+						>
+							<AlertTriangle size={11} strokeWidth={2.2} />
+						</Flex>
+						<Box fontSize='10px' fontWeight='700' textTransform='uppercase' letterSpacing='0.06em' color='accent.alert'>
 							{'Danger zone'}
 						</Box>
 					</Flex>
-					<Box fontSize='xs' color='fg.muted' mb='2'>
+					<Box fontSize='xs' color='fg.muted' mb='2' lineHeight='1.5'>
 						{'Signing out will clear your authentication tokens and require re-authentication on next launch.'}
 					</Box>
 					<ItemSpacer />
