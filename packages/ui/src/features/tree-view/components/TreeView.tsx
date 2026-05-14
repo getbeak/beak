@@ -76,38 +76,54 @@ const TreeView: React.FC<React.PropsWithChildren<TreeViewProps>> = props => {
 		[flat, indexById, scrollToIndex],
 	);
 
+	const abstractionsValue = useMemo(
+		() => ({
+			nodeFlairRenderers: props.nodeFlairRenderers,
+			renameSelector: props.renameSelector,
+			onRenameStarted: props.onRenameStarted,
+			onRenameUpdated: props.onRenameUpdated,
+			onRenameSubmitted: props.onRenameSubmitted,
+			onRenameEnded: props.onRenameEnded,
+			onContextMenu: props.onContextMenu,
+			onDrop: props.onDrop,
+			onNodeClick: props.onNodeClick,
+			onNodeDoubleClick: props.onNodeDoubleClick,
+			onNodeKeyDown: props.onNodeKeyDown,
+		}),
+		[
+			props.nodeFlairRenderers,
+			props.renameSelector,
+			props.onRenameStarted,
+			props.onRenameUpdated,
+			props.onRenameSubmitted,
+			props.onRenameEnded,
+			props.onContextMenu,
+			props.onDrop,
+			props.onNodeClick,
+			props.onNodeDoubleClick,
+			props.onNodeKeyDown,
+		],
+	);
+
+	const focusValue = useMemo(
+		() => ({
+			rootRef: container,
+			activeNodeId: props.activeNodeId,
+			focusedNodeId,
+			focusedNodeInvalidator,
+			setFocusedNodeId,
+		}),
+		[props.activeNodeId, focusedNodeId, focusedNodeInvalidator, setFocusedNodeId],
+	);
+
 	useSectionBody({ flexGrow: 2 });
 
 	const virtualItems = virtualizer.getVirtualItems();
 
 	return (
 		<TreeViewNodesContext.Provider value={tree}>
-			<TreeViewAbstractionsContext.Provider
-				value={{
-					nodeFlairRenderers: props.nodeFlairRenderers,
-
-					renameSelector: props.renameSelector,
-					onRenameStarted: props.onRenameStarted,
-					onRenameUpdated: props.onRenameUpdated,
-					onRenameSubmitted: props.onRenameSubmitted,
-					onRenameEnded: props.onRenameEnded,
-
-					onContextMenu: props.onContextMenu,
-					onDrop: props.onDrop,
-					onNodeClick: props.onNodeClick,
-					onNodeDoubleClick: props.onNodeDoubleClick,
-					onNodeKeyDown: props.onNodeKeyDown,
-				}}
-			>
-				<TreeViewFocusContext.Provider
-					value={{
-						rootRef: container,
-						activeNodeId: props.activeNodeId,
-						focusedNodeId,
-						focusedNodeInvalidator,
-						setFocusedNodeId,
-					}}
-				>
+			<TreeViewAbstractionsContext.Provider value={abstractionsValue}>
+				<TreeViewFocusContext.Provider value={focusValue}>
 					<TreeViewFlatContext.Provider value={flatContextValue}>
 						<DndProvider backend={HTML5Backend}>
 							<NodeContextMenu
