@@ -35,17 +35,29 @@ const TabItem = <T = string>(props: React.PropsWithChildren<TabItemProps<T>>): R
 		size,
 		subItems,
 		variant = 'underline',
+		onClick,
+		onKeyDown,
 		...rest
 	} = props;
 
 	const sm = size === 'sm';
 	const isCard = variant === 'card';
 
+	function handleKeyDown(event: React.KeyboardEvent<HTMLDivElement>) {
+		onKeyDown?.(event);
+		if (event.defaultPrevented) return;
+		if (event.key === 'Enter' || event.key === ' ') {
+			event.preventDefault();
+			onClick?.(event as unknown as React.MouseEvent<HTMLDivElement>);
+		}
+	}
+
 	return (
 		<Box
 			ref={lazyForwardedRef as unknown as React.Ref<HTMLDivElement>}
 			role='tab'
 			aria-selected={active}
+			tabIndex={active ? 0 : -1}
 			position='relative'
 			display='inline-flex'
 			alignItems='center'
@@ -89,6 +101,12 @@ const TabItem = <T = string>(props: React.PropsWithChildren<TabItemProps<T>>): R
 							: 'color-mix(in srgb, var(--beak-colors-bg-surface) 50%, transparent)',
 					}
 			}
+			_focusVisible={{
+				outline: 'none',
+				boxShadow: 'inset 0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-pink) 45%, transparent)',
+			}}
+			onClick={onClick}
+			onKeyDown={handleKeyDown}
 			css={{ '> svg': { marginLeft: '5px' } }}
 			{...(rest as Record<string, unknown>)}
 		>
