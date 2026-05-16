@@ -24,7 +24,11 @@ const RootDropContainer: React.FC<React.PropsWithChildren> = ({ children }) => {
 			borderStyle={highlight ? 'dashed' : undefined}
 			borderColor={highlight ? 'accent.pink' : undefined}
 			bg={highlight ? 'color-mix(in srgb, var(--beak-colors-accent-pink) 18%, transparent)' : undefined}
-			boxShadow={highlight ? '0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-pink) 30%, transparent), inset 0 0 24px color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent)' : undefined}
+			boxShadow={
+				highlight
+					? '0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-pink) 30%, transparent), inset 0 0 24px color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent)'
+					: undefined
+			}
 			transition='background-color .14s ease, border-color .14s ease, box-shadow .14s ease'
 		>
 			{children}

@@ -1,10 +1,11 @@
 import { Box } from '@chakra-ui/react';
+import BeakTooltip from '@beak/ui/components/atoms/BeakTooltip';
 import * as React from 'react';
 import { useContext, useEffect, useRef, useState } from 'react';
 import validFilename from 'valid-filename';
 
 import { TreeViewAbstractionsContext } from '../../contexts/abstractions-context';
-import { TreeViewFocusContext } from '../../contexts/focus-context';
+import { TreeViewMachineContext } from '../../contexts/machine-context';
 import { useActiveRename } from '../../hooks/use-active-rename';
 import type { TreeViewItem } from '../../types';
 
@@ -19,7 +20,7 @@ interface NodeRenamerProps {
 
 const NodeRenamer: React.FC<NodeRenamerProps> = ({ node }) => {
 	const absContext = useContext(TreeViewAbstractionsContext);
-	const focusContext = useContext(TreeViewFocusContext);
+	const treeApi = useContext(TreeViewMachineContext);
 	const [activeRename, renaming] = useActiveRename(node);
 
 	const [canShowTooltip, setCanShowTooltip] = useState(false);
@@ -41,9 +42,7 @@ const NodeRenamer: React.FC<NodeRenamerProps> = ({ node }) => {
 		// effect setup left the tooltip flag stuck on whatever the initial
 		// layout said, regardless of later width changes.
 		const update = () => {
-			setCanShowTooltip(
-				element.scrollWidth > element.clientWidth || element.scrollHeight > element.clientHeight,
-			);
+			setCanShowTooltip(element.scrollWidth > element.clientWidth || element.scrollHeight > element.clientHeight);
 		};
 
 		update();
@@ -59,18 +58,16 @@ const NodeRenamer: React.FC<NodeRenamerProps> = ({ node }) => {
 
 	if (!renaming) {
 		return (
-			<Box
-				data-tooltip-id='tt-variables-renderer-extension-missing'
-				data-tooltip-content={node.name}
-				data-tooltip-place='top-end'
-				data-tooltip-hidden={!canShowTooltip}
-				ref={wrappedTextRef}
-				overflow='hidden'
-				whiteSpace='nowrap'
-				textOverflow='ellipsis'
-			>
-				{node.name}
-			</Box>
+			<BeakTooltip content={node.name} disabled={!canShowTooltip}>
+				<Box
+					ref={wrappedTextRef}
+					overflow='hidden'
+					whiteSpace='nowrap'
+					textOverflow='ellipsis'
+				>
+					{node.name}
+				</Box>
+			</BeakTooltip>
 		);
 	}
 
@@ -120,7 +117,7 @@ const NodeRenamer: React.FC<NodeRenamerProps> = ({ node }) => {
 						if (error !== void 0) return;
 						absContext.onRenameSubmitted?.(node);
 					}
-					focusContext.setFocusedNodeId(node.id);
+					treeApi?.focus(node.id);
 				}}
 				onChange={e => updateEditValue(e.currentTarget.value)}
 			/>
