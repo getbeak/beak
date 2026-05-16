@@ -50,14 +50,27 @@ export const initialState: State = {
 	writeDebouncer: '',
 };
 
-export interface VariableSetId { id: string }
+export interface VariableSetId {
+	id: string;
+}
 
-export interface VariableSetsOpenedPayload { variableSets: VariableSets }
+export interface VariableSetsOpenedPayload {
+	variableSets: VariableSets;
+}
 
-export interface CreateNewVariableSetPayload { name?: string }
-export interface InsertNewVariableSetPayload { id: string; variableSet: VariableSet }
-export interface InsertNewGroupPayload extends VariableSetId { setName: string }
-export interface InsertNewItemPayload extends VariableSetId { itemName: string }
+export interface CreateNewVariableSetPayload {
+	name?: string;
+}
+export interface InsertNewVariableSetPayload {
+	id: string;
+	variableSet: VariableSet;
+}
+export interface InsertNewGroupPayload extends VariableSetId {
+	setName: string;
+}
+export interface InsertNewItemPayload extends VariableSetId {
+	itemName: string;
+}
 
 export interface UpdateGroupNamePayload extends VariableSetId {
 	setId: string;
@@ -78,14 +91,20 @@ export interface RemoveVariableSetFromDiskPayload {
 	withConfirmation: boolean;
 }
 
-export interface RemoveGroupPayload extends VariableSetId { setId: string }
-export interface RemoveItemPayload extends VariableSetId { itemId: string }
+export interface RemoveGroupPayload extends VariableSetId {
+	setId: string;
+}
+export interface RemoveItemPayload extends VariableSetId {
+	itemId: string;
+}
 
-export interface VariableSetRenameStarted extends VariableSetId { }
-export interface VariableSetRenameCancelled extends VariableSetId { }
-export interface VariableSetRenameSubmitted extends VariableSetId { }
-export interface VariableSetRenameResolved extends VariableSetId { }
-export interface VariableSetRenameUpdated extends VariableSetId { name: string }
+export interface VariableSetRenameStarted extends VariableSetId {}
+export interface VariableSetRenameCancelled extends VariableSetId {}
+export interface VariableSetRenameSubmitted extends VariableSetId {}
+export interface VariableSetRenameResolved extends VariableSetId {}
+export interface VariableSetRenameUpdated extends VariableSetId {
+	name: string;
+}
 
 export default {
 	ActionTypes,

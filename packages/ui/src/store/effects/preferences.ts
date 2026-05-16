@@ -1,5 +1,6 @@
 import type {
 	EditorPreferences,
+	PanePreferences,
 	ProjectPanePreferences,
 	RequestPreference,
 	SidebarPreferences,
@@ -10,6 +11,7 @@ import path from 'path-browserify';
 
 import {
 	editorPreferences,
+	panePreferences,
 	projectPanePreferences,
 	requestPreference,
 	sidebarPreferences,
@@ -19,10 +21,16 @@ import {
 	editorPreferencesLoaded,
 	editorPreferencesSetSelectedVariableGroup,
 	loadEditorPreferences,
+	loadPanePreferences,
 	loadProjectPanePreferences,
 	loadRequestPreferences,
 	loadSidebarPreferences,
+	panePreferenceSetPixelSize,
+	panePreferenceSetSplitRatio,
+	panePreferencesLoaded,
 	projectPanePreferenceSetCollapse,
+	projectPanePreferenceSetExplorerFilter,
+	projectPanePreferenceSetShowHidden,
 	projectPanePreferencesLoaded,
 	requestPreferenceSetReqJsonExpand,
 	requestPreferenceSetReqMainTab,
@@ -63,6 +71,13 @@ export function registerPreferencesEffects(start: AppStartListening) {
 		effect: async (_action, api) => {
 			const preferences = await loadProjectPanePreferencesFile();
 			api.dispatch(projectPanePreferencesLoaded(preferences));
+		},
+	});
+	start({
+		actionCreator: loadPanePreferences,
+		effect: async (_action, api) => {
+			const preferences = await loadPanePreferencesFile();
+			api.dispatch(panePreferencesLoaded(preferences));
 		},
 	});
 
@@ -106,14 +121,31 @@ export function registerPreferencesEffects(start: AppStartListening) {
 		});
 	}
 
-	start({
-		actionCreator: projectPanePreferenceSetCollapse,
-		effect: async (_action, api) => {
-			const prefs = api.getState().global.preferences.projectPane;
-			if (!prefs) return;
-			await ipcFsService.writeJson(path.join('.beak', 'preferences', 'project-pane.json'), prefs);
-		},
-	});
+	for (const ac of [
+		projectPanePreferenceSetCollapse,
+		projectPanePreferenceSetShowHidden,
+		projectPanePreferenceSetExplorerFilter,
+	]) {
+		start({
+			actionCreator: ac,
+			effect: async (_action, api) => {
+				const prefs = api.getState().global.preferences.projectPane;
+				if (!prefs) return;
+				await ipcFsService.writeJson(path.join('.beak', 'preferences', 'project-pane.json'), prefs);
+			},
+		});
+	}
+
+	for (const ac of [panePreferenceSetPixelSize, panePreferenceSetSplitRatio]) {
+		start({
+			actionCreator: ac,
+			effect: async (_action, api) => {
+				const prefs = api.getState().global.preferences.panes;
+				if (!prefs) return;
+				await ipcFsService.writeJson(path.join('.beak', 'preferences', 'panes.json'), prefs);
+			},
+		});
+	}
 }
 
 async function loadRequestPreferencesFile(id: string) {
@@ -182,6 +214,21 @@ async function loadProjectPanePreferencesFile() {
 		return preferenceFile.file;
 	} catch (error) {
 		console.warn('Project preferences invalid:', error);
+		return defaultPreferences;
+	}
+}
+
+async function loadPanePreferencesFile(): Promise<PanePreferences> {
+	const preferencesPath = path.join('.beak', 'preferences', 'panes.json');
+	const defaultPreferences: PanePreferences = { pixelSizes: {}, splitRatios: {} };
+
+	if (!(await ipcFsService.pathExists(preferencesPath))) return defaultPreferences;
+
+	try {
+		const preferenceFile = await readJsonAndValidate<PanePreferences>(preferencesPath, panePreferences);
+		return preferenceFile.file;
+	} catch (error) {
+		console.warn('Pane preferences invalid:', error);
 		return defaultPreferences;
 	}
 }

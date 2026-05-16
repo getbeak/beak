@@ -1,11 +1,8 @@
 import { requestBodyContentType } from '@beak/common/helpers/request';
 import { TypedObject } from '@beak/common/helpers/typescript';
-import type {
-	FlightCompletePayload,
-	FlightFailedPayload,
-	FlightHeartbeatPayload,
-} from '@beak/common/types/requester';
 import type { NotificationPreferences } from '@beak/common/types/preferences';
+import type { FlightCompletePayload, FlightFailedPayload, FlightHeartbeatPayload } from '@beak/common/types/requester';
+import ksuid from '@beak/ksuid';
 import {
 	type BeginFlightPayload,
 	beginFlightRequest,
@@ -17,7 +14,6 @@ import {
 	updateFlightProgress,
 } from '@beak/state/flight';
 import { resolveLegacyWithValues } from '@beak/state/request-values';
-import ksuid from '@beak/ksuid';
 import { instance as windowSessionInstance } from '@beak/ui/contexts/window-session-context';
 import { convertKeyValueToString } from '@beak/ui/features/basic-table-editor/parsers';
 import { convertToRealJson } from '@beak/ui/features/json-editor/parsers';
@@ -36,6 +32,7 @@ import type { RequestNode, ValidRequestNode } from '@getbeak/types/nodes';
 import type { ResponseOverview } from '@getbeak/types/response';
 import type { Context } from '@getbeak/types/values';
 
+import { attachCookiesToFlightRequest } from '../../services/flight/attach-cookies';
 import { type PrepareRequestDeps, prepareRequest } from '../../services/flight/prepare-request';
 import { getStatusReasonPhrase } from '../../utils/http';
 import type { AppStartListening } from '../listener';
@@ -133,13 +130,14 @@ export function registerFlightEffects(start: AppStartListening) {
 			const sliceValues = state.global.requestValues.requests[requestId] ?? null;
 			const resolvedInfo = resolveLegacyWithValues(node.info, sliceValues);
 			const preparedRequest = await prepareRequest(resolvedInfo, context, buildPrepareDeps());
+			const requestWithCookies = attachCookiesToFlightRequest(api.getState(), preparedRequest, requestId);
 
 			api.dispatch(
 				beginFlightRequest({
 					binaryStoreKey,
 					requestId,
 					flightId,
-					request: preparedRequest,
+					request: requestWithCookies,
 					redirectDepth: 0,
 					reason: 'request_editor',
 					showProgress: true,
@@ -202,8 +200,7 @@ export function registerFlightEffects(start: AppStartListening) {
 			const settled = new Promise<void>(resolve => {
 				pendingFlights.set(flightId, {
 					onHeartbeat: heartbeat => {
-						if (heartbeat.stage === 'reading_body')
-							binaryStore.append(binaryStoreKey, heartbeat.payload.buffer);
+						if (heartbeat.stage === 'reading_body') binaryStore.append(binaryStoreKey, heartbeat.payload.buffer);
 						api.dispatch(updateFlightProgress({ requestId, flightId, heartbeat }));
 					},
 					onComplete: completePayload => {

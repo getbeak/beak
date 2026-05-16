@@ -68,6 +68,7 @@ export function buildProjectTreeReducer<S extends ProjectTreeState>(builder: Act
 			state.id = payload.id;
 			state.folderPath = payload.folderPath;
 			state.mode = payload.mode;
+			state.cookies = payload.cookies;
 		})
 		.addCase(actions.projectOpened, (state, { payload }) => {
 			state.tree = payload.tree;
@@ -92,6 +93,9 @@ export function buildProjectTreeReducer<S extends ProjectTreeState>(builder: Act
 			state.id = payload.id;
 			state.name = payload.name;
 			state.folderPath = undefined;
+		})
+		.addCase(actions.renameProject, (state, { payload }) => {
+			state.name = payload.name;
 		})
 
 		.addCase(actions.insertRequestNode, (state, action) => {

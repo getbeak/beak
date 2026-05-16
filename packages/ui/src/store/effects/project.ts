@@ -6,12 +6,13 @@ import {
 	insertRequestNode,
 	materialiseInMemoryProject,
 	moveNodeInTree,
+	type ProjectMode,
 	projectLoadFailed,
 	projectOpened,
-	type ProjectMode,
 	removeNodeFromStore,
 	removeNodeFromStoreByPath,
 	renameNodeInTree,
+	renameProject,
 	startProject,
 } from '@beak/state/project';
 import {
@@ -24,15 +25,17 @@ import {
 import type { ActiveRename } from '@beak/ui/features/tree-view/types';
 import { createFolderNode, readFolderNode, removeFolderNode, renameFolderNode } from '@beak/ui/lib/beak-project/folder';
 import { moveNodesOnDisk } from '@beak/ui/lib/beak-project/nodes';
+import { readProjectFile } from '@beak/ui/lib/beak-project/project';
 import {
 	createRequestNode,
 	duplicateRequestNode,
 	readRequestNode,
 	removeRequestNode,
 	renameRequestNode,
+	unlinkAndPersistAs,
 	writeRequestNode,
 } from '@beak/ui/lib/beak-project/request';
-import { ipcDialogService, ipcEncryptionService } from '@beak/ui/lib/ipc';
+import { ipcDialogService, ipcEncryptionService, ipcFsService } from '@beak/ui/lib/ipc';
 import { loadProject, startTreeWatcher, type TreeEvent } from '@beak/ui/services/project';
 import type { FolderNode, RequestNode, Tree } from '@getbeak/types/nodes';
 import path from 'path-browserify';
@@ -50,6 +53,7 @@ import {
 	revealRequestExternal,
 } from '../project/actions';
 import { startVariableSets } from '../variable-sets/actions';
+import { startWorkflows, updateWorkflowName } from '../workflows/actions';
 
 function selectMode(api: { getState: () => { global: { project: { mode: ProjectMode } } } }): ProjectMode {
 	return api.getState().global.project.mode;
@@ -96,6 +100,7 @@ export function registerProjectEffects(start: AppStartListening) {
 			const { info, tree } = result.value;
 			api.dispatch(insertProjectInfo(info));
 			api.dispatch(startVariableSets());
+			api.dispatch(startWorkflows());
 			api.dispatch(projectOpened({ tree }));
 			api.dispatch(loadTabState());
 
@@ -139,6 +144,8 @@ export function registerProjectEffects(start: AppStartListening) {
 		projectActions.requestBodyUrlEncodedEditorRemoveItem,
 		projectActions.requestBodyUrlEncodedEditorEnabledChange,
 		projectActions.requestOptionFollowRedirects,
+		projectActions.requestOptionSendCookies,
+		projectActions.requestOptionToggleAdditionalCookieJar,
 	];
 	for (const ac of nodeUpdateActions) {
 		start({
@@ -152,6 +159,17 @@ export function registerProjectEffects(start: AppStartListening) {
 				const requestId = (payload as { requestId: string }).requestId;
 				let node = api.getState().global.project.tree[requestId];
 				if (!node || node.type !== 'request') return;
+
+				// Linked (spec-generated) request files are read-only on disk:
+				// the user must explicitly unlink (close-tab dialog → rename) for
+				// edits to persist. Until then the edit lives in redux state with
+				// a dirty flag; the project effect skips the debounced write.
+				if (node.mode === 'valid' && node.info._provenance?.linked === true) {
+					if (!api.getState().global.project.linkedDirty[requestId]) {
+						api.dispatch(projectActions.linkedDirtyMarked({ requestId }));
+					}
+					return;
+				}
 
 				const nonce = uuid.v4();
 				api.dispatch(projectActions.setWriteDebounce({ requestId, nonce }));
@@ -315,11 +333,13 @@ export function registerProjectEffects(start: AppStartListening) {
 					? 'tree'
 					: destinationNode.type === 'folder'
 						? destinationNode.filePath
-						: destinationNode.parent ?? 'tree';
-				api.dispatch(moveNodeInTree({
-					nodeId: payload.sourceNodeId,
-					destinationFolderPath,
-				}));
+						: (destinationNode.parent ?? 'tree');
+				api.dispatch(
+					moveNodeInTree({
+						nodeId: payload.sourceNodeId,
+						destinationFolderPath,
+					}),
+				);
 
 				if (openedTab) {
 					api.dispatch(makeTabPermanent(openedTab.payload));
@@ -381,7 +401,21 @@ export function registerProjectEffects(start: AppStartListening) {
 			const node = api.getState().global.project.tree[payload.requestId];
 
 			if (!activeRename || activeRename.id !== payload.requestId) return;
-			if (!node) return;
+
+			// Workflows aren't in the project tree — they're synthesised into the
+			// merged tree by the project pane from the workflows slice. The rename
+			// UI shares the same `activeRename` slot, so we route the submit to
+			// `updateWorkflowName` (debounced effect writes the file).
+			if (!node) {
+				const workflow = api.getState().global.workflows.workflows[payload.requestId];
+				if (!workflow) return;
+
+				if (activeRename.name !== workflow.name) {
+					api.dispatch(updateWorkflowName({ id: payload.requestId, name: activeRename.name }));
+				}
+				api.dispatch(projectActions.renameResolved({ requestId: payload.requestId }));
+				return;
+			}
 
 			if (activeRename.name === node.name) {
 				api.dispatch(projectActions.renameResolved({ requestId: payload.requestId }));
@@ -441,6 +475,148 @@ export function registerProjectEffects(start: AppStartListening) {
 		},
 	});
 
+	// Unlink + rename: persist the user's in-memory edits to a new file (with
+	// `_provenance.linked: false`), close the original tab, and clear the
+	// dirty flag. The original on-disk file is left alone so the next re-sync
+	// repopulates it cleanly.
+	start({
+		actionCreator: projectActions.unlinkAndRename,
+		effect: async ({ payload }, api) => {
+			const node = api.getState().global.project.tree[payload.requestId];
+			if (!node || node.type !== 'request' || node.mode !== 'valid') return;
+
+			try {
+				const persisted = await unlinkAndPersistAs(node);
+				if (!persisted) return;
+				api.dispatch(projectActions.linkedDirtyCleared({ requestId: payload.requestId }));
+				api.dispatch(projectActions.unlinkConfirmDismiss());
+				api.dispatch(closeTab(payload.requestId));
+			} catch (error) {
+				if (!(error instanceof Error)) return;
+				await ipcDialogService.showMessageBox({
+					type: 'error',
+					title: 'Unlink failed',
+					message: 'We couldn’t persist your edits to a new file.',
+					detail: [error.message, error.stack].join('\n'),
+				});
+			}
+		},
+	});
+
+	// closeTabIntent — UI-side close requests pass through this gate so dirty
+	// linked requests can prompt before they vanish. Everything else closes
+	// directly via the existing `closeTab` reducer path.
+	start({
+		actionCreator: projectActions.closeTabIntent,
+		effect: async ({ payload }, api) => {
+			const tabId = payload ?? api.getState().features.tabs.selectedTab;
+			if (!tabId) return;
+
+			const tab = api.getState().features.tabs.activeTabs.find(t => t.payload === tabId);
+			if (tab?.type === 'request' && api.getState().global.project.linkedDirty[tabId]) {
+				api.dispatch(projectActions.unlinkConfirmShow({ requestId: tabId }));
+				return;
+			}
+
+			api.dispatch(closeTab(tabId));
+		},
+	});
+
+	// Focus-on-stale: when the user switches to a tab whose request was
+	// clobbered by an external change (re-sync, manual edit, git pull),
+	// surface the reconcile prompt instead of silently presenting whichever
+	// version they happen to have in memory.
+	start({
+		actionCreator: changeTab,
+		effect: async ({ payload }, api) => {
+			if (payload.type !== 'request') return;
+			const requestId = payload.payload;
+			if (api.getState().global.project.linkedStale[requestId]) {
+				api.dispatch(projectActions.staleReloadShow({ requestId }));
+			}
+		},
+	});
+
+	// Re-link: discard in-memory edits and re-read the on-disk (spec) version.
+	start({
+		actionCreator: projectActions.relinkRequest,
+		effect: async ({ payload }, api) => {
+			const node = api.getState().global.project.tree[payload.requestId];
+			if (!node || node.type !== 'request') return;
+
+			const refreshed = await readRequestNode(node.filePath);
+			api.dispatch(insertRequestNode(refreshed));
+			api.dispatch(projectActions.linkedDirtyCleared({ requestId: payload.requestId }));
+			api.dispatch(projectActions.linkedStaleCleared({ requestId: payload.requestId }));
+		},
+	});
+
+	// Stale reload: re-read from disk + clear flags. Same effect as relink
+	// when the user has no dirty edits; the distinct action exists so the
+	// reload dialog tracks separately from the close-tab dialog.
+	start({
+		actionCreator: projectActions.reloadStaleRequest,
+		effect: async ({ payload }, api) => {
+			const node = api.getState().global.project.tree[payload.requestId];
+			if (!node || node.type !== 'request') return;
+
+			const refreshed = await readRequestNode(node.filePath);
+			api.dispatch(insertRequestNode(refreshed));
+			api.dispatch(projectActions.linkedDirtyCleared({ requestId: payload.requestId }));
+			api.dispatch(projectActions.linkedStaleCleared({ requestId: payload.requestId }));
+			api.dispatch(projectActions.staleReloadDismiss());
+		},
+	});
+
+	// "Keep my version": just clear the stale flag. Edits stay in-memory; on
+	// the next re-sync, this fires again. The user has to commit (unlink) to
+	// stop seeing it.
+	start({
+		actionCreator: projectActions.keepLocalStaleRequest,
+		effect: async ({ payload }, api) => {
+			api.dispatch(projectActions.linkedStaleCleared({ requestId: payload.requestId }));
+			api.dispatch(projectActions.staleReloadDismiss());
+		},
+	});
+
+	// Rename project: in disk mode, the slice has already applied the new
+	// name; here we round-trip `project.json` so the change survives
+	// refresh. Memory-mode projects keep the rename in redux until Save
+	// Project As.
+	start({
+		actionCreator: renameProject,
+		effect: async ({ payload }, api) => {
+			if (selectMode(api) !== 'disk') return;
+			try {
+				const projectFile = await readProjectFile();
+				if (projectFile.name === payload.name) return;
+				await ipcFsService.writeJson('project.json', { ...projectFile, name: payload.name });
+			} catch (error) {
+				console.warn('rename project persist failed', error);
+			}
+		},
+	});
+
+	// Set primary cookie jar: same shape as renameProject — slice is already
+	// up to date by the time this runs; we round-trip project.json so the
+	// `cookies.primaryVariableSet` field survives refresh.
+	start({
+		actionCreator: projectActions.setPrimaryCookieJar,
+		effect: async ({ payload }, api) => {
+			if (selectMode(api) !== 'disk') return;
+			try {
+				const projectFile = await readProjectFile();
+				if (projectFile.cookies?.primaryVariableSet === payload.variableSet) return;
+				await ipcFsService.writeJson('project.json', {
+					...projectFile,
+					cookies: { ...(projectFile.cookies ?? {}), primaryVariableSet: payload.variableSet },
+				});
+			} catch (error) {
+				console.warn('primary cookie jar persist failed', error);
+			}
+		},
+	});
+
 	// External reveal-request request: poll until the project tree contains it.
 	start({
 		actionCreator: revealRequestExternal,
@@ -461,7 +637,22 @@ export function registerProjectEffects(start: AppStartListening) {
 }
 
 interface ProjectListenerApi {
-	getState: () => { global: { project: { tree: Tree; latestWrite?: { filePath: string; writtenAt: number } } } };
+	getState: () => {
+		global: {
+			project: {
+				tree: Tree;
+				latestWrite?: { filePath: string; writtenAt: number };
+				linkedDirty: Record<string, boolean>;
+				linkedStale: Record<string, boolean>;
+			};
+		};
+		features: {
+			tabs: {
+				selectedTab: string | undefined;
+				activeTabs: Array<{ type: string; payload: string; temporary: boolean }>;
+			};
+		};
+	};
 	dispatch: (a: { type: string; [k: string]: unknown }) => unknown;
 }
 
@@ -476,7 +667,11 @@ async function ensureEncryptionAlert(api: ProjectListenerApi) {
 	api.dispatch(
 		alertInsert({
 			ident: ksuid.generate('alert').toString(),
-			alert: { type: 'missing_encryption' },
+			alert: {
+				type: 'missing_encryption',
+				severity: 'error',
+				scope: { kind: 'project' },
+			},
 		}),
 	);
 }
@@ -508,6 +703,14 @@ async function handleTreeEvent(api: ProjectListenerApi, event: TreeEvent) {
 					const expiry = lastWrite.writtenAt + 1000;
 					if (expiry > Date.now()) return;
 				}
+				// If a linked file's user has unsaved in-memory edits, don't
+				// clobber redux state — mark the request stale so the reload
+				// dialog can ask them on next tab focus.
+				const existing = Object.values(api.getState().global.project.tree).find(n => n.filePath === event.path);
+				if (existing?.type === 'request' && api.getState().global.project.linkedDirty[existing.id]) {
+					api.dispatch(projectActions.linkedStaleMarked({ requestId: existing.id }));
+					return;
+				}
 				const node = await readRequestNode(event.path);
 				api.dispatch(insertRequestNode(node));
 				return;
@@ -525,6 +728,16 @@ async function handleTreeEvent(api: ProjectListenerApi, event: TreeEvent) {
 				api.dispatch(attemptReconciliation());
 				return;
 			}
+			case 'collection-changed':
+			case 'collection-removed': {
+				// A collection file changes the merged shape of every request
+				// whose nearest collection is this one. Cheapest correct move:
+				// re-read every request under the collection's folder; ones
+				// shadowed by a deeper `_collection.json` simply re-read with
+				// the same merged data (no visible churn).
+				await refreshRequestsUnderCollection(api, event.path);
+				return;
+			}
 		}
 	} catch (error) {
 		if (!(error instanceof Error)) return;
@@ -535,4 +748,28 @@ async function handleTreeEvent(api: ProjectListenerApi, event: TreeEvent) {
 			detail: [error.message, error.stack].join('\n'),
 		});
 	}
+}
+
+async function refreshRequestsUnderCollection(api: ProjectListenerApi, collectionPath: string) {
+	const folder = path.dirname(collectionPath);
+	const prefix = `${folder}/`;
+	const tree = api.getState().global.project.tree;
+	const linkedDirty = api.getState().global.project.linkedDirty;
+
+	const affected = Object.values(tree).filter(
+		n => n.type === 'request' && (n.parent === folder || (n.parent ?? '').startsWith(prefix)),
+	);
+
+	await Promise.all(
+		affected.map(async n => {
+			// Mirror request-changed: protect in-memory edits on dirty linked
+			// files. Mark them stale so the reload dialog picks it up.
+			if (linkedDirty[n.id]) {
+				api.dispatch(projectActions.linkedStaleMarked({ requestId: n.id }));
+				return;
+			}
+			const refreshed = await readRequestNode(n.filePath);
+			api.dispatch(insertRequestNode(refreshed));
+		}),
+	);
 }

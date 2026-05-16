@@ -89,6 +89,13 @@ export function registerFlightHistoryEffects(start: AppStartListening) {
 		actionCreator: projectOpened,
 		effect: async (_action, api) => {
 			try {
+				// First-open projects have no history file yet — short-circuit
+				// before the read so the main process doesn't log a benign
+				// ENOENT through its IPC error channel.
+				if (!(await ipcFsService.pathExists(HISTORY_FILE_PATH))) {
+					api.dispatch(hydrateFlightHistories({ histories: {} }));
+					return;
+				}
 				const raw = (await ipcFsService.readJson<unknown>(HISTORY_FILE_PATH)) as unknown;
 				if (!raw || (typeof raw === 'string' && raw.length === 0)) {
 					api.dispatch(hydrateFlightHistories({ histories: {} }));
@@ -106,6 +113,26 @@ export function registerFlightHistoryEffects(start: AppStartListening) {
 				const histories: Record<string, ReturnType<typeof persistedToRuntimeHistory>> = {};
 				for (const [requestId, persisted] of Object.entries(cleaned.histories)) {
 					histories[requestId] = persistedToRuntimeHistory(persisted);
+					// Seed the binary store with whatever response/request bodies
+					// were captured on disk. The OverviewTab / ResponseTab / body
+					// hooks all read bytes through `binaryStore.get(binaryStoreKey)`
+					// — without this seeding, a refresh leaves them empty even
+					// though the persisted JSON has the preview text.
+					for (const entry of persisted.entries) {
+						const key = `${entry.flightId}-hydrated`;
+						if (entry.response?.body !== undefined) {
+							binaryStore.create(key, new TextEncoder().encode(entry.response.body));
+						} else if (entry.response?.hasBody) {
+							// We knew there was a body but it was dropped (binary /
+							// oversized). Create an empty slot so the inspector
+							// can still render the "body truncated" hint without
+							// throwing on a missing key.
+							binaryStore.create(key);
+						}
+						if (entry.request.body !== undefined) {
+							binaryStore.create(`${key}-req`, new TextEncoder().encode(entry.request.body));
+						}
+					}
 				}
 				api.dispatch(hydrateFlightHistories({ histories }));
 			} catch (error) {

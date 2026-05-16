@@ -111,7 +111,8 @@ export function registerTabsEffects(start: AppStartListening) {
 					}
 					case 'new_project_intro':
 					case 'preferences':
-						// Both are project-window-scoped, not tied to tree/variable-set
+					case 'variable_input_playground':
+						// Project-window-scoped singletons, not tied to tree/variable-set
 						// state, so reconciliation should leave them alone.
 						break;
 					default:

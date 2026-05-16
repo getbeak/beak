@@ -1,6 +1,8 @@
 import type { SerializedSquawk } from '@beak/squawk';
 import type { Tree } from '@getbeak/types/nodes';
 
+import type { ProjectCookieConfig } from '../schemas';
+
 /**
  * Where the project lives, if anywhere. `none` is an empty workbench window
  * (welcome tab, no project). `memory` is an unsaved scratch project the user
@@ -22,6 +24,13 @@ export interface ProjectTreeState {
 	name?: string;
 	/** Folder path on disk. Only set when `mode === 'disk'`. */
 	folderPath?: string;
+	/**
+	 * Project-wide cookie config (primary variable set, …). Mirrored from
+	 * `project.json`'s `cookies` field on load and back-written on edit.
+	 * Absent means the project hasn't customised cookie behaviour and the
+	 * runtime falls back to its defaults.
+	 */
+	cookies?: ProjectCookieConfig;
 	tree: Tree;
 	/**
 	 * Set when the initial project load (or a retry) failed. While set, the
@@ -43,6 +52,7 @@ export interface ProjectInfoPayload {
 	name: string;
 	folderPath?: string;
 	mode: 'memory' | 'disk';
+	cookies?: ProjectCookieConfig;
 }
 
 export interface ProjectOpenedPayload {

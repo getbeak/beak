@@ -1,8 +1,17 @@
-import type { RecentProject } from '@beak/common/types/beak-hub';
+import type { RecentProject, RecentProjectSource } from '@beak/common/types/beak-hub';
 
-import { BeakBase } from '../base';
+import { BeakBase, type Providers } from '../base';
 
 export default class BeakRecents extends BeakBase {
+	/**
+	 * Each host injects what its recents *natively* look like (electron →
+	 * `desktop`, web → `browser`) so legacy entries without a stored `source`
+	 * field don't render as the wrong type after this field landed.
+	 */
+	constructor(providers: Providers, private readonly defaultSource: RecentProjectSource = 'desktop') {
+		super(providers);
+	}
+
 	async listProjects() {
 		const has = await this.p.storage.has('recents');
 
@@ -12,6 +21,7 @@ export default class BeakRecents extends BeakBase {
 		const resolved = await Promise.all(
 			recents.map(async r => {
 				const projectFilePath = r.path;
+				const source = r.source ?? this.defaultSource;
 
 				try {
 					const pfStat = await this.p.node.fs.promises.stat(projectFilePath);
@@ -20,6 +30,7 @@ export default class BeakRecents extends BeakBase {
 					return {
 						...r,
 						accessTime,
+						source,
 					};
 				} catch (error) {
 					if (error instanceof Error) {
@@ -37,17 +48,30 @@ export default class BeakRecents extends BeakBase {
 	async addProject(recent: Omit<RecentProject, 'exists' | 'accessTime'>) {
 		const recents = await this.listProjects();
 		const filteredRecents = recents.filter(r => r.path !== recent.path);
+		const source = recent.source ?? this.defaultSource;
 
 		// TODO(afr): Find a way to add project to app recent document list on electron
 		// app.addRecentDocument(recent.path);
 
 		await this.p.storage.set(
 			'recents',
-			[recent, ...filteredRecents].map<RecentProject>(r => ({
+			[{ ...recent, source }, ...filteredRecents].map<RecentProject>(r => ({
 				name: r.name,
 				path: r.path,
 				accessTime: new Date().toISOString(),
+				source: r.source ?? this.defaultSource,
 			})),
+		);
+	}
+
+	async renameProject(projectPath: string, name: string) {
+		const has = await this.p.storage.has('recents');
+		if (!has) return;
+
+		const recents = await this.p.storage.get('recents');
+		await this.p.storage.set(
+			'recents',
+			recents.map(r => (r.path === projectPath ? { ...r, name } : r)),
 		);
 	}
 }

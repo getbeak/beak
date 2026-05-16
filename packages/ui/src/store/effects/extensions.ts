@@ -1,130 +1,188 @@
 import Squawk from '@beak/common/utils/squawk';
-import { reloadExtensions, startExtensions } from '@beak/state/extensions';
 import ksuid from '@beak/ksuid';
+import {
+	checkExtensionUpdates,
+	extensionRemoved,
+	extensionsLoaded,
+	extensionUpsert,
+	installExtension,
+	operationChanged,
+	reloadExtensions,
+	removeExtension,
+	searchExtensions,
+	searchStateChanged,
+	startExtensions,
+	updateExtension,
+	updatesAvailable,
+} from '@beak/state/extensions';
 import { VariableManager } from '@beak/ui/features/variables';
-import createFsEmitter, { type FsSubscription } from '@beak/ui/lib/fs-emitter';
-import { ipcExtensionsService, ipcFsService } from '@beak/ui/lib/ipc';
-import path from 'path-browserify';
-import { extensionsOpened } from '../extensions/actions';
-import type { Extension, FailedExtension } from '../extensions/types';
+import { ipcExtensionsService } from '@beak/ui/lib/ipc';
+
 import type { AppStartListening } from '../listener';
 import { alertInsert, alertRemoveType } from '../project/actions';
 
-interface PackageJson {
-	name: string;
-	version: string;
-	dependencies: Record<string, string> | undefined;
-	beakExtensionType: string;
-}
-
 export function registerExtensionsEffects(start: AppStartListening) {
-	let subscription: FsSubscription | undefined;
-
 	start({
 		actionCreator: startExtensions,
 		effect: async (_action, api) => {
-			await initialImport(api);
-
-			subscription?.close();
-			subscription = createFsEmitter(
-				'extensions',
-				async event => {
-					if (!['add', 'change', 'unlink'].includes(event.type)) return;
-					// TODO(afr): make this more intelligent sometime
-					await initialImport(api);
-				},
-				{ depth: 0, followSymlinks: false },
-			);
+			await loadAll(api);
 		},
 	});
 
 	start({
 		actionCreator: reloadExtensions,
 		effect: async (_action, api) => {
-			await initialImport(api);
+			await loadAll(api);
+		},
+	});
+
+	start({
+		actionCreator: installExtension,
+		effect: async ({ payload }, api) => {
+			const { packageName, versionRange } = payload;
+
+			api.dispatch(
+				operationChanged({
+					packageName,
+					operation: { kind: 'install', status: 'pending', version: versionRange },
+				}),
+			);
+
+			try {
+				const extension = await ipcExtensionsService.install({ packageName, versionRange });
+				VariableManager.registerExtension(extension);
+				api.dispatch(extensionUpsert({ extension }));
+				api.dispatch(operationChanged({ packageName, operation: null }));
+			} catch (error) {
+				api.dispatch(
+					operationChanged({
+						packageName,
+						operation: { kind: 'install', status: 'failed', error: Squawk.coerce(error) },
+					}),
+				);
+			}
+		},
+	});
+
+	start({
+		actionCreator: removeExtension,
+		effect: async ({ payload }, api) => {
+			const { packageName } = payload;
+
+			api.dispatch(
+				operationChanged({
+					packageName,
+					operation: { kind: 'remove', status: 'pending' },
+				}),
+			);
+
+			try {
+				await ipcExtensionsService.remove({ packageName });
+				VariableManager.unregisterExtension(packageName);
+				api.dispatch(extensionRemoved({ packageName }));
+				api.dispatch(operationChanged({ packageName, operation: null }));
+			} catch (error) {
+				api.dispatch(
+					operationChanged({
+						packageName,
+						operation: { kind: 'remove', status: 'failed', error: Squawk.coerce(error) },
+					}),
+				);
+			}
+		},
+	});
+
+	start({
+		actionCreator: updateExtension,
+		effect: async ({ payload }, api) => {
+			const { packageName, versionRange } = payload;
+
+			api.dispatch(
+				operationChanged({
+					packageName,
+					operation: { kind: 'update', status: 'pending', version: versionRange },
+				}),
+			);
+
+			try {
+				const extension = await ipcExtensionsService.update({ packageName, versionRange });
+				VariableManager.registerExtension(extension);
+				api.dispatch(extensionUpsert({ extension }));
+				api.dispatch(operationChanged({ packageName, operation: null }));
+			} catch (error) {
+				api.dispatch(
+					operationChanged({
+						packageName,
+						operation: { kind: 'update', status: 'failed', error: Squawk.coerce(error) },
+					}),
+				);
+			}
+		},
+	});
+
+	start({
+		actionCreator: checkExtensionUpdates,
+		effect: async (_action, api) => {
+			try {
+				const updates = await ipcExtensionsService.checkUpdates();
+				api.dispatch(updatesAvailable({ updates }));
+			} catch {
+				// Surface failures as an empty result rather than a permanent error.
+				api.dispatch(updatesAvailable({ updates: [] }));
+			}
+		},
+	});
+
+	let lastSearchToken = 0;
+	start({
+		actionCreator: searchExtensions,
+		effect: async ({ payload }, api) => {
+			const token = ++lastSearchToken;
+			api.dispatch(searchStateChanged({ query: payload.query, loading: true }));
+
+			if (!payload.query.trim()) {
+				api.dispatch(searchStateChanged({ results: [], loading: false }));
+				return;
+			}
+
+			try {
+				const results = await ipcExtensionsService.search({ query: payload.query });
+				if (token !== lastSearchToken) return;
+				api.dispatch(searchStateChanged({ results, loading: false }));
+			} catch {
+				if (token !== lastSearchToken) return;
+				api.dispatch(searchStateChanged({ results: [], loading: false }));
+			}
 		},
 	});
 }
 
-async function initialImport(api: { dispatch: (a: { type: string; [k: string]: unknown }) => unknown }) {
-	const hasExtensions = await ipcFsService.pathExists('extensions');
-	if (!hasExtensions) return;
-
-	const extensions = await readExtensions();
-	const invalidExtensions = extensions.filter(e => !e.valid) as FailedExtension[];
+async function loadAll(api: { dispatch: (a: { type: string; [k: string]: unknown }) => unknown }) {
+	const extensions = await ipcExtensionsService.list();
 
 	api.dispatch(alertRemoveType('invalid_extension'));
-	api.dispatch(extensionsOpened({ extensions }));
+	api.dispatch(extensionsLoaded({ extensions }));
 
-	for (const invalid of invalidExtensions) {
-		const dir = path.dirname(invalid.filePath);
-		const lastDirIndex = dir.lastIndexOf(path.sep) + 1;
-		const lastDir = dir.substring(lastDirIndex);
+	for (const extension of extensions) {
+		if (extension.status === 'loaded') {
+			VariableManager.registerExtension(extension);
+			continue;
+		}
 
 		api.dispatch(
 			alertInsert({
 				ident: ksuid.generate('alert').toString(),
 				alert: {
 					type: 'invalid_extension',
+					severity: 'error',
+					scope: { kind: 'project' },
 					payload: {
-						error: invalid.error,
-						assumedName: lastDir,
-						filePath: invalid.filePath,
+						error: extension.error,
+						assumedName: extension.packageName,
+						filePath: extension.filePath,
 					},
 				},
 			}),
 		);
 	}
-}
-
-async function readExtensions(): Promise<Extension[]> {
-	const packagePath = path.join('extensions', 'package.json');
-	const lockPath = path.join('extensions', 'yarn.lock');
-
-	const packageExists = await ipcFsService.pathExists(packagePath);
-	const lockExists = await ipcFsService.pathExists(lockPath);
-
-	if (!packageExists || !lockExists) return [];
-
-	const packageJson = await ipcFsService.readJson<PackageJson>(packagePath);
-
-	if (!packageJson.dependencies) return [];
-
-	const dependencies = (await ipcFsService.readText(lockPath))
-		.split('\n')
-		.filter(l => l.startsWith('"'))
-		.map(l => {
-			const closeIndex = l.lastIndexOf('@');
-			return l.substring(1, closeIndex);
-		});
-
-	const extensions = await Promise.all(
-		dependencies.map<Promise<Extension | null>>(async k => {
-			const dependencyPath = path.join('extensions', 'node_modules', k);
-			const packagePath = path.join(dependencyPath, 'package.json');
-			const packageExists = await ipcFsService.pathExists(packagePath);
-
-			if (!packageExists) return null;
-
-			const packageJson = await ipcFsService.readJson<PackageJson>(packagePath);
-
-			// TODO(afr): Parse this properly, with validation
-			const { beakExtensionType } = packageJson;
-			if (!beakExtensionType) return null;
-
-			try {
-				const extension = await ipcExtensionsService.registerRtv({ extensionFilePath: dependencyPath });
-				VariableManager.registerExternalVariable(extension);
-				return extension;
-			} catch (error) {
-				return {
-					filePath: packagePath,
-					valid: false,
-					error: Squawk.coerce(error),
-				};
-			}
-		}),
-	);
-
-	return extensions.filter(Boolean) as Extension[];
 }

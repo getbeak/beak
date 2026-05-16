@@ -11,10 +11,10 @@ import type { State } from '../types';
 export default function buildTree(builder: ActionReducerMapBuilder<State>) {
 	builder
 		.addCase(actions.renameStarted, (state, action) => {
-			const { requestId } = action.payload;
-			const node = state.tree[requestId];
-			if (!node) return;
-			state.activeRename = { id: requestId, name: node.name };
+			const { requestId, name } = action.payload;
+			const seedName = name ?? state.tree[requestId]?.name;
+			if (seedName === undefined) return;
+			state.activeRename = { id: requestId, name: seedName };
 		})
 		.addCase(actions.renameUpdated, (state, action) => {
 			const { requestId, name } = action.payload;

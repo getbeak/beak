@@ -1,4 +1,5 @@
 import ksuid from '@beak/ksuid';
+import type { RecentProjectSource } from '@beak/common/types/beak-hub';
 import type { RequestNodeFile } from '@getbeak/types/nodes';
 import type { ProjectFile } from '@getbeak/types/project';
 import type { VariableSet } from '@getbeak/types/variable-sets';
@@ -22,6 +23,21 @@ interface CreateProjectOptions {
 	 * features as out-of-scope.
 	 */
 	skipGit?: boolean;
+	/**
+	 * Override the `source` recorded on the new recents entry. Defaults to
+	 * the host's natural source (electron → `desktop`, web → `browser`);
+	 * the export-to-local-folder flow overrides with `local-folder`.
+	 */
+	recentSource?: RecentProjectSource;
+}
+
+export interface BeakProjectOptions {
+	/**
+	 * What the host's `recents` list looks like by default. Electron hosts
+	 * pass `desktop`, web hosts pass `browser`. Per-call overrides through
+	 * `CreateProjectOptions.recentSource` take precedence.
+	 */
+	defaultRecentSource?: RecentProjectSource;
 }
 
 interface ReadProjectFileOptions {
@@ -33,12 +49,12 @@ export default class BeakProject extends BeakBase {
 	private readonly beakMigrations: BeakMigrations;
 	private readonly beakRecents: BeakRecents;
 
-	constructor(providers: Providers) {
+	constructor(providers: Providers, opts?: BeakProjectOptions) {
 		super(providers);
 
 		this.beakExtensions = new BeakExtensions(this.providers);
 		this.beakMigrations = new BeakMigrations(this.providers, this.beakExtensions);
-		this.beakRecents = new BeakRecents(this.providers);
+		this.beakRecents = new BeakRecents(this.providers, opts?.defaultRecentSource);
 	}
 
 	async create(name: string, projectParentFolder: string, opts?: CreateProjectOptions) {
@@ -169,6 +185,7 @@ export default class BeakProject extends BeakBase {
 			await this.beakRecents.addProject({
 				name,
 				path: projectFolderPath,
+				source: options.recentSource,
 			});
 		}
 
@@ -200,6 +217,26 @@ export default class BeakProject extends BeakBase {
 
 	get recents() {
 		return this.beakRecents;
+	}
+
+	async renameAtPath(projectFolderPath: string, name: string): Promise<boolean> {
+		const trimmed = name.trim();
+		if (!trimmed) return false;
+
+		const projectFile = await this.readProjectFile(projectFolderPath);
+		if (!projectFile) return false;
+
+		if (projectFile.name !== trimmed) {
+			const projectFilePath = this.p.node.path.join(projectFolderPath, 'project.json');
+			await this.p.node.fs.promises.writeFile(
+				projectFilePath,
+				JSON.stringify({ ...projectFile, name: trimmed }, null, '\t'),
+				'utf8',
+			);
+		}
+
+		await this.beakRecents.renameProject(projectFolderPath, trimmed);
+		return true;
 	}
 
 	private async createProjectEncryption(projectId: string) {

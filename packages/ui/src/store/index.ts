@@ -1,28 +1,29 @@
+import { type CookieSliceState, cookiesSlice, initialCookieState } from '@beak/state/cookies';
 // Flight slice lives in @beak/state (pure domain), used here as a global state shard.
 import { type FlightSliceState, flightSlice } from '@beak/state/flight';
 import { type RequestValuesSliceState, requestValuesSlice } from '@beak/state/request-values';
 import { type SocketsSliceState, socketsSlice } from '@beak/state/sockets';
 import { applyMiddleware, combineReducers, createStore, type Store } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
-import * as encryptionStore from '../features/encryption/store';
-import type { State as EncryptionState } from '../features/encryption/store/types';
-import * as omniBarStore from '../features/omni-bar/store';
-import type { State as OmniBarState } from '../features/omni-bar/store/types';
 import * as cloneRepoStore from '../features/clone-repo/store';
 import type { State as CloneRepoState } from '../features/clone-repo/store/types';
+import * as encryptionStore from '../features/encryption/store';
+import type { State as EncryptionState } from '../features/encryption/store/types';
+import * as endpointsUiStore from '../features/endpoints/store';
+import type { State as EndpointsUiState } from '../features/endpoints/store/types';
+import * as omniBarStore from '../features/omni-bar/store';
+import type { State as OmniBarState } from '../features/omni-bar/store/types';
 import * as openApiImportStore from '../features/openapi-import/store';
 import type { State as OpenApiImportState } from '../features/openapi-import/store/types';
 import * as sourceControlStore from '../features/source-control/store';
 import type { State as SourceControlState } from '../features/source-control/store/types';
 import * as tabsStore from '../features/tabs/store';
 import type { State as TabsState } from '../features/tabs/store/types';
-import * as arbiterStore from './arbiter';
-import type { State as ArbiterState } from './arbiter/types';
+import { registerAllEffects } from './effects';
 import * as extensionsStore from './extensions';
 import type { State as ExtensionsState } from './extensions/types';
 import * as gitStore from './git';
 import type { State as GitState } from './git/types';
-import { registerAllEffects } from './effects';
 import { listenerMiddleware } from './listener';
 import * as preferencesStore from './preferences';
 import type { State as PreferencesState } from './preferences/types';
@@ -30,18 +31,21 @@ import * as projectStore from './project';
 import type { State as ProjectState } from './project/types';
 import * as variableSetsStore from './variable-sets';
 import type { State as VariableSetState } from './variable-sets/types';
+import * as workflowsStore from './workflows';
+import type { State as WorkflowsState } from './workflows/types';
 
 export interface ApplicationState {
 	features: {
 		cloneRepo: CloneRepoState;
 		encryption: EncryptionState;
+		endpointsUi: EndpointsUiState;
 		omniBar: OmniBarState;
 		openApiImport: OpenApiImportState;
 		sourceControl: SourceControlState;
 		tabs: TabsState;
 	};
 	global: {
-		arbiter: ArbiterState;
+		cookies: CookieSliceState;
 		extensions: ExtensionsState;
 		flight: FlightSliceState;
 		git: GitState;
@@ -50,6 +54,7 @@ export interface ApplicationState {
 		requestValues: RequestValuesSliceState;
 		sockets: SocketsSliceState;
 		variableSets: VariableSetState;
+		workflows: WorkflowsState;
 	};
 }
 
@@ -58,13 +63,14 @@ function createRootReducer() {
 		features: combineReducers({
 			cloneRepo: cloneRepoStore.reducer,
 			encryption: encryptionStore.reducer,
+			endpointsUi: endpointsUiStore.reducer,
 			omniBar: omniBarStore.reducer,
 			openApiImport: openApiImportStore.reducer,
 			sourceControl: sourceControlStore.reducer,
 			tabs: tabsStore.reducer,
 		}),
 		global: combineReducers({
-			arbiter: arbiterStore.reducers,
+			cookies: cookiesSlice,
 			extensions: extensionsStore.reducers,
 			flight: flightSlice,
 			git: gitStore.reducers,
@@ -73,6 +79,7 @@ function createRootReducer() {
 			requestValues: requestValuesSlice,
 			sockets: socketsSlice,
 			variableSets: variableSetsStore.reducers,
+			workflows: workflowsStore.reducers,
 		}),
 	});
 }
@@ -82,13 +89,14 @@ function createInitialState(): ApplicationState {
 		features: {
 			cloneRepo: cloneRepoStore.initialState,
 			encryption: encryptionStore.types.initialState,
+			endpointsUi: endpointsUiStore.initialState,
 			omniBar: omniBarStore.types.initialState,
 			openApiImport: openApiImportStore.types.initialState,
 			sourceControl: sourceControlStore.initialState,
 			tabs: tabsStore.types.initialState,
 		},
 		global: {
-			arbiter: arbiterStore.types.initialState,
+			cookies: initialCookieState,
 			extensions: extensionsStore.types.initialState,
 			flight: {
 				flightStates: {},
@@ -104,6 +112,7 @@ function createInitialState(): ApplicationState {
 			requestValues: { loaded: false, requests: {} },
 			sockets: { sessions: {}, socketsByRequest: {} },
 			variableSets: variableSetsStore.types.initialState,
+			workflows: workflowsStore.types.initialState,
 		},
 	};
 }

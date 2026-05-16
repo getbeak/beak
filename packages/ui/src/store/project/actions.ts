@@ -22,8 +22,8 @@ export {
 };
 
 import {
-	type AlertDependencies,
 	type AlertInsertPayload,
+	type AlertScopeMatch,
 	ActionTypes as AT,
 	type CreateNewThing,
 	type DuplicateRequestPayload,
@@ -34,6 +34,8 @@ import {
 	type RequestBodyFileChangedPayload,
 	type RequestBodyGraphQlEditorQueryChangedPayload,
 	type RequestBodyGraphQlEditorReconcileVariablesPayload,
+	type RequestBodyGrpcMetadataChangedPayload,
+	type RequestBodyGrpcRequestJsonChangedPayload,
 	type RequestBodyJsonEditorAddEntryPayload,
 	type RequestBodyJsonEditorDescriptionChangePayload,
 	type RequestBodyJsonEditorEnabledChangePayload,
@@ -41,6 +43,7 @@ import {
 	type RequestBodyJsonEditorNameChangePayload,
 	type RequestBodyJsonEditorOptionsChangePayload,
 	type RequestBodyJsonEditorRemoveEntryPayload,
+	type RequestBodyJsonEditorReplacePayloadPayload,
 	type RequestBodyJsonEditorRequiredChangePayload,
 	type RequestBodyJsonEditorTypeChangePayload,
 	type RequestBodyJsonEditorValueChangePayload,
@@ -52,16 +55,20 @@ import {
 	type RequestBodyUrlEncodedEditorNameChangePayload,
 	type RequestBodyUrlEncodedEditorRemoveItemPayload,
 	type RequestBodyUrlEncodedEditorValueChangePayload,
+	type RequestIdPayload,
 	type RequestOptionDecompressResponse,
 	type RequestOptionFollowRedirects,
 	type RequestOptionMaxRedirects,
+	type RequestOptionSendCookies,
 	type RequestOptionTimeoutMs,
+	type RequestOptionToggleAdditionalCookieJar,
 	type RequestRenameCancelled,
 	type RequestRenameResolved,
 	type RequestRenameStarted,
 	type RequestRenameSubmitted,
 	type RequestRenameUpdated,
 	type RequestUriUpdatedPayload,
+	type SetPrimaryCookieJarPayload,
 	type ToggleableItemAddedPayload,
 	type ToggleableItemRemovedPayload,
 	type ToggleableItemUpdatedPayload,
@@ -94,6 +101,31 @@ export const renameResolved = createAction<RequestRenameResolved>(AT.RENAME_RESO
 
 export const setLatestWrite = createAction<LatestWrite>(AT.SET_LATEST_WRITE);
 export const setWriteDebounce = createAction<WriteDebouncePayload>(AT.SET_WRITE_DEBOUNCE);
+
+export const linkedDirtyMarked = createAction<RequestIdPayload>(AT.LINKED_DIRTY_MARKED);
+export const linkedDirtyCleared = createAction<RequestIdPayload>(AT.LINKED_DIRTY_CLEARED);
+export const linkedStaleMarked = createAction<RequestIdPayload>(AT.LINKED_STALE_MARKED);
+export const linkedStaleCleared = createAction<RequestIdPayload>(AT.LINKED_STALE_CLEARED);
+
+/** User picked "Rename + Unlink" in the close-tab dialog. */
+export const unlinkAndRename = createAction<RequestIdPayload>(AT.UNLINK_AND_RENAME);
+/** Re-fetch from disk: drop in-memory edits, snap back to spec output. */
+export const relinkRequest = createAction<RequestIdPayload>(AT.RELINK_REQUEST);
+/** Stale-reload dialog: accept the disk version. */
+export const reloadStaleRequest = createAction<RequestIdPayload>(AT.RELOAD_STALE_REQUEST);
+/** Stale-reload dialog: keep my in-memory version, ignore disk change. */
+export const keepLocalStaleRequest = createAction<RequestIdPayload>(AT.KEEP_LOCAL_STALE_REQUEST);
+
+/**
+ * UI-initiated tab close. Routes through the linked-dirty gate: dirty
+ * linked requests open the unlink-confirm dialog; everything else closes
+ * directly. Pass `undefined` to target the currently-selected tab.
+ */
+export const closeTabIntent = createAction<string | undefined>(AT.CLOSE_TAB_INTENT);
+export const unlinkConfirmShow = createAction<RequestIdPayload>(AT.UNLINK_CONFIRM_SHOW);
+export const unlinkConfirmDismiss = createAction(AT.UNLINK_CONFIRM_DISMISS);
+export const staleReloadShow = createAction<RequestIdPayload>(AT.STALE_RELOAD_SHOW);
+export const staleReloadDismiss = createAction(AT.STALE_RELOAD_DISMISS);
 
 export const requestBodyTypeChanged = createAction<RequestBodyTypeChangedPayload>(AT.REQUEST_BODY_TYPE_CHANGED);
 export const requestBodyTextChanged = createAction<RequestBodyTextChangedPayload>(AT.REQUEST_BODY_TEXT_CHANGED);
@@ -132,6 +164,9 @@ export const requestBodyJsonEditorRemoveEntry = createAction<RequestBodyJsonEdit
 );
 export const requestBodyJsonEditorMoveEntry = createAction<RequestBodyJsonEditorMoveEntryPayload>(
 	AT.REQUEST_BODY_JSON_EDITOR_MOVE_ENTRY,
+);
+export const requestBodyJsonEditorReplacePayload = createAction<RequestBodyJsonEditorReplacePayloadPayload>(
+	AT.REQUEST_BODY_JSON_EDITOR_REPLACE_PAYLOAD,
 );
 
 export const requestBodyUrlEncodedEditorNameChange = createAction<RequestBodyUrlEncodedEditorNameChangePayload>(
@@ -174,6 +209,13 @@ export const requestBodyGraphQlEditorRemoveEntry = createAction<RequestBodyJsonE
 export const requestBodyGraphQlEditorReconcileVariables =
 	createAction<RequestBodyGraphQlEditorReconcileVariablesPayload>(AT.REQUEST_BODY_GRAPHQL_EDITOR_RECONCILE_VARIABLES);
 
+export const requestBodyGrpcRequestJsonChanged = createAction<RequestBodyGrpcRequestJsonChangedPayload>(
+	AT.REQUEST_BODY_GRPC_REQUEST_JSON_CHANGED,
+);
+export const requestBodyGrpcMetadataChanged = createAction<RequestBodyGrpcMetadataChangedPayload>(
+	AT.REQUEST_BODY_GRPC_METADATA_CHANGED,
+);
+
 export const requestOptionFollowRedirects = createAction<RequestOptionFollowRedirects>(
 	AT.REQUEST_OPTION_FOLLOW_REDIRECTS,
 );
@@ -182,10 +224,15 @@ export const requestOptionDecompressResponse = createAction<RequestOptionDecompr
 );
 export const requestOptionTimeoutMs = createAction<RequestOptionTimeoutMs>(AT.REQUEST_OPTION_TIMEOUT_MS);
 export const requestOptionMaxRedirects = createAction<RequestOptionMaxRedirects>(AT.REQUEST_OPTION_MAX_REDIRECTS);
+export const requestOptionSendCookies = createAction<RequestOptionSendCookies>(AT.REQUEST_OPTION_SEND_COOKIES);
+export const requestOptionToggleAdditionalCookieJar = createAction<RequestOptionToggleAdditionalCookieJar>(
+	AT.REQUEST_OPTION_TOGGLE_ADDITIONAL_COOKIE_JAR,
+);
+export const setPrimaryCookieJar = createAction<SetPrimaryCookieJarPayload>(AT.SET_PRIMARY_COOKIE_JAR);
 
 export const alertInsert = createAction<AlertInsertPayload>(AT.ALERTS_INSERT);
 export const alertRemove = createAction<string>(AT.ALERTS_REMOVE);
-export const alertRemoveDependents = createAction<AlertDependencies>(AT.ALERTS_REMOVE_DEPENDENTS);
+export const alertRemoveForScope = createAction<AlertScopeMatch>(AT.ALERTS_REMOVE_FOR_SCOPE);
 export const alertRemoveType = createAction<string>(AT.ALERTS_REMOVE_TYPE);
 export const alertClear = createAction(AT.ALERTS_CLEAR);
 
@@ -227,6 +274,22 @@ export default {
 	setLatestWrite,
 	setWriteDebounce,
 
+	linkedDirtyMarked,
+	linkedDirtyCleared,
+	linkedStaleMarked,
+	linkedStaleCleared,
+
+	unlinkAndRename,
+	relinkRequest,
+	reloadStaleRequest,
+	keepLocalStaleRequest,
+
+	closeTabIntent,
+	unlinkConfirmShow,
+	unlinkConfirmDismiss,
+	staleReloadShow,
+	staleReloadDismiss,
+
 	requestBodyTypeChanged,
 	requestBodyTextChanged,
 	requestBodyJsonRawChanged,
@@ -243,6 +306,7 @@ export default {
 	requestBodyJsonEditorAddEntry,
 	requestBodyJsonEditorRemoveEntry,
 	requestBodyJsonEditorMoveEntry,
+	requestBodyJsonEditorReplacePayload,
 
 	requestBodyGraphQlEditorQueryChanged,
 	requestBodyGraphQlEditorNameChange,
@@ -263,10 +327,13 @@ export default {
 	requestOptionDecompressResponse,
 	requestOptionTimeoutMs,
 	requestOptionMaxRedirects,
+	requestOptionSendCookies,
+	requestOptionToggleAdditionalCookieJar,
+	setPrimaryCookieJar,
 
 	alertInsert,
 	alertRemove,
-	alertRemoveDependents,
+	alertRemoveForScope,
 	alertRemoveType,
 	alertClear,
 

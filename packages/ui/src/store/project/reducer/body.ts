@@ -45,6 +45,44 @@ export default function buildBody(builder: ActionReducerMapBuilder<State>) {
 	buildJsonEditor(builder);
 	buildUrlEncodedEditor(builder);
 	buildGraphQlEditor(builder);
+	buildGrpcEditor(builder);
+}
+
+function buildGrpcEditor(builder: ActionReducerMapBuilder<State>) {
+	builder
+		.addCase(actions.requestBodyGrpcRequestJsonChanged, (state, { payload }) => {
+			const node = state.tree[payload.requestId] as ValidRequestNode;
+			// Service / method are pinned on the request file at discovery time;
+			// this action only ever touches the JSON body so we leave the rest
+			// alone (and mass-assign would fight Immer's draft model anyway).
+			const current = node.info.body.payload as {
+				service: string;
+				method: string;
+				metadata?: Record<string, string>;
+			};
+			node.info.body.payload = {
+				...current,
+				requestJson: payload.requestJson,
+			};
+		})
+		.addCase(actions.requestBodyGrpcMetadataChanged, (state, { payload }) => {
+			const node = state.tree[payload.requestId] as ValidRequestNode;
+			const current = node.info.body.payload as {
+				service: string;
+				method: string;
+				requestJson: string;
+				metadata?: Record<string, string>;
+			};
+			// Omit the field entirely when the map is empty so the on-disk file
+			// stays small for the common "no metadata" case. The Zod schema
+			// accepts both shapes.
+			if (Object.keys(payload.metadata).length === 0) {
+				const { metadata: _omitted, ...rest } = current;
+				node.info.body.payload = rest;
+			} else {
+				node.info.body.payload = { ...current, metadata: payload.metadata };
+			}
+		});
 }
 
 function buildJsonEditor(builder: ActionReducerMapBuilder<State>) {
@@ -149,6 +187,11 @@ function buildJsonEditor(builder: ActionReducerMapBuilder<State>) {
 			const node = state.tree[payload.requestId] as ValidRequestNode;
 			const body = node.info.body as RequestBodyJson;
 			body.payload = moveJsonEntry(body.payload, payload.id, payload.targetId, payload.op);
+		})
+		.addCase(actions.requestBodyJsonEditorReplacePayload, (state, { payload }) => {
+			const node = state.tree[payload.requestId] as ValidRequestNode;
+			const body = node.info.body as RequestBodyJson;
+			body.payload = payload.payload;
 		});
 }
 

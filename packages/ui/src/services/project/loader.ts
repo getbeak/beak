@@ -23,6 +23,7 @@ export interface ProjectLoadInfo {
 	id: string;
 	name: string;
 	mode: 'memory' | 'disk';
+	cookies?: ProjectFile['cookies'];
 }
 
 export interface ProjectLoadValue {
@@ -60,7 +61,12 @@ export async function loadProject(treePath = 'tree'): Promise<ProjectLoadResult>
 			// mechanism) keep their `untitled: true` flag in project.json but
 			// the renderer ignores it — those folders just become regular disk
 			// projects and the banner stops appearing.
-			info: { id: project.id, name: project.name, mode: 'disk' },
+			info: {
+				id: project.id,
+				name: project.name,
+				mode: 'disk',
+				cookies: project.cookies,
+			},
 			tree,
 		},
 	};

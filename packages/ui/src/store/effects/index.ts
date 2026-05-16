@@ -1,4 +1,7 @@
 import { startAppListening } from '../listener';
+import { registerAlertsEffects } from './alerts';
+import { registerCookieEffects } from './cookies';
+import { registerEndpointSyncEffects } from './endpoint-sync';
 import { registerExtensionsEffects } from './extensions';
 import { registerFlightEffects } from './flight';
 import { registerFlightHistoryEffects } from './flight-history';
@@ -9,6 +12,7 @@ import { registerRequestValuesEffects } from './request-values';
 import { registerSocketEffects } from './sockets';
 import { registerTabsEffects } from './tabs';
 import { registerVariableSetsEffects } from './variable-sets';
+import { registerWorkflowsEffects } from './workflows';
 
 /**
  * Register every former-saga effect with the listener middleware. Called
@@ -16,6 +20,9 @@ import { registerVariableSetsEffects } from './variable-sets';
  * adding a new effect doesn't require editing this file.
  */
 export function registerAllEffects(): void {
+	registerAlertsEffects(startAppListening);
+	registerCookieEffects(startAppListening);
+	registerEndpointSyncEffects(startAppListening);
 	registerExtensionsEffects(startAppListening);
 	registerFlightEffects(startAppListening);
 	registerFlightHistoryEffects(startAppListening);
@@ -26,4 +33,5 @@ export function registerAllEffects(): void {
 	registerSocketEffects(startAppListening);
 	registerTabsEffects(startAppListening);
 	registerVariableSetsEffects(startAppListening);
+	registerWorkflowsEffects(startAppListening);
 }

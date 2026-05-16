@@ -19,6 +19,18 @@ export interface MaterialiseInMemoryProjectPayload {
 	name: string;
 }
 
+export interface RenameProjectPayload {
+	name: string;
+}
+
+/**
+ * Update the project's display name. The reducer applies the change
+ * immediately; the renderer-side effect persists it to `project.json`
+ * (only when `mode === 'disk'` — memory projects pick up the rename on
+ * Save Project As).
+ */
+export const renameProject = createAction<RenameProjectPayload>('project/renameProject');
+
 /**
  * Promote an empty workbench (`mode: 'none'`) to an in-memory scratch
  * project (`mode: 'memory'`). Fired as soon as the user takes a tree-

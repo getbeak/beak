@@ -5,7 +5,7 @@ import {
 	alertClear,
 	alertInsert,
 	alertRemove,
-	alertRemoveDependents,
+	alertRemoveForScope,
 	insertFolderNode,
 	insertProjectInfo,
 	insertRequestNode,
@@ -280,8 +280,9 @@ describe('project reducer — body', () => {
 		);
 		const node = next.tree['req-1'] as ValidRequestNode;
 		expect(node.info.body.type).toBe('file');
-		expect((node.info.body.payload as { assetRef?: { sha256: string } }).assetRef?.sha256)
-			.toBe('0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef');
+		expect((node.info.body.payload as { assetRef?: { sha256: string } }).assetRef?.sha256).toBe(
+			'0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef',
+		);
 	});
 
 	it('requestBodyAssetChanged with undefined clears the ref while keeping legacy fields', () => {
@@ -301,10 +302,7 @@ describe('project reducer — body', () => {
 				assetRef: { sha256: 'f'.repeat(64), size: 1 },
 			}),
 		);
-		const cleared = projectReducer(
-			withAsset,
-			requestBodyAssetChanged({ requestId: 'req-1', assetRef: undefined }),
-		);
+		const cleared = projectReducer(withAsset, requestBodyAssetChanged({ requestId: 'req-1', assetRef: undefined }));
 		const payload = (cleared.tree['req-1'] as ValidRequestNode).info.body.payload as {
 			fileReferenceId?: string;
 			assetRef?: unknown;
@@ -320,28 +318,75 @@ describe('project reducer — alerts', () => {
 			empty,
 			alertInsert({
 				ident: 'a1',
-				alert: { type: 'missing_encryption' },
+				alert: {
+					type: 'missing_encryption',
+					severity: 'error',
+					scope: { kind: 'project' },
+				},
 			}),
 		);
-		expect(next.alerts.a1).toEqual({ type: 'missing_encryption' });
+		expect(next.alerts.a1?.type).toBe('missing_encryption');
+		expect(next.alerts.a1?.severity).toBe('error');
 
 		const removed = projectReducer(next, alertRemove('a1'));
 		expect(removed.alerts.a1).toBeUndefined();
 	});
 
-	it('alertRemoveDependents clears alerts for a requestId', () => {
+	it('alertRemoveForScope clears alerts for a request scope', () => {
 		const seeded = projectReducer(
 			empty,
 			alertInsert({
 				ident: 'a1',
 				alert: {
 					type: 'http_body_not_allowed',
-					dependencies: { requestId: 'req-1' },
+					severity: 'warning',
+					scope: { kind: 'request', requestId: 'req-1' },
 				},
 			}),
 		);
-		const next = projectReducer(seeded, alertRemoveDependents({ requestId: 'req-1' }));
+		const next = projectReducer(seeded, alertRemoveForScope({ kind: 'request', requestId: 'req-1' }));
 		expect(next.alerts.a1).toBeUndefined();
+	});
+
+	it('alertRemoveForScope without an id sweeps every alert in that bucket', () => {
+		let state = empty;
+		state = projectReducer(
+			state,
+			alertInsert({
+				ident: 'a1',
+				alert: {
+					type: 'http_body_not_allowed',
+					severity: 'warning',
+					scope: { kind: 'request', requestId: 'req-1' },
+				},
+			}),
+		);
+		state = projectReducer(
+			state,
+			alertInsert({
+				ident: 'a2',
+				alert: {
+					type: 'http_body_not_allowed',
+					severity: 'warning',
+					scope: { kind: 'request', requestId: 'req-2' },
+				},
+			}),
+		);
+		state = projectReducer(
+			state,
+			alertInsert({
+				ident: 'a3',
+				alert: {
+					type: 'missing_encryption',
+					severity: 'error',
+					scope: { kind: 'project' },
+				},
+			}),
+		);
+		const next = projectReducer(state, alertRemoveForScope({ kind: 'request' }));
+		expect(next.alerts.a1).toBeUndefined();
+		expect(next.alerts.a2).toBeUndefined();
+		expect(next.alerts.a3).toBeDefined();
 	});
 
 	it('alertClear wipes everything', () => {
@@ -349,7 +394,11 @@ describe('project reducer — alerts', () => {
 			empty,
 			alertInsert({
 				ident: 'a1',
-				alert: { type: 'missing_encryption' },
+				alert: {
+					type: 'missing_encryption',
+					severity: 'error',
+					scope: { kind: 'project' },
+				},
 			}),
 		);
 		const next = projectReducer(seeded, alertClear());

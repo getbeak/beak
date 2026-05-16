@@ -11,7 +11,9 @@ import {
 	removeBranch,
 	requestCheckout,
 	requestCommit,
+	requestCreateBranch,
 	requestFetch,
+	requestInit,
 	requestPull,
 	requestPush,
 	requestStatus,
@@ -23,16 +25,19 @@ import createFsEmitter, { type FsSubscription, scanDirectoryRecursively } from '
 import { ipcFsService, ipcGitService } from '@beak/ui/lib/ipc';
 import path from 'path-browserify';
 
-import type { ApplicationState } from '..';
 import type { AppStartListening } from '../listener';
 
 const headPrefix = path.join('refs', 'heads');
 const headPrefixFs = path.join('.git', headPrefix);
 const headFilePathFs = path.join('.git', 'HEAD');
 
-function resolveDir(state: ApplicationState): string {
-	return state.global.project.folderPath ?? '';
-}
+/**
+ * The renderer no longer tracks the project folder — the host pins `dir`
+ * to the project root attached to the invoking window before forwarding
+ * to isomorphic-git. We still need to satisfy the IPC schema's `min(1)`
+ * constraint, so the renderer ships a placeholder.
+ */
+const dir = '.';
 
 export function registerGitEffects(start: AppStartListening) {
 	start({
@@ -70,11 +75,8 @@ export function registerGitEffects(start: AppStartListening) {
 			// Surface remotes once on open so the source-control panel can render
 			// them immediately.
 			try {
-				const dir = resolveDir(api.getState() as ApplicationState);
-				if (dir) {
-					const remotes = await ipcGitService.listRemotes({ dir });
-					api.dispatch(remotesUpdated(remotes.remotes));
-				}
+				const remotes = await ipcGitService.listRemotes({ dir });
+				api.dispatch(remotesUpdated(remotes.remotes));
 			} catch {
 				/* not a git repo or read failed — silently skip */
 			}
@@ -82,13 +84,36 @@ export function registerGitEffects(start: AppStartListening) {
 	});
 
 	start({
+		actionCreator: requestInit,
+		effect: async (action, api) => {
+			const op: GitOperation = 'init';
+			api.dispatch(operationStarted({ op }));
+			try {
+				await ipcGitService.init({ dir, defaultBranch: action.payload.defaultBranch ?? 'main' });
+				const { branch } = await ipcGitService.currentBranch({ dir });
+				api.dispatch(
+					gitOpened({
+						branches: branch ? [{ name: branch }] : [],
+						selectedBranch: branch ?? undefined,
+					}),
+				);
+				try {
+					const remotes = await ipcGitService.listRemotes({ dir });
+					api.dispatch(remotesUpdated(remotes.remotes));
+				} catch {
+					/* no remotes yet — fine */
+				}
+				api.dispatch(operationSucceeded({ op, notice: branch ?? undefined }));
+				api.dispatch(requestStatus());
+			} catch (err) {
+				api.dispatch(operationFailed({ op, error: err instanceof Error ? err.message : String(err) }));
+			}
+		},
+	});
+
+	start({
 		actionCreator: requestStatus,
 		effect: async (_action, api) => {
-			const dir = resolveDir(api.getState() as ApplicationState);
-			if (!dir) {
-				api.dispatch(statusFailed('No project folder bound to this window.'));
-				return;
-			}
 			try {
 				const result = await ipcGitService.statusMatrix({ dir });
 				api.dispatch(statusFetched(summariseStatus(result.rows)));
@@ -102,11 +127,6 @@ export function registerGitEffects(start: AppStartListening) {
 		actionCreator: requestCommit,
 		effect: async (action, api) => {
 			const op: GitOperation = 'commit';
-			const dir = resolveDir(api.getState() as ApplicationState);
-			if (!dir) {
-				api.dispatch(operationFailed({ op, error: 'No project folder bound to this window.' }));
-				return;
-			}
 			api.dispatch(operationStarted({ op }));
 			try {
 				// Auto-stage everything that's drifted from index OR untracked
@@ -143,11 +163,6 @@ export function registerGitEffects(start: AppStartListening) {
 		actionCreator: requestPush,
 		effect: async (action, api) => {
 			const op: GitOperation = 'push';
-			const dir = resolveDir(api.getState() as ApplicationState);
-			if (!dir) {
-				api.dispatch(operationFailed({ op, error: 'No project folder bound to this window.' }));
-				return;
-			}
 			api.dispatch(operationStarted({ op }));
 			try {
 				const result = await ipcGitService.push({
@@ -172,11 +187,6 @@ export function registerGitEffects(start: AppStartListening) {
 		actionCreator: requestPull,
 		effect: async (action, api) => {
 			const op: GitOperation = 'pull';
-			const dir = resolveDir(api.getState() as ApplicationState);
-			if (!dir) {
-				api.dispatch(operationFailed({ op, error: 'No project folder bound to this window.' }));
-				return;
-			}
 			api.dispatch(operationStarted({ op }));
 			try {
 				await ipcGitService.pull({
@@ -199,11 +209,6 @@ export function registerGitEffects(start: AppStartListening) {
 		actionCreator: requestFetch,
 		effect: async (action, api) => {
 			const op: GitOperation = 'fetch';
-			const dir = resolveDir(api.getState() as ApplicationState);
-			if (!dir) {
-				api.dispatch(operationFailed({ op, error: 'No project folder bound to this window.' }));
-				return;
-			}
 			api.dispatch(operationStarted({ op }));
 			try {
 				await ipcGitService.fetch({
@@ -223,11 +228,6 @@ export function registerGitEffects(start: AppStartListening) {
 		actionCreator: requestCheckout,
 		effect: async (action, api) => {
 			const op: GitOperation = 'checkout';
-			const dir = resolveDir(api.getState() as ApplicationState);
-			if (!dir) {
-				api.dispatch(operationFailed({ op, error: 'No project folder bound to this window.' }));
-				return;
-			}
 			api.dispatch(operationStarted({ op }));
 			try {
 				await ipcGitService.checkout({
@@ -237,6 +237,32 @@ export function registerGitEffects(start: AppStartListening) {
 				});
 				api.dispatch(operationSucceeded({ op }));
 				api.dispatch(requestStatus());
+			} catch (err) {
+				api.dispatch(operationFailed({ op, error: err instanceof Error ? err.message : String(err) }));
+			}
+		},
+	});
+
+	start({
+		actionCreator: requestCreateBranch,
+		effect: async (action, api) => {
+			const op: GitOperation = 'branch';
+			api.dispatch(operationStarted({ op }));
+			try {
+				await ipcGitService.branch({
+					dir,
+					ref: action.payload.ref,
+					object: action.payload.object,
+				});
+				// fs-emitter on `.git/refs/heads` will pick up the new branch
+				// shortly, but optimistically add it now so the dropdown shows
+				// the result immediately.
+				api.dispatch(addBranch(action.payload.ref));
+
+				if (action.payload.checkout) {
+					api.dispatch(requestCheckout({ ref: action.payload.ref }));
+				}
+				api.dispatch(operationSucceeded({ op, notice: `Created branch ${action.payload.ref}` }));
 			} catch (err) {
 				api.dispatch(operationFailed({ op, error: err instanceof Error ? err.message : String(err) }));
 			}

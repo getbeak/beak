@@ -106,5 +106,26 @@ export default function buildRequestFields(builder: ActionReducerMapBuilder<Stat
 		.addCase(actions.requestOptionMaxRedirects, (state, { payload }) => {
 			const node = state.tree[payload.requestId] as ValidRequestNode;
 			node.info.options.maxRedirects = payload.maxRedirects;
+		})
+		.addCase(actions.requestOptionSendCookies, (state, { payload }) => {
+			const node = state.tree[payload.requestId] as ValidRequestNode;
+			node.info.options.sendCookies = payload.sendCookies;
+		})
+		.addCase(actions.requestOptionToggleAdditionalCookieJar, (state, { payload }) => {
+			const node = state.tree[payload.requestId] as ValidRequestNode;
+			const current = node.info.options.additionalCookieJarSets ?? [];
+			if (current.includes(payload.variableSet)) {
+				node.info.options.additionalCookieJarSets = current.filter(v => v !== payload.variableSet);
+			} else {
+				node.info.options.additionalCookieJarSets = [...current, payload.variableSet];
+			}
+			// Empty arrays don't need to live on disk; drop the key so the
+			// merged file stays clean for projects that never opt in.
+			if (node.info.options.additionalCookieJarSets.length === 0) {
+				node.info.options.additionalCookieJarSets = undefined;
+			}
+		})
+		.addCase(actions.setPrimaryCookieJar, (state, { payload }) => {
+			state.cookies = { ...(state.cookies ?? {}), primaryVariableSet: payload.variableSet };
 		});
 }
