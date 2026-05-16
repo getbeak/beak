@@ -61,6 +61,7 @@ const OperationStatus: React.FC<OperationStatusProps> = ({ state }) => {
 
 function verb(op: GitOperation): string {
 	switch (op) {
+		case 'init': return 'Initialising repository';
 		case 'commit': return 'Committing';
 		case 'push': return 'Pushing';
 		case 'pull': return 'Pulling';
@@ -72,6 +73,7 @@ function verb(op: GitOperation): string {
 
 function pastVerb(op: GitOperation): string {
 	switch (op) {
+		case 'init': return 'Repository initialised';
 		case 'commit': return 'Commit created';
 		case 'push': return 'Pushed';
 		case 'pull': return 'Pulled';
