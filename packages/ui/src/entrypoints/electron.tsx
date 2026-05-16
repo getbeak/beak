@@ -2,7 +2,6 @@ import { init } from '@sentry/electron';
 import React from 'react';
 
 import ErrorBoundary from '../components/molecules/ErrorBoundary';
-import Portal from '../containers/Portal';
 import Preferences from '../containers/Preferences';
 import ProjectMain from '../containers/ProjectMain';
 
@@ -21,9 +20,6 @@ function getComponent(container: string | null): { node: React.ReactNode; label:
 
 		case 'preferences':
 			return { node: <Preferences />, label: 'Preferences' };
-
-		case 'portal':
-			return { node: <Portal />, label: 'Shared collection' };
 
 		default:
 			return { node: <span>{'unknown'}</span>, label: 'Window' };

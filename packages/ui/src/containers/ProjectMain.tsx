@@ -8,10 +8,14 @@ import ErrorBoundary from '../components/molecules/ErrorBoundary';
 import ProgressIndicator from '../components/molecules/ProgressIndicator';
 import ProjectLoadFailed from '../components/molecules/ProjectLoadFailed';
 import ProjectLoading from '../components/molecules/ProjectLoading';
+import BrowserStorageBanner from '../components/molecules/BrowserStorageBanner';
 import UntitledBanner from '../components/molecules/UntitledBanner';
 import ActionBar from '../features/action-bar/components/ActionBar';
+import AlertStatusStrip from '../features/alerts/components/AlertStatusStrip';
+import AlertToaster from '../features/alerts/components/AlertToaster';
 import CloneRepoDialog from '../features/clone-repo/components/CloneRepoDialog';
 import ProjectEncryption from '../features/encryption/components/ProjectEncryption';
+import LinkedFileDialogs from '../features/linked-files/components/LinkedFileDialogs';
 import Omnibar from '../features/omni-bar/components/Omnibar';
 import OpenApiImportDialog from '../features/openapi-import/components/OpenApiImportDialog';
 import { useOpenApiAutoSync } from '../features/project-home/hooks/use-openapi-auto-sync';
@@ -68,6 +72,7 @@ const ProjectMain: React.FC = () => {
 				{setup && loaded && (
 					<React.Fragment>
 						<UntitledBanner />
+						<BrowserStorageBanner />
 						<Flex flex='1' minH='0' direction='row'>
 							<Box
 								w={`${collapsedSidebar ? 48 : Math.round(sidebarControl.width)}px`}
@@ -85,21 +90,14 @@ const ProjectMain: React.FC = () => {
 							{!collapsedSidebar && <SidebarResizer control={sidebarControl} />}
 
 							<Box flex='1' minW='0' h='100%' position='relative' overflowY='hidden'>
-								{embedded && (
-									<ErrorBoundary variant='inline' label='Action bar'>
-										<ActionBar />
-									</ErrorBoundary>
-								)}
 								<ErrorBoundary variant='full' label='Workbench'>
 									<TabView
 										tabs={tabs.activeTabs}
 										selectedTab={activeTab}
 										rightSlot={
-											embedded ? undefined : (
-												<ErrorBoundary variant='inline' label='Action bar'>
-													<ActionBar inline />
-												</ErrorBoundary>
-											)
+											<ErrorBoundary variant='inline' label='Action bar'>
+												<ActionBar inline />
+											</ErrorBoundary>
 										}
 									/>
 								</ErrorBoundary>
@@ -117,9 +115,16 @@ const ProjectMain: React.FC = () => {
 						<ErrorBoundary variant='panel' label='Clone repo'>
 							<CloneRepoDialog />
 						</ErrorBoundary>
+						<ErrorBoundary variant='panel' label='Linked file dialogs'>
+							<LinkedFileDialogs />
+						</ErrorBoundary>
+						<ErrorBoundary variant='inline' label='Alerts strip'>
+							<AlertStatusStrip />
+						</ErrorBoundary>
 					</React.Fragment>
 				)}
 			</Box>
+			<AlertToaster />
 
 			<ProjectEncryption />
 
