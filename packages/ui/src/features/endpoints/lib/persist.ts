@@ -13,10 +13,12 @@ const COLLECTION_FILENAME = '_collection.json';
  * Path layout for endpoints: every endpoint lives at
  * `tree/endpoints/<kind>/<folderName>/`. Keeps them grouped + visually
  * separated from hand-authored request folders, and makes the kind
- * inspectable from the path alone.
+ * inspectable from the path alone. Paths are project-relative — the fs
+ * IPC layer (`ensureWithinProject`) resolves them against the open
+ * project's folder before touching disk.
  */
-function endpointsBase(projectFolderPath: string, kind: EndpointKind): string {
-	return path.join(projectFolderPath, 'tree', 'endpoints', kind);
+function endpointsBase(kind: EndpointKind): string {
+	return path.join('tree', 'endpoints', kind);
 }
 
 export interface CreateEndpointInput {
@@ -122,15 +124,14 @@ async function writeSeedRequest(folderPath: string, input: CreateEndpointInput):
 /**
  * Create an endpoint folder at `tree/endpoints/<kind>/<folderName>/`,
  * write its `_collection.json` declaring the source, and seed a request
- * file so the click-through has somewhere to land. Returns both paths +
- * the seed request id so the caller can open it as a tab.
+ * file so the click-through has somewhere to land. The folder path is
+ * project-relative — IPC resolves it against the open project. Returns
+ * the path + the seed request id so the caller can open it as a tab.
  */
 export async function createEndpointFolder(
-	projectFolderPath: string,
 	input: CreateEndpointInput,
 ): Promise<{ folderPath: string; requestId: string }> {
-	const base = endpointsBase(projectFolderPath, input.kind);
-	const folderPath = path.join(base, input.folderName);
+	const folderPath = path.join(endpointsBase(input.kind), input.folderName);
 
 	if (await ipcFsService.pathExists(folderPath))
 		throw new Error(`A folder named "${input.folderName}" already exists under endpoints/${input.kind}/.`);

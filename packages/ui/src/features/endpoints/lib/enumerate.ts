@@ -9,14 +9,16 @@ const COLLECTION_FILENAME = '_collection.json';
 
 /**
  * Walk the project tree and pull every folder whose `_collection.json` is
- * a source of the given kind (graphql / grpc). Read from disk each call —
- * collections change rarely, the sidebar is mounted on demand, and a stale
- * cache would hide a freshly-registered endpoint.
+ * a source of the given kind (graphql / grpc). Re-read from disk each call
+ * — collections change rarely, the sidebar is mounted on demand, and a
+ * stale cache would hide a freshly-registered endpoint.
+ *
+ * Paths from the tree are already project-relative (the loader scans
+ * starting from `tree/`), so no project-folder argument is needed.
  */
 export async function enumerateEndpoints<K extends EndpointKind>(
 	kind: K,
 	tree: Tree,
-	projectFolderPath: string,
 ): Promise<EndpointEntry[]> {
 	const out: EndpointEntry[] = [];
 
@@ -35,7 +37,7 @@ export async function enumerateEndpoints<K extends EndpointKind>(
 
 			out.push({
 				folderPath: folder.filePath,
-				relativeFolder: toRelative(folder.filePath, projectFolderPath),
+				relativeFolder: folder.filePath,
 				folderName: path.basename(folder.filePath),
 				collection: parsed.data,
 				source: parsed.data.source as EndpointEntry['source'],
@@ -47,12 +49,4 @@ export async function enumerateEndpoints<K extends EndpointKind>(
 
 	out.sort((a, b) => a.relativeFolder.localeCompare(b.relativeFolder));
 	return out;
-}
-
-function toRelative(folderPath: string, projectFolderPath: string): string {
-	if (!projectFolderPath) return folderPath;
-	const root = projectFolderPath.replace(/\/+$/, '');
-	if (folderPath === root) return '.';
-	if (folderPath.startsWith(`${root}/`)) return folderPath.slice(root.length + 1);
-	return folderPath;
 }

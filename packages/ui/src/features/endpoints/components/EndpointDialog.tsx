@@ -1,6 +1,5 @@
 import Button from '@beak/ui/components/atoms/Button';
 import Dialog, { DialogBody, DialogFooter, DialogHeader } from '@beak/ui/components/molecules/Dialog';
-import { useAppSelector } from '@beak/ui/store/redux';
 import { Box, chakra, Flex } from '@chakra-ui/react';
 import type { GrpcDescriptor } from '@beak/state/schemas';
 import { AlertOctagon, FileCode, Folder, Hash, Network, Radio } from 'lucide-react';
@@ -39,7 +38,6 @@ const EndpointDialog: React.FC<EndpointDialogProps> = ({
 	onClose,
 }) => {
 	const config = ENDPOINT_CONFIG[endpointKind];
-	const projectFolderPath = useAppSelector(s => s.global.project.folderPath);
 	const isCreate = mode.kind === 'create';
 	const isGrpc = endpointKind === 'grpc';
 
@@ -76,15 +74,11 @@ const EndpointDialog: React.FC<EndpointDialogProps> = ({
 		(isCreate ? folderName.trim().length > 0 : true);
 
 	async function submit() {
-		if (!projectFolderPath) {
-			setError('No project loaded.');
-			return;
-		}
 		setBusy(true);
 		setError(null);
 		try {
 			if (mode.kind === 'create') {
-				await createEndpointFolder(projectFolderPath, {
+				await createEndpointFolder({
 					kind: endpointKind,
 					folderName: folderName.trim(),
 					endpoint: endpoint.trim(),
