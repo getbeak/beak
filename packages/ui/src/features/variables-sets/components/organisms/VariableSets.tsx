@@ -1,6 +1,5 @@
-import React, { useContext } from 'react';
-import { useDispatch } from 'react-redux';
 import { TypedObject } from '@beak/common/helpers/typescript';
+import Button from '@beak/ui/components/atoms/Button';
 import WindowSessionContext from '@beak/ui/contexts/window-session-context';
 import { changeTab, makeTabPermanent } from '@beak/ui/features/tabs/store/actions';
 import TreeView from '@beak/ui/features/tree-view/components/TreeView';
@@ -11,11 +10,11 @@ import { useAppSelector } from '@beak/ui/store/redux';
 import { actions } from '@beak/ui/store/variable-sets';
 import { removeVariableSetFromDisk } from '@beak/ui/store/variable-sets/actions';
 import { renderAcceleratorDefinition } from '@beak/ui/utils/keyboard-rendering';
-import type { MenuItemConstructorOptions } from 'electron';
-
 import { Box, Flex } from '@chakra-ui/react';
-import Button from '@beak/ui/components/atoms/Button';
+import type { MenuItemConstructorOptions } from 'electron';
 import { Plus, Table } from 'lucide-react';
+import React, { useContext } from 'react';
+import { useDispatch } from 'react-redux';
 
 const VariableSets: React.FC<React.PropsWithChildren<unknown>> = () => {
 	const dispatch = useDispatch();
@@ -26,94 +25,100 @@ const VariableSets: React.FC<React.PropsWithChildren<unknown>> = () => {
 	const windowSession = useContext(WindowSessionContext);
 	const darwin = windowSession.isDarwin();
 
-	const tree = variableSetKeys.reduce<TreeViewNodes>((acc, k) => ({
-		...acc,
-		[k]: {
-			id: k,
-			type: 'variable-set',
-			filePath: `variable-sets/${k}.json`,
-			name: k,
-			parent: 'variable-sets',
-		},
-	}), {} as TreeViewNodes);
+	const tree = variableSetKeys.reduce<TreeViewNodes>(
+		(acc, k) => ({
+			...acc,
+			[k]: {
+				id: k,
+				type: 'variable-set',
+				filePath: `variable-sets/${k}.json`,
+				name: k,
+				parent: 'variable-sets',
+			},
+		}),
+		{} as TreeViewNodes,
+	);
 
 	const empty = variableSetKeys.length === 0;
 
 	function generateContextMenu(node: TreeViewItem): MenuItemConstructorOptions[] {
-		return [{
-			id: 'variable-sets-ctx:new',
-			label: 'New Variable Set',
-			click: () => {
-				dispatch(actions.createNewVariableSet({ }));
+		return [
+			{
+				id: 'variable-sets-ctx:new',
+				label: 'New Variable Set',
+				click: () => {
+					dispatch(actions.createNewVariableSet({}));
+				},
 			},
-		}, {
-			id: 'variable-sets-ctx:reveal',
-			label: `Reveal in ${darwin ? 'Finder' : 'Explorer'}`,
-			enabled: node.id !== 'root',
-			click: () => {
-				ipcExplorerService.revealFile(node.filePath);
+			{
+				id: 'variable-sets-ctx:reveal',
+				label: `Reveal in ${darwin ? 'Finder' : 'Explorer'}`,
+				enabled: node.id !== 'root',
+				click: () => {
+					ipcExplorerService.revealFile(node.filePath);
+				},
 			},
-		},
 
-		{ id: 'variable-sets-ctx:sep-1', type: 'separator' },
+			{ id: 'variable-sets-ctx:sep-1', type: 'separator' },
 
-		{ id: 'variable-sets-ctx:copy', label: 'Copy', enabled: false },
-		{ id: 'variable-sets-ctx:cut', label: 'Cut', enabled: false },
-		{ id: 'variable-sets-ctx:paste', label: 'Paste', enabled: false },
+			{ id: 'variable-sets-ctx:copy', label: 'Copy', enabled: false },
+			{ id: 'variable-sets-ctx:cut', label: 'Cut', enabled: false },
+			{ id: 'variable-sets-ctx:paste', label: 'Paste', enabled: false },
 
-		{ id: 'variable-sets-ctx:sep-2', type: 'separator' },
+			{ id: 'variable-sets-ctx:sep-2', type: 'separator' },
 
-		{
-			id: 'variable-sets-ctx:copy-path',
-			label: 'Copy Path',
-			enabled: node.id !== 'root',
-			click: () => ipcExplorerService.copyFullNodePath(node.filePath),
-		},
-		{
-			id: 'variable-sets-ctx:copy-relative-path',
-			label: 'Copy Relative Path',
-			enabled: node.id !== 'root',
-			click: () => navigator.clipboard.writeText(node.filePath),
-		},
-
-		{ id: 'variable-sets-ctx:sep-3', type: 'separator' },
-
-		{
-			id: 'variable-sets-ctx:rename',
-			label: 'Rename',
-			accelerator: renderAcceleratorDefinition('tree-view.node.rename'),
-			enabled: node.id !== 'root',
-			click: () => {
-				if (node.id === 'root')
-					return;
-
-				dispatch(actions.renameStarted({ id: node.id }));
+			{
+				id: 'variable-sets-ctx:copy-path',
+				label: 'Copy Path',
+				enabled: node.id !== 'root',
+				click: () => ipcExplorerService.copyFullNodePath(node.filePath),
 			},
-		}, {
-			id: 'variable-sets-ctx:delete',
-			label: 'Delete',
-			accelerator: renderAcceleratorDefinition('tree-view.node.delete'),
-			enabled: node.id !== 'root',
-			click: () => {
-				dispatch(actions.removeVariableSetFromDisk({ id: node.id, withConfirmation: true }));
+			{
+				id: 'variable-sets-ctx:copy-relative-path',
+				label: 'Copy Relative Path',
+				enabled: node.id !== 'root',
+				click: () => navigator.clipboard.writeText(node.filePath),
 			},
-		}];
+
+			{ id: 'variable-sets-ctx:sep-3', type: 'separator' },
+
+			{
+				id: 'variable-sets-ctx:rename',
+				label: 'Rename',
+				accelerator: renderAcceleratorDefinition('tree-view.node.rename'),
+				enabled: node.id !== 'root',
+				click: () => {
+					if (node.id === 'root') return;
+
+					dispatch(actions.renameStarted({ id: node.id }));
+				},
+			},
+			{
+				id: 'variable-sets-ctx:delete',
+				label: 'Delete',
+				accelerator: renderAcceleratorDefinition('tree-view.node.delete'),
+				enabled: node.id !== 'root',
+				click: () => {
+					dispatch(actions.removeVariableSetFromDisk({ id: node.id, withConfirmation: true }));
+				},
+			},
+		];
 	}
 
 	function handleNodeClick(_event: React.MouseEvent<HTMLDivElement>, node: TreeViewItem) {
-		if (node.type === 'folder')
-			return;
+		if (node.type === 'folder') return;
 
-		dispatch(changeTab({
-			type: 'variable_set_editor',
-			payload: node.id,
-			temporary: true,
-		}));
+		dispatch(
+			changeTab({
+				type: 'variable_set_editor',
+				payload: node.id,
+				temporary: true,
+			}),
+		);
 	}
 
 	function handleNodeDoubleClick(_event: React.MouseEvent<HTMLDivElement>, node: TreeViewItem) {
-		if (node.type === 'folder')
-			return;
+		if (node.type === 'folder') return;
 
 		dispatch(makeTabPermanent(node.id));
 	}
@@ -128,7 +133,8 @@ const VariableSets: React.FC<React.PropsWithChildren<unknown>> = () => {
 				dispatch(removeVariableSetFromDisk({ id: node.id, withConfirmation: true }));
 				break;
 
-			default: return;
+			default:
+				return;
 		}
 
 		event.preventDefault();
@@ -152,7 +158,9 @@ const VariableSets: React.FC<React.PropsWithChildren<unknown>> = () => {
 					>
 						<Table size={18} strokeWidth={2} />
 					</Flex>
-					<Box fontSize='sm' fontWeight='600' color='fg.default' letterSpacing='-0.005em' lineHeight='1.2'>{'No variable sets yet'}</Box>
+					<Box fontSize='sm' fontWeight='600' color='fg.default' letterSpacing='-0.005em' lineHeight='1.2'>
+						{'No variable sets yet'}
+					</Box>
 					<Box fontSize='10px' color='accent.pink' fontWeight='700' letterSpacing='0.06em' textTransform='uppercase'>
 						{'Variable sets group your envs'}
 					</Box>
@@ -168,16 +176,13 @@ const VariableSets: React.FC<React.PropsWithChildren<unknown>> = () => {
 			<TreeView
 				tree={tree}
 				activeNodeId={selectedTabId}
-				focusedNodeId={selectedTabId}
 				allowRootContextMenu
 				rootParentName={'variable-sets'}
-
 				renameSelector={(_node, state) => state.global.variableSets.activeRename}
 				onRenameStarted={node => dispatch(actions.renameStarted({ id: node.id }))}
 				onRenameEnded={node => dispatch(actions.renameCancelled({ id: node.id }))}
 				onRenameUpdated={(node, name) => dispatch(actions.renameUpdated({ id: node.id, name }))}
 				onRenameSubmitted={node => dispatch(actions.renameSubmitted({ id: node.id }))}
-
 				onContextMenu={generateContextMenu}
 				onNodeClick={handleNodeClick}
 				onNodeDoubleClick={handleNodeDoubleClick}

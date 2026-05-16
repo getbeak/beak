@@ -1,65 +1,125 @@
 import { TypedObject } from '@beak/common/helpers/typescript';
-import DebouncedInput from '@beak/ui/components/atoms/DebouncedInput';
-import { generateValueIdent } from '@beak/ui/lib/beak-variable-set/utils';
 import { useAppSelector } from '@beak/ui/store/redux';
-import { actions } from '@beak/ui/store/variable-sets';
-import { insertNewGroup, insertNewItem, removeGroup, removeItem } from '@beak/ui/store/variable-sets/actions';
-import { Box, Flex } from '@chakra-ui/react';
-import { Layers, Variable as VariableIcon } from 'lucide-react';
+import { duplicateItem, insertNewItem, moveItem, removeItem } from '@beak/ui/store/variable-sets/actions';
+import { Box, Button, chakra, Flex, IconButton, Stack } from '@chakra-ui/react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { Layers, Plus, Search, Variable as VariableIcon, X } from 'lucide-react';
 import * as React from 'react';
-import { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
-import VariableInput from '../../variable-input/components/VariableInput';
-import { BodyNameCell, BodyValueCell, HeaderGroupNameCell, HeaderNameCell } from './atoms/Cells';
-import { Body, Header, Row } from './atoms/Structure';
-import CellDeletionAction from './molecules/CellDeletionAction';
-import CreateNewSplash from './molecules/CreateNewSplash';
+import EmptyState from './molecules/EmptyState';
+import EnvChipBar from './molecules/EnvChipBar';
+import SaveIndicator from './molecules/SaveIndicator';
+import VariableCard, { VS_CARD_ATTR } from './molecules/VariableCard';
 
 interface VariableSetEditorProps {
 	variableSetName: string;
 }
 
+const MotionDiv = motion.create(chakra('div'));
+
 const VariableSetEditor: React.FC<React.PropsWithChildren<VariableSetEditorProps>> = ({ variableSetName }) => {
 	const dispatch = useDispatch();
-	const variableSets = useAppSelector(s => s.global.variableSets);
-	const variableSet = variableSets.variableSets[variableSetName];
+	const variableSet = useAppSelector(s => s.global.variableSets.variableSets[variableSetName]);
+	const selectedSets = useAppSelector(s => s.global.preferences.editor.selectedVariableSets);
+	const [query, setQuery] = React.useState('');
+	const newItemRef = React.useRef<HTMLInputElement>(null);
+	const searchRef = React.useRef<HTMLInputElement>(null);
+	const containerRef = React.useRef<HTMLDivElement>(null);
+	const lastItemCountRef = React.useRef<number>(0);
 
-	const [newItem, setNewItem] = useState<string | undefined>(void 0);
-	const newItemRef = useRef<HTMLInputElement>(null);
+	const setKeys = variableSet ? TypedObject.keys(variableSet.sets) : [];
+	const itemKeys = variableSet ? TypedObject.keys(variableSet.items) : [];
+	const activeSetId = selectedSets[variableSetName] ?? setKeys[0];
 
-	const [newGroup, setNewGroup] = useState<string | undefined>(void 0);
-	const newGroupRef = useRef<HTMLInputElement>(null);
+	const trimmedQuery = query.trim().toLowerCase();
+	const filteredItemKeys = !trimmedQuery
+		? itemKeys
+		: itemKeys.filter(k => (variableSet?.items[k] ?? '').toLowerCase().includes(trimmedQuery));
 
-	useEffect(() => {
-		if (!newItem) return;
+	React.useEffect(() => {
+		if (!variableSet) return;
+		if (itemKeys.length > lastItemCountRef.current && newItemRef.current) {
+			newItemRef.current.focus();
+			newItemRef.current.select();
+		}
+		lastItemCountRef.current = itemKeys.length;
+	}, [itemKeys.length, variableSet]);
 
-		if (!TypedObject.values(variableSet.items).includes(newItem)) return;
+	React.useEffect(() => {
+		if (!containerRef.current) return;
+		const container = containerRef.current;
 
-		if (newItemRef?.current === null) return;
+		function isTypingTarget(el: Element | null): boolean {
+			if (!el) return false;
+			const tag = el.tagName.toLowerCase();
+			if (tag === 'input' || tag === 'textarea' || tag === 'select') return true;
+			return (el as HTMLElement).isContentEditable;
+		}
 
-		newItemRef.current.focus();
-		setNewItem(void 0);
-	}, [newItem, setNewItem, variableSet?.items, newItemRef]);
+		function focusedItemId(): string | null {
+			const active = document.activeElement;
+			if (!active || !container.contains(active)) return null;
+			const card = active.closest(`[${VS_CARD_ATTR}]`);
+			return card?.getAttribute(VS_CARD_ATTR) ?? null;
+		}
 
-	useEffect(() => {
-		if (!newGroup) return;
+		function onKey(e: KeyboardEvent) {
+			const meta = e.metaKey || e.ctrlKey;
 
-		if (!TypedObject.values(variableSet.sets).includes(newGroup)) return;
+			if (meta && e.key.toLowerCase() === 'k') {
+				e.preventDefault();
+				searchRef.current?.focus();
+				searchRef.current?.select();
+				return;
+			}
 
-		if (newGroupRef?.current === null) return;
+			const target = document.activeElement;
+			const typing = isTypingTarget(target);
+			const itemId = focusedItemId();
+			if (!itemId) return;
+			const index = itemKeys.indexOf(itemId);
+			if (index === -1) return;
 
-		newGroupRef.current.focus();
-		setNewGroup(void 0);
-	}, [newGroup, setNewGroup, variableSet?.sets, newGroupRef]);
+			if (meta && !e.shiftKey && e.key.toLowerCase() === 'd') {
+				e.preventDefault();
+				dispatch(duplicateItem({ id: variableSetName, itemId }));
+				return;
+			}
 
-	const setKeys = variableSet && TypedObject.keys(variableSet.sets);
-	const itemKeys = variableSet && TypedObject.keys(variableSet.items);
+			if (e.altKey && e.key === 'ArrowUp') {
+				e.preventDefault();
+				if (index > 0) dispatch(moveItem({ id: variableSetName, itemId, toIndex: index - 1 }));
+				return;
+			}
+
+			if (e.altKey && e.key === 'ArrowDown') {
+				e.preventDefault();
+				if (index < itemKeys.length - 1) {
+					dispatch(moveItem({ id: variableSetName, itemId, toIndex: index + 1 }));
+				}
+				return;
+			}
+
+			if (meta && e.key === 'Backspace' && !typing) {
+				e.preventDefault();
+				dispatch(removeItem({ id: variableSetName, itemId }));
+				return;
+			}
+		}
+
+		container.addEventListener('keydown', onKey);
+		return () => container.removeEventListener('keydown', onKey);
+	}, [dispatch, itemKeys, variableSetName]);
 
 	if (!variableSet) return null;
 
+	const hasSets = setKeys.length > 0;
+	const hasItems = itemKeys.length > 0;
+	const hasFilter = trimmedQuery.length > 0;
+
 	return (
-		<Flex direction='column' bg='bg.surface' h='100%' w='100%'>
+		<Flex direction='column' bg='bg.canvas' h='100%' w='100%' ref={containerRef as React.Ref<HTMLDivElement>}>
 			<Flex
 				align='center'
 				gap='2'
@@ -97,238 +157,199 @@ const VariableSetEditor: React.FC<React.PropsWithChildren<VariableSetEditorProps
 					{variableSetName}
 				</Box>
 				<Flex align='center' gap='1.5' ml='2' color='fg.subtle' fontSize='10px' fontWeight='600'>
-					<Flex
-						align='center'
-						gap='1'
-						px='1.5'
-						py='0.5'
-						borderRadius='sm'
-						borderWidth='1px'
-						borderColor='border.subtle'
-						bg='color-mix(in srgb, var(--beak-colors-bg-surface-alt) 60%, transparent)'
-						fontVariantNumeric='tabular-nums'
-					>
-						<VariableIcon size={10} strokeWidth={2.2} />
-						<Box as='span'>{itemKeys.length}</Box>
-						<Box as='span' color='fg.disabled'>
-							{'items'}
-						</Box>
-					</Flex>
-					<Flex
-						align='center'
-						gap='1'
-						px='1.5'
-						py='0.5'
-						borderRadius='sm'
-						borderWidth='1px'
-						borderColor='border.subtle'
-						bg='color-mix(in srgb, var(--beak-colors-bg-surface-alt) 60%, transparent)'
-						fontVariantNumeric='tabular-nums'
-					>
-						<Layers size={10} strokeWidth={2.2} />
-						<Box as='span'>{setKeys.length}</Box>
-						<Box as='span' color='fg.disabled'>
-							{'sets'}
-						</Box>
-					</Flex>
+					<MetaPill icon={<VariableIcon size={10} strokeWidth={2.2} />} count={itemKeys.length} label='vars' />
+					<MetaPill icon={<Layers size={10} strokeWidth={2.2} />} count={setKeys.length} label='envs' />
 				</Flex>
+
+				<Box flex='1 1 auto' />
+
+				<SaveIndicator />
 			</Flex>
 
-			<Box flex='1 1 auto' overflow='auto'>
-				{variableSet && setKeys.length === 0 && <CreateNewSplash type={'set'} variableSet={variableSetName} />}
+			{!hasSets && <EmptyState variant='no-sets' variableSet={variableSetName} />}
 
-				{variableSet && setKeys.length > 0 && (
-					<React.Fragment>
-						<Header>
-							<Row $cols={setKeys.length}>
-								<HeaderNameCell>
-									<EmptyInput $center disabled value={'Name'} aria-hidden tabIndex={-1} />
-								</HeaderNameCell>
-								{variableSet &&
-									setKeys.map(k => (
-										<HeaderGroupNameCell key={k}>
-											<StyledDebounce
-												innerRef={variableSet.sets[k] === newGroup ? newGroupRef : null}
-												$center
-												type={'text'}
-												value={variableSet.sets[k]}
-												onChange={v => {
-													dispatch(
-														actions.updateGroupName({
-															id: variableSetName,
-															setId: k,
-															updatedName: v,
-														}),
-													);
-												}}
-											/>
+			{hasSets && (
+				<>
+					<EnvChipBar variableSetName={variableSetName} />
 
-											<CellDeletionAction
-												name={variableSet.sets[k]}
-												onConfirmedDeletion={() =>
-													dispatch(
-														removeGroup({
-															id: variableSetName,
-															setId: k,
-														}),
-													)
-												}
-											/>
-										</HeaderGroupNameCell>
-									))}
-								<HeaderGroupNameCell>
-									<EmptyInput
-										aria-label='New group'
-										placeholder={'New group…'}
-										type={'text'}
-										value={''}
-										onChange={e => {
-											setNewGroup(e.target.value);
-											dispatch(
-												insertNewGroup({
-													id: variableSetName,
-													setName: e.target.value,
-												}),
-											);
-										}}
-									/>
-								</HeaderGroupNameCell>
-							</Row>
-						</Header>
+					{hasItems && <SearchBar ref={searchRef} value={query} onChange={setQuery} />}
 
-						<Body>
-							{variableSet &&
-								itemKeys.map(ik => (
-									<Row key={ik} $cols={setKeys.length}>
-										<BodyNameCell>
-											<StyledDebounce
-												innerRef={variableSet.items[ik] === newItem ? newItemRef : null}
-												type={'text'}
-												value={variableSet.items[ik]}
-												onChange={v => {
-													dispatch(
-														actions.updateItemName({
-															id: variableSetName,
-															itemId: ik,
-															updatedName: v,
-														}),
-													);
-												}}
-											/>
+					<Box flex='1 1 auto' overflow='auto' px='3' py='3'>
+						{!hasItems && <EmptyState variant='no-items' variableSet={variableSetName} />}
 
-											<CellDeletionAction
-												name={variableSet.items[ik]}
-												onConfirmedDeletion={() =>
-													dispatch(
-														removeItem({
-															id: variableSetName,
-															itemId: ik,
-														}),
-													)
-												}
-											/>
-										</BodyNameCell>
+						{hasItems && (
+							<Stack gap='1.5' maxW='960px' mx='auto'>
+								{hasFilter && filteredItemKeys.length === 0 && (
+									<Flex align='center' justify='center' py='8' color='fg.subtle' fontSize='12px' gap='2'>
+										<Search size={12} strokeWidth={2} />
+										{`No variables match "${query}"`}
+									</Flex>
+								)}
 
-										{setKeys.map(gk => {
-											const key = generateValueIdent(gk, ik);
-											const value = variableSet.values[key];
+								<AnimatePresence initial={false}>
+									{filteredItemKeys.map(itemId => {
+										const index = itemKeys.indexOf(itemId);
+										return (
+											<MotionDiv
+												key={itemId}
+												layout
+												initial={{ opacity: 0, y: -4 }}
+												animate={{ opacity: 1, y: 0 }}
+												exit={{ opacity: 0, height: 0 }}
+												transition={{ duration: 0.16, ease: 'easeOut' }}
+											>
+												<VariableCard
+													variableSetName={variableSetName}
+													itemId={itemId}
+													index={index}
+													totalCount={itemKeys.length}
+													activeSetId={activeSetId}
+													autoFocusNameRef={index === itemKeys.length - 1 ? newItemRef : undefined}
+												/>
+											</MotionDiv>
+										);
+									})}
+								</AnimatePresence>
 
-											return (
-												<BodyValueCell key={gk}>
-													<VariableInput
-														parts={value || ['']}
-														onChange={parts => {
-															dispatch(
-																actions.updateValue({
-																	id: variableSetName,
-																	setId: gk,
-																	itemId: ik,
-																	updated: parts,
-																}),
-															);
-														}}
-													/>
-												</BodyValueCell>
-											);
-										})}
-
-										<BodyValueCell>
-											<EmptyInput disabled aria-hidden tabIndex={-1} />
-										</BodyValueCell>
-									</Row>
-								))}
-
-							<Row $cols={setKeys.length}>
-								<BodyNameCell>
-									<EmptyInput
-										aria-label='New item'
-										placeholder={'New item…'}
-										type={'text'}
-										value={''}
-										onChange={e => {
-											setNewItem(e.target.value);
-											dispatch(
-												insertNewItem({
-													id: variableSetName,
-													itemName: e.target.value,
-												}),
-											);
-										}}
-									/>
-								</BodyNameCell>
-
-								{variableSet &&
-									setKeys.map(k => (
-										<BodyValueCell key={k}>
-											<EmptyInput disabled aria-hidden tabIndex={-1} />
-										</BodyValueCell>
-									))}
-
-								<BodyValueCell>
-									<EmptyInput disabled aria-hidden tabIndex={-1} />
-								</BodyValueCell>
-							</Row>
-						</Body>
-					</React.Fragment>
-				)}
-			</Box>
+								{!hasFilter && (
+									<Flex justify='center' pt='1'>
+										<Button
+											size='sm'
+											variant='ghost'
+											gap='1.5'
+											color='fg.muted'
+											fontSize='12px'
+											fontWeight='500'
+											borderWidth='1px'
+											borderColor='border.subtle'
+											borderStyle='dashed'
+											borderRadius='md'
+											px='3'
+											h='28px'
+											_hover={{
+												borderColor: 'accent.pink',
+												color: 'accent.pink',
+												bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 10%, transparent)',
+											}}
+											onClick={() => dispatch(insertNewItem({ id: variableSetName, itemName: '' }))}
+										>
+											<Plus size={12} strokeWidth={2.2} />
+											Add variable
+										</Button>
+									</Flex>
+								)}
+							</Stack>
+						)}
+					</Box>
+				</>
+			)}
 		</Flex>
 	);
 };
 
-const INPUT_STYLE = (center?: boolean): React.CSSProperties => ({
-	width: 'calc(100% - 12px)',
-	background: 'none',
-	border: '1px solid transparent',
-	borderRadius: '4px',
-	color: 'var(--beak-colors-fg-default)',
-	caretColor: 'var(--beak-colors-accent-pink)',
-	fontSize: '13px',
-	fontWeight: 500,
-	textAlign: center ? 'center' : 'inherit',
-	padding: '4px 6px',
-	transition: 'background-color .12s ease, border-color .12s ease',
-});
-
-interface StyledDebounceProps {
-	$center?: boolean;
-	innerRef?: React.Ref<HTMLInputElement> | null;
-	type: 'text';
+interface SearchBarProps {
 	value: string;
-	disabled?: boolean;
 	onChange: (v: string) => void;
 }
 
-const StyledDebounce: React.FC<StyledDebounceProps> = ({ $center, ...rest }) => (
-	<DebouncedInput {...rest} style={INPUT_STYLE($center)} />
-);
+const SearchBar = React.forwardRef<HTMLInputElement, SearchBarProps>(({ value, onChange }, ref) => (
+	<Flex
+		align='center'
+		gap='2'
+		px='3'
+		py='1.5'
+		borderBottomWidth='1px'
+		borderColor='border.subtle'
+		bg='bg.surface'
+		flex='0 0 auto'
+	>
+		<Flex
+			align='center'
+			gap='1.5'
+			flex='1 1 auto'
+			h='26px'
+			px='2'
+			borderRadius='sm'
+			borderWidth='1px'
+			borderColor='border.subtle'
+			bg='color-mix(in srgb, var(--beak-colors-bg-surface-alt) 60%, transparent)'
+			transition='border-color .12s ease, background-color .12s ease'
+			_focusWithin={{
+				borderColor: 'accent.pink',
+				bg: 'bg.surface',
+			}}
+		>
+			<Box color='fg.subtle' flex='0 0 auto'>
+				<Search size={11} strokeWidth={2} />
+			</Box>
+			<chakra.input
+				ref={ref}
+				type='text'
+				value={value}
+				onChange={e => onChange(e.target.value)}
+				placeholder='Search variables…'
+				flex='1 1 auto'
+				bg='transparent'
+				border='none'
+				outline='none'
+				fontSize='12px'
+				color='fg.default'
+				_placeholder={{ color: 'fg.subtle' }}
+			/>
+			<Box
+				as='span'
+				flex='0 0 auto'
+				fontSize='9.5px'
+				fontWeight='600'
+				color='fg.disabled'
+				letterSpacing='0.04em'
+				display={value ? 'none' : 'inline-block'}
+			>
+				⌘K
+			</Box>
+			{value && (
+				<IconButton
+					aria-label='Clear search'
+					size='2xs'
+					variant='ghost'
+					h='18px'
+					w='18px'
+					minW='18px'
+					color='fg.subtle'
+					onClick={() => onChange('')}
+				>
+					<X size={10} strokeWidth={2.4} />
+				</IconButton>
+			)}
+		</Flex>
+	</Flex>
+));
+SearchBar.displayName = 'SearchBar';
 
-interface EmptyInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
-	$center?: boolean;
+interface MetaPillProps {
+	icon: React.ReactNode;
+	count: number;
+	label: string;
 }
 
-const EmptyInput: React.FC<EmptyInputProps> = ({ $center, style, ...rest }) => (
-	<input {...rest} style={{ ...INPUT_STYLE($center), ...(style as React.CSSProperties) }} />
+const MetaPill: React.FC<MetaPillProps> = ({ icon, count, label }) => (
+	<Flex
+		align='center'
+		gap='1'
+		px='1.5'
+		py='0.5'
+		borderRadius='sm'
+		borderWidth='1px'
+		borderColor='border.subtle'
+		bg='color-mix(in srgb, var(--beak-colors-bg-surface-alt) 60%, transparent)'
+		fontVariantNumeric='tabular-nums'
+	>
+		{icon}
+		<Box as='span'>{count}</Box>
+		<Box as='span' color='fg.disabled'>
+			{label}
+		</Box>
+	</Flex>
 );
 
 export default VariableSetEditor;

@@ -1,21 +1,22 @@
 import Button from '@beak/ui/components/atoms/Button';
-import { insertNewGroup } from '@beak/ui/store/variable-sets/actions';
+import { insertNewGroup, insertNewItem } from '@beak/ui/store/variable-sets/actions';
 import { Box, Flex } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
-import { Plus, Table } from 'lucide-react';
+import { Layers, Plus, Variable as VariableIcon } from 'lucide-react';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 
-interface CreateNewSplashProps {
-	type: 'set';
+interface EmptyStateProps {
+	variant: 'no-sets' | 'no-items';
 	variableSet: string;
 }
 
-const CreateNewSplash: React.FC<CreateNewSplashProps> = ({ type, variableSet }) => {
+const EmptyState: React.FC<EmptyStateProps> = ({ variant, variableSet }) => {
 	const dispatch = useDispatch();
+	const isSets = variant === 'no-sets';
 
 	return (
-		<Flex direction='column' align='center' justify='center' gap='3' py='12' px='6'>
+		<Flex direction='column' align='center' justify='center' gap='3' py='14' px='6'>
 			<motion.div
 				initial={{ opacity: 0, scale: 0.92 }}
 				animate={{ opacity: 1, scale: 1 }}
@@ -33,28 +34,31 @@ const CreateNewSplash: React.FC<CreateNewSplashProps> = ({ type, variableSet }) 
 					borderColor='color-mix(in srgb, var(--beak-colors-accent-pink) 30%, transparent)'
 					boxShadow='0 8px 24px color-mix(in srgb, var(--beak-colors-accent-pink) 30%, transparent), inset 0 1px 0 color-mix(in srgb, white 18%, transparent)'
 				>
-					<Table size={24} strokeWidth={1.8} />
+					{isSets ? <Layers size={22} strokeWidth={1.8} /> : <VariableIcon size={22} strokeWidth={1.8} />}
 				</Flex>
 			</motion.div>
 			<Box fontSize='xl' fontWeight='700' color='fg.default' letterSpacing='-0.02em' lineHeight='1.1'>
-				{'No sets yet'}
+				{isSets ? 'No environments yet' : 'No variables yet'}
 			</Box>
-			<Box fontSize='xs' color='fg.muted' textAlign='center' maxW='320px' lineHeight='1.5'>
-				{'Variable sets let you switch the same variable between values for different environments (eg. dev / prod).'}
+			<Box fontSize='xs' color='fg.muted' textAlign='center' maxW='340px' lineHeight='1.5'>
+				{isSets
+					? 'Environments let the same variable hold different values per stage (eg. dev / staging / prod). Add one to get started.'
+					: 'Variables hold reusable values you can drop into requests with $. Add one to start composing.'}
 			</Box>
 			<Button
 				size='sm'
 				onClick={() => {
-					if (type === 'set') dispatch(insertNewGroup({ id: variableSet, setName: '' }));
+					if (isSets) dispatch(insertNewGroup({ id: variableSet, setName: '' }));
+					else dispatch(insertNewItem({ id: variableSet, itemName: '' }));
 				}}
 			>
 				<Flex align='center' gap='1.5'>
 					<Plus size={12} />
-					{'Create your first set'}
+					{isSets ? 'Add your first environment' : 'Add your first variable'}
 				</Flex>
 			</Button>
 		</Flex>
 	);
 };
 
-export default CreateNewSplash;
+export default EmptyState;
