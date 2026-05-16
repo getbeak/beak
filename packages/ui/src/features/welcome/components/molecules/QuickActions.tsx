@@ -4,6 +4,7 @@ import * as React from 'react';
 
 import { useMenuActionDispatcher } from '../../../../hooks/use-application-menu-event-listener';
 import { ipcProjectService } from '../../../../lib/ipc';
+import { fsaSupported, pickAndPersistLocalFolder } from '../../lib/pick-local-folder';
 
 import ActionCard from './ActionCard';
 
@@ -15,6 +16,8 @@ interface QuickActionsProps {
 
 const QuickActions: React.FC<QuickActionsProps> = ({ embedded, cloneEnabled, onCloneRequested }) => {
 	const dispatchMenu = useMenuActionDispatcher();
+	const webFsaAvailable = !embedded && fsaSupported();
+	const openExistingEnabled = embedded || webFsaAvailable;
 
 	return (
 		<Box>
@@ -45,12 +48,22 @@ const QuickActions: React.FC<QuickActionsProps> = ({ embedded, cloneEnabled, onC
 					icon={FolderOpen}
 					tone='teal'
 					title='Open existing'
-					body='Open a Beak project folder from your computer.'
+					body={
+						embedded
+							? 'Open a Beak project folder from your computer.'
+							: webFsaAvailable
+								? 'Mount a local folder via the browser’s File System Access picker.'
+								: 'Open a Beak project folder from your computer.'
+					}
 					keybinding={embedded ? '⌘O' : undefined}
-					disabled={!embedded}
-					disabledReason='Opening a local folder needs the desktop app or a browser with File System Access. Coming soon to web.'
+					disabled={!openExistingEnabled}
+					disabledReason='Your browser doesn’t expose the File System Access API. Use Chrome / Edge, or download the desktop app.'
 					onClick={() => {
-						void ipcProjectService.openProject();
+						if (embedded) {
+							void ipcProjectService.openProject();
+						} else {
+							void pickAndPersistLocalFolder();
+						}
 					}}
 				/>
 				<ActionCard

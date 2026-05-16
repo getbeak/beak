@@ -102,8 +102,21 @@ export default class OpfsFs {
 	readonly promises: OpfsFsPromises;
 	private rootPromise: Promise<FileSystemDirectoryHandle>;
 
-	constructor(namespace: string) {
-		this.rootPromise = navigator.storage.getDirectory().then(root => root.getDirectoryHandle(namespace, { create: true }));
+	/**
+	 * Construct with either:
+	 *   * a namespace string — root is `<OPFS>/{namespace}` (the default).
+	 *   * a `Promise<FileSystemDirectoryHandle>` — root is whatever that
+	 *     promise resolves to. Used by the File-System-Access path to mount
+	 *     a user-picked folder behind the same `fs.promises` surface.
+	 */
+	constructor(rootOrNamespace: string | Promise<FileSystemDirectoryHandle>) {
+		if (typeof rootOrNamespace === 'string') {
+			this.rootPromise = navigator.storage
+				.getDirectory()
+				.then(root => root.getDirectoryHandle(rootOrNamespace, { create: true }));
+		} else {
+			this.rootPromise = rootOrNamespace;
+		}
 		this.promises = new OpfsFsPromises(this);
 	}
 

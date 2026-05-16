@@ -4,6 +4,7 @@ import gitHttp from 'isomorphic-git/http/web';
 import path from 'path-browserify';
 import { Logger } from 'tslog';
 
+import { checkHandlePermission, loadHandle } from './fsa-handle-storage';
 import OpfsFs from './opfs-fs';
 import AesProvider from './providers/aes';
 import CredentialsProvider from './providers/credentials';
@@ -13,6 +14,10 @@ const beakHostLogger = new Logger({ name: 'web-host' });
 
 /**
  * Beak's web shell runs on OPFS — no lightning-fs / IndexedDB fallback.
+ * If the user has picked a real folder via the File System Access API
+ * (welcome screen → Open existing), the host mounts that folder as the
+ * fs root instead and OPFS is unused for the session.
+ *
  * Browsers without OPFS (private mode in some configurations, very old
  * Safari, etc.) get a "browser not supported" boot error rather than a
  * slow IndexedDB path that timed out commits at 10+ seconds per file.
@@ -23,7 +28,22 @@ if (typeof navigator === 'undefined' || typeof navigator.storage?.getDirectory !
 	);
 }
 
-const beakBrowserFs = new OpfsFs('beak');
+/**
+ * Resolve the fs root: a previously-picked FSA folder if the user has
+ * one *and* still has read+write permission, otherwise the OPFS subdir.
+ *
+ * `requestPermission` would force a user gesture, but boot doesn't have
+ * one — so we silently fall back to OPFS when permission has lapsed.
+ * The user can re-pick from the welcome screen if they want.
+ */
+async function resolveFsRoot(): Promise<FileSystemDirectoryHandle> {
+	const saved = await loadHandle();
+	if (saved && (await checkHandlePermission(saved))) return saved;
+	const root = await navigator.storage.getDirectory();
+	return root.getDirectoryHandle('beak', { create: true });
+}
+
+const beakBrowserFs = new OpfsFs(resolveFsRoot());
 
 const runtime = new Runtime({
 	capabilities: {
