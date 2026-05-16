@@ -1,13 +1,15 @@
-import { Box, Flex } from '@chakra-ui/react';
 import type { SidebarVariant } from '@beak/common/types/beak-hub';
 import type { Shortcuts } from '@beak/ui/lib/keyboard-shortcuts';
 import { renderPlainTextDefinition } from '@beak/ui/utils/keyboard-rendering';
-import { FolderTree, type LucideIcon, Table } from 'lucide-react';
+import { Box, Flex } from '@chakra-ui/react';
+import { FolderTree, type LucideIcon, Plug, Puzzle, Table } from 'lucide-react';
 import * as React from 'react';
 
 const icons: Record<SidebarVariant, LucideIcon> = {
 	project: FolderTree,
 	variables: Table,
+	endpoints: Plug,
+	extensions: Puzzle,
 };
 
 interface SidebarMenuItemProps {
@@ -24,44 +26,30 @@ const SidebarMenuItem: React.FC<SidebarMenuItemProps> = props => {
 	const isActive = selectedItem === item;
 
 	return (
-		<Box
-			data-tooltip-id='tt-sidebar-menu-item'
-			data-tooltip-content={`${name} (${renderPlainTextDefinition(shortcut)})`}
-			position='relative'
-			py='1'
-		>
+		<Box position='relative' h='48px'>
+			{isActive && <Box position='absolute' left='0' top='0' bottom='0' w='2px' bg='accent.pink' pointerEvents='none' />}
 			<Flex
 				role='button'
 				tabIndex={0}
 				aria-label={name}
 				aria-pressed={isActive}
+				data-tooltip-id='tt-sidebar-menu-item'
+				data-tooltip-content={`${name} (${renderPlainTextDefinition(shortcut)})`}
 				align='center'
 				justify='center'
 				cursor='pointer'
-				h='32px'
-				w='32px'
-				mx='auto'
-				borderRadius='md'
-				color={isActive ? 'accent.pink' : 'fg.muted'}
-				bg={isActive ? 'color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent)' : 'transparent'}
-				borderWidth='1px'
-				borderStyle='solid'
-				borderColor={isActive ? 'color-mix(in srgb, var(--beak-colors-accent-pink) 28%, transparent)' : 'transparent'}
-				boxShadow={isActive ? '0 4px 12px color-mix(in srgb, var(--beak-colors-accent-pink) 18%, transparent), inset 0 1px 0 color-mix(in srgb, white 14%, transparent)' : undefined}
-				transition='color .14s ease, background-color .14s ease, transform .08s ease, box-shadow .14s ease'
+				h='100%'
+				w='100%'
+				color={isActive ? 'fg.default' : 'fg.muted'}
+				transition='color .1s linear, background-color .1s linear'
 				_hover={{
-					color: 'accent.pink',
-					bg: isActive
-						? 'color-mix(in srgb, var(--beak-colors-accent-pink) 22%, transparent)'
-						: 'color-mix(in srgb, var(--beak-colors-accent-pink) 12%, transparent)',
+					color: 'fg.default',
+					bg: 'color-mix(in srgb, var(--beak-colors-fg-default) 7%, transparent)',
 				}}
 				_focusVisible={{
 					outline: 'none',
-					boxShadow: isActive
-						? '0 4px 12px color-mix(in srgb, var(--beak-colors-accent-pink) 18%, transparent), inset 0 1px 0 color-mix(in srgb, white 14%, transparent), 0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-pink) 50%, transparent)'
-						: '0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-pink) 50%, transparent)',
+					boxShadow: 'inset 0 0 0 1px var(--beak-colors-accent-pink)',
 				}}
-				_active={{ transform: 'scale(0.92)' }}
 				onClick={() => onClick(item)}
 				onKeyDown={(event: React.KeyboardEvent) => {
 					if (event.key === 'Enter' || event.key === ' ') {
@@ -70,7 +58,7 @@ const SidebarMenuItem: React.FC<SidebarMenuItemProps> = props => {
 					}
 				}}
 			>
-				<Icon color='currentColor' size={15} strokeWidth={isActive ? 2.2 : 1.8} />
+				<Icon color='currentColor' size={22} strokeWidth={1.6} />
 			</Flex>
 		</Box>
 	);
