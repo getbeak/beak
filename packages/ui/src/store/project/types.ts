@@ -136,6 +136,8 @@ export interface ToggleableItemUpdatedPayload extends RequestIdPayload {
 	type?: ScalarPropertyType | null;
 	required?: boolean | null;
 	description?: string | null;
+	/** Enum options. `null` clears the list. */
+	options?: string[] | null;
 }
 
 export interface ToggleableItemRemovedPayload extends RequestIdPayload {

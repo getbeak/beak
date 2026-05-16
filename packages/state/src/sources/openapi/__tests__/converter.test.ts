@@ -218,7 +218,7 @@ describe('openapiToCollection', () => {
 			type: 'number',
 			description: 'Max rows returned.',
 		});
-		expect(op.override.query?.tier).toMatchObject({ type: 'enum' });
+		expect(op.override.query?.tier).toMatchObject({ type: 'enum', options: ['free', 'pro'] });
 		expect(op.override.query?.tier).not.toHaveProperty('required');
 		expect(op.override.query?.active).toMatchObject({ type: 'boolean' });
 

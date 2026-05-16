@@ -292,6 +292,7 @@ function paramsToRecord(params: OpenApiParameter[]): NonNullable<RequestFileOver
 			type?: ScalarPropertyType;
 			required?: boolean;
 			description?: string;
+			options?: string[];
 		}
 	> = {};
 	for (const p of params) {
@@ -300,6 +301,12 @@ function paramsToRecord(params: OpenApiParameter[]): NonNullable<RequestFileOver
 		const inferredType = scalarTypeFromSchema(p.schema);
 		const isTokenHeader = p.in === 'header' && TOKEN_HEADER_PATTERN.test(p.name);
 		const schemaType: ScalarPropertyType | undefined = isTokenHeader ? 'token' : inferredType;
+		// Carry enum members across so Value mode renders a dropdown rather
+		// than free text. We coerce every option to a string — OpenAPI allows
+		// numeric / boolean enums but the value editor stores strings on the
+		// wire either way.
+		const enumOptions =
+			schemaType === 'enum' && Array.isArray(p.schema?.enum) ? p.schema!.enum!.map(v => String(v)) : undefined;
 
 		out[p.name] = {
 			name: p.name,
@@ -308,6 +315,7 @@ function paramsToRecord(params: OpenApiParameter[]): NonNullable<RequestFileOver
 			...(schemaType ? { type: schemaType } : {}),
 			...(required ? { required: true } : {}),
 			...(p.description ? { description: p.description } : {}),
+			...(enumOptions && enumOptions.length > 0 ? { options: enumOptions } : {}),
 		};
 	}
 	return out;

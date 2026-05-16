@@ -27,9 +27,9 @@ interface SchemaTableEditorProps {
 	addItem?: () => void;
 	removeItem?: (ident: string) => void;
 	updateItem?: (
-		key: 'name' | 'type' | 'required' | 'description',
+		key: 'name' | 'type' | 'required' | 'description' | 'options',
 		ident: string,
-		value: string | boolean | ScalarPropertyType | null,
+		value: string | boolean | ScalarPropertyType | string[] | null,
 	) => void;
 }
 
@@ -287,13 +287,30 @@ const SchemaTableEditor: React.FC<SchemaTableEditorProps> = ({
 									/>
 								</BodyCell>
 								<BodyCell>
-									<DebouncedInput
-										type='text'
-										value={description}
-										disabled={readOnly}
-										placeholder='What is this for?'
-										onChange={v => updateItem?.('description', k, v || null)}
-									/>
+									<Flex direction='column' w='100%' gap='0.5' py='1'>
+										<DebouncedInput
+											type='text'
+											value={description}
+											disabled={readOnly}
+											placeholder='What is this for?'
+											onChange={v => updateItem?.('description', k, v || null)}
+										/>
+										{type === 'enum' && (
+											<DebouncedInput
+												type='text'
+												value={(item.options ?? []).join(', ')}
+												disabled={readOnly}
+												placeholder='Comma-separated allowed values (e.g. free, pro, enterprise)'
+												onChange={v => {
+													const parsed = v
+														.split(',')
+														.map(s => s.trim())
+														.filter(s => s.length > 0);
+													updateItem?.('options', k, parsed.length === 0 ? null : parsed);
+												}}
+											/>
+										)}
+									</Flex>
 								</BodyCell>
 								{editable && (
 									<BodyCell>

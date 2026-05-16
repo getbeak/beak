@@ -99,4 +99,9 @@ export interface ToggleKeyValue {
 	type?: ScalarPropertyType;
 	required?: boolean;
 	description?: string;
+	/**
+	 * For `type === 'enum'`, the allowed values. Value mode renders a select
+	 * instead of a free-text input when this list is non-empty.
+	 */
+	options?: string[];
 }

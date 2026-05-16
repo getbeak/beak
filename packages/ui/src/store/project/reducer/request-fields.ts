@@ -23,6 +23,10 @@ function applySchemaMetadata(item: ToggleKeyValue, payload: ToggleableItemUpdate
 		if (payload.description === null) delete item.description;
 		else item.description = payload.description;
 	}
+	if (payload.options !== void 0) {
+		if (payload.options === null) delete item.options;
+		else item.options = payload.options;
+	}
 }
 
 export default function buildRequestFields(builder: ActionReducerMapBuilder<State>) {

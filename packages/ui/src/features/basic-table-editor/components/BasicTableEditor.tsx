@@ -1,10 +1,10 @@
 import { TypedObject } from '@beak/common/helpers/typescript';
 import DebouncedInput from '@beak/ui/components/atoms/DebouncedInput';
 import type { ValueSections } from '@beak/ui/features/variables/values';
-import { Box, Button, Flex, Text } from '@chakra-ui/react';
+import { Box, Button, chakra, Flex, Text } from '@chakra-ui/react';
 import type { ScalarPropertyType, ToggleKeyValue } from '@getbeak/types/request';
 import { AnimatePresence, motion } from 'framer-motion';
-import { AlertCircle, Plus } from 'lucide-react';
+import { AlertCircle, ChevronDown, Plus } from 'lucide-react';
 import * as React from 'react';
 
 /**
@@ -45,6 +45,68 @@ interface BasicTableEditorProps {
 }
 
 const MotionRow = motion.create(Row);
+
+const ChakraSelect = chakra('select');
+
+/**
+ * Native-styled select dropdown for enum-typed values. Native `<select>` keeps
+ * keyboard navigation + accessibility for free; the chrome rides Beak's
+ * tokens so it doesn't look out of place next to the variable input.
+ */
+const EnumSelect: React.FC<{
+	options: string[];
+	value: string;
+	disabled?: boolean;
+	onChange: (next: string) => void;
+}> = ({ options, value, disabled, onChange }) => (
+	<Box position='relative' flexGrow={1} display='inline-flex' alignItems='stretch'>
+		<ChakraSelect
+			value={value}
+			disabled={disabled}
+			onChange={e => onChange((e.target as HTMLSelectElement).value)}
+			w='100%'
+			h='30px'
+			minH='30px'
+			px='10px'
+			pr='28px'
+			borderWidth='0'
+			borderRadius='0'
+			bg='transparent'
+			color='fg.default'
+			fontSize='12px'
+			fontFamily='inherit'
+			appearance='none'
+			cursor={disabled ? 'default' : 'pointer'}
+			outline='none'
+			_focus={{
+				bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 5%, transparent)',
+				boxShadow: 'inset 0 -1px 0 var(--beak-colors-accent-pink)',
+			}}
+		>
+			{!options.includes(value) && value !== '' && (
+				<option value={value}>{`${value} (off-list)`}</option>
+			)}
+			{value === '' && <option value=''>{'Choose a value…'}</option>}
+			{options.map(o => (
+				<option key={o} value={o}>
+					{o}
+				</option>
+			))}
+		</ChakraSelect>
+		<Box
+			position='absolute'
+			right='8px'
+			top='50%'
+			transform='translateY(-50%)'
+			pointerEvents='none'
+			color='fg.subtle'
+			display='inline-flex'
+			alignItems='center'
+		>
+			<ChevronDown size={12} strokeWidth={1.8} />
+		</Box>
+	</Box>
+);
 
 /**
  * Tiny indicator that the schema declared this field required. Pink dot,
@@ -131,6 +193,15 @@ const BasicTableEditor: React.FC<BasicTableEditorProps> = ({
 							tooltipAttrs['data-tooltip-id'] = 'tt-schema-row-description';
 							tooltipAttrs['data-tooltip-content'] = description;
 						}
+						// Enum dropdown is driven from the first part of the value sections
+						// — multi-part variable values aren't representable as a single
+						// select entry, so we collapse and warn (the "off-list" option).
+						const enumOptions = type === 'enum' ? item.options ?? [] : [];
+						const useEnumPicker = type === 'enum' && enumOptions.length > 0;
+						const enumValue =
+							useEnumPicker && item.value.length === 1 && typeof item.value[0] === 'string'
+								? item.value[0]
+								: '';
 
 						return (
 							<MotionRow
@@ -168,14 +239,23 @@ const BasicTableEditor: React.FC<BasicTableEditorProps> = ({
 								<BodyInputValueCell>
 									<BodyInputWrapper>
 										{showTypeChip && type && <TypeChip type={type} />}
-										<VariableInput
-											requestId={requestId}
-											parts={item.value}
-											readOnly={readOnly}
-											disabled={readOnly}
-											mask={type === 'token'}
-											onChange={parts => updateItem?.('value', k, parts)}
-										/>
+										{useEnumPicker ? (
+											<EnumSelect
+												options={enumOptions}
+												value={enumValue}
+												disabled={readOnly}
+												onChange={next => updateItem?.('value', k, [next])}
+											/>
+										) : (
+											<VariableInput
+												requestId={requestId}
+												parts={item.value}
+												readOnly={readOnly}
+												disabled={readOnly}
+												mask={type === 'token'}
+												onChange={parts => updateItem?.('value', k, parts)}
+											/>
+										)}
 										{missingRequired && (
 											<Box
 												flexShrink={0}
