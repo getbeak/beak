@@ -10,7 +10,9 @@ import type { ValueSections } from '@beak/ui/features/variables/values';
 import { requestPreferenceSetReqMainTab } from '@beak/ui/store/preferences/actions';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { Box, chakra, Flex, Menu, Portal } from '@chakra-ui/react';
+import type { Entries } from '@getbeak/types/body-editor-json';
 import type { ValidRequestNode } from '@getbeak/types/nodes';
+import type { ToggleKeyValue } from '@getbeak/types/request';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronDown, Loader2, Plug, PlugZap, Send } from 'lucide-react';
 import * as React from 'react';
@@ -28,6 +30,51 @@ export interface HeaderProps {
 const VERBS = ['get', 'post', 'put', 'patch', 'delete', 'head', 'options'];
 
 const ChakraButton = chakra('button');
+
+function isScalarEmpty(item: ToggleKeyValue): boolean {
+	const parts = item.value;
+	if (!parts || parts.length === 0) return true;
+	return parts.every(p => typeof p === 'string' && p.length === 0);
+}
+
+function isJsonEntryEmpty(entry: Entries): boolean {
+	if (entry.type === 'object' || entry.type === 'array') return false;
+	if (entry.type === 'boolean' || entry.type === 'null') return false;
+	const parts = entry.value;
+	if (!parts || parts.length === 0) return true;
+	return parts.every(p => typeof p === 'string' && p.length === 0);
+}
+
+/**
+ * Sum of required-but-empty fields across every scope. Drives the warning
+ * dot on the Send button — purely advisory, the user can still send.
+ */
+function countMissingRequiredFields(node: ValidRequestNode): number {
+	let count = 0;
+	for (const h of Object.values(node.info.headers)) {
+		if (h.required === true && h.enabled !== false && isScalarEmpty(h)) count++;
+	}
+	for (const q of Object.values(node.info.query)) {
+		if (q.required === true && q.enabled !== false && isScalarEmpty(q)) count++;
+	}
+	const body = node.info.body;
+	if (body) {
+		if (body.type === 'json') {
+			for (const e of Object.values(body.payload)) {
+				if (e.required === true && e.enabled !== false && isJsonEntryEmpty(e)) count++;
+			}
+		} else if (body.type === 'url_encoded_form') {
+			for (const item of Object.values(body.payload)) {
+				if (item.required === true && item.enabled !== false && isScalarEmpty(item)) count++;
+			}
+		} else if (body.type === 'graphql') {
+			for (const e of Object.values(body.payload.variables)) {
+				if (e.required === true && e.enabled !== false && isJsonEntryEmpty(e)) count++;
+			}
+		}
+	}
+	return count;
+}
 
 const Header: React.FC<HeaderProps> = ({ node }) => {
 	const dispatch = useDispatch();
@@ -50,6 +97,8 @@ const Header: React.FC<HeaderProps> = ({ node }) => {
 	}, [node.info.url]);
 
 	const socketActive = currentSocket?.status === 'open' || currentSocket?.status === 'connecting';
+
+	const missingRequired = React.useMemo(() => countMissingRequiredFields(node), [node]);
 
 	async function dispatchSendAction() {
 		if (!isSocketUrl) {
@@ -319,7 +368,11 @@ const Header: React.FC<HeaderProps> = ({ node }) => {
 							? socketActive
 								? `Close socket (${cmdGlyph}+Enter)`
 								: `Open socket (${cmdGlyph}+Enter)`
-							: `Send request (${cmdGlyph}+Enter)`
+							: missingRequired > 0
+								? `Send request (${cmdGlyph}+Enter) — ${missingRequired} required field${
+										missingRequired === 1 ? '' : 's'
+									} empty`
+								: `Send request (${cmdGlyph}+Enter)`
 					}
 					flexShrink={0}
 					display='inline-flex'
@@ -349,6 +402,19 @@ const Header: React.FC<HeaderProps> = ({ node }) => {
 						void dispatchSendAction();
 					}}
 				>
+					{!isSocketUrl && !flighting && missingRequired > 0 && (
+						<Box
+							position='absolute'
+							top='4px'
+							right='5px'
+							w='8px'
+							h='8px'
+							borderRadius='full'
+							bg='accent.alert'
+							boxShadow='0 0 0 1.5px var(--beak-colors-accent-pink), 0 0 6px color-mix(in srgb, var(--beak-colors-accent-alert) 70%, transparent)'
+							pointerEvents='none'
+						/>
+					)}
 					<AnimatePresence initial={false} mode='wait'>
 						{isSocketUrl ? (
 							<motion.span
