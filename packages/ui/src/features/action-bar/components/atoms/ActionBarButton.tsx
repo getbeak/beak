@@ -3,10 +3,10 @@ import * as React from 'react';
 
 /**
  * The pill icon-bearing button used throughout the action bar
- * (encryption toggle, flight history controls, omni-search, alerts).
+ * (encryption toggle, flight history controls, omni-search).
  *
- * Refs are forwarded so anchored popovers (e.g. AlertsPopover) can
- * read the button's bounding box.
+ * Refs are forwarded so anchored popovers can read the button's
+ * bounding box.
  */
 const ActionBarButton = React.forwardRef<HTMLButtonElement, ButtonProps>(({ children, ...rest }, ref) => (
 	<Button
