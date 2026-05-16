@@ -47,6 +47,71 @@ interface BasicTableEditorProps {
 const MotionRow = motion.create(Row);
 
 const ChakraSelect = chakra('select');
+const ChakraToggleButton = chakra('button');
+
+/**
+ * Native-feel boolean switch for `type='boolean'` value cells. Reads + writes
+ * the value as `['true']` / `['false']` / `['']` so the legacy wire format
+ * keeps working — a variable reference would put non-string parts in the
+ * ValueSections and we fall back to the free-text VariableInput.
+ */
+const BoolValueToggle: React.FC<{
+	value: ValueSections;
+	disabled?: boolean;
+	onChange: (next: ValueSections) => void;
+}> = ({ value, disabled, onChange }) => {
+	const literal = value.length === 1 && typeof value[0] === 'string' ? value[0] : '';
+	const checked = literal === 'true';
+	const indeterminate = literal !== 'true' && literal !== 'false';
+	return (
+		<Flex flexGrow={1} align='center' gap='2' pl='10px'>
+			<ChakraToggleButton
+				type='button'
+				role='switch'
+				aria-checked={checked}
+				disabled={disabled}
+				title={checked ? 'Currently true — click to flip' : indeterminate ? 'Currently unset — click to set' : 'Currently false — click to flip'}
+				onClick={() => onChange([checked ? 'false' : 'true'])}
+				position='relative'
+				w='30px'
+				h='16px'
+				minW='30px'
+				p='0'
+				borderRadius='full'
+				borderWidth='1px'
+				borderColor={checked ? 'accent.pink' : indeterminate ? 'border.subtle' : 'border.emphasized'}
+				bg={
+					checked
+						? 'accent.pink'
+						: indeterminate
+							? 'transparent'
+							: 'color-mix(in srgb, var(--beak-colors-bg-surface-emphasized) 70%, transparent)'
+				}
+				cursor={disabled ? 'default' : 'pointer'}
+				transition='background-color .18s ease, border-color .18s ease'
+				_focusVisible={{
+					outline: 'none',
+					boxShadow: '0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-pink) 45%, transparent)',
+				}}
+			>
+				<Box
+					position='absolute'
+					top='1px'
+					left='1px'
+					w='12px'
+					h='12px'
+					borderRadius='full'
+					bg={checked ? 'fg.onAccent' : indeterminate ? 'fg.subtle' : 'fg.muted'}
+					transform={checked ? 'translateX(14px)' : indeterminate ? 'translateX(7px)' : 'translateX(0)'}
+					transition='transform .2s cubic-bezier(.4, 0, .2, 1), background-color .18s ease'
+				/>
+			</ChakraToggleButton>
+			<Box as='span' fontSize='11.5px' color={indeterminate ? 'fg.subtle' : 'fg.muted'} fontVariantNumeric='tabular-nums'>
+				{indeterminate ? 'unset' : literal}
+			</Box>
+		</Flex>
+	);
+};
 
 /**
  * Native-styled select dropdown for enum-typed values. Native `<select>` keeps
@@ -202,6 +267,14 @@ const BasicTableEditor: React.FC<BasicTableEditorProps> = ({
 							useEnumPicker && item.value.length === 1 && typeof item.value[0] === 'string'
 								? item.value[0]
 								: '';
+						// Boolean toggle is used when the value is purely literal — a single
+						// string part the toggle can flip between. If the value carries a
+						// variable blob, fall back to the free-text input so the user
+						// keeps their reference.
+						const useBoolToggle =
+							type === 'boolean' &&
+							(item.value.length === 0 ||
+								(item.value.length === 1 && typeof item.value[0] === 'string'));
 
 						return (
 							<MotionRow
@@ -245,6 +318,12 @@ const BasicTableEditor: React.FC<BasicTableEditorProps> = ({
 												value={enumValue}
 												disabled={readOnly}
 												onChange={next => updateItem?.('value', k, [next])}
+											/>
+										) : useBoolToggle ? (
+											<BoolValueToggle
+												value={item.value}
+												disabled={readOnly}
+												onChange={parts => updateItem?.('value', k, parts)}
 											/>
 										) : (
 											<VariableInput
