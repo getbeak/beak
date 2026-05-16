@@ -22,6 +22,7 @@ import URL from 'url-parse';
 
 import { requestFlight } from '../../../../store/flight/actions';
 import { requestQueryAdded, requestUriUpdated } from '../../../../store/project/actions';
+import PreFlightWarningDialog from '../molecules/PreFlightWarningDialog';
 
 export interface HeaderProps {
 	node: ValidRequestNode;
@@ -45,35 +46,61 @@ function isJsonEntryEmpty(entry: Entries): boolean {
 	return parts.every(p => typeof p === 'string' && p.length === 0);
 }
 
+interface MissingRequiredSummary {
+	count: number;
+	scopes: string[];
+}
+
 /**
  * Sum of required-but-empty fields across every scope. Drives the warning
- * dot on the Send button — purely advisory, the user can still send.
+ * dot on the Send button and the pre-flight dialog — purely advisory, the
+ * user can still send.
  */
-function countMissingRequiredFields(node: ValidRequestNode): number {
+function summarizeMissingRequired(node: ValidRequestNode): MissingRequiredSummary {
+	const scopes: string[] = [];
 	let count = 0;
+
+	let headersCount = 0;
 	for (const h of Object.values(node.info.headers)) {
-		if (h.required === true && h.enabled !== false && isScalarEmpty(h)) count++;
+		if (h.required === true && h.enabled !== false && isScalarEmpty(h)) headersCount++;
 	}
+	if (headersCount > 0) {
+		scopes.push('Headers');
+		count += headersCount;
+	}
+
+	let queryCount = 0;
 	for (const q of Object.values(node.info.query)) {
-		if (q.required === true && q.enabled !== false && isScalarEmpty(q)) count++;
+		if (q.required === true && q.enabled !== false && isScalarEmpty(q)) queryCount++;
 	}
+	if (queryCount > 0) {
+		scopes.push('Params');
+		count += queryCount;
+	}
+
+	let bodyCount = 0;
 	const body = node.info.body;
 	if (body) {
 		if (body.type === 'json') {
 			for (const e of Object.values(body.payload)) {
-				if (e.required === true && e.enabled !== false && isJsonEntryEmpty(e)) count++;
+				if (e.required === true && e.enabled !== false && isJsonEntryEmpty(e)) bodyCount++;
 			}
 		} else if (body.type === 'url_encoded_form') {
 			for (const item of Object.values(body.payload)) {
-				if (item.required === true && item.enabled !== false && isScalarEmpty(item)) count++;
+				if (item.required === true && item.enabled !== false && isScalarEmpty(item)) bodyCount++;
 			}
 		} else if (body.type === 'graphql') {
 			for (const e of Object.values(body.payload.variables)) {
-				if (e.required === true && e.enabled !== false && isJsonEntryEmpty(e)) count++;
+				if (e.required === true && e.enabled !== false && isJsonEntryEmpty(e)) bodyCount++;
 			}
 		}
 	}
-	return count;
+	if (bodyCount > 0) {
+		scopes.push('Body');
+		count += bodyCount;
+	}
+
+	return { count, scopes };
 }
 
 const Header: React.FC<HeaderProps> = ({ node }) => {
@@ -98,11 +125,24 @@ const Header: React.FC<HeaderProps> = ({ node }) => {
 
 	const socketActive = currentSocket?.status === 'open' || currentSocket?.status === 'connecting';
 
-	const missingRequired = React.useMemo(() => countMissingRequiredFields(node), [node]);
+	const missingRequiredSummary = React.useMemo(() => summarizeMissingRequired(node), [node]);
+	const missingRequired = missingRequiredSummary.count;
+	const [preFlightWarningOpen, setPreFlightWarningOpen] = React.useState(false);
+
+	function performSend() {
+		dispatch(requestFlight());
+	}
 
 	async function dispatchSendAction() {
 		if (!isSocketUrl) {
-			dispatch(requestFlight());
+			// Soft-gate on the schema contract — open the warning when any
+			// required field is empty, but never block the path through. The
+			// user confirms in the dialog with `performSend`.
+			if (missingRequired > 0) {
+				setPreFlightWarningOpen(true);
+				return;
+			}
+			performSend();
 			return;
 		}
 
@@ -453,6 +493,17 @@ const Header: React.FC<HeaderProps> = ({ node }) => {
 					</AnimatePresence>
 				</ChakraButton>
 			</Flex>
+			{preFlightWarningOpen && (
+				<PreFlightWarningDialog
+					missingCount={missingRequired}
+					scopes={missingRequiredSummary.scopes}
+					onCancel={() => setPreFlightWarningOpen(false)}
+					onConfirm={() => {
+						setPreFlightWarningOpen(false);
+						performSend();
+					}}
+				/>
+			)}
 		</Flex>
 	);
 };
