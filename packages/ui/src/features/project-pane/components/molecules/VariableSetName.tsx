@@ -1,8 +1,8 @@
-import { Box } from '@chakra-ui/react';
 import ContextMenu from '@beak/ui/components/atoms/ContextMenu';
 import tabActions from '@beak/ui/features/tabs/store/actions';
 import sidebarActions from '@beak/ui/store/preferences/actions';
 import { actions as vgActions } from '@beak/ui/store/variable-sets';
+import { Box } from '@chakra-ui/react';
 import type { MenuItemConstructorOptions } from 'electron';
 import * as React from 'react';
 import { useEffect, useRef, useState } from 'react';
@@ -30,11 +30,13 @@ export const VariableSetName: React.FC<VariableSetNameProps> = ({ variableSetNam
 				id: 'variable-set-name-ctx:open',
 				label: 'Open in Editor',
 				click: () => {
-					dispatch(tabActions.changeTab({
-						type: 'variable_set_editor',
-						payload: variableSetName,
-						temporary: false,
-					}));
+					dispatch(
+						tabActions.changeTab({
+							type: 'variable_set_editor',
+							payload: variableSetName,
+							temporary: false,
+						}),
+					);
 				},
 			},
 			{
@@ -45,10 +47,12 @@ export const VariableSetName: React.FC<VariableSetNameProps> = ({ variableSetNam
 				id: 'variable-set-name-ctx:delete',
 				label: 'Delete',
 				click: () => {
-					dispatch(vgActions.removeVariableSetFromDisk({
-						id: variableSetName,
-						withConfirmation: true,
-					}));
+					dispatch(
+						vgActions.removeVariableSetFromDisk({
+							id: variableSetName,
+							withConfirmation: true,
+						}),
+					);
 				},
 			},
 		]);
@@ -61,15 +65,15 @@ export const VariableSetName: React.FC<VariableSetNameProps> = ({ variableSetNam
 				ref={(i: HTMLElement | null) => {
 					targetRef.current = i;
 				}}
-				color='fg.default'
-				fontSize='xs'
+				color='fg.muted'
+				fontSize='12px'
 				fontWeight='500'
 				overflow='hidden'
 				textOverflow='ellipsis'
 				whiteSpace='nowrap'
-				cursor='pointer'
-				transition='color .12s ease'
-				_hover={{ color: 'accent.teal' }}
+				cursor='default'
+				transition='color .1s linear'
+				_hover={{ color: 'fg.default' }}
 			>
 				{variableSetName}
 			</Box>
