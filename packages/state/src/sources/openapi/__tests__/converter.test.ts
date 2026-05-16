@@ -170,4 +170,86 @@ describe('openapiToCollection', () => {
 		});
 		expect(result.requests[0].override.id).toBe(`${result.requests[0].override.operationId}@0`);
 	});
+
+	it('emits schema metadata (required, description, scalar type) onto headers + query', () => {
+		const spec: OpenApiDocument = {
+			openapi: '3.0.0',
+			info: { title: 's', version: '1' },
+			servers: [{ url: 'https://x' }],
+			paths: {
+				'/things': {
+					get: {
+						operationId: 'list',
+						parameters: [
+							{
+								name: 'limit',
+								in: 'query',
+								required: true,
+								description: 'Max rows returned.',
+								schema: { type: 'integer', default: 25 },
+							},
+							{
+								name: 'tier',
+								in: 'query',
+								schema: { type: 'string', enum: ['free', 'pro'] },
+							},
+							{
+								name: 'active',
+								in: 'query',
+								schema: { type: 'boolean' },
+							},
+							{
+								name: 'Authorization',
+								in: 'header',
+								required: true,
+								description: 'Bearer token.',
+								schema: { type: 'string' },
+							},
+						],
+					},
+				},
+			},
+		};
+		const result = openapiToCollection(spec, { now: FIXED_NOW, makeId: STABLE_ID });
+		const op = result.requests.find(r => r.override.operationId === 'list')!;
+
+		expect(op.override.query?.limit).toMatchObject({
+			required: true,
+			type: 'number',
+			description: 'Max rows returned.',
+		});
+		expect(op.override.query?.tier).toMatchObject({ type: 'enum' });
+		expect(op.override.query?.tier).not.toHaveProperty('required');
+		expect(op.override.query?.active).toMatchObject({ type: 'boolean' });
+
+		// Well-known auth header → token (masked in value editor).
+		expect(op.override.headers?.Authorization).toMatchObject({
+			required: true,
+			type: 'token',
+			description: 'Bearer token.',
+		});
+	});
+
+	it('omits type when it would default to "string" — keeps the file diff calm', () => {
+		const spec: OpenApiDocument = {
+			openapi: '3.0.0',
+			info: { title: 's', version: '1' },
+			servers: [{ url: 'https://x' }],
+			paths: {
+				'/things': {
+					get: {
+						operationId: 'list',
+						parameters: [
+							{ name: 'q', in: 'query', schema: { type: 'string' } },
+							{ name: 'X-Trace', in: 'header', schema: { type: 'string' } },
+						],
+					},
+				},
+			},
+		};
+		const result = openapiToCollection(spec, { now: FIXED_NOW, makeId: STABLE_ID });
+		const op = result.requests.find(r => r.override.operationId === 'list')!;
+		expect(op.override.query?.q).not.toHaveProperty('type');
+		expect(op.override.headers?.['X-Trace']).not.toHaveProperty('type');
+	});
 });

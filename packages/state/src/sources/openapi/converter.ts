@@ -29,6 +29,10 @@ export interface ConvertOptions {
 	specPath?: string;
 	/** Remote spec URL. */
 	specUrl?: string;
+	/** Pass-through to the collection's source.autoSync — Project Home toggles this. */
+	autoSync?: boolean;
+	/** Pass-through to the collection's source.intervalMinutes. */
+	intervalMinutes?: number;
 	/** Override the timestamp (test injection). Defaults to `new Date().toISOString()`. */
 	now?: () => string;
 	/** Stable id generator (test injection). Defaults to a deterministic per-operation id. */
@@ -65,6 +69,8 @@ export function openapiToCollection(
 			...(options.specPath ? { specPath: options.specPath } : {}),
 			...(options.specUrl ? { specUrl: options.specUrl } : {}),
 			lastSyncedAt: now(),
+			...(options.autoSync ? { autoSync: true } : {}),
+			...(options.intervalMinutes ? { intervalMinutes: options.intervalMinutes } : {}),
 		},
 		...(baseUrl ? { defaults: { baseUrl: [baseUrl] } } : {}),
 	};
@@ -242,14 +248,66 @@ function renderPath(pathPattern: string, pathParams: OpenApiParameter[]): string
 	return rendered;
 }
 
+type ScalarPropertyType = 'string' | 'number' | 'boolean' | 'enum' | 'token';
+
+/**
+ * Map an OpenAPI parameter schema's type onto Beak's scalar property type.
+ * `string` is the implicit default and is omitted from the output so we
+ * don't pollute every header with `type: 'string'`. `integer`/`number`
+ * collapse to `number`. `enum`-bearing schemas override the base type so
+ * the value editor can render a dropdown.
+ */
+function scalarTypeFromSchema(schema: OpenApiParameter['schema']): ScalarPropertyType | undefined {
+	if (!schema) return undefined;
+	if (schema.enum && schema.enum.length > 0) return 'enum';
+	switch (schema.type) {
+		case 'integer':
+		case 'number':
+			return 'number';
+		case 'boolean':
+			return 'boolean';
+		case 'string':
+		case undefined:
+			return undefined;
+		default:
+			return undefined;
+	}
+}
+
+/**
+ * Header names that imply a credential — we tag these as `token` so the
+ * value editor masks their plaintext, even if the spec didn't declare a
+ * format. Match is case-insensitive and limited to well-known scheme names
+ * to avoid false positives.
+ */
+const TOKEN_HEADER_PATTERN = /^(authorization|x-api-key|x-auth-token|api-key|apikey)$/i;
+
 function paramsToRecord(params: OpenApiParameter[]): NonNullable<RequestFileOverride['query']> {
-	const out: Record<string, { name: string; value: [string]; enabled: boolean }> = {};
+	const out: Record<
+		string,
+		{
+			name: string;
+			value: [string];
+			enabled: boolean;
+			type?: ScalarPropertyType;
+			required?: boolean;
+			description?: string;
+		}
+	> = {};
 	for (const p of params) {
 		const exampleValue = stringifyExample(p.schema);
+		const required = p.required === true;
+		const inferredType = scalarTypeFromSchema(p.schema);
+		const isTokenHeader = p.in === 'header' && TOKEN_HEADER_PATTERN.test(p.name);
+		const schemaType: ScalarPropertyType | undefined = isTokenHeader ? 'token' : inferredType;
+
 		out[p.name] = {
 			name: p.name,
 			value: [exampleValue],
-			enabled: p.required ?? false,
+			enabled: required,
+			...(schemaType ? { type: schemaType } : {}),
+			...(required ? { required: true } : {}),
+			...(p.description ? { description: p.description } : {}),
 		};
 	}
 	return out;
