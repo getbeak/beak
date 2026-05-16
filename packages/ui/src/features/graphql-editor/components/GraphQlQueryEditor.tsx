@@ -1,5 +1,5 @@
 import React from 'react';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import ksuid from '@beak/ksuid';
 import EditorView from '@beak/ui/components/atoms/EditorView';
@@ -29,6 +29,53 @@ export interface GraphQlQueryEditorProps {
 
 const schemaCache: Record<string, IntrospectionQuery> = {};
 
+/**
+ * Craft an explanatory error when the schema endpoint responds with no usable
+ * body. Status drives the explanation — 401/403 hint at auth, 4xx more
+ * broadly at request shape, 5xx at the server.
+ */
+function buildStatusError(status: number | undefined, decodedText: string): Error {
+	if (status === 401 || status === 403)
+		return new Error(
+			`Schema endpoint returned HTTP ${status}. The endpoint likely requires authentication — add an Authorization header (or API token) to this request and hit Send again.`,
+		);
+	if (status === 404)
+		return new Error('Schema endpoint returned HTTP 404. Double-check the URL — many GraphQL servers expose introspection at a different path (e.g. /graphql).');
+	if (status === 405)
+		return new Error('Schema endpoint returned HTTP 405. Some servers only accept POST for GraphQL — confirm the verb on this request.');
+	if (typeof status === 'number' && status >= 400 && status < 500)
+		return new Error(`Schema endpoint returned HTTP ${status}. The server rejected the introspection request — check the URL, headers, and that introspection is enabled.`);
+	if (typeof status === 'number' && status >= 500)
+		return new Error(`Schema endpoint returned HTTP ${status}. The upstream server errored — try again, or check the endpoint's status page.`);
+	if (decodedText.length === 0)
+		return new Error('Schema endpoint returned an empty body. The endpoint may be down or refusing requests at the network level.');
+	return new Error('Schema endpoint returned no usable response.');
+}
+
+/**
+ * Called when the endpoint returned 200 + parsable JSON but no `data`
+ * payload. Surfaces the upstream `errors` array if present — many servers
+ * disable introspection or return GraphQL-level rejections this way.
+ */
+function buildIntrospectionFailureError(status: number | undefined, jsonResponse: unknown): Error {
+	const errors = (jsonResponse as { errors?: unknown[] } | null)?.errors;
+	if (Array.isArray(errors) && errors.length > 0) {
+		const messages = errors
+			.map(e => (e && typeof e === 'object' && 'message' in e ? String((e as { message: unknown }).message) : null))
+			.filter((m): m is string => Boolean(m));
+		const joined = messages.join(' · ') || 'Server returned a GraphQL error response with no message.';
+		const looksLikeIntrospectionDisabled = /introspect|disabled|denied|unauthor/i.test(joined);
+		if (looksLikeIntrospectionDisabled)
+			return new Error(`Introspection appears to be disabled on this endpoint. Server replied: ${joined}`);
+		return new Error(`Schema endpoint responded with GraphQL errors: ${joined}`);
+	}
+	if (status === 401 || status === 403)
+		return new Error(
+			`Schema endpoint replied with HTTP ${status} and no schema. The endpoint likely requires authentication — add an Authorization header to this request.`,
+		);
+	return new Error('Schema response missing `data` field. The endpoint replied successfully but did not return an introspection result.');
+}
+
 const GraphQlQueryEditor: React.FC<GraphQlQueryEditorProps> = props => {
 	const { node } = props;
 	const dispatch = useDispatch();
@@ -39,6 +86,31 @@ const GraphQlQueryEditor: React.FC<GraphQlQueryEditorProps> = props => {
 	const variableSets = useAppSelector(s => s.global.variableSets.variableSets);
 	const selectedSets = useAppSelector(s => s.global.preferences.editor.selectedVariableSets);
 	const schemaFlight = useAppSelector(s => s.global.flight.flightHistories[node.id]?.history[schemaFlightId]);
+
+	// The tree slice replaces nodes wholesale on every fs-watcher tick, so
+	// `node.info.url`/`headers` are fresh array/object references on every
+	// render even when their content hasn't changed. Passing those references
+	// straight into `useDebounce` makes the debounce regenerate constantly,
+	// which — combined with the success effect bumping state below — caused a
+	// fire loop that hammered the upstream endpoint (e.g. GitHub's GraphQL
+	// API rate-limited us). We collapse the deps into a single content-hash
+	// string so the debounce only re-arms on meaningful change.
+	const inputsKey = useMemo(
+		() =>
+			JSON.stringify({
+				verb: node.info.verb,
+				url: node.info.url,
+				query: node.info.query,
+				headers: node.info.headers,
+				variableSets,
+				selectedSets,
+			}),
+		[node.info.verb, node.info.url, node.info.query, node.info.headers, variableSets, selectedSets],
+	);
+	// Belt-and-braces: even with a stable hash a render burst could still
+	// fire the debounce twice with identical inputs. Track the last key we
+	// actually dispatched so we never fetch the same schema twice.
+	const lastDispatchedKey = useRef<string | null>(null);
 
 	const operationsUri = `${node.id}/operations.graphql`;
 	const variablesUri = `${node.id}/variables.json`;
@@ -80,12 +152,21 @@ const GraphQlQueryEditor: React.FC<GraphQlQueryEditorProps> = props => {
 	useEffect(() => {
 		if (!schemaFlight) return;
 
+		// Whatever happens below, the in-flight fetch has resolved one way or
+		// another — release the loading screen so the editor or error pane can
+		// take over. Without this reset, an empty-body or implicit failure
+		// (where `schemaFlight.error` is undefined) leaves the spinner stuck.
+		setLoading(false);
+
 		const textDecoder = new TextDecoder();
 		const binaryData = binaryStore.get(schemaFlight.binaryStoreKey) ?? new Uint8Array(0);
 		const decodedText = textDecoder.decode(binaryData);
+		const status = schemaFlight.response?.status;
 
 		if (schemaFlight.error || !schemaFlight.response || !schemaFlight.response.hasBody || !decodedText) {
-			setSchemaFetchError(schemaFlight.error!);
+			setSchemaFetchError(
+				schemaFlight.error ?? buildStatusError(status, decodedText),
+			);
 			setHasSchema(false);
 
 			return;
@@ -95,7 +176,7 @@ const GraphQlQueryEditor: React.FC<GraphQlQueryEditorProps> = props => {
 		try {
 			const jsonResponse = JSON.parse(decodedText);
 			if (!jsonResponse?.data) {
-				setSchemaFetchError(new Error('Schema response missing `data` field'));
+				setSchemaFetchError(buildIntrospectionFailureError(status, jsonResponse));
 				setHasSchema(false);
 				return;
 			}
@@ -109,6 +190,13 @@ const GraphQlQueryEditor: React.FC<GraphQlQueryEditorProps> = props => {
 	}, [schemaFlight?.flightId]);
 
 	useDebounce(async () => {
+		// Skip if we've already dispatched a schema fetch for this exact
+		// inputs hash — covers both the "render burst" path and the case
+		// where a previous fetch failed (the user has to change something
+		// meaningful for us to retry, otherwise we'd dogpile a broken endpoint).
+		if (lastDispatchedKey.current === inputsKey) return;
+		lastDispatchedKey.current = inputsKey;
+
 		setLoading(true);
 
 		const flightId = ksuid.generate('flight').toString();
@@ -127,7 +215,10 @@ const GraphQlQueryEditor: React.FC<GraphQlQueryEditorProps> = props => {
 				type: 'text',
 				payload: JSON.stringify(graphQlBody),
 			},
-			options: { followRedirects: false },
+			// Cap the background schema fetch — without a timeout a hanging
+			// endpoint pins the loading screen forever (the request's own
+			// `timeoutMs` is independent and not consulted here).
+			options: { followRedirects: false, timeoutMs: 15_000 },
 			verb: 'post',
 			query: {},
 			url: [resolvedSchemaUrl.toString()],
@@ -157,14 +248,7 @@ const GraphQlQueryEditor: React.FC<GraphQlQueryEditorProps> = props => {
 			showResult: true,
 			reason: 'graphql_schema',
 		}));
-	}, 500, [
-		// This is messy but it is what it is
-		node.info.verb,
-		node.info.url,
-		JSON.stringify(node.info.query),
-		JSON.stringify(variableSets),
-		JSON.stringify(selectedSets),
-	]);
+	}, 800, [inputsKey]);
 
 	if (!hasSchema && loading) {
 		return (

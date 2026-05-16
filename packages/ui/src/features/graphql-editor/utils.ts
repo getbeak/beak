@@ -19,7 +19,11 @@ export const editorTabSubItems: TabSubItem<EditorMode>[] = [
 	},
 	{
 		key: 'variables',
-		label: 'Variables',
+		label: 'Query variables',
+	},
+	{
+		key: 'split',
+		label: 'Split',
 	},
 ];
 

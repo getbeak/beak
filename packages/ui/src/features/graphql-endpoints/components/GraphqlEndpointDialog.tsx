@@ -1,9 +1,9 @@
 import Button from '@beak/ui/components/atoms/Button';
 import DebouncedInput from '@beak/ui/components/atoms/DebouncedInput';
-import Dialog from '@beak/ui/components/molecules/Dialog';
+import Dialog, { DialogBody, DialogFooter, DialogHeader } from '@beak/ui/components/molecules/Dialog';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { Box, Flex } from '@chakra-ui/react';
-import { Network } from 'lucide-react';
+import { AlertOctagon, Network } from 'lucide-react';
 import * as React from 'react';
 import { useState } from 'react';
 
@@ -71,77 +71,62 @@ const GraphqlEndpointDialog: React.FC<GraphqlEndpointDialogProps> = ({ mode, ini
 
 	return (
 		<Dialog onClose={() => onClose(false)} tone='indigo'>
-			<Box w='460px' p='5'>
-				<Flex align='center' gap='2.5' mb='4'>
-					<Flex
-						align='center'
-						justify='center'
-						w='32px'
-						h='32px'
-						borderRadius='full'
-						bg='color-mix(in srgb, var(--beak-colors-accent-indigo) 14%, transparent)'
-						borderWidth='1px'
-						borderColor='color-mix(in srgb, var(--beak-colors-accent-indigo) 28%, transparent)'
-						color='accent.indigo'
-					>
-						<Network size={14} strokeWidth={2} />
-					</Flex>
-					<Box fontSize='md' fontWeight='600' color='fg.default'>
-						{isCreate ? 'Add GraphQL endpoint' : `Edit ${mode.kind === 'edit' ? mode.folderName : ''}`}
-					</Box>
-				</Flex>
-
-				<Flex direction='column' gap='3'>
-					{isCreate && (
-						<LabeledField
-							label='Folder name'
-							description="Used as the folder under tree/ and as the endpoint's display name."
-						>
-							<Box borderWidth='1px' borderColor='border.subtle' borderRadius='sm'>
+			<Box w='460px'>
+				<DialogHeader
+					icon={<Network size={14} strokeWidth={2.2} />}
+					title={isCreate ? 'Add GraphQL endpoint' : `Edit ${mode.kind === 'edit' ? mode.folderName : ''}`}
+				/>
+				<DialogBody>
+					<Flex direction='column' gap='3'>
+						{isCreate && (
+							<LabeledField
+								label='Folder name'
+								description='Used as the folder under tree/ and as the endpoint’s display name.'
+							>
+								<Box borderWidth='1px' borderColor='border.subtle' borderRadius='md' bg='bg.canvas'>
+									<DebouncedInput type='text' value={folderName} placeholder='Acme API' onChange={setFolderName} />
+								</Box>
+							</LabeledField>
+						)}
+						<LabeledField label='Endpoint URL'>
+							<Box borderWidth='1px' borderColor='border.subtle' borderRadius='md' bg='bg.canvas'>
 								<DebouncedInput
 									type='text'
-									value={folderName}
-									placeholder='Acme API'
-									onChange={setFolderName}
+									value={endpoint}
+									placeholder='https://api.example.com/graphql'
+									onChange={setEndpoint}
 								/>
 							</Box>
 						</LabeledField>
-					)}
-					<LabeledField label='Endpoint URL'>
-						<Box borderWidth='1px' borderColor='border.subtle' borderRadius='sm'>
-							<DebouncedInput
-								type='text'
-								value={endpoint}
-								placeholder='https://api.example.com/graphql'
-								onChange={setEndpoint}
-							/>
-						</Box>
-					</LabeledField>
-				</Flex>
 
-				{error && (
-					<Box
-						mt='3'
-						p='2'
-						borderWidth='1px'
-						borderColor='accent.alert'
-						borderRadius='sm'
-						bg='color-mix(in srgb, var(--beak-colors-accent-alert) 8%, transparent)'
-						color='accent.alert'
-						fontSize='xs'
-					>
-						{error}
-					</Box>
-				)}
-
-				<Flex justify='flex-end' gap='2' mt='4'>
+						{error && (
+							<Flex
+								align='center'
+								gap='2'
+								px='2.5'
+								py='1.5'
+								borderRadius='md'
+								borderWidth='1px'
+								borderColor='color-mix(in srgb, var(--beak-colors-accent-alert) 38%, var(--beak-colors-border-subtle))'
+								bg='color-mix(in srgb, var(--beak-colors-accent-alert) 10%, var(--beak-colors-bg-surface))'
+								fontSize='xs'
+							>
+								<Box color='accent.alert' flex='0 0 auto'>
+									<AlertOctagon size={13} />
+								</Box>
+								<Box color='fg.default'>{error}</Box>
+							</Flex>
+						)}
+					</Flex>
+				</DialogBody>
+				<DialogFooter>
 					<Button colour='secondary' size='sm' onClick={() => onClose(false)}>
 						{'Cancel'}
 					</Button>
 					<Button size='sm' disabled={!canSubmit} onClick={submit}>
 						{busy ? 'Saving…' : isCreate ? 'Add endpoint' : 'Save changes'}
 					</Button>
-				</Flex>
+				</DialogFooter>
 			</Box>
 		</Dialog>
 	);
