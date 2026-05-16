@@ -1,9 +1,20 @@
 import { IpcWindowServiceMain } from '@beak/common/ipc/window';
 import { type IpcMainInvokeEvent, ipcMain } from 'electron';
 
-import { closeWindow, createEmptyProjectMainWindow, reloadWindow, windowStack } from '../window-management';
+import {
+	closeWindow,
+	createEmptyProjectMainWindow,
+	reloadWindow,
+	setWindowDirty,
+	windowStack,
+} from '../window-management';
 
 const service = new IpcWindowServiceMain(ipcMain);
+
+service.registerSetDirty(async (event, payload) => {
+	const senderId = (event as IpcMainInvokeEvent).sender.id;
+	setWindowDirty(senderId, payload.dirty);
+});
 
 service.registerCloseSelfWindow(async event => {
 	const senderId = (event as IpcMainInvokeEvent).sender.id;

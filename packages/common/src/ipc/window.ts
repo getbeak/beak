@@ -8,7 +8,12 @@ const WindowMessages = {
 	CloseSelfWindow: 'close_self_window',
 	ReloadSelfWindow: 'reload_self_window',
 	ToggleDeveloperTools: 'toggle_developer_tools',
+	SetDirty: 'set_dirty',
 };
+
+export interface SetDirtyReq {
+	dirty: boolean;
+}
 
 export class IpcWindowServiceRenderer extends IpcServiceRenderer<'window'> {
 	constructor(ipc: PartialIpcRenderer) {
@@ -25,6 +30,10 @@ export class IpcWindowServiceRenderer extends IpcServiceRenderer<'window'> {
 
 	async toggleDeveloperTools() {
 		return await this.invoke(WindowMessages.ToggleDeveloperTools);
+	}
+
+	async setDirty(payload: SetDirtyReq) {
+		return await this.invoke(WindowMessages.SetDirty, payload);
 	}
 }
 
@@ -43,5 +52,9 @@ export class IpcWindowServiceMain extends IpcServiceMain<'window'> {
 
 	registerToggleDeveloperTools(fn: IpcListener<void>) {
 		this.registerRequestHandler(WindowMessages.ToggleDeveloperTools, fn);
+	}
+
+	registerSetDirty(fn: IpcListener<SetDirtyReq>) {
+		this.registerRequestHandler(WindowMessages.SetDirty, fn);
 	}
 }

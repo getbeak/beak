@@ -1,7 +1,7 @@
 import * as path from 'node:path';
 import * as url from 'node:url';
 import type { WindowPresence } from '@beak/runtime-shared/providers/storage';
-import { app, BrowserWindow, type BrowserWindowConstructorOptions, nativeTheme } from 'electron';
+import { app, BrowserWindow, type BrowserWindowConstructorOptions, dialog, nativeTheme } from 'electron';
 
 import getBeakHost from './host';
 import { tryOpenProjectFolder } from './host/extensions/project';
@@ -21,6 +21,57 @@ export const windowIdToProjectFilePathMapping: Record<number, string> = {};
 export const windowStack: Record<number, BrowserWindow> = {};
 export const windowType: Record<number, Container> = {};
 export const stackMap: Record<string, number> = {};
+
+/**
+ * Window IDs whose renderer reports unsaved in-memory changes. Updated by
+ * the renderer via `ipcWindowService.setDirty` whenever the project mode
+ * + tree size combination crosses the dirty boundary. Drives the
+ * unsaved-changes confirmation on window close.
+ */
+const dirtyWindowIds = new Set<number>();
+
+/** True if the close path is currently dispatching the unsaved-changes
+ *  dialog for a given window — used to ensure the renderer's in-flight
+ *  Save Project As doesn't race the dialog and double-prompt.
+ */
+const closeInFlight = new Set<number>();
+
+export function setWindowDirty(windowId: number, dirty: boolean) {
+	if (dirty) dirtyWindowIds.add(windowId);
+	else dirtyWindowIds.delete(windowId);
+}
+
+async function promptUnsavedClose(window: BrowserWindow) {
+	const result = await dialog.showMessageBox(window, {
+		type: 'warning',
+		title: 'Save changes to this project?',
+		message: 'Your changes will be lost if you don’t save them.',
+		buttons: ['Save…', "Don't save", 'Cancel'],
+		defaultId: 0,
+		cancelId: 2,
+	});
+
+	switch (result.response) {
+		case 2:
+			// Cancel — keep the window open. closeInFlight clears via finally.
+			return;
+		case 1:
+			// Don't save — drop dirty + force-close, bypassing the close guard.
+			dirtyWindowIds.delete(window.id);
+			window.destroy();
+			delete windowStack[window.id];
+			return;
+		case 0:
+		default: {
+			// Save — ask the renderer to run materialiseFromMemory. The
+			// successful save closes + reopens this window itself; if the
+			// user cancels the folder picker, the window stays open and
+			// stays dirty, ready for them to try again.
+			window.webContents.send('window:request_save');
+			return;
+		}
+	}
+}
 
 const DEV_URL = 'http://localhost:5173';
 const environment = process.env.NODE_ENV;
@@ -164,7 +215,18 @@ async function createWindow(
 		window.show();
 		window.focus();
 	});
-	window.on('close', () => {
+	window.on('close', event => {
+		// Unsaved-changes guard. Only project-main windows can be dirty
+		// (memory-mode projects with non-empty trees); the renderer keeps
+		// dirtyWindowIds in sync via ipcWindowService.setDirty.
+		if (dirtyWindowIds.has(window.id) && !closeInFlight.has(window.id)) {
+			event.preventDefault();
+			closeInFlight.add(window.id);
+			void promptUnsavedClose(window).finally(() => closeInFlight.delete(window.id));
+			return;
+		}
+
+		dirtyWindowIds.delete(window.id);
 		delete windowStack[window.id];
 	});
 

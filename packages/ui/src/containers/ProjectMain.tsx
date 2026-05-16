@@ -1,28 +1,29 @@
 import { useAppSelector } from '@beak/ui/store/redux';
-import { Box } from '@chakra-ui/react';
+import { Box, Flex } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
-import { ReflexContainer } from 'react-reflex';
 
-import ReflexElement from '../components/atoms/ReflexElement';
-import ReflexSplitter from '../components/atoms/ReflexSplitter';
 import ReflexStyles from '../components/atoms/ReflexStyles';
 import ProgressIndicator from '../components/molecules/ProgressIndicator';
+import ProjectLoadFailed from '../components/molecules/ProjectLoadFailed';
 import ProjectLoading from '../components/molecules/ProjectLoading';
 import UntitledBanner from '../components/molecules/UntitledBanner';
 import ActionBar from '../features/action-bar/components/ActionBar';
+import CloneRepoDialog from '../features/clone-repo/components/CloneRepoDialog';
 import ProjectEncryption from '../features/encryption/components/ProjectEncryption';
 import Omnibar from '../features/omni-bar/components/Omnibar';
-import CloneRepoDialog from '../features/clone-repo/components/CloneRepoDialog';
 import OpenApiImportDialog from '../features/openapi-import/components/OpenApiImportDialog';
 import { useOpenApiAutoSync } from '../features/project-home/hooks/use-openapi-auto-sync';
 import Sidebar from '../features/sidebar/components/Sidebar';
+import SidebarResizer from '../features/sidebar/components/SidebarResizer';
+import { useSidebarWidth } from '../features/sidebar/hooks/use-sidebar-width';
 import SourceControlDialog from '../features/source-control/components/SourceControlDialog';
 import TabView from '../features/tabs/components/TabView';
 import { useApplicationMenuEventListener } from '../hooks/use-application-menu-event-listener';
 import { useGlobalKeyboardShortcuts } from '../hooks/use-global-keyboard-shortcuts';
 import { useProjectBootstrap } from '../hooks/use-project-bootstrap';
 import { useProjectLoading } from '../hooks/use-project-loading';
+import { useUnsavedChangesGuard } from '../hooks/use-unsaved-changes-guard';
 
 const embedded = Boolean(window.embeddedIndicator);
 
@@ -30,6 +31,7 @@ const ProjectMain: React.FC = () => {
 	const [title, setTitle] = useState('Loading… - Beak');
 	const [setup, setSetup] = useState(false);
 	const collapsedSidebar = useAppSelector(s => s.global.preferences.sidebar.collapsed.sidebar);
+	const sidebarControl = useSidebarWidth();
 	const project = useAppSelector(s => s.global.project);
 	const variableSets = useAppSelector(s => s.global.variableSets);
 	const tabs = useAppSelector(s => s.features.tabs);
@@ -42,6 +44,7 @@ const ProjectMain: React.FC = () => {
 	useProjectBootstrap();
 	useGlobalKeyboardShortcuts(loaded && setup);
 	useOpenApiAutoSync(loaded && setup);
+	useUnsavedChangesGuard();
 
 	useEffect(() => {
 		if (!loaded || setup) return void 0;
@@ -64,24 +67,29 @@ const ProjectMain: React.FC = () => {
 				{setup && loaded && (
 					<React.Fragment>
 						<UntitledBanner />
-						<Box flex='1' minH='0'>
-							<ReflexContainer orientation={'vertical'}>
-								<ReflexElement flex={20} minSize={260} $forcedWidth={collapsedSidebar ? 48 : void 0}>
-									<Sidebar />
-								</ReflexElement>
+						<Flex flex='1' minH='0' direction='row'>
+							<Box
+								w={`${collapsedSidebar ? 48 : Math.round(sidebarControl.width)}px`}
+								flexShrink={0}
+								h='100%'
+								minH='0'
+								overflow='hidden'
+								transition={sidebarControl.dragging ? 'none' : 'width .16s ease'}
+							>
+								<Sidebar />
+							</Box>
 
-								<ReflexSplitter $disabled={collapsedSidebar} hideVisualIndicator orientation={'vertical'} />
+							{!collapsedSidebar && <SidebarResizer control={sidebarControl} />}
 
-								<ReflexElement flex={80} minSize={800} style={{ overflowY: 'hidden' }}>
-									{embedded && <ActionBar />}
-									<TabView
-										tabs={tabs.activeTabs}
-										selectedTab={activeTab}
-										rightSlot={embedded ? undefined : <ActionBar inline />}
-									/>
-								</ReflexElement>
-							</ReflexContainer>
-						</Box>
+							<Box flex='1' minW='0' h='100%' position='relative' overflowY='hidden'>
+								{embedded && <ActionBar />}
+								<TabView
+									tabs={tabs.activeTabs}
+									selectedTab={activeTab}
+									rightSlot={embedded ? undefined : <ActionBar inline />}
+								/>
+							</Box>
+						</Flex>
 						<Omnibar />
 						<OpenApiImportDialog />
 						<SourceControlDialog />
@@ -92,7 +100,7 @@ const ProjectMain: React.FC = () => {
 
 			<ProjectEncryption />
 
-			{projectLoading && <ProjectLoading />}
+			{project.loadError ? <ProjectLoadFailed error={project.loadError} /> : projectLoading && <ProjectLoading />}
 		</React.Fragment>
 	);
 };
