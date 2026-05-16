@@ -9,6 +9,8 @@ export type Shortcuts =
 	| 'sidebar.toggle-view'
 	| 'sidebar.switch-project'
 	| 'sidebar.switch-variables'
+	| 'sidebar.switch-endpoints'
+	| 'sidebar.switch-extensions'
 
 	| 'tree-view.node.up'
 	| 'tree-view.node.down'
@@ -54,6 +56,8 @@ export const shortcutDefinitions: Record<Shortcuts, PlatformSpecificDefinitions 
 	'sidebar.toggle-view': { type: 'agnostic', ctrlOrMeta: true, key: 'B' },
 	'sidebar.switch-project': { type: 'agnostic', ctrlOrMeta: true, key: '1' },
 	'sidebar.switch-variables': { type: 'agnostic', ctrlOrMeta: true, key: '2' },
+	'sidebar.switch-endpoints': { type: 'agnostic', ctrlOrMeta: true, key: '3' },
+	'sidebar.switch-extensions': { type: 'agnostic', ctrlOrMeta: true, key: '4' },
 
 	'tree-view.node.up': { type: 'agnostic', key: 'ArrowUp' },
 	'tree-view.node.down': { type: 'agnostic', key: 'ArrowDown' },
@@ -129,6 +133,14 @@ export function checkShortcut(shortcutKey: Shortcuts, event: React.KeyboardEvent
 
 	if (!shortcutDefinition) return false;
 
+	// Single-letter `event.key` is the lower-cased character when Shift isn't
+	// held ('b' for Cmd+B, 'd' for Cmd+D). The definitions all declare the
+	// upper-case form, so compare against the same upper-cased version the
+	// array path already uses — otherwise every single-letter ctrlOrMeta
+	// shortcut silently misses on the web host's keydown path.
+	const matchesKey = (defKey: string | string[]) =>
+		typeof defKey === 'string' ? defKey === modifiedKey : defKey.includes(modifiedKey);
+
 	if (shortcutDefinition.ctrlOrMeta) {
 		const useMeta = windowSessionInstance.isDarwin();
 		const useCtrl = !useMeta;
@@ -137,7 +149,7 @@ export function checkShortcut(shortcutKey: Shortcuts, event: React.KeyboardEvent
 			((useMeta && metaKey) || (useCtrl && ctrlKey)) &&
 			Boolean(shortcutDefinition.alt) === altKey &&
 			Boolean(shortcutDefinition.shift) === shiftKey &&
-			(typeof shortcutDefinition.key === 'string' ? shortcutDefinition.key === key : shortcutDefinition.key.includes(modifiedKey))
+			matchesKey(shortcutDefinition.key)
 		);
 	}
 
@@ -146,7 +158,7 @@ export function checkShortcut(shortcutKey: Shortcuts, event: React.KeyboardEvent
 		Boolean(shortcutDefinition.ctrl) === ctrlKey &&
 		Boolean(shortcutDefinition.meta) === metaKey &&
 		Boolean(shortcutDefinition.shift) === shiftKey &&
-		(typeof shortcutDefinition.key === 'string' ? shortcutDefinition.key === key : shortcutDefinition.key.includes(modifiedKey))
+		matchesKey(shortcutDefinition.key)
 	);
 }
 

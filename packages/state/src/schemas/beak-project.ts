@@ -261,6 +261,22 @@ export const collectionSourceSchema = z.discriminatedUnion('type', [
 			lastSyncedAt: z.string().optional(),
 		})
 		.strict(),
+	z
+		.object({
+			type: z.literal('grpc'),
+			/** gRPC endpoint URL — e.g. `grpc.example.com:50051` or `https://...`. */
+			endpoint: z.string().min(1),
+			/**
+			 * Optional project-relative or absolute path to a `.proto` file
+			 * describing the service. Phase 2 of grpc work loads + parses
+			 * this to drive method completion + request authoring. Absent
+			 * means the endpoint is registered but not yet wired for
+			 * descriptors.
+			 */
+			protoPath: z.string().min(1).optional(),
+			lastSyncedAt: z.string().optional(),
+		})
+		.strict(),
 ]);
 
 export type CollectionSource = z.infer<typeof collectionSourceSchema>;

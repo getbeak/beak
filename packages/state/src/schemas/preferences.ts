@@ -16,7 +16,7 @@ export type EditorPreferences = z.infer<typeof editorPreferencesSchema>;
  */
 export const sidebarPreferencesSchema = z
 	.object({
-		selected: z.enum(['project', 'variables']),
+		selected: z.enum(['project', 'variables', 'endpoints', 'extensions']),
 		collapsed: z.record(z.string(), z.boolean()),
 	})
 	.strict();

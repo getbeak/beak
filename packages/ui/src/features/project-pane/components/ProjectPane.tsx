@@ -8,7 +8,6 @@ import type { MenuItemConstructorOptions } from 'electron';
 import React, { useContext } from 'react';
 import { useDispatch } from 'react-redux';
 
-import GraphqlEndpoints from '../../graphql-endpoints/components/GraphqlEndpoints';
 import SidebarPane from '../../sidebar/components/SidebarPane';
 import SidebarPaneSection from '../../sidebar/components/SidebarPaneSection';
 import { changeTab, makeTabPermanent } from '../../tabs/store/actions';
@@ -170,9 +169,6 @@ const ProjectPane: React.FC<React.PropsWithChildren<unknown>> = () => {
 			</SidebarPaneSection>
 			<SidebarPaneSection title={'Variable sets'} collapseKey={'beak.project.variable-sets'}>
 				<VariableSets />
-			</SidebarPaneSection>
-			<SidebarPaneSection title={'GraphQL endpoints'} collapseKey={'beak.project.graphql-endpoints'}>
-				<GraphqlEndpoints />
 			</SidebarPaneSection>
 			<SidebarPaneSection title={name ?? 'Project'} collapseKey={'beak.project.explorer'}>
 				<TreeView

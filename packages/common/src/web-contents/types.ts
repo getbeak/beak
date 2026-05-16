@@ -8,6 +8,8 @@ export type MenuEventCode =
 	| 'toggle_sidebar'
 	| 'sidebar_show_project'
 	| 'sidebar_show_variables'
+	| 'sidebar_show_endpoints'
+	| 'sidebar_show_extensions'
 	| 'close_tab'
 	| 'close_all_tabs'
 	| 'close_other_tabs'
@@ -18,5 +20,6 @@ export type MenuEventCode =
 	| 'show_new_project_intro'
 	| 'show_omni_commands'
 	| 'show_preferences'
+	| 'show_project_home'
 	| 'import_openapi_spec'
 	| 'save_project_as';

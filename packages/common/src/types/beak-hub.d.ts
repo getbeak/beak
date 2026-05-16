@@ -38,7 +38,7 @@ export interface EditorPreferences {
 	selectedVariableSets: Record<string, string>;
 }
 
-export type SidebarVariant = 'project' | 'variables';
+export type SidebarVariant = 'project' | 'variables' | 'endpoints' | 'extensions';
 
 export interface SidebarPreferences {
 	selected: SidebarVariant;
