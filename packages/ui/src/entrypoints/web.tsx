@@ -1,17 +1,16 @@
 import React from 'react';
-import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
 import WebProjectMain from '../containers/WebProjectMain';
 
-// The web host no longer has a welcome screen — `/` redirects to the
-// default project route so the app boots straight into a workspace.
-// (The web host resolves "default" to either a previously-open project or
-// an untitled one via its own bootstrap pipeline.)
+// `/` mounts the empty workbench (welcome tab, no project bootstrap).
+// `/project/:projectId` mounts a bound project — same shell, full bootstrap.
+// Mirrors the electron host's empty-vs-disk window distinction.
 const router = createBrowserRouter([
 	{
 		path: '/',
 		children: [
-			{ path: '', element: <Navigate to='/project/default' replace /> },
+			{ path: '', element: <WebProjectMain /> },
 			{ path: 'project/:projectId', element: <WebProjectMain /> },
 		],
 	},

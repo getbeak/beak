@@ -8,6 +8,7 @@ import { startExtensions } from '../store/extensions/actions';
 import { startGit } from '../store/git/actions';
 import {
 	loadEditorPreferences,
+	loadPanePreferences,
 	loadProjectPanePreferences,
 	loadSidebarPreferences,
 } from '../store/preferences/actions';
@@ -15,7 +16,13 @@ import { revealRequestExternal, startProject } from '../store/project/actions';
 
 function isEmptyWindow(): boolean {
 	const params = new URLSearchParams(window.location.search);
-	return params.get('empty') === '1';
+	if (params.get('empty') === '1') return true;
+	// Web host: the bare root path means no project bound. Electron always
+	// has a query string (windowId, container) so it never matches this
+	// check — it relies on the explicit `?empty=1` flag from the host.
+	const isEmbedded = Boolean(window.embeddedIndicator);
+	if (!isEmbedded && (window.location.pathname === '/' || window.location.pathname === '')) return true;
+	return false;
 }
 
 /**
@@ -52,6 +59,7 @@ export function useProjectBootstrap() {
 		dispatch(loadEditorPreferences());
 		dispatch(loadSidebarPreferences());
 		dispatch(loadProjectPanePreferences());
+		dispatch(loadPanePreferences());
 		dispatch(startProject());
 		dispatch(startExtensions());
 		dispatch(startGit());
