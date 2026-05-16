@@ -39,6 +39,12 @@ service.registerSwitchEnvironment(async (_event, environment) => {
 });
 service.registerSwitchThemeMode(async (_event, themeMode) => {
 	await setThemeMode(themeMode);
+
+	TypedObject.values(windowStack).forEach(window => {
+		if (!window) return;
+
+		window.webContents.send('theme_mode_updated', themeMode);
+	});
 });
 
 service.registerResetConfig(async () => {

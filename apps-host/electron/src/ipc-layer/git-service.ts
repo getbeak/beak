@@ -2,6 +2,7 @@ import getRuntime from '@beak/apps-host-electron/host';
 import {
 	type AddReq,
 	type AddRemoteReq,
+	type BranchReq,
 	type CheckoutReq,
 	type CloneReq,
 	type CommitReq,
@@ -20,36 +21,57 @@ import {
 	type StatusMatrixReq,
 	type StatusReq,
 } from '@beak/common/ipc/git';
-import { ipcMain } from 'electron';
+import { type IpcMainInvokeEvent, ipcMain } from 'electron';
+
+import { getProjectFolder } from './utils';
 
 /**
  * Electron-side bindings for the Git IPC channel — thin pass-through to
  * `Runtime.git` (BeakGit), which is wired with `isomorphic-git/http/node`.
  *
- * Sandboxing TODO: every op accepts `dir` from the renderer verbatim. For
- * window-bound operations (commit / push / pull / status / …) we should
- * pin `dir` to the project root attached to the invoking window. Clone
- * is the only operation that legitimately wants an arbitrary new path,
- * and Phase 5 will route it through a host-driven folder picker so the
- * renderer doesn't synthesize the destination either.
+ * Every window-bound op pins `dir` to the project root the window is
+ * attached to. The renderer's `dir` field is ignored for those ops — the
+ * payload just needs to satisfy the schema. `clone` is the one exception:
+ * it legitimately writes to an arbitrary new path supplied by the caller.
  */
 const service = new IpcGitServiceMain(ipcMain);
 
+function withProjectDir<P extends { dir: string }>(event: IpcMainInvokeEvent, payload: P): P {
+	return { ...payload, dir: getProjectFolder(event) };
+}
+
 service.registerClone(async (_event, payload: CloneReq) => getRuntime().git.clone(payload));
-service.registerInit(async (_event, payload: InitReq) => getRuntime().git.init(payload));
-service.registerStatusMatrix(async (_event, payload: StatusMatrixReq) => getRuntime().git.statusMatrix(payload));
-service.registerStatus(async (_event, payload: StatusReq) => getRuntime().git.status(payload));
-service.registerAdd(async (_event, payload: AddReq) => getRuntime().git.add(payload));
-service.registerRemove(async (_event, payload: RemoveReq) => getRuntime().git.remove(payload));
-service.registerCommit(async (_event, payload: CommitReq) => getRuntime().git.commit(payload));
-service.registerPush(async (_event, payload: PushReq) => getRuntime().git.push(payload));
-service.registerPull(async (_event, payload: PullReq) => getRuntime().git.pull(payload));
-service.registerFetch(async (_event, payload: FetchReq) => getRuntime().git.fetch(payload));
-service.registerCheckout(async (_event, payload: CheckoutReq) => getRuntime().git.checkout(payload));
-service.registerCurrentBranch(async (_event, payload: CurrentBranchReq) => getRuntime().git.currentBranch(payload));
-service.registerListBranches(async (_event, payload: ListBranchesReq) => getRuntime().git.listBranches(payload));
-service.registerLog(async (_event, payload: LogReq) => getRuntime().git.log(payload));
-service.registerListRemotes(async (_event, payload: ListRemotesReq) => getRuntime().git.listRemotes(payload));
-service.registerAddRemote(async (_event, payload: AddRemoteReq) => getRuntime().git.addRemote(payload));
-service.registerRemoveRemote(async (_event, payload: RemoveRemoteReq) => getRuntime().git.removeRemote(payload));
-service.registerResolveRef(async (_event, payload: ResolveRefReq) => getRuntime().git.resolveRef(payload));
+service.registerInit(async (event, payload: InitReq) => getRuntime().git.init(withProjectDir(event, payload)));
+service.registerStatusMatrix(async (event, payload: StatusMatrixReq) =>
+	getRuntime().git.statusMatrix(withProjectDir(event, payload)),
+);
+service.registerStatus(async (event, payload: StatusReq) => getRuntime().git.status(withProjectDir(event, payload)));
+service.registerAdd(async (event, payload: AddReq) => getRuntime().git.add(withProjectDir(event, payload)));
+service.registerRemove(async (event, payload: RemoveReq) => getRuntime().git.remove(withProjectDir(event, payload)));
+service.registerCommit(async (event, payload: CommitReq) => getRuntime().git.commit(withProjectDir(event, payload)));
+service.registerPush(async (event, payload: PushReq) => getRuntime().git.push(withProjectDir(event, payload)));
+service.registerPull(async (event, payload: PullReq) => getRuntime().git.pull(withProjectDir(event, payload)));
+service.registerFetch(async (event, payload: FetchReq) => getRuntime().git.fetch(withProjectDir(event, payload)));
+service.registerCheckout(async (event, payload: CheckoutReq) =>
+	getRuntime().git.checkout(withProjectDir(event, payload)),
+);
+service.registerBranch(async (event, payload: BranchReq) => getRuntime().git.branch(withProjectDir(event, payload)));
+service.registerCurrentBranch(async (event, payload: CurrentBranchReq) =>
+	getRuntime().git.currentBranch(withProjectDir(event, payload)),
+);
+service.registerListBranches(async (event, payload: ListBranchesReq) =>
+	getRuntime().git.listBranches(withProjectDir(event, payload)),
+);
+service.registerLog(async (event, payload: LogReq) => getRuntime().git.log(withProjectDir(event, payload)));
+service.registerListRemotes(async (event, payload: ListRemotesReq) =>
+	getRuntime().git.listRemotes(withProjectDir(event, payload)),
+);
+service.registerAddRemote(async (event, payload: AddRemoteReq) =>
+	getRuntime().git.addRemote(withProjectDir(event, payload)),
+);
+service.registerRemoveRemote(async (event, payload: RemoveRemoteReq) =>
+	getRuntime().git.removeRemote(withProjectDir(event, payload)),
+);
+service.registerResolveRef(async (event, payload: ResolveRefReq) =>
+	getRuntime().git.resolveRef(withProjectDir(event, payload)),
+);

@@ -52,7 +52,11 @@ export default {
 	},
 	plugins: [
 		mkcert(),
-		reactPlugin({ include: '**/*.tsx' }),
+		reactPlugin({
+			babel: {
+				plugins: [['babel-plugin-react-compiler', { target: '19' }]],
+			},
+		}),
 		monacoEditorPlugin.default({
 			globalAPI: true,
 			languageWorkers: ['json', 'css', 'html', 'typescript', 'editorWorkerService'],

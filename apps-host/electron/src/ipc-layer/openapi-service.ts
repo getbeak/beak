@@ -25,13 +25,25 @@ service.registerSyncFromSpec(async (event, payload: SyncFromSpecReq) => {
 	}
 
 	const conversion = openapiToCollection(payload.spec as never, {
+		seedMode: payload.seedMode,
 		specPath: payload.specPath,
 		specUrl: payload.specUrl,
+		autoSync: payload.autoSync,
+		intervalMinutes: payload.intervalMinutes,
+		groupByPath: payload.groupByPath,
 	});
+
+	// Last path segment becomes the folder name used to namespace variable
+	// set items (e.g. `petstore.baseUrl`). Project root → empty folder, which
+	// the merger handles by namespacing as `.baseUrl` — ugly but harmless.
+	const folderName = path.basename(resolved) || 'root';
 
 	const writeResult = await getRuntime().openapi.syncToFolder(resolved, {
 		collection: conversion.collection,
 		requests: conversion.requests,
+		variableSet: conversion.variableSet,
+		folderName,
+		projectRoot: root,
 	});
 
 	const response: SyncFromSpecRes = {

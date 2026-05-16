@@ -3,6 +3,21 @@ import { app, dialog } from 'electron';
 import electronDebug from 'electron-debug';
 import { autoUpdater } from 'electron-updater';
 
+// EPIPE on stderr happens when the parent process (electron-esbuild dev's
+// pipe, a launcher script, etc.) tears down while Node is still trying to
+// emit a deprecation / process warning. The thrown EPIPE then walks up to
+// `uncaughtException` and kills the app — which is silly, because the only
+// thing we lost is a log line. Swallowing it here keeps the renderer alive
+// when the dev harness gets impatient. Same guard for stdout for symmetry.
+process.stderr.on('error', err => {
+	if ((err as NodeJS.ErrnoException).code === 'EPIPE') return;
+	throw err;
+});
+process.stdout.on('error', err => {
+	if ((err as NodeJS.ErrnoException).code === 'EPIPE') return;
+	throw err;
+});
+
 import './ipc-layer';
 import getBeakHost from './host';
 import { tryOpenProjectFolder } from './host/extensions/project';

@@ -11,7 +11,7 @@ import WindowStateManager from './lib/window-state-manager';
 import { screenshotSizing } from './main';
 import { staticPath } from './utils/static-path';
 
-export type Container = 'project-main' | 'preferences' | 'portal';
+export type Container = 'project-main' | 'preferences';
 
 // This is pretty lame, there should be a better way
 export const projectIdToWindowIdMapping: Record<string, number> = {};
@@ -73,7 +73,10 @@ async function promptUnsavedClose(window: BrowserWindow) {
 	}
 }
 
-const DEV_URL = 'http://localhost:5173';
+// Electron's renderer dev server lives on 5174; 5173 is the web host
+// (apps-host/web) which uses HTTPS + service workers and would refuse
+// our embedded BrowserWindow's plain-frame load.
+const DEV_URL = 'http://localhost:5174';
 const environment = process.env.NODE_ENV;
 
 export function generateWindowPresence() {
@@ -81,8 +84,7 @@ export function generateWindowPresence() {
 	const windowPresence = windows.reduce<(WindowPresence | null)[]>((acc, val) => {
 		const type = windowType[val.id];
 
-		// Don't persist portal, as it's only used for signed out state
-		if (!type || type === 'portal') return [...acc, null];
+		if (!type) return [...acc, null];
 
 		if (type === 'project-main') {
 			const projectFilePath = getProjectFilePathFromWindowId(val.id);
@@ -124,12 +126,6 @@ export async function attemptWindowPresenceLoad() {
 			}
 
 			switch (p.payload) {
-				case 'portal':
-					await createPortalWindow();
-
-					success = true;
-					break;
-
 				case 'preferences':
 					await createPreferencesWindow();
 
@@ -347,37 +343,5 @@ export async function createProjectMainWindow(projectId: string, projectFilePath
 export async function createEmptyProjectMainWindow() {
 	const window = await createWindow(projectMainWindowOpts(), 'project-main', { empty: '1' });
 	window.setTitle('Beak');
-	return window.id;
-}
-
-export async function createPortalWindow() {
-	const existing = stackMap.portal;
-
-	if (existing && windowStack[existing]) {
-		if (windowStack[existing].isMinimized()) windowStack[existing].restore();
-
-		windowStack[existing].focus();
-
-		return existing;
-	}
-
-	const windowOpts: BrowserWindowConstructorOptions & { width: number; height: number } = {
-		height: 400,
-		width: 800,
-		resizable: false,
-		title: 'Welcome to Beak',
-		autoHideMenuBar: true,
-		transparent: true,
-		titleBarStyle: 'hiddenInset',
-		visualEffectState: 'active',
-		vibrancy: 'under-window',
-	};
-
-	if (process.platform === 'darwin') windowOpts.frame = false;
-
-	const window = await createWindow(windowOpts, 'portal');
-
-	stackMap.portal = window.id;
-
 	return window.id;
 }

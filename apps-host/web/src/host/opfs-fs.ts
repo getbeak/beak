@@ -98,9 +98,19 @@ interface ResolveOptions {
 	createIntermediate?: boolean;
 }
 
+export type OpfsFsEventName = 'add' | 'change' | 'unlink' | 'addDir' | 'unlinkDir';
+
+export interface OpfsFsEvent {
+	eventName: OpfsFsEventName;
+	path: string;
+}
+
+export type OpfsFsListener = (event: OpfsFsEvent) => void;
+
 export default class OpfsFs {
 	readonly promises: OpfsFsPromises;
 	private rootPromise: Promise<FileSystemDirectoryHandle>;
+	private listeners = new Set<OpfsFsListener>();
 
 	/**
 	 * Construct with either:
@@ -117,16 +127,54 @@ export default class OpfsFs {
 		} else {
 			this.rootPromise = rootOrNamespace;
 		}
-		this.promises = new OpfsFsPromises(this);
+		this.promises = new OpfsFsPromises(this, e => this.emit(e));
 	}
 
 	async root(): Promise<FileSystemDirectoryHandle> {
 		return this.rootPromise;
 	}
+
+	/**
+	 * Subscribe to mutation events emitted by this fs. Returns an unsubscribe
+	 * function. Errors thrown by a listener are swallowed so one bad consumer
+	 * can't break others.
+	 *
+	 * Emitted events mirror chokidar's shape (`add`/`change`/`unlink`/
+	 * `addDir`/`unlinkDir`) so the web `fs-watcher-service` can fan them out
+	 * to renderer-side watcher sessions verbatim.
+	 */
+	onChange(fn: OpfsFsListener): () => void {
+		this.listeners.add(fn);
+		return () => {
+			this.listeners.delete(fn);
+		};
+	}
+
+	private emit(event: OpfsFsEvent) {
+		for (const l of this.listeners) {
+			try {
+				l(event);
+			} catch {
+				/* a misbehaving listener mustn't drop events for others */
+			}
+		}
+	}
 }
 
 class OpfsFsPromises {
-	constructor(private readonly fs: OpfsFs) {}
+	constructor(
+		private readonly fs: OpfsFs,
+		private readonly emit: (event: OpfsFsEvent) => void,
+	) {}
+
+	private async exists(path: string): Promise<'file' | 'dir' | null> {
+		try {
+			const stats = await this.stat(path);
+			return stats.isDirectory() ? 'dir' : 'file';
+		} catch {
+			return null;
+		}
+	}
 
 	private async resolveDir(segments: string[], opts: ResolveOptions = {}): Promise<FileSystemDirectoryHandle> {
 		let cur = await this.fs.root();
@@ -180,6 +228,10 @@ class OpfsFsPromises {
 		data: Uint8Array | ArrayBuffer | string,
 		options?: { encoding?: string } | string,
 	): Promise<void> {
+		// `add` vs `change` differs only in the renderer's self-write
+		// suppression (`change` events get debounced against `latestWrite`;
+		// `add` events don't). Stat before write so we can emit the right one.
+		const existed = (await this.exists(path)) === 'file';
 		const { handle } = await this.resolveFile(path, { create: true });
 		const writable = await handle.createWritable();
 		try {
@@ -193,6 +245,7 @@ class OpfsFsPromises {
 			await writable.abort(err instanceof Error ? err.message : String(err)).catch(() => {});
 			throw err;
 		}
+		this.emit({ eventName: existed ? 'change' : 'add', path });
 		void options;
 	}
 
@@ -208,6 +261,7 @@ class OpfsFsPromises {
 			if (err instanceof DOMException && err.name === 'InvalidModificationError') throw EISDIR(path);
 			throw err;
 		}
+		this.emit({ eventName: 'unlink', path });
 	}
 
 	async readdir(path: string): Promise<string[]> {
@@ -233,7 +287,20 @@ class OpfsFsPromises {
 		const recursive = Boolean(opts?.recursive);
 
 		if (recursive) {
+			// Find the deepest existing prefix so we can emit `addDir` for each
+			// freshly-created level. Chokidar does the same on native recursive
+			// directory creation; without it the renderer won't see intermediate
+			// folders that the watcher should know about (e.g. when OpenAPI
+			// sync writes `tree/openapi/users/...` from a virgin project).
+			const fresh: string[] = [];
+			for (let i = segments.length; i > 0; i--) {
+				const probe = segments.slice(0, i).join('/');
+				if ((await this.exists(probe)) === 'dir') break;
+				fresh.unshift(probe);
+			}
 			await this.resolveDir(segments, { createIntermediate: true });
+			const prefix = path.startsWith('/') ? '/' : '';
+			for (const seg of fresh) this.emit({ eventName: 'addDir', path: `${prefix}${seg}` });
 			return;
 		}
 
@@ -250,6 +317,7 @@ class OpfsFsPromises {
 			// NotFoundError means it doesn't exist yet — go create it.
 		}
 		await parent.getDirectoryHandle(name, { create: true });
+		this.emit({ eventName: 'addDir', path });
 	}
 
 	async rmdir(path: string, opts?: { recursive?: boolean }): Promise<void> {
@@ -266,6 +334,7 @@ class OpfsFsPromises {
 			}
 			throw err;
 		}
+		this.emit({ eventName: 'unlinkDir', path });
 	}
 
 	async stat(path: string): Promise<OpfsStats> {
@@ -302,6 +371,8 @@ class OpfsFsPromises {
 		// OPFS has no native rename. We implement it as copy + delete for files,
 		// recursive copy + delete for directories. Slow for large trees — Beak
 		// projects are small enough that this is acceptable for now.
+		// Per-step events (writeFile / unlink / mkdir / rmdir) are emitted by
+		// the underlying calls — no extra wiring needed here.
 		const stats = await this.stat(oldPath);
 		if (stats.isDirectory()) {
 			await this.copyDirectory(oldPath, newPath);

@@ -1,18 +1,23 @@
 import type { IpcMainListener, PartialIpcMain } from '@beak/common/ipc/main';
 import type { IpcMessage } from '@beak/common/ipc/types';
-import type { IpcMainInvokeEvent, IpcRendererEvent, WebContents } from 'electron';
+import type { IpcMainEvent, IpcMainInvokeEvent, IpcRendererEvent, WebContents } from 'electron';
 
 type RendererListener = (event: IpcRendererEvent, ...args: unknown[]) => void;
+type MainListener = (event: IpcMainEvent, ...args: unknown[]) => void;
 
 /**
  * Web shim for Electron's `ipcMain` + `secureBridge.ipc` pair.
  *
- * Two channels:
- *  - `invoke` — the renderer calls a request handler registered via `handle()`
- *    (mirrors Electron's `ipcMain.handle` / `ipcRenderer.invoke`).
- *  - `emit`   — main-side code pushes an event to every renderer listener
+ * Three pathways:
+ *  - `invoke`/`handle` — renderer calls a request handler (mirrors Electron's
+ *    `ipcMain.handle` / `ipcRenderer.invoke`).
+ *  - `emit`            — host-side pushes an event to every renderer listener
  *    subscribed via `secureBridge.ipc.on()` (mirrors `webContents.send` +
  *    `ipcRenderer.on`).
+ *  - `on` (this side)  — host-side listens for one-way messages a renderer
+ *    sends via `event.sender.send(channel, message)`. Used by the
+ *    extension worker's `parseValueSections` round-trip, which sends a
+ *    correlated response back without going through the request/reply path.
  *
  * `index.html` defines a tiny `secureBridge.ipc` stub so early modules don't
  * NPE; the constructor below replaces that stub with the real wiring.
@@ -20,6 +25,16 @@ type RendererListener = (event: IpcRendererEvent, ...args: unknown[]) => void;
 class WebIpcMain implements PartialIpcMain {
 	private channelListeners: Record<string, IpcMainListener> = {};
 	private eventListeners: Record<string, Set<RendererListener>> = {};
+	private mainListeners: Record<string, Set<MainListener>> = {};
+	private readonly cachedSenderShim = {
+		send: (channel: string, ...args: unknown[]) => {
+			const listeners = this.mainListeners[channel];
+			if (!listeners) return;
+
+			const fakeEvent = { sender: this.webContents } as unknown as IpcMainEvent;
+			for (const listener of listeners) listener(fakeEvent, ...args);
+		},
+	};
 
 	constructor() {
 		window.secureBridge.ipc.invoke = (channel: string, payload: IpcMessage) => {
@@ -31,7 +46,9 @@ class WebIpcMain implements PartialIpcMain {
 		};
 
 		window.secureBridge.ipc.on = (channel: string, listener: RendererListener) => {
-			(this.eventListeners[channel] ??= new Set()).add(listener);
+			const set = this.eventListeners[channel] ?? new Set();
+			this.eventListeners[channel] = set;
+			set.add(listener);
 		};
 
 		window.secureBridge.ipc.off = (channel: string, listener: RendererListener) => {
@@ -48,8 +65,21 @@ class WebIpcMain implements PartialIpcMain {
 		const listeners = this.eventListeners[channel];
 		if (!listeners) return;
 
-		const event = { sender: null } as unknown as IpcRendererEvent;
+		// Senders see this stand-in WebContents when they call `event.sender.send(...)`
+		// from a renderer-side listener — fan that out to host-side `on` listeners.
+		const event = { sender: this.cachedSenderShim } as unknown as IpcRendererEvent;
 		for (const listener of listeners) listener(event, ...args);
+	}
+
+	/** Subscribe to renderer→host one-way messages on `channel`. */
+	on(channel: string, listener: MainListener) {
+		const set = this.mainListeners[channel] ?? new Set();
+		this.mainListeners[channel] = set;
+		set.add(listener);
+	}
+
+	off(channel: string, listener: MainListener) {
+		this.mainListeners[channel]?.delete(listener);
 	}
 
 	/**

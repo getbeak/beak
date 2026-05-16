@@ -119,12 +119,24 @@ service.registerReadDir(async (_event, payload: ReadDirReq) => {
 	if (!projectFolder) return [];
 
 	const filePath = await ensureWithinProject(projectFolder, payload.filePath);
-	const directoryEntries = await getBeakHost().p.node.fs.promises.readdir(filePath, payload.options || void 0);
-	const directoryEntriesStrings = directoryEntries as unknown as string[];
+	// lightning-fs partially supports the node fs.promises.readdir API but
+	// its `withFileTypes` handling returns `[name, stat]` tuples in some
+	// versions, which then break the downstream `path.join(dir, name)` call
+	// (the second arg is the tuple, not a string). We always want plain
+	// string filenames here — the loop below stat-checks each entry for
+	// `isDirectory` regardless — so we explicitly drop the caller's options
+	// and pass `undefined`.
+	const directoryEntries = (await getBeakHost().p.node.fs.promises.readdir(filePath)) as unknown as Array<
+		string | [string, unknown]
+	>;
 
 	return await Promise.all(
-		directoryEntriesStrings.map(async de => {
-			const fullPath = getBeakHost().p.node.path.join(filePath, de);
+		directoryEntries.map(async de => {
+			// Defensive unwrap: if a future lightning-fs version hands back
+			// `[name, stat]` tuples regardless, take the first element rather
+			// than crashing path.join.
+			const name = Array.isArray(de) ? (de[0] as string) : de;
+			const fullPath = getBeakHost().p.node.path.join(filePath, name);
 			let isDirectory = false;
 
 			try {
@@ -136,7 +148,7 @@ service.registerReadDir(async (_event, payload: ReadDirReq) => {
 			}
 
 			return {
-				name: de,
+				name,
 				isDirectory,
 			};
 		}),

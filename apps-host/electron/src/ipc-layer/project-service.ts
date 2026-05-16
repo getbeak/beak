@@ -73,6 +73,16 @@ service.registerCreateProject(async (event, payload) => {
 	}
 });
 
+service.registerRenameProjectAtPath(async (_event, payload) => {
+	if (!payload?.projectPath || typeof payload.name !== 'string') return false;
+	return await getBeakHost().project.renameAtPath(payload.projectPath, payload.name);
+});
+
+// Electron projects always land in recents via `create()` — the renderer
+// never needs to register one out-of-band. Stub returns false so the IPC
+// shape stays uniform across hosts.
+service.registerRecordRecent(async () => false);
+
 service.registerMaterialiseFromMemory(async (event, payload) => {
 	const window = windowStack[(event as IpcMainInvokeEvent).sender.id]!;
 

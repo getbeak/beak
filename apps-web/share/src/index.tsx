@@ -1,4 +1,4 @@
-import { DesignSystemProvider } from '@beak/design-system';
+import { BeakChakraProvider } from '@beak/design-system';
 import * as Sentry from '@sentry/react';
 import * as React from 'react';
 import { lazy, Suspense } from 'react';
@@ -11,8 +11,8 @@ import ErrorFallback from './features/errors/components/ErrorFallback';
 
 const ShareProject = lazy(() => import('./features/share-project/components/ShareProject'));
 
-// Tiny global styles previously in design-system/index.tsx (styled-components).
-// Inlined as a <style> tag so styled-components can be uninstalled.
+// Tiny global styles — inlined as a `<style>` tag, resolved through Chakra
+// CSS variables (`var(--beak-colors-*)`) so they pick up the active theme.
 const GLOBAL_CSS = `
 	body {
 		font-family: 'Open Sans', sans-serif;
@@ -31,7 +31,7 @@ const GLOBAL_CSS = `
 const EntryPoint: React.FC = () => (
 	<React.Fragment>
 		<base href='./' />
-		<DesignSystemProvider themeKey='dark'>
+		<BeakChakraProvider themeKey='dark'>
 			<style>{GLOBAL_CSS}</style>
 			<BrowserRouter>
 				<AppContainer>
@@ -45,7 +45,7 @@ const EntryPoint: React.FC = () => (
 					</Sentry.ErrorBoundary>
 				</AppContainer>
 			</BrowserRouter>
-		</DesignSystemProvider>
+		</BeakChakraProvider>
 	</React.Fragment>
 );
 

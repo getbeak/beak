@@ -29,6 +29,23 @@ service.registerOpenProject(async _event => {
 	alert('Not implemented: `registerOpenProject`');
 });
 
+service.registerRenameProjectAtPath(async (_event, payload) => {
+	if (!payload?.projectPath || typeof payload.name !== 'string') return false;
+	return await getBeakHost().project.renameAtPath(payload.projectPath, payload.name);
+});
+
+service.registerRecordRecent(async (_event, payload) => {
+	if (!payload?.name || !payload?.path || !payload?.source) return false;
+
+	await getBeakHost().project.recents.addProject({
+		name: payload.name,
+		path: payload.path,
+		source: payload.source,
+	});
+
+	return true;
+});
+
 service.registerCreateProject(async (_event, payload) => {
 	const project = await getBeakHost().project.create(payload.projectName, '/', {
 		useProjectIdAsProjectFolder: true,
@@ -48,11 +65,4 @@ service.registerCreateProject(async (_event, payload) => {
 	if (fs.promises?.flush) await fs.promises.flush();
 
 	window.location.assign(`/project/${project.projectId}`);
-});
-
-service.registerPromoteUntitled(async (_event, _payload) => {
-	// Web host has no concept of moving folders across the user's real filesystem.
-	// Until we wire OPFS / File System Access to a "Save As…" picker the renderer
-	// just gets a null result, which it should surface as "not supported here".
-	return null;
 });

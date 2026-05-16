@@ -159,8 +159,11 @@ async function runRequest(overview: RequestOverview) {
 
 		if (!hasContentTypeHeader && body.type !== 'text') {
 			const contentType = requestBodyContentType(body);
-
-			(init.headers as Record<string, string>)['Content-Type'] = contentType;
+			// `Partial` map — `requestBodyContentType` can now return undefined
+			// for body types Beak doesn't auto-assign a Content-Type to
+			// (json_raw, grpc). In that case the user's explicit headers win,
+			// which is exactly the behaviour those types want.
+			if (contentType) (init.headers as Record<string, string>)['Content-Type'] = contentType;
 		}
 	}
 

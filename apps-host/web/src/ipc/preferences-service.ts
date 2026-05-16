@@ -28,8 +28,9 @@ service.registerGetThemeMode(async () => await getBeakHost().providers.storage.g
 service.registerSwitchEnvironment(async (_event, _environment) => {
 	// await switchEnvironment(environment as Environment);
 });
-service.registerSwitchThemeMode(async (_event, _themeMode) => {
-	// await setThemeMode(themeMode);
+service.registerSwitchThemeMode(async (_event, themeMode) => {
+	await getBeakHost().providers.storage.set('themeMode', themeMode);
+	webIpcMain.emit('theme_mode_updated', themeMode);
 });
 
 service.registerResetConfig(async () => {

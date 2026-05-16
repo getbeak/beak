@@ -22,13 +22,22 @@ service.registerSyncFromSpec(async (_event, payload: SyncFromSpecReq) => {
 	}
 
 	const conversion = openapiToCollection(payload.spec as never, {
+		seedMode: payload.seedMode,
 		specPath: payload.specPath,
 		specUrl: payload.specUrl,
+		autoSync: payload.autoSync,
+		intervalMinutes: payload.intervalMinutes,
+		groupByPath: payload.groupByPath,
 	});
+
+	const folderName = path.basename(targetFolder) || 'root';
 
 	const writeResult = await getRuntime().openapi.syncToFolder(targetFolder, {
 		collection: conversion.collection,
 		requests: conversion.requests,
+		variableSet: conversion.variableSet,
+		folderName,
+		projectRoot,
 	});
 
 	const response: SyncFromSpecRes = {

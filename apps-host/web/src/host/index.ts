@@ -29,6 +29,21 @@ if (typeof navigator === 'undefined' || typeof navigator.storage?.getDirectory !
 }
 
 /**
+ * Tracks whether the fs root is the OPFS namespace (the default sandbox)
+ * or a user-picked folder mounted via the File System Access API. The flag
+ * is set inside `resolveFsRoot` as the boot promise settles. IPC handlers
+ * read it through `getRootMode()` to decide how to interpret paths and
+ * which recents to surface.
+ *
+ * Synchronous reads are safe in practice because boot resolves long before
+ * the renderer dispatches its first IPC — but if you ever need to gate a
+ * very-early operation on a guaranteed value, await `rootModeReady`.
+ */
+export type RootMode = 'opfs' | 'fsa';
+
+let currentRootMode: RootMode = 'opfs';
+
+/**
  * Resolve the fs root: a previously-picked FSA folder if the user has
  * one *and* still has read+write permission, otherwise the OPFS subdir.
  *
@@ -38,17 +53,28 @@ if (typeof navigator === 'undefined' || typeof navigator.storage?.getDirectory !
  */
 async function resolveFsRoot(): Promise<FileSystemDirectoryHandle> {
 	const saved = await loadHandle();
-	if (saved && (await checkHandlePermission(saved))) return saved;
+	if (saved && (await checkHandlePermission(saved))) {
+		currentRootMode = 'fsa';
+		return saved;
+	}
+	currentRootMode = 'opfs';
 	const root = await navigator.storage.getDirectory();
 	return root.getDirectoryHandle('beak', { create: true });
 }
 
-const beakBrowserFs = new OpfsFs(resolveFsRoot());
+const fsRootPromise = resolveFsRoot();
+const beakBrowserFs = new OpfsFs(fsRootPromise);
+
+export function getRootMode(): RootMode {
+	return currentRootMode;
+}
+
+export const rootModeReady: Promise<RootMode> = fsRootPromise.then(() => currentRootMode);
 
 const runtime = new Runtime({
 	capabilities: {
 		nativeContextMenus: false,
-		extensions: false,
+		extensions: true,
 		multipleWindows: false,
 		systemKeychain: false,
 		fileSystemAccess: 'sandboxed',

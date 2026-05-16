@@ -26,7 +26,11 @@ export default {
 		},
 	},
 	plugins: [
-		reactPlugin({ include: '**/*.tsx' }),
+		reactPlugin({
+			babel: {
+				plugins: [['babel-plugin-react-compiler', { target: '19' }]],
+			},
+		}),
 		viteSentryPlugin({
 			authToken: process.env.SENTRY_AUTH_TOKEN,
 			dryRun: process.env.BUILD_ENVIRONMENT !== 'ci',

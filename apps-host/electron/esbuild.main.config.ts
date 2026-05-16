@@ -1,4 +1,3 @@
-import fs from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import path from 'node:path';
 import SentryCliModule from '@sentry/cli';
@@ -100,25 +99,6 @@ const sentrySourceMapsPlugin = {
 	},
 };
 
-const handleVm2Plugin = {
-	name: 'handle-vm2',
-	setup: (build: PluginBuild) => {
-		build.onEnd(async () => {
-			const outDir = build.initialOptions.outdir!;
-			const vm2Dir = path.join(outDir, '../../../../node_modules/vm2/lib/');
-			const bridge = path.join(vm2Dir, 'bridge.js');
-			const setupSandbox = path.join(vm2Dir, 'setup-sandbox.js');
-			const setupNodeSandbox = path.join(vm2Dir, 'setup-node-sandbox.js');
-
-			await Promise.all([
-				fs.copyFile(bridge, path.join(outDir, 'bridge.js')),
-				fs.copyFile(setupSandbox, path.join(outDir, 'setup-sandbox.js')),
-				fs.copyFile(setupNodeSandbox, path.join(outDir, 'setup-node-sandbox.js')),
-			]);
-		});
-	},
-};
-
 export default [
 	{
 		platform: 'node',
@@ -127,7 +107,7 @@ export default [
 		format: 'cjs',
 		minify: environment !== 'development',
 		entryPoints: [path.resolve('src/main.ts'), path.resolve('src/preload.ts')],
-		plugins: [nativeNodeModulesPlugin, sentrySourceMapsPlugin, handleVm2Plugin],
+		plugins: [nativeNodeModulesPlugin, sentrySourceMapsPlugin],
 		define: {
 			'process.env.BUILD_ENVIRONMENT': writeDefinition(process.env.BUILD_ENVIRONMENT),
 			'process.env.RELEASE_IDENTIFIER': writeDefinition(releaseIdentifier),
@@ -135,7 +115,9 @@ export default [
 		},
 		sourcemap: true,
 		assetNames: '[name]',
-		external: ['node:fs'],
+		// isolated-vm is a native module — leave it out of the bundle so the
+		// .node binding resolves correctly at runtime from node_modules.
+		external: ['node:fs', 'isolated-vm'],
 	},
 ] as BuildOptions[];
 
