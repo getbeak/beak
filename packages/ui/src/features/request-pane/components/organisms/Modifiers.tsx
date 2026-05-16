@@ -10,9 +10,20 @@ import actions from '@beak/ui/store/project/actions';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { Box, chakra, Flex } from '@chakra-ui/react';
 import type { ValidRequestNode } from '@getbeak/types/nodes';
+import type { ToggleKeyValue } from '@getbeak/types/request';
 import * as React from 'react';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
+
+/**
+ * Mirror of `isValueEmpty` from BasicTableEditor: a ToggleKeyValue's value
+ * counts as empty when it has no parts or every part is an empty string.
+ */
+function isToggleValueEmpty(item: ToggleKeyValue): boolean {
+	const parts = item.value;
+	if (!parts || parts.length === 0) return true;
+	return parts.every(p => typeof p === 'string' && p.length === 0);
+}
 
 import SchemaTableEditor from '@beak/ui/features/basic-table-editor/components/SchemaTableEditor';
 
@@ -67,6 +78,16 @@ const Modifiers: React.FC<React.PropsWithChildren<ModifiersProps>> = props => {
 	const queryCount = TypedObject.values(node.info.query).filter(q => q.enabled).length;
 	const bodyType = node.info.body.type;
 	const bodyLabel = bodyTypeLabel(bodyType);
+
+	// Count required fields with empty values per scope. Surfaced as a tiny red
+	// badge in the tab label so the user sees "you owe values" without having
+	// to open each tab.
+	const headersMissing = TypedObject.values(node.info.headers).filter(
+		h => h.required === true && h.enabled !== false && isToggleValueEmpty(h),
+	).length;
+	const queryMissing = TypedObject.values(node.info.query).filter(
+		q => q.required === true && q.enabled !== false && isToggleValueEmpty(q),
+	).length;
 
 	function setTab(tab: RequestPreferenceMainTab) {
 		dispatch(requestPreferenceSetReqMainTab({ id: node.id, tab }));
@@ -128,6 +149,27 @@ const Modifiers: React.FC<React.PropsWithChildren<ModifiersProps>> = props => {
 								<Box as='span' position='relative'>
 									{t.label}
 								</Box>
+								{(t.key === 'headers' ? headersMissing : t.key === 'url_query' ? queryMissing : 0) > 0 && (
+									<Box
+										as='span'
+										display='inline-flex'
+										alignItems='center'
+										justifyContent='center'
+										minW='16px'
+										h='16px'
+										px='1'
+										borderRadius='full'
+										bg='accent.alert'
+										color='fg.onAccent'
+										fontSize='10px'
+										fontWeight='700'
+										fontVariantNumeric='tabular-nums'
+										data-tooltip-id='tt-schema-row-description'
+										data-tooltip-content='Required schema fields with empty values'
+									>
+										{t.key === 'headers' ? headersMissing : queryMissing}
+									</Box>
+								)}
 								{counter !== undefined && (
 									<Box
 										as='span'

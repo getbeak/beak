@@ -4,8 +4,19 @@ import type { ValueSections } from '@beak/ui/features/variables/values';
 import { Box, Button, Flex, Text } from '@chakra-ui/react';
 import type { ScalarPropertyType, ToggleKeyValue } from '@getbeak/types/request';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Plus } from 'lucide-react';
+import { AlertCircle, Plus } from 'lucide-react';
 import * as React from 'react';
+
+/**
+ * A `ValueSections` is "effectively empty" when it has no parts, or every
+ * part is an empty string (variables are never empty — their presence
+ * means a value will resolve at flight time). Used by schema-driven
+ * validation to flag required-but-blank rows.
+ */
+function isValueEmpty(parts: ValueSections | undefined): boolean {
+	if (!parts || parts.length === 0) return true;
+	return parts.every(p => typeof p === 'string' && p.length === 0);
+}
 
 import VariableInput from '../../variable-input/components/VariableInput';
 import {
@@ -110,9 +121,11 @@ const BasicTableEditor: React.FC<BasicTableEditorProps> = ({
 					{keys.map(k => {
 						const item = items[k];
 						const required = item.required === true;
+						const enabled = item.enabled !== false;
 						const type = item.type;
 						const description = item.description;
 						const showTypeChip = type !== undefined && type !== 'string';
+						const missingRequired = required && enabled && isValueEmpty(item.value);
 						const tooltipAttrs: Record<string, string> = {};
 						if (description) {
 							tooltipAttrs['data-tooltip-id'] = 'tt-schema-row-description';
@@ -127,6 +140,13 @@ const BasicTableEditor: React.FC<BasicTableEditorProps> = ({
 								animate={{ opacity: 1, height: 'auto' }}
 								exit={{ opacity: 0, height: 0 }}
 								transition={{ duration: 0.16, ease: 'easeOut' }}
+								data-missing-required={missingRequired ? 'true' : undefined}
+								css={{
+									'&[data-missing-required="true"]::before': {
+										opacity: 1,
+										backgroundColor: 'var(--beak-colors-accent-alert)',
+									},
+								}}
 							>
 								<BodyToggleCell>
 									{editable && showToggle && (
@@ -156,6 +176,19 @@ const BasicTableEditor: React.FC<BasicTableEditorProps> = ({
 											mask={type === 'token'}
 											onChange={parts => updateItem?.('value', k, parts)}
 										/>
+										{missingRequired && (
+											<Box
+												flexShrink={0}
+												mr='2'
+												display='inline-flex'
+												alignItems='center'
+												color='accent.alert'
+												data-tooltip-id='tt-schema-row-description'
+												data-tooltip-content='Required by schema but the value is empty'
+											>
+												<AlertCircle size={12} strokeWidth={2} />
+											</Box>
+										)}
 									</BodyInputWrapper>
 								</BodyInputValueCell>
 								{editable && (
