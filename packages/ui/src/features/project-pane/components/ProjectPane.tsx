@@ -14,6 +14,7 @@ import { changeTab, makeTabPermanent } from '../../tabs/store/actions';
 import TreeView from '../../tree-view/components/TreeView';
 import type { TreeViewItem } from '../../tree-view/types';
 import RequestFlightStatus from './molecules/RequestFlightStatus';
+import CookieJars from './organisms/CookieJars';
 import Git from './organisms/Git';
 import VariableSets from './organisms/VariableSets';
 
@@ -169,6 +170,9 @@ const ProjectPane: React.FC<React.PropsWithChildren<unknown>> = () => {
 			</SidebarPaneSection>
 			<SidebarPaneSection title={'Variable sets'} collapseKey={'beak.project.variable-sets'}>
 				<VariableSets />
+			</SidebarPaneSection>
+			<SidebarPaneSection title={'Cookies'} collapseKey={'beak.project.cookies'}>
+				<CookieJars />
 			</SidebarPaneSection>
 			<SidebarPaneSection title={name ?? 'Project'} collapseKey={'beak.project.explorer'}>
 				<TreeView
