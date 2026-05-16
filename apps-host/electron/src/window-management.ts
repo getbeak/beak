@@ -35,8 +35,13 @@ export function generateWindowPresence() {
 
 		if (type === 'project-main') {
 			const projectFilePath = getProjectFilePathFromWindowId(val.id);
-			const projectPath = path.dirname(projectFilePath);
 
+			// No projectFilePath = empty workbench window. Persist as a generic
+			// 'empty' payload so cold restore opens the welcome workbench again
+			// instead of falling through to the most-recent project.
+			if (!projectFilePath) return [...acc, { type: 'generic', payload: 'empty' }];
+
+			const projectPath = path.dirname(projectFilePath);
 			if (!projectPath) return [...acc, null];
 
 			return [...acc, { type: 'project-main', payload: projectPath }];
@@ -80,9 +85,16 @@ export async function attemptWindowPresenceLoad() {
 					success = true;
 					break;
 
+				case 'empty':
+					await createEmptyProjectMainWindow();
+
+					success = true;
+					break;
+
 				default:
 					// 'welcome' / unknown payloads — no-op. Cold boot will fall
-					// back to opening the most-recent project or an untitled one.
+					// back to opening the most-recent project or an empty
+					// workbench window.
 					return;
 			}
 		}),
@@ -227,7 +239,7 @@ export async function createPreferencesWindow() {
 	return window.id;
 }
 
-export async function createProjectMainWindow(projectId: string, projectFilePath: string) {
+function projectMainWindowOpts(): BrowserWindowConstructorOptions & { width: number; height: number } {
 	const windowOpts: BrowserWindowConstructorOptions & { width: number; height: number } = {
 		height: 850,
 		width: 1400,
@@ -249,7 +261,11 @@ export async function createProjectMainWindow(projectId: string, projectFilePath
 	// On Windows we want total control of the frame
 	if (process.platform !== 'darwin') windowOpts.autoHideMenuBar = false;
 
-	const window = await createWindow(windowOpts, 'project-main');
+	return windowOpts;
+}
+
+export async function createProjectMainWindow(projectId: string, projectFilePath: string) {
+	const window = await createWindow(projectMainWindowOpts(), 'project-main');
 
 	projectIdToWindowIdMapping[projectId] = window.id;
 	windowIdToProjectIdMapping[window.id] = projectId;
@@ -257,6 +273,18 @@ export async function createProjectMainWindow(projectId: string, projectFilePath
 
 	window.setRepresentedFilename(projectFilePath);
 
+	return window.id;
+}
+
+/**
+ * Empty workbench window — same chrome as a project-main window but with no
+ * project bound to it. The renderer reads `?empty=1` and skips the project
+ * load entirely, opening the welcome tab. Used as the cold-start landing
+ * when there are no recents to restore.
+ */
+export async function createEmptyProjectMainWindow() {
+	const window = await createWindow(projectMainWindowOpts(), 'project-main', { empty: '1' });
+	window.setTitle('Beak');
 	return window.id;
 }
 

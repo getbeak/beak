@@ -5,12 +5,17 @@ import { autoUpdater } from 'electron-updater';
 
 import './ipc-layer';
 import getBeakHost from './host';
-import { openUntitledProject, tryOpenProjectFolder } from './host/extensions/project';
+import { tryOpenProjectFolder } from './host/extensions/project';
 import handleUrlEvent from './protocol';
 import { attemptShowPostUpdateWelcome } from './updater';
 import { createAndSetMenu } from './utils/menu';
 import { appIsPackaged } from './utils/static-path';
-import { attemptWindowPresenceLoad, generateWindowPresence, windowStack } from './window-management';
+import {
+	attemptWindowPresenceLoad,
+	createEmptyProjectMainWindow,
+	generateWindowPresence,
+	windowStack,
+} from './window-management';
 
 if (process.env.NODE_ENV !== 'development') {
 	init({
@@ -98,12 +103,12 @@ async function createOrFocusDefaultWindow(initial = false) {
 
 	// No window-presence to restore. Boot order:
 	//  1. Most-recent project from BeakRecents, so a returning user lands on
-	//     their last work directly.
-	//  2. Otherwise, spin up an untitled scratch project. The user can promote
-	//     it later via "Save Project As…".
-	//  3. If even untitled creation fails (e.g. userData is read-only), bail
-	//     with an error dialog rather than hanging — there's no welcome
-	//     window to fall back to anymore.
+	//     their last work directly. Mirrors VS Code's `window.restoreWindows`
+	//     default — fast path for returning users.
+	//  2. Otherwise, open an empty workbench window with the welcome tab.
+	//     No untitled project is materialised on disk; in-memory scratch
+	//     projects are created on first edit (P3) and only persist if the
+	//     user chooses Save Project As.
 	if (initial) {
 		const recents = await getBeakHost().project.recents.listProjects();
 		const mostRecent = [...recents].sort((a, b) => b.accessTime.localeCompare(a.accessTime))[0];
@@ -114,13 +119,13 @@ async function createOrFocusDefaultWindow(initial = false) {
 	}
 
 	try {
-		await openUntitledProject();
+		await createEmptyProjectMainWindow();
 	} catch (err) {
-		console.warn('[main] failed to open untitled project', err);
+		console.warn('[main] failed to open empty workbench window', err);
 		await dialog.showMessageBox({
 			type: 'error',
 			title: 'Could not start Beak',
-			message: 'Beak could not open a project.',
+			message: 'Beak could not open a window.',
 			detail: err instanceof Error ? err.message : String(err),
 		});
 	}

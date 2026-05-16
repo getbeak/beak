@@ -7,7 +7,7 @@ export type WindowPresence = GenericWindowPresence | ProjectMainWindowPresence;
 
 export interface GenericWindowPresence {
 	type: 'generic';
-	payload: 'welcome' | 'preferences' | 'portal';
+	payload: 'welcome' | 'preferences' | 'portal' | 'empty';
 }
 
 export interface ProjectMainWindowPresence {

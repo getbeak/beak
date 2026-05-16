@@ -31,6 +31,15 @@ export function buildProjectTreeReducer<S extends ProjectTreeState>(builder: Act
 			state.loadError = payload.error;
 			state.loaded = false;
 		})
+		.addCase(actions.markNoProject, state => {
+			state.loaded = true;
+			state.mode = 'none';
+			state.tree = {} as typeof state.tree;
+			state.id = undefined;
+			state.name = undefined;
+			state.folderPath = undefined;
+			state.loadError = undefined;
+		})
 
 		.addCase(actions.insertRequestNode, (state, action) => {
 			const node = action.payload as ValidRequestNode;

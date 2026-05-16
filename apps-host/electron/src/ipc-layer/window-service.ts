@@ -1,8 +1,7 @@
 import { IpcWindowServiceMain } from '@beak/common/ipc/window';
 import { type IpcMainInvokeEvent, ipcMain } from 'electron';
 
-import { openUntitledProject } from '../host/extensions/project';
-import { closeWindow, reloadWindow, windowStack } from '../window-management';
+import { closeWindow, createEmptyProjectMainWindow, reloadWindow, windowStack } from '../window-management';
 
 const service = new IpcWindowServiceMain(ipcMain);
 
@@ -10,15 +9,15 @@ service.registerCloseSelfWindow(async event => {
 	const senderId = (event as IpcMainInvokeEvent).sender.id;
 	closeWindow(senderId);
 
-	// If there are no remaining project windows, spin up an untitled one so
-	// the user isn't left in a windowless state (welcome screen no longer
-	// exists). On macOS this matches the "app stays alive without windows"
-	// convention — the next dock-icon click will land on the untitled.
+	// If there are no remaining windows, open an empty workbench so the user
+	// isn't left in a windowless state. On macOS this matches the "app stays
+	// alive without windows" convention — the next dock-icon click lands on
+	// the empty workbench (welcome tab) rather than killing the process.
 	if (Object.keys(windowStack).length === 0) {
 		try {
-			await openUntitledProject();
+			await createEmptyProjectMainWindow();
 		} catch (err) {
-			console.warn('[window-service] failed to open untitled project after close', err);
+			console.warn('[window-service] failed to open empty workbench after close', err);
 		}
 	}
 });
