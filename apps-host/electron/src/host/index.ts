@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import Runtime from '@beak/runtime-shared';
 import { app } from 'electron';
+import gitHttp from 'isomorphic-git/http/node';
 import { Logger } from 'tslog';
 
 import { setupLoggerForFsLogging } from '../lib/logger';
@@ -62,6 +63,9 @@ const runtime = new Runtime({
 		node: {
 			fs,
 			path,
+		},
+		git: {
+			http: gitHttp,
 		},
 	},
 });

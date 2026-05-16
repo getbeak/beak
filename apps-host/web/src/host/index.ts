@@ -1,6 +1,7 @@
 import Runtime from '@beak/runtime-shared';
 import FS from '@isomorphic-git/lightning-fs';
 import base64 from 'base64-js';
+import gitHttp from 'isomorphic-git/http/web';
 import path from 'path-browserify';
 import { Logger } from 'tslog';
 
@@ -61,6 +62,13 @@ const runtime = new Runtime({
 			fs: beakBrowserFs,
 			// @ts-expect-error see above
 			path,
+		},
+		git: {
+			http: gitHttp,
+			// Public dev CORS proxy. Production should swap for a self-hosted
+			// proxy (a few-line Cloudflare Worker is enough); see Phase 5 wiring
+			// for the per-call override.
+			corsProxy: 'https://cors.isomorphic-git.org',
 		},
 	},
 });
