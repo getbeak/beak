@@ -74,6 +74,53 @@ export function buildProjectTreeReducer<S extends ProjectTreeState>(builder: Act
 			const node = state.tree[payload.nodeId]
 				?? Object.values(state.tree).find(n => n.filePath === payload.nodeId);
 			if (!node) return;
+
+			if (node.type === 'request') {
+				// Memory-mode requests carry synthetic filePaths like
+				// `tree/<name>.json` — nothing reads them, Save Project As
+				// regenerates real paths from the tree shape. Just patch the
+				// name; leave the stale path in place.
+				node.name = payload.name;
+				return;
+			}
+
+			// Folder rename: re-key the folder itself and walk descendants
+			// rewriting their `filePath` (and `parent`) prefix. Folders are
+			// tree-keyed by filePath, so descendant folders also need re-keying;
+			// requests stay keyed by ksuid.
+			const oldPath = node.filePath;
+			const slash = oldPath.lastIndexOf('/');
+			const dir = slash >= 0 ? oldPath.slice(0, slash) : '';
+			const newPath = dir ? `${dir}/${payload.name}` : payload.name;
+			if (newPath === oldPath) return;
+
+			const oldPrefix = `${oldPath}/`;
+			const newPrefix = `${newPath}/`;
+
+			const next = {} as typeof state.tree;
+			for (const [key, child] of Object.entries(state.tree)) {
+				if (child === node) continue; // re-inserted below
+
+				if (child.filePath === oldPath) continue; // duplicate of `node`
+
+				if (child.filePath.startsWith(oldPrefix)) {
+					child.filePath = newPrefix + child.filePath.slice(oldPrefix.length);
+					if (child.parent === oldPath) {
+						child.parent = newPath;
+					} else if (child.parent && child.parent.startsWith(oldPrefix)) {
+						child.parent = newPrefix + child.parent.slice(oldPrefix.length);
+					}
+					next[child.type === 'folder' ? child.filePath : key] = child;
+					continue;
+				}
+
+				next[key] = child;
+			}
+
 			node.name = payload.name;
+			node.filePath = newPath;
+			(node as FolderNode).id = newPath;
+			next[newPath] = node;
+			state.tree = next;
 		});
 }

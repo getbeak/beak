@@ -11,6 +11,7 @@ import {
 	projectOpened,
 	removeNodeFromStore,
 	removeNodeFromStoreByPath,
+	renameNodeInTree,
 	startProject,
 } from '..';
 
@@ -101,5 +102,66 @@ describe('project tree reducer (core)', () => {
 		const seeded = reducer(empty, insertRequestNode(makeRequestNode({ id: 'r2', filePath: '/tree/r2.json' })));
 		const next = reducer(seeded, removeNodeFromStoreByPath('/missing.json'));
 		expect(next.tree.r2).toBeDefined();
+	});
+});
+
+describe('project tree reducer (renameNodeInTree — folder rename rewrites descendants)', () => {
+	function seedFolderTree() {
+		// /tree/foo
+		//   /tree/foo/req-a   (request, key=req-a)
+		//   /tree/foo/bar     (folder, key=/tree/foo/bar)
+		//     /tree/foo/bar/req-b   (request, key=req-b)
+		let s = empty;
+		s = reducer(s, insertFolderNode(makeFolderNode({ id: '/tree/foo', name: 'foo', filePath: '/tree/foo', parent: '/tree' })));
+		s = reducer(s, insertFolderNode(makeFolderNode({ id: '/tree/foo/bar', name: 'bar', filePath: '/tree/foo/bar', parent: '/tree/foo' })));
+		s = reducer(s, insertRequestNode(makeRequestNode({ id: 'req-a', name: 'a', filePath: '/tree/foo/a.json', parent: '/tree/foo' })));
+		s = reducer(s, insertRequestNode(makeRequestNode({ id: 'req-b', name: 'b', filePath: '/tree/foo/bar/b.json', parent: '/tree/foo/bar' })));
+		return s;
+	}
+
+	it('re-keys the folder under its new path and renames it', () => {
+		const next = reducer(seedFolderTree(), renameNodeInTree({ nodeId: '/tree/foo', name: 'baz' }));
+		expect(next.tree['/tree/foo']).toBeUndefined();
+		expect(next.tree['/tree/baz']).toBeDefined();
+		expect(next.tree['/tree/baz']?.name).toBe('baz');
+		expect(next.tree['/tree/baz']?.filePath).toBe('/tree/baz');
+		expect((next.tree['/tree/baz'] as FolderNode).id).toBe('/tree/baz');
+	});
+
+	it('re-keys descendant folders and updates their filePath + parent', () => {
+		const next = reducer(seedFolderTree(), renameNodeInTree({ nodeId: '/tree/foo', name: 'baz' }));
+		expect(next.tree['/tree/foo/bar']).toBeUndefined();
+		const subFolder = next.tree['/tree/baz/bar'];
+		expect(subFolder).toBeDefined();
+		expect(subFolder?.filePath).toBe('/tree/baz/bar');
+		expect(subFolder?.parent).toBe('/tree/baz');
+	});
+
+	it('rewrites descendant request paths and parents but keeps the ksuid key', () => {
+		const next = reducer(seedFolderTree(), renameNodeInTree({ nodeId: '/tree/foo', name: 'baz' }));
+		const reqA = next.tree['req-a'];
+		const reqB = next.tree['req-b'];
+		expect(reqA?.filePath).toBe('/tree/baz/a.json');
+		expect(reqA?.parent).toBe('/tree/baz');
+		expect(reqB?.filePath).toBe('/tree/baz/bar/b.json');
+		expect(reqB?.parent).toBe('/tree/baz/bar');
+	});
+
+	it('renaming a request node only changes its name', () => {
+		const seeded = reducer(empty, insertRequestNode(makeRequestNode({ id: 'r2', name: 'old', filePath: '/tree/old.json' })));
+		const next = reducer(seeded, renameNodeInTree({ nodeId: 'r2', name: 'new' }));
+		expect(next.tree.r2?.name).toBe('new');
+		expect(next.tree.r2?.filePath).toBe('/tree/old.json');
+	});
+
+	it('is a no-op when the new name resolves to the same path', () => {
+		const seeded = seedFolderTree();
+		const next = reducer(seeded, renameNodeInTree({ nodeId: '/tree/foo', name: 'foo' }));
+		expect(next.tree).toEqual(seeded.tree);
+	});
+
+	it('is a no-op when the node is not in the tree', () => {
+		const next = reducer(seedFolderTree(), renameNodeInTree({ nodeId: '/tree/missing', name: 'x' }));
+		expect(next.tree['/tree/foo']).toBeDefined();
 	});
 });
