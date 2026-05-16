@@ -1,5 +1,8 @@
 import DebouncedInput from '@beak/ui/components/atoms/DebouncedInput';
 import { useAppSelector } from '@beak/ui/store/redux';
+import { Box } from '@chakra-ui/react';
+import type { Entries } from '@getbeak/types/body-editor-json';
+import { AlertCircle } from 'lucide-react';
 import * as React from 'react';
 import { useContext, useMemo, useRef } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
@@ -16,6 +19,23 @@ import {
 } from '../atoms/Cells';
 import { Row } from '../atoms/Structure';
 import EntryDragHandle from './EntryDragHandle';
+
+/**
+ * Does this entry's current value count as "filled in" for the purposes of
+ * schema validation? Containers (object / array) and types with intrinsic
+ * presence (boolean, null) always count as filled. String / number entries
+ * are empty when no parts are present or every part is a literal empty
+ * string — variable blobs are treated as filled because they resolve to a
+ * value at flight time.
+ */
+function isEntryValueEmpty(entry: Entries | undefined): boolean {
+	if (!entry) return true;
+	if (entry.type === 'object' || entry.type === 'array') return false;
+	if (entry.type === 'boolean' || entry.type === 'null') return false;
+	const parts = entry.value;
+	if (!parts || parts.length === 0) return true;
+	return parts.every(p => typeof p === 'string' && p.length === 0);
+}
 
 export interface EntryRowProps {
 	id: string;
@@ -129,6 +149,13 @@ const EntryRow: React.FC<EntryRowProps> = ({
 		dragPreviewRef(el);
 	};
 
+	const entry = entries[id];
+	const missingRequired =
+		!editorContext.schemaMode &&
+		entry?.required === true &&
+		entry?.enabled !== false &&
+		isEntryValueEmpty(entry);
+
 	return (
 		<Row
 			ref={setRowRef}
@@ -137,17 +164,34 @@ const EntryRow: React.FC<EntryRowProps> = ({
 			data-entry-depth={depth}
 			data-drag-state={dragging ? 'dragging' : undefined}
 			data-drop-state={dropState === 'none' ? undefined : dropState}
+			data-missing-required={missingRequired ? 'true' : undefined}
+			css={{
+				'&[data-missing-required="true"]::before': {
+					opacity: 1,
+					backgroundColor: 'var(--beak-colors-accent-alert)',
+				},
+			}}
 		>
 			<BodyFolderCell>{folder ?? null}</BodyFolderCell>
 			<BodyToggleCell>{toggle}</BodyToggleCell>
 			<BodyPrimaryCell depth={depth}>{primary}</BodyPrimaryCell>
 			<BodyTypeCell>{type}</BodyTypeCell>
-			<BodyInputValueCell>
+			<BodyInputValueCell
+				css={
+					missingRequired
+						? {
+								display: 'flex',
+								alignItems: 'center',
+								gap: '0',
+							}
+						: undefined
+				}
+			>
 				{editorContext.schemaMode ? (
 					<DebouncedInput
 						type='text'
 						placeholder='What is this for?'
-						value={entries[id]?.description ?? ''}
+						value={entry?.description ?? ''}
 						onChange={next =>
 							dispatch(
 								editorContext.descriptionChange({
@@ -160,6 +204,19 @@ const EntryRow: React.FC<EntryRowProps> = ({
 					/>
 				) : (
 					value
+				)}
+				{missingRequired && (
+					<Box
+						flexShrink={0}
+						mr='2'
+						display='inline-flex'
+						alignItems='center'
+						color='accent.alert'
+						data-tooltip-id='tt-schema-row-description'
+						data-tooltip-content='Required by schema but the value is empty'
+					>
+						<AlertCircle size={12} strokeWidth={2} />
+					</Box>
 				)}
 			</BodyInputValueCell>
 			<BodyAction>{actions}</BodyAction>
