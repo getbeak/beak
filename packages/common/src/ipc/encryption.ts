@@ -24,6 +24,7 @@ const submitKeySchema = z.object({ key: z.string().min(1) });
 export const EncryptionMessages = {
 	CheckStatus: 'check_status',
 	SubmitKey: 'submit_key',
+	ResetKey: 'reset_key',
 	GenerateIv: 'generate_iv',
 	EncryptString: 'encrypt_string',
 	DecryptString: 'decrypt_string',
@@ -69,6 +70,17 @@ export class IpcEncryptionServiceRenderer extends IpcServiceRenderer<'encryption
 		return this.invoke<boolean>(EncryptionMessages.SubmitKey, payload);
 	}
 
+	/**
+	 * Destroy the project's current encryption key and replace it with a freshly
+	 * generated one. Pre-existing secure/private values and the sealed cookie
+	 * jar remain on disk but become unreadable — they're overwritten lazily as
+	 * the user re-edits them. Caller is responsible for the destructive UX
+	 * confirmation; this IPC does no second-guessing.
+	 */
+	async resetKey() {
+		return this.invoke<boolean>(EncryptionMessages.ResetKey);
+	}
+
 	async generateIv() {
 		return this.invoke<string>(EncryptionMessages.GenerateIv);
 	}
@@ -105,6 +117,10 @@ export class IpcEncryptionServiceMain extends IpcServiceMain<'encryption'> {
 
 	registerSubmitKey(fn: IpcListener<SubmitKeyReq>) {
 		this.registerRequestHandler(EncryptionMessages.SubmitKey, fn, submitKeySchema as never);
+	}
+
+	registerResetKey(fn: IpcListener<void>) {
+		this.registerRequestHandler(EncryptionMessages.ResetKey, fn);
 	}
 
 	registerGenerateIv(fn: IpcListener<void>) {

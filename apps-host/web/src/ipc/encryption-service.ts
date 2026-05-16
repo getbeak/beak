@@ -30,6 +30,21 @@ service.registerSubmitKey(async (_event, { key }) => {
 	return true;
 });
 
+service.registerResetKey(async () => {
+	const projectId = getCurrentProjectId();
+
+	if (!projectId) return false;
+
+	const newKey = await getBeakHost().providers.aes.generateKey();
+
+	await getBeakHost().providers.credentials.setProjectEncryption(projectId, {
+		key: newKey,
+		algorithm: getBeakHost().providers.aes.aesAlgo,
+	});
+
+	return true;
+});
+
 service.registerGenerateIv(async () => await getBeakHost().providers.aes.generateIv());
 
 service.registerEncryptString(async (_event, { iv, payload }) => {

@@ -1,11 +1,13 @@
-import { Box, Flex } from '@chakra-ui/react';
 import Button from '@beak/ui/components/atoms/Button';
-import Dialog from '@beak/ui/components/molecules/Dialog';
+import Dialog, { DialogBody, DialogFooter, DialogHeader } from '@beak/ui/components/molecules/Dialog';
 import { ipcEncryptionService } from '@beak/ui/lib/ipc';
+import { Box, Flex } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
-import { Check, Copy, KeyRound } from 'lucide-react';
+import { AlertTriangle, Check, Copy, KeyRound } from 'lucide-react';
 import * as React from 'react';
 import { useEffect, useRef, useState } from 'react';
+
+import ResetEncryptionConfirm from './ResetEncryptionConfirm';
 
 interface ViewProjectEncryptionProps {
 	onClose: (resolved: boolean) => void;
@@ -13,11 +15,15 @@ interface ViewProjectEncryptionProps {
 
 const ViewProjectEncryption: React.FC<ViewProjectEncryptionProps> = ({ onClose }) => {
 	const [copied, setCopied] = useState(false);
+	const [resetting, setResetting] = useState(false);
 	const copiedTimerRef = useRef<number | null>(null);
 
-	useEffect(() => () => {
-		if (copiedTimerRef.current !== null) window.clearTimeout(copiedTimerRef.current);
-	}, []);
+	useEffect(
+		() => () => {
+			if (copiedTimerRef.current !== null) window.clearTimeout(copiedTimerRef.current);
+		},
+		[],
+	);
 
 	function copy() {
 		ipcEncryptionService.copyEncryptionKey();
@@ -29,54 +35,59 @@ const ViewProjectEncryption: React.FC<ViewProjectEncryptionProps> = ({ onClose }
 		}, 1500);
 	}
 
+	if (resetting) {
+		return (
+			<ResetEncryptionConfirm
+				onClose={resolved => {
+					setResetting(false);
+					if (resolved) onClose(true);
+				}}
+			/>
+		);
+	}
+
 	return (
 		<Dialog onClose={() => onClose(false)}>
-			<Box w='480px' p='5'>
-				<Flex align='center' gap='2.5' mb='3'>
+			<Box w='480px'>
+				<DialogHeader icon={<KeyRound size={14} strokeWidth={2.2} />} title='Project encryption' />
+				<DialogBody>
+					<Box as='p' fontSize='sm' color='fg.default' lineHeight='1.55' mb='3'>
+						{'Share the key below with your team to unlock your project’s secrets.'}
+					</Box>
 					<Flex
 						align='center'
-						justify='center'
-						w='32px'
-						h='32px'
-						borderRadius='full'
-						bg='color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent)'
+						gap='2'
+						px='2.5'
+						py='1.5'
+						borderRadius='md'
 						borderWidth='1px'
-						borderColor='color-mix(in srgb, var(--beak-colors-accent-pink) 28%, transparent)'
-						color='accent.pink'
-						boxShadow='0 4px 12px color-mix(in srgb, var(--beak-colors-accent-pink) 22%, transparent), inset 0 1px 0 color-mix(in srgb, white 16%, transparent)'
+						borderColor='color-mix(in srgb, var(--beak-colors-accent-warning) 38%, var(--beak-colors-border-subtle))'
+						bg='color-mix(in srgb, var(--beak-colors-accent-warning) 10%, var(--beak-colors-bg-surface))'
+						color='fg.default'
+						fontSize='xs'
 					>
-						<KeyRound size={14} strokeWidth={2} />
+						<Box color='accent.warning' flex='0 0 auto'>
+							<AlertTriangle size={13} strokeWidth={2.2} />
+						</Box>
+						<Box>
+							<Box as='span' fontWeight='600'>
+								{'Treat this as a password. '}
+							</Box>
+							<Box as='span' color='fg.muted'>
+								{'Don’t post it anywhere permanent or public.'}
+							</Box>
+						</Box>
 					</Flex>
-					<Box fontSize='md' fontWeight='600' color='fg.default' letterSpacing='-0.005em'>
-						{'Project encryption'}
-					</Box>
-				</Flex>
-				<Box as='p' fontSize='sm' color='fg.muted' lineHeight='1.55' mb='2'>
-					{'Share the key below with your team to unlock your project’s secrets. '}
-					{'Be careful — don’t post it anywhere permanent or public.'}
-				</Box>
-				<Flex
-					align='center'
-					gap='1.5'
-					mb='4'
-					px='2.5'
-					py='1.5'
-					borderRadius='md'
-					borderWidth='1px'
-					borderColor='color-mix(in srgb, var(--beak-colors-accent-warning) 30%, var(--beak-colors-border-subtle))'
-					bg='color-mix(in srgb, var(--beak-colors-accent-warning) 8%, transparent)'
-					color='accent.warning'
-					fontSize='10px'
-					fontWeight='700'
-					letterSpacing='0.06em'
-					textTransform='uppercase'
-					css={{ borderLeft: '3px solid var(--beak-colors-accent-warning)' }}
-				>
-					<KeyRound size={11} strokeWidth={2.2} />
-					{'Treat this as a password'}
-				</Flex>
-				<Flex justify='flex-end' gap='2'>
-					<Button colour='secondary' size='sm' onClick={() => onClose(false)}>{'Close'}</Button>
+				</DialogBody>
+				<DialogFooter>
+					<Flex flex='1' justify='flex-start'>
+						<Button colour='secondary' size='sm' onClick={() => setResetting(true)}>
+							{'Reset key…'}
+						</Button>
+					</Flex>
+					<Button colour='secondary' size='sm' onClick={() => onClose(false)}>
+						{'Close'}
+					</Button>
 					<Button size='sm' onClick={copy}>
 						<motion.span
 							key={copied ? 'copied' : 'idle'}
@@ -88,7 +99,7 @@ const ViewProjectEncryption: React.FC<ViewProjectEncryptionProps> = ({ onClose }
 							{copied ? 'Copied!' : 'Copy encryption key'}
 						</motion.span>
 					</Button>
-				</Flex>
+				</DialogFooter>
 			</Box>
 		</Dialog>
 	);
