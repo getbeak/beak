@@ -5,6 +5,7 @@ import {
 	insertProjectInfo,
 	insertRequestNode,
 	materialiseInMemoryProject,
+	moveNodeInTree,
 	projectLoadFailed,
 	projectOpened,
 	type ProjectMode,
@@ -297,10 +298,6 @@ export function registerProjectEffects(start: AppStartListening) {
 	start({
 		actionCreator: moveNodeOnDisk,
 		effect: async ({ payload }, api) => {
-			// Memory-mode reordering isn't supported yet — drag-and-drop is a
-			// no-op until Save Project As materialises a real folder layout.
-			if (selectMode(api) !== 'disk') return;
-
 			const tree = api.getState().global.project.tree;
 			const sourceNode = tree[payload.sourceNodeId];
 			const destinationNode = tree[payload.destinationNodeId];
@@ -309,6 +306,26 @@ export function registerProjectEffects(start: AppStartListening) {
 
 			if (!sourceNode) return;
 			if (!destinationNode && payload.destinationNodeId !== 'root') return;
+
+			if (selectMode(api) !== 'disk') {
+				// Memory-mode move: rewrite the source's filePath/parent in
+				// redux. Folders re-key + carry their descendants under the
+				// new path; requests just reseat under the new parent.
+				const destinationFolderPath = !destinationNode
+					? 'tree'
+					: destinationNode.type === 'folder'
+						? destinationNode.filePath
+						: destinationNode.parent ?? 'tree';
+				api.dispatch(moveNodeInTree({
+					nodeId: payload.sourceNodeId,
+					destinationFolderPath,
+				}));
+
+				if (openedTab) {
+					api.dispatch(makeTabPermanent(openedTab.payload));
+				}
+				return;
+			}
 
 			await moveNodesOnDisk(sourceNode, destinationNode);
 
