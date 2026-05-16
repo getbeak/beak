@@ -71,6 +71,11 @@ const ProjectPane: React.FC<React.PropsWithChildren<unknown>> = () => {
 	const [draft, setDraft] = useState(name ?? 'Project');
 	const renameInputRef = useRef<HTMLInputElement | null>(null);
 	const treeCommandsRef = useRef<TreeCommands | null>(null);
+	// Tracks which direction the single bulk-toggle should fire next. We
+	// flip after each click so the same button cycles through collapse-all
+	// → expand-all → collapse-all instead of needing two buttons in the
+	// header (the section is short on horizontal real estate).
+	const [bulkToggleMode, setBulkToggleMode] = useState<'collapse' | 'expand'>('collapse');
 
 	useEffect(() => {
 		if (!renaming) setDraft(name ?? 'Project');
@@ -123,19 +128,21 @@ const ProjectPane: React.FC<React.PropsWithChildren<unknown>> = () => {
 				onClick: () => dispatch(actions.createNewFolder({ highlightedNodeId: undefined })),
 			},
 			{
-				id: 'project-pane:collapse-all',
-				label: 'Collapse all',
-				icon: ChevronsDownUp,
-				onClick: () => treeCommandsRef.current?.collapseAll(),
-			},
-			{
-				id: 'project-pane:expand-all',
-				label: 'Expand all',
-				icon: ChevronsUpDown,
-				onClick: () => treeCommandsRef.current?.expandAll(),
+				id: 'project-pane:toggle-collapse',
+				label: bulkToggleMode === 'collapse' ? 'Collapse all' : 'Expand all',
+				icon: bulkToggleMode === 'collapse' ? ChevronsDownUp : ChevronsUpDown,
+				onClick: () => {
+					if (bulkToggleMode === 'collapse') {
+						treeCommandsRef.current?.collapseAll();
+						setBulkToggleMode('expand');
+					} else {
+						treeCommandsRef.current?.expandAll();
+						setBulkToggleMode('collapse');
+					}
+				},
 			},
 		],
-		[dispatch, mode],
+		[dispatch, mode, bulkToggleMode],
 	);
 
 	// Merge workflows into the tree as peer nodes. Each workflow becomes a
@@ -423,7 +430,7 @@ const ProjectPane: React.FC<React.PropsWithChildren<unknown>> = () => {
 					)
 				}
 				inlineActions={projectSectionActions}
-				headerSlot={
+				secondaryHeaderSlot={
 					<ExplorerFilterMenu
 						value={explorerFilter}
 						onChange={next => dispatch(projectPanePreferenceSetExplorerFilter(next))}

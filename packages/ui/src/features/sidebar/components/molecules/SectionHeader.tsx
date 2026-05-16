@@ -16,12 +16,12 @@ export interface InlineSectionAction {
 interface SectionHeaderProps {
 	inlineActions?: InlineSectionAction[];
 	/**
-	 * Custom element rendered in the header's right-hand cluster, alongside
-	 * the inline-action icons. Unlike inline actions this slot is always
-	 * visible (not hover-revealed) — use it for stateful controls that need
-	 * to advertise their current value, like the explorer's tree filter.
+	 * Custom React node rendered alongside the icon-button inline actions,
+	 * inside the same hover-revealed cluster. Use for stateful controls
+	 * (filter, sort) that don't fit the plain icon-button shape but should
+	 * still fade in/out with the rest of the section actions.
 	 */
-	headerSlot?: React.ReactNode;
+	secondaryHeaderSlot?: React.ReactNode;
 	collapsed?: boolean;
 	disableCollapse?: boolean;
 	onClick: () => void;
@@ -30,7 +30,8 @@ interface SectionHeaderProps {
 const ChakraButton = chakra('button');
 
 const SectionHeader: React.FC<React.PropsWithChildren<SectionHeaderProps>> = props => {
-	const { inlineActions, headerSlot, children, collapsed, disableCollapse, onClick } = props;
+	const { inlineActions, secondaryHeaderSlot, children, collapsed, disableCollapse, onClick } = props;
+	const hasFadingContent = secondaryHeaderSlot !== void 0 || (inlineActions && inlineActions.length > 0);
 
 	return (
 		<Flex
@@ -93,10 +94,10 @@ const SectionHeader: React.FC<React.PropsWithChildren<SectionHeaderProps>> = pro
 				</Box>
 			</Flex>
 			<Flex align='center' gap='0.5'>
-				{headerSlot}
-				{inlineActions && inlineActions.length > 0 && (
+				{hasFadingContent && (
 					<Flex data-section-actions align='center' gap='0.5' opacity={0} transition='opacity .12s linear'>
-						{inlineActions.map(action => {
+						{secondaryHeaderSlot}
+						{inlineActions?.map(action => {
 							const Icon = action.icon;
 							return (
 								<BeakTooltip key={action.id} content={action.label}>

@@ -3,11 +3,10 @@ import type { MenuEventPayload } from '@beak/common/web-contents/types';
 import { changeTab } from '@beak/ui/features/tabs/store/actions';
 import { checkShortcut } from '@beak/ui/lib/keyboard-shortcuts';
 import { sidebarPreferenceSetCollapse, sidebarPreferenceSetSelected } from '@beak/ui/store/preferences/actions';
-import { actions as projectActions } from '@beak/ui/store/project';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { actions as variableSetActions } from '@beak/ui/store/variable-sets';
 import { Box, chakra, Flex } from '@chakra-ui/react';
-import { FilePlus, FolderPlus, Plus } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import * as React from 'react';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
@@ -265,28 +264,6 @@ const Sidebar: React.FC = () => {
 								{title}
 							</Box>
 							<Flex data-view-actions align='center' gap='0.5' opacity={0} transition='opacity .12s ease'>
-								{selectedSidebar === 'project' && (
-									<React.Fragment>
-										<ViewActionButton
-											aria-label='New request'
-											title='New request'
-											onClick={() => {
-												dispatch(projectActions.createNewRequest({ highlightedNodeId: undefined }));
-											}}
-										>
-											<FilePlus size={13} strokeWidth={1.8} />
-										</ViewActionButton>
-										<ViewActionButton
-											aria-label='New folder'
-											title='New folder'
-											onClick={() => {
-												dispatch(projectActions.createNewFolder({ highlightedNodeId: undefined }));
-											}}
-										>
-											<FolderPlus size={13} strokeWidth={1.8} />
-										</ViewActionButton>
-									</React.Fragment>
-								)}
 								{selectedSidebar === 'variables' && (
 									<ViewActionButton
 										aria-label='New variable set'
