@@ -8,22 +8,11 @@ export const ProjectMessages = {
 	OpenFolder: 'open_folder',
 	OpenProject: 'open_project',
 	CreateProject: 'create_project',
-	PromoteUntitled: 'promote_untitled',
 	MaterialiseFromMemory: 'materialise_from_memory',
 };
 
 export interface CreateProjectReq {
 	projectName: string;
-}
-
-export interface PromoteUntitledReq {
-	/** Optional new name; defaults to the destination folder's basename. */
-	newName?: string;
-}
-
-export interface PromoteUntitledRes {
-	projectId: string;
-	projectFilePath: string;
 }
 
 export interface MaterialiseFromMemoryReq {
@@ -84,10 +73,6 @@ export class IpcProjectServiceRenderer extends IpcServiceRenderer<'project'> {
 		return await this.invoke(ProjectMessages.CreateProject, payload);
 	}
 
-	async promoteUntitled(payload: PromoteUntitledReq): Promise<PromoteUntitledRes | null> {
-		return await this.invoke<PromoteUntitledRes | null>(ProjectMessages.PromoteUntitled, payload);
-	}
-
 	async materialiseFromMemory(payload: MaterialiseFromMemoryReq): Promise<MaterialiseFromMemoryRes | null> {
 		return await this.invoke<MaterialiseFromMemoryRes | null>(ProjectMessages.MaterialiseFromMemory, payload);
 	}
@@ -108,10 +93,6 @@ export class IpcProjectServiceMain extends IpcServiceMain<'project'> {
 
 	registerCreateProject(fn: IpcListener<CreateProjectReq>) {
 		this.registerRequestHandler(ProjectMessages.CreateProject, fn);
-	}
-
-	registerPromoteUntitled(fn: IpcListener<PromoteUntitledReq>) {
-		this.registerRequestHandler(ProjectMessages.PromoteUntitled, fn);
 	}
 
 	registerMaterialiseFromMemory(fn: IpcListener<MaterialiseFromMemoryReq>) {

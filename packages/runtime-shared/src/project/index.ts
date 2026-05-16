@@ -175,43 +175,6 @@ export default class BeakProject extends BeakBase {
 		return { projectFilePath, projectId: projectFile.id };
 	}
 
-	/**
-	 * Move an untitled project folder into a permanent location and clear the
-	 * `untitled` flag. Caller is responsible for re-opening the project window
-	 * at the new path; this method only touches the filesystem and recents.
-	 */
-	async promoteUntitled(currentFolderPath: string, targetFolderPath: string, newName?: string) {
-		const currentProjectFile = await this.readProjectFile(currentFolderPath);
-		if (!currentProjectFile)
-			throw new Error(`promoteUntitled: no project at ${currentFolderPath}`);
-		if (!currentProjectFile.untitled)
-			throw new Error(`promoteUntitled: project at ${currentFolderPath} is not untitled`);
-
-		if (await fileExists(this, targetFolderPath))
-			throw new Error(`promoteUntitled: target folder ${targetFolderPath} already exists`);
-
-		await this.p.node.fs.promises.rename(currentFolderPath, targetFolderPath);
-
-		const promoted: ProjectFile = {
-			id: currentProjectFile.id,
-			name: newName ?? currentProjectFile.name,
-			version: currentProjectFile.version,
-		};
-
-		await this.p.node.fs.promises.writeFile(
-			this.p.node.path.join(targetFolderPath, 'project.json'),
-			JSON.stringify(promoted, null, '\t'),
-			'utf8',
-		);
-
-		await this.beakRecents.addProject({
-			name: promoted.name,
-			path: targetFolderPath,
-		});
-
-		return { projectId: promoted.id, projectFilePath: this.p.node.path.join(targetFolderPath, 'project.json') };
-	}
-
 	async readProjectFile(projectFolderPath: string, opts?: ReadProjectFileOptions) {
 		const options: ReadProjectFileOptions = { ...opts };
 		const projectFilePath = this.p.node.path.join(projectFolderPath, 'project.json');

@@ -7,14 +7,11 @@ import { ipcDialogService, ipcProjectService } from '../lib/ipc';
 import { useAppSelector } from '../store/redux';
 
 /**
- * Save the current project to a folder the user picks. Memory-mode projects
- * call `materialiseFromMemory` (writes the in-memory tree + variable-sets
- * onto a freshly-scaffolded project). Legacy on-disk untitled projects (the
- * old `userData/untitled-projects/<ksuid>/` mechanism) still go through
- * `promoteUntitled` until P5 retires them.
- *
- * Disk-mode projects don't need a save action — they're already on disk.
- * Calling the returned function is a no-op in that case.
+ * Save the current memory-mode project to a folder the user picks. Calls
+ * `materialiseFromMemory` to scaffold a fresh project at the chosen folder
+ * and overlay the in-memory tree + variable-sets onto it. Disk-mode and
+ * none-mode projects don't have anything to save — the returned function
+ * is a no-op for them.
  */
 export function useSaveProjectAs() {
 	const mode = useAppSelector(s => s.global.project.mode);
@@ -23,19 +20,13 @@ export function useSaveProjectAs() {
 	const variableSets = useAppSelector(s => s.global.variableSets.variableSets);
 
 	return useCallback(async () => {
+		if (mode !== 'memory') return;
 		try {
-			if (mode === 'memory') {
-				await ipcProjectService.materialiseFromMemory({
-					projectName,
-					tree: serialiseTree(tree),
-					variableSets: serialiseVariableSets(variableSets),
-				});
-				return;
-			}
-
-			// Legacy on-disk untitled project. The IPC will pick up the
-			// current window's project folder and rename it.
-			await ipcProjectService.promoteUntitled({});
+			await ipcProjectService.materialiseFromMemory({
+				projectName,
+				tree: serialiseTree(tree),
+				variableSets: serialiseVariableSets(variableSets),
+			});
 		} catch (err) {
 			console.warn('Save Project As… failed', err);
 			await ipcDialogService.showMessageBox({

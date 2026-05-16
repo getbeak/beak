@@ -9,8 +9,8 @@ import { useSaveProjectAs } from '../../hooks/use-save-project-as';
 /**
  * Thin strip rendered above the sidebar/main split when the active project
  * is an in-memory scratch project. The CTA fires the same IPC as the File
- * menu's "Save Project As…" item — promoteUntitled — which writes the
- * project to the user-chosen folder and re-opens the window.
+ * menu's "Save Project As…" item — materialiseFromMemory — which writes
+ * the project to the user-chosen folder and re-opens the window.
  *
  * Returns null for disk-backed projects so production workspaces pay no
  * layout cost.

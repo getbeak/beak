@@ -4,10 +4,9 @@ export interface ProjectFile {
 	version: string;
 
 	/**
-	 * True when the project was auto-created as a scratch space on cold start
-	 * (no recents). Untitled projects live in a temp folder under userData and
-	 * should not be tracked in recents until the user promotes them to a real
-	 * location (`project.promoteUntitled`).
+	 * Legacy flag from the removed userData/untitled-projects/ scratch
+	 * mechanism. Kept optional so old project.json files keep loading; the
+	 * renderer ignores it.
 	 */
 	untitled?: boolean;
 }
