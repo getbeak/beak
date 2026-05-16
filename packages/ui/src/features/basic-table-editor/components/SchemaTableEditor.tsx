@@ -225,13 +225,7 @@ const RequiredToggle: React.FC<{
 	</ChakraButton>
 );
 
-const SchemaTableEditor: React.FC<SchemaTableEditorProps> = ({
-	items,
-	readOnly,
-	addItem,
-	updateItem,
-	removeItem,
-}) => {
+const SchemaTableEditor: React.FC<SchemaTableEditorProps> = ({ items, readOnly, addItem, updateItem, removeItem }) => {
 	const editable = !readOnly;
 	const keys = TypedObject.keys(items);
 	const hasRows = keys.length > 0;

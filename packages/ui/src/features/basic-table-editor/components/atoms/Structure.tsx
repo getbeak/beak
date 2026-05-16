@@ -18,10 +18,12 @@ export const Row = chakra('div', {
 		gridTemplateColumns: '22px 28px minmax(0, .8fr) minmax(0, 1fr) 28px',
 		gridTemplateRows: 'minmax(0, 1fr)',
 		alignItems: 'stretch',
-		minHeight: '32px',
+		minHeight: '28px',
 		borderBottomWidth: '1px',
 		borderColor: 'border.subtle',
-		transition: 'background-color .12s ease',
+		// Background change is intentionally instant — see Structure.tsx in
+		// json-editor for the rationale. tl;dr: tweens flicker under rapid
+		// hover/focus-within oscillation when the user clicks between cells.
 		'&::before': {
 			content: '""',
 			position: 'absolute',
@@ -31,19 +33,15 @@ export const Row = chakra('div', {
 			width: '2px',
 			backgroundColor: 'accent.pink',
 			opacity: 0,
-			transition: 'opacity .12s ease',
 			pointerEvents: 'none',
 		},
-		'&:hover': {
-			backgroundColor: 'color-mix(in srgb, var(--beak-colors-fg-default) 4%, transparent)',
-		},
-		'&:focus-within': {
-			backgroundColor: 'color-mix(in srgb, var(--beak-colors-fg-default) 6%, transparent)',
+		'&:hover, &:focus-within': {
+			backgroundColor: 'color-mix(in srgb, var(--beak-colors-fg-default) 5%, transparent)',
 		},
 		'&:hover::before, &:focus-within::before': { opacity: 1 },
 		'&:hover [data-row-action], &:focus-within [data-row-action]': { opacity: 1 },
 		'&[data-empty="true"]': {
-			minHeight: '28px',
+			minHeight: '24px',
 		},
 		'&[data-empty="true"]:hover, &[data-empty="true"]:focus-within': {
 			backgroundColor: 'transparent',
@@ -64,7 +62,7 @@ export const Header = chakra('div', {
 		backgroundColor: 'bg.surface',
 		'& > div': {
 			borderBottomColor: 'border.default',
-			minHeight: '26px',
+			minHeight: '22px',
 		},
 	},
 });

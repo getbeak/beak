@@ -106,11 +106,7 @@ const TypeButton: React.FC<{
 									py='1.5'
 									px='2'
 									gap='2'
-									bg={
-										isActive
-											? 'color-mix(in srgb, var(--beak-colors-accent-indigo) 14%, transparent)'
-											: undefined
-									}
+									bg={isActive ? 'color-mix(in srgb, var(--beak-colors-accent-indigo) 14%, transparent)' : undefined}
 									color={isActive ? 'accent.indigo' : 'fg.default'}
 									_hover={{ bg: 'color-mix(in srgb, var(--beak-colors-fg-default) 8%, transparent)' }}
 								>
@@ -190,21 +186,20 @@ const SchemaPanel: React.FC<SchemaPanelProps> = ({
 			<Flex direction='column' gap='2' px='4' py='3' pl='52px'>
 				<Flex align='center' gap='2' wrap='wrap'>
 					<Flex align='center' gap='1.5'>
-						<Box as='span' fontSize='10px' fontWeight='600' color='fg.subtle' letterSpacing='0.05em' textTransform='uppercase'>
+						<Box
+							as='span'
+							fontSize='10px'
+							fontWeight='600'
+							color='fg.subtle'
+							letterSpacing='0.05em'
+							textTransform='uppercase'
+						>
 							{'Type'}
 						</Box>
-						<TypeButton
-							value={type}
-							disabled={readOnly}
-							onChange={next => onChangeType(next === 'string' ? null : next)}
-						/>
+						<TypeButton value={type} disabled={readOnly} onChange={next => onChangeType(next === 'string' ? null : next)} />
 					</Flex>
 					<Box w='1px' h='14px' bg='border.subtle' />
-					<RequiredToggle
-						value={required}
-						disabled={readOnly}
-						onChange={next => onChangeRequired(next || null)}
-					/>
+					<RequiredToggle value={required} disabled={readOnly} onChange={next => onChangeRequired(next || null)} />
 				</Flex>
 				<Flex align='center' gap='2'>
 					<Box

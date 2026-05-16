@@ -88,21 +88,19 @@ export const BodyInputWrapper: React.FC<BoxProps> = ({ children, ...rest }) => (
 			'& > div > article, & > input[type=text]': {
 				width: '100%',
 				height: '100%',
-				minHeight: '30px',
+				minHeight: '26px',
 				border: 'none',
 				borderRadius: '0',
 				background: 'transparent',
-				padding: '0 10px',
+				padding: '0 8px',
 				margin: '0',
 				fontSize: '12px',
-				lineHeight: '30px',
+				lineHeight: '26px',
 				color: 'var(--beak-colors-fg-default)',
 				caretColor: 'var(--beak-colors-accent-pink)',
-				transition: 'background-color .12s ease, box-shadow .12s ease',
 			},
-			'& > div > article:hover, & > input[type=text]:hover': {
-				background: 'color-mix(in srgb, var(--beak-colors-fg-default) 3%, transparent)',
-			},
+			// No input-level hover bg — see json-editor Cells.tsx for the
+			// rationale (compounding with the row's hover tint caused flicker).
 			'& > div > article:focus-within, & > input[type=text]:focus': {
 				outline: 'none',
 				background: 'color-mix(in srgb, var(--beak-colors-accent-pink) 5%, transparent)',
@@ -111,9 +109,6 @@ export const BodyInputWrapper: React.FC<BoxProps> = ({ children, ...rest }) => (
 			'& > input:disabled': {
 				color: 'inherit',
 				userSelect: 'none',
-				background: 'transparent',
-			},
-			'& > input:disabled:hover': {
 				background: 'transparent',
 			},
 		}}

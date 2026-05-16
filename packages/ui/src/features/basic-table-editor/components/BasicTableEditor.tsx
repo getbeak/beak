@@ -1,14 +1,15 @@
 import { TypedObject } from '@beak/common/helpers/typescript';
 import DebouncedInput from '@beak/ui/components/atoms/DebouncedInput';
 import type { ValueSections } from '@beak/ui/features/variables/values';
-import { Box, Button, chakra, Flex, Text } from '@chakra-ui/react';
+import { Box, chakra, Flex } from '@chakra-ui/react';
 import type { ScalarPropertyType, ToggleKeyValue } from '@getbeak/types/request';
 import { AnimatePresence, motion } from 'framer-motion';
 import { AlertCircle, ChevronDown, ChevronRight, Plus } from 'lucide-react';
 import * as React from 'react';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import VariableInput from '../../variable-input/components/VariableInput';
+import type { HeaderSuggestion } from '../constants/common-headers';
 import {
 	BodyAction,
 	BodyExpandCell,
@@ -23,9 +24,11 @@ import {
 	HeaderValueCell,
 } from './atoms/Cells';
 import { Body, Header, Row } from './atoms/Structure';
+import CookieHeaderEditor from './molecules/CookieHeaderEditor';
 import EntryActions from './molecules/EntryActions';
 import EntryToggler from './molecules/EntryToggler';
 import SchemaPanel from './molecules/SchemaPanel';
+import SuggestingNameInput from './molecules/SuggestingNameInput';
 
 /**
  * A `ValueSections` is "effectively empty" when it has no parts, or every
@@ -57,6 +60,13 @@ interface BasicTableEditorProps {
 	requestId?: string;
 	readOnly?: boolean;
 	disableItemToggle?: boolean;
+	/**
+	 * When set, the key cell renders a typeahead-style input that suggests
+	 * names from this list as the user types. The input still accepts
+	 * arbitrary free text — suggestions are guidance, not validation. Used
+	 * by the request-pane headers tab to surface RFC header names.
+	 */
+	nameSuggestions?: HeaderSuggestion[];
 	addItem?: () => void;
 	/**
 	 * Update a row's field. Accepts the legacy value-mode fields (name /
@@ -97,7 +107,13 @@ const BoolValueToggle: React.FC<{
 				role='switch'
 				aria-checked={checked}
 				disabled={disabled}
-				title={checked ? 'Currently true — click to flip' : indeterminate ? 'Currently unset — click to set' : 'Currently false — click to flip'}
+				title={
+					checked
+						? 'Currently true — click to flip'
+						: indeterminate
+							? 'Currently unset — click to set'
+							: 'Currently false — click to flip'
+				}
 				onClick={() => onChange([checked ? 'false' : 'true'])}
 				position='relative'
 				w='30px'
@@ -175,9 +191,7 @@ const EnumSelect: React.FC<{
 				boxShadow: 'inset 0 -1px 0 var(--beak-colors-accent-pink)',
 			}}
 		>
-			{!options.includes(value) && value !== '' && (
-				<option value={value}>{`${value} (off-list)`}</option>
-			)}
+			{!options.includes(value) && value !== '' && <option value={value}>{`${value} (off-list)`}</option>}
 			{value === '' && <option value=''>{'Choose a value…'}</option>}
 			{options.map(o => (
 				<option key={o} value={o}>
@@ -251,6 +265,7 @@ const BasicTableEditor: React.FC<BasicTableEditorProps> = ({
 	requestId,
 	readOnly,
 	disableItemToggle,
+	nameSuggestions,
 	addItem,
 	updateItem,
 	removeItem,
@@ -265,19 +280,31 @@ const BasicTableEditor: React.FC<BasicTableEditorProps> = ({
 	// row affordances: required dot, type chip, description tooltip).
 	const [expanded, setExpanded] = useState<Record<string, boolean>>({});
 
+	// Track keys across renders so we can spot the just-added row and pull
+	// focus into its key input. Avoids the "click + then click the key cell"
+	// dance after hitting the trailing "+ Add row" stub.
+	const previousKeysRef = useRef<string[]>(keys);
+	const focusKeyRef = useRef<string | null>(null);
+	useEffect(() => {
+		const prev = previousKeysRef.current;
+		if (keys.length > prev.length) {
+			const added = keys.find(k => !prev.includes(k));
+			if (added) focusKeyRef.current = added;
+		}
+		previousKeysRef.current = keys;
+	}, [keys]);
+
 	return (
 		<Flex direction='column' h='100%' w='100%' fontSize='sm' fontWeight='400' color='fg.muted'>
-			{hasRows && (
-				<Header>
-					<Row data-empty='true'>
-						<HeaderExpandCell />
-						<HeaderToggleCell />
-						<HeaderKeyCell>{'Key'}</HeaderKeyCell>
-						<HeaderValueCell>{'Value'}</HeaderValueCell>
-						{editable && <HeaderAction />}
-					</Row>
-				</Header>
-			)}
+			<Header>
+				<Row data-empty='true'>
+					<HeaderExpandCell />
+					<HeaderToggleCell />
+					<HeaderKeyCell>{'Key'}</HeaderKeyCell>
+					<HeaderValueCell>{'Value'}</HeaderValueCell>
+					{editable && <HeaderAction />}
+				</Row>
+			</Header>
 			<Body flex='1' display='flex' flexDirection='column' minH={0}>
 				<AnimatePresence initial={false}>
 					{keys.map(k => {
@@ -288,6 +315,11 @@ const BasicTableEditor: React.FC<BasicTableEditorProps> = ({
 						const description = item.description;
 						const showTypeChip = type !== undefined && type !== 'string';
 						const missingRequired = required && enabled && isValueEmpty(item.value);
+						// Empty-key rows are silently dropped at the prepare-request
+						// boundary; flag them in the editor so the user notices the
+						// row that won't actually be sent. Disabled rows aren't sent
+						// anyway, so skip the flag for them.
+						const emptyKey = enabled && (!item.name || item.name.trim().length === 0);
 						const tooltipAttrs: Record<string, string> = {};
 						if (description) {
 							tooltipAttrs['data-tooltip-id'] = 'tt-schema-row-description';
@@ -296,22 +328,36 @@ const BasicTableEditor: React.FC<BasicTableEditorProps> = ({
 						// Enum dropdown is driven from the first part of the value sections
 						// — multi-part variable values aren't representable as a single
 						// select entry, so we collapse and warn (the "off-list" option).
-						const enumOptions = type === 'enum' ? item.options ?? [] : [];
+						const enumOptions = type === 'enum' ? (item.options ?? []) : [];
 						const useEnumPicker = type === 'enum' && enumOptions.length > 0;
 						const enumValue =
-							useEnumPicker && item.value.length === 1 && typeof item.value[0] === 'string'
-								? item.value[0]
-								: '';
+							useEnumPicker && item.value.length === 1 && typeof item.value[0] === 'string' ? item.value[0] : '';
 						// Boolean toggle is used when the value is purely literal — a single
 						// string part the toggle can flip between. If the value carries a
 						// variable blob, fall back to the free-text input so the user
 						// keeps their reference.
 						const useBoolToggle =
 							type === 'boolean' &&
-							(item.value.length === 0 ||
-								(item.value.length === 1 && typeof item.value[0] === 'string'));
-						const isExpanded = expanded[k] === true;
+							(item.value.length === 0 || (item.value.length === 1 && typeof item.value[0] === 'string'));
+						// Cookie rows surface a structured editor for `name=value` pairs
+						// instead of the schema authoring panel. Detection is opt-in via
+						// `nameSuggestions` — the headers table sets it; the query table
+						// doesn't.
+						const isCookieRow = Boolean(nameSuggestions) && item.name.trim().toLowerCase() === 'cookie';
+						// Cookie rows default to expanded so the structured editor is the
+						// first thing the user sees; everything else stays collapsed.
+						const isExpanded = expanded[k] !== undefined ? expanded[k] === true : isCookieRow;
 						const schemaAuthored = hasSchemaAuthored(item);
+						const expandTooltip = isCookieRow
+							? isExpanded
+								? 'Hide cookie editor'
+								: 'Show cookie editor'
+							: isExpanded
+								? 'Hide schema'
+								: schemaAuthored
+									? 'Show schema'
+									: 'Define schema';
+						const expandColor = isCookieRow ? 'accent.pink' : schemaAuthored ? 'accent.indigo' : 'fg.subtle';
 
 						return (
 							<React.Fragment key={k}>
@@ -322,23 +368,32 @@ const BasicTableEditor: React.FC<BasicTableEditorProps> = ({
 									exit={{ opacity: 0, height: 0 }}
 									transition={{ duration: 0.16, ease: 'easeOut' }}
 									data-missing-required={missingRequired ? 'true' : undefined}
+									data-empty-key={emptyKey ? 'true' : undefined}
 									css={{
 										'&[data-missing-required="true"]::before': {
 											opacity: 1,
 											backgroundColor: 'var(--beak-colors-accent-alert)',
+										},
+										'&[data-empty-key="true"]': {
+											backgroundColor:
+												'color-mix(in srgb, var(--beak-colors-accent-warning) 8%, transparent)',
+										},
+										'&[data-empty-key="true"]::before': {
+											opacity: 1,
+											backgroundColor: 'var(--beak-colors-accent-warning)',
 										},
 									}}
 								>
 									<BodyExpandCell>
 										<ChakraExpandButton
 											type='button'
-											aria-label={isExpanded ? 'Collapse schema' : 'Expand schema'}
+											aria-label={isExpanded ? 'Collapse' : 'Expand'}
 											aria-expanded={isExpanded}
-											title={isExpanded ? 'Hide schema' : schemaAuthored ? 'Show schema' : 'Define schema'}
+											title={expandTooltip}
 											onClick={() =>
 												setExpanded(prev => ({
 													...prev,
-													[k]: !prev[k],
+													[k]: !(prev[k] !== undefined ? prev[k] : isCookieRow),
 												}))
 											}
 											display='inline-flex'
@@ -349,21 +404,17 @@ const BasicTableEditor: React.FC<BasicTableEditorProps> = ({
 											p='0'
 											border='none'
 											bg='transparent'
-											color={schemaAuthored ? 'accent.indigo' : 'fg.subtle'}
+											color={expandColor}
 											cursor='pointer'
 											transition='color .12s ease, transform .12s ease'
-											_hover={{ color: schemaAuthored ? 'accent.indigo' : 'fg.default' }}
+											_hover={{ color: isCookieRow ? 'accent.pink' : schemaAuthored ? 'accent.indigo' : 'fg.default' }}
 											_focusVisible={{
 												outline: 'none',
 												boxShadow: '0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-indigo) 35%, transparent)',
 												borderRadius: '4px',
 											}}
 										>
-											{isExpanded ? (
-												<ChevronDown size={11} strokeWidth={2} />
-											) : (
-												<ChevronRight size={11} strokeWidth={2} />
-											)}
+											{isExpanded ? <ChevronDown size={11} strokeWidth={2} /> : <ChevronRight size={11} strokeWidth={2} />}
 										</ChakraExpandButton>
 									</BodyExpandCell>
 									<BodyToggleCell>
@@ -371,67 +422,97 @@ const BasicTableEditor: React.FC<BasicTableEditorProps> = ({
 											<EntryToggler value={item.enabled} onChange={enabled => updateItem?.('enabled', k, enabled)} />
 										)}
 									</BodyToggleCell>
-								<BodyPrimaryCell>
-									<BodyInputWrapper {...tooltipAttrs}>
-										<DebouncedInput
-											type='text'
-											value={item.name}
-											disabled={readOnly}
-											placeholder='key'
-											onChange={v => updateItem?.('name', k, v)}
-										/>
-										{required && <RequiredDot />}
-									</BodyInputWrapper>
-								</BodyPrimaryCell>
-								<BodyInputValueCell>
-									<BodyInputWrapper>
-										{showTypeChip && type && <TypeChip type={type} />}
-										{useEnumPicker ? (
-											<EnumSelect
-												options={enumOptions}
-												value={enumValue}
-												disabled={readOnly}
-												onChange={next => updateItem?.('value', k, [next])}
-											/>
-										) : useBoolToggle ? (
-											<BoolValueToggle
-												value={item.value}
-												disabled={readOnly}
-												onChange={parts => updateItem?.('value', k, parts)}
-											/>
-										) : (
-											<VariableInput
-												requestId={requestId}
-												parts={item.value}
-												readOnly={readOnly}
-												disabled={readOnly}
-												mask={type === 'token'}
-												onChange={parts => updateItem?.('value', k, parts)}
-											/>
-										)}
-										{missingRequired && (
-											<Box
-												flexShrink={0}
-												mr='2'
-												display='inline-flex'
-												alignItems='center'
-												color='accent.alert'
-												data-tooltip-id='tt-schema-row-description'
-												data-tooltip-content='Required by schema but the value is empty'
-											>
-												<AlertCircle size={12} strokeWidth={2} />
-											</Box>
-										)}
-									</BodyInputWrapper>
-								</BodyInputValueCell>
-								{editable && (
-									<BodyAction>
-										<EntryActions onRemove={() => removeItem?.(k)} />
-									</BodyAction>
-								)}
+									<BodyPrimaryCell>
+										<BodyInputWrapper {...tooltipAttrs}>
+											{nameSuggestions ? (
+												<SuggestingNameInput
+													innerRef={el => {
+														if (focusKeyRef.current === k && el) {
+															el.focus();
+															focusKeyRef.current = null;
+														}
+													}}
+													value={item.name}
+													disabled={readOnly}
+													placeholder='key'
+													suggestions={nameSuggestions}
+													onChange={v => updateItem?.('name', k, v)}
+												/>
+											) : (
+												<DebouncedInput
+													innerRef={el => {
+														if (focusKeyRef.current === k && el) {
+															el.focus();
+															focusKeyRef.current = null;
+														}
+													}}
+													type='text'
+													value={item.name}
+													disabled={readOnly}
+													placeholder='key'
+													onChange={v => updateItem?.('name', k, v)}
+												/>
+											)}
+											{required && <RequiredDot />}
+										</BodyInputWrapper>
+									</BodyPrimaryCell>
+									<BodyInputValueCell>
+										<BodyInputWrapper>
+											{showTypeChip && type && <TypeChip type={type} />}
+											{useEnumPicker ? (
+												<EnumSelect
+													options={enumOptions}
+													value={enumValue}
+													disabled={readOnly}
+													onChange={next => updateItem?.('value', k, [next])}
+												/>
+											) : useBoolToggle ? (
+												<BoolValueToggle
+													value={item.value}
+													disabled={readOnly}
+													onChange={parts => updateItem?.('value', k, parts)}
+												/>
+											) : (
+												<VariableInput
+													requestId={requestId}
+													parts={item.value}
+													readOnly={readOnly}
+													disabled={readOnly}
+													mask={type === 'token'}
+													onChange={parts => updateItem?.('value', k, parts)}
+												/>
+											)}
+											{missingRequired && (
+												<Box
+													flexShrink={0}
+													mr='2'
+													display='inline-flex'
+													alignItems='center'
+													color='accent.alert'
+													data-tooltip-id='tt-schema-row-description'
+													data-tooltip-content='Required by schema but the value is empty'
+												>
+													<AlertCircle size={12} strokeWidth={2} />
+												</Box>
+											)}
+										</BodyInputWrapper>
+									</BodyInputValueCell>
+									{editable && (
+										<BodyAction>
+											<EntryActions onRemove={() => removeItem?.(k)} />
+										</BodyAction>
+									)}
 								</MotionRow>
 								<AnimatePresence initial={false}>
-									{isExpanded && editable && (
+									{isExpanded && editable && isCookieRow && (
+										<CookieHeaderEditor
+											key={`${k}-cookie-panel`}
+											value={item.value}
+											readOnly={readOnly}
+											onChange={next => updateItem?.('value', k, next)}
+										/>
+									)}
+									{isExpanded && editable && !isCookieRow && (
 										<SchemaPanel
 											key={`${k}-panel`}
 											item={item}
@@ -448,81 +529,73 @@ const BasicTableEditor: React.FC<BasicTableEditorProps> = ({
 					})}
 				</AnimatePresence>
 
-				{!hasRows && (
-					<Flex flex='1' align='center' justify='center' direction='column' gap='3' color='fg.subtle'>
-						<Flex
-							align='center'
-							justify='center'
-							w='32px'
-							h='32px'
-							borderRadius='full'
-							bg='color-mix(in srgb, var(--beak-colors-fg-default) 6%, transparent)'
-							color='fg.subtle'
-						>
-							<Plus size={14} strokeWidth={1.8} />
-						</Flex>
-						<Text fontSize='sm' fontWeight='500' color='fg.muted'>
-							{readOnly ? 'No entries' : 'No entries yet'}
-						</Text>
-						{editable && (
-							<Button
-								size='xs'
-								variant='outline'
-								borderColor='border.default'
-								color='fg.default'
-								gap='1'
-								fontSize='xs'
-								fontWeight='500'
-								_hover={{
-									borderColor: 'accent.pink',
-									color: 'accent.pink',
-									bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 10%, transparent)',
-								}}
-								onClick={() => addItem?.()}
-							>
-								<Plus size={11} strokeWidth={2} />
-								{'Add your first row'}
-							</Button>
-						)}
-					</Flex>
-				)}
+				{editable && <TrailingGhostRow hasRows={hasRows} onAdd={() => addItem?.()} />}
 			</Body>
-
-			{hasRows && editable && (
-				<Flex justify='flex-end' mt='2' mb='2' mr='2'>
-					<Button
-						bg='transparent'
-						borderWidth='1px'
-						borderColor='border.subtle'
-						borderRadius='sm'
-						color='fg.muted'
-						gap='1'
-						px='2.5'
-						py='1'
-						fontSize='xs'
-						fontWeight='500'
-						h='auto'
-						minH='24px'
-						transition='border-color .1s linear, background-color .1s linear, color .1s linear'
-						_hover={{
-							outline: 'none',
-							borderColor: 'color-mix(in srgb, var(--beak-colors-fg-default) 25%, transparent)',
-							color: 'fg.default',
-							bg: 'color-mix(in srgb, var(--beak-colors-fg-default) 6%, transparent)',
-						}}
-						_focusVisible={{
-							outline: 'none',
-							borderColor: 'accent.pink',
-							boxShadow: '0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-pink) 22%, transparent)',
-						}}
-						onClick={() => addItem?.()}
-					>
-						<Plus size={11} strokeWidth={2} />
-						{'Add row'}
-					</Button>
-				</Flex>
-			)}
 		</Flex>
+	);
+};
+
+/**
+ * Inline call-to-action that sits as the visual "next row" below the real
+ * rows. Clicking (or tab-focusing) anywhere on it dispatches an `addItem`;
+ * `BasicTableEditor` then focuses the new row's key input so the user can
+ * just start typing without a chrome handoff. Replaces the prior bottom-right
+ * "Add row" button + the centred empty-state callout — the empty case is
+ * just this stub with a slightly louder label.
+ */
+const TrailingGhostRow: React.FC<{ hasRows: boolean; onAdd: () => void }> = ({ hasRows, onAdd }) => {
+	const label = hasRows ? 'Add row' : 'Add your first row';
+	return (
+		<MotionRow
+			layout
+			initial={{ opacity: 0 }}
+			animate={{ opacity: 1 }}
+			transition={{ duration: 0.16, ease: 'easeOut' }}
+			role='button'
+			tabIndex={0}
+			aria-label={label}
+			onClick={onAdd}
+			onKeyDown={(event: React.KeyboardEvent<HTMLDivElement>) => {
+				if (event.key === 'Enter' || event.key === ' ') {
+					event.preventDefault();
+					onAdd();
+				}
+			}}
+			data-ghost-row='true'
+			css={{
+				cursor: 'pointer',
+				borderBottomStyle: 'dashed',
+				color: 'var(--beak-colors-fg-subtle)',
+				transition: 'background-color .12s ease, color .12s ease, border-color .12s ease',
+				'&:hover': {
+					backgroundColor: 'color-mix(in srgb, var(--beak-colors-accent-pink) 6%, transparent)',
+					color: 'var(--beak-colors-accent-pink)',
+					borderBottomColor: 'color-mix(in srgb, var(--beak-colors-accent-pink) 36%, transparent)',
+				},
+				'&:focus-visible': {
+					outline: 'none',
+					backgroundColor: 'color-mix(in srgb, var(--beak-colors-accent-pink) 8%, transparent)',
+					color: 'var(--beak-colors-accent-pink)',
+					boxShadow: 'inset 0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-pink) 40%, transparent)',
+				},
+				'&::before': { display: 'none' },
+			}}
+		>
+			<Box
+				gridColumn='3 / -1'
+				display='inline-flex'
+				alignItems='center'
+				gap='1.5'
+				h='100%'
+				pl='10px'
+				fontSize='12px'
+				fontWeight='500'
+				letterSpacing='0.005em'
+			>
+				<Plus size={11} strokeWidth={2.2} />
+				<Box as='span'>{label}</Box>
+			</Box>
+		</MotionRow>
 	);
 };
 
