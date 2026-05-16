@@ -1,6 +1,7 @@
 import { startAppListening } from '../listener';
 import { registerExtensionsEffects } from './extensions';
 import { registerFlightEffects } from './flight';
+import { registerFlightHistoryEffects } from './flight-history';
 import { registerGitEffects } from './git';
 import { registerPreferencesEffects } from './preferences';
 import { registerProjectEffects } from './project';
@@ -17,6 +18,7 @@ import { registerVariableSetsEffects } from './variable-sets';
 export function registerAllEffects(): void {
 	registerExtensionsEffects(startAppListening);
 	registerFlightEffects(startAppListening);
+	registerFlightHistoryEffects(startAppListening);
 	registerGitEffects(startAppListening);
 	registerPreferencesEffects(startAppListening);
 	registerProjectEffects(startAppListening);

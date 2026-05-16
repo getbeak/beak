@@ -183,10 +183,10 @@ describe('enforceProjectCap', () => {
 		};
 
 		const after = enforceProjectCap(file);
-		const total = Object.values(after.histories)
-			.flatMap(h => h.entries)
-			.map(e => JSON.stringify(e).length)
-			.reduce((a, b) => a + b, 0);
+		let total = 0;
+		for (const h of Object.values(after.histories)) {
+			for (const e of h.entries) total += JSON.stringify(e).length;
+		}
 		expect(total).toBeLessThanOrEqual(HISTORY_RULES.maxProjectBytes);
 
 		// r2 had the oldest entries (startedAt around 5_000); they should drop

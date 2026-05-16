@@ -80,6 +80,14 @@ const flightSlice = createSlice({
 		setFlightHistory: (state, action: PayloadAction<{ requestId: string; history: FlightHistory }>) => {
 			state.flightHistories[action.payload.requestId] = action.payload.history;
 		},
+		/**
+		 * Bulk-load every request's history from a persisted file. Fired
+		 * after the renderer effect reads `.beak/flight-history.json` and
+		 * applies rules. Overwrites the in-memory map wholesale.
+		 */
+		hydrateFlightHistories: (state, action: PayloadAction<{ histories: Record<string, FlightHistory> }>) => {
+			state.flightHistories = action.payload.histories;
+		},
 		clearFlightData: (state, action: PayloadAction<{ requestId: string }>) => {
 			const { requestId } = action.payload;
 			delete state.flightStates[requestId];
@@ -247,7 +255,7 @@ const flightSlice = createSlice({
 	},
 });
 
-export const { setFlightHistory, clearFlightData, resetFlightState } = flightSlice.actions;
+export const { setFlightHistory, hydrateFlightHistories, clearFlightData, resetFlightState } = flightSlice.actions;
 
 export default flightSlice.reducer;
 
