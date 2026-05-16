@@ -1,7 +1,11 @@
+import { changeTab } from '@beak/ui/features/tabs/store/actions';
+import { useAppSelector } from '@beak/ui/store/redux';
 import { Box, chakra, Flex, Menu, Portal } from '@chakra-ui/react';
+import type { RequestNode } from '@getbeak/types/nodes';
 import { ChevronDown, Edit3, Hash, Network, Plug, Plus } from 'lucide-react';
 import * as React from 'react';
 import { useMemo, useState } from 'react';
+import { useDispatch } from 'react-redux';
 
 import { useEndpoints } from '../hooks/use-endpoints';
 import { ENDPOINT_CONFIG, type EndpointEntry, type EndpointKind } from '../types';
@@ -32,7 +36,9 @@ interface UnifiedRow {
 const EndpointsPane: React.FC = () => {
 	const graphql = useEndpoints('graphql');
 	const grpc = useEndpoints('grpc');
+	const tree = useAppSelector(s => s.global.project.tree);
 	const [dialog, setDialog] = useState<DialogState>({ mode: 'closed' });
+	const dispatch = useDispatch();
 
 	function closeDialog(didChange: boolean) {
 		setDialog({ mode: 'closed' });
@@ -40,6 +46,23 @@ const EndpointsPane: React.FC = () => {
 			void graphql.refresh();
 			void grpc.refresh();
 		}
+	}
+
+	/**
+	 * Find the seed request inside an endpoint folder. The persist layer
+	 * writes either `Introspection.json` (graphql) or `Endpoint.json`
+	 * (grpc); we identify it by walking the tree for a request whose
+	 * parent is this folder. Multiple requests = pick the first stable
+	 * by name.
+	 */
+	function openEndpointInRequestPane(entry: EndpointEntry) {
+		const folder = Object.values(tree).find(n => n.type === 'folder' && n.filePath === entry.folderPath);
+		if (!folder) return;
+		const requestChild = Object.values(tree)
+			.filter((n): n is RequestNode => n.type === 'request' && n.parent === folder.id)
+			.sort((a, b) => a.name.localeCompare(b.name))[0];
+		if (!requestChild) return;
+		dispatch(changeTab({ type: 'request', payload: requestChild.id, temporary: false }));
 	}
 
 	const rows = useMemo<UnifiedRow[]>(() => {
@@ -94,6 +117,7 @@ const EndpointsPane: React.FC = () => {
 									key={entry.folderPath}
 									kind={kind}
 									entry={entry}
+									onOpen={() => openEndpointInRequestPane(entry)}
 									onEdit={() => setDialog({ mode: 'edit', kind, entry })}
 								/>
 							))}
@@ -201,8 +225,8 @@ const KindMenuItem: React.FC<{ kind: EndpointKind; onPick: (kind: EndpointKind) 
 			gap='2'
 			color='fg.default'
 			_hover={{
-				bg: `color-mix(in srgb, ${config.accentVar} 12%, transparent)`,
-				color: config.accentToken,
+				bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 12%, transparent)',
+				color: 'accent.pink',
 			}}
 		>
 			<Box color={config.accentToken}>
@@ -285,11 +309,12 @@ const EmptyStateAddButton: React.FC<{ kind: EndpointKind; onPick: (kind: Endpoin
 
 // ─── Row ──────────────────────────────────────────────────────────────────
 
-const EndpointRow: React.FC<{ kind: EndpointKind; entry: EndpointEntry; onEdit: () => void }> = ({
-	kind,
-	entry,
-	onEdit,
-}) => {
+const EndpointRow: React.FC<{
+	kind: EndpointKind;
+	entry: EndpointEntry;
+	onOpen: () => void;
+	onEdit: () => void;
+}> = ({ kind, entry, onOpen, onEdit }) => {
 	const config = ENDPOINT_CONFIG[kind];
 	const Icon = kind === 'graphql' ? Hash : Network;
 	const endpoint = typeof entry.source.endpoint === 'string' ? entry.source.endpoint : '';
@@ -303,18 +328,18 @@ const EndpointRow: React.FC<{ kind: EndpointKind; entry: EndpointEntry; onEdit: 
 			role='button'
 			tabIndex={0}
 			cursor='pointer'
-			onClick={onEdit}
+			onClick={onOpen}
 			onKeyDown={e => {
 				if (e.key === 'Enter' || e.key === ' ') {
 					e.preventDefault();
-					onEdit();
+					onOpen();
 				}
 			}}
-			_hover={{ bg: 'color-mix(in srgb, var(--beak-colors-fg-default) 5%, transparent)' }}
+			_hover={{ bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 8%, transparent)' }}
 			_focusVisible={{
 				outline: 'none',
-				bg: `color-mix(in srgb, ${config.accentVar} 10%, transparent)`,
-				boxShadow: `inset 2px 0 0 ${config.accentVar}`,
+				bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 12%, transparent)',
+				boxShadow: 'inset 2px 0 0 var(--beak-colors-accent-pink)',
 			}}
 		>
 			<Flex
