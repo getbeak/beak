@@ -1,5 +1,5 @@
 import ksuid from '@beak/ksuid';
-import type { CollectionFile, CollectionSource } from '@beak/state/schemas';
+import type { CollectionFile, CollectionSource, GrpcDescriptor } from '@beak/state/schemas';
 import { collectionFileSchema } from '@beak/state/schemas';
 import type { RequestNodeFile } from '@getbeak/types/nodes';
 import path from 'path-browserify';
@@ -23,10 +23,18 @@ export interface CreateEndpointInput {
 	kind: EndpointKind;
 	folderName: string;
 	endpoint: string;
+	/**
+	 * gRPC descriptor source — only meaningful when `kind === 'grpc'`. The
+	 * dialog defaults to `{ type: 'reflection' }`. Undefined leaves the
+	 * source's `descriptor` field absent (descriptors haven't been picked
+	 * yet); the request pane will surface a Discover affordance.
+	 */
+	descriptor?: GrpcDescriptor;
 }
 
 export interface UpdateEndpointInput {
 	endpoint?: string;
+	descriptor?: GrpcDescriptor;
 }
 
 const GRAPHQL_INTROSPECTION_QUERY = `query IntrospectionQuery {
@@ -130,7 +138,11 @@ export async function createEndpointFolder(
 	const source: CollectionSource =
 		input.kind === 'graphql'
 			? { type: 'graphql', endpoint: input.endpoint }
-			: { type: 'grpc', endpoint: input.endpoint };
+			: {
+					type: 'grpc',
+					endpoint: input.endpoint,
+					...(input.descriptor ? { descriptor: input.descriptor } : {}),
+				};
 
 	const collection: CollectionFile = { source };
 	collectionFileSchema.parse(collection);
@@ -167,6 +179,7 @@ export async function updateEndpoint(
 		source: {
 			...parsed.data.source,
 			...(patch.endpoint !== undefined ? { endpoint: patch.endpoint } : {}),
+			...(kind === 'grpc' && patch.descriptor !== undefined ? { descriptor: patch.descriptor } : {}),
 		},
 	};
 

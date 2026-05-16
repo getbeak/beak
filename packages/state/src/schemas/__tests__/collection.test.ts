@@ -37,6 +37,50 @@ describe('collectionFileSchema', () => {
 		expect(r.success).toBe(true);
 	});
 
+	it('accepts a grpc collection with reflection descriptor', () => {
+		const r = collectionFileSchema.safeParse({
+			source: {
+				type: 'grpc',
+				endpoint: 'grpc.example.com:50051',
+				descriptor: { type: 'reflection' },
+			},
+		});
+		expect(r.success).toBe(true);
+	});
+
+	it('accepts a grpc collection with proto-file descriptor', () => {
+		const r = collectionFileSchema.safeParse({
+			source: {
+				type: 'grpc',
+				endpoint: 'grpc.example.com:50051',
+				descriptor: { type: 'proto', path: './protos/service.proto' },
+			},
+		});
+		expect(r.success).toBe(true);
+	});
+
+	it('accepts a grpc collection with buf-module descriptor', () => {
+		const r = collectionFileSchema.safeParse({
+			source: {
+				type: 'grpc',
+				endpoint: 'grpc.example.com:50051',
+				descriptor: { type: 'buf', module: 'buf.build/connectrpc/eliza' },
+			},
+		});
+		expect(r.success).toBe(true);
+	});
+
+	it('rejects a grpc descriptor with an unknown type', () => {
+		const r = collectionFileSchema.safeParse({
+			source: {
+				type: 'grpc',
+				endpoint: 'grpc.example.com:50051',
+				descriptor: { type: 'magic' },
+			},
+		});
+		expect(r.success).toBe(false);
+	});
+
 	it('rejects an unknown source type', () => {
 		const r = collectionFileSchema.safeParse({ source: { type: 'soap' } });
 		expect(r.success).toBe(false);

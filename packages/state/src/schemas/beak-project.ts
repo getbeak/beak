@@ -217,6 +217,33 @@ export type RequestFileOverride = z.infer<typeof requestFileOverrideSchema>;
 // ─── Collection file (`_collection.json` per folder under `tree/`) ───
 
 /**
+ * gRPC descriptor source — how the renderer loads method + message
+ * shapes for a service. `reflection` is the cleanest UX (analogous to
+ * GraphQL introspection); `proto` is the fallback for servers that
+ * disable reflection in production; `buf` consumes the modern Buf
+ * Schema Registry distribution path.
+ */
+export const grpcDescriptorSchema = z.discriminatedUnion('type', [
+	z.object({ type: z.literal('reflection') }).strict(),
+	z
+		.object({
+			type: z.literal('proto'),
+			/** Project-relative or absolute path to a `.proto` file. */
+			path: z.string().min(1),
+		})
+		.strict(),
+	z
+		.object({
+			type: z.literal('buf'),
+			/** BSR module path, e.g. `buf.build/connectrpc/eliza`. */
+			module: z.string().min(1),
+		})
+		.strict(),
+]);
+
+export type GrpcDescriptor = z.infer<typeof grpcDescriptorSchema>;
+
+/**
  * Where the requests in this collection come from. `manual` means
  * hand-written; `openapi` / `graphql` mean the contents are kept in sync
  * with an external spec. Phase 6 fills in the `openapi` source.
@@ -267,13 +294,23 @@ export const collectionSourceSchema = z.discriminatedUnion('type', [
 			/** gRPC endpoint URL — e.g. `grpc.example.com:50051` or `https://...`. */
 			endpoint: z.string().min(1),
 			/**
-			 * Optional project-relative or absolute path to a `.proto` file
-			 * describing the service. Phase 2 of grpc work loads + parses
-			 * this to drive method completion + request authoring. Absent
-			 * means the endpoint is registered but not yet wired for
-			 * descriptors.
+			 * How method + message descriptors get loaded for this service.
+			 *
+			 *  - `reflection` — the gRPC server runs the reflection service
+			 *    (`grpc.reflection.v1.ServerReflection`). Default — same UX as
+			 *    GraphQL introspection: point at the URL, hit Discover, done.
+			 *  - `proto` — local `.proto` file at the given path (project
+			 *    relative or absolute). Fallback for servers that don't enable
+			 *    reflection (often the case in production for security
+			 *    reasons).
+			 *  - `buf` — module on the Buf Schema Registry, e.g.
+			 *    `buf.build/connectrpc/eliza`. Fetched + parsed on Discover.
+			 *
+			 * Absent means descriptors haven't been picked yet — the endpoint
+			 * is registered but the request pane can't offer method completion
+			 * until one is chosen.
 			 */
-			protoPath: z.string().min(1).optional(),
+			descriptor: grpcDescriptorSchema.optional(),
 			lastSyncedAt: z.string().optional(),
 		})
 		.strict(),

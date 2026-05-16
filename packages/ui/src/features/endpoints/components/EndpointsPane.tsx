@@ -138,6 +138,7 @@ const EndpointsPane: React.FC = () => {
 						folderName: dialog.entry.folderName,
 					}}
 					initialEndpoint={typeof dialog.entry.source.endpoint === 'string' ? dialog.entry.source.endpoint : ''}
+					initialDescriptor={dialog.kind === 'grpc' && 'descriptor' in dialog.entry.source ? dialog.entry.source.descriptor : undefined}
 					onClose={closeDialog}
 				/>
 			)}
