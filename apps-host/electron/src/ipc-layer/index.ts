@@ -11,7 +11,6 @@ import './fs-service';
 import './fs-watcher-service';
 import './git-service';
 import './http-service';
-import './nest-service';
 import './notification-service';
 import './openapi-service';
 import './project-service';
