@@ -27,6 +27,16 @@ export default {
 	root: './src',
 	base: './',
 	publicDir: '../public',
+	// Pin the renderer dev server to 5174 (plain HTTP). The web host
+	// (apps-host/web) owns 5173 over HTTPS so it can register service
+	// workers; the Electron BrowserWindow loads us as a plain frame and
+	// would 502 against the web host's TLS-terminated dev server, so they
+	// can't share a port.
+	server: {
+		port: 5174,
+		strictPort: true,
+		host: '127.0.0.1',
+	},
 	resolve: {
 		alias: {
 			'@beak/ui': path.join(__dirname, './src'),
@@ -46,7 +56,11 @@ export default {
 		},
 	},
 	plugins: [
-		reactPlugin({ include: '**/*.tsx' }),
+		reactPlugin({
+			babel: {
+				plugins: [['babel-plugin-react-compiler', { target: '19' }]],
+			},
+		}),
 		monacoEditorPlugin.default({
 			globalAPI: true,
 			languageWorkers: ['json', 'css', 'html', 'typescript', 'editorWorkerService'],

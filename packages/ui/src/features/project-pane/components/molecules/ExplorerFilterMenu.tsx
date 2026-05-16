@@ -113,11 +113,7 @@ const ExplorerFilterMenu: React.FC<ExplorerFilterMenuProps> = ({ value, onChange
 									py='1.5'
 									px='2'
 									gap='2'
-									bg={
-										selected
-											? 'color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent)'
-											: undefined
-									}
+									bg={selected ? 'color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent)' : undefined}
 									color={selected ? 'accent.pink' : 'fg.default'}
 									_hover={{
 										bg: 'color-mix(in srgb, var(--beak-colors-fg-default) 8%, transparent)',

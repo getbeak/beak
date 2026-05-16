@@ -9,14 +9,7 @@ import { actions as workflowActions } from '@beak/ui/store/workflows';
 import { renderAcceleratorDefinition } from '@beak/ui/utils/keyboard-rendering';
 import { Box, Input } from '@chakra-ui/react';
 import type { MenuItemConstructorOptions } from 'electron';
-import {
-	ChevronsDownUp,
-	ChevronsUpDown,
-	FilePlus,
-	FolderPlus,
-	Pencil,
-	Workflow as WorkflowIcon,
-} from 'lucide-react';
+import { ChevronsDownUp, ChevronsUpDown, FilePlus, FolderPlus, Pencil, Workflow as WorkflowIcon } from 'lucide-react';
 import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
@@ -70,9 +63,7 @@ const ProjectPane: React.FC<React.PropsWithChildren<unknown>> = () => {
 	const workflows = useAppSelector(s => s.global.workflows.workflows);
 	const selectedTabId = useAppSelector(s => s.features.tabs.selectedTab);
 	const showHiddenFolders = useAppSelector(s => Boolean(s.global.preferences.projectPane?.showHiddenFolders));
-	const explorerFilter = useAppSelector<ExplorerFilter>(
-		s => s.global.preferences.projectPane?.explorerFilter ?? 'all',
-	);
+	const explorerFilter = useAppSelector<ExplorerFilter>(s => s.global.preferences.projectPane?.explorerFilter ?? 'all');
 	const windowSession = useContext(WindowSessionContext);
 	const darwin = windowSession.isDarwin();
 	const dispatch = useDispatch();
@@ -171,10 +162,7 @@ const ProjectPane: React.FC<React.PropsWithChildren<unknown>> = () => {
 		return next;
 	}, [tree, workflows]);
 
-	const displayedTree = useMemo(
-		() => filterMergedTree(mergedTree, explorerFilter),
-		[mergedTree, explorerFilter],
-	);
+	const displayedTree = useMemo(() => filterMergedTree(mergedTree, explorerFilter), [mergedTree, explorerFilter]);
 
 	function generateContextMenu(node: TreeViewItem, commands?: TreeCommands): MenuItemConstructorOptions[] {
 		const isWorkflow = node.type === 'workflow';

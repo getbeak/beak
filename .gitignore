@@ -22,3 +22,5 @@ tsconfig.tsbuildinfo
 .beak
 .claude/
 test-results/
+
+.playwright-cli/
