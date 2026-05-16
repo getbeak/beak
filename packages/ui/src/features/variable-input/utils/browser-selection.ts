@@ -23,19 +23,30 @@ export function normalizeSelection(existing?: NormalizedSelection): NormalizedSe
 	if (existing && startPoint.nodeName === 'ARTICLE') return existing;
 
 	let subject: Node = startPoint;
-	let container: Node = startPoint;
+	let container: Node | null = startPoint;
 	const isTextNode = subject.nodeName === '#text';
 
 	if (isTextNode) {
 		// Try to move to the parent span if we're selecting a text node
-		if (subject.parentNode!.nodeName === 'SPAN') subject = subject.parentNode!;
+		if (subject.parentNode?.nodeName === 'SPAN') subject = subject.parentNode;
 
-		// Keep reverse-traversing the dom until we find the article node
+		// Walk up until we hit the ARTICLE wrapper. If we walk off the top
+		// (selection lives outside our editable — happens after blur with a
+		// stray range), bail and let the caller fall back. The previous code
+		// dereferenced `null.parentNode` and crashed; we'd rather hand back
+		// the existing snapshot.
+		while (container && container.nodeName !== 'ARTICLE') {
+			container = container.parentNode;
+		}
 
-		while (true) {
-			container = container.parentNode!;
-
-			if (container.nodeName === 'ARTICLE') break;
+		if (!container) {
+			return (
+				existing ?? {
+					isTextNode: false,
+					partIndex: 0,
+					offset: 0,
+				}
+			);
 		}
 	}
 
@@ -58,18 +69,24 @@ export function setSelection(elem: HTMLElement, selection: NormalizedSelection) 
 
 	if (!node) return;
 
-	if (range.startOffset !== range.endOffset) return;
-
 	if (selection.isTextNode) {
-		range.setStart(node.childNodes[0], selection.offset);
+		const textNode = node.childNodes[0];
+		if (!textNode) return;
+		range.setStart(textNode, Math.min(selection.offset, textNode.nodeValue?.length ?? 0));
 	} else {
 		const childrenLength = elem.childNodes.length;
 		const finalIndex = childrenLength === 2 && selection.partIndex === 1 ? 1 : selection.partIndex + 1;
-
-		range.setStart(elem.childNodes[finalIndex], 0);
+		const target = elem.childNodes[finalIndex];
+		if (!target) return;
+		range.setStart(target, 0);
 	}
 
-	new Promise(() => {
+	// Defer to a microtask so that any in-flight `innerHTML` mutation has flushed
+	// before we anchor the selection. The previous `new Promise(() => …)` ran the
+	// body synchronously inside the executor but never resolved the promise —
+	// misleading and timing-fragile. A microtask is the actual "after this stack
+	// unwinds" boundary we want.
+	queueMicrotask(() => {
 		sel?.removeAllRanges();
 		sel?.addRange(range);
 	});

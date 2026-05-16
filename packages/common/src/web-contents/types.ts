@@ -22,4 +22,5 @@ export type MenuEventCode =
 	| 'show_preferences'
 	| 'show_project_home'
 	| 'import_openapi_spec'
-	| 'save_project_as';
+	| 'save_project_as'
+	| 'show_variable_input_lab';
