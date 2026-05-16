@@ -10,6 +10,7 @@ import './flight-service';
 import './fs-service';
 import './fs-watcher-service';
 import './git-service';
+import './grpc-service';
 import './http-service';
 import './notification-service';
 import './openapi-service';
