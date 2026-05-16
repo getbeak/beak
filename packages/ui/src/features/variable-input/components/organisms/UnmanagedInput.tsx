@@ -12,10 +12,7 @@ export default class UnmanagedInput extends React.Component<UnmanagedInputProps>
 		// Re-render when placeholder or mask flips. Editable content itself
 		// is managed imperatively via innerHTML in VariableInput, so other
 		// upstream churn is ignored.
-		return (
-			nextProps.placeholder !== this.props.placeholder ||
-			nextProps.mask !== this.props.mask
-		);
+		return nextProps.placeholder !== this.props.placeholder || nextProps.mask !== this.props.mask;
 	}
 
 	render() {
@@ -98,19 +95,21 @@ export default class UnmanagedInput extends React.Component<UnmanagedInputProps>
 						userSelect: 'text',
 						boxShadow:
 							'0 1px 2px color-mix(in srgb, var(--blob-accent) 30%, transparent), inset 0 1px 0 color-mix(in srgb, white 22%, transparent)',
-						transition:
-							'background .14s ease, transform .12s cubic-bezier(0.16, 1, 0.3, 1), box-shadow .14s ease, filter .14s ease',
+						transition: 'background .14s ease, box-shadow .14s ease, filter .14s ease',
 					},
 					'& .bvs-blob > strong': { fontWeight: 700, letterSpacing: '-0.005em' },
 					'& .bvs-blob[data-editable="true"]': { cursor: 'pointer' },
+					// Hover-state intentionally avoids any vertical transform —
+					// shifting the blob by 1px under the cursor caused the cursor to
+					// cross the blob boundary and unhover, which re-shifted it back
+					// down. Net effect was a visible flicker. Keep the change in
+					// filter + shadow only.
 					'& .bvs-blob[data-editable="true"]:hover': {
 						filter: 'brightness(1.06)',
-						transform: 'translateY(-1px)',
 						boxShadow:
 							'0 3px 8px color-mix(in srgb, var(--blob-accent) 42%, transparent), inset 0 1px 0 color-mix(in srgb, white 30%, transparent)',
 					},
 					'& .bvs-blob[data-editable="true"]:active': {
-						transform: 'translateY(0px)',
 						filter: 'brightness(0.95)',
 					},
 					// Environment values resolve per active variable-set; tint indigo so
@@ -134,7 +133,6 @@ export default class UnmanagedInput extends React.Component<UnmanagedInputProps>
 						letterSpacing: '0.01em',
 					},
 					'& .bvs-blob[data-missing="true"]:hover': {
-						transform: 'none',
 						filter: 'brightness(1.02)',
 					},
 				}}

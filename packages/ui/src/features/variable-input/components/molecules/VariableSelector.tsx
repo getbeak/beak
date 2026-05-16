@@ -131,7 +131,7 @@ const VariableSelector: React.FC<React.PropsWithChildren<VariableSelectorProps>>
 	async function createDefaultVariable(item: VariableStaticInformation) {
 		let payload: any;
 		if (item.external) {
-			payload = await ipcExtensionsService.rtvCreateDefaultPayload({ type: item.type, context });
+			payload = await ipcExtensionsService.variableCreateDefaultPayload({ type: item.type, context });
 		} else {
 			payload = await (item as Variable<any>).createDefaultPayload(context);
 		}
@@ -178,7 +178,7 @@ const VariableSelector: React.FC<React.PropsWithChildren<VariableSelectorProps>>
 		<Box
 			borderTopWidth='1px'
 			borderColor='border.subtle'
-			bg='color-mix(in srgb, var(--beak-colors-bg-canvas) 72%, transparent)'
+			bg='var(--beak-colors-bg-canvas)'
 			px='2.5'
 			py='1.5'
 			minH='36px'
@@ -246,12 +246,10 @@ const VariableSelector: React.FC<React.PropsWithChildren<VariableSelectorProps>>
 		maxHeight: 280,
 		display: 'flex',
 		flexDirection: 'column',
-		border: '1px solid color-mix(in srgb, var(--beak-colors-accent-pink) 24%, var(--beak-colors-border-subtle))',
-		borderRadius: 10,
-		background: 'color-mix(in srgb, var(--beak-colors-bg-surface) 72%, transparent)',
-		backdropFilter: 'blur(24px) saturate(180%)',
-		boxShadow:
-			'0 40px 96px rgba(0,0,0,0.38), 0 12px 32px color-mix(in srgb, var(--beak-colors-accent-pink) 18%, rgba(0,0,0,0.18)), inset 0 1px 0 color-mix(in srgb, white 22%, transparent)',
+		border: '1px solid var(--beak-colors-border-default)',
+		borderRadius: 8,
+		background: 'var(--beak-colors-bg-surface)',
+		boxShadow: '0 18px 44px rgba(0,0,0,0.28), 0 6px 16px rgba(0,0,0,0.16)',
 		overflow: 'hidden',
 		fontSize: 13,
 	};
@@ -286,7 +284,7 @@ const VariableSelector: React.FC<React.PropsWithChildren<VariableSelectorProps>>
 					py='1.5'
 					borderBottomWidth='1px'
 					borderColor='border.subtle'
-					bg='color-mix(in srgb, var(--beak-colors-bg-canvas) 55%, transparent)'
+					bg='var(--beak-colors-bg-canvas)'
 					fontSize='10px'
 					letterSpacing='0.07em'
 					textTransform='uppercase'
@@ -450,7 +448,7 @@ const VariableSelector: React.FC<React.PropsWithChildren<VariableSelectorProps>>
 					py='1.5'
 					borderTopWidth='1px'
 					borderColor='border.subtle'
-					bg='color-mix(in srgb, var(--beak-colors-bg-canvas) 55%, transparent)'
+					bg='var(--beak-colors-bg-canvas)'
 					fontSize='10px'
 					letterSpacing='0.04em'
 					color='fg.subtle'
