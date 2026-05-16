@@ -1,99 +1,77 @@
 import type { EditorPreferences } from '@beak/common/types/preferences';
+import type { ThemeMode } from '@beak/common/types/theme';
 import Input from '@beak/ui/components/atoms/Input';
 import { ipcPreferencesService } from '@beak/ui/lib/ipc';
 import React from 'react';
 import { useEffect, useState } from 'react';
 
-import { SelectContainer, SelectItem, SelectItemPreview } from '../atoms/fancy-select';
-import { ItemGroup, ItemInfo, ItemLabel } from '../atoms/item';
-import Pane from '../molecules/Pane';
+import { Monitor, Moon, Sun } from 'lucide-react';
 
-const EditorPane: React.FC<React.PropsWithChildren<unknown>> = () => {
-	const [editorPreferences, setEditorPreferences] = useState<EditorPreferences>();
+import Row from '../atoms/Row';
+import Section from '../atoms/Section';
+import SegmentedControl from '../atoms/SegmentedControl';
+
+const THEME_ITEMS = [
+	{ key: 'system' as const, label: 'Default', preview: <Monitor size={14} strokeWidth={1.8} /> },
+	{ key: 'light' as const, label: 'Light', preview: <Sun size={14} strokeWidth={1.8} /> },
+	{ key: 'dark' as const, label: 'Dark', preview: <Moon size={14} strokeWidth={1.8} /> },
+];
+
+const EditorPane: React.FC = () => {
+	const [prefs, setPrefs] = useState<EditorPreferences>();
 
 	useEffect(() => {
 		let cancelled = false;
-		ipcPreferencesService.getEditorOverview().then(prefs => {
-			if (!cancelled) setEditorPreferences(prefs);
-		});
+		ipcPreferencesService.getEditorOverview().then(p => { if (!cancelled) setPrefs(p); });
 		return () => {
 			cancelled = true;
 		};
 	}, []);
 
-	function getEditorPreferences() {
-		ipcPreferencesService.getEditorOverview().then(setEditorPreferences);
+	async function update<Key extends keyof EditorPreferences>(key: Key, value: EditorPreferences[Key]) {
+		await ipcPreferencesService.setEditorValue(key, value);
+		setPrefs(await ipcPreferencesService.getEditorOverview());
 	}
 
-	function updateEditorPreference<Key extends keyof EditorPreferences>(key: Key, value: EditorPreferences[Key]) {
-		ipcPreferencesService.setEditorValue(key, value).then(getEditorPreferences);
-	}
-
-	if (!editorPreferences) return null;
+	if (!prefs) return null;
 
 	return (
-		<Pane title={'Rich text editor'}>
-			<ItemGroup>
-				<ItemLabel>{'Theme override'}</ItemLabel>
-				<SelectContainer>
-					<SelectItem
-						$active={editorPreferences.themeOverride === 'system'}
-						onClick={() => updateEditorPreference('themeOverride', 'system')}
-					>
-						<SelectItemPreview
-							$active={editorPreferences.themeOverride === 'system'}
-							$themeMode={'system'}
-							$themeType={'editor'}
-						/>
-						{'Default'}
-					</SelectItem>
-					<SelectItem
-						$active={editorPreferences.themeOverride === 'light'}
-						onClick={() => updateEditorPreference('themeOverride', 'light')}
-					>
-						<SelectItemPreview
-							$active={editorPreferences.themeOverride === 'light'}
-							$themeMode={'light'}
-							$themeType={'editor'}
-						/>
-						{'Light'}
-					</SelectItem>
-					<SelectItem
-						$active={editorPreferences.themeOverride === 'dark'}
-						onClick={() => updateEditorPreference('themeOverride', 'dark')}
-					>
-						<SelectItemPreview
-							$active={editorPreferences.themeOverride === 'dark'}
-							$themeMode={'dark'}
-							$themeType={'editor'}
-						/>
-						{'Dark'}
-					</SelectItem>
-				</SelectContainer>
-				<ItemInfo>{'By default, the editor theme will use Beak’s current theme.'}</ItemInfo>
-			</ItemGroup>
-
-			<ItemGroup>
-				<ItemLabel>{'Font size'}</ItemLabel>
-				<Input
-					$beakSize='sm'
-					$noStretch
-					aria-label='Editor font size'
-					type='number'
-					min={8}
-					max={32}
-					style={{ width: '90px' }}
-					value={editorPreferences.fontSize}
-					onChange={event => {
-						const raw = Number(event.currentTarget.value);
-						if (!Number.isFinite(raw)) return;
-						const clamped = Math.min(32, Math.max(8, Math.round(raw)));
-						updateEditorPreference('fontSize', clamped);
-					}}
-				/>
-				<ItemInfo>{'Applies to the Monaco editor inside Beak (request/response bodies, raw views).'}</ItemInfo>
-			</ItemGroup>
-		</Pane>
+		<>
+			<Section
+				title='Code editor'
+				description='Applies to the Monaco editor inside Beak — request and response bodies, raw views.'
+			>
+				<Row
+					label='Theme override'
+					description='By default, the editor follows Beak’s theme.'
+				>
+					<SegmentedControl
+						ariaLabel='Editor theme override'
+						items={THEME_ITEMS}
+						value={prefs.themeOverride as ThemeMode}
+						onChange={mode => update('themeOverride', mode)}
+					/>
+				</Row>
+				<Row label='Font size' description='Between 8 and 32 pixels.'>
+					<Input
+						$beakSize='sm'
+						$noStretch
+						aria-label='Editor font size'
+						type='number'
+						min={8}
+						max={32}
+						style={{ width: '74px', textAlign: 'right' }}
+						value={prefs.fontSize}
+						onChange={event => {
+							const raw = Number(event.currentTarget.value);
+							if (!Number.isFinite(raw)) return;
+							const clamped = Math.min(32, Math.max(8, Math.round(raw)));
+							update('fontSize', clamped);
+						}}
+					/>
+				</Row>
+			</Section>
+		</>
 	);
 };
 
