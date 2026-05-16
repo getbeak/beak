@@ -74,52 +74,50 @@ const tooltips: TooltipDefinition[] = [
 	{
 		anchor: 'tt-sidebar-menu-item',
 	},
+	{
+		anchor: 'tt-schema-row-description',
+	},
 ];
 
-// Beak's tooltip chrome. react-tooltip ships a basic dark/light pill — the
-// override below brings tooltips inline with the rest of the app's frosted-
-// glass aesthetic: translucent surface, accent-pink edge, soft shadow, and
-// a `font-size:11px / line-height:1.35` body that reads at desktop density.
-// Injected once at module load (the CSS rules are global anyway).
+// Beak's tooltip chrome — inverted surface so it always reads with high
+// contrast against the chrome behind it (dark tooltip in light theme, light
+// tooltip in dark theme — same pattern macOS / Linear / Notion use).
+// Injected once at module load.
 if (typeof document !== 'undefined' && !document.getElementById('beak-tooltip-styles')) {
 	const styleEl = document.createElement('style');
 	styleEl.id = 'beak-tooltip-styles';
 	styleEl.textContent = `
 		:root {
 			--rt-opacity: 1;
-			--rt-transition-show-delay: 0.12s;
-			--rt-transition-closing-delay: 0.1s;
+			--rt-transition-show-delay: 0.15s;
+			--rt-transition-closing-delay: 0.05s;
+			--beak-tt-bg: var(--beak-colors-gray-900);
+			--beak-tt-fg: var(--beak-colors-gray-50);
+			--beak-tt-border: var(--beak-colors-gray-700);
+		}
+		html.dark {
+			--beak-tt-bg: var(--beak-colors-gray-100);
+			--beak-tt-fg: var(--beak-colors-gray-950);
+			--beak-tt-border: var(--beak-colors-gray-300);
 		}
 		.beak-tooltip {
 			z-index: 1000;
 			max-width: 280px;
-			padding: 6px 9px !important;
-			font-size: 11px !important;
-			font-weight: 500;
-			line-height: 1.35;
-			letter-spacing: 0.005em;
-			color: var(--beak-colors-fg-default) !important;
-			background: color-mix(in srgb, var(--beak-colors-bg-surface) 78%, transparent) !important;
-			border: 1px solid color-mix(in srgb, var(--beak-colors-accent-pink) 22%, var(--beak-colors-border-default)) !important;
-			border-radius: 6px !important;
-			-webkit-backdrop-filter: blur(18px) saturate(180%);
-			backdrop-filter: blur(18px) saturate(180%);
-			box-shadow:
-				0 12px 32px rgba(0, 0, 0, 0.30),
-				0 4px 10px color-mix(in srgb, var(--beak-colors-accent-pink) 14%, rgba(0, 0, 0, 0.12)),
-				inset 0 1px 0 color-mix(in srgb, white 18%, transparent);
+			padding: 5px 9px !important;
+			font-size: 12px !important;
+			font-weight: 400;
+			line-height: 1.4;
+			color: var(--beak-tt-fg) !important;
+			background: var(--beak-tt-bg) !important;
+			border: 1px solid var(--beak-tt-border) !important;
+			border-radius: 4px !important;
+			box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
 		}
 		.beak-tooltip .react-tooltip-arrow,
 		.beak-tooltip > [class*='styles-module_arrow'] {
-			background: color-mix(in srgb, var(--beak-colors-bg-surface) 80%, transparent) !important;
-			border-right: 1px solid color-mix(in srgb, var(--beak-colors-accent-pink) 22%, var(--beak-colors-border-default));
-			border-bottom: 1px solid color-mix(in srgb, var(--beak-colors-accent-pink) 22%, var(--beak-colors-border-default));
-		}
-		/* Fallback when backdrop-filter is unavailable (Linux without compositor). */
-		@supports not (backdrop-filter: blur(8px)) {
-			.beak-tooltip {
-				background: var(--beak-colors-bg-surface) !important;
-			}
+			background: var(--beak-tt-bg) !important;
+			border-right: 1px solid var(--beak-tt-border);
+			border-bottom: 1px solid var(--beak-tt-border);
 		}
 	`;
 	document.head.appendChild(styleEl);

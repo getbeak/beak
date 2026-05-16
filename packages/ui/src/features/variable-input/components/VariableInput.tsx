@@ -32,13 +32,20 @@ export interface VariableInputProps {
 	requestId?: string;
 	parts: ValueSections;
 	readOnly?: boolean;
+	/**
+	 * When true, mask the rendered text with bullets (CSS text-security).
+	 * Used for schema `type: 'token'` fields so secrets aren't shown in
+	 * plaintext while editing. Keys + values still copy/paste normally —
+	 * the masking is purely visual.
+	 */
+	mask?: boolean;
 
 	onChange: (parts: ValueSections) => void;
 	onUrlQueryStringDetection?: () => void;
 }
 
 const VariableInput = React.forwardRef<HTMLElement, VariableInputProps>((props, forwardedRef) => {
-	const { disabled, requestId, placeholder, parts: incomingParts, onChange, readOnly } = props;
+	const { disabled, requestId, placeholder, parts: incomingParts, onChange, readOnly, mask } = props;
 	const dispatch = useDispatch();
 
 	const [latestForceRerender, forceRerender] = useForceReRender();
@@ -442,7 +449,7 @@ const VariableInput = React.forwardRef<HTMLElement, VariableInputProps>((props, 
 
 	return (
 		<Box position='relative'>
-			<UnmanagedInput innerRef={editableRef} placeholder={placeholder} />
+			<UnmanagedInput innerRef={editableRef} placeholder={placeholder} mask={mask} />
 			{showSelector && editableRef && (
 				<VariableSelector
 					requestId={props.requestId}

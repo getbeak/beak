@@ -1,8 +1,8 @@
 import { TypedObject } from '@beak/common/helpers/typescript';
 import DebouncedInput from '@beak/ui/components/atoms/DebouncedInput';
 import type { ValueSections } from '@beak/ui/features/variables/values';
-import { Button, Flex, Text } from '@chakra-ui/react';
-import type { ToggleKeyValue } from '@getbeak/types/request';
+import { Box, Button, Flex, Text } from '@chakra-ui/react';
+import type { ScalarPropertyType, ToggleKeyValue } from '@getbeak/types/request';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Plus } from 'lucide-react';
 import * as React from 'react';
@@ -35,6 +35,50 @@ interface BasicTableEditorProps {
 
 const MotionRow = motion.create(Row);
 
+/**
+ * Tiny indicator that the schema declared this field required. Pink dot,
+ * tooltip on hover ("Required by schema"). Sits at the leading edge of
+ * the key cell so it scans as "this field has a contract obligation"
+ * without stealing real estate.
+ */
+const RequiredDot: React.FC = () => (
+	<Box
+		flexShrink={0}
+		w='5px'
+		h='5px'
+		ml='1.5'
+		borderRadius='full'
+		bg='accent.pink'
+		data-tooltip-id='tt-schema-row-description'
+		data-tooltip-content='Required by schema'
+	/>
+);
+
+/**
+ * Type chip rendered next to the input when the schema declared a non-string
+ * type. Tiny indigo capsule — visible enough to communicate the contract,
+ * faint enough not to compete with the value.
+ */
+const TypeChip: React.FC<{ type: ScalarPropertyType }> = ({ type }) => (
+	<Box
+		flexShrink={0}
+		mr='1.5'
+		px='1.5'
+		h='14px'
+		display='inline-flex'
+		alignItems='center'
+		borderRadius='sm'
+		bg='color-mix(in srgb, var(--beak-colors-accent-indigo) 14%, transparent)'
+		color='accent.indigo'
+		fontSize='9.5px'
+		fontWeight='600'
+		letterSpacing='0.04em'
+		textTransform='uppercase'
+	>
+		{type}
+	</Box>
+);
+
 const BasicTableEditor: React.FC<BasicTableEditorProps> = ({
 	items,
 	requestId,
@@ -65,6 +109,15 @@ const BasicTableEditor: React.FC<BasicTableEditorProps> = ({
 				<AnimatePresence initial={false}>
 					{keys.map(k => {
 						const item = items[k];
+						const required = item.required === true;
+						const type = item.type;
+						const description = item.description;
+						const showTypeChip = type !== undefined && type !== 'string';
+						const tooltipAttrs: Record<string, string> = {};
+						if (description) {
+							tooltipAttrs['data-tooltip-id'] = 'tt-schema-row-description';
+							tooltipAttrs['data-tooltip-content'] = description;
+						}
 
 						return (
 							<MotionRow
@@ -81,7 +134,7 @@ const BasicTableEditor: React.FC<BasicTableEditorProps> = ({
 									)}
 								</BodyToggleCell>
 								<BodyPrimaryCell>
-									<BodyInputWrapper>
+									<BodyInputWrapper {...tooltipAttrs}>
 										<DebouncedInput
 											type='text'
 											value={item.name}
@@ -89,15 +142,18 @@ const BasicTableEditor: React.FC<BasicTableEditorProps> = ({
 											placeholder='key'
 											onChange={v => updateItem?.('name', k, v)}
 										/>
+										{required && <RequiredDot />}
 									</BodyInputWrapper>
 								</BodyPrimaryCell>
 								<BodyInputValueCell>
 									<BodyInputWrapper>
+										{showTypeChip && type && <TypeChip type={type} />}
 										<VariableInput
 											requestId={requestId}
 											parts={item.value}
 											readOnly={readOnly}
 											disabled={readOnly}
+											mask={type === 'token'}
 											onChange={parts => updateItem?.('value', k, parts)}
 										/>
 									</BodyInputWrapper>

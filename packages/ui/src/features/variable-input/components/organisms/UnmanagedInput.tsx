@@ -4,18 +4,22 @@ import * as React from 'react';
 interface UnmanagedInputProps {
 	innerRef: React.MutableRefObject<HTMLDivElement | null>;
 	placeholder?: string;
+	mask?: boolean;
 }
 
 export default class UnmanagedInput extends React.Component<UnmanagedInputProps> {
 	shouldComponentUpdate(nextProps: UnmanagedInputProps) {
-		// Only re-render when the placeholder text changes. The actual editable
-		// content is managed imperatively via innerHTML in VariableInput, so we
-		// continue to skip re-renders triggered by upstream state churn.
-		return nextProps.placeholder !== this.props.placeholder;
+		// Re-render when placeholder or mask flips. Editable content itself
+		// is managed imperatively via innerHTML in VariableInput, so other
+		// upstream churn is ignored.
+		return (
+			nextProps.placeholder !== this.props.placeholder ||
+			nextProps.mask !== this.props.mask
+		);
 	}
 
 	render() {
-		const { placeholder } = this.props;
+		const { placeholder, mask } = this.props;
 		return (
 			<Box
 				as='article'
@@ -24,12 +28,21 @@ export default class UnmanagedInput extends React.Component<UnmanagedInputProps>
 				spellCheck={false}
 				suppressContentEditableWarning
 				data-placeholder={placeholder ?? ''}
+				data-masked={mask ? 'true' : undefined}
 				fontSize='sm'
 				borderWidth='1px'
 				borderColor='border.subtle'
 				whiteSpace='nowrap'
 				overflow='hidden'
-				style={{ caretColor: 'var(--beak-colors-accent-pink)' }}
+				style={{
+					caretColor: 'var(--beak-colors-accent-pink)',
+					...(mask
+						? ({
+								WebkitTextSecurity: 'disc',
+								textSecurity: 'disc',
+							} as React.CSSProperties)
+						: {}),
+				}}
 				css={{
 					// CSS-driven placeholder follows the host's padding naturally and
 					// avoids the previous absolute-positioned overlay with hardcoded

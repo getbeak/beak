@@ -1,4 +1,5 @@
 import DebouncedInput from '@beak/ui/components/atoms/DebouncedInput';
+import { Box } from '@chakra-ui/react';
 import type { Entries } from '@getbeak/types/body-editor-json';
 import * as React from 'react';
 import { useContext } from 'react';
@@ -7,6 +8,24 @@ import { useDispatch } from 'react-redux';
 import { JsonEditorContext } from '../../contexts/json-editor-context';
 import { BodyInputWrapper, BodyNameOverrideWrapper } from '../atoms/Cells';
 import { detectName } from './JsonEntry';
+
+/**
+ * Mirrors the BasicTableEditor's required dot — pink bullet next to the
+ * key cell when the schema declared this entry required. Tooltip is the
+ * shared `tt-schema-row-description` anchor.
+ */
+const RequiredDot: React.FC<{ description?: string }> = ({ description }) => (
+	<Box
+		flexShrink={0}
+		w='5px'
+		h='5px'
+		ml='1.5'
+		borderRadius='full'
+		bg='accent.pink'
+		data-tooltip-id='tt-schema-row-description'
+		data-tooltip-content={description ?? 'Required by schema'}
+	/>
+);
 
 interface EntryPrimaryProps {
 	depth: number;
@@ -42,13 +61,21 @@ const EntryPrimary: React.FC<EntryPrimaryProps> = ({ depth, requestId, value, na
 		return <BodyNameOverrideWrapper>{nameOverride}</BodyNameOverrideWrapper>;
 	}
 
+	const description = value.description;
+	const tooltipAttrs: Record<string, string> = {};
+	if (description && !editorContext.schemaMode) {
+		tooltipAttrs['data-tooltip-id'] = 'tt-schema-row-description';
+		tooltipAttrs['data-tooltip-content'] = description;
+	}
+
 	return (
-		<BodyInputWrapper>
+		<BodyInputWrapper {...tooltipAttrs}>
 			<DebouncedInput
 				type='text'
 				value={detectName(depth, value)}
 				onChange={name => dispatch(editorContext.nameChange({ id: value.id, requestId, name }))}
 			/>
+			{value.required === true && !editorContext.schemaMode && <RequiredDot description={description} />}
 		</BodyInputWrapper>
 	);
 };
