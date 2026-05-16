@@ -12,11 +12,11 @@ import { createSystem, defaultConfig, defineConfig } from '@chakra-ui/react';
  * already know.
  *
  * Families:
- *   gray   — neutral, slightly cool (macOS-leaning)
+ *   gray   — refined cool slate; subtle blue undertone deepens into the dark end
  *   blue   — system blue (informational)
- *   pink   — Beak brand pink (primary)
- *   teal   — Beak brand teal (success / GET)
- *   indigo — Beak brand indigo (focus / PUT-PATCH)
+ *   pink   — Beak brand pink, a confident rose (primary)
+ *   teal   — Beak brand teal, refined aqua (success / GET)
+ *   indigo — Beak brand indigo, Apple-system leaning (focus / PUT-PATCH)
  *   red    — alert / DELETE
  *   green  — success (in addition to teal)
  *   yellow — warning
@@ -40,70 +40,70 @@ import { createSystem, defaultConfig, defineConfig } from '@chakra-ui/react';
 
 const colors = {
 	gray: {
-		'50': { value: '#F7F8FA' },
-		'100': { value: '#EFF1F4' },
+		'50': { value: '#F8F9FB' },
+		'100': { value: '#F0F2F5' },
 		'200': { value: '#E2E5EA' },
-		'300': { value: '#C9CED7' },
-		'400': { value: '#9AA1AD' },
-		'500': { value: '#6B7280' },
-		'600': { value: '#4A5160' },
-		'700': { value: '#363B49' },
-		'800': { value: '#242838' },
-		'850': { value: '#1B1F2C' },
-		'900': { value: '#141824' },
-		'950': { value: '#0B0E18' },
+		'300': { value: '#C7CCD5' },
+		'400': { value: '#8E94A2' },
+		'500': { value: '#5F6573' },
+		'600': { value: '#404654' },
+		'700': { value: '#2A2F3B' },
+		'800': { value: '#1A1D27' },
+		'850': { value: '#14171F' },
+		'900': { value: '#0F1219' },
+		'950': { value: '#080A11' },
 	},
 	pink: {
-		'50': { value: '#FDF2F5' },
-		'100': { value: '#FCE4EC' },
-		'200': { value: '#F8C5D2' },
-		'300': { value: '#F19DB0' },
-		'400': { value: '#E58399' },
-		'500': { value: '#D45D80' },
-		'600': { value: '#B84A6C' },
-		'700': { value: '#963A56' },
-		'800': { value: '#6E2A40' },
-		'900': { value: '#4A1B2A' },
-		'950': { value: '#2A0F19' },
+		'50': { value: '#FDF3F7' },
+		'100': { value: '#FBE3EE' },
+		'200': { value: '#F6C2D7' },
+		'300': { value: '#EE99B6' },
+		'400': { value: '#E47497' },
+		'500': { value: '#DA4D7C' },
+		'600': { value: '#BB3C68' },
+		'700': { value: '#952F54' },
+		'800': { value: '#6D243F' },
+		'900': { value: '#481A2A' },
+		'950': { value: '#281019' },
 	},
 	teal: {
-		'50': { value: '#ECFDF6' },
-		'100': { value: '#D2F9E5' },
-		'200': { value: '#A5F0CC' },
-		'300': { value: '#6FE3B0' },
-		'400': { value: '#45D9A5' },
-		'500': { value: '#33CC99' },
-		'600': { value: '#29A37B' },
-		'700': { value: '#1F7A5C' },
-		'800': { value: '#155339' },
-		'900': { value: '#0C351F' },
-		'950': { value: '#061D11' },
+		'50': { value: '#ECFDF7' },
+		'100': { value: '#CDF8E7' },
+		'200': { value: '#9CEFCE' },
+		'300': { value: '#65E0AE' },
+		'400': { value: '#36C896' },
+		'500': { value: '#1FB58F' },
+		'600': { value: '#16906F' },
+		'700': { value: '#117055' },
+		'800': { value: '#0C5240' },
+		'900': { value: '#08362A' },
+		'950': { value: '#041D16' },
 	},
 	indigo: {
-		'50': { value: '#EEEEFD' },
-		'100': { value: '#D8D8F9' },
-		'200': { value: '#B2B2F2' },
-		'300': { value: '#8585E5' },
-		'400': { value: '#5C5CC8' },
-		'500': { value: '#4646B0' },
-		'600': { value: '#333399' },
-		'700': { value: '#2A2A7D' },
-		'800': { value: '#20205F' },
-		'900': { value: '#181847' },
-		'950': { value: '#0E0E2A' },
+		'50': { value: '#EEEEFE' },
+		'100': { value: '#DDDDFC' },
+		'200': { value: '#BBBBF8' },
+		'300': { value: '#9392EE' },
+		'400': { value: '#706FDD' },
+		'500': { value: '#5856D6' },
+		'600': { value: '#4644BD' },
+		'700': { value: '#3837A0' },
+		'800': { value: '#2A2A7B' },
+		'900': { value: '#1E1E5A' },
+		'950': { value: '#11102F' },
 	},
 	red: {
 		'50': { value: '#FEF2F2' },
-		'100': { value: '#FFE0E0' },
-		'200': { value: '#FFB8B8' },
-		'300': { value: '#FF8585' },
-		'400': { value: '#FF5757' },
-		'500': { value: '#FC3233' },
-		'600': { value: '#DB1F20' },
-		'700': { value: '#B61617' },
-		'800': { value: '#851011' },
-		'900': { value: '#520808' },
-		'950': { value: '#2C0404' },
+		'100': { value: '#FEE2E2' },
+		'200': { value: '#FECACA' },
+		'300': { value: '#FCA5A5' },
+		'400': { value: '#F87171' },
+		'500': { value: '#EF4444' },
+		'600': { value: '#DC2626' },
+		'700': { value: '#B91C1C' },
+		'800': { value: '#991B1B' },
+		'900': { value: '#7F1D1D' },
+		'950': { value: '#450A0A' },
 	},
 	yellow: {
 		'50': { value: '#FEFCE8' },
@@ -324,6 +324,39 @@ const config = defineConfig({
 			'--beak-colors-accent-warning': 'var(--beak-colors-yellow-500)',
 			'--beak-colors-accent-info': 'var(--beak-colors-blue-500)',
 			'--beak-colors-fg-onAccent': 'var(--beak-colors-gray-50)',
+			// Layered surface + foreground + border aliases. Same root cause as
+			// the accent block — portal-mounted popups (variable picker, header
+			// autocomplete, suggestion lists) use `var(--beak-colors-bg-surface)`
+			// in raw CSS and the dotted Chakra emission never resolved as a dash
+			// name, so they rendered transparent over whatever sat behind the
+			// portal. Light defaults live on `:where(html)`; dark overrides ride
+			// on `html.dark` below.
+			'--beak-colors-bg-canvas': 'var(--beak-colors-gray-50)',
+			'--beak-colors-bg-surface': '#FFFFFF',
+			'--beak-colors-bg-surface-alt': 'var(--beak-colors-gray-50)',
+			'--beak-colors-bg-surface-emphasized': 'var(--beak-colors-gray-100)',
+			'--beak-colors-bg-subtle': 'var(--beak-colors-gray-50)',
+			'--beak-colors-fg-default': 'var(--beak-colors-gray-950)',
+			'--beak-colors-fg-muted': 'var(--beak-colors-gray-700)',
+			'--beak-colors-fg-subtle': 'var(--beak-colors-gray-500)',
+			'--beak-colors-fg-disabled': 'var(--beak-colors-gray-400)',
+			'--beak-colors-border-subtle': 'var(--beak-colors-gray-200)',
+			'--beak-colors-border-default': 'var(--beak-colors-gray-300)',
+			'--beak-colors-border-emphasized': 'var(--beak-colors-gray-400)',
+		},
+		':where(html.dark)': {
+			'--beak-colors-bg-canvas': 'var(--beak-colors-gray-950)',
+			'--beak-colors-bg-surface': 'var(--beak-colors-gray-900)',
+			'--beak-colors-bg-surface-alt': 'var(--beak-colors-gray-850)',
+			'--beak-colors-bg-surface-emphasized': 'var(--beak-colors-gray-800)',
+			'--beak-colors-bg-subtle': 'var(--beak-colors-gray-950)',
+			'--beak-colors-fg-default': 'var(--beak-colors-gray-50)',
+			'--beak-colors-fg-muted': 'var(--beak-colors-gray-300)',
+			'--beak-colors-fg-subtle': 'var(--beak-colors-gray-400)',
+			'--beak-colors-fg-disabled': 'var(--beak-colors-gray-600)',
+			'--beak-colors-border-subtle': 'var(--beak-colors-gray-800)',
+			'--beak-colors-border-default': 'var(--beak-colors-gray-700)',
+			'--beak-colors-border-emphasized': 'var(--beak-colors-gray-600)',
 		},
 		'html, body': {
 			margin: 0,
@@ -347,37 +380,11 @@ const config = defineConfig({
 				cursor: 'text',
 			},
 		},
-		'body .react-tooltip': {
-			padding: '7px 10px',
-			fontSize: '11.5px',
-			fontWeight: '500',
-			letterSpacing: '-0.005em',
-			lineHeight: 1.35,
-			borderRadius: '7px',
-			background: 'color-mix(in srgb, var(--beak-colors-gray-950) 82%, transparent)',
-			color: 'var(--beak-colors-gray-50)',
-			borderWidth: '1px',
-			borderStyle: 'solid',
-			borderColor:
-				'color-mix(in srgb, var(--beak-colors-accent-pink) 22%, color-mix(in srgb, var(--beak-colors-gray-700) 55%, transparent))',
-			boxShadow:
-				'0 14px 38px rgba(0, 0, 0, 0.4), 0 4px 10px color-mix(in srgb, var(--beak-colors-accent-pink) 14%, rgba(0, 0, 0, 0.18)), inset 0 1px 0 color-mix(in srgb, white 12%, transparent)',
-			backdropFilter: 'blur(14px) saturate(160%)',
-			opacity: '1 !important' as unknown as string,
-			zIndex: 105,
-			maxWidth: '320px',
-			transition: 'opacity .14s ease, transform .14s ease',
-			'&.react-tooltip__show': {
-				animation: 'beakTooltipIn .16s cubic-bezier(.2, .8, .3, 1)',
-			},
-			'& .react-tooltip-arrow': {
-				width: '9px',
-				height: '9px',
-				background: 'color-mix(in srgb, var(--beak-colors-gray-950) 82%, transparent)',
-				borderColor:
-					'color-mix(in srgb, var(--beak-colors-accent-pink) 22%, color-mix(in srgb, var(--beak-colors-gray-700) 55%, transparent))',
-			},
-		},
+		// Tooltip styling lives next to the Tooltip registry in
+		// `@beak/ui/components/molecules/Tooltips.tsx` (`.beak-tooltip` class,
+		// injected at module load with `!important`). Keeping it there means
+		// the styling lives next to the mount registry and we don't have to
+		// scatter `!important` overrides across two files.
 		'::selection': {
 			backgroundColor: 'color-mix(in srgb, var(--beak-colors-accent-pink) 35%, transparent)',
 			color: 'var(--beak-colors-fg-default)',

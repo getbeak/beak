@@ -1,5 +1,6 @@
-import type { Theme } from '@beak/common/types/theme';
-import { DesignSystemProvider } from '@beak/design-system';
+import type { Theme, ThemeMode } from '@beak/common/types/theme';
+import { BeakChakraProvider } from '@beak/design-system';
+import type { IpcRendererEvent } from 'electron';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
@@ -7,11 +8,14 @@ import { Provider } from 'react-redux';
 
 import './utils/unhandled-error-handler';
 import NonprodBadge from './components/atoms/NonprodBadge';
+import ContextMenuHost from './components/molecules/ContextMenuHost';
 import ErrorBoundary from './components/molecules/ErrorBoundary';
 import Tooltips from './components/molecules/Tooltips';
+import { KeyboardStateProvider } from './contexts/keyboard-state-context';
 import WindowSessionContext, { instance } from './contexts/window-session-context';
 import { ElectronEntrypoint } from './entrypoints/electron';
 import { WebEntrypoint } from './entrypoints/web';
+import { ipcPreferencesService } from './lib/ipc';
 import { configureStore } from './store';
 import { setupMonaco } from './utils/monaco';
 
@@ -27,31 +31,7 @@ function getSystemTheme(): Theme {
 }
 
 const GLOBAL_CSS = (darwin: boolean) => `
-	:root {
-		--rt-color-white: var(--beak-colors-gray-50);
-		--rt-color-dark: var(--beak-colors-gray-900);
-		--rt-opacity: 1;
-	}
-	.react-tooltip {
-		border: 1px solid color-mix(in srgb, var(--beak-colors-accent-pink) 26%, var(--beak-colors-border-subtle)) !important;
-		box-shadow: 0 8px 24px rgba(0,0,0,0.28), 0 4px 10px color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent), inset 0 1px 0 color-mix(in srgb, white 14%, transparent) !important;
-		backdrop-filter: blur(10px) saturate(160%) !important;
-		font-size: 11px !important;
-		font-weight: 500 !important;
-		letter-spacing: 0.01em !important;
-		padding: 5px 8px !important;
-		max-width: 260px !important;
-		animation: beakTooltipIn 0.14s ease-out both !important;
-	}
-	.react-tooltip-arrow {
-		border-right: 1px solid color-mix(in srgb, var(--beak-colors-accent-pink) 26%, var(--beak-colors-border-subtle)) !important;
-		border-bottom: 1px solid color-mix(in srgb, var(--beak-colors-accent-pink) 26%, var(--beak-colors-border-subtle)) !important;
-	}
 	${darwin ? 'html, body { background-color: transparent !important; }' : ''}
-	@keyframes beakTooltipIn {
-		0% { opacity: 0; transform: translateY(-3px) scale(.96); }
-		100% { opacity: 1; transform: translateY(0) scale(1); }
-	}
 	@keyframes beakSpin {
 		from { transform: rotate(0deg); }
 		to { transform: rotate(360deg); }
@@ -102,30 +82,50 @@ const GLOBAL_CSS = (darwin: boolean) => `
 `;
 
 const App: React.FC = () => {
-	const [theme, setTheme] = useState<Theme>(getSystemTheme());
+	const [systemTheme, setSystemTheme] = useState<Theme>(getSystemTheme());
+	const [mode, setMode] = useState<ThemeMode>('system');
 
 	useEffect(() => {
 		const query = window.matchMedia('(prefers-color-scheme: dark)');
 		const onChange = (event: MediaQueryListEvent) => {
-			setTheme(event.matches ? 'dark' : 'light');
+			setSystemTheme(event.matches ? 'dark' : 'light');
 		};
 		query.addEventListener('change', onChange);
 		return () => query.removeEventListener('change', onChange);
 	}, []);
 
+	useEffect(() => {
+		let cancelled = false;
+		ipcPreferencesService.getThemeMode().then(stored => {
+			if (!cancelled && stored) setMode(stored);
+		});
+
+		const listener = (_event: IpcRendererEvent, next: ThemeMode) => setMode(next);
+		window.secureBridge.ipc.on('theme_mode_updated', listener);
+		return () => {
+			cancelled = true;
+			window.secureBridge.ipc.off('theme_mode_updated', listener);
+		};
+	}, []);
+
+	const theme: Theme = mode === 'system' ? systemTheme : mode;
+
 	return (
 		<Provider store={store}>
 			<base href='./' />
 			<WindowSessionContext.Provider value={instance}>
-				<DesignSystemProvider themeKey={theme}>
-					<style>{GLOBAL_CSS(instance.isDarwin())}</style>
-					<ErrorBoundary variant='full' label='Beak'>
-						{embedded && <ElectronEntrypoint />}
-						{!embedded && <WebEntrypoint />}
-					</ErrorBoundary>
-					<NonprodBadge />
-					<Tooltips />
-				</DesignSystemProvider>
+				<KeyboardStateProvider>
+					<BeakChakraProvider themeKey={theme}>
+						<style>{GLOBAL_CSS(instance.isDarwin())}</style>
+						<ErrorBoundary variant='full' label='Beak'>
+							{embedded && <ElectronEntrypoint />}
+							{!embedded && <WebEntrypoint />}
+						</ErrorBoundary>
+						<NonprodBadge />
+						<Tooltips />
+						<ContextMenuHost />
+					</BeakChakraProvider>
+				</KeyboardStateProvider>
 			</WindowSessionContext.Provider>
 		</Provider>
 	);

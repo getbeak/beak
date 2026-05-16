@@ -1,5 +1,5 @@
 import type { Theme } from '@beak/common/types/theme';
-import { DesignSystemProvider } from '@beak/design-system';
+import { BeakChakraProvider } from '@beak/design-system';
 import React from 'react';
 import { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
@@ -27,7 +27,7 @@ const App: React.FC = () => {
 	return (
 		<>
 			<base href={'./'} />
-			<DesignSystemProvider themeKey={theme} />
+			<BeakChakraProvider themeKey={theme} />
 		</>
 	);
 };

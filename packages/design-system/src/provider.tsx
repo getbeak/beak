@@ -22,10 +22,6 @@ interface BeakChakraProviderProps {
  *    `<html>` so Chakra's `_dark` semantic-token selectors resolve.
  * 2. Chakra UI v3 `ChakraProvider` — supplies the design system
  *    (`packages/design-system/src/theme.ts`) to every descendant.
- *
- * No styled-components ThemeProvider here — every remaining
- * styled-component reads its colours via `var(--beak-colors-*)` CSS
- * variables that Chakra emits at the root.
  */
 const BeakChakraProvider: React.FC<BeakChakraProviderProps> = ({ themeKey, children }) => (
 	<NextThemesProvider

@@ -79,48 +79,52 @@ const tooltips: TooltipDefinition[] = [
 	},
 ];
 
-// Beak's tooltip chrome — inverted surface so it always reads with high
-// contrast against the chrome behind it (dark tooltip in light theme, light
-// tooltip in dark theme — same pattern macOS / Linear / Notion use).
-// Injected once at module load.
-if (typeof document !== 'undefined' && !document.getElementById('beak-tooltip-styles')) {
-	const styleEl = document.createElement('style');
-	styleEl.id = 'beak-tooltip-styles';
+// Beak's tooltip chrome. Goal: feel like Linear/Raycast/Vercel — small,
+// dark, no border, soft shadow, brief delay. Same dark surface in light
+// and dark themes (modern apps deliberately don't invert tooltips — it
+// keeps the brand voice consistent and tooltips are recognizably
+// "tooltip-shaped" regardless of theme). Injected (or refreshed) at
+// module load so HMR picks up edits to this block instead of leaving the
+// previous tooltip CSS sitting in the DOM.
+if (typeof document !== 'undefined') {
+	let styleEl = document.getElementById('beak-tooltip-styles') as HTMLStyleElement | null;
+	if (!styleEl) {
+		styleEl = document.createElement('style');
+		styleEl.id = 'beak-tooltip-styles';
+		document.head.appendChild(styleEl);
+	}
 	styleEl.textContent = `
 		:root {
 			--rt-opacity: 1;
-			--rt-transition-show-delay: 0.15s;
-			--rt-transition-closing-delay: 0.05s;
-			--beak-tt-bg: var(--beak-colors-gray-900);
-			--beak-tt-fg: var(--beak-colors-gray-50);
-			--beak-tt-border: var(--beak-colors-gray-700);
-		}
-		html.dark {
-			--beak-tt-bg: var(--beak-colors-gray-100);
-			--beak-tt-fg: var(--beak-colors-gray-950);
-			--beak-tt-border: var(--beak-colors-gray-300);
+			--rt-transition-show-delay: 0.18s;
+			--rt-transition-closing-delay: 0s;
 		}
 		.beak-tooltip {
-			z-index: 1000;
-			max-width: 280px;
-			padding: 5px 9px !important;
-			font-size: 12px !important;
-			font-weight: 400;
-			line-height: 1.4;
-			color: var(--beak-tt-fg) !important;
-			background: var(--beak-tt-bg) !important;
-			border: 1px solid var(--beak-tt-border) !important;
-			border-radius: 4px !important;
-			box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+			/* Above modal dialogs (101) and portal popups (102–110). */
+			z-index: 1500 !important;
+			max-width: 220px !important;
+			padding: 2px 6px !important;
+			font-size: 10.5px !important;
+			font-weight: 500 !important;
+			line-height: 1.3 !important;
+			letter-spacing: 0 !important;
+			color: rgba(255, 255, 255, 0.92) !important;
+			background: rgba(24, 26, 33, 0.94) !important;
+			border: 0 !important;
+			border-radius: 3px !important;
+			box-shadow: 0 1px 3px rgba(0, 0, 0, 0.14), 0 3px 8px rgba(0, 0, 0, 0.12) !important;
+			pointer-events: none;
+			-webkit-backdrop-filter: blur(8px);
+			backdrop-filter: blur(8px);
 		}
 		.beak-tooltip .react-tooltip-arrow,
 		.beak-tooltip > [class*='styles-module_arrow'] {
-			background: var(--beak-tt-bg) !important;
-			border-right: 1px solid var(--beak-tt-border);
-			border-bottom: 1px solid var(--beak-tt-border);
+			width: 5px !important;
+			height: 5px !important;
+			background: rgba(24, 26, 33, 0.94) !important;
+			border: 0 !important;
 		}
 	`;
-	document.head.appendChild(styleEl);
 }
 
 export const Tooltips: React.FC = () => (
