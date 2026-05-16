@@ -5,10 +5,10 @@ import { actions } from '@beak/ui/store/project';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { renderAcceleratorDefinition } from '@beak/ui/utils/keyboard-rendering';
 import type { MenuItemConstructorOptions } from 'electron';
-import React from 'react';
-import { useContext } from 'react';
+import React, { useContext } from 'react';
 import { useDispatch } from 'react-redux';
 
+import GraphqlEndpoints from '../../graphql-endpoints/components/GraphqlEndpoints';
 import SidebarPane from '../../sidebar/components/SidebarPane';
 import SidebarPaneSection from '../../sidebar/components/SidebarPaneSection';
 import { changeTab, makeTabPermanent } from '../../tabs/store/actions';
@@ -165,13 +165,16 @@ const ProjectPane: React.FC<React.PropsWithChildren<unknown>> = () => {
 
 	return (
 		<SidebarPane>
-			<SidebarPaneSection title={name ?? 'Project'} collapseKey={'beak.project.project'}>
+			<SidebarPaneSection title={'Source control'} collapseKey={'beak.project.project'}>
 				<Git />
 			</SidebarPaneSection>
 			<SidebarPaneSection title={'Variable sets'} collapseKey={'beak.project.variable-sets'}>
 				<VariableSets />
 			</SidebarPaneSection>
-			<SidebarPaneSection title={'Explorer'} collapseKey={'beak.project.explorer'}>
+			<SidebarPaneSection title={'GraphQL endpoints'} collapseKey={'beak.project.graphql-endpoints'}>
+				<GraphqlEndpoints />
+			</SidebarPaneSection>
+			<SidebarPaneSection title={name ?? 'Project'} collapseKey={'beak.project.explorer'}>
 				<TreeView
 					tree={tree}
 					rootParentName={'tree'}
