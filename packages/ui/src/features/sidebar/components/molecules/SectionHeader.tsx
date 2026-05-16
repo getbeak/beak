@@ -1,21 +1,29 @@
-import { Box, Flex } from '@chakra-ui/react';
-import ksuid from '@beak/ksuid';
-import { showContextMenu } from '@beak/ui/utils/context-menu';
-import { ChevronRight, EllipsisVertical } from 'lucide-react';
-import type { MenuItemConstructorOptions } from 'electron';
+import { Box, chakra, Flex } from '@chakra-ui/react';
+import type { LucideIcon } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 import * as React from 'react';
-import { useMemo } from 'react';
+
+import BeakTooltip from '../../../../components/atoms/BeakTooltip';
+
+export interface InlineSectionAction {
+	id: string;
+	label: string;
+	icon: LucideIcon;
+	disabled?: boolean;
+	onClick: () => void;
+}
 
 interface SectionHeaderProps {
-	actions?: MenuItemConstructorOptions[];
+	inlineActions?: InlineSectionAction[];
 	collapsed?: boolean;
 	disableCollapse?: boolean;
 	onClick: () => void;
 }
 
+const ChakraButton = chakra('button');
+
 const SectionHeader: React.FC<React.PropsWithChildren<SectionHeaderProps>> = props => {
-	const { actions, children, collapsed, disableCollapse, onClick } = props;
-	const ctxMenuId = useMemo(() => ksuid.generate('ctxmenu').toString(), []);
+	const { inlineActions, children, collapsed, disableCollapse, onClick } = props;
 
 	return (
 		<Flex
@@ -25,23 +33,23 @@ const SectionHeader: React.FC<React.PropsWithChildren<SectionHeaderProps>> = pro
 			tabIndex={disableCollapse ? -1 : 0}
 			justify='space-between'
 			align='center'
-			px='2'
-			py='2'
+			h='28px'
+			px='3'
 			textTransform='uppercase'
-			fontSize='10px'
-			fontWeight='700'
-			letterSpacing='0.08em'
-			color='fg.subtle'
+			fontSize='11px'
+			fontWeight='600'
+			letterSpacing='0.04em'
+			color='fg.muted'
 			cursor={disableCollapse ? 'default' : 'pointer'}
-			transition='color .12s ease, background-color .12s ease'
+			transition='color .1s linear, background-color .1s linear'
 			_hover={{
 				color: 'fg.default',
-				bg: disableCollapse ? undefined : 'color-mix(in srgb, var(--beak-colors-bg-surface) 35%, transparent)',
+				bg: disableCollapse ? undefined : 'color-mix(in srgb, var(--beak-colors-fg-default) 6%, transparent)',
 			}}
 			_focusVisible={{
 				outline: 'none',
 				color: 'fg.default',
-				boxShadow: 'inset 0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-pink) 35%, transparent)',
+				boxShadow: 'inset 0 0 0 1px var(--beak-colors-accent-pink)',
 			}}
 			onClick={onClick}
 			onKeyDown={(event: React.KeyboardEvent) => {
@@ -55,63 +63,86 @@ const SectionHeader: React.FC<React.PropsWithChildren<SectionHeaderProps>> = pro
 				'&:hover [data-section-actions], &:focus-within [data-section-actions]': { opacity: 1 },
 			}}
 		>
-			<Flex align='center' gap='1.5' minW={0}>
-				{!disableCollapse && (
-					<Box
-						display='inline-flex'
-						alignItems='center'
-						justifyContent='center'
-						w='11px'
-						h='11px'
-						color='fg.muted'
-						transform={collapsed ? 'rotate(0deg)' : 'rotate(90deg)'}
-						transition='transform .14s ease-out'
-					>
-						<ChevronRight size={10} />
-					</Box>
-				)}
+			<Flex align='center' gap='1' minW={0}>
+				{/* Chevron reserves space even when disableCollapse, so titles
+				    (and body content indented to title position) stay aligned
+				    across sections regardless of whether the chevron renders. */}
+				<Box
+					display='inline-flex'
+					alignItems='center'
+					justifyContent='center'
+					w='12px'
+					h='12px'
+					flexShrink={0}
+					color='fg.subtle'
+					transform={collapsed ? 'rotate(0deg)' : 'rotate(90deg)'}
+					transition='transform .12s ease-out'
+					opacity={disableCollapse ? 0 : 1}
+				>
+					<ChevronRight size={12} strokeWidth={2} />
+				</Box>
 				<Box overflow='hidden' textOverflow='ellipsis' whiteSpace='nowrap'>
 					{children}
 				</Box>
 			</Flex>
-			{actions && actions.length > 0 && (
-				<Box
+			{inlineActions && inlineActions.length > 0 && (
+				<Flex
 					data-section-actions
-					role='button'
-					tabIndex={0}
-					aria-label='Section actions'
-					title='Section actions'
-					px='1'
-					py='0.5'
-					borderRadius='sm'
-					color='fg.subtle'
+					align='center'
+					gap='0.5'
 					opacity={0}
-					transition='color .12s ease, background-color .12s ease, opacity .14s ease, transform .08s ease'
-					_hover={{
-						color: 'accent.pink',
-						bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent)',
-					}}
-					_focusVisible={{
-						outline: 'none',
-						color: 'accent.pink',
-						boxShadow: '0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-pink) 40%, transparent)',
-					}}
-					_active={{ transform: 'scale(0.92)' }}
-					onClick={event => {
-						event.preventDefault();
-						event.stopPropagation();
-						showContextMenu(ctxMenuId, actions);
-					}}
-					onKeyDown={event => {
-						if (event.key === 'Enter' || event.key === ' ') {
-							event.preventDefault();
-							event.stopPropagation();
-							showContextMenu(ctxMenuId, actions);
-						}
-					}}
+					transition='opacity .12s linear'
 				>
-					<EllipsisVertical size={11} />
-				</Box>
+					{inlineActions.map(action => {
+						const Icon = action.icon;
+						return (
+							<BeakTooltip key={action.id} content={action.label}>
+								<ChakraButton
+									type='button'
+									role='button'
+									aria-label={action.label}
+									disabled={action.disabled}
+									display='inline-flex'
+									alignItems='center'
+									justifyContent='center'
+									w='18px'
+									h='18px'
+									bg='transparent'
+									border='none'
+									borderRadius='sm'
+									color='fg.subtle'
+									cursor={action.disabled ? 'not-allowed' : 'pointer'}
+									transition='color .1s linear, background-color .1s linear'
+									_hover={{
+										color: action.disabled ? 'fg.subtle' : 'fg.default',
+										bg: action.disabled
+											? undefined
+											: 'color-mix(in srgb, var(--beak-colors-fg-default) 10%, transparent)',
+									}}
+									_focusVisible={{
+										outline: 'none',
+										color: 'fg.default',
+										boxShadow: 'inset 0 0 0 1px var(--beak-colors-accent-pink)',
+									}}
+									onClick={event => {
+										event.preventDefault();
+										event.stopPropagation();
+										if (!action.disabled) action.onClick();
+									}}
+									onKeyDown={event => {
+										if (event.key === 'Enter' || event.key === ' ') {
+											event.preventDefault();
+											event.stopPropagation();
+											if (!action.disabled) action.onClick();
+										}
+									}}
+								>
+									<Icon size={12} strokeWidth={1.8} />
+								</ChakraButton>
+							</BeakTooltip>
+						);
+					})}
+				</Flex>
 			)}
 		</Flex>
 	);

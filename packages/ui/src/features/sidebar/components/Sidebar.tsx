@@ -89,7 +89,7 @@ const Sidebar: React.FC = () => {
 				case checkShortcut('sidebar.switch-endpoints', event):
 					event.stopPropagation();
 					dispatch(sidebarPreferenceSetCollapse({ key: 'sidebar', collapsed: false }));
-					dispatch(sidebarPreferenceSetSelected('endpoints'));
+					dispatch(sidebarPreferenceSetSelected('schemas'));
 					break;
 				case checkShortcut('sidebar.switch-extensions', event):
 					event.stopPropagation();
@@ -117,7 +117,7 @@ const Sidebar: React.FC = () => {
 					break;
 				case 'sidebar_show_endpoints':
 					dispatch(sidebarPreferenceSetCollapse({ key: 'sidebar', collapsed: false }));
-					dispatch(sidebarPreferenceSetSelected('endpoints'));
+					dispatch(sidebarPreferenceSetSelected('schemas'));
 					break;
 				case 'sidebar_show_extensions':
 					dispatch(sidebarPreferenceSetCollapse({ key: 'sidebar', collapsed: false }));
@@ -148,9 +148,12 @@ const Sidebar: React.FC = () => {
 
 	const topSpacer = embedded ? 36 : 0;
 	const title =
-		selectedSidebar === 'variables' ? 'Variables'
-			: selectedSidebar === 'endpoints' ? 'Endpoints'
-				: selectedSidebar === 'extensions' ? 'Extensions'
+		selectedSidebar === 'variables'
+			? 'Variables'
+			: selectedSidebar === 'schemas'
+				? 'Schema sources'
+				: selectedSidebar === 'extensions'
+					? 'Extensions'
 					: 'Explorer';
 
 	return (
@@ -165,19 +168,18 @@ const Sidebar: React.FC = () => {
 				inset='0'
 				zIndex={1}
 				pointerEvents='none'
-				backdropFilter={useNativeVibrancy ? undefined : 'blur(40px) saturate(120%)'}
+				backdropFilter={useNativeVibrancy ? undefined : 'blur(40px) saturate(140%)'}
 				css={{
-					// Light mode keeps the panel quite opaque — the mesh shows
-					// up as faint hue-shift in the blurred panel, not as a
-					// foreground tint. Dark mode leans more transparent so the
-					// mesh actually peeks through.
+					// Lean transparent in both modes so the mesh underneath
+					// actually reads as colour-through-glass. Blur + saturation
+					// keep text legible on top.
 					background: useNativeVibrancy
 						? 'color-mix(in srgb, var(--beak-colors-bg-surface-alt) 55%, transparent)'
-						: 'color-mix(in srgb, var(--beak-colors-bg-surface-alt) 92%, transparent)',
+						: 'color-mix(in srgb, var(--beak-colors-bg-surface-alt) 72%, transparent)',
 					'.dark &': {
 						background: useNativeVibrancy
 							? 'color-mix(in srgb, var(--beak-colors-gray-850) 60%, transparent)'
-							: 'color-mix(in srgb, var(--beak-colors-gray-900) 78%, transparent)',
+							: 'color-mix(in srgb, var(--beak-colors-gray-900) 62%, transparent)',
 					},
 				}}
 			/>
@@ -207,8 +209,8 @@ const Sidebar: React.FC = () => {
 							onClick={handleActivityClick}
 						/>
 						<SidebarMenuItem
-							item='endpoints'
-							name='Endpoints'
+							item='schemas'
+							name='Schema sources'
 							selectedItem={sidebarCollapsed ? null : selectedSidebar}
 							shortcut='sidebar.switch-endpoints'
 							onClick={handleActivityClick}
@@ -232,11 +234,19 @@ const Sidebar: React.FC = () => {
 							align='center'
 							h='35px'
 							flexShrink={0}
-							pl='4'
-							pr='2'
+							px='3'
 							gap='1'
+							style={embedded ? ({ WebkitAppRegion: 'drag' } as React.CSSProperties) : undefined}
 							css={{
 								'&:hover [data-view-actions], &:focus-within [data-view-actions]': { opacity: 1 },
+								...(embedded && {
+									// Empty space in the title strip stays a drag region; the
+									// title text + hover action buttons opt out so they
+									// stay clickable.
+									'button, [role=button], [data-no-drag]': {
+										WebkitAppRegion: 'no-drag' as never,
+									},
+								}),
 							}}
 						>
 							<Box
@@ -300,7 +310,7 @@ const Sidebar: React.FC = () => {
 						<Box flex='1' minH={0} display='flex' flexDirection='column' overflow='hidden'>
 							{selectedSidebar === 'project' && <ProjectPane />}
 							{selectedSidebar === 'variables' && <VariablesPane />}
-							{selectedSidebar === 'endpoints' && <EndpointsPane />}
+							{selectedSidebar === 'schemas' && <EndpointsPane />}
 							{selectedSidebar === 'extensions' && <ExtensionsPane />}
 						</Box>
 					</Flex>
