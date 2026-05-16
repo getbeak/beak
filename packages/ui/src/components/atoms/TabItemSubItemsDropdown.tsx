@@ -1,8 +1,8 @@
+import Popover, { PopoverBody } from '@beak/ui/components/molecules/Popover';
 import { Box, Flex } from '@chakra-ui/react';
 import { Check, ChevronDown } from 'lucide-react';
 import * as React from 'react';
-import { useEffect, useRef, useState } from 'react';
-import { createPortal } from 'react-dom';
+import { useRef, useState } from 'react';
 
 import type { TabSubItem } from './TabItem';
 
@@ -21,18 +21,6 @@ const TabItemSubItemsDropdown = <T = string>(props: TabItemSubItemsDropdownProps
 		onSubItemChanged(subItem);
 		setShowDropdown(false);
 	}
-
-	useEffect(() => {
-		if (!showDropdown) return void 0;
-		function onKeyDown(event: KeyboardEvent) {
-			if (event.key === 'Escape') {
-				event.preventDefault();
-				setShowDropdown(false);
-			}
-		}
-		window.addEventListener('keydown', onKeyDown);
-		return () => window.removeEventListener('keydown', onKeyDown);
-	}, [showDropdown]);
 
 	return (
 		<React.Fragment>
@@ -60,82 +48,64 @@ const TabItemSubItemsDropdown = <T = string>(props: TabItemSubItemsDropdownProps
 				onClick={(event: React.MouseEvent) => {
 					event.stopPropagation();
 					event.preventDefault();
-					setShowDropdown(true);
+					setShowDropdown(s => !s);
 				}}
 			>
 				<ChevronDown size={10} strokeWidth={2.2} />
 			</Box>
 
-			{parentRef.current &&
-				showDropdown &&
-				createPortal(
-					<Box position='fixed' inset='0' onClick={() => setShowDropdown(false)} zIndex={101}>
-						<Box
-							role='listbox'
-							aria-label='Sub-tab'
-							position='fixed'
-							w='160px'
-							borderWidth='1px'
-							borderColor='color-mix(in srgb, var(--beak-colors-accent-pink) 24%, var(--beak-colors-border-subtle))'
-							borderRadius='lg'
-							bg='color-mix(in srgb, var(--beak-colors-bg-surface) 70%, transparent)'
-							backdropFilter='blur(24px) saturate(180%)'
-							boxShadow='0 28px 64px rgba(0,0,0,0.32), 0 8px 20px color-mix(in srgb, var(--beak-colors-accent-pink) 16%, rgba(0,0,0,0.15)), inset 0 1px 0 color-mix(in srgb, white 20%, transparent)'
-							p='1'
-							zIndex={102}
-							style={{
-								marginTop: `${parentRef.current!.getBoundingClientRect().top + parentRef.current!.clientHeight + 6}px`,
-								marginLeft: `${parentRef.current!.getBoundingClientRect().left - 160 + 14}px`,
-							}}
-							onClick={event => event.stopPropagation()}
-						>
-							{subItems.map(i => {
-								const isActive = (i.key as unknown as string) === activeSubItem;
-								return (
-									<Flex
-										tabIndex={0}
-										role='option'
-										aria-selected={isActive}
-										key={i.key as string}
-										align='center'
-										justify='space-between'
-										gap='2'
-										px='2'
-										py='1.5'
-										fontSize='xs'
-										fontWeight={isActive ? '600' : '500'}
-										cursor='pointer'
-										borderRadius='md'
-										color={isActive ? 'accent.pink' : 'fg.default'}
-										bg={isActive ? 'color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent)' : 'transparent'}
-										_hover={{ bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 12%, transparent)', color: 'accent.pink' }}
-										_focusVisible={{
-											outline: 'none',
-											bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 18%, transparent)',
-											color: 'accent.pink',
-											boxShadow: '0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-pink) 35%, transparent)',
-										}}
-										onClick={() => setSubItem(i.key)}
-										onKeyDown={(event: React.KeyboardEvent) => {
-											if (event.key === 'Enter' || event.key === ' ') {
-												event.preventDefault();
-												setSubItem(i.key);
-											}
-										}}
-									>
-										<Box>{i.label}</Box>
-										{isActive && (
-											<Box color='accent.pink' display='inline-flex'>
-												<Check size={11} strokeWidth={3} />
-											</Box>
-										)}
-									</Flex>
-								);
-							})}
-						</Box>
-					</Box>,
-					document.getElementById('tab-item-sub-items-popover')!,
-				)}
+			{showDropdown && (
+				<Popover
+					anchor={parentRef.current}
+					onClose={() => setShowDropdown(false)}
+					width={180}
+					align='end'
+					ariaLabel='Sub-tab'
+				>
+					<PopoverBody padding='4px'>
+						{subItems.map(i => {
+							const isActive = (i.key as unknown as string) === activeSubItem;
+							return (
+								<Flex
+									tabIndex={0}
+									role='option'
+									aria-selected={isActive}
+									key={i.key as string}
+									align='center'
+									justify='space-between'
+									gap='2'
+									px='2'
+									py='1.5'
+									fontSize='xs'
+									fontWeight={isActive ? '600' : '500'}
+									cursor='pointer'
+									borderRadius='md'
+									color={isActive ? 'accent.pink' : 'fg.default'}
+									bg={isActive ? 'color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent)' : 'transparent'}
+									_hover={{
+										bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 12%, transparent)',
+										color: 'accent.pink',
+									}}
+									onClick={() => setSubItem(i.key)}
+									onKeyDown={(event: React.KeyboardEvent) => {
+										if (event.key === 'Enter' || event.key === ' ') {
+											event.preventDefault();
+											setSubItem(i.key);
+										}
+									}}
+								>
+									<Box>{i.label}</Box>
+									{isActive && (
+										<Box color='accent.pink' display='inline-flex'>
+											<Check size={11} strokeWidth={3} />
+										</Box>
+									)}
+								</Flex>
+							);
+						})}
+					</PopoverBody>
+				</Popover>
+			)}
 		</React.Fragment>
 	);
 };

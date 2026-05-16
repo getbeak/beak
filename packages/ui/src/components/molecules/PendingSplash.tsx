@@ -12,8 +12,6 @@ import { renderSimpleKey } from '@beak/ui/utils/keyboard-rendering';
 import { motion, useReducedMotion } from 'framer-motion';
 import * as React from 'react';
 
-import MeshGradient from './MeshGradient';
-
 const displayShortcuts: Partial<Record<Shortcuts, string>> = {
 	'menu-bar.file.new-request': 'Create new request',
 	'global.execute-request': 'Execute request',
@@ -29,14 +27,21 @@ const PendingSplash: React.FC = () => {
 	const reduced = useReducedMotion();
 
 	return (
-		<Box position='relative' w='100%' h='100%' overflow='hidden'>
-			<MeshGradient
-				position='absolute'
-				inset='0'
-				tone='loading'
-				intensity='subtle'
-				pointerEvents='none'
-			/>
+		<Box
+			position='relative'
+			w='100%'
+			h='100%'
+			overflow='hidden'
+			css={{
+				// Distinct from the request pane (`bg.surface`): lighter in
+				// light mode, lifted in dark. Solid-enough to read as its own
+				// surface, but still translucent so the mesh hints through.
+				background: 'color-mix(in srgb, var(--beak-colors-bg-canvas) 88%, transparent)',
+				'.dark &': {
+					background: 'color-mix(in srgb, var(--beak-colors-bg-surface-emphasized) 78%, transparent)',
+				},
+			}}
+		>
 			<Flex
 				position='relative'
 				w='100%'
@@ -87,14 +92,8 @@ const PendingSplash: React.FC = () => {
 					templateColumns='auto auto'
 					columnGap='4'
 					rowGap='2.5'
-					px='5'
-					py='3.5'
-					borderRadius='xl'
-					borderWidth='1px'
-					borderColor='color-mix(in srgb, var(--beak-colors-accent-pink) 18%, var(--beak-colors-border-subtle))'
-					bg='color-mix(in srgb, var(--beak-colors-bg-surface) 60%, transparent)'
-					backdropFilter='blur(16px) saturate(150%)'
-					boxShadow='0 16px 40px rgba(0,0,0,0.18), inset 0 1px 0 color-mix(in srgb, white 18%, transparent)'
+					px='2'
+					py='1'
 				>
 					{TypedObject.keys(displayShortcuts).map(k => {
 						const name = displayShortcuts[k];

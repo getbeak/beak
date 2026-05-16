@@ -1,9 +1,7 @@
-// Static CSS for react-reflex panes. The component returns a <style> tag
-// rather than going through styled-components' createGlobalStyle.
-//
-// Visual styling for the splitter element (background, hover, glow) lives
-// in `ReflexSplitter` so it can resolve through Chakra tokens at runtime.
-// This file only sets up the structural and cursor-related rules.
+// Static structural + cursor CSS for react-reflex panes, returned as a
+// `<style>` tag. Visual styling for the splitter element (background,
+// hover, glow) lives in `ReflexSplitter` so it can resolve through Chakra
+// tokens at runtime.
 
 import * as React from 'react';
 

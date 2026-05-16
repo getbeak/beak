@@ -15,6 +15,13 @@ export interface InlineSectionAction {
 
 interface SectionHeaderProps {
 	inlineActions?: InlineSectionAction[];
+	/**
+	 * Custom element rendered in the header's right-hand cluster, alongside
+	 * the inline-action icons. Unlike inline actions this slot is always
+	 * visible (not hover-revealed) — use it for stateful controls that need
+	 * to advertise their current value, like the explorer's tree filter.
+	 */
+	headerSlot?: React.ReactNode;
 	collapsed?: boolean;
 	disableCollapse?: boolean;
 	onClick: () => void;
@@ -23,7 +30,7 @@ interface SectionHeaderProps {
 const ChakraButton = chakra('button');
 
 const SectionHeader: React.FC<React.PropsWithChildren<SectionHeaderProps>> = props => {
-	const { inlineActions, children, collapsed, disableCollapse, onClick } = props;
+	const { inlineActions, headerSlot, children, collapsed, disableCollapse, onClick } = props;
 
 	return (
 		<Flex
@@ -85,65 +92,60 @@ const SectionHeader: React.FC<React.PropsWithChildren<SectionHeaderProps>> = pro
 					{children}
 				</Box>
 			</Flex>
-			{inlineActions && inlineActions.length > 0 && (
-				<Flex
-					data-section-actions
-					align='center'
-					gap='0.5'
-					opacity={0}
-					transition='opacity .12s linear'
-				>
-					{inlineActions.map(action => {
-						const Icon = action.icon;
-						return (
-							<BeakTooltip key={action.id} content={action.label}>
-								<ChakraButton
-									type='button'
-									role='button'
-									aria-label={action.label}
-									disabled={action.disabled}
-									display='inline-flex'
-									alignItems='center'
-									justifyContent='center'
-									w='18px'
-									h='18px'
-									bg='transparent'
-									border='none'
-									borderRadius='sm'
-									color='fg.subtle'
-									cursor={action.disabled ? 'not-allowed' : 'pointer'}
-									transition='color .1s linear, background-color .1s linear'
-									_hover={{
-										color: action.disabled ? 'fg.subtle' : 'fg.default',
-										bg: action.disabled
-											? undefined
-											: 'color-mix(in srgb, var(--beak-colors-fg-default) 10%, transparent)',
-									}}
-									_focusVisible={{
-										outline: 'none',
-										color: 'fg.default',
-										boxShadow: 'inset 0 0 0 1px var(--beak-colors-accent-pink)',
-									}}
-									onClick={event => {
-										event.preventDefault();
-										event.stopPropagation();
-										if (!action.disabled) action.onClick();
-									}}
-									onKeyDown={event => {
-										if (event.key === 'Enter' || event.key === ' ') {
+			<Flex align='center' gap='0.5'>
+				{headerSlot}
+				{inlineActions && inlineActions.length > 0 && (
+					<Flex data-section-actions align='center' gap='0.5' opacity={0} transition='opacity .12s linear'>
+						{inlineActions.map(action => {
+							const Icon = action.icon;
+							return (
+								<BeakTooltip key={action.id} content={action.label}>
+									<ChakraButton
+										type='button'
+										role='button'
+										aria-label={action.label}
+										disabled={action.disabled}
+										display='inline-flex'
+										alignItems='center'
+										justifyContent='center'
+										w='18px'
+										h='18px'
+										bg='transparent'
+										border='none'
+										borderRadius='sm'
+										color='fg.subtle'
+										cursor={action.disabled ? 'not-allowed' : 'pointer'}
+										transition='color .1s linear, background-color .1s linear'
+										_hover={{
+											color: action.disabled ? 'fg.subtle' : 'fg.default',
+											bg: action.disabled ? undefined : 'color-mix(in srgb, var(--beak-colors-fg-default) 10%, transparent)',
+										}}
+										_focusVisible={{
+											outline: 'none',
+											color: 'fg.default',
+											boxShadow: 'inset 0 0 0 1px var(--beak-colors-accent-pink)',
+										}}
+										onClick={event => {
 											event.preventDefault();
 											event.stopPropagation();
 											if (!action.disabled) action.onClick();
-										}
-									}}
-								>
-									<Icon size={12} strokeWidth={1.8} />
-								</ChakraButton>
-							</BeakTooltip>
-						);
-					})}
-				</Flex>
-			)}
+										}}
+										onKeyDown={event => {
+											if (event.key === 'Enter' || event.key === ' ') {
+												event.preventDefault();
+												event.stopPropagation();
+												if (!action.disabled) action.onClick();
+											}
+										}}
+									>
+										<Icon size={12} strokeWidth={1.8} />
+									</ChakraButton>
+								</BeakTooltip>
+							);
+						})}
+					</Flex>
+				)}
+			</Flex>
 		</Flex>
 	);
 };

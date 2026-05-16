@@ -1,9 +1,14 @@
 import { Dialog as ChakraDialog, Portal } from '@chakra-ui/react';
-import React from 'react';
+import * as React from 'react';
 
 interface DialogProps {
 	onClose: () => void;
 	size?: 'sm' | 'md' | 'lg';
+	/**
+	 * Accent colour for the header icon and (subtle) bottom-border tint. The
+	 * dialog surface itself stays neutral so content reads clearly — the tone
+	 * is a quiet signal, not a paint job.
+	 */
 	tone?: 'pink' | 'teal' | 'indigo' | 'alert';
 }
 
@@ -14,14 +19,29 @@ const TONE_ACCENT: Record<NonNullable<DialogProps['tone']>, string> = {
 	alert: 'var(--beak-colors-accent-alert)',
 };
 
+interface DialogToneContextValue {
+	accent: string;
+	tone: NonNullable<DialogProps['tone']>;
+}
+
+const DialogToneContext = React.createContext<DialogToneContextValue>({
+	accent: TONE_ACCENT.pink,
+	tone: 'pink',
+});
+
 /**
- * Beak's modal dialog — Chakra v3 `Dialog.Root` under the hood, with a
- * frosted-glass aesthetic: translucent surface, heavy backdrop blur,
- * brand-tinted sunrise gradient at the top, layered glow shadow, and a
- * fine sheen line that picks up pink → teal across the top edge.
+ * Beak's modal dialog. Solid surface, neutral shadow, no decorative gradients
+ * or sheen lines — text contrast is the priority. The accent tone is exposed
+ * via context so `DialogHeader` can colour its icon without each dialog
+ * threading the tone through its own props.
+ *
+ * Layouts should compose via `DialogHeader`, `DialogBody`, and `DialogFooter`
+ * rather than handing the `Dialog` arbitrary padded boxes. That keeps every
+ * dialog in the app on the same baseline rhythm.
  */
 const Dialog: React.FC<React.PropsWithChildren<DialogProps>> = ({ children, onClose, size = 'md', tone = 'pink' }) => {
 	const accent = TONE_ACCENT[tone];
+	const toneValue = React.useMemo(() => ({ accent, tone }), [accent, tone]);
 
 	return (
 		<ChakraDialog.Root
@@ -36,11 +56,11 @@ const Dialog: React.FC<React.PropsWithChildren<DialogProps>> = ({ children, onCl
 		>
 			<Portal>
 				<ChakraDialog.Backdrop
-					bg='color-mix(in srgb, var(--beak-colors-gray-950) 42%, transparent)'
-					backdropFilter='blur(16px) saturate(160%)'
+					bg='color-mix(in srgb, var(--beak-colors-gray-950) 55%, transparent)'
+					backdropFilter='blur(10px) saturate(140%)'
 					css={{
 						'@supports not (backdrop-filter: blur(8px))': {
-							background: 'color-mix(in srgb, var(--beak-colors-gray-950) 78%, transparent)',
+							background: 'color-mix(in srgb, var(--beak-colors-gray-950) 82%, transparent)',
 						},
 					}}
 				/>
@@ -48,56 +68,123 @@ const Dialog: React.FC<React.PropsWithChildren<DialogProps>> = ({ children, onCl
 					<ChakraDialog.Content
 						maxW='unset'
 						w='auto'
-						bg='color-mix(in srgb, var(--beak-colors-bg-surface) 68%, transparent)'
+						bg='bg.surface'
 						borderWidth='1px'
-						borderColor={`color-mix(in srgb, ${accent} 30%, var(--beak-colors-border-subtle))`}
-						borderRadius='xl'
-						boxShadow={`
-							0 50px 120px rgba(0, 0, 0, 0.42),
-							0 20px 56px color-mix(in srgb, ${accent} 22%, rgba(0, 0, 0, 0.2)),
-							0 0 0 1px color-mix(in srgb, white 6%, transparent),
-							inset 0 1px 0 color-mix(in srgb, white 22%, transparent),
-							inset 0 -1px 0 color-mix(in srgb, var(--beak-colors-gray-950) 10%, transparent)
-						`}
+						borderColor='border.default'
+						borderRadius='lg'
+						boxShadow='0 24px 60px rgba(0,0,0,0.32), 0 6px 16px rgba(0,0,0,0.18)'
 						p='0'
 						overflow='hidden'
-						backdropFilter='blur(28px) saturate(180%)'
-						css={{
-							position: 'relative',
-							'&::before': {
-								content: '""',
-								position: 'absolute',
-								top: 0,
-								left: 0,
-								right: 0,
-								height: '140px',
-								background: `
-									radial-gradient(60% 100% at 18% 0%, color-mix(in srgb, ${accent} 32%, transparent), transparent 65%),
-									radial-gradient(70% 110% at 88% 0%, color-mix(in srgb, var(--beak-colors-accent-teal) 22%, transparent), transparent 70%)
-								`,
-								pointerEvents: 'none',
-								zIndex: 0,
-							},
-							'&::after': {
-								content: '""',
-								position: 'absolute',
-								top: 0,
-								left: '6%',
-								right: '6%',
-								height: '1px',
-								background: `linear-gradient(90deg, transparent, color-mix(in srgb, ${accent} 85%, transparent) 30%, color-mix(in srgb, var(--beak-colors-accent-teal) 75%, transparent) 70%, transparent)`,
-								pointerEvents: 'none',
-								zIndex: 1,
-							},
-							'& > *': { position: 'relative', zIndex: 2 },
-						}}
 					>
-						{children}
+						<DialogToneContext.Provider value={toneValue}>{children}</DialogToneContext.Provider>
 					</ChakraDialog.Content>
 				</ChakraDialog.Positioner>
 			</Portal>
 		</ChakraDialog.Root>
 	);
 };
+
+interface DialogHeaderProps {
+	icon?: React.ReactNode;
+	title: React.ReactNode;
+	description?: React.ReactNode;
+}
+
+/**
+ * Standard dialog header: optional icon chip (tinted with the dialog's tone),
+ * title, optional one-line description underneath. Always has a bottom border
+ * so the body's reading boundary is unambiguous.
+ */
+export const DialogHeader: React.FC<DialogHeaderProps> = ({ icon, title, description }) => {
+	const { accent } = React.useContext(DialogToneContext);
+	return (
+		<div
+			style={{
+				display: 'flex',
+				alignItems: 'center',
+				gap: '12px',
+				padding: '14px 20px',
+				borderBottom: '1px solid var(--beak-colors-border-subtle)',
+			}}
+		>
+			{icon && (
+				<div
+					style={{
+						display: 'inline-flex',
+						alignItems: 'center',
+						justifyContent: 'center',
+						width: '28px',
+						height: '28px',
+						flex: '0 0 auto',
+						borderRadius: '999px',
+						background: `color-mix(in srgb, ${accent} 14%, transparent)`,
+						color: accent,
+					}}
+				>
+					{icon}
+				</div>
+			)}
+			<div style={{ minWidth: 0, flex: '1 1 auto' }}>
+				<div
+					style={{
+						fontSize: '14px',
+						fontWeight: 600,
+						color: 'var(--beak-colors-fg-default)',
+						lineHeight: 1.25,
+						letterSpacing: '-0.005em',
+					}}
+				>
+					{title}
+				</div>
+				{description && (
+					<div
+						style={{
+							marginTop: '2px',
+							fontSize: '12px',
+							color: 'var(--beak-colors-fg-muted)',
+							lineHeight: 1.4,
+						}}
+					>
+						{description}
+					</div>
+				)}
+			</div>
+		</div>
+	);
+};
+
+interface DialogBodyProps {
+	/** Override the standard padding. Use sparingly. */
+	padding?: string;
+}
+
+/**
+ * Standard dialog body. Holds the dialog's actual content. Forms typically
+ * stack inside this — fields use the surrounding `bg.surface` so they don't
+ * pop visually like the old white-on-translucent tiles did.
+ */
+export const DialogBody: React.FC<React.PropsWithChildren<DialogBodyProps>> = ({ children, padding = '16px 20px' }) => (
+	<div style={{ padding, color: 'var(--beak-colors-fg-default)' }}>{children}</div>
+);
+
+/**
+ * Standard dialog footer. Right-aligns buttons; top border separates from
+ * the body so action affordances read distinct from content.
+ */
+export const DialogFooter: React.FC<React.PropsWithChildren> = ({ children }) => (
+	<div
+		style={{
+			display: 'flex',
+			alignItems: 'center',
+			justifyContent: 'flex-end',
+			gap: '8px',
+			padding: '12px 20px',
+			borderTop: '1px solid var(--beak-colors-border-subtle)',
+			background: 'var(--beak-colors-bg-canvas)',
+		}}
+	>
+		{children}
+	</div>
+);
 
 export default Dialog;

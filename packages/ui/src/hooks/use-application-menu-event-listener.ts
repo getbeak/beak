@@ -3,17 +3,18 @@ import { requestFlight } from '@beak/state/flight';
 import { useCallback, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { showEncryptionView } from '../features/encryption/store/actions';
-import { actions as openApiImportActions } from '../features/openapi-import/store';
 import { showOmniBar } from '../features/omni-bar/store/actions';
+import { actions as openApiImportActions } from '../features/openapi-import/store';
 import {
 	changeTab,
 	changeTabNext,
 	changeTabPrevious,
-	closeTab,
 	closeTabsAll,
 	closeTabsOther,
 } from '../features/tabs/store/actions';
-import { createNewFolder, createNewRequest } from '../store/project/actions';
+import { exportProjectToLocalFolder } from '../features/welcome/lib/export-to-local-folder';
+import { useAppSelector } from '../store/redux';
+import { closeTabIntent, createNewFolder, createNewRequest } from '../store/project/actions';
 import { useSaveProjectAs } from './use-save-project-as';
 
 const embedded = Boolean(window.embeddedIndicator);
@@ -26,6 +27,8 @@ const embedded = Boolean(window.embeddedIndicator);
 export function useMenuActionDispatcher() {
 	const dispatch = useDispatch();
 	const saveProjectAs = useSaveProjectAs();
+	const projectId = useAppSelector(s => s.global.project.id ?? null);
+	const projectName = useAppSelector(s => s.global.project.name ?? '');
 
 	return useCallback(
 		(code: MenuEventCode) => {
@@ -44,7 +47,7 @@ export function useMenuActionDispatcher() {
 					dispatch(closeTabsOther());
 					break;
 				case 'close_tab':
-					dispatch(closeTab());
+					dispatch(closeTabIntent(undefined));
 					break;
 				case 'select_next_tab':
 					dispatch(changeTabNext());
@@ -75,6 +78,16 @@ export function useMenuActionDispatcher() {
 					dispatch(changeTab({ type: 'project_home', temporary: false, payload: 'project_home' }));
 					break;
 
+				case 'show_variable_input_lab':
+					dispatch(
+						changeTab({
+							type: 'variable_input_playground',
+							temporary: false,
+							payload: 'variable_input_playground',
+						}),
+					);
+					break;
+
 				case 'import_openapi_spec':
 					dispatch(openApiImportActions.start());
 					break;
@@ -83,12 +96,23 @@ export function useMenuActionDispatcher() {
 					void saveProjectAs();
 					break;
 
+				case 'export_to_local_folder':
+					if (!projectId) break;
+					void (async () => {
+						const outcome = await exportProjectToLocalFolder({
+							projectId,
+							projectName: projectName || 'Beak Project',
+						});
+						if (outcome.ok) window.location.reload();
+					})();
+					break;
+
 				default:
 					console.warn('Unknown menu item event', code);
 					break;
 			}
 		},
-		[dispatch, saveProjectAs],
+		[dispatch, saveProjectAs, projectId, projectName],
 	);
 }
 

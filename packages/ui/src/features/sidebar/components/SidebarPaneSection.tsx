@@ -18,6 +18,12 @@ interface SidebarPaneSectionProps {
 	 * variable set" are immediately discoverable.
 	 */
 	inlineActions?: InlineSectionAction[];
+	/**
+	 * Always-visible custom slot in the section header, rendered alongside
+	 * the (hover-revealed) inline actions. Use this for stateful controls
+	 * like the explorer's tree filter that need to advertise their value.
+	 */
+	headerSlot?: React.ReactNode;
 	title: React.ReactNode;
 	collapseKey: string;
 	disableCollapse?: boolean;
@@ -25,7 +31,7 @@ interface SidebarPaneSectionProps {
 
 const SidebarPaneSection: React.FC<React.PropsWithChildren<SidebarPaneSectionProps>> = props => {
 	const dispatch = useDispatch();
-	const { inlineActions, title, collapseKey, disableCollapse, children } = props;
+	const { inlineActions, headerSlot, title, collapseKey, disableCollapse, children } = props;
 	const [bodyOptions, setBodyOptions] = useState<SectionBodyOptions>({});
 
 	const collapsed = useAppSelector(s => s.global.preferences.sidebar.collapsed[collapseKey]);
@@ -72,6 +78,7 @@ const SidebarPaneSection: React.FC<React.PropsWithChildren<SidebarPaneSectionPro
 			<Box mt='1' _first={{ mt: 0 }}>
 				<SectionHeader
 					inlineActions={inlineActions}
+					headerSlot={headerSlot}
 					collapsed={uiCollapsed}
 					disableCollapse={disableCollapse}
 					onClick={setCollapsedProxy}

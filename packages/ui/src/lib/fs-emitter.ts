@@ -73,7 +73,10 @@ async function* scanDirectoryRecursivelyIter(
 			yield { path: res, isDirectory: true };
 
 			yield* scanDirectoryRecursivelyIter(res, allowAllFiles);
-		} else if (allowAllFiles || extension === '.json') {
+		} else if ((allowAllFiles || extension === '.json') && !dirent.name.startsWith('_')) {
+			// `_`-prefixed files are metadata (e.g. `_collection.json`) — they
+			// live in the tree but are not request nodes. Skip them so the
+			// renderer doesn't try to parse them as requests.
 			yield { path: res, isDirectory: false };
 		}
 	}

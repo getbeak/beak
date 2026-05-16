@@ -17,21 +17,24 @@ import * as React from 'react';
  *
  * `intensity` controls overlay opacity (subtle/normal/strong).
  * The shader honours `prefers-reduced-motion` — when set, `speed`
- * drops to 0 so the gradient renders static.
+ * drops to 0 so the gradient renders static. Pass `static` to force
+ * a frozen render regardless of the user's motion preference (useful
+ * for always-on chrome like the sidebar where motion would be noisy).
  */
 export interface MeshGradientProps extends Omit<BoxProps, 'children'> {
 	tone?: 'welcome' | 'loading' | 'success' | 'alert';
 	intensity?: 'subtle' | 'normal' | 'strong';
+	static?: boolean;
 }
 
 const PALETTES: Record<NonNullable<MeshGradientProps['tone']>, string[]> = {
 	// More colour stops = a livelier mesh. Each tone repeats its
 	// brand colour in a different position so the shader has more
 	// "anchors" to interpolate between.
-	welcome: ['#d45d80', '#33CC99', '#333399', '#d45d80', '#5C5CC8', '#1a1a2e'],
-	loading: ['#33CC99', '#333399', '#d45d80', '#33CC99', '#0e1226'],
-	success: ['#33CC99', '#9be9c8', '#33CC99', '#22C55E', '#1a3326'],
-	alert: ['#FC3233', '#d45d80', '#333399', '#FF5757', '#2a0e1a'],
+	welcome: ['#DA4D7C', '#1FB58F', '#4644BD', '#DA4D7C', '#706FDD', '#11141E'],
+	loading: ['#1FB58F', '#4644BD', '#DA4D7C', '#1FB58F', '#0F1219'],
+	success: ['#1FB58F', '#9CEFCE', '#1FB58F', '#22C55E', '#0C5240'],
+	alert: ['#EF4444', '#DA4D7C', '#4644BD', '#F87171', '#281019'],
 };
 
 const INTENSITY_OPACITY = {
@@ -43,11 +46,13 @@ const INTENSITY_OPACITY = {
 const MeshGradient: React.FC<MeshGradientProps> = ({
 	tone = 'welcome',
 	intensity = 'normal',
+	static: isStatic = false,
 	...rest
 }) => {
 	const reduced = useReducedMotion();
 	const colors = PALETTES[tone];
 	const opacity = INTENSITY_OPACITY[intensity];
+	const speed = isStatic || reduced ? 0 : 0.55;
 
 	return (
 		<Box data-testid='mesh-gradient' position='relative' overflow='hidden' {...rest}>
@@ -62,7 +67,7 @@ const MeshGradient: React.FC<MeshGradientProps> = ({
 					colors={colors}
 					distortion={0.95}
 					swirl={0.35}
-					speed={reduced ? 0 : 0.55}
+					speed={speed}
 					grainMixer={0.18}
 					style={{ width: '100%', height: '100%' }}
 				/>

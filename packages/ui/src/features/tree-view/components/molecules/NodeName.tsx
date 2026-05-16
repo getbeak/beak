@@ -2,7 +2,16 @@ import { verbToColor } from '@beak/design-system/helpers';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { Box } from '@chakra-ui/react';
 import type { ValidRequestNode } from '@getbeak/types/nodes';
-import { ArrowUpRight, FileText, Folder, FolderOpen, Link2, type LucideIcon, Table } from 'lucide-react';
+import {
+	ArrowUpRight,
+	FileText,
+	Folder,
+	FolderOpen,
+	Link2,
+	type LucideIcon,
+	Table,
+	Workflow as WorkflowIcon,
+} from 'lucide-react';
 import React from 'react';
 
 import type { TreeViewItem } from '../../types';
@@ -24,6 +33,9 @@ function nonRequestIcon(node: TreeViewItem, collapsed: boolean): { Icon: LucideI
 	}
 	if (node.type === 'variable-set') {
 		return { Icon: Table, color: 'var(--beak-colors-accent-teal)' };
+	}
+	if (node.type === 'workflow') {
+		return { Icon: WorkflowIcon, color: 'var(--beak-colors-accent-indigo)' };
 	}
 	// fallback for non-verb file-like nodes (e.g. _collection, broken requests)
 	return { Icon: FileText, color: 'var(--beak-colors-fg-subtle)' };

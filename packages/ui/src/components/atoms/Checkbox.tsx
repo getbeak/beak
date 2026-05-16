@@ -4,7 +4,7 @@ import * as React from 'react';
 import { useId } from 'react';
 
 interface CheckboxProps extends Omit<React.HTMLProps<HTMLInputElement>, 'as' | 'label'> {
-	label: string;
+	label?: string;
 }
 
 const HiddenInput = chakra('input', {
@@ -47,7 +47,7 @@ const Checkbox: React.FC<CheckboxProps> = ({ label, ...rest }) => {
 	const id = rest.id ?? generatedId;
 
 	return (
-		<Flex align='center' gap='2'>
+		<Flex align='center' gap={label ? '2' : '0'}>
 			<Box position='relative' display='inline-flex' alignItems='center' justifyContent='center'>
 				<HiddenInput type='checkbox' {...rest} id={id} />
 				<Box
@@ -77,7 +77,7 @@ const Checkbox: React.FC<CheckboxProps> = ({ label, ...rest }) => {
 					</Box>
 				</Box>
 			</Box>
-			<Label htmlFor={id}>{label}</Label>
+			{label ? <Label htmlFor={id}>{label}</Label> : null}
 		</Flex>
 	);
 };

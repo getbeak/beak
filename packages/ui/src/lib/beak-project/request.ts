@@ -32,6 +32,9 @@ export async function createRequestNode(directory: string, name?: string, templa
 		},
 		options: {
 			followRedirects: false,
+			decompressResponse: true,
+			timeoutMs: 0,
+			maxRedirects: 5,
 		},
 	};
 
@@ -73,7 +76,7 @@ export async function readRequestNode(requestFilePath: string): Promise<RequestN
 			name,
 			id: merged.id,
 			mode: 'valid',
-			info: { ...merged },
+			info: ensureRuntimeShape(merged),
 		};
 	}
 
@@ -103,7 +106,32 @@ export async function readRequestNode(requestFilePath: string): Promise<RequestN
 		name,
 		id: file.id,
 		mode: 'valid',
-		info: { ...file },
+		info: ensureRuntimeShape(file),
+	};
+}
+
+/**
+ * Backfill the runtime invariants the renderer assumes about a valid request
+ * node. `body` is the load-bearing one — `RequestPane` and the flight machinery
+ * read `info.body.type` unconditionally, but the on-disk schema and the
+ * collection-defaults merge both allow `body` to be absent (a sparse override
+ * with no body alongside a collection whose defaults don't declare one yields
+ * `merged.body === undefined`). Default to an empty text body so the renderer
+ * stays crash-free. `query` / `headers` / `options` get the same treatment
+ * since they're addressed the same way downstream.
+ */
+function ensureRuntimeShape(file: RequestNodeFile): RequestNodeFile {
+	return {
+		...file,
+		body: file.body ?? { type: 'text', payload: '' },
+		query: file.query ?? {},
+		headers: file.headers ?? {},
+		options: file.options ?? {
+			followRedirects: false,
+			decompressResponse: true,
+			timeoutMs: 0,
+			maxRedirects: 5,
+		},
 	};
 }
 
@@ -143,6 +171,40 @@ export async function renameRequestNode(newName: string, requestNode: RequestNod
 	if (await ipcFsService.pathExists(newFilePath)) throw new Error('Request already exists');
 
 	await ipcFsService.move(oldFilePath, newFilePath);
+}
+
+/**
+ * Persist an unlinked copy of a linked request alongside the original. The
+ * original file is left intact so the next spec re-sync can repopulate it;
+ * the new file carries the user's in-memory edits and is marked
+ * `_provenance.linked: false` so future syncs leave it alone.
+ *
+ * Returns the new request id and absolute file path. Caller wires the tab
+ * switch + dirty-flag clear in the orchestrator (the helper is
+ * deliberately I/O-only so it's easy to test).
+ */
+export async function unlinkAndPersistAs(
+	request: RequestNode,
+): Promise<{ id: string; filePath: string } | null> {
+	if (request.mode === 'failed') return null;
+
+	const oldPath = request.filePath;
+	const extension = path.extname(oldPath);
+	const baseName = path.basename(oldPath, extension);
+	const directory = path.join(oldPath, '..');
+
+	const { fullPath } = await generateSafeNewPath(`${baseName}-edited`, directory, extension);
+
+	const newId = ksuid.generate('request').toString();
+	const node: RequestNodeFile = {
+		...request.info,
+		id: newId,
+		_provenance: { source: request.info._provenance?.source ?? 'openapi', linked: false },
+	};
+
+	await ipcFsService.writeJson(fullPath, node, { spaces: '\t' });
+
+	return { id: newId, filePath: fullPath };
 }
 
 export async function duplicateRequestNode(request: RequestNode): Promise<string | null> {
