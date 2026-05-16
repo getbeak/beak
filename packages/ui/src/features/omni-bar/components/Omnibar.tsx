@@ -2,78 +2,109 @@ import { Box, Flex, chakra } from '@chakra-ui/react';
 import { checkShortcut } from '@beak/ui/lib/keyboard-shortcuts';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Search, Terminal } from 'lucide-react';
+import { Command, Search, Sparkles } from 'lucide-react';
 import * as React from 'react';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
+import { useOmniItems } from '../hooks/use-omni-items';
+import { useOmniSearch } from '../hooks/use-omni-search';
+import { CATEGORY_META } from '../lib/categories';
+import type { OmniItem } from '../lib/types';
 import { actions } from '../store';
-import OmniFooter from './atoms/OmniFooter';
-import CommandsView from './organism/CommandsView';
-import FinderView from './organism/FinderView';
+import OmniEmpty from './OmniEmpty';
+import OmniFooter from './OmniFooter';
+import OmniList from './OmniList';
 
 const ChakraInput = chakra('input');
 const MotionBox = motion.create(Box);
 
 const Omnibar: React.FC = () => {
+	const dispatch = useDispatch();
 	const { open, mode } = useAppSelector(s => s.features.omniBar);
 	const [content, setContent] = useState('');
+	const [activeIndex, setActiveIndex] = useState(0);
 	const inputRef = useRef<HTMLInputElement | null>(null);
-	const dispatch = useDispatch();
+
+	const reset = useCallback(() => {
+		setContent('');
+		setActiveIndex(0);
+		dispatch(actions.hideOmniBar());
+	}, [dispatch]);
 
 	useEffect(() => {
-		window.addEventListener('keydown', onKeyDown);
-		return () => window.removeEventListener('keydown', onKeyDown);
-		// onKeyDown closes over `open` — re-register when it flips so the
-		// shortcut sees current state rather than the initial `false`.
-		// biome-ignore lint/correctness/useExhaustiveDependencies: see comment
-	}, [open]);
-
-	useEffect(() => {
-		if (open) inputRef?.current?.focus();
-	}, [open, inputRef]);
-
-	useEffect(() => {
-		if (open && mode === 'commands') setContent('>');
-	}, [open, mode]);
-
-	function onKeyDown(event: KeyboardEvent) {
-		switch (true) {
-			case checkShortcut('omni-bar.launch.finder', event):
+		function onKeyDown(event: KeyboardEvent) {
+			if (checkShortcut('omni-bar.launch.finder', event)) {
 				if (open) {
-					dispatch(actions.hideOmniBar());
+					reset();
 				} else {
 					dispatch(actions.showOmniBar({ mode: 'search' }));
 					setContent('');
+					setActiveIndex(0);
 				}
-				break;
-			case checkShortcut('omni-bar.launch.commands', event):
-				if (open) {
-					dispatch(actions.hideOmniBar());
-				} else {
-					dispatch(actions.showOmniBar({ mode: 'search' }));
-					setContent('>');
-				}
-				break;
-			case event.key === 'Escape' && open:
-				reset();
-				break;
-			default:
+				event.preventDefault();
 				return;
+			}
+			if (checkShortcut('omni-bar.launch.commands', event)) {
+				if (open) {
+					reset();
+				} else {
+					dispatch(actions.showOmniBar({ mode: 'commands' }));
+					setContent('> ');
+					setActiveIndex(0);
+				}
+				event.preventDefault();
+				return;
+			}
+			if (event.key === 'Escape' && open) {
+				reset();
+				event.preventDefault();
+			}
 		}
-		event.preventDefault();
-	}
+		window.addEventListener('keydown', onKeyDown);
+		return () => window.removeEventListener('keydown', onKeyDown);
+	}, [dispatch, open, reset]);
 
-	function reset() {
-		setContent('');
-		dispatch(actions.hideOmniBar());
-	}
+	useEffect(() => {
+		if (open && mode === 'commands' && !content.startsWith('>')) setContent('> ');
+		if (open) setTimeout(() => inputRef.current?.focus(), 16);
+	}, [open, mode]); // eslint-disable-line react-hooks/exhaustive-deps
 
-	const isCommands = content.startsWith('>');
-	const ModeIcon = isCommands ? Terminal : Search;
-	const placeholder = isCommands
-		? 'Run a command…'
-		: 'Search requests by name, host, or path';
+	const allItems = useOmniItems();
+	const { groups, flatItems, scope } = useOmniSearch(allItems, content);
+
+	useEffect(() => {
+		setActiveIndex(prev => {
+			if (flatItems.length === 0) return 0;
+			if (prev >= flatItems.length) return 0;
+			return prev;
+		});
+	}, [flatItems.length]);
+
+	const activeItem: OmniItem | undefined = flatItems[activeIndex];
+
+	const selectActive = useCallback(() => {
+		if (!activeItem) return;
+		reset();
+		activeItem.action({ dispatch });
+	}, [activeItem, dispatch, reset]);
+
+	const accent = useMemo(() => {
+		if (scope === 'commands') return 'var(--beak-colors-accent-success)';
+		if (scope === 'recents') return 'var(--beak-colors-accent-indigo)';
+		return activeItem ? CATEGORY_META[activeItem.category].accent : 'var(--beak-colors-accent-pink)';
+	}, [scope, activeItem]);
+
+	const ModeIcon = scope === 'commands' ? Command : scope === 'recents' ? Sparkles : Search;
+	const placeholder =
+		scope === 'commands'
+			? 'Run a command…'
+			: scope === 'recents'
+				? 'Browse recent items…'
+				: 'Find requests, folders, var sets, pages, commands…';
+
+	const trimmedContent = content.trim();
+	const hasQuery = trimmedContent.length > 0 && trimmedContent !== '>' && trimmedContent !== '~';
 
 	return (
 		<AnimatePresence>
@@ -82,132 +113,191 @@ const Omnibar: React.FC = () => {
 					initial={{ opacity: 0 }}
 					animate={{ opacity: 1 }}
 					exit={{ opacity: 0 }}
-					transition={{ duration: 0.14, ease: 'easeOut' }}
+					transition={{ duration: 0.12, ease: 'easeOut' }}
 					position='absolute'
 					inset='0'
 					zIndex={100}
+					display='flex'
+					alignItems='flex-start'
+					justifyContent='center'
+					px='4'
+					pt='14'
+					pb='6'
 					css={{
-						background: 'color-mix(in srgb, var(--beak-colors-gray-950) 42%, transparent)',
-						backdropFilter: 'blur(16px) saturate(160%)',
+						// Single backdrop layer — the previous double-blur (backdrop
+						// + panel both running `backdrop-filter`) caused a visible
+						// multi-frame paint cascade on Electron because Chromium has
+						// to re-rasterise every layer on each animation tick.
+						background: 'rgba(0, 0, 0, 0.45)',
+						backdropFilter: 'blur(14px) saturate(130%)',
 					}}
-					onClick={() => dispatch(actions.hideOmniBar())}
+					onClick={() => reset()}
 				>
 					<MotionBox
 						role='dialog'
 						aria-modal='true'
-						aria-label={isCommands ? 'Command palette' : 'Find requests'}
-						initial={{ opacity: 0, y: -8, scale: 0.98 }}
-						animate={{ opacity: 1, y: 0, scale: 1 }}
-						exit={{ opacity: 0, y: -8, scale: 0.98 }}
-						transition={{ type: 'spring', stiffness: 600, damping: 30 }}
+						aria-label='Command bar'
+						initial={{ opacity: 0, y: -8 }}
+						animate={{ opacity: 1, y: 0 }}
+						exit={{ opacity: 0, y: -6 }}
+						transition={{ duration: 0.14, ease: [0.16, 1, 0.3, 1] }}
 						position='relative'
-						mx='auto'
-						mt='20'
-						w='600px'
+						w='640px'
 						maxW='calc(100vw - 40px)'
 						borderRadius='xl'
 						borderWidth='1px'
-						borderColor='color-mix(in srgb, var(--beak-colors-accent-pink) 28%, var(--beak-colors-border-subtle))'
-						bg='color-mix(in srgb, var(--beak-colors-bg-surface) 70%, transparent)'
-						backdropFilter='blur(28px) saturate(180%)'
-						boxShadow='0 50px 120px rgba(0,0,0,0.42), 0 20px 56px color-mix(in srgb, var(--beak-colors-accent-pink) 22%, rgba(0,0,0,0.2)), 0 0 0 1px color-mix(in srgb, white 6%, transparent), inset 0 1px 0 color-mix(in srgb, white 22%, transparent)'
-						overflow='hidden'
+						bg='bg.surface'
+						display='flex'
+						flexDirection='column'
 						zIndex={101}
+						overflow='hidden'
 						onClick={(event: React.MouseEvent) => event.stopPropagation()}
-						css={{
-							'&::before': {
-								content: '""',
-								position: 'absolute',
-								top: 0,
-								left: 0,
-								right: 0,
-								height: '120px',
-								background: 'radial-gradient(60% 100% at 20% 0%, color-mix(in srgb, var(--beak-colors-accent-pink) 28%, transparent), transparent 65%), radial-gradient(70% 110% at 85% 0%, color-mix(in srgb, var(--beak-colors-accent-teal) 18%, transparent), transparent 70%)',
-								pointerEvents: 'none',
-								zIndex: 0,
-							},
-							'&::after': {
-								content: '""',
-								position: 'absolute',
-								top: 0,
-								left: '6%',
-								right: '6%',
-								height: '1px',
-								background: 'linear-gradient(90deg, transparent, color-mix(in srgb, var(--beak-colors-accent-pink) 80%, transparent) 30%, color-mix(in srgb, var(--beak-colors-accent-teal) 70%, transparent) 70%, transparent)',
-								pointerEvents: 'none',
-								zIndex: 1,
-							},
-							'& > *': { position: 'relative', zIndex: 2 },
+						style={{
+							// `style` (not `css`) so the accent-driven values write
+							// straight to inline styles — no className/utility-class
+							// className churn when the accent changes scope.
+							borderColor: `color-mix(in srgb, ${accent} 30%, var(--beak-colors-border-default))`,
+							boxShadow: [
+								'0 40px 110px rgba(0,0,0,0.42)',
+								'0 0 0 1px color-mix(in srgb, white 5%, transparent)',
+								'inset 0 1px 0 color-mix(in srgb, white 16%, transparent)',
+							].join(', '),
 						}}
+						css={{ maxHeight: 'min(560px, calc(100vh - 120px))' }}
 					>
-						<Flex align='center' px='3' h='44px' gap='2'>
-							<Box
-								color={isCommands ? 'accent.teal' : 'accent.pink'}
-								filter={`drop-shadow(0 0 4px color-mix(in srgb, var(--beak-colors-${isCommands ? 'accent-teal' : 'accent-pink'}) 45%, transparent))`}
+						<Flex
+							align='center'
+							px='3'
+							h='48px'
+							gap='2.5'
+							flex='0 0 auto'
+							position='relative'
+							zIndex={3}
+							css={{
+								background: `radial-gradient(120% 200% at 0% 0%, color-mix(in srgb, ${accent} 14%, transparent), transparent 60%)`,
+							}}
+						>
+							<motion.div
+								key={ModeIcon === Command ? 'cmd' : ModeIcon === Sparkles ? 'rec' : 'search'}
+								initial={{ opacity: 0, scale: 0.85 }}
+								animate={{ opacity: 1, scale: 1 }}
+								transition={{ duration: 0.12, ease: 'easeOut' }}
+								style={{ display: 'flex', alignItems: 'center', color: accent }}
 							>
 								<ModeIcon size={16} />
-							</Box>
+							</motion.div>
 							<ChakraInput
-								placeholder={placeholder}
-								tabIndex={0}
 								ref={inputRef}
+								placeholder={placeholder}
 								value={content}
-								onChange={e => setContent(e.currentTarget.value)}
+								onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+									setContent(e.currentTarget.value);
+									setActiveIndex(0);
+								}}
+								onKeyDown={(event: React.KeyboardEvent<HTMLInputElement>) => {
+									switch (event.key) {
+										case 'ArrowDown':
+											event.preventDefault();
+											setActiveIndex(idx => (flatItems.length === 0 ? 0 : (idx + 1) % flatItems.length));
+											break;
+										case 'ArrowUp':
+											event.preventDefault();
+											setActiveIndex(idx =>
+												flatItems.length === 0 ? 0 : (idx - 1 + flatItems.length) % flatItems.length,
+											);
+											break;
+										case 'Home':
+											if (flatItems.length > 0) {
+												event.preventDefault();
+												setActiveIndex(0);
+											}
+											break;
+										case 'End':
+											if (flatItems.length > 0) {
+												event.preventDefault();
+												setActiveIndex(flatItems.length - 1);
+											}
+											break;
+										case 'PageDown':
+											if (flatItems.length > 0) {
+												event.preventDefault();
+												setActiveIndex(idx => Math.min(idx + 6, flatItems.length - 1));
+											}
+											break;
+										case 'PageUp':
+											if (flatItems.length > 0) {
+												event.preventDefault();
+												setActiveIndex(idx => Math.max(idx - 6, 0));
+											}
+											break;
+										case 'Enter':
+											event.preventDefault();
+											selectActive();
+											break;
+										default:
+											break;
+									}
+								}}
 								border='none'
 								outline='none'
 								bg='transparent'
 								color='fg.default'
 								fontSize='15px'
-								lineHeight='44px'
-								h='44px'
+								lineHeight='48px'
+								h='48px'
 								flex='1 1 auto'
 								minW={0}
 								_placeholder={{ color: 'fg.subtle' }}
-								css={{ caretColor: 'var(--beak-colors-accent-pink)' }}
+								css={{ caretColor: accent }}
 							/>
 							<Box
 								fontSize='10px'
 								fontWeight='700'
-								letterSpacing='0.06em'
+								letterSpacing='0.08em'
 								textTransform='uppercase'
 								px='1.5'
 								py='0.5'
 								borderRadius='sm'
-								borderWidth='1px'
-								borderStyle='solid'
-								color={isCommands ? 'accent.teal' : 'accent.pink'}
-								bg={`color-mix(in srgb, var(--beak-colors-${isCommands ? 'accent-teal' : 'accent-pink'}) 14%, transparent)`}
-								borderColor={`color-mix(in srgb, var(--beak-colors-${isCommands ? 'accent-teal' : 'accent-pink'}) 28%, transparent)`}
-								boxShadow='inset 0 1px 0 color-mix(in srgb, white 14%, transparent)'
+								css={{
+									background: `color-mix(in srgb, ${accent} 14%, transparent)`,
+									color: accent,
+									border: `1px solid color-mix(in srgb, ${accent} 30%, transparent)`,
+									boxShadow: 'inset 0 1px 0 color-mix(in srgb, white 14%, transparent)',
+								}}
 							>
-								{isCommands ? 'Cmd' : 'Find'}
+								{scope === 'commands' ? 'Cmd' : scope === 'recents' ? 'Recent' : 'Find'}
 							</Box>
 						</Flex>
 
-						{content && (
-							<Box
-								maxH='min(calc(100vh - 200px), 420px)'
-								borderTopWidth='1px'
-								borderColor='border.subtle'
-								overflowX='hidden'
-								overflowY='auto'
-								css={{
-									'&::-webkit-scrollbar': { width: '6px' },
-									'&::-webkit-scrollbar-thumb': {
-										background: 'color-mix(in srgb, var(--beak-colors-fg-muted) 22%, transparent)',
-										borderRadius: '3px',
-									},
-									'&::-webkit-scrollbar-thumb:hover': {
-										background: 'color-mix(in srgb, var(--beak-colors-accent-pink) 55%, transparent)',
-									},
-								}}
-							>
-								{!isCommands && <FinderView content={content} reset={reset} />}
-								{isCommands && <CommandsView content={content} reset={reset} />}
-							</Box>
-						)}
+						<Box
+							flex='1 1 auto'
+							minH='0'
+							display='flex'
+							flexDirection='column'
+							borderTopWidth='1px'
+							borderColor='border.subtle'
+							position='relative'
+							zIndex={2}
+						>
+							{flatItems.length === 0 ? (
+								<OmniEmpty hasQuery={hasQuery} scope={scope} />
+							) : (
+								<OmniList
+									groups={groups}
+									flatItems={flatItems}
+									activeIndex={activeIndex}
+									onSelect={item => {
+										reset();
+										item.action({ dispatch });
+									}}
+									onHoverIndex={setActiveIndex}
+								/>
+							)}
+						</Box>
 
-						<OmniFooter mode={isCommands ? 'commands' : 'finder'} />
+						<Box flex='0 0 auto' position='relative' zIndex={3}>
+							<OmniFooter scope={scope} activeCategory={activeItem?.category} resultCount={flatItems.length} />
+						</Box>
 					</MotionBox>
 				</MotionBox>
 			)}
