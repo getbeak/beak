@@ -1,13 +1,13 @@
-import { Box, Flex } from '@chakra-ui/react';
 import { useAppSelector } from '@beak/ui/store/redux';
+import { Box, Flex } from '@chakra-ui/react';
 import { AlertOctagon, CheckCircle2, FolderGit2, Loader2 } from 'lucide-react';
 import * as React from 'react';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 
 import Button from '../../../components/atoms/Button';
-import Dialog from '../../../components/molecules/Dialog';
 import Input from '../../../components/atoms/Input';
+import Dialog, { DialogBody, DialogFooter, DialogHeader } from '../../../components/molecules/Dialog';
 import { cloneRepo, openClonedProject } from '../lib/clone';
 import { actions } from '../store';
 
@@ -17,7 +17,6 @@ const CloneRepoDialog: React.FC = () => {
 	const dispatch = useDispatch();
 	const state = useAppSelector(s => s.features.cloneRepo?.current);
 
-	// While in `cloning`, dispatch the IPC clone and resolve to success / failure.
 	useEffect(() => {
 		if (!state || state.phase !== 'cloning') return;
 		let cancelled = false;
@@ -47,30 +46,12 @@ const CloneRepoDialog: React.FC = () => {
 
 	return (
 		<Dialog onClose={onClose} tone='indigo' size='md'>
-			<Box p='5' minW='460px' maxW='520px'>
-				<Flex align='center' gap='3' mb='4'>
-					<Flex
-						align='center'
-						justify='center'
-						w='34px'
-						h='34px'
-						borderRadius='full'
-						bg='color-mix(in srgb, var(--beak-colors-accent-indigo) 14%, transparent)'
-						borderWidth='1px'
-						borderColor='color-mix(in srgb, var(--beak-colors-accent-indigo) 28%, transparent)'
-						color='accent.indigo'
-					>
-						<FolderGit2 size={16} strokeWidth={2.2} />
-					</Flex>
-					<Box flex='1 1 auto'>
-						<Box fontSize='md' fontWeight='700' color='fg.default' letterSpacing='-0.005em'>
-							{'Clone a Beak project'}
-						</Box>
-						<Box fontSize='xs' color='fg.muted'>
-							{'Pull a Beak project from a Git remote and open it locally.'}
-						</Box>
-					</Box>
-				</Flex>
+			<Box minW='480px' maxW='540px'>
+				<DialogHeader
+					icon={<FolderGit2 size={14} strokeWidth={2.2} />}
+					title='Clone a Beak project'
+					description='Pull a Beak project from a Git remote and open it locally.'
+				/>
 
 				{state.phase === 'configuring' && (
 					<ConfigureForm
@@ -96,9 +77,7 @@ const CloneRepoDialog: React.FC = () => {
 					/>
 				)}
 
-				{state.phase === 'cloning' && (
-					<CloningProgress url={state.url} targetName={state.targetName} />
-				)}
+				{state.phase === 'cloning' && <CloningProgress url={state.url} targetName={state.targetName} />}
 
 				{state.phase === 'result' && (
 					<ResultPanel
@@ -136,74 +115,90 @@ const ConfigureForm: React.FC<ConfigureFormProps> = ({
 	onCancel,
 	onSubmit,
 }) => (
-	<Flex direction='column' gap='3'>
-		<Flex direction='column' gap='1'>
-			<Box fontSize='10px' fontWeight='700' textTransform='uppercase' letterSpacing='0.06em' color='fg.subtle'>
-				{'Repo URL'}
-			</Box>
-			<Input
-				$beakSize='md'
-				value={url}
-				placeholder='https://github.com/getbeak/sample-project.git'
-				onChange={e => onUrlChange(e.currentTarget.value)}
-				autoFocus
-			/>
-		</Flex>
-		<Flex direction='column' gap='1'>
-			<Box fontSize='10px' fontWeight='700' textTransform='uppercase' letterSpacing='0.06em' color='fg.subtle'>
-				{embedded ? 'Folder name' : 'Project name'}
-			</Box>
-			<Input
-				$beakSize='md'
-				value={targetName}
-				placeholder='my-cool-api'
-				onChange={e => onTargetNameChange(e.currentTarget.value)}
-			/>
-			<Box fontSize='10px' color='fg.subtle'>
-				{embedded
-					? 'You’ll pick the parent folder next; this name becomes the subfolder.'
-					: 'Stored in the in-browser project filesystem.'}
-			</Box>
-		</Flex>
-		{error && (
-			<Flex align='center' gap='1.5' color='accent.alert' fontSize='xs'>
-				<AlertOctagon size={12} />
-				<Box color='fg.default'>{error}</Box>
+	<React.Fragment>
+		<DialogBody>
+			<Flex direction='column' gap='3'>
+				<FormField label='Repo URL'>
+					<Input
+						$beakSize='md'
+						value={url}
+						placeholder='https://github.com/getbeak/sample-project.git'
+						onChange={e => onUrlChange(e.currentTarget.value)}
+						autoFocus
+					/>
+				</FormField>
+				<FormField
+					label={embedded ? 'Folder name' : 'Project name'}
+					helper={
+						embedded
+							? 'You’ll pick the parent folder next; this name becomes the subfolder.'
+							: 'Stored in the in-browser project filesystem.'
+					}
+				>
+					<Input
+						$beakSize='md'
+						value={targetName}
+						placeholder='my-cool-api'
+						onChange={e => onTargetNameChange(e.currentTarget.value)}
+					/>
+				</FormField>
+				{error && (
+					<Flex
+						align='center'
+						gap='2'
+						px='2.5'
+						py='1.5'
+						borderRadius='md'
+						borderWidth='1px'
+						borderColor='color-mix(in srgb, var(--beak-colors-accent-alert) 38%, var(--beak-colors-border-subtle))'
+						bg='color-mix(in srgb, var(--beak-colors-accent-alert) 10%, var(--beak-colors-bg-surface))'
+						fontSize='xs'
+					>
+						<Box color='accent.alert' flex='0 0 auto'>
+							<AlertOctagon size={13} />
+						</Box>
+						<Box color='fg.default'>{error}</Box>
+					</Flex>
+				)}
 			</Flex>
-		)}
-		<Flex justify='flex-end' gap='2' mt='1'>
+		</DialogBody>
+		<DialogFooter>
 			<Button size='sm' colour='secondary' onClick={onCancel}>
 				{'Cancel'}
 			</Button>
-			<Button onClick={onSubmit}>{'Continue'}</Button>
-		</Flex>
-	</Flex>
+			<Button size='sm' onClick={onSubmit}>
+				{'Continue'}
+			</Button>
+		</DialogFooter>
+	</React.Fragment>
 );
 
 const CloningProgress: React.FC<{ url: string; targetName: string }> = ({ url, targetName }) => (
-	<Flex direction='column' align='center' gap='3' py='4'>
-		<Box
-			css={{
-				animation: 'cr-spin 1.1s linear infinite',
-				'@keyframes cr-spin': {
-					from: { transform: 'rotate(0deg)' },
-					to: { transform: 'rotate(360deg)' },
-				},
-			}}
-			color='accent.indigo'
-		>
-			<Loader2 size={24} />
-		</Box>
-		<Box fontSize='sm' fontWeight='600' color='fg.default'>
-			{'Cloning…'}
-		</Box>
-		<Box fontSize='xs' fontFamily='mono' color='fg.muted' textAlign='center' wordBreak='break-all'>
-			{url}
-		</Box>
-		<Box fontSize='10px' color='fg.subtle'>
-			{`into ${targetName}`}
-		</Box>
-	</Flex>
+	<DialogBody>
+		<Flex direction='column' align='center' gap='2' py='4'>
+			<Box
+				css={{
+					animation: 'cr-spin 1.1s linear infinite',
+					'@keyframes cr-spin': {
+						from: { transform: 'rotate(0deg)' },
+						to: { transform: 'rotate(360deg)' },
+					},
+				}}
+				color='accent.indigo'
+			>
+				<Loader2 size={22} />
+			</Box>
+			<Box fontSize='sm' fontWeight='600' color='fg.default'>
+				{'Cloning…'}
+			</Box>
+			<Box fontSize='xs' fontFamily='mono' color='fg.muted' textAlign='center' wordBreak='break-all'>
+				{url}
+			</Box>
+			<Box fontSize='10px' color='fg.subtle'>
+				{`into ${targetName}`}
+			</Box>
+		</Flex>
+	</DialogBody>
 );
 
 interface ResultPanelProps {
@@ -215,63 +210,89 @@ interface ResultPanelProps {
 const ResultPanel: React.FC<ResultPanelProps> = ({ outcome, onCancel, onOpen }) => {
 	if (!outcome.ok) {
 		return (
-			<Flex direction='column' gap='3'>
-				<Flex align='center' gap='2' color='accent.alert'>
-					<AlertOctagon size={14} />
+			<React.Fragment>
+				<DialogBody>
+					<Flex align='center' gap='2' color='accent.alert' mb='2'>
+						<AlertOctagon size={14} />
+						<Box fontSize='sm' fontWeight='600' color='fg.default'>
+							{'Clone failed'}
+						</Box>
+					</Flex>
+					<Box
+						p='3'
+						borderWidth='1px'
+						borderColor='color-mix(in srgb, var(--beak-colors-accent-alert) 30%, transparent)'
+						borderRadius='md'
+						bg='color-mix(in srgb, var(--beak-colors-accent-alert) 6%, transparent)'
+						fontSize='xs'
+						color='fg.default'
+						fontFamily='mono'
+						wordBreak='break-word'
+					>
+						{outcome.error}
+					</Box>
+				</DialogBody>
+				<DialogFooter>
+					<Button size='sm' colour='secondary' onClick={onCancel}>
+						{'Close'}
+					</Button>
+				</DialogFooter>
+			</React.Fragment>
+		);
+	}
+
+	return (
+		<React.Fragment>
+			<DialogBody>
+				<Flex align='center' gap='2' color='accent.teal' mb='2'>
+					<CheckCircle2 size={14} />
 					<Box fontSize='sm' fontWeight='600' color='fg.default'>
-						{'Clone failed'}
+						{'Cloned successfully'}
 					</Box>
 				</Flex>
 				<Box
 					p='3'
 					borderWidth='1px'
-					borderColor='color-mix(in srgb, var(--beak-colors-accent-alert) 30%, transparent)'
+					borderColor='border.subtle'
 					borderRadius='md'
-					bg='color-mix(in srgb, var(--beak-colors-accent-alert) 8%, transparent)'
+					bg='bg.canvas'
 					fontSize='xs'
-					color='fg.default'
+					color='fg.muted'
 					fontFamily='mono'
+					wordBreak='break-all'
 				>
-					{outcome.error}
+					{outcome.dir}
 				</Box>
-				<Flex justify='flex-end'>
-					<Button size='sm' colour='secondary' onClick={onCancel}>
-						{'Close'}
-					</Button>
-				</Flex>
-			</Flex>
-		);
-	}
-
-	return (
-		<Flex direction='column' gap='3'>
-			<Flex align='center' gap='2' color='accent.teal'>
-				<CheckCircle2 size={14} />
-				<Box fontSize='sm' fontWeight='600' color='fg.default'>
-					{'Cloned successfully'}
-				</Box>
-			</Flex>
-			<Box
-				p='3'
-				borderWidth='1px'
-				borderColor='border.subtle'
-				borderRadius='md'
-				bg='bg.surface'
-				fontSize='xs'
-				color='fg.muted'
-				fontFamily='mono'
-				wordBreak='break-all'
-			>
-				{outcome.dir}
-			</Box>
-			<Flex justify='flex-end' gap='2'>
+			</DialogBody>
+			<DialogFooter>
 				<Button size='sm' colour='secondary' onClick={onCancel}>
 					{'Stay here'}
 				</Button>
-				<Button onClick={onOpen}>{'Open project'}</Button>
-			</Flex>
-		</Flex>
+				<Button size='sm' onClick={onOpen}>
+					{'Open project'}
+				</Button>
+			</DialogFooter>
+		</React.Fragment>
 	);
 };
+
+interface FormFieldProps {
+	label: string;
+	helper?: string;
+}
+
+const FormField: React.FC<React.PropsWithChildren<FormFieldProps>> = ({ label, helper, children }) => (
+	<Flex direction='column' gap='1'>
+		<Box fontSize='10px' fontWeight='700' textTransform='uppercase' letterSpacing='0.06em' color='fg.subtle'>
+			{label}
+		</Box>
+		{children}
+		{helper && (
+			<Box fontSize='11px' color='fg.subtle'>
+				{helper}
+			</Box>
+		)}
+	</Flex>
+);
 
 export default CloneRepoDialog;

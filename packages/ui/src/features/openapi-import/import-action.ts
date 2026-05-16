@@ -10,6 +10,8 @@ export interface ImportOpenApiArgs {
 	filename?: string;
 	/** Project-relative folder under `tree/` for the new collection. */
 	targetFolder: string;
+	/** Group requests into sub-folders derived from each operation's URL path. */
+	groupByPath?: boolean;
 }
 
 export type ImportOpenApiOutcome =
@@ -39,6 +41,7 @@ export async function importOpenApi(args: ImportOpenApiArgs): Promise<ImportOpen
 			targetFolder: args.targetFolder,
 			spec: parsed.spec,
 			specPath: args.filename,
+			...(args.groupByPath ? { groupByPath: true } : {}),
 		});
 		const notice = describeOutcome(result);
 		return notice ? { ok: true, result, notice } : { ok: true, result };

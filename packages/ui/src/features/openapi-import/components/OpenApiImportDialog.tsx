@@ -1,8 +1,8 @@
-import { Box, Flex, chakra } from '@chakra-ui/react';
 import Button from '@beak/ui/components/atoms/Button';
 import Input from '@beak/ui/components/atoms/Input';
-import Dialog from '@beak/ui/components/molecules/Dialog';
+import Dialog, { DialogBody, DialogFooter, DialogHeader } from '@beak/ui/components/molecules/Dialog';
 import { useAppSelector } from '@beak/ui/store/redux';
+import { Box, chakra, Flex } from '@chakra-ui/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { AlertOctagon, CheckCircle2, FolderPlus, FolderTree } from 'lucide-react';
 import * as React from 'react';
@@ -13,7 +13,10 @@ import { importOpenApi } from '../import-action';
 import { pickSpecFile } from '../pick-file';
 import { actions } from '../store';
 
-const DEFAULT_FOLDER = 'tree/openapi';
+// Empty default — the user picks the path verbatim. Submitting blank
+// drops the requests straight under `tree/`; typing `users-api` drops them
+// under `tree/users-api/`. No automatic `_schemas/` or `openapi/` prefix.
+const DEFAULT_FOLDER = '';
 const ChakraButton = chakra('button');
 
 const OpenApiImportDialog: React.FC = () => {
@@ -21,6 +24,10 @@ const OpenApiImportDialog: React.FC = () => {
 	const state = useAppSelector(s => s.features.openApiImport);
 	const projectTree = useAppSelector(s => s.global.project.tree);
 	const [folderInput, setFolderInput] = useState(state.targetFolder || DEFAULT_FOLDER);
+	// Local-only — not persisted to the store. The user picks per-import; the
+	// `_collection.json` records nothing about it, so re-syncing with the
+	// same toggle keeps everything stable.
+	const [groupByPath, setGroupByPath] = useState(false);
 
 	const folders = useMemo(() => {
 		if (!projectTree) return [];
@@ -30,7 +37,6 @@ const OpenApiImportDialog: React.FC = () => {
 			.sort((a, b) => a.localeCompare(b));
 	}, [projectTree]);
 
-	// Phase 1: kick off the native file picker as soon as we enter picking-file.
 	useEffect(() => {
 		if (state.phase !== 'picking-file') return;
 		let cancelled = false;
@@ -52,7 +58,6 @@ const OpenApiImportDialog: React.FC = () => {
 		};
 	}, [state.phase, dispatch]);
 
-	// Phase 3: when the user confirms a folder, run the import.
 	useEffect(() => {
 		if (state.phase !== 'importing' || !state.file) return;
 		let cancelled = false;
@@ -60,6 +65,7 @@ const OpenApiImportDialog: React.FC = () => {
 			source: state.file.source,
 			filename: state.file.filename,
 			targetFolder: state.targetFolder,
+			groupByPath,
 		})
 			.then(outcome => {
 				if (cancelled) return;
@@ -77,31 +83,30 @@ const OpenApiImportDialog: React.FC = () => {
 		return () => {
 			cancelled = true;
 		};
-	}, [state.phase, state.file, state.targetFolder, dispatch]);
+	}, [state.phase, state.file, state.targetFolder, groupByPath, dispatch]);
 
-	// Re-seed the folder input whenever the dialog opens fresh.
 	useEffect(() => {
-		if (state.phase === 'picking-folder') {
-			setFolderInput(state.targetFolder || DEFAULT_FOLDER);
-		}
+		if (state.phase === 'picking-folder') setFolderInput(state.targetFolder || DEFAULT_FOLDER);
 	}, [state.phase, state.targetFolder]);
 
 	if (state.phase === 'idle' || state.phase === 'picking-file') return null;
 
 	function onSubmitFolder() {
-		const trimmed = folderInput.trim();
-		if (!trimmed) return;
-		const normalized = trimmed.startsWith('tree/') ? trimmed : `tree/${trimmed.replace(/^\/+/, '')}`;
-		dispatch(actions.folderChosen({ targetFolder: normalized }));
+		dispatch(actions.folderChosen({ targetFolder: resolveTarget(folderInput) }));
 	}
 
 	function onClose() {
 		dispatch(actions.close());
 	}
 
+	// Submit blank → root of the tree. Anything else gets `tree/` prepended
+	// unless the user has already done it. Leading slashes are stripped so
+	// `/users-api` lands at `tree/users-api`, not `tree//users-api`.
+	const resolvedTarget = resolveTarget(folderInput);
+
 	return (
 		<Dialog onClose={onClose}>
-			<Box p='4' minW='420px' maxW='520px'>
+			<Box minW='460px' maxW='540px'>
 				<AnimatePresence mode='wait'>
 					{state.phase === 'picking-folder' && (
 						<motion.div
@@ -111,90 +116,133 @@ const OpenApiImportDialog: React.FC = () => {
 							exit={{ opacity: 0, y: -4 }}
 							transition={{ duration: 0.14 }}
 						>
-							<Flex align='center' gap='2.5' mb='3'>
-								<Flex
-									align='center'
-									justify='center'
-									w='32px'
-									h='32px'
-									borderRadius='full'
-									bg='color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent)'
-									borderWidth='1px'
-									borderColor='color-mix(in srgb, var(--beak-colors-accent-pink) 28%, transparent)'
-									color='accent.pink'
-									boxShadow='0 4px 12px color-mix(in srgb, var(--beak-colors-accent-pink) 22%, transparent), inset 0 1px 0 color-mix(in srgb, white 16%, transparent)'
-								>
-									<FolderTree size={14} strokeWidth={2} />
-								</Flex>
-								<Box fontWeight='600' fontSize='md' color='fg.default' letterSpacing='-0.005em'>
-									{'Where should this OpenAPI spec land?'}
-								</Box>
-							</Flex>
-							<Box fontSize='xs' color='fg.muted' mb='3' lineHeight='1.5'>
-								{state.file?.filename ? (
-									<>
-										{'Importing '}
-										<Box as='span' fontFamily='mono' color='fg.default'>
-											{state.file.filename}
+							<DialogHeader
+								icon={<FolderTree size={14} strokeWidth={2.2} />}
+								title='Import OpenAPI spec'
+								description={
+									state.file?.filename ? `Importing ${state.file.filename}` : 'Choose where the imported spec should land.'
+								}
+							/>
+							<DialogBody>
+								<Flex direction='column' gap='3'>
+									<Flex direction='column' gap='1'>
+										<Box
+											fontSize='10px'
+											fontWeight='700'
+											textTransform='uppercase'
+											letterSpacing='0.06em'
+											color='fg.subtle'
+										>
+											{'Target folder'}
 										</Box>
-									</>
-								) : (
-									'Importing OpenAPI spec'
-								)}
-							</Box>
+										<Input
+											$beakSize='md'
+											value={folderInput}
+											placeholder='leave blank for the project root, or type e.g. users-api'
+											onChange={e => setFolderInput(e.currentTarget.value)}
+											onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+												if (e.key === 'Enter') {
+													e.preventDefault();
+													onSubmitFolder();
+												}
+											}}
+										/>
+										<Box fontSize='11px' color='fg.subtle'>
+											{'Saves to '}
+											<Box as='span' fontFamily='mono' color='fg.default'>
+												{displayTarget(resolvedTarget)}
+											</Box>
+										</Box>
+									</Flex>
 
-							<Box mb='2'>
-								<Box fontSize='10px' fontWeight='700' textTransform='uppercase' letterSpacing='0.06em' color='accent.pink' mb='1'>
-									{'Target folder'}
-								</Box>
-								<Input
-									$beakSize='md'
-									value={folderInput}
-									placeholder={DEFAULT_FOLDER}
-									onChange={e => setFolderInput(e.currentTarget.value)}
-									onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
-										if (e.key === 'Enter') {
-											e.preventDefault();
-											onSubmitFolder();
-										}
-									}}
-								/>
-								<Box mt='1' fontSize='10px' color='fg.subtle'>
-									{'Will resolve under '}
-									<Box as='span' fontFamily='mono'>
-										{folderInput.startsWith('tree/') ? folderInput : `tree/${folderInput.replace(/^\/+/, '')}`}
-									</Box>
-								</Box>
-							</Box>
-
-							{folders.length > 0 && (
-								<Box mt='3'>
-									<Box fontSize='10px' fontWeight='700' textTransform='uppercase' letterSpacing='0.06em' color='accent.pink' mb='1.5'>
-										{'Existing folders'}
-									</Box>
-									<Box
-										maxH='180px'
-										overflowY='auto'
+									<Flex
+										as='label'
+										align='flex-start'
+										gap='2'
+										cursor='pointer'
+										fontSize='xs'
+										color='fg.muted'
+										px='1'
+										py='1'
 										borderRadius='md'
-										borderWidth='1px'
-										borderColor='border.subtle'
-										bg='bg.canvas'
-										css={{
-											'&::-webkit-scrollbar': { width: '6px' },
-											'&::-webkit-scrollbar-thumb': {
-												background: 'color-mix(in srgb, var(--beak-colors-fg-muted) 22%, transparent)',
-												borderRadius: '3px',
-											},
-											'&::-webkit-scrollbar-thumb:hover': {
-												background: 'color-mix(in srgb, var(--beak-colors-accent-pink) 55%, transparent)',
-											},
-										}}
+										_hover={{ color: 'fg.default' }}
 									>
-										{folders.map(path => {
-											const isPicked = folderInput === path;
-											return (
+										<input
+											type='checkbox'
+											checked={groupByPath}
+											onChange={e => setGroupByPath(e.currentTarget.checked)}
+											style={{ marginTop: '2px' }}
+										/>
+										<Box>
+											<Box fontWeight='600' color='fg.default'>
+												{'Group by URL path'}
+											</Box>
+											<Box fontSize='10px' color='fg.subtle' mt='0.5'>
+												{'Mirror the URL hierarchy in the tree — '}
+												<Box as='span' fontFamily='mono'>
+													{'/api/agents/{id}'}
+												</Box>
+												{' lands under '}
+												<Box as='span' fontFamily='mono'>
+													{'api/agents/'}
+												</Box>
+												{' instead of all in one folder.'}
+											</Box>
+										</Box>
+									</Flex>
+
+									{folders.length > 0 && (
+										<Flex direction='column' gap='1'>
+											<Box
+												fontSize='10px'
+												fontWeight='700'
+												textTransform='uppercase'
+												letterSpacing='0.06em'
+												color='fg.subtle'
+											>
+												{'Existing folders'}
+											</Box>
+											<Box
+												maxH='180px'
+												overflowY='auto'
+												borderRadius='md'
+												borderWidth='1px'
+												borderColor='border.subtle'
+												bg='bg.canvas'
+											>
+												{folders.map(p => {
+													const isPicked = folderInput === p;
+													return (
+														<ChakraButton
+															key={p}
+															type='button'
+															display='flex'
+															alignItems='center'
+															gap='1.5'
+															w='100%'
+															textAlign='left'
+															bg={isPicked ? 'color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent)' : 'transparent'}
+															border='none'
+															px='2'
+															py='1'
+															fontSize='xs'
+															fontFamily='mono'
+															color={isPicked ? 'fg.default' : 'fg.muted'}
+															cursor='pointer'
+															_hover={{
+																bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 12%, transparent)',
+																color: 'fg.default',
+															}}
+															onClick={() => setFolderInput(p)}
+														>
+															<FolderTree size={10} />
+															<Box overflow='hidden' textOverflow='ellipsis'>
+																{p}
+															</Box>
+														</ChakraButton>
+													);
+												})}
 												<ChakraButton
-													key={path}
 													type='button'
 													display='flex'
 													alignItems='center'
@@ -207,114 +255,61 @@ const OpenApiImportDialog: React.FC = () => {
 													py='1'
 													fontSize='xs'
 													fontFamily='mono'
-													color={isPicked ? 'accent.pink' : 'fg.muted'}
+													color='fg.subtle'
 													cursor='pointer'
 													_hover={{
-														bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 12%, transparent)',
-														color: 'accent.pink',
+														bg: 'color-mix(in srgb, var(--beak-colors-accent-teal) 12%, transparent)',
+														color: 'fg.default',
 													}}
-													_focusVisible={{
-														outline: 'none',
-														bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 18%, transparent)',
-														color: 'accent.pink',
-														boxShadow: 'inset 0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-pink) 40%, transparent)',
-													}}
-													onClick={() => setFolderInput(path)}
+													onClick={() => setFolderInput('')}
 												>
-													<FolderTree size={10} />
-													<Box overflow='hidden' textOverflow='ellipsis'>
-														{path}
-													</Box>
+													<FolderPlus size={10} />
+													<Box>{'Drop at project root'}</Box>
 												</ChakraButton>
-											);
-										})}
-										<ChakraButton
-											type='button'
-											display='flex'
-											alignItems='center'
-											gap='1.5'
-											w='100%'
-											textAlign='left'
-											bg='transparent'
-											border='none'
-											px='2'
-											py='1'
-											fontSize='xs'
-											fontFamily='mono'
-											color='fg.subtle'
-											cursor='pointer'
-											_hover={{
-												bg: 'color-mix(in srgb, var(--beak-colors-accent-teal) 12%, transparent)',
-												color: 'accent.teal',
-											}}
-											_focusVisible={{
-												outline: 'none',
-												bg: 'color-mix(in srgb, var(--beak-colors-accent-teal) 18%, transparent)',
-												color: 'accent.teal',
-												boxShadow: 'inset 0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-teal) 40%, transparent)',
-											}}
-											onClick={() => setFolderInput(DEFAULT_FOLDER)}
-										>
-											<FolderPlus size={10} />
-											<Box>{`Use default (${DEFAULT_FOLDER})`}</Box>
-										</ChakraButton>
-									</Box>
-								</Box>
-							)}
-
-							<Flex justify='flex-end' gap='2' mt='4'>
-								<Button colour='secondary' size='sm' onClick={onClose}>{'Cancel'}</Button>
-								<Button size='sm' onClick={onSubmitFolder}>{'Import'}</Button>
-							</Flex>
+											</Box>
+										</Flex>
+									)}
+								</Flex>
+							</DialogBody>
+							<DialogFooter>
+								<Button colour='secondary' size='sm' onClick={onClose}>
+									{'Cancel'}
+								</Button>
+								<Button size='sm' onClick={onSubmitFolder}>
+									{'Import'}
+								</Button>
+							</DialogFooter>
 						</motion.div>
 					)}
 
 					{state.phase === 'importing' && (
-						<motion.div
-							key='importing'
-							initial={{ opacity: 0 }}
-							animate={{ opacity: 1 }}
-							exit={{ opacity: 0 }}
-						>
-							<Flex
-								role='status'
-								aria-live='polite'
-								aria-label='Importing OpenAPI spec'
-								direction='column'
-								align='center'
-								py='6'
-								gap='3'
-							>
-								<Flex
-									align='center'
-									justify='center'
-									w='48px'
-									h='48px'
-									borderRadius='full'
-									bg='color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent)'
-									borderWidth='1px'
-									borderColor='color-mix(in srgb, var(--beak-colors-accent-pink) 28%, transparent)'
-									color='accent.pink'
-									boxShadow='0 6px 22px color-mix(in srgb, var(--beak-colors-accent-pink) 32%, transparent), inset 0 1px 0 color-mix(in srgb, white 18%, transparent)'
-								>
+						<motion.div key='importing' initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+							<DialogHeader
+								icon={
 									<motion.div
 										animate={{ rotate: 360 }}
 										transition={{ duration: 1.1, ease: 'linear', repeat: Number.POSITIVE_INFINITY }}
 										style={{ display: 'inline-flex' }}
 									>
-										<FolderTree size={20} strokeWidth={2} />
+										<FolderTree size={14} strokeWidth={2.2} />
 									</motion.div>
-								</Flex>
-								<Flex direction='column' align='center' gap='1'>
-									<Box fontSize='sm' fontWeight='600' color='fg.default' letterSpacing='-0.005em'>
-										{'Importing OpenAPI spec'}
-									</Box>
-									<Box fontSize='xs' color='fg.muted' lineHeight='1.5'>
-										{'→ '}
-										<Box as='span' fontFamily='mono' color='fg.default'>{state.targetFolder}</Box>
-									</Box>
-								</Flex>
-							</Flex>
+								}
+								title='Importing OpenAPI spec'
+								description={`→ ${state.targetFolder}`}
+							/>
+							<DialogBody>
+								<Box
+									role='status'
+									aria-live='polite'
+									aria-label='Importing OpenAPI spec'
+									fontSize='sm'
+									color='fg.muted'
+									textAlign='center'
+									py='2'
+								>
+									{'Reading routes, writing collection…'}
+								</Box>
+							</DialogBody>
 						</motion.div>
 					)}
 
@@ -327,76 +322,48 @@ const OpenApiImportDialog: React.FC = () => {
 							transition={{ duration: 0.14 }}
 						>
 							{state.result.ok ? (
-								<Flex direction='column' gap='2.5'>
-									<Flex align='center' gap='2.5'>
-										<Flex
-											align='center'
-											justify='center'
-											w='32px'
-											h='32px'
-											borderRadius='full'
-											bg='color-mix(in srgb, var(--beak-colors-accent-teal) 14%, transparent)'
-											borderWidth='1px'
-											borderColor='color-mix(in srgb, var(--beak-colors-accent-teal) 28%, transparent)'
-											color='accent.teal'
-											boxShadow='0 4px 12px color-mix(in srgb, var(--beak-colors-accent-teal) 22%, transparent), inset 0 1px 0 color-mix(in srgb, white 16%, transparent)'
-										>
-											<CheckCircle2 size={14} strokeWidth={2} />
-										</Flex>
-										<Box fontWeight='600' fontSize='md' color='fg.default' letterSpacing='-0.005em'>
-											{'OpenAPI imported'}
+								<React.Fragment>
+									<DialogHeader
+										icon={<CheckCircle2 size={14} strokeWidth={2.2} />}
+										title='OpenAPI imported'
+										description={`Saved to ${state.targetFolder}`}
+									/>
+									<DialogBody>
+										<Box fontSize='sm' color='fg.default' lineHeight='1.55'>
+											{state.result.notice ?? 'The collection is ready to edit in the project tree.'}
 										</Box>
-									</Flex>
-									<Box fontSize='sm' color='fg.muted' lineHeight='1.5'>
-										{state.result.notice ??
-											`Imported into ${state.targetFolder}. The collection is ready to edit in the project tree.`}
-									</Box>
-								</Flex>
+									</DialogBody>
+								</React.Fragment>
 							) : (
-								<Flex direction='column' gap='2.5'>
-									<Flex align='center' gap='2.5'>
-										<Flex
-											align='center'
-											justify='center'
-											w='32px'
-											h='32px'
-											borderRadius='full'
-											bg='color-mix(in srgb, var(--beak-colors-accent-alert) 14%, transparent)'
+								<React.Fragment>
+									<DialogHeader
+										icon={<AlertOctagon size={14} strokeWidth={2.2} />}
+										title='Import failed'
+										description='OpenAPI import didn’t complete.'
+									/>
+									<DialogBody>
+										<Box
+											fontSize='xs'
+											fontFamily='mono'
+											color='fg.default'
+											bg='color-mix(in srgb, var(--beak-colors-accent-alert) 6%, var(--beak-colors-bg-surface))'
 											borderWidth='1px'
-											borderColor='color-mix(in srgb, var(--beak-colors-accent-alert) 28%, transparent)'
-											color='accent.alert'
-											boxShadow='0 4px 12px color-mix(in srgb, var(--beak-colors-accent-alert) 22%, transparent), inset 0 1px 0 color-mix(in srgb, white 16%, transparent)'
+											borderColor='color-mix(in srgb, var(--beak-colors-accent-alert) 28%, var(--beak-colors-border-subtle))'
+											borderRadius='md'
+											p='2.5'
+											lineHeight='1.45'
+											overflowWrap='anywhere'
 										>
-											<AlertOctagon size={14} strokeWidth={2} />
-										</Flex>
-										<Box fontWeight='600' fontSize='md' color='fg.default' letterSpacing='-0.005em'>
-											{'Import failed'}
+											{state.result.error}
 										</Box>
-									</Flex>
-									<Box
-										fontSize='xs'
-										fontFamily='mono'
-										color='fg.default'
-										bg='color-mix(in srgb, var(--beak-colors-accent-alert) 6%, var(--beak-colors-bg-surface))'
-										borderWidth='1px'
-										borderColor='color-mix(in srgb, var(--beak-colors-accent-alert) 28%, var(--beak-colors-border-subtle))'
-										boxShadow='0 4px 12px color-mix(in srgb, var(--beak-colors-accent-alert) 10%, rgba(0,0,0,0.04)), inset 0 1px 0 color-mix(in srgb, white 14%, transparent)'
-										css={{ borderLeft: '3px solid var(--beak-colors-accent-alert)' }}
-										borderRadius='md'
-										p='2.5'
-										lineHeight='1.45'
-										overflowWrap='anywhere'
-									>
-										<Box fontSize='10px' fontWeight='700' letterSpacing='0.06em' textTransform='uppercase' color='accent.alert' mb='1' fontFamily='body'>
-											{'Error message'}
-										</Box>
-										{state.result.error}
-									</Box>
-								</Flex>
+									</DialogBody>
+								</React.Fragment>
 							)}
-							<Flex justify='flex-end' mt='4'>
-								<Button size='sm' onClick={onClose}>{'Done'}</Button>
-							</Flex>
+							<DialogFooter>
+								<Button size='sm' onClick={onClose}>
+									{'Done'}
+								</Button>
+							</DialogFooter>
 						</motion.div>
 					)}
 				</AnimatePresence>
@@ -404,5 +371,19 @@ const OpenApiImportDialog: React.FC = () => {
 		</Dialog>
 	);
 };
+
+function resolveTarget(input: string): string {
+	const trimmed = input.trim().replace(/^\/+/, '').replace(/\/+$/, '');
+	if (!trimmed) return 'tree';
+	if (trimmed === 'tree' || trimmed.startsWith('tree/')) return trimmed;
+	return `tree/${trimmed}`;
+}
+
+/** User-facing version of a resolved target: drops the internal `tree/` prefix. */
+function displayTarget(resolved: string): string {
+	if (resolved === 'tree') return 'project root';
+	if (resolved.startsWith('tree/')) return resolved.slice('tree/'.length);
+	return resolved;
+}
 
 export default OpenApiImportDialog;
