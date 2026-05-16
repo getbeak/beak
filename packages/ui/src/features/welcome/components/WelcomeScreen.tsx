@@ -1,6 +1,8 @@
 import { Box, Flex } from '@chakra-ui/react';
 import * as React from 'react';
+import { useDispatch } from 'react-redux';
 
+import { actions as cloneRepoActions } from '../../clone-repo/store';
 import { useDefaultOrCreateRequest } from '../../../hooks/use-default-or-create-request';
 import Hero from './molecules/Hero';
 import LearnGrid from './molecules/LearnGrid';
@@ -10,6 +12,7 @@ import RecentsList from './molecules/RecentsList';
 const embedded = Boolean(window.embeddedIndicator);
 
 const WelcomeScreen: React.FC = () => {
+	const dispatch = useDispatch();
 	const defaultOrCreateRequest = useDefaultOrCreateRequest();
 
 	return (
@@ -20,10 +23,8 @@ const WelcomeScreen: React.FC = () => {
 				<Box>
 					<QuickActions
 						embedded={embedded}
-						cloneEnabled={false}
-						onCloneRequested={() => {
-							/* placeholder — wired in Phase 5 (clone flow) */
-						}}
+						cloneEnabled
+						onCloneRequested={() => dispatch(cloneRepoActions.start())}
 					/>
 				</Box>
 

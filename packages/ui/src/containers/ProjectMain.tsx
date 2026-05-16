@@ -13,6 +13,7 @@ import UntitledBanner from '../components/molecules/UntitledBanner';
 import ActionBar from '../features/action-bar/components/ActionBar';
 import ProjectEncryption from '../features/encryption/components/ProjectEncryption';
 import Omnibar from '../features/omni-bar/components/Omnibar';
+import CloneRepoDialog from '../features/clone-repo/components/CloneRepoDialog';
 import OpenApiImportDialog from '../features/openapi-import/components/OpenApiImportDialog';
 import { useOpenApiAutoSync } from '../features/project-home/hooks/use-openapi-auto-sync';
 import Sidebar from '../features/sidebar/components/Sidebar';
@@ -84,6 +85,7 @@ const ProjectMain: React.FC = () => {
 						<Omnibar />
 						<OpenApiImportDialog />
 						<SourceControlDialog />
+						<CloneRepoDialog />
 					</React.Fragment>
 				)}
 			</Box>

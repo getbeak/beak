@@ -8,6 +8,8 @@ import * as encryptionStore from '../features/encryption/store';
 import type { State as EncryptionState } from '../features/encryption/store/types';
 import * as omniBarStore from '../features/omni-bar/store';
 import type { State as OmniBarState } from '../features/omni-bar/store/types';
+import * as cloneRepoStore from '../features/clone-repo/store';
+import type { State as CloneRepoState } from '../features/clone-repo/store/types';
 import * as openApiImportStore from '../features/openapi-import/store';
 import type { State as OpenApiImportState } from '../features/openapi-import/store/types';
 import * as sourceControlStore from '../features/source-control/store';
@@ -31,6 +33,7 @@ import type { State as VariableSetState } from './variable-sets/types';
 
 export interface ApplicationState {
 	features: {
+		cloneRepo: CloneRepoState;
 		encryption: EncryptionState;
 		omniBar: OmniBarState;
 		openApiImport: OpenApiImportState;
@@ -53,6 +56,7 @@ export interface ApplicationState {
 function createRootReducer() {
 	return combineReducers({
 		features: combineReducers({
+			cloneRepo: cloneRepoStore.reducer,
 			encryption: encryptionStore.reducer,
 			omniBar: omniBarStore.reducer,
 			openApiImport: openApiImportStore.reducer,
@@ -76,6 +80,7 @@ function createRootReducer() {
 function createInitialState(): ApplicationState {
 	return {
 		features: {
+			cloneRepo: cloneRepoStore.initialState,
 			encryption: encryptionStore.types.initialState,
 			omniBar: omniBarStore.types.initialState,
 			openApiImport: openApiImportStore.types.initialState,
