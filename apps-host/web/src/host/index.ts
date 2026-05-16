@@ -1,16 +1,29 @@
 import Runtime from '@beak/runtime-shared';
-import FS from '@isomorphic-git/lightning-fs';
 import base64 from 'base64-js';
 import gitHttp from 'isomorphic-git/http/web';
 import path from 'path-browserify';
 import { Logger } from 'tslog';
 
+import OpfsFs from './opfs-fs';
 import AesProvider from './providers/aes';
 import CredentialsProvider from './providers/credentials';
 import StorageProvider from './providers/storage';
 
 const beakHostLogger = new Logger({ name: 'web-host' });
-const beakBrowserFs = new FS('beak');
+
+/**
+ * Beak's web shell runs on OPFS — no lightning-fs / IndexedDB fallback.
+ * Browsers without OPFS (private mode in some configurations, very old
+ * Safari, etc.) get a "browser not supported" boot error rather than a
+ * slow IndexedDB path that timed out commits at 10+ seconds per file.
+ */
+if (typeof navigator === 'undefined' || typeof navigator.storage?.getDirectory !== 'function') {
+	throw new Error(
+		'Beak (web) needs the Origin Private File System (OPFS). Your browser doesn’t expose it — try Chrome 86+, Edge 86+, Firefox 111+ or Safari 17+, and disable private browsing if it’s on.',
+	);
+}
+
+const beakBrowserFs = new OpfsFs('beak');
 
 const runtime = new Runtime({
 	capabilities: {
