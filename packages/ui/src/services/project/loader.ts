@@ -55,10 +55,12 @@ export async function loadProject(treePath = 'tree'): Promise<ProjectLoadResult>
 	return {
 		kind: 'ok',
 		value: {
-			// Pre-existing on-disk projects flagged `untitled: true` (left over
-			// from the legacy untitled-on-disk mechanism) still surface as
-			// memory-mode for the renderer so the Save banner reappears.
-			info: { id: project.id, name: project.name, mode: project.untitled ? 'memory' : 'disk' },
+			// Anything loaded from disk is `mode: 'disk'`. Old on-disk untitled
+			// projects (the legacy `userData/untitled-projects/<ksuid>/`
+			// mechanism) keep their `untitled: true` flag in project.json but
+			// the renderer ignores it — those folders just become regular disk
+			// projects and the banner stops appearing.
+			info: { id: project.id, name: project.name, mode: 'disk' },
 			tree,
 		},
 	};

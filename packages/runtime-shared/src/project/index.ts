@@ -12,10 +12,8 @@ import BeakRecents from './recents';
 
 interface CreateProjectOptions {
 	useProjectIdAsProjectFolder?: boolean;
-	/** Do not add the new project to the recents list (used by untitled scratch projects). */
+	/** Do not add the new project to the recents list. */
 	skipRecents?: boolean;
-	/** Mark the resulting project.json with `untitled: true`. */
-	untitled?: boolean;
 	/**
 	 * Skip the `git init` + initial commit step. The web host's
 	 * lightning-fs filesystem can take 10+ seconds to commit even a tiny
@@ -70,6 +68,9 @@ export default class BeakProject extends BeakBase {
 			},
 			options: {
 				followRedirects: false,
+				decompressResponse: true,
+				timeoutMs: 0,
+				maxRedirects: 5,
 			},
 		};
 
@@ -158,7 +159,7 @@ export default class BeakProject extends BeakBase {
 			'utf8',
 		);
 
-		const project = await this.createProjectFile(projectFolderPath, name, projectId, options.untitled);
+		const project = await this.createProjectFile(projectFolderPath, name, projectId);
 		const [projectFile, projectFilePath] = project;
 
 		await this.createProjectEncryption(projectFile.id);
@@ -249,14 +250,12 @@ export default class BeakProject extends BeakBase {
 		projectPath: string,
 		name: string,
 		projectId?: string,
-		untitled = false,
 	): Promise<[ProjectFile, string]> {
 		const projectFilePath = this.p.node.path.join(projectPath, 'project.json');
 		const profileFile: ProjectFile = {
 			id: projectId ?? ksuid.generate('project').toString(),
 			name,
 			version: '0.5.0',
-			...(untitled ? { untitled: true } : {}),
 		};
 
 		await this.p.node.fs.promises.writeFile(

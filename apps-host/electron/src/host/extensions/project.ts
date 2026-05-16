@@ -4,30 +4,6 @@ import { app, type BrowserWindow, dialog, type MessageBoxOptions, type OpenDialo
 
 import getBeakHost from '..';
 
-const UNTITLED_PROJECTS_PARENT = 'untitled-projects';
-
-function untitledProjectsParentPath() {
-	return path.join(app.getPath('userData'), UNTITLED_PROJECTS_PARENT);
-}
-
-/**
- * Create a fresh untitled scratch project under userData and open it in a
- * project main window. The project does NOT get added to recents (untitled
- * projects only earn a recent slot once they are promoted to a real location).
- */
-export async function openUntitledProject() {
-	const parent = untitledProjectsParentPath();
-	await getBeakHost().providers.node.fs.promises.mkdir(parent, { recursive: true });
-
-	const { projectId, projectFilePath } = await getBeakHost().project.create('Untitled', parent, {
-		useProjectIdAsProjectFolder: true,
-		skipRecents: true,
-		untitled: true,
-	});
-
-	return await createProjectMainWindow(projectId, projectFilePath);
-}
-
 export async function tryOpenProjectFolder(projectPath: string, silent = false) {
 	let projectFilePath = projectPath;
 

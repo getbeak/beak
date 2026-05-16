@@ -1,5 +1,5 @@
-import { openProjectDialog, openUntitledProject } from '@beak/apps-host-electron/host/extensions/project';
-import { createPreferencesWindow } from '@beak/apps-host-electron/window-management';
+import { openProjectDialog } from '@beak/apps-host-electron/host/extensions/project';
+import { createEmptyProjectMainWindow, createPreferencesWindow } from '@beak/apps-host-electron/window-management';
 import type { MenuItemConstructorOptions } from 'electron';
 
 import type { Context } from '.';
@@ -24,7 +24,7 @@ export default function generateFileMenu(ctx: Context): MenuItemConstructorOptio
 			{
 				label: 'New Window',
 				accelerator: 'CmdOrCtrl+Shift+M',
-				click: async () => openUntitledProject(),
+				click: async () => createEmptyProjectMainWindow(),
 			},
 			{
 				type: 'separator',
@@ -52,6 +52,12 @@ export default function generateFileMenu(ctx: Context): MenuItemConstructorOptio
 			},
 			{
 				type: 'separator',
+			},
+			{
+				label: 'Project Home',
+				accelerator: 'CmdOrCtrl+Shift+H',
+				enabled: isProjectEditor(ctx),
+				click: async () => sendMenuItemClick(ctx, 'show_project_home'),
 			},
 			{
 				label: 'Import OpenAPI spec…',
