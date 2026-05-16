@@ -1,4 +1,6 @@
 import type Squawk from '@beak/common/utils/squawk';
+import type { SerializedSquawk } from '@beak/squawk';
+import type { ProjectMode } from '@beak/state/project';
 import type { ExtractedVariables } from '@beak/ui/features/graphql-editor/types';
 import type { ActiveRename } from '@beak/ui/features/tree-view/types';
 import type { ValueSections } from '@beak/ui/features/variables/values';
@@ -89,11 +91,11 @@ export const ActionTypes = {
 
 export interface State {
 	loaded: boolean;
+	mode: ProjectMode;
 
 	id?: string;
 	name?: string;
 	folderPath?: string;
-	untitled?: boolean;
 	tree: Tree;
 
 	activeRename?: ActiveRename;
@@ -101,10 +103,18 @@ export interface State {
 	writeDebouncer: Record<string, string>;
 
 	alerts: Record<string, Alert | undefined>;
+
+	/**
+	 * Set by the project loader when the initial load (or a retry) fails.
+	 * The renderer shows `<ProjectLoadFailed>` while present so the user
+	 * can see what went wrong instead of staring at the loading splash.
+	 */
+	loadError?: SerializedSquawk;
 }
 
 export const initialState: State = {
 	loaded: false,
+	mode: 'none',
 
 	tree: {},
 

@@ -72,10 +72,11 @@ describe('project reducer — lifecycle', () => {
 		expect(next.loaded).toBe(false);
 	});
 
-	it('insertProjectInfo stores id and name', () => {
-		const next = projectReducer(empty, insertProjectInfo({ id: 'p1', name: 'Demo' }));
+	it('insertProjectInfo stores id, name and mode', () => {
+		const next = projectReducer(empty, insertProjectInfo({ id: 'p1', name: 'Demo', mode: 'disk' }));
 		expect(next.id).toBe('p1');
 		expect(next.name).toBe('Demo');
+		expect(next.mode).toBe('disk');
 	});
 
 	it('projectOpened sets tree and marks loaded', () => {

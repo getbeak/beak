@@ -8,20 +8,19 @@ import { ipcDialogService, ipcProjectService } from '../../lib/ipc';
 
 /**
  * Thin strip rendered above the sidebar/main split when the active project
- * is an untitled scratch project (created under
- * userData/untitled-projects/). The CTA fires the same IPC as the File
- * menu's "Save Project As…" item — promoteUntitled — which moves the
- * folder to the user-chosen location and re-opens the window.
+ * is an in-memory scratch project. The CTA fires the same IPC as the File
+ * menu's "Save Project As…" item — promoteUntitled — which writes the
+ * project to the user-chosen folder and re-opens the window.
  *
- * Returns null for non-untitled projects so production workspaces pay no
+ * Returns null for disk-backed projects so production workspaces pay no
  * layout cost.
  */
 const MotionFlex = motion.create(Flex);
 
 const UntitledBanner: React.FC = () => {
-	const untitled = useAppSelector(s => Boolean(s.global.project.untitled));
+	const isMemory = useAppSelector(s => s.global.project.mode === 'memory');
 
-	if (!untitled) return null;
+	if (!isMemory) return null;
 
 	async function onSaveAs() {
 		try {
@@ -79,7 +78,7 @@ const UntitledBanner: React.FC = () => {
 				<Text as='span' fontWeight='700' color='accent.pink' textTransform='uppercase' fontSize='10px' letterSpacing='0.06em' mr='1'>
 					{'Untitled'}
 				</Text>
-				{'Changes are live but in a temporary folder. Save to keep it.'}
+				{'Changes are held in memory only. Save to keep them.'}
 			</Text>
 			<Button
 				type='button'

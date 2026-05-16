@@ -52,8 +52,8 @@ function makeFolderNode(overrides: Partial<FolderNode> = {}): FolderNode {
 const empty = reducer(undefined, { type: '@@INIT' });
 
 describe('project tree reducer (core)', () => {
-	it('starts with an empty tree, unloaded', () => {
-		expect(empty).toEqual({ loaded: false, tree: {} });
+	it('starts with an empty tree, unloaded, in `none` mode', () => {
+		expect(empty).toEqual({ loaded: false, mode: 'none', tree: {} });
 	});
 
 	it('startProject marks unloaded', () => {
@@ -61,10 +61,11 @@ describe('project tree reducer (core)', () => {
 		expect(next.loaded).toBe(false);
 	});
 
-	it('insertProjectInfo stores id and name', () => {
-		const next = reducer(empty, insertProjectInfo({ id: 'p1', name: 'Demo' }));
+	it('insertProjectInfo stores id, name and mode', () => {
+		const next = reducer(empty, insertProjectInfo({ id: 'p1', name: 'Demo', mode: 'disk' }));
 		expect(next.id).toBe('p1');
 		expect(next.name).toBe('Demo');
+		expect(next.mode).toBe('disk');
 	});
 
 	it('projectOpened replaces tree and marks loaded', () => {

@@ -14,16 +14,22 @@ export function buildProjectTreeReducer<S extends ProjectTreeState>(builder: Act
 	builder
 		.addCase(actions.startProject, state => {
 			state.loaded = false;
+			state.loadError = undefined;
 		})
 		.addCase(actions.insertProjectInfo, (state, { payload }) => {
 			state.name = payload.name;
 			state.id = payload.id;
 			state.folderPath = payload.folderPath;
-			state.untitled = payload.untitled;
+			state.mode = payload.mode;
 		})
 		.addCase(actions.projectOpened, (state, { payload }) => {
 			state.tree = payload.tree;
 			state.loaded = true;
+			state.loadError = undefined;
+		})
+		.addCase(actions.projectLoadFailed, (state, { payload }) => {
+			state.loadError = payload.error;
+			state.loaded = false;
 		})
 
 		.addCase(actions.insertRequestNode, (state, action) => {
