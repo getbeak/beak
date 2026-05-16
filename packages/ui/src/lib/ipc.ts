@@ -9,6 +9,7 @@ import { IpcExtensionsServiceRenderer } from '@beak/common/ipc/extensions';
 import { IpcFlightServiceRenderer } from '@beak/common/ipc/flight';
 import { IpcFsServiceRenderer } from '@beak/common/ipc/fs';
 import { IpcFsWatcherServiceRenderer } from '@beak/common/ipc/fs-watcher';
+import { IpcGitServiceRenderer } from '@beak/common/ipc/git';
 import { IpcHttpServiceRenderer } from '@beak/common/ipc/http';
 import { IpcNestServiceRenderer } from '@beak/common/ipc/nest';
 import { IpcNotificationServiceRenderer } from '@beak/common/ipc/notification';
@@ -36,6 +37,7 @@ export const ipcExtensionsService = new IpcExtensionsServiceRenderer(partialIpcR
 export const ipcFlightService = new IpcFlightServiceRenderer(partialIpcRenderer);
 export const ipcFsService = new IpcFsServiceRenderer(partialIpcRenderer);
 export const ipcFsWatcherService = new IpcFsWatcherServiceRenderer(partialIpcRenderer);
+export const ipcGitService = new IpcGitServiceRenderer(partialIpcRenderer);
 export const ipcHttpService = new IpcHttpServiceRenderer(partialIpcRenderer);
 export const ipcNestService = new IpcNestServiceRenderer(partialIpcRenderer);
 export const ipcNotificationService = new IpcNotificationServiceRenderer(partialIpcRenderer);

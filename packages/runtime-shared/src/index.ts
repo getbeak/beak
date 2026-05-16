@@ -1,15 +1,17 @@
 import AssetStore from './assets';
 import AssetGc from './assets/gc';
 import { RuntimeBase, type RuntimeCapabilities, type RuntimeOptions } from './base';
+import BeakGit from './git';
 import BeakProject from './project';
 import OpenApiWriter from './sources/openapi-writer';
 import ValueStore from './values';
 
 export { RuntimeBase } from './base';
-export type { Providers, RuntimeCapabilities, RuntimeOptions } from './base';
+export type { GitProvider, Providers, RuntimeCapabilities, RuntimeOptions } from './base';
 export { default as AssetStore } from './assets';
 export { default as AssetGc } from './assets/gc';
 export type { AssetRef } from './assets';
+export { default as BeakGit } from './git';
 export { default as OpenApiWriter } from './sources/openapi-writer';
 export type { OpenApiSyncInput, OpenApiSyncResult } from './sources/openapi-writer';
 export { default as ValueStore } from './values';
@@ -27,6 +29,7 @@ export default class Runtime extends RuntimeBase {
 	private readonly assetGc: AssetGc;
 	private readonly openApiWriter: OpenApiWriter;
 	private readonly valueStore: ValueStore;
+	private readonly beakGit: BeakGit;
 
 	constructor(options: RuntimeOptions) {
 		super(options.providers);
@@ -37,6 +40,7 @@ export default class Runtime extends RuntimeBase {
 		this.assetGc = new AssetGc(this.providers);
 		this.openApiWriter = new OpenApiWriter(this.providers);
 		this.valueStore = new ValueStore(this.providers);
+		this.beakGit = new BeakGit(this.providers);
 	}
 
 	get project() {
@@ -61,5 +65,13 @@ export default class Runtime extends RuntimeBase {
 	/** Per-project request values store (`.beak/values.json`). */
 	get values() {
 		return this.valueStore;
+	}
+
+	/**
+	 * Host-side git operations (isomorphic-git). Local-only ops work
+	 * without a wired `git.http` provider; network ops throw if missing.
+	 */
+	get git() {
+		return this.beakGit;
 	}
 }

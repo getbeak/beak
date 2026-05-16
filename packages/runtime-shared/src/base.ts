@@ -1,5 +1,6 @@
 import type fs from 'node:fs';
 import type path from 'node:path';
+import type { HttpClient } from 'isomorphic-git';
 import type { Logger } from 'tslog';
 
 import type CredentialsProvider from './providers/credentials';
@@ -26,6 +27,16 @@ export interface RuntimeCapabilities {
 	binaryStreaming: boolean;
 }
 
+/**
+ * Optional Git provider — each host wires the right HTTP transport and an
+ * optional default CORS proxy. Local-only operations work without it; only
+ * network ops (clone/push/pull/fetch) require `http`.
+ */
+export interface GitProvider {
+	http: HttpClient;
+	corsProxy?: string;
+}
+
 export interface Providers {
 	aes: AesProvider;
 	credentials: CredentialsProvider;
@@ -36,6 +47,8 @@ export interface Providers {
 		fs: typeof fs;
 		path: typeof path;
 	};
+
+	git?: GitProvider;
 }
 
 export interface RuntimeOptions {

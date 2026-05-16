@@ -25,6 +25,7 @@
 		"@beak/state": "*",
 		"@getbeak/extension-sdk": "*",
 		"@getbeak/types": "^2.1.0",
+		"isomorphic-git": "^1.37.6",
 		"tslog": "^4.10.2"
 	},
 	"devDependencies": {

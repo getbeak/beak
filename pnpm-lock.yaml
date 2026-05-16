@@ -484,6 +484,9 @@ importers:
       '@getbeak/types':
         specifier: ^2.1.0
         version: link:../types
+      isomorphic-git:
+        specifier: ^1.37.6
+        version: 1.37.6
       tslog:
         specifier: ^4.10.2
         version: 4.10.2
