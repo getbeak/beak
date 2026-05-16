@@ -16,6 +16,7 @@ import {
 	requestPureFlight,
 	updateFlightProgress,
 } from '@beak/state/flight';
+import { resolveLegacyWithValues } from '@beak/state/request-values';
 import ksuid from '@beak/ksuid';
 import { instance as windowSessionInstance } from '@beak/ui/contexts/window-session-context';
 import { convertKeyValueToString } from '@beak/ui/features/basic-table-editor/parsers';
@@ -123,7 +124,15 @@ export function registerFlightEffects(start: AppStartListening) {
 				currentRequestId: requestId,
 			};
 
-			const preparedRequest = await prepareRequest(node.info, context, buildPrepareDeps());
+			// Overlay the values slice onto the legacy tree so flight prep sees
+			// any value-mode edits that bypassed the tree reducers. Today the
+			// slice mirrors the tree (backfilled on project open), so this is a
+			// no-op; future phases route editor writes through the slice and
+			// the overlay becomes load-bearing without prepare-request needing
+			// to know which side won.
+			const sliceValues = state.global.requestValues.requests[requestId] ?? null;
+			const resolvedInfo = resolveLegacyWithValues(node.info, sliceValues);
+			const preparedRequest = await prepareRequest(resolvedInfo, context, buildPrepareDeps());
 
 			api.dispatch(
 				beginFlightRequest({
