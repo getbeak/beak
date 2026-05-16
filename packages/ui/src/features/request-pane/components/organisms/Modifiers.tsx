@@ -1,6 +1,7 @@
 import { TypedObject } from '@beak/common/helpers/typescript';
 import type { RequestEditorMode, RequestPreferenceMainTab } from '@beak/common/types/beak-hub';
 import BasicTableEditor from '@beak/ui/features/basic-table-editor/components/BasicTableEditor';
+import SchemaTableEditor from '@beak/ui/features/basic-table-editor/components/SchemaTableEditor';
 import type { EditorMode } from '@beak/ui/features/graphql-editor/types';
 import {
 	requestPreferenceSetReqEditorMode,
@@ -15,6 +16,12 @@ import * as React from 'react';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 
+import { useChangeBodyType } from '../../use-change-body-type';
+import BodyTypeSelector from '../molecules/BodyTypeSelector';
+import EditorModeToggle from '../molecules/EditorModeToggle';
+import BodyTab from './BodyTab';
+import OptionsView from './OptionsView';
+
 /**
  * Mirror of `isValueEmpty` from BasicTableEditor: a ToggleKeyValue's value
  * counts as empty when it has no parts or every part is an empty string.
@@ -24,14 +31,6 @@ function isToggleValueEmpty(item: ToggleKeyValue): boolean {
 	if (!parts || parts.length === 0) return true;
 	return parts.every(p => typeof p === 'string' && p.length === 0);
 }
-
-import SchemaTableEditor from '@beak/ui/features/basic-table-editor/components/SchemaTableEditor';
-
-import { useChangeBodyType } from '../../use-change-body-type';
-import BodyTypeSelector from '../molecules/BodyTypeSelector';
-import EditorModeToggle from '../molecules/EditorModeToggle';
-import BodyTab from './BodyTab';
-import OptionsView from './OptionsView';
 
 export interface ModifiersProps {
 	node: ValidRequestNode;
