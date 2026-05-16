@@ -1,5 +1,6 @@
 import { Box, Flex, IconButton } from '@chakra-ui/react';
 import { statusToColor, verbToColor } from '@beak/design-system/helpers';
+import BeakTooltip from '@beak/ui/components/atoms/BeakTooltip';
 import useVariableContext from '@beak/ui/features/variables/hooks/use-variable-context';
 import { getStatusReasonPhrase } from '@beak/ui/utils/http';
 import { convertRequestToUrl } from '@beak/ui/utils/uri';
@@ -112,20 +113,20 @@ const Header: React.FC<HeaderProps> = ({ selectedFlight }) => {
 				_hover={{ borderColor: 'color-mix(in srgb, var(--beak-colors-accent-pink) 35%, var(--beak-colors-border-subtle))' }}
 				_focusWithin={{ borderColor: 'accent.pink', boxShadow: '0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-pink) 22%, transparent)' }}
 			>
-				<Box
-					flex='1 1 auto'
-					minW={0}
-					overflow='hidden'
-					textOverflow='ellipsis'
-					whiteSpace='nowrap'
-					fontFamily='mono'
-					fontSize='xs'
-					color='fg.default'
-					data-tooltip-id='tt-response-header-url-bar'
-					data-tooltip-content={url}
-				>
-					{url}
-				</Box>
+				<BeakTooltip content={url}>
+					<Box
+						flex='1 1 auto'
+						minW={0}
+						overflow='hidden'
+						textOverflow='ellipsis'
+						whiteSpace='nowrap'
+						fontFamily='mono'
+						fontSize='xs'
+						color='fg.default'
+					>
+						{url}
+					</Box>
+				</BeakTooltip>
 				<IconButton
 					aria-label='Copy URL'
 					title={justCopied ? 'Copied!' : 'Copy URL'}

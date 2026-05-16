@@ -1,18 +1,18 @@
 import { TypedObject } from '@beak/common/helpers/typescript';
 import EditorView from '@beak/ui/components/atoms/EditorView';
-import BasicTableEditor from '@beak/ui/features/basic-table-editor/components/BasicTableEditor';
 import binaryStore from '@beak/ui/lib/binary-store';
 import { requestPreferenceSetResSubTab } from '@beak/ui/store/preferences/actions';
 import { useAppSelector } from '@beak/ui/store/redux';
-import type { Flight } from '@getbeak/types/flight';
 import { Box, Flex } from '@chakra-ui/react';
-import React, { useEffect, useMemo } from 'react';
+import type { Flight } from '@getbeak/types/flight';
+import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 
 import TabBar from '../../../../components/atoms/TabBar';
 import TabItem from '../../../../components/atoms/TabItem';
 import TabSpacer from '../../../../components/atoms/TabSpacer';
 import ErrorView from '../molecules/ErrorView';
+import ResponseHeadersTable from '../molecules/ResponseHeadersTable';
 import PrettyViewer from './PrettyViewer';
 import SseTab from './SseTab';
 
@@ -40,21 +40,8 @@ const ResponseTab: React.FC<React.PropsWithChildren<ResponseTabProps>> = props =
 		return historic === 'sse';
 	});
 
-	const headerItems = useMemo(() => {
-		if (!flight.response) return {};
-		const headers = flight.response.headers;
-		return Object.keys(headers).reduce(
-			(acc, name, idx) => ({
-				...acc,
-				[`header-${idx}-${name.toLowerCase()}`]: {
-					name,
-					value: [headers[name]],
-					enabled: true,
-				},
-			}),
-			{},
-		);
-	}, [flight.response]);
+	const responseHeaders = flight.response?.headers ?? {};
+	const responseUrl = flight.response?.url;
 
 	// Ensure we have a valid tab
 	useEffect(() => {
@@ -104,7 +91,7 @@ const ResponseTab: React.FC<React.PropsWithChildren<ResponseTabProps>> = props =
 			</TabBar>
 
 			<Box flexGrow={2} overflowY='hidden' h='100%'>
-				{tab === 'headers' && <BasicTableEditor items={headerItems} readOnly />}
+				{tab === 'headers' && <ResponseHeadersTable headers={responseHeaders} responseUrl={responseUrl} />}
 				{tab === 'events' && showSseTab && <SseTab flight={flight} />}
 				{tab === 'pretty' && <PrettyViewer flight={flight} mode={'response'} />}
 				{tab === 'raw' && (

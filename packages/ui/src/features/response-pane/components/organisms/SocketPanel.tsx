@@ -1,15 +1,27 @@
 import { Box, chakra, Flex, Input } from '@chakra-ui/react';
-import { closeSocket, openSocket, sendSocketMessage, type SocketMessage, type SocketSession } from '@beak/state/sockets';
+import {
+	closeSocket,
+	openSocket,
+	sendSocketMessage,
+	type SocketMessage,
+	type SocketSession,
+} from '@beak/state/sockets';
 import ksuid from '@beak/ksuid';
 import { useAppSelector } from '@beak/ui/store/redux';
 import React from 'react';
 import { useDispatch } from 'react-redux';
+
+import TabBar from '../../../../components/atoms/TabBar';
+import TabItem from '../../../../components/atoms/TabItem';
+import TabSpacer from '../../../../components/atoms/TabSpacer';
 
 const ChakraButton = chakra('button');
 
 export interface SocketPanelProps {
 	session: SocketSession;
 }
+
+type SocketPanelTab = 'live' | 'handshake';
 
 const STATUS_COLOURS: Record<SocketSession['status'], string> = {
 	connecting: 'accent.warning',
@@ -20,13 +32,18 @@ const STATUS_COLOURS: Record<SocketSession['status'], string> = {
 };
 
 /**
- * Single-pane WebSocket viewer: status header, scrolling message log, and a
- * send box. Replaces the HTTP inspector when the current request has a
- * socket session. Auto-scrolls to the tail unless the user has scrolled
- * away (same affordance as the SSE event log).
+ * WebSocket viewer with two tabs:
+ *  - "Live" — status header, scrolling message log, and send box. Auto-scrolls
+ *    to tail unless the user scrolled away.
+ *  - "Handshake" — opening request headers, the negotiated upgrade response
+ *    (selected sub-protocol + extensions), and (once the session terminates)
+ *    the close frame summary and totals.
+ *
+ * Replaces the HTTP inspector when the current request has a socket session.
  */
 const SocketPanel: React.FC<SocketPanelProps> = ({ session }) => {
 	const dispatch = useDispatch();
+	const [tab, setTab] = React.useState<SocketPanelTab>('live');
 	const [draft, setDraft] = React.useState('');
 	const listRef = React.useRef<HTMLDivElement | null>(null);
 	const pinnedRef = React.useRef(true);
@@ -120,42 +137,194 @@ const SocketPanel: React.FC<SocketPanelProps> = ({ session }) => {
 				</ActionButton>
 			</Flex>
 
-			<Box ref={listRef} flex='1' overflowY='auto' onScroll={handleScroll}>
-				{session.messages.length === 0 && (
-					<Flex h='100%' align='center' justify='center' color='fg.muted' fontSize='sm'>
-						{'No messages yet'}
-					</Flex>
-				)}
-				{session.messages.map(m => (
-					<MessageRow key={m.id} message={m} />
-				))}
-			</Box>
+			<TabBar $centered>
+				<TabSpacer />
+				<TabItem active={tab === 'live'} size='sm' onClick={() => setTab('live')}>
+					{'Live'}
+				</TabItem>
+				<TabItem active={tab === 'handshake'} size='sm' onClick={() => setTab('handshake')}>
+					{'Handshake'}
+				</TabItem>
+				<TabSpacer />
+			</TabBar>
 
-			<Flex
-				gap='2'
-				p='2'
-				borderTopWidth='1px'
-				borderColor='border.default'
-				bg='bg.surface'
-				align='center'
-			>
-				<Input
-					size='sm'
-					placeholder={isOpen ? 'Send a text message — Enter to send' : 'Connect first'}
-					value={draft}
-					disabled={!isOpen}
-					onChange={e => setDraft(e.target.value)}
-					onKeyDown={handleKeyDown}
-					fontFamily='mono'
-					fontSize='xs'
-				/>
-				<ActionButton onClick={handleSend} disabled={!isOpen || draft.length === 0}>
-					{'Send'}
-				</ActionButton>
-			</Flex>
+			{tab === 'live' ? (
+				<React.Fragment>
+					<Box ref={listRef} flex='1' overflowY='auto' onScroll={handleScroll}>
+						{session.messages.length === 0 && (
+							<Flex h='100%' align='center' justify='center' color='fg.muted' fontSize='sm'>
+								{'No messages yet'}
+							</Flex>
+						)}
+						{session.messages.map(m => (
+							<MessageRow key={m.id} message={m} />
+						))}
+					</Box>
+
+					<Flex
+						gap='2'
+						p='2'
+						borderTopWidth='1px'
+						borderColor='border.default'
+						bg='bg.surface'
+						align='center'
+					>
+						<Input
+							size='sm'
+							placeholder={isOpen ? 'Send a text message — Enter to send' : 'Connect first'}
+							value={draft}
+							disabled={!isOpen}
+							onChange={e => setDraft(e.target.value)}
+							onKeyDown={handleKeyDown}
+							fontFamily='mono'
+							fontSize='xs'
+						/>
+						<ActionButton onClick={handleSend} disabled={!isOpen || draft.length === 0}>
+							{'Send'}
+						</ActionButton>
+					</Flex>
+				</React.Fragment>
+			) : (
+				<HandshakeView session={session} />
+			)}
 		</Flex>
 	);
 };
+
+const HandshakeView: React.FC<{ session: SocketSession }> = ({ session }) => {
+	const requestHeaders = session.headers ?? [];
+	const isTerminal = session.status === 'closed' || session.status === 'failed';
+
+	return (
+		<Box flex='1' overflowY='auto' px='4' py='3'>
+			<Flex direction='column' gap='4' maxW='760px' mx='auto'>
+				<Section title='Request' subtitle={`Opening handshake to ${session.url}`}>
+					<KvRow name='URL' value={session.url} mono />
+					{session.protocols && session.protocols.length > 0 && (
+						<KvRow name='Sub-protocols' value={session.protocols.join(', ')} mono />
+					)}
+					{requestHeaders.length > 0 ? (
+						requestHeaders.map((h, i) => (
+							<KvRow key={`${h.name}-${i}`} name={h.name} value={h.value} mono />
+						))
+					) : (
+						<Empty>{'No user-authored headers — only the standard upgrade headers were sent.'}</Empty>
+					)}
+				</Section>
+
+				<Section title='Response' subtitle='Negotiated upgrade'>
+					{session.openedAt ? (
+						<KvRow name='Opened at' value={new Date(session.openedAt).toISOString()} mono />
+					) : (
+						<Empty>
+							{session.status === 'connecting'
+								? 'Awaiting upgrade…'
+								: 'Server never completed the upgrade handshake.'}
+						</Empty>
+					)}
+					{session.negotiatedProtocol && (
+						<KvRow name='Sec-WebSocket-Protocol' value={session.negotiatedProtocol} mono />
+					)}
+					{session.extensions && (
+						<KvRow name='Sec-WebSocket-Extensions' value={session.extensions} mono />
+					)}
+				</Section>
+
+				{isTerminal && (
+					<Section
+						title='Close'
+						subtitle={
+							session.status === 'failed'
+								? 'Session ended with an error'
+								: session.wasClean
+									? 'Clean close'
+									: 'Disconnected without a clean close'
+						}
+					>
+						{session.errorMessage && <KvRow name='Error' value={session.errorMessage} mono />}
+						{typeof session.closeCode === 'number' && (
+							<KvRow
+								name='Close code'
+								value={`${session.closeCode}${session.closeReason ? ` — ${session.closeReason}` : ''}`}
+								mono
+							/>
+						)}
+						{session.openedAt && session.closedAt && (
+							<KvRow
+								name='Duration'
+								value={formatDuration(session.closedAt - session.openedAt)}
+								mono
+							/>
+						)}
+						<KvRow
+							name='Messages'
+							value={`↓ ${session.messagesIn}  ·  ↑ ${session.messagesOut}`}
+						/>
+						<KvRow
+							name='Bytes'
+							value={`↓ ${formatBytes(session.bytesIn)}  ·  ↑ ${formatBytes(session.bytesOut)}`}
+						/>
+					</Section>
+				)}
+			</Flex>
+		</Box>
+	);
+};
+
+const Section: React.FC<React.PropsWithChildren<{ title: string; subtitle?: string }>> = ({
+	title,
+	subtitle,
+	children,
+}) => (
+	<Box>
+		<Flex direction='column' gap='0.5' mb='2'>
+			<Box
+				fontSize='10px'
+				fontWeight='700'
+				textTransform='uppercase'
+				letterSpacing='0.08em'
+				color='fg.subtle'
+			>
+				{title}
+			</Box>
+			{subtitle && (
+				<Box fontSize='12px' color='fg.muted' lineHeight='1.4'>
+					{subtitle}
+				</Box>
+			)}
+		</Flex>
+		<Box
+			borderTopWidth='1px'
+			borderTopColor='border.subtle'
+			css={{ '& > *:not(:last-child)': { borderBottom: '1px solid var(--beak-colors-border-subtle)' } }}
+		>
+			{children}
+		</Box>
+	</Box>
+);
+
+const KvRow: React.FC<{ name: string; value: string; mono?: boolean }> = ({ name, value, mono }) => (
+	<Flex align='center' gap='3' py='2' px='1' fontSize='12px'>
+		<Box flex='0 0 160px' color='fg.subtle' fontWeight='500'>
+			{name}
+		</Box>
+		<Box
+			flex='1 1 auto'
+			minW={0}
+			fontFamily={mono ? 'mono' : undefined}
+			color='fg.default'
+			wordBreak='break-all'
+		>
+			{value}
+		</Box>
+	</Flex>
+);
+
+const Empty: React.FC<React.PropsWithChildren> = ({ children }) => (
+	<Box py='2' px='1' fontSize='12px' color='fg.subtle' fontStyle='italic'>
+		{children}
+	</Box>
+);
 
 const MessageRow: React.FC<{ message: SocketMessage }> = ({ message }) => {
 	const time = new Date(message.receivedAt).toISOString().slice(11, 23);
@@ -252,6 +421,14 @@ function formatBytes(n: number): string {
 	if (n < 1024 * 1024) return `${(n / 1024).toFixed(1)} KB`;
 	if (n < 1024 * 1024 * 1024) return `${(n / (1024 * 1024)).toFixed(1)} MB`;
 	return `${(n / (1024 * 1024 * 1024)).toFixed(2)} GB`;
+}
+
+function formatDuration(ms: number): string {
+	if (ms < 1000) return `${ms} ms`;
+	if (ms < 60_000) return `${(ms / 1000).toFixed(1)} s`;
+	const mins = Math.floor(ms / 60_000);
+	const secs = Math.floor((ms % 60_000) / 1000);
+	return `${mins}m ${secs}s`;
 }
 
 export default SocketPanel;
