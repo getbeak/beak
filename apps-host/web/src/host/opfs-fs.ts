@@ -214,8 +214,14 @@ class OpfsFsPromises {
 		const segments = parsePath(path);
 		const dir = await this.resolveDir(segments);
 		const out: string[] = [];
-		// FileSystemDirectoryHandle implements an async iterator over its keys.
-		for await (const name of (dir as unknown as AsyncIterable<string>)) {
+		// FileSystemDirectoryHandle's default async iterator yields
+		// `[name, handle]` tuples (equivalent to `entries()`), not bare names
+		// — the WHATWG FS spec mirrors Map's iterator. We want just the names,
+		// so iterate `.keys()` explicitly. Casting to AsyncIterable<string>
+		// here is wrong: the default iterator returns tuples and any
+		// downstream `path.join(dir, name)` would receive an array and throw.
+		const keys = (dir as unknown as { keys(): AsyncIterableIterator<string> }).keys();
+		for await (const name of keys) {
 			out.push(name);
 		}
 		return out;
