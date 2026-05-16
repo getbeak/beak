@@ -19,9 +19,16 @@ const splitterStyle = (
 	customChildren: boolean,
 	disabled: boolean,
 ): React.CSSProperties => ({
-	width: orientation === 'vertical' ? '1px' : 'auto',
-	height: customChildren ? 'auto' : orientation === 'horizontal' ? '1px' : 'auto',
-	backgroundColor: 'var(--beak-colors-border-subtle)',
+	// Honour the cross-axis CSS rule (.reflex-container.vertical > .reflex-splitter { height: 100% })
+	// by leaving the main axis unset here; inline `height: auto` was over-riding
+	// the rule and collapsing the splitter to 0 in vertical containers.
+	width: orientation === 'vertical' && !customChildren ? '1px' : undefined,
+	height: orientation === 'horizontal' && !customChildren ? '1px' : undefined,
+	// `border-emphasized` (gray-400 light / gray-600 dark) — contrast solid
+	// enough to read at 1px against either bg.canvas or bg.surface in both
+	// themes. Earlier `border-subtle` (gray-200 / gray-800) blended into the
+	// surrounding surface and disappeared.
+	backgroundColor: 'var(--beak-colors-border-emphasized)',
 	border: 'none',
 	transition: 'background .18s ease, box-shadow .18s ease',
 	display: disabled ? 'none' : undefined,
