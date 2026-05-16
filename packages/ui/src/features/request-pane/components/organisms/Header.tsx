@@ -23,6 +23,7 @@ import URL from 'url-parse';
 import { requestFlight } from '../../../../store/flight/actions';
 import { requestQueryAdded, requestUriUpdated } from '../../../../store/project/actions';
 import PreFlightWarningDialog from '../molecules/PreFlightWarningDialog';
+import RequestPaneFlightControls from '../molecules/RequestPaneFlightControls';
 
 export interface HeaderProps {
 	node: ValidRequestNode;
@@ -206,6 +207,7 @@ const Header: React.FC<HeaderProps> = ({ node }) => {
 	return (
 		<Flex
 			align='center'
+			gap='2'
 			px='3'
 			py='2'
 			borderBottomWidth='1px'
@@ -217,6 +219,7 @@ const Header: React.FC<HeaderProps> = ({ node }) => {
 				boxShadow: 'inset 0 1px 0 color-mix(in srgb, white 5%, transparent)',
 			}}
 		>
+			<RequestPaneFlightControls requestId={node.id} />
 			{/* Single fused control: verb chip | URL input | send icon. One
 			    rounded chassis, one focus ring, three segments flush against
 			    each other. */}

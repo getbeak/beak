@@ -1,11 +1,9 @@
 import { TypedObject } from '@beak/common/helpers/typescript';
 import type { RequestEditorMode, RequestPreferenceMainTab } from '@beak/common/types/beak-hub';
 import BasicTableEditor from '@beak/ui/features/basic-table-editor/components/BasicTableEditor';
+import { COMMON_REQUEST_HEADERS } from '@beak/ui/features/basic-table-editor/constants/common-headers';
 import type { EditorMode } from '@beak/ui/features/graphql-editor/types';
-import {
-	requestPreferenceSetReqEditorMode,
-	requestPreferenceSetReqMainTab,
-} from '@beak/ui/store/preferences/actions';
+import { requestPreferenceSetReqEditorMode, requestPreferenceSetReqMainTab } from '@beak/ui/store/preferences/actions';
 import actions from '@beak/ui/store/project/actions';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { Box, chakra, Flex } from '@chakra-ui/react';
@@ -132,9 +130,10 @@ const Modifiers: React.FC<React.PropsWithChildren<ModifiersProps>> = props => {
 	}
 
 	// Headers/query author their schema via per-row expansion now; the binary
-	// toggle is only useful when the active body is structured (json /
-	// graphql), where rows don't yet have an inline schema affordance.
-	const showModeToggle = tab === 'body' && (bodyType === 'json' || bodyType === 'graphql');
+	// Schema/Values toggle only makes sense for structured-JSON bodies — GraphQL
+	// variables derive their shape from the query, so authoring a separate schema
+	// for them is conceptually wrong.
+	const showModeToggle = tab === 'body' && bodyType === 'json';
 
 	function counterFor(tabKey: RequestPreferenceMainTab): React.ReactNode {
 		switch (tabKey) {
@@ -263,6 +262,7 @@ const Modifiers: React.FC<React.PropsWithChildren<ModifiersProps>> = props => {
 					<BasicTableEditor
 						items={node.info.headers}
 						requestId={node.id}
+						nameSuggestions={COMMON_REQUEST_HEADERS}
 						addItem={() => dispatch(actions.requestHeaderAdded({ requestId: node.id }))}
 						removeItem={id =>
 							dispatch(

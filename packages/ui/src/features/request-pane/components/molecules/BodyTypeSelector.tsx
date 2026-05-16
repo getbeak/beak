@@ -2,7 +2,7 @@ import type { EditorMode } from '@beak/ui/features/graphql-editor/types';
 import { editorTabSubItems } from '@beak/ui/features/graphql-editor/utils';
 import { Box, chakra, Flex, Menu, Portal } from '@chakra-ui/react';
 import type { RequestBodyType } from '@getbeak/types/request';
-import { Braces, ChevronDown, FileText, Hash, type LucideIcon, Network, Type } from 'lucide-react';
+import { Braces, ChevronDown, FileJson, FileText, Hash, type LucideIcon, Network, Type } from 'lucide-react';
 import * as React from 'react';
 
 interface BodyTypeSelectorProps {
@@ -21,6 +21,7 @@ interface Variant {
 const VARIANTS: Variant[] = [
 	{ key: 'text', label: 'Text', icon: Type },
 	{ key: 'json', label: 'JSON', icon: Braces },
+	{ key: 'json_raw', label: 'JSON (raw)', icon: FileJson },
 	{ key: 'url_encoded_form', label: 'Form', icon: Network },
 	{ key: 'graphql', label: 'GraphQL', icon: Hash },
 	{ key: 'file', label: 'File', icon: FileText },
@@ -78,12 +79,11 @@ const BodyTypeSelector: React.FC<BodyTypeSelectorProps> = ({
 					<Portal>
 						<Menu.Positioner>
 							<Menu.Content
-								bg='color-mix(in srgb, var(--beak-colors-bg-surface) 78%, transparent)'
+								bg='bg.surface.emphasized'
 								borderWidth='1px'
-								borderColor='color-mix(in srgb, var(--beak-colors-border-default) 80%, transparent)'
-								borderRadius='lg'
-								backdropFilter='blur(24px) saturate(180%)'
-								boxShadow='0 24px 56px rgba(0,0,0,0.32), 0 8px 18px rgba(0,0,0,0.16), inset 0 1px 0 color-mix(in srgb, white 18%, transparent)'
+								borderColor='border.default'
+								borderRadius='md'
+								boxShadow='0 8px 24px rgba(0,0,0,0.28)'
 								p='1'
 								minW='140px'
 							>
@@ -125,41 +125,49 @@ const BodyTypeSelector: React.FC<BodyTypeSelectorProps> = ({
 						display='inline-flex'
 						alignItems='center'
 						gap='1.5'
-						h='22px'
+						h='24px'
 						px='2'
 						borderRadius='sm'
-						borderWidth='1px'
-						borderColor='color-mix(in srgb, var(--beak-colors-accent-pink) 28%, var(--beak-colors-border-subtle))'
-						bg='color-mix(in srgb, var(--beak-colors-accent-pink) 10%, transparent)'
-						color='accent.pink'
-						fontSize='11px'
-						fontWeight='600'
+						border='none'
+						bg='transparent'
+						color='fg.muted'
+						fontSize='11.5px'
+						fontWeight='500'
 						cursor='pointer'
-						transition='border-color .12s ease, background-color .12s ease, box-shadow .12s ease'
+						transition='color .12s ease, background-color .12s ease'
 						_hover={{
-							bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 16%, transparent)',
+							color: 'fg.default',
+							bg: 'color-mix(in srgb, var(--beak-colors-fg-default) 8%, transparent)',
 						}}
 						_focusVisible={{
 							outline: 'none',
-							boxShadow: '0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-pink) 35%, transparent)',
+							color: 'accent.pink',
+							boxShadow: 'inset 0 0 0 1px color-mix(in srgb, var(--beak-colors-accent-pink) 45%, transparent)',
+						}}
+						css={{
+							'&[data-state="open"]': {
+								color: 'var(--beak-colors-accent-pink)',
+								background: 'color-mix(in srgb, var(--beak-colors-accent-pink) 12%, transparent)',
+							},
+							'&[data-state="open"] svg.lucide-chevron-down': { transform: 'rotate(180deg)' },
+							'svg.lucide-chevron-down': { transition: 'transform .16s cubic-bezier(0.16, 1, 0.3, 1)' },
 						}}
 					>
-						<ActiveIcon size={11} strokeWidth={2} />
+						<ActiveIcon size={11} strokeWidth={1.8} />
 						<Box as='span'>{activeLabel}</Box>
-						<ChevronDown size={10} strokeWidth={2.2} style={{ opacity: 0.7 }} />
+						<ChevronDown size={11} strokeWidth={1.8} style={{ opacity: 0.6 }} />
 					</ChakraButton>
 				</Menu.Trigger>
 				<Portal>
 					<Menu.Positioner>
 						<Menu.Content
-							bg='color-mix(in srgb, var(--beak-colors-bg-surface) 78%, transparent)'
+							bg='bg.surface.emphasized'
 							borderWidth='1px'
-							borderColor='color-mix(in srgb, var(--beak-colors-border-default) 80%, transparent)'
-							borderRadius='lg'
-							backdropFilter='blur(24px) saturate(180%)'
-							boxShadow='0 24px 56px rgba(0,0,0,0.32), 0 8px 18px rgba(0,0,0,0.16), inset 0 1px 0 color-mix(in srgb, white 18%, transparent)'
+							borderColor='border.default'
+							borderRadius='md'
+							boxShadow='0 8px 24px rgba(0,0,0,0.28)'
 							p='1'
-							minW='150px'
+							minW='160px'
 						>
 							{VARIANTS.map(v => {
 								const isActive = v.key === value;
@@ -169,20 +177,19 @@ const BodyTypeSelector: React.FC<BodyTypeSelectorProps> = ({
 										key={v.key}
 										value={v.key}
 										onClick={() => onTypeChange(v.key)}
-										fontSize='xs'
+										fontSize='12px'
 										fontWeight={isActive ? '600' : '500'}
-										borderRadius='md'
+										borderRadius='sm'
 										py='1.5'
 										px='2'
 										gap='2'
 										bg={isActive ? 'color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent)' : undefined}
 										color={isActive ? 'accent.pink' : 'fg.default'}
 										_hover={{
-											bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 12%, transparent)',
-											color: 'accent.pink',
+											bg: 'color-mix(in srgb, var(--beak-colors-fg-default) 8%, transparent)',
 										}}
 									>
-										<Icon size={12} strokeWidth={2} />
+										<Icon size={12} strokeWidth={1.8} />
 										<Box as='span'>{v.label}</Box>
 									</Menu.Item>
 								);

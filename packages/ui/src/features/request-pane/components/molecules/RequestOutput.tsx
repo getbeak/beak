@@ -9,6 +9,7 @@ import { parseValueSections } from '@beak/ui/features/variables/parser';
 import { ipcFsService } from '@beak/ui/lib/ipc';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { requestAllowsBody } from '@beak/ui/utils/http';
+import { contentTypeToMonacoLanguage } from '@beak/ui/utils/monaco';
 import { convertRequestToUrl } from '@beak/ui/utils/uri';
 import type { ValidRequestNode } from '@getbeak/types/nodes';
 import type { RequestBody, RequestOverview, ToggleKeyValue } from '@getbeak/types/request';
@@ -19,17 +20,28 @@ export interface RequestOutputProps {
 	selectedNode: ValidRequestNode;
 }
 
+interface SplitOutput {
+	head: string;
+	body: string;
+	/** Monaco language id for the body editor — already falls back to 'text'. */
+	bodyLanguage: string;
+	/** Resolved Content-Type used to pick the body language; shown in the divider. */
+	contentType: string | null;
+}
+
+const EMPTY_SPLIT: SplitOutput = { head: '', body: '', bodyLanguage: 'text', contentType: null };
+
 const RequestOutput: React.FC<React.PropsWithChildren<RequestOutputProps>> = props => {
 	const node = props.selectedNode;
 	const variableSets = useAppSelector(s => s.global.variableSets.variableSets);
 	const selectedSets = useAppSelector(s => s.global.preferences.editor.selectedVariableSets);
 	const windowSession = useContext(WindowSessionContext);
-	const [output, setOutput] = useState('');
+	const [output, setOutput] = useState<SplitOutput>(EMPTY_SPLIT);
 	const context = useVariableContext(node.id);
 
 	useEffect(() => {
 		let cancelled = false;
-		createBasicHttpOutput(node.info, context, windowSession).then(response => {
+		createSplitHttpOutput(node.info, context, windowSession).then(response => {
 			if (!cancelled) setOutput(response);
 		});
 		return () => {
@@ -37,7 +49,15 @@ const RequestOutput: React.FC<React.PropsWithChildren<RequestOutputProps>> = pro
 		};
 	}, [node, selectedSets, variableSets]);
 
-	return <EditorView language={'http'} value={output} options={{ readOnly: true }} />;
+	// Render head + body in ONE Monaco editor so the user can copy-paste the
+	// whole thing in one swipe. The custom `http` monarch tokenizer
+	// (utils/monaco.ts) inspects the Content-Type header during tokenization
+	// and transitions into an embedded language for the body section — so a
+	// JSON body still highlights as JSON, an XML body as XML, etc., without
+	// needing two separate editors stacked.
+	const combined = output.body.length === 0 ? output.head : `${output.head}\n\n${output.body}`;
+
+	return <EditorView language={'http'} value={combined} options={{ readOnly: true }} />;
 };
 
 function createBodySection(verb: string, body: RequestBody) {
@@ -55,7 +75,34 @@ function createBodySection(verb: string, body: RequestBody) {
 	}
 }
 
+/**
+ * Render the full HTTP preview as one blob — used by callers that copy the
+ * preview to the clipboard or stuff it into a flight history pane. New
+ * inline rendering should reach for `createSplitHttpOutput` instead so the
+ * body can be highlighted by content-type.
+ */
 export async function createBasicHttpOutput(overview: RequestOverview, context: Context, windowSession: WindowSession) {
+	const split = await createSplitHttpOutput(overview, context, windowSession);
+	if (split.body.length === 0) return split.head;
+	return `${split.head}\n\n${split.body}`;
+}
+
+/**
+ * Two-region variant of the HTTP preview: head (request line + headers,
+ * Monaco-language `http`) separated from body (Monaco language picked from
+ * the resolved Content-Type). The split is what lets the inline preview
+ * colourise the body — JSON gets JSON tokens, XML gets XML tokens, etc.
+ *
+ * The body language is resolved from the explicit Content-Type header
+ * first, falling back to the body-type's natural mime (JSON body without a
+ * declared header still highlights as JSON). Unknown / no content-type
+ * yields `text` so the body still renders, just without colours.
+ */
+export async function createSplitHttpOutput(
+	overview: RequestOverview,
+	context: Context,
+	windowSession: WindowSession,
+): Promise<SplitOutput> {
 	const url = await convertRequestToUrl(context, overview);
 	const { headers, verb, body } = overview;
 	const firstLine = [`${verb.toUpperCase()} `, url.pathname];
@@ -75,19 +122,16 @@ export async function createBasicHttpOutput(overview: RequestOverview, context: 
 
 	if (url.hash) firstLine.push(url.hash);
 
-	const out = [`${firstLine.join('')} HTTP/1.1`];
+	const headLines: string[] = [`${firstLine.join('')} HTTP/1.1`];
 
-	if (!hasHeader('host', headers)) out.push(`Host: ${url.hostname}${url.port ? `:${url.port}` : ''}`);
-
-	if (!hasHeader('connection', headers)) out.push('Connection: close');
-
-	if (!hasHeader('accept', headers)) out.push('Accept: */*');
-
+	if (!hasHeader('host', headers)) headLines.push(`Host: ${url.hostname}${url.port ? `:${url.port}` : ''}`);
+	if (!hasHeader('connection', headers)) headLines.push('Connection: close');
+	if (!hasHeader('accept', headers)) headLines.push('Accept: */*');
 	if (!hasHeader('user-agent', headers))
-		out.push(`User-Agent: Beak/${windowSession.version ?? ''} (${windowSession.os})`);
+		headLines.push(`User-Agent: Beak/${windowSession.version ?? ''} (${windowSession.os})`);
 
 	if (headers) {
-		out.push(
+		headLines.push(
 			...(await Promise.all(
 				TypedObject.values(headers)
 					.filter(h => h.enabled)
@@ -97,48 +141,68 @@ export async function createBasicHttpOutput(overview: RequestOverview, context: 
 	}
 
 	const bodyOut = createBodySection(verb, body);
+	let resolvedContentType: string | null = readLiteralContentTypeHeader(headers);
 
 	if (bodyOut !== null) {
-		const hasContentTypeHeader = TypedObject.values(headers)
-			.map(h => h.name.toLocaleLowerCase())
-			.find(h => h === 'content-type');
-
-		if (!hasContentTypeHeader) {
-			const contentType = requestBodyContentType(body);
-
-			if (contentType) out.push(`Content-Type: ${contentType}`);
-		}
-
-		// Padding between headers/body
-		out.push('');
-
-		if (body.type === 'json') {
-			out.push(JSON.stringify(await convertToRealJson(context, body.payload), null, '\t'));
-		} else if (body.type === 'text') {
-			out.push(body.payload);
-		} else if (body.type === 'url_encoded_form') {
-			out.push(await convertKeyValueToString(context, body.payload));
-		} else if (body.type === 'file') {
-			out.push(await readReferencedFile(body.payload.fileReferenceId));
-		} else if (!requestAllowsBody(verb) && body.type === 'graphql') {
-			// Do nothing here, the graphql body on a get/head is set in the query
-		} else if (requestAllowsBody(verb) && body.type === 'graphql') {
-			out.push(
-				JSON.stringify(
-					{
-						query: body.payload.query,
-						variables: await convertToRealJson(context, body.payload.variables),
-					},
-					null,
-					'\t',
-				),
-			);
-		} else {
-			out.push('[Unknown body type]');
+		if (!resolvedContentType) {
+			const inferred = requestBodyContentType(body);
+			if (inferred) {
+				headLines.push(`Content-Type: ${inferred}`);
+				resolvedContentType = inferred;
+			}
 		}
 	}
 
-	return out.join('\n');
+	const bodyLanguage = contentTypeToMonacoLanguage(resolvedContentType) ?? 'text';
+
+	let bodyText = '';
+	if (bodyOut !== null) {
+		if (body.type === 'json') {
+			bodyText = JSON.stringify(await convertToRealJson(context, body.payload), null, '\t');
+		} else if (body.type === 'json_raw') {
+			bodyText = body.payload;
+		} else if (body.type === 'text') {
+			bodyText = body.payload;
+		} else if (body.type === 'url_encoded_form') {
+			bodyText = await convertKeyValueToString(context, body.payload);
+		} else if (body.type === 'file') {
+			bodyText = await readReferencedFile(body.payload.fileReferenceId);
+		} else if (!requestAllowsBody(verb) && body.type === 'graphql') {
+			bodyText = '';
+		} else if (requestAllowsBody(verb) && body.type === 'graphql') {
+			bodyText = JSON.stringify(
+				{
+					query: body.payload.query,
+					variables: await convertToRealJson(context, body.payload.variables),
+				},
+				null,
+				'\t',
+			);
+		} else {
+			bodyText = '[Unknown body type]';
+		}
+	}
+
+	return {
+		head: headLines.join('\n'),
+		body: bodyText,
+		bodyLanguage,
+		contentType: resolvedContentType,
+	};
+}
+
+/**
+ * Pull the first enabled Content-Type header value out of the request, but
+ * only when it's a plain string (no variable references). Variable values
+ * resolve at flight time, not here — picking a Monaco language off them
+ * would be guessing. Returns null when no usable header exists.
+ */
+function readLiteralContentTypeHeader(headers: Record<string, ToggleKeyValue>): string | null {
+	const match = TypedObject.values(headers).find(h => h.enabled && h.name.toLowerCase() === 'content-type');
+	if (!match) return null;
+	const parts = match.value;
+	if (parts.length !== 1 || typeof parts[0] !== 'string') return null;
+	return parts[0];
 }
 
 async function readReferencedFile(fileReferenceId: string | undefined) {

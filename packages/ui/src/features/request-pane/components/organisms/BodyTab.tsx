@@ -1,3 +1,4 @@
+import { TypedObject } from '@beak/common/helpers/typescript';
 import type { RequestEditorMode } from '@beak/common/types/beak-hub';
 import EditorView from '@beak/ui/components/atoms/EditorView';
 import BasicTableEditor from '@beak/ui/features/basic-table-editor/components/BasicTableEditor';
@@ -7,16 +8,69 @@ import type { EditorMode } from '@beak/ui/features/graphql-editor/types';
 import JsonEditor from '@beak/ui/features/json-editor/components/JsonEditor';
 import type { ValueSections } from '@beak/ui/features/variables/values';
 import actions, { requestBodyJsonRawChanged, requestBodyTextChanged } from '@beak/ui/store/project/actions';
+import { contentTypeToMonacoLanguage } from '@beak/ui/utils/monaco';
 import { Box, Flex, Text } from '@chakra-ui/react';
 import type { ValidRequestNode } from '@getbeak/types/nodes';
-import type { RequestBodyJson } from '@getbeak/types/request';
-import { Info } from 'lucide-react';
+import type { RequestBodyJson, ToggleKeyValue } from '@getbeak/types/request';
+import { Braces, FileText, Info } from 'lucide-react';
 import React from 'react';
 import { useDispatch } from 'react-redux';
 import FileUploadView from '../molecules/FileUploadView';
 
-const TEXT_PLACEHOLDER = 'Empty body — click to start typing, or paste content here.';
-const JSON_RAW_PLACEHOLDER = 'Empty JSON body — type a JSON value here.';
+/**
+ * Read the first literal Content-Type header off a request (ignoring variable
+ * references — those resolve at flight time, not in the editor) so the text
+ * body's Monaco language can be picked from it. Returns null when there's no
+ * header, no enabled header, or the value contains a variable blob.
+ */
+function readLiteralContentType(headers: Record<string, ToggleKeyValue>): string | null {
+	const match = TypedObject.values(headers).find(h => h.enabled && h.name.toLowerCase() === 'content-type');
+	if (!match) return null;
+	const parts = match.value;
+	if (parts.length !== 1 || typeof parts[0] !== 'string') return null;
+	return parts[0];
+}
+
+/**
+ * Empty-state overlay for the Monaco-backed text / json_raw editors. The
+ * Monaco surface itself is unstyled and gives no signal that you can click
+ * into it, so when the body is empty we float a small icon + label
+ * combination in the middle of the pane. Pointer events pass through so a
+ * click still lands on the editor and starts typing — the overlay is a hint,
+ * not a button.
+ */
+const EmptyBodyHint: React.FC<{ icon: React.ReactNode; label: string; hint: string }> = ({ icon, label, hint }) => (
+	<Flex
+		position='absolute'
+		inset='0'
+		align='center'
+		justify='center'
+		direction='column'
+		gap='2'
+		pointerEvents='none'
+		userSelect='none'
+		color='fg.subtle'
+		px='6'
+	>
+		<Flex
+			align='center'
+			justify='center'
+			w='32px'
+			h='32px'
+			borderRadius='full'
+			bg='color-mix(in srgb, var(--beak-colors-fg-default) 6%, transparent)'
+			color='fg.subtle'
+		>
+			{icon}
+		</Flex>
+		<Text fontSize='sm' fontWeight='500' color='fg.muted'>
+			{label}
+		</Text>
+		<Text fontSize='xs' textAlign='center' maxW='280px' color='fg.subtle'>
+			{hint}
+		</Text>
+	</Flex>
+);
 
 export interface BodyTabProps {
 	node: ValidRequestNode;
@@ -30,17 +84,7 @@ export interface BodyTabProps {
  * / file (all opaque blobs from the contract's point of view).
  */
 const SchemaNoStructure: React.FC<{ label: string; hint: string }> = ({ label, hint }) => (
-	<Flex
-		direction='column'
-		align='center'
-		justify='center'
-		flex='1'
-		minH='180px'
-		gap='3'
-		color='fg.subtle'
-		px='8'
-		py='8'
-	>
+	<Flex direction='column' align='center' justify='center' flex='1' minH='180px' gap='3' color='fg.subtle' px='8' py='8'>
 		<Flex
 			align='center'
 			justify='center'
@@ -66,9 +110,22 @@ const BodyTab: React.FC<React.PropsWithChildren<BodyTabProps>> = props => {
 	const { node, graphQlMode, editorMode } = props;
 	const { body } = node.info;
 	const isSchema = editorMode === 'schema';
+	// Pick Monaco language for the free-text editor from any literal
+	// Content-Type header on the request. Lets users author XML / YAML / etc.
+	// inline with proper highlighting without forcing a body-type switch.
+	const detectedLanguage = contentTypeToMonacoLanguage(readLiteralContentType(node.info.headers)) ?? 'text';
 
 	return (
-		<Box h='100%' overflowY={body.type !== 'text' && body.type !== 'json_raw' ? 'auto' : 'hidden'}>
+		<Box
+			h='100%'
+			overflowY={
+				body.type === 'graphql' && graphQlMode === 'split'
+					? 'hidden'
+					: body.type !== 'text' && body.type !== 'json_raw'
+						? 'auto'
+						: 'hidden'
+			}
+		>
 			{isSchema && body.type === 'text' && (
 				<SchemaNoStructure
 					label='Text body — no structural schema'
@@ -99,24 +156,14 @@ const BodyTab: React.FC<React.PropsWithChildren<BodyTabProps>> = props => {
 					<EditorView
 						language={'json'}
 						value={body.payload}
-						onChange={text =>
-							dispatch(requestBodyJsonRawChanged({ requestId: node.id, text: text ?? '' }))
-						}
+						onChange={text => dispatch(requestBodyJsonRawChanged({ requestId: node.id, text: text ?? '' }))}
 					/>
 					{body.payload === '' && (
-						<Box
-							position='absolute'
-							top='10px'
-							left='62px'
-							pointerEvents='none'
-							color='fg.subtle'
-							fontFamily='mono'
-							fontSize='12.5px'
-							fontStyle='italic'
-							userSelect='none'
-						>
-							{JSON_RAW_PLACEHOLDER}
-						</Box>
+						<EmptyBodyHint
+							icon={<Braces size={14} strokeWidth={1.8} />}
+							label='Empty raw JSON body'
+							hint='Click anywhere here to start typing. Variables can be inserted with ${…}.'
+						/>
 					)}
 				</Box>
 			)}
@@ -130,24 +177,16 @@ const BodyTab: React.FC<React.PropsWithChildren<BodyTabProps>> = props => {
 					borderTopColor='border.subtle'
 				>
 					<EditorView
-						language={'text'}
+						language={detectedLanguage}
 						value={body.payload}
 						onChange={text => dispatch(requestBodyTextChanged({ requestId: node.id, text: text ?? '' }))}
 					/>
 					{body.payload === '' && (
-						<Box
-							position='absolute'
-							top='10px'
-							left='62px'
-							pointerEvents='none'
-							color='fg.subtle'
-							fontFamily='mono'
-							fontSize='12.5px'
-							fontStyle='italic'
-							userSelect='none'
-						>
-							{TEXT_PLACEHOLDER}
-						</Box>
+						<EmptyBodyHint
+							icon={<FileText size={14} strokeWidth={1.8} />}
+							label='Empty body'
+							hint='Click anywhere here to start typing, or paste content from the clipboard.'
+						/>
 					)}
 				</Box>
 			)}
@@ -208,7 +247,17 @@ const BodyTab: React.FC<React.PropsWithChildren<BodyTabProps>> = props => {
 			)}
 			{body.type === 'graphql' && graphQlMode === 'query' && <GraphQlQueryEditor node={node} />}
 			{body.type === 'graphql' && graphQlMode === 'variables' && (
-				<GraphQlVariablesEditor node={node} schemaMode={isSchema} />
+				<GraphQlVariablesEditor node={node} schemaMode={false} />
+			)}
+			{body.type === 'graphql' && graphQlMode === 'split' && (
+				<Box display='grid' gridTemplateColumns='minmax(0, 1fr) minmax(0, 1fr)' h='100%' minH={0}>
+					<Box minW={0} h='100%' borderRightWidth='1px' borderColor='border.subtle'>
+						<GraphQlQueryEditor node={node} />
+					</Box>
+					<Box minW={0} h='100%' overflow='auto'>
+						<GraphQlVariablesEditor node={node} schemaMode={false} />
+					</Box>
+				</Box>
 			)}
 			{!isSchema && body.type === 'file' && <FileUploadView node={node} />}
 		</Box>

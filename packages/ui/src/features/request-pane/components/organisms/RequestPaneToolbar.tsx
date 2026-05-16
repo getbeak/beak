@@ -3,7 +3,7 @@ import useVariableContext from '@beak/ui/features/variables/hooks/use-variable-c
 import useShareLink from '@beak/ui/hooks/use-share-link';
 import { Box, Flex, IconButton } from '@chakra-ui/react';
 import type { ValidRequestNode } from '@getbeak/types/nodes';
-import { Check, Copy, Share2, Terminal } from 'lucide-react';
+import { Check, Copy, GripHorizontal, Share2 } from 'lucide-react';
 import * as React from 'react';
 import { useContext, useEffect, useRef, useState } from 'react';
 
@@ -13,6 +13,13 @@ interface RequestPaneToolbarProps {
 	selectedNode: ValidRequestNode;
 }
 
+/**
+ * Header bar for the raw-HTTP preview pane. Rendered as the visual surface
+ * of the horizontal splitter between the modifier panel and the preview, so
+ * the user grabs the labelled bar to resize — same affordance the old
+ * design had, but with the label / copy / share controls baked in instead
+ * of floating as a separate chrome on top of the editor.
+ */
 const RequestPaneToolbar: React.FC<RequestPaneToolbarProps> = ({ selectedNode }) => {
 	const context = useVariableContext(selectedNode.id);
 	const windowSession = useContext(WindowSessionContext);
@@ -58,28 +65,36 @@ const RequestPaneToolbar: React.FC<RequestPaneToolbarProps> = ({ selectedNode })
 		}
 	}
 
+	// Stop pointer/mouse events on the buttons from initiating a drag on the
+	// surrounding splitter. The label and grip handle still pass events
+	// through so the bar can be grabbed anywhere except the controls.
+	const stopDrag = (event: React.PointerEvent | React.MouseEvent) => {
+		event.stopPropagation();
+	};
+
 	return (
-		<Flex position='absolute' top='2' right='2' align='center' gap='1' zIndex={2} pointerEvents='auto'>
-			<Flex
-				align='center'
-				gap='1.5'
-				h='22px'
-				pl='1.5'
-				pr='1'
-				borderRadius='sm'
-				borderWidth='1px'
-				borderColor='border.subtle'
-				bg='color-mix(in srgb, var(--beak-colors-bg-surface) 80%, transparent)'
-				backdropFilter='blur(8px)'
-				boxShadow='0 2px 8px rgba(0,0,0,0.12)'
-			>
-				<Flex align='center' gap='1' color='fg.subtle'>
-					<Terminal size={10} strokeWidth={2.2} />
-					<Box fontSize='9px' fontWeight='700' textTransform='uppercase' letterSpacing='0.08em'>
-						{'Preview'}
-					</Box>
-				</Flex>
-				<Box w='1px' h='12px' bg='border.subtle' />
+		<Flex
+			align='center'
+			h='26px'
+			px='2'
+			gap='2'
+			bg='bg.surface'
+			borderTopWidth='1px'
+			borderBottomWidth='1px'
+			borderColor='border.subtle'
+			cursor='row-resize'
+			color='fg.subtle'
+			transition='border-color .12s ease, color .12s ease, background-color .12s ease'
+			_hover={{ color: 'fg.muted', borderColor: 'border.default' }}
+		>
+			<Flex align='center' gap='1' pointerEvents='none'>
+				<GripHorizontal size={12} strokeWidth={2} />
+				<Box fontSize='10px' fontWeight='700' textTransform='uppercase' letterSpacing='0.08em'>
+					{'Raw HTTP'}
+				</Box>
+			</Flex>
+			<Box flex='1' pointerEvents='none' />
+			<Flex align='center' gap='0.5' onPointerDown={stopDrag} onMouseDown={stopDrag}>
 				<IconButton
 					aria-label='Copy as raw HTTP'
 					title='Copy as raw HTTP'
@@ -90,14 +105,14 @@ const RequestPaneToolbar: React.FC<RequestPaneToolbarProps> = ({ selectedNode })
 					minW='18px'
 					borderRadius='sm'
 					color={copied === 'preview' ? 'accent.teal' : 'fg.subtle'}
-					transition='color .12s ease, background-color .12s ease'
+					transition='color .1s linear, background-color .1s linear'
 					_hover={{
-						color: copied === 'preview' ? 'accent.teal' : 'accent.pink',
-						bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent)',
+						color: copied === 'preview' ? 'accent.teal' : 'fg.default',
+						bg: 'color-mix(in srgb, var(--beak-colors-fg-default) 10%, transparent)',
 					}}
 					_focusVisible={{
 						outline: 'none',
-						boxShadow: '0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-pink) 45%, transparent)',
+						boxShadow: 'inset 0 0 0 1px color-mix(in srgb, var(--beak-colors-accent-pink) 55%, transparent)',
 					}}
 					onClick={copyRequestPreview}
 				>
@@ -113,14 +128,14 @@ const RequestPaneToolbar: React.FC<RequestPaneToolbarProps> = ({ selectedNode })
 					minW='18px'
 					borderRadius='sm'
 					color={copied === 'share' ? 'accent.teal' : 'fg.subtle'}
-					transition='color .12s ease, background-color .12s ease'
+					transition='color .1s linear, background-color .1s linear'
 					_hover={{
-						color: copied === 'share' ? 'accent.teal' : 'accent.pink',
-						bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent)',
+						color: copied === 'share' ? 'accent.teal' : 'fg.default',
+						bg: 'color-mix(in srgb, var(--beak-colors-fg-default) 10%, transparent)',
 					}}
 					_focusVisible={{
 						outline: 'none',
-						boxShadow: '0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-pink) 45%, transparent)',
+						boxShadow: 'inset 0 0 0 1px color-mix(in srgb, var(--beak-colors-accent-pink) 55%, transparent)',
 					}}
 					disabled={!shareUrl}
 					onClick={copyShareLink}
