@@ -10,6 +10,7 @@ import {
 import actions from '@beak/ui/store/project/actions';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { Box, chakra, Flex } from '@chakra-ui/react';
+import type { Entries } from '@getbeak/types/body-editor-json';
 import type { ValidRequestNode } from '@getbeak/types/nodes';
 import type { ToggleKeyValue } from '@getbeak/types/request';
 import * as React from 'react';
@@ -30,6 +31,40 @@ function isToggleValueEmpty(item: ToggleKeyValue): boolean {
 	const parts = item.value;
 	if (!parts || parts.length === 0) return true;
 	return parts.every(p => typeof p === 'string' && p.length === 0);
+}
+
+/**
+ * Mirror of `isEntryValueEmpty` from EntryRow — container + intrinsic
+ * types satisfy the contract by their presence; string/number entries
+ * count as empty when no parts or every part is an empty literal.
+ */
+function isJsonEntryValueEmpty(entry: Entries): boolean {
+	if (entry.type === 'object' || entry.type === 'array') return false;
+	if (entry.type === 'boolean' || entry.type === 'null') return false;
+	const parts = entry.value;
+	if (!parts || parts.length === 0) return true;
+	return parts.every(p => typeof p === 'string' && p.length === 0);
+}
+
+function countMissingRequiredInBody(node: ValidRequestNode): number {
+	const body = node.info.body;
+	if (!body) return 0;
+	switch (body.type) {
+		case 'json':
+			return TypedObject.values(body.payload).filter(
+				entry => entry.required === true && entry.enabled !== false && isJsonEntryValueEmpty(entry),
+			).length;
+		case 'url_encoded_form':
+			return TypedObject.values(body.payload).filter(
+				item => item.required === true && item.enabled !== false && isToggleValueEmpty(item),
+			).length;
+		case 'graphql':
+			return TypedObject.values(body.payload.variables).filter(
+				entry => entry.required === true && entry.enabled !== false && isJsonEntryValueEmpty(entry),
+			).length;
+		default:
+			return 0;
+	}
 }
 
 export interface ModifiersProps {
@@ -87,6 +122,7 @@ const Modifiers: React.FC<React.PropsWithChildren<ModifiersProps>> = props => {
 	const queryMissing = TypedObject.values(node.info.query).filter(
 		q => q.required === true && q.enabled !== false && isToggleValueEmpty(q),
 	).length;
+	const bodyMissing = countMissingRequiredInBody(node);
 
 	function setTab(tab: RequestPreferenceMainTab) {
 		dispatch(requestPreferenceSetReqMainTab({ id: node.id, tab }));
@@ -148,27 +184,38 @@ const Modifiers: React.FC<React.PropsWithChildren<ModifiersProps>> = props => {
 								<Box as='span' position='relative'>
 									{t.label}
 								</Box>
-								{(t.key === 'headers' ? headersMissing : t.key === 'url_query' ? queryMissing : 0) > 0 && (
-									<Box
-										as='span'
-										display='inline-flex'
-										alignItems='center'
-										justifyContent='center'
-										minW='16px'
-										h='16px'
-										px='1'
-										borderRadius='full'
-										bg='accent.alert'
-										color='fg.onAccent'
-										fontSize='10px'
-										fontWeight='700'
-										fontVariantNumeric='tabular-nums'
-										data-tooltip-id='tt-schema-row-description'
-										data-tooltip-content='Required schema fields with empty values'
-									>
-										{t.key === 'headers' ? headersMissing : queryMissing}
-									</Box>
-								)}
+								{(() => {
+									const missing =
+										t.key === 'headers'
+											? headersMissing
+											: t.key === 'url_query'
+												? queryMissing
+												: t.key === 'body'
+													? bodyMissing
+													: 0;
+									if (missing === 0) return null;
+									return (
+										<Box
+											as='span'
+											display='inline-flex'
+											alignItems='center'
+											justifyContent='center'
+											minW='16px'
+											h='16px'
+											px='1'
+											borderRadius='full'
+											bg='accent.alert'
+											color='fg.onAccent'
+											fontSize='10px'
+											fontWeight='700'
+											fontVariantNumeric='tabular-nums'
+											data-tooltip-id='tt-schema-row-description'
+											data-tooltip-content='Required schema fields with empty values'
+										>
+											{missing}
+										</Box>
+									);
+								})()}
 								{counter !== undefined && (
 									<Box
 										as='span'
