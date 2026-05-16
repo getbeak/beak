@@ -10,6 +10,8 @@ import * as omniBarStore from '../features/omni-bar/store';
 import type { State as OmniBarState } from '../features/omni-bar/store/types';
 import * as openApiImportStore from '../features/openapi-import/store';
 import type { State as OpenApiImportState } from '../features/openapi-import/store/types';
+import * as sourceControlStore from '../features/source-control/store';
+import type { State as SourceControlState } from '../features/source-control/store/types';
 import * as tabsStore from '../features/tabs/store';
 import type { State as TabsState } from '../features/tabs/store/types';
 import * as arbiterStore from './arbiter';
@@ -32,6 +34,7 @@ export interface ApplicationState {
 		encryption: EncryptionState;
 		omniBar: OmniBarState;
 		openApiImport: OpenApiImportState;
+		sourceControl: SourceControlState;
 		tabs: TabsState;
 	};
 	global: {
@@ -53,6 +56,7 @@ function createRootReducer() {
 			encryption: encryptionStore.reducer,
 			omniBar: omniBarStore.reducer,
 			openApiImport: openApiImportStore.reducer,
+			sourceControl: sourceControlStore.reducer,
 			tabs: tabsStore.reducer,
 		}),
 		global: combineReducers({
@@ -75,6 +79,7 @@ function createInitialState(): ApplicationState {
 			encryption: encryptionStore.types.initialState,
 			omniBar: omniBarStore.types.initialState,
 			openApiImport: openApiImportStore.types.initialState,
+			sourceControl: sourceControlStore.initialState,
 			tabs: tabsStore.types.initialState,
 		},
 		global: {

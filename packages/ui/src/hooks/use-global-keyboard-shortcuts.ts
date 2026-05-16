@@ -1,6 +1,7 @@
 import { requestFlight } from '@beak/state/flight';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
+import { openSourceControl } from '../features/source-control/store';
 import { checkShortcut } from '../lib/keyboard-shortcuts';
 
 /**
@@ -23,6 +24,10 @@ export function useGlobalKeyboardShortcuts(enabled: boolean) {
 					event.stopPropagation();
 					dispatch(requestFlight());
 					break;
+				case isSourceControlShortcut(event):
+					event.stopPropagation();
+					dispatch(openSourceControl());
+					break;
 				default:
 					return;
 			}
@@ -32,4 +37,16 @@ export function useGlobalKeyboardShortcuts(enabled: boolean) {
 		window.addEventListener('keydown', onKeyDown);
 		return () => window.removeEventListener('keydown', onKeyDown);
 	}, [enabled, dispatch]);
+}
+
+/**
+ * Ctrl+Shift+G / Cmd+Shift+G — open the Source Control dialog. Bound here
+ * rather than in `keyboard-shortcuts/index.ts` so the source-control feature
+ * stays self-contained while that registry is being reshaped on the active
+ * branch.
+ */
+function isSourceControlShortcut(event: KeyboardEvent): boolean {
+	const isMac = navigator.userAgent.includes('Mac');
+	const mod = isMac ? event.metaKey : event.ctrlKey;
+	return mod && event.shiftKey && (event.key === 'g' || event.key === 'G');
 }

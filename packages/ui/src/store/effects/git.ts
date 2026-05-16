@@ -109,6 +109,22 @@ export function registerGitEffects(start: AppStartListening) {
 			}
 			api.dispatch(operationStarted({ op }));
 			try {
+				// Auto-stage everything that's drifted from index OR untracked
+				// before committing. Mirrors `git add -A && git commit`. The
+				// renderer can drive a richer per-file workflow later; for now
+				// a single Commit button captures the whole working tree.
+				const status = await ipcGitService.statusMatrix({ dir });
+				for (const [filepath, head, workdir, stage] of status.rows) {
+					const drifted = workdir > 0 && workdir !== stage;
+					const untracked = head === 0 && workdir > 0;
+					const deleted = head !== 0 && workdir === 0;
+					if (drifted || untracked) {
+						await ipcGitService.add({ dir, filepath });
+					} else if (deleted) {
+						await ipcGitService.remove({ dir, filepath });
+					}
+				}
+
 				const result = await ipcGitService.commit({
 					dir,
 					message: action.payload.message,

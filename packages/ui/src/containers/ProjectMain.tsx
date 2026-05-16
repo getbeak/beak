@@ -1,5 +1,5 @@
-import { Box } from '@chakra-ui/react';
 import { useAppSelector } from '@beak/ui/store/redux';
+import { Box } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 import { ReflexContainer } from 'react-reflex';
@@ -14,7 +14,9 @@ import ActionBar from '../features/action-bar/components/ActionBar';
 import ProjectEncryption from '../features/encryption/components/ProjectEncryption';
 import Omnibar from '../features/omni-bar/components/Omnibar';
 import OpenApiImportDialog from '../features/openapi-import/components/OpenApiImportDialog';
+import { useOpenApiAutoSync } from '../features/project-home/hooks/use-openapi-auto-sync';
 import Sidebar from '../features/sidebar/components/Sidebar';
+import SourceControlDialog from '../features/source-control/components/SourceControlDialog';
 import TabView from '../features/tabs/components/TabView';
 import { useApplicationMenuEventListener } from '../hooks/use-application-menu-event-listener';
 import { useGlobalKeyboardShortcuts } from '../hooks/use-global-keyboard-shortcuts';
@@ -38,6 +40,7 @@ const ProjectMain: React.FC = () => {
 	useApplicationMenuEventListener();
 	useProjectBootstrap();
 	useGlobalKeyboardShortcuts(loaded && setup);
+	useOpenApiAutoSync(loaded && setup);
 
 	useEffect(() => {
 		if (!loaded || setup) return void 0;
@@ -62,7 +65,7 @@ const ProjectMain: React.FC = () => {
 						<UntitledBanner />
 						<Box flex='1' minH='0'>
 							<ReflexContainer orientation={'vertical'}>
-								<ReflexElement flex={20} minSize={260} $forcedWidth={collapsedSidebar ? 42 : void 0}>
+								<ReflexElement flex={20} minSize={260} $forcedWidth={collapsedSidebar ? 48 : void 0}>
 									<Sidebar />
 								</ReflexElement>
 
@@ -80,6 +83,7 @@ const ProjectMain: React.FC = () => {
 						</Box>
 						<Omnibar />
 						<OpenApiImportDialog />
+						<SourceControlDialog />
 					</React.Fragment>
 				)}
 			</Box>
