@@ -2,19 +2,20 @@ import { chakra } from '@chakra-ui/react';
 
 /**
  * Visual columns for the key/value editor:
+ *  - 22px gutter for the row-expand chevron (reveals inline schema authoring)
  *  - 28px gutter for the toggle switch (kept flush so toggle aligns column)
  *  - .8fr key
  *  - 1fr value
  *  - 28px gutter for the row-action menu
  *
  * Every cell sits inside this grid so the column rhythm holds whether the row
- * is the header (just labels) or a body row (toggle + inputs + actions).
+ * is the header (just labels) or a body row (chevron + toggle + inputs + actions).
  */
 export const Row = chakra('div', {
 	base: {
 		position: 'relative',
 		display: 'grid',
-		gridTemplateColumns: '28px minmax(0, .8fr) minmax(0, 1fr) 28px',
+		gridTemplateColumns: '22px 28px minmax(0, .8fr) minmax(0, 1fr) 28px',
 		gridTemplateRows: 'minmax(0, 1fr)',
 		alignItems: 'stretch',
 		minHeight: '32px',

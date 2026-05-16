@@ -1,7 +1,6 @@
 import type { RequestEditorMode } from '@beak/common/types/beak-hub';
 import EditorView from '@beak/ui/components/atoms/EditorView';
 import BasicTableEditor from '@beak/ui/features/basic-table-editor/components/BasicTableEditor';
-import SchemaTableEditor from '@beak/ui/features/basic-table-editor/components/SchemaTableEditor';
 import GraphQlQueryEditor from '@beak/ui/features/graphql-editor/components/GraphQlQueryEditor';
 import GraphQlVariablesEditor from '@beak/ui/features/graphql-editor/components/GraphQlVariablesEditor';
 import type { EditorMode } from '@beak/ui/features/graphql-editor/types';
@@ -165,35 +164,7 @@ const BodyTab: React.FC<React.PropsWithChildren<BodyTabProps>> = props => {
 					}}
 				/>
 			)}
-			{isSchema && body.type === 'url_encoded_form' && (
-				<SchemaTableEditor
-					items={body.payload}
-					addItem={() => dispatch(actions.requestBodyUrlEncodedEditorAddItem({ requestId: node.id }))}
-					removeItem={id =>
-						dispatch(
-							actions.requestBodyUrlEncodedEditorRemoveItem({
-								requestId: node.id,
-								id,
-							}),
-						)
-					}
-					updateItem={(field, id, value) => {
-						if (field === 'name') {
-							dispatch(
-								actions.requestBodyUrlEncodedEditorNameChange({
-									requestId: node.id,
-									id,
-									name: typeof value === 'string' ? value : '',
-								}),
-							);
-						}
-						// Other schema fields (type / required / description) pass
-						// through via .passthrough()-allowed legacy file slots.
-						// Wire dedicated reducers when we promote them off the values map.
-					}}
-				/>
-			)}
-			{!isSchema && body.type === 'url_encoded_form' && (
+			{body.type === 'url_encoded_form' && (
 				<BasicTableEditor
 					items={body.payload}
 					requestId={node.id}

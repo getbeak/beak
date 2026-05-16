@@ -1,7 +1,6 @@
 import { TypedObject } from '@beak/common/helpers/typescript';
 import type { RequestEditorMode, RequestPreferenceMainTab } from '@beak/common/types/beak-hub';
 import BasicTableEditor from '@beak/ui/features/basic-table-editor/components/BasicTableEditor';
-import SchemaTableEditor from '@beak/ui/features/basic-table-editor/components/SchemaTableEditor';
 import type { EditorMode } from '@beak/ui/features/graphql-editor/types';
 import {
 	requestPreferenceSetReqEditorMode,
@@ -132,7 +131,10 @@ const Modifiers: React.FC<React.PropsWithChildren<ModifiersProps>> = props => {
 		dispatch(requestPreferenceSetReqEditorMode({ id: node.id, mode }));
 	}
 
-	const showModeToggle = tab !== 'options';
+	// Headers/query author their schema via per-row expansion now; the binary
+	// toggle is only useful when the active body is structured (json /
+	// graphql), where rows don't yet have an inline schema affordance.
+	const showModeToggle = tab === 'body' && (bodyType === 'json' || bodyType === 'graphql');
 
 	function counterFor(tabKey: RequestPreferenceMainTab): React.ReactNode {
 		switch (tabKey) {
@@ -257,30 +259,7 @@ const Modifiers: React.FC<React.PropsWithChildren<ModifiersProps>> = props => {
 			</Flex>
 
 			<Box flexGrow={2} overflowY='auto' h='100%'>
-				{tab === 'headers' && editorMode === 'schema' && (
-					<SchemaTableEditor
-						items={node.info.headers}
-						addItem={() => dispatch(actions.requestHeaderAdded({ requestId: node.id }))}
-						removeItem={id =>
-							dispatch(
-								actions.requestHeaderRemoved({
-									requestId: node.id,
-									identifier: id,
-								}),
-							)
-						}
-						updateItem={(field, id, value) =>
-							dispatch(
-								actions.requestHeaderUpdated({
-									requestId: node.id,
-									identifier: id,
-									[field]: value,
-								}),
-							)
-						}
-					/>
-				)}
-				{tab === 'headers' && editorMode === 'values' && (
+				{tab === 'headers' && (
 					<BasicTableEditor
 						items={node.info.headers}
 						requestId={node.id}
@@ -304,30 +283,7 @@ const Modifiers: React.FC<React.PropsWithChildren<ModifiersProps>> = props => {
 						}
 					/>
 				)}
-				{tab === 'url_query' && editorMode === 'schema' && (
-					<SchemaTableEditor
-						items={node.info.query}
-						addItem={() => dispatch(actions.requestQueryAdded({ requestId: node.id }))}
-						removeItem={id =>
-							dispatch(
-								actions.requestQueryRemoved({
-									requestId: node.id,
-									identifier: id,
-								}),
-							)
-						}
-						updateItem={(field, id, value) =>
-							dispatch(
-								actions.requestQueryUpdated({
-									requestId: node.id,
-									identifier: id,
-									[field]: value,
-								}),
-							)
-						}
-					/>
-				)}
-				{tab === 'url_query' && editorMode === 'values' && (
+				{tab === 'url_query' && (
 					<BasicTableEditor
 						items={node.info.query}
 						requestId={node.id}

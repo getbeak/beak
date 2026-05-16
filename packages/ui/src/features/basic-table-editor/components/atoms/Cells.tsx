@@ -20,14 +20,28 @@ const headerBase = {
 } as const;
 
 export const HeaderCell = chakra('div', { base: headerBase });
-// Toggle column has no label, but we still reserve the cell so the grid lines
-// up cleanly between the header and body rows.
+// The expand + toggle columns reserve fixed gutters; no label, but kept
+// so the grid lines up cleanly between the header and body rows.
+export const HeaderExpandCell = chakra('div', { base: { ...headerBase, px: 0 } });
 export const HeaderToggleCell = chakra('div', { base: { ...headerBase, px: 0 } });
 export const HeaderKeyCell = chakra('div', { base: headerBase });
 export const HeaderValueCell = chakra('div', { base: headerBase });
 export const HeaderAction = chakra('div', { base: { ...headerBase, px: 0 } });
 
 export const BodyCell = chakra('div', {});
+
+/**
+ * Expand column — fixed 22px wide, centred. Hosts the per-row chevron that
+ * reveals inline schema authoring (type / required / description / options)
+ * under each row.
+ */
+export const BodyExpandCell = chakra('div', {
+	base: {
+		display: 'flex',
+		alignItems: 'center',
+		justifyContent: 'center',
+	},
+});
 
 /**
  * The toggle column — fixed 28px wide, centred. Mirrors HeaderToggleCell so

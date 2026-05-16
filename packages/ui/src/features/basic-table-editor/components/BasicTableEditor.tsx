@@ -4,8 +4,28 @@ import type { ValueSections } from '@beak/ui/features/variables/values';
 import { Box, Button, chakra, Flex, Text } from '@chakra-ui/react';
 import type { ScalarPropertyType, ToggleKeyValue } from '@getbeak/types/request';
 import { AnimatePresence, motion } from 'framer-motion';
-import { AlertCircle, ChevronDown, Plus } from 'lucide-react';
+import { AlertCircle, ChevronDown, ChevronRight, Plus } from 'lucide-react';
 import * as React from 'react';
+import { useState } from 'react';
+
+import VariableInput from '../../variable-input/components/VariableInput';
+import {
+	BodyAction,
+	BodyExpandCell,
+	BodyInputValueCell,
+	BodyInputWrapper,
+	BodyPrimaryCell,
+	BodyToggleCell,
+	HeaderAction,
+	HeaderExpandCell,
+	HeaderKeyCell,
+	HeaderToggleCell,
+	HeaderValueCell,
+} from './atoms/Cells';
+import { Body, Header, Row } from './atoms/Structure';
+import EntryActions from './molecules/EntryActions';
+import EntryToggler from './molecules/EntryToggler';
+import SchemaPanel from './molecules/SchemaPanel';
 
 /**
  * A `ValueSections` is "effectively empty" when it has no parts, or every
@@ -18,21 +38,19 @@ function isValueEmpty(parts: ValueSections | undefined): boolean {
 	return parts.every(p => typeof p === 'string' && p.length === 0);
 }
 
-import VariableInput from '../../variable-input/components/VariableInput';
-import {
-	BodyAction,
-	BodyInputValueCell,
-	BodyInputWrapper,
-	BodyPrimaryCell,
-	BodyToggleCell,
-	HeaderAction,
-	HeaderKeyCell,
-	HeaderToggleCell,
-	HeaderValueCell,
-} from './atoms/Cells';
-import { Body, Header, Row } from './atoms/Structure';
-import EntryActions from './molecules/EntryActions';
-import EntryToggler from './molecules/EntryToggler';
+/**
+ * A row has "schema authored" when any of the optional schema fields has
+ * been set. The expand chevron tints indigo in that state so the user can
+ * scan the table for which rows already have a contract attached.
+ */
+function hasSchemaAuthored(item: ToggleKeyValue): boolean {
+	return (
+		(item.type !== undefined && item.type !== 'string') ||
+		item.required === true ||
+		(item.description !== undefined && item.description.length > 0) ||
+		(item.options !== undefined && item.options.length > 0)
+	);
+}
 
 interface BasicTableEditorProps {
 	items: Record<string, ToggleKeyValue>;
@@ -40,7 +58,16 @@ interface BasicTableEditorProps {
 	readOnly?: boolean;
 	disableItemToggle?: boolean;
 	addItem?: () => void;
-	updateItem?: (type: keyof ToggleKeyValue, ident: string, value: string | boolean | ValueSections) => void;
+	/**
+	 * Update a row's field. Accepts the legacy value-mode fields (name /
+	 * value / enabled) and the schema fields (type / required / description /
+	 * options). Reducer-side, schema fields use `null` to clear.
+	 */
+	updateItem?: (
+		type: keyof ToggleKeyValue,
+		ident: string,
+		value: string | boolean | ValueSections | ScalarPropertyType | string[] | null,
+	) => void;
 	removeItem?: (ident: string) => void;
 }
 
@@ -217,6 +244,8 @@ const TypeChip: React.FC<{ type: ScalarPropertyType }> = ({ type }) => (
 	</Box>
 );
 
+const ChakraExpandButton = chakra('button');
+
 const BasicTableEditor: React.FC<BasicTableEditorProps> = ({
 	items,
 	requestId,
@@ -230,12 +259,18 @@ const BasicTableEditor: React.FC<BasicTableEditorProps> = ({
 	const showToggle = !disableItemToggle;
 	const keys = TypedObject.keys(items);
 	const hasRows = keys.length > 0;
+	// Per-row expanded state. Local to this editor instance — schema authoring
+	// is transient UI; if the user closes and re-opens the request the panel
+	// starts collapsed (the schema info is still visible via the value-mode
+	// row affordances: required dot, type chip, description tooltip).
+	const [expanded, setExpanded] = useState<Record<string, boolean>>({});
 
 	return (
 		<Flex direction='column' h='100%' w='100%' fontSize='sm' fontWeight='400' color='fg.muted'>
 			{hasRows && (
 				<Header>
 					<Row data-empty='true'>
+						<HeaderExpandCell />
 						<HeaderToggleCell />
 						<HeaderKeyCell>{'Key'}</HeaderKeyCell>
 						<HeaderValueCell>{'Value'}</HeaderValueCell>
@@ -275,28 +310,67 @@ const BasicTableEditor: React.FC<BasicTableEditorProps> = ({
 							type === 'boolean' &&
 							(item.value.length === 0 ||
 								(item.value.length === 1 && typeof item.value[0] === 'string'));
+						const isExpanded = expanded[k] === true;
+						const schemaAuthored = hasSchemaAuthored(item);
 
 						return (
-							<MotionRow
-								key={k}
-								layout
-								initial={{ opacity: 0, height: 0 }}
-								animate={{ opacity: 1, height: 'auto' }}
-								exit={{ opacity: 0, height: 0 }}
-								transition={{ duration: 0.16, ease: 'easeOut' }}
-								data-missing-required={missingRequired ? 'true' : undefined}
-								css={{
-									'&[data-missing-required="true"]::before': {
-										opacity: 1,
-										backgroundColor: 'var(--beak-colors-accent-alert)',
-									},
-								}}
-							>
-								<BodyToggleCell>
-									{editable && showToggle && (
-										<EntryToggler value={item.enabled} onChange={enabled => updateItem?.('enabled', k, enabled)} />
-									)}
-								</BodyToggleCell>
+							<React.Fragment key={k}>
+								<MotionRow
+									layout
+									initial={{ opacity: 0, height: 0 }}
+									animate={{ opacity: 1, height: 'auto' }}
+									exit={{ opacity: 0, height: 0 }}
+									transition={{ duration: 0.16, ease: 'easeOut' }}
+									data-missing-required={missingRequired ? 'true' : undefined}
+									css={{
+										'&[data-missing-required="true"]::before': {
+											opacity: 1,
+											backgroundColor: 'var(--beak-colors-accent-alert)',
+										},
+									}}
+								>
+									<BodyExpandCell>
+										<ChakraExpandButton
+											type='button'
+											aria-label={isExpanded ? 'Collapse schema' : 'Expand schema'}
+											aria-expanded={isExpanded}
+											title={isExpanded ? 'Hide schema' : schemaAuthored ? 'Show schema' : 'Define schema'}
+											onClick={() =>
+												setExpanded(prev => ({
+													...prev,
+													[k]: !prev[k],
+												}))
+											}
+											display='inline-flex'
+											alignItems='center'
+											justifyContent='center'
+											w='18px'
+											h='18px'
+											p='0'
+											border='none'
+											bg='transparent'
+											color={schemaAuthored ? 'accent.indigo' : 'fg.subtle'}
+											cursor='pointer'
+											transition='color .12s ease, transform .12s ease'
+											_hover={{ color: schemaAuthored ? 'accent.indigo' : 'fg.default' }}
+											_focusVisible={{
+												outline: 'none',
+												boxShadow: '0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-indigo) 35%, transparent)',
+												borderRadius: '4px',
+											}}
+										>
+											{isExpanded ? (
+												<ChevronDown size={11} strokeWidth={2} />
+											) : (
+												<ChevronRight size={11} strokeWidth={2} />
+											)}
+										</ChakraExpandButton>
+									</BodyExpandCell>
+									<BodyToggleCell>
+										{editable && showToggle && (
+											<EntryToggler value={item.enabled} onChange={enabled => updateItem?.('enabled', k, enabled)} />
+										)}
+									</BodyToggleCell>
 								<BodyPrimaryCell>
 									<BodyInputWrapper {...tooltipAttrs}>
 										<DebouncedInput
@@ -355,7 +429,21 @@ const BasicTableEditor: React.FC<BasicTableEditorProps> = ({
 										<EntryActions onRemove={() => removeItem?.(k)} />
 									</BodyAction>
 								)}
-							</MotionRow>
+								</MotionRow>
+								<AnimatePresence initial={false}>
+									{isExpanded && editable && (
+										<SchemaPanel
+											key={`${k}-panel`}
+											item={item}
+											readOnly={readOnly}
+											onChangeType={next => updateItem?.('type', k, next)}
+											onChangeRequired={next => updateItem?.('required', k, next)}
+											onChangeDescription={next => updateItem?.('description', k, next)}
+											onChangeOptions={next => updateItem?.('options', k, next)}
+										/>
+									)}
+								</AnimatePresence>
+							</React.Fragment>
 						);
 					})}
 				</AnimatePresence>
