@@ -1,6 +1,6 @@
 {
 	"name": "@getbeak/extension-sdk",
-	"version": "0.1.0",
+	"version": "0.2.0",
 	"private": false,
 	"description": "Public SDK for authoring Beak extensions (variables, realtime values, helpers).",
 	"homepage": "https://github.com/getbeak/beak/tree/master/packages/extension-sdk",

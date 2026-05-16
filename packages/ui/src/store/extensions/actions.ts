@@ -1,5 +1,47 @@
 // Source of truth is @beak/state/extensions; this re-export keeps existing UI imports working.
-import { extensionsOpened, reloadExtensions, startExtensions } from '@beak/state/extensions';
+import {
+	checkExtensionUpdates,
+	extensionRemoved,
+	extensionUpsert,
+	extensionsLoaded,
+	installExtension,
+	operationChanged,
+	reloadExtensions,
+	removeExtension,
+	searchExtensions,
+	searchStateChanged,
+	startExtensions,
+	updateExtension,
+	updatesAvailable,
+} from '@beak/state/extensions';
 
-export { extensionsOpened, reloadExtensions, startExtensions };
-export default { extensionsOpened, reloadExtensions, startExtensions };
+export {
+	checkExtensionUpdates,
+	extensionRemoved,
+	extensionUpsert,
+	extensionsLoaded,
+	installExtension,
+	operationChanged,
+	reloadExtensions,
+	removeExtension,
+	searchExtensions,
+	searchStateChanged,
+	startExtensions,
+	updateExtension,
+	updatesAvailable,
+};
+export default {
+	checkExtensionUpdates,
+	extensionRemoved,
+	extensionUpsert,
+	extensionsLoaded,
+	installExtension,
+	operationChanged,
+	reloadExtensions,
+	removeExtension,
+	searchExtensions,
+	searchStateChanged,
+	startExtensions,
+	updateExtension,
+	updatesAvailable,
+};
