@@ -1,13 +1,30 @@
+import Button from '@beak/ui/components/atoms/Button';
+import Dialog, { DialogBody, DialogFooter, DialogHeader } from '@beak/ui/components/molecules/Dialog';
 import { changeTab } from '@beak/ui/features/tabs/store/actions';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { Box, chakra, Flex, Menu, Portal } from '@chakra-ui/react';
 import type { RequestNode } from '@getbeak/types/nodes';
-import { ChevronDown, Edit3, Hash, Network, Plug, Plus } from 'lucide-react';
+import { motion } from 'framer-motion';
+import {
+	AlertCircle,
+	CheckCircle2,
+	ChevronDown,
+	Circle,
+	Hash,
+	MoreHorizontal,
+	Network,
+	Pencil,
+	Plug,
+	Plus,
+	RefreshCw,
+	Trash2,
+} from 'lucide-react';
 import * as React from 'react';
 import { useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
 import { useEndpoints } from '../hooks/use-endpoints';
+import { deleteEndpointFolder } from '../lib/persist';
 import { ENDPOINT_CONFIG, type EndpointEntry, type EndpointKind } from '../types';
 import EndpointDialog from './EndpointDialog';
 
@@ -16,7 +33,8 @@ const ChakraButton = chakra('button');
 type DialogState =
 	| { mode: 'closed' }
 	| { mode: 'create'; kind: EndpointKind }
-	| { mode: 'edit'; kind: EndpointKind; entry: EndpointEntry };
+	| { mode: 'edit'; kind: EndpointKind; entry: EndpointEntry }
+	| { mode: 'confirm-delete'; kind: EndpointKind; entry: EndpointEntry };
 
 interface UnifiedRow {
 	kind: EndpointKind;
@@ -40,12 +58,14 @@ const EndpointsPane: React.FC = () => {
 	const [dialog, setDialog] = useState<DialogState>({ mode: 'closed' });
 	const dispatch = useDispatch();
 
+	function refreshLists() {
+		void graphql.refresh();
+		void grpc.refresh();
+	}
+
 	function closeDialog(didChange: boolean) {
 		setDialog({ mode: 'closed' });
-		if (didChange) {
-			void graphql.refresh();
-			void grpc.refresh();
-		}
+		if (didChange) refreshLists();
 	}
 
 	/**
@@ -65,6 +85,17 @@ const EndpointsPane: React.FC = () => {
 		dispatch(changeTab({ type: 'request', payload: requestChild.id, temporary: false }));
 	}
 
+	async function confirmDelete(entry: EndpointEntry) {
+		try {
+			await deleteEndpointFolder(entry.folderPath);
+			refreshLists();
+		} catch (e) {
+			console.warn('endpoint delete failed', e);
+		} finally {
+			setDialog({ mode: 'closed' });
+		}
+	}
+
 	const rows = useMemo<UnifiedRow[]>(() => {
 		const all: UnifiedRow[] = [
 			...graphql.entries.map(entry => ({ kind: 'graphql' as const, entry })),
@@ -80,30 +111,28 @@ const EndpointsPane: React.FC = () => {
 	return (
 		<React.Fragment>
 			<Flex direction='column' flex='1' minH={0}>
-				<Flex
-					align='center'
-					justify='space-between'
-					px='3'
-					py='2'
-					borderBottomWidth='1px'
-					borderColor='border.subtle'
-					flexShrink={0}
-				>
-					<Box
-						fontSize='10.5px'
-						fontWeight='600'
-						color='fg.subtle'
-						letterSpacing='0.05em'
-						textTransform='uppercase'
+				{hasRows && (
+					<Flex
+						align='center'
+						justify='space-between'
+						px='3'
+						py='2'
+						borderBottomWidth='1px'
+						borderColor='border.subtle'
+						flexShrink={0}
 					>
-						{loading
-							? 'Loading…'
-							: hasRows
-								? `${rows.length} registered`
-								: 'Empty — no endpoints yet'}
-					</Box>
-					<AddDropdown onPick={kind => setDialog({ mode: 'create', kind })} />
-				</Flex>
+						<Box
+							fontSize='10.5px'
+							fontWeight='600'
+							color='fg.subtle'
+							letterSpacing='0.05em'
+							textTransform='uppercase'
+						>
+							{loading ? 'Loading…' : `${rows.length} registered`}
+						</Box>
+						<AddDropdown onPick={kind => setDialog({ mode: 'create', kind })} />
+					</Flex>
+				)}
 
 				<Box flex='1' minH={0} overflowY='auto'>
 					{!hasRows && !loading && (
@@ -119,6 +148,7 @@ const EndpointsPane: React.FC = () => {
 									entry={entry}
 									onOpen={() => openEndpointInRequestPane(entry)}
 									onEdit={() => setDialog({ mode: 'edit', kind, entry })}
+									onDelete={() => setDialog({ mode: 'confirm-delete', kind, entry })}
 								/>
 							))}
 						</Flex>
@@ -140,6 +170,13 @@ const EndpointsPane: React.FC = () => {
 					initialEndpoint={typeof dialog.entry.source.endpoint === 'string' ? dialog.entry.source.endpoint : ''}
 					initialDescriptor={dialog.kind === 'grpc' && 'descriptor' in dialog.entry.source ? dialog.entry.source.descriptor : undefined}
 					onClose={closeDialog}
+				/>
+			)}
+			{dialog.mode === 'confirm-delete' && (
+				<DeleteConfirmDialog
+					entry={dialog.entry}
+					onCancel={() => setDialog({ mode: 'closed' })}
+					onConfirm={() => confirmDelete(dialog.entry)}
 				/>
 			)}
 		</React.Fragment>
@@ -247,85 +284,143 @@ const KindMenuItem: React.FC<{ kind: EndpointKind; onPick: (kind: EndpointKind) 
 
 // ─── Empty state ──────────────────────────────────────────────────────────
 
+/**
+ * Empty state mirrors the variable-sets EmptyState vocabulary: big pink
+ * icon in a tinted circle, large bold title, soft description, single
+ * primary CTA. Tightens the surface so the sidebar doesn't look adrift
+ * before any endpoints are registered.
+ */
 const EmptyState: React.FC<{ onPick: (kind: EndpointKind) => void }> = ({ onPick }) => (
-	<Flex direction='column' align='center' gap='3' px='5' py='8' color='fg.subtle'>
-		<Flex
-			align='center'
-			justify='center'
-			w='40px'
-			h='40px'
-			borderRadius='full'
-			bg='color-mix(in srgb, var(--beak-colors-accent-indigo) 12%, transparent)'
-			color='accent.indigo'
-			borderWidth='1px'
-			borderColor='color-mix(in srgb, var(--beak-colors-accent-indigo) 22%, transparent)'
+	<Flex direction='column' align='center' justify='center' gap='3' py='14' px='6'>
+		<motion.div
+			initial={{ opacity: 0, scale: 0.92 }}
+			animate={{ opacity: 1, scale: 1 }}
+			transition={{ type: 'spring', stiffness: 600, damping: 28 }}
 		>
-			<Plug size={16} strokeWidth={1.8} />
-		</Flex>
-		<Box fontSize='12.5px' fontWeight='600' color='fg.default'>
-			{'No endpoints registered'}
+			<Flex
+				align='center'
+				justify='center'
+				w='56px'
+				h='56px'
+				borderRadius='full'
+				bg='color-mix(in srgb, var(--beak-colors-accent-pink) 16%, transparent)'
+				color='accent.pink'
+				borderWidth='1px'
+				borderColor='color-mix(in srgb, var(--beak-colors-accent-pink) 30%, transparent)'
+				boxShadow='0 8px 24px color-mix(in srgb, var(--beak-colors-accent-pink) 30%, transparent), inset 0 1px 0 color-mix(in srgb, white 18%, transparent)'
+			>
+				<Plug size={22} strokeWidth={1.8} />
+			</Flex>
+		</motion.div>
+		<Box fontSize='xl' fontWeight='700' color='fg.default' letterSpacing='-0.02em' lineHeight='1.1'>
+			{'No endpoints yet'}
 		</Box>
-		<Box fontSize='11px' textAlign='center' lineHeight='1.5' maxW='240px'>
-			{'Register a GraphQL endpoint or gRPC service to group every request that hits it under a single folder.'}
+		<Box fontSize='xs' color='fg.muted' textAlign='center' maxW='320px' lineHeight='1.5'>
+			{'Register a GraphQL endpoint or gRPC service to group every request that hits it under a single folder. Headers, auth, and the schema live on the seed request — opened in the request pane.'}
 		</Box>
-		<Flex gap='2' mt='1'>
-			<EmptyStateAddButton kind='graphql' onPick={onPick} />
-			<EmptyStateAddButton kind='grpc' onPick={onPick} />
-		</Flex>
+		<AddDropdownPrimary onPick={onPick} />
 	</Flex>
 );
 
-const EmptyStateAddButton: React.FC<{ kind: EndpointKind; onPick: (kind: EndpointKind) => void }> = ({
-	kind,
-	onPick,
-}) => {
-	const config = ENDPOINT_CONFIG[kind];
-	const Icon = kind === 'graphql' ? Hash : Network;
-	return (
-		<ChakraButton
-			type='button'
-			onClick={() => onPick(kind)}
-			display='inline-flex'
-			alignItems='center'
-			gap='1.5'
-			h='26px'
-			px='3'
-			borderRadius='full'
-			border='none'
-			bg={config.accentToken}
-			color='fg.onAccent'
-			fontSize='11.5px'
-			fontWeight='600'
-			cursor='pointer'
-			boxShadow={`0 4px 10px color-mix(in srgb, ${config.accentVar} 35%, transparent), inset 0 1px 0 color-mix(in srgb, white 18%, transparent)`}
-			transition='filter .12s ease, transform .08s ease'
-			_hover={{ filter: 'brightness(1.06)' }}
-			_active={{ transform: 'translateY(0.5px)' }}
-		>
-			<Icon size={11} strokeWidth={2.4} />
-			{kind === 'graphql' ? 'GraphQL' : 'gRPC'}
-		</ChakraButton>
-	);
-};
+const AddDropdownPrimary: React.FC<{ onPick: (kind: EndpointKind) => void }> = ({ onPick }) => (
+	<Menu.Root>
+		<Menu.Trigger asChild>
+			<Button size='sm'>
+				<Flex align='center' gap='1.5'>
+					<Plus size={12} />
+					{'Add your first endpoint'}
+					<ChevronDown size={11} strokeWidth={2} style={{ opacity: 0.85 }} />
+				</Flex>
+			</Button>
+		</Menu.Trigger>
+		<Portal>
+			<Menu.Positioner>
+				<Menu.Content
+					bg='bg.surface.emphasized'
+					borderWidth='1px'
+					borderColor='border.default'
+					borderRadius='md'
+					boxShadow='0 8px 24px rgba(0,0,0,0.28)'
+					p='1'
+					minW='220px'
+				>
+					<KindMenuItem kind='graphql' onPick={onPick} />
+					<KindMenuItem kind='grpc' onPick={onPick} />
+				</Menu.Content>
+			</Menu.Positioner>
+		</Portal>
+	</Menu.Root>
+);
 
 // ─── Row ──────────────────────────────────────────────────────────────────
+
+type SyncStatus = 'never' | 'fresh' | 'stale';
+
+function describeSync(lastSyncedAt: string | undefined): { status: SyncStatus; label: string } {
+	if (!lastSyncedAt) return { status: 'never', label: 'Never synced' };
+	const at = Date.parse(lastSyncedAt);
+	if (!Number.isFinite(at)) return { status: 'never', label: 'Never synced' };
+	const ageMs = Date.now() - at;
+	const minutes = Math.floor(ageMs / 60_000);
+	const hours = Math.floor(minutes / 60);
+	const days = Math.floor(hours / 24);
+
+	const label =
+		minutes < 1
+			? 'Synced just now'
+			: minutes < 60
+				? `Synced ${minutes}m ago`
+				: hours < 24
+					? `Synced ${hours}h ago`
+					: `Synced ${days}d ago`;
+	const status: SyncStatus = ageMs < 24 * 60 * 60 * 1000 ? 'fresh' : 'stale';
+	return { status, label };
+}
+
+const SyncIndicator: React.FC<{ status: SyncStatus }> = ({ status }) => {
+	const palette =
+		status === 'fresh'
+			? { icon: CheckCircle2, color: 'var(--beak-colors-accent-success)', label: 'Synced' }
+			: status === 'stale'
+				? { icon: AlertCircle, color: 'var(--beak-colors-accent-warning)', label: 'Stale — sync hasn’t run in over a day' }
+				: { icon: Circle, color: 'var(--beak-colors-fg-subtle)', label: 'Never synced' };
+	const Icon = palette.icon;
+	return (
+		<Box
+			display='inline-flex'
+			alignItems='center'
+			justifyContent='center'
+			color={palette.color}
+			title={palette.label}
+			aria-label={palette.label}
+		>
+			<Icon size={11} strokeWidth={2} />
+		</Box>
+	);
+};
 
 const EndpointRow: React.FC<{
 	kind: EndpointKind;
 	entry: EndpointEntry;
 	onOpen: () => void;
 	onEdit: () => void;
-}> = ({ kind, entry, onOpen, onEdit }) => {
+	onDelete: () => void;
+}> = ({ kind, entry, onOpen, onEdit, onDelete }) => {
 	const config = ENDPOINT_CONFIG[kind];
 	const Icon = kind === 'graphql' ? Hash : Network;
 	const endpoint = typeof entry.source.endpoint === 'string' ? entry.source.endpoint : '';
-	const lastSync = entry.source.lastSyncedAt ? new Date(entry.source.lastSyncedAt).toLocaleString() : null;
+	const { status: syncStatus, label: syncLabel } = describeSync(entry.source.lastSyncedAt);
+	const descriptor =
+		kind === 'grpc' && 'descriptor' in entry.source && entry.source.descriptor
+			? entry.source.descriptor.type
+			: null;
+
 	return (
 		<Flex
 			align='center'
 			gap='2'
 			px='3'
-			py='1.5'
+			py='2'
 			role='button'
 			tabIndex={0}
 			cursor='pointer'
@@ -347,17 +442,17 @@ const EndpointRow: React.FC<{
 				align='center'
 				justify='center'
 				flexShrink={0}
-				w='22px'
-				h='22px'
+				w='26px'
+				h='26px'
 				borderRadius='sm'
 				bg={`color-mix(in srgb, ${config.accentVar} 12%, transparent)`}
 				color={config.accentToken}
 			>
-				<Icon size={11} strokeWidth={2} />
+				<Icon size={12} strokeWidth={2} />
 			</Flex>
-			<Flex direction='column' flex='1' minW={0}>
+			<Flex direction='column' flex='1' minW={0} gap='0.5'>
 				<Flex align='center' gap='1.5'>
-					<Box fontSize='12px' fontWeight='500' color='fg.default' truncate>
+					<Box fontSize='12px' fontWeight='600' color='fg.default' truncate>
 						{entry.folderName}
 					</Box>
 					<Box
@@ -376,24 +471,51 @@ const EndpointRow: React.FC<{
 					>
 						{kind === 'graphql' ? 'GraphQL' : 'gRPC'}
 					</Box>
+					{descriptor && (
+						<Box
+							as='span'
+							display='inline-flex'
+							alignItems='center'
+							h='14px'
+							px='1.5'
+							borderRadius='sm'
+							borderWidth='1px'
+							borderColor='border.subtle'
+							color='fg.subtle'
+							fontSize='9.5px'
+							fontWeight='500'
+							textTransform='uppercase'
+							letterSpacing='0.04em'
+						>
+							{descriptor}
+						</Box>
+					)}
 				</Flex>
 				<Box fontSize='10.5px' color='fg.subtle' fontFamily='mono' truncate>
 					{endpoint || '(no endpoint set)'}
 				</Box>
-				{lastSync && (
-					<Box fontSize='10px' color='fg.subtle' fontStyle='italic'>
-						{`Synced ${lastSync}`}
-					</Box>
-				)}
+				<Flex align='center' gap='1' color='fg.subtle' fontSize='10px'>
+					<SyncIndicator status={syncStatus} />
+					<Box>{syncLabel}</Box>
+				</Flex>
 			</Flex>
+			<RowMenu folderName={entry.folderName} onEdit={onEdit} onDelete={onDelete} />
+		</Flex>
+	);
+};
+
+const RowMenu: React.FC<{ folderName: string; onEdit: () => void; onDelete: () => void }> = ({
+	folderName,
+	onEdit,
+	onDelete,
+}) => (
+	<Menu.Root>
+		<Menu.Trigger asChild>
 			<ChakraButton
 				type='button'
-				aria-label={`Edit ${entry.folderName}`}
-				title={`Edit ${entry.folderName}`}
-				onClick={e => {
-					e.stopPropagation();
-					onEdit();
-				}}
+				aria-label={`More actions for ${folderName}`}
+				title='More'
+				onClick={e => e.stopPropagation()}
 				display='inline-flex'
 				alignItems='center'
 				justifyContent='center'
@@ -407,10 +529,131 @@ const EndpointRow: React.FC<{
 				flexShrink={0}
 				_hover={{ color: 'fg.default', bg: 'color-mix(in srgb, var(--beak-colors-fg-default) 8%, transparent)' }}
 			>
-				<Edit3 size={11} strokeWidth={1.8} />
+				<MoreHorizontal size={12} strokeWidth={2} />
 			</ChakraButton>
+		</Menu.Trigger>
+		<Portal>
+			<Menu.Positioner>
+				<Menu.Content
+					bg='bg.surface.emphasized'
+					borderWidth='1px'
+					borderColor='border.default'
+					borderRadius='md'
+					boxShadow='0 8px 24px rgba(0,0,0,0.28)'
+					p='1'
+					minW='160px'
+				>
+					<RowMenuItem
+						icon={Pencil}
+						label='Edit endpoint'
+						onSelect={e => {
+							e.stopPropagation();
+							onEdit();
+						}}
+					/>
+					<RowMenuItem
+						icon={RefreshCw}
+						label='Discover'
+						disabled
+						hint='Coming soon'
+						onSelect={e => e.stopPropagation()}
+					/>
+					<Box h='1px' bg='border.subtle' my='1' />
+					<RowMenuItem
+						icon={Trash2}
+						label='Delete endpoint'
+						tone='destructive'
+						onSelect={e => {
+							e.stopPropagation();
+							onDelete();
+						}}
+					/>
+				</Menu.Content>
+			</Menu.Positioner>
+		</Portal>
+	</Menu.Root>
+);
+
+const RowMenuItem: React.FC<{
+	icon: typeof Pencil;
+	label: string;
+	hint?: string;
+	tone?: 'destructive';
+	disabled?: boolean;
+	onSelect: (e: React.MouseEvent) => void;
+}> = ({ icon: Icon, label, hint, tone, disabled, onSelect }) => (
+	<Menu.Item
+		value={label}
+		disabled={disabled}
+		onClick={onSelect as unknown as () => void}
+		fontSize='12px'
+		fontWeight='500'
+		borderRadius='sm'
+		py='1.5'
+		px='2'
+		gap='2'
+		color={tone === 'destructive' ? 'accent.alert' : 'fg.default'}
+		opacity={disabled ? 0.55 : 1}
+		cursor={disabled ? 'not-allowed' : 'pointer'}
+		_hover={
+			disabled
+				? undefined
+				: tone === 'destructive'
+					? {
+							bg: 'color-mix(in srgb, var(--beak-colors-accent-alert) 14%, transparent)',
+							color: 'accent.alert',
+						}
+					: {
+							bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 12%, transparent)',
+							color: 'accent.pink',
+						}
+		}
+	>
+		<Icon size={12} strokeWidth={1.8} />
+		<Flex direction='column' align='flex-start' gap='0' minW={0}>
+			<Box as='span'>{label}</Box>
+			{hint && (
+				<Box as='span' fontSize='10px' color='fg.subtle' fontWeight='400'>
+					{hint}
+				</Box>
+			)}
 		</Flex>
-	);
-};
+	</Menu.Item>
+);
+
+// ─── Delete confirm dialog ────────────────────────────────────────────────
+
+const DeleteConfirmDialog: React.FC<{
+	entry: EndpointEntry;
+	onCancel: () => void;
+	onConfirm: () => void;
+}> = ({ entry, onCancel, onConfirm }) => (
+	<Dialog onClose={onCancel} tone='alert'>
+		<Box w='420px'>
+			<DialogHeader
+				icon={<Trash2 size={14} strokeWidth={2.2} />}
+				title={`Delete ${entry.folderName}?`}
+				description='Removes the endpoint folder and every request inside it from disk. This cannot be undone.'
+			/>
+			<DialogBody>
+				<Box as='p' fontSize='sm' color='fg.muted' lineHeight='1.55'>
+					{'The folder at '}
+					<Box as='span' fontFamily='mono' color='fg.default'>
+						{entry.folderPath}
+					</Box>
+					{' will be deleted recursively.'}
+				</Box>
+			</DialogBody>
+			<DialogFooter>
+				<Button colour='secondary' size='sm' onClick={onCancel}>
+					{'Cancel'}
+				</Button>
+				<Button colour='destructive' size='sm' onClick={onConfirm}>
+					{'Delete endpoint'}
+				</Button>
+			</DialogFooter>
+		</Box>
+	</Dialog>
+);
 
 export default EndpointsPane;

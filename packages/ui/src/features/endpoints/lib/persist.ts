@@ -189,3 +189,14 @@ export async function updateEndpoint(
 
 	await ipcFsService.writeJson(collectionPath, revalidated.data, { spaces: '\t' });
 }
+
+/**
+ * Recursively remove an endpoint folder + everything inside it. The host's
+ * fs IPC handles directory removal; the project tree's fs-watcher picks up
+ * the change and the renderer's tree state catches up. Caller should refresh
+ * the endpoints hook to drop the entry from the sidebar immediately rather
+ * than waiting for the watcher tick.
+ */
+export async function deleteEndpointFolder(folderPath: string): Promise<void> {
+	await ipcFsService.remove(folderPath);
+}
