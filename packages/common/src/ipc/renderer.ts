@@ -17,7 +17,16 @@ export class IpcServiceRenderer<T extends string> extends IpcServiceBase<T> {
 			const response = await this.ipc.invoke(this.channel, { code, payload });
 
 			if (response && typeof response === 'object' && 'error' in response && response.error) {
-				throw new Error(`IPC Error: ${JSON.stringify(response.error)}`);
+				// Carry the host-side `code` onto the thrown Error so renderer
+				// effects can branch on it (e.g. `error.code === 'ENOENT'` to
+				// treat a missing file as "fresh state" rather than logging a
+				// scary warning). Without this the renderer only sees the
+				// stringified IpcError in `.message`.
+				const ipcError = response.error as { code?: unknown; message?: unknown };
+				const message = typeof ipcError.message === 'string' ? ipcError.message : JSON.stringify(ipcError);
+				const wrapped = new Error(`IPC Error: ${message}`) as Error & { code?: string };
+				if (typeof ipcError.code === 'string') wrapped.code = ipcError.code;
+				throw wrapped;
 			}
 
 			return (response as any)?.response as R;

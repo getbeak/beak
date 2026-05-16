@@ -59,8 +59,14 @@ export class IpcServiceMain<T extends string> extends IpcServiceBase<T> {
 
 	private normalizeError(error: unknown): IpcError {
 		if (error instanceof Error) {
+			// Preserve the original `.code` when the thrower set one (e.g. node fs
+			// errors like ENOENT, ENOTDIR, EACCES). Renderer-side effects branch
+			// on these — overwriting them with a generic 'IPC_ERROR' forces
+			// callers to brittle-string-match the message instead.
+			const original = (error as Error & { code?: unknown }).code;
+			const code = typeof original === 'string' && original.length > 0 ? original : 'IPC_ERROR';
 			return {
-				code: 'IPC_ERROR',
+				code,
 				message: error.message,
 				stack: error.stack,
 			};

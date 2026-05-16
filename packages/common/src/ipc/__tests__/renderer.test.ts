@@ -74,7 +74,17 @@ describe('IpcServiceRenderer - Stage 3', () => {
 			const mockError = { error: { message: 'Test error' } };
 			mockIpc.invoke = vi.fn().mockResolvedValue(mockError);
 
-			await expect(service.testInvoke('test_code')).rejects.toThrow('IPC Error: {"message":"Test error"}');
+			await expect(service.testInvoke('test_code')).rejects.toThrow('IPC Error: Test error');
+		});
+
+		it('preserves the host-side error code on the thrown Error', async () => {
+			const mockError = { error: { code: 'ENOENT', message: 'no such file' } };
+			mockIpc.invoke = vi.fn().mockResolvedValue(mockError);
+
+			await expect(service.testInvoke('test_code')).rejects.toMatchObject({
+				code: 'ENOENT',
+				message: 'IPC Error: no such file',
+			});
 		});
 
 		it('should handle network errors', async () => {
