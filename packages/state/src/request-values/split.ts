@@ -79,7 +79,12 @@ function splitScalarMap(
 		headers.push({
 			id,
 			name: entry.name,
-			type: 'string',
+			// The legacy ToggleKeyValue stores `type` as our scalar property type
+			// (string | number | boolean | enum | token); the request-schema
+			// shape uses the same union so this carries over directly.
+			type: entry.type ?? 'string',
+			...(entry.required === true ? { required: true } : {}),
+			...(entry.description ? { description: entry.description } : {}),
 		});
 		headerValues[id] = {
 			kind: 'string',
@@ -102,6 +107,12 @@ function mergeScalarMap(
 			name: def.name,
 			value: extractValueSections(cell),
 			enabled: cell ? cell.enabled : true,
+			// Preserve schema metadata across the round-trip. The legacy
+			// ToggleKeyValue shape carries these optionally, so we only emit
+			// them when they're present in the schema.
+			...(def.type !== 'string' ? { type: def.type } : {}),
+			...(def.required === true ? { required: true } : {}),
+			...(def.description ? { description: def.description } : {}),
 		};
 	}
 	return out;
@@ -243,6 +254,8 @@ function entryToProperty(id: string, entry: Entries): JsonProperty {
 		id,
 		parentId: entry.parentId,
 		...(('name' in entry && typeof entry.name === 'string') ? { name: entry.name } : {}),
+		...(entry.required === true ? { required: true } : {}),
+		...(entry.description ? { description: entry.description } : {}),
 	};
 
 	switch (entry.type) {
@@ -293,6 +306,8 @@ function propertyToEntry(prop: JsonProperty, cell: PropertyValue | undefined): E
 		parentId: prop.parentId,
 		enabled: cell ? cell.enabled : true,
 		...(prop.name !== undefined ? { name: prop.name } : {}),
+		...(prop.required === true ? { required: true } : {}),
+		...(prop.description ? { description: prop.description } : {}),
 	};
 
 	switch (prop.type) {
