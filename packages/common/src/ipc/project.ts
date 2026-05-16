@@ -9,6 +9,7 @@ export const ProjectMessages = {
 	OpenProject: 'open_project',
 	CreateProject: 'create_project',
 	PromoteUntitled: 'promote_untitled',
+	MaterialiseFromMemory: 'materialise_from_memory',
 };
 
 export interface CreateProjectReq {
@@ -21,6 +22,47 @@ export interface PromoteUntitledReq {
 }
 
 export interface PromoteUntitledRes {
+	projectId: string;
+	projectFilePath: string;
+}
+
+export interface MaterialiseFromMemoryReq {
+	/** Display name; also becomes the new folder name under the user's chosen parent. */
+	projectName: string;
+	/**
+	 * Full in-memory tree as it lives in the renderer's project slice. Each
+	 * value is a FolderNode or ValidRequestNode; we type-erase here because
+	 * `@beak/common` cannot depend on `@getbeak/types` shapes that are
+	 * derived from the schemas package.
+	 */
+	tree: Record<string, MaterialiseTreeNode>;
+	/** Variable-sets state, keyed by display name. Same shape as on disk. */
+	variableSets: Record<string, MaterialiseVariableSet>;
+}
+
+export interface MaterialiseTreeNode {
+	id: string;
+	type: 'folder' | 'request';
+	mode?: 'valid' | 'failed';
+	name: string;
+	filePath: string;
+	parent: string | null;
+	info?: Record<string, unknown>;
+}
+
+export interface MaterialiseVariableSet {
+	sets: Record<string, string>;
+	items: Record<string, string>;
+	/**
+	 * `values` carry the same `ValueSections` array shape variable-sets
+	 * use everywhere (string parts and `{ type, payload }` realtime-value
+	 * references). Type-erased here because `@beak/common` cannot depend
+	 * on `@getbeak/types`; the host writes them through unchanged.
+	 */
+	values: Record<string, unknown[]>;
+}
+
+export interface MaterialiseFromMemoryRes {
 	projectId: string;
 	projectFilePath: string;
 }
@@ -45,6 +87,10 @@ export class IpcProjectServiceRenderer extends IpcServiceRenderer<'project'> {
 	async promoteUntitled(payload: PromoteUntitledReq): Promise<PromoteUntitledRes | null> {
 		return await this.invoke<PromoteUntitledRes | null>(ProjectMessages.PromoteUntitled, payload);
 	}
+
+	async materialiseFromMemory(payload: MaterialiseFromMemoryReq): Promise<MaterialiseFromMemoryRes | null> {
+		return await this.invoke<MaterialiseFromMemoryRes | null>(ProjectMessages.MaterialiseFromMemory, payload);
+	}
 }
 
 export class IpcProjectServiceMain extends IpcServiceMain<'project'> {
@@ -66,5 +112,9 @@ export class IpcProjectServiceMain extends IpcServiceMain<'project'> {
 
 	registerPromoteUntitled(fn: IpcListener<PromoteUntitledReq>) {
 		this.registerRequestHandler(ProjectMessages.PromoteUntitled, fn);
+	}
+
+	registerMaterialiseFromMemory(fn: IpcListener<MaterialiseFromMemoryReq>) {
+		this.registerRequestHandler(ProjectMessages.MaterialiseFromMemory, fn);
 	}
 }

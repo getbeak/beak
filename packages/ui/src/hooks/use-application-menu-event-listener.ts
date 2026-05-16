@@ -1,6 +1,6 @@
-import type { MenuEventPayload } from '@beak/common/web-contents/types';
+import type { MenuEventCode, MenuEventPayload } from '@beak/common/web-contents/types';
 import { requestFlight } from '@beak/state/flight';
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { showEncryptionView } from '../features/encryption/store/actions';
 import { actions as openApiImportActions } from '../features/openapi-import/store';
@@ -13,16 +13,22 @@ import {
 	closeTabsAll,
 	closeTabsOther,
 } from '../features/tabs/store/actions';
-import { ipcProjectService } from '../lib/ipc';
 import { createNewFolder, createNewRequest } from '../store/project/actions';
+import { useSaveProjectAs } from './use-save-project-as';
 
-export function useApplicationMenuEventListener() {
+const embedded = Boolean(window.embeddedIndicator);
+
+/**
+ * Returns a dispatcher that runs the action behind a `MenuEventCode`. Used by
+ * the electron IPC listener and the web-host menu bar so both shells route
+ * through one switch.
+ */
+export function useMenuActionDispatcher() {
 	const dispatch = useDispatch();
+	const saveProjectAs = useSaveProjectAs();
 
-	useEffect(() => {
-		function listener(_event: unknown, payload: MenuEventPayload) {
-			const { code } = payload;
-
+	return useCallback(
+		(code: MenuEventCode) => {
 			switch (code) {
 				case 'new_folder':
 					dispatch(createNewFolder({ highlightedNodeId: void 0 }));
@@ -65,25 +71,40 @@ export function useApplicationMenuEventListener() {
 					dispatch(changeTab({ type: 'preferences', temporary: false, payload: 'preferences' }));
 					break;
 
+				case 'show_project_home':
+					dispatch(changeTab({ type: 'project_home', temporary: false, payload: 'project_home' }));
+					break;
+
 				case 'import_openapi_spec':
 					dispatch(openApiImportActions.start());
 					break;
 
 				case 'save_project_as':
-					void ipcProjectService.promoteUntitled({}).catch(err => {
-						console.warn('Save Project As… failed', err);
-					});
+					void saveProjectAs();
 					break;
 
 				default:
-					console.warn('Unknown menu item event', payload);
+					console.warn('Unknown menu item event', code);
 					break;
 			}
+		},
+		[dispatch, saveProjectAs],
+	);
+}
+
+export function useApplicationMenuEventListener() {
+	const dispatchMenuCode = useMenuActionDispatcher();
+
+	useEffect(() => {
+		if (!embedded) return;
+
+		function listener(_event: unknown, payload: MenuEventPayload) {
+			dispatchMenuCode(payload.code);
 		}
 
 		window.secureBridge.ipc.on('menu:menu_item_click', listener);
 		return () => {
 			window.secureBridge.ipc.off('menu:menu_item_click', listener);
 		};
-	}, [dispatch]);
+	}, [dispatchMenuCode]);
 }

@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { FileWarning } from 'lucide-react';
 import * as React from 'react';
 
-import { ipcDialogService, ipcProjectService } from '../../lib/ipc';
+import { useSaveProjectAs } from '../../hooks/use-save-project-as';
 
 /**
  * Thin strip rendered above the sidebar/main split when the active project
@@ -19,22 +19,9 @@ const MotionFlex = motion.create(Flex);
 
 const UntitledBanner: React.FC = () => {
 	const isMemory = useAppSelector(s => s.global.project.mode === 'memory');
+	const saveProjectAs = useSaveProjectAs();
 
 	if (!isMemory) return null;
-
-	async function onSaveAs() {
-		try {
-			await ipcProjectService.promoteUntitled({});
-		} catch (err) {
-			console.warn('Save Project As… failed', err);
-			await ipcDialogService.showMessageBox({
-				type: 'error',
-				title: 'Save Project As… failed',
-				message: 'Beak couldn’t save this untitled project.',
-				detail: err instanceof Error ? err.message : String(err),
-			});
-		}
-	}
 
 	return (
 		<MotionFlex
@@ -96,7 +83,7 @@ const UntitledBanner: React.FC = () => {
 					outline: 'none',
 					boxShadow: '0 0 0 3px color-mix(in srgb, var(--beak-colors-accent-pink) 30%, transparent)',
 				}}
-				onClick={onSaveAs}
+				onClick={() => void saveProjectAs()}
 			>
 				{'Save Project As…'}
 			</Button>
