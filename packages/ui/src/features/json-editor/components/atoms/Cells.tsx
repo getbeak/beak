@@ -76,21 +76,21 @@ export const BodyInputWrapper: React.FC<BoxProps> = props => (
 			'& > div > article, & > input[type=text]': {
 				width: '100%',
 				height: '100%',
-				minHeight: '28px',
+				minHeight: '24px',
 				border: 'none',
 				borderRadius: '0',
 				background: 'transparent',
-				padding: '0 8px',
+				padding: '0 6px',
 				margin: '0',
 				fontSize: '12px',
-				lineHeight: '28px',
+				lineHeight: '24px',
 				color: 'var(--beak-colors-fg-default)',
 				caretColor: 'var(--beak-colors-accent-pink)',
-				transition: 'background-color .12s ease, box-shadow .12s ease',
 			},
-			'& > div > article:hover, & > input[type=text]:hover': {
-				background: 'color-mix(in srgb, var(--beak-colors-fg-default) 3%, transparent)',
-			},
+			// Drop the hover bg on inputs — the row's hover/focus-within tint
+			// already signals "this row is live"; layering a second tint on the
+			// input on top of it produced a perceptible flicker as the user
+			// moved the cursor between cells.
 			'& > div > article:focus-within, & > input[type=text]:focus': {
 				outline: 'none',
 				background: 'color-mix(in srgb, var(--beak-colors-accent-pink) 5%, transparent)',

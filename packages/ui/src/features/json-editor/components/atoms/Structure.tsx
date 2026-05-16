@@ -20,10 +20,13 @@ export const Row = chakra('div', {
 		gridTemplateColumns: '18px 28px minmax(0, .9fr) 56px minmax(0, 1fr) 56px 24px',
 		gridTemplateRows: 'minmax(0, 1fr)',
 		alignItems: 'stretch',
-		minHeight: '30px',
+		minHeight: '26px',
 		borderBottomWidth: '1px',
 		borderColor: 'border.subtle',
-		transition: 'background-color .12s ease',
+		// Background change is intentionally instant — a 120ms tween could get
+		// interrupted by rapid hover/focus-within oscillation as the user
+		// clicks through a row's controls, which read as a flicker. Snapping
+		// looks calmer.
 		'&::before': {
 			content: '""',
 			position: 'absolute',
@@ -33,19 +36,18 @@ export const Row = chakra('div', {
 			width: '2px',
 			backgroundColor: 'accent.pink',
 			opacity: 0,
-			transition: 'opacity .12s ease',
 			pointerEvents: 'none',
 		},
-		'&:hover': {
-			backgroundColor: 'color-mix(in srgb, var(--beak-colors-fg-default) 4%, transparent)',
-		},
-		'&:focus-within': {
-			backgroundColor: 'color-mix(in srgb, var(--beak-colors-fg-default) 6%, transparent)',
+		// Combine hover + focus-within into one state. Splitting them used to
+		// flash the bg through three values (none → 4% → 6%) every time the
+		// user clicked into a cell, which read as a visible flicker.
+		'&:hover, &:focus-within': {
+			backgroundColor: 'color-mix(in srgb, var(--beak-colors-fg-default) 5%, transparent)',
 		},
 		'&:hover::before, &:focus-within::before': { opacity: 1 },
 		'&:hover [data-row-action], &:focus-within [data-row-action]': { opacity: 1 },
 		'&:hover [data-row-drag], &:focus-within [data-row-drag]': { opacity: 1 },
-		'&[data-empty="true"]': { minHeight: '26px' },
+		'&[data-empty="true"]': { minHeight: '22px' },
 		'&[data-empty="true"]:hover, &[data-empty="true"]:focus-within': {
 			backgroundColor: 'transparent',
 		},
@@ -75,7 +77,7 @@ export const Header = chakra('div', {
 		backgroundColor: 'bg.surface',
 		'& > div': {
 			borderBottomColor: 'border.default',
-			minHeight: '26px',
+			minHeight: '22px',
 		},
 	},
 });

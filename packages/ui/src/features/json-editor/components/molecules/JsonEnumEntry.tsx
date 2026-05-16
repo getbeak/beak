@@ -1,6 +1,5 @@
-import DebouncedInput from '@beak/ui/components/atoms/DebouncedInput';
 import { Box, chakra, Flex } from '@chakra-ui/react';
-import type { EnumEntry, EntryType, NamedEnumEntry } from '@getbeak/types/body-editor-json';
+import type { EnumEntry, NamedEnumEntry } from '@getbeak/types/body-editor-json';
 import { ChevronDown } from 'lucide-react';
 import React, { useContext } from 'react';
 import { useDispatch } from 'react-redux';
@@ -17,8 +16,6 @@ import TypeSelector from './TypeSelector';
 interface JsonEnumEntryProps extends JsonEntryProps {
 	value: EnumEntry | NamedEnumEntry;
 }
-
-const ROOT_CONTAINER_TYPES: EntryType[] = ['object', 'array'];
 
 const ChakraSelect = chakra('select');
 
@@ -99,14 +96,7 @@ const JsonEnumEntry: React.FC<React.PropsWithChildren<JsonEnumEntryProps>> = pro
 			canDrag={!isRoot}
 			toggle={<EntryToggler id={id} requestId={requestId} value={value.enabled} />}
 			primary={<EntryPrimary depth={depth} requestId={requestId} value={value} nameOverride={nameOverride} />}
-			type={
-				<TypeSelector
-					allowedTypes={isRoot ? ROOT_CONTAINER_TYPES : void 0}
-					requestId={requestId}
-					id={id}
-					value={value.type}
-				/>
-			}
+			type={<TypeSelector requestId={requestId} id={id} value={value.type} />}
 			value={
 				<BodyInputWrapper>
 					{options.length > 0 ? (

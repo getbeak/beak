@@ -1,6 +1,6 @@
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { useAppSelector } from '@beak/ui/store/redux';
-import type { ArrayEntry, EntryType, NamedArrayEntry } from '@getbeak/types/body-editor-json';
+import type { ArrayEntry, NamedArrayEntry } from '@getbeak/types/body-editor-json';
 import React, { useContext, useState } from 'react';
 
 import { JsonEditorContext } from '../../contexts/json-editor-context';
@@ -17,8 +17,6 @@ import TypeSelector from './TypeSelector';
 interface JsonArrayEntryProps extends JsonEntryProps {
 	value: ArrayEntry | NamedArrayEntry;
 }
-
-const ROOT_CONTAINER_TYPES: EntryType[] = ['object', 'array'];
 
 const JsonArrayEntry: React.FC<React.PropsWithChildren<JsonArrayEntryProps>> = props => {
 	const { depth, requestId, nameOverride, value } = props;
@@ -43,14 +41,7 @@ const JsonArrayEntry: React.FC<React.PropsWithChildren<JsonArrayEntryProps>> = p
 				}
 				toggle={<EntryToggler id={id} requestId={requestId} value={value.enabled} />}
 				primary={<EntryPrimary depth={depth} requestId={requestId} value={value} nameOverride={nameOverride} />}
-				type={
-					<TypeSelector
-						allowedTypes={isRoot ? ROOT_CONTAINER_TYPES : void 0}
-						id={id}
-						requestId={requestId}
-						value={value.type}
-					/>
-				}
+				type={<TypeSelector id={id} requestId={requestId} value={value.type} />}
 				value={
 					<BodyLabelValueCell style={{ fontVariantNumeric: 'tabular-nums' }}>
 						{`${children.length} ${children.length === 1 ? 'item' : 'items'}`}

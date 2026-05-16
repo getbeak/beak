@@ -13,6 +13,7 @@ import {
 	BodyAction,
 	BodyFolderCell,
 	BodyInputValueCell,
+	BodyInputWrapper,
 	BodyPrimaryCell,
 	BodyToggleCell,
 	BodyTypeCell,
@@ -151,10 +152,7 @@ const EntryRow: React.FC<EntryRowProps> = ({
 
 	const entry = entries[id];
 	const missingRequired =
-		!editorContext.schemaMode &&
-		entry?.required === true &&
-		entry?.enabled !== false &&
-		isEntryValueEmpty(entry);
+		!editorContext.schemaMode && entry?.required === true && entry?.enabled !== false && isEntryValueEmpty(entry);
 
 	return (
 		<Row
@@ -188,40 +186,44 @@ const EntryRow: React.FC<EntryRowProps> = ({
 				}
 			>
 				{editorContext.schemaMode ? (
-					<Flex direction='column' w='100%' gap='0.5' py='1'>
-						<DebouncedInput
-							type='text'
-							placeholder='What is this for?'
-							value={entry?.description ?? ''}
-							onChange={next =>
-								dispatch(
-									editorContext.descriptionChange({
-										id,
-										requestId: editorContext.requestId,
-										description: next || null,
-									}),
-								)
-							}
-						/>
-						{entry?.type === 'enum' && (
+					<Flex direction='column' w='100%'>
+						<BodyInputWrapper>
 							<DebouncedInput
 								type='text'
-								value={(entry.options ?? []).join(', ')}
-								placeholder='Comma-separated allowed values (e.g. free, pro, enterprise)'
-								onChange={next => {
-									const parsed = next
-										.split(',')
-										.map(s => s.trim())
-										.filter(s => s.length > 0);
+								placeholder='What is this for?'
+								value={entry?.description ?? ''}
+								onChange={next =>
 									dispatch(
-										editorContext.optionsChange({
+										editorContext.descriptionChange({
 											id,
 											requestId: editorContext.requestId,
-											options: parsed.length === 0 ? null : parsed,
+											description: next || null,
 										}),
-									);
-								}}
+									)
+								}
 							/>
+						</BodyInputWrapper>
+						{entry?.type === 'enum' && (
+							<BodyInputWrapper>
+								<DebouncedInput
+									type='text'
+									value={(entry.options ?? []).join(', ')}
+									placeholder='Comma-separated allowed values (e.g. free, pro, enterprise)'
+									onChange={next => {
+										const parsed = next
+											.split(',')
+											.map(s => s.trim())
+											.filter(s => s.length > 0);
+										dispatch(
+											editorContext.optionsChange({
+												id,
+												requestId: editorContext.requestId,
+												options: parsed.length === 0 ? null : parsed,
+											}),
+										);
+									}}
+								/>
+							</BodyInputWrapper>
 						)}
 					</Flex>
 				) : (

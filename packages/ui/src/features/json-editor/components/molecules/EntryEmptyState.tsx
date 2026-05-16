@@ -48,7 +48,10 @@ const EntryEmptyState: React.FC<EntryEmptyStateProps> = ({ parentId, parentType,
 				fontWeight='500'
 				letterSpacing='0.01em'
 				transition='color .12s ease, background-color .12s ease'
-				style={{ paddingLeft: `${46 + depth * 12}px`, paddingRight: '12px' }}
+				// 46px = folder (18) + toggle (28) grid gutter; +8 lines the icon
+				// up with the "Key" header label and the key inputs in real rows
+				// (BodyInputWrapper applies an 8px inner padding to inputs).
+				style={{ paddingLeft: `${54 + depth * 12}px`, paddingRight: '12px' }}
 				_hover={{
 					color: 'accent.pink',
 					background: 'color-mix(in srgb, var(--beak-colors-accent-pink) 6%, transparent)',

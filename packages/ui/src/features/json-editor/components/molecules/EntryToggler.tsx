@@ -79,9 +79,7 @@ const EntryToggler: React.FC<EntryTogglerProps> = ({ requestId, id, value, onCha
 			borderColor={displayValue ? accent : 'border.emphasized'}
 			bg={displayValue ? accent : `color-mix(in srgb, var(--beak-colors-bg-surface-emphasized) 70%, transparent)`}
 			boxShadow={
-				displayValue
-					? `0 0 12px color-mix(in srgb, ${accentVar} 35%, transparent)`
-					: 'inset 0 1px 2px rgba(0,0,0,0.06)'
+				displayValue ? `0 0 12px color-mix(in srgb, ${accentVar} 35%, transparent)` : 'inset 0 1px 2px rgba(0,0,0,0.06)'
 			}
 			display='inline-flex'
 			alignItems='center'

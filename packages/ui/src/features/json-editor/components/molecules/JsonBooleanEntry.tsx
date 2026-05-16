@@ -1,5 +1,5 @@
 import { Box, chakra } from '@chakra-ui/react';
-import type { BooleanEntry, EntryType, NamedBooleanEntry } from '@getbeak/types/body-editor-json';
+import type { BooleanEntry, NamedBooleanEntry } from '@getbeak/types/body-editor-json';
 import { Check } from 'lucide-react';
 import React, { useContext } from 'react';
 import { useDispatch } from 'react-redux';
@@ -30,8 +30,6 @@ interface JsonBooleanEntryProps extends JsonEntryProps {
 	value: BooleanEntry | NamedBooleanEntry;
 }
 
-const ROOT_CONTAINER_TYPES: EntryType[] = ['object', 'array'];
-
 const JsonBooleanEntry: React.FC<React.PropsWithChildren<JsonBooleanEntryProps>> = props => {
 	const { depth, requestId, value, nameOverride } = props;
 	const { id } = value;
@@ -48,14 +46,7 @@ const JsonBooleanEntry: React.FC<React.PropsWithChildren<JsonBooleanEntryProps>>
 			canDrag={!isRoot}
 			toggle={<EntryToggler id={id} requestId={requestId} value={value.enabled} />}
 			primary={<EntryPrimary depth={depth} requestId={requestId} value={value} nameOverride={nameOverride} />}
-			type={
-				<TypeSelector
-					allowedTypes={isRoot ? ROOT_CONTAINER_TYPES : void 0}
-					requestId={requestId}
-					id={id}
-					value={value.type}
-				/>
-			}
+			type={<TypeSelector requestId={requestId} id={id} value={value.type} />}
 			value={
 				<Box display='flex' alignItems='center' pl='2'>
 					<Box position='relative' display='inline-flex'>
