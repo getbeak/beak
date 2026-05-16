@@ -7,6 +7,7 @@ import { Provider } from 'react-redux';
 
 import './utils/unhandled-error-handler';
 import NonprodBadge from './components/atoms/NonprodBadge';
+import ErrorBoundary from './components/molecules/ErrorBoundary';
 import Tooltips from './components/molecules/Tooltips';
 import WindowSessionContext, { instance } from './contexts/window-session-context';
 import { ElectronEntrypoint } from './entrypoints/electron';
@@ -118,8 +119,10 @@ const App: React.FC = () => {
 			<WindowSessionContext.Provider value={instance}>
 				<DesignSystemProvider themeKey={theme}>
 					<style>{GLOBAL_CSS(instance.isDarwin())}</style>
-					{embedded && <ElectronEntrypoint />}
-					{!embedded && <WebEntrypoint />}
+					<ErrorBoundary variant='full' label='Beak'>
+						{embedded && <ElectronEntrypoint />}
+						{!embedded && <WebEntrypoint />}
+					</ErrorBoundary>
 					<NonprodBadge />
 					<Tooltips />
 				</DesignSystemProvider>

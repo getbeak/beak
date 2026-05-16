@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 
 import ReflexStyles from '../components/atoms/ReflexStyles';
+import ErrorBoundary from '../components/molecules/ErrorBoundary';
 import ProgressIndicator from '../components/molecules/ProgressIndicator';
 import ProjectLoadFailed from '../components/molecules/ProjectLoadFailed';
 import ProjectLoading from '../components/molecules/ProjectLoading';
@@ -76,24 +77,46 @@ const ProjectMain: React.FC = () => {
 								overflow='hidden'
 								transition={sidebarControl.dragging ? 'none' : 'width .16s ease'}
 							>
-								<Sidebar />
+								<ErrorBoundary variant='panel' label='Sidebar'>
+									<Sidebar />
+								</ErrorBoundary>
 							</Box>
 
 							{!collapsedSidebar && <SidebarResizer control={sidebarControl} />}
 
 							<Box flex='1' minW='0' h='100%' position='relative' overflowY='hidden'>
-								{embedded && <ActionBar />}
-								<TabView
-									tabs={tabs.activeTabs}
-									selectedTab={activeTab}
-									rightSlot={embedded ? undefined : <ActionBar inline />}
-								/>
+								{embedded && (
+									<ErrorBoundary variant='inline' label='Action bar'>
+										<ActionBar />
+									</ErrorBoundary>
+								)}
+								<ErrorBoundary variant='full' label='Workbench'>
+									<TabView
+										tabs={tabs.activeTabs}
+										selectedTab={activeTab}
+										rightSlot={
+											embedded ? undefined : (
+												<ErrorBoundary variant='inline' label='Action bar'>
+													<ActionBar inline />
+												</ErrorBoundary>
+											)
+										}
+									/>
+								</ErrorBoundary>
 							</Box>
 						</Flex>
-						<Omnibar />
-						<OpenApiImportDialog />
-						<SourceControlDialog />
-						<CloneRepoDialog />
+						<ErrorBoundary variant='panel' label='Omnibar'>
+							<Omnibar />
+						</ErrorBoundary>
+						<ErrorBoundary variant='panel' label='OpenAPI import'>
+							<OpenApiImportDialog />
+						</ErrorBoundary>
+						<ErrorBoundary variant='panel' label='Source control'>
+							<SourceControlDialog />
+						</ErrorBoundary>
+						<ErrorBoundary variant='panel' label='Clone repo'>
+							<CloneRepoDialog />
+						</ErrorBoundary>
 					</React.Fragment>
 				)}
 			</Box>

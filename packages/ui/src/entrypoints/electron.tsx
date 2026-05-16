@@ -1,6 +1,7 @@
 import { init } from '@sentry/electron';
 import React from 'react';
 
+import ErrorBoundary from '../components/molecules/ErrorBoundary';
 import Portal from '../containers/Portal';
 import Preferences from '../containers/Preferences';
 import ProjectMain from '../containers/ProjectMain';
@@ -13,26 +14,30 @@ if (import.meta.env.MODE !== 'development') {
 	});
 }
 
-function getComponent(container: string | null) {
+function getComponent(container: string | null): { node: React.ReactNode; label: string } {
 	switch (container) {
 		case 'project-main':
-			return <ProjectMain />;
+			return { node: <ProjectMain />, label: 'Project window' };
 
 		case 'preferences':
-			return <Preferences />;
+			return { node: <Preferences />, label: 'Preferences' };
 
 		case 'portal':
-			return <Portal />;
+			return { node: <Portal />, label: 'Shared collection' };
 
 		default:
-			return <span>{'unknown'}</span>;
+			return { node: <span>{'unknown'}</span>, label: 'Window' };
 	}
 }
 
 export const ElectronEntrypoint: React.FC = () => {
 	const params = new URLSearchParams(window.location.search);
 	const container = params.get('container')!;
-	const component = getComponent(container);
+	const { node, label } = getComponent(container);
 
-	return component;
+	return (
+		<ErrorBoundary variant='full' label={label} resetKeys={[container]}>
+			{node}
+		</ErrorBoundary>
+	);
 };

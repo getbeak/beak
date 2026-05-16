@@ -1,11 +1,12 @@
-import { Box, Flex } from '@chakra-ui/react';
 import type { TabItem } from '@beak/common/types/beak-project';
 import { checkShortcut } from '@beak/ui/lib/keyboard-shortcuts';
+import { Box, Flex } from '@chakra-ui/react';
 import * as React from 'react';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 
 import TabBar from '../../../components/atoms/TabBar';
+import ErrorBoundary from '../../../components/molecules/ErrorBoundary';
 import { changeTabNext, changeTabPrevious, closeTab, closeTabsAll, closeTabsOther } from '../store/actions';
 import NewProjectIntroTab from './molecules/NewProjectIntroTab';
 import PreferencesTab from './molecules/PreferencesTab';
@@ -17,6 +18,21 @@ interface TabViewProps {
 	tabs: TabItem[];
 	selectedTab: TabItem | undefined;
 	rightSlot?: React.ReactNode;
+}
+
+function labelForTab(tab: TabItem | undefined): string {
+	switch (tab?.type) {
+		case 'request':
+			return 'Request editor';
+		case 'variable_set_editor':
+			return 'Variable set editor';
+		case 'preferences':
+			return 'Preferences';
+		case 'new_project_intro':
+			return 'Intro';
+		default:
+			return 'Tab';
+	}
 }
 
 const TabView: React.FC<TabViewProps> = ({ selectedTab, tabs, rightSlot }) => {
@@ -65,13 +81,7 @@ const TabView: React.FC<TabViewProps> = ({ selectedTab, tabs, rightSlot }) => {
 				borderBottomColor='border.subtle'
 				flexShrink={0}
 			>
-				<TabBar
-					bg='transparent'
-					px='1.5'
-					flex='1'
-					minW={0}
-					css={{ '& > [role=tab]': { marginRight: '2px' } }}
-				>
+				<TabBar bg='transparent' px='1.5' flex='1' minW={0} css={{ '& > [role=tab]': { marginRight: '2px' } }}>
 					{tabs.map(t => {
 						if (t.type === 'request') return <RequestTab key={t.payload} tab={t} />;
 						if (t.type === 'variable_set_editor') return <VariableSetEditorTab key={t.payload} tab={t} />;
@@ -88,7 +98,9 @@ const TabView: React.FC<TabViewProps> = ({ selectedTab, tabs, rightSlot }) => {
 			</Flex>
 
 			<Box flex='1' minH={0}>
-				<Router selectedTab={selectedTab} />
+				<ErrorBoundary key={selectedTab?.payload ?? '__empty__'} variant='panel' label={labelForTab(selectedTab)}>
+					<Router selectedTab={selectedTab} />
+				</ErrorBoundary>
 			</Box>
 		</Flex>
 	);
