@@ -31,6 +31,11 @@ export function registerTabsEffects(start: AppStartListening) {
 		start({
 			actionCreator: ac,
 			effect: async (_action, api) => {
+				// Tab state persists per-project under .beak/preferences/. With
+				// no project on disk there's nowhere to write — ephemeral tabs
+				// in memory mode get persisted alongside the project on Save.
+				if (api.getState().global.project.mode !== 'disk') return;
+
 				const state = api.getState().features.tabs;
 				if (!state) return;
 

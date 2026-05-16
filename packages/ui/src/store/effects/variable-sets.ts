@@ -101,6 +101,10 @@ export function registerVariableSetsEffects(start: AppStartListening) {
 		start({
 			actionCreator: ac,
 			effect: async ({ payload }, api) => {
+				// Memory-mode projects don't persist anything until Save Project
+				// As — the variable-set is just a redux entry until then.
+				if (api.getState().global.project.mode !== 'disk') return;
+
 				const id = (payload as { id: string }).id;
 				const variableSet = api.getState().global.variableSets.variableSets[id];
 				if (!variableSet) return;
@@ -122,6 +126,16 @@ export function registerVariableSetsEffects(start: AppStartListening) {
 	start({
 		actionCreator: createNewVariableSet,
 		effect: async ({ payload }, api) => {
+			if (api.getState().global.project.mode !== 'disk') {
+				// Memory mode: synthesise the variable set and add it to the
+				// store directly — no fs round-trip via the watcher.
+				const id = payload.name ?? 'New variable set';
+				api.dispatch(insertNewVariableSet({ id, variableSet: { sets: {}, items: {}, values: {} } }));
+				api.dispatch(changeTab({ type: 'variable_set_editor', payload: id, temporary: true }));
+				api.dispatch(vgActions.renameStarted({ id }));
+				return;
+			}
+
 			const id = await createVariableSet('variable-sets', payload.name);
 			api.dispatch(changeTab({ type: 'variable_set_editor', payload: id, temporary: true }));
 			await api.take(insertNewVariableSet.match, 250);
@@ -134,8 +148,11 @@ export function registerVariableSetsEffects(start: AppStartListening) {
 		actionCreator: removeVariableSetFromDisk,
 		effect: async ({ payload }, api) => {
 			const { id, withConfirmation } = payload;
+			const mode = api.getState().global.project.mode;
 
-			if (withConfirmation) {
+			if (mode === 'disk' && withConfirmation) {
+				// Disk projects warn — irreversible. Memory deletes are just
+				// redux state changes; nothing to undo, no warning needed.
 				const response = await ipcDialogService.showMessageBox({
 					title: 'Delete variable set',
 					message: `You are about to delete “${id}” from your machine. Are you sure you want to continue?`,
@@ -148,7 +165,7 @@ export function registerVariableSetsEffects(start: AppStartListening) {
 				if (response.response === 1) return;
 			}
 
-			await removeVariableSet(id);
+			if (mode === 'disk') await removeVariableSet(id);
 			api.dispatch(removeVariableSetFromStore(id));
 			api.dispatch(attemptReconciliation());
 		},
@@ -164,6 +181,15 @@ export function registerVariableSetsEffects(start: AppStartListening) {
 			if (!activeRename || activeRename.id !== id) return;
 
 			if (activeRename.name === activeRename.id) {
+				api.dispatch(vgActions.renameResolved({ id }));
+				return;
+			}
+
+			// Memory-mode variable-set rename isn't supported yet — the store
+			// keys by id, so the rename would need to re-key everything. Defer
+			// until after Save Project As (variable-sets are usable but their
+			// names are sticky in memory mode).
+			if (api.getState().global.project.mode !== 'disk') {
 				api.dispatch(vgActions.renameResolved({ id }));
 				return;
 			}

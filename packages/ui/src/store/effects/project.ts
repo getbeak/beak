@@ -1,14 +1,18 @@
 import Squawk from '@beak/common/utils/squawk';
+import ksuid from '@beak/ksuid';
 import {
 	insertFolderNode,
 	insertProjectInfo,
 	insertRequestNode,
+	materialiseInMemoryProject,
+	projectLoadFailed,
 	projectOpened,
+	type ProjectMode,
 	removeNodeFromStore,
 	removeNodeFromStoreByPath,
+	renameNodeInTree,
 	startProject,
 } from '@beak/state/project';
-import ksuid from '@beak/ksuid';
 import {
 	attemptReconciliation,
 	changeTab,
@@ -19,7 +23,6 @@ import {
 import type { ActiveRename } from '@beak/ui/features/tree-view/types';
 import { createFolderNode, readFolderNode, removeFolderNode, renameFolderNode } from '@beak/ui/lib/beak-project/folder';
 import { moveNodesOnDisk } from '@beak/ui/lib/beak-project/nodes';
-import { readProjectFile } from '@beak/ui/lib/beak-project/project';
 import {
 	createRequestNode,
 	duplicateRequestNode,
@@ -28,10 +31,9 @@ import {
 	renameRequestNode,
 	writeRequestNode,
 } from '@beak/ui/lib/beak-project/request';
-import createFsEmitter, { scanDirectoryRecursively } from '@beak/ui/lib/fs-emitter';
-import { ipcDialogService, ipcEncryptionService, ipcWindowService } from '@beak/ui/lib/ipc';
+import { ipcDialogService, ipcEncryptionService } from '@beak/ui/lib/ipc';
+import { loadProject, startTreeWatcher, type TreeEvent } from '@beak/ui/services/project';
 import type { FolderNode, RequestNode, Tree } from '@getbeak/types/nodes';
-import type { ProjectFile } from '@getbeak/types/project';
 import path from 'path-browserify';
 import * as uuid from 'uuid';
 import type { AppStartListening } from '../listener';
@@ -48,116 +50,60 @@ import {
 } from '../project/actions';
 import { startVariableSets } from '../variable-sets/actions';
 
+function selectMode(api: { getState: () => { global: { project: { mode: ProjectMode } } } }): ProjectMode {
+	return api.getState().global.project.mode;
+}
+
+/**
+ * Promote an empty workbench to an in-memory scratch project. Called as
+ * the first thing inside any tree-mutating effect — once the user takes
+ * a real action from the welcome tab, we have a project. The id is a
+ * fresh ksuid; the user can rename via Save Project As later.
+ */
+function ensureMaterialised(api: {
+	getState: () => { global: { project: { mode: ProjectMode } } };
+	dispatch: (a: unknown) => unknown;
+}): ProjectMode {
+	const mode = selectMode(api);
+	if (mode !== 'none') return mode;
+	api.dispatch(
+		materialiseInMemoryProject({
+			id: ksuid.generate('project').toString(),
+			name: 'Untitled',
+		}),
+	);
+	return 'memory';
+}
+
 export function registerProjectEffects(start: AppStartListening) {
-	// startProject: read project metadata, kick off variable groups, do the initial tree
-	// import, then start watching the tree folder for changes.
+	// startProject: orchestrate the load via ProjectLoaderService, then wire
+	// the long-running tree watcher and the encryption alert. The effect
+	// stays thin — domain logic lives in `services/project/`.
 	start({
 		actionCreator: startProject,
 		effect: async (_action, api) => {
-			let project: ProjectFile;
+			const result = await loadProject();
 
-			try {
-				project = await readProjectFile();
-				api.dispatch(insertProjectInfo({ id: project.id, name: project.name, untitled: project.untitled }));
-				api.dispatch(startVariableSets());
-				await initialImport(api, 'tree');
-				api.dispatch(loadTabState());
-			} catch (error) {
-				if (error instanceof Error && error.message === 'Legacy project detected') {
-					await ipcDialogService.showMessageBox({
-						type: 'warning',
-						title: 'Unsupported project version',
-						message: 'The project you opened is no longer supported by Beak, it should have been automatically updated.',
-						detail: 'Message @beakapp on twitter for support.',
-					});
-				} else if (error instanceof Error && error.message === 'Future project detected') {
-					await ipcDialogService.showMessageBox({
-						type: 'warning',
-						title: 'Unsupported project version',
-						message:
-							'The project you opened can’t be opened by this version of Beak. Please check for updates and try again.',
-						detail: 'Message @beakapp on twitter for support.',
-					});
-				} else {
-					const squawk = Squawk.coerce(error);
-					await ipcDialogService.showMessageBox({
-						type: 'error',
-						title: 'Project failed to open',
-						message: 'There was a problem loading the Beak project.',
-						detail: [squawk.message, squawk.stack].join('\n'),
-					});
-				}
-
-				await ipcWindowService.closeSelfWindow();
+			if (result.kind === 'error') {
+				// Surface the failure in-page (instead of closing the window)
+				// so the user can read the squawk, fix the underlying file,
+				// and dispatch startProject again.
+				api.dispatch(projectLoadFailed({ error: result.error.serialize() }));
 				return;
 			}
 
-			const encryptionStatus = await ipcEncryptionService.checkStatus();
-			if (!encryptionStatus) {
-				api.dispatch(
-					alertInsert({
-						ident: ksuid.generate('alert').toString(),
-						alert: { type: 'missing_encryption' },
-					}),
-				);
-			}
+			const { info, tree } = result.value;
+			api.dispatch(insertProjectInfo(info));
+			api.dispatch(startVariableSets());
+			api.dispatch(projectOpened({ tree }));
+			api.dispatch(loadTabState());
 
-			// Long-running fs subscription. Lives for the life of the project window
-			// — it's not unsubscribed because the project is open for the window's
-			// entire lifetime.
-			const subscription = createFsEmitter(
-				'tree',
-				async event => {
-					const isDirectory = ['addDir', 'unlinkDir'].includes(event.type);
+			await ensureEncryptionAlert(api);
 
-					if (!isDirectory && path.extname(event.path) !== '.json') return;
-
-					try {
-						if (isDirectory) {
-							if (event.type === 'addDir') {
-								const node = await readFolderNode(event.path);
-								const existingNode = api.getState().global.project.tree[node.id];
-								if (existingNode) return;
-								api.dispatch(insertFolderNode(node));
-							} else if (event.type === 'unlinkDir') {
-								api.dispatch(removeNodeFromStoreByPath(event.path));
-								api.dispatch(attemptReconciliation());
-							}
-						} else {
-							if (event.type === 'change') {
-								const lastWrite = api.getState().global.project.latestWrite;
-								if (lastWrite && lastWrite.filePath === event.path) {
-									const expiry = lastWrite.writtenAt + 1000;
-									if (expiry > Date.now()) return;
-								}
-							}
-
-							if (event.type === 'change' || event.type === 'add') {
-								const node = await readRequestNode(event.path);
-								api.dispatch(insertRequestNode(node));
-							} else if (event.type === 'unlink') {
-								const tree = api.getState().global.project.tree;
-								const node = Object.values(tree).find(n => n.filePath === event.path);
-								if (node) api.dispatch(closeTab(node.id));
-								api.dispatch(removeNodeFromStoreByPath(event.path));
-								api.dispatch(attemptReconciliation());
-							}
-						}
-					} catch (error) {
-						if (!(error instanceof Error)) return;
-						await ipcDialogService.showMessageBox({
-							type: 'error',
-							title: 'Project data error',
-							message: 'There was a problem reading a file or directory in your project',
-							detail: [error.message, error.stack].join('\n'),
-						});
-					}
-				},
-				{ followSymlinks: false },
-			);
-
-			// Forever; cleanup happens when the window closes.
-			void subscription;
+			// Long-running fs subscription. Lives for the life of the project
+			// window — it's not unsubscribed because the project is open for the
+			// window's entire lifetime.
+			void startTreeWatcher(event => handleTreeEvent(api, event));
 		},
 	});
 
@@ -197,6 +143,11 @@ export function registerProjectEffects(start: AppStartListening) {
 		start({
 			actionCreator: ac,
 			effect: async ({ payload }, api) => {
+				// Memory-mode projects keep redux as the only source of truth —
+				// the body editor's keystrokes never hit disk until Save Project
+				// As. Skip the debounce + write entirely.
+				if (selectMode(api) !== 'disk') return;
+
 				const requestId = (payload as { requestId: string }).requestId;
 				let node = api.getState().global.project.tree[requestId];
 				if (!node || node.type !== 'request') return;
@@ -215,17 +166,35 @@ export function registerProjectEffects(start: AppStartListening) {
 		});
 	}
 
-	// Create new folder / request — async because we wait for the fs watcher to
-	// emit the insert action so we can immediately start the rename UI on it.
+	// Create new folder / request — in disk mode, this writes to fs and waits
+	// for the watcher to fold the new node into the tree (so we can start the
+	// rename UI on it). In memory / none mode, we synthesise the node inline
+	// and dispatch insert directly; no watcher round-trip exists.
 	start({
 		actionCreator: createNewFolder,
 		effect: async ({ payload }, api) => {
+			const mode = ensureMaterialised(api);
 			const parentNode = payload.highlightedNodeId
 				? api.getState().global.project.tree[payload.highlightedNodeId]
 				: undefined;
 
 			let directory = 'tree/';
 			if (parentNode) directory = parentNode.type === 'folder' ? parentNode.filePath : path.dirname(parentNode.filePath);
+
+			if (mode !== 'disk') {
+				const name = payload.name ?? 'New folder';
+				const filePath = path.join(directory, name);
+				const folder: FolderNode = {
+					id: filePath,
+					type: 'folder',
+					name,
+					filePath,
+					parent: directory,
+				};
+				api.dispatch(insertFolderNode(folder));
+				api.dispatch(projectActions.renameStarted({ requestId: filePath }));
+				return;
+			}
 
 			const resolvedPath = await createFolderNode(directory, payload.name);
 
@@ -236,12 +205,44 @@ export function registerProjectEffects(start: AppStartListening) {
 	start({
 		actionCreator: createNewRequest,
 		effect: async ({ payload }, api) => {
+			const mode = ensureMaterialised(api);
 			const parentNode = payload.highlightedNodeId
 				? api.getState().global.project.tree[payload.highlightedNodeId]
 				: undefined;
 
 			let directory = 'tree/';
 			if (parentNode) directory = parentNode.type === 'folder' ? parentNode.filePath : path.dirname(parentNode.filePath);
+
+			if (mode !== 'disk') {
+				const id = ksuid.generate('request').toString();
+				const name = payload.name ?? 'New request';
+				const filePath = path.join(directory, `${name}.json`);
+				const node: RequestNode = {
+					id,
+					type: 'request',
+					mode: 'valid',
+					name,
+					filePath,
+					parent: directory,
+					info: {
+						verb: 'get',
+						url: ['https://httpbin.org/anything'],
+						query: {},
+						headers: {},
+						body: { type: 'text', payload: '' },
+						options: {
+							followRedirects: false,
+							decompressResponse: true,
+							timeoutMs: 0,
+							maxRedirects: 5,
+						},
+					},
+				};
+				api.dispatch(insertRequestNode(node));
+				api.dispatch(changeTab({ type: 'request', payload: id, temporary: true }));
+				api.dispatch(projectActions.renameStarted({ requestId: id }));
+				return;
+			}
 
 			const nodeId = await createRequestNode(directory, payload.name);
 
@@ -257,6 +258,23 @@ export function registerProjectEffects(start: AppStartListening) {
 		effect: async ({ payload }, api) => {
 			const node = api.getState().global.project.tree[payload.requestId];
 			if (!node || node.type !== 'request') return;
+
+			if (selectMode(api) !== 'disk') {
+				if (node.mode !== 'valid') return; // can't duplicate a broken request
+				const id = ksuid.generate('request').toString();
+				const name = `${node.name} copy`;
+				const filePath = path.join(path.dirname(node.filePath), `${name}.json`);
+				const cloned: RequestNode = {
+					...node,
+					id,
+					name,
+					filePath,
+					info: structuredClone(node.info),
+				};
+				api.dispatch(insertRequestNode(cloned));
+				api.dispatch(changeTab({ type: 'request', payload: id, temporary: true }));
+				return;
+			}
 
 			const newNodeId = await duplicateRequestNode(node);
 
@@ -279,6 +297,10 @@ export function registerProjectEffects(start: AppStartListening) {
 	start({
 		actionCreator: moveNodeOnDisk,
 		effect: async ({ payload }, api) => {
+			// Memory-mode reordering isn't supported yet — drag-and-drop is a
+			// no-op until Save Project As materialises a real folder layout.
+			if (selectMode(api) !== 'disk') return;
+
 			const tree = api.getState().global.project.tree;
 			const sourceNode = tree[payload.sourceNodeId];
 			const destinationNode = tree[payload.destinationNodeId];
@@ -306,7 +328,12 @@ export function registerProjectEffects(start: AppStartListening) {
 			const node = api.getState().global.project.tree[requestId];
 			if (!node) return;
 
-			if (withConfirmation) {
+			const mode = selectMode(api);
+
+			if (mode === 'disk' && withConfirmation) {
+				// Disk projects warn the user — the action is irreversible.
+				// Memory projects skip the warning since "delete" only removes
+				// from redux; nothing has been written to disk yet.
 				const response = await ipcDialogService.showMessageBox({
 					title: 'Delete file or folder',
 					message: `You are about to delete “${node.name}” from your machine. Are you sure you want to continue?`,
@@ -319,8 +346,10 @@ export function registerProjectEffects(start: AppStartListening) {
 				if (response.response === 1) return;
 			}
 
-			if (node.type === 'folder') await removeFolderNode(node.filePath);
-			else if (node.type === 'request') await removeRequestNode(node.filePath);
+			if (mode === 'disk') {
+				if (node.type === 'folder') await removeFolderNode(node.filePath);
+				else if (node.type === 'request') await removeRequestNode(node.filePath);
+			}
 
 			api.dispatch(removeNodeFromStore(requestId));
 			api.dispatch(attemptReconciliation());
@@ -338,6 +367,15 @@ export function registerProjectEffects(start: AppStartListening) {
 			if (!node) return;
 
 			if (activeRename.name === node.name) {
+				api.dispatch(projectActions.renameResolved({ requestId: payload.requestId }));
+				return;
+			}
+
+			// Memory-mode rename: just patch the node's name in redux. Folder
+			// `filePath` (and child paths) stay synthetic — they're regenerated
+			// when the project is saved to disk.
+			if (selectMode(api) !== 'disk') {
+				api.dispatch(renameNodeInTree({ nodeId: payload.requestId, name: activeRename.name }));
 				api.dispatch(projectActions.renameResolved({ requestId: payload.requestId }));
 				return;
 			}
@@ -405,30 +443,79 @@ export function registerProjectEffects(start: AppStartListening) {
 	});
 }
 
-async function initialImport(
-	api: { dispatch: (a: { type: string; [k: string]: unknown }) => unknown },
-	treePath: string,
-) {
-	const items = await scanDirectoryRecursively(treePath);
-
-	const folders = items.filter(s => s.isDirectory);
-	const requests = items.filter(s => !s.isDirectory);
-
-	const folderNodes = await readFolderNodes(folders);
-	const requestNodes = await readRequestNodes(requests);
-	const tree: Tree = { ...folderNodes, ...requestNodes } as Tree;
-
-	api.dispatch(projectOpened({ tree }));
+interface ProjectListenerApi {
+	getState: () => { global: { project: { tree: Tree; latestWrite?: { filePath: string; writtenAt: number } } } };
+	dispatch: (a: { type: string; [k: string]: unknown }) => unknown;
 }
 
-async function readFolderNodes(folders: { path: string; isDirectory: boolean }[]) {
-	if (folders.length === 0) return {};
-	const results = await Promise.all(folders.map(f => readFolderNode(f.path)));
-	return results.reduce((acc, val) => ({ ...acc, [val.id]: val }), {} as Record<string, unknown>);
+/**
+ * If keychain access is missing, drop an inline alert so the UI can prompt
+ * the user. Kept here so the project lifecycle isn't bundled into a
+ * separate service for what's effectively a single dispatch.
+ */
+async function ensureEncryptionAlert(api: ProjectListenerApi) {
+	const ok = await ipcEncryptionService.checkStatus();
+	if (ok) return;
+	api.dispatch(
+		alertInsert({
+			ident: ksuid.generate('alert').toString(),
+			alert: { type: 'missing_encryption' },
+		}),
+	);
 }
 
-async function readRequestNodes(requests: { path: string; isDirectory: boolean }[]) {
-	if (requests.length === 0) return {};
-	const results = await Promise.all(requests.map(f => readRequestNode(f.path)));
-	return results.reduce((acc, val) => ({ ...acc, [val.id]: val }), {} as Record<string, unknown>);
+/**
+ * Translate a `TreeEvent` from the watcher into the right tree-state
+ * actions. Splitting it out keeps the orchestrator small and lets us
+ * unit-test the mapping without booting redux + the fs emitter.
+ */
+async function handleTreeEvent(api: ProjectListenerApi, event: TreeEvent) {
+	try {
+		switch (event.kind) {
+			case 'folder-added': {
+				const node = await readFolderNode(event.path);
+				if (api.getState().global.project.tree[node.id]) return;
+				api.dispatch(insertFolderNode(node));
+				return;
+			}
+			case 'folder-removed': {
+				api.dispatch(removeNodeFromStoreByPath(event.path));
+				api.dispatch(attemptReconciliation());
+				return;
+			}
+			case 'request-changed': {
+				// Debounce self-triggered writes so the renderer's own save
+				// doesn't immediately bounce a fresh read through the tree.
+				const lastWrite = api.getState().global.project.latestWrite;
+				if (lastWrite && lastWrite.filePath === event.path) {
+					const expiry = lastWrite.writtenAt + 1000;
+					if (expiry > Date.now()) return;
+				}
+				const node = await readRequestNode(event.path);
+				api.dispatch(insertRequestNode(node));
+				return;
+			}
+			case 'request-added': {
+				const node = await readRequestNode(event.path);
+				api.dispatch(insertRequestNode(node));
+				return;
+			}
+			case 'request-removed': {
+				const tree = api.getState().global.project.tree;
+				const node = Object.values(tree).find(n => n.filePath === event.path);
+				if (node) api.dispatch(closeTab(node.id));
+				api.dispatch(removeNodeFromStoreByPath(event.path));
+				api.dispatch(attemptReconciliation());
+				return;
+			}
+		}
+	} catch (error) {
+		if (!(error instanceof Error)) return;
+		await ipcDialogService.showMessageBox({
+			type: 'error',
+			title: 'Project data error',
+			message: 'There was a problem reading a file or directory in your project',
+			detail: [error.message, error.stack].join('\n'),
+		});
+	}
 }

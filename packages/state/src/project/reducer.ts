@@ -40,6 +40,12 @@ export function buildProjectTreeReducer<S extends ProjectTreeState>(builder: Act
 			state.folderPath = undefined;
 			state.loadError = undefined;
 		})
+		.addCase(actions.materialiseInMemoryProject, (state, { payload }) => {
+			state.mode = 'memory';
+			state.id = payload.id;
+			state.name = payload.name;
+			state.folderPath = undefined;
+		})
 
 		.addCase(actions.insertRequestNode, (state, action) => {
 			const node = action.payload as ValidRequestNode;
@@ -60,5 +66,14 @@ export function buildProjectTreeReducer<S extends ProjectTreeState>(builder: Act
 
 			const { [node.id]: _remove, ...rest } = state.tree;
 			state.tree = rest;
+		})
+		.addCase(actions.renameNodeInTree, (state, { payload }) => {
+			// Folders are keyed by filePath but the lookup id we receive is the
+			// caller's chosen identity (request id, or folder filePath). Try
+			// both — id-keyed first (request path), then filePath-keyed (folder).
+			const node = state.tree[payload.nodeId]
+				?? Object.values(state.tree).find(n => n.filePath === payload.nodeId);
+			if (!node) return;
+			node.name = payload.name;
 		});
 }
