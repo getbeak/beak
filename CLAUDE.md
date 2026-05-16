@@ -214,6 +214,15 @@ Biome enforces (see `biome.json`):
 - `noUnusedImports` / `noUnusedVariables` are errors. `ignoreRestSiblings` is on.
 - `useNamingConvention` warns: variables `camelCase` | `PascalCase` | `CONSTANT_CASE`, types `PascalCase`. Test files (`*.test.ts(x)`, `__tests__/`) are exempted from naming + `noExplicitAny`.
 
+## Local artefacts
+
+Screenshots, PDFs, traces, and any other transient capture artefacts go in
+`screenshots/` at the repo root (gitignored). NEVER write a PNG/PDF to the
+repo root or to a package directory — strays show up in `git status` and
+get committed by accident. When invoking `playwright-cli screenshot`,
+always pass `--filename=screenshots/<name>.png`; the default writes to the
+cwd, which is wrong.
+
 ## Path aliases
 
 The root `tsconfig.json` defines `@beak/*` and `@getbeak/*` aliases pointing at source (not `dist`). When editing across packages locally, prefer alias imports — they pick up changes without a rebuild. Vite/electron-esbuild are configured to resolve the same aliases.
