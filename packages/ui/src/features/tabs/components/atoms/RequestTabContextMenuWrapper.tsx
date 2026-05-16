@@ -5,11 +5,12 @@ import { ipcExplorerService } from '@beak/ui/lib/ipc';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { renderAcceleratorDefinition } from '@beak/ui/utils/keyboard-rendering';
 import type { MenuItemConstructorOptions } from 'electron';
-import React from 'react';
-import { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
-import { closeTab, closeTabsAll, closeTabsLeft, closeTabsOther, closeTabsRight } from '../../store/actions';
+import { useTabPresentation } from '../../contexts/tab-presentation';
+import { closeTabIntent } from '@beak/ui/store/project/actions';
+import { closeTabsAll, closeTabsLeft, closeTabsOther, closeTabsRight } from '../../store/actions';
 
 interface RequestTabContextMenuWrapperProps {
 	tab: TabItem;
@@ -23,6 +24,7 @@ const RequestTabContextMenuWrapper: React.FC<React.PropsWithChildren<RequestTabC
 	const { activeTabs } = useAppSelector(s => s.features.tabs)!;
 	const [menuItems, setMenuItems] = useState<MenuItemConstructorOptions[]>([]);
 	const windowSession = useContext(WindowSessionContext);
+	const presentation = useTabPresentation();
 
 	useEffect(() => {
 		if (!node) return;
@@ -31,14 +33,27 @@ const RequestTabContextMenuWrapper: React.FC<React.PropsWithChildren<RequestTabC
 		const selectedIndex = activeTabs.findIndex(t => t.payload === node.id);
 		const startTab = selectedIndex <= 0;
 		const endTab = selectedIndex === activeTabs.length - 1;
+		const rawEditing = presentation.isRawEditing(node.id);
 
 		setMenuItems([
+			{
+				id: 'request-tab-ctx:edit-raw',
+				label: rawEditing ? 'Close raw editor' : 'Edit raw JSON…',
+				enabled: isRequestTab,
+				click: () => {
+					if (rawEditing) presentation.exitRawEdit(node.id);
+					else presentation.enterRawEdit(node.id);
+				},
+			},
+
+			{ id: 'request-tab-ctx:sep-0', type: 'separator' },
+
 			{
 				id: 'request-tab-ctx:close',
 				accelerator: renderAcceleratorDefinition('tab-bar.current.close'),
 				label: 'Close',
 				click: () => {
-					dispatch(closeTab(node.id));
+					dispatch(closeTabIntent(node.id));
 				},
 			},
 			{
@@ -100,7 +115,7 @@ const RequestTabContextMenuWrapper: React.FC<React.PropsWithChildren<RequestTabC
 				},
 			},
 		]);
-	}, [tab, node, activeTabs, dispatch, windowSession]);
+	}, [tab, node, activeTabs, dispatch, windowSession, presentation]);
 
 	return (
 		<ContextMenu menuItems={menuItems} target={target}>

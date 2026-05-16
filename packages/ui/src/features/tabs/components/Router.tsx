@@ -4,18 +4,25 @@ import ReflexSplitter from '@beak/ui/components/atoms/ReflexSplitter';
 import ErrorBoundary from '@beak/ui/components/molecules/ErrorBoundary';
 import NewProjectIntro from '@beak/ui/components/molecules/NewProjectIntro';
 import PendingSlash from '@beak/ui/components/molecules/PendingSplash';
+import { usePaneSplit } from '@beak/ui/hooks/use-pane-split';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { Box, Flex } from '@chakra-ui/react';
 import type { RequestNode } from '@getbeak/types/nodes';
 import { HelpCircle } from 'lucide-react';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { ReflexContainer } from 'react-reflex';
 
 import Preferences from '../../../containers/Preferences';
+import ProjectHome from '../../../containers/ProjectHome';
 import BrokenRequest from '../../broken-request/components/BrokenRequest';
+import CookieJarEditor from '../../cookies/components/CookieJarEditor';
+import FolderOverview from '../../folder-overview/components/FolderOverview';
 import RequestPane from '../../request-pane/components/RequestPane';
 import ResponsePane from '../../response-pane/components/ResponsePane';
+import VariableInputPlayground from '../../variable-input/playground/VariableInputPlayground';
 import VariableSetEditor from '../../variable-sets/components/VariableSetEditor';
+import WorkflowEditor from '../../workflows/components/WorkflowEditor';
+import { useTabPresentation } from '../contexts/tab-presentation';
 
 interface RouterProps {
 	selectedTab: TabItem | undefined;
@@ -23,6 +30,23 @@ interface RouterProps {
 
 const Router: React.FC<React.PropsWithChildren<RouterProps>> = ({ selectedTab }) => {
 	const selectedItem = useAppSelector(s => s.global.project.tree[selectedTab?.payload || '']);
+	const presentation = useTabPresentation();
+	const currentRequest = selectedTab?.type === 'request' ? (selectedItem as RequestNode | undefined) : undefined;
+
+	const reqResSplit = usePaneSplit({
+		key: 'request-response',
+		defaultRatio: 0.5,
+		orientation: 'vertical',
+		minRatio: 0.2,
+		maxRatio: 0.8,
+	});
+
+	// A tab that lands in (or falls into) failed mode sticks to the raw
+	// editor — successful saves shouldn't yank the user back to the request
+	// view without an explicit confirmation.
+	useEffect(() => {
+		if (currentRequest?.mode === 'failed') presentation.markBrokenSticky(currentRequest.id);
+	}, [currentRequest?.id, currentRequest?.mode, presentation]);
 
 	if (!selectedTab) return <PendingSlash />;
 
@@ -31,13 +55,31 @@ const Router: React.FC<React.PropsWithChildren<RouterProps>> = ({ selectedTab })
 
 		if (!selectedRequest) return <PendingSlash />;
 
-		if (selectedRequest.mode === 'failed') {
-			return <BrokenRequest filePath={selectedRequest.filePath} error={selectedRequest.error} />;
+		const isSticky = presentation.isBrokenSticky(selectedRequest.id);
+		const isRawEditing = presentation.isRawEditing(selectedRequest.id);
+		const showRawEditor = selectedRequest.mode === 'failed' || isSticky || isRawEditing;
+
+		if (showRawEditor) {
+			return (
+				<BrokenRequest
+					filePath={selectedRequest.filePath}
+					node={selectedRequest}
+					// Sticky/failed paths only allow dismiss once the file is
+					// valid (otherwise the request view would crash on a failed
+					// node). User-toggled raw edits are always valid, so
+					// leaving anytime is safe.
+					allowDismissAnytime={!isSticky && selectedRequest.mode !== 'failed'}
+					onDismiss={() => {
+						presentation.clearBrokenSticky(selectedRequest.id);
+						presentation.exitRawEdit(selectedRequest.id);
+					}}
+				/>
+			);
 		}
 
 		return (
 			<ReflexContainer orientation={'vertical'}>
-				<ReflexElement flex={50} minSize={450}>
+				<ReflexElement flex={reqResSplit.firstFlex} minSize={450} onStopResize={reqResSplit.onStopResize}>
 					<ErrorBoundary variant='panel' label='Request pane' resetKeys={[selectedRequest.id]}>
 						<RequestPane />
 					</ErrorBoundary>
@@ -45,7 +87,7 @@ const Router: React.FC<React.PropsWithChildren<RouterProps>> = ({ selectedTab })
 
 				<ReflexSplitter orientation={'vertical'} />
 
-				<ReflexElement flex={50} minSize={450}>
+				<ReflexElement flex={reqResSplit.secondFlex} minSize={450}>
 					<ErrorBoundary variant='panel' label='Response pane' resetKeys={[selectedRequest.id]}>
 						<ResponsePane />
 					</ErrorBoundary>
@@ -66,6 +108,23 @@ const Router: React.FC<React.PropsWithChildren<RouterProps>> = ({ selectedTab })
 
 		case 'preferences':
 			return <Preferences />;
+
+		case 'project_home':
+			return <ProjectHome />;
+
+		case 'folder_overview':
+			return <FolderOverview key={selectedTab.payload} folderId={selectedTab.payload} />;
+
+		case 'cookie_jar':
+			return <CookieJarEditor />;
+
+		case 'workflow_editor': {
+			const workflowId = selectedTab.payload;
+			return <WorkflowEditor key={workflowId} workflowId={workflowId} />;
+		}
+
+		case 'variable_input_playground':
+			return <VariableInputPlayground />;
 
 		default:
 			return (

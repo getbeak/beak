@@ -21,7 +21,7 @@ const LearnGrid: React.FC = () => (
 		<Flex
 			align='center'
 			gap='1.5'
-			mb='3.5'
+			mb='2.5'
 			color='fg.subtle'
 			fontSize='10px'
 			fontWeight='700'
@@ -31,7 +31,7 @@ const LearnGrid: React.FC = () => (
 			<BookOpen size={11} />
 			{'Learn'}
 		</Flex>
-		<SimpleGrid columns={{ base: 1, md: 2 }} gap='3'>
+		<SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} gap='2.5'>
 			<GuideCard
 				idx={0}
 				icon={BookOpen}
@@ -73,14 +73,15 @@ const GuideCard: React.FC<GuideCardProps> = ({ idx, icon: Icon, title, body, cta
 		initial={{ opacity: 0, y: 12 }}
 		animate={{ opacity: 1, y: 0 }}
 		transition={{ duration: 0.32, ease: 'easeOut', delay: 0.18 + idx * 0.06 }}
-		style={{ display: 'block', width: '100%' }}
+		style={{ display: 'flex', width: '100%', height: '100%' }}
 	>
 		<ChakraButton
 			type='button'
 			display='block'
 			textAlign='left'
 			w='100%'
-			p='4'
+			h='100%'
+			p='3'
 			borderRadius='lg'
 			borderWidth='1px'
 			borderColor='border.subtle'
@@ -101,27 +102,27 @@ const GuideCard: React.FC<GuideCardProps> = ({ idx, icon: Icon, title, body, cta
 			}}
 			onClick={() => ipcExplorerService.launchUrl(url)}
 		>
-			<Flex align='flex-start' gap='3'>
+			<Flex align='flex-start' gap='2.5'>
 				<Flex
 					flex='0 0 auto'
 					align='center'
 					justify='center'
-					w='36px'
-					h='36px'
-					borderRadius='lg'
+					w='30px'
+					h='30px'
+					borderRadius='md'
 					bg='color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent)'
 					borderWidth='1px'
 					borderColor='color-mix(in srgb, var(--beak-colors-accent-pink) 28%, transparent)'
 					color='accent.pink'
 					boxShadow='0 4px 12px color-mix(in srgb, var(--beak-colors-accent-pink) 22%, transparent), inset 0 1px 0 color-mix(in srgb, white 16%, transparent)'
 				>
-					<Icon size={16} />
+					<Icon size={14} />
 				</Flex>
 				<Box flex='1 1 auto' minW={0}>
-					<Box fontSize='sm' fontWeight='600' color='fg.default' letterSpacing='-0.005em' mb='1'>
+					<Box fontSize='sm' fontWeight='600' color='fg.default' letterSpacing='-0.005em' mb='0.5'>
 						{title}
 					</Box>
-					<Box fontSize='xs' color='fg.muted' lineHeight='1.5' mb='2'>
+					<Box fontSize='xs' color='fg.muted' lineHeight='1.45' mb='1.5'>
 						{body}
 					</Box>
 					<Flex

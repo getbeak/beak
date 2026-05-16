@@ -37,7 +37,7 @@ const Hero: React.FC<HeroProps> = ({ onPrimary }) => (
 			}}
 		/>
 
-		<Box position='relative' px={{ base: '6', md: '10' }} py={{ base: '8', md: '11' }} maxW='620px'>
+		<Box position='relative' px={{ base: '5', md: '8' }} py={{ base: '5', md: '7' }} maxW='620px'>
 			<motion.div
 				initial={{ opacity: 0, y: 6 }}
 				animate={{ opacity: 1, y: 0 }}
@@ -46,7 +46,7 @@ const Hero: React.FC<HeroProps> = ({ onPrimary }) => (
 				<Flex
 					align='center'
 					gap='1.5'
-					mb='3'
+					mb='2'
 					color='white'
 					opacity={0.9}
 					fontSize='10px'
@@ -60,25 +60,22 @@ const Hero: React.FC<HeroProps> = ({ onPrimary }) => (
 				<Box
 					as='h1'
 					color='white'
-					fontSize={{ base: '3xl', md: '4xl' }}
+					fontSize={{ base: '2xl', md: '3xl' }}
 					fontWeight='700'
-					lineHeight='1.05'
+					lineHeight='1.1'
 					letterSpacing='-0.02em'
-					mb='3'
+					mb='2'
 				>
-					{'Craft, test, and ship'}
-					<br />
-					{'beautiful API requests.'}
+					{'Craft, test, and ship beautiful API requests.'}
 				</Box>
 				<Box
 					color='white'
 					opacity={0.85}
-					fontSize={{ base: 'sm', md: 'md' }}
-					lineHeight='1.55'
+					fontSize={{ base: 'xs', md: 'sm' }}
+					lineHeight='1.5'
 					maxW='480px'
-					mb='6'
+					mb='4'
 				>
-					{'A comprehensive toolkit for building, editing, testing, and exploring APIs. '}
 					{'Pick up where you left off, start fresh, or pull a Git repo down to work with.'}
 				</Box>
 				<Flex gap='2.5' wrap='wrap'>

@@ -5,7 +5,7 @@ import * as React from 'react';
 interface ActionCardProps {
 	idx: number;
 	icon: React.ComponentType<{ size?: number }>;
-	tone: 'pink' | 'teal' | 'indigo' | 'orange';
+	tone: 'pink' | 'teal' | 'indigo' | 'orange' | 'green' | 'blue' | 'red';
 	title: string;
 	body: string;
 	keybinding?: string;
@@ -22,6 +22,9 @@ const TONE_VAR: Record<ActionCardProps['tone'], string> = {
 	teal: 'var(--beak-colors-accent-teal)',
 	indigo: 'var(--beak-colors-accent-indigo)',
 	orange: 'var(--beak-colors-accent-warning)',
+	green: 'var(--beak-colors-accent-success)',
+	blue: 'var(--beak-colors-accent-info)',
+	red: 'var(--beak-colors-accent-alert)',
 };
 
 const ActionCard: React.FC<ActionCardProps> = ({
@@ -42,14 +45,15 @@ const ActionCard: React.FC<ActionCardProps> = ({
 			initial={{ opacity: 0, y: 10 }}
 			animate={{ opacity: 1, y: 0 }}
 			transition={{ duration: 0.3, ease: 'easeOut', delay: 0.05 + idx * 0.05 }}
-			style={{ display: 'block', width: '100%' }}
+			style={{ display: 'flex', width: '100%', height: '100%' }}
 		>
 			<ChakraButton
 				type='button'
 				display='block'
 				textAlign='left'
 				w='100%'
-				p='4'
+				h='100%'
+				p='3'
 				borderRadius='lg'
 				borderWidth='1px'
 				borderColor='border.subtle'
@@ -80,14 +84,14 @@ const ActionCard: React.FC<ActionCardProps> = ({
 					if (!disabled) onClick();
 				}}
 			>
-				<Flex align='flex-start' gap='3'>
+				<Flex align='flex-start' gap='2.5'>
 					<Flex
 						flex='0 0 auto'
 						align='center'
 						justify='center'
-						w='40px'
-						h='40px'
-						borderRadius='lg'
+						w='32px'
+						h='32px'
+						borderRadius='md'
 						css={{
 							background: `color-mix(in srgb, ${accent} 14%, transparent)`,
 							borderWidth: '1px',
@@ -97,10 +101,10 @@ const ActionCard: React.FC<ActionCardProps> = ({
 							boxShadow: `0 4px 12px color-mix(in srgb, ${accent} 22%, transparent), inset 0 1px 0 color-mix(in srgb, white 16%, transparent)`,
 						}}
 					>
-						<Icon size={17} />
+						<Icon size={15} />
 					</Flex>
 					<Box flex='1 1 auto' minW={0}>
-						<Flex align='center' gap='2' mb='1'>
+						<Flex align='center' gap='2' mb='0.5'>
 							<Box fontSize='sm' fontWeight='600' color='fg.default' letterSpacing='-0.005em'>
 								{title}
 							</Box>
@@ -120,7 +124,7 @@ const ActionCard: React.FC<ActionCardProps> = ({
 								</Box>
 							)}
 						</Flex>
-						<Box fontSize='xs' color='fg.muted' lineHeight='1.5'>
+						<Box fontSize='xs' color='fg.muted' lineHeight='1.45'>
 							{disabled && disabledReason ? disabledReason : body}
 						</Box>
 					</Box>
