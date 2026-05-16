@@ -11,6 +11,21 @@ export type { GitProvider, Providers, RuntimeCapabilities, RuntimeOptions } from
 export { default as AssetStore } from './assets';
 export { default as AssetGc } from './assets/gc';
 export type { AssetRef } from './assets';
+export {
+	ExtensionRegistry,
+	gunzip,
+	packageDestination,
+	readTar,
+	verifyIntegrity,
+} from './extensions';
+export type {
+	ExtensionRegistryOptions,
+	RegistryPackageMetadata,
+	RegistrySearchHit,
+	RegistryVersionMetadata,
+	ResolvedVersion,
+	TarEntry,
+} from './extensions';
 export { default as BeakGit } from './git';
 export { default as OpenApiWriter } from './sources/openapi-writer';
 export type { OpenApiSyncInput, OpenApiSyncResult } from './sources/openapi-writer';
@@ -35,7 +50,9 @@ export default class Runtime extends RuntimeBase {
 		super(options.providers);
 
 		this.capabilities = options.capabilities;
-		this.beakProject = new BeakProject(this.providers);
+		this.beakProject = new BeakProject(this.providers, {
+			defaultRecentSource: options.capabilities.fileSystemAccess === 'native' ? 'desktop' : 'browser',
+		});
 		this.assetStore = new AssetStore(this.providers);
 		this.assetGc = new AssetGc(this.providers);
 		this.openApiWriter = new OpenApiWriter(this.providers);

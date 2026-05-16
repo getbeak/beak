@@ -34,7 +34,7 @@ export interface GitStatusSummary {
 	updatedAt: string;
 }
 
-export type GitOperation = 'commit' | 'push' | 'pull' | 'fetch' | 'checkout';
+export type GitOperation = 'init' | 'commit' | 'push' | 'pull' | 'fetch' | 'checkout' | 'branch';
 
 export type GitOperationState =
 	| { phase: 'idle' }
@@ -73,6 +73,10 @@ export interface GitOpenedPayload {
 	selectedBranch: string | undefined;
 }
 
+export interface GitInitRequest {
+	defaultBranch?: string;
+}
+
 export interface GitCommitRequest {
 	message: string;
 	author: { name: string; email: string };
@@ -105,6 +109,15 @@ export interface GitCheckoutRequest {
 	force?: boolean;
 }
 
+export interface GitCreateBranchRequest {
+	/** New branch name. */
+	ref: string;
+	/** Optional starting point — defaults to HEAD when omitted. */
+	object?: string;
+	/** Switch to the new branch after creating it. */
+	checkout?: boolean;
+}
+
 export const startGit = createAction('git/startGit');
 export const gitOpened = createAction<GitOpenedPayload>('git/gitOpened');
 export const gitClosed = createAction('git/gitClosed');
@@ -117,11 +130,13 @@ export const statusFetched = createAction<GitStatusSummary>('git/statusFetched')
 export const statusFailed = createAction<string>('git/statusFailed');
 export const remotesUpdated = createAction<RemoteEntry[]>('git/remotesUpdated');
 
+export const requestInit = createAction<GitInitRequest>('git/requestInit');
 export const requestCommit = createAction<GitCommitRequest>('git/requestCommit');
 export const requestPush = createAction<GitPushRequest>('git/requestPush');
 export const requestPull = createAction<GitPullRequest>('git/requestPull');
 export const requestFetch = createAction<GitFetchRequest>('git/requestFetch');
 export const requestCheckout = createAction<GitCheckoutRequest>('git/requestCheckout');
+export const requestCreateBranch = createAction<GitCreateBranchRequest>('git/requestCreateBranch');
 
 export const operationStarted = createAction<{ op: GitOperation }>('git/operationStarted');
 export const operationSucceeded = createAction<{ op: GitOperation; notice?: string }>('git/operationSucceeded');

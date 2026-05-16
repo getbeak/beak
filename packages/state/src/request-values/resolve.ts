@@ -94,6 +94,17 @@ function overlayBody(legacy: RequestBody, values: RequestValues): RequestBody {
 			// File body's bytes don't live in the values slice (the legacy
 			// payload already references content-addressed assets).
 			return legacy;
+		case 'grpc':
+			return bodyValues.type === 'grpc'
+				? {
+						...legacy,
+						payload: {
+							service: bodyValues.service || legacy.payload.service,
+							method: bodyValues.method || legacy.payload.method,
+							requestJson: bodyValues.requestJson,
+						},
+					}
+				: legacy;
 	}
 }
 

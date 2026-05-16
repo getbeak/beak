@@ -20,8 +20,12 @@ import type { IpcListener } from './types';
 const syncFromSpecSchema = z.object({
 	targetFolder: z.string().min(1),
 	spec: z.unknown(),
+	seedMode: z.enum(['url', 'file', 'paste']).optional(),
 	specPath: z.string().min(1).optional(),
 	specUrl: z.url().optional(),
+	autoSync: z.boolean().optional(),
+	intervalMinutes: z.number().int().min(1).optional(),
+	groupByPath: z.boolean().optional(),
 });
 
 export const OpenApiMessages = {
@@ -33,9 +37,17 @@ export interface SyncFromSpecReq {
 	targetFolder: string;
 	/** Pre-parsed OpenAPI document — the host runs the converter on it. */
 	spec: unknown;
+	/** Which add-mode produced this sync — determines the re-sync UX surface. */
+	seedMode?: 'url' | 'file' | 'paste';
 	/** Optional reference for where the spec was loaded from (logged into the collection). */
 	specPath?: string;
 	specUrl?: string;
+	/** Persist autoSync flag onto the collection's source. */
+	autoSync?: boolean;
+	/** Persist intervalMinutes onto the collection's source. */
+	intervalMinutes?: number;
+	/** Group requests into sub-folders derived from each operation's URL path. */
+	groupByPath?: boolean;
 }
 
 export interface SyncFromSpecRes {

@@ -126,6 +126,15 @@ export const bodyValueSchema = z.discriminatedUnion('type', [
 			variables: propertyValueMapSchema,
 		})
 		.strict(),
+	z
+		.object({
+			type: z.literal('grpc'),
+			service: z.string().min(1),
+			method: z.string().min(1),
+			/** Request body, stored verbatim as a JSON string so the editor preserves whitespace. */
+			requestJson: z.string(),
+		})
+		.strict(),
 ]);
 
 export type BodyValue =
@@ -140,7 +149,8 @@ export type BodyValue =
 			contentType?: string;
 			assetRef?: { sha256: string; size: number; contentType?: string };
 	  }
-	| { type: 'graphql'; query: string; variables: PropertyValueMap };
+	| { type: 'graphql'; query: string; variables: PropertyValueMap }
+	| { type: 'grpc'; service: string; method: string; requestJson: string };
 
 // ─── Request values ───────────────────────────────────────────────────────
 

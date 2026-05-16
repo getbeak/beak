@@ -23,11 +23,11 @@ describe('collectionFileSchema', () => {
 		expect(r.success).toBe(true);
 	});
 
-	it('rejects an openapi collection without specPath or specUrl', () => {
+	it('accepts an openapi collection seeded from a paste (no path, no url)', () => {
 		const r = collectionFileSchema.safeParse({
-			source: { type: 'openapi' },
+			source: { type: 'openapi', seedMode: 'paste' },
 		});
-		expect(r.success).toBe(false);
+		expect(r.success).toBe(true);
 	});
 
 	it('accepts a graphql collection', () => {
@@ -123,7 +123,7 @@ describe('mergeCollectionDefaults', () => {
 		const out = mergeCollectionDefaults(defaults, { id: 'r1' });
 		expect(out.url).toEqual(['https://api.example.com']);
 		expect(out.verb).toBe('GET');
-		expect(out.headers.Accept?.value).toEqual(['application/json']);
+		expect(out.headers?.Accept?.value).toEqual(['application/json']);
 		expect(out.options?.followRedirects).toBe(true);
 	});
 
@@ -132,8 +132,8 @@ describe('mergeCollectionDefaults', () => {
 			id: 'r1',
 			headers: { 'X-Auth': { name: 'X-Auth', value: ['custom'], enabled: true } },
 		});
-		expect(out.headers['X-Auth']?.value).toEqual(['custom']);
-		expect(out.headers.Accept?.value).toEqual(['application/json']);
+		expect(out.headers?.['X-Auth']?.value).toEqual(['custom']);
+		expect(out.headers?.Accept?.value).toEqual(['application/json']);
 	});
 
 	it('keeps override-explicit verb / url over defaults', () => {

@@ -1,5 +1,6 @@
 import type {
 	EditorPreferences,
+	PanePreferences,
 	ProjectPanePreferences,
 	RequestEditorMode,
 	RequestPreference,
@@ -15,6 +16,7 @@ export interface PreferencesState {
 	editor: EditorPreferences;
 	sidebar: SidebarPreferences;
 	projectPane: ProjectPanePreferences;
+	panes: PanePreferences;
 }
 
 export const initialPreferencesState: PreferencesState = {
@@ -22,6 +24,7 @@ export const initialPreferencesState: PreferencesState = {
 	editor: { selectedVariableSets: {} },
 	sidebar: { selected: 'project', collapsed: {} },
 	projectPane: { collapsed: {} },
+	panes: { pixelSizes: {}, splitRatios: {} },
 };
 
 export type RequestPreferencePayload<T = void> = T extends void ? { id: string } : { id: string } & T;
@@ -57,11 +60,22 @@ export interface ProjectPaneCollapsePayload {
 	collapsed: boolean;
 }
 
+export interface PanePixelSizePayload {
+	key: string;
+	size: number;
+}
+
+export interface PaneSplitRatioPayload {
+	key: string;
+	ratio: number;
+}
+
 // Saga triggers (side-effect intents). The reducer doesn't react to these directly.
 export const loadRequestPreferences = createAction<{ id: string }>('preferences/loadRequestPreferences');
 export const loadEditorPreferences = createAction('preferences/loadEditorPreferences');
 export const loadSidebarPreferences = createAction('preferences/loadSidebarPreferences');
 export const loadProjectPanePreferences = createAction('preferences/loadProjectPanePreferences');
+export const loadPanePreferences = createAction('preferences/loadPanePreferences');
 
 // State updates.
 export const requestPreferencesLoaded = createAction<RequestPreferencesLoadedPayload>(
@@ -94,6 +108,14 @@ export const projectPanePreferencesLoaded = createAction<ProjectPanePreferences>
 export const projectPanePreferenceSetCollapse = createAction<ProjectPaneCollapsePayload>(
 	'preferences/projectPaneSetCollapse',
 );
+export const projectPanePreferenceSetShowHidden = createAction<boolean>('preferences/projectPaneSetShowHidden');
+export const projectPanePreferenceSetExplorerFilter = createAction<'all' | 'requests' | 'workflows'>(
+	'preferences/projectPaneSetExplorerFilter',
+);
+
+export const panePreferencesLoaded = createAction<PanePreferences>('preferences/panesLoaded');
+export const panePreferenceSetPixelSize = createAction<PanePixelSizePayload>('preferences/panesSetPixelSize');
+export const panePreferenceSetSplitRatio = createAction<PaneSplitRatioPayload>('preferences/panesSetSplitRatio');
 
 const preferencesReducer = createReducer(initialPreferencesState, builder => {
 	builder
@@ -158,6 +180,22 @@ const preferencesReducer = createReducer(initialPreferencesState, builder => {
 		})
 		.addCase(projectPanePreferenceSetCollapse, (state, { payload }) => {
 			state.projectPane.collapsed[payload.key] = payload.collapsed;
+		})
+		.addCase(projectPanePreferenceSetShowHidden, (state, { payload }) => {
+			state.projectPane.showHiddenFolders = payload;
+		})
+		.addCase(projectPanePreferenceSetExplorerFilter, (state, { payload }) => {
+			state.projectPane.explorerFilter = payload;
+		})
+
+		.addCase(panePreferencesLoaded, (state, { payload }) => {
+			state.panes = payload;
+		})
+		.addCase(panePreferenceSetPixelSize, (state, { payload }) => {
+			state.panes.pixelSizes[payload.key] = payload.size;
+		})
+		.addCase(panePreferenceSetSplitRatio, (state, { payload }) => {
+			state.panes.splitRatios[payload.key] = payload.ratio;
 		});
 });
 

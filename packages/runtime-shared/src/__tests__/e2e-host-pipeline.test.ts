@@ -111,6 +111,9 @@ describe('e2e: OpenAPI converter → writer → real fs round trip', () => {
 		const writeResult = await writer.syncToFolder(targetFolder, {
 			collection: result.collection,
 			requests: result.requests,
+			variableSet: result.variableSet,
+			folderName: 'pets',
+			projectRoot,
 		});
 
 		expect(writeResult.collectionPath).toBe(join(targetFolder, '_collection.json'));
@@ -121,7 +124,17 @@ describe('e2e: OpenAPI converter → writer → real fs round trip', () => {
 		const collection = JSON.parse(collectionRaw);
 		expect(collection.source.type).toBe('openapi');
 		expect(collection.source.specPath).toBe('spec.yaml');
-		expect(collection.defaults.baseUrl).toEqual(['https://api.example.com/v1']);
+
+		// baseUrl now points at the merged Environments variable-set item; the
+		// literal URL lives in the variable set's values map.
+		const baseUrlPart = collection.defaults.baseUrl[0];
+		expect(baseUrlPart.type).toBe('variable_set_item');
+		expect(typeof baseUrlPart.payload.itemId).toBe('string');
+
+		expect(writeResult.variableSetPath).toBe(join(projectRoot, 'variable-sets', 'Environments.json'));
+		const varSet = JSON.parse(await fs.readFile(writeResult.variableSetPath!, 'utf8'));
+		expect(Object.values(varSet.items)).toContain('pets.baseUrl');
+		expect(Object.values(varSet.values)).toContainEqual(['https://api.example.com/v1']);
 
 		// listPets request should carry the resolved Trace header from $ref.
 		const listPetsPath = writeResult.requestPaths.find(p => p.endsWith('listPets.json'));

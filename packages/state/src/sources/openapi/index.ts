@@ -2,8 +2,10 @@ export type {
 	ConvertedRequest,
 	ConvertOptions,
 	OpenApiConversionResult,
+	ProposedVariableSet,
+	VariableSetMergeResult,
 } from './converter';
-export { openapiToCollection } from './converter';
+export { mergeProposedVariableSet, openapiToCollection } from './converter';
 export type {
 	HttpMethod,
 	OpenApiDocument,

@@ -1,3 +1,4 @@
+import type { RecentProjectSource } from '../types/beak-hub';
 import type { PartialIpcMain } from './main';
 import { IpcServiceMain } from './main';
 import type { PartialIpcRenderer } from './renderer';
@@ -9,10 +10,31 @@ export const ProjectMessages = {
 	OpenProject: 'open_project',
 	CreateProject: 'create_project',
 	MaterialiseFromMemory: 'materialise_from_memory',
+	RenameProjectAtPath: 'rename_project_at_path',
+	RecordRecent: 'record_recent',
 };
 
 export interface CreateProjectReq {
 	projectName: string;
+}
+
+export interface RenameProjectAtPathReq {
+	/** Absolute path to the project folder (the one containing `project.json`). */
+	projectPath: string;
+	/** New display name. Trimmed by the caller; an empty value is rejected. */
+	name: string;
+}
+
+export interface RecordRecentReq {
+	/** Display name for the recents list. */
+	name: string;
+	/**
+	 * Fs path to the project root. Interpretation is host-dependent: on web
+	 * FSA mode this is `/` (the picked folder *is* the project), on web OPFS
+	 * mode it's `/<projectId>`, on electron it's an absolute OS path.
+	 */
+	path: string;
+	source: RecentProjectSource;
 }
 
 export interface MaterialiseFromMemoryReq {
@@ -76,6 +98,23 @@ export class IpcProjectServiceRenderer extends IpcServiceRenderer<'project'> {
 	async materialiseFromMemory(payload: MaterialiseFromMemoryReq): Promise<MaterialiseFromMemoryRes | null> {
 		return await this.invoke<MaterialiseFromMemoryRes | null>(ProjectMessages.MaterialiseFromMemory, payload);
 	}
+
+	async renameProjectAtPath(payload: RenameProjectAtPathReq): Promise<boolean> {
+		return await this.invoke<boolean>(ProjectMessages.RenameProjectAtPath, payload);
+	}
+
+	/**
+	 * Append (or de-dupe) a recents entry. Used by the web-side export flow
+	 * after a project has been copied to a user-picked local folder — once
+	 * the FSA handle is persisted, the renderer calls this so the local-folder
+	 * project lands in the recents list before the page reloads.
+	 *
+	 * Electron returns `false`; recents are added implicitly by `create()`
+	 * there. Web returns `true` on success.
+	 */
+	async recordRecent(payload: RecordRecentReq): Promise<boolean> {
+		return await this.invoke<boolean>(ProjectMessages.RecordRecent, payload);
+	}
 }
 
 export class IpcProjectServiceMain extends IpcServiceMain<'project'> {
@@ -97,5 +136,13 @@ export class IpcProjectServiceMain extends IpcServiceMain<'project'> {
 
 	registerMaterialiseFromMemory(fn: IpcListener<MaterialiseFromMemoryReq>) {
 		this.registerRequestHandler(ProjectMessages.MaterialiseFromMemory, fn);
+	}
+
+	registerRenameProjectAtPath(fn: IpcListener<RenameProjectAtPathReq>) {
+		this.registerRequestHandler(ProjectMessages.RenameProjectAtPath, fn);
+	}
+
+	registerRecordRecent(fn: IpcListener<RecordRecentReq>) {
+		this.registerRequestHandler(ProjectMessages.RecordRecent, fn);
 	}
 }

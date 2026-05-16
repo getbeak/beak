@@ -55,6 +55,22 @@ export interface RemoveItemPayload extends VariableSetId {
 	itemId: string;
 }
 
+export interface DuplicateItemPayload extends VariableSetId {
+	itemId: string;
+}
+export interface DuplicateGroupPayload extends VariableSetId {
+	setId: string;
+}
+
+export interface MoveItemPayload extends VariableSetId {
+	itemId: string;
+	toIndex: number;
+}
+export interface MoveGroupPayload extends VariableSetId {
+	setId: string;
+	toIndex: number;
+}
+
 /**
  * Compose the variable-group lookup ident.
  */

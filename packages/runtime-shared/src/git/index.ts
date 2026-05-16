@@ -1,6 +1,7 @@
 import type {
 	AddReq,
 	AddRemoteReq,
+	BranchReq,
 	CheckoutReq,
 	CloneReq,
 	CloneRes,
@@ -203,6 +204,20 @@ export default class BeakGit extends BeakBase {
 			ref: payload.ref,
 			filepaths: payload.filepaths,
 			force: payload.force,
+		});
+	}
+
+	async branch(payload: BranchReq): Promise<void> {
+		await git.branch({
+			fs: this.fs,
+			dir: payload.dir,
+			ref: payload.ref,
+			object: payload.object,
+			force: payload.force,
+			// Beak's `Checkout` IPC is the explicit "switch branches" call. Keep
+			// `branch` create-only so the user can stage a branch without
+			// leaving the current working tree.
+			checkout: false,
 		});
 	}
 

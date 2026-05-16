@@ -196,6 +196,9 @@ export function compressEntry(
 			...(entry.timing.beakEnd !== undefined && entry.timing.beakStart
 				? { durationMs: entry.timing.beakEnd - entry.timing.beakStart }
 				: {}),
+			...(entry.timing.requestStart !== undefined ? { requestStart: entry.timing.requestStart } : {}),
+			...(entry.timing.headersEnd !== undefined ? { headersEnd: entry.timing.headersEnd } : {}),
+			...(entry.timing.responseEnd !== undefined ? { responseEnd: entry.timing.responseEnd } : {}),
 		},
 		...(entry.sseEvents && entry.sseEvents.length > 0
 			? {
@@ -321,6 +324,9 @@ export function persistedToRuntimeHistory(persisted: PersistedFlightHistory): Fl
 			timing: {
 				beakStart: entry.timing.startedAt,
 				...(entry.timing.completedAt !== undefined ? { beakEnd: entry.timing.completedAt } : {}),
+				...(entry.timing.requestStart !== undefined ? { requestStart: entry.timing.requestStart } : {}),
+				...(entry.timing.headersEnd !== undefined ? { headersEnd: entry.timing.headersEnd } : {}),
+				...(entry.timing.responseEnd !== undefined ? { responseEnd: entry.timing.responseEnd } : {}),
 			} as FlightHistoryEntry['timing'],
 			...(entry.sseEvents ? { sseEvents: entry.sseEvents } : {}),
 			...(entry.streamKind ? { streamKind: entry.streamKind } : {}),

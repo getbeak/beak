@@ -35,6 +35,7 @@ export const GitMessages = {
 	Pull: 'pull',
 	Fetch: 'fetch',
 	Checkout: 'checkout',
+	Branch: 'branch',
 	CurrentBranch: 'current_branch',
 	ListBranches: 'list_branches',
 	Log: 'log',
@@ -256,6 +257,27 @@ const checkoutSchema = z.object({
 	force: z.boolean().optional(),
 });
 
+export interface BranchReq {
+	dir: string;
+	/** Branch name to create. */
+	ref: string;
+	/**
+	 * Starting point — anything `isomorphic-git` accepts as an object
+	 * reference (branch name, tag, commit SHA). Defaults to HEAD when
+	 * omitted, so the new branch points at the current commit.
+	 */
+	object?: string;
+	/** If true, overwrite an existing branch of the same name. */
+	force?: boolean;
+}
+
+const branchSchema = z.object({
+	dir: z.string().min(1),
+	ref: z.string().min(1),
+	object: z.string().optional(),
+	force: z.boolean().optional(),
+});
+
 export interface CurrentBranchReq {
 	dir: string;
 	fullName?: boolean;
@@ -407,6 +429,10 @@ export class IpcGitServiceRenderer extends IpcServiceRenderer<'git'> {
 		return this.invoke<void>(GitMessages.Checkout, payload);
 	}
 
+	async branch(payload: BranchReq) {
+		return this.invoke<void>(GitMessages.Branch, payload);
+	}
+
 	async currentBranch(payload: CurrentBranchReq) {
 		return this.invoke<CurrentBranchRes>(GitMessages.CurrentBranch, payload);
 	}
@@ -483,6 +509,10 @@ export class IpcGitServiceMain extends IpcServiceMain<'git'> {
 
 	registerCheckout(fn: IpcListener<CheckoutReq>) {
 		this.registerRequestHandler(GitMessages.Checkout, fn, checkoutSchema as never);
+	}
+
+	registerBranch(fn: IpcListener<BranchReq>) {
+		this.registerRequestHandler(GitMessages.Branch, fn, branchSchema as never);
 	}
 
 	registerCurrentBranch(fn: IpcListener<CurrentBranchReq>) {

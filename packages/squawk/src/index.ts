@@ -89,7 +89,7 @@ export default class Squawk extends Error {
 	 * ```
 	 */
 	static is<T extends Squawk>(this: abstract new (...args: never) => T, error: unknown): error is T {
-		return error instanceof this;
+		return error instanceof Squawk;
 	}
 
 	/** True when `error` is a known Squawk (any subclass). */

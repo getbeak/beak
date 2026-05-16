@@ -8,7 +8,12 @@ export type TabItem =
 	| RequestTabItem
 	| VariableSetEditorTabItem
 	| NewProjectIntroTabItem
-	| PreferencesTabItem;
+	| PreferencesTabItem
+	| ProjectHomeTabItem
+	| FolderOverviewTabItem
+	| CookieJarTabItem
+	| WorkflowEditorTabItem
+	| VariableInputPlaygroundTabItem;
 
 export interface TabBase {
 	type: string;
@@ -39,4 +44,53 @@ export interface NewProjectIntroTabItem extends TabBase {
 export interface PreferencesTabItem extends TabBase {
 	type: 'preferences';
 	payload: 'preferences';
+}
+
+/**
+ * Project-level dashboard tab — manages OpenAPI sync sources and other
+ * project-wide controls. One per project window.
+ */
+export interface ProjectHomeTabItem extends TabBase {
+	type: 'project_home';
+	payload: 'project_home';
+}
+
+/**
+ * Folder overview — a dashboard for a single folder node. Payload is the
+ * folder's node id (same id used as a tree key). Lists the folder's direct
+ * children with quick-open affordances; intended landing surface when a
+ * user clicks a folder in the project sidebar.
+ */
+export interface FolderOverviewTabItem extends TabBase {
+	type: 'folder_overview';
+	payload: string;
+}
+
+/**
+ * Inspector for the project's cookie jars (one per variable set, partitioned
+ * by item). Lets the user view, edit, and clear cookies captured from
+ * `Set-Cookie` responses.
+ */
+export interface CookieJarTabItem extends TabBase {
+	type: 'cookie_jar';
+	payload: 'cookie_jar';
+}
+
+/**
+ * Workflow editor — xyflow-based visual builder for a single workflow. The
+ * payload is the workflow id (matches the on-disk filename `workflows/<id>.json`).
+ */
+export interface WorkflowEditorTabItem extends TabBase {
+	type: 'workflow_editor';
+	payload: string;
+}
+
+/**
+ * Variable input playground — dev-only sandbox for exercising the
+ * `VariableInput` component in isolation, with preset scenarios and a live
+ * debug panel (ValueSections, selection state, event log).
+ */
+export interface VariableInputPlaygroundTabItem extends TabBase {
+	type: 'variable_input_playground';
+	payload: 'variable_input_playground';
 }

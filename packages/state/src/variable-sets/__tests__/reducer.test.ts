@@ -4,9 +4,13 @@ import { describe, expect, it } from 'vitest';
 
 import {
 	buildVariableSetsReducer,
+	duplicateGroup,
+	duplicateItem,
 	generateValueIdent,
 	initialVariableSetsState,
 	insertNewVariableSet,
+	moveGroup,
+	moveItem,
 	removeGroup,
 	removeItem,
 	removeVariableSetFromStore,
@@ -141,5 +145,67 @@ describe('variable-groups reducer (core)', () => {
 
 	it('generateValueIdent produces the &-joined ident', () => {
 		expect(generateValueIdent('a', 'b')).toBe('a&b');
+	});
+
+	it('duplicateItem clones values across every set with a unique name', () => {
+		const base: VariableSet = {
+			sets: { 'set-a': 'dev', 'set-b': 'prod' },
+			items: { 'item-1': 'apiKey' },
+			values: {
+				[generateValueIdent('set-a', 'item-1')]: ['dev-secret'],
+				[generateValueIdent('set-b', 'item-1')]: ['prod-secret'],
+			},
+		};
+		const seeded = reducer(empty, insertNewVariableSet({ id: 'vg1', variableSet: base }));
+		const dup = reducer(seeded, duplicateItem({ id: 'vg1', itemId: 'item-1' }));
+
+		const itemEntries = Object.entries(dup.variableSets.vg1.items);
+		expect(itemEntries).toHaveLength(2);
+		const [, copyName] = itemEntries[1];
+		expect(copyName).toBe('apiKey copy');
+		const newItemId = itemEntries[1][0];
+		expect(dup.variableSets.vg1.values[generateValueIdent('set-a', newItemId)]).toEqual(['dev-secret']);
+		expect(dup.variableSets.vg1.values[generateValueIdent('set-b', newItemId)]).toEqual(['prod-secret']);
+	});
+
+	it('duplicateGroup clones values for every item and inserts after the source', () => {
+		const base: VariableSet = {
+			sets: { 'set-a': 'dev', 'set-b': 'prod' },
+			items: { 'item-1': 'apiKey', 'item-2': 'baseUrl' },
+			values: {
+				[generateValueIdent('set-b', 'item-1')]: ['prod-secret'],
+				[generateValueIdent('set-b', 'item-2')]: ['https://api'],
+			},
+		};
+		const seeded = reducer(empty, insertNewVariableSet({ id: 'vg1', variableSet: base }));
+		const dup = reducer(seeded, duplicateGroup({ id: 'vg1', setId: 'set-b' }));
+
+		const setEntries = Object.entries(dup.variableSets.vg1.sets);
+		expect(setEntries.map(([, v]) => v)).toEqual(['dev', 'prod', 'prod copy']);
+		const newSetId = setEntries[2][0];
+		expect(dup.variableSets.vg1.values[generateValueIdent(newSetId, 'item-1')]).toEqual(['prod-secret']);
+		expect(dup.variableSets.vg1.values[generateValueIdent(newSetId, 'item-2')]).toEqual(['https://api']);
+	});
+
+	it('moveItem reorders items in the underlying record', () => {
+		const base: VariableSet = {
+			sets: { 'set-a': 'dev' },
+			items: { 'item-1': 'a', 'item-2': 'b', 'item-3': 'c' },
+			values: {},
+		};
+		const seeded = reducer(empty, insertNewVariableSet({ id: 'vg1', variableSet: base }));
+		const next = reducer(seeded, moveItem({ id: 'vg1', itemId: 'item-3', toIndex: 0 }));
+		expect(Object.keys(next.variableSets.vg1.items)).toEqual(['item-3', 'item-1', 'item-2']);
+	});
+
+	it('moveGroup reorders sets in the underlying record', () => {
+		const base: VariableSet = {
+			sets: { 'set-a': 'dev', 'set-b': 'staging', 'set-c': 'prod' },
+			items: {},
+			values: {},
+		};
+		const seeded = reducer(empty, insertNewVariableSet({ id: 'vg1', variableSet: base }));
+		const next = reducer(seeded, moveGroup({ id: 'vg1', setId: 'set-a', toIndex: 2 }));
+		expect(Object.keys(next.variableSets.vg1.sets)).toEqual(['set-b', 'set-c', 'set-a']);
 	});
 });

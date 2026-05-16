@@ -194,6 +194,15 @@ export const bodySchemaSchema = z.discriminatedUnion('type', [
 			variables: jsonPropertyMapSchema,
 		})
 		.strict(),
+	z
+		.object({
+			type: z.literal('grpc'),
+			/** Fully-qualified service name. */
+			service: z.string().min(1),
+			/** Method on that service. */
+			method: z.string().min(1),
+		})
+		.strict(),
 ]);
 
 export type BodySchema = z.infer<typeof bodySchemaSchema>;

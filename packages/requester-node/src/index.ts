@@ -125,10 +125,15 @@ function classifyStream(contentType: string | null, transferEncoding: string | n
 }
 
 async function runRequest(overview: RequestOverview) {
-	const { body, headers, verb } = overview;
+	const { body, headers, verb, options } = overview;
 	const url = overview.url[0];
 
-	const init: RequestInit = {
+	const followRedirects = Boolean(options?.followRedirects);
+	const decompressResponse = options?.decompressResponse ?? true;
+	const timeoutMs = options?.timeoutMs ?? 0;
+	const maxRedirects = options?.maxRedirects ?? 5;
+
+	const init: RequestInit & { timeout?: number; follow?: number } = {
 		method: verb,
 		headers: TypedObject.values(headers)
 			.filter(h => h.enabled)
@@ -139,13 +144,19 @@ async function runRequest(overview: RequestOverview) {
 				}),
 				{},
 			),
-		redirect: 'manual',
-		compress: false,
+		redirect: followRedirects ? 'follow' : 'manual',
+		// node-fetch's `compress` flag accepts gzip/br/deflate and decodes
+		// the body transparently when true. When the user opts out we leave
+		// the encoded bytes alone so they can inspect raw payloads.
+		compress: decompressResponse,
+		timeout: timeoutMs > 0 ? timeoutMs : 0,
+		follow: maxRedirects,
 	};
 
 	if (!bodyFreeVerbs.includes(verb.toLowerCase())) {
 		switch (body.type) {
 			case 'text':
+			case 'json_raw':
 				init.body = body.payload as string;
 				break;
 
@@ -163,8 +174,11 @@ async function runRequest(overview: RequestOverview) {
 
 		if (!hasContentTypeHeader && body.type !== 'text') {
 			const contentType = requestBodyContentType(body);
-
-			(init.headers as Record<string, string>)['Content-Type'] = contentType;
+			// `requestBodyContentType` returns undefined for body types Beak
+			// doesn't auto-assign a Content-Type to (json_raw, grpc); skip
+			// the header in that case so we don't write `undefined` into the
+			// HTTP request.
+			if (contentType) (init.headers as Record<string, string>)['Content-Type'] = contentType;
 		}
 	}
 

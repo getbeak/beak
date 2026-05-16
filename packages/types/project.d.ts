@@ -9,4 +9,15 @@ export interface ProjectFile {
 	 * renderer ignores it.
 	 */
 	untitled?: boolean;
+
+	/**
+	 * Project-wide cookie configuration. `primaryVariableSet` names the
+	 * variable set whose currently-selected item drives the default
+	 * cookie jar (the one outgoing requests pull from by default, the one
+	 * incoming Set-Cookie headers always deposit into). Defaults to
+	 * `'Environment'` when absent.
+	 */
+	cookies?: {
+		primaryVariableSet?: string;
+	};
 }

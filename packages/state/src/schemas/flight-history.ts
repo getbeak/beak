@@ -58,6 +58,12 @@ const persistedFlightTimingSchema = z
 		startedAt: z.number().int(),
 		completedAt: z.number().int().optional(),
 		durationMs: z.number().int().nonnegative().optional(),
+		/** Raw wall-clock landmarks from the runtime entry — kept so the
+		 *  Overview tab can compute the same network-only duration after
+		 *  a refresh as it did during the original flight. */
+		requestStart: z.number().int().optional(),
+		headersEnd: z.number().int().optional(),
+		responseEnd: z.number().int().optional(),
 	})
 	.passthrough();
 

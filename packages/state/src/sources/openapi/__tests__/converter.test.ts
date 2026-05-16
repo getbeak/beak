@@ -37,7 +37,7 @@ function minimalSpec(): OpenApiDocument {
 }
 
 describe('openapiToCollection', () => {
-	it('produces an openapi-source collection with the first servers[] entry as baseUrl', () => {
+	it('points the collection baseUrl at the proposed Environments variable set', () => {
 		const result = openapiToCollection(minimalSpec(), {
 			specPath: 'spec.yaml',
 			now: FIXED_NOW,
@@ -48,7 +48,18 @@ describe('openapiToCollection', () => {
 			specPath: 'spec.yaml',
 			lastSyncedAt: '2026-05-13T00:00:00.000Z',
 		});
-		expect(result.collection.defaults?.baseUrl).toEqual(['https://api.example.com']);
+
+		// baseUrl is now a value-part referencing the proposed variable-set
+		// item; the literal URL lives inside `variableSet.set.values`.
+		const baseUrl = (result.collection.defaults?.baseUrl ?? []) as unknown as Array<{
+			type?: string;
+			payload?: { itemId?: string };
+		}>;
+		expect(baseUrl[0]?.type).toBe('variable_set_item');
+		expect(baseUrl[0]?.payload?.itemId).toBe(result.variableSet?.items.baseUrl);
+
+		const values = Object.values(result.variableSet?.set.values ?? {});
+		expect(values).toContainEqual(['https://api.example.com']);
 	});
 
 	it('emits one request per operation, carrying operationId and verb', () => {

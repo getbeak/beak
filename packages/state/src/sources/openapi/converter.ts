@@ -1,7 +1,11 @@
+import ksuid from '@beak/ksuid';
+import type { VariableSet } from '@getbeak/types/variable-sets';
+
 import type {
 	CollectionFile,
 	RequestFileOverride,
 } from '../../schemas/beak-project';
+import { generateValueIdent } from '../../variable-sets/types';
 import {
 	HTTP_METHODS,
 	type HttpMethod,
@@ -10,33 +14,86 @@ import {
 	type OpenApiParameter,
 	type OpenApiPathItem,
 	type OpenApiReference,
+	type OpenApiServer,
 } from './types';
 
 export interface OpenApiConversionResult {
 	collection: CollectionFile;
 	requests: ConvertedRequest[];
+	/**
+	 * Variable set proposed by the converter when the spec declares
+	 * `servers`. The collection's `defaults.baseUrl` is a reference into this
+	 * variable set's `baseUrl` item; the user picks which server (set) is
+	 * active from the variable-set picker. `null` when the spec has no
+	 * servers — the collection then carries no `baseUrl` default at all and
+	 * each request file declares its full URL.
+	 */
+	variableSet: ProposedVariableSet | null;
 	warnings: string[];
+}
+
+export interface ProposedVariableSet {
+	name: string;
+	set: VariableSet;
+	/**
+	 * Map from semantic label (e.g. `baseUrl`, `apiKey`) to the item id used
+	 * inside `set`. The writer / merger consults this when rewriting
+	 * value-part references in the collection so they point at the merged
+	 * variable set's item ids instead of the converter's local ones.
+	 */
+	items: Record<string, string>;
 }
 
 export interface ConvertedRequest {
 	/** Suggested file name (without extension), e.g. "listUsers" or "GET-users-id". */
 	suggestedName: string;
+	/**
+	 * Sub-folder (forward-slash separated, no leading/trailing slash) the
+	 * writer should drop this request into, relative to the import target.
+	 * Empty / undefined → write at the target folder root. Populated only
+	 * when `ConvertOptions.groupByPath` is set; URL parameter segments
+	 * (`{userId}`) are stripped so the resulting folder names are
+	 * filesystem-friendly and stable across re-syncs.
+	 */
+	folder?: string;
 	override: RequestFileOverride;
 }
 
 export interface ConvertOptions {
+	/**
+	 * Seed mode: `url` for remote-spec sources, `file` for local-file sources,
+	 * `paste` for one-shot literal text. Determines which re-sync surface the
+	 * sidebar exposes and which warning banner the request pane renders.
+	 */
+	seedMode?: 'url' | 'file' | 'paste';
 	/** Path relative to the project that the spec file was written to. */
 	specPath?: string;
 	/** Remote spec URL. */
 	specUrl?: string;
-	/** Pass-through to the collection's source.autoSync — Project Home toggles this. */
+	/** Pass-through to the collection's source.autoSync — sidebar toggles this. */
 	autoSync?: boolean;
 	/** Pass-through to the collection's source.intervalMinutes. */
 	intervalMinutes?: number;
+	/** Name of the proposed Environments variable set. Defaults to 'Environments'. */
+	variableSetName?: string;
+	/**
+	 * Opt-in heuristic: derive a sub-folder per request from its URL path, so
+	 * `/api/agents/{id}/posts` writes to `api/agents/posts/<operationId>.json`
+	 * instead of dumping everything in one flat folder. Parameter segments
+	 * (`{userId}`) are stripped from the folder path so names stay
+	 * filesystem-clean; the operationId-based filename still disambiguates
+	 * operations on the same effective path. Pure mapping — same spec
+	 * always produces the same layout, so re-syncs are stable.
+	 */
+	groupByPath?: boolean;
 	/** Override the timestamp (test injection). Defaults to `new Date().toISOString()`. */
 	now?: () => string;
 	/** Stable id generator (test injection). Defaults to a deterministic per-operation id. */
 	makeId?: (operationId: string, index: number) => string;
+	/** Stable set-id generator (test injection). Defaults to a ksuid per call. */
+	makeSetId?: (description: string, index: number) => string;
+	/** Stable item-id generator (test injection). Defaults to a ksuid per call. */
+	makeItemId?: (name: string) => string;
 }
 
 /**
@@ -55,24 +112,45 @@ export function openapiToCollection(
 ): OpenApiConversionResult {
 	const warnings: string[] = [];
 	const now = options.now ?? (() => new Date().toISOString());
+	const syncedAt = now();
 	const makeId = options.makeId ?? defaultIdGen;
+	const makeSetId = options.makeSetId ?? (() => ksuid.generate('set').toString());
+	const makeItemId = options.makeItemId ?? (() => ksuid.generate('item').toString());
 
 	if (!spec.openapi?.startsWith('3.')) {
 		warnings.push(`Unsupported OpenAPI version '${spec.openapi}' — converter is tested against 3.x.`);
 	}
 
-	const baseUrl = pickBaseUrl(spec, warnings);
+	const servers = spec.servers ?? [];
+	if (servers.length === 0) {
+		warnings.push('Spec has no `servers` entry — collection baseUrl will be empty.');
+	}
+
+	// Build the proposed variable set first. When the spec declares servers,
+	// the collection's `baseUrl` default becomes a reference into this set
+	// (the user picks which server is active); the writer merges this into
+	// any existing variable set with the same name so multi-spec projects
+	// share one Environments file.
+	const variableSet: ProposedVariableSet | null = buildProposedVariableSet(servers, {
+		name: options.variableSetName ?? 'Environments',
+		makeSetId,
+		makeItemId,
+	});
+
+	const baseUrlItemId = variableSet?.items.baseUrl;
+	const baseUrlPart = baseUrlItemId ? { type: 'variable_set_item', payload: { itemId: baseUrlItemId } } : null;
 
 	const collection: CollectionFile = {
 		source: {
 			type: 'openapi',
+			...(options.seedMode ? { seedMode: options.seedMode } : {}),
 			...(options.specPath ? { specPath: options.specPath } : {}),
 			...(options.specUrl ? { specUrl: options.specUrl } : {}),
-			lastSyncedAt: now(),
+			lastSyncedAt: syncedAt,
 			...(options.autoSync ? { autoSync: true } : {}),
 			...(options.intervalMinutes ? { intervalMinutes: options.intervalMinutes } : {}),
 		},
-		...(baseUrl ? { defaults: { baseUrl: [baseUrl] } } : {}),
+		...(baseUrlPart ? { defaults: { baseUrl: [baseUrlPart] } } : {}),
 	};
 
 	const requests: ConvertedRequest[] = [];
@@ -100,28 +178,221 @@ export function openapiToCollection(
 				warnings,
 				spec,
 			});
+			override._provenance = {
+				source: 'openapi',
+				linked: true,
+				operationId: opId,
+				syncedAt,
+			};
+
+			const folder = options.groupByPath ? derivePathFolder(pathPattern) : undefined;
 
 			requests.push({
 				suggestedName: opId,
+				...(folder ? { folder } : {}),
 				override,
 			});
 			operationIndex += 1;
 		}
 	}
 
-	return { collection, requests, warnings };
+	return { collection, requests, variableSet, warnings };
 }
 
-function pickBaseUrl(spec: OpenApiDocument, warnings: string[]): string | undefined {
-	const servers = spec.servers ?? [];
-	if (servers.length === 0) {
-		warnings.push('Spec has no `servers` entry — collection baseUrl will be empty.');
+// ─── Variable-set merger ────────────────────────────────────────────────
+// Lives next to the converter (rather than its own module) because the
+// dev server's resolver doesn't always notice newly-added files mid-
+// session — having one fewer file to import keeps HMR happy.
+
+export interface VariableSetMergeResult {
+	/**
+	 * The merged variable set ready to be written to disk. `null` means the
+	 * writer should not create or touch a variable-set file (no proposal,
+	 * no existing file).
+	 */
+	merged: VariableSet | null;
+	/**
+	 * Final item-id remapping for the proposed set's items. Keys are the
+	 * converter's *semantic labels* (`baseUrl`, `apiKey`, …); values are the
+	 * item ids inside `merged` that the writer should substitute into the
+	 * collection's value-part references. The merger always normalises to
+	 * the canonical ids of the existing file (or the new file).
+	 */
+	itemIdByLabel: Record<string, string>;
+}
+
+/**
+ * Fold a converter-emitted variable set into an existing on-disk variable
+ * set (if any), namespacing items by `folderName` so multiple specs in the
+ * same project share an Environments file without colliding on common
+ * variable names.
+ *
+ * Pure — no I/O. The IPC layer reads the existing set and writes the
+ * merged one back.
+ *
+ * Rules:
+ *  - **Sets are reused by display name**: a proposed `Production` set folds
+ *    into an existing set called `Production`.
+ *  - **Items are namespaced by folder**: proposed item `baseUrl` becomes
+ *    `<folderName>.baseUrl`. Re-imports into the same folder reuse the
+ *    existing namespaced item (so its id is stable across syncs).
+ *  - **Values write through to the resolved (setId, itemId) pair.** Re-sync
+ *    overwrites existing values; values for items / sets the spec didn't
+ *    touch are preserved.
+ */
+export function mergeProposedVariableSet(
+	existing: VariableSet | null,
+	proposed: ProposedVariableSet | null,
+	folderName: string,
+): VariableSetMergeResult {
+	if (!proposed) {
+		return { merged: existing, itemIdByLabel: {} };
+	}
+
+	const merged: VariableSet = existing
+		? {
+				sets: { ...existing.sets },
+				items: { ...existing.items },
+				values: { ...existing.values },
+			}
+		: { sets: {}, items: {}, values: {} };
+
+	const existingSetIdByName = new Map<string, string>();
+	for (const [setId, name] of Object.entries(merged.sets)) {
+		existingSetIdByName.set(name, setId);
+	}
+
+	const proposedSetIdToMerged = new Map<string, string>();
+	for (const [proposedSetId, name] of Object.entries(proposed.set.sets)) {
+		const existingId = existingSetIdByName.get(name);
+		if (existingId !== undefined) {
+			proposedSetIdToMerged.set(proposedSetId, existingId);
+		} else {
+			merged.sets[proposedSetId] = name;
+			proposedSetIdToMerged.set(proposedSetId, proposedSetId);
+		}
+	}
+
+	const existingItemIdByName = new Map<string, string>();
+	for (const [itemId, name] of Object.entries(merged.items)) {
+		existingItemIdByName.set(name, itemId);
+	}
+
+	const proposedItemIdToMerged = new Map<string, string>();
+	const itemIdByLabel: Record<string, string> = {};
+	for (const [proposedItemId, label] of Object.entries(proposed.set.items)) {
+		const namespaced = `${folderName}.${label}`;
+		const existingId = existingItemIdByName.get(namespaced);
+		if (existingId !== undefined) {
+			proposedItemIdToMerged.set(proposedItemId, existingId);
+			itemIdByLabel[label] = existingId;
+		} else {
+			merged.items[proposedItemId] = namespaced;
+			proposedItemIdToMerged.set(proposedItemId, proposedItemId);
+			itemIdByLabel[label] = proposedItemId;
+		}
+	}
+
+	// Mirror the converter's label→proposedItemId mapping so callers that
+	// asked for the `baseUrl` label get the right merged item id even when
+	// sets/items were renamed mid-flight.
+	for (const [label, proposedItemId] of Object.entries(proposed.items)) {
+		const resolved = proposedItemIdToMerged.get(proposedItemId);
+		if (resolved !== undefined) itemIdByLabel[label] = resolved;
+	}
+
+	for (const [proposedIdent, value] of Object.entries(proposed.set.values)) {
+		const [proposedSetId, proposedItemId] = proposedIdent.split('&');
+		if (!proposedSetId || !proposedItemId) continue;
+		const setId = proposedSetIdToMerged.get(proposedSetId);
+		const itemId = proposedItemIdToMerged.get(proposedItemId);
+		if (!setId || !itemId) continue;
+		merged.values[generateValueIdent(setId, itemId)] = value;
+	}
+
+	return { merged, itemIdByLabel };
+}
+
+interface BuildVariableSetArgs {
+	name: string;
+	makeSetId: (description: string, index: number) => string;
+	makeItemId: (name: string) => string;
+}
+
+/**
+ * Build a candidate variable set from the spec's `servers[]`. Each server
+ * becomes a *set* (Production / Staging / …) keyed off `description` (or a
+ * sanitised host fallback); one `baseUrl` *item* holds the URL value per
+ * set. The merger upstream namespaces the item by folder name and reuses
+ * sets with matching display names so multi-spec projects share a single
+ * Environments file.
+ */
+function buildProposedVariableSet(
+	servers: OpenApiServer[],
+	args: BuildVariableSetArgs,
+): ProposedVariableSet | null {
+	if (servers.length === 0) return null;
+
+	const sets: Record<string, string> = {};
+	const setIds: string[] = [];
+	servers.forEach((server, index) => {
+		const display = server.description?.trim() || hostFromUrl(server.url) || `Server ${index + 1}`;
+		const setId = args.makeSetId(display, index);
+		sets[setId] = display;
+		setIds.push(setId);
+	});
+
+	const baseUrlItemId = args.makeItemId('baseUrl');
+	const items: Record<string, string> = { [baseUrlItemId]: 'baseUrl' };
+
+	const values: Record<string, Array<string>> = {};
+	servers.forEach((server, index) => {
+		const setId = setIds[index]!;
+		values[generateValueIdent(setId, baseUrlItemId)] = [server.url];
+	});
+
+	return {
+		name: args.name,
+		set: { sets, items, values: values as VariableSet['values'] },
+		items: { baseUrl: baseUrlItemId },
+	};
+}
+
+function hostFromUrl(url: string): string | undefined {
+	try {
+		return new URL(url).host;
+	} catch {
 		return undefined;
 	}
-	if (servers.length > 1) {
-		warnings.push(`Spec has ${servers.length} server entries — using the first ('${servers[0].url}').`);
-	}
-	return servers[0].url;
+}
+
+/**
+ * Project an OpenAPI path pattern onto a forward-slash folder path,
+ * stripping parameter segments (`{userId}`) so the resulting folder names
+ * stay filesystem-friendly. Parameter-only paths and the root path return
+ * the empty string — the writer treats that as "write at the import target
+ * with no extra nesting".
+ *
+ * Pure and deterministic by construction: the path string fully determines
+ * the output, so re-syncs land each operation in the same folder every time.
+ */
+export function derivePathFolder(pathPattern: string): string {
+	return pathPattern
+		.split('/')
+		.map(seg => seg.trim())
+		.filter(seg => seg.length > 0 && !/^\{.+\}$/.test(seg))
+		.map(seg => sanitiseFolderSegment(seg))
+		.filter(seg => seg.length > 0)
+		.join('/');
+}
+
+function sanitiseFolderSegment(segment: string): string {
+	return segment
+		.replace(/[\\/:*?"<>|]/g, '-')
+		.replace(/\s+/g, '-')
+		.replace(/-+/g, '-')
+		.replace(/^[.-]+|[.-]+$/g, '')
+		.slice(0, 80);
 }
 
 function buildFallbackOperationId(method: HttpMethod, pathPattern: string): string {
@@ -177,10 +448,13 @@ function buildRequestOverride({
 		override.headers = paramsToRecord(headerParams);
 	}
 
-	if (operation.requestBody) {
-		const body = bodyFromRequestBody(operation.requestBody);
-		if (body) override.body = body;
-	}
+	// Always seed a body, even for bodyless verbs (GET/DELETE). The request
+	// pane + flight machinery assume `info.body` is present — reading
+	// `body.type` on undefined throws — and every other place that
+	// constructs a request file in this codebase honours the same invariant.
+	override.body = operation.requestBody
+		? bodyFromRequestBody(operation.requestBody) ?? { type: 'text', payload: '' }
+		: { type: 'text', payload: '' };
 
 	return override;
 }

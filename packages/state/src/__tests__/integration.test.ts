@@ -67,7 +67,10 @@ describe('OpenAPI → collection → merge round trip', () => {
 			expect(merged.url).toEqual(r.override.url);
 		}
 
-		expect(collection.defaults?.baseUrl).toEqual(['https://api.example.com/v1']);
+		// baseUrl is a value-part reference into the proposed Environments
+		// variable set; the literal lives in the set's values map.
+		const baseUrl = (collection.defaults?.baseUrl ?? []) as unknown as Array<{ type?: string }>;
+		expect(baseUrl[0]?.type).toBe('variable_set_item');
 	});
 
 	it('resolves the shared $ref Trace header into every operation', () => {
@@ -90,7 +93,7 @@ describe('OpenAPI → collection → merge round trip', () => {
 		// Sanity: the collection itself, when merged into each request, gives
 		// us a final shape where the path operation's headers are still there.
 		const merged = mergeCollectionDefaults(collection.defaults, listPets.override);
-		expect(merged.headers['X-Trace']?.enabled).toBe(true);
+		expect(merged.headers?.['X-Trace']?.enabled).toBe(true);
 	});
 
 	it('round-trips: read → edit verb → diff back to a sparse override', () => {

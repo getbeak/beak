@@ -177,6 +177,16 @@ function splitBody(body: RequestBody | undefined): { schema: BodySchema; values:
 				},
 			};
 		}
+		case 'grpc':
+			return {
+				schema: { type: 'grpc', service: body.payload.service, method: body.payload.method },
+				values: {
+					type: 'grpc',
+					service: body.payload.service,
+					method: body.payload.method,
+					requestJson: body.payload.requestJson,
+				},
+			};
 	}
 }
 
@@ -222,6 +232,18 @@ function mergeBody(schema: BodySchema, values: BodyValue): RequestBody | undefin
 						schema.variables,
 						values.type === 'graphql' ? values.variables : {},
 					),
+				},
+			};
+		case 'grpc':
+			return {
+				type: 'grpc',
+				payload: {
+					service: schema.service,
+					method: schema.method,
+					// `requestJson` lives only on the values side — when the user
+					// hasn't touched it yet we default to an empty object so the
+					// editor lands on something parseable rather than a blank file.
+					requestJson: values.type === 'grpc' ? values.requestJson : '{}',
 				},
 			};
 	}
