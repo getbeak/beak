@@ -1,7 +1,8 @@
-import { z, type ZodType } from 'zod';
+import { type ZodType, z } from 'zod';
 
 export * from './beak-project';
 export * from './beak-variable-group';
+export * from './beak-workflow';
 export * from './collection-merge';
 export * from './flight-history';
 export * from './preferences';
