@@ -2,11 +2,19 @@ import { selectOutgoingCookies } from '@beak/state/cookies';
 import type { FlightRequest, FlightRequestKeyValue } from '@beak/state/flight';
 import type { ApplicationState } from '@beak/ui/store';
 
+import { resolveEnabledCookieJars } from './cookie-jar-resolver';
+
 /**
  * Post-process a prepared `FlightRequest` to fold matching jar cookies
  * into the outgoing `Cookie` header. Pure with respect to the request
  * (returns a new object); only reads the cookies slice + preferences
  * from the supplied state.
+ *
+ * Jar selection follows the project's primary + per-request additional
+ * model (see `resolveEnabledCookieJars`). When the request's options
+ * carry `sendCookies: false`, the request goes out without any jar
+ * cookies attached — the user-authored Cookie header (if any) still
+ * rides along untouched.
  *
  * Merge rules with a user-set `Cookie` header:
  *   - User-set names always win — a user override is a deliberate act.
@@ -16,7 +24,11 @@ import type { ApplicationState } from '@beak/ui/store';
  *
  * If the user's `Cookie` header is disabled, treat it as absent.
  */
-export function attachCookiesToFlightRequest(state: ApplicationState, request: FlightRequest): FlightRequest {
+export function attachCookiesToFlightRequest(
+	state: ApplicationState,
+	request: FlightRequest,
+	requestId: string,
+): FlightRequest {
 	const urlString = (request.url[0] as string | undefined) ?? '';
 	if (!urlString) return request;
 	let scheme = '';
@@ -31,8 +43,11 @@ export function attachCookiesToFlightRequest(state: ApplicationState, request: F
 		return request;
 	}
 
+	const { enabledJars, sendCookies } = resolveEnabledCookieJars(state, requestId);
+	if (!sendCookies) return request;
+
 	const selections = state.global.preferences.editor.selectedVariableSets ?? {};
-	const outgoing = selectOutgoingCookies(state, selections, scheme, host, path);
+	const outgoing = selectOutgoingCookies(state, selections, enabledJars, scheme, host, path);
 	if (outgoing.cookies.length === 0) return request;
 
 	const headers = { ...request.headers };

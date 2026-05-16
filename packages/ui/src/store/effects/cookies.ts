@@ -1,12 +1,10 @@
 import {
 	type CookieEntry,
 	type CookieJar,
-	canonicaliseHost,
 	clearAllCookies,
 	clearJar,
 	clearJarItem,
 	deleteCookie,
-	domainMatches,
 	hydrateCookieJars,
 	parseSetCookie,
 	renameJar,
@@ -102,6 +100,13 @@ export function registerCookieEffects(start: AppStartListening) {
 		actionCreator: projectOpened,
 		effect: async (_action, api) => {
 			try {
+				// First-open projects have no sealed file yet — short-circuit
+				// before the read so the main process doesn't log a benign
+				// ENOENT through its IPC error channel.
+				if (!(await ipcFsService.pathExists(COOKIES_FILE_PATH))) {
+					api.dispatch(hydrateCookieJars({ jars: emptyCookieJarFile().jars }));
+					return;
+				}
 				const raw = (await ipcFsService.readJson<unknown>(COOKIES_FILE_PATH)) as unknown;
 				if (!raw || (typeof raw === 'string' && raw.length === 0)) {
 					api.dispatch(hydrateCookieJars({ jars: emptyCookieJarFile().jars }));
@@ -231,38 +236,42 @@ function extractCookiesFromResponse(response: { url: string; headers: Record<str
  * Pick the variable-set jar (and currently-selected item) that should
  * receive these Set-Cookie entries. Heuristic:
  *
- *  1. Jars whose currently-selected item already holds a cookie whose
- *     domain matches `cookieDomain` — strongest signal that this jar
- *     "owns" the host.
- *  2. Otherwise, the "Environment" jar if it has a selected item — the
- *     default-bootstrap jar is the right home for ambient cookies.
- *  3. Otherwise, the first variable set (alphabetical) whose item is
- *     selected — deterministic fallback.
+ * Set-Cookie always deposits into the project's primary cookie jar
+ * (configured via `project.json` → `cookies.primaryVariableSet`,
+ * defaults to `'Environment'`). Earlier this was a domain-matching
+ * heuristic that could pick *any* variable-set jar, which made
+ * incoming cookies feel non-deterministic — same host could land in
+ * different jars depending on what was already inside them. The
+ * primary jar is the deliberate "ambient" jar, so it owns Set-Cookie.
  *
- * Returns null when no variable set has a selected item; in that case
- * we drop the cookies on the floor rather than guess.
+ * Returns null only when the primary jar has no selected item (the
+ * user hasn't picked an environment yet); cookies are dropped in that
+ * case rather than guessed at.
+ *
+ * `_cookieDomain` is unused now but kept on the signature so the
+ * caller doesn't have to thread changes — and future logic that wants
+ * to honour, say, a `cookieDomainOverrides` config knows where to
+ * look.
  */
-function pickOwningJar(state: ApplicationState, cookieDomain: string): { variableSet: string; itemId: string } | null {
+function pickOwningJar(
+	state: ApplicationState,
+	_cookieDomain: string,
+): { variableSet: string; itemId: string } | null {
+	const projectCookies = state.global.project.cookies;
 	const selections = state.global.preferences.editor.selectedVariableSets ?? {};
-	const jars = state.global.cookies.jars;
+	const variableSets = state.global.variableSets.variableSets ?? {};
+	const variableSetNames = Object.keys(variableSets);
 
-	const candidates: { variableSet: string; itemId: string }[] = [];
-	for (const variableSet of Object.keys(selections).sort()) {
-		const itemId = selections[variableSet];
-		if (!itemId) continue;
-		candidates.push({ variableSet, itemId });
-	}
-	if (candidates.length === 0) return null;
+	const requestedPrimary = projectCookies?.primaryVariableSet;
+	const primary =
+		requestedPrimary && variableSets[requestedPrimary]
+			? requestedPrimary
+			: variableSetNames.includes('Environment')
+				? 'Environment'
+				: variableSetNames.sort()[0];
 
-	const host = canonicaliseHost(cookieDomain);
-	for (const cand of candidates) {
-		const list = jars[cand.variableSet]?.[cand.itemId];
-		if (!list?.length) continue;
-		if (list.some(c => domainMatches(host, c.domain, c.hostOnly))) return cand;
-	}
-
-	const environment = candidates.find(c => c.variableSet === 'Environment');
-	if (environment) return environment;
-
-	return candidates[0];
+	if (!primary) return null;
+	const itemId = selections[primary];
+	if (!itemId) return null;
+	return { variableSet: primary, itemId };
 }

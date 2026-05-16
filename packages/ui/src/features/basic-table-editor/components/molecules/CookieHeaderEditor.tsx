@@ -4,7 +4,7 @@ import { Box, chakra } from '@chakra-ui/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Plus, X } from 'lucide-react';
 import * as React from 'react';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import {
 	type CookieHeaderPair,
@@ -52,13 +52,35 @@ const ChakraButton = chakra('button');
 const CookieHeaderEditor: React.FC<CookieHeaderEditorProps> = ({ value, readOnly, onChange }) => {
 	const plain = useMemo(() => isPlainStringValue(value), [value]);
 	const text = useMemo(() => valueSectionsToPlainString(value), [value]);
-	const pairs = useMemo(() => parseCookieHeader(text), [text]);
+	// The parsed view is derived from the serialised header — empty-named
+	// pairs never round-trip (they'd be ambiguous in `name=value; ...`
+	// notation), so we layer a local draft on top for in-flight rows the
+	// user is still typing into.
+	const parsed = useMemo(() => parseCookieHeader(text), [text]);
+	const [draftEmptyCount, setDraftEmptyCount] = useState(0);
+	const lastTextRef = useRef(text);
+
+	useEffect(() => {
+		// External edits to the value cell wipe local drafts — the user
+		// switched contexts, the empty placeholders no longer apply.
+		if (lastTextRef.current !== text) {
+			lastTextRef.current = text;
+			setDraftEmptyCount(0);
+		}
+	}, [text]);
+
+	const pairs = useMemo(() => {
+		if (draftEmptyCount === 0) return parsed;
+		const drafts = Array.from({ length: draftEmptyCount }, () => ({ name: '', value: '' }));
+		return [...parsed, ...drafts];
+	}, [parsed, draftEmptyCount]);
 
 	function commit(next: CookieHeaderPair[]) {
-		// An empty list collapses to an empty string so the value cell
-		// above shows nothing — matches the user's mental model of "no
-		// cookies = no header value".
-		onChange([serialiseCookieHeader(next)]);
+		const namedCount = next.filter(p => p.name.length > 0).length;
+		setDraftEmptyCount(next.length - namedCount);
+		const serialised = serialiseCookieHeader(next);
+		lastTextRef.current = serialised;
+		onChange([serialised]);
 	}
 
 	function updatePair(index: number, patch: Partial<CookieHeaderPair>) {

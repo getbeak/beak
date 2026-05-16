@@ -8,10 +8,14 @@ import {
 } from '@beak/state/cookies';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { Box, chakra, Flex } from '@chakra-ui/react';
-import { Cookie as CookieIcon, ShieldCheck, ShieldHalf, ShieldOff, Trash2 } from 'lucide-react';
+import { Cookie as CookieIcon, ShieldCheck, ShieldHalf, ShieldOff, Star, Trash2 } from 'lucide-react';
 import * as React from 'react';
 import { useMemo } from 'react';
 import { useDispatch } from 'react-redux';
+
+const DEFAULT_PRIMARY = 'Environment';
+
+type JarUsage = 'primary' | 'used' | 'unused' | 'orphan';
 
 /**
  * Inspector for every cookie jar in the project. Grouped first by
@@ -23,6 +27,8 @@ import { useDispatch } from 'react-redux';
 const CookieJarEditor: React.FC = () => {
 	const jars = useAppSelector(selectAllCookieJars);
 	const variableSetMeta = useAppSelector(s => s.global.variableSets.variableSets);
+	const projectTree = useAppSelector(s => s.global.project.tree);
+	const requestedPrimary = useAppSelector(s => s.global.project.cookies?.primaryVariableSet);
 	const dispatch = useDispatch();
 
 	const jarKeys = useMemo(() => Object.keys(jars).sort(), [jars]);
@@ -30,6 +36,38 @@ const CookieJarEditor: React.FC = () => {
 		() => Object.values(jars).reduce((sum, jar) => sum + Object.values(jar).reduce((a, b) => a + b.length, 0), 0),
 		[jars],
 	);
+
+	// Mirrors `resolveEnabledCookieJars` — the project's primary jar is the
+	// one used by every flight by default. Falls back to "Environment", then
+	// the first variable set alphabetically.
+	const primaryVariableSet = useMemo(() => {
+		const existing = variableSetMeta ?? {};
+		if (requestedPrimary && existing[requestedPrimary]) return requestedPrimary;
+		const names = Object.keys(existing).sort();
+		if (names.includes(DEFAULT_PRIMARY)) return DEFAULT_PRIMARY;
+		return names[0];
+	}, [requestedPrimary, variableSetMeta]);
+
+	// A variable set's jar is "used" (beyond being primary) when at least one
+	// request opts into it via `additionalCookieJarSets`. Anything else is
+	// dead weight — we still keep the cookies around in case the user re-adds
+	// the set, but the UI dims them so they stop drawing the eye.
+	const additionalUsedSets = useMemo(() => {
+		const used = new Set<string>();
+		for (const node of Object.values(projectTree)) {
+			if (!node || node.type !== 'request' || node.mode !== 'valid') continue;
+			const list = node.info.options?.additionalCookieJarSets ?? [];
+			for (const name of list) used.add(name);
+		}
+		return used;
+	}, [projectTree]);
+
+	function jarUsageFor(name: string): JarUsage {
+		if (!variableSetMeta?.[name]) return 'orphan';
+		if (name === primaryVariableSet) return 'primary';
+		if (additionalUsedSets.has(name)) return 'used';
+		return 'unused';
+	}
 
 	return (
 		<Flex direction='column' h='100%' bg='bg.canvas' overflow='hidden'>
@@ -104,24 +142,44 @@ const CookieJarEditor: React.FC = () => {
 					const jar = jars[variableSet];
 					const items = Object.keys(jar).sort();
 					const variableSetItemMeta = variableSetMeta[variableSet]?.items ?? {};
+					const usage = jarUsageFor(variableSet);
+					const inactive = usage === 'unused' || usage === 'orphan';
 					return (
-						<Box key={variableSet} borderBottomWidth='1px' borderColor='border.subtle' bg='bg.canvas'>
+						<Box
+							key={variableSet}
+							borderBottomWidth='1px'
+							borderColor='border.subtle'
+							bg='bg.canvas'
+							opacity={inactive ? 0.55 : 1}
+							transition='opacity .12s ease'
+						>
 							<Flex
 								align='center'
 								justify='space-between'
 								px='4'
 								py='2'
-								bg='color-mix(in srgb, var(--beak-colors-accent-teal) 6%, transparent)'
+								bg={
+									inactive
+										? 'color-mix(in srgb, var(--beak-colors-fg-default) 4%, transparent)'
+										: 'color-mix(in srgb, var(--beak-colors-accent-teal) 6%, transparent)'
+								}
 								borderBottomWidth='1px'
 								borderColor='border.subtle'
 							>
-								<Flex align='center' gap='1.5' fontSize='12px' fontWeight='700' color='accent.teal'>
-									<Box as='span' textTransform='uppercase' letterSpacing='0.06em' fontSize='10px'>
+								<Flex align='center' gap='1.5' fontSize='12px' fontWeight='700'>
+									<Box
+										as='span'
+										textTransform='uppercase'
+										letterSpacing='0.06em'
+										fontSize='10px'
+										color={inactive ? 'fg.subtle' : 'accent.teal'}
+									>
 										{'Variable set'}
 									</Box>
 									<Box as='span' color='fg.default' textTransform='none' letterSpacing='-0.005em' fontWeight='700'>
 										{variableSet}
 									</Box>
+									<JarUsageBadge usage={usage} />
 								</Flex>
 								<ActionButton
 									label='Clear jar'
@@ -296,6 +354,15 @@ const Tag: React.FC<{ label: string; value: string; tone?: Tone }> = ({ label, v
 			</Box>
 		</Flex>
 	);
+};
+
+const JarUsageBadge: React.FC<{ usage: JarUsage }> = ({ usage }) => {
+	if (usage === 'primary')
+		return <Pill icon={<Star size={9} strokeWidth={2.4} fill='currentColor' />} label='Primary' tone='success' />;
+	if (usage === 'used') return <Pill icon={<CookieIcon size={9} strokeWidth={2.4} />} label='In use' tone='info' />;
+	if (usage === 'orphan')
+		return <Pill icon={<ShieldOff size={9} strokeWidth={2.4} />} label='Orphan' tone='warning' />;
+	return <Pill icon={null} label='Unused' tone='subtle' />;
 };
 
 const Pill: React.FC<{ icon: React.ReactNode; label: string; tone: Tone }> = ({ icon, label, tone }) => {

@@ -52,7 +52,7 @@ const CookieJarTab: React.FC<React.PropsWithChildren<CookieJarTabProps>> = ({ ta
 				}}
 				onClose={() => dispatch(closeTab(tab.payload))}
 			>
-				{tab.temporary ? <em>{'Cookies'}</em> : 'Cookies'}
+				{tab.temporary ? <em>{'Cookie jars'}</em> : 'Cookie jars'}
 			</TabItem>
 		</TabContextMenuWrapper>
 	);

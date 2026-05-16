@@ -1,6 +1,26 @@
 import { z } from 'zod';
 
 /**
+ * Project-wide cookie configuration. Lives on the project file because the
+ * primary variable set is a property of the project, not of a particular
+ * window or request.
+ */
+export const projectCookieConfigSchema = z
+	.object({
+		/**
+		 * The variable set whose currently-selected item drives the
+		 * "default" cookie jar — the one outgoing requests pull from by
+		 * default and the one incoming Set-Cookie headers always land in.
+		 * Defaults to `'Environment'` when absent so existing projects
+		 * keep working without a migration.
+		 */
+		primaryVariableSet: z.string().min(1).optional(),
+	})
+	.strict();
+
+export type ProjectCookieConfig = z.infer<typeof projectCookieConfigSchema>;
+
+/**
  * Project file — the `project.json` at the root of a Beak project.
  */
 export const projectFileSchema = z
@@ -9,6 +29,7 @@ export const projectFileSchema = z
 		version: z.string().min(1),
 		name: z.string().min(1),
 		untitled: z.boolean().optional(),
+		cookies: projectCookieConfigSchema.optional(),
 	})
 	.strict();
 
@@ -103,6 +124,18 @@ const requestOptionsSchema = z
 		decompressResponse: z.boolean().optional(),
 		timeoutMs: z.number().int().min(0).optional(),
 		maxRedirects: z.number().int().min(0).optional(),
+		/**
+		 * Cookie behaviour overrides for this request.
+		 *  - `sendCookies` (default `true`): opt-out — when false, no jars
+		 *    contribute cookies to the outgoing request.
+		 *  - `additionalCookieJarSets`: variable-set names whose currently-
+		 *    selected item should layer extra cookies on top of the
+		 *    project's primary jar (e.g. a `User` set alongside `Environment`).
+		 *    Names must match `variableSets` keys; unknown names are ignored
+		 *    at flight time.
+		 */
+		sendCookies: z.boolean().optional(),
+		additionalCookieJarSets: z.array(z.string().min(1)).optional(),
 	})
 	.strict();
 
@@ -166,6 +199,26 @@ const bodySchema = z.discriminatedUnion('type', [
 			payload: graphQlSchema,
 		})
 		.passthrough(),
+	z
+		.object({
+			type: z.literal('grpc'),
+			payload: z
+				.object({
+					/** Fully-qualified service name (e.g. `helloworld.HelloService`). */
+					service: z.string().min(1),
+					/** RPC method name on that service. */
+					method: z.string().min(1),
+					/**
+					 * Last-known request body as a JSON string. Stored verbatim so the
+					 * Monaco editor round-trips whitespace + comments faithfully.
+					 */
+					requestJson: z.string(),
+					/** Per-call gRPC metadata. Optional for back-compat with files written before the field landed. */
+					metadata: z.record(z.string(), z.string()).optional(),
+				})
+				.strict(),
+		})
+		.passthrough(),
 ]);
 
 /**
@@ -177,14 +230,48 @@ export const requestFileSchema = z
 		id: z.string().min(1),
 		verb: z.string(),
 		url: valuePartsSchema,
-		query: z.record(z.string(), keyValuePairSchema),
-		headers: z.record(z.string(), keyValuePairSchema),
+		// `query` and `headers` are optional on disk so sparse OpenAPI imports
+		// (operations with no query/header parameters) round-trip cleanly even
+		// when the collection's defaults are empty. `ensureRuntimeShape` in
+		// the renderer's reader backfills them to `{}` so downstream code can
+		// still address them unconditionally.
+		query: z.record(z.string(), keyValuePairSchema).optional(),
+		headers: z.record(z.string(), keyValuePairSchema).optional(),
 		body: bodySchema.optional(),
 		options: requestOptionsSchema.optional(),
+		/** Seed introspection file for an endpoint collection — see `RequestOverview.introspection`. */
+		introspection: z.literal(true).optional(),
+		/** Sync provenance — present only on files generated from a spec (OpenAPI / gRPC). */
+		_provenance: z.lazy(() => provenanceSchema).optional(),
 	})
 	.passthrough();
 
 export type RequestFile = z.infer<typeof requestFileSchema>;
+
+// ─── Provenance (linked-to-spec marker) ─────────────────────────────
+
+/**
+ * Marks a request file as generated from an external spec. Re-syncs skip
+ * any file with `linked: false` — the user took ownership and the
+ * converter must leave it alone. Writes flip `linked: true → false`
+ * automatically on the first user edit (see the renderer's project
+ * effect); a `[Re-link]` action restores it.
+ *
+ * `graphql` is intentionally absent: GraphQL doesn't enumerate operations,
+ * so the renderer never generates per-operation files for it.
+ */
+export const provenanceSchema = z
+	.object({
+		source: z.enum(['openapi', 'grpc']),
+		linked: z.boolean(),
+		/** OpenAPI operationId / gRPC fully-qualified method, etc. */
+		operationId: z.string().min(1).optional(),
+		/** ISO 8601 timestamp of the sync that produced (or last updated) this file. */
+		syncedAt: z.string().optional(),
+	})
+	.strict();
+
+export type Provenance = z.infer<typeof provenanceSchema>;
 
 // ─── Sparse request overrides ───────────────────────────────────────
 //
@@ -209,6 +296,10 @@ export const requestFileOverrideSchema = z
 		headers: z.record(z.string(), keyValuePairSchema).optional(),
 		body: bodySchema.optional(),
 		options: requestOptionsSchema.optional(),
+		/** Seed introspection file for an endpoint collection — see `RequestOverview.introspection`. */
+		introspection: z.literal(true).optional(),
+		/** Sync provenance — present only on files generated from a spec (OpenAPI / gRPC). */
+		_provenance: z.lazy(() => provenanceSchema).optional(),
 	})
 	.passthrough();
 
@@ -257,6 +348,15 @@ export const collectionSourceSchema = z.discriminatedUnion('type', [
 	z
 		.object({
 			type: z.literal('openapi'),
+			/**
+			 * How the spec was seeded. Drives the re-sync surface the UI shows:
+			 *  - `url` — re-fetch `specUrl` on demand and on a poll cadence.
+			 *  - `file` — re-read `specPath`; compare mtime to detect drift.
+			 *  - `paste` — one-shot literal paste; no re-sync source.
+			 * Optional for back-compat: readers fall back to whichever of
+			 * `specUrl` / `specPath` is set.
+			 */
+			seedMode: z.enum(['url', 'file', 'paste']).optional(),
 			/** Absolute or project-relative path to the spec file. */
 			specPath: z.string().min(1).optional(),
 			/** Remote spec URL — fetched on sync. */
@@ -265,9 +365,9 @@ export const collectionSourceSchema = z.discriminatedUnion('type', [
 			lastSyncedAt: z.string().optional(),
 			/**
 			 * When true, the renderer's auto-sync poller refetches `specUrl`
-			 * (or re-reads `specPath`) on the cadence below. Toggled from the
-			 * Project Home tab. Flipping it does NOT trigger an immediate
-			 * sync — the next poll tick picks it up.
+			 * on the cadence below. Toggled from the OpenAPI sidebar pane.
+			 * Flipping it does NOT trigger an immediate sync — the next poll
+			 * tick picks it up.
 			 */
 			autoSync: z.boolean().optional(),
 			/**
@@ -277,10 +377,7 @@ export const collectionSourceSchema = z.discriminatedUnion('type', [
 			 */
 			intervalMinutes: z.number().int().min(1).optional(),
 		})
-		.strict()
-		.refine(d => Boolean(d.specPath || d.specUrl), {
-			message: 'openapi source requires specPath or specUrl',
-		}),
+		.strict(),
 	z
 		.object({
 			type: z.literal('graphql'),

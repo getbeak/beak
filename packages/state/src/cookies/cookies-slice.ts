@@ -179,13 +179,22 @@ export const selectCookieJar = (variableSet: string) => (state: CookiesRootState
 
 /**
  * For a flight outgoing to `(scheme, host, path)`, collect the cookies
- * that should ride along across every enabled variable-set jar's
- * currently-selected item. Caller passes the resolved per-variable-set
- * item selections (`preferences.editor.selectedVariableSets`).
+ * that should ride along. `enabledVariableSets` is the ordered list of
+ * variable-set names the caller wants in play: typically `[primary,
+ * ...additional]`, where `primary` is the project's default jar source
+ * (see `ProjectCookieConfig`) and `additional` opts in to extra jars
+ * per request.
+ *
+ * Order matters: the first jar in the list wins on name collisions
+ * (subsequent jars only fill names not yet taken). That means the
+ * primary jar's cookies override any same-named cookie in an additional
+ * jar — useful when a `User` jar holds a session token that should
+ * defer to whatever the `Environment` jar currently has.
  */
 export function selectOutgoingCookies(
 	state: CookiesRootState,
 	selections: Record<string, string | undefined>,
+	enabledVariableSets: string[],
 	scheme: string,
 	host: string,
 	path: string,
@@ -196,15 +205,22 @@ export function selectOutgoingCookies(
 } {
 	const perJar: { variableSet: string; itemId: string; cookies: CookieEntry[] }[] = [];
 	const all: CookieEntry[] = [];
-	for (const [variableSet, jar] of Object.entries(state.global.cookies.jars)) {
+	const claimedNames = new Set<string>();
+	for (const variableSet of enabledVariableSets) {
+		const jar = state.global.cookies.jars[variableSet];
+		if (!jar) continue;
 		const itemId = selections[variableSet];
 		if (!itemId) continue;
 		const list = jar[itemId];
 		if (!list?.length) continue;
 		const matched = filterCookiesForRequest({ cookies: list, scheme, host, path });
 		if (matched.length === 0) continue;
-		perJar.push({ variableSet, itemId, cookies: matched });
-		all.push(...matched);
+		// Earlier jars in the list win on name collisions — see the docblock.
+		const fresh = matched.filter(c => !claimedNames.has(c.name));
+		for (const c of fresh) claimedNames.add(c.name);
+		if (fresh.length === 0) continue;
+		perJar.push({ variableSet, itemId, cookies: fresh });
+		all.push(...fresh);
 	}
 	all.sort((a, b) => {
 		if (a.path.length !== b.path.length) return b.path.length - a.path.length;

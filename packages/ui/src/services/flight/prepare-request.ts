@@ -78,10 +78,17 @@ async function flattenToggleValueSections(
 	const out: Record<string, FlightRequestKeyValue> = {};
 	await Promise.all(
 		TypedObject.keys(toggleValueSections).map(async k => {
+			const entry = toggleValueSections[k];
+			// Empty-keyed rows are placeholders the user hasn't finished editing
+			// yet — sending them produces `: value` headers or `=value` query
+			// strings, which is never what they meant. Skip them at the prepare
+			// boundary so the outgoing wire stays clean (the editor still
+			// flags them visually for the user to fix).
+			if (!entry.name || entry.name.trim().length === 0) return;
 			out[k] = {
-				enabled: toggleValueSections[k].enabled,
-				name: toggleValueSections[k].name,
-				value: [await deps.parseValueSections(context, toggleValueSections[k].value)],
+				enabled: entry.enabled,
+				name: entry.name,
+				value: [await deps.parseValueSections(context, entry.value)],
 			};
 		}),
 	);
@@ -122,6 +129,8 @@ async function flattenBody(
 	switch (body.type) {
 		case 'text':
 			return body;
+		case 'json_raw':
+			return { type: 'text', payload: body.payload };
 		case 'json': {
 			const json = await deps.convertToRealJson(context, body.payload);
 			return { type: 'text', payload: JSON.stringify(json) };

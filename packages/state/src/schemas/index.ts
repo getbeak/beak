@@ -4,6 +4,7 @@ export * from './beak-project';
 export * from './beak-variable-group';
 export * from './beak-workflow';
 export * from './collection-merge';
+export * from './cookies';
 export * from './flight-history';
 export * from './preferences';
 export * from './request-schema';
