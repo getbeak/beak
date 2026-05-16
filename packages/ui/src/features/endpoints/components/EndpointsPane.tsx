@@ -1,32 +1,49 @@
+import type { GrpcServiceDescriptor } from '@beak/common/ipc/grpc';
+import type { GrpcDescriptor } from '@beak/state/schemas';
 import Button from '@beak/ui/components/atoms/Button';
 import Dialog, { DialogBody, DialogFooter, DialogHeader } from '@beak/ui/components/molecules/Dialog';
 import { changeTab } from '@beak/ui/features/tabs/store/actions';
+import { ipcGrpcService } from '@beak/ui/lib/ipc';
+import { alertInsert, alertRemove } from '@beak/ui/store/project/actions';
+import { endpointSyncFailedIdent } from '@beak/ui/store/project/types';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { Box, chakra, Flex, Menu, Portal } from '@chakra-ui/react';
 import type { RequestNode } from '@getbeak/types/nodes';
 import { motion } from 'framer-motion';
 import {
 	AlertCircle,
+	AlertOctagon,
 	CheckCircle2,
 	ChevronDown,
 	Circle,
+	FileText,
 	Hash,
 	MoreHorizontal,
 	Network,
 	Pencil,
+	Play,
 	Plug,
 	Plus,
 	RefreshCw,
 	Trash2,
 } from 'lucide-react';
 import * as React from 'react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
-
+import { syncFromUrl } from '../../project-home/lib/sync-from-url';
+import SidebarPane from '../../sidebar/components/SidebarPane';
 import { useEndpoints } from '../hooks/use-endpoints';
-import { deleteEndpointFolder } from '../lib/persist';
-import { ENDPOINT_CONFIG, type EndpointEntry, type EndpointKind } from '../types';
+import { actions as endpointsUiActions } from '../store';
+import {
+	deleteEndpointFolder,
+	readGrpcDescriptor,
+	syncGrpcMethodRequestFiles,
+	writeGrpcDescriptor,
+} from '../lib/persist';
+import { describeSync } from '../lib/sync-status';
+import { ENDPOINT_CONFIG, type EndpointEntry, type EndpointKind, type OpenApiSource } from '../types';
 import EndpointDialog from './EndpointDialog';
+import GrpcInvokeDialog from './GrpcInvokeDialog';
 
 const ChakraButton = chakra('button');
 
@@ -34,7 +51,13 @@ type DialogState =
 	| { mode: 'closed' }
 	| { mode: 'create'; kind: EndpointKind }
 	| { mode: 'edit'; kind: EndpointKind; entry: EndpointEntry }
-	| { mode: 'confirm-delete'; kind: EndpointKind; entry: EndpointEntry };
+	| { mode: 'confirm-delete'; kind: EndpointKind; entry: EndpointEntry }
+	| {
+			mode: 'grpc-invoke';
+			entry: EndpointEntry;
+			descriptor: GrpcDescriptor;
+			services: GrpcServiceDescriptor[];
+	  };
 
 interface UnifiedRow {
 	kind: EndpointKind;
@@ -54,13 +77,35 @@ interface UnifiedRow {
 const EndpointsPane: React.FC = () => {
 	const graphql = useEndpoints('graphql');
 	const grpc = useEndpoints('grpc');
+	const openapi = useEndpoints('openapi');
 	const tree = useAppSelector(s => s.global.project.tree);
+	// Index endpoint-sync-failed alerts by folder path so each row can read its
+	// own current failure (if any) without scanning the whole alerts map.
+	const syncFailuresByFolder = useAppSelector(s => {
+		const out: Record<string, string> = {};
+		for (const alert of Object.values(s.global.project.alerts)) {
+			if (!alert || alert.type !== 'endpoint_sync_failed') continue;
+			out[alert.scope.folderPath] = alert.payload.errorMessage;
+		}
+		return out;
+	});
 	const [dialog, setDialog] = useState<DialogState>({ mode: 'closed' });
 	const dispatch = useDispatch();
+	const pendingSourceKind = useAppSelector(s => s.features.endpointsUi.pendingSourceKind);
+
+	// Honour the "open the dialog for this kind" intent posted by the
+	// welcome screen's schema-source tiles. Fires once per intent — we clear
+	// it on consume so re-mounts don't re-open the dialog.
+	useEffect(() => {
+		if (!pendingSourceKind) return;
+		setDialog({ mode: 'create', kind: pendingSourceKind });
+		dispatch(endpointsUiActions.clearPendingSchemaSource());
+	}, [pendingSourceKind, dispatch]);
 
 	function refreshLists() {
 		void graphql.refresh();
 		void grpc.refresh();
+		void openapi.refresh();
 	}
 
 	function closeDialog(didChange: boolean) {
@@ -69,20 +114,40 @@ const EndpointsPane: React.FC = () => {
 	}
 
 	/**
-	 * Find the seed request inside an endpoint folder. The persist layer
-	 * writes either `Introspection.json` (graphql) or `Endpoint.json`
-	 * (grpc); we identify it by walking the tree for a request whose
-	 * parent is this folder. Multiple requests = pick the first stable
-	 * by name.
+	 * Open the first request inside an endpoint folder — used by the
+	 * GraphQL edit dialog's "Open introspection request" button. The persist
+	 * layer seeds `Discover schema.json` for GraphQL, so the first child of
+	 * a graphql folder is always the introspection request.
 	 */
-	function openEndpointInRequestPane(entry: EndpointEntry) {
-		const folder = Object.values(tree).find(n => n.type === 'folder' && n.filePath === entry.folderPath);
+	function openSeedRequest(folderPath: string) {
+		const folder = Object.values(tree).find(n => n.type === 'folder' && n.filePath === folderPath);
 		if (!folder) return;
-		const requestChild = Object.values(tree)
+		const seed = Object.values(tree)
 			.filter((n): n is RequestNode => n.type === 'request' && n.parent === folder.id)
 			.sort((a, b) => a.name.localeCompare(b.name))[0];
-		if (!requestChild) return;
-		dispatch(changeTab({ type: 'request', payload: requestChild.id, temporary: false }));
+		if (seed) dispatch(changeTab({ type: 'request', payload: seed.id, temporary: false }));
+	}
+
+	/**
+	 * Re-open the try-it dialog using descriptors persisted on the last
+	 * discovery run. Avoids a fresh network roundtrip when the user just
+	 * wants to fire another request against an already-discovered service.
+	 */
+	async function openInvokeDialog(entry: EndpointEntry) {
+		if (!('descriptor' in entry.source) || !entry.source.descriptor) return;
+		const persisted = await readGrpcDescriptor(entry.folderPath);
+		if (!persisted) {
+			// No sidecar yet — run discovery first; the success path drops
+			// the user into the dialog automatically.
+			await runDiscover(entry);
+			return;
+		}
+		setDialog({
+			mode: 'grpc-invoke',
+			entry,
+			descriptor: entry.source.descriptor,
+			services: persisted.services,
+		});
 	}
 
 	async function confirmDelete(entry: EndpointEntry) {
@@ -96,38 +161,118 @@ const EndpointsPane: React.FC = () => {
 		}
 	}
 
+	/**
+	 * Kick off a gRPC discovery roundtrip for the given endpoint. The host
+	 * IPC does the actual reflection / proto parsing; we persist the result
+	 * into the folder's `_grpc.json` sidecar and refresh the rows. Failures
+	 * route through the existing `endpoint_sync_failed` alert pipeline so
+	 * the user sees them both on the row and in the action-bar errors list.
+	 */
+	async function runDiscover(entry: EndpointEntry) {
+		if (!('descriptor' in entry.source) || !entry.source.descriptor) return;
+		const ident = endpointSyncFailedIdent(entry.folderPath);
+		const endpoint = typeof entry.source.endpoint === 'string' ? entry.source.endpoint : '';
+		try {
+			const res = await ipcGrpcService.discoverMethods({
+				endpoint,
+				descriptor: entry.source.descriptor,
+			});
+			await writeGrpcDescriptor(entry.folderPath, {
+				discoveredAt: res.discoveredAt,
+				services: res.services,
+				messages: res.messages,
+				enums: res.enums,
+			});
+			// Materialise unary methods as on-disk request files so the user
+			// can open + edit them like any other request. Streaming methods
+			// stay descriptor-only until the streaming editor lands.
+			await syncGrpcMethodRequestFiles(entry.folderPath, res.services);
+			dispatch(alertRemove(ident));
+			refreshLists();
+			// As soon as discovery succeeds, drop the user into the try-it
+			// dialog focused on the newly-discovered methods. Skips the
+			// "now click the row menu and pick Try" hunt for the common
+			// path of "I want to call something against this service".
+			if (res.services.length > 0) {
+				setDialog({ mode: 'grpc-invoke', entry, descriptor: entry.source.descriptor, services: res.services });
+			}
+		} catch (err) {
+			const message = err instanceof Error ? err.message : String(err);
+			dispatch(
+				alertInsert({
+					ident,
+					alert: {
+						type: 'endpoint_sync_failed',
+						severity: 'warning',
+						scope: { kind: 'endpoint', folderPath: entry.folderPath },
+						payload: {
+							folderName: entry.folderName,
+							kind: 'grpc',
+							errorMessage: message,
+						},
+					},
+				}),
+			);
+		}
+	}
+
 	const rows = useMemo<UnifiedRow[]>(() => {
 		const all: UnifiedRow[] = [
 			...graphql.entries.map(entry => ({ kind: 'graphql' as const, entry })),
 			...grpc.entries.map(entry => ({ kind: 'grpc' as const, entry })),
+			...openapi.entries.map(entry => ({ kind: 'openapi' as const, entry })),
 		];
 		all.sort((a, b) => a.entry.relativeFolder.localeCompare(b.entry.relativeFolder));
 		return all;
-	}, [graphql.entries, grpc.entries]);
+	}, [graphql.entries, grpc.entries, openapi.entries]);
 
-	const loading = graphql.loading || grpc.loading;
+	const loading = graphql.loading || grpc.loading || openapi.loading;
 	const hasRows = rows.length > 0;
+
+	/**
+	 * Re-fetch the spec for a URL-mode openapi endpoint, writing through the
+	 * existing sync helper so failure routing (alert insertion, fresh-sync
+	 * marker) matches the auto-sync poller exactly. File/paste-mode rows
+	 * don't have a re-sync source, so this is a no-op for them.
+	 */
+	async function runOpenApiSync(entry: EndpointEntry) {
+		const source = entry.source as OpenApiSource;
+		if (!source.specUrl) return;
+		const ident = endpointSyncFailedIdent(entry.folderPath);
+		const outcome = await syncFromUrl({
+			targetFolder: entry.folderPath,
+			url: source.specUrl,
+			autoSync: source.autoSync,
+			intervalMinutes: source.intervalMinutes,
+		});
+		if (outcome.ok) {
+			dispatch(alertRemove(ident));
+			refreshLists();
+		} else {
+			dispatch(
+				alertInsert({
+					ident,
+					alert: {
+						type: 'endpoint_sync_failed',
+						severity: 'warning',
+						scope: { kind: 'endpoint', folderPath: entry.folderPath },
+						payload: {
+							folderName: entry.folderName,
+							kind: 'openapi',
+							errorMessage: outcome.error,
+						},
+					},
+				}),
+			);
+		}
+	}
 
 	return (
 		<React.Fragment>
-			<Flex direction='column' flex='1' minH={0}>
+			<SidebarPane>
 				{hasRows && (
-					<Flex
-						align='center'
-						justify='space-between'
-						px='3'
-						py='2'
-						borderBottomWidth='1px'
-						borderColor='border.subtle'
-						flexShrink={0}
-					>
-						<Box
-							fontSize='10.5px'
-							fontWeight='600'
-							color='fg.subtle'
-							letterSpacing='0.05em'
-							textTransform='uppercase'
-						>
+					<Flex align='center' justify='space-between' h='24px' px='3' flexShrink={0}>
+						<Box fontSize='11px' fontWeight='600' color='fg.muted' letterSpacing='0.04em' textTransform='uppercase'>
 							{loading ? 'Loading…' : `${rows.length} registered`}
 						</Box>
 						<AddDropdown onPick={kind => setDialog({ mode: 'create', kind })} />
@@ -135,9 +280,7 @@ const EndpointsPane: React.FC = () => {
 				)}
 
 				<Box flex='1' minH={0} overflowY='auto'>
-					{!hasRows && !loading && (
-						<EmptyState onPick={kind => setDialog({ mode: 'create', kind })} />
-					)}
+					{!hasRows && !loading && <EmptyState onPick={kind => setDialog({ mode: 'create', kind })} />}
 
 					{hasRows && (
 						<Flex direction='column' py='1'>
@@ -146,37 +289,82 @@ const EndpointsPane: React.FC = () => {
 									key={entry.folderPath}
 									kind={kind}
 									entry={entry}
-									onOpen={() => openEndpointInRequestPane(entry)}
+									syncError={syncFailuresByFolder[entry.folderPath]}
 									onEdit={() => setDialog({ mode: 'edit', kind, entry })}
 									onDelete={() => setDialog({ mode: 'confirm-delete', kind, entry })}
+									onDiscover={kind === 'grpc' ? () => runDiscover(entry) : undefined}
+									onInvoke={kind === 'grpc' ? () => openInvokeDialog(entry) : undefined}
+									onSync={
+										kind === 'openapi' && (entry.source as OpenApiSource).specUrl ? () => runOpenApiSync(entry) : undefined
+									}
 								/>
 							))}
 						</Flex>
 					)}
 				</Box>
-			</Flex>
+			</SidebarPane>
 
 			{dialog.mode === 'create' && (
 				<EndpointDialog endpointKind={dialog.kind} mode={{ kind: 'create' }} onClose={closeDialog} />
 			)}
-			{dialog.mode === 'edit' && (
-				<EndpointDialog
-					endpointKind={dialog.kind}
-					mode={{
-						kind: 'edit',
-						folderPath: dialog.entry.folderPath,
-						folderName: dialog.entry.folderName,
-					}}
-					initialEndpoint={typeof dialog.entry.source.endpoint === 'string' ? dialog.entry.source.endpoint : ''}
-					initialDescriptor={dialog.kind === 'grpc' && 'descriptor' in dialog.entry.source ? dialog.entry.source.descriptor : undefined}
-					onClose={closeDialog}
-				/>
-			)}
+			{dialog.mode === 'edit' &&
+				(() => {
+					// Read the live entry on every render so the "Last synced" line in
+					// the dialog reflects a freshly-run sync without having to re-open.
+					const liveEntry = rows.find(r => r.entry.folderPath === dialog.entry.folderPath)?.entry ?? dialog.entry;
+					const liveOpenApi = dialog.kind === 'openapi' ? (liveEntry.source as OpenApiSource) : null;
+					return (
+						<EndpointDialog
+							endpointKind={dialog.kind}
+							mode={{
+								kind: 'edit',
+								folderPath: liveEntry.folderPath,
+								folderName: liveEntry.folderName,
+							}}
+							initialEndpoint={
+								'endpoint' in liveEntry.source && typeof liveEntry.source.endpoint === 'string' ? liveEntry.source.endpoint : ''
+							}
+							initialDescriptor={
+								dialog.kind === 'grpc' && 'descriptor' in liveEntry.source ? liveEntry.source.descriptor : undefined
+							}
+							initialOpenApiSource={liveOpenApi ?? undefined}
+							lastSyncedAt={liveEntry.source.lastSyncedAt}
+							onSyncNow={
+								dialog.kind === 'openapi' && liveOpenApi?.specUrl
+									? async () => {
+											await runOpenApiSync(liveEntry);
+										}
+									: undefined
+							}
+							onOpenIntrospection={
+								dialog.kind === 'graphql'
+									? () => {
+											openSeedRequest(liveEntry.folderPath);
+											closeDialog(false);
+										}
+									: undefined
+							}
+							onClose={closeDialog}
+						/>
+					);
+				})()}
 			{dialog.mode === 'confirm-delete' && (
 				<DeleteConfirmDialog
 					entry={dialog.entry}
 					onCancel={() => setDialog({ mode: 'closed' })}
 					onConfirm={() => confirmDelete(dialog.entry)}
+				/>
+			)}
+			{dialog.mode === 'grpc-invoke' && (
+				<GrpcInvokeDialog
+					endpoint={
+						'endpoint' in dialog.entry.source && typeof dialog.entry.source.endpoint === 'string'
+							? dialog.entry.source.endpoint
+							: ''
+					}
+					descriptor={dialog.descriptor}
+					services={dialog.services}
+					onClose={() => setDialog({ mode: 'closed' })}
 				/>
 			)}
 		</React.Fragment>
@@ -190,8 +378,8 @@ const AddDropdown: React.FC<{ onPick: (kind: EndpointKind) => void }> = ({ onPic
 		<Menu.Trigger asChild>
 			<ChakraButton
 				type='button'
-				aria-label='Add endpoint'
-				title='Add endpoint'
+				aria-label='Add schema source'
+				title='Add schema source'
 				display='inline-flex'
 				alignItems='center'
 				gap='1'
@@ -238,19 +426,38 @@ const AddDropdown: React.FC<{ onPick: (kind: EndpointKind) => void }> = ({ onPic
 					borderRadius='md'
 					boxShadow='0 8px 24px rgba(0,0,0,0.28)'
 					p='1'
-					minW='200px'
+					minW='220px'
 				>
 					<KindMenuItem kind='graphql' onPick={onPick} />
 					<KindMenuItem kind='grpc' onPick={onPick} />
+					<KindMenuItem kind='openapi' onPick={onPick} />
 				</Menu.Content>
 			</Menu.Positioner>
 		</Portal>
 	</Menu.Root>
 );
 
+const KIND_ICONS: Record<EndpointKind, typeof Hash> = {
+	graphql: Hash,
+	grpc: Network,
+	openapi: FileText,
+};
+
+const KIND_SUBTITLES: Record<EndpointKind, string> = {
+	graphql: 'Register a GraphQL endpoint',
+	grpc: 'Register a gRPC service',
+	openapi: 'Import from a spec file, URL, or paste',
+};
+
+const KIND_CHIP_LABEL: Record<EndpointKind, string> = {
+	graphql: 'GraphQL',
+	grpc: 'gRPC',
+	openapi: 'OpenAPI',
+};
+
 const KindMenuItem: React.FC<{ kind: EndpointKind; onPick: (kind: EndpointKind) => void }> = ({ kind, onPick }) => {
 	const config = ENDPOINT_CONFIG[kind];
-	const Icon = kind === 'graphql' ? Hash : Network;
+	const Icon = KIND_ICONS[kind];
 	return (
 		<Menu.Item
 			value={kind}
@@ -275,7 +482,7 @@ const KindMenuItem: React.FC<{ kind: EndpointKind; onPick: (kind: EndpointKind) 
 					{config.label}
 				</Box>
 				<Box as='span' fontSize='10.5px' color='fg.subtle' fontWeight='400'>
-					{kind === 'graphql' ? 'Register a GraphQL endpoint' : 'Register a gRPC service'}
+					{KIND_SUBTITLES[kind]}
 				</Box>
 			</Flex>
 		</Menu.Item>
@@ -313,10 +520,12 @@ const EmptyState: React.FC<{ onPick: (kind: EndpointKind) => void }> = ({ onPick
 			</Flex>
 		</motion.div>
 		<Box fontSize='xl' fontWeight='700' color='fg.default' letterSpacing='-0.02em' lineHeight='1.1'>
-			{'No endpoints yet'}
+			{'No schema sources yet'}
 		</Box>
-		<Box fontSize='xs' color='fg.muted' textAlign='center' maxW='320px' lineHeight='1.5'>
-			{'Register a GraphQL endpoint or gRPC service to group every request that hits it under a single folder. Headers, auth, and the schema live on the seed request — opened in the request pane.'}
+		<Box fontSize='xs' color='fg.muted' textAlign='center' maxW='360px' lineHeight='1.5'>
+			{
+				'Schema sources turn an API contract into a folder of requests. Point Beak at a GraphQL endpoint, a gRPC service, or an OpenAPI spec — every operation is imported as a request, grouped under one folder, and (for OpenAPI) kept in sync as the spec evolves.'
+			}
 		</Box>
 		<AddDropdownPrimary onPick={onPick} />
 	</Flex>
@@ -328,7 +537,7 @@ const AddDropdownPrimary: React.FC<{ onPick: (kind: EndpointKind) => void }> = (
 			<Button size='sm'>
 				<Flex align='center' gap='1.5'>
 					<Plus size={12} />
-					{'Add your first endpoint'}
+					{'Add a schema source'}
 					<ChevronDown size={11} strokeWidth={2} style={{ opacity: 0.85 }} />
 				</Flex>
 			</Button>
@@ -342,10 +551,11 @@ const AddDropdownPrimary: React.FC<{ onPick: (kind: EndpointKind) => void }> = (
 					borderRadius='md'
 					boxShadow='0 8px 24px rgba(0,0,0,0.28)'
 					p='1'
-					minW='220px'
+					minW='240px'
 				>
 					<KindMenuItem kind='graphql' onPick={onPick} />
 					<KindMenuItem kind='grpc' onPick={onPick} />
+					<KindMenuItem kind='openapi' onPick={onPick} />
 				</Menu.Content>
 			</Menu.Positioner>
 		</Portal>
@@ -355,27 +565,6 @@ const AddDropdownPrimary: React.FC<{ onPick: (kind: EndpointKind) => void }> = (
 // ─── Row ──────────────────────────────────────────────────────────────────
 
 type SyncStatus = 'never' | 'fresh' | 'stale';
-
-function describeSync(lastSyncedAt: string | undefined): { status: SyncStatus; label: string } {
-	if (!lastSyncedAt) return { status: 'never', label: 'Never synced' };
-	const at = Date.parse(lastSyncedAt);
-	if (!Number.isFinite(at)) return { status: 'never', label: 'Never synced' };
-	const ageMs = Date.now() - at;
-	const minutes = Math.floor(ageMs / 60_000);
-	const hours = Math.floor(minutes / 60);
-	const days = Math.floor(hours / 24);
-
-	const label =
-		minutes < 1
-			? 'Synced just now'
-			: minutes < 60
-				? `Synced ${minutes}m ago`
-				: hours < 24
-					? `Synced ${hours}h ago`
-					: `Synced ${days}d ago`;
-	const status: SyncStatus = ageMs < 24 * 60 * 60 * 1000 ? 'fresh' : 'stale';
-	return { status, label };
-}
 
 const SyncIndicator: React.FC<{ status: SyncStatus }> = ({ status }) => {
 	const palette =
@@ -402,18 +591,32 @@ const SyncIndicator: React.FC<{ status: SyncStatus }> = ({ status }) => {
 const EndpointRow: React.FC<{
 	kind: EndpointKind;
 	entry: EndpointEntry;
-	onOpen: () => void;
+	/** Latest sync error message for this folder, if any. Drives the failure badge + tooltip. */
+	syncError?: string;
 	onEdit: () => void;
 	onDelete: () => void;
-}> = ({ kind, entry, onOpen, onEdit, onDelete }) => {
+	/** Provided only for gRPC rows — fires a method-discovery roundtrip. */
+	onDiscover?: () => Promise<void> | void;
+	/** Provided only for gRPC rows — opens the try-it dialog (auto-discovers when no cache exists). */
+	onInvoke?: () => Promise<void> | void;
+	/** Provided only for URL-mode openapi rows — re-fetches the spec. */
+	onSync?: () => Promise<void> | void;
+}> = ({ kind, entry, syncError, onEdit, onDelete, onDiscover, onInvoke, onSync }) => {
 	const config = ENDPOINT_CONFIG[kind];
-	const Icon = kind === 'graphql' ? Hash : Network;
-	const endpoint = typeof entry.source.endpoint === 'string' ? entry.source.endpoint : '';
+	const Icon = KIND_ICONS[kind];
+	const endpoint = 'endpoint' in entry.source && typeof entry.source.endpoint === 'string' ? entry.source.endpoint : '';
 	const { status: syncStatus, label: syncLabel } = describeSync(entry.source.lastSyncedAt);
 	const descriptor =
-		kind === 'grpc' && 'descriptor' in entry.source && entry.source.descriptor
-			? entry.source.descriptor.type
-			: null;
+		kind === 'grpc' && 'descriptor' in entry.source && entry.source.descriptor ? entry.source.descriptor.type : null;
+	const openApi = kind === 'openapi' ? (entry.source as OpenApiSource) : null;
+	const seedModeLabel = openApi?.seedMode ?? (openApi?.specUrl ? 'url' : openApi?.specPath ? 'file' : 'paste');
+	const sublabel = openApi
+		? openApi.specUrl
+			? openApi.specUrl
+			: openApi.specPath
+				? `from ${openApi.specPath}`
+				: '(pasted spec)'
+		: endpoint || '(no endpoint set)';
 
 	return (
 		<Flex
@@ -424,11 +627,11 @@ const EndpointRow: React.FC<{
 			role='button'
 			tabIndex={0}
 			cursor='pointer'
-			onClick={onOpen}
+			onClick={onEdit}
 			onKeyDown={e => {
 				if (e.key === 'Enter' || e.key === ' ') {
 					e.preventDefault();
-					onOpen();
+					onEdit();
 				}
 			}}
 			_hover={{ bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 8%, transparent)' }}
@@ -469,7 +672,7 @@ const EndpointRow: React.FC<{
 						letterSpacing='0.04em'
 						textTransform='uppercase'
 					>
-						{kind === 'graphql' ? 'GraphQL' : 'gRPC'}
+						{KIND_CHIP_LABEL[kind]}
 					</Box>
 					{descriptor && (
 						<Box
@@ -490,25 +693,65 @@ const EndpointRow: React.FC<{
 							{descriptor}
 						</Box>
 					)}
+					{openApi && (
+						<Box
+							as='span'
+							display='inline-flex'
+							alignItems='center'
+							h='14px'
+							px='1.5'
+							borderRadius='sm'
+							borderWidth='1px'
+							borderColor='border.subtle'
+							color='fg.subtle'
+							fontSize='9.5px'
+							fontWeight='500'
+							textTransform='uppercase'
+							letterSpacing='0.04em'
+						>
+							{seedModeLabel}
+						</Box>
+					)}
 				</Flex>
 				<Box fontSize='10.5px' color='fg.subtle' fontFamily='mono' truncate>
-					{endpoint || '(no endpoint set)'}
+					{sublabel}
 				</Box>
-				<Flex align='center' gap='1' color='fg.subtle' fontSize='10px'>
-					<SyncIndicator status={syncStatus} />
-					<Box>{syncLabel}</Box>
-				</Flex>
+				{syncError ? (
+					<Flex align='flex-start' gap='1' color='accent.alert' fontSize='10px' title={syncError}>
+						<Box flexShrink={0} mt='0.5'>
+							<AlertOctagon size={10} strokeWidth={2.2} />
+						</Box>
+						<Box truncate lineHeight='1.35'>
+							{`Sync failed — ${syncError}`}
+						</Box>
+					</Flex>
+				) : (
+					<Flex align='center' gap='1' color='fg.subtle' fontSize='10px'>
+						<SyncIndicator status={syncStatus} />
+						<Box>{syncLabel}</Box>
+					</Flex>
+				)}
 			</Flex>
-			<RowMenu folderName={entry.folderName} onEdit={onEdit} onDelete={onDelete} />
+			<RowMenu
+				folderName={entry.folderName}
+				onEdit={onEdit}
+				onDelete={onDelete}
+				onDiscover={onDiscover}
+				onInvoke={onInvoke}
+				onSync={onSync}
+			/>
 		</Flex>
 	);
 };
 
-const RowMenu: React.FC<{ folderName: string; onEdit: () => void; onDelete: () => void }> = ({
-	folderName,
-	onEdit,
-	onDelete,
-}) => (
+const RowMenu: React.FC<{
+	folderName: string;
+	onEdit: () => void;
+	onDelete: () => void;
+	onDiscover?: () => Promise<void> | void;
+	onInvoke?: () => Promise<void> | void;
+	onSync?: () => Promise<void> | void;
+}> = ({ folderName, onEdit, onDelete, onDiscover, onInvoke, onSync }) => (
 	<Menu.Root>
 		<Menu.Trigger asChild>
 			<ChakraButton
@@ -545,23 +788,49 @@ const RowMenu: React.FC<{ folderName: string; onEdit: () => void; onDelete: () =
 				>
 					<RowMenuItem
 						icon={Pencil}
-						label='Edit endpoint'
+						label='Edit source'
 						onSelect={e => {
 							e.stopPropagation();
 							onEdit();
 						}}
 					/>
-					<RowMenuItem
-						icon={RefreshCw}
-						label='Discover'
-						disabled
-						hint='Coming soon'
-						onSelect={e => e.stopPropagation()}
-					/>
+					{onDiscover && (
+						<RowMenuItem
+							icon={RefreshCw}
+							label='Discover methods'
+							hint='Fetch services + methods from the endpoint'
+							onSelect={e => {
+								e.stopPropagation();
+								void onDiscover();
+							}}
+						/>
+					)}
+					{onInvoke && (
+						<RowMenuItem
+							icon={Play}
+							label='Try a method'
+							hint='Pick a method and fire a request'
+							onSelect={e => {
+								e.stopPropagation();
+								void onInvoke();
+							}}
+						/>
+					)}
+					{onSync && (
+						<RowMenuItem
+							icon={RefreshCw}
+							label='Sync now'
+							hint='Re-fetch the spec and overwrite generated requests'
+							onSelect={e => {
+								e.stopPropagation();
+								void onSync();
+							}}
+						/>
+					)}
 					<Box h='1px' bg='border.subtle' my='1' />
 					<RowMenuItem
 						icon={Trash2}
-						label='Delete endpoint'
+						label='Delete source'
 						tone='destructive'
 						onSelect={e => {
 							e.stopPropagation();

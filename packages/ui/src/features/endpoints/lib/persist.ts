@@ -1,24 +1,29 @@
 import ksuid from '@beak/ksuid';
+import type { SyncFromSpecRes } from '@beak/common/ipc/openapi';
 import type { CollectionFile, CollectionSource, GrpcDescriptor } from '@beak/state/schemas';
 import { collectionFileSchema } from '@beak/state/schemas';
 import type { RequestNodeFile } from '@getbeak/types/nodes';
 import path from 'path-browserify';
 
-import { ipcFsService } from '../../../lib/ipc';
+import { ipcFsService, ipcOpenApiService } from '../../../lib/ipc';
+import { looksLikeOpenApi3, parseSpecSource } from '../../openapi-import/parse-spec-source';
+import { syncFromUrl } from '../../project-home/lib/sync-from-url';
 import type { EndpointKind } from '../types';
 
 const COLLECTION_FILENAME = '_collection.json';
 
 /**
- * Path layout for endpoints: every endpoint lives at
- * `tree/endpoints/<kind>/<folderName>/`. Keeps them grouped + visually
- * separated from hand-authored request folders, and makes the kind
- * inspectable from the path alone. Paths are project-relative — the fs
- * IPC layer (`ensureWithinProject`) resolves them against the open
- * project's folder before touching disk.
+ * Path layout for schema sources: the folder lives at `tree/<folderName>/`
+ * with no auto-prefix. The user picks the path — Beak does not impose its
+ * own organising directory. Paths are project-relative — the fs IPC layer
+ * (`ensureWithinProject`) resolves them against the open project's folder
+ * before touching disk.
+ *
+ * `kind` is unused at the path level, but kept on the signature so callers
+ * can pass it without juggling a parallel API.
  */
-function endpointsBase(kind: EndpointKind): string {
-	return path.join('tree', 'endpoints', kind);
+function endpointsBase(_kind: EndpointKind): string {
+	return 'tree';
 }
 
 export interface CreateEndpointInput {
@@ -85,36 +90,42 @@ fragment TypeRef on __Type {
 }`;
 
 /**
- * Seed a request file inside an endpoint folder so the user lands in the
- * request pane on click. For GraphQL the seed is a ready-to-fire
- * introspection query — hitting Send returns the SDL.
- * For gRPC we leave it as a minimal POST against the endpoint URL until
- * proto-descriptor support lands.
+ * Seed a request file inside a GraphQL endpoint folder so the user lands in
+ * the request pane on click. The seed is a ready-to-fire introspection query
+ * — hitting Send returns the SDL.
+ *
+ * We do NOT seed a request for gRPC: there is no host-side gRPC requester
+ * yet (no proto parsing, no reflection, no method invocation), so an HTTP
+ * POST stub against the gRPC URL would only lead users into a confusing
+ * dead end. Clicking a gRPC endpoint row opens the edit dialog instead;
+ * once method invocation is wired we'll seed a typed gRPC method stub here.
  */
-async function writeSeedRequest(folderPath: string, input: CreateEndpointInput): Promise<string> {
+async function writeSeedRequest(folderPath: string, input: CreateEndpointInput): Promise<string | null> {
+	if (input.kind !== 'graphql') return null;
+
 	const id = ksuid.generate('request').toString();
-	const name = input.kind === 'graphql' ? 'Introspection' : 'Endpoint';
-	const fullPath = path.join(folderPath, `${name}.json`);
+	// Filename = what shows up in the project tree (minus `.json`). "Discover
+	// schema" mirrors gRPC's "Discover methods" verb and reads better than the
+	// older "Introspection" jargon.
+	const fullPath = path.join(folderPath, 'Discover schema.json');
 
 	const request: RequestNodeFile = {
 		id,
-		verb: input.kind === 'graphql' ? 'post' : 'post',
+		verb: 'post',
 		url: [input.endpoint],
 		query: {},
 		headers: {},
-		body:
-			input.kind === 'graphql'
-				? {
-						type: 'graphql',
-						payload: { query: GRAPHQL_INTROSPECTION_QUERY, variables: {} },
-					}
-				: { type: 'text', payload: '' },
+		body: {
+			type: 'graphql',
+			payload: { query: GRAPHQL_INTROSPECTION_QUERY, variables: {} },
+		},
 		options: {
 			followRedirects: false,
 			decompressResponse: true,
 			timeoutMs: 0,
 			maxRedirects: 5,
 		},
+		introspection: true,
 	};
 
 	await ipcFsService.writeJson(fullPath, request, { spaces: '\t' });
@@ -125,16 +136,20 @@ async function writeSeedRequest(folderPath: string, input: CreateEndpointInput):
  * Create an endpoint folder at `tree/endpoints/<kind>/<folderName>/`,
  * write its `_collection.json` declaring the source, and seed a request
  * file so the click-through has somewhere to land. The folder path is
- * project-relative — IPC resolves it against the open project. Returns
- * the path + the seed request id so the caller can open it as a tab.
+ * project-relative — IPC resolves it against the open project.
+ *
+ * Returns the path + the seed request id when one exists. gRPC endpoints
+ * currently get no seed (no host-side gRPC client yet), so callers must
+ * handle `requestId === null` by opening the edit dialog or a placeholder
+ * instead of a request tab.
  */
 export async function createEndpointFolder(
 	input: CreateEndpointInput,
-): Promise<{ folderPath: string; requestId: string }> {
+): Promise<{ folderPath: string; requestId: string | null }> {
 	const folderPath = path.join(endpointsBase(input.kind), input.folderName);
 
 	if (await ipcFsService.pathExists(folderPath))
-		throw new Error(`A folder named "${input.folderName}" already exists under endpoints/${input.kind}/.`);
+		throw new Error(`A folder named "${input.folderName}" already exists in the project tree.`);
 
 	const source: CollectionSource =
 		input.kind === 'graphql'
@@ -199,4 +214,245 @@ export async function updateEndpoint(
  */
 export async function deleteEndpointFolder(folderPath: string): Promise<void> {
 	await ipcFsService.remove(folderPath);
+}
+
+// ─── OpenAPI ──────────────────────────────────────────────────────────────
+//
+// OpenAPI schema sources share the same `tree/<folderName>/`
+// layout as graphql / grpc but the create flow is meaningfully different:
+// instead of a single URL + optional descriptor it takes a seed source
+// (file / url / paste), runs the importer through the host's openapi IPC,
+// and lands a whole folder of generated request files. Persistence of the
+// collection itself happens inside the IPC handler — the converter writes
+// `_collection.json` with the chosen seedMode + specPath/specUrl/etc.
+
+export interface CreateOpenApiEndpointInput {
+	folderName: string;
+	/**
+	 * Where the spec came from. `paste` covers ad-hoc imports without a
+	 * re-sync source; `file` records the filename (no on-disk path on web
+	 * shells); `url` keeps the URL and is the only mode that supports
+	 * auto-sync.
+	 */
+	seed:
+		| { mode: 'url'; url: string; autoSync?: boolean; intervalMinutes?: number }
+		| { mode: 'file'; filename: string; source: string }
+		| { mode: 'paste'; source: string };
+}
+
+export interface CreateOpenApiEndpointResult {
+	folderPath: string;
+	sync: SyncFromSpecRes;
+}
+
+/**
+ * Create `tree/<folderName>/`, run the importer, and
+ * write the generated collection + request files. Throws on bad spec
+ * input so the caller can surface the message in the dialog.
+ */
+export async function createOpenApiEndpointFolder(
+	input: CreateOpenApiEndpointInput,
+): Promise<CreateOpenApiEndpointResult> {
+	const folderPath = path.join(endpointsBase('openapi'), input.folderName);
+	if (await ipcFsService.pathExists(folderPath))
+		throw new Error(`A folder named "${input.folderName}" already exists in the project tree.`);
+
+	if (input.seed.mode === 'url') {
+		const outcome = await syncFromUrl({
+			targetFolder: folderPath,
+			url: input.seed.url,
+			autoSync: input.seed.autoSync,
+			intervalMinutes: input.seed.intervalMinutes,
+		});
+		if (!outcome.ok) throw new Error(outcome.error);
+		return { folderPath, sync: outcome.result };
+	}
+
+	// file + paste both end up running the parser locally and calling
+	// the openapi IPC directly — same code path, the seedMode + specPath
+	// fields differ.
+	const filename = input.seed.mode === 'file' ? input.seed.filename : undefined;
+	const parsed = parseSpecSource(input.seed.source, filename);
+	if (!parsed.ok) throw new Error(parsed.error);
+	if (!looksLikeOpenApi3(parsed.spec))
+		throw new Error('This file does not look like an OpenAPI 3.x document (missing `openapi: 3.x`).');
+
+	const sync = await ipcOpenApiService.syncFromSpec({
+		targetFolder: folderPath,
+		spec: parsed.spec,
+		seedMode: input.seed.mode,
+		...(input.seed.mode === 'file' ? { specPath: input.seed.filename } : {}),
+	});
+	return { folderPath, sync };
+}
+
+export interface UpdateOpenApiInput {
+	url?: string;
+	autoSync?: boolean;
+	intervalMinutes?: number;
+}
+
+/**
+ * Mutate an openapi collection's URL + auto-sync settings in place. Used
+ * by the endpoint dialog's edit branch when a URL-mode openapi source
+ * needs its config tweaked. Re-validates against the collection schema
+ * so a buggy patch can't corrupt the file.
+ */
+export async function updateOpenApiEndpoint(folderPath: string, patch: UpdateOpenApiInput): Promise<void> {
+	const collectionPath = path.join(folderPath, COLLECTION_FILENAME);
+	const raw = await ipcFsService.readJson<unknown>(collectionPath);
+	const parsed = collectionFileSchema.safeParse(raw);
+	if (!parsed.success) throw new Error(`Collection at ${collectionPath} failed schema validation.`);
+	if (parsed.data.source.type !== 'openapi')
+		throw new Error(`Collection at ${collectionPath} is not an openapi source.`);
+
+	const next: CollectionFile = {
+		...parsed.data,
+		source: {
+			...parsed.data.source,
+			...(patch.url !== undefined ? { specUrl: patch.url } : {}),
+			...(patch.autoSync !== undefined ? { autoSync: patch.autoSync } : {}),
+			...(patch.intervalMinutes !== undefined ? { intervalMinutes: patch.intervalMinutes } : {}),
+		},
+	};
+
+	const revalidated = collectionFileSchema.safeParse(next);
+	if (!revalidated.success) throw new Error('Updated collection failed schema validation.');
+
+	await ipcFsService.writeJson(collectionPath, revalidated.data, { spaces: '\t' });
+}
+
+/**
+ * Discovered gRPC services + methods live in a sidecar `_grpc.json` inside
+ * the endpoint folder so the renderer can read them back on next launch
+ * without re-hitting the network. `_`-prefixed filename keeps it out of
+ * the regular tree (the fs-emitter ignores those — see `fs-emitter.ts`).
+ */
+const GRPC_DESCRIPTOR_FILENAME = '_grpc.json';
+
+export interface PersistedGrpcDescriptor {
+	discoveredAt: string;
+	services: Array<{
+		name: string;
+		methods: Array<{
+			name: string;
+			requestType: string;
+			responseType: string;
+			requestStream: boolean;
+			responseStream: boolean;
+		}>;
+	}>;
+	/**
+	 * Flat map of FQ message name → field list, persisted alongside the
+	 * service shape so the Fields editor can render structured inputs
+	 * without re-querying reflection. Optional for back-compat with
+	 * sidecars written before the schema landed.
+	 */
+	messages?: Record<
+		string,
+		{
+			name: string;
+			fields: Array<{
+				name: string;
+				number: number;
+				type: string;
+				typeName: string;
+				repeated: boolean;
+				optional: boolean;
+				oneofIndex?: number;
+			}>;
+			oneofs: string[];
+		}
+	>;
+	enums?: Record<
+		string,
+		{
+			name: string;
+			values: Array<{ name: string; number: number }>;
+		}
+	>;
+}
+
+export async function writeGrpcDescriptor(folderPath: string, descriptor: PersistedGrpcDescriptor): Promise<void> {
+	const fullPath = path.join(folderPath, GRPC_DESCRIPTOR_FILENAME);
+	await ipcFsService.writeJson(fullPath, descriptor, { spaces: '\t' });
+}
+
+export async function readGrpcDescriptor(folderPath: string): Promise<PersistedGrpcDescriptor | null> {
+	const fullPath = path.join(folderPath, GRPC_DESCRIPTOR_FILENAME);
+	if (!(await ipcFsService.pathExists(fullPath))) return null;
+	try {
+		return await ipcFsService.readJson<PersistedGrpcDescriptor>(fullPath);
+	} catch {
+		// Corrupt or unreadable — fall through to "no descriptor known".
+		return null;
+	}
+}
+
+/**
+ * Sync the on-disk method request files to match `services`. Each unary
+ * method gets one request file named `<method>.json` carrying a
+ * `body.type === 'grpc'` payload; streaming methods are skipped because
+ * the request pane can't drive them yet. We preserve the existing file
+ * (and crucially its `id` + last-edited `requestJson`) when a file with
+ * the same name already exists — re-running Discover after the user
+ * tweaked a request shouldn't nuke their work.
+ *
+ * Returns the request ids it owns post-sync so callers can stitch tabs /
+ * recent lists against the same identifiers across reloads.
+ */
+export async function syncGrpcMethodRequestFiles(
+	folderPath: string,
+	services: PersistedGrpcDescriptor['services'],
+): Promise<{ writtenPaths: string[]; ownedIds: string[] }> {
+	const writtenPaths: string[] = [];
+	const ownedIds: string[] = [];
+	for (const svc of services) {
+		for (const method of svc.methods) {
+			if (method.requestStream || method.responseStream) continue;
+			const fileName = `${method.name}.json`;
+			const fullPath = path.join(folderPath, fileName);
+
+			let existing: RequestNodeFile | null = null;
+			if (await ipcFsService.pathExists(fullPath)) {
+				try {
+					existing = await ipcFsService.readJson<RequestNodeFile>(fullPath);
+				} catch {
+					// Corrupt file — overwrite below.
+				}
+			}
+
+			const id = existing?.id ?? ksuid.generate('request').toString();
+			const existingGrpc =
+				existing && existing.body && existing.body.type === 'grpc'
+					? (existing.body.payload as { service?: string; method?: string; requestJson?: string })
+					: null;
+
+			const request: RequestNodeFile = {
+				id,
+				verb: 'post',
+				url: [''],
+				query: {},
+				headers: {},
+				body: {
+					type: 'grpc',
+					payload: {
+						service: svc.name,
+						method: method.name,
+						requestJson: existingGrpc?.requestJson ?? '{\n\t\n}',
+					},
+				},
+				options: {
+					followRedirects: false,
+					decompressResponse: false,
+					timeoutMs: 0,
+					maxRedirects: 0,
+				},
+			};
+			await ipcFsService.writeJson(fullPath, request, { spaces: '\t' });
+			writtenPaths.push(fullPath);
+			ownedIds.push(id);
+		}
+	}
+	return { writtenPaths, ownedIds };
 }
