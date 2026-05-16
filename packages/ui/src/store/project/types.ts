@@ -47,6 +47,7 @@ export const ActionTypes = {
 	REQUEST_BODY_JSON_EDITOR_ENABLED_CHANGE: '@beak/global/project/REQUEST_BODY_JSON_EDITOR_ENABLED_CHANGE',
 	REQUEST_BODY_JSON_EDITOR_DESCRIPTION_CHANGE: '@beak/global/project/REQUEST_BODY_JSON_EDITOR_DESCRIPTION_CHANGE',
 	REQUEST_BODY_JSON_EDITOR_REQUIRED_CHANGE: '@beak/global/project/REQUEST_BODY_JSON_EDITOR_REQUIRED_CHANGE',
+	REQUEST_BODY_JSON_EDITOR_OPTIONS_CHANGE: '@beak/global/project/REQUEST_BODY_JSON_EDITOR_OPTIONS_CHANGE',
 	REQUEST_BODY_JSON_EDITOR_ADD_ENTRY: '@beak/global/project/REQUEST_BODY_JSON_EDITOR_ADD_ENTRY',
 	REQUEST_BODY_JSON_EDITOR_REMOVE_ENTRY: '@beak/global/project/REQUEST_BODY_JSON_EDITOR_REMOVE_ENTRY',
 	REQUEST_BODY_JSON_EDITOR_MOVE_ENTRY: '@beak/global/project/REQUEST_BODY_JSON_EDITOR_MOVE_ENTRY',
@@ -273,6 +274,11 @@ export interface RequestBodyJsonEditorDescriptionChangePayload extends RequestId
 export interface RequestBodyJsonEditorRequiredChangePayload extends RequestIdPayload {
 	id: string;
 	required: boolean | null;
+}
+
+export interface RequestBodyJsonEditorOptionsChangePayload extends RequestIdPayload {
+	id: string;
+	options: string[] | null;
 }
 
 export interface RequestBodyJsonEditorAddEntryPayload extends RequestIdPayload {

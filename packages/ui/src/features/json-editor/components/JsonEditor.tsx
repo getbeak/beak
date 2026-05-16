@@ -70,6 +70,7 @@ const JsonEditor: React.FC<React.PropsWithChildren<JsonEditorProps>> = props => 
 			enabledChange: props.enabledChanged ?? actions.requestBodyJsonEditorEnabledChange,
 			descriptionChange: actions.requestBodyJsonEditorDescriptionChange,
 			requiredChange: actions.requestBodyJsonEditorRequiredChange,
+			optionsChange: actions.requestBodyJsonEditorOptionsChange,
 			addEntry: props.addedEntry ?? actions.requestBodyJsonEditorAddEntry,
 			removeEntry: props.removedEntry ?? actions.requestBodyJsonEditorRemoveEntry,
 			moveEntry: props.movedEntry ?? actions.requestBodyJsonEditorMoveEntry,

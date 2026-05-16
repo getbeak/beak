@@ -267,6 +267,17 @@ function entryToProperty(id: string, entry: Entries): JsonProperty {
 			return { ...base, type: 'boolean' };
 		case 'null':
 			return { ...base, type: 'null' };
+		case 'enum':
+			// Enum carries a constraints.enum list on the schema side so the
+			// json-property model stays a closed set — the editor reads it back
+			// through `constraints.enum` rather than a top-level `options`.
+			return {
+				...base,
+				type: 'string',
+				...(entry.options && entry.options.length > 0
+					? { constraints: { enum: entry.options } }
+					: {}),
+			};
 		case 'array':
 			return { ...base, type: 'array' };
 		case 'object':
@@ -277,6 +288,7 @@ function entryToProperty(id: string, entry: Entries): JsonProperty {
 function entryToValueCell(entry: Entries): PropertyValue | null {
 	switch (entry.type) {
 		case 'string':
+		case 'enum':
 			return { kind: 'string', value: entry.value, enabled: entry.enabled } as PropertyValue;
 		case 'number':
 			return { kind: 'number', value: entry.value, enabled: entry.enabled } as PropertyValue;

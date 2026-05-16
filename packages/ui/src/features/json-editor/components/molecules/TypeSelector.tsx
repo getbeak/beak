@@ -1,6 +1,6 @@
 import { Box } from '@chakra-ui/react';
 import type { EntryType } from '@getbeak/types/body-editor-json';
-import { AlignJustify, Ban, Calculator, CircleCheck, Layers, OctagonAlert, Type } from 'lucide-react';
+import { AlignJustify, Ban, Calculator, CircleCheck, Layers, ListFilter, OctagonAlert, Type } from 'lucide-react';
 import * as React from 'react';
 import { useContext, useRef } from 'react';
 import { useDispatch } from 'react-redux';
@@ -22,7 +22,7 @@ interface TypeSelectorProps {
 	onChange?: (entryType: EntryType) => void;
 }
 
-const PRIMITIVE_TYPES: EntryType[] = ['string', 'number', 'boolean', 'null'];
+const PRIMITIVE_TYPES: EntryType[] = ['string', 'number', 'boolean', 'null', 'enum'];
 const CONTAINER_TYPES: EntryType[] = ['array', 'object'];
 
 const TYPE_COLOUR: Record<EntryType, string> = {
@@ -30,6 +30,7 @@ const TYPE_COLOUR: Record<EntryType, string> = {
 	number: 'var(--beak-colors-accent-indigo)',
 	boolean: 'var(--beak-colors-accent-warning)',
 	null: 'var(--beak-colors-fg-subtle)',
+	enum: 'var(--beak-colors-accent-indigo)',
 	array: 'var(--beak-colors-accent-pink)',
 	object: 'var(--beak-colors-accent-pink)',
 };
@@ -89,6 +90,7 @@ const TypeSelector: React.FC<TypeSelectorProps> = ({ disabled, requestId, id, va
 						{(!allowedSet || allowedSet.has('number')) && <option value='number'>{'Number'}</option>}
 						{(!allowedSet || allowedSet.has('boolean')) && <option value='boolean'>{'Boolean'}</option>}
 						{(!allowedSet || allowedSet.has('null')) && <option value='null'>{'Null'}</option>}
+						{(!allowedSet || allowedSet.has('enum')) && <option value='enum'>{'Enum'}</option>}
 					</optgroup>
 				)}
 				{showContainers && (
@@ -129,6 +131,8 @@ function getIconForType(type: EntryType) {
 			return CircleCheck;
 		case 'null':
 			return Ban;
+		case 'enum':
+			return ListFilter;
 		case 'object':
 			return AlignJustify;
 		case 'array':

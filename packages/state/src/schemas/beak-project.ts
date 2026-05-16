@@ -64,6 +64,11 @@ const jsonEntrySchema = z.discriminatedUnion('type', [
 		value: valuePartsSchema.optional(),
 	}),
 	jsonEntryBaseSchema.extend({
+		type: z.literal('enum'),
+		value: valuePartsSchema.optional(),
+		options: z.array(z.string()).optional(),
+	}),
+	jsonEntryBaseSchema.extend({
 		type: z.literal('array'),
 	}),
 	jsonEntryBaseSchema.extend({
@@ -86,6 +91,21 @@ const graphQlSchema = z
 	})
 	.passthrough();
 
+/**
+ * Per-request runtime options. Shared between request files, sparse
+ * overrides, and collection defaults so all three places stay in lockstep.
+ * All fields are optional — defaults come from the project's request
+ * factory.
+ */
+const requestOptionsSchema = z
+	.object({
+		followRedirects: z.boolean().optional(),
+		decompressResponse: z.boolean().optional(),
+		timeoutMs: z.number().int().min(0).optional(),
+		maxRedirects: z.number().int().min(0).optional(),
+	})
+	.strict();
+
 const bodySchema = z.discriminatedUnion('type', [
 	z
 		.object({
@@ -97,6 +117,12 @@ const bodySchema = z.discriminatedUnion('type', [
 		.object({
 			type: z.literal('json'),
 			payload: z.record(z.string(), jsonEntrySchema),
+		})
+		.passthrough(),
+	z
+		.object({
+			type: z.literal('json_raw'),
+			payload: z.string(),
 		})
 		.passthrough(),
 	z
@@ -154,12 +180,7 @@ export const requestFileSchema = z
 		query: z.record(z.string(), keyValuePairSchema),
 		headers: z.record(z.string(), keyValuePairSchema),
 		body: bodySchema.optional(),
-		options: z
-			.object({
-				followRedirects: z.boolean().optional(),
-			})
-			.strict()
-			.optional(),
+		options: requestOptionsSchema.optional(),
 	})
 	.passthrough();
 
@@ -187,12 +208,7 @@ export const requestFileOverrideSchema = z
 		query: z.record(z.string(), keyValuePairSchema).optional(),
 		headers: z.record(z.string(), keyValuePairSchema).optional(),
 		body: bodySchema.optional(),
-		options: z
-			.object({
-				followRedirects: z.boolean().optional(),
-			})
-			.strict()
-			.optional(),
+		options: requestOptionsSchema.optional(),
 	})
 	.passthrough();
 
@@ -220,6 +236,19 @@ export const collectionSourceSchema = z.discriminatedUnion('type', [
 			specUrl: z.url().optional(),
 			/** Last sync timestamp (ISO 8601). */
 			lastSyncedAt: z.string().optional(),
+			/**
+			 * When true, the renderer's auto-sync poller refetches `specUrl`
+			 * (or re-reads `specPath`) on the cadence below. Toggled from the
+			 * Project Home tab. Flipping it does NOT trigger an immediate
+			 * sync — the next poll tick picks it up.
+			 */
+			autoSync: z.boolean().optional(),
+			/**
+			 * Sync cadence in whole minutes. Defaults to 60 when `autoSync` is
+			 * on. Min 1 keeps us out of tight refetch loops if a user types
+			 * a bad value.
+			 */
+			intervalMinutes: z.number().int().min(1).optional(),
 		})
 		.strict()
 		.refine(d => Boolean(d.specPath || d.specUrl), {
@@ -249,12 +278,7 @@ export const collectionDefaultsSchema = z
 		query: z.record(z.string(), keyValuePairSchema).optional(),
 		headers: z.record(z.string(), keyValuePairSchema).optional(),
 		body: bodySchema.optional(),
-		options: z
-			.object({
-				followRedirects: z.boolean().optional(),
-			})
-			.strict()
-			.optional(),
+		options: requestOptionsSchema.optional(),
 	})
 	.strict();
 

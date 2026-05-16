@@ -6,6 +6,7 @@ import type {
 	RequestBodyJsonEditorEnabledChangePayload,
 	RequestBodyJsonEditorMoveEntryPayload,
 	RequestBodyJsonEditorNameChangePayload,
+	RequestBodyJsonEditorOptionsChangePayload,
 	RequestBodyJsonEditorRemoveEntryPayload,
 	RequestBodyJsonEditorRequiredChangePayload,
 	RequestBodyJsonEditorTypeChangePayload,
@@ -27,6 +28,7 @@ interface Context {
 	enabledChange: (payload: RequestBodyJsonEditorEnabledChangePayload) => AnyAction;
 	descriptionChange: (payload: RequestBodyJsonEditorDescriptionChangePayload) => AnyAction;
 	requiredChange: (payload: RequestBodyJsonEditorRequiredChangePayload) => AnyAction;
+	optionsChange: (payload: RequestBodyJsonEditorOptionsChangePayload) => AnyAction;
 	addEntry: (payload: RequestBodyJsonEditorAddEntryPayload) => AnyAction;
 	removeEntry: (payload: RequestBodyJsonEditorRemoveEntryPayload) => AnyAction;
 	moveEntry: (payload: RequestBodyJsonEditorMoveEntryPayload) => AnyAction;
@@ -52,6 +54,7 @@ export const JsonEditorContext = createContext<Context>({
 	enabledChange: actions.requestBodyJsonEditorEnabledChange,
 	descriptionChange: actions.requestBodyJsonEditorDescriptionChange,
 	requiredChange: actions.requestBodyJsonEditorRequiredChange,
+	optionsChange: actions.requestBodyJsonEditorOptionsChange,
 	addEntry: actions.requestBodyJsonEditorAddEntry,
 	removeEntry: actions.requestBodyJsonEditorRemoveEntry,
 	moveEntry: actions.requestBodyJsonEditorMoveEntry,

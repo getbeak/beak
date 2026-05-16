@@ -67,7 +67,15 @@ function buildJsonEditor(builder: ActionReducerMapBuilder<State>) {
 			const entry = body.payload[payload.id];
 			if (!entry) return;
 
+			const previousType = entry.type;
 			entry.type = payload.type;
+
+			// Leaving 'enum' — drop the options field so the file diff doesn't
+			// carry dead schema metadata.
+			if (previousType === 'enum' && payload.type !== 'enum') {
+				// biome-ignore lint/suspicious/noExplicitAny: structural cast — options only lives on EnumEntry
+				delete (entry as any).options;
+			}
 
 			if (['array', 'object'].includes(payload.type)) {
 				// biome-ignore lint/suspicious/noExplicitAny: array/object entries don't carry a value field; container entries store their children separately
@@ -102,6 +110,14 @@ function buildJsonEditor(builder: ActionReducerMapBuilder<State>) {
 			if (!entry) return;
 			if (payload.required === null) delete entry.required;
 			else entry.required = payload.required;
+		})
+		.addCase(actions.requestBodyJsonEditorOptionsChange, (state, { payload }) => {
+			const node = state.tree[payload.requestId] as ValidRequestNode;
+			const body = node.info.body as RequestBodyJson;
+			const entry = body.payload[payload.id];
+			if (!entry || entry.type !== 'enum') return;
+			if (payload.options === null) delete entry.options;
+			else entry.options = payload.options;
 		})
 		.addCase(actions.requestBodyJsonEditorAddEntry, (state, { payload }) => {
 			const node = state.tree[payload.requestId] as ValidRequestNode;

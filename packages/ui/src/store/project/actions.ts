@@ -39,6 +39,7 @@ import {
 	type RequestBodyJsonEditorEnabledChangePayload,
 	type RequestBodyJsonEditorMoveEntryPayload,
 	type RequestBodyJsonEditorNameChangePayload,
+	type RequestBodyJsonEditorOptionsChangePayload,
 	type RequestBodyJsonEditorRemoveEntryPayload,
 	type RequestBodyJsonEditorRequiredChangePayload,
 	type RequestBodyJsonEditorTypeChangePayload,
@@ -119,6 +120,9 @@ export const requestBodyJsonEditorDescriptionChange = createAction<RequestBodyJs
 );
 export const requestBodyJsonEditorRequiredChange = createAction<RequestBodyJsonEditorRequiredChangePayload>(
 	AT.REQUEST_BODY_JSON_EDITOR_REQUIRED_CHANGE,
+);
+export const requestBodyJsonEditorOptionsChange = createAction<RequestBodyJsonEditorOptionsChangePayload>(
+	AT.REQUEST_BODY_JSON_EDITOR_OPTIONS_CHANGE,
 );
 export const requestBodyJsonEditorAddEntry = createAction<RequestBodyJsonEditorAddEntryPayload>(
 	AT.REQUEST_BODY_JSON_EDITOR_ADD_ENTRY,
@@ -235,6 +239,7 @@ export default {
 	requestBodyJsonEditorEnabledChange,
 	requestBodyJsonEditorDescriptionChange,
 	requestBodyJsonEditorRequiredChange,
+	requestBodyJsonEditorOptionsChange,
 	requestBodyJsonEditorAddEntry,
 	requestBodyJsonEditorRemoveEntry,
 	requestBodyJsonEditorMoveEntry,

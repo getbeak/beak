@@ -1,6 +1,6 @@
 import DebouncedInput from '@beak/ui/components/atoms/DebouncedInput';
 import { useAppSelector } from '@beak/ui/store/redux';
-import { Box } from '@chakra-ui/react';
+import { Box, Flex } from '@chakra-ui/react';
 import type { Entries } from '@getbeak/types/body-editor-json';
 import { AlertCircle } from 'lucide-react';
 import * as React from 'react';
@@ -188,20 +188,42 @@ const EntryRow: React.FC<EntryRowProps> = ({
 				}
 			>
 				{editorContext.schemaMode ? (
-					<DebouncedInput
-						type='text'
-						placeholder='What is this for?'
-						value={entry?.description ?? ''}
-						onChange={next =>
-							dispatch(
-								editorContext.descriptionChange({
-									id,
-									requestId: editorContext.requestId,
-									description: next || null,
-								}),
-							)
-						}
-					/>
+					<Flex direction='column' w='100%' gap='0.5' py='1'>
+						<DebouncedInput
+							type='text'
+							placeholder='What is this for?'
+							value={entry?.description ?? ''}
+							onChange={next =>
+								dispatch(
+									editorContext.descriptionChange({
+										id,
+										requestId: editorContext.requestId,
+										description: next || null,
+									}),
+								)
+							}
+						/>
+						{entry?.type === 'enum' && (
+							<DebouncedInput
+								type='text'
+								value={(entry.options ?? []).join(', ')}
+								placeholder='Comma-separated allowed values (e.g. free, pro, enterprise)'
+								onChange={next => {
+									const parsed = next
+										.split(',')
+										.map(s => s.trim())
+										.filter(s => s.length > 0);
+									dispatch(
+										editorContext.optionsChange({
+											id,
+											requestId: editorContext.requestId,
+											options: parsed.length === 0 ? null : parsed,
+										}),
+									);
+								}}
+							/>
+						)}
+					</Flex>
 				) : (
 					value
 				)}
