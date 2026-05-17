@@ -209,3 +209,84 @@ export function cloneNodeAt(
 ): WorkflowNode {
 	return { ...source, id: newId, position } as WorkflowNode;
 }
+
+export interface LayoutOptions {
+	/** Pixels between successive ranks (left-to-right). Default 280 — clears NODE_WIDTH + a gutter. */
+	rankSpacing?: number;
+	/** Pixels between siblings within a rank (top-to-bottom). Default 140 — clears NODE_HEIGHT. */
+	siblingSpacing?: number;
+	/** Top-left anchor for the Start node. Default `{ x: 80, y: 120 }`. */
+	origin?: { x: number; y: number };
+}
+
+/**
+ * "Tidy graph" — BFS from Start, assign each node a rank by hop-count,
+ * then lay out columns left-to-right with siblings stacked vertically.
+ * Nodes that Start can't reach are appended in a tail rank so the user
+ * can still see them (and hopefully wire them up).
+ *
+ * Returns a fresh `WorkflowFile` — the caller decides whether to dispatch
+ * it via `replaceGraph`. Pure + deterministic for a given input order.
+ */
+export function autoLayout(workflow: WorkflowFile, options: LayoutOptions = {}): WorkflowFile {
+	const rankSpacing = options.rankSpacing ?? 280;
+	const siblingSpacing = options.siblingSpacing ?? 140;
+	const origin = options.origin ?? { x: 80, y: 120 };
+
+	const nodesById = new Map(workflow.nodes.map(n => [n.id, n]));
+	const adjacency = new Map<string, string[]>();
+	for (const e of workflow.edges) {
+		if (!nodesById.has(e.source) || !nodesById.has(e.target)) continue;
+		const next = adjacency.get(e.source) ?? [];
+		next.push(e.target);
+		adjacency.set(e.source, next);
+	}
+
+	const rankById = new Map<string, number>();
+	const start = workflow.nodes.find(n => n.type === 'start');
+	const queue: { id: string; rank: number }[] = [];
+	if (start) queue.push({ id: start.id, rank: 0 });
+
+	while (queue.length > 0) {
+		const head = queue.shift();
+		if (!head) break;
+		const existing = rankById.get(head.id);
+		if (existing !== undefined && existing <= head.rank) continue;
+		rankById.set(head.id, head.rank);
+		for (const target of adjacency.get(head.id) ?? []) queue.push({ id: target, rank: head.rank + 1 });
+	}
+
+	// Stash unreachable nodes (no Start, or Start can't get there) into a
+	// tail rank that's at least one column right of the deepest reached
+	// node, so they're visible without colliding with the main flow.
+	const maxRank = rankById.size === 0 ? -1 : Math.max(...rankById.values());
+	let tailRank = maxRank + 1;
+	for (const n of workflow.nodes) {
+		if (!rankById.has(n.id)) {
+			rankById.set(n.id, tailRank);
+			tailRank++;
+		}
+	}
+
+	// Group by rank in insertion order so the layout is stable across runs
+	// when the BFS is deterministic (we use Array#shift, not a set).
+	const byRank = new Map<number, string[]>();
+	for (const [id, rank] of rankById) {
+		const bucket = byRank.get(rank) ?? [];
+		bucket.push(id);
+		byRank.set(rank, bucket);
+	}
+
+	const positions = new Map<string, { x: number; y: number }>();
+	for (const [rank, ids] of byRank) {
+		const x = origin.x + rank * rankSpacing;
+		for (let i = 0; i < ids.length; i++) {
+			positions.set(ids[i], { x, y: origin.y + i * siblingSpacing });
+		}
+	}
+
+	return {
+		...workflow,
+		nodes: workflow.nodes.map(n => ({ ...n, position: positions.get(n.id) ?? n.position }) as WorkflowNode),
+	};
+}

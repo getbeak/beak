@@ -1,13 +1,13 @@
 import type {
+	OverrideEntry,
 	RequestOverrides,
-	ToggleKeyValueOverride,
 	WorkflowEdge,
 	WorkflowFile,
 	WorkflowNode,
 	WorkflowNodeKind,
 } from '../schemas/beak-workflow';
 
-export type { RequestOverrides, ToggleKeyValueOverride, WorkflowEdge, WorkflowFile, WorkflowNode, WorkflowNodeKind };
+export type { OverrideEntry, RequestOverrides, WorkflowEdge, WorkflowFile, WorkflowNode, WorkflowNodeKind };
 
 /**
  * Pure workflows state — UI-layer state (rename UI, file-watch coordination)
@@ -73,6 +73,20 @@ export interface RemoveNodePayload extends WorkflowId {
 	nodeId: string;
 }
 
+/**
+ * Clone an existing node under a fresh id. The caller owns id minting so the
+ * KSUID side-effect stays out of the pure reducer. The new node lands at
+ * `position` (typically the source's position + a small offset).
+ *
+ * Start nodes can't be duplicated — the orchestrator only knows about one
+ * entry point per workflow; the reducer enforces that invariant.
+ */
+export interface DuplicateNodePayload extends WorkflowId {
+	sourceNodeId: string;
+	newNodeId: string;
+	position: { x: number; y: number };
+}
+
 export interface AddEdgePayload extends WorkflowId {
 	edge: WorkflowEdge;
 }
@@ -84,4 +98,14 @@ export interface RemoveEdgePayload extends WorkflowId {
 export interface ReplaceGraphPayload extends WorkflowId {
 	nodes: WorkflowNode[];
 	edges: WorkflowEdge[];
+}
+
+/**
+ * Sweep across every workflow and clear `data.requestId` on any request
+ * node referring to one of the supplied ids. Dispatched after the project
+ * tree drops a request so workflow files stop carrying dangling references
+ * that the editor renders as "Request not found".
+ */
+export interface PurgeRequestRefsPayload {
+	requestIds: string[];
 }

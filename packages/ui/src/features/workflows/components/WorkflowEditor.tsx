@@ -1,6 +1,7 @@
 import { verbToColor, verbToShortLabel } from '@beak/design-system/helpers';
 import ksuid from '@beak/ksuid';
 import {
+	autoLayout,
 	inspectGraph,
 	overrideBadgeText,
 	placeNewNode,
@@ -33,7 +34,16 @@ import {
 	ReactFlowProvider,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
-import { AlertTriangle, Bell, GitBranch, Globe, Play, Repeat, Workflow as WorkflowIcon } from 'lucide-react';
+import {
+	AlertTriangle,
+	Bell,
+	GitBranch,
+	Globe,
+	LayoutTemplate,
+	Play,
+	Repeat,
+	Workflow as WorkflowIcon,
+} from 'lucide-react';
 import * as React from 'react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -124,11 +134,36 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 				event.preventDefault();
 				dispatch(workflowActions.removeNode({ id: workflowId, nodeId: selectedNodeId }));
 				setSelectedNodeId(null);
+				return;
+			}
+
+			// Cmd/Ctrl-D — duplicate the selected node next to its source so the
+			// user can crank out near-identical request steps.
+			if ((event.metaKey || event.ctrlKey) && (event.key === 'd' || event.key === 'D') && selectedNode) {
+				if (selectedNode.type === 'start' || !workflow) return;
+				event.preventDefault();
+				const newId = ksuid.generate('node').toString();
+				const offset = { x: selectedNode.position.x + 60, y: selectedNode.position.y + 40 };
+				dispatch(
+					workflowActions.duplicateNode({
+						id: workflowId,
+						sourceNodeId: selectedNode.id,
+						newNodeId: newId,
+						position: offset,
+					}),
+				);
+				setSelectedNodeId(newId);
 			}
 		}
 		window.addEventListener('keydown', onKeyDown);
 		return () => window.removeEventListener('keydown', onKeyDown);
-	}, [dispatch, selectedNode, selectedNodeId, workflowId]);
+	}, [dispatch, selectedNode, selectedNodeId, workflow, workflowId]);
+
+	const tidyGraph = useCallback(() => {
+		if (!workflow) return;
+		const laidOut = autoLayout(workflow);
+		dispatch(workflowActions.replaceGraph({ id: workflowId, nodes: laidOut.nodes, edges: laidOut.edges }));
+	}, [dispatch, workflow, workflowId]);
 
 	const onNodesChange = useCallback(
 		(changes: NodeChange[]) => {
@@ -262,6 +297,12 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 						icon={<Bell size={13} strokeWidth={1.8} />}
 						label='Notification'
 						onClick={() => addNode('notification')}
+					/>
+					<Box w='1px' h='14px' bg='border.subtle' alignSelf='center' mx='1' />
+					<ToolbarButton
+						icon={<LayoutTemplate size={13} strokeWidth={1.8} />}
+						label='Tidy'
+						onClick={tidyGraph}
 					/>
 				</Stack>
 			</Flex>
@@ -474,8 +515,11 @@ const EmptySelectionPanel: React.FC<EmptySelectionPanelProps> = ({ addNode, unre
 				<Box mb='0.5'>
 					<KbdHint>Esc</KbdHint> {'clear selection'}
 				</Box>
-				<Box>
+				<Box mb='0.5'>
 					<KbdHint>Delete</KbdHint> {'remove the selected step'}
+				</Box>
+				<Box>
+					<KbdHint>⌘ D</KbdHint> {'duplicate the selected step'}
 				</Box>
 			</Box>
 		</Flex>

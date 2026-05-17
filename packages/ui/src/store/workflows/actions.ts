@@ -3,8 +3,10 @@
 import {
 	addEdge,
 	addNode,
+	duplicateNode,
 	insertNewWorkflow,
 	moveNode,
+	purgeRequestRefs,
 	removeEdge,
 	removeNode,
 	removeWorkflowFromStore,
@@ -21,8 +23,10 @@ import { createAction } from '@reduxjs/toolkit';
 export {
 	addEdge,
 	addNode,
+	duplicateNode,
 	insertNewWorkflow,
 	moveNode,
+	purgeRequestRefs,
 	removeEdge,
 	removeNode,
 	removeWorkflowFromStore,
@@ -58,6 +62,7 @@ export default {
 	updateNodeData,
 	moveNode,
 	removeNode,
+	duplicateNode,
 
 	addEdge,
 	removeEdge,

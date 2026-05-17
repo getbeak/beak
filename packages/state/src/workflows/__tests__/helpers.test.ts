@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import {
+	autoLayout,
 	cloneNodeAt,
 	countOverrideEntries,
 	edgesAfterNodeRemoval,
@@ -265,5 +266,93 @@ describe('cloneNodeAt', () => {
 		expect(cloned.position).toEqual({ x: 300, y: 50 });
 		expect(cloned.type).toBe('request');
 		expect((cloned.data as { requestId: string }).requestId).toBe('req-x');
+	});
+});
+
+describe('autoLayout', () => {
+	const wf = (nodes: WorkflowNode[], edges: WorkflowFile['edges'] = []): WorkflowFile => ({
+		id: 'wf1',
+		name: 'Auto layout',
+		nodes,
+		edges,
+	});
+
+	it('places Start at the origin and lays children one column right', () => {
+		const input = wf(
+			[
+				{ id: 's', type: 'start', position: { x: 999, y: 999 }, data: {} },
+				{ id: 'a', type: 'request', position: { x: 999, y: 999 }, data: { requestId: null } },
+			],
+			[{ id: 'e1', source: 's', target: 'a' }],
+		);
+		const out = autoLayout(input, { origin: { x: 80, y: 120 }, rankSpacing: 200, siblingSpacing: 100 });
+		expect(out.nodes.find(n => n.id === 's')!.position).toEqual({ x: 80, y: 120 });
+		expect(out.nodes.find(n => n.id === 'a')!.position).toEqual({ x: 280, y: 120 });
+	});
+
+	it('stacks siblings vertically within a rank', () => {
+		const input = wf(
+			[
+				{ id: 's', type: 'start', position: { x: 0, y: 0 }, data: {} },
+				{ id: 'a', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } },
+				{ id: 'b', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } },
+			],
+			[
+				{ id: 'e1', source: 's', target: 'a' },
+				{ id: 'e2', source: 's', target: 'b' },
+			],
+		);
+		const out = autoLayout(input, { origin: { x: 0, y: 0 }, rankSpacing: 200, siblingSpacing: 100 });
+		const a = out.nodes.find(n => n.id === 'a')!.position;
+		const b = out.nodes.find(n => n.id === 'b')!.position;
+		expect(a.x).toBe(200);
+		expect(b.x).toBe(200);
+		expect(Math.abs(a.y - b.y)).toBe(100);
+	});
+
+	it('appends unreachable nodes into trailing ranks so they stay visible', () => {
+		const input = wf(
+			[
+				{ id: 's', type: 'start', position: { x: 0, y: 0 }, data: {} },
+				{ id: 'a', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } },
+				{ id: 'orphan', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } },
+			],
+			[{ id: 'e1', source: 's', target: 'a' }],
+		);
+		const out = autoLayout(input, { origin: { x: 0, y: 0 }, rankSpacing: 200, siblingSpacing: 100 });
+		const orphanX = out.nodes.find(n => n.id === 'orphan')!.position.x;
+		const aX = out.nodes.find(n => n.id === 'a')!.position.x;
+		// Orphan must be strictly further right than the reachable column.
+		expect(orphanX).toBeGreaterThan(aX);
+	});
+
+	it('does not crash and lays out everything when there is no Start node', () => {
+		const input = wf([
+			{ id: 'a', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } } as WorkflowNode,
+			{ id: 'b', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } } as WorkflowNode,
+		]);
+		const out = autoLayout(input);
+		// Both still get a position assignment — they fall into the tail ranks.
+		const a = out.nodes.find(n => n.id === 'a')!.position;
+		const b = out.nodes.find(n => n.id === 'b')!.position;
+		expect(a).not.toEqual({ x: 0, y: 0 });
+		expect(b).not.toEqual({ x: 0, y: 0 });
+	});
+
+	it('is idempotent — running twice returns the same layout', () => {
+		const input = wf(
+			[
+				{ id: 's', type: 'start', position: { x: 0, y: 0 }, data: {} },
+				{ id: 'a', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } },
+				{ id: 'b', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } },
+			],
+			[
+				{ id: 'e1', source: 's', target: 'a' },
+				{ id: 'e2', source: 'a', target: 'b' },
+			],
+		);
+		const once = autoLayout(input);
+		const twice = autoLayout(once);
+		expect(twice.nodes).toEqual(once.nodes);
 	});
 });

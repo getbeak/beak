@@ -68,6 +68,25 @@ export function buildWorkflowsReducer<S extends WorkflowsState>(builder: ActionR
 			// to render an edge with a missing endpoint and crashes the canvas.
 			workflow.edges = workflow.edges.filter(e => e.source !== payload.nodeId && e.target !== payload.nodeId);
 		})
+		.addCase(actions.duplicateNode, (state, { payload }) => {
+			const workflow = state.workflows[payload.id];
+			if (!workflow) return;
+			const source = workflow.nodes.find(n => n.id === payload.sourceNodeId);
+			if (!source) return;
+			// Workflows have exactly one Start node — refuse to clone it so the
+			// graph can never end up with two entry points (or none, depending
+			// on how the orchestrator picks).
+			if (source.type === 'start') return;
+			// Deep-clone via JSON — workflow node data is JSON-safe per the
+			// schema, and structuredClone chokes on Immer's draft proxies.
+			const cloned = {
+				...source,
+				id: payload.newNodeId,
+				position: payload.position,
+				data: JSON.parse(JSON.stringify(source.data)),
+			} as (typeof workflow.nodes)[number];
+			workflow.nodes.push(cloned);
+		})
 		.addCase(actions.addEdge, (state, { payload }) => {
 			const workflow = state.workflows[payload.id];
 			if (!workflow) return;
@@ -87,5 +106,22 @@ export function buildWorkflowsReducer<S extends WorkflowsState>(builder: ActionR
 		})
 		.addCase(actions.removeWorkflowFromStore, (state, { payload }) => {
 			delete state.workflows[payload];
+		})
+		.addCase(actions.purgeRequestRefs, (state, { payload }) => {
+			// Project tree just dropped these requests — clear every request
+			// node's `data.requestId` that still points at one. Editors then
+			// render the canonical "Pick a request →" empty state instead of
+			// a dangling id; the workflow file will rewrite on next save.
+			const dropped = new Set(payload.requestIds);
+			if (dropped.size === 0) return;
+			for (const workflow of Object.values(state.workflows)) {
+				for (const node of workflow.nodes) {
+					if (node.type !== 'request') continue;
+					const d = node.data as { requestId: string | null };
+					if (d.requestId && dropped.has(d.requestId)) {
+						d.requestId = null;
+					}
+				}
+			}
 		});
 }

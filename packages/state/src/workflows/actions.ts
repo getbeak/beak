@@ -3,8 +3,10 @@ import { createAction } from '@reduxjs/toolkit';
 import type {
 	AddEdgePayload,
 	AddNodePayload,
+	DuplicateNodePayload,
 	InsertNewWorkflowPayload,
 	MoveNodePayload,
+	PurgeRequestRefsPayload,
 	RemoveEdgePayload,
 	RemoveNodePayload,
 	ReplaceGraphPayload,
@@ -27,6 +29,7 @@ export const updateNode = createAction<UpdateNodePayload>('workflows/updateNode'
 export const updateNodeData = createAction<UpdateNodeDataPayload>('workflows/updateNodeData');
 export const moveNode = createAction<MoveNodePayload>('workflows/moveNode');
 export const removeNode = createAction<RemoveNodePayload>('workflows/removeNode');
+export const duplicateNode = createAction<DuplicateNodePayload>('workflows/duplicateNode');
 
 export const addEdge = createAction<AddEdgePayload>('workflows/addEdge');
 export const removeEdge = createAction<RemoveEdgePayload>('workflows/removeEdge');
@@ -34,3 +37,5 @@ export const removeEdge = createAction<RemoveEdgePayload>('workflows/removeEdge'
 export const replaceGraph = createAction<ReplaceGraphPayload>('workflows/replaceGraph');
 
 export const removeWorkflowFromStore = createAction<string>('workflows/removeWorkflowFromStore');
+
+export const purgeRequestRefs = createAction<PurgeRequestRefsPayload>('workflows/purgeRequestRefs');

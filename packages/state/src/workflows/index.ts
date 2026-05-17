@@ -1,10 +1,12 @@
 export * from './actions';
 export {
+	autoLayout,
 	cloneNodeAt,
 	countOverrideEntries,
 	edgesAfterNodeRemoval,
 	type GraphHealth,
 	inspectGraph,
+	type LayoutOptions,
 	overrideBadgeText,
 	placeNewNode,
 	previewValueSections,
