@@ -749,6 +749,23 @@ describe('validateConnection', () => {
 		});
 	});
 
+	it('rejects edges that would close a directed cycle', () => {
+		const wf: WorkflowFile = {
+			...baseWorkflow(),
+			nodes: [
+				{ id: 's', type: 'start', position: { x: 0, y: 0 }, data: {} },
+				{ id: 'a', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } },
+				{ id: 'b', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } },
+			],
+			edges: [
+				{ id: 'e1', source: 's', target: 'a' },
+				{ id: 'e2', source: 'a', target: 'b' },
+			],
+		};
+		// Adding b → a closes the cycle s → a → b → a.
+		expect(validateConnection(wf, { source: 'b', target: 'a' })).toEqual({ ok: false, reason: 'would-create-cycle' });
+	});
+
 	it('rejects connections that touch a comment node on either end', () => {
 		const wf: WorkflowFile = {
 			...baseWorkflow(),

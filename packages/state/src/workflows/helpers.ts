@@ -420,7 +420,8 @@ export type ConnectionRejection =
 	| 'self-loop'
 	| 'into-start'
 	| 'comment-endpoint'
-	| 'duplicate-edge';
+	| 'duplicate-edge'
+	| 'would-create-cycle';
 
 /**
  * Validate a candidate edge before it's added to the graph. Catches the
@@ -451,6 +452,12 @@ export function validateConnection(
 		) {
 			return { ok: false, reason: 'duplicate-edge' };
 		}
+	}
+	// If adding source → target would mean target can reach back to source,
+	// the new edge closes a cycle. Loop nodes are the orchestrator's
+	// intended way to iterate; raw cycles via plain edges run forever.
+	if (reachableFromNode(workflow, attempt.target).includes(attempt.source)) {
+		return { ok: false, reason: 'would-create-cycle' };
 	}
 	return { ok: true };
 }
