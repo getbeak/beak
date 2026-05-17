@@ -47,6 +47,7 @@ const CheatSheetDialog: React.FC<CheatSheetDialogProps> = ({ open, onClose }) =>
 							<Row keys={['Double-click edge']} desc='Set / clear an edge label' />
 							<Row keys={['Right-click edge']} desc='Delete the edge' />
 							<Row keys={['⌘ D']} desc='Duplicate selected node next to its source' />
+							<Row keys={['⌘ ⇧ D']} desc='Fork the whole workflow (creates "Copy of …")' />
 							<Row keys={['Delete', 'Backspace']} desc='Remove selected node(s) or edge' />
 							<Row keys={['↑ ↓ ← →']} desc='Nudge selected by 20px (Shift = 5×)' />
 						</Section>

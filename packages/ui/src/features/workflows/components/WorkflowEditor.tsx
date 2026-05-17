@@ -45,6 +45,7 @@ import {
 	Clipboard,
 	ClipboardPaste,
 	Combine,
+	Copy,
 	FileText,
 	GitBranch,
 	Globe,
@@ -323,6 +324,15 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 			if ((event.metaKey || event.ctrlKey) && event.key === '.') {
 				event.preventDefault();
 				fitView(selectedIds.size > 0 ? 'selection' : 'all');
+				return;
+			}
+
+			// Cmd/Ctrl-Shift-D — fork the *whole* workflow into a sibling copy
+			// ("Copy of …"). Lives next to Cmd-D so the user can pick "duplicate
+			// node" vs. "duplicate workflow" by holding Shift.
+			if ((event.metaKey || event.ctrlKey) && event.shiftKey && (event.key === 'd' || event.key === 'D') && workflow) {
+				event.preventDefault();
+				dispatch(workflowActions.duplicateWorkflow({ sourceId: workflowId }));
 				return;
 			}
 
@@ -805,6 +815,11 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 						icon={<Combine size={13} strokeWidth={1.8} />}
 						label='Merge'
 						onClick={mergeWorkflowJson}
+					/>
+					<ToolbarButton
+						icon={<Copy size={13} strokeWidth={1.8} />}
+						label='Fork'
+						onClick={() => dispatch(workflowActions.duplicateWorkflow({ sourceId: workflowId }))}
 					/>
 					<Box w='1px' h='14px' bg='border.subtle' alignSelf='center' mx='1' />
 					<ToolbarButton
