@@ -147,6 +147,8 @@ interface EmptySelectionPanelProps {
 	unreachableCount: number;
 	unlinkedCount: number;
 	cycleCount: number;
+	description: string;
+	onChangeDescription: (next: string | undefined) => void;
 }
 
 // Shown on the right when nothing's selected — gives the canvas an obvious
@@ -157,6 +159,8 @@ export const EmptySelectionPanel: React.FC<EmptySelectionPanelProps> = ({
 	unreachableCount,
 	unlinkedCount,
 	cycleCount,
+	description,
+	onChangeDescription,
 }) => {
 	const items: { kind: AddableNodeKind; icon: React.ReactNode; title: string; subtitle: string; tone: string }[] = [
 		{
@@ -206,6 +210,37 @@ export const EmptySelectionPanel: React.FC<EmptySelectionPanelProps> = ({
 			minH={0}
 			overflowY='auto'
 		>
+			<Box px='3' py='3' borderBottomWidth='1px' borderColor='border.subtle'>
+				<Box
+					fontSize='10px'
+					fontWeight='700'
+					color='fg.muted'
+					textTransform='uppercase'
+					letterSpacing='0.06em'
+					mb='1'
+				>
+					{'Description'}
+				</Box>
+				<textarea
+					value={description}
+					placeholder='What does this workflow do?'
+					onChange={e => onChangeDescription(e.target.value)}
+					onBlur={() => onChangeDescription(description.trim() || undefined)}
+					style={{
+						width: '100%',
+						minHeight: '60px',
+						padding: '6px 8px',
+						fontSize: '12px',
+						fontFamily: 'inherit',
+						background: 'var(--beak-colors-bg-canvas)',
+						border: '1px solid var(--beak-colors-border-default)',
+						borderRadius: '4px',
+						color: 'inherit',
+						resize: 'vertical',
+						outline: 'none',
+					}}
+				/>
+			</Box>
 			<Box px='3' py='3' borderBottomWidth='1px' borderColor='border.subtle'>
 				<Box fontSize='10px' fontWeight='700' color='fg.muted' textTransform='uppercase' letterSpacing='0.06em'>
 					{'Add a step'}
