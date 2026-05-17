@@ -28,9 +28,18 @@ export function mergeCollectionDefaults(
 		url: override.url ?? d.baseUrl ?? [''],
 		query: shallowMergeRecord(d.query, override.query),
 		headers: shallowMergeRecord(d.headers, override.headers),
+		// Path parameters are per-operation by construction (each declares its
+		// own `{name}` placeholders in the URL), so there's no collection-level
+		// default to merge against — just pass the override through.
+		...(override.pathParameters ? { pathParameters: override.pathParameters } : {}),
 		body: override.body ?? d.body,
 		options: mergeOptions(d.options, override.options),
 		...(override.operationId !== undefined ? { operationId: override.operationId } : {}),
+		// Provenance + introspection ride along — they identify a request
+		// against its source spec and must survive the merge so re-syncs and
+		// exporters can map a runtime request back to its origin.
+		...(override._provenance ? { _provenance: override._provenance } : {}),
+		...(override.introspection ? { introspection: override.introspection } : {}),
 	};
 }
 
@@ -40,10 +49,7 @@ export function mergeCollectionDefaults(
  * the defaults, reproduces the request. Fields equal to the default are
  * omitted; fields that differ are written out in full.
  */
-export function diffFromDefaults(
-	defaults: CollectionDefaults | undefined,
-	request: RequestFile,
-): RequestFileOverride {
+export function diffFromDefaults(defaults: CollectionDefaults | undefined, request: RequestFile): RequestFileOverride {
 	const d = defaults ?? {};
 	const override: RequestFileOverride = { id: request.id };
 
@@ -56,6 +62,12 @@ export function diffFromDefaults(
 	const headersDiff = diffRecord(d.headers, request.headers);
 	if (headersDiff) override.headers = headersDiff;
 
+	// Path parameters live on the request only — no collection default to diff
+	// against. Pass through verbatim when non-empty so re-syncs round-trip
+	// the metadata cleanly.
+	if (request.pathParameters && Object.keys(request.pathParameters).length > 0)
+		override.pathParameters = request.pathParameters;
+
 	if (request.body !== undefined && !deepEqual(request.body, d.body)) override.body = request.body;
 
 	const optionsDiff = diffOptions(d.options, request.options);
@@ -67,10 +79,7 @@ export function diffFromDefaults(
 	return override;
 }
 
-function shallowMergeRecord<T>(
-	a: Record<string, T> | undefined,
-	b: Record<string, T> | undefined,
-): Record<string, T> {
+function shallowMergeRecord<T>(a: Record<string, T> | undefined, b: Record<string, T> | undefined): Record<string, T> {
 	if (!a && !b) return {};
 	if (!a) return { ...b } as Record<string, T>;
 	if (!b) return { ...a };
@@ -95,18 +104,12 @@ function diffRecord<T>(
 	return changed ? diff : undefined;
 }
 
-function mergeOptions(
-	a: CollectionDefaults['options'],
-	b: RequestFileOverride['options'],
-): RequestFile['options'] {
+function mergeOptions(a: CollectionDefaults['options'], b: RequestFileOverride['options']): RequestFile['options'] {
 	if (!a && !b) return undefined;
 	return { ...(a ?? {}), ...(b ?? {}) };
 }
 
-function diffOptions(
-	a: CollectionDefaults['options'],
-	b: RequestFile['options'],
-): RequestFileOverride['options'] {
+function diffOptions(a: CollectionDefaults['options'], b: RequestFile['options']): RequestFileOverride['options'] {
 	if (!b || Object.keys(b).length === 0) return undefined;
 	if (!a) return b;
 	const diff: NonNullable<RequestFileOverride['options']> = {};
