@@ -318,6 +318,45 @@ export function connectedComponents(workflow: WorkflowFile): string[][] {
 }
 
 /**
+ * Flatten + dedupe tags across a workflow map. Returns them in
+ * alphabetical order so downstream UI (autocomplete, filter chips)
+ * gets a stable listing. Pure; ready for tree-filter machinery.
+ */
+export function extractAllTags(workflows: ReadonlyArray<WorkflowFile> | Record<string, WorkflowFile>): string[] {
+	const list = Array.isArray(workflows) ? workflows : Object.values(workflows);
+	const set = new Set<string>();
+	for (const wf of list) {
+		for (const t of wf.tags ?? []) set.add(t);
+	}
+	return [...set].sort();
+}
+
+/**
+ * One-hop predecessors / successors of a node. Filtered to existing edges
+ * (dangling endpoints don't count) and de-duped (a node can't be its
+ * own predecessor in the result set even if a self-loop exists).
+ */
+export function findSourcesOf(workflow: WorkflowFile, nodeId: string): string[] {
+	const ids = new Set<string>();
+	for (const e of workflow.edges) {
+		if (e.target !== nodeId) continue;
+		if (e.source === nodeId) continue; // skip self-loops
+		ids.add(e.source);
+	}
+	return [...ids];
+}
+
+export function findTargetsOf(workflow: WorkflowFile, nodeId: string): string[] {
+	const ids = new Set<string>();
+	for (const e of workflow.edges) {
+		if (e.source !== nodeId) continue;
+		if (e.target === nodeId) continue; // skip self-loops
+		ids.add(e.target);
+	}
+	return [...ids];
+}
+
+/**
  * BFS reachability from an arbitrary node id. Mirrors `reachableFromStart`
  * but lets a caller anchor on any node — used by run-from-here to compute
  * the partial walk and by tests that need to scope a slice of the graph.

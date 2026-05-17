@@ -9,6 +9,9 @@ import {
 	connectedComponents,
 	countOverrideEntries,
 	edgesAfterNodeRemoval,
+	extractAllTags,
+	findSourcesOf,
+	findTargetsOf,
 	firstIssueNode,
 	flightFromNode,
 	inspectGraph,
@@ -761,6 +764,62 @@ describe('nodeIssuesFromHealth + firstIssueNode', () => {
 		expect(firstIssueNode(makeHealth({ cycleNodes: ['a'], unlinkedRequestNodes: ['b'], unreachable: ['c'] }))).toBe('a');
 		expect(firstIssueNode(makeHealth({ unlinkedRequestNodes: ['b'], unreachable: ['c'] }))).toBe('b');
 		expect(firstIssueNode(makeHealth({ unreachable: ['c'] }))).toBe('c');
+	});
+});
+
+describe('findSourcesOf / findTargetsOf', () => {
+	const wf: WorkflowFile = {
+		id: 'wf',
+		name: 'hop',
+		nodes: [
+			{ id: 's', type: 'start', position: { x: 0, y: 0 }, data: {} },
+			{ id: 'a', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } },
+			{ id: 'b', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } },
+			{ id: 'c', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } },
+		],
+		edges: [
+			{ id: 'e1', source: 's', target: 'a' },
+			{ id: 'e2', source: 'b', target: 'a' },
+			{ id: 'e3', source: 'a', target: 'c' },
+			{ id: 'e4', source: 'a', target: 'a' }, // self-loop
+		],
+	};
+
+	it('findSourcesOf returns the unique inbound nodes', () => {
+		expect(findSourcesOf(wf, 'a').sort()).toEqual(['b', 's']);
+	});
+
+	it('findTargetsOf returns the unique outbound nodes', () => {
+		expect(findTargetsOf(wf, 'a')).toEqual(['c']);
+	});
+
+	it('returns [] when the node has no predecessors/successors', () => {
+		expect(findSourcesOf(wf, 's')).toEqual([]);
+		expect(findTargetsOf(wf, 'c')).toEqual([]);
+	});
+});
+
+describe('extractAllTags', () => {
+	it('flattens + dedupes + sorts tags from an array', () => {
+		const wfs: WorkflowFile[] = [
+			{ id: 'a', name: 'A', tags: ['auth', 'staging'], nodes: [], edges: [] },
+			{ id: 'b', name: 'B', tags: ['staging', 'smoke'], nodes: [], edges: [] },
+			{ id: 'c', name: 'C', nodes: [], edges: [] },
+		];
+		expect(extractAllTags(wfs)).toEqual(['auth', 'smoke', 'staging']);
+	});
+
+	it('accepts a record (workflow id → file)', () => {
+		expect(
+			extractAllTags({
+				a: { id: 'a', name: 'A', tags: ['x'], nodes: [], edges: [] },
+				b: { id: 'b', name: 'B', tags: ['y'], nodes: [], edges: [] },
+			}),
+		).toEqual(['x', 'y']);
+	});
+
+	it('returns [] when nothing has tags', () => {
+		expect(extractAllTags([{ id: 'a', name: 'A', nodes: [], edges: [] }])).toEqual([]);
 	});
 });
 
