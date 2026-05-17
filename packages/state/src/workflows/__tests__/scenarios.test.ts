@@ -5,6 +5,7 @@ import * as actions from '../actions';
 import { diffWorkflows, summariseChange } from '../diff';
 import {
 	cleanupDanglingEdges,
+	duplicateWorkflow,
 	extractAllTags,
 	findTargetsOf,
 	inspectGraph,
@@ -336,6 +337,39 @@ describe('workflow lifecycle — build and tear down', () => {
 		// Validator should reject "b → a" since reaching back from a closes the cycle.
 		const result = validateConnection(state.workflows[seed.id]!, { source: 'b', target: 'a' });
 		expect(result).toEqual({ ok: false, reason: 'would-create-cycle' });
+	});
+
+	it('duplicates a workflow into the same store under a fresh id', () => {
+		const mint = counterMinter();
+		const seed = instantiateTemplate({ template: 'smoke-test', name: 'Original', mintId: mint });
+		const seeded: typeof seed = { ...seed, tags: ['smoke', 'auth'], description: 'Hits the API once' };
+		let state = reducer(initialWorkflowsState, actions.insertNewWorkflow({ id: seeded.id, workflow: seeded }));
+
+		const clone = duplicateWorkflow(state.workflows[seeded.id]!, mint);
+		state = reducer(state, actions.insertNewWorkflow({ id: clone.id, workflow: clone }));
+
+		// Both workflows live under distinct ids.
+		expect(Object.keys(state.workflows).sort()).toEqual([seeded.id, clone.id].sort());
+		// Source untouched: same nodes / edges / name.
+		const source = state.workflows[seeded.id]!;
+		expect(source.name).toBe('Original');
+		expect(source.nodes.map(n => n.id)).toEqual(seeded.nodes.map(n => n.id));
+		// Clone carries the "Copy of …" default and inherits tags + description.
+		const fresh = state.workflows[clone.id]!;
+		expect(fresh.name).toBe('Copy of Original');
+		expect(fresh.tags).toEqual(['smoke', 'auth']);
+		expect(fresh.description).toBe('Hits the API once');
+		// Reducer stamps createdAt on insert because the helper cleared it.
+		expect(typeof fresh.createdAt).toBe('number');
+		// Every cloned edge points at the cloned node ids, not the source ones.
+		const cloneNodeIds = new Set(fresh.nodes.map(n => n.id));
+		for (const e of fresh.edges) {
+			expect(cloneNodeIds.has(e.source)).toBe(true);
+			expect(cloneNodeIds.has(e.target)).toBe(true);
+		}
+		// And the clone's ids are disjoint from the source's.
+		const sourceNodeIds = new Set(source.nodes.map(n => n.id));
+		for (const id of cloneNodeIds) expect(sourceNodeIds.has(id)).toBe(false);
 	});
 
 	it('purges request refs when the underlying project tree drops the request', () => {
