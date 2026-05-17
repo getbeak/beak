@@ -69,6 +69,7 @@ import {
 	WarningPill,
 } from './editor-chrome';
 import { nodeTypes } from './node-views';
+import CheatSheetDialog from './CheatSheetDialog';
 import NodePropertiesPanel from './NodePropertiesPanel';
 import NodeSearchDialog from './NodeSearchDialog';
 import QuickFixDialog from './QuickFixDialog';
@@ -116,6 +117,7 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 	const [simulateOpen, setSimulateOpen] = useState(false);
 	const [quickFixOpen, setQuickFixOpen] = useState(false);
 	const [statsOpen, setStatsOpen] = useState(false);
+	const [cheatSheetOpen, setCheatSheetOpen] = useState(false);
 	const [activeSimEdgeId, setActiveSimEdgeId] = useState<string | null>(null);
 	// `{ x, y }` is in flow-coordinates (already mapped); rendered absolutely
 	// over the canvas at `screen-x/y` for the menu position.
@@ -275,6 +277,15 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 			if ((event.metaKey || event.ctrlKey) && (event.key === 'k' || event.key === 'K')) {
 				event.preventDefault();
 				setSearchOpen(true);
+				return;
+			}
+
+			// ? — open the cheat sheet. Skips when modifiers are held so
+			// the user can still type "?" into focused inputs (those are
+			// handled by the isEditable guard at the top of the handler).
+			if (!event.metaKey && !event.ctrlKey && !event.altKey && event.key === '?') {
+				event.preventDefault();
+				setCheatSheetOpen(true);
 				return;
 			}
 
@@ -590,6 +601,7 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 				onJumpToNode={replaceSelection}
 			/>
 			<StatsDialog workflow={workflow} open={statsOpen} onClose={() => setStatsOpen(false)} />
+			<CheatSheetDialog open={cheatSheetOpen} onClose={() => setCheatSheetOpen(false)} />
 			<Flex
 				align='center'
 				gap='2'

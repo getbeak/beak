@@ -333,6 +333,9 @@ export const EmptySelectionPanel: React.FC<EmptySelectionPanelProps> = ({
 					<KbdHint>↑ ↓ ← →</KbdHint> {'nudge selected (Shift = 5×)'}
 				</Box>
 				<Box mb='0.5'>
+					<KbdHint>?</KbdHint> {'show all shortcuts'}
+				</Box>
+				<Box mb='0.5'>
 					<KbdHint>Right-click</KbdHint> {'an edge to delete it'}
 				</Box>
 				<Box>
