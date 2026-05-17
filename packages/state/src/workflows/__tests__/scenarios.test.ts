@@ -3,7 +3,15 @@ import { describe, expect, it } from 'vitest';
 
 import * as actions from '../actions';
 import { diffWorkflows, summariseChange } from '../diff';
-import { cleanupDanglingEdges, inspectGraph, mergeWorkflows, searchNodes, validateConnection } from '../helpers';
+import {
+	cleanupDanglingEdges,
+	extractAllTags,
+	findTargetsOf,
+	inspectGraph,
+	mergeWorkflows,
+	searchNodes,
+	validateConnection,
+} from '../helpers';
 import { buildWorkflowsReducer } from '../reducer';
 import { workflowStats } from '../stats';
 import { instantiateTemplate } from '../templates';
@@ -233,6 +241,34 @@ describe('workflow lifecycle — build and tear down', () => {
 		expect(result.nodes).toHaveLength(5);
 		// Exactly one Start (from A).
 		expect(result.nodes.filter(n => n.type === 'start')).toHaveLength(1);
+	});
+
+	it('extractAllTags returns the union across the slice', () => {
+		const a = instantiateTemplate({ template: 'blank', name: 'A', mintId: counterMinter() });
+		const b = { ...a, id: 'wf-b', name: 'B' };
+		let state = reducer(initialWorkflowsState, actions.insertNewWorkflow({ id: a.id, workflow: a }));
+		state = reducer(state, actions.insertNewWorkflow({ id: b.id, workflow: b }));
+		state = reducer(state, actions.setWorkflowTags({ id: a.id, tags: ['auth', 'smoke'] }));
+		state = reducer(state, actions.setWorkflowTags({ id: b.id, tags: ['smoke', 'staging'] }));
+
+		const tags = extractAllTags(state.workflows);
+		expect(tags).toEqual(['auth', 'smoke', 'staging']);
+	});
+
+	it('findTargetsOf reflects edges added through the slice', () => {
+		const mint = counterMinter();
+		const seed = instantiateTemplate({ template: 'blank', name: 'walk', mintId: mint });
+		const startId = seed.nodes[0].id;
+		let state = reducer(initialWorkflowsState, actions.insertNewWorkflow({ id: seed.id, workflow: seed }));
+		state = reducer(
+			state,
+			actions.addNode({
+				id: seed.id,
+				node: { id: 'a', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } },
+			}),
+		);
+		state = reducer(state, actions.addEdge({ id: seed.id, edge: { id: 'e1', source: startId, target: 'a' } }));
+		expect(findTargetsOf(state.workflows[seed.id]!, startId)).toEqual(['a']);
 	});
 
 	it('tags + description round-trip through the slice', () => {
