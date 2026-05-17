@@ -3,6 +3,7 @@ import { workflowSchema } from '@beak/state/schemas/beak-workflow';
 import {
 	autoLayout,
 	compactPositions,
+	completionRatio,
 	connectedComponents,
 	inspectGraph,
 	mergeWorkflows,
@@ -735,6 +736,21 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 							label={workflow.tags.length === 1 ? 'tag' : 'tags'}
 						/>
 					)}
+					{(() => {
+						// Only render the "% linked" pill when there's an actual gap to
+						// surface — completionRatio returns 1 for workflows with no
+						// request nodes too, which would otherwise show a misleading
+						// 100% chip on a Loop/Notification-only flow.
+						const ratio = completionRatio(workflow);
+						if (ratio === 1) return null;
+						return (
+							<MetaPill
+								icon={<Globe size={10} strokeWidth={2.2} />}
+								count={Math.round(ratio * 100)}
+								label='% linked'
+							/>
+						);
+					})()}
 					<SaveStateIndicator workflowId={workflowId} />
 					{warningCount > 0 && (
 						<WarningPill
