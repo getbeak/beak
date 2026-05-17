@@ -1,5 +1,6 @@
 import type { SidebarVariant } from '@beak/common/types/beak-hub';
 import { actions as omniBarActions } from '@beak/ui/features/omni-bar/store';
+import { useAppSelector } from '@beak/ui/store/redux';
 import { Box, Flex, SimpleGrid } from '@chakra-ui/react';
 import { Layers, Network, Plug, Workflow as WorkflowIcon } from 'lucide-react';
 import * as React from 'react';
@@ -11,6 +12,8 @@ import ActionCard from './ActionCard';
 
 const ManageGrid: React.FC = () => {
 	const dispatch = useDispatch();
+	const workflowCount = useAppSelector(s => Object.keys(s.global.workflows.workflows).length);
+	const variableSetCount = useAppSelector(s => Object.keys(s.global.variableSets.variableSets ?? {}).length);
 
 	const showSidebar = React.useCallback(
 		(variant: SidebarVariant) => {
@@ -40,6 +43,7 @@ const ManageGrid: React.FC = () => {
 					icon={Layers}
 					tone='teal'
 					title='Variable sets'
+					keybinding={variableSetCount > 0 ? String(variableSetCount) : undefined}
 					body='Define values once per environment — URLs, tokens, IDs — and reference them with {{name}} across every request. Flip the active set and every request swaps.'
 					onClick={() => showSidebar('variables')}
 				/>
@@ -56,6 +60,7 @@ const ManageGrid: React.FC = () => {
 					icon={WorkflowIcon}
 					tone='pink'
 					title='Workflows'
+					keybinding={workflowCount > 0 ? String(workflowCount) : undefined}
 					body='Chain requests into a flow — Start → Request → Condition → Loop → Notify. Forks, simulates and saves to disk just like a request. Cmd+Shift+O to jump in.'
 					onClick={() => dispatch(omniBarActions.showOmniBar({ mode: 'workflows' }))}
 				/>
