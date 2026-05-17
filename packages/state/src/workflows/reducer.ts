@@ -20,7 +20,12 @@ export function buildWorkflowsReducer<S extends WorkflowsState>(builder: ActionR
 			state.loaded = true;
 		})
 		.addCase(actions.insertNewWorkflow, (state, { payload }) => {
-			state.workflows[payload.id] = payload.workflow;
+			// Stamp createdAt only if the incoming workflow doesn't already
+			// carry one (paste-imported or file-read workflows preserve the
+			// original).
+			const incoming = payload.workflow;
+			const next = incoming.createdAt ? incoming : { ...incoming, createdAt: Date.now() };
+			state.workflows[payload.id] = next;
 		})
 		.addCase(actions.updateWorkflowName, (state, { payload }) => {
 			const workflow = state.workflows[payload.id];

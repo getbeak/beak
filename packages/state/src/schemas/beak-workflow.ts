@@ -233,6 +233,12 @@ export const workflowSchema = z
 		 * used for sorting tree-by-recency + "last edited" tooltips.
 		 */
 		updatedAt: z.number().optional(),
+		/**
+		 * Millisecond Unix timestamp of creation. Stamped on
+		 * `insertNewWorkflow` and never bumped again. Lets the renderer
+		 * tell "made today" from "made last year" in a list.
+		 */
+		createdAt: z.number().optional(),
 		nodes: z.array(workflowNodeSchema),
 		edges: z.array(workflowEdgeSchema),
 	})

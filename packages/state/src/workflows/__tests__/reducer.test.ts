@@ -357,6 +357,35 @@ describe('workflows reducer — updateWorkflowDescription', () => {
 	});
 });
 
+describe('workflows reducer — createdAt stamping', () => {
+	it('stamps createdAt on insertNewWorkflow when missing', () => {
+		const before = Date.now();
+		const next = reducer(
+			initialWorkflowsState,
+			actions.insertNewWorkflow({
+				id: 'wf-fresh',
+				workflow: { id: 'wf-fresh', name: 'fresh', nodes: [], edges: [] },
+			}),
+		);
+		const after = Date.now();
+		const ts = next.workflows['wf-fresh']?.createdAt;
+		expect(ts).toBeDefined();
+		expect(ts!).toBeGreaterThanOrEqual(before);
+		expect(ts!).toBeLessThanOrEqual(after);
+	});
+
+	it('preserves an existing createdAt (paste / file read)', () => {
+		const next = reducer(
+			initialWorkflowsState,
+			actions.insertNewWorkflow({
+				id: 'wf-old',
+				workflow: { id: 'wf-old', name: 'old', nodes: [], edges: [], createdAt: 100 },
+			}),
+		);
+		expect(next.workflows['wf-old']?.createdAt).toBe(100);
+	});
+});
+
 describe('workflows reducer — updatedAt stamping', () => {
 	it('stamps a timestamp on the just-mutated workflow', () => {
 		const start: WorkflowsState = { loaded: true, workflows: { wf1: makeWorkflow() } };
