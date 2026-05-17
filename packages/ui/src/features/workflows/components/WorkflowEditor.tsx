@@ -723,7 +723,7 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 							label={workflow.tags.length === 1 ? 'tag' : 'tags'}
 						/>
 					)}
-					<SaveStateIndicator />
+					<SaveStateIndicator workflowId={workflowId} />
 					{warningCount > 0 && (
 						<WarningPill
 							count={warningCount}

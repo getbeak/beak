@@ -44,11 +44,14 @@ export const MetaPill: React.FC<MetaPillProps> = ({ icon, count, label }) => (
 
 // "Saved 10s ago" / "Saving…" indicator next to the meta pills. Reads the
 // workflow slice's debounce nonce + last-write timestamp directly. Falls
-// back to nothing when the project hasn't saved yet (untitled workflow on
-// a sandbox host where writes are no-ops).
-export const SaveStateIndicator: React.FC = () => {
+// back to workflow.updatedAt when latestWrite is 0 (in-memory mode where
+// writes are no-ops but the reducer still stamps the workflow on each
+// mutation), so the user gets feedback even without a disk-backed project.
+export const SaveStateIndicator: React.FC<{ workflowId?: string }> = ({ workflowId }) => {
 	const pending = useAppSelector(s => s.global.workflows.writeDebouncer);
-	const latest = useAppSelector(s => s.global.workflows.latestWrite ?? 0);
+	const latestWrite = useAppSelector(s => s.global.workflows.latestWrite ?? 0);
+	const updatedAt = useAppSelector(s => (workflowId ? s.global.workflows.workflows[workflowId]?.updatedAt ?? 0 : 0));
+	const latest = latestWrite || updatedAt;
 	const [now, setNow] = useState(() => Date.now());
 
 	useEffect(() => {
