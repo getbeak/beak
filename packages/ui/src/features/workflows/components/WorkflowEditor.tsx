@@ -2,6 +2,7 @@ import ksuid from '@beak/ksuid';
 import { workflowSchema } from '@beak/state/schemas/beak-workflow';
 import {
 	autoLayout,
+	compactPositions,
 	connectedComponents,
 	inspectGraph,
 	type NodeIssue,
@@ -47,6 +48,7 @@ import {
 	Globe,
 	HelpCircle,
 	LayoutTemplate,
+	Minimize2,
 	Play,
 	Repeat,
 	StickyNote,
@@ -357,6 +359,13 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 		if (!workflow) return;
 		const laidOut = autoLayout(workflow);
 		dispatch(workflowActions.replaceGraph({ id: workflowId, nodes: laidOut.nodes, edges: laidOut.edges }));
+	}, [dispatch, workflow, workflowId]);
+
+	const compactGraph = useCallback(() => {
+		if (!workflow) return;
+		const compacted = compactPositions(workflow);
+		if (compacted === workflow) return; // no-op shortcut: nothing changed
+		dispatch(workflowActions.replaceGraph({ id: workflowId, nodes: compacted.nodes, edges: compacted.edges }));
 	}, [dispatch, workflow, workflowId]);
 
 	const clearGraph = useCallback(async () => {
@@ -711,6 +720,7 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 					/>
 					<Box w='1px' h='14px' bg='border.subtle' alignSelf='center' mx='1' />
 					<ToolbarButton icon={<LayoutTemplate size={13} strokeWidth={1.8} />} label='Tidy' onClick={tidyGraph} />
+					<ToolbarButton icon={<Minimize2 size={13} strokeWidth={1.8} />} label='Compact' onClick={compactGraph} />
 					<ToolbarButton icon={<Trash2 size={13} strokeWidth={1.8} />} label='Clear' onClick={clearGraph} />
 					<ToolbarButton
 						icon={<Play size={13} strokeWidth={1.8} />}
