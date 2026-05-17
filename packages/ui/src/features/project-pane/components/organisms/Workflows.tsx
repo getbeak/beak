@@ -37,6 +37,15 @@ const Workflows: React.FC = () => {
 	const entries = React.useMemo(() => {
 		const trimmed = filter.trim();
 		if (trimmed === '') return recentWorkflows(workflows);
+		// "#auth" → filter to workflows that declare the "auth" tag. Skipping
+		// the empty-after-# case so a lone "#" still falls through to the
+		// general fuzzy search (the user might be mid-typing).
+		if (trimmed.startsWith('#') && trimmed.length > 1) {
+			const tag = trimmed.slice(1).trim().toLowerCase();
+			if (tag.length > 0) {
+				return recentWorkflows(workflows).filter(wf => (wf.tags ?? []).some(t => t === tag));
+			}
+		}
 		const ranked = searchWorkflows(workflows, trimmed);
 		return ranked.map(r => workflows[r.id]).filter((wf): wf is NonNullable<typeof wf> => Boolean(wf));
 	}, [filter, workflows]);
@@ -61,11 +70,12 @@ const Workflows: React.FC = () => {
 						</Box>
 						<Input
 							size='xs'
-							placeholder='Filter workflows…'
+							placeholder='Filter workflows… (#tag)'
 							value={filter}
 							onChange={event => setFilter(event.target.value)}
 							pl='6'
 							fontSize='11px'
+							title='Type to fuzzy-search. Prefix with # to filter by exact tag.'
 						/>
 					</Box>
 				)}
