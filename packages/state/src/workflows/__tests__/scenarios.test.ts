@@ -2,7 +2,7 @@ import { createReducer } from '@reduxjs/toolkit';
 import { describe, expect, it } from 'vitest';
 
 import * as actions from '../actions';
-import { cleanupDanglingEdges, inspectGraph, searchNodes, validateConnection } from '../helpers';
+import { cleanupDanglingEdges, inspectGraph, mergeWorkflows, searchNodes, validateConnection } from '../helpers';
 import { buildWorkflowsReducer } from '../reducer';
 import { workflowStats } from '../stats';
 import { instantiateTemplate } from '../templates';
@@ -191,6 +191,26 @@ describe('workflow lifecycle — build and tear down', () => {
 		// Only the OK edge survives; xyflow won't choke on a missing endpoint.
 		expect(wf.edges.map(e => e.id)).toEqual(['e-ok']);
 		expect(inspectGraph(wf).danglingEdges).toEqual([]);
+	});
+
+	it('mergeWorkflows + replaceGraph composes two workflows into one', () => {
+		const mintA = counterMinter();
+		const a = instantiateTemplate({ template: 'smoke-test', name: 'A', mintId: mintA });
+		const mintB = counterMinter();
+		const b = instantiateTemplate({ template: 'auth-chain', name: 'B', mintId: mintB });
+		let state = reducer(initialWorkflowsState, actions.insertNewWorkflow({ id: a.id, workflow: a }));
+
+		const mergeMint = (prefix: 'node' | 'edge') => `${prefix}-merge-${Math.random().toString(36).slice(2, 8)}`;
+		const merged = mergeWorkflows(a, b, mergeMint);
+		state = reducer(state, actions.replaceGraph({ id: a.id, nodes: merged.nodes, edges: merged.edges }));
+
+		const result = state.workflows[a.id]!;
+		// Source's Start dropped; everything else grafted on. A had 3 nodes
+		// (start, request, notification); B had 3 (start, request, request),
+		// minus B's Start = 2. Total: 5.
+		expect(result.nodes).toHaveLength(5);
+		// Exactly one Start (from A).
+		expect(result.nodes.filter(n => n.type === 'start')).toHaveLength(1);
 	});
 
 	it('tags + description round-trip through the slice', () => {
