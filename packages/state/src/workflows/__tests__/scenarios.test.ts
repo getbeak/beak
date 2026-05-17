@@ -3,9 +3,10 @@ import { describe, expect, it } from 'vitest';
 
 import * as actions from '../actions';
 import { cleanupDanglingEdges, inspectGraph, searchNodes, validateConnection } from '../helpers';
-import { validateWorkflow } from '../validation';
 import { buildWorkflowsReducer } from '../reducer';
+import { workflowStats } from '../stats';
 import { instantiateTemplate } from '../templates';
+import { validateWorkflow } from '../validation';
 import { initialWorkflowsState, type WorkflowsState } from '../types';
 
 /**
@@ -190,6 +191,32 @@ describe('workflow lifecycle — build and tear down', () => {
 		// Only the OK edge survives; xyflow won't choke on a missing endpoint.
 		expect(wf.edges.map(e => e.id)).toEqual(['e-ok']);
 		expect(inspectGraph(wf).danglingEdges).toEqual([]);
+	});
+
+	it('workflowStats follows the slice through add/remove cycles', () => {
+		const mint = counterMinter();
+		const seed = instantiateTemplate({ template: 'blank', name: 'live', mintId: mint });
+		const startId = seed.nodes[0].id;
+		let state = reducer(initialWorkflowsState, actions.insertNewWorkflow({ id: seed.id, workflow: seed }));
+		expect(workflowStats(state.workflows[seed.id]!).nodesByKind.request).toBe(0);
+
+		state = reducer(
+			state,
+			actions.addNode({
+				id: seed.id,
+				node: { id: 'r1', type: 'request', position: { x: 0, y: 0 }, data: { requestId: 'req-a' } },
+			}),
+		);
+		state = reducer(state, actions.addEdge({ id: seed.id, edge: { id: 'e1', source: startId, target: 'r1' } }));
+		const afterAdd = workflowStats(state.workflows[seed.id]!);
+		expect(afterAdd.nodesByKind.request).toBe(1);
+		expect(afterAdd.linkedRequestCount).toBe(1);
+		expect(afterAdd.edgeCount).toBe(1);
+
+		state = reducer(state, actions.removeNode({ id: seed.id, nodeId: 'r1' }));
+		const afterRemove = workflowStats(state.workflows[seed.id]!);
+		expect(afterRemove.nodesByKind.request).toBe(0);
+		expect(afterRemove.edgeCount).toBe(0); // cascade-deleted with the node
 	});
 
 	it('searchNodes reflects per-node renames after the slice updates them', () => {
