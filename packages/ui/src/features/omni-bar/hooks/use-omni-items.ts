@@ -1,5 +1,6 @@
 import { TypedObject } from '@beak/common/helpers/typescript';
 import type { TabItem } from '@beak/common/types/beak-project';
+import { completionRatio } from '@beak/state/workflows';
 import { verbToColor, verbToShortLabel } from '@beak/design-system/helpers';
 import tabActions, { changeTab } from '@beak/ui/features/tabs/store/actions';
 import { sidebarPreferenceSetCollapse, sidebarPreferenceSetSelected } from '@beak/ui/store/preferences/actions';
@@ -156,6 +157,10 @@ export function useOmniItems(): OmniItem[] {
 			const desc = wf.description?.trim();
 			if (desc) subtitleParts.push(desc);
 			subtitleParts.push(`${stepCount} step${stepCount === 1 ? '' : 's'}`);
+			// Surface "N% linked" only when there's a real gap so completed
+			// flows stay quiet — exactly the same UX as the editor header pill.
+			const ratio = completionRatio(wf);
+			if (ratio < 1) subtitleParts.push(`${Math.round(ratio * 100)}% linked`);
 			if (wf.tags && wf.tags.length > 0) subtitleParts.push(`#${wf.tags.join(' #')}`);
 			items.push({
 				id: `workflow:${wf.id}`,
