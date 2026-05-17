@@ -705,6 +705,7 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 					size='xs'
 					variant='outline'
 					value={workflow.name}
+					placeholder='Untitled workflow'
 					maxW='280px'
 					h='24px'
 					fontSize='12px'
@@ -715,6 +716,7 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 					px='1.5'
 					_hover={{ borderColor: 'border.subtle' }}
 					_focus={{ borderColor: 'accent.pink', bg: 'bg.surface' }}
+					_placeholder={{ color: 'fg.subtle', fontStyle: 'italic' }}
 					onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
 						dispatch(workflowActions.updateWorkflowName({ id: workflowId, name: e.target.value }));
 					}}
