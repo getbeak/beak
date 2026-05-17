@@ -1,6 +1,6 @@
 import { renameProject } from '@beak/state/project';
 import WindowSessionContext from '@beak/ui/contexts/window-session-context';
-import { ipcExplorerService } from '@beak/ui/lib/ipc';
+import { ipcDialogService, ipcExplorerService } from '@beak/ui/lib/ipc';
 import { checkShortcut } from '@beak/ui/lib/keyboard-shortcuts';
 import { projectPanePreferenceSetExplorerFilter } from '@beak/ui/store/preferences/actions';
 import { actions } from '@beak/ui/store/project';
@@ -19,12 +19,11 @@ import { changeTab, makeTabPermanent } from '../../tabs/store/actions';
 import TreeView from '../../tree-view/components/TreeView';
 import type { TreeCommands } from '../../tree-view/contexts/abstractions-context';
 import type { TreeViewItem, TreeViewNodes } from '../../tree-view/types';
+import TemplatePickerDialog from '../../workflows/components/TemplatePickerDialog';
 import ExplorerFilterMenu, { type ExplorerFilter } from './molecules/ExplorerFilterMenu';
 import RequestFlair from './molecules/RequestFlair';
-import CookieJars from './organisms/CookieJars';
 import Git from './organisms/Git';
 import VariableSets from './organisms/VariableSets';
-import Workflows from './organisms/Workflows';
 
 /**
  * Filter the merged project tree by leaf type (request vs workflow), pruning
@@ -76,6 +75,9 @@ const ProjectPane: React.FC<React.PropsWithChildren<unknown>> = () => {
 	// → expand-all → collapse-all instead of needing two buttons in the
 	// header (the section is short on horizontal real estate).
 	const [bulkToggleMode, setBulkToggleMode] = useState<'collapse' | 'expand'>('collapse');
+	// `undefined` = dialog closed; `null` = pick at project root; `<folderId>` =
+	// pick inside a folder. Carries the parent through the picker round-trip.
+	const [templatePickerParent, setTemplatePickerParent] = useState<string | null | undefined>(undefined);
 
 	useEffect(() => {
 		if (!renaming) setDraft(name ?? 'Project');
@@ -113,7 +115,7 @@ const ProjectPane: React.FC<React.PropsWithChildren<unknown>> = () => {
 				id: 'project-pane:new-workflow',
 				label: 'New workflow',
 				icon: WorkflowIcon,
-				onClick: () => dispatch(workflowActions.createNewWorkflow({ parent: null })),
+				onClick: () => setTemplatePickerParent(null),
 			},
 			{
 				id: 'project-pane:new-request',
@@ -215,7 +217,7 @@ const ProjectPane: React.FC<React.PropsWithChildren<unknown>> = () => {
 				id: 'project-tree-ctx:new-workflow',
 				label: 'New Workflow',
 				click: () => {
-					dispatch(workflowActions.createNewWorkflow({ parent: newWorkflowParent }));
+					setTemplatePickerParent(newWorkflowParent);
 				},
 			},
 			{
@@ -286,11 +288,7 @@ const ProjectPane: React.FC<React.PropsWithChildren<unknown>> = () => {
 				accelerator: renderAcceleratorDefinition('tree-view.node.delete'),
 				enabled: node.id !== 'root',
 				click: () => {
-					if (isWorkflow) {
-						dispatch(workflowActions.removeWorkflowFromDisk({ id: node.id, withConfirmation: true }));
-					} else {
-						dispatch(actions.removeNodeFromDisk({ requestId: node.id, withConfirmation: true }));
-					}
+					void deleteWithSelection(node, commands);
 				},
 			},
 
@@ -360,11 +358,7 @@ const ProjectPane: React.FC<React.PropsWithChildren<unknown>> = () => {
 				break;
 
 			case checkShortcut('project-explorer.item.delete', event):
-				if (node.type === 'workflow') {
-					dispatch(workflowActions.removeWorkflowFromDisk({ id: node.id, withConfirmation: true }));
-				} else {
-					dispatch(actions.removeNodeFromDisk({ requestId: node.id, withConfirmation: true }));
-				}
+				void deleteWithSelection(node, treeCommandsRef.current ?? undefined);
 				break;
 
 			default:
@@ -374,19 +368,71 @@ const ProjectPane: React.FC<React.PropsWithChildren<unknown>> = () => {
 		event.preventDefault();
 	}
 
+	/**
+	 * Delete the right-clicked / focused node — but if it's part of a
+	 * multi-selection, delete every selected node in one go. Shows a single
+	 * batched confirmation in disk mode (the per-action effect's own confirm
+	 * is skipped via `withConfirmation: false` to avoid N popups).
+	 */
+	async function deleteWithSelection(node: TreeViewItem, commands?: TreeCommands) {
+		if (node.id === 'root') return;
+		const selection = commands?.getSelection() ?? [];
+		const isBulk = selection.length > 1 && selection.includes(node.id);
+		const targetIds = isBulk ? selection.filter(id => id !== 'root') : [node.id];
+
+		const targets = targetIds.map(id => {
+			const wf = workflows[id];
+			if (wf) return { id, isWorkflow: true as const, name: wf.name };
+			const treeNode = tree[id];
+			return { id, isWorkflow: false as const, name: treeNode?.name ?? id };
+		});
+
+		if (targets.length === 0) return;
+
+		if (mode === 'disk') {
+			const message =
+				targets.length === 1
+					? `You are about to delete “${targets[0]!.name}” from your machine. Are you sure you want to continue?`
+					: `You are about to delete ${targets.length} items from your machine. Are you sure you want to continue?`;
+			const detail =
+				targets.length === 1
+					? 'This action is irreversible inside Beak!'
+					: `${targets.map(t => `• ${t.name}`).join('\n')}\n\nThis action is irreversible inside Beak!`;
+			const response = await ipcDialogService.showMessageBox({
+				title: targets.length === 1 ? 'Delete file or folder' : 'Delete items',
+				message,
+				detail,
+				type: 'warning',
+				buttons: ['Remove', 'Cancel'],
+				defaultId: 1,
+				cancelId: 1,
+			});
+			if (response.response === 1) return;
+		}
+
+		for (const t of targets) {
+			if (t.isWorkflow) {
+				dispatch(workflowActions.removeWorkflowFromDisk({ id: t.id, withConfirmation: false }));
+			} else {
+				dispatch(actions.removeNodeFromDisk({ requestId: t.id, withConfirmation: false }));
+			}
+		}
+	}
+
 	return (
 		<SidebarPane>
+			<TemplatePickerDialog
+				open={templatePickerParent !== undefined}
+				onClose={() => setTemplatePickerParent(undefined)}
+				onPick={template => {
+					dispatch(workflowActions.createNewWorkflow({ parent: templatePickerParent ?? null, template }));
+				}}
+			/>
 			<SidebarPaneSection title={'Source control'} collapseKey={'beak.project.project'}>
 				<Git />
 			</SidebarPaneSection>
 			<SidebarPaneSection title={'Variable sets'} collapseKey={'beak.project.variable-sets'}>
 				<VariableSets />
-			</SidebarPaneSection>
-			<SidebarPaneSection title={'Cookies'} collapseKey={'beak.project.cookies'}>
-				<CookieJars />
-			</SidebarPaneSection>
-			<SidebarPaneSection title={'Workflows'} collapseKey={'beak.project.workflows'}>
-				<Workflows />
 			</SidebarPaneSection>
 			<SidebarPaneSection
 				title={

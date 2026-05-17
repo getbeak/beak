@@ -1,5 +1,5 @@
 import ksuid from '@beak/ksuid';
-import type { WorkflowFile } from '@beak/state/workflows';
+import { instantiateTemplate, type WorkflowFile } from '@beak/state/workflows';
 import { changeTab } from '@beak/ui/features/tabs/store/actions';
 import {
 	ensureWorkflowsDir,
@@ -130,31 +130,26 @@ export function registerWorkflowsEffects(start: AppStartListening) {
 		});
 	}
 
-	// Create a new workflow: synthesise locally, open the tab, persist on disk
-	// projects via the debounced effect above.
+	// Create a new workflow: synthesise locally (via the template helper), open
+	// the tab, persist on disk projects via the debounced effect above. The
+	// template defaults to 'blank' so the no-arg path stays a single Start node.
 	start({
 		actionCreator: createNewWorkflow,
 		effect: async ({ payload }, api) => {
-			const id = ksuid.generate('workflow').toString();
 			const name = payload.name ?? 'Untitled workflow';
-			// Every workflow gets a Start node as its entry point — the orchestrator
-			// needs a deterministic place to begin from. Users can never create or
-			// delete a second one (the toolbar omits Start, the panel hides Delete).
-			const startNodeId = ksuid.generate('node').toString();
-			const workflow: WorkflowFile = {
-				id,
+			const workflow: WorkflowFile = instantiateTemplate({
+				template: payload.template ?? 'blank',
 				name,
 				parent: payload.parent ?? null,
-				nodes: [{ id: startNodeId, type: 'start', position: { x: 80, y: 120 }, data: {} }],
-				edges: [],
-			};
+				mintId: prefix => ksuid.generate(prefix).toString(),
+			});
 
 			if (api.getState().global.project.mode === 'disk') {
 				await ensureWorkflowsDir();
 			}
 
-			api.dispatch(insertNewWorkflow({ id, workflow }));
-			api.dispatch(changeTab({ type: 'workflow_editor', payload: id, temporary: false }));
+			api.dispatch(insertNewWorkflow({ id: workflow.id, workflow }));
+			api.dispatch(changeTab({ type: 'workflow_editor', payload: workflow.id, temporary: false }));
 		},
 	});
 

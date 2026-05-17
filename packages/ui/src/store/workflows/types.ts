@@ -1,4 +1,4 @@
-import type { WorkflowFile } from '@beak/state/workflows';
+import type { TemplateKey, WorkflowFile } from '@beak/state/workflows';
 
 export const ActionTypes = {
 	START_WORKFLOWS: '@beak/global/workflows/START_WORKFLOWS',
@@ -33,6 +33,8 @@ export interface CreateNewWorkflowPayload {
 	name?: string;
 	/** Tree folder id to land the new workflow inside. Omit for project root. */
 	parent?: string | null;
+	/** Starter template; defaults to 'blank' (single Start node, no wiring). */
+	template?: TemplateKey;
 }
 
 export interface RemoveWorkflowFromDiskPayload {

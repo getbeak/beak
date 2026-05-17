@@ -19,4 +19,12 @@ export {
 } from './helpers';
 export { mergeJson, mergeKv, pruneBody, pruneOverrideMap, pruneOverrides } from './overrides';
 export * from './reducer';
+export {
+	type IdMinter,
+	type InstantiateOptions,
+	instantiateTemplate,
+	templateCatalog,
+	type TemplateKey,
+	type TemplateMetadata,
+} from './templates';
 export * from './types';
