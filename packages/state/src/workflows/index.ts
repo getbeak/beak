@@ -41,6 +41,7 @@ export {
 	serializeForExport,
 	topologicalOrder,
 	validateConnection,
+	workflowsByTag,
 } from './helpers';
 export { diffWorkflows, summariseChange, type WorkflowDiff } from './diff';
 export { CURRENT_WORKFLOW_VERSION, migrateWorkflow } from './migrate';

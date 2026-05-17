@@ -33,6 +33,7 @@ import {
 	serializeForExport,
 	topologicalOrder,
 	validateConnection,
+	workflowsByTag,
 } from '../helpers';
 import type { WorkflowFile, WorkflowNode } from '../types';
 
@@ -970,6 +971,41 @@ describe('extractAllTags', () => {
 
 	it('returns [] when nothing has tags', () => {
 		expect(extractAllTags([{ id: 'a', name: 'A', nodes: [], edges: [] }])).toEqual([]);
+	});
+});
+
+describe('workflowsByTag', () => {
+	const wfs: WorkflowFile[] = [
+		{ id: 'a', name: 'A', tags: ['auth', 'staging'], nodes: [], edges: [] },
+		{ id: 'b', name: 'B', tags: ['staging', 'smoke'], nodes: [], edges: [] },
+		{ id: 'c', name: 'C', nodes: [], edges: [] },
+	];
+
+	it('groups workflows under every tag they declare', () => {
+		const map = workflowsByTag(wfs);
+		expect(map.get('auth')!.map(w => w.id)).toEqual(['a']);
+		expect(map.get('smoke')!.map(w => w.id)).toEqual(['b']);
+		expect(map.get('staging')!.map(w => w.id).sort()).toEqual(['a', 'b']);
+	});
+
+	it('buckets untagged workflows under the empty-string key', () => {
+		const map = workflowsByTag(wfs);
+		expect(map.get('')!.map(w => w.id)).toEqual(['c']);
+	});
+
+	it('omits the empty-string bucket when every workflow has tags', () => {
+		const tagged: WorkflowFile[] = [{ id: 'x', name: 'X', tags: ['t'], nodes: [], edges: [] }];
+		expect(workflowsByTag(tagged).has('')).toBe(false);
+	});
+
+	it('preserves tag iteration order — alphabetical, then untagged last', () => {
+		const map = workflowsByTag(wfs);
+		expect([...map.keys()]).toEqual(['auth', 'smoke', 'staging', '']);
+	});
+
+	it('accepts a record as well as an array', () => {
+		const record = Object.fromEntries(wfs.map(w => [w.id, w])) as Record<string, WorkflowFile>;
+		expect([...workflowsByTag(record).keys()]).toEqual(['auth', 'smoke', 'staging', '']);
 	});
 });
 

@@ -425,6 +425,35 @@ export function extractAllTags(workflows: ReadonlyArray<WorkflowFile> | Record<s
 }
 
 /**
+ * Bucket workflows by tag — used by the (future) tag-filter chip bar in
+ * the project pane. Workflows with no tags fall into the empty-string
+ * bucket so the caller can choose whether to show an "Untagged" group.
+ * Returns a Map so insertion order is the tag alphabetical order from
+ * extractAllTags + a trailing untagged bucket when present.
+ */
+export function workflowsByTag(
+	workflows: ReadonlyArray<WorkflowFile> | Record<string, WorkflowFile>,
+): Map<string, WorkflowFile[]> {
+	const list = Array.isArray(workflows) ? workflows : Object.values(workflows);
+	const tags = extractAllTags(list);
+	const out = new Map<string, WorkflowFile[]>();
+	for (const tag of tags) out.set(tag, []);
+	const untagged: WorkflowFile[] = [];
+	for (const wf of list) {
+		const wfTags = wf.tags ?? [];
+		if (wfTags.length === 0) {
+			untagged.push(wf);
+			continue;
+		}
+		for (const t of wfTags) {
+			out.get(t)!.push(wf);
+		}
+	}
+	if (untagged.length > 0) out.set('', untagged);
+	return out;
+}
+
+/**
  * One-hop predecessors / successors of a node. Filtered to existing edges
  * (dangling endpoints don't count) and de-duped (a node can't be its
  * own predecessor in the result set even if a self-loop exists).
