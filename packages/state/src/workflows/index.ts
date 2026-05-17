@@ -30,6 +30,7 @@ export {
 	validateConnection,
 } from './helpers';
 export { diffWorkflows, type WorkflowDiff } from './diff';
+export { CURRENT_WORKFLOW_VERSION, migrateWorkflow } from './migrate';
 export { toMarkdown } from './markdown';
 export { mergeJson, mergeKv, pruneBody, pruneOverrideMap, pruneOverrides } from './overrides';
 export * from './reducer';

@@ -184,7 +184,7 @@ describe('workflow lifecycle — build and tear down', () => {
 				{ id: 'e-dangling', source: 's', target: 'ghost' },
 			],
 		};
-		const cleaned = cleanupDanglingEdges(drifted);
+		const cleaned = cleanupDanglingEdges(drifted as never);
 		const state = reducer(initialWorkflowsState, actions.insertNewWorkflow({ id: cleaned.id, workflow: cleaned }));
 		const wf = state.workflows[cleaned.id]!;
 		// Only the OK edge survives; xyflow won't choke on a missing endpoint.
