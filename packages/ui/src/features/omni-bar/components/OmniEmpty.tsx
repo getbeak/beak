@@ -53,7 +53,15 @@ const OmniEmpty: React.FC<OmniEmptyProps> = ({ hasQuery, scope }) => {
 						)}
 						{scope === 'commands' && 'Type to filter actions, theme switches, tab controls.'}
 						{scope === 'recents' && 'Currently open and recently viewed surfaces.'}
-						{scope === 'workflows' && 'Match by workflow name, description, tag, or id.'}
+						{scope === 'workflows' && (
+							<>
+								{'Match by workflow name, description, tag, or id. '}
+								<Box as='span' color='accent.pink' fontWeight='600'>
+									{'⌘ ⇧ O '}
+								</Box>
+								{'jumps back here from anywhere.'}
+							</>
+						)}
 					</Box>
 				</Flex>
 			</MotionBox>
