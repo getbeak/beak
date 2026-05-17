@@ -170,7 +170,8 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 		return rfEdges.map(e => {
 			const onCycle = cycleSet.has(e.source) && cycleSet.has(e.target);
 			const isConnectedToSelection = selectedIds.has(e.source) || selectedIds.has(e.target);
-			if (!onCycle && !isConnectedToSelection) return e;
+			const handleColor = edgeColorForHandle(typeof e.sourceHandle === 'string' ? e.sourceHandle : null);
+			if (!onCycle && !isConnectedToSelection && !handleColor) return e;
 			const style: React.CSSProperties = { ...(e.style as React.CSSProperties | undefined) };
 			if (onCycle) {
 				style.stroke = 'var(--beak-colors-accent-warning)';
@@ -178,6 +179,9 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 			} else if (isConnectedToSelection) {
 				style.stroke = 'var(--beak-colors-accent-pink)';
 				style.strokeWidth = 2;
+			} else if (handleColor) {
+				style.stroke = handleColor;
+				style.strokeWidth = 1.5;
 			}
 			return { ...e, style, animated: onCycle ? false : isConnectedToSelection };
 		});
@@ -732,6 +736,28 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 		</Flex>
 	);
 };
+
+/**
+ * Edge stroke colour by sourceHandle. `true`/`false` branches inherit
+ * the success/alert accents (matching the labels on the condition node
+ * pill); `body`/`after` use the loop tones; unhandled edges fall back
+ * to the canvas default. Returns `null` for "no override" so the
+ * caller can decide whether to apply.
+ */
+function edgeColorForHandle(handle: string | null): string | null {
+	switch (handle) {
+		case 'true':
+			return 'var(--beak-colors-accent-success)';
+		case 'false':
+			return 'var(--beak-colors-accent-alert)';
+		case 'body':
+			return 'var(--beak-colors-accent-teal)';
+		case 'after':
+			return 'var(--beak-colors-accent-pink)';
+		default:
+			return null;
+	}
+}
 
 /**
  * Mini-map node tint by kind — same tones the canvas pills use, so the
