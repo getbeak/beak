@@ -68,6 +68,12 @@ describe('workflowSchema — round-trip', () => {
 					position: { x: 800, y: 0 },
 					data: { title: ['done'], body: ['ok'] },
 				},
+				{
+					id: 'cm1',
+					type: 'comment',
+					position: { x: 1000, y: 0 },
+					data: { text: 'Reminder: assumes auth header is set upstream.' },
+				},
 			],
 			edges: [
 				{ id: 'e1', source: 's', target: 'r1' },
@@ -81,8 +87,23 @@ describe('workflowSchema — round-trip', () => {
 		const wire = JSON.parse(JSON.stringify(wf));
 		const parsed = workflowSchema.parse(wire);
 		expect(parsed.id).toBe('wf-1');
-		expect(parsed.nodes).toHaveLength(7);
+		expect(parsed.nodes).toHaveLength(8);
 		expect(parsed.edges).toHaveLength(4);
+	});
+
+	it('accepts a comment node with empty text', () => {
+		const wf = {
+			id: 'wf-6',
+			name: 'Empty comment',
+			nodes: [
+				{ id: 's', type: 'start', position: { x: 0, y: 0 }, data: {} },
+				{ id: 'cm', type: 'comment', position: { x: 100, y: 100 }, data: {} },
+			],
+			edges: [],
+		};
+		const parsed = workflowSchema.parse(wf);
+		const comment = parsed.nodes.find(n => n.type === 'comment')!;
+		expect((comment.data as { text?: string }).text).toBeUndefined();
 	});
 
 	it('rejects an unknown node kind', () => {

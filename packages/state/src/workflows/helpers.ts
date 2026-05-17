@@ -167,6 +167,9 @@ export function inspectGraph(workflow: WorkflowFile): GraphHealth {
 	const unreachable: string[] = [];
 	for (const node of workflow.nodes) {
 		if (node.type === 'start') continue;
+		// Comment nodes are pure documentation — they're *expected* to be
+		// disconnected from Start, so they never count as unreachable.
+		if (node.type === 'comment') continue;
 		if (!reachable.has(node.id)) unreachable.push(node.id);
 	}
 
@@ -327,7 +330,13 @@ export interface ConnectionAttempt {
  * Reasons a connection attempt is rejected, used to tooltip the canvas
  * when xyflow says "no" so the user knows *why*.
  */
-export type ConnectionRejection = 'unknown-source' | 'unknown-target' | 'self-loop' | 'into-start' | 'duplicate-edge';
+export type ConnectionRejection =
+	| 'unknown-source'
+	| 'unknown-target'
+	| 'self-loop'
+	| 'into-start'
+	| 'comment-endpoint'
+	| 'duplicate-edge';
 
 /**
  * Validate a candidate edge before it's added to the graph. Catches the
@@ -344,7 +353,11 @@ export function validateConnection(
 	if (!nodesById.has(attempt.target)) return { ok: false, reason: 'unknown-target' };
 	if (attempt.source === attempt.target) return { ok: false, reason: 'self-loop' };
 	const target = nodesById.get(attempt.target);
+	const source = nodesById.get(attempt.source);
 	if (target?.type === 'start') return { ok: false, reason: 'into-start' };
+	// Comment nodes are pure documentation and don't render Handles, so we
+	// also reject connections at the data layer for defence in depth.
+	if (target?.type === 'comment' || source?.type === 'comment') return { ok: false, reason: 'comment-endpoint' };
 	for (const e of workflow.edges) {
 		if (
 			e.source === attempt.source &&

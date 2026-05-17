@@ -4,7 +4,7 @@ import { useAppSelector } from '@beak/ui/store/redux';
 import { Box, Flex, Stack } from '@chakra-ui/react';
 import type { RequestNode as ProjectRequestNode } from '@getbeak/types/nodes';
 import { Handle, type NodeProps, Position } from '@xyflow/react';
-import { Bell, GitBranch, Globe, Play, Repeat } from 'lucide-react';
+import { Bell, GitBranch, Globe, Play, Repeat, StickyNote } from 'lucide-react';
 import * as React from 'react';
 
 /**
@@ -257,6 +257,45 @@ export function ConditionNodeView({ data, selected }: NodeProps) {
 	);
 }
 
+export function CommentNodeView({ data, selected }: NodeProps) {
+	const d = data as { text?: string };
+	const text = (d.text ?? '').trim();
+	return (
+		<Box
+			minW='180px'
+			maxW='280px'
+			borderRadius='md'
+			bg='color-mix(in srgb, var(--beak-colors-accent-warning) 8%, var(--beak-colors-bg-surface))'
+			borderWidth='1px'
+			borderColor={selected ? 'accent.warning' : 'color-mix(in srgb, var(--beak-colors-accent-warning) 28%, transparent)'}
+			boxShadow={selected ? '0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-warning) 24%, transparent)' : 'sm'}
+			fontSize='12px'
+			color='fg.default'
+			position='relative'
+			transition='border-color .12s ease, box-shadow .12s ease'
+		>
+			<Flex align='center' gap='2' px='2.5' py='1.5' color='accent.warning'>
+				<StickyNote size={12} strokeWidth={1.8} />
+				<Box fontWeight='600' fontSize='10px' textTransform='uppercase' letterSpacing='0.04em' opacity={0.8}>
+					{'Note'}
+				</Box>
+			</Flex>
+			<Box
+				px='2.5'
+				pb='2'
+				fontSize='12px'
+				color='fg.default'
+				whiteSpace='pre-wrap'
+				wordBreak='break-word'
+				fontStyle={text ? undefined : 'italic'}
+				opacity={text ? 1 : 0.6}
+			>
+				{text || 'Click to write a note…'}
+			</Box>
+		</Box>
+	);
+}
+
 export function NotificationNodeView({ data, selected }: NodeProps) {
 	const d = data as { title?: unknown[]; body?: unknown[] };
 	const title = previewValueSections(d.title) || 'Untitled notification';
@@ -284,4 +323,5 @@ export const nodeTypes = {
 	loop: LoopNodeView,
 	condition: ConditionNodeView,
 	notification: NotificationNodeView,
+	comment: CommentNodeView,
 };

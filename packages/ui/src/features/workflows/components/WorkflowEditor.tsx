@@ -26,7 +26,7 @@ import {
 	ReactFlowProvider,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
-import { Bell, GitBranch, Globe, LayoutTemplate, Repeat, Workflow as WorkflowIcon } from 'lucide-react';
+import { Bell, GitBranch, Globe, LayoutTemplate, Repeat, StickyNote, Workflow as WorkflowIcon } from 'lucide-react';
 import * as React from 'react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -246,6 +246,9 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 			case 'notification':
 				node = { id, type: 'notification', position, data: {} };
 				break;
+			case 'comment':
+				node = { id, type: 'comment', position, data: { text: '' } };
+				break;
 		}
 		dispatch(workflowActions.addNode({ id: workflowId, node }));
 	}
@@ -331,6 +334,11 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 						icon={<Bell size={13} strokeWidth={1.8} />}
 						label='Notification'
 						onClick={() => addNode('notification')}
+					/>
+					<ToolbarButton
+						icon={<StickyNote size={13} strokeWidth={1.8} />}
+						label='Note'
+						onClick={() => addNode('comment')}
 					/>
 					<Box w='1px' h='14px' bg='border.subtle' alignSelf='center' mx='1' />
 					<ToolbarButton icon={<LayoutTemplate size={13} strokeWidth={1.8} />} label='Tidy' onClick={tidyGraph} />

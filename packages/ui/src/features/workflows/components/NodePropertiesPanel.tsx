@@ -112,6 +112,8 @@ function NodeBody({ workflowId, node }: { workflowId: string; node: WorkflowNode
 			return <ConditionEditor workflowId={workflowId} node={node} />;
 		case 'notification':
 			return <NotificationEditor workflowId={workflowId} node={node} />;
+		case 'comment':
+			return <CommentEditor workflowId={workflowId} node={node} />;
 	}
 }
 
@@ -806,6 +808,45 @@ function NotificationEditor({
 	);
 }
 
+// ── Comment ──────────────────────────────────────────────────────────────────
+
+function CommentEditor({
+	workflowId,
+	node,
+}: {
+	workflowId: string;
+	node: Extract<WorkflowNode, { type: 'comment' }>;
+}) {
+	const dispatch = useDispatch();
+	return (
+		<Stack gap='3' px='3' py='3'>
+			<Stack gap='1'>
+				<FieldLabel>{'Note'}</FieldLabel>
+				<Textarea
+					size='sm'
+					rows={8}
+					placeholder='Document this section of the workflow…'
+					value={node.data.text ?? ''}
+					onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+						dispatch(
+							workflowActions.updateNodeData({
+								id: workflowId,
+								nodeId: node.id,
+								data: { text: e.target.value === '' ? undefined : e.target.value },
+							}),
+						)
+					}
+				/>
+			</Stack>
+			<HelperText>
+				{
+					'Comments are pure documentation. They have no inputs or outputs and never run — they ride along with the workflow file so your notes round-trip with the graph.'
+				}
+			</HelperText>
+		</Stack>
+	);
+}
+
 // ── Bits ─────────────────────────────────────────────────────────────────────
 
 const FieldLabel: React.FC<React.PropsWithChildren> = ({ children }) => (
@@ -895,6 +936,8 @@ function kindLabel(kind: WorkflowNode['type']): string {
 			return 'Condition';
 		case 'notification':
 			return 'Notification';
+		case 'comment':
+			return 'Comment';
 	}
 }
 

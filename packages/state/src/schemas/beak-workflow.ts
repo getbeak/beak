@@ -29,35 +29,58 @@ const startNodeSchema = z.object({
 });
 
 /**
- * A subset of the on-disk `ToggleKeyValue` shape (header/query rows). We
- * persist the same ksuid→entry record the request file uses so future RTV
- * editor work plugs in without a migration. `value` is value-sections (array
- * of string-or-RTV parts) — bare-bones editors today write `[string]`, the
- * RTV editor pass replaces the parts in place.
+ * Per-entry override slot. Keyed by the linked request's entry id (header /
+ * query / json / form ksuid), so the override naturally "rides on top of"
+ * the linked schema without duplicating its name/type/required/description
+ * fields. Both fields are optional — a missing key means "pass through the
+ * linked value"; an explicit `false` on `enabled` disables an otherwise-on
+ * row for this step only.
+ *
+ * `value` is `unknown` because the linked entry's value shape varies by
+ * type — `ValueSections` (array) for headers, query, and most JSON entry
+ * types; `boolean` for JSON boolean entries; `null` for null entries. The
+ * renderer knows the linked entry's type at merge time and writes the
+ * right shape here.
  */
-const toggleKeyValueOverrideSchema = z.object({
-	name: z.string(),
-	value: z.array(z.unknown()),
-	enabled: z.boolean(),
+const overrideEntrySchema = z.object({
+	value: z.unknown().optional(),
+	enabled: z.boolean().optional(),
 });
 
 /**
- * Per-step request overrides. Each field is optional — a missing key means
- * "use the linked request's value verbatim". Headers + query are keyed by
- * ksuid so reorder + RTV-binding tools can address rows individually.
+ * Per-step request overrides. Every slot is optional — a missing key means
+ * "use the linked request's value verbatim". Headers, query, and body
+ * fields are keyed by the linked request's entry id so the override map
+ * stays minimal (only the cells the user actually touched). Schema-side
+ * fields (`name`, `type`, `required`, `description`, `options`) live on the
+ * linked request — workflow steps only override values and the per-row
+ * enabled flag, and only on rows the linked schema marks optional.
  */
 const requestOverridesSchema = z
 	.object({
-		headers: z.record(z.string(), toggleKeyValueOverrideSchema).optional(),
-		query: z.record(z.string(), toggleKeyValueOverrideSchema).optional(),
+		headers: z.record(z.string(), overrideEntrySchema).optional(),
+		query: z.record(z.string(), overrideEntrySchema).optional(),
 		body: z
 			.object({
-				// Minimal body override surface — content-type + raw text. The
-				// linked request's structured body editor (json, form, file) is
-				// the source of truth; this slot lets a step swap in a different
-				// payload without re-authoring the request.
-				contentType: z.string().optional(),
-				text: z.array(z.unknown()).optional(),
+				/**
+				 * Per-field overrides for structured bodies — keyed by the
+				 * linked JSON entry id (`json` body), url-encoded form entry
+				 * id (`url_encoded_form` body), or GraphQL variables entry id
+				 * (`graphql` body). The renderer picks the relevant editor
+				 * from the linked body's type.
+				 */
+				fields: z.record(z.string(), overrideEntrySchema).optional(),
+				/**
+				 * Free-form text replacement for opaque body types (`text`,
+				 * `json_raw`). Replaces the whole payload — there's no schema
+				 * to overlay against, so per-field overrides don't apply.
+				 */
+				raw: z
+					.object({
+						contentType: z.string().optional(),
+						text: z.array(z.unknown()).optional(),
+					})
+					.optional(),
 			})
 			.optional(),
 		// The URL itself is fixed by the linked request, but the fragment
@@ -78,7 +101,7 @@ const requestNodeSchema = z.object({
 	}),
 });
 
-export type ToggleKeyValueOverride = z.infer<typeof toggleKeyValueOverrideSchema>;
+export type OverrideEntry = z.infer<typeof overrideEntrySchema>;
 export type RequestOverrides = NonNullable<z.infer<typeof requestOverridesSchema>>;
 
 const loopNodeSchema = z.object({
@@ -132,12 +155,28 @@ const notificationNodeSchema = z.object({
 	}),
 });
 
+/**
+ * Comment / sticky-note node — pure documentation. Doesn't run, doesn't
+ * route, doesn't carry handles (the renderer omits both `target` and
+ * `source` Handles). Stays on disk as part of the graph so the user's
+ * notes round-trip with the workflow file.
+ */
+const commentNodeSchema = z.object({
+	id: z.string(),
+	type: z.literal('comment'),
+	position: nodePositionSchema,
+	data: z.object({
+		text: z.string().optional(),
+	}),
+});
+
 export const workflowNodeSchema = z.discriminatedUnion('type', [
 	startNodeSchema,
 	requestNodeSchema,
 	loopNodeSchema,
 	conditionNodeSchema,
 	notificationNodeSchema,
+	commentNodeSchema,
 ]);
 
 export const workflowEdgeSchema = z.object({

@@ -1,7 +1,7 @@
 import type { WorkflowNodeKind } from '@beak/state/workflows';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { Box, Flex, Stack } from '@chakra-ui/react';
-import { AlertTriangle, Bell, GitBranch, Globe, Repeat } from 'lucide-react';
+import { AlertTriangle, Bell, GitBranch, Globe, Repeat, StickyNote } from 'lucide-react';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 
@@ -167,6 +167,13 @@ export const EmptySelectionPanel: React.FC<EmptySelectionPanelProps> = ({
 			icon: <Bell size={14} strokeWidth={1.8} />,
 			title: 'Notification',
 			subtitle: 'Fire a desktop notification at this step.',
+			tone: 'warning',
+		},
+		{
+			kind: 'comment',
+			icon: <StickyNote size={14} strokeWidth={1.8} />,
+			title: 'Comment',
+			subtitle: 'Document a section — runs nothing, just a sticky note.',
 			tone: 'warning',
 		},
 	];

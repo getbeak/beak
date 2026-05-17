@@ -207,6 +207,17 @@ describe('inspectGraph', () => {
 		expect(r.danglingEdges).toEqual(['e1', 'e2']);
 	});
 
+	it('does not flag comment nodes as unreachable', () => {
+		const wf = makeWorkflow({
+			nodes: [
+				{ id: 's', type: 'start', position: { x: 0, y: 0 }, data: {} } as WorkflowNode,
+				{ id: 'cm', type: 'comment', position: { x: 0, y: 0 }, data: { text: 'hello' } } as WorkflowNode,
+			],
+		});
+		const r = inspectGraph(wf);
+		expect(r.unreachable).toEqual([]);
+	});
+
 	it('lists request nodes with no linked request', () => {
 		const wf = makeWorkflow({
 			nodes: [
@@ -493,6 +504,18 @@ describe('validateConnection', () => {
 			ok: false,
 			reason: 'duplicate-edge',
 		});
+	});
+
+	it('rejects connections that touch a comment node on either end', () => {
+		const wf: WorkflowFile = {
+			...baseWorkflow(),
+			nodes: [
+				...baseWorkflow().nodes,
+				{ id: 'cm', type: 'comment', position: { x: 0, y: 0 }, data: { text: 'note' } } as WorkflowNode,
+			],
+		};
+		expect(validateConnection(wf, { source: 'a', target: 'cm' })).toEqual({ ok: false, reason: 'comment-endpoint' });
+		expect(validateConnection(wf, { source: 'cm', target: 'a' })).toEqual({ ok: false, reason: 'comment-endpoint' });
 	});
 
 	it('accepts the same source/target when the handles differ', () => {
