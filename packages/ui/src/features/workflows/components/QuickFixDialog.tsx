@@ -1,4 +1,4 @@
-import { inspectGraph, validateWorkflow, type WorkflowFile } from '@beak/state/workflows';
+import { firstIssueNode, inspectGraph, validateWorkflow, type WorkflowFile } from '@beak/state/workflows';
 import { actions as workflowActions } from '@beak/ui/store/workflows';
 import { Box, Button, Dialog, Flex, Stack } from '@chakra-ui/react';
 import { Bell, GitBranch, Globe, Repeat, StickyNote, Workflow as WorkflowIcon } from 'lucide-react';
@@ -94,6 +94,24 @@ const QuickFixDialog: React.FC<QuickFixDialogProps> = ({ workflow, open, onClose
 							</Box>
 						) : (
 							<Stack gap='3'>
+								{(() => {
+									// Quick "jump to the first issue" entry — saves a click when
+									// the user just opened the dialog and wants to dive in.
+									const target = firstIssueNode(health);
+									if (!target) return null;
+									return (
+										<Button
+											type='button'
+											size='sm'
+											colorPalette='blue'
+											variant='outline'
+											onClick={() => jump(target)}
+										>
+											{'Jump to first issue'}
+										</Button>
+									);
+								})()}
+
 								{health.unreachable.length > 0 && (
 									<Button
 										type='button'
