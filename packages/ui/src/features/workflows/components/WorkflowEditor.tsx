@@ -124,6 +124,11 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 		initialLabel: string;
 		screen: { x: number; y: number };
 	} | null>(null);
+	const [nodeRenameEditor, setNodeRenameEditor] = useState<{
+		nodeId: string;
+		initialName: string;
+		screen: { x: number; y: number };
+	} | null>(null);
 	const reactFlow = useReactFlow();
 	const selectedNodeId = selectedIds.size === 1 ? [...selectedIds][0] : null;
 
@@ -504,6 +509,23 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 					onCancel={() => setEdgeLabelEditor(null)}
 				/>
 			)}
+			{nodeRenameEditor && (
+				<EdgeLabelEditor
+					screen={nodeRenameEditor.screen}
+					initialLabel={nodeRenameEditor.initialName}
+					onCommit={next => {
+						dispatch(
+							workflowActions.renameNode({
+								id: workflowId,
+								nodeId: nodeRenameEditor.nodeId,
+								name: next || undefined,
+							}),
+						);
+						setNodeRenameEditor(null);
+					}}
+					onCancel={() => setNodeRenameEditor(null)}
+				/>
+			)}
 			<NodeSearchDialog
 				workflow={workflow}
 				open={searchOpen}
@@ -690,6 +712,14 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 							setEdgeLabelEditor({
 								edgeId: edge.id,
 								initialLabel: current,
+								screen: { x: event.clientX, y: event.clientY },
+							});
+						}}
+						onNodeDoubleClick={(event, node) => {
+							const current = (node.data as { _name?: string } | undefined)?._name ?? '';
+							setNodeRenameEditor({
+								nodeId: node.id,
+								initialName: current,
 								screen: { x: event.clientX, y: event.clientY },
 							});
 						}}
