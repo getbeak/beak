@@ -1,6 +1,7 @@
+import { inspectGraph } from '@beak/state/workflows';
 import { changeTab } from '@beak/ui/features/tabs/store/actions';
-import { actions as workflowActions } from '@beak/ui/store/workflows';
 import { useAppSelector } from '@beak/ui/store/redux';
+import { actions as workflowActions } from '@beak/ui/store/workflows';
 import { Box, chakra, Flex } from '@chakra-ui/react';
 import { Workflow as WorkflowIcon } from 'lucide-react';
 import * as React from 'react';
@@ -34,20 +35,20 @@ const Workflows: React.FC = () => {
 			{entries.map(wf => {
 				const isActive = selectedTabId === wf.id;
 				const nodeCount = wf.nodes.length;
+				const health = inspectGraph(wf);
+				const issueCount = health.unreachable.length + health.unlinkedRequestNodes.length + health.cycleNodes.length;
+				const dotColor =
+					issueCount > 0
+						? 'var(--beak-colors-accent-warning)'
+						: nodeCount > 1
+							? 'var(--beak-colors-accent-success)'
+							: 'var(--beak-colors-fg-subtle)';
 				return (
 					<ChakraButton
 						type='button'
 						key={wf.id}
-						onClick={() =>
-							dispatch(
-								changeTab({ type: 'workflow_editor', payload: wf.id, temporary: true }),
-							)
-						}
-						onDoubleClick={() =>
-							dispatch(
-								changeTab({ type: 'workflow_editor', payload: wf.id, temporary: false }),
-							)
-						}
+						onClick={() => dispatch(changeTab({ type: 'workflow_editor', payload: wf.id, temporary: true }))}
+						onDoubleClick={() => dispatch(changeTab({ type: 'workflow_editor', payload: wf.id, temporary: false }))}
 						onContextMenu={event => {
 							event.preventDefault();
 							dispatch(workflowActions.removeWorkflowFromDisk({ id: wf.id, withConfirmation: true }));
@@ -60,11 +61,7 @@ const Workflows: React.FC = () => {
 						h='26px'
 						px='3'
 						border='none'
-						bg={
-							isActive
-								? 'color-mix(in srgb, var(--beak-colors-accent-pink) 12%, transparent)'
-								: 'transparent'
-						}
+						bg={isActive ? 'color-mix(in srgb, var(--beak-colors-accent-pink) 12%, transparent)' : 'transparent'}
 						color={isActive ? 'accent.pink' : 'fg.default'}
 						fontSize='12px'
 						fontWeight='500'
@@ -88,8 +85,20 @@ const Workflows: React.FC = () => {
 							h='14px'
 							flexShrink={0}
 							color={isActive ? 'accent.pink' : 'fg.subtle'}
+							position='relative'
 						>
 							<WorkflowIcon size={11} strokeWidth={1.8} />
+							<Box
+								position='absolute'
+								top='-1px'
+								right='-1px'
+								w='6px'
+								h='6px'
+								borderRadius='full'
+								bg={dotColor}
+								borderWidth='1.5px'
+								borderColor='bg.surface'
+							/>
 						</Flex>
 						<Box flex='1 1 auto' minW={0} overflow='hidden' textOverflow='ellipsis' whiteSpace='nowrap'>
 							{wf.name || 'Untitled workflow'}
@@ -101,8 +110,13 @@ const Workflows: React.FC = () => {
 							fontVariantNumeric='tabular-nums'
 							color={isActive ? 'accent.pink' : 'fg.subtle'}
 							opacity={0.7}
+							title={
+								issueCount > 0
+									? `${issueCount} issue${issueCount === 1 ? '' : 's'}`
+									: undefined
+							}
 						>
-							{`${nodeCount} step${nodeCount === 1 ? '' : 's'}`}
+							{issueCount > 0 ? `${issueCount} issue${issueCount === 1 ? '' : 's'}` : `${nodeCount} step${nodeCount === 1 ? '' : 's'}`}
 						</Box>
 					</ChakraButton>
 				);
