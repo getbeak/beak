@@ -113,6 +113,7 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 	const [searchOpen, setSearchOpen] = useState(false);
 	const [simulateOpen, setSimulateOpen] = useState(false);
 	const [quickFixOpen, setQuickFixOpen] = useState(false);
+	const [activeSimEdgeId, setActiveSimEdgeId] = useState<string | null>(null);
 	// `{ x, y }` is in flow-coordinates (already mapped); rendered absolutely
 	// over the canvas at `screen-x/y` for the menu position.
 	const [paneMenu, setPaneMenu] = useState<{ flow: { x: number; y: number }; screen: { x: number; y: number } } | null>(
@@ -173,9 +174,13 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 			const onCycle = cycleSet.has(e.source) && cycleSet.has(e.target);
 			const isConnectedToSelection = selectedIds.has(e.source) || selectedIds.has(e.target);
 			const handleColor = edgeColorForHandle(typeof e.sourceHandle === 'string' ? e.sourceHandle : null);
-			if (!onCycle && !isConnectedToSelection && !handleColor) return e;
+			const isActiveSim = activeSimEdgeId === e.id;
+			if (!onCycle && !isConnectedToSelection && !handleColor && !isActiveSim) return e;
 			const style: React.CSSProperties = { ...(e.style as React.CSSProperties | undefined) };
-			if (onCycle) {
+			if (isActiveSim) {
+				style.stroke = 'var(--beak-colors-accent-pink)';
+				style.strokeWidth = 3;
+			} else if (onCycle) {
 				style.stroke = 'var(--beak-colors-accent-warning)';
 				style.strokeWidth = 2;
 			} else if (isConnectedToSelection) {
@@ -185,9 +190,9 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 				style.stroke = handleColor;
 				style.strokeWidth = 1.5;
 			}
-			return { ...e, style, animated: onCycle ? false : isConnectedToSelection };
+			return { ...e, style, animated: isActiveSim ? true : onCycle ? false : isConnectedToSelection };
 		});
-	}, [rfEdges, selectedIds, workflow, health?.cycleNodes]);
+	}, [rfEdges, selectedIds, workflow, health?.cycleNodes, activeSimEdgeId]);
 
 	const selectedNode = useMemo(() => {
 		if (!workflow || !selectedNodeId) return undefined;
@@ -508,8 +513,12 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 			<SimulationDialog
 				workflow={workflow}
 				open={simulateOpen}
-				onClose={() => setSimulateOpen(false)}
+				onClose={() => {
+					setSimulateOpen(false);
+					setActiveSimEdgeId(null);
+				}}
 				onJumpToNode={replaceSelection}
+				onActiveEdge={setActiveSimEdgeId}
 			/>
 			<QuickFixDialog
 				workflow={workflow}

@@ -9,6 +9,12 @@ interface SimulationDialogProps {
 	open: boolean;
 	onClose: () => void;
 	onJumpToNode: (nodeId: string) => void;
+	/**
+	 * Fired each time the cursor lands on an edge-followed event, so the
+	 * editor can stroke the active wire on the canvas. Fires `null` when
+	 * the cursor moves off an edge event or the dialog closes.
+	 */
+	onActiveEdge?: (edgeId: string | null) => void;
 }
 
 /**
@@ -20,7 +26,7 @@ interface SimulationDialogProps {
  * Useful before the orchestrator lands — lets the user eyeball whether
  * their loop/condition wiring produces the walk they expect.
  */
-const SimulationDialog: React.FC<SimulationDialogProps> = ({ workflow, open, onClose, onJumpToNode }) => {
+const SimulationDialog: React.FC<SimulationDialogProps> = ({ workflow, open, onClose, onJumpToNode, onActiveEdge }) => {
 	const events = useMemo<SimulationEvent[]>(() => {
 		if (!open) return [];
 		return walkWorkflow(workflow, { evaluateCondition: () => true });
@@ -71,7 +77,15 @@ const SimulationDialog: React.FC<SimulationDialogProps> = ({ workflow, open, onC
 		if (!event) return;
 		const id = currentNodeId(event);
 		if (id) onJumpToNode(id);
-	}, [cursor, events, open, onJumpToNode]);
+		// Fire the active-edge callback when the cursor lands on an
+		// edge-followed event; null otherwise so the highlight clears
+		// between hops.
+		onActiveEdge?.(event.type === 'edge-followed' ? event.edgeId : null);
+	}, [cursor, events, open, onJumpToNode, onActiveEdge]);
+
+	useEffect(() => {
+		if (!open && onActiveEdge) onActiveEdge(null);
+	}, [open, onActiveEdge]);
 
 	const atEnd = cursor >= events.length - 1;
 	const atStart = cursor <= 0;
