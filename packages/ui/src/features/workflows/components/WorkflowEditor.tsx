@@ -1,6 +1,15 @@
 import { verbToColor, verbToShortLabel } from '@beak/design-system/helpers';
 import ksuid from '@beak/ksuid';
-import type { RequestOverrides, WorkflowEdge, WorkflowNode, WorkflowNodeKind } from '@beak/state/workflows';
+import {
+	inspectGraph,
+	overrideBadgeText,
+	placeNewNode,
+	previewValueSections,
+	type RequestOverrides,
+	type WorkflowEdge,
+	type WorkflowNode,
+	type WorkflowNodeKind,
+} from '@beak/state/workflows';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { actions as workflowActions } from '@beak/ui/store/workflows';
 import { Box, Flex, Input, Stack } from '@chakra-ui/react';
@@ -24,9 +33,9 @@ import {
 	ReactFlowProvider,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
-import { Bell, GitBranch, Globe, Play, Repeat } from 'lucide-react';
+import { AlertTriangle, Bell, GitBranch, Globe, Play, Repeat, Workflow as WorkflowIcon } from 'lucide-react';
 import * as React from 'react';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
 import NodePropertiesPanel from './NodePropertiesPanel';
@@ -85,6 +94,42 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 		return workflow.nodes.find(n => n.id === selectedNodeId);
 	}, [workflow, selectedNodeId]);
 
+	const health = useMemo(() => (workflow ? inspectGraph(workflow) : null), [workflow]);
+	const warningCount = health ? health.unreachable.length + health.unlinkedRequestNodes.length : 0;
+
+	// Keyboard: Delete/Backspace removes the selected node (unless it's Start),
+	// Escape clears selection. Skip when focus is inside a text field so the
+	// properties panel and toolbar inputs keep their native behaviour.
+	useEffect(() => {
+		function onKeyDown(event: KeyboardEvent) {
+			const target = event.target as HTMLElement | null;
+			const tag = target?.tagName;
+			const isEditable =
+				tag === 'INPUT' ||
+				tag === 'TEXTAREA' ||
+				tag === 'SELECT' ||
+				(target?.isContentEditable ?? false);
+			if (isEditable) return;
+
+			if (event.key === 'Escape') {
+				if (selectedNodeId) {
+					event.preventDefault();
+					setSelectedNodeId(null);
+				}
+				return;
+			}
+
+			if ((event.key === 'Delete' || event.key === 'Backspace') && selectedNodeId && selectedNode) {
+				if (selectedNode.type === 'start') return;
+				event.preventDefault();
+				dispatch(workflowActions.removeNode({ id: workflowId, nodeId: selectedNodeId }));
+				setSelectedNodeId(null);
+			}
+		}
+		window.addEventListener('keydown', onKeyDown);
+		return () => window.removeEventListener('keydown', onKeyDown);
+	}, [dispatch, selectedNode, selectedNodeId, workflowId]);
+
 	const onNodesChange = useCallback(
 		(changes: NodeChange[]) => {
 			if (!workflow) return;
@@ -119,7 +164,7 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 
 	function addNode(kind: AddableNodeKind) {
 		const id = ksuid.generate('node').toString();
-		const position = { x: 280 + Math.random() * 240, y: 120 + Math.random() * 200 };
+		const position = placeNewNode(workflow.nodes);
 		let node: WorkflowNode;
 		switch (kind) {
 			case 'request':
@@ -144,22 +189,67 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 				align='center'
 				gap='2'
 				px='3'
-				h='38px'
+				py='2'
 				flexShrink={0}
 				borderBottomWidth='1px'
 				borderColor='border.subtle'
 				bg='bg.surface'
 			>
+				<Flex
+					align='center'
+					justify='center'
+					w='22px'
+					h='22px'
+					borderRadius='md'
+					bg='color-mix(in srgb, var(--beak-colors-accent-pink) 12%, transparent)'
+					borderWidth='1px'
+					borderColor='color-mix(in srgb, var(--beak-colors-accent-pink) 26%, transparent)'
+					color='accent.pink'
+					flex='0 0 auto'
+				>
+					<WorkflowIcon size={11} strokeWidth={2.2} />
+				</Flex>
 				<Input
-					size='sm'
-					variant='subtle'
+					size='xs'
+					variant='outline'
 					value={workflow.name}
 					maxW='280px'
+					h='24px'
+					fontSize='12px'
+					fontWeight='600'
+					color='fg.default'
+					borderColor='transparent'
+					bg='transparent'
+					px='1.5'
+					_hover={{ borderColor: 'border.subtle' }}
+					_focus={{ borderColor: 'accent.pink', bg: 'bg.surface' }}
 					onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
 						dispatch(workflowActions.updateWorkflowName({ id: workflowId, name: e.target.value }));
 					}}
 				/>
-				<Box flex='1' />
+				<Flex align='center' gap='1.5' ml='2' color='fg.subtle' fontSize='10px' fontWeight='600'>
+					<MetaPill icon={<Globe size={10} strokeWidth={2.2} />} count={workflow.nodes.length} label='steps' />
+					<MetaPill icon={<GitBranch size={10} strokeWidth={2.2} />} count={workflow.edges.length} label='links' />
+					{warningCount > 0 && (
+						<WarningPill
+							count={warningCount}
+							label={warningCount === 1 ? 'issue' : 'issues'}
+							title={
+								health
+									? [
+										health.unreachable.length > 0 ? `${health.unreachable.length} unreachable` : null,
+										health.unlinkedRequestNodes.length > 0 ? `${health.unlinkedRequestNodes.length} unlinked` : null,
+									]
+											.filter(Boolean)
+											.join(' · ')
+									: undefined
+							}
+						/>
+					)}
+				</Flex>
+
+				<Box flex='1 1 auto' />
+
 				<Stack direction='row' gap='1'>
 					<ToolbarButton icon={<Globe size={13} strokeWidth={1.8} />} label='Request' onClick={() => addNode('request')} />
 					<ToolbarButton icon={<Repeat size={13} strokeWidth={1.8} />} label='Loop' onClick={() => addNode('loop')} />
@@ -194,17 +284,222 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 						<Controls />
 					</ReactFlow>
 				</Box>
-				{selectedNode && (
+				{selectedNode ? (
 					<NodePropertiesPanel
 						workflowId={workflowId}
 						node={selectedNode}
 						onClose={() => setSelectedNodeId(null)}
+					/>
+				) : (
+					<EmptySelectionPanel
+						addNode={addNode}
+						unreachableCount={health?.unreachable.length ?? 0}
+						unlinkedCount={health?.unlinkedRequestNodes.length ?? 0}
 					/>
 				)}
 			</Flex>
 		</Flex>
 	);
 };
+
+interface MetaPillProps {
+	icon: React.ReactNode;
+	count: number;
+	label: string;
+}
+
+// Mirrors the variable-set editor's header pill so the two surfaces feel
+// like siblings rather than two different visual languages.
+const MetaPill: React.FC<MetaPillProps> = ({ icon, count, label }) => (
+	<Flex
+		align='center'
+		gap='1'
+		px='1.5'
+		h='18px'
+		borderRadius='sm'
+		borderWidth='1px'
+		borderColor='border.subtle'
+		bg='bg.canvas'
+		color='fg.subtle'
+		fontVariantNumeric='tabular-nums'
+	>
+		{icon}
+		<Box as='span'>{count}</Box>
+		<Box as='span' color='fg.muted'>
+			{label}
+		</Box>
+	</Flex>
+);
+
+// Amber pill that appears when the graph picks up unreachable steps or
+// unlinked request nodes — same shape as MetaPill so the two read as a row.
+const WarningPill: React.FC<{ count: number; label: string; title?: string }> = ({ count, label, title }) => (
+	<Flex
+		align='center'
+		gap='1'
+		px='1.5'
+		h='18px'
+		borderRadius='sm'
+		borderWidth='1px'
+		borderColor='color-mix(in srgb, var(--beak-colors-accent-warning) 38%, transparent)'
+		bg='color-mix(in srgb, var(--beak-colors-accent-warning) 14%, transparent)'
+		color='accent.warning'
+		fontVariantNumeric='tabular-nums'
+		title={title}
+	>
+		<AlertTriangle size={10} strokeWidth={2.2} />
+		<Box as='span'>{count}</Box>
+		<Box as='span' opacity={0.85}>
+			{label}
+		</Box>
+	</Flex>
+);
+
+interface EmptySelectionPanelProps {
+	addNode: (kind: AddableNodeKind) => void;
+	unreachableCount: number;
+	unlinkedCount: number;
+}
+
+// Shown on the right when nothing's selected — gives the canvas an obvious
+// "what next" instead of empty space. Buttons fire the same toolbar handlers
+// so the user has one entry point for adding nodes regardless of focus.
+const EmptySelectionPanel: React.FC<EmptySelectionPanelProps> = ({ addNode, unreachableCount, unlinkedCount }) => {
+	const items: { kind: AddableNodeKind; icon: React.ReactNode; title: string; subtitle: string; tone: string }[] = [
+		{
+			kind: 'request',
+			icon: <Globe size={14} strokeWidth={1.8} />,
+			title: 'Request',
+			subtitle: 'Run a linked request with per-step overrides.',
+			tone: 'pink',
+		},
+		{
+			kind: 'loop',
+			icon: <Repeat size={14} strokeWidth={1.8} />,
+			title: 'Loop',
+			subtitle: 'Repeat the inner branch N times or for each item.',
+			tone: 'teal',
+		},
+		{
+			kind: 'condition',
+			icon: <GitBranch size={14} strokeWidth={1.8} />,
+			title: 'Condition',
+			subtitle: 'Branch on a value — true/false outputs.',
+			tone: 'indigo',
+		},
+		{
+			kind: 'notification',
+			icon: <Bell size={14} strokeWidth={1.8} />,
+			title: 'Notification',
+			subtitle: 'Fire a desktop notification at this step.',
+			tone: 'warning',
+		},
+	];
+	return (
+		<Flex
+			direction='column'
+			w='320px'
+			flexShrink={0}
+			bg='bg.surface'
+			borderLeftWidth='1px'
+			borderColor='border.subtle'
+			minH={0}
+			overflowY='auto'
+		>
+			<Box px='3' py='3' borderBottomWidth='1px' borderColor='border.subtle'>
+				<Box fontSize='10px' fontWeight='700' color='fg.muted' textTransform='uppercase' letterSpacing='0.06em'>
+					{'Add a step'}
+				</Box>
+				<Box mt='1' fontSize='11px' color='fg.subtle' lineHeight='1.5'>
+					{'Click a node to edit its details. Or add a new step from below — it lands next to your existing work.'}
+				</Box>
+			</Box>
+			<Stack px='2' py='2' gap='1'>
+				{items.map(item => (
+					<Flex
+						as='button'
+						key={item.kind}
+						role='button'
+						align='flex-start'
+						gap='2'
+						px='2'
+						py='2'
+						bg='transparent'
+						borderRadius='sm'
+						cursor='pointer'
+						textAlign='left'
+						_hover={{ bg: 'color-mix(in srgb, var(--beak-colors-fg-default) 6%, transparent)' }}
+						onClick={() => addNode(item.kind)}
+					>
+						<Flex
+							align='center'
+							justify='center'
+							w='24px'
+							h='24px'
+							flexShrink={0}
+							borderRadius='sm'
+							color={`accent.${item.tone}`}
+							bg={`color-mix(in srgb, var(--beak-colors-accent-${item.tone}) 14%, transparent)`}
+						>
+							{item.icon}
+						</Flex>
+						<Stack gap='0.5' flex='1' minW={0}>
+							<Box fontSize='12px' fontWeight='600' color='fg.default'>
+								{item.title}
+							</Box>
+							<Box fontSize='11px' color='fg.subtle' lineHeight='1.4'>
+								{item.subtitle}
+							</Box>
+						</Stack>
+					</Flex>
+				))}
+			</Stack>
+			{(unreachableCount > 0 || unlinkedCount > 0) && (
+				<Box px='3' py='3' borderTopWidth='1px' borderColor='border.subtle'>
+					<Box fontSize='10px' fontWeight='700' color='accent.warning' textTransform='uppercase' letterSpacing='0.06em' mb='1.5'>
+						{'Heads up'}
+					</Box>
+					<Stack gap='1' fontSize='11px' color='fg.subtle' lineHeight='1.5'>
+						{unreachableCount > 0 && (
+							<Box>{`${unreachableCount} step${unreachableCount === 1 ? '' : 's'} not connected to Start.`}</Box>
+						)}
+						{unlinkedCount > 0 && (
+							<Box>{`${unlinkedCount} request step${unlinkedCount === 1 ? '' : 's'} missing a linked request.`}</Box>
+						)}
+					</Stack>
+				</Box>
+			)}
+			<Box flex='1' />
+			<Box px='3' py='2.5' borderTopWidth='1px' borderColor='border.subtle' fontSize='10px' color='fg.subtle' lineHeight='1.5'>
+				<Box mb='0.5'>
+					<KbdHint>Esc</KbdHint> {'clear selection'}
+				</Box>
+				<Box>
+					<KbdHint>Delete</KbdHint> {'remove the selected step'}
+				</Box>
+			</Box>
+		</Flex>
+	);
+};
+
+const KbdHint: React.FC<React.PropsWithChildren> = ({ children }) => (
+	<Box
+		as='span'
+		display='inline-block'
+		px='1'
+		mr='1'
+		fontFamily='mono'
+		fontSize='10px'
+		fontWeight='600'
+		color='fg.muted'
+		bg='bg.canvas'
+		borderRadius='sm'
+		borderWidth='1px'
+		borderColor='border.subtle'
+	>
+		{children}
+	</Box>
+);
 
 const ToolbarButton: React.FC<{ icon: React.ReactNode; label: string; onClick: () => void }> = ({ icon, label, onClick }) => (
 	<Flex
@@ -323,36 +618,6 @@ const VerbBadge: React.FC<{ verb: string }> = ({ verb }) => (
 		{verbToShortLabel(verb)}
 	</Box>
 );
-
-function countOverrideEntries(record?: Record<string, { enabled: boolean }>): number {
-	if (!record) return 0;
-	return Object.values(record).filter(r => r.enabled).length;
-}
-
-function overrideBadgeText(overrides?: RequestOverrides): string | null {
-	if (!overrides) return null;
-	const counts: string[] = [];
-	const headers = countOverrideEntries(overrides.headers);
-	const query = countOverrideEntries(overrides.query);
-	if (headers > 0) counts.push(`${headers}h`);
-	if (query > 0) counts.push(`${query}q`);
-	if (overrides.body) counts.push('body');
-	if (overrides.fragment && overrides.fragment.length > 0) counts.push('frag');
-	return counts.length === 0 ? null : counts.join(' · ');
-}
-
-// Best-effort URL preview for the canvas pill. Joins string parts of the
-// linked request's value-sections URL and replaces RTV parts with `{var}` so
-// the pill never explodes on a templated URL.
-function previewValueSections(parts: unknown[] | undefined): string {
-	if (!parts) return '';
-	return parts
-		.map(p => {
-			if (typeof p === 'string') return p;
-			return '{var}';
-		})
-		.join('');
-}
 
 function RequestNodeView({ data, selected }: NodeProps) {
 	const d = data as { requestId: string | null; overrides?: RequestOverrides };

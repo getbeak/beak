@@ -1,18 +1,42 @@
 import { verbToColor, verbToShortLabel } from '@beak/design-system/helpers';
-import type { RequestOverrides, WorkflowNode } from '@beak/state/workflows';
+import { projectTree } from '@beak/state';
+import {
+	mergeJson,
+	mergeKv,
+	type OverrideEntry,
+	previewValueSections,
+	pruneBody,
+	pruneOverrideMap,
+	pruneOverrides,
+	readPlainText,
+	type RequestOverrides,
+	type WorkflowNode,
+} from '@beak/state/workflows';
+import BasicTableEditor from '@beak/ui/features/basic-table-editor/components/BasicTableEditor';
+import JsonEditor from '@beak/ui/features/json-editor/components/JsonEditor';
 import { changeTab } from '@beak/ui/features/tabs/store/actions';
 import VariableInput from '@beak/ui/features/variable-input/components/VariableInput';
-import type { ValueSections } from '@beak/ui/features/variables/values';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { actions as workflowActions } from '@beak/ui/store/workflows';
-import { Box, Button, Flex, IconButton as ChakraIconButton, Input, NativeSelect, Stack, Tabs, Textarea } from '@chakra-ui/react';
-import type { RequestNode } from '@getbeak/types/nodes';
+import {
+	Box,
+	Button,
+	IconButton as ChakraIconButton,
+	Flex,
+	Input,
+	NativeSelect,
+	Stack,
+	Tabs,
+	Textarea,
+} from '@chakra-ui/react';
+import type { EntryMap } from '@getbeak/types/body-editor-json';
+import type { ValidRequestNode } from '@getbeak/types/nodes';
+import type { ToggleKeyValue } from '@getbeak/types/request';
+import type { ValueSections } from '@getbeak/types/values';
 import { ExternalLink, Play, Trash2, X } from 'lucide-react';
 import * as React from 'react';
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
-
-import KeyValueEditor from './KeyValueEditor';
 
 interface NodePropertiesPanelProps {
 	workflowId: string;
@@ -57,7 +81,10 @@ const NodePropertiesPanel: React.FC<NodePropertiesPanelProps> = ({ workflowId, n
 				{/* Start nodes are workflow-scoped singletons; hide Delete so the user
 				    can't strand a workflow without an entry point. */}
 				{node.type !== 'start' && (
-					<TinyIconButton ariaLabel='Delete node' onClick={() => dispatch(workflowActions.removeNode({ id: workflowId, nodeId: node.id }))}>
+					<TinyIconButton
+						ariaLabel='Delete node'
+						onClick={() => dispatch(workflowActions.removeNode({ id: workflowId, nodeId: node.id }))}
+					>
 						<Trash2 size={13} strokeWidth={1.8} />
 					</TinyIconButton>
 				)}
@@ -107,7 +134,9 @@ function StartEditor() {
 				</Box>
 			</Flex>
 			<HelperText>
-				{'Every workflow begins here. Connect this node’s output to the first step you want to run. Exactly one start node per workflow.'}
+				{
+					'Every workflow begins here. Connect this node’s output to the first step you want to run. Exactly one start node per workflow.'
+				}
 			</HelperText>
 		</Stack>
 	);
@@ -115,6 +144,14 @@ function StartEditor() {
 
 // ── Request ──────────────────────────────────────────────────────────────────
 
+/**
+ * Workflow request-node editor. Reuses the same `BasicTableEditor` /
+ * `JsonEditor` the request pane mounts, but in `valuesOnly` mode so the
+ * schema (key names, types, required, descriptions) stays locked to whatever
+ * the linked request declares. The user only edits *values* and the per-row
+ * enabled toggle (and only for non-required rows). Edits land in the
+ * workflow's per-step override map, keyed by the linked entry's id.
+ */
 function RequestEditor({ workflowId, node }: { workflowId: string; node: Extract<WorkflowNode, { type: 'request' }> }) {
 	const dispatch = useDispatch();
 	const tree = useAppSelector(s => s.global.project.tree);
@@ -124,22 +161,25 @@ function RequestEditor({ workflowId, node }: { workflowId: string; node: Extract
 		return t?.type === 'request' ? t : undefined;
 	});
 
-	const requests = useMemo(() => {
-		const all = Object.values(tree).filter((n): n is RequestNode => n.type === 'request');
-		return all.sort((a, b) => a.name.localeCompare(b.name));
-	}, [tree]);
+	const requests = useMemo(
+		() => projectTree.filterByType(tree, 'request').sort((a, b) => a.name.localeCompare(b.name)),
+		[tree],
+	);
 
 	const overrides: RequestOverrides = node.data.overrides ?? {};
 
-	function patchOverrides(patch: Partial<RequestOverrides>) {
-		dispatch(
-			workflowActions.updateNodeData({
-				id: workflowId,
-				nodeId: node.id,
-				data: { overrides: { ...overrides, ...patch } },
-			}),
-		);
-	}
+	const writeOverrides = useCallback(
+		(next: RequestOverrides) => {
+			dispatch(
+				workflowActions.updateNodeData({
+					id: workflowId,
+					nodeId: node.id,
+					data: { overrides: pruneOverrides(next) },
+				}),
+			);
+		},
+		[dispatch, workflowId, node.id],
+	);
 
 	const verb = linked?.mode === 'valid' ? linked.info.verb : null;
 	const urlPreview = linked?.mode === 'valid' ? previewValueSections(linked.info.url) : '';
@@ -187,7 +227,16 @@ function RequestEditor({ workflowId, node }: { workflowId: string; node: Extract
 						borderColor='border.subtle'
 					>
 						<VerbPill verb={verb} />
-						<Box flex='1' minW={0} fontSize='11px' color='fg.muted' fontFamily='mono' whiteSpace='nowrap' overflow='hidden' textOverflow='ellipsis'>
+						<Box
+							flex='1'
+							minW={0}
+							fontSize='11px'
+							color='fg.muted'
+							fontFamily='mono'
+							whiteSpace='nowrap'
+							overflow='hidden'
+							textOverflow='ellipsis'
+						>
 							{urlPreview || '(no URL)'}
 						</Box>
 						<ChakraIconButton
@@ -198,7 +247,7 @@ function RequestEditor({ workflowId, node }: { workflowId: string; node: Extract
 							_hover={{ color: 'fg.default' }}
 							onClick={() => {
 								if (!linked) return;
-								dispatch(changeTab({ type: 'request', payload: linked.id, temporary: false }));
+								dispatch(changeTab({ type: 'request', payload: linked.id, temporary: true }));
 							}}
 						>
 							<ExternalLink size={12} strokeWidth={1.8} />
@@ -207,7 +256,7 @@ function RequestEditor({ workflowId, node }: { workflowId: string; node: Extract
 				)}
 			</Stack>
 
-			{linked && (
+			{linked && linked.mode === 'valid' && (
 				<Tabs.Root defaultValue='headers' size='sm' variant='line'>
 					<Tabs.List px='3' borderBottomWidth='1px' borderColor='border.subtle'>
 						<Tabs.Trigger value='headers'>{'Headers'}</Tabs.Trigger>
@@ -217,39 +266,33 @@ function RequestEditor({ workflowId, node }: { workflowId: string; node: Extract
 					</Tabs.List>
 
 					<Tabs.Content value='headers' p='3'>
-						<KeyValueEditor
-							rows={overrides.headers}
-							onChange={next => patchOverrides({ headers: Object.keys(next).length === 0 ? undefined : next })}
-							namePlaceholder='Header name'
-							valuePlaceholder='Value'
-							addLabel='Add header'
+						<KvOverrideEditor
+							linked={linked.info.headers}
+							overrides={overrides.headers}
+							onChange={next => writeOverrides({ ...overrides, headers: next })}
 						/>
-						<OverrideHelper>{"Overrides merge over the request's headers — same name wins."}</OverrideHelper>
+						<OverrideHelper>{'Override values for this step only — the linked request owns the schema.'}</OverrideHelper>
 					</Tabs.Content>
 
 					<Tabs.Content value='query' p='3'>
-						<KeyValueEditor
-							rows={overrides.query}
-							onChange={next => patchOverrides({ query: Object.keys(next).length === 0 ? undefined : next })}
-							namePlaceholder='Param name'
-							valuePlaceholder='Value'
-							addLabel='Add parameter'
+						<KvOverrideEditor
+							linked={linked.info.query}
+							overrides={overrides.query}
+							onChange={next => writeOverrides({ ...overrides, query: next })}
 						/>
-						<OverrideHelper>{"Overrides merge over the request's query — same name wins."}</OverrideHelper>
+						<OverrideHelper>{'Override values for this step only — the linked request owns the schema.'}</OverrideHelper>
 					</Tabs.Content>
 
 					<Tabs.Content value='body' p='3'>
-						<BodyOverrideEditor
-							value={overrides.body}
-							onChange={next => patchOverrides({ body: next })}
+						<BodyOverrideTab
+							linked={linked}
+							overrides={overrides.body}
+							onChange={next => writeOverrides({ ...overrides, body: next })}
 						/>
 					</Tabs.Content>
 
 					<Tabs.Content value='fragment' p='3'>
-						<FragmentEditor
-							value={overrides.fragment}
-							onChange={next => patchOverrides({ fragment: next })}
-						/>
+						<FragmentEditor value={overrides.fragment} onChange={next => writeOverrides({ ...overrides, fragment: next })} />
 					</Tabs.Content>
 				</Tabs.Root>
 			)}
@@ -257,18 +300,197 @@ function RequestEditor({ workflowId, node }: { workflowId: string; node: Extract
 	);
 }
 
-function BodyOverrideEditor({
+// ── Header/Query override editor ────────────────────────────────────────────
+
+/**
+ * Reuse `BasicTableEditor` in `valuesOnly` mode for header + query overrides.
+ * Linked rows are merged with overrides at render time so the table shows the
+ * linked schema with override values overlaid; edits write back into the
+ * keyed override map. Schema-side updates (name, type, required, etc.)
+ * never reach this component — `valuesOnly` locks the affordances.
+ */
+function KvOverrideEditor({
+	linked,
+	overrides,
+	onChange,
+}: {
+	linked: Record<string, ToggleKeyValue>;
+	overrides: Record<string, OverrideEntry> | undefined;
+	onChange: (next: Record<string, OverrideEntry> | undefined) => void;
+}) {
+	const merged = useMemo(() => mergeKv(linked, overrides), [linked, overrides]);
+
+	function patchOverride(id: string, patch: Partial<OverrideEntry>) {
+		const current = overrides?.[id] ?? {};
+		const updated: OverrideEntry = { ...current, ...patch };
+		const next: Record<string, OverrideEntry> = { ...(overrides ?? {}), [id]: updated };
+		onChange(pruneOverrideMap(next));
+	}
+
+	if (Object.keys(linked).length === 0) {
+		return <HelperText>{'No fields declared on the linked request — nothing to override here.'}</HelperText>;
+	}
+
+	return (
+		<BasicTableEditor
+			items={merged}
+			valuesOnly
+			updateItem={(type, id, value) => {
+				if (type === 'value') patchOverride(id, { value });
+				else if (type === 'enabled') patchOverride(id, { enabled: value as boolean });
+				// Other fields (name/type/required/...) belong to the linked schema
+				// and can't be reached from this UI; ignore if they somehow fire.
+			}}
+		/>
+	);
+}
+
+// ── Body override tab ───────────────────────────────────────────────────────
+
+/**
+ * Dispatches on the linked body type to render the appropriate values-only
+ * editor. JSON bodies get the structured `JsonEditor`, url-encoded forms get
+ * the `BasicTableEditor`, and opaque bodies (text, json_raw) fall back to a
+ * full-payload textarea (since there's no schema to overlay against). gRPC /
+ * file / GraphQL bodies are noted as not-yet-supported for v1.
+ */
+function BodyOverrideTab({
+	linked,
+	overrides,
+	onChange,
+}: {
+	linked: ValidRequestNode;
+	overrides: RequestOverrides['body'];
+	onChange: (next: RequestOverrides['body']) => void;
+}) {
+	const body = linked.info.body;
+
+	if (body.type === 'json') {
+		return (
+			<JsonBodyOverrideEditor
+				requestId={linked.id}
+				linked={body.payload}
+				overrides={overrides?.fields}
+				onChange={nextFields => onChange(pruneBody({ ...(overrides ?? {}), fields: nextFields }))}
+			/>
+		);
+	}
+
+	if (body.type === 'url_encoded_form') {
+		return (
+			<KvOverrideEditor
+				linked={body.payload}
+				overrides={overrides?.fields}
+				onChange={nextFields => onChange(pruneBody({ ...(overrides ?? {}), fields: nextFields }))}
+			/>
+		);
+	}
+
+	if (body.type === 'text' || body.type === 'json_raw') {
+		return (
+			<RawBodyOverrideEditor
+				linkedPayload={body.payload}
+				value={overrides?.raw}
+				onChange={nextRaw => onChange(pruneBody({ ...(overrides ?? {}), raw: nextRaw }))}
+			/>
+		);
+	}
+
+	return (
+		<HelperText>
+			{`Body overrides for "${body.type}" bodies are coming in a follow-up. The linked request's body fires as-is.`}
+		</HelperText>
+	);
+}
+
+/**
+ * Reuses `JsonEditor` in `valuesOnly` mode for the JSON body. Merges the
+ * linked EntryMap with the per-step overrides on every render, and provides
+ * custom action creators so value/enabled writes land in the workflow's
+ * override slice instead of the project slice.
+ */
+function JsonBodyOverrideEditor({
+	requestId,
+	linked,
+	overrides,
+	onChange,
+}: {
+	requestId: string;
+	linked: EntryMap;
+	overrides: Record<string, OverrideEntry> | undefined;
+	onChange: (next: Record<string, OverrideEntry> | undefined) => void;
+}) {
+	const merged = useMemo(() => mergeJson(linked, overrides), [linked, overrides]);
+
+	const patchOverride = useCallback(
+		(id: string, patch: Partial<OverrideEntry>) => {
+			const current = overrides?.[id] ?? {};
+			const updated: OverrideEntry = { ...current, ...patch };
+			const next: Record<string, OverrideEntry> = { ...(overrides ?? {}), [id]: updated };
+			onChange(pruneOverrideMap(next));
+		},
+		[overrides, onChange],
+	);
+
+	// JsonEditor expects each action creator to take a payload and return an
+	// AnyAction. Wrap our patch-and-dispatch in lightweight thunks that return
+	// a workflow `updateNodeData` action — using the underlying writeOverrides
+	// path through the parent's onChange so we don't double up dispatches.
+	const valueChanged = useCallback(
+		(payload: { id: string; value: unknown }) => {
+			patchOverride(payload.id, { value: payload.value });
+			// Return a noop action — the dispatch has already happened above.
+			return { type: 'workflows/_noop' } as const;
+		},
+		[patchOverride],
+	);
+	const enabledChanged = useCallback(
+		(payload: { id: string; enabled: boolean }) => {
+			patchOverride(payload.id, { enabled: payload.enabled });
+			return { type: 'workflows/_noop' } as const;
+		},
+		[patchOverride],
+	);
+
+	if (Object.keys(linked).length === 0) {
+		return <HelperText>{'No JSON body fields on the linked request — nothing to override.'}</HelperText>;
+	}
+
+	return (
+		<JsonEditor
+			requestId={requestId}
+			value={merged}
+			valuesOnly
+			editorSelector={() => merged}
+			// Schema-mutation handlers are unreachable in valuesOnly mode but
+			// JsonEditor still requires the slots — point them at a noop to
+			// keep redux quiet if the UI somehow surfaces them.
+			valueChanged={valueChanged}
+			enabledChanged={enabledChanged}
+		/>
+	);
+}
+
+/**
+ * Free-form raw-body override for `text` and `json_raw` linked bodies. Shows
+ * the linked payload as a faint placeholder so the user knows what they're
+ * replacing — typing into the textarea writes the full override payload, and
+ * clearing it removes the override (the linked body fires unchanged).
+ */
+function RawBodyOverrideEditor({
+	linkedPayload,
 	value,
 	onChange,
 }: {
-	value: NonNullable<RequestOverrides['body']> | undefined;
-	onChange: (next: NonNullable<RequestOverrides['body']> | undefined) => void;
+	linkedPayload: string;
+	value: NonNullable<RequestOverrides['body']>['raw'];
+	onChange: (next: NonNullable<RequestOverrides['body']>['raw']) => void;
 }) {
 	const contentType = value?.contentType ?? '';
 	const text = readPlainText(value?.text);
 
-	function update(patch: Partial<NonNullable<RequestOverrides['body']>>) {
-		const next: NonNullable<RequestOverrides['body']> = { ...(value ?? {}), ...patch };
+	function update(patch: Partial<NonNullable<NonNullable<RequestOverrides['body']>['raw']>>) {
+		const next = { ...(value ?? {}), ...patch };
 		const empty = !next.contentType && (!next.text || next.text.length === 0);
 		onChange(empty ? undefined : next);
 	}
@@ -276,7 +498,7 @@ function BodyOverrideEditor({
 	return (
 		<Stack gap='3'>
 			<Stack gap='1'>
-				<FieldLabel>{'Content-Type'}</FieldLabel>
+				<FieldLabel>{'Content-Type override'}</FieldLabel>
 				<Input
 					size='sm'
 					placeholder='application/json'
@@ -287,11 +509,11 @@ function BodyOverrideEditor({
 				/>
 			</Stack>
 			<Stack gap='1'>
-				<FieldLabel>{'Body'}</FieldLabel>
+				<FieldLabel>{'Body override'}</FieldLabel>
 				<Textarea
 					size='sm'
 					rows={8}
-					placeholder={`{\n  "key": "value"\n}`}
+					placeholder={linkedPayload || '// blank — leave empty to pass the linked body through'}
 					fontFamily='mono'
 					fontSize='12px'
 					value={text}
@@ -300,10 +522,14 @@ function BodyOverrideEditor({
 					}
 				/>
 			</Stack>
-			<OverrideHelper>{"Overrides the linked request's body for this step only."}</OverrideHelper>
+			<OverrideHelper>
+				{'Opaque body types have no schema to overlay — the override replaces the whole payload for this step.'}
+			</OverrideHelper>
 		</Stack>
 	);
 }
+
+// ── Override map plumbing ───────────────────────────────────────────────────
 
 function FragmentEditor({
 	value,
@@ -318,7 +544,9 @@ function FragmentEditor({
 			<Stack gap='1'>
 				<FieldLabel>{'URL fragment'}</FieldLabel>
 				<Flex align='center' gap='1'>
-					<Box fontSize='12px' color='fg.subtle' fontFamily='mono'>{'#'}</Box>
+					<Box fontSize='12px' color='fg.subtle' fontFamily='mono'>
+						{'#'}
+					</Box>
 					<Input
 						size='sm'
 						placeholder='section-id'
@@ -346,13 +574,17 @@ function LoopEditor({ workflowId, node }: { workflowId: string; node: Extract<Wo
 				<Flex gap='1'>
 					<ModeButton
 						active={node.data.mode === 'count'}
-						onClick={() => dispatch(workflowActions.updateNodeData({ id: workflowId, nodeId: node.id, data: { mode: 'count' } }))}
+						onClick={() =>
+							dispatch(workflowActions.updateNodeData({ id: workflowId, nodeId: node.id, data: { mode: 'count' } }))
+						}
 					>
 						{'Count'}
 					</ModeButton>
 					<ModeButton
 						active={node.data.mode === 'forEach'}
-						onClick={() => dispatch(workflowActions.updateNodeData({ id: workflowId, nodeId: node.id, data: { mode: 'forEach' } }))}
+						onClick={() =>
+							dispatch(workflowActions.updateNodeData({ id: workflowId, nodeId: node.id, data: { mode: 'forEach' } }))
+						}
 					>
 						{'For each'}
 					</ModeButton>
@@ -383,14 +615,7 @@ function LoopEditor({ workflowId, node }: { workflowId: string; node: Extract<Wo
 				<HelperText>{'For-each: bind a response array via realtime values. Editor coming soon.'}</HelperText>
 			)}
 
-			<Stack
-				gap='1.5'
-				p='2.5'
-				borderRadius='sm'
-				bg='bg.subtle'
-				borderWidth='1px'
-				borderColor='border.subtle'
-			>
+			<Stack gap='1.5' p='2.5' borderRadius='sm' bg='bg.subtle' borderWidth='1px' borderColor='border.subtle'>
 				<Flex align='center' gap='1.5' fontSize='11px' color='accent.teal'>
 					<Box w='6px' h='6px' borderRadius='full' bg='currentColor' />
 					<Box fontWeight='600'>{'body'}</Box>
@@ -418,7 +643,13 @@ const operatorOptions: { value: string; label: string }[] = [
 
 const operatorsNeedingRight = new Set(['equals', 'not_equals', 'contains']);
 
-function ConditionEditor({ workflowId, node }: { workflowId: string; node: Extract<WorkflowNode, { type: 'condition' }> }) {
+function ConditionEditor({
+	workflowId,
+	node,
+}: {
+	workflowId: string;
+	node: Extract<WorkflowNode, { type: 'condition' }>;
+}) {
 	const dispatch = useDispatch();
 
 	const showRight = operatorsNeedingRight.has(node.data.operator);
@@ -519,7 +750,13 @@ const VariableInputBox: React.FC<{
 
 // ── Notification ─────────────────────────────────────────────────────────────
 
-function NotificationEditor({ workflowId, node }: { workflowId: string; node: Extract<WorkflowNode, { type: 'notification' }> }) {
+function NotificationEditor({
+	workflowId,
+	node,
+}: {
+	workflowId: string;
+	node: Extract<WorkflowNode, { type: 'notification' }>;
+}) {
 	const dispatch = useDispatch();
 
 	const titleText = readPlainText(node.data.title);
@@ -562,7 +799,9 @@ function NotificationEditor({ workflowId, node }: { workflowId: string; node: Ex
 					}
 				/>
 			</Stack>
-			<HelperText>{'Plain text only for now. Realtime-value templating lands with the loops/conditions editor pass.'}</HelperText>
+			<HelperText>
+				{'Plain text only for now. Realtime-value templating lands with the loops/conditions editor pass.'}
+			</HelperText>
 		</Stack>
 	);
 }
@@ -606,7 +845,11 @@ const VerbPill: React.FC<{ verb: string }> = ({ verb }) => (
 	</Box>
 );
 
-const TinyIconButton: React.FC<React.PropsWithChildren<{ ariaLabel: string; onClick: () => void }>> = ({ ariaLabel, onClick, children }) => (
+const TinyIconButton: React.FC<React.PropsWithChildren<{ ariaLabel: string; onClick: () => void }>> = ({
+	ariaLabel,
+	onClick,
+	children,
+}) => (
 	<Button
 		type='button'
 		aria-label={ariaLabel}
@@ -624,7 +867,11 @@ const TinyIconButton: React.FC<React.PropsWithChildren<{ ariaLabel: string; onCl
 	</Button>
 );
 
-const ModeButton: React.FC<React.PropsWithChildren<{ active: boolean; onClick: () => void }>> = ({ active, onClick, children }) => (
+const ModeButton: React.FC<React.PropsWithChildren<{ active: boolean; onClick: () => void }>> = ({
+	active,
+	onClick,
+	children,
+}) => (
 	<Button
 		type='button'
 		size='xs'
@@ -635,26 +882,6 @@ const ModeButton: React.FC<React.PropsWithChildren<{ active: boolean; onClick: (
 		{children}
 	</Button>
 );
-
-function readPlainText(value: unknown): string {
-	// Workflow value-sections are an array of string-or-RTV-object parts. The
-	// editors here only write plain strings for now, so we round-trip safely as
-	// long as every part is a string. RTV-typed parts collapse to "" here — the
-	// realtime-values editor pass replaces this reader with one that renders
-	// inline RTV chips.
-	if (!Array.isArray(value)) return '';
-	return value.filter((v): v is string => typeof v === 'string').join('');
-}
-
-function previewValueSections(parts: unknown[] | undefined): string {
-	if (!parts) return '';
-	return parts
-		.map(p => {
-			if (typeof p === 'string') return p;
-			return '{var}';
-		})
-		.join('');
-}
 
 function kindLabel(kind: WorkflowNode['type']): string {
 	switch (kind) {
