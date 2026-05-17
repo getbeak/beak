@@ -499,6 +499,27 @@ export function extractAllTags(workflows: ReadonlyArray<WorkflowFile> | Record<s
 }
 
 /**
+ * "just now" / "5m ago" / "2d ago" / "3mo ago" formatter. Single source
+ * of truth for relative timestamps across the workflow surface — tree
+ * tooltip, stats dialog, save-state indicator. Caller passes "now" so
+ * the helper stays pure + deterministic.
+ */
+export function formatRelativeTime(ms: number, now: number = Date.now()): string {
+	const seconds = Math.max(0, Math.floor((now - ms) / 1000));
+	if (seconds < 60) return 'just now';
+	const minutes = Math.floor(seconds / 60);
+	if (minutes < 60) return `${minutes}m ago`;
+	const hours = Math.floor(minutes / 60);
+	if (hours < 24) return `${hours}h ago`;
+	const days = Math.floor(hours / 24);
+	if (days < 30) return `${days}d ago`;
+	const months = Math.floor(days / 30);
+	if (months < 12) return `${months}mo ago`;
+	const years = Math.floor(months / 12);
+	return `${years}y ago`;
+}
+
+/**
  * Number on [0, 1] representing how many of the workflow's request
  * nodes have a linked request id. Returns 1 (everything linked) when
  * the workflow has no request nodes at all — a "vacuous truth" so a

@@ -21,6 +21,7 @@ export {
 	firstIssueNode,
 	firstUnlinkedRequest,
 	flightFromNode,
+	formatRelativeTime,
 	groupWorkflowsByParent,
 	linkedRequestIds,
 	parentIdsUsed,

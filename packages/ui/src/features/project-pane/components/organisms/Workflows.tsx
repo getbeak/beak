@@ -1,4 +1,11 @@
-import { extractAllTags, inspectGraph, recentWorkflows, searchWorkflows, validateWorkflow } from '@beak/state/workflows';
+import {
+	extractAllTags,
+	formatRelativeTime,
+	inspectGraph,
+	recentWorkflows,
+	searchWorkflows,
+	validateWorkflow,
+} from '@beak/state/workflows';
 import { changeTab } from '@beak/ui/features/tabs/store/actions';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { actions as workflowActions } from '@beak/ui/store/workflows';
@@ -308,19 +315,8 @@ function composeTreeTooltip(description: string | undefined, updatedAt: number |
 	const lines: string[] = [];
 	const trimmed = description?.trim();
 	if (trimmed) lines.push(trimmed);
-	if (updatedAt) lines.push(`Last edited ${formatAgo(Date.now() - updatedAt)}`);
+	if (updatedAt) lines.push(`Last edited ${formatRelativeTime(updatedAt)}`);
 	return lines.length === 0 ? undefined : lines.join('\n');
-}
-
-function formatAgo(ms: number): string {
-	const seconds = Math.max(0, Math.floor(ms / 1000));
-	if (seconds < 60) return 'just now';
-	const minutes = Math.floor(seconds / 60);
-	if (minutes < 60) return `${minutes}m ago`;
-	const hours = Math.floor(minutes / 60);
-	if (hours < 24) return `${hours}h ago`;
-	const days = Math.floor(hours / 24);
-	return `${days}d ago`;
 }
 
 interface WorkflowRowContextMenuProps {
