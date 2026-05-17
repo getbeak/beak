@@ -1,6 +1,7 @@
 export * from './actions';
 export {
 	autoLayout,
+	cleanupDanglingEdges,
 	cloneNodeAt,
 	type ConnectionAttempt,
 	type ConnectionRejection,

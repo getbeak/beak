@@ -472,6 +472,20 @@ export function edgesAfterNodeRemoval(edges: ReadonlyArray<WorkflowEdge>, nodeId
 }
 
 /**
+ * Drop edges whose source or target node no longer exists. Used on
+ * workflow open so files that drifted on disk (e.g. via merge conflict)
+ * load cleanly — xyflow chokes on edges with missing endpoints.
+ * Returns the same reference when nothing changed so React selectors
+ * don't churn.
+ */
+export function cleanupDanglingEdges(workflow: WorkflowFile): WorkflowFile {
+	const nodeIds = new Set(workflow.nodes.map(n => n.id));
+	const kept = workflow.edges.filter(e => nodeIds.has(e.source) && nodeIds.has(e.target));
+	if (kept.length === workflow.edges.length) return workflow;
+	return { ...workflow, edges: kept };
+}
+
+/**
  * Pretty-print the workflow as JSON for clipboard export. The shape is
  * the on-disk schema verbatim — pasting it back via `parseImportedWorkflow`
  * produces an equivalent workflow with re-keyed ids.

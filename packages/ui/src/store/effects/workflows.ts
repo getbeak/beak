@@ -1,5 +1,5 @@
 import ksuid from '@beak/ksuid';
-import { instantiateTemplate, type WorkflowFile } from '@beak/state/workflows';
+import { cleanupDanglingEdges, instantiateTemplate, type WorkflowFile } from '@beak/state/workflows';
 import { changeTab } from '@beak/ui/features/tabs/store/actions';
 import {
 	ensureWorkflowsDir,
@@ -63,7 +63,8 @@ export function registerWorkflowsEffects(start: AppStartListening) {
 					if (event.type === 'add' || event.type === 'change') {
 						try {
 							const { file } = await readWorkflow(event.path);
-							api.dispatch(insertNewWorkflow({ id: file.id, workflow: file }));
+							const cleaned = cleanupDanglingEdges(file);
+							api.dispatch(insertNewWorkflow({ id: cleaned.id, workflow: cleaned }));
 						} catch (error) {
 							if (!(error instanceof Error)) return;
 							await ipcDialogService.showMessageBox({
@@ -216,7 +217,8 @@ async function initialImport(api: { dispatch: (action: { type: string; [k: strin
 
 	for (const r of results) {
 		if (r.ok) {
-			workflows[r.file.id] = r.file;
+			const cleaned = cleanupDanglingEdges(r.file);
+			workflows[cleaned.id] = cleaned;
 		} else {
 			failures.push({ filePath: r.filePath, error: r.error });
 		}

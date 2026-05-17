@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { workflowSchema } from '../../schemas/beak-workflow';
 import {
 	autoLayout,
+	cleanupDanglingEdges,
 	cloneNodeAt,
 	countOverrideEntries,
 	edgesAfterNodeRemoval,
@@ -320,6 +321,39 @@ describe('inspectGraph', () => {
 		const r = inspectGraph(wf);
 		expect(r.cycleNodes).toEqual(['b', 'c']);
 		expect(r.unreachable).toEqual(['b', 'c']);
+	});
+});
+
+describe('cleanupDanglingEdges', () => {
+	it('returns the same workflow ref when no edges are dangling', () => {
+		const wf: WorkflowFile = {
+			id: 'wf',
+			name: 'clean',
+			nodes: [
+				{ id: 's', type: 'start', position: { x: 0, y: 0 }, data: {} },
+				{ id: 'a', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } },
+			],
+			edges: [{ id: 'e1', source: 's', target: 'a' }],
+		};
+		expect(cleanupDanglingEdges(wf)).toBe(wf);
+	});
+
+	it('drops only edges whose source or target is missing', () => {
+		const wf: WorkflowFile = {
+			id: 'wf',
+			name: 'dangling',
+			nodes: [
+				{ id: 's', type: 'start', position: { x: 0, y: 0 }, data: {} },
+				{ id: 'a', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } },
+			],
+			edges: [
+				{ id: 'e1', source: 's', target: 'a' },
+				{ id: 'e2', source: 'ghost', target: 'a' },
+				{ id: 'e3', source: 's', target: 'phantom' },
+			],
+		};
+		const cleaned = cleanupDanglingEdges(wf);
+		expect(cleaned.edges.map(e => e.id)).toEqual(['e1']);
 	});
 });
 
