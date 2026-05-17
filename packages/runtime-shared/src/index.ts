@@ -1,23 +1,18 @@
 import AssetStore from './assets';
 import AssetGc from './assets/gc';
 import { RuntimeBase, type RuntimeCapabilities, type RuntimeOptions } from './base';
+import { ProjectExtensions } from './extensions/project-extensions';
+import { FsSandbox } from './fs-sandbox';
 import BeakGit from './git';
 import BeakProject from './project';
 import OpenApiWriter from './sources/openapi-writer';
 import ValueStore from './values';
 
-export { RuntimeBase } from './base';
-export type { GitProvider, Providers, RuntimeCapabilities, RuntimeOptions } from './base';
+export type { AssetRef } from './assets';
 export { default as AssetStore } from './assets';
 export { default as AssetGc } from './assets/gc';
-export type { AssetRef } from './assets';
-export {
-	ExtensionRegistry,
-	gunzip,
-	packageDestination,
-	readTar,
-	verifyIntegrity,
-} from './extensions';
+export type { GitProvider, Providers, RuntimeCapabilities, RuntimeOptions } from './base';
+export { RuntimeBase } from './base';
 export type {
 	ExtensionRegistryOptions,
 	RegistryPackageMetadata,
@@ -26,9 +21,18 @@ export type {
 	ResolvedVersion,
 	TarEntry,
 } from './extensions';
+export {
+	ExtensionRegistry,
+	gunzip,
+	packageDestination,
+	readTar,
+	verifyIntegrity,
+} from './extensions';
 export { default as BeakGit } from './git';
+export { type GitBindingsOptions, registerGitBindings } from './git/bindings';
+export { type FetchTextDeps, fetchText, makeCappedBodyReader, parseHttpUrl } from './http/fetch-text';
+export type { OpenApiReadResult, OpenApiSyncInput, OpenApiSyncResult } from './sources/openapi-writer';
 export { default as OpenApiWriter } from './sources/openapi-writer';
-export type { OpenApiSyncInput, OpenApiSyncResult } from './sources/openapi-writer';
 export { default as ValueStore } from './values';
 
 /**
@@ -45,6 +49,8 @@ export default class Runtime extends RuntimeBase {
 	private readonly openApiWriter: OpenApiWriter;
 	private readonly valueStore: ValueStore;
 	private readonly beakGit: BeakGit;
+	private readonly projectExt: ProjectExtensions;
+	private readonly fsSandbox: FsSandbox;
 
 	constructor(options: RuntimeOptions) {
 		super(options.providers);
@@ -58,6 +64,8 @@ export default class Runtime extends RuntimeBase {
 		this.openApiWriter = new OpenApiWriter(this.providers);
 		this.valueStore = new ValueStore(this.providers);
 		this.beakGit = new BeakGit(this.providers);
+		this.projectExt = new ProjectExtensions(this.providers);
+		this.fsSandbox = new FsSandbox(this.providers, this.beakProject);
 	}
 
 	get project() {
@@ -90,5 +98,23 @@ export default class Runtime extends RuntimeBase {
 	 */
 	get git() {
 		return this.beakGit;
+	}
+
+	/**
+	 * Per-project extensions folder management — `node_modules/` scan +
+	 * `package.json` manifest read/write. Used by both hosts' extension
+	 * service handlers; previously each maintained its own copy.
+	 */
+	get projectExtensions() {
+		return this.projectExt;
+	}
+
+	/**
+	 * Filesystem sandbox helper — every IPC handler that takes a path
+	 * runs through `runtime.fs.ensureWithinProject(...)` so a malicious
+	 * renderer can't reach outside the open project root.
+	 */
+	get fs() {
+		return this.fsSandbox;
 	}
 }

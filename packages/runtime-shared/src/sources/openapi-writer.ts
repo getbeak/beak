@@ -1,4 +1,5 @@
-import type { CollectionFile, RequestFileOverride } from '@beak/state/schemas';
+import type { CollectionFile, RequestFile, RequestFileOverride } from '@beak/state/schemas';
+import { mergeCollectionDefaults } from '@beak/state/schemas';
 import { mergeProposedVariableSet, type ProposedVariableSet } from '@beak/state/sources/openapi';
 import type { VariableSet } from '@getbeak/types/variable-sets';
 
@@ -20,6 +21,23 @@ export interface OpenApiSyncInput {
 	folderName?: string;
 	/** Project root absolute path. Required when `variableSet` is provided. */
 	projectRoot?: string;
+}
+
+/**
+ * Output of {@link OpenApiWriter#readFromFolder}. Carries the parsed
+ * collection plus the concrete `RequestFile`-shaped entries (each override
+ * already merged against the collection's defaults), ready to feed into
+ * `collectionToOpenapi` or any other consumer that wants live request data.
+ */
+export interface OpenApiReadResult {
+	collection: CollectionFile;
+	requests: RequestFile[];
+	/**
+	 * Files we deliberately skipped — parse failures, the reserved
+	 * `_collection.json`, anything that doesn't match the override shape.
+	 * Surfaced for diagnostic UI; the read itself still succeeds.
+	 */
+	skipped: Array<{ path: string; reason: string }>;
 }
 
 export interface OpenApiSyncResult {
@@ -55,6 +73,62 @@ export interface OpenApiSyncResult {
  * callers are responsible for joining the project root.
  */
 export default class OpenApiWriter extends BeakBase {
+	/**
+	 * Inverse of {@link syncToFolder}: read a folder's `_collection.json` +
+	 * request override files off disk and return them as concrete
+	 * `RequestFile`s with the collection's defaults merged in. Walks
+	 * recursively so collections that use `groupByPath` still round-trip
+	 * (each subfolder's `.json` files come back as one operation each).
+	 *
+	 * Pure read — never writes, never throws on a malformed individual file
+	 * (just records it in `skipped` and moves on). Throws only when the
+	 * folder itself or `_collection.json` is missing / unreadable.
+	 */
+	async readFromFolder(folderPath: string): Promise<OpenApiReadResult> {
+		const path = this.p.node.path;
+		const fs = this.p.node.fs.promises;
+
+		const collectionPath = path.join(folderPath, '_collection.json');
+		const collectionRaw = await fs.readFile(collectionPath, 'utf8');
+		const collection = JSON.parse(collectionRaw as unknown as string) as CollectionFile;
+
+		const skipped: OpenApiReadResult['skipped'] = [];
+		const requests: RequestFile[] = [];
+
+		const walk = async (dir: string): Promise<void> => {
+			const entries = await fs.readdir(dir, { withFileTypes: true });
+			for (const entry of entries) {
+				const entryPath = path.join(dir, entry.name);
+				if (entry.isDirectory()) {
+					await walk(entryPath);
+					continue;
+				}
+				if (!entry.isFile()) continue;
+				if (!entry.name.endsWith('.json')) continue;
+				if (entry.name === '_collection.json') continue;
+
+				try {
+					const raw = await fs.readFile(entryPath, 'utf8');
+					const parsed = JSON.parse(raw as unknown as string) as RequestFileOverride;
+					if (typeof parsed.id !== 'string') {
+						skipped.push({ path: entryPath, reason: 'missing or invalid `id` — not a request override' });
+						continue;
+					}
+					const merged = mergeCollectionDefaults(collection.defaults, parsed);
+					requests.push(merged);
+				} catch (err) {
+					skipped.push({
+						path: entryPath,
+						reason: err instanceof Error ? err.message : 'unknown read/parse failure',
+					});
+				}
+			}
+		};
+
+		await walk(folderPath);
+		return { collection, requests, skipped };
+	}
+
 	async syncToFolder(targetFolderPath: string, input: OpenApiSyncInput): Promise<OpenApiSyncResult> {
 		const path = this.p.node.path;
 		const fs = this.p.node.fs.promises;
