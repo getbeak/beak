@@ -1,4 +1,4 @@
-import type { WorkflowEdge, WorkflowNodeKind } from '@beak/state/workflows';
+import { summariseHealth, type WorkflowEdge, type WorkflowNodeKind } from '@beak/state/workflows';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { Box, Button, Flex, Input, Stack, Textarea } from '@chakra-ui/react';
 import { AlertTriangle, Bell, GitBranch, Globe, Repeat, StickyNote, Trash2, X } from 'lucide-react';
@@ -149,6 +149,7 @@ interface EmptySelectionPanelProps {
 	unreachableCount: number;
 	unlinkedCount: number;
 	cycleCount: number;
+	warningCount: number;
 	description: string;
 	onChangeDescription: (next: string | undefined) => void;
 	tags: string[];
@@ -163,11 +164,29 @@ export const EmptySelectionPanel: React.FC<EmptySelectionPanelProps> = ({
 	unreachableCount,
 	unlinkedCount,
 	cycleCount,
+	warningCount,
 	description,
 	onChangeDescription,
 	tags,
 	onChangeTags,
 }) => {
+	const headsUpLine = summariseHealth(
+		// summariseHealth only reads `.unreachable.length` / `.cycleNodes.length`
+		// / `.unlinkedRequestNodes.length` off the input, so we only need to
+		// provide arrays of the right length. Falsifying it like this keeps
+		// the renderer from having to thread the full GraphHealth object
+		// through; the count props remain the single source of truth.
+		{
+			nodeCount: 0,
+			edgeCount: 0,
+			reachable: new Set(),
+			danglingEdges: [],
+			unreachable: new Array<string>(unreachableCount),
+			cycleNodes: new Array<string>(cycleCount),
+			unlinkedRequestNodes: new Array<string>(unlinkedCount),
+		},
+		warningCount,
+	);
 	const items: { kind: AddableNodeKind; icon: React.ReactNode; title: string; subtitle: string; tone: string }[] = [
 		{
 			kind: 'request',
@@ -279,7 +298,7 @@ export const EmptySelectionPanel: React.FC<EmptySelectionPanelProps> = ({
 					</Flex>
 				))}
 			</Stack>
-			{(unreachableCount > 0 || unlinkedCount > 0 || cycleCount > 0) && (
+			{headsUpLine && (
 				<Box px='3' py='3' borderTopWidth='1px' borderColor='border.subtle'>
 					<Box
 						fontSize='10px'
@@ -291,17 +310,9 @@ export const EmptySelectionPanel: React.FC<EmptySelectionPanelProps> = ({
 					>
 						{'Heads up'}
 					</Box>
-					<Stack gap='1' fontSize='11px' color='fg.subtle' lineHeight='1.5'>
-						{unreachableCount > 0 && (
-							<Box>{`${unreachableCount} step${unreachableCount === 1 ? '' : 's'} not connected to Start.`}</Box>
-						)}
-						{unlinkedCount > 0 && (
-							<Box>{`${unlinkedCount} request step${unlinkedCount === 1 ? '' : 's'} missing a linked request.`}</Box>
-						)}
-						{cycleCount > 0 && (
-							<Box>{`${cycleCount} step${cycleCount === 1 ? '' : 's'} sit on a directed cycle — use a Loop node to bound iteration.`}</Box>
-						)}
-					</Stack>
+					<Box fontSize='11px' color='fg.subtle' lineHeight='1.5'>
+						{headsUpLine}
+					</Box>
 				</Box>
 			)}
 			<Box flex='1' />

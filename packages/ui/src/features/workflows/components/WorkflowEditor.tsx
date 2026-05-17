@@ -998,6 +998,7 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 						unreachableCount={health?.unreachable.length ?? 0}
 						unlinkedCount={health?.unlinkedRequestNodes.length ?? 0}
 						cycleCount={health?.cycleNodes.length ?? 0}
+						warningCount={nodeWarnings.size}
 						description={workflow.description ?? ''}
 						onChangeDescription={next =>
 							dispatch(workflowActions.updateWorkflowDescription({ id: workflowId, description: next }))
