@@ -166,6 +166,20 @@ function describe(
 				tone: 'var(--beak-colors-accent-warning)',
 				indent: 2,
 			};
+		case 'request-completed':
+			return {
+				label: `✓ request ${labelFor(event.nodeId, nodeLabels)}`,
+				nodeId: event.nodeId,
+				tone: 'var(--beak-colors-accent-success)',
+				indent: 2,
+			};
+		case 'notification-fired':
+			return {
+				label: `🔔 "${event.title}"`,
+				nodeId: event.nodeId,
+				tone: 'var(--beak-colors-accent-warning)',
+				indent: 2,
+			};
 		case 'comment-skipped':
 			return {
 				label: `… comment skipped`,

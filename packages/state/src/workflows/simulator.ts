@@ -1,3 +1,4 @@
+import { previewValueSections } from './helpers';
 import type { WorkflowEdge, WorkflowFile, WorkflowNode } from './types';
 
 /**
@@ -23,6 +24,8 @@ export type SimulationEvent =
 	| { type: 'condition-evaluated'; nodeId: string; branch: 'true' | 'false' }
 	| { type: 'loop-iteration'; nodeId: string; index: number }
 	| { type: 'request-skipped'; nodeId: string; reason: 'unlinked' }
+	| { type: 'request-completed'; nodeId: string; output: unknown }
+	| { type: 'notification-fired'; nodeId: string; title: string }
 	| { type: 'comment-skipped'; nodeId: string }
 	| { type: 'workflow-complete'; workflowId: string }
 	| { type: 'workflow-aborted'; workflowId: string; reason: string };
@@ -98,7 +101,8 @@ export function walkWorkflow(workflow: WorkflowFile, context: SimulationContext 
 				if (!d.requestId) {
 					events.push({ type: 'request-skipped', nodeId, reason: 'unlinked' });
 				} else {
-					context.runRequest?.(node as Extract<WorkflowNode, { type: 'request' }>);
+					const output = context.runRequest?.(node as Extract<WorkflowNode, { type: 'request' }>);
+					events.push({ type: 'request-completed', nodeId, output });
 				}
 				followAllOutbound(nodeId);
 				break;
@@ -124,6 +128,9 @@ export function walkWorkflow(workflow: WorkflowFile, context: SimulationContext 
 				break;
 			}
 			case 'notification': {
+				const notif = node as Extract<WorkflowNode, { type: 'notification' }>;
+				const title = previewValueSections(notif.data.title) || 'Untitled notification';
+				events.push({ type: 'notification-fired', nodeId, title });
 				followAllOutbound(nodeId);
 				break;
 			}

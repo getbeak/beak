@@ -34,6 +34,38 @@ describe('walkWorkflow', () => {
 		expect(events.some(e => e.type === 'enter-node' && e.nodeId === 'n1')).toBe(true);
 	});
 
+	it('emits request-completed with the resolver output for a linked request', () => {
+		const wf: WorkflowFile = {
+			id: 'wf',
+			name: 'completed',
+			nodes: [
+				baseStart,
+				{ id: 'r1', type: 'request', position: { x: 0, y: 0 }, data: { requestId: 'req-a' } },
+			],
+			edges: [{ id: 'e1', source: 's', target: 'r1' }],
+		};
+		const events = walkWorkflow(wf, { runRequest: () => ({ status: 200, body: 'ok' }) });
+		const completed = events.find(e => e.type === 'request-completed');
+		expect(completed).toBeDefined();
+		expect((completed as { output: { status: number; body: string } }).output).toEqual({ status: 200, body: 'ok' });
+	});
+
+	it('emits notification-fired with the title preview', () => {
+		const wf: WorkflowFile = {
+			id: 'wf',
+			name: 'notif',
+			nodes: [
+				baseStart,
+				{ id: 'n1', type: 'notification', position: { x: 0, y: 0 }, data: { title: ['Heads up: '] } } as never,
+			],
+			edges: [{ id: 'e1', source: 's', target: 'n1' }],
+		};
+		const events = walkWorkflow(wf);
+		const fired = events.find(e => e.type === 'notification-fired');
+		expect(fired).toBeDefined();
+		expect((fired as { title: string }).title).toBe('Heads up: ');
+	});
+
 	it('emits request-skipped when the request node is unlinked', () => {
 		const wf: WorkflowFile = {
 			id: 'wf',
