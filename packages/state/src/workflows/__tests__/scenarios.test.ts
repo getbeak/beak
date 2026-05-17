@@ -2,7 +2,7 @@ import { createReducer } from '@reduxjs/toolkit';
 import { describe, expect, it } from 'vitest';
 
 import * as actions from '../actions';
-import { inspectGraph, validateConnection } from '../helpers';
+import { cleanupDanglingEdges, inspectGraph, validateConnection } from '../helpers';
 import { validateWorkflow } from '../validation';
 import { buildWorkflowsReducer } from '../reducer';
 import { instantiateTemplate } from '../templates';
@@ -166,6 +166,30 @@ describe('workflow lifecycle — build and tear down', () => {
 		const warnings = validateWorkflow(wf);
 		expect(warnings.has('l')).toBe(true); // loop count=0
 		expect(warnings.has('n')).toBe(true); // notification empty
+	});
+
+	it('disk-drift cleanup: dangling edges drop before reaching the slice', () => {
+		// Mirrors what the file-watch effect does on workflow open. A file
+		// arrived from disk with two edges; one of them references a node
+		// that no longer exists (merge conflict, manual delete, etc.).
+		const drifted = {
+			id: 'wf-drift',
+			name: 'drift',
+			nodes: [
+				{ id: 's', type: 'start' as const, position: { x: 0, y: 0 }, data: {} },
+				{ id: 'a', type: 'request' as const, position: { x: 0, y: 0 }, data: { requestId: null } },
+			],
+			edges: [
+				{ id: 'e-ok', source: 's', target: 'a' },
+				{ id: 'e-dangling', source: 's', target: 'ghost' },
+			],
+		};
+		const cleaned = cleanupDanglingEdges(drifted);
+		const state = reducer(initialWorkflowsState, actions.insertNewWorkflow({ id: cleaned.id, workflow: cleaned }));
+		const wf = state.workflows[cleaned.id]!;
+		// Only the OK edge survives; xyflow won't choke on a missing endpoint.
+		expect(wf.edges.map(e => e.id)).toEqual(['e-ok']);
+		expect(inspectGraph(wf).danglingEdges).toEqual([]);
 	});
 
 	it('catches cycle-closing wires at the validator before they reach the slice', () => {
