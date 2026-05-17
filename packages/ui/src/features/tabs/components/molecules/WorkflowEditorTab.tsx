@@ -1,5 +1,5 @@
 import type { WorkflowEditorTabItem } from '@beak/common/types/beak-project';
-import { inspectGraph, validateWorkflow } from '@beak/state/workflows';
+import { inspectGraph, summariseHealth, validateWorkflow } from '@beak/state/workflows';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { Box } from '@chakra-ui/react';
 import { Workflow } from 'lucide-react';
@@ -20,16 +20,16 @@ const WorkflowEditorTab: React.FC<React.PropsWithChildren<WorkflowEditorTabProps
 	const workflow = useAppSelector(s => s.global.workflows.workflows[tab.payload]);
 	const name = workflow?.name;
 	const stepCount = workflow?.nodes.length ?? 0;
-	const issueCount = React.useMemo(() => {
-		if (!workflow) return 0;
+	const { issueCount, issueTooltip } = React.useMemo(() => {
+		if (!workflow) return { issueCount: 0, issueTooltip: '' };
 		const health = inspectGraph(workflow);
 		const warnings = validateWorkflow(workflow);
-		return (
+		const total =
 			health.unreachable.length +
 			health.unlinkedRequestNodes.length +
 			health.cycleNodes.length +
-			warnings.size
-		);
+			warnings.size;
+		return { issueCount: total, issueTooltip: summariseHealth(health, warnings.size) ?? '' };
 	}, [workflow]);
 	const pendingWrite = useAppSelector(s => Boolean(s.global.workflows.writeDebouncer));
 	const [target, setTarget] = useState<HTMLElement>();
@@ -108,7 +108,7 @@ const WorkflowEditorTab: React.FC<React.PropsWithChildren<WorkflowEditorTabProps
 							borderRadius='sm'
 							px='1'
 							lineHeight='1.4'
-							title={`${issueCount} issue${issueCount === 1 ? '' : 's'} on this workflow`}
+							title={issueTooltip || `${issueCount} issue${issueCount === 1 ? '' : 's'} on this workflow`}
 						>
 							{`!${issueCount}`}
 						</Box>
