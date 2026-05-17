@@ -38,6 +38,7 @@ import {
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import {
+	BarChart3,
 	Bell,
 	Clipboard,
 	ClipboardPaste,
@@ -72,6 +73,7 @@ import NodePropertiesPanel from './NodePropertiesPanel';
 import NodeSearchDialog from './NodeSearchDialog';
 import QuickFixDialog from './QuickFixDialog';
 import SimulationDialog from './SimulationDialog';
+import StatsDialog from './StatsDialog';
 
 interface WorkflowEditorProps {
 	workflowId: string;
@@ -113,6 +115,7 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 	const [searchOpen, setSearchOpen] = useState(false);
 	const [simulateOpen, setSimulateOpen] = useState(false);
 	const [quickFixOpen, setQuickFixOpen] = useState(false);
+	const [statsOpen, setStatsOpen] = useState(false);
 	const [activeSimEdgeId, setActiveSimEdgeId] = useState<string | null>(null);
 	// `{ x, y }` is in flow-coordinates (already mapped); rendered absolutely
 	// over the canvas at `screen-x/y` for the menu position.
@@ -586,6 +589,7 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 				onClose={() => setQuickFixOpen(false)}
 				onJumpToNode={replaceSelection}
 			/>
+			<StatsDialog workflow={workflow} open={statsOpen} onClose={() => setStatsOpen(false)} />
 			<Flex
 				align='center'
 				gap='2'
@@ -687,6 +691,11 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 						icon={<Play size={13} strokeWidth={1.8} />}
 						label='Simulate'
 						onClick={() => setSimulateOpen(true)}
+					/>
+					<ToolbarButton
+						icon={<BarChart3 size={13} strokeWidth={1.8} />}
+						label='Stats'
+						onClick={() => setStatsOpen(true)}
 					/>
 					<Box w='1px' h='14px' bg='border.subtle' alignSelf='center' mx='1' />
 					<ToolbarButton
