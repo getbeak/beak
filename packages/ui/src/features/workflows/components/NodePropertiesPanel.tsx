@@ -8,8 +8,8 @@ import {
 	pruneBody,
 	pruneOverrideMap,
 	pruneOverrides,
-	readPlainText,
 	type RequestOverrides,
+	readPlainText,
 	type WorkflowNode,
 } from '@beak/state/workflows';
 import BasicTableEditor from '@beak/ui/features/basic-table-editor/components/BasicTableEditor';

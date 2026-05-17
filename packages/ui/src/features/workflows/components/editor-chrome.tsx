@@ -1,0 +1,326 @@
+import type { WorkflowNodeKind } from '@beak/state/workflows';
+import { useAppSelector } from '@beak/ui/store/redux';
+import { Box, Flex, Stack } from '@chakra-ui/react';
+import { AlertTriangle, Bell, GitBranch, Globe, Repeat } from 'lucide-react';
+import * as React from 'react';
+import { useEffect, useState } from 'react';
+
+/**
+ * Editor-chrome bits — the pieces that surround the xyflow canvas but
+ * aren't the canvas itself. Pulled out of `WorkflowEditor.tsx` so the
+ * editor file stays focused on graph plumbing.
+ */
+
+export type AddableNodeKind = Exclude<WorkflowNodeKind, 'start'>;
+
+interface MetaPillProps {
+	icon: React.ReactNode;
+	count: number;
+	label: string;
+}
+
+// Mirrors the variable-set editor's header pill so the two surfaces feel
+// like siblings rather than two different visual languages.
+export const MetaPill: React.FC<MetaPillProps> = ({ icon, count, label }) => (
+	<Flex
+		align='center'
+		gap='1'
+		px='1.5'
+		h='18px'
+		borderRadius='sm'
+		borderWidth='1px'
+		borderColor='border.subtle'
+		bg='bg.canvas'
+		color='fg.subtle'
+		fontVariantNumeric='tabular-nums'
+	>
+		{icon}
+		<Box as='span'>{count}</Box>
+		<Box as='span' color='fg.muted'>
+			{label}
+		</Box>
+	</Flex>
+);
+
+// "Saved 10s ago" / "Saving…" indicator next to the meta pills. Reads the
+// workflow slice's debounce nonce + last-write timestamp directly. Falls
+// back to nothing when the project hasn't saved yet (untitled workflow on
+// a sandbox host where writes are no-ops).
+export const SaveStateIndicator: React.FC = () => {
+	const pending = useAppSelector(s => s.global.workflows.writeDebouncer);
+	const latest = useAppSelector(s => s.global.workflows.latestWrite ?? 0);
+	const [now, setNow] = useState(() => Date.now());
+
+	useEffect(() => {
+		// Tick every 5s so the "X ago" stamp doesn't lie. Skip while pending —
+		// the label is just "Saving…" then, no need to repaint.
+		if (pending) return;
+		const id = window.setInterval(() => setNow(Date.now()), 5000);
+		return () => window.clearInterval(id);
+	}, [pending]);
+
+	if (pending) {
+		return (
+			<Flex
+				align='center'
+				gap='1'
+				px='1.5'
+				h='18px'
+				borderRadius='sm'
+				borderWidth='1px'
+				borderColor='border.subtle'
+				bg='bg.canvas'
+				color='fg.muted'
+			>
+				<Box w='5px' h='5px' borderRadius='full' bg='accent.pink' />
+				{'Saving…'}
+			</Flex>
+		);
+	}
+	if (!latest) return null;
+	const seconds = Math.max(1, Math.floor((now - latest) / 1000));
+	const label =
+		seconds < 60 ? `Saved ${seconds}s ago` : seconds < 3600 ? `Saved ${Math.floor(seconds / 60)}m ago` : 'Saved';
+	return (
+		<Flex
+			align='center'
+			gap='1'
+			px='1.5'
+			h='18px'
+			borderRadius='sm'
+			borderWidth='1px'
+			borderColor='border.subtle'
+			bg='bg.canvas'
+			color='fg.muted'
+			title={new Date(latest).toLocaleString()}
+		>
+			<Box w='5px' h='5px' borderRadius='full' bg='accent.success' />
+			{label}
+		</Flex>
+	);
+};
+
+// Amber pill that appears when the graph picks up unreachable steps or
+// unlinked request nodes — same shape as MetaPill so the two read as a row.
+export const WarningPill: React.FC<{ count: number; label: string; title?: string }> = ({ count, label, title }) => (
+	<Flex
+		align='center'
+		gap='1'
+		px='1.5'
+		h='18px'
+		borderRadius='sm'
+		borderWidth='1px'
+		borderColor='color-mix(in srgb, var(--beak-colors-accent-warning) 38%, transparent)'
+		bg='color-mix(in srgb, var(--beak-colors-accent-warning) 14%, transparent)'
+		color='accent.warning'
+		fontVariantNumeric='tabular-nums'
+		title={title}
+	>
+		<AlertTriangle size={10} strokeWidth={2.2} />
+		<Box as='span'>{count}</Box>
+		<Box as='span' opacity={0.85}>
+			{label}
+		</Box>
+	</Flex>
+);
+
+interface EmptySelectionPanelProps {
+	addNode: (kind: AddableNodeKind) => void;
+	unreachableCount: number;
+	unlinkedCount: number;
+	cycleCount: number;
+}
+
+// Shown on the right when nothing's selected — gives the canvas an obvious
+// "what next" instead of empty space. Buttons fire the same toolbar handlers
+// so the user has one entry point for adding nodes regardless of focus.
+export const EmptySelectionPanel: React.FC<EmptySelectionPanelProps> = ({
+	addNode,
+	unreachableCount,
+	unlinkedCount,
+	cycleCount,
+}) => {
+	const items: { kind: AddableNodeKind; icon: React.ReactNode; title: string; subtitle: string; tone: string }[] = [
+		{
+			kind: 'request',
+			icon: <Globe size={14} strokeWidth={1.8} />,
+			title: 'Request',
+			subtitle: 'Run a linked request with per-step overrides.',
+			tone: 'pink',
+		},
+		{
+			kind: 'loop',
+			icon: <Repeat size={14} strokeWidth={1.8} />,
+			title: 'Loop',
+			subtitle: 'Repeat the inner branch N times or for each item.',
+			tone: 'teal',
+		},
+		{
+			kind: 'condition',
+			icon: <GitBranch size={14} strokeWidth={1.8} />,
+			title: 'Condition',
+			subtitle: 'Branch on a value — true/false outputs.',
+			tone: 'indigo',
+		},
+		{
+			kind: 'notification',
+			icon: <Bell size={14} strokeWidth={1.8} />,
+			title: 'Notification',
+			subtitle: 'Fire a desktop notification at this step.',
+			tone: 'warning',
+		},
+	];
+	return (
+		<Flex
+			direction='column'
+			w='320px'
+			flexShrink={0}
+			bg='bg.surface'
+			borderLeftWidth='1px'
+			borderColor='border.subtle'
+			minH={0}
+			overflowY='auto'
+		>
+			<Box px='3' py='3' borderBottomWidth='1px' borderColor='border.subtle'>
+				<Box fontSize='10px' fontWeight='700' color='fg.muted' textTransform='uppercase' letterSpacing='0.06em'>
+					{'Add a step'}
+				</Box>
+				<Box mt='1' fontSize='11px' color='fg.subtle' lineHeight='1.5'>
+					{'Click a node to edit its details. Or add a new step from below — it lands next to your existing work.'}
+				</Box>
+			</Box>
+			<Stack px='2' py='2' gap='1'>
+				{items.map(item => (
+					<Flex
+						as='button'
+						key={item.kind}
+						role='button'
+						align='flex-start'
+						gap='2'
+						px='2'
+						py='2'
+						bg='transparent'
+						borderRadius='sm'
+						cursor='pointer'
+						textAlign='left'
+						_hover={{ bg: 'color-mix(in srgb, var(--beak-colors-fg-default) 6%, transparent)' }}
+						onClick={() => addNode(item.kind)}
+					>
+						<Flex
+							align='center'
+							justify='center'
+							w='24px'
+							h='24px'
+							flexShrink={0}
+							borderRadius='sm'
+							color={`accent.${item.tone}`}
+							bg={`color-mix(in srgb, var(--beak-colors-accent-${item.tone}) 14%, transparent)`}
+						>
+							{item.icon}
+						</Flex>
+						<Stack gap='0.5' flex='1' minW={0}>
+							<Box fontSize='12px' fontWeight='600' color='fg.default'>
+								{item.title}
+							</Box>
+							<Box fontSize='11px' color='fg.subtle' lineHeight='1.4'>
+								{item.subtitle}
+							</Box>
+						</Stack>
+					</Flex>
+				))}
+			</Stack>
+			{(unreachableCount > 0 || unlinkedCount > 0 || cycleCount > 0) && (
+				<Box px='3' py='3' borderTopWidth='1px' borderColor='border.subtle'>
+					<Box
+						fontSize='10px'
+						fontWeight='700'
+						color='accent.warning'
+						textTransform='uppercase'
+						letterSpacing='0.06em'
+						mb='1.5'
+					>
+						{'Heads up'}
+					</Box>
+					<Stack gap='1' fontSize='11px' color='fg.subtle' lineHeight='1.5'>
+						{unreachableCount > 0 && (
+							<Box>{`${unreachableCount} step${unreachableCount === 1 ? '' : 's'} not connected to Start.`}</Box>
+						)}
+						{unlinkedCount > 0 && (
+							<Box>{`${unlinkedCount} request step${unlinkedCount === 1 ? '' : 's'} missing a linked request.`}</Box>
+						)}
+						{cycleCount > 0 && (
+							<Box>{`${cycleCount} step${cycleCount === 1 ? '' : 's'} sit on a directed cycle — use a Loop node to bound iteration.`}</Box>
+						)}
+					</Stack>
+				</Box>
+			)}
+			<Box flex='1' />
+			<Box
+				px='3'
+				py='2.5'
+				borderTopWidth='1px'
+				borderColor='border.subtle'
+				fontSize='10px'
+				color='fg.subtle'
+				lineHeight='1.5'
+			>
+				<Box mb='0.5'>
+					<KbdHint>Esc</KbdHint> {'clear selection'}
+				</Box>
+				<Box mb='0.5'>
+					<KbdHint>Delete</KbdHint> {'remove the selected step'}
+				</Box>
+				<Box>
+					<KbdHint>⌘ D</KbdHint> {'duplicate the selected step'}
+				</Box>
+			</Box>
+		</Flex>
+	);
+};
+
+export const KbdHint: React.FC<React.PropsWithChildren> = ({ children }) => (
+	<Box
+		as='span'
+		display='inline-block'
+		px='1'
+		mr='1'
+		fontFamily='mono'
+		fontSize='10px'
+		fontWeight='600'
+		color='fg.muted'
+		bg='bg.canvas'
+		borderRadius='sm'
+		borderWidth='1px'
+		borderColor='border.subtle'
+	>
+		{children}
+	</Box>
+);
+
+export const ToolbarButton: React.FC<{ icon: React.ReactNode; label: string; onClick: () => void }> = ({
+	icon,
+	label,
+	onClick,
+}) => (
+	<Flex
+		as='button'
+		role='button'
+		align='center'
+		gap='1.5'
+		px='2'
+		h='24px'
+		fontSize='12px'
+		color='fg.muted'
+		bg='transparent'
+		borderRadius='sm'
+		cursor='pointer'
+		_hover={{
+			color: 'fg.default',
+			bg: 'color-mix(in srgb, var(--beak-colors-fg-default) 8%, transparent)',
+		}}
+		onClick={onClick}
+	>
+		{icon}
+		<Box>{label}</Box>
+	</Flex>
+);
