@@ -76,9 +76,7 @@ export function placeNewNode(
 	existing: ReadonlyArray<{ position: { x: number; y: number } }>,
 	gridSize = 20,
 ): { x: number; y: number } {
-	const start = existing.length === 0
-		? { x: 280, y: 160 }
-		: cascadeFrom(rightmost(existing), gridSize);
+	const start = existing.length === 0 ? { x: 280, y: 160 } : cascadeFrom(rightmost(existing), gridSize);
 
 	let candidate = snap(start, gridSize);
 	let safety = 64;
@@ -191,7 +189,10 @@ export function inspectGraph(workflow: WorkflowFile): GraphHealth {
 		unreachable,
 		danglingEdges,
 		unlinkedRequestNodes,
-		cycleNodes: findCycleNodes(adjacency, workflow.nodes.map(n => n.id)),
+		cycleNodes: findCycleNodes(
+			adjacency,
+			workflow.nodes.map(n => n.id),
+		),
 	};
 }
 
@@ -201,7 +202,6 @@ export function inspectGraph(workflow: WorkflowFile): GraphHealth {
  * marks the entire grey stack frame for that path. Cheap O(V+E).
  */
 function findCycleNodes(adjacency: Map<string, string[]>, allIds: ReadonlyArray<string>): string[] {
-	const WHITE = 0;
 	const GREY = 1;
 	const BLACK = 2;
 	const colour = new Map<string, number>();
@@ -243,6 +243,79 @@ function findCycleNodes(adjacency: Map<string, string[]>, allIds: ReadonlyArray<
 	return [...onCycle].sort();
 }
 
+/**
+ * BFS reachability from Start, broken out so the orchestrator (and unit
+ * tests) can call it without paying for the full health snapshot. Returns
+ * the node id set in insertion order so callers that want a deterministic
+ * walk get one.
+ */
+export function reachableFromStart(workflow: WorkflowFile): string[] {
+	const nodeIds = new Set(workflow.nodes.map(n => n.id));
+	const adjacency = new Map<string, string[]>();
+	for (const e of workflow.edges) {
+		if (!nodeIds.has(e.source) || !nodeIds.has(e.target)) continue;
+		const next = adjacency.get(e.source) ?? [];
+		next.push(e.target);
+		adjacency.set(e.source, next);
+	}
+	const start = workflow.nodes.find(n => n.type === 'start');
+	if (!start) return [];
+
+	const seen = new Set<string>();
+	const order: string[] = [];
+	const queue: string[] = [start.id];
+	while (queue.length > 0) {
+		const id = queue.shift();
+		if (!id || seen.has(id)) continue;
+		seen.add(id);
+		order.push(id);
+		for (const next of adjacency.get(id) ?? []) queue.push(next);
+	}
+	return order;
+}
+
+/**
+ * Kahn's algorithm — emits the workflow's nodes in topological order
+ * starting from Start, suitable for sequential orchestration. Throws when
+ * the graph contains a directed cycle (which the editor surfaces in the
+ * WarningPill before the user ever hits "run").
+ *
+ * Only considers nodes reachable from Start; unreachable nodes never
+ * appear in the result, since the orchestrator will skip them anyway.
+ */
+export function topologicalOrder(workflow: WorkflowFile): string[] {
+	const reachable = new Set(reachableFromStart(workflow));
+	const inDegree = new Map<string, number>();
+	const adjacency = new Map<string, string[]>();
+	for (const id of reachable) inDegree.set(id, 0);
+	for (const e of workflow.edges) {
+		if (!reachable.has(e.source) || !reachable.has(e.target)) continue;
+		const next = adjacency.get(e.source) ?? [];
+		next.push(e.target);
+		adjacency.set(e.source, next);
+		inDegree.set(e.target, (inDegree.get(e.target) ?? 0) + 1);
+	}
+
+	const ready: string[] = [];
+	for (const [id, degree] of inDegree) if (degree === 0) ready.push(id);
+
+	const order: string[] = [];
+	while (ready.length > 0) {
+		const id = ready.shift()!;
+		order.push(id);
+		for (const next of adjacency.get(id) ?? []) {
+			const remaining = (inDegree.get(next) ?? 0) - 1;
+			inDegree.set(next, remaining);
+			if (remaining === 0) ready.push(next);
+		}
+	}
+
+	if (order.length !== reachable.size) {
+		throw new Error('topologicalOrder: workflow contains a directed cycle');
+	}
+	return order;
+}
+
 export interface ConnectionAttempt {
 	source: string;
 	target: string;
@@ -254,12 +327,7 @@ export interface ConnectionAttempt {
  * Reasons a connection attempt is rejected, used to tooltip the canvas
  * when xyflow says "no" so the user knows *why*.
  */
-export type ConnectionRejection =
-	| 'unknown-source'
-	| 'unknown-target'
-	| 'self-loop'
-	| 'into-start'
-	| 'duplicate-edge';
+export type ConnectionRejection = 'unknown-source' | 'unknown-target' | 'self-loop' | 'into-start' | 'duplicate-edge';
 
 /**
  * Validate a candidate edge before it's added to the graph. Catches the
@@ -305,11 +373,7 @@ export function edgesAfterNodeRemoval(edges: ReadonlyArray<WorkflowEdge>, nodeId
  * function so KSUIDs (which need a runtime side-effect to mint) stay out
  * of pure-helper land.
  */
-export function cloneNodeAt(
-	source: WorkflowNode,
-	newId: string,
-	position: { x: number; y: number },
-): WorkflowNode {
+export function cloneNodeAt(source: WorkflowNode, newId: string, position: { x: number; y: number }): WorkflowNode {
 	return { ...source, id: newId, position } as WorkflowNode;
 }
 

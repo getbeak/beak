@@ -9,7 +9,9 @@ import {
 	overrideBadgeText,
 	placeNewNode,
 	previewValueSections,
+	reachableFromStart,
 	readPlainText,
+	topologicalOrder,
 	validateConnection,
 } from '../helpers';
 import type { WorkflowFile, WorkflowNode } from '../types';
@@ -132,11 +134,10 @@ describe('placeNewNode', () => {
 	});
 
 	it('picks the rightmost-and-then-lowest anchor when multiple share x', () => {
-		const p = placeNewNode([
-			{ position: { x: 100, y: 50 } },
-			{ position: { x: 300, y: 50 } },
-			{ position: { x: 300, y: 200 } },
-		], 20);
+		const p = placeNewNode(
+			[{ position: { x: 100, y: 50 } }, { position: { x: 300, y: 50 } }, { position: { x: 300, y: 200 } }],
+			20,
+		);
 		// Anchored off the (300, 200) node — cascade target should be to its right.
 		expect(p.x).toBeGreaterThan(300);
 		expect(p.y).toBe(200);
@@ -187,9 +188,7 @@ describe('inspectGraph', () => {
 
 	it('drops the Start node from the unreachable list even without a Start', () => {
 		const wf = makeWorkflow({
-			nodes: [
-				{ id: 'r1', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } } as WorkflowNode,
-			],
+			nodes: [{ id: 'r1', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } } as WorkflowNode],
 		});
 		const r = inspectGraph(wf);
 		// No Start → everything (except Start nodes) is unreachable.
@@ -338,6 +337,112 @@ describe('cloneNodeAt', () => {
 	});
 });
 
+describe('reachableFromStart', () => {
+	it('returns [] when there is no Start node', () => {
+		expect(
+			reachableFromStart({
+				id: 'wf',
+				name: 'no start',
+				nodes: [{ id: 'a', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } } as WorkflowNode],
+				edges: [],
+			}),
+		).toEqual([]);
+	});
+
+	it('walks BFS in insertion order', () => {
+		const wf: WorkflowFile = {
+			id: 'wf',
+			name: 'walk',
+			nodes: [
+				{ id: 's', type: 'start', position: { x: 0, y: 0 }, data: {} },
+				{ id: 'a', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } },
+				{ id: 'b', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } },
+				{ id: 'c', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } },
+			],
+			edges: [
+				{ id: 'e1', source: 's', target: 'a' },
+				{ id: 'e2', source: 's', target: 'b' },
+				{ id: 'e3', source: 'a', target: 'c' },
+			],
+		};
+		expect(reachableFromStart(wf)).toEqual(['s', 'a', 'b', 'c']);
+	});
+
+	it('skips dangling edges', () => {
+		const wf: WorkflowFile = {
+			id: 'wf',
+			name: 'dangling',
+			nodes: [
+				{ id: 's', type: 'start', position: { x: 0, y: 0 }, data: {} },
+				{ id: 'a', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } },
+			],
+			edges: [
+				{ id: 'e1', source: 's', target: 'ghost' },
+				{ id: 'e2', source: 's', target: 'a' },
+			],
+		};
+		expect(reachableFromStart(wf)).toEqual(['s', 'a']);
+	});
+});
+
+describe('topologicalOrder', () => {
+	it('emits Start first, then dependents', () => {
+		const wf: WorkflowFile = {
+			id: 'wf',
+			name: 'topo',
+			nodes: [
+				{ id: 's', type: 'start', position: { x: 0, y: 0 }, data: {} },
+				{ id: 'a', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } },
+				{ id: 'b', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } },
+				{ id: 'c', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } },
+			],
+			edges: [
+				{ id: 'e1', source: 's', target: 'a' },
+				{ id: 'e2', source: 's', target: 'b' },
+				{ id: 'e3', source: 'a', target: 'c' },
+				{ id: 'e4', source: 'b', target: 'c' },
+			],
+		};
+		const order = topologicalOrder(wf);
+		expect(order[0]).toBe('s');
+		expect(order[order.length - 1]).toBe('c');
+		expect(order.indexOf('a')).toBeLessThan(order.indexOf('c'));
+		expect(order.indexOf('b')).toBeLessThan(order.indexOf('c'));
+	});
+
+	it('skips unreachable nodes (they would never run anyway)', () => {
+		const wf: WorkflowFile = {
+			id: 'wf',
+			name: 'unreachable',
+			nodes: [
+				{ id: 's', type: 'start', position: { x: 0, y: 0 }, data: {} },
+				{ id: 'a', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } },
+				{ id: 'orphan', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } },
+			],
+			edges: [{ id: 'e1', source: 's', target: 'a' }],
+		};
+		expect(topologicalOrder(wf)).toEqual(['s', 'a']);
+	});
+
+	it('throws when the graph contains a cycle', () => {
+		const wf: WorkflowFile = {
+			id: 'wf',
+			name: 'cycle',
+			nodes: [
+				{ id: 's', type: 'start', position: { x: 0, y: 0 }, data: {} },
+				{ id: 'a', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } },
+				{ id: 'b', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } },
+			],
+			edges: [
+				{ id: 'e1', source: 's', target: 'a' },
+				{ id: 'e2', source: 'a', target: 'b' },
+				{ id: 'e3', source: 'b', target: 'a' },
+			],
+		};
+		expect(() => topologicalOrder(wf)).toThrow(/cycle/);
+	});
+});
+
 describe('validateConnection', () => {
 	const baseWorkflow = (): WorkflowFile => ({
 		id: 'wf1',
@@ -384,9 +489,10 @@ describe('validateConnection', () => {
 			...baseWorkflow(),
 			edges: [{ id: 'e1', source: 'a', target: 'b', sourceHandle: 'body', targetHandle: null }],
 		};
-		expect(
-			validateConnection(wf, { source: 'a', target: 'b', sourceHandle: 'body', targetHandle: null }),
-		).toEqual({ ok: false, reason: 'duplicate-edge' });
+		expect(validateConnection(wf, { source: 'a', target: 'b', sourceHandle: 'body', targetHandle: null })).toEqual({
+			ok: false,
+			reason: 'duplicate-edge',
+		});
 	});
 
 	it('accepts the same source/target when the handles differ', () => {

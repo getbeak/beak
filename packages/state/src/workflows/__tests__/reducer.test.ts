@@ -159,10 +159,7 @@ describe('workflows reducer — updateNodeData', () => {
 				}),
 			},
 		};
-		const next = reducer(
-			start,
-			actions.updateNodeData({ id: 'wf1', nodeId: 'l1', data: { count: 9 } }),
-		);
+		const next = reducer(start, actions.updateNodeData({ id: 'wf1', nodeId: 'l1', data: { count: 9 } }));
 		const node = next.workflows.wf1!.nodes.find(n => n.id === 'l1')!;
 		const d = node.data as { mode: string; count: number };
 		expect(d.mode).toBe('count');
@@ -225,7 +222,7 @@ describe('workflows reducer — duplicateNode', () => {
 		expect(cloned!.type).toBe('request');
 	});
 
-	it('deep-clones the `data` field so edits don\'t alias the source', () => {
+	it("deep-clones the `data` field so edits don't alias the source", () => {
 		const start = makeState();
 		const next = reducer(
 			start,
@@ -234,9 +231,7 @@ describe('workflows reducer — duplicateNode', () => {
 		const source = next.workflows.wf1!.nodes.find(n => n.id === 'r1')!;
 		const cloned = next.workflows.wf1!.nodes.find(n => n.id === 'r1-clone')!;
 		expect(cloned.data).not.toBe(source.data);
-		expect((cloned.data as { overrides: object }).overrides).not.toBe(
-			(source.data as { overrides: object }).overrides,
-		);
+		expect((cloned.data as { overrides: object }).overrides).not.toBe((source.data as { overrides: object }).overrides);
 	});
 
 	it('refuses to clone Start nodes', () => {
@@ -276,16 +271,10 @@ describe('workflows reducer — moveNode', () => {
 				}),
 			},
 		};
-		const next = reducer(
-			start,
-			actions.moveNode({ id: 'wf1', nodeId: 'a', position: { x: 200, y: 80 } }),
-		);
+		const next = reducer(start, actions.moveNode({ id: 'wf1', nodeId: 'a', position: { x: 200, y: 80 } }));
 		expect(next.workflows.wf1!.nodes.find(n => n.id === 'a')!.position).toEqual({ x: 200, y: 80 });
 
-		const noop = reducer(
-			start,
-			actions.moveNode({ id: 'wf1', nodeId: 'ghost', position: { x: 1, y: 1 } }),
-		);
+		const noop = reducer(start, actions.moveNode({ id: 'wf1', nodeId: 'ghost', position: { x: 1, y: 1 } }));
 		expect(noop.workflows.wf1).toEqual(start.workflows.wf1);
 	});
 });

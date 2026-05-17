@@ -1,9 +1,9 @@
 export * from './actions';
 export {
 	autoLayout,
-	cloneNodeAt,
 	type ConnectionAttempt,
 	type ConnectionRejection,
+	cloneNodeAt,
 	countOverrideEntries,
 	edgesAfterNodeRemoval,
 	type GraphHealth,
@@ -12,7 +12,9 @@ export {
 	overrideBadgeText,
 	placeNewNode,
 	previewValueSections,
+	reachableFromStart,
 	readPlainText,
+	topologicalOrder,
 	validateConnection,
 } from './helpers';
 export { mergeJson, mergeKv, pruneBody, pruneOverrideMap, pruneOverrides } from './overrides';
