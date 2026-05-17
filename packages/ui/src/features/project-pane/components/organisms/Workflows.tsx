@@ -3,7 +3,7 @@ import { changeTab } from '@beak/ui/features/tabs/store/actions';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { actions as workflowActions } from '@beak/ui/store/workflows';
 import { Box, chakra, Flex, Input } from '@chakra-ui/react';
-import { Copy, Pencil, Search, Trash2, Workflow as WorkflowIcon } from 'lucide-react';
+import { Copy, Edit3, Pencil, Search, Trash2, Workflow as WorkflowIcon } from 'lucide-react';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 
@@ -27,6 +27,7 @@ const Workflows: React.FC = () => {
 	const workflows = useAppSelector(s => s.global.workflows.workflows);
 	const [menu, setMenu] = React.useState<ContextMenuState | null>(null);
 	const [filter, setFilter] = React.useState('');
+	const [renamingId, setRenamingId] = React.useState<string | null>(null);
 	const total = Object.keys(workflows).length;
 	// Sort by updatedAt desc so the most recently-edited workflow is always
 	// near the top — saves the user from scanning a long list. Legacy
@@ -84,6 +85,10 @@ const Workflows: React.FC = () => {
 						dispatch(changeTab({ type: 'workflow_editor', payload: menu.workflowId, temporary: false }));
 						setMenu(null);
 					}}
+					onRename={() => {
+						setRenamingId(menu.workflowId);
+						setMenu(null);
+					}}
 					onDuplicate={() => {
 						dispatch(workflowActions.duplicateWorkflow({ sourceId: menu.workflowId }));
 						setMenu(null);
@@ -117,10 +122,17 @@ const Workflows: React.FC = () => {
 						type='button'
 						key={wf.id}
 						title={composeTreeTooltip(wf.description, wf.updatedAt)}
-						onClick={() => dispatch(changeTab({ type: 'workflow_editor', payload: wf.id, temporary: true }))}
-						onDoubleClick={() => dispatch(changeTab({ type: 'workflow_editor', payload: wf.id, temporary: false }))}
+						onClick={() => {
+							if (renamingId === wf.id) return;
+							dispatch(changeTab({ type: 'workflow_editor', payload: wf.id, temporary: true }));
+						}}
+						onDoubleClick={() => {
+							if (renamingId === wf.id) return;
+							dispatch(changeTab({ type: 'workflow_editor', payload: wf.id, temporary: false }));
+						}}
 						onContextMenu={event => {
 							event.preventDefault();
+							if (renamingId === wf.id) return;
 							setMenu({ workflowId: wf.id, screen: { x: event.clientX, y: event.clientY } });
 						}}
 						display='flex'
@@ -170,9 +182,25 @@ const Workflows: React.FC = () => {
 								borderColor='bg.surface'
 							/>
 						</Flex>
-						<Box flex='1 1 auto' minW={0} overflow='hidden' textOverflow='ellipsis' whiteSpace='nowrap'>
-							{wf.name || 'Untitled workflow'}
-						</Box>
+						{renamingId === wf.id ? (
+							<Box flex='1 1 auto' minW={0}>
+								<InlineRename
+									initial={wf.name ?? ''}
+									onCommit={next => {
+										const trimmed = next.trim();
+										if (trimmed && trimmed !== wf.name) {
+											dispatch(workflowActions.updateWorkflowName({ id: wf.id, name: trimmed }));
+										}
+										setRenamingId(null);
+									}}
+									onCancel={() => setRenamingId(null)}
+								/>
+							</Box>
+						) : (
+							<Box flex='1 1 auto' minW={0} overflow='hidden' textOverflow='ellipsis' whiteSpace='nowrap'>
+								{wf.name || 'Untitled workflow'}
+							</Box>
+						)}
 						{wf.tags && wf.tags.length > 0 && (
 							<Flex gap='1' flexShrink={0} alignItems='center'>
 								{wf.tags.slice(0, 2).map(tag => (
@@ -247,6 +275,7 @@ interface WorkflowRowContextMenuProps {
 	screen: { x: number; y: number };
 	workflowName: string;
 	onOpen: () => void;
+	onRename: () => void;
 	onDuplicate: () => void;
 	onDelete: () => void;
 	onClose: () => void;
@@ -259,7 +288,7 @@ interface WorkflowRowContextMenuProps {
  * the row component stays focused on the row itself.
  */
 const WorkflowRowContextMenu: React.FC<WorkflowRowContextMenuProps> = props => {
-	const { screen, workflowName, onOpen, onDuplicate, onDelete, onClose } = props;
+	const { screen, workflowName, onOpen, onRename, onDuplicate, onDelete, onClose } = props;
 	const ref = React.useRef<HTMLDivElement | null>(null);
 
 	React.useEffect(() => {
@@ -279,6 +308,7 @@ const WorkflowRowContextMenu: React.FC<WorkflowRowContextMenuProps> = props => {
 
 	const items: { label: string; icon: React.ReactNode; onClick: () => void; tone?: 'danger' }[] = [
 		{ label: 'Open', icon: <Pencil size={12} strokeWidth={1.8} />, onClick: onOpen },
+		{ label: 'Rename', icon: <Edit3 size={12} strokeWidth={1.8} />, onClick: onRename },
 		{ label: 'Duplicate', icon: <Copy size={12} strokeWidth={1.8} />, onClick: onDuplicate },
 		{ label: 'Delete…', icon: <Trash2 size={12} strokeWidth={1.8} />, onClick: onDelete, tone: 'danger' },
 	];
@@ -338,6 +368,59 @@ const WorkflowRowContextMenu: React.FC<WorkflowRowContextMenuProps> = props => {
 				</Flex>
 			))}
 		</Box>
+	);
+};
+
+interface InlineRenameProps {
+	initial: string;
+	onCommit: (next: string) => void;
+	onCancel: () => void;
+}
+
+/**
+ * Tiny controlled Input that mounts pre-selected with the current name
+ * so the user can start typing immediately. Enter commits; Escape /
+ * blur cancels — same contract as the tree-view rename pattern. Stops
+ * row-level click/double-click propagation so a click in the input
+ * doesn't accidentally trip the tab-change handler on the surrounding
+ * ChakraButton row.
+ */
+const InlineRename: React.FC<InlineRenameProps> = ({ initial, onCommit, onCancel }) => {
+	const [value, setValue] = React.useState(initial);
+	const ref = React.useRef<HTMLInputElement | null>(null);
+
+	React.useEffect(() => {
+		const input = ref.current;
+		if (!input) return;
+		input.focus();
+		input.select();
+	}, []);
+
+	return (
+		<Input
+			ref={ref}
+			size='xs'
+			variant='subtle'
+			value={value}
+			onChange={event => setValue(event.target.value)}
+			onClick={event => event.stopPropagation()}
+			onDoubleClick={event => event.stopPropagation()}
+			onKeyDown={event => {
+				if (event.key === 'Enter') {
+					event.preventDefault();
+					event.stopPropagation();
+					onCommit(value);
+				} else if (event.key === 'Escape') {
+					event.preventDefault();
+					event.stopPropagation();
+					onCancel();
+				}
+			}}
+			onBlur={() => onCancel()}
+			fontSize='12px'
+			h='20px'
+			px='1'
+		/>
 	);
 };
 
