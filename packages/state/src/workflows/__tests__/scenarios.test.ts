@@ -2,6 +2,7 @@ import { createReducer } from '@reduxjs/toolkit';
 import { describe, expect, it } from 'vitest';
 
 import * as actions from '../actions';
+import { diffWorkflows, summariseChange } from '../diff';
 import { cleanupDanglingEdges, inspectGraph, mergeWorkflows, searchNodes, validateConnection } from '../helpers';
 import { buildWorkflowsReducer } from '../reducer';
 import { workflowStats } from '../stats';
@@ -191,6 +192,27 @@ describe('workflow lifecycle — build and tear down', () => {
 		// Only the OK edge survives; xyflow won't choke on a missing endpoint.
 		expect(wf.edges.map(e => e.id)).toEqual(['e-ok']);
 		expect(inspectGraph(wf).danglingEdges).toEqual([]);
+	});
+
+	it('diffWorkflows + summariseChange describe a merge as +N steps, +N edges', () => {
+		const mintA = counterMinter();
+		const a = instantiateTemplate({ template: 'blank', name: 'A', mintId: mintA });
+		const mintB = counterMinter();
+		const b = instantiateTemplate({ template: 'smoke-test', name: 'B', mintId: mintB });
+
+		let mergeCounter = 0;
+		const mergeMint = (prefix: 'node' | 'edge') => `${prefix}-merge-${mergeCounter++}`;
+		const merged = mergeWorkflows(a, b, mergeMint);
+
+		const diff = diffWorkflows(a, merged);
+		// smoke-test seeds: start + request + notification (3); start dropped → 2 grafted nodes.
+		expect(diff.addedNodes).toHaveLength(2);
+		// smoke-test seeds 2 edges (s→r, r→n); the s→r edge is filtered out
+		// because the source Start was dropped. Only r→n grafts.
+		expect(diff.addedEdges).toHaveLength(1);
+		const summary = summariseChange(diff);
+		expect(summary).toContain('+2 step');
+		expect(summary).toContain('+1 edge');
 	});
 
 	it('mergeWorkflows + replaceGraph composes two workflows into one', () => {
