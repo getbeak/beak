@@ -3,6 +3,7 @@
 import {
 	addEdge,
 	addNode,
+	clearGraph,
 	duplicateNode,
 	insertNewWorkflow,
 	moveNode,
@@ -26,6 +27,7 @@ import { createAction } from '@reduxjs/toolkit';
 export {
 	addEdge,
 	addNode,
+	clearGraph,
 	duplicateNode,
 	insertNewWorkflow,
 	moveNode,
@@ -77,6 +79,7 @@ export default {
 	updateEdgeLabel,
 
 	replaceGraph,
+	clearGraph,
 
 	removeWorkflowFromStore,
 	removeWorkflowFromDisk,

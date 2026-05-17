@@ -317,6 +317,39 @@ describe('workflows reducer — duplicateNode', () => {
 	});
 });
 
+describe('workflows reducer — clearGraph', () => {
+	it('keeps Start and drops everything else', () => {
+		const start: WorkflowsState = {
+			loaded: true,
+			workflows: {
+				wf1: makeWorkflow({
+					nodes: [
+						{ id: 's', type: 'start', position: { x: 0, y: 0 }, data: {} },
+						{ id: 'a', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } },
+						{ id: 'b', type: 'notification', position: { x: 0, y: 0 }, data: {} },
+					],
+					edges: [
+						{ id: 'e1', source: 's', target: 'a' },
+						{ id: 'e2', source: 'a', target: 'b' },
+					],
+				}),
+			},
+		};
+		const next = reducer(start, actions.clearGraph({ id: 'wf1' }));
+		const wf = next.workflows.wf1!;
+		expect(wf.nodes.map(n => n.id)).toEqual(['s']);
+		expect(wf.edges).toEqual([]);
+	});
+
+	it('is a no-op when the workflow is missing', () => {
+		const start: WorkflowsState = {
+			loaded: true,
+			workflows: { wf1: makeWorkflow() },
+		};
+		expect(reducer(start, actions.clearGraph({ id: 'missing' }))).toEqual(start);
+	});
+});
+
 describe('workflows reducer — renameNode', () => {
 	it('sets and clears a node name', () => {
 		const start: WorkflowsState = {

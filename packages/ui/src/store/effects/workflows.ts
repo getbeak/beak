@@ -18,6 +18,7 @@ import * as wfActions from '../workflows/actions';
 import {
 	addEdge,
 	addNode,
+	clearGraph,
 	createNewWorkflow,
 	duplicateNode,
 	insertNewWorkflow,
@@ -112,6 +113,7 @@ export function registerWorkflowsEffects(start: AppStartListening) {
 		removeEdge,
 		updateEdgeLabel,
 		replaceGraph,
+		clearGraph,
 	];
 	for (const ac of updateActions) {
 		start({

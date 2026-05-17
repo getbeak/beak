@@ -14,6 +14,7 @@ import {
 	type WorkflowNode,
 } from '@beak/state/workflows';
 import { changeTab } from '@beak/ui/features/tabs/store/actions';
+import { ipcDialogService } from '@beak/ui/lib/ipc';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { actions as workflowActions } from '@beak/ui/store/workflows';
 import { Box, Flex, Input, Stack } from '@chakra-ui/react';
@@ -45,6 +46,7 @@ import {
 	Play,
 	Repeat,
 	StickyNote,
+	Trash2,
 	Workflow as WorkflowIcon,
 } from 'lucide-react';
 import * as React from 'react';
@@ -260,6 +262,23 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 		const laidOut = autoLayout(workflow);
 		dispatch(workflowActions.replaceGraph({ id: workflowId, nodes: laidOut.nodes, edges: laidOut.edges }));
 	}, [dispatch, workflow, workflowId]);
+
+	const clearGraph = useCallback(async () => {
+		if (!workflow) return;
+		if (workflow.nodes.length <= 1 && workflow.edges.length === 0) return;
+		const result = await ipcDialogService.showMessageBox({
+			type: 'warning',
+			title: 'Clear workflow',
+			message: 'Remove every step except Start?',
+			detail: 'This drops every node and edge on the canvas; the workflow file itself stays.',
+			buttons: ['Clear', 'Cancel'],
+			defaultId: 1,
+			cancelId: 1,
+		});
+		if (result.response === 1) return;
+		dispatch(workflowActions.clearGraph({ id: workflowId }));
+		clearSelection();
+	}, [dispatch, workflow, workflowId, clearSelection]);
 
 	const copyWorkflowJson = useCallback(async () => {
 		if (!workflow) return;
@@ -559,6 +578,7 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 					/>
 					<Box w='1px' h='14px' bg='border.subtle' alignSelf='center' mx='1' />
 					<ToolbarButton icon={<LayoutTemplate size={13} strokeWidth={1.8} />} label='Tidy' onClick={tidyGraph} />
+					<ToolbarButton icon={<Trash2 size={13} strokeWidth={1.8} />} label='Clear' onClick={clearGraph} />
 					<ToolbarButton
 						icon={<Play size={13} strokeWidth={1.8} />}
 						label='Simulate'

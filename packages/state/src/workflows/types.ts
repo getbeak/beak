@@ -132,3 +132,10 @@ export interface ReplaceGraphPayload extends WorkflowId {
 export interface PurgeRequestRefsPayload {
 	requestIds: string[];
 }
+
+/**
+ * Reset the graph to "Start only" — keeps the existing Start node so we
+ * never end up with a workflow that has no entry point. Useful for
+ * abandoning a half-built design without deleting the whole file.
+ */
+export interface ClearGraphPayload extends WorkflowId {}

@@ -143,6 +143,13 @@ export function buildWorkflowsReducer<S extends WorkflowsState>(builder: ActionR
 			workflow.nodes = payload.nodes;
 			workflow.edges = payload.edges;
 		})
+		.addCase(actions.clearGraph, (state, { payload }) => {
+			const workflow = state.workflows[payload.id];
+			if (!workflow) return;
+			// Keep the Start node so the workflow always has an entry point.
+			workflow.nodes = workflow.nodes.filter(n => n.type === 'start');
+			workflow.edges = [];
+		})
 		.addCase(actions.removeWorkflowFromStore, (state, { payload }) => {
 			delete state.workflows[payload];
 		})

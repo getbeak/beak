@@ -3,6 +3,7 @@ import { createAction } from '@reduxjs/toolkit';
 import type {
 	AddEdgePayload,
 	AddNodePayload,
+	ClearGraphPayload,
 	DuplicateNodePayload,
 	InsertNewWorkflowPayload,
 	MoveNodePayload,
@@ -41,6 +42,7 @@ export const removeEdge = createAction<RemoveEdgePayload>('workflows/removeEdge'
 export const updateEdgeLabel = createAction<UpdateEdgeLabelPayload>('workflows/updateEdgeLabel');
 
 export const replaceGraph = createAction<ReplaceGraphPayload>('workflows/replaceGraph');
+export const clearGraph = createAction<ClearGraphPayload>('workflows/clearGraph');
 
 export const removeWorkflowFromStore = createAction<string>('workflows/removeWorkflowFromStore');
 
