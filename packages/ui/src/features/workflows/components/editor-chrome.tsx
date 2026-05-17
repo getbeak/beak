@@ -336,6 +336,9 @@ export const EmptySelectionPanel: React.FC<EmptySelectionPanelProps> = ({
 					<KbdHint>?</KbdHint> {'show all shortcuts'}
 				</Box>
 				<Box mb='0.5'>
+					<KbdHint>⌘ .</KbdHint> {'fit viewport to selection / graph'}
+				</Box>
+				<Box mb='0.5'>
 					<KbdHint>Right-click</KbdHint> {'an edge to delete it'}
 				</Box>
 				<Box>
