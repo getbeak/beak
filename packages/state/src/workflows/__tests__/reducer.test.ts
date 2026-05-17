@@ -317,6 +317,39 @@ describe('workflows reducer — duplicateNode', () => {
 	});
 });
 
+describe('workflows reducer — renameNode', () => {
+	it('sets and clears a node name', () => {
+		const start: WorkflowsState = {
+			loaded: true,
+			workflows: {
+				wf1: makeWorkflow({
+					nodes: [
+						{ id: 's', type: 'start', position: { x: 0, y: 0 }, data: {} },
+						{ id: 'a', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } },
+					],
+				}),
+			},
+		};
+		const named = reducer(start, actions.renameNode({ id: 'wf1', nodeId: 'a', name: '  Fetch users  ' }));
+		expect((named.workflows.wf1!.nodes.find(n => n.id === 'a')! as { name?: string }).name).toBe('Fetch users');
+		const cleared = reducer(named, actions.renameNode({ id: 'wf1', nodeId: 'a', name: '   ' }));
+		expect((cleared.workflows.wf1!.nodes.find(n => n.id === 'a')! as { name?: string }).name).toBeUndefined();
+	});
+
+	it('is a no-op when the workflow or node is missing', () => {
+		const start: WorkflowsState = {
+			loaded: true,
+			workflows: {
+				wf1: makeWorkflow({
+					nodes: [{ id: 's', type: 'start', position: { x: 0, y: 0 }, data: {} }],
+				}),
+			},
+		};
+		expect(reducer(start, actions.renameNode({ id: 'missing', nodeId: 's', name: 'x' }))).toEqual(start);
+		expect(reducer(start, actions.renameNode({ id: 'wf1', nodeId: 'ghost', name: 'x' }))).toEqual(start);
+	});
+});
+
 describe('workflows reducer — updateEdgeLabel', () => {
 	it('sets an edge label and clears it when blank', () => {
 		const start: WorkflowsState = {

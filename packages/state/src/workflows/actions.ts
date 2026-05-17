@@ -10,6 +10,7 @@ import type {
 	RemoveEdgePayload,
 	RemoveNodePayload,
 	RemoveNodesPayload,
+	RenameNodePayload,
 	UpdateEdgeLabelPayload,
 	ReplaceGraphPayload,
 	SetWorkflowParentPayload,
@@ -30,6 +31,7 @@ export const addNode = createAction<AddNodePayload>('workflows/addNode');
 export const updateNode = createAction<UpdateNodePayload>('workflows/updateNode');
 export const updateNodeData = createAction<UpdateNodeDataPayload>('workflows/updateNodeData');
 export const moveNode = createAction<MoveNodePayload>('workflows/moveNode');
+export const renameNode = createAction<RenameNodePayload>('workflows/renameNode');
 export const removeNode = createAction<RemoveNodePayload>('workflows/removeNode');
 export const removeNodes = createAction<RemoveNodesPayload>('workflows/removeNodes');
 export const duplicateNode = createAction<DuplicateNodePayload>('workflows/duplicateNode');

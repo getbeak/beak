@@ -11,6 +11,7 @@ import {
 	removeNode,
 	removeNodes,
 	removeWorkflowFromStore,
+	renameNode,
 	replaceGraph,
 	setWorkflowParent,
 	startWorkflows,
@@ -33,6 +34,7 @@ export {
 	removeNode,
 	removeNodes,
 	removeWorkflowFromStore,
+	renameNode,
 	replaceGraph,
 	setWorkflowParent,
 	startWorkflows,
@@ -67,6 +69,7 @@ export default {
 	moveNode,
 	removeNode,
 	removeNodes,
+	renameNode,
 	duplicateNode,
 
 	addEdge,

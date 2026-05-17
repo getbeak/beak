@@ -65,6 +65,21 @@ describe('toMarkdown', () => {
 		expect(md).toContain('repeat 2 × (body) → POST /metrics — _each iteration_');
 	});
 
+	it('prefers an explicit node name over the derived label', () => {
+		const wf: WorkflowFile = {
+			id: 'wf',
+			name: 'named',
+			nodes: [
+				{ id: 's', type: 'start', position: { x: 0, y: 0 }, data: {} },
+				{ id: 'a', type: 'request', position: { x: 0, y: 0 }, data: { requestId: 'req-a' }, name: 'Login flow' } as WorkflowNode,
+			],
+			edges: [],
+		};
+		const md = toMarkdown(wf, new Map([['req-a', 'POST /sessions']]));
+		expect(md).toContain('**Request** — Login flow');
+		expect(md).not.toContain('POST /sessions');
+	});
+
 	it('marks dangling edge endpoints rather than crashing', () => {
 		const wf: WorkflowFile = {
 			id: 'wf',

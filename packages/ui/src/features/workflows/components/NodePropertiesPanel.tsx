@@ -94,11 +94,38 @@ const NodePropertiesPanel: React.FC<NodePropertiesPanelProps> = ({ workflowId, n
 			</Flex>
 
 			<Box flex='1' minH={0} overflowY='auto'>
+				<Box px='3' pt='3'>
+					<Input
+						size='sm'
+						placeholder={defaultLabelFor(node)}
+						value={(node as { name?: string }).name ?? ''}
+						onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+							dispatch(workflowActions.renameNode({ id: workflowId, nodeId: node.id, name: e.target.value || undefined }))
+						}
+					/>
+				</Box>
 				<NodeBody workflowId={workflowId} node={node} />
 			</Box>
 		</Flex>
 	);
 };
+
+function defaultLabelFor(node: WorkflowNode): string {
+	switch (node.type) {
+		case 'start':
+			return 'Start';
+		case 'request':
+			return 'Request step';
+		case 'loop':
+			return 'Loop step';
+		case 'condition':
+			return 'Condition step';
+		case 'notification':
+			return 'Notification step';
+		case 'comment':
+			return 'Note';
+	}
+}
 
 function NodeBody({ workflowId, node }: { workflowId: string; node: WorkflowNode }) {
 	switch (node.type) {

@@ -63,6 +63,8 @@ function kindBadge(kind: WorkflowNode['type']): string {
 }
 
 function describeNode(node: WorkflowNode, requestNames: ReadonlyMap<string, string>): string {
+	const explicit = (node as { name?: string }).name?.trim();
+	if (explicit) return explicit;
 	switch (node.type) {
 		case 'start':
 			return 'Workflow entry point';

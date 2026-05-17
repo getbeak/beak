@@ -608,6 +608,11 @@ function describeNodeForSearch(
 	node: WorkflowNode,
 	requestNames: ReadonlyMap<string, string>,
 ): NodeSearchResult {
+	// A user-given `name` always wins over the derived label.
+	const explicit = (node as { name?: string }).name?.trim();
+	if (explicit) {
+		return { id: node.id, label: explicit, subtitle: kindCapitalised(node.type), kind: node.type };
+	}
 	switch (node.type) {
 		case 'start':
 			return { id: node.id, label: 'Start', subtitle: 'Workflow entry point', kind: 'start' };
@@ -655,6 +660,10 @@ function describeNodeForSearch(
 			};
 		}
 	}
+}
+
+function kindCapitalised(kind: WorkflowNode['type']): string {
+	return kind.charAt(0).toUpperCase() + kind.slice(1);
 }
 
 /**

@@ -138,6 +138,21 @@ describe('workflowSchema — round-trip', () => {
 		expect(parsed.parent).toBeUndefined();
 	});
 
+	it('accepts a per-node display name', () => {
+		const wf = {
+			id: 'wf-name',
+			name: 'named',
+			nodes: [
+				{ id: 's', type: 'start', position: { x: 0, y: 0 }, name: 'Begin', data: {} },
+				{ id: 'a', type: 'request', position: { x: 0, y: 0 }, name: 'Login', data: { requestId: null } },
+			],
+			edges: [],
+		};
+		const parsed = workflowSchema.parse(wf);
+		expect(parsed.nodes[0].name).toBe('Begin');
+		expect(parsed.nodes[1].name).toBe('Login');
+	});
+
 	it('accepts an edge with an inline label', () => {
 		const wf = {
 			id: 'wf-7',

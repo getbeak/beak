@@ -60,6 +60,15 @@ export function buildWorkflowsReducer<S extends WorkflowsState>(builder: ActionR
 			if (!node) return;
 			node.position = payload.position;
 		})
+		.addCase(actions.renameNode, (state, { payload }) => {
+			const workflow = state.workflows[payload.id];
+			if (!workflow) return;
+			const node = workflow.nodes.find(n => n.id === payload.nodeId);
+			if (!node) return;
+			const trimmed = payload.name?.trim();
+			if (trimmed) (node as { name?: string }).name = trimmed;
+			else delete (node as { name?: string }).name;
+		})
 		.addCase(actions.removeNode, (state, { payload }) => {
 			const workflow = state.workflows[payload.id];
 			if (!workflow) return;

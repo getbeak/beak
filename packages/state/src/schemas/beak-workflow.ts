@@ -25,6 +25,7 @@ const startNodeSchema = z.object({
 	id: z.string(),
 	type: z.literal('start'),
 	position: nodePositionSchema,
+	name: z.string().optional(),
 	data: z.object({}),
 });
 
@@ -94,6 +95,7 @@ const requestNodeSchema = z.object({
 	id: z.string(),
 	type: z.literal('request'),
 	position: nodePositionSchema,
+	name: z.string().optional(),
 	data: z.object({
 		// References a request in tree/ — null until the user picks one.
 		requestId: z.string().nullable(),
@@ -108,6 +110,7 @@ const loopNodeSchema = z.object({
 	id: z.string(),
 	type: z.literal('loop'),
 	position: nodePositionSchema,
+	name: z.string().optional(),
 	data: z.object({
 		// `count` runs the inner branch N times; `forEach` iterates a value
 		// section (typically a response-body-json array ref). Both empty by
@@ -124,6 +127,7 @@ const conditionNodeSchema = z.object({
 	id: z.string(),
 	type: z.literal('condition'),
 	position: nodePositionSchema,
+	name: z.string().optional(),
 	data: z.object({
 		/**
 		 * Dot path into the incoming node's output, e.g. `body.user.id` or
@@ -149,6 +153,7 @@ const notificationNodeSchema = z.object({
 	id: z.string(),
 	type: z.literal('notification'),
 	position: nodePositionSchema,
+	name: z.string().optional(),
 	data: z.object({
 		title: z.array(z.unknown()).optional(),
 		body: z.array(z.unknown()).optional(),
@@ -165,6 +170,7 @@ const commentNodeSchema = z.object({
 	id: z.string(),
 	type: z.literal('comment'),
 	position: nodePositionSchema,
+	name: z.string().optional(),
 	data: z.object({
 		text: z.string().optional(),
 	}),

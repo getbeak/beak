@@ -69,6 +69,15 @@ export interface MoveNodePayload extends WorkflowId {
 	position: { x: number; y: number };
 }
 
+/**
+ * Set / clear a per-node user-friendly name. Empty / undefined drops the
+ * field entirely so the on-disk file stays clean.
+ */
+export interface RenameNodePayload extends WorkflowId {
+	nodeId: string;
+	name: string | undefined;
+}
+
 export interface RemoveNodePayload extends WorkflowId {
 	nodeId: string;
 }
