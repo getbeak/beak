@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { workflowStats } from '../stats';
+import { summariseWorkflow, workflowStats } from '../stats';
 import { instantiateTemplate, type TemplateKey } from '../templates';
 import type { WorkflowFile, WorkflowNode } from '../types';
 
@@ -106,5 +106,39 @@ describe('workflowStats', () => {
 			edges: [{ id: 'e1', source: 'a', target: 'b' }],
 		};
 		expect(workflowStats(wf).componentCount).toBe(2);
+	});
+});
+
+describe('summariseWorkflow', () => {
+	it('returns null for an empty workflow', () => {
+		expect(summariseWorkflow({ id: 'wf', name: '', nodes: [], edges: [] })).toBeNull();
+	});
+
+	it('reports steps + edges + tags with middle-dot separators', () => {
+		const wf: WorkflowFile = {
+			id: 'wf',
+			name: 'S',
+			tags: ['x', 'y'],
+			nodes: [
+				{ id: 's', type: 'start', position: { x: 0, y: 0 }, data: {} },
+				{ id: 'a', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } },
+				{ id: 'b', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } },
+			],
+			edges: [
+				{ id: 'e1', source: 's', target: 'a' },
+				{ id: 'e2', source: 'a', target: 'b' },
+			],
+		};
+		expect(summariseWorkflow(wf)).toBe('3 steps · 2 edges · 2 tags');
+	});
+
+	it('drops tags when none are set', () => {
+		const wf: WorkflowFile = {
+			id: 'wf',
+			name: 'S',
+			nodes: [{ id: 's', type: 'start', position: { x: 0, y: 0 }, data: {} }],
+			edges: [],
+		};
+		expect(summariseWorkflow(wf)).toBe('1 step');
 	});
 });

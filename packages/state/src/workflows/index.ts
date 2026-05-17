@@ -45,7 +45,7 @@ export { toMarkdown } from './markdown';
 export { mergeJson, mergeKv, pruneBody, pruneOverrideMap, pruneOverrides } from './overrides';
 export * from './reducer';
 export { type SimulationContext, type SimulationEvent, walkWorkflow } from './simulator';
-export { type WorkflowStats, workflowStats } from './stats';
+export { summariseWorkflow, type WorkflowStats, workflowStats } from './stats';
 export { type NodeWarning, validateNode, validateWorkflow } from './validation';
 export {
 	type IdMinter,

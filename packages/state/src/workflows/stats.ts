@@ -21,6 +21,24 @@ export interface WorkflowStats {
 	unlinkedRequestCount: number;
 }
 
+/**
+ * One-line "5 steps · 4 edges · 2 tags" summary for the tree-row
+ * tooltip + future welcome-screen recent-workflows list. Returns null
+ * when there's nothing interesting to say (empty workflow).
+ */
+export function summariseWorkflow(workflow: WorkflowFile): string | null {
+	const stats = workflowStats(workflow);
+	const stepCount = workflow.nodes.length;
+	if (stepCount === 0) return null;
+	const parts: string[] = [];
+	parts.push(`${stepCount} step${stepCount === 1 ? '' : 's'}`);
+	if (stats.edgeCount > 0) parts.push(`${stats.edgeCount} edge${stats.edgeCount === 1 ? '' : 's'}`);
+	if (workflow.tags && workflow.tags.length > 0) {
+		parts.push(`${workflow.tags.length} tag${workflow.tags.length === 1 ? '' : 's'}`);
+	}
+	return parts.join(' · ');
+}
+
 export function workflowStats(workflow: WorkflowFile): WorkflowStats {
 	const nodesByKind: Record<WorkflowNodeKind, number> = {
 		start: 0,
