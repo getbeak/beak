@@ -2,6 +2,7 @@ import ksuid from '@beak/ksuid';
 import { workflowSchema } from '@beak/state/schemas/beak-workflow';
 import {
 	autoLayout,
+	connectedComponents,
 	inspectGraph,
 	type NodeIssue,
 	nodeIssuesFromHealth,
@@ -141,6 +142,7 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 	const rfEdges = useMemo<Edge[]>(() => (workflow ? (workflow.edges as unknown as Edge[]) : []), [workflow]);
 
 	const health = useMemo(() => (workflow ? inspectGraph(workflow) : null), [workflow]);
+	const componentCount = useMemo(() => (workflow ? connectedComponents(workflow).length : 0), [workflow]);
 	// Per-node issue (cycle > unlinked > unreachable). Threaded into rfNodes
 	// below so the kind-specific node views can paint a coloured ring.
 	const nodeIssues = useMemo<Map<string, NodeIssue>>(() => (health ? nodeIssuesFromHealth(health) : new Map()), [health]);
@@ -554,6 +556,13 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 				<Flex align='center' gap='1.5' ml='2' color='fg.subtle' fontSize='10px' fontWeight='600'>
 					<MetaPill icon={<Globe size={10} strokeWidth={2.2} />} count={workflow.nodes.length} label='steps' />
 					<MetaPill icon={<GitBranch size={10} strokeWidth={2.2} />} count={workflow.edges.length} label='links' />
+					{componentCount > 1 && (
+						<MetaPill
+							icon={<LayoutTemplate size={10} strokeWidth={2.2} />}
+							count={componentCount}
+							label={componentCount === 1 ? 'island' : 'islands'}
+						/>
+					)}
 					<SaveStateIndicator />
 					{warningCount > 0 && (
 						<WarningPill
