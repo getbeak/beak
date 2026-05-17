@@ -1,4 +1,5 @@
 import type { WorkflowEditorTabItem } from '@beak/common/types/beak-project';
+import { inspectGraph, validateWorkflow } from '@beak/state/workflows';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { Box } from '@chakra-ui/react';
 import { Workflow } from 'lucide-react';
@@ -16,8 +17,20 @@ interface WorkflowEditorTabProps {
 const WorkflowEditorTab: React.FC<React.PropsWithChildren<WorkflowEditorTabProps>> = ({ tab }) => {
 	const dispatch = useDispatch();
 	const selectedTabPayload = useAppSelector(s => s.features.tabs.selectedTab);
-	const name = useAppSelector(s => s.global.workflows.workflows[tab.payload]?.name);
-	const stepCount = useAppSelector(s => s.global.workflows.workflows[tab.payload]?.nodes.length ?? 0);
+	const workflow = useAppSelector(s => s.global.workflows.workflows[tab.payload]);
+	const name = workflow?.name;
+	const stepCount = workflow?.nodes.length ?? 0;
+	const issueCount = React.useMemo(() => {
+		if (!workflow) return 0;
+		const health = inspectGraph(workflow);
+		const warnings = validateWorkflow(workflow);
+		return (
+			health.unreachable.length +
+			health.unlinkedRequestNodes.length +
+			health.cycleNodes.length +
+			warnings.size
+		);
+	}, [workflow]);
 	const pendingWrite = useAppSelector(s => Boolean(s.global.workflows.writeDebouncer));
 	const [target, setTarget] = useState<HTMLElement>();
 
@@ -69,7 +82,7 @@ const WorkflowEditorTab: React.FC<React.PropsWithChildren<WorkflowEditorTabProps
 					<Box as='span' overflow='hidden' textOverflow='ellipsis' whiteSpace='nowrap'>
 						{`${labelPrefix}${base}`}
 					</Box>
-					{showCount && (
+					{showCount && issueCount === 0 && (
 						<Box
 							as='span'
 							flexShrink={0}
@@ -79,6 +92,25 @@ const WorkflowEditorTab: React.FC<React.PropsWithChildren<WorkflowEditorTabProps
 							opacity={0.8}
 						>
 							{stepCount}
+						</Box>
+					)}
+					{issueCount > 0 && (
+						<Box
+							as='span'
+							flexShrink={0}
+							fontSize='9px'
+							fontWeight='700'
+							color='accent.warning'
+							fontVariantNumeric='tabular-nums'
+							borderWidth='1px'
+							borderColor='color-mix(in srgb, var(--beak-colors-accent-warning) 40%, transparent)'
+							bg='color-mix(in srgb, var(--beak-colors-accent-warning) 14%, transparent)'
+							borderRadius='sm'
+							px='1'
+							lineHeight='1.4'
+							title={`${issueCount} issue${issueCount === 1 ? '' : 's'} on this workflow`}
+						>
+							{`!${issueCount}`}
 						</Box>
 					)}
 				</Box>
