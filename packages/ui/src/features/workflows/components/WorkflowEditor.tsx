@@ -11,6 +11,7 @@ import {
 	parseImportedWorkflow,
 	placeNewNode,
 	serializeForExport,
+	summariseHealth,
 	toMarkdown,
 	validateConnection,
 	validateWorkflow,
@@ -741,12 +742,7 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 							label={warningCount === 1 ? 'issue' : 'issues'}
 							title={
 								health
-									? [
-											health.unreachable.length > 0 ? `${health.unreachable.length} unreachable` : null,
-											health.unlinkedRequestNodes.length > 0 ? `${health.unlinkedRequestNodes.length} unlinked` : null,
-											health.cycleNodes.length > 0 ? `${health.cycleNodes.length} on cycle` : null,
-											'click to jump',
-										]
+									? [summariseHealth(health, nodeWarnings.size), 'click to jump']
 											.filter(Boolean)
 											.join(' · ')
 									: undefined
