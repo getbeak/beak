@@ -241,6 +241,15 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 				return;
 			}
 
+			// Edge-selected → Delete / Backspace removes it. Mirrors the
+			// node-selected handling above.
+			if ((event.key === 'Delete' || event.key === 'Backspace') && selectedEdgeId) {
+				event.preventDefault();
+				dispatch(workflowActions.removeEdge({ id: workflowId, edgeId: selectedEdgeId }));
+				setSelectedEdgeId(null);
+				return;
+			}
+
 			// Cmd/Ctrl-A — select every non-Start node on the canvas. Comment
 			// nodes are intentionally included so the user can sweep them out
 			// alongside live steps.
