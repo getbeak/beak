@@ -68,6 +68,23 @@ export function buildWorkflowsReducer<S extends WorkflowsState>(builder: ActionR
 			// to render an edge with a missing endpoint and crashes the canvas.
 			workflow.edges = workflow.edges.filter(e => e.source !== payload.nodeId && e.target !== payload.nodeId);
 		})
+		.addCase(actions.removeNodes, (state, { payload }) => {
+			const workflow = state.workflows[payload.id];
+			if (!workflow) return;
+			if (payload.nodeIds.length === 0) return;
+			// Start is workflow-scoped and must never be deleted — skip it
+			// rather than throwing so the caller can pass a raw selection set
+			// without filtering.
+			const dropping = new Set<string>();
+			for (const id of payload.nodeIds) {
+				const node = workflow.nodes.find(n => n.id === id);
+				if (!node || node.type === 'start') continue;
+				dropping.add(id);
+			}
+			if (dropping.size === 0) return;
+			workflow.nodes = workflow.nodes.filter(n => !dropping.has(n.id));
+			workflow.edges = workflow.edges.filter(e => !dropping.has(e.source) && !dropping.has(e.target));
+		})
 		.addCase(actions.duplicateNode, (state, { payload }) => {
 			const workflow = state.workflows[payload.id];
 			if (!workflow) return;

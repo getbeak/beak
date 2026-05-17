@@ -189,6 +189,65 @@ describe('workflows reducer — replaceGraph', () => {
 	});
 });
 
+describe('workflows reducer — removeNodes (bulk)', () => {
+	const makeState = (): WorkflowsState => ({
+		loaded: true,
+		workflows: {
+			wf1: makeWorkflow({
+				nodes: [
+					{ id: 's', type: 'start', position: { x: 0, y: 0 }, data: {} },
+					{ id: 'a', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } },
+					{ id: 'b', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } },
+					{ id: 'c', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } },
+				],
+				edges: [
+					{ id: 'e1', source: 's', target: 'a' },
+					{ id: 'e2', source: 'a', target: 'b' },
+					{ id: 'e3', source: 'b', target: 'c' },
+					{ id: 'e4', source: 's', target: 'c' },
+				],
+			}),
+		},
+	});
+
+	it('removes every named node and every edge touching one', () => {
+		const start = makeState();
+		const next = reducer(start, actions.removeNodes({ id: 'wf1', nodeIds: ['a', 'b'] }));
+		const wf = next.workflows.wf1!;
+		expect(wf.nodes.map(n => n.id).sort()).toEqual(['c', 's']);
+		// e1, e2, e3 touched a or b; only e4 (s → c) survives.
+		expect(wf.edges.map(e => e.id)).toEqual(['e4']);
+	});
+
+	it('silently skips Start nodes so callers can pass raw selection sets', () => {
+		const start = makeState();
+		const next = reducer(start, actions.removeNodes({ id: 'wf1', nodeIds: ['s', 'a'] }));
+		const wf = next.workflows.wf1!;
+		expect(wf.nodes.find(n => n.id === 's')).toBeDefined();
+		expect(wf.nodes.find(n => n.id === 'a')).toBeUndefined();
+	});
+
+	it('is a no-op for empty input', () => {
+		const start = makeState();
+		const next = reducer(start, actions.removeNodes({ id: 'wf1', nodeIds: [] }));
+		expect(next).toBe(start);
+	});
+
+	it('is a no-op when the workflow is gone', () => {
+		const start = makeState();
+		const next = reducer(start, actions.removeNodes({ id: 'missing', nodeIds: ['a'] }));
+		expect(next).toEqual(start);
+	});
+
+	it('ignores ids that no longer exist on the workflow', () => {
+		const start = makeState();
+		const next = reducer(start, actions.removeNodes({ id: 'wf1', nodeIds: ['ghost', 'a'] }));
+		const wf = next.workflows.wf1!;
+		expect(wf.nodes.find(n => n.id === 'a')).toBeUndefined();
+		expect(wf.nodes).toHaveLength(3);
+	});
+});
+
 describe('workflows reducer — duplicateNode', () => {
 	const makeState = (): WorkflowsState => ({
 		loaded: true,

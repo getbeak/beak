@@ -74,6 +74,15 @@ export interface RemoveNodePayload extends WorkflowId {
 }
 
 /**
+ * Atomic bulk removal — drops the named nodes + every edge touching one.
+ * Start nodes are silently skipped (the workflow always needs one entry
+ * point); the reducer enforces this so callers don't have to filter.
+ */
+export interface RemoveNodesPayload extends WorkflowId {
+	nodeIds: string[];
+}
+
+/**
  * Clone an existing node under a fresh id. The caller owns id minting so the
  * KSUID side-effect stays out of the pure reducer. The new node lands at
  * `position` (typically the source's position + a small offset).
