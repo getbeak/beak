@@ -155,6 +155,25 @@ const StatsDialog: React.FC<StatsDialogProps> = ({ workflow, open, onClose }) =>
 								)}
 							</Section>
 
+							{(workflow.createdAt || workflow.updatedAt) && (
+								<Section title='Timeline'>
+									{workflow.createdAt && (
+										<Row label='Created'>
+											<Box fontSize='11px' color='fg.default' fontVariantNumeric='tabular-nums'>
+												{formatTimestamp(workflow.createdAt)}
+											</Box>
+										</Row>
+									)}
+									{workflow.updatedAt && (
+										<Row label='Last edited'>
+											<Box fontSize='11px' color='fg.default' fontVariantNumeric='tabular-nums'>
+												{formatTimestamp(workflow.updatedAt)}
+											</Box>
+										</Row>
+									)}
+								</Section>
+							)}
+
 							{bounds && (
 								<Section title='Canvas bounds'>
 									<Row label='Width'>
@@ -195,6 +214,29 @@ const Row: React.FC<React.PropsWithChildren<{ label: string }>> = ({ label, chil
 		{children}
 	</Flex>
 );
+
+/**
+ * Pretty-print a timestamp as "<date> · <relative>". Avoids pulling
+ * in a dep like date-fns for the one place it's used.
+ */
+function formatTimestamp(ms: number): string {
+	const date = new Date(ms);
+	const ago = formatAgo(Date.now() - ms);
+	return `${date.toLocaleString()} (${ago})`;
+}
+
+function formatAgo(deltaMs: number): string {
+	const seconds = Math.max(0, Math.floor(deltaMs / 1000));
+	if (seconds < 60) return 'just now';
+	const minutes = Math.floor(seconds / 60);
+	if (minutes < 60) return `${minutes}m ago`;
+	const hours = Math.floor(minutes / 60);
+	if (hours < 24) return `${hours}h ago`;
+	const days = Math.floor(hours / 24);
+	if (days < 30) return `${days}d ago`;
+	const months = Math.floor(days / 30);
+	return `${months}mo ago`;
+}
 
 const Count: React.FC<{ value: number }> = ({ value }) => (
 	<Box fontSize='12px' fontWeight='600' color='fg.default' fontVariantNumeric='tabular-nums'>
