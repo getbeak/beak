@@ -13,6 +13,7 @@ export {
 	extractAllTags,
 	findRequestStepsUsing,
 	findSourcesOf,
+	findWorkflowByName,
 	findTargetsOf,
 	firstIssueNode,
 	flightFromNode,

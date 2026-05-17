@@ -14,6 +14,7 @@ import {
 	findRequestStepsUsing,
 	findSourcesOf,
 	findTargetsOf,
+	findWorkflowByName,
 	firstIssueNode,
 	flightFromNode,
 	inspectGraph,
@@ -860,6 +861,35 @@ describe('duplicateWorkflow', () => {
 	it('compares names case-insensitively', () => {
 		const cloned = duplicateWorkflow(source, makeMinter(), { existingNames: ['copy of original'] });
 		expect(cloned.name).toBe('Copy of Original (2)');
+	});
+});
+
+describe('findWorkflowByName', () => {
+	const wfs: WorkflowFile[] = [
+		{ id: 'a', name: 'Auth chain', nodes: [], edges: [] },
+		{ id: 'b', name: 'Smoke test', nodes: [], edges: [] },
+	];
+
+	it('matches case-insensitively', () => {
+		expect(findWorkflowByName(wfs, 'AUTH CHAIN')?.id).toBe('a');
+	});
+
+	it('trims whitespace before comparing', () => {
+		expect(findWorkflowByName(wfs, '   smoke test  ')?.id).toBe('b');
+	});
+
+	it('returns null when nothing matches', () => {
+		expect(findWorkflowByName(wfs, 'Missing')).toBeNull();
+	});
+
+	it('returns null for an empty needle', () => {
+		expect(findWorkflowByName(wfs, '   ')).toBeNull();
+	});
+
+	it('accepts a record (id → file)', () => {
+		const record: Record<string, WorkflowFile> = {};
+		for (const w of wfs) record[w.id] = w;
+		expect(findWorkflowByName(record, 'Auth chain')?.id).toBe('a');
 	});
 });
 

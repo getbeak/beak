@@ -360,6 +360,26 @@ export function duplicateWorkflow(
 }
 
 /**
+ * Find a workflow by its display name. Case-insensitive, whitespace-
+ * trimmed. Returns the first match — duplicate names can exist (the
+ * conflict-suffix is best-effort, not enforced at the slice), so the
+ * caller should not assume uniqueness. Returns null when nothing
+ * matches; pure + cheap so safe to call from React renders.
+ */
+export function findWorkflowByName(
+	workflows: Record<string, WorkflowFile> | ReadonlyArray<WorkflowFile>,
+	name: string,
+): WorkflowFile | null {
+	const list = Array.isArray(workflows) ? (workflows as readonly WorkflowFile[]) : Object.values(workflows);
+	const needle = name.trim().toLowerCase();
+	if (needle === '') return null;
+	for (const wf of list) {
+		if ((wf.name ?? '').trim().toLowerCase() === needle) return wf;
+	}
+	return null;
+}
+
+/**
  * Returns `base` if it's not already in `existing`, otherwise appends a
  * " (2)", " (3)"… suffix until a unique name is found. The comparison is
  * case-insensitive so "Copy of Auth" and "COPY OF AUTH" don't both squeeze
