@@ -142,7 +142,7 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 		return workflow.nodes.map(n => ({
 			...n,
 			selected: selectedIds.has(n.id),
-			data: { ...n.data, _issue: nodeIssues.get(n.id) },
+			data: { ...n.data, _issue: nodeIssues.get(n.id), _name: (n as { name?: string }).name },
 		})) as unknown as Node[];
 	}, [workflow, selectedIds, nodeIssues]);
 	const warningCount = health
