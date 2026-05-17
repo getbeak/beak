@@ -7,10 +7,12 @@ import {
 	cleanupDanglingEdges,
 	duplicateWorkflow,
 	extractAllTags,
+	findDuplicateNames,
 	findTargetsOf,
 	inspectGraph,
 	mergeWorkflows,
 	searchNodes,
+	uniqueWorkflowName,
 	validateConnection,
 } from '../helpers';
 import { buildWorkflowsReducer } from '../reducer';
@@ -395,6 +397,30 @@ describe('workflow lifecycle — build and tear down', () => {
 		expect(Object.keys(state.workflows).length).toBe(3);
 		const names = Object.values(state.workflows).map(w => w.name).sort();
 		expect(names).toEqual(['Copy of Original', 'Copy of Original (2)', 'Original']);
+	});
+
+	it('uniqueWorkflowName works against the live store + findDuplicateNames flags real collisions', () => {
+		const mint = counterMinter();
+		const a = instantiateTemplate({ template: 'blank', name: 'Auth', mintId: mint });
+		const b = instantiateTemplate({ template: 'blank', name: 'Auth', mintId: mint });
+		let state = reducer(initialWorkflowsState, actions.insertNewWorkflow({ id: a.id, workflow: a }));
+		state = reducer(state, actions.insertNewWorkflow({ id: b.id, workflow: b }));
+
+		const dups = findDuplicateNames(state.workflows);
+		expect(dups).toEqual([{ name: 'Auth', ids: [a.id, b.id] }]);
+
+		// Now produce a non-colliding name for a new sibling using the same
+		// uniqueWorkflowName helper the renaming flow uses.
+		const next = uniqueWorkflowName(
+			'Auth',
+			Object.values(state.workflows).map(w => w.name),
+		);
+		expect(next).toBe('Auth (2)');
+
+		// Insert under the new name and re-check — the duplicates list now
+		// surfaces nothing (since "Auth (2)" is distinct).
+		state = reducer(state, actions.updateWorkflowName({ id: b.id, name: next }));
+		expect(findDuplicateNames(state.workflows)).toEqual([]);
 	});
 
 	it('purges request refs when the underlying project tree drops the request', () => {
