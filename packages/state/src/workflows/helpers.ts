@@ -595,6 +595,21 @@ export function summariseHealth(health: GraphHealth, warningCount: number): stri
 }
 
 /**
+ * Returns the count of distinct (deduped, normalised) tags across the
+ * collection. Equivalent to `extractAllTags(workflows).length` but
+ * skips the array allocation so it's safe to call from a tight
+ * render path (eg. tab chip badges).
+ */
+export function tagCount(workflows: ReadonlyArray<WorkflowFile> | Record<string, WorkflowFile>): number {
+	const list = Array.isArray(workflows) ? workflows : Object.values(workflows);
+	const set = new Set<string>();
+	for (const wf of list) {
+		for (const t of wf.tags ?? []) set.add(t);
+	}
+	return set.size;
+}
+
+/**
  * Tags that appear in `known` but never on any workflow in `workflows`.
  * Useful when the project tracks a curated tag vocabulary (eg. read from
  * project.json) and we want to flag stale entries. Returns the tags

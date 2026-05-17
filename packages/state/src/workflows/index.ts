@@ -45,6 +45,7 @@ export {
 	type WorkflowSearchResult,
 	serializeForExport,
 	summariseHealth,
+	tagCount,
 	topologicalOrder,
 	uniqueWorkflowName,
 	unusedTags,

@@ -37,6 +37,7 @@ import {
 	searchWorkflows,
 	serializeForExport,
 	summariseHealth,
+	tagCount,
 	topologicalOrder,
 	uniqueWorkflowName,
 	unusedTags,
@@ -1267,6 +1268,28 @@ describe('summariseHealth', () => {
 		const h = emptyHealth();
 		h.unreachable = ['x'];
 		expect(summariseHealth(h, 0)).toBe('1 unreachable');
+	});
+});
+
+describe('tagCount', () => {
+	it('returns the distinct tag count across a collection', () => {
+		const wfs: WorkflowFile[] = [
+			{ id: 'a', name: 'A', tags: ['auth', 'staging'], nodes: [], edges: [] },
+			{ id: 'b', name: 'B', tags: ['staging', 'smoke'], nodes: [], edges: [] },
+		];
+		expect(tagCount(wfs)).toBe(3);
+	});
+
+	it('returns 0 when no workflows declare tags', () => {
+		expect(tagCount([{ id: 'a', name: 'A', nodes: [], edges: [] }])).toBe(0);
+	});
+
+	it('matches extractAllTags().length', () => {
+		const wfs: WorkflowFile[] = [
+			{ id: 'a', name: 'A', tags: ['x', 'y', 'z'], nodes: [], edges: [] },
+			{ id: 'b', name: 'B', tags: ['y'], nodes: [], edges: [] },
+		];
+		expect(tagCount(wfs)).toBe(extractAllTags(wfs).length);
 	});
 });
 
