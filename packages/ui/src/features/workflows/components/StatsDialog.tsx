@@ -32,6 +32,35 @@ const StatsDialog: React.FC<StatsDialogProps> = ({ workflow, open, onClose }) =>
 					</Dialog.Header>
 					<Dialog.Body>
 						<Stack gap='3'>
+							{(workflow.description?.trim() || (workflow.tags && workflow.tags.length > 0)) && (
+								<Section title='Meta'>
+									{workflow.description?.trim() && (
+										<Box fontSize='12px' color='fg.default' lineHeight='1.45' px='2' py='1'>
+											{workflow.description.trim()}
+										</Box>
+									)}
+									{workflow.tags && workflow.tags.length > 0 && (
+										<Flex gap='1' flexWrap='wrap' px='2'>
+											{workflow.tags.map(tag => (
+												<Box
+													key={tag}
+													fontSize='10px'
+													px='1.5'
+													py='0.5'
+													borderRadius='sm'
+													borderWidth='1px'
+													borderColor='border.subtle'
+													bg='bg.canvas'
+													color='fg.muted'
+												>
+													{`#${tag}`}
+												</Box>
+											))}
+										</Flex>
+									)}
+								</Section>
+							)}
+
 							<Section title='Nodes by kind'>
 								{Object.entries(stats.nodesByKind)
 									.filter(([, count]) => count > 0)
