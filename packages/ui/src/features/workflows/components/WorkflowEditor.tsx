@@ -5,6 +5,7 @@ import {
 	compactPositions,
 	connectedComponents,
 	inspectGraph,
+	mergeWorkflows,
 	type NodeIssue,
 	nodeIssuesFromHealth,
 	parseImportedWorkflow,
@@ -43,6 +44,7 @@ import {
 	Bell,
 	Clipboard,
 	ClipboardPaste,
+	Combine,
 	FileText,
 	GitBranch,
 	Globe,
@@ -426,6 +428,24 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 		}
 	}, [dispatch]);
 
+	const mergeWorkflowJson = useCallback(async () => {
+		if (!workflow) return;
+		try {
+			const text = await navigator.clipboard.readText();
+			let parsed: ReturnType<typeof workflowSchema.parse>;
+			try {
+				parsed = workflowSchema.parse(JSON.parse(text));
+			} catch (err) {
+				console.warn('[workflows] merge: invalid JSON / schema', err);
+				return;
+			}
+			const merged = mergeWorkflows(workflow, parsed, prefix => ksuid.generate(prefix).toString());
+			dispatch(workflowActions.replaceGraph({ id: workflowId, nodes: merged.nodes, edges: merged.edges }));
+		} catch (err) {
+			console.warn('[workflows] merge failed', err);
+		}
+	}, [dispatch, workflow, workflowId]);
+
 	const onNodesChange = useCallback(
 		(changes: NodeChange[]) => {
 			if (!workflow) return;
@@ -752,6 +772,11 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 						icon={<ClipboardPaste size={13} strokeWidth={1.8} />}
 						label='Paste'
 						onClick={pasteWorkflowJson}
+					/>
+					<ToolbarButton
+						icon={<Combine size={13} strokeWidth={1.8} />}
+						label='Merge'
+						onClick={mergeWorkflowJson}
 					/>
 					<Box w='1px' h='14px' bg='border.subtle' alignSelf='center' mx='1' />
 					<ToolbarButton
