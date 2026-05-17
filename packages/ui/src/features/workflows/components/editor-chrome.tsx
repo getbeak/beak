@@ -148,6 +148,8 @@ interface EmptySelectionPanelProps {
 	cycleCount: number;
 	description: string;
 	onChangeDescription: (next: string | undefined) => void;
+	tags: string[];
+	onChangeTags: (next: string[]) => void;
 }
 
 // Shown on the right when nothing's selected — gives the canvas an obvious
@@ -160,6 +162,8 @@ export const EmptySelectionPanel: React.FC<EmptySelectionPanelProps> = ({
 	cycleCount,
 	description,
 	onChangeDescription,
+	tags,
+	onChangeTags,
 }) => {
 	const items: { kind: AddableNodeKind; icon: React.ReactNode; title: string; subtitle: string; tone: string }[] = [
 		{
@@ -240,6 +244,7 @@ export const EmptySelectionPanel: React.FC<EmptySelectionPanelProps> = ({
 					}}
 				/>
 			</Box>
+			<TagsEditor tags={tags} onChange={onChangeTags} />
 			<Box px='3' py='3' borderBottomWidth='1px' borderColor='border.subtle'>
 				<Box fontSize='10px' fontWeight='700' color='fg.muted' textTransform='uppercase' letterSpacing='0.06em'>
 					{'Add a step'}
@@ -778,6 +783,94 @@ export const MultiSelectPanel: React.FC<MultiSelectPanelProps> = ({ count, onDel
 		</Box>
 	</Flex>
 );
+
+/**
+ * Tag chips + add input. Lives between Description and Add-a-step in
+ * EmptySelectionPanel. The reducer normalises (trim/lowercase/dedupe)
+ * so this component only needs to push the user's raw input through.
+ */
+const TagsEditor: React.FC<{ tags: string[]; onChange: (next: string[]) => void }> = ({ tags, onChange }) => {
+	const [draft, setDraft] = useState('');
+
+	function commitDraft() {
+		const trimmed = draft.trim();
+		if (!trimmed) return;
+		onChange([...tags, trimmed]);
+		setDraft('');
+	}
+
+	function removeAt(idx: number) {
+		const next = [...tags];
+		next.splice(idx, 1);
+		onChange(next);
+	}
+
+	return (
+		<Box px='3' py='3' borderBottomWidth='1px' borderColor='border.subtle'>
+			<Box fontSize='10px' fontWeight='700' color='fg.muted' textTransform='uppercase' letterSpacing='0.06em' mb='1'>
+				{'Tags'}
+			</Box>
+			<Flex wrap='wrap' gap='1' mb='1.5'>
+				{tags.map((tag, i) => (
+					<Flex
+						key={tag}
+						align='center'
+						gap='1'
+						px='1.5'
+						h='18px'
+						borderRadius='sm'
+						borderWidth='1px'
+						borderColor='border.subtle'
+						bg='bg.canvas'
+						color='fg.default'
+						fontSize='10px'
+					>
+						<Box>{tag}</Box>
+						<Box
+							as='button'
+							role='button'
+							aria-label={`Remove tag ${tag}`}
+							color='fg.muted'
+							cursor='pointer'
+							_hover={{ color: 'accent.alert' }}
+							onClick={() => removeAt(i)}
+						>
+							<X size={9} strokeWidth={2.2} />
+						</Box>
+					</Flex>
+				))}
+			</Flex>
+			<input
+				value={draft}
+				placeholder='Add a tag…'
+				onChange={e => setDraft(e.target.value)}
+				onBlur={commitDraft}
+				onKeyDown={e => {
+					if (e.key === 'Enter') {
+						e.preventDefault();
+						commitDraft();
+					} else if (e.key === 'Backspace' && draft === '' && tags.length > 0) {
+						// Backspace on empty input drops the trailing tag — matches the
+						// pattern in most chip inputs (Mail, Linear).
+						e.preventDefault();
+						removeAt(tags.length - 1);
+					}
+				}}
+				style={{
+					width: '100%',
+					padding: '4px 8px',
+					fontSize: '11px',
+					fontFamily: 'inherit',
+					background: 'var(--beak-colors-bg-canvas)',
+					border: '1px solid var(--beak-colors-border-default)',
+					borderRadius: '4px',
+					color: 'inherit',
+					outline: 'none',
+				}}
+			/>
+		</Box>
+	);
+};
 
 export const KbdHint: React.FC<React.PropsWithChildren> = ({ children }) => (
 	<Box

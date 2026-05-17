@@ -822,6 +822,8 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 						onChangeDescription={next =>
 							dispatch(workflowActions.updateWorkflowDescription({ id: workflowId, description: next }))
 						}
+						tags={workflow.tags ?? []}
+						onChangeTags={next => dispatch(workflowActions.setWorkflowTags({ id: workflowId, tags: next }))}
 					/>
 				)}
 			</Flex>
