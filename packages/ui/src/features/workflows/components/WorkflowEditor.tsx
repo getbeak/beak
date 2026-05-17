@@ -1,7 +1,6 @@
 import ksuid from '@beak/ksuid';
 import {
 	autoLayout,
-	firstIssueNode,
 	inspectGraph,
 	type NodeIssue,
 	nodeIssuesFromHealth,
@@ -48,6 +47,7 @@ import {
 import { nodeTypes } from './node-views';
 import NodePropertiesPanel from './NodePropertiesPanel';
 import NodeSearchDialog from './NodeSearchDialog';
+import QuickFixDialog from './QuickFixDialog';
 import SimulationDialog from './SimulationDialog';
 
 interface WorkflowEditorProps {
@@ -87,6 +87,7 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 	const [selectedIds, setSelectedIds] = useState<ReadonlySet<string>>(() => new Set());
 	const [searchOpen, setSearchOpen] = useState(false);
 	const [simulateOpen, setSimulateOpen] = useState(false);
+	const [quickFixOpen, setQuickFixOpen] = useState(false);
 	// `{ x, y }` is in flow-coordinates (already mapped); rendered absolutely
 	// over the canvas at `screen-x/y` for the menu position.
 	const [paneMenu, setPaneMenu] = useState<{ flow: { x: number; y: number }; screen: { x: number; y: number } } | null>(
@@ -364,6 +365,12 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 				onClose={() => setSimulateOpen(false)}
 				onJumpToNode={replaceSelection}
 			/>
+			<QuickFixDialog
+				workflow={workflow}
+				open={quickFixOpen}
+				onClose={() => setQuickFixOpen(false)}
+				onJumpToNode={replaceSelection}
+			/>
 			<Flex
 				align='center'
 				gap='2'
@@ -426,11 +433,7 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 											.join(' · ')
 									: undefined
 							}
-							onClick={() => {
-								if (!health) return;
-								const target = firstIssueNode(health);
-								if (target) replaceSelection(target);
-							}}
+							onClick={() => setQuickFixOpen(true)}
 						/>
 					)}
 				</Flex>
