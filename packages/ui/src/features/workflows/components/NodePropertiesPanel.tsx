@@ -1,6 +1,8 @@
 import { verbToColor, verbToShortLabel } from '@beak/design-system/helpers';
 import { projectTree } from '@beak/state';
 import {
+	findSourcesOf,
+	findTargetsOf,
 	mergeJson,
 	mergeKv,
 	type OverrideEntry,
@@ -104,6 +106,7 @@ const NodePropertiesPanel: React.FC<NodePropertiesPanelProps> = ({ workflowId, n
 						}
 					/>
 				</Box>
+				<ConnectionsSummary workflowId={workflowId} nodeId={node.id} />
 				<NodeBody workflowId={workflowId} node={node} />
 			</Box>
 		</Flex>
@@ -958,6 +961,41 @@ function kindLabel(kind: WorkflowNode['type']): string {
 		case 'comment':
 			return 'Comment';
 	}
+}
+
+/**
+ * Compact "Inbound · Outbound" chip row above the kind-specific editor.
+ * Reads `findSourcesOf` + `findTargetsOf` against the live slice so the
+ * counts stay in lockstep with drag/drop wiring.
+ */
+function ConnectionsSummary({ workflowId, nodeId }: { workflowId: string; nodeId: string }) {
+	const workflow = useAppSelector(s => s.global.workflows.workflows[workflowId]);
+	if (!workflow) return null;
+	const sources = findSourcesOf(workflow, nodeId);
+	const targets = findTargetsOf(workflow, nodeId);
+	if (sources.length === 0 && targets.length === 0) return null;
+
+	return (
+		<Flex
+			align='center'
+			gap='1.5'
+			mt='2'
+			mx='3'
+			px='2'
+			py='1'
+			borderRadius='sm'
+			bg='bg.subtle'
+			borderWidth='1px'
+			borderColor='border.subtle'
+			fontSize='10px'
+			color='fg.muted'
+			fontWeight='600'
+		>
+			<Box>
+				{`Inbound ${sources.length} · Outbound ${targets.length}`}
+			</Box>
+		</Flex>
+	);
 }
 
 export default NodePropertiesPanel;
