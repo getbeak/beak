@@ -101,7 +101,10 @@ export class ExtensionManifests extends RuntimeBase {
 		}
 
 		const scriptPath = path.join(extensionPath, packageJson.main);
-		const exists = await fs.stat(scriptPath).then(() => true).catch(() => false);
+		const exists = await fs
+			.stat(scriptPath)
+			.then(() => true)
+			.catch(() => false);
 		if (!exists) {
 			throw new Squawk('extension_main_missing', {
 				extensionPath,

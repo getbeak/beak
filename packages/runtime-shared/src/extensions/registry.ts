@@ -287,9 +287,7 @@ function subtleAlgorithm(name: string): string {
 function bytesToBase64(bytes: Uint8Array): string {
 	let binary = '';
 	for (let i = 0; i < bytes.length; i += 1) binary += String.fromCharCode(bytes[i]);
-	return typeof btoa === 'function'
-		? btoa(binary)
-		: Buffer.from(bytes).toString('base64');
+	return typeof btoa === 'function' ? btoa(binary) : Buffer.from(bytes).toString('base64');
 }
 
 function bytesToHex(bytes: Uint8Array): string {

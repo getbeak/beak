@@ -1,6 +1,8 @@
-export { ExtensionManifests } from './manifest';
 export type { ParsedExtensionManifest, ParseExtensionManifestOptions } from './manifest';
-export { default as ExtensionRegistry, packageDestination, verifyIntegrity } from './registry';
+export { ExtensionManifests } from './manifest';
+export { makeFullyQualifiedType, packageNameFromType, variableIdFromType } from './manifest-helpers';
+export type { InstalledExtensionEntry, ProjectExtensionsManifest } from './project-extensions';
+export { ProjectExtensions } from './project-extensions';
 export type {
 	ExtensionRegistryOptions,
 	RegistryPackageMetadata,
@@ -8,5 +10,8 @@ export type {
 	RegistryVersionMetadata,
 	ResolvedVersion,
 } from './registry';
-export { gunzip, readTar } from './tar';
+export { default as ExtensionRegistry, packageDestination, verifyIntegrity } from './registry';
+export type { RegisteredRecord, RegistryOptions } from './registry-base';
+export { ProjectExtensionRegistry } from './registry-base';
 export type { TarEntry } from './tar';
+export { gunzip, readTar } from './tar';
