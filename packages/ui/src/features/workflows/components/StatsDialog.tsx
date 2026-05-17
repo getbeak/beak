@@ -1,4 +1,4 @@
-import { nodeBounds, type WorkflowFile, workflowStats } from '@beak/state/workflows';
+import { inspectGraph, nodeBounds, validateWorkflow, type WorkflowFile, workflowStats } from '@beak/state/workflows';
 import { Box, Button, Dialog, Flex, Stack } from '@chakra-ui/react';
 import * as React from 'react';
 import { useMemo } from 'react';
@@ -17,6 +17,10 @@ interface StatsDialogProps {
 const StatsDialog: React.FC<StatsDialogProps> = ({ workflow, open, onClose }) => {
 	const stats = useMemo(() => workflowStats(workflow), [workflow]);
 	const bounds = useMemo(() => nodeBounds(workflow.nodes), [workflow.nodes]);
+	const health = useMemo(() => inspectGraph(workflow), [workflow]);
+	const warnings = useMemo(() => validateWorkflow(workflow), [workflow]);
+	const totalIssues =
+		health.unreachable.length + health.unlinkedRequestNodes.length + health.cycleNodes.length + warnings.size;
 
 	return (
 		<Dialog.Root open={open} onOpenChange={d => (d.open ? null : onClose())} size='md' placement='center'>
@@ -64,6 +68,29 @@ const StatsDialog: React.FC<StatsDialogProps> = ({ workflow, open, onClose }) =>
 								<Row label='Unlinked requests'>
 									<Count value={stats.unlinkedRequestCount} />
 								</Row>
+							</Section>
+
+							<Section title='Issues'>
+								{totalIssues === 0 ? (
+									<Box fontSize='12px' color='accent.success'>
+										{'Clean. No structural or config warnings.'}
+									</Box>
+								) : (
+									<>
+										<Row label='Unreachable nodes'>
+											<Count value={health.unreachable.length} />
+										</Row>
+										<Row label='Unlinked requests'>
+											<Count value={health.unlinkedRequestNodes.length} />
+										</Row>
+										<Row label='Cycle members'>
+											<Count value={health.cycleNodes.length} />
+										</Row>
+										<Row label='Per-node warnings'>
+											<Count value={warnings.size} />
+										</Row>
+									</>
+								)}
 							</Section>
 
 							{bounds && (
