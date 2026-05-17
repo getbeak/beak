@@ -53,6 +53,7 @@ import { useDispatch } from 'react-redux';
 
 import {
 	type AddableNodeKind,
+	EdgeLabelEditor,
 	EmptySelectionPanel,
 	MetaPill,
 	MultiSelectPanel,
@@ -111,6 +112,11 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 	const [paneMenu, setPaneMenu] = useState<{ flow: { x: number; y: number }; screen: { x: number; y: number } } | null>(
 		null,
 	);
+	const [edgeLabelEditor, setEdgeLabelEditor] = useState<{
+		edgeId: string;
+		initialLabel: string;
+		screen: { x: number; y: number };
+	} | null>(null);
 	const reactFlow = useReactFlow();
 	const selectedNodeId = selectedIds.size === 1 ? [...selectedIds][0] : null;
 
@@ -429,6 +435,23 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 					onClose={() => setPaneMenu(null)}
 				/>
 			)}
+			{edgeLabelEditor && (
+				<EdgeLabelEditor
+					screen={edgeLabelEditor.screen}
+					initialLabel={edgeLabelEditor.initialLabel}
+					onCommit={next => {
+						dispatch(
+							workflowActions.updateEdgeLabel({
+								id: workflowId,
+								edgeId: edgeLabelEditor.edgeId,
+								label: next || undefined,
+							}),
+						);
+						setEdgeLabelEditor(null);
+					}}
+					onCancel={() => setEdgeLabelEditor(null)}
+				/>
+			)}
 			<NodeSearchDialog
 				workflow={workflow}
 				open={searchOpen}
@@ -592,13 +615,13 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 							event.preventDefault();
 							dispatch(workflowActions.removeEdge({ id: workflowId, edgeId: edge.id }));
 						}}
-						onEdgeDoubleClick={(_event, edge) => {
+						onEdgeDoubleClick={(event, edge) => {
 							const current = typeof edge.label === 'string' ? edge.label : '';
-							// `prompt` is intentionally low-rent here — a richer inline
-							// editor lands when we have RTV chips on edges.
-							const next = window.prompt('Edge label', current);
-							if (next === null) return; // user hit Cancel
-							dispatch(workflowActions.updateEdgeLabel({ id: workflowId, edgeId: edge.id, label: next || undefined }));
+							setEdgeLabelEditor({
+								edgeId: edge.id,
+								initialLabel: current,
+								screen: { x: event.clientX, y: event.clientY },
+							});
 						}}
 						nodeTypes={nodeTypes}
 						fitView

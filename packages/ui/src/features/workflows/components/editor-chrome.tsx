@@ -312,6 +312,71 @@ export const EmptySelectionPanel: React.FC<EmptySelectionPanelProps> = ({
 	);
 };
 
+interface EdgeLabelEditorProps {
+	screen: { x: number; y: number };
+	initialLabel: string;
+	onCommit: (label: string) => void;
+	onCancel: () => void;
+}
+
+/**
+ * Inline floating input for editing an edge's label — spawned on
+ * double-click of an edge in xyflow. Enter commits, Escape cancels,
+ * blur commits (matches the way every other inline-rename in Beak
+ * works). Replaces the earlier `window.prompt` placeholder.
+ */
+export const EdgeLabelEditor: React.FC<EdgeLabelEditorProps> = ({ screen, initialLabel, onCommit, onCancel }) => {
+	const [value, setValue] = useState(initialLabel);
+	const inputRef = useRef<HTMLInputElement | null>(null);
+
+	useEffect(() => {
+		inputRef.current?.focus();
+		inputRef.current?.select();
+	}, []);
+
+	return (
+		<Box
+			position='fixed'
+			left={`${screen.x}px`}
+			top={`${screen.y}px`}
+			transform='translate(-50%, -50%)'
+			zIndex={50}
+			minW='200px'
+			bg='bg.surface'
+			borderRadius='md'
+			borderWidth='1px'
+			borderColor='accent.pink'
+			boxShadow='md'
+		>
+			<input
+				ref={inputRef}
+				value={value}
+				onChange={e => setValue(e.target.value)}
+				onBlur={() => onCommit(value.trim())}
+				onKeyDown={e => {
+					if (e.key === 'Enter') {
+						e.preventDefault();
+						onCommit(value.trim());
+					} else if (e.key === 'Escape') {
+						e.preventDefault();
+						onCancel();
+					}
+				}}
+				placeholder='Edge label'
+				style={{
+					width: '100%',
+					padding: '4px 8px',
+					fontSize: '12px',
+					background: 'transparent',
+					border: 'none',
+					outline: 'none',
+					color: 'inherit',
+				}}
+			/>
+		</Box>
+	);
+};
+
 interface PaneContextMenuProps {
 	screen: { x: number; y: number };
 	onPick: (kind: AddableNodeKind) => void;
