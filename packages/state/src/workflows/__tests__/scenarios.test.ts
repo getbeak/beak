@@ -372,6 +372,31 @@ describe('workflow lifecycle — build and tear down', () => {
 		for (const id of cloneNodeIds) expect(sourceNodeIds.has(id)).toBe(false);
 	});
 
+	it('duplicates the same source twice — each clone lands on a unique name', () => {
+		const mint = counterMinter();
+		const seed = instantiateTemplate({ template: 'blank', name: 'Original', mintId: mint });
+		let state = reducer(initialWorkflowsState, actions.insertNewWorkflow({ id: seed.id, workflow: seed }));
+
+		// First clone — collides with nothing.
+		const first = duplicateWorkflow(state.workflows[seed.id]!, mint, {
+			existingNames: Object.values(state.workflows).map(w => w.name),
+		});
+		state = reducer(state, actions.insertNewWorkflow({ id: first.id, workflow: first }));
+		expect(first.name).toBe('Copy of Original');
+
+		// Second clone of the same source — must walk past the first clone.
+		const second = duplicateWorkflow(state.workflows[seed.id]!, mint, {
+			existingNames: Object.values(state.workflows).map(w => w.name),
+		});
+		state = reducer(state, actions.insertNewWorkflow({ id: second.id, workflow: second }));
+		expect(second.name).toBe('Copy of Original (2)');
+
+		// Three workflows under three distinct ids.
+		expect(Object.keys(state.workflows).length).toBe(3);
+		const names = Object.values(state.workflows).map(w => w.name).sort();
+		expect(names).toEqual(['Copy of Original', 'Copy of Original (2)', 'Original']);
+	});
+
 	it('purges request refs when the underlying project tree drops the request', () => {
 		const mint = counterMinter();
 		const seed = instantiateTemplate({ template: 'smoke-test', name: 'flow', mintId: mint });
