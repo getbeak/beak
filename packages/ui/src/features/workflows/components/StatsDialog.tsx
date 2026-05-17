@@ -1,6 +1,7 @@
 import {
 	findDuplicateNames,
 	inspectGraph,
+	linkedRequestIds,
 	nodeBounds,
 	validateWorkflow,
 	type WorkflowFile,
@@ -32,6 +33,7 @@ const StatsDialog: React.FC<StatsDialogProps> = ({ workflow, open, onClose }) =>
 	// Cross-workflow check: name collisions in the project. Only show the
 	// group(s) that include *this* workflow so the warning is contextual.
 	const allWorkflows = useAppSelector(s => s.global.workflows.workflows);
+	const reqIds = useMemo(() => linkedRequestIds(workflow), [workflow]);
 	const namesake = useMemo(() => {
 		const dups = findDuplicateNames(allWorkflows);
 		return dups.find(g => g.ids.includes(workflow.id)) ?? null;
@@ -154,6 +156,14 @@ const StatsDialog: React.FC<StatsDialogProps> = ({ workflow, open, onClose }) =>
 									</>
 								)}
 							</Section>
+
+							{reqIds.length > 0 && (
+								<Section title='Linked requests'>
+									<Box fontSize='11px' color='fg.subtle' px='2' pb='1'>
+										{`${reqIds.length} distinct request${reqIds.length === 1 ? '' : 's'} referenced.`}
+									</Box>
+								</Section>
+							)}
 
 							{(workflow.createdAt || workflow.updatedAt) && (
 								<Section title='Timeline'>
