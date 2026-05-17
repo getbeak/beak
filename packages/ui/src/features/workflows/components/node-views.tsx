@@ -39,8 +39,9 @@ const NodeShell: React.FC<{
 	noOutput?: boolean;
 	rightHandles?: BranchHandle[];
 	issue?: NodeIssue;
+	warned?: boolean;
 	children?: React.ReactNode;
-}> = ({ tone, icon, title, name, selected, noInput, noOutput, rightHandles, issue, children }) => {
+}> = ({ tone, icon, title, name, selected, noInput, noOutput, rightHandles, issue, warned, children }) => {
 	const issueTone = issue === 'cycle' || issue === 'unlinked' ? 'warning' : issue === 'unreachable' ? 'alert' : null;
 	const borderColor = selected
 		? `accent.${tone}`
@@ -80,6 +81,15 @@ const NodeShell: React.FC<{
 			<Box fontWeight='600' fontSize='11px' textTransform='uppercase' letterSpacing='0.04em' flex='1' minW={0}>
 				{title}
 			</Box>
+			{warned && (
+				<Box
+					w='6px'
+					h='6px'
+					borderRadius='full'
+					bg='accent.warning'
+					title='This step has configuration warnings'
+				/>
+			)}
 		</Flex>
 		{name && (
 			<Box
@@ -147,7 +157,7 @@ const VerbBadge: React.FC<{ verb: string }> = ({ verb }) => (
 );
 
 export function RequestNodeView({ data, selected }: NodeProps) {
-	const d = data as { requestId: string | null; overrides?: RequestOverrides; _issue?: NodeIssue; _name?: string };
+	const d = data as { requestId: string | null; overrides?: RequestOverrides; _issue?: NodeIssue; _name?: string; _warned?: boolean };
 	const linked = useAppSelector(s => {
 		if (!d.requestId) return undefined;
 		const node = s.global.project.tree[d.requestId];
@@ -159,7 +169,7 @@ export function RequestNodeView({ data, selected }: NodeProps) {
 	const urlPreview = linked?.mode === 'valid' ? previewValueSections(linked.info.url) : '';
 
 	return (
-		<NodeShell tone='pink' icon={<Globe size={12} strokeWidth={1.8} />} title='Request' name={d._name} selected={selected} issue={d._issue}>
+		<NodeShell tone='pink' icon={<Globe size={12} strokeWidth={1.8} />} title='Request' name={d._name} selected={selected} issue={d._issue} warned={d._warned}>
 			{!d.requestId ? (
 				<Box px='2.5' py='2' color='fg.subtle' fontStyle='italic'>
 					{'Pick a request →'}
@@ -222,7 +232,7 @@ export function RequestNodeView({ data, selected }: NodeProps) {
 }
 
 export function StartNodeView({ data, selected }: NodeProps) {
-	const d = data as { _name?: string };
+	const d = data as { _name?: string; _warned?: boolean };
 	return (
 		<NodeShell
 			tone='success'
@@ -230,6 +240,7 @@ export function StartNodeView({ data, selected }: NodeProps) {
 			title='Start'
 			name={d._name}
 			selected={selected}
+			warned={d._warned}
 			noInput
 		>
 			<Box px='2.5' py='1.5' color='fg.subtle' fontSize='11px' fontStyle='italic'>
@@ -240,7 +251,7 @@ export function StartNodeView({ data, selected }: NodeProps) {
 }
 
 export function LoopNodeView({ data, selected }: NodeProps) {
-	const d = data as { mode: 'count' | 'forEach'; count?: number; _issue?: NodeIssue; _name?: string };
+	const d = data as { mode: 'count' | 'forEach'; count?: number; _issue?: NodeIssue; _name?: string; _warned?: boolean };
 	const subtitle = d.mode === 'count' ? `Repeat ${d.count ?? 0} ×` : 'For each item';
 	return (
 		<NodeShell
@@ -250,6 +261,7 @@ export function LoopNodeView({ data, selected }: NodeProps) {
 			name={d._name}
 			selected={selected}
 			issue={d._issue}
+			warned={d._warned}
 			rightHandles={[
 				{ id: 'body', label: 'body', tone: 'teal' },
 				{ id: 'after', label: 'after', tone: 'pink' },
@@ -271,7 +283,7 @@ const operatorLabels: Record<string, string> = {
 };
 
 export function ConditionNodeView({ data, selected }: NodeProps) {
-	const d = data as { operator: string; _issue?: NodeIssue; _name?: string };
+	const d = data as { operator: string; _issue?: NodeIssue; _name?: string; _warned?: boolean };
 	return (
 		<NodeShell
 			tone='indigo'
@@ -280,6 +292,7 @@ export function ConditionNodeView({ data, selected }: NodeProps) {
 			name={d._name}
 			selected={selected}
 			issue={d._issue}
+			warned={d._warned}
 			rightHandles={[
 				{ id: 'true', label: 'true', tone: 'success' },
 				{ id: 'false', label: 'false', tone: 'alert' },
@@ -332,10 +345,10 @@ export function CommentNodeView({ data, selected }: NodeProps) {
 }
 
 export function NotificationNodeView({ data, selected }: NodeProps) {
-	const d = data as { title?: unknown[]; body?: unknown[]; _issue?: NodeIssue; _name?: string };
+	const d = data as { title?: unknown[]; body?: unknown[]; _issue?: NodeIssue; _name?: string; _warned?: boolean };
 	const title = previewValueSections(d.title) || 'Untitled notification';
 	return (
-		<NodeShell tone='warning' icon={<Bell size={12} strokeWidth={1.8} />} title='Notification' name={d._name} selected={selected} issue={d._issue}>
+		<NodeShell tone='warning' icon={<Bell size={12} strokeWidth={1.8} />} title='Notification' name={d._name} selected={selected} issue={d._issue} warned={d._warned}>
 			<Box
 				px='2.5'
 				py='2'

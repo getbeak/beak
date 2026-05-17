@@ -153,18 +153,25 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 	// Per-node issue (cycle > unlinked > unreachable). Threaded into rfNodes
 	// below so the kind-specific node views can paint a coloured ring.
 	const nodeIssues = useMemo<Map<string, NodeIssue>>(() => (health ? nodeIssuesFromHealth(health) : new Map()), [health]);
+	const nodeWarnings = useMemo(() => (workflow ? validateWorkflow(workflow) : new Map<string, unknown>()), [workflow]);
+	const nodeWarningsCount = nodeWarnings.size;
 
-	// Reflect Redux selection + per-node issue back through xyflow's node data
-	// so the node-views render with their selection ring + issue accent.
+	// Reflect Redux selection + per-node issue/warning back through xyflow's
+	// node data so the node-views render with their selection ring + issue
+	// accent + warning dot.
 	const rfNodes = useMemo<Node[]>(() => {
 		if (!workflow) return [];
 		return workflow.nodes.map(n => ({
 			...n,
 			selected: selectedIds.has(n.id),
-			data: { ...n.data, _issue: nodeIssues.get(n.id), _name: (n as { name?: string }).name },
+			data: {
+				...n.data,
+				_issue: nodeIssues.get(n.id),
+				_name: (n as { name?: string }).name,
+				_warned: nodeWarnings.has(n.id),
+			},
 		})) as unknown as Node[];
-	}, [workflow, selectedIds, nodeIssues]);
-	const nodeWarningsCount = useMemo(() => (workflow ? validateWorkflow(workflow).size : 0), [workflow]);
+	}, [workflow, selectedIds, nodeIssues, nodeWarnings]);
 	const warningCount = health
 		? health.unreachable.length + health.unlinkedRequestNodes.length + health.cycleNodes.length + nodeWarningsCount
 		: 0;
