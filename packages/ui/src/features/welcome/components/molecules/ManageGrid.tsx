@@ -1,6 +1,7 @@
 import type { SidebarVariant } from '@beak/common/types/beak-hub';
+import { actions as omniBarActions } from '@beak/ui/features/omni-bar/store';
 import { Box, Flex, SimpleGrid } from '@chakra-ui/react';
-import { Boxes, Layers, Network, Plug, Workflow } from 'lucide-react';
+import { Layers, Network, Plug, Workflow as WorkflowIcon } from 'lucide-react';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 
@@ -33,45 +34,37 @@ const ManageGrid: React.FC = () => {
 			>
 				{'Edit this project'}
 			</Flex>
-			<SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} gap='2.5' alignItems='stretch'>
+			<SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} gap='2.5' alignItems='stretch'>
 				<ActionCard
 					idx={0}
-					icon={Boxes}
-					tone='pink'
-					title='Requests'
-					body='Browse the request tree, cookies and source control.'
-					onClick={() => showSidebar('project')}
-				/>
-				<ActionCard
-					idx={1}
 					icon={Layers}
 					tone='teal'
 					title='Variable sets'
-					body='Switch between environments instantly — staging, prod, local.'
+					body='Define values once per environment — URLs, tokens, IDs — and reference them with {{name}} across every request. Flip the active set and every request swaps.'
 					onClick={() => showSidebar('variables')}
 				/>
 				<ActionCard
-					idx={2}
+					idx={1}
 					icon={Network}
 					tone='indigo'
 					title='Schema sources'
-					body='Browse and edit the requests synced from your OpenAPI, GraphQL, and gRPC schemas.'
+					body='Connect an OpenAPI spec, GraphQL endpoint or gRPC service. Beak materialises every operation as a request and re-syncs whenever the schema changes.'
 					onClick={() => showSidebar('schemas')}
 				/>
 				<ActionCard
-					idx={3}
-					icon={Workflow}
-					tone='green'
+					idx={2}
+					icon={WorkflowIcon}
+					tone='pink'
 					title='Workflows'
-					body='Chain requests with loops, conditions, and notifications. Lives alongside requests in the project tree.'
-					onClick={() => showSidebar('project')}
+					body='Chain requests into a flow — Start → Request → Condition → Loop → Notify. Forks, simulates and saves to disk just like a request. Cmd+Shift+O to jump in.'
+					onClick={() => dispatch(omniBarActions.showOmniBar({ mode: 'workflows' }))}
 				/>
 				<ActionCard
-					idx={4}
+					idx={3}
 					icon={Plug}
 					tone='blue'
 					title='Extensions'
-					body='Add custom variables and realtime values via JavaScript extensions.'
+					body='Write JavaScript that runs inside Beak — sign requests, decrypt payloads, fetch live tokens — and surface the result as a {{variable}} anywhere.'
 					onClick={() => showSidebar('extensions')}
 				/>
 			</SimpleGrid>
