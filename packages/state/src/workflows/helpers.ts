@@ -463,6 +463,37 @@ export function extractAllTags(workflows: ReadonlyArray<WorkflowFile> | Record<s
 }
 
 /**
+ * Find workflows whose display name collides (case-insensitive,
+ * whitespace-trimmed) — used by a future "Project doctor" pane to
+ * flag accidental duplicates introduced by paste-import or by the
+ * conflict-suffix walker failing past 1000 iterations.
+ *
+ * Returns one entry per name with the colliding workflow ids; entries
+ * with only one workflow are omitted. Sorted by name for stable diffs.
+ */
+export function findDuplicateNames(
+	workflows: ReadonlyArray<WorkflowFile> | Record<string, WorkflowFile>,
+): Array<{ name: string; ids: string[] }> {
+	const list = Array.isArray(workflows) ? workflows : Object.values(workflows);
+	const buckets = new Map<string, { display: string; ids: string[] }>();
+	for (const wf of list) {
+		const display = (wf.name ?? '').trim();
+		if (display === '') continue;
+		const key = display.toLowerCase();
+		const bucket = buckets.get(key) ?? { display, ids: [] };
+		bucket.ids.push(wf.id);
+		buckets.set(key, bucket);
+	}
+	const out: Array<{ name: string; ids: string[] }> = [];
+	for (const { display, ids } of buckets.values()) {
+		if (ids.length < 2) continue;
+		out.push({ name: display, ids: [...ids] });
+	}
+	out.sort((a, b) => a.name.localeCompare(b.name));
+	return out;
+}
+
+/**
  * One-line human summary of a workflow's structural issues. Returns
  * `null` when everything is clean so the caller can skip rendering the
  * line entirely. The output is comma-separated and prefixes counts —

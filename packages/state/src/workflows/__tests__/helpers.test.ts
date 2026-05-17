@@ -11,6 +11,7 @@ import {
 	duplicateWorkflow,
 	edgesAfterNodeRemoval,
 	extractAllTags,
+	findDuplicateNames,
 	findRequestStepsUsing,
 	findSourcesOf,
 	findTargetsOf,
@@ -1040,6 +1041,48 @@ describe('extractAllTags', () => {
 
 	it('returns [] when nothing has tags', () => {
 		expect(extractAllTags([{ id: 'a', name: 'A', nodes: [], edges: [] }])).toEqual([]);
+	});
+});
+
+describe('findDuplicateNames', () => {
+	it('returns colliding workflows grouped by trimmed lowercase name', () => {
+		const wfs: WorkflowFile[] = [
+			{ id: 'a', name: 'Auth chain', nodes: [], edges: [] },
+			{ id: 'b', name: '  auth chain  ', nodes: [], edges: [] },
+			{ id: 'c', name: 'Smoke test', nodes: [], edges: [] },
+			{ id: 'd', name: 'AUTH CHAIN', nodes: [], edges: [] },
+		];
+		const result = findDuplicateNames(wfs);
+		expect(result).toEqual([{ name: 'Auth chain', ids: ['a', 'b', 'd'] }]);
+	});
+
+	it('returns [] when no names collide', () => {
+		expect(
+			findDuplicateNames([
+				{ id: 'a', name: 'A', nodes: [], edges: [] },
+				{ id: 'b', name: 'B', nodes: [], edges: [] },
+			]),
+		).toEqual([]);
+	});
+
+	it('skips workflows with blank names', () => {
+		expect(
+			findDuplicateNames([
+				{ id: 'a', name: '', nodes: [], edges: [] },
+				{ id: 'b', name: '   ', nodes: [], edges: [] },
+			]),
+		).toEqual([]);
+	});
+
+	it('returns groups sorted alphabetically by display name', () => {
+		const wfs: WorkflowFile[] = [
+			{ id: 'a', name: 'Zeta', nodes: [], edges: [] },
+			{ id: 'b', name: 'Zeta', nodes: [], edges: [] },
+			{ id: 'c', name: 'Alpha', nodes: [], edges: [] },
+			{ id: 'd', name: 'Alpha', nodes: [], edges: [] },
+		];
+		const result = findDuplicateNames(wfs);
+		expect(result.map(r => r.name)).toEqual(['Alpha', 'Zeta']);
 	});
 });
 

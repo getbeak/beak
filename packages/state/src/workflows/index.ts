@@ -11,6 +11,7 @@ export {
 	duplicateWorkflow,
 	edgesAfterNodeRemoval,
 	extractAllTags,
+	findDuplicateNames,
 	findRequestStepsUsing,
 	findSourcesOf,
 	findWorkflowByName,
