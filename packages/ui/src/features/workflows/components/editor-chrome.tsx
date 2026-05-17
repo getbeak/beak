@@ -327,6 +327,12 @@ export const EmptySelectionPanel: React.FC<EmptySelectionPanelProps> = ({
 					<KbdHint>⌘ K</KbdHint> {'jump to a step by name'}
 				</Box>
 				<Box mb='0.5'>
+					<KbdHint>⌘ ⇧ O</KbdHint> {'jump to another workflow'}
+				</Box>
+				<Box mb='0.5'>
+					<KbdHint>⌘ ⇧ D</KbdHint> {'fork this workflow'}
+				</Box>
+				<Box mb='0.5'>
 					<KbdHint>R / L / C / N / M</KbdHint> {'add a step'}
 				</Box>
 				<Box mb='0.5'>
