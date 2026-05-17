@@ -5,6 +5,7 @@ export const ActionTypes = {
 	WORKFLOWS_OPENED: '@beak/global/workflows/WORKFLOWS_OPENED',
 
 	CREATE_NEW_WORKFLOW: '@beak/global/workflows/CREATE_NEW_WORKFLOW',
+	DUPLICATE_WORKFLOW: '@beak/global/workflows/DUPLICATE_WORKFLOW',
 	REMOVE_WORKFLOW_FROM_DISK: '@beak/global/workflows/REMOVE_WORKFLOW_FROM_DISK',
 
 	SET_LATEST_WRITE: '@beak/global/workflows/SET_LATEST_WRITE',
@@ -39,6 +40,18 @@ export interface CreateNewWorkflowPayload {
 	description?: string;
 	/** Optional initial tags; persisted directly (no normalisation here — the slice action handles that on every update). */
 	tags?: string[];
+}
+
+export interface DuplicateWorkflowPayload {
+	/** Source workflow id to clone. */
+	sourceId: string;
+	/**
+	 * Optional explicit name for the clone; defaults to "Copy of <source>".
+	 * The effect strips/respects this — keep blank for the default behaviour.
+	 */
+	name?: string;
+	/** When true (default), open the new workflow in a permanent tab. */
+	openTab?: boolean;
 }
 
 export interface RemoveWorkflowFromDiskPayload {

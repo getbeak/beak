@@ -51,10 +51,16 @@ export {
 	workflowsOpened,
 };
 
-import { ActionTypes as AT, type CreateNewWorkflowPayload, type RemoveWorkflowFromDiskPayload } from './types';
+import {
+	ActionTypes as AT,
+	type CreateNewWorkflowPayload,
+	type DuplicateWorkflowPayload,
+	type RemoveWorkflowFromDiskPayload,
+} from './types';
 
 // UI-only side-effect triggers — listened to by effects, not reduced.
 export const createNewWorkflow = createAction<CreateNewWorkflowPayload>(AT.CREATE_NEW_WORKFLOW);
+export const duplicateWorkflow = createAction<DuplicateWorkflowPayload>(AT.DUPLICATE_WORKFLOW);
 export const removeWorkflowFromDisk = createAction<RemoveWorkflowFromDiskPayload>(AT.REMOVE_WORKFLOW_FROM_DISK);
 
 export const setLatestWrite = createAction<number>(AT.SET_LATEST_WRITE);
@@ -65,6 +71,7 @@ export default {
 	workflowsOpened,
 
 	createNewWorkflow,
+	duplicateWorkflow,
 	insertNewWorkflow,
 	updateWorkflowName,
 	updateWorkflowDescription,

@@ -3,11 +3,16 @@ import { changeTab } from '@beak/ui/features/tabs/store/actions';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { actions as workflowActions } from '@beak/ui/store/workflows';
 import { Box, chakra, Flex } from '@chakra-ui/react';
-import { Workflow as WorkflowIcon } from 'lucide-react';
+import { Copy, Pencil, Trash2, Workflow as WorkflowIcon } from 'lucide-react';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 
 const ChakraButton = chakra('button');
+
+interface ContextMenuState {
+	workflowId: string;
+	screen: { x: number; y: number };
+}
 
 /**
  * Workflows sidebar section — mirrors the VariableSets row look so the two
@@ -20,6 +25,7 @@ const Workflows: React.FC = () => {
 	const dispatch = useDispatch();
 	const selectedTabId = useAppSelector(s => s.features.tabs.selectedTab);
 	const workflows = useAppSelector(s => s.global.workflows.workflows);
+	const [menu, setMenu] = React.useState<ContextMenuState | null>(null);
 	// Sort by updatedAt desc so the most recently-edited workflow is always
 	// near the top — saves the user from scanning a long list. Legacy
 	// (no-timestamp) files trail in insertion order via the helper's rule.
@@ -34,8 +40,34 @@ const Workflows: React.FC = () => {
 	}
 
 	return (
-		<Flex direction='column' minW={0}>
-			{entries.map(wf => {
+		<>
+			<Flex direction='column' minW={0}>
+				{renderRows()}
+			</Flex>
+			{menu && (
+				<WorkflowRowContextMenu
+					screen={menu.screen}
+					workflowName={workflows[menu.workflowId]?.name ?? 'Untitled workflow'}
+					onOpen={() => {
+						dispatch(changeTab({ type: 'workflow_editor', payload: menu.workflowId, temporary: false }));
+						setMenu(null);
+					}}
+					onDuplicate={() => {
+						dispatch(workflowActions.duplicateWorkflow({ sourceId: menu.workflowId }));
+						setMenu(null);
+					}}
+					onDelete={() => {
+						dispatch(workflowActions.removeWorkflowFromDisk({ id: menu.workflowId, withConfirmation: true }));
+						setMenu(null);
+					}}
+					onClose={() => setMenu(null)}
+				/>
+			)}
+		</>
+	);
+
+	function renderRows() {
+		return entries.map(wf => {
 				const isActive = selectedTabId === wf.id;
 				const nodeCount = wf.nodes.length;
 				const health = inspectGraph(wf);
@@ -57,7 +89,7 @@ const Workflows: React.FC = () => {
 						onDoubleClick={() => dispatch(changeTab({ type: 'workflow_editor', payload: wf.id, temporary: false }))}
 						onContextMenu={event => {
 							event.preventDefault();
-							dispatch(workflowActions.removeWorkflowFromDisk({ id: wf.id, withConfirmation: true }));
+							setMenu({ workflowId: wf.id, screen: { x: event.clientX, y: event.clientY } });
 						}}
 						display='flex'
 						alignItems='center'
@@ -152,9 +184,8 @@ const Workflows: React.FC = () => {
 						</Box>
 					</ChakraButton>
 				);
-			})}
-		</Flex>
-	);
+			});
+	}
 };
 
 /**
@@ -179,5 +210,103 @@ function formatAgo(ms: number): string {
 	const days = Math.floor(hours / 24);
 	return `${days}d ago`;
 }
+
+interface WorkflowRowContextMenuProps {
+	screen: { x: number; y: number };
+	workflowName: string;
+	onOpen: () => void;
+	onDuplicate: () => void;
+	onDelete: () => void;
+	onClose: () => void;
+}
+
+/**
+ * Floating right-click menu for a workflow row in the project pane.
+ * Mirrors the canvas PaneContextMenu — a fixed-position panel that
+ * closes on outside-click or Escape. Sits at the bottom of the file so
+ * the row component stays focused on the row itself.
+ */
+const WorkflowRowContextMenu: React.FC<WorkflowRowContextMenuProps> = props => {
+	const { screen, workflowName, onOpen, onDuplicate, onDelete, onClose } = props;
+	const ref = React.useRef<HTMLDivElement | null>(null);
+
+	React.useEffect(() => {
+		function onDoc(event: MouseEvent) {
+			if (ref.current && !ref.current.contains(event.target as Node)) onClose();
+		}
+		function onKey(event: KeyboardEvent) {
+			if (event.key === 'Escape') onClose();
+		}
+		document.addEventListener('mousedown', onDoc);
+		document.addEventListener('keydown', onKey);
+		return () => {
+			document.removeEventListener('mousedown', onDoc);
+			document.removeEventListener('keydown', onKey);
+		};
+	}, [onClose]);
+
+	const items: { label: string; icon: React.ReactNode; onClick: () => void; tone?: 'danger' }[] = [
+		{ label: 'Open', icon: <Pencil size={12} strokeWidth={1.8} />, onClick: onOpen },
+		{ label: 'Duplicate', icon: <Copy size={12} strokeWidth={1.8} />, onClick: onDuplicate },
+		{ label: 'Delete…', icon: <Trash2 size={12} strokeWidth={1.8} />, onClick: onDelete, tone: 'danger' },
+	];
+
+	return (
+		<Box
+			ref={ref}
+			position='fixed'
+			left={`${screen.x}px`}
+			top={`${screen.y}px`}
+			zIndex={50}
+			minW='190px'
+			bg='bg.surface'
+			borderRadius='md'
+			borderWidth='1px'
+			borderColor='border.subtle'
+			boxShadow='md'
+			py='1'
+			fontSize='12px'
+			color='fg.default'
+		>
+			<Box
+				px='2.5'
+				py='1'
+				fontSize='10px'
+				fontWeight='700'
+				color='fg.muted'
+				textTransform='uppercase'
+				letterSpacing='0.06em'
+				overflow='hidden'
+				textOverflow='ellipsis'
+				whiteSpace='nowrap'
+			>
+				{workflowName}
+			</Box>
+			{items.map(item => (
+				<Flex
+					as='button'
+					key={item.label}
+					role='menuitem'
+					align='center'
+					gap='2'
+					w='100%'
+					px='2.5'
+					py='1.5'
+					textAlign='left'
+					bg='transparent'
+					cursor='pointer'
+					color={item.tone === 'danger' ? 'accent.alert' : 'fg.default'}
+					_hover={{ bg: 'bg.subtle' }}
+					onClick={item.onClick}
+				>
+					<Box w='14px' h='14px' display='inline-flex' alignItems='center' justifyContent='center'>
+						{item.icon}
+					</Box>
+					<Box>{item.label}</Box>
+				</Flex>
+			))}
+		</Box>
+	);
+};
 
 export default Workflows;

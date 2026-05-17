@@ -1,5 +1,11 @@
 import ksuid from '@beak/ksuid';
-import { cleanupDanglingEdges, instantiateTemplate, migrateWorkflow, type WorkflowFile } from '@beak/state/workflows';
+import {
+	cleanupDanglingEdges,
+	duplicateWorkflow as duplicateWorkflowFile,
+	instantiateTemplate,
+	migrateWorkflow,
+	type WorkflowFile,
+} from '@beak/state/workflows';
 import { changeTab } from '@beak/ui/features/tabs/store/actions';
 import {
 	ensureWorkflowsDir,
@@ -21,6 +27,7 @@ import {
 	clearGraph,
 	createNewWorkflow,
 	duplicateNode,
+	duplicateWorkflow,
 	insertNewWorkflow,
 	moveNode,
 	removeEdge,
@@ -170,6 +177,32 @@ export function registerWorkflowsEffects(start: AppStartListening) {
 
 			api.dispatch(insertNewWorkflow({ id: workflow.id, workflow }));
 			api.dispatch(changeTab({ type: 'workflow_editor', payload: workflow.id, temporary: false }));
+		},
+	});
+
+	// Duplicate: clone an existing workflow's nodes/edges under fresh ids,
+	// insert into the store (which triggers the debounced disk write), and
+	// open it in a permanent tab. The source workflow is untouched.
+	start({
+		actionCreator: duplicateWorkflow,
+		effect: async ({ payload }, api) => {
+			const source = api.getState().global.workflows.workflows[payload.sourceId];
+			if (!source) return;
+
+			const clone = duplicateWorkflowFile(
+				source,
+				prefix => ksuid.generate(prefix).toString(),
+				payload.name ? { name: payload.name } : {},
+			);
+
+			if (api.getState().global.project.mode === 'disk') {
+				await ensureWorkflowsDir();
+			}
+
+			api.dispatch(insertNewWorkflow({ id: clone.id, workflow: clone }));
+			if (payload.openTab !== false) {
+				api.dispatch(changeTab({ type: 'workflow_editor', payload: clone.id, temporary: false }));
+			}
 		},
 	});
 
