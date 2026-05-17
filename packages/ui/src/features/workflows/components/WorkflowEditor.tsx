@@ -678,7 +678,7 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 						proOptions={{ hideAttribution: true }}
 					>
 						<Background gap={20} size={1} />
-						<MiniMap pannable zoomable />
+						<MiniMap pannable zoomable nodeColor={miniMapNodeColor} />
 						<Controls />
 					</ReactFlow>
 				</Box>
@@ -723,6 +723,32 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 		</Flex>
 	);
 };
+
+/**
+ * Mini-map node tint by kind — same tones the canvas pills use, so the
+ * mini-map reads as a faithful scaled-down view of the graph. xyflow
+ * calls this per node; we cast through `Node` because xyflow doesn't
+ * know our discriminated union.
+ */
+function miniMapNodeColor(node: Node): string {
+	const type = (node as { type?: string }).type;
+	switch (type) {
+		case 'start':
+			return 'var(--beak-colors-accent-success)';
+		case 'request':
+			return 'var(--beak-colors-accent-pink)';
+		case 'loop':
+			return 'var(--beak-colors-accent-teal)';
+		case 'condition':
+			return 'var(--beak-colors-accent-indigo)';
+		case 'notification':
+			return 'var(--beak-colors-accent-warning)';
+		case 'comment':
+			return 'var(--beak-colors-accent-warning)';
+		default:
+			return 'var(--beak-colors-fg-subtle)';
+	}
+}
 
 /**
  * Maps the canvas hotkeys (R / L / C / N / M) onto add-node kinds.
