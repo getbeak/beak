@@ -26,6 +26,7 @@ export function buildWorkflowsReducer<S extends WorkflowsState>(builder: ActionR
 			const workflow = state.workflows[payload.id];
 			if (!workflow) return;
 			workflow.name = payload.name;
+			touch(workflow);
 		})
 		.addCase(actions.updateWorkflowDescription, (state, { payload }) => {
 			const workflow = state.workflows[payload.id];
@@ -33,6 +34,7 @@ export function buildWorkflowsReducer<S extends WorkflowsState>(builder: ActionR
 			const trimmed = payload.description?.trim();
 			if (trimmed) workflow.description = trimmed;
 			else delete workflow.description;
+			touch(workflow);
 		})
 		.addCase(actions.setWorkflowTags, (state, { payload }) => {
 			const workflow = state.workflows[payload.id];
@@ -49,16 +51,19 @@ export function buildWorkflowsReducer<S extends WorkflowsState>(builder: ActionR
 			}
 			if (next.length === 0) delete workflow.tags;
 			else workflow.tags = next;
+			touch(workflow);
 		})
 		.addCase(actions.setWorkflowParent, (state, { payload }) => {
 			const workflow = state.workflows[payload.id];
 			if (!workflow) return;
 			workflow.parent = payload.parent;
+			touch(workflow);
 		})
 		.addCase(actions.addNode, (state, { payload }) => {
 			const workflow = state.workflows[payload.id];
 			if (!workflow) return;
 			workflow.nodes.push(payload.node);
+			touch(workflow);
 		})
 		.addCase(actions.updateNode, (state, { payload }) => {
 			const workflow = state.workflows[payload.id];
@@ -66,6 +71,7 @@ export function buildWorkflowsReducer<S extends WorkflowsState>(builder: ActionR
 			const idx = workflow.nodes.findIndex(n => n.id === payload.nodeId);
 			if (idx === -1) return;
 			workflow.nodes[idx] = { ...workflow.nodes[idx], ...payload.patch } as (typeof workflow.nodes)[number];
+			touch(workflow);
 		})
 		.addCase(actions.updateNodeData, (state, { payload }) => {
 			const workflow = state.workflows[payload.id];
@@ -75,6 +81,7 @@ export function buildWorkflowsReducer<S extends WorkflowsState>(builder: ActionR
 			// Cast through unknown — `data` shape is per-kind but the editor is
 			// kind-aware and only passes valid keys for this node's kind.
 			node.data = { ...node.data, ...payload.data } as typeof node.data;
+			touch(workflow);
 		})
 		.addCase(actions.moveNode, (state, { payload }) => {
 			const workflow = state.workflows[payload.id];
@@ -82,6 +89,7 @@ export function buildWorkflowsReducer<S extends WorkflowsState>(builder: ActionR
 			const node = workflow.nodes.find(n => n.id === payload.nodeId);
 			if (!node) return;
 			node.position = payload.position;
+			touch(workflow);
 		})
 		.addCase(actions.renameNode, (state, { payload }) => {
 			const workflow = state.workflows[payload.id];
@@ -91,6 +99,7 @@ export function buildWorkflowsReducer<S extends WorkflowsState>(builder: ActionR
 			const trimmed = payload.name?.trim();
 			if (trimmed) (node as { name?: string }).name = trimmed;
 			else delete (node as { name?: string }).name;
+			touch(workflow);
 		})
 		.addCase(actions.removeNode, (state, { payload }) => {
 			const workflow = state.workflows[payload.id];
@@ -99,6 +108,7 @@ export function buildWorkflowsReducer<S extends WorkflowsState>(builder: ActionR
 			// Drop any edges touching the removed node — otherwise xyflow tries
 			// to render an edge with a missing endpoint and crashes the canvas.
 			workflow.edges = workflow.edges.filter(e => e.source !== payload.nodeId && e.target !== payload.nodeId);
+			touch(workflow);
 		})
 		.addCase(actions.removeNodes, (state, { payload }) => {
 			const workflow = state.workflows[payload.id];
@@ -116,6 +126,7 @@ export function buildWorkflowsReducer<S extends WorkflowsState>(builder: ActionR
 			if (dropping.size === 0) return;
 			workflow.nodes = workflow.nodes.filter(n => !dropping.has(n.id));
 			workflow.edges = workflow.edges.filter(e => !dropping.has(e.source) && !dropping.has(e.target));
+			touch(workflow);
 		})
 		.addCase(actions.duplicateNode, (state, { payload }) => {
 			const workflow = state.workflows[payload.id];
@@ -135,17 +146,20 @@ export function buildWorkflowsReducer<S extends WorkflowsState>(builder: ActionR
 				data: JSON.parse(JSON.stringify(source.data)),
 			} as (typeof workflow.nodes)[number];
 			workflow.nodes.push(cloned);
+			touch(workflow);
 		})
 		.addCase(actions.addEdge, (state, { payload }) => {
 			const workflow = state.workflows[payload.id];
 			if (!workflow) return;
 			if (workflow.edges.some(e => e.id === payload.edge.id)) return;
 			workflow.edges.push(payload.edge);
+			touch(workflow);
 		})
 		.addCase(actions.removeEdge, (state, { payload }) => {
 			const workflow = state.workflows[payload.id];
 			if (!workflow) return;
 			workflow.edges = workflow.edges.filter(e => e.id !== payload.edgeId);
+			touch(workflow);
 		})
 		.addCase(actions.updateEdgeLabel, (state, { payload }) => {
 			const workflow = state.workflows[payload.id];
@@ -159,12 +173,14 @@ export function buildWorkflowsReducer<S extends WorkflowsState>(builder: ActionR
 			} else {
 				edge.label = payload.label;
 			}
+			touch(workflow);
 		})
 		.addCase(actions.replaceGraph, (state, { payload }) => {
 			const workflow = state.workflows[payload.id];
 			if (!workflow) return;
 			workflow.nodes = payload.nodes;
 			workflow.edges = payload.edges;
+			touch(workflow);
 		})
 		.addCase(actions.clearGraph, (state, { payload }) => {
 			const workflow = state.workflows[payload.id];
@@ -172,6 +188,7 @@ export function buildWorkflowsReducer<S extends WorkflowsState>(builder: ActionR
 			// Keep the Start node so the workflow always has an entry point.
 			workflow.nodes = workflow.nodes.filter(n => n.type === 'start');
 			workflow.edges = [];
+			touch(workflow);
 		})
 		.addCase(actions.removeWorkflowFromStore, (state, { payload }) => {
 			delete state.workflows[payload];
@@ -193,4 +210,14 @@ export function buildWorkflowsReducer<S extends WorkflowsState>(builder: ActionR
 				}
 			}
 		});
+}
+
+/**
+ * Inline `Date.now()` stamping helper — call at the END of each case
+ * AFTER confirming a real mutation occurred. Bypassed when the case
+ * short-circuits as a no-op so identity equality stays intact for the
+ * no-op tests.
+ */
+function touch(workflow: { updatedAt?: number }): void {
+	workflow.updatedAt = Date.now();
 }

@@ -357,6 +357,32 @@ describe('workflows reducer — updateWorkflowDescription', () => {
 	});
 });
 
+describe('workflows reducer — updatedAt stamping', () => {
+	it('stamps a timestamp on the just-mutated workflow', () => {
+		const start: WorkflowsState = { loaded: true, workflows: { wf1: makeWorkflow() } };
+		const before = Date.now();
+		const next = reducer(start, actions.updateWorkflowName({ id: 'wf1', name: 'X' }));
+		const after = Date.now();
+		const ts = next.workflows.wf1!.updatedAt;
+		expect(ts).toBeDefined();
+		expect(ts!).toBeGreaterThanOrEqual(before);
+		expect(ts!).toBeLessThanOrEqual(after);
+	});
+
+	it('only stamps the workflow named by the action payload', () => {
+		const start: WorkflowsState = {
+			loaded: true,
+			workflows: {
+				wf1: { ...makeWorkflow(), updatedAt: 0 },
+				wf2: { ...makeWorkflow(), id: 'wf2', updatedAt: 0 },
+			},
+		};
+		const next = reducer(start, actions.updateWorkflowName({ id: 'wf1', name: 'X' }));
+		expect(next.workflows.wf1!.updatedAt).toBeGreaterThan(0);
+		expect(next.workflows.wf2!.updatedAt).toBe(0);
+	});
+});
+
 describe('workflows reducer — clearGraph', () => {
 	it('keeps Start and drops everything else', () => {
 		const start: WorkflowsState = {

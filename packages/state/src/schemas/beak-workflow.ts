@@ -227,6 +227,12 @@ export const workflowSchema = z
 		 * it. Surfaced in the tag editor + future tree-filtering UI.
 		 */
 		tags: z.array(z.string()).optional(),
+		/**
+		 * Millisecond Unix timestamp of the most recent reducer mutation.
+		 * Stamped by `touchUpdatedAt` (called from every mutating case);
+		 * used for sorting tree-by-recency + "last edited" tooltips.
+		 */
+		updatedAt: z.number().optional(),
 		nodes: z.array(workflowNodeSchema),
 		edges: z.array(workflowEdgeSchema),
 	})
