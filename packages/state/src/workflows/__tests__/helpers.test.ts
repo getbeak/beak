@@ -5,10 +5,12 @@ import {
 	cloneNodeAt,
 	countOverrideEntries,
 	edgesAfterNodeRemoval,
+	flightFromNode,
 	inspectGraph,
 	overrideBadgeText,
 	placeNewNode,
 	previewValueSections,
+	reachableFromNode,
 	reachableFromStart,
 	readPlainText,
 	topologicalOrder,
@@ -451,6 +453,78 @@ describe('topologicalOrder', () => {
 			],
 		};
 		expect(() => topologicalOrder(wf)).toThrow(/cycle/);
+	});
+});
+
+describe('reachableFromNode + flightFromNode', () => {
+	const wf: WorkflowFile = {
+		id: 'wf',
+		name: 'partial',
+		nodes: [
+			{ id: 's', type: 'start', position: { x: 0, y: 0 }, data: {} },
+			{ id: 'a', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } },
+			{ id: 'b', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } },
+			{ id: 'c', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } },
+			{ id: 'd', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } },
+		],
+		edges: [
+			{ id: 'e1', source: 's', target: 'a' },
+			{ id: 'e2', source: 'a', target: 'b' },
+			{ id: 'e3', source: 'b', target: 'c' },
+			{ id: 'e4', source: 'a', target: 'd' },
+		],
+	};
+
+	it('returns empty for an unknown anchor', () => {
+		expect(reachableFromNode(wf, 'ghost')).toEqual([]);
+		expect(flightFromNode(wf, 'ghost')).toEqual([]);
+	});
+
+	it('walks the slice downstream of the anchor', () => {
+		const slice = reachableFromNode(wf, 'a').sort();
+		expect(slice).toEqual(['a', 'b', 'c', 'd']);
+	});
+
+	it('emits the anchor first in the flight order', () => {
+		const order = flightFromNode(wf, 'a');
+		expect(order[0]).toBe('a');
+		expect(order).toHaveLength(4);
+	});
+
+	it('respects downstream topological dependencies', () => {
+		const order = flightFromNode(wf, 'a');
+		expect(order.indexOf('a')).toBeLessThan(order.indexOf('b'));
+		expect(order.indexOf('b')).toBeLessThan(order.indexOf('c'));
+	});
+
+	it('returns just the anchor when the slice is a single node', () => {
+		const single: WorkflowFile = {
+			id: 'wf',
+			name: 'single',
+			nodes: [
+				{ id: 's', type: 'start', position: { x: 0, y: 0 }, data: {} },
+				{ id: 'x', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } },
+			],
+			edges: [],
+		};
+		expect(flightFromNode(single, 'x')).toEqual(['x']);
+	});
+
+	it('throws when the slice contains a cycle', () => {
+		const cyclic: WorkflowFile = {
+			id: 'wf',
+			name: 'cyclic slice',
+			nodes: [
+				{ id: 's', type: 'start', position: { x: 0, y: 0 }, data: {} },
+				{ id: 'a', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } },
+				{ id: 'b', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } },
+			],
+			edges: [
+				{ id: 'e1', source: 'a', target: 'b' },
+				{ id: 'e2', source: 'b', target: 'a' },
+			],
+		};
+		expect(() => flightFromNode(cyclic, 'a')).toThrow(/cycle/);
 	});
 });
 
