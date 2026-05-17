@@ -65,6 +65,18 @@ describe('toMarkdown', () => {
 		expect(md).toContain('repeat 2 × (body) → POST /metrics — _each iteration_');
 	});
 
+	it('renders tags as inline-code chips above the description', () => {
+		const wf: WorkflowFile = {
+			id: 'wf',
+			name: 'tagged',
+			tags: ['auth', 'staging'],
+			nodes: [{ id: 's', type: 'start', position: { x: 0, y: 0 }, data: {} }],
+			edges: [],
+		};
+		const md = toMarkdown(wf);
+		expect(md).toContain('`auth` · `staging`');
+	});
+
 	it('includes the workflow description when set', () => {
 		const wf: WorkflowFile = {
 			id: 'wf',

@@ -16,6 +16,12 @@ export function toMarkdown(workflow: WorkflowFile, requestNames: ReadonlyMap<str
 	const title = workflow.name || 'Untitled workflow';
 	lines.push(`# ${title}`, '');
 
+	if (workflow.tags && workflow.tags.length > 0) {
+		// Render as inline-code chips so the tags pop visually in a PR body
+		// or README without depending on a custom markdown extension.
+		lines.push(workflow.tags.map(t => `\`${t}\``).join(' · '), '');
+	}
+
 	if (workflow.description?.trim()) {
 		lines.push(workflow.description.trim(), '');
 	}
