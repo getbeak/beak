@@ -9,6 +9,7 @@ import {
 	purgeRequestRefs,
 	removeEdge,
 	removeNode,
+	removeNodes,
 	removeWorkflowFromStore,
 	replaceGraph,
 	setWorkflowParent,
@@ -29,6 +30,7 @@ export {
 	purgeRequestRefs,
 	removeEdge,
 	removeNode,
+	removeNodes,
 	removeWorkflowFromStore,
 	replaceGraph,
 	setWorkflowParent,
@@ -62,6 +64,7 @@ export default {
 	updateNodeData,
 	moveNode,
 	removeNode,
+	removeNodes,
 	duplicateNode,
 
 	addEdge,

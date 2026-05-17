@@ -35,6 +35,7 @@ import {
 	type AddableNodeKind,
 	EmptySelectionPanel,
 	MetaPill,
+	MultiSelectPanel,
 	SaveStateIndicator,
 	ToolbarButton,
 	WarningPill,
@@ -73,12 +74,33 @@ const WorkflowEditor: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 	const workflow = useAppSelector(s => s.global.workflows.workflows[workflowId]);
 	const dispatch = useDispatch();
-	const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
+	// Selection is a Set so the user can multi-pick via Cmd/Ctrl-Click. Most
+	// of the editor still cares about "the one selection" (single-pane,
+	// keyboard duplicate, edge-highlight) — those derive the single id below.
+	const [selectedIds, setSelectedIds] = useState<ReadonlySet<string>>(() => new Set());
+	const selectedNodeId = selectedIds.size === 1 ? [...selectedIds][0] : null;
+
+	const clearSelection = useCallback(() => setSelectedIds(new Set()), []);
+	const replaceSelection = useCallback((id: string) => setSelectedIds(new Set([id])), []);
+	const toggleSelection = useCallback((id: string) => {
+		setSelectedIds(prev => {
+			const next = new Set(prev);
+			if (next.has(id)) next.delete(id);
+			else next.add(id);
+			return next;
+		});
+	}, []);
 
 	// xyflow's controlled API takes `Node[]` / `Edge[]`. Our schema is structurally
 	// compatible — we cast through `unknown` because xyflow's generic Node has an
 	// open `data` record and ours is a discriminated union.
-	const rfNodes = useMemo<Node[]>(() => (workflow ? (workflow.nodes as unknown as Node[]) : []), [workflow]);
+	// Reflect Redux selection back through xyflow's `selected` flag so the
+	// node-views render with their selection ring (NodeShell consumes
+	// `selected` from NodeProps).
+	const rfNodes = useMemo<Node[]>(() => {
+		if (!workflow) return [];
+		return workflow.nodes.map(n => ({ ...n, selected: selectedIds.has(n.id) })) as unknown as Node[];
+	}, [workflow, selectedIds]);
 	const rfEdges = useMemo<Edge[]>(() => (workflow ? (workflow.edges as unknown as Edge[]) : []), [workflow]);
 
 	const health = useMemo(() => (workflow ? inspectGraph(workflow) : null), [workflow]);
@@ -94,8 +116,7 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 		const cycleSet = new Set(health?.cycleNodes ?? []);
 		return rfEdges.map(e => {
 			const onCycle = cycleSet.has(e.source) && cycleSet.has(e.target);
-			const isConnectedToSelection =
-				selectedNodeId !== null && (e.source === selectedNodeId || e.target === selectedNodeId);
+			const isConnectedToSelection = selectedIds.has(e.source) || selectedIds.has(e.target);
 			if (!onCycle && !isConnectedToSelection) return e;
 			const style: React.CSSProperties = { ...(e.style as React.CSSProperties | undefined) };
 			if (onCycle) {
@@ -107,7 +128,7 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 			}
 			return { ...e, style, animated: onCycle ? false : isConnectedToSelection };
 		});
-	}, [rfEdges, selectedNodeId, workflow, health?.cycleNodes]);
+	}, [rfEdges, selectedIds, workflow, health?.cycleNodes]);
 
 	const selectedNode = useMemo(() => {
 		if (!workflow || !selectedNodeId) return undefined;
@@ -125,23 +146,40 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 			if (isEditable) return;
 
 			if (event.key === 'Escape') {
-				if (selectedNodeId) {
+				if (selectedIds.size > 0) {
 					event.preventDefault();
-					setSelectedNodeId(null);
+					clearSelection();
 				}
 				return;
 			}
 
-			if ((event.key === 'Delete' || event.key === 'Backspace') && selectedNodeId && selectedNode) {
-				if (selectedNode.type === 'start') return;
+			if ((event.key === 'Delete' || event.key === 'Backspace') && selectedIds.size > 0) {
 				event.preventDefault();
-				dispatch(workflowActions.removeNode({ id: workflowId, nodeId: selectedNodeId }));
-				setSelectedNodeId(null);
+				if (selectedIds.size === 1) {
+					const onlyId = [...selectedIds][0];
+					const node = workflow?.nodes.find(n => n.id === onlyId);
+					if (node?.type === 'start') return;
+					dispatch(workflowActions.removeNode({ id: workflowId, nodeId: onlyId }));
+				} else {
+					dispatch(workflowActions.removeNodes({ id: workflowId, nodeIds: [...selectedIds] }));
+				}
+				clearSelection();
 				return;
 			}
 
-			// Cmd/Ctrl-D — duplicate the selected node next to its source so the
-			// user can crank out near-identical request steps.
+			// Cmd/Ctrl-A — select every non-Start node on the canvas. Comment
+			// nodes are intentionally included so the user can sweep them out
+			// alongside live steps.
+			if ((event.metaKey || event.ctrlKey) && (event.key === 'a' || event.key === 'A') && workflow) {
+				event.preventDefault();
+				const ids = workflow.nodes.filter(n => n.type !== 'start').map(n => n.id);
+				setSelectedIds(new Set(ids));
+				return;
+			}
+
+			// Cmd/Ctrl-D — duplicate when exactly one node is selected. Multi-
+			// select duplication would need a relayout pass to keep things
+			// readable; skip it for now.
 			if ((event.metaKey || event.ctrlKey) && (event.key === 'd' || event.key === 'D') && selectedNode) {
 				if (selectedNode.type === 'start' || !workflow) return;
 				event.preventDefault();
@@ -155,12 +193,12 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 						position: offset,
 					}),
 				);
-				setSelectedNodeId(newId);
+				replaceSelection(newId);
 			}
 		}
 		window.addEventListener('keydown', onKeyDown);
 		return () => window.removeEventListener('keydown', onKeyDown);
-	}, [dispatch, selectedNode, selectedNodeId, workflow, workflowId]);
+	}, [clearSelection, dispatch, replaceSelection, selectedIds, selectedNode, workflow, workflowId]);
 
 	const tidyGraph = useCallback(() => {
 		if (!workflow) return;
@@ -353,8 +391,14 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 						onEdgesChange={onEdgesChange}
 						onConnect={onConnect}
 						isValidConnection={isValidConnection}
-						onNodeClick={(_event, node) => setSelectedNodeId(node.id)}
-						onPaneClick={() => setSelectedNodeId(null)}
+						onNodeClick={(event, node) => {
+							// Cmd/Ctrl-click toggles in multi-select; bare click replaces.
+							// Matches Finder / VS Code conventions — the user reaches for it
+							// instinctively when they want to fan out a delete or move.
+							if (event.metaKey || event.ctrlKey) toggleSelection(node.id);
+							else replaceSelection(node.id);
+						}}
+						onPaneClick={() => clearSelection()}
 						onEdgeContextMenu={(event, edge) => {
 							// Right-click an edge to delete it. Native context menu would
 							// just show "Inspect"; suppressing + dispatching removeEdge is
@@ -371,8 +415,17 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 						<Controls />
 					</ReactFlow>
 				</Box>
-				{selectedNode ? (
-					<NodePropertiesPanel workflowId={workflowId} node={selectedNode} onClose={() => setSelectedNodeId(null)} />
+				{selectedIds.size > 1 ? (
+					<MultiSelectPanel
+						count={selectedIds.size}
+						onDelete={() => {
+							dispatch(workflowActions.removeNodes({ id: workflowId, nodeIds: [...selectedIds] }));
+							clearSelection();
+						}}
+						onClear={() => clearSelection()}
+					/>
+				) : selectedNode ? (
+					<NodePropertiesPanel workflowId={workflowId} node={selectedNode} onClose={() => clearSelection()} />
 				) : (
 					<EmptySelectionPanel
 						addNode={addNode}

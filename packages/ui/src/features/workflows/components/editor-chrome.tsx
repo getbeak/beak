@@ -1,7 +1,7 @@
 import type { WorkflowNodeKind } from '@beak/state/workflows';
 import { useAppSelector } from '@beak/ui/store/redux';
-import { Box, Flex, Stack } from '@chakra-ui/react';
-import { AlertTriangle, Bell, GitBranch, Globe, Repeat, StickyNote } from 'lucide-react';
+import { Box, Button, Flex, Stack } from '@chakra-ui/react';
+import { AlertTriangle, Bell, GitBranch, Globe, Repeat, StickyNote, Trash2, X } from 'lucide-react';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 
@@ -287,6 +287,89 @@ export const EmptySelectionPanel: React.FC<EmptySelectionPanelProps> = ({
 		</Flex>
 	);
 };
+
+interface MultiSelectPanelProps {
+	count: number;
+	onDelete: () => void;
+	onClear: () => void;
+}
+
+/**
+ * Replaces NodePropertiesPanel when more than one node is selected.
+ * Editing properties of a heterogeneous set doesn't make sense (the
+ * panel is kind-specific), so the multi-pane is just a delete + clear
+ * harness. Single-node selection always falls back to the rich panel.
+ */
+export const MultiSelectPanel: React.FC<MultiSelectPanelProps> = ({ count, onDelete, onClear }) => (
+	<Flex
+		direction='column'
+		w='320px'
+		flexShrink={0}
+		bg='bg.surface'
+		borderLeftWidth='1px'
+		borderColor='border.subtle'
+		minH={0}
+	>
+		<Flex align='center' h='38px' px='3' gap='2' borderBottomWidth='1px' borderColor='border.subtle' flexShrink={0}>
+			<Box
+				fontSize='10px'
+				fontWeight='700'
+				color='fg.muted'
+				textTransform='uppercase'
+				letterSpacing='0.06em'
+				flex='1'
+			>
+				{`${count} steps selected`}
+			</Box>
+			<Button
+				type='button'
+				size='xs'
+				variant='ghost'
+				color='fg.muted'
+				aria-label='Clear selection'
+				_hover={{ color: 'fg.default', bg: 'color-mix(in srgb, var(--beak-colors-fg-default) 8%, transparent)' }}
+				onClick={onClear}
+			>
+				<X size={14} strokeWidth={1.8} />
+			</Button>
+		</Flex>
+		<Stack gap='3' px='3' py='3'>
+			<Box fontSize='12px' color='fg.subtle' lineHeight='1.5'>
+				{'Editing properties is per-kind, so the panel switches to bulk actions when more than one step is selected. Start nodes are excluded from delete automatically.'}
+			</Box>
+			<Button
+				type='button'
+				size='sm'
+				colorPalette='red'
+				variant='outline'
+				onClick={onDelete}
+			>
+				<Trash2 size={13} strokeWidth={1.8} />
+				{`Delete ${count} steps`}
+			</Button>
+		</Stack>
+		<Box flex='1' />
+		<Box
+			px='3'
+			py='2.5'
+			borderTopWidth='1px'
+			borderColor='border.subtle'
+			fontSize='10px'
+			color='fg.subtle'
+			lineHeight='1.5'
+		>
+			<Box mb='0.5'>
+				<KbdHint>⌘ Click</KbdHint> {'toggle a step in the selection'}
+			</Box>
+			<Box mb='0.5'>
+				<KbdHint>⌘ A</KbdHint> {'select every non-Start step'}
+			</Box>
+			<Box>
+				<KbdHint>Delete</KbdHint> {'remove the entire selection'}
+			</Box>
+		</Box>
+	</Flex>
+);
 
 export const KbdHint: React.FC<React.PropsWithChildren> = ({ children }) => (
 	<Box
