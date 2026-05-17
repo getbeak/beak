@@ -20,6 +20,8 @@ export interface WorkflowDiff {
 	modifiedEdges: string[];
 	nameChanged: boolean;
 	parentChanged: boolean;
+	descriptionChanged: boolean;
+	tagsChanged: boolean;
 }
 
 export function diffWorkflows(before: WorkflowFile, after: WorkflowFile): WorkflowDiff {
@@ -61,7 +63,15 @@ export function diffWorkflows(before: WorkflowFile, after: WorkflowFile): Workfl
 		modifiedEdges: modifiedEdges.sort(),
 		nameChanged: before.name !== after.name,
 		parentChanged: (before.parent ?? null) !== (after.parent ?? null),
+		descriptionChanged: (before.description ?? '') !== (after.description ?? ''),
+		tagsChanged: !arraysEqual(before.tags ?? [], after.tags ?? []),
 	};
+}
+
+function arraysEqual(a: ReadonlyArray<string>, b: ReadonlyArray<string>): boolean {
+	if (a.length !== b.length) return false;
+	for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) return false;
+	return true;
 }
 
 function structurallyEqual(a: unknown, b: unknown): boolean {

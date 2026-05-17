@@ -30,6 +30,8 @@ describe('diffWorkflows', () => {
 			modifiedEdges: [],
 			nameChanged: false,
 			parentChanged: false,
+			descriptionChanged: false,
+			tagsChanged: false,
 		});
 	});
 
@@ -67,6 +69,22 @@ describe('diffWorkflows', () => {
 		const d = diffWorkflows(before, after);
 		expect(d.nameChanged).toBe(true);
 		expect(d.parentChanged).toBe(true);
+	});
+
+	it('reports description + tag changes', () => {
+		const before = makeWorkflow({ description: 'old', tags: ['a'] });
+		const after = makeWorkflow({ description: 'new', tags: ['a', 'b'] });
+		const d = diffWorkflows(before, after);
+		expect(d.descriptionChanged).toBe(true);
+		expect(d.tagsChanged).toBe(true);
+	});
+
+	it('treats undefined-vs-empty as no change for description/tags', () => {
+		const before = makeWorkflow();
+		const after = makeWorkflow({ description: '', tags: [] });
+		const d = diffWorkflows(before, after);
+		expect(d.descriptionChanged).toBe(false);
+		expect(d.tagsChanged).toBe(false);
 	});
 
 	it('detects added + removed + modified edges', () => {
