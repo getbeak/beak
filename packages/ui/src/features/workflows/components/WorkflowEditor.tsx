@@ -288,6 +288,28 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 				return;
 			}
 
+			// Arrow keys nudge the selected node(s) by gridSize (or 5× with
+			// Shift). The toolbar uses the same 20px grid; matching here keeps
+			// keyboard moves snapped without extra work.
+			if (workflow && !event.metaKey && !event.ctrlKey && !event.altKey && selectedIds.size > 0) {
+				const delta = nudgeDeltaForKey(event.key, event.shiftKey ? 100 : 20);
+				if (delta) {
+					event.preventDefault();
+					for (const id of selectedIds) {
+						const node = workflow.nodes.find(n => n.id === id);
+						if (!node) continue;
+						dispatch(
+							workflowActions.moveNode({
+								id: workflowId,
+								nodeId: id,
+								position: { x: node.position.x + delta.x, y: node.position.y + delta.y },
+							}),
+						);
+					}
+					return;
+				}
+			}
+
 			// Bare-letter hotkeys for adding nodes — R / L / C / N / M. Skip
 			// when modifiers are held so Cmd-R (page reload) etc. aren't
 			// hijacked. The `isEditable` guard above already protects inputs.
@@ -836,6 +858,25 @@ function miniMapNodeColor(node: Node): string {
 			return 'var(--beak-colors-accent-warning)';
 		default:
 			return 'var(--beak-colors-fg-subtle)';
+	}
+}
+
+/**
+ * Maps the four arrow keys onto a position delta. Returns `null` for
+ * non-arrow keys so the keyboard handler can pass them through.
+ */
+function nudgeDeltaForKey(key: string, step: number): { x: number; y: number } | null {
+	switch (key) {
+		case 'ArrowUp':
+			return { x: 0, y: -step };
+		case 'ArrowDown':
+			return { x: 0, y: step };
+		case 'ArrowLeft':
+			return { x: -step, y: 0 };
+		case 'ArrowRight':
+			return { x: step, y: 0 };
+		default:
+			return null;
 	}
 }
 
