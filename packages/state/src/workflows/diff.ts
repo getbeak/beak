@@ -68,6 +68,32 @@ export function diffWorkflows(before: WorkflowFile, after: WorkflowFile): Workfl
 	};
 }
 
+/**
+ * One-line, human-readable summary of a WorkflowDiff. Drops empty
+ * sections and orders them by importance (structure > metadata > meta).
+ *
+ * Returns `null` when the diff is empty so the caller can decide
+ * whether to suppress the surface entirely (no-op edits don't need
+ * a toast).
+ */
+export function summariseChange(diff: WorkflowDiff): string | null {
+	const parts: string[] = [];
+	if (diff.addedNodes.length > 0) parts.push(`+${diff.addedNodes.length} step${diff.addedNodes.length === 1 ? '' : 's'}`);
+	if (diff.removedNodes.length > 0) parts.push(`-${diff.removedNodes.length} step${diff.removedNodes.length === 1 ? '' : 's'}`);
+	if (diff.modifiedNodes.length > 0)
+		parts.push(`~${diff.modifiedNodes.length} step${diff.modifiedNodes.length === 1 ? '' : 's'}`);
+	if (diff.addedEdges.length > 0) parts.push(`+${diff.addedEdges.length} edge${diff.addedEdges.length === 1 ? '' : 's'}`);
+	if (diff.removedEdges.length > 0)
+		parts.push(`-${diff.removedEdges.length} edge${diff.removedEdges.length === 1 ? '' : 's'}`);
+	if (diff.modifiedEdges.length > 0)
+		parts.push(`~${diff.modifiedEdges.length} edge${diff.modifiedEdges.length === 1 ? '' : 's'}`);
+	if (diff.nameChanged) parts.push('renamed');
+	if (diff.parentChanged) parts.push('moved');
+	if (diff.descriptionChanged) parts.push('description');
+	if (diff.tagsChanged) parts.push('tags');
+	return parts.length === 0 ? null : parts.join(', ');
+}
+
 function arraysEqual(a: ReadonlyArray<string>, b: ReadonlyArray<string>): boolean {
 	if (a.length !== b.length) return false;
 	for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) return false;

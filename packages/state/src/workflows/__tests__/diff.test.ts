@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { diffWorkflows } from '../diff';
+import { diffWorkflows, summariseChange } from '../diff';
 import type { WorkflowFile } from '../types';
 
 const baseStart = { id: 's', type: 'start' as const, position: { x: 0, y: 0 }, data: {} };
@@ -104,5 +104,45 @@ describe('diffWorkflows', () => {
 		expect(d.modifiedEdges).toEqual(['e1']);
 		expect(d.removedEdges).toEqual(['e2']);
 		expect(d.addedEdges).toEqual(['e3']);
+	});
+});
+
+describe('summariseChange', () => {
+	it('returns null for a no-op diff', () => {
+		const wf = makeWorkflow();
+		expect(summariseChange(diffWorkflows(wf, wf))).toBeNull();
+	});
+
+	it('reports added/removed/modified counts in singular/plural form', () => {
+		const before = makeWorkflow({
+			nodes: [baseStart, { id: 'a', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } }],
+			edges: [{ id: 'e1', source: 's', target: 'a' }],
+		});
+		const after = makeWorkflow({
+			nodes: [
+				baseStart,
+				{ id: 'a', type: 'request', position: { x: 1, y: 1 }, data: { requestId: 'req-1' } },
+				{ id: 'b', type: 'notification', position: { x: 0, y: 0 }, data: {} },
+			],
+			edges: [
+				{ id: 'e1', source: 's', target: 'a', label: 'happy' },
+				{ id: 'e2', source: 'a', target: 'b' },
+			],
+		});
+		const summary = summariseChange(diffWorkflows(before, after));
+		expect(summary).toContain('+1 step');
+		expect(summary).toContain('~1 step');
+		expect(summary).toContain('+1 edge');
+		expect(summary).toContain('~1 edge');
+	});
+
+	it('reports metadata-only changes (rename, move, description, tags)', () => {
+		const before = makeWorkflow();
+		const after = makeWorkflow({ name: 'X', parent: 'folder-1', description: 'd', tags: ['t'] });
+		const summary = summariseChange(diffWorkflows(before, after));
+		expect(summary).toContain('renamed');
+		expect(summary).toContain('moved');
+		expect(summary).toContain('description');
+		expect(summary).toContain('tags');
 	});
 });
