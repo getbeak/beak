@@ -1,6 +1,6 @@
 import { type SimulationEvent, walkWorkflow, type WorkflowFile } from '@beak/state/workflows';
 import { Box, Button, Dialog, Flex, Stack } from '@chakra-ui/react';
-import { ChevronLeft, ChevronRight, Play, SkipForward } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Play, RotateCcw, SkipForward } from 'lucide-react';
 import * as React from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
@@ -142,6 +142,19 @@ const SimulationDialog: React.FC<SimulationDialogProps> = ({ workflow, open, onC
 										{'Play'}
 									</>
 								)}
+							</Button>
+							<Button
+								type='button'
+								size='xs'
+								variant='outline'
+								disabled={cursor === 0 && !playing}
+								onClick={() => {
+									setCursor(0);
+									setPlaying(false);
+								}}
+							>
+								<RotateCcw size={12} strokeWidth={1.8} />
+								{'Reset'}
 							</Button>
 							<Box flex='1' />
 							<Box fontSize='10px' color='fg.subtle' fontVariantNumeric='tabular-nums'>
