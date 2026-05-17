@@ -8,6 +8,7 @@ import {
 	parseImportedWorkflow,
 	placeNewNode,
 	serializeForExport,
+	toMarkdown,
 	validateConnection,
 	type WorkflowEdge,
 	type WorkflowNode,
@@ -37,6 +38,7 @@ import {
 	Bell,
 	Clipboard,
 	ClipboardPaste,
+	FileText,
 	GitBranch,
 	Globe,
 	LayoutTemplate,
@@ -95,6 +97,7 @@ const WorkflowEditor: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 
 const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 	const workflow = useAppSelector(s => s.global.workflows.workflows[workflowId]);
+	const projectTree = useAppSelector(s => s.global.project.tree);
 	const dispatch = useDispatch();
 	// Selection is a Set so the user can multi-pick via Cmd/Ctrl-Click. Most
 	// of the editor still cares about "the one selection" (single-pane,
@@ -260,6 +263,19 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 			console.warn('[workflows] copy to clipboard failed', err);
 		}
 	}, [workflow]);
+
+	const copyWorkflowMarkdown = useCallback(async () => {
+		if (!workflow) return;
+		try {
+			const names = new Map<string, string>();
+			for (const node of Object.values(projectTree)) {
+				if (node.type === 'request') names.set(node.id, node.name);
+			}
+			await navigator.clipboard.writeText(toMarkdown(workflow, names));
+		} catch (err) {
+			console.warn('[workflows] copy markdown failed', err);
+		}
+	}, [workflow, projectTree]);
 
 	const pasteWorkflowJson = useCallback(async () => {
 		try {
@@ -513,6 +529,11 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 						icon={<Clipboard size={13} strokeWidth={1.8} />}
 						label='Copy'
 						onClick={copyWorkflowJson}
+					/>
+					<ToolbarButton
+						icon={<FileText size={13} strokeWidth={1.8} />}
+						label='Doc'
+						onClick={copyWorkflowMarkdown}
 					/>
 					<ToolbarButton
 						icon={<ClipboardPaste size={13} strokeWidth={1.8} />}

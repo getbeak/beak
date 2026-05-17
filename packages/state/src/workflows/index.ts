@@ -27,6 +27,7 @@ export {
 	topologicalOrder,
 	validateConnection,
 } from './helpers';
+export { toMarkdown } from './markdown';
 export { mergeJson, mergeKv, pruneBody, pruneOverrideMap, pruneOverrides } from './overrides';
 export * from './reducer';
 export { type SimulationContext, type SimulationEvent, walkWorkflow } from './simulator';
