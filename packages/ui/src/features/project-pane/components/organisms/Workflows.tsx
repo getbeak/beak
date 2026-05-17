@@ -1,4 +1,4 @@
-import { inspectGraph, recentWorkflows, searchWorkflows, validateWorkflow } from '@beak/state/workflows';
+import { extractAllTags, inspectGraph, recentWorkflows, searchWorkflows, validateWorkflow } from '@beak/state/workflows';
 import { changeTab } from '@beak/ui/features/tabs/store/actions';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { actions as workflowActions } from '@beak/ui/store/workflows';
@@ -59,6 +59,12 @@ const Workflows: React.FC = () => {
 	}
 
 	const showFilter = total >= 3;
+	// Tag chip bar above the row list. Click a chip to populate the filter
+	// input with the matching #tag prefix — discoverability for the new
+	// tag-filter path. Hidden until the project has at least a couple of
+	// tagged workflows so the chrome doesn't dominate small projects.
+	const allTags = React.useMemo(() => extractAllTags(workflows), [workflows]);
+	const activeTag = filter.trim().startsWith('#') ? filter.trim().slice(1).trim().toLowerCase() : '';
 
 	return (
 		<>
@@ -78,6 +84,42 @@ const Workflows: React.FC = () => {
 							title='Type to fuzzy-search. Prefix with # to filter by exact tag.'
 						/>
 					</Box>
+				)}
+				{allTags.length >= 2 && (
+					<Flex gap='1' wrap='wrap' px='3' pb='1.5' pt='0.5'>
+						{allTags.slice(0, 6).map(tag => {
+							const isActive = activeTag === tag;
+							return (
+								<Box
+									key={tag}
+									as='button'
+									role='button'
+									title={`Filter by #${tag}`}
+									onClick={() => setFilter(isActive ? '' : `#${tag}`)}
+									fontSize='9px'
+									fontWeight='600'
+									px='1.5'
+									h='16px'
+									display='inline-flex'
+									alignItems='center'
+									borderRadius='sm'
+									borderWidth='1px'
+									cursor='pointer'
+									borderColor={isActive ? 'accent.pink' : 'border.subtle'}
+									bg={isActive ? 'color-mix(in srgb, var(--beak-colors-accent-pink) 16%, transparent)' : 'bg.canvas'}
+									color={isActive ? 'accent.pink' : 'fg.muted'}
+									_hover={{ borderColor: 'accent.pink' }}
+								>
+									{`#${tag}`}
+								</Box>
+							);
+						})}
+						{allTags.length > 6 && (
+							<Box fontSize='9px' color='fg.subtle' alignSelf='center'>
+								{`+${allTags.length - 6}`}
+							</Box>
+						)}
+					</Flex>
 				)}
 				{entries.length === 0 ? (
 					<Box px='3' py='2' fontSize='11px' color='fg.subtle' lineHeight='1.45'>
