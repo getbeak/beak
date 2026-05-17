@@ -24,6 +24,7 @@ import {
 	previewValueSections,
 	reachableFromNode,
 	reachableFromStart,
+	recentWorkflows,
 	readPlainText,
 	searchNodes,
 	serializeForExport,
@@ -796,6 +797,43 @@ describe('findSourcesOf / findTargetsOf', () => {
 	it('returns [] when the node has no predecessors/successors', () => {
 		expect(findSourcesOf(wf, 's')).toEqual([]);
 		expect(findTargetsOf(wf, 'c')).toEqual([]);
+	});
+});
+
+describe('recentWorkflows', () => {
+	const make = (id: string, updatedAt?: number): WorkflowFile => ({
+		id,
+		name: id.toUpperCase(),
+		updatedAt,
+		nodes: [],
+		edges: [],
+	});
+
+	it('sorts by updatedAt descending', () => {
+		const wfs = [make('a', 100), make('b', 300), make('c', 200)];
+		expect(recentWorkflows(wfs).map(w => w.id)).toEqual(['b', 'c', 'a']);
+	});
+
+	it('places undefined-updatedAt last in insertion order', () => {
+		const wfs = [make('a', 100), make('b'), make('c', 200), make('d')];
+		expect(recentWorkflows(wfs).map(w => w.id)).toEqual(['c', 'a', 'b', 'd']);
+	});
+
+	it('honours limit', () => {
+		const wfs = [make('a', 100), make('b', 300), make('c', 200)];
+		expect(recentWorkflows(wfs, 2).map(w => w.id)).toEqual(['b', 'c']);
+	});
+
+	it('accepts a record input', () => {
+		const wfs = { a: make('a', 100), b: make('b', 300) };
+		expect(recentWorkflows(wfs).map(w => w.id)).toEqual(['b', 'a']);
+	});
+
+	it('does not mutate the input array', () => {
+		const wfs = [make('a', 100), make('b', 300)];
+		const original = [...wfs];
+		recentWorkflows(wfs);
+		expect(wfs).toEqual(original);
 	});
 });
 

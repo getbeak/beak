@@ -318,6 +318,31 @@ export function connectedComponents(workflow: WorkflowFile): string[][] {
 }
 
 /**
+ * Sort a workflow collection by updatedAt descending. Workflows without
+ * a timestamp (legacy files pre-dating the field) land last in their
+ * insertion order so they don't shuffle on every open.
+ *
+ * Optional `limit` truncates the result — useful for "5 most recent"
+ * surfaces. Accepts an array or a record (id → workflow).
+ */
+export function recentWorkflows(
+	workflows: ReadonlyArray<WorkflowFile> | Record<string, WorkflowFile>,
+	limit?: number,
+): WorkflowFile[] {
+	const list = Array.isArray(workflows) ? workflows.slice() : Object.values(workflows);
+	list.sort((a, b) => {
+		const ta = a.updatedAt;
+		const tb = b.updatedAt;
+		if (ta === undefined && tb === undefined) return 0;
+		if (ta === undefined) return 1;
+		if (tb === undefined) return -1;
+		return tb - ta;
+	});
+	if (limit !== undefined) return list.slice(0, limit);
+	return list;
+}
+
+/**
  * Flatten + dedupe tags across a workflow map. Returns them in
  * alphabetical order so downstream UI (autocomplete, filter chips)
  * gets a stable listing. Pure; ready for tree-filter machinery.

@@ -30,6 +30,7 @@ export {
 	previewValueSections,
 	reachableFromNode,
 	reachableFromStart,
+	recentWorkflows,
 	readPlainText,
 	searchNodes,
 	serializeForExport,
