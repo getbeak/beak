@@ -277,8 +277,11 @@ export const EmptySelectionPanel: React.FC<EmptySelectionPanelProps> = ({
 				<Box mb='0.5'>
 					<KbdHint>Delete</KbdHint> {'remove the selected step'}
 				</Box>
-				<Box>
+				<Box mb='0.5'>
 					<KbdHint>⌘ D</KbdHint> {'duplicate the selected step'}
+				</Box>
+				<Box>
+					<KbdHint>Right-click</KbdHint> {'an edge to delete it'}
 				</Box>
 			</Box>
 		</Flex>

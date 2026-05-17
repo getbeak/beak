@@ -355,6 +355,13 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 						isValidConnection={isValidConnection}
 						onNodeClick={(_event, node) => setSelectedNodeId(node.id)}
 						onPaneClick={() => setSelectedNodeId(null)}
+						onEdgeContextMenu={(event, edge) => {
+							// Right-click an edge to delete it. Native context menu would
+							// just show "Inspect"; suppressing + dispatching removeEdge is
+							// the affordance every graph editor ships.
+							event.preventDefault();
+							dispatch(workflowActions.removeEdge({ id: workflowId, edgeId: edge.id }));
+						}}
 						nodeTypes={nodeTypes}
 						fitView
 						proOptions={{ hideAttribution: true }}
