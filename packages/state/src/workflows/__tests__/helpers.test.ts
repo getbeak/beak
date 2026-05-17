@@ -10,6 +10,7 @@ import {
 	placeNewNode,
 	previewValueSections,
 	readPlainText,
+	validateConnection,
 } from '../helpers';
 import type { WorkflowFile, WorkflowNode } from '../types';
 
@@ -159,6 +160,7 @@ describe('inspectGraph', () => {
 		expect(r.unreachable).toEqual([]);
 		expect(r.danglingEdges).toEqual([]);
 		expect(r.unlinkedRequestNodes).toEqual([]);
+		expect(r.cycleNodes).toEqual([]);
 	});
 
 	it('walks reachability from Start through outbound edges', () => {
@@ -234,6 +236,73 @@ describe('inspectGraph', () => {
 		const r = inspectGraph(wf);
 		expect(Array.from(r.reachable).sort()).toEqual(['a', 'b', 's']);
 	});
+
+	it('flags every node sitting on a directed cycle', () => {
+		const wf = makeWorkflow({
+			nodes: [
+				{ id: 's', type: 'start', position: { x: 0, y: 0 }, data: {} } as WorkflowNode,
+				{ id: 'a', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } } as WorkflowNode,
+				{ id: 'b', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } } as WorkflowNode,
+				{ id: 'c', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } } as WorkflowNode,
+			],
+			edges: [
+				{ id: 'e1', source: 's', target: 'a' },
+				{ id: 'e2', source: 'a', target: 'b' },
+				{ id: 'e3', source: 'b', target: 'c' },
+				{ id: 'e4', source: 'c', target: 'a' },
+			],
+		});
+		expect(inspectGraph(wf).cycleNodes).toEqual(['a', 'b', 'c']);
+	});
+
+	it('returns an empty cycle list for a DAG', () => {
+		const wf = makeWorkflow({
+			nodes: [
+				{ id: 's', type: 'start', position: { x: 0, y: 0 }, data: {} } as WorkflowNode,
+				{ id: 'a', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } } as WorkflowNode,
+				{ id: 'b', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } } as WorkflowNode,
+			],
+			edges: [
+				{ id: 'e1', source: 's', target: 'a' },
+				{ id: 'e2', source: 'a', target: 'b' },
+			],
+		});
+		expect(inspectGraph(wf).cycleNodes).toEqual([]);
+	});
+
+	it('flags self-loops as cycles', () => {
+		const wf = makeWorkflow({
+			nodes: [
+				{ id: 's', type: 'start', position: { x: 0, y: 0 }, data: {} } as WorkflowNode,
+				{ id: 'a', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } } as WorkflowNode,
+			],
+			edges: [
+				{ id: 'e1', source: 's', target: 'a' },
+				{ id: 'e2', source: 'a', target: 'a' },
+			],
+		});
+		expect(inspectGraph(wf).cycleNodes).toEqual(['a']);
+	});
+
+	it('does not flag a node whose cycle is in a different connected component', () => {
+		const wf = makeWorkflow({
+			nodes: [
+				{ id: 's', type: 'start', position: { x: 0, y: 0 }, data: {} } as WorkflowNode,
+				{ id: 'a', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } } as WorkflowNode,
+				// b/c are unreachable + cyclic; a is reachable + acyclic.
+				{ id: 'b', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } } as WorkflowNode,
+				{ id: 'c', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } } as WorkflowNode,
+			],
+			edges: [
+				{ id: 'e1', source: 's', target: 'a' },
+				{ id: 'e2', source: 'b', target: 'c' },
+				{ id: 'e3', source: 'c', target: 'b' },
+			],
+		});
+		const r = inspectGraph(wf);
+		expect(r.cycleNodes).toEqual(['b', 'c']);
+		expect(r.unreachable).toEqual(['b', 'c']);
+	});
 });
 
 describe('edgesAfterNodeRemoval', () => {
@@ -266,6 +335,66 @@ describe('cloneNodeAt', () => {
 		expect(cloned.position).toEqual({ x: 300, y: 50 });
 		expect(cloned.type).toBe('request');
 		expect((cloned.data as { requestId: string }).requestId).toBe('req-x');
+	});
+});
+
+describe('validateConnection', () => {
+	const baseWorkflow = (): WorkflowFile => ({
+		id: 'wf1',
+		name: 'Connections',
+		nodes: [
+			{ id: 's', type: 'start', position: { x: 0, y: 0 }, data: {} },
+			{ id: 'a', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } },
+			{ id: 'b', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } },
+		],
+		edges: [],
+	});
+
+	it('accepts a clean source → target connection', () => {
+		expect(validateConnection(baseWorkflow(), { source: 'a', target: 'b' })).toEqual({ ok: true });
+	});
+
+	it('rejects connections into Start', () => {
+		expect(validateConnection(baseWorkflow(), { source: 'a', target: 's' })).toEqual({
+			ok: false,
+			reason: 'into-start',
+		});
+	});
+
+	it('rejects self-loops', () => {
+		expect(validateConnection(baseWorkflow(), { source: 'a', target: 'a' })).toEqual({
+			ok: false,
+			reason: 'self-loop',
+		});
+	});
+
+	it('rejects when source or target is gone', () => {
+		expect(validateConnection(baseWorkflow(), { source: 'ghost', target: 'a' })).toEqual({
+			ok: false,
+			reason: 'unknown-source',
+		});
+		expect(validateConnection(baseWorkflow(), { source: 'a', target: 'ghost' })).toEqual({
+			ok: false,
+			reason: 'unknown-target',
+		});
+	});
+
+	it('rejects duplicate edges (same source/target + same handles)', () => {
+		const wf: WorkflowFile = {
+			...baseWorkflow(),
+			edges: [{ id: 'e1', source: 'a', target: 'b', sourceHandle: 'body', targetHandle: null }],
+		};
+		expect(
+			validateConnection(wf, { source: 'a', target: 'b', sourceHandle: 'body', targetHandle: null }),
+		).toEqual({ ok: false, reason: 'duplicate-edge' });
+	});
+
+	it('accepts the same source/target when the handles differ', () => {
+		const wf: WorkflowFile = {
+			...baseWorkflow(),
+			edges: [{ id: 'e1', source: 'a', target: 'b', sourceHandle: 'body' }],
+		};
+		expect(validateConnection(wf, { source: 'a', target: 'b', sourceHandle: 'after' })).toEqual({ ok: true });
 	});
 });
 

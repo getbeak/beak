@@ -7,6 +7,7 @@ import {
 	placeNewNode,
 	previewValueSections,
 	type RequestOverrides,
+	validateConnection,
 	type WorkflowEdge,
 	type WorkflowNode,
 	type WorkflowNodeKind,
@@ -99,13 +100,38 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 	const rfNodes = useMemo<Node[]>(() => (workflow ? (workflow.nodes as unknown as Node[]) : []), [workflow]);
 	const rfEdges = useMemo<Edge[]>(() => (workflow ? (workflow.edges as unknown as Edge[]) : []), [workflow]);
 
+	const health = useMemo(() => (workflow ? inspectGraph(workflow) : null), [workflow]);
+	const warningCount = health
+		? health.unreachable.length + health.unlinkedRequestNodes.length + health.cycleNodes.length
+		: 0;
+
+	// Edge decorations: highlight the wires touching the selected node, and
+	// stroke cycle edges with the warning accent so the user sees the loop
+	// before they hit "run".
+	const decoratedEdges = useMemo<Edge[]>(() => {
+		if (!workflow) return rfEdges;
+		const cycleSet = new Set(health?.cycleNodes ?? []);
+		return rfEdges.map(e => {
+			const onCycle = cycleSet.has(e.source) && cycleSet.has(e.target);
+			const isConnectedToSelection =
+				selectedNodeId !== null && (e.source === selectedNodeId || e.target === selectedNodeId);
+			if (!onCycle && !isConnectedToSelection) return e;
+			const style: React.CSSProperties = { ...(e.style as React.CSSProperties | undefined) };
+			if (onCycle) {
+				style.stroke = 'var(--beak-colors-accent-warning)';
+				style.strokeWidth = 2;
+			} else if (isConnectedToSelection) {
+				style.stroke = 'var(--beak-colors-accent-pink)';
+				style.strokeWidth = 2;
+			}
+			return { ...e, style, animated: onCycle ? false : isConnectedToSelection };
+		});
+	}, [rfEdges, selectedNodeId, workflow, health?.cycleNodes]);
+
 	const selectedNode = useMemo(() => {
 		if (!workflow || !selectedNodeId) return undefined;
 		return workflow.nodes.find(n => n.id === selectedNodeId);
 	}, [workflow, selectedNodeId]);
-
-	const health = useMemo(() => (workflow ? inspectGraph(workflow) : null), [workflow]);
-	const warningCount = health ? health.unreachable.length + health.unlinkedRequestNodes.length : 0;
 
 	// Keyboard: Delete/Backspace removes the selected node (unless it's Start),
 	// Escape clears selection. Skip when focus is inside a text field so the
@@ -186,6 +212,17 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 	const onConnect = useCallback(
 		(connection: Connection) => {
 			if (!workflow) return;
+			// Defence-in-depth: xyflow already filters with `isValidConnection`,
+			// but a stale viewport can race past it. Re-check here so we never
+			// dispatch a self-loop / into-Start / duplicate edge.
+			if (!connection.source || !connection.target) return;
+			const ok = validateConnection(workflow, {
+				source: connection.source,
+				target: connection.target,
+				sourceHandle: connection.sourceHandle,
+				targetHandle: connection.targetHandle,
+			});
+			if (!ok.ok) return;
 			const next = addRfEdge(connection, rfEdges) as unknown as WorkflowEdge[];
 			// xyflow's `addEdge` synthesises ids on its own; we replace them with a
 			// ksuid so the dedupe-by-id check in `addEdge` reducer is meaningful.
@@ -193,6 +230,22 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 			dispatch(workflowActions.replaceGraph({ id: workflowId, nodes: workflow.nodes, edges: enriched }));
 		},
 		[dispatch, rfEdges, workflow, workflowId],
+	);
+
+	// xyflow's pre-drop hook. Returning false greys out the target handle so
+	// the user sees the rejection before they release the mouse.
+	const isValidConnection = useCallback(
+		(connection: Connection | WorkflowEdge) => {
+			if (!workflow) return false;
+			if (!connection.source || !connection.target) return false;
+			return validateConnection(workflow, {
+				source: connection.source,
+				target: connection.target,
+				sourceHandle: connection.sourceHandle,
+				targetHandle: connection.targetHandle,
+			}).ok;
+		},
+		[workflow],
 	);
 
 	if (!workflow) return null;
@@ -265,6 +318,7 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 				<Flex align='center' gap='1.5' ml='2' color='fg.subtle' fontSize='10px' fontWeight='600'>
 					<MetaPill icon={<Globe size={10} strokeWidth={2.2} />} count={workflow.nodes.length} label='steps' />
 					<MetaPill icon={<GitBranch size={10} strokeWidth={2.2} />} count={workflow.edges.length} label='links' />
+					<SaveStateIndicator />
 					{warningCount > 0 && (
 						<WarningPill
 							count={warningCount}
@@ -274,6 +328,7 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 									? [
 										health.unreachable.length > 0 ? `${health.unreachable.length} unreachable` : null,
 										health.unlinkedRequestNodes.length > 0 ? `${health.unlinkedRequestNodes.length} unlinked` : null,
+										health.cycleNodes.length > 0 ? `${health.cycleNodes.length} on cycle` : null,
 									]
 											.filter(Boolean)
 											.join(' · ')
@@ -310,10 +365,11 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 				<Box flex='1' minW={0}>
 					<ReactFlow
 						nodes={rfNodes}
-						edges={rfEdges}
+						edges={decoratedEdges}
 						onNodesChange={onNodesChange}
 						onEdgesChange={onEdgesChange}
 						onConnect={onConnect}
+						isValidConnection={isValidConnection}
 						onNodeClick={(_event, node) => setSelectedNodeId(node.id)}
 						onPaneClick={() => setSelectedNodeId(null)}
 						nodeTypes={nodeTypes}
@@ -336,6 +392,7 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 						addNode={addNode}
 						unreachableCount={health?.unreachable.length ?? 0}
 						unlinkedCount={health?.unlinkedRequestNodes.length ?? 0}
+						cycleCount={health?.cycleNodes.length ?? 0}
 					/>
 				)}
 			</Flex>
@@ -372,6 +429,68 @@ const MetaPill: React.FC<MetaPillProps> = ({ icon, count, label }) => (
 	</Flex>
 );
 
+// "Saved 10s ago" / "Saving…" indicator next to the meta pills. Reads the
+// workflow slice's debounce nonce + last-write timestamp directly. Falls
+// back to nothing when the project hasn't saved yet (untitled workflow on
+// a sandbox host where writes are no-ops).
+const SaveStateIndicator: React.FC = () => {
+	const pending = useAppSelector(s => s.global.workflows.writeDebouncer);
+	const latest = useAppSelector(s => s.global.workflows.latestWrite ?? 0);
+	const [now, setNow] = useState(() => Date.now());
+
+	useEffect(() => {
+		// Tick every 5s so the "X ago" stamp doesn't lie. Skip while pending —
+		// the label is just "Saving…" then, no need to repaint.
+		if (pending) return;
+		const id = window.setInterval(() => setNow(Date.now()), 5000);
+		return () => window.clearInterval(id);
+	}, [pending]);
+
+	if (pending) {
+		return (
+			<Flex
+				align='center'
+				gap='1'
+				px='1.5'
+				h='18px'
+				borderRadius='sm'
+				borderWidth='1px'
+				borderColor='border.subtle'
+				bg='bg.canvas'
+				color='fg.muted'
+			>
+				<Box w='5px' h='5px' borderRadius='full' bg='accent.pink' />
+				{'Saving…'}
+			</Flex>
+		);
+	}
+	if (!latest) return null;
+	const seconds = Math.max(1, Math.floor((now - latest) / 1000));
+	const label =
+		seconds < 60
+			? `Saved ${seconds}s ago`
+			: seconds < 3600
+				? `Saved ${Math.floor(seconds / 60)}m ago`
+				: 'Saved';
+	return (
+		<Flex
+			align='center'
+			gap='1'
+			px='1.5'
+			h='18px'
+			borderRadius='sm'
+			borderWidth='1px'
+			borderColor='border.subtle'
+			bg='bg.canvas'
+			color='fg.muted'
+			title={new Date(latest).toLocaleString()}
+		>
+			<Box w='5px' h='5px' borderRadius='full' bg='accent.success' />
+			{label}
+		</Flex>
+	);
+};
+
 // Amber pill that appears when the graph picks up unreachable steps or
 // unlinked request nodes — same shape as MetaPill so the two read as a row.
 const WarningPill: React.FC<{ count: number; label: string; title?: string }> = ({ count, label, title }) => (
@@ -400,12 +519,13 @@ interface EmptySelectionPanelProps {
 	addNode: (kind: AddableNodeKind) => void;
 	unreachableCount: number;
 	unlinkedCount: number;
+	cycleCount: number;
 }
 
 // Shown on the right when nothing's selected — gives the canvas an obvious
 // "what next" instead of empty space. Buttons fire the same toolbar handlers
 // so the user has one entry point for adding nodes regardless of focus.
-const EmptySelectionPanel: React.FC<EmptySelectionPanelProps> = ({ addNode, unreachableCount, unlinkedCount }) => {
+const EmptySelectionPanel: React.FC<EmptySelectionPanelProps> = ({ addNode, unreachableCount, unlinkedCount, cycleCount }) => {
 	const items: { kind: AddableNodeKind; icon: React.ReactNode; title: string; subtitle: string; tone: string }[] = [
 		{
 			kind: 'request',
@@ -495,7 +615,7 @@ const EmptySelectionPanel: React.FC<EmptySelectionPanelProps> = ({ addNode, unre
 					</Flex>
 				))}
 			</Stack>
-			{(unreachableCount > 0 || unlinkedCount > 0) && (
+			{(unreachableCount > 0 || unlinkedCount > 0 || cycleCount > 0) && (
 				<Box px='3' py='3' borderTopWidth='1px' borderColor='border.subtle'>
 					<Box fontSize='10px' fontWeight='700' color='accent.warning' textTransform='uppercase' letterSpacing='0.06em' mb='1.5'>
 						{'Heads up'}
@@ -506,6 +626,9 @@ const EmptySelectionPanel: React.FC<EmptySelectionPanelProps> = ({ addNode, unre
 						)}
 						{unlinkedCount > 0 && (
 							<Box>{`${unlinkedCount} request step${unlinkedCount === 1 ? '' : 's'} missing a linked request.`}</Box>
+						)}
+						{cycleCount > 0 && (
+							<Box>{`${cycleCount} step${cycleCount === 1 ? '' : 's'} sit on a directed cycle — use a Loop node to bound iteration.`}</Box>
 						)}
 					</Stack>
 				</Box>

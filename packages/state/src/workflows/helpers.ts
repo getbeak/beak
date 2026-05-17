@@ -129,6 +129,13 @@ export interface GraphHealth {
 	danglingEdges: string[];
 	/** Request nodes with `requestId === null` (the user hasn't picked one). */
 	unlinkedRequestNodes: string[];
+	/**
+	 * Node ids that participate in a directed cycle (each appears as both
+	 * an ancestor and a descendant of itself). The orchestrator needs a
+	 * loop node to bound iteration; raw cycles via plain edges run forever,
+	 * so we surface them in the header pill.
+	 */
+	cycleNodes: string[];
 }
 
 /**
@@ -184,7 +191,103 @@ export function inspectGraph(workflow: WorkflowFile): GraphHealth {
 		unreachable,
 		danglingEdges,
 		unlinkedRequestNodes,
+		cycleNodes: findCycleNodes(adjacency, workflow.nodes.map(n => n.id)),
 	};
+}
+
+/**
+ * Tarjan-ish DFS that flags every node sitting on a directed cycle. Uses
+ * a 3-state colour map (white/grey/black); a back-edge to a grey node
+ * marks the entire grey stack frame for that path. Cheap O(V+E).
+ */
+function findCycleNodes(adjacency: Map<string, string[]>, allIds: ReadonlyArray<string>): string[] {
+	const WHITE = 0;
+	const GREY = 1;
+	const BLACK = 2;
+	const colour = new Map<string, number>();
+	const onCycle = new Set<string>();
+	const stack: string[] = [];
+
+	for (const id of allIds) {
+		if (colour.get(id) !== undefined) continue;
+		const todo: { id: string; childIdx: number }[] = [{ id, childIdx: 0 }];
+		colour.set(id, GREY);
+		stack.push(id);
+		while (todo.length > 0) {
+			const top = todo[todo.length - 1];
+			const children = adjacency.get(top.id) ?? [];
+			if (top.childIdx >= children.length) {
+				colour.set(top.id, BLACK);
+				todo.pop();
+				stack.pop();
+				continue;
+			}
+			const child = children[top.childIdx++];
+			const c = colour.get(child);
+			if (c === GREY) {
+				// Back edge — mark the whole grey chain from `child` up to top.
+				let captured = false;
+				for (const n of stack) {
+					if (n === child) captured = true;
+					if (captured) onCycle.add(n);
+				}
+			} else if (c === undefined) {
+				colour.set(child, GREY);
+				stack.push(child);
+				todo.push({ id: child, childIdx: 0 });
+			}
+		}
+	}
+
+	// Sort for deterministic test/assertion output.
+	return [...onCycle].sort();
+}
+
+export interface ConnectionAttempt {
+	source: string;
+	target: string;
+	sourceHandle?: string | null;
+	targetHandle?: string | null;
+}
+
+/**
+ * Reasons a connection attempt is rejected, used to tooltip the canvas
+ * when xyflow says "no" so the user knows *why*.
+ */
+export type ConnectionRejection =
+	| 'unknown-source'
+	| 'unknown-target'
+	| 'self-loop'
+	| 'into-start'
+	| 'duplicate-edge';
+
+/**
+ * Validate a candidate edge before it's added to the graph. Catches the
+ * mistakes that the slice's invariants don't (the reducer dedupes by id,
+ * but xyflow synthesises an id when the user drags, so the dedupe key
+ * isn't useful for a "same source/target/handle" check).
+ */
+export function validateConnection(
+	workflow: WorkflowFile,
+	attempt: ConnectionAttempt,
+): { ok: true } | { ok: false; reason: ConnectionRejection } {
+	const nodesById = new Map(workflow.nodes.map(n => [n.id, n]));
+	if (!nodesById.has(attempt.source)) return { ok: false, reason: 'unknown-source' };
+	if (!nodesById.has(attempt.target)) return { ok: false, reason: 'unknown-target' };
+	if (attempt.source === attempt.target) return { ok: false, reason: 'self-loop' };
+	const target = nodesById.get(attempt.target);
+	if (target?.type === 'start') return { ok: false, reason: 'into-start' };
+	for (const e of workflow.edges) {
+		if (
+			e.source === attempt.source &&
+			e.target === attempt.target &&
+			(e.sourceHandle ?? null) === (attempt.sourceHandle ?? null) &&
+			(e.targetHandle ?? null) === (attempt.targetHandle ?? null)
+		) {
+			return { ok: false, reason: 'duplicate-edge' };
+		}
+	}
+	return { ok: true };
 }
 
 /**
