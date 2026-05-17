@@ -185,6 +185,11 @@ export const workflowEdgeSchema = z.object({
 	target: z.string(),
 	sourceHandle: z.string().nullable().optional(),
 	targetHandle: z.string().nullable().optional(),
+	/**
+	 * Free-form label rendered inline on the edge. Useful for tagging the
+	 * happy path vs an error branch, or for narrating loop body wiring.
+	 */
+	label: z.string().optional(),
 });
 
 export const workflowSchema = z

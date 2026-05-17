@@ -23,8 +23,12 @@ import { z } from 'zod';
 
 export const propertyConstraintsSchema = z
 	.object({
-		/** Restricts the value to one of an explicit enumeration. */
-		enum: z.array(z.union([z.string(), z.number()])).optional(),
+		/**
+		 * Restricts the value to one of an explicit enumeration. Typed
+		 * primitives — `string | number | boolean | null` — matching JSON
+		 * Schema's `enum` keyword.
+		 */
+		enum: z.array(z.union([z.string(), z.number(), z.boolean(), z.null()])).optional(),
 		/** Numeric minimum (inclusive). */
 		min: z.number().optional(),
 		/** Numeric maximum (inclusive). */
@@ -38,9 +42,7 @@ export const propertyConstraintsSchema = z
 		/** Regex pattern (string, JS-flavour). */
 		pattern: z.string().optional(),
 		/** Well-known string formats (email, url, uuid, date-time, ipv4, ipv6). */
-		format: z
-			.enum(['email', 'url', 'uri', 'uuid', 'date', 'date-time', 'ipv4', 'ipv6'])
-			.optional(),
+		format: z.enum(['email', 'url', 'uri', 'uuid', 'date', 'date-time', 'ipv4', 'ipv6']).optional(),
 	})
 	.strict();
 

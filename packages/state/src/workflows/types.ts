@@ -104,6 +104,11 @@ export interface RemoveEdgePayload extends WorkflowId {
 	edgeId: string;
 }
 
+export interface UpdateEdgeLabelPayload extends WorkflowId {
+	edgeId: string;
+	label: string | undefined;
+}
+
 export interface ReplaceGraphPayload extends WorkflowId {
 	nodes: WorkflowNode[];
 	edges: WorkflowEdge[];

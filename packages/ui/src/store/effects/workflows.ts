@@ -30,6 +30,7 @@ import {
 	replaceGraph,
 	setWorkflowParent,
 	startWorkflows,
+	updateEdgeLabel,
 	updateNode,
 	updateNodeData,
 	updateWorkflowName,
@@ -107,6 +108,7 @@ export function registerWorkflowsEffects(start: AppStartListening) {
 		duplicateNode,
 		addEdge,
 		removeEdge,
+		updateEdgeLabel,
 		replaceGraph,
 	];
 	for (const ac of updateActions) {

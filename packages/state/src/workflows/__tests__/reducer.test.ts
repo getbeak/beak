@@ -317,6 +317,43 @@ describe('workflows reducer — duplicateNode', () => {
 	});
 });
 
+describe('workflows reducer — updateEdgeLabel', () => {
+	it('sets an edge label and clears it when blank', () => {
+		const start: WorkflowsState = {
+			loaded: true,
+			workflows: {
+				wf1: makeWorkflow({
+					nodes: [
+						{ id: 's', type: 'start', position: { x: 0, y: 0 }, data: {} },
+						{ id: 'a', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } },
+					],
+					edges: [{ id: 'e1', source: 's', target: 'a' }],
+				}),
+			},
+		};
+		const labelled = reducer(start, actions.updateEdgeLabel({ id: 'wf1', edgeId: 'e1', label: 'happy path' }));
+		expect(labelled.workflows.wf1!.edges[0].label).toBe('happy path');
+		const cleared = reducer(labelled, actions.updateEdgeLabel({ id: 'wf1', edgeId: 'e1', label: '' }));
+		expect((cleared.workflows.wf1!.edges[0] as { label?: string }).label).toBeUndefined();
+	});
+
+	it('is a no-op when the workflow or edge is missing', () => {
+		const start: WorkflowsState = {
+			loaded: true,
+			workflows: {
+				wf1: makeWorkflow({
+					nodes: [{ id: 's', type: 'start', position: { x: 0, y: 0 }, data: {} }],
+					edges: [],
+				}),
+			},
+		};
+		const a = reducer(start, actions.updateEdgeLabel({ id: 'missing', edgeId: 'e', label: 'x' }));
+		const b = reducer(start, actions.updateEdgeLabel({ id: 'wf1', edgeId: 'ghost', label: 'x' }));
+		expect(a).toEqual(start);
+		expect(b).toEqual(start);
+	});
+});
+
 describe('workflows reducer — moveNode', () => {
 	it('moves the node and ignores moves targeting missing nodes', () => {
 		const start: WorkflowsState = {

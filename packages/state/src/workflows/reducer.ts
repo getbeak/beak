@@ -115,6 +115,19 @@ export function buildWorkflowsReducer<S extends WorkflowsState>(builder: ActionR
 			if (!workflow) return;
 			workflow.edges = workflow.edges.filter(e => e.id !== payload.edgeId);
 		})
+		.addCase(actions.updateEdgeLabel, (state, { payload }) => {
+			const workflow = state.workflows[payload.id];
+			if (!workflow) return;
+			const edge = workflow.edges.find(e => e.id === payload.edgeId);
+			if (!edge) return;
+			// Empty / undefined label drops the field entirely so the on-disk
+			// file stays clean of empty strings.
+			if (!payload.label) {
+				delete (edge as { label?: string }).label;
+			} else {
+				edge.label = payload.label;
+			}
+		})
 		.addCase(actions.replaceGraph, (state, { payload }) => {
 			const workflow = state.workflows[payload.id];
 			if (!workflow) return;

@@ -345,7 +345,7 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 	// xyflow's pre-drop hook. Returning false greys out the target handle so
 	// the user sees the rejection before they release the mouse.
 	const isValidConnection = useCallback(
-		(connection: Connection | WorkflowEdge) => {
+		(connection: Connection | Edge) => {
 			if (!workflow) return false;
 			if (!connection.source || !connection.target) return false;
 			return validateConnection(workflow, {
@@ -553,6 +553,14 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 							// the affordance every graph editor ships.
 							event.preventDefault();
 							dispatch(workflowActions.removeEdge({ id: workflowId, edgeId: edge.id }));
+						}}
+						onEdgeDoubleClick={(_event, edge) => {
+							const current = typeof edge.label === 'string' ? edge.label : '';
+							// `prompt` is intentionally low-rent here — a richer inline
+							// editor lands when we have RTV chips on edges.
+							const next = window.prompt('Edge label', current);
+							if (next === null) return; // user hit Cancel
+							dispatch(workflowActions.updateEdgeLabel({ id: workflowId, edgeId: edge.id, label: next || undefined }));
 						}}
 						nodeTypes={nodeTypes}
 						fitView

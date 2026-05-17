@@ -138,6 +138,20 @@ describe('workflowSchema — round-trip', () => {
 		expect(parsed.parent).toBeUndefined();
 	});
 
+	it('accepts an edge with an inline label', () => {
+		const wf = {
+			id: 'wf-7',
+			name: 'labelled edges',
+			nodes: [
+				{ id: 's', type: 'start', position: { x: 0, y: 0 }, data: {} },
+				{ id: 'a', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } },
+			],
+			edges: [{ id: 'e1', source: 's', target: 'a', label: 'happy path' }],
+		};
+		const parsed = workflowSchema.parse(wf);
+		expect(parsed.edges[0].label).toBe('happy path');
+	});
+
 	it('treats request overrides as fully optional', () => {
 		const wf = {
 			id: 'wf-5',

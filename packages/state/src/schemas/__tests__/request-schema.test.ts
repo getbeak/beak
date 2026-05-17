@@ -74,9 +74,7 @@ describe('request-schema', () => {
 	});
 
 	it('rejects strict body schema with unknown type', () => {
-		expect(() =>
-			bodySchemaSchema.parse({ type: 'multipart', fields: [] }),
-		).toThrow();
+		expect(() => bodySchemaSchema.parse({ type: 'multipart', fields: [] })).toThrow();
 	});
 });
 

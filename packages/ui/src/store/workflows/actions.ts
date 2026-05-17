@@ -14,6 +14,7 @@ import {
 	replaceGraph,
 	setWorkflowParent,
 	startWorkflows,
+	updateEdgeLabel,
 	updateNode,
 	updateNodeData,
 	updateWorkflowName,
@@ -35,6 +36,7 @@ export {
 	replaceGraph,
 	setWorkflowParent,
 	startWorkflows,
+	updateEdgeLabel,
 	updateNode,
 	updateNodeData,
 	updateWorkflowName,
@@ -69,6 +71,7 @@ export default {
 
 	addEdge,
 	removeEdge,
+	updateEdgeLabel,
 
 	replaceGraph,
 
