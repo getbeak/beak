@@ -17,6 +17,7 @@ const WorkflowEditorTab: React.FC<React.PropsWithChildren<WorkflowEditorTabProps
 	const dispatch = useDispatch();
 	const selectedTabPayload = useAppSelector(s => s.features.tabs.selectedTab);
 	const name = useAppSelector(s => s.global.workflows.workflows[tab.payload]?.name);
+	const stepCount = useAppSelector(s => s.global.workflows.workflows[tab.payload]?.nodes.length ?? 0);
 	const pendingWrite = useAppSelector(s => Boolean(s.global.workflows.writeDebouncer));
 	const [target, setTarget] = useState<HTMLElement>();
 
@@ -25,7 +26,10 @@ const WorkflowEditorTab: React.FC<React.PropsWithChildren<WorkflowEditorTabProps
 	// Bullet shows only on the active tab — writeDebouncer is global so we
 	// can't pinpoint which workflow is dirty, but only the active tab can
 	// have caused the pending write (editor dispatches come from its mount).
-	const label = pendingWrite && isActive ? `• ${base}` : base;
+	const labelPrefix = pendingWrite && isActive ? '• ' : '';
+	// Hide the count for empty / single-Start workflows — it's noisy and not
+	// informative; only show once the user has actually built something.
+	const showCount = stepCount > 1;
 
 	return (
 		<TabContextMenuWrapper tab={tab} target={target}>
@@ -61,7 +65,23 @@ const WorkflowEditorTab: React.FC<React.PropsWithChildren<WorkflowEditorTabProps
 				}}
 				onClose={() => dispatch(closeTab(tab.payload))}
 			>
-				{label}
+				<Box as='span' display='inline-flex' alignItems='center' gap='1.5' minW={0}>
+					<Box as='span' overflow='hidden' textOverflow='ellipsis' whiteSpace='nowrap'>
+						{`${labelPrefix}${base}`}
+					</Box>
+					{showCount && (
+						<Box
+							as='span'
+							flexShrink={0}
+							fontSize='10px'
+							color='fg.subtle'
+							fontVariantNumeric='tabular-nums'
+							opacity={0.8}
+						>
+							{stepCount}
+						</Box>
+					)}
+				</Box>
 			</TabItem>
 		</TabContextMenuWrapper>
 	);
