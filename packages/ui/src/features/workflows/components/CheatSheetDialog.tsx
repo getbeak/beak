@@ -40,6 +40,7 @@ const CheatSheetDialog: React.FC<CheatSheetDialogProps> = ({ open, onClose }) =>
 							<Row keys={['⌘ A']} desc='Select every non-Start node' />
 							<Row keys={['Esc']} desc='Clear selection' />
 							<Row keys={['⌘ K']} desc='Jump to a step by name / kind / id' />
+							<Row keys={['⌘ ⇧ O']} desc='Open the omni-bar in workflows scope' />
 						</Section>
 
 						<Section title='Editing'>
