@@ -135,6 +135,20 @@ describe('workflow lifecycle — build and tear down', () => {
 		expect(state.workflows[seed.id]!.nodes.find(n => n.id === 'r-clone')).toBeDefined();
 	});
 
+	it('catches cycle-closing wires at the validator before they reach the slice', () => {
+		const mint = counterMinter();
+		const seed = instantiateTemplate({ template: 'blank', name: 'cycle test', mintId: mint });
+		const start = seed.nodes[0];
+		const a = { id: 'a', type: 'request' as const, position: { x: 0, y: 0 }, data: { requestId: null } };
+		const b = { id: 'b', type: 'request' as const, position: { x: 0, y: 0 }, data: { requestId: null } };
+		let state = reducer(initialWorkflowsState, actions.insertNewWorkflow({ id: seed.id, workflow: { ...seed, nodes: [...seed.nodes, a, b] } }));
+		state = reducer(state, actions.addEdge({ id: seed.id, edge: { id: 'e1', source: start.id, target: 'a' } }));
+		state = reducer(state, actions.addEdge({ id: seed.id, edge: { id: 'e2', source: 'a', target: 'b' } }));
+		// Validator should reject "b → a" since reaching back from a closes the cycle.
+		const result = validateConnection(state.workflows[seed.id]!, { source: 'b', target: 'a' });
+		expect(result).toEqual({ ok: false, reason: 'would-create-cycle' });
+	});
+
 	it('purges request refs when the underlying project tree drops the request', () => {
 		const mint = counterMinter();
 		const seed = instantiateTemplate({ template: 'smoke-test', name: 'flow', mintId: mint });

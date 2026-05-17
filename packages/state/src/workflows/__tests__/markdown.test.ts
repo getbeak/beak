@@ -65,6 +65,20 @@ describe('toMarkdown', () => {
 		expect(md).toContain('repeat 2 × (body) → POST /metrics — _each iteration_');
 	});
 
+	it('renders edge labels with italic emphasis', () => {
+		const wf: WorkflowFile = {
+			id: 'wf',
+			name: 'labelled',
+			nodes: [
+				{ id: 's', type: 'start', position: { x: 0, y: 0 }, data: {} },
+				{ id: 'a', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } },
+			],
+			edges: [{ id: 'e1', source: 's', target: 'a', label: 'happy path' }],
+		};
+		const md = toMarkdown(wf);
+		expect(md).toContain('— _happy path_');
+	});
+
 	it('prefers an explicit node name over the derived label', () => {
 		const wf: WorkflowFile = {
 			id: 'wf',
