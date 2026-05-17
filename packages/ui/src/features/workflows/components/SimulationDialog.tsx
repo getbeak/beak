@@ -1,7 +1,8 @@
 import { type SimulationEvent, walkWorkflow, type WorkflowFile } from '@beak/state/workflows';
-import { Box, Dialog, Flex, Stack } from '@chakra-ui/react';
+import { Box, Button, Dialog, Flex, Stack } from '@chakra-ui/react';
+import { ChevronLeft, ChevronRight, Play, SkipForward } from 'lucide-react';
 import * as React from 'react';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 interface SimulationDialogProps {
 	workflow: WorkflowFile;
@@ -12,9 +13,9 @@ interface SimulationDialogProps {
 
 /**
  * "Simulate this workflow" preview. Calls `walkWorkflow` with a default
- * resolver (conditions = truthy, loops = data.count, requests = no-op)
- * and renders the event log. Clicking a node-referencing event jumps
- * back to that node in the canvas.
+ * resolver (conditions = truthy, loops = data.count) and renders the
+ * event log with prev/next/play step-through controls — clicking an
+ * event jumps to its node.
  *
  * Useful before the orchestrator lands — lets the user eyeball whether
  * their loop/condition wiring produces the walk they expect.
@@ -31,6 +32,50 @@ const SimulationDialog: React.FC<SimulationDialogProps> = ({ workflow, open, onC
 		return map;
 	}, [workflow]);
 
+	// Cursor pointing at the most recent "current" event. Step-through plays
+	// from 0 up to events.length - 1. Reset when the event stream changes
+	// (re-opening, workflow edit).
+	const [cursor, setCursor] = useState(0);
+	const [playing, setPlaying] = useState(false);
+	const listRef = useRef<HTMLDivElement | null>(null);
+
+	useEffect(() => {
+		setCursor(0);
+		setPlaying(false);
+	}, [events]);
+
+	// Auto-play steps through one event every 350ms. Stops at the end.
+	useEffect(() => {
+		if (!playing) return;
+		if (cursor >= events.length - 1) {
+			setPlaying(false);
+			return;
+		}
+		const id = window.setTimeout(() => setCursor(c => Math.min(events.length - 1, c + 1)), 350);
+		return () => window.clearTimeout(id);
+	}, [playing, cursor, events.length]);
+
+	// Auto-scroll the active row into view so the cursor stays visible.
+	useEffect(() => {
+		const list = listRef.current;
+		if (!list) return;
+		const row = list.querySelector<HTMLElement>(`[data-event-idx="${cursor}"]`);
+		row?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+	}, [cursor]);
+
+	// Highlight the current node on the canvas as the cursor advances. We
+	// don't close the dialog — the user is following along.
+	useEffect(() => {
+		if (!open) return;
+		const event = events[cursor];
+		if (!event) return;
+		const id = currentNodeId(event);
+		if (id) onJumpToNode(id);
+	}, [cursor, events, open, onJumpToNode]);
+
+	const atEnd = cursor >= events.length - 1;
+	const atStart = cursor <= 0;
+
 	return (
 		<Dialog.Root open={open} onOpenChange={d => (d.open ? null : onClose())} size='lg' placement='center'>
 			<Dialog.Backdrop />
@@ -41,9 +86,56 @@ const SimulationDialog: React.FC<SimulationDialogProps> = ({ workflow, open, onC
 					</Dialog.Header>
 					<Dialog.Body>
 						<Box mb='2' fontSize='12px' color='fg.muted'>
-							{'Walks the graph as if every condition were truthy and every loop ran its declared count. Requests are skipped (no real HTTP fires). Click a step to jump to it.'}
+							{'Walks the graph as if every condition were truthy and every loop ran its declared count. Requests are skipped (no real HTTP fires).'}
 						</Box>
+						<Flex align='center' gap='1' mb='2'>
+							<Button
+								type='button'
+								size='xs'
+								variant='outline'
+								disabled={atStart}
+								onClick={() => setCursor(c => Math.max(0, c - 1))}
+							>
+								<ChevronLeft size={12} strokeWidth={1.8} />
+								{'Prev'}
+							</Button>
+							<Button
+								type='button'
+								size='xs'
+								variant='outline'
+								disabled={atEnd}
+								onClick={() => setCursor(c => Math.min(events.length - 1, c + 1))}
+							>
+								{'Next'}
+								<ChevronRight size={12} strokeWidth={1.8} />
+							</Button>
+							<Button
+								type='button'
+								size='xs'
+								variant='solid'
+								colorPalette='pink'
+								disabled={atEnd}
+								onClick={() => setPlaying(p => !p)}
+							>
+								{playing ? (
+									<>
+										<SkipForward size={12} strokeWidth={1.8} />
+										{'Pause'}
+									</>
+								) : (
+									<>
+										<Play size={12} strokeWidth={1.8} fill='currentColor' />
+										{'Play'}
+									</>
+								)}
+							</Button>
+							<Box flex='1' />
+							<Box fontSize='10px' color='fg.subtle' fontVariantNumeric='tabular-nums'>
+								{`step ${Math.min(cursor + 1, events.length)} / ${events.length}`}
+							</Box>
+						</Flex>
 						<Box
+							ref={listRef}
 							maxH='420px'
 							overflowY='auto'
 							borderWidth='1px'
@@ -55,10 +147,11 @@ const SimulationDialog: React.FC<SimulationDialogProps> = ({ workflow, open, onC
 								{events.map((event, i) => (
 									<EventRow
 										key={i}
+										idx={i}
+										current={i === cursor}
 										event={event}
 										nodeLabels={nodeLabels}
-										onJumpToNode={onJumpToNode}
-										onClose={onClose}
+										onPick={() => setCursor(i)}
 									/>
 								))}
 							</Stack>
@@ -73,33 +166,30 @@ const SimulationDialog: React.FC<SimulationDialogProps> = ({ workflow, open, onC
 interface EventRowProps {
 	event: SimulationEvent;
 	nodeLabels: Map<string, string>;
-	onJumpToNode: (nodeId: string) => void;
-	onClose: () => void;
+	onPick: () => void;
+	idx: number;
+	current: boolean;
 }
 
-const EventRow: React.FC<EventRowProps> = ({ event, nodeLabels, onJumpToNode, onClose }) => {
+const EventRow: React.FC<EventRowProps> = ({ event, nodeLabels, onPick, idx, current }) => {
 	const { label, nodeId, tone, indent } = describe(event, nodeLabels);
 	const clickable = nodeId !== undefined;
 	return (
 		<Flex
 			as={clickable ? 'button' : 'div'}
+			data-event-idx={idx}
 			align='center'
 			gap='2'
 			px='3'
 			py='1'
 			pl={`${12 + indent * 14}px`}
-			bg='transparent'
+			bg={current ? 'bg.subtle' : 'transparent'}
+			borderLeftWidth='2px'
+			borderLeftColor={current ? 'accent.pink' : 'transparent'}
 			cursor={clickable ? 'pointer' : 'default'}
 			textAlign='left'
 			_hover={clickable ? { bg: 'bg.subtle' } : undefined}
-			onClick={
-				clickable
-					? () => {
-						onJumpToNode(nodeId);
-						onClose();
-					}
-					: undefined
-			}
+			onClick={clickable ? onPick : undefined}
 		>
 			<Box w='8px' h='8px' borderRadius='full' bg={tone} flexShrink={0} />
 			<Box color='fg.default'>{label}</Box>
@@ -213,6 +303,22 @@ function kindShortLabel(node: WorkflowFile['nodes'][number]): string {
 			return 'notif';
 		case 'comment':
 			return 'note';
+	}
+}
+
+function currentNodeId(event: SimulationEvent): string | null {
+	switch (event.type) {
+		case 'enter-node':
+		case 'exit-node':
+		case 'condition-evaluated':
+		case 'loop-iteration':
+		case 'request-skipped':
+		case 'request-completed':
+		case 'notification-fired':
+		case 'comment-skipped':
+			return event.nodeId;
+		default:
+			return null;
 	}
 }
 
