@@ -27,6 +27,13 @@ export function buildWorkflowsReducer<S extends WorkflowsState>(builder: ActionR
 			if (!workflow) return;
 			workflow.name = payload.name;
 		})
+		.addCase(actions.updateWorkflowDescription, (state, { payload }) => {
+			const workflow = state.workflows[payload.id];
+			if (!workflow) return;
+			const trimmed = payload.description?.trim();
+			if (trimmed) workflow.description = trimmed;
+			else delete workflow.description;
+		})
 		.addCase(actions.setWorkflowParent, (state, { payload }) => {
 			const workflow = state.workflows[payload.id];
 			if (!workflow) return;

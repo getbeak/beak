@@ -35,6 +35,7 @@ import {
 	updateEdgeLabel,
 	updateNode,
 	updateNodeData,
+	updateWorkflowDescription,
 	updateWorkflowName,
 	workflowsOpened,
 } from '../workflows/actions';
@@ -101,6 +102,7 @@ export function registerWorkflowsEffects(start: AppStartListening) {
 	const updateActions = [
 		insertNewWorkflow,
 		updateWorkflowName,
+		updateWorkflowDescription,
 		setWorkflowParent,
 		addNode,
 		updateNode,

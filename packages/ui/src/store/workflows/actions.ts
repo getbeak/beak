@@ -19,6 +19,7 @@ import {
 	updateEdgeLabel,
 	updateNode,
 	updateNodeData,
+	updateWorkflowDescription,
 	updateWorkflowName,
 	workflowsOpened,
 } from '@beak/state/workflows';
@@ -43,6 +44,7 @@ export {
 	updateEdgeLabel,
 	updateNode,
 	updateNodeData,
+	updateWorkflowDescription,
 	updateWorkflowName,
 	workflowsOpened,
 };
@@ -63,6 +65,7 @@ export default {
 	createNewWorkflow,
 	insertNewWorkflow,
 	updateWorkflowName,
+	updateWorkflowDescription,
 	setWorkflowParent,
 
 	addNode,

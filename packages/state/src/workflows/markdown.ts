@@ -16,6 +16,10 @@ export function toMarkdown(workflow: WorkflowFile, requestNames: ReadonlyMap<str
 	const title = workflow.name || 'Untitled workflow';
 	lines.push(`# ${title}`, '');
 
+	if (workflow.description?.trim()) {
+		lines.push(workflow.description.trim(), '');
+	}
+
 	if (workflow.nodes.length === 0) {
 		lines.push('_Empty workflow._');
 		return lines.join('\n');

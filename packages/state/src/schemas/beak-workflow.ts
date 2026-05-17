@@ -209,6 +209,11 @@ export const workflowSchema = z
 		 * the project tree without moving on-disk.
 		 */
 		parent: z.string().nullable().optional(),
+		/**
+		 * Free-form documentation for the workflow as a whole — surfaced in
+		 * the empty-selection panel and the Markdown export. Not parsed.
+		 */
+		description: z.string().optional(),
 		nodes: z.array(workflowNodeSchema),
 		edges: z.array(workflowEdgeSchema),
 	})

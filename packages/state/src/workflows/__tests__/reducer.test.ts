@@ -317,6 +317,24 @@ describe('workflows reducer — duplicateNode', () => {
 	});
 });
 
+describe('workflows reducer — updateWorkflowDescription', () => {
+	it('sets and clears the description', () => {
+		const start: WorkflowsState = {
+			loaded: true,
+			workflows: { wf1: makeWorkflow() },
+		};
+		const set = reducer(start, actions.updateWorkflowDescription({ id: 'wf1', description: '  doc text  ' }));
+		expect(set.workflows.wf1!.description).toBe('doc text');
+		const cleared = reducer(set, actions.updateWorkflowDescription({ id: 'wf1', description: '' }));
+		expect((cleared.workflows.wf1 as { description?: string }).description).toBeUndefined();
+	});
+
+	it('is a no-op when the workflow is missing', () => {
+		const start: WorkflowsState = { loaded: true, workflows: { wf1: makeWorkflow() } };
+		expect(reducer(start, actions.updateWorkflowDescription({ id: 'missing', description: 'x' }))).toEqual(start);
+	});
+});
+
 describe('workflows reducer — clearGraph', () => {
 	it('keeps Start and drops everything else', () => {
 		const start: WorkflowsState = {

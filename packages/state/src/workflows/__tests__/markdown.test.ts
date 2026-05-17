@@ -65,6 +65,18 @@ describe('toMarkdown', () => {
 		expect(md).toContain('repeat 2 × (body) → POST /metrics — _each iteration_');
 	});
 
+	it('includes the workflow description when set', () => {
+		const wf: WorkflowFile = {
+			id: 'wf',
+			name: 'with desc',
+			description: 'Runs the smoke test against staging.',
+			nodes: [{ id: 's', type: 'start', position: { x: 0, y: 0 }, data: {} }],
+			edges: [],
+		};
+		const md = toMarkdown(wf);
+		expect(md).toContain('Runs the smoke test against staging.');
+	});
+
 	it('renders edge labels with italic emphasis', () => {
 		const wf: WorkflowFile = {
 			id: 'wf',

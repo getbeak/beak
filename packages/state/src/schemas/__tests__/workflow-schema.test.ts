@@ -138,6 +138,17 @@ describe('workflowSchema — round-trip', () => {
 		expect(parsed.parent).toBeUndefined();
 	});
 
+	it('accepts an optional workflow description', () => {
+		const wf = {
+			id: 'wf-desc',
+			name: 'with desc',
+			description: 'Some doc text.',
+			nodes: [{ id: 's', type: 'start', position: { x: 0, y: 0 }, data: {} }],
+			edges: [],
+		};
+		expect(workflowSchema.parse(wf).description).toBe('Some doc text.');
+	});
+
 	it('accepts a per-node display name', () => {
 		const wf = {
 			id: 'wf-name',
