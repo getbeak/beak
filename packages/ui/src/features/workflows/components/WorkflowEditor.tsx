@@ -53,6 +53,7 @@ import {
 	Tag,
 	Trash2,
 	Workflow as WorkflowIcon,
+	Wrench,
 } from 'lucide-react';
 import * as React from 'react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -717,6 +718,11 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 						icon={<BarChart3 size={13} strokeWidth={1.8} />}
 						label='Stats'
 						onClick={() => setStatsOpen(true)}
+					/>
+					<ToolbarButton
+						icon={<Wrench size={13} strokeWidth={1.8} />}
+						label='Lint'
+						onClick={() => setQuickFixOpen(true)}
 					/>
 					<Box w='1px' h='14px' bg='border.subtle' alignSelf='center' mx='1' />
 					<ToolbarButton
