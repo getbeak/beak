@@ -4,6 +4,7 @@ import { useCallback, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { showEncryptionView } from '../features/encryption/store/actions';
 import { showOmniBar } from '../features/omni-bar/store/actions';
+import { exportOpenApi } from '../features/openapi-export/export-action';
 import { actions as openApiImportActions } from '../features/openapi-import/store';
 import {
 	changeTab,
@@ -13,8 +14,8 @@ import {
 	closeTabsOther,
 } from '../features/tabs/store/actions';
 import { exportProjectToLocalFolder } from '../features/welcome/lib/export-to-local-folder';
-import { useAppSelector } from '../store/redux';
 import { closeTabIntent, createNewFolder, createNewRequest } from '../store/project/actions';
+import { useAppSelector } from '../store/redux';
 import { useSaveProjectAs } from './use-save-project-as';
 
 const embedded = Boolean(window.embeddedIndicator);
@@ -90,6 +91,10 @@ export function useMenuActionDispatcher() {
 
 				case 'import_openapi_spec':
 					dispatch(openApiImportActions.start());
+					break;
+
+				case 'export_openapi_spec':
+					void exportOpenApi({ title: projectName || undefined });
 					break;
 
 				case 'save_project_as':

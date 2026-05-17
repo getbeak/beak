@@ -22,6 +22,7 @@ export type MenuEventCode =
 	| 'show_preferences'
 	| 'show_project_home'
 	| 'import_openapi_spec'
+	| 'export_openapi_spec'
 	| 'save_project_as'
 	| 'export_to_local_folder'
 	| 'show_variable_input_lab';

@@ -1,4 +1,4 @@
-import { openProjectDialog } from '@beak/apps-host-electron/host/extensions/project';
+import { openProjectDialog } from '@beak/apps-host-electron/host/project';
 import { createEmptyProjectMainWindow, createPreferencesWindow } from '@beak/apps-host-electron/window-management';
 import type { MenuItemConstructorOptions } from 'electron';
 
@@ -63,6 +63,11 @@ export default function generateFileMenu(ctx: Context): MenuItemConstructorOptio
 				label: 'Import OpenAPI spec…',
 				enabled: isProjectEditor(ctx),
 				click: async () => sendMenuItemClick(ctx, 'import_openapi_spec'),
+			},
+			{
+				label: 'Export OpenAPI spec…',
+				enabled: isProjectEditor(ctx),
+				click: async () => sendMenuItemClick(ctx, 'export_openapi_spec'),
 			},
 			{
 				type: 'separator',
