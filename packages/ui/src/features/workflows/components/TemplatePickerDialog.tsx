@@ -1,4 +1,4 @@
-import { templateCatalog, type TemplateKey } from '@beak/state/workflows';
+import { instantiateTemplate, templateCatalog, type TemplateKey, workflowStats } from '@beak/state/workflows';
 import { Box, Button, Dialog, Flex, Stack } from '@chakra-ui/react';
 import { Bell, GitBranch, LayoutTemplate, Repeat, Workflow as WorkflowIcon } from 'lucide-react';
 import * as React from 'react';
@@ -39,6 +39,7 @@ const TemplatePickerDialog: React.FC<TemplatePickerDialogProps> = ({ open, onClo
 						<Stack gap='1.5'>
 							{templateCatalog.map(item => {
 								const icon = iconFor(item.key);
+								const previewStats = templateStatsPreview(item.key);
 								return (
 									<Flex
 										as='button'
@@ -70,9 +71,21 @@ const TemplatePickerDialog: React.FC<TemplatePickerDialogProps> = ({ open, onClo
 											{icon}
 										</Flex>
 										<Stack gap='0.5' flex='1' minW={0}>
-											<Box fontSize='13px' fontWeight='600' color='fg.default'>
-												{item.title}
-											</Box>
+											<Flex align='center' gap='2'>
+												<Box fontSize='13px' fontWeight='600' color='fg.default'>
+													{item.title}
+												</Box>
+												{previewStats && (
+													<Box
+														fontSize='10px'
+														color='fg.muted'
+														fontVariantNumeric='tabular-nums'
+														fontFamily='mono'
+													>
+														{previewStats}
+													</Box>
+												)}
+											</Flex>
 											<Box fontSize='11px' color='fg.subtle' lineHeight='1.4'>
 												{item.subtitle}
 											</Box>
@@ -92,6 +105,33 @@ const TemplatePickerDialog: React.FC<TemplatePickerDialogProps> = ({ open, onClo
 		</Dialog.Root>
 	);
 };
+
+/**
+ * Build a tiny "1·1·0" stats glyph for each template — request/loop/
+ * notification counts of the seed. Lets the user pick by shape rather
+ * than by name alone. Counter-minter is deterministic so each call
+ * produces the same numbers.
+ */
+function templateStatsPreview(key: TemplateKey): string | null {
+	const counts: Record<string, number> = {};
+	const mintId = (prefix: 'workflow' | 'node' | 'edge') => {
+		counts[prefix] = (counts[prefix] ?? 0) + 1;
+		return `${prefix}-${counts[prefix]}`;
+	};
+	try {
+		const wf = instantiateTemplate({ template: key, name: '', mintId });
+		const stats = workflowStats(wf);
+		const interesting = stats.nodesByKind.request + stats.nodesByKind.loop + stats.nodesByKind.notification;
+		if (interesting === 0) return null;
+		const parts: string[] = [];
+		if (stats.nodesByKind.request) parts.push(`${stats.nodesByKind.request} req`);
+		if (stats.nodesByKind.loop) parts.push(`${stats.nodesByKind.loop} loop`);
+		if (stats.nodesByKind.notification) parts.push(`${stats.nodesByKind.notification} notif`);
+		return parts.join(' · ');
+	} catch {
+		return null;
+	}
+}
 
 function iconFor(template: TemplateKey): React.ReactNode {
 	switch (template) {
