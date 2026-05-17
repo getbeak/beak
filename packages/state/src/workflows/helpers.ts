@@ -741,6 +741,84 @@ export function cloneNodeAt(source: WorkflowNode, newId: string, position: { x: 
 }
 
 /**
+ * Graft `source`'s nodes + edges into `into` — used by paste-into-existing
+ * and future "import partial". Re-keys every node/edge id via the
+ * caller-supplied minter so there are no collisions; shifts source's
+ * nodes to land to the right of `into`'s existing bounds with a margin.
+ * The Start node from source is dropped (workflows already have one).
+ *
+ * Pure + deterministic given a stable minter. Doesn't touch tags /
+ * description / name on `into`.
+ */
+export function mergeWorkflows(
+	into: WorkflowFile,
+	source: WorkflowFile,
+	mintId: (prefix: 'node' | 'edge') => string,
+): WorkflowFile {
+	const intoBounds = nodeBounds(into.nodes);
+	const sourceBounds = nodeBounds(source.nodes.filter(n => n.type !== 'start'));
+	const xShift = intoBounds && sourceBounds ? intoBounds.maxX + 240 - sourceBounds.minX : 0;
+	const yShift = intoBounds && sourceBounds ? intoBounds.minY - sourceBounds.minY : 0;
+
+	const nodeIdMap = new Map<string, string>();
+	const reKeyedNodes = source.nodes
+		.filter(n => n.type !== 'start')
+		.map(node => {
+			const newId = mintId('node');
+			nodeIdMap.set(node.id, newId);
+			return {
+				...node,
+				id: newId,
+				position: { x: node.position.x + xShift, y: node.position.y + yShift },
+			};
+		}) as typeof into.nodes;
+
+	const reKeyedEdges = source.edges
+		.filter(e => nodeIdMap.has(e.source) && nodeIdMap.has(e.target))
+		.map(edge => ({
+			...edge,
+			id: mintId('edge'),
+			source: nodeIdMap.get(edge.source)!,
+			target: nodeIdMap.get(edge.target)!,
+		}));
+
+	return {
+		...into,
+		nodes: [...into.nodes, ...reKeyedNodes],
+		edges: [...into.edges, ...reKeyedEdges],
+	};
+}
+
+export interface NodeBounds {
+	minX: number;
+	minY: number;
+	maxX: number;
+	maxY: number;
+	width: number;
+	height: number;
+}
+
+/**
+ * Pure bounding-rectangle of a node set. Returns `null` for an empty
+ * input so callers can short-circuit. Width/height assume node positions
+ * are top-left corners — that matches xyflow's coordinate system.
+ */
+export function nodeBounds(nodes: ReadonlyArray<{ position: { x: number; y: number } }>): NodeBounds | null {
+	if (nodes.length === 0) return null;
+	let minX = Number.POSITIVE_INFINITY;
+	let minY = Number.POSITIVE_INFINITY;
+	let maxX = Number.NEGATIVE_INFINITY;
+	let maxY = Number.NEGATIVE_INFINITY;
+	for (const n of nodes) {
+		if (n.position.x < minX) minX = n.position.x;
+		if (n.position.y < minY) minY = n.position.y;
+		if (n.position.x > maxX) maxX = n.position.x;
+		if (n.position.y > maxY) maxY = n.position.y;
+	}
+	return { minX, minY, maxX, maxY, width: maxX - minX, height: maxY - minY };
+}
+
+/**
  * Shift every node so the leftmost is at `margin.x` and the topmost is at
  * `margin.y`. Useful after a Tidy + manual drag session where the user
  * has pushed nodes off into negative space; saves them from manually

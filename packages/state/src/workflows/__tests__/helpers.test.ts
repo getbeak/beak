@@ -12,6 +12,8 @@ import {
 	firstIssueNode,
 	flightFromNode,
 	inspectGraph,
+	mergeWorkflows,
+	nodeBounds,
 	nodeIssuesFromHealth,
 	overrideBadgeText,
 	parseImportedWorkflow,
@@ -363,6 +365,86 @@ describe('connectedComponents', () => {
 		};
 		const components = connectedComponents(wf);
 		expect(components).toEqual([['s']]);
+	});
+});
+
+describe('nodeBounds', () => {
+	it('returns null for an empty array', () => {
+		expect(nodeBounds([])).toBeNull();
+	});
+
+	it('computes min/max/width/height across positions', () => {
+		const result = nodeBounds([
+			{ position: { x: 100, y: 50 } },
+			{ position: { x: 300, y: 200 } },
+			{ position: { x: -20, y: 80 } },
+		]);
+		expect(result).toEqual({ minX: -20, minY: 50, maxX: 300, maxY: 200, width: 320, height: 150 });
+	});
+
+	it('collapses to zero w/h for a single node', () => {
+		const result = nodeBounds([{ position: { x: 10, y: 10 } }]);
+		expect(result).toEqual({ minX: 10, minY: 10, maxX: 10, maxY: 10, width: 0, height: 0 });
+	});
+});
+
+describe('mergeWorkflows', () => {
+	function makeMinter() {
+		const counts: Record<string, number> = {};
+		return (prefix: 'node' | 'edge') => {
+			counts[prefix] = (counts[prefix] ?? 0) + 1;
+			return `${prefix}-merged-${counts[prefix]}`;
+		};
+	}
+
+	const into: WorkflowFile = {
+		id: 'wf-into',
+		name: 'into',
+		nodes: [
+			{ id: 's', type: 'start', position: { x: 80, y: 120 }, data: {} },
+			{ id: 'a', type: 'request', position: { x: 280, y: 120 }, data: { requestId: null } },
+		],
+		edges: [{ id: 'e1', source: 's', target: 'a' }],
+	};
+
+	const source: WorkflowFile = {
+		id: 'wf-src',
+		name: 'src',
+		nodes: [
+			{ id: 's2', type: 'start', position: { x: 0, y: 0 }, data: {} },
+			{ id: 'b', type: 'notification', position: { x: 200, y: 0 }, data: {} },
+			{ id: 'c', type: 'comment', position: { x: 200, y: 100 }, data: { text: 'hi' } },
+		],
+		edges: [
+			{ id: 'es1', source: 's2', target: 'b' },
+			{ id: 'es2', source: 'b', target: 'c' },
+		],
+	};
+
+	it("drops source's Start node and grafts the rest", () => {
+		const merged = mergeWorkflows(into, source, makeMinter());
+		const types = merged.nodes.map(n => n.type);
+		expect(types.filter(t => t === 'start').length).toBe(1); // only the existing Start
+		expect(merged.nodes.length).toBe(into.nodes.length + (source.nodes.length - 1));
+	});
+
+	it('re-keys node + edge ids; edges referencing the dropped Start are filtered', () => {
+		const merged = mergeWorkflows(into, source, makeMinter());
+		// es1 referenced source's Start, which is dropped — so es1 doesn't survive.
+		// es2 was b → c; both got re-keyed.
+		expect(merged.edges.length).toBe(into.edges.length + 1);
+		// New edge ids are all under the merge minter's prefix.
+		const newEdgeIds = merged.edges.filter(e => !into.edges.some(prev => prev.id === e.id));
+		for (const e of newEdgeIds) expect(e.id.startsWith('edge-merged-')).toBe(true);
+	});
+
+	it('shifts source nodes to land right of `into`s rightmost', () => {
+		const merged = mergeWorkflows(into, source, makeMinter());
+		const intoMax = Math.max(...into.nodes.map(n => n.position.x));
+		const sourceXs = merged.nodes
+			.filter(n => !into.nodes.some(prev => prev.id === n.id))
+			.map(n => n.position.x);
+		for (const x of sourceXs) expect(x).toBeGreaterThan(intoMax);
 	});
 });
 
