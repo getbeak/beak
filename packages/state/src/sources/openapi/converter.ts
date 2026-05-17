@@ -1,11 +1,10 @@
 import ksuid from '@beak/ksuid';
 import type { VariableSet } from '@getbeak/types/variable-sets';
 
-import type {
-	CollectionFile,
-	RequestFileOverride,
-} from '../../schemas/beak-project';
+import type { CollectionFile, RequestFileOverride } from '../../schemas/beak-project';
+import type { PropertyConstraints } from '../../schemas/request-schema';
 import { generateValueIdent } from '../../variable-sets/types';
+import { openApiSchemaToEntries } from './schema-to-entries';
 import {
 	HTTP_METHODS,
 	type HttpMethod,
@@ -14,6 +13,8 @@ import {
 	type OpenApiParameter,
 	type OpenApiPathItem,
 	type OpenApiReference,
+	type OpenApiResponse,
+	type OpenApiSchema,
 	type OpenApiServer,
 } from './types';
 
@@ -106,10 +107,7 @@ export interface ConvertOptions {
  *
  * Pure function: no I/O, no `Date.now()` unless `options.now` is omitted.
  */
-export function openapiToCollection(
-	spec: OpenApiDocument,
-	options: ConvertOptions = {},
-): OpenApiConversionResult {
+export function openapiToCollection(spec: OpenApiDocument, options: ConvertOptions = {}): OpenApiConversionResult {
 	const warnings: string[] = [];
 	const now = options.now ?? (() => new Date().toISOString());
 	const syncedAt = now();
@@ -327,10 +325,7 @@ interface BuildVariableSetArgs {
  * sets with matching display names so multi-spec projects share a single
  * Environments file.
  */
-function buildProposedVariableSet(
-	servers: OpenApiServer[],
-	args: BuildVariableSetArgs,
-): ProposedVariableSet | null {
+function buildProposedVariableSet(servers: OpenApiServer[], args: BuildVariableSetArgs): ProposedVariableSet | null {
 	if (servers.length === 0) return null;
 
 	const sets: Record<string, string> = {};
@@ -447,14 +442,20 @@ function buildRequestOverride({
 	if (headerParams.length > 0) {
 		override.headers = paramsToRecord(headerParams);
 	}
+	if (pathParams.length > 0) {
+		override.pathParameters = pathParamsToRecord(pathParams);
+	}
 
 	// Always seed a body, even for bodyless verbs (GET/DELETE). The request
 	// pane + flight machinery assume `info.body` is present — reading
 	// `body.type` on undefined throws — and every other place that
 	// constructs a request file in this codebase honours the same invariant.
-	override.body = operation.requestBody
-		? bodyFromRequestBody(operation.requestBody) ?? { type: 'text', payload: '' }
-		: { type: 'text', payload: '' };
+	//
+	// Prefer the requestBody schema; fall back to `responses[200|204]` for
+	// operations that don't declare a request body (most GET endpoints).
+	// The response schema describes what the operation deals with, and
+	// most specs put their useful schema info there.
+	override.body = bodyForOperation(operation, spec, warnings) ?? { type: 'text', payload: '' };
 
 	return override;
 }
@@ -556,6 +557,70 @@ function scalarTypeFromSchema(schema: OpenApiParameter['schema']): ScalarPropert
  */
 const TOKEN_HEADER_PATTERN = /^(authorization|x-api-key|x-auth-token|api-key|apikey)$/i;
 
+/**
+ * Subset of OpenAPI `format` values our `PropertyConstraints.format` Zod
+ * enum understands. Anything outside this set is dropped on extraction so
+ * the converter doesn't fabricate invalid data. The renderer's request-pane
+ * editor surfaces the format as a placeholder hint above the value input.
+ *
+ * Note: OpenAPI also recognises numeric formats (`int32`, `int64`, `float`,
+ * `double`) and the credential format `password` — those are handled
+ * separately (numeric formats inform the scalar type; `password` flips a
+ * header to `token`). The set below is strictly the string-format hints.
+ */
+const KNOWN_STRING_FORMATS = new Set<NonNullable<PropertyConstraints['format']>>([
+	'email',
+	'url',
+	'uri',
+	'uuid',
+	'date',
+	'date-time',
+	'ipv4',
+	'ipv6',
+]);
+
+/**
+ * Pick the constraints we know how to model out of an OpenAPI parameter
+ * schema. Returns `undefined` when the schema is absent or carries nothing
+ * we can map — keeps emitted records clean instead of dropping `constraints: {}`
+ * onto every parameter.
+ *
+ * Pure: deterministic for a given schema, no side effects, no narrowing of
+ * fields we couldn't already see on the source type. Anything outside the
+ * known constraint shape (e.g. unsupported `format` strings) is dropped on
+ * the floor by design — surfacing them would mean a typed contract the
+ * value editor doesn't understand.
+ */
+function extractParameterConstraints(schema: OpenApiParameter['schema']): PropertyConstraints | undefined {
+	if (!schema) return undefined;
+	const c: PropertyConstraints = {};
+	if (typeof schema.pattern === 'string' && schema.pattern.length > 0) c.pattern = schema.pattern;
+	if (typeof schema.minLength === 'number' && Number.isFinite(schema.minLength) && schema.minLength >= 0)
+		c.minLength = schema.minLength;
+	if (typeof schema.maxLength === 'number' && Number.isFinite(schema.maxLength) && schema.maxLength >= 0)
+		c.maxLength = schema.maxLength;
+	if (typeof schema.minimum === 'number' && Number.isFinite(schema.minimum)) c.min = schema.minimum;
+	if (typeof schema.maximum === 'number' && Number.isFinite(schema.maximum)) c.max = schema.maximum;
+	if (schema.type === 'integer') c.integer = true;
+	if (typeof schema.format === 'string') {
+		const f = schema.format as NonNullable<PropertyConstraints['format']>;
+		if (KNOWN_STRING_FORMATS.has(f)) c.format = f;
+	}
+	return Object.keys(c).length > 0 ? c : undefined;
+}
+
+/**
+ * A header parameter is a credential when *either* its name matches a
+ * well-known scheme (Authorization, X-API-Key, …) *or* the spec declared
+ * `format: 'password'` on its schema. The latter is the canonical OpenAPI
+ * signal — the former is a pragmatic fallback for specs that don't bother
+ * with `format`.
+ */
+function isCredentialHeader(name: string, schema: OpenApiParameter['schema']): boolean {
+	if (schema?.format === 'password') return true;
+	return TOKEN_HEADER_PATTERN.test(name);
+}
+
 function paramsToRecord(params: OpenApiParameter[]): NonNullable<RequestFileOverride['query']> {
 	const out: Record<
 		string,
@@ -567,13 +632,14 @@ function paramsToRecord(params: OpenApiParameter[]): NonNullable<RequestFileOver
 			required?: boolean;
 			description?: string;
 			options?: string[];
+			constraints?: PropertyConstraints;
 		}
 	> = {};
 	for (const p of params) {
 		const exampleValue = stringifyExample(p.schema);
 		const required = p.required === true;
 		const inferredType = scalarTypeFromSchema(p.schema);
-		const isTokenHeader = p.in === 'header' && TOKEN_HEADER_PATTERN.test(p.name);
+		const isTokenHeader = p.in === 'header' && isCredentialHeader(p.name, p.schema);
 		const schemaType: ScalarPropertyType | undefined = isTokenHeader ? 'token' : inferredType;
 		// Carry enum members across so Value mode renders a dropdown rather
 		// than free text. We coerce every option to a string — OpenAPI allows
@@ -581,6 +647,7 @@ function paramsToRecord(params: OpenApiParameter[]): NonNullable<RequestFileOver
 		// wire either way.
 		const enumOptions =
 			schemaType === 'enum' && Array.isArray(p.schema?.enum) ? p.schema!.enum!.map(v => String(v)) : undefined;
+		const constraints = extractParameterConstraints(p.schema);
 
 		out[p.name] = {
 			name: p.name,
@@ -590,6 +657,38 @@ function paramsToRecord(params: OpenApiParameter[]): NonNullable<RequestFileOver
 			...(required ? { required: true } : {}),
 			...(p.description ? { description: p.description } : {}),
 			...(enumOptions && enumOptions.length > 0 ? { options: enumOptions } : {}),
+			...(constraints ? { constraints } : {}),
+		};
+	}
+	return out;
+}
+
+/**
+ * Project OpenAPI path parameters onto the request file's `pathParameters`
+ * record. Same shape as {@link paramsToRecord} sans the `enabled` flag —
+ * path params are required by URL structure, so an enable toggle would only
+ * produce broken requests. Seeds `value` with `example` / `default` /
+ * first-enum-member when the spec provides one, else empty so the user can
+ * fill it in via the request pane's path-params editor.
+ */
+function pathParamsToRecord(params: OpenApiParameter[]): NonNullable<RequestFileOverride['pathParameters']> {
+	const out: NonNullable<RequestFileOverride['pathParameters']> = {};
+	for (const p of params) {
+		const exampleValue = stringifyExample(p.schema);
+		const required = p.required === true;
+		const inferredType = scalarTypeFromSchema(p.schema);
+		const enumOptions =
+			inferredType === 'enum' && Array.isArray(p.schema?.enum) ? p.schema!.enum!.map(v => String(v)) : undefined;
+		const constraints = extractParameterConstraints(p.schema);
+
+		out[p.name] = {
+			name: p.name,
+			value: [exampleValue],
+			...(inferredType ? { type: inferredType } : {}),
+			...(required ? { required: true } : {}),
+			...(p.description ? { description: p.description } : {}),
+			...(enumOptions && enumOptions.length > 0 ? { options: enumOptions } : {}),
+			...(constraints ? { constraints } : {}),
 		};
 	}
 	return out;
@@ -603,23 +702,118 @@ function stringifyExample(schema: OpenApiParameter['schema']): string {
 	return '';
 }
 
-function bodyFromRequestBody(
-	requestBody: OpenApiOperation['requestBody'],
+/**
+ * Build the body field of a request override from an OpenAPI operation.
+ *
+ * Lookup order:
+ *  1. `requestBody.content[<json>].schema` — explicit request body.
+ *  2. `responses['200'].content[<json>].schema` — most APIs put their
+ *     authoritative schema info here; for GET endpoints this is the only
+ *     schema we have to seed the body with.
+ *  3. `responses['204'].content[<json>].schema` — rare, but worth a look
+ *     before falling through to an empty body.
+ *  4. `requestBody.content[<json>].schema.example` — if there's a schema
+ *     we couldn't structure, fall back to dumping the example as text.
+ *
+ * When we find a JSON-shaped schema we walk it into an `EntryMap` so the
+ * structured editor lights up; non-JSON content types still come through
+ * as text (`text/plain`, `text/csv`, etc.). Anything we can't convert
+ * surfaces a warning so the user knows the import is best-effort.
+ */
+function bodyForOperation(
+	operation: OpenApiOperation,
+	doc: OpenApiDocument,
+	warnings: string[],
 ): RequestFileOverride['body'] {
-	if (!requestBody || '$ref' in requestBody) return undefined;
-	const content = requestBody.content ?? {};
+	const fromRequest = pickJsonContent(operation.requestBody, doc);
+	if (fromRequest) return materialiseBody(fromRequest.schema, fromRequest.mediaType, doc, warnings);
+
+	const fromResponse = pickJsonContent(operation.responses?.['200'], doc) ?? pickJsonContent(operation.responses?.['204'], doc);
+	if (fromResponse) return materialiseBody(fromResponse.schema, fromResponse.mediaType, doc, warnings);
+
+	// No JSON schema anywhere — but a non-JSON content might still carry an
+	// example that's worth keeping around as a text body.
+	const fromRequestText = pickTextContent(operation.requestBody);
+	if (fromRequestText) return { type: 'text', payload: fromRequestText };
+
+	return undefined;
+}
+
+interface PickedContent {
+	schema: OpenApiSchema | OpenApiReference | undefined;
+	mediaType: string;
+}
+
+/**
+ * Walk a request-body / response holder, dereference if needed, and pull
+ * out the JSON-flavoured content entry. Returns null when there's nothing
+ * JSON-shaped to convert.
+ */
+function pickJsonContent(
+	holder: OpenApiOperation['requestBody'] | OpenApiResponse | OpenApiReference | undefined,
+	doc: OpenApiDocument,
+): PickedContent | null {
+	if (!holder) return null;
+	const resolved = isReference(holder) ? derefRequestBodyOrResponse(holder, doc) : holder;
+	if (!resolved || !('content' in resolved) || !resolved.content) return null;
+	const mediaTypes = Object.keys(resolved.content);
+	if (mediaTypes.length === 0) return null;
+	const jsonType = mediaTypes.find(t => t.includes('json'));
+	if (!jsonType) return null;
+	const schema = resolved.content[jsonType]?.schema;
+	if (!schema) return null;
+	return { schema, mediaType: jsonType };
+}
+
+function pickTextContent(
+	holder: OpenApiOperation['requestBody'] | undefined,
+): string | null {
+	if (!holder || '$ref' in holder) return null;
+	const content = holder.content ?? {};
 	const mediaTypes = Object.keys(content);
-	if (mediaTypes.length === 0) return undefined;
-	const jsonType = mediaTypes.find(t => t.includes('json')) ?? mediaTypes[0];
-	const schema = content[jsonType]?.schema;
-	const example = schema?.example;
+	if (mediaTypes.length === 0) return null;
+	const first = mediaTypes[0];
+	const example = content[first]?.schema?.example;
+	return example !== undefined ? String(example) : null;
+}
 
-	if (jsonType.includes('json')) {
-		const payload = example !== undefined ? prettyJson(example) : '{\n}';
-		return { type: 'text', payload };
+function materialiseBody(
+	schema: OpenApiSchema | OpenApiReference | undefined,
+	mediaType: string,
+	doc: OpenApiDocument,
+	warnings: string[],
+): RequestFileOverride['body'] {
+	if (!schema) return undefined;
+	const { entries, warnings: convWarnings } = openApiSchemaToEntries(schema, doc);
+	for (const w of convWarnings) warnings.push(`Body schema (${mediaType}): ${w}`);
+	if (Object.keys(entries).length > 0) {
+		// Cast through unknown — the Zod-inferred body schema accepts the
+		// passthrough record-of-record shape, but TS sees the two
+		// `Record<string, …>` types as nominally distinct.
+		return { type: 'json', payload: entries as unknown as Record<string, never> };
 	}
+	// Conversion produced nothing usable (empty schema, all refs unresolved).
+	// Fall back to the schema's example as a text body so the user at least
+	// sees a stub of what the API expects.
+	const inline = isReference(schema) ? null : schema;
+	const example = inline?.example;
+	return { type: 'text', payload: example !== undefined ? prettyJson(example) : '' };
+}
 
-	return { type: 'text', payload: example !== undefined ? String(example) : '' };
+function isReference(value: unknown): value is OpenApiReference {
+	return typeof value === 'object' && value !== null && '$ref' in value && typeof (value as OpenApiReference).$ref === 'string';
+}
+
+function derefRequestBodyOrResponse(
+	ref: OpenApiReference,
+	doc: OpenApiDocument,
+): OpenApiResponse | NonNullable<OpenApiOperation['requestBody']> | null {
+	if (!ref.$ref.startsWith('#/')) return null;
+	const path = ref.$ref.slice(2).split('/');
+	if (path[0] !== 'components') return null;
+	if (path[1] === 'responses' && path[2]) return doc.components?.responses?.[path[2]] ?? null;
+	if (path[1] === 'requestBodies' && path[2]) return doc.components?.requestBodies?.[path[2]] ?? null;
+	return null;
 }
 
 function prettyJson(value: unknown): string {
