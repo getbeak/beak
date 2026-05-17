@@ -13,6 +13,7 @@ export {
 	edgesAfterNodeRemoval,
 	extractAllTags,
 	findDuplicateNames,
+	findIsolatedNodes,
 	findRequestStepsUsing,
 	findSourcesOf,
 	findWorkflowByName,
@@ -52,6 +53,7 @@ export {
 	uniqueWorkflowName,
 	unusedTags,
 	validateConnection,
+	workflowDepth,
 	workflowsByTag,
 } from './helpers';
 export { diffWorkflows, summariseChange, type WorkflowDiff } from './diff';

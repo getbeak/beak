@@ -13,6 +13,7 @@ import {
 	edgesAfterNodeRemoval,
 	extractAllTags,
 	findDuplicateNames,
+	findIsolatedNodes,
 	findRequestStepsUsing,
 	findSourcesOf,
 	findTargetsOf,
@@ -44,6 +45,7 @@ import {
 	uniqueWorkflowName,
 	unusedTags,
 	validateConnection,
+	workflowDepth,
 	workflowsByTag,
 } from '../helpers';
 import type { WorkflowFile, WorkflowNode } from '../types';
@@ -1802,5 +1804,126 @@ describe('searchWorkflows', () => {
 	it('falls back to "Untitled workflow" when name is blank', () => {
 		const blank: Record<string, WorkflowFile> = { 'wf-x': wf('wf-x', '   ') };
 		expect(searchWorkflows(blank, '').map(r => r.name)).toEqual(['Untitled workflow']);
+	});
+});
+
+describe('workflowDepth', () => {
+	function startOnly(): WorkflowFile {
+		return {
+			id: 'wf',
+			name: '',
+			nodes: [{ id: 's', type: 'start', position: { x: 0, y: 0 }, data: {} }],
+			edges: [],
+		};
+	}
+
+	it('returns 0 for a Start-only workflow', () => {
+		expect(workflowDepth(startOnly())).toBe(0);
+	});
+
+	it('counts edges along the longest path', () => {
+		const wf: WorkflowFile = {
+			id: 'wf',
+			name: '',
+			nodes: [
+				{ id: 's', type: 'start', position: { x: 0, y: 0 }, data: {} },
+				{ id: 'a', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } },
+				{ id: 'b', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } },
+				{ id: 'c', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } },
+			],
+			edges: [
+				{ id: 'e1', source: 's', target: 'a' },
+				{ id: 'e2', source: 'a', target: 'b' },
+				{ id: 'e3', source: 'b', target: 'c' },
+			],
+		};
+		expect(workflowDepth(wf)).toBe(3);
+	});
+
+	it('takes the max of branching paths', () => {
+		const wf: WorkflowFile = {
+			id: 'wf',
+			name: '',
+			nodes: [
+				{ id: 's', type: 'start', position: { x: 0, y: 0 }, data: {} },
+				{ id: 'a', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } },
+				{ id: 'b', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } },
+				{ id: 'c', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } },
+			],
+			edges: [
+				{ id: 'e1', source: 's', target: 'a' },
+				{ id: 'e2', source: 'a', target: 'b' },
+				{ id: 'e3', source: 's', target: 'c' },
+			],
+		};
+		expect(workflowDepth(wf)).toBe(2);
+	});
+
+	it('returns Infinity when a cycle is reachable from Start', () => {
+		const wf: WorkflowFile = {
+			id: 'wf',
+			name: '',
+			nodes: [
+				{ id: 's', type: 'start', position: { x: 0, y: 0 }, data: {} },
+				{ id: 'a', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } },
+				{ id: 'b', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } },
+			],
+			edges: [
+				{ id: 'e1', source: 's', target: 'a' },
+				{ id: 'e2', source: 'a', target: 'b' },
+				{ id: 'e3', source: 'b', target: 'a' },
+			],
+		};
+		expect(workflowDepth(wf)).toBe(Number.POSITIVE_INFINITY);
+	});
+
+	it('ignores edges pointing at missing nodes', () => {
+		const wf: WorkflowFile = {
+			id: 'wf',
+			name: '',
+			nodes: [{ id: 's', type: 'start', position: { x: 0, y: 0 }, data: {} }],
+			edges: [{ id: 'e1', source: 's', target: 'ghost' }],
+		};
+		expect(workflowDepth(wf)).toBe(0);
+	});
+});
+
+describe('findIsolatedNodes', () => {
+	it('returns non-Start nodes with no edges', () => {
+		const wf: WorkflowFile = {
+			id: 'wf',
+			name: '',
+			nodes: [
+				{ id: 's', type: 'start', position: { x: 0, y: 0 }, data: {} },
+				{ id: 'a', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } },
+				{ id: 'b', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } },
+				{ id: 'c', type: 'comment', position: { x: 0, y: 0 }, data: { text: '' } },
+			],
+			edges: [{ id: 'e1', source: 's', target: 'a' }],
+		};
+		expect(findIsolatedNodes(wf).sort()).toEqual(['b', 'c']);
+	});
+
+	it('never lists Start as isolated even when it has no edges', () => {
+		const wf: WorkflowFile = {
+			id: 'wf',
+			name: '',
+			nodes: [{ id: 's', type: 'start', position: { x: 0, y: 0 }, data: {} }],
+			edges: [],
+		};
+		expect(findIsolatedNodes(wf)).toEqual([]);
+	});
+
+	it('counts a node as connected if it is referenced as source OR target', () => {
+		const wf: WorkflowFile = {
+			id: 'wf',
+			name: '',
+			nodes: [
+				{ id: 's', type: 'start', position: { x: 0, y: 0 }, data: {} },
+				{ id: 'a', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } },
+			],
+			edges: [{ id: 'e1', source: 'a', target: 's' }],
+		};
+		expect(findIsolatedNodes(wf)).toEqual([]);
 	});
 });

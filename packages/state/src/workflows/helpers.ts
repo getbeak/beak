@@ -520,6 +520,78 @@ export function completionRatio(workflow: WorkflowFile): number {
 }
 
 /**
+ * Longest path length (edge count) from any Start node to a leaf,
+ * walking outbound edges. Returns 0 for a Start-only workflow,
+ * Number.POSITIVE_INFINITY when a cycle is reachable from Start
+ * (rather than looping forever).
+ *
+ * Useful as a "graph depth" stat in the dialog and as a future
+ * heuristic for layout-pass spacing decisions.
+ */
+export function workflowDepth(workflow: WorkflowFile): number {
+	const adjacency = new Map<string, string[]>();
+	const nodeIds = new Set(workflow.nodes.map(n => n.id));
+	for (const e of workflow.edges) {
+		if (!nodeIds.has(e.source) || !nodeIds.has(e.target)) continue;
+		const next = adjacency.get(e.source) ?? [];
+		next.push(e.target);
+		adjacency.set(e.source, next);
+	}
+	const starts = workflow.nodes.filter(n => n.type === 'start').map(n => n.id);
+	if (starts.length === 0) return 0;
+	let best = 0;
+	for (const root of starts) {
+		// DFS-colour: WHITE not seen, GRAY on current path (cycle marker),
+		// BLACK fully explored with memoised depth.
+		const colour = new Map<string, 'gray' | 'black'>();
+		const depthOf = new Map<string, number>();
+		let cycleHit = false;
+		function visit(id: string): number {
+			const c = colour.get(id);
+			if (c === 'gray') {
+				cycleHit = true;
+				return 0;
+			}
+			if (c === 'black') return depthOf.get(id) ?? 0;
+			colour.set(id, 'gray');
+			let maxChild = 0;
+			for (const next of adjacency.get(id) ?? []) {
+				const child = visit(next);
+				if (child + 1 > maxChild) maxChild = child + 1;
+			}
+			colour.set(id, 'black');
+			depthOf.set(id, maxChild);
+			return maxChild;
+		}
+		const d = visit(root);
+		if (cycleHit) return Number.POSITIVE_INFINITY;
+		if (d > best) best = d;
+	}
+	return best;
+}
+
+/**
+ * Nodes that participate in zero edges — neither inbound nor outbound.
+ * Excludes the Start node by default since it's allowed to be alone.
+ * Useful for the lint dialog as a "dead end" hint.
+ */
+export function findIsolatedNodes(workflow: WorkflowFile): string[] {
+	const touched = new Set<string>();
+	const nodeIds = new Set(workflow.nodes.map(n => n.id));
+	for (const e of workflow.edges) {
+		if (nodeIds.has(e.source)) touched.add(e.source);
+		if (nodeIds.has(e.target)) touched.add(e.target);
+	}
+	const out: string[] = [];
+	for (const node of workflow.nodes) {
+		if (node.type === 'start') continue;
+		if (touched.has(node.id)) continue;
+		out.push(node.id);
+	}
+	return out;
+}
+
+/**
  * Distinct request ids referenced by the workflow's request nodes.
  * Returns the ids in first-appearance order so the caller can render
  * a "this workflow uses these requests" list with a stable layout.
