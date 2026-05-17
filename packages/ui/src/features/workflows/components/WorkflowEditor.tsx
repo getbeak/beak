@@ -27,7 +27,7 @@ import {
 	useReactFlow,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
-import { Bell, GitBranch, Globe, LayoutTemplate, Repeat, StickyNote, Workflow as WorkflowIcon } from 'lucide-react';
+import { Bell, GitBranch, Globe, LayoutTemplate, Play, Repeat, StickyNote, Workflow as WorkflowIcon } from 'lucide-react';
 import * as React from 'react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -45,6 +45,7 @@ import {
 import { nodeTypes } from './node-views';
 import NodePropertiesPanel from './NodePropertiesPanel';
 import NodeSearchDialog from './NodeSearchDialog';
+import SimulationDialog from './SimulationDialog';
 
 interface WorkflowEditorProps {
 	workflowId: string;
@@ -82,6 +83,7 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 	// keyboard duplicate, edge-highlight) — those derive the single id below.
 	const [selectedIds, setSelectedIds] = useState<ReadonlySet<string>>(() => new Set());
 	const [searchOpen, setSearchOpen] = useState(false);
+	const [simulateOpen, setSimulateOpen] = useState(false);
 	// `{ x, y }` is in flow-coordinates (already mapped); rendered absolutely
 	// over the canvas at `screen-x/y` for the menu position.
 	const [paneMenu, setPaneMenu] = useState<{ flow: { x: number; y: number }; screen: { x: number; y: number } } | null>(
@@ -346,6 +348,12 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 				onClose={() => setSearchOpen(false)}
 				onPick={nodeId => replaceSelection(nodeId)}
 			/>
+			<SimulationDialog
+				workflow={workflow}
+				open={simulateOpen}
+				onClose={() => setSimulateOpen(false)}
+				onJumpToNode={replaceSelection}
+			/>
 			<Flex
 				align='center'
 				gap='2'
@@ -433,6 +441,11 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 					/>
 					<Box w='1px' h='14px' bg='border.subtle' alignSelf='center' mx='1' />
 					<ToolbarButton icon={<LayoutTemplate size={13} strokeWidth={1.8} />} label='Tidy' onClick={tidyGraph} />
+					<ToolbarButton
+						icon={<Play size={13} strokeWidth={1.8} />}
+						label='Simulate'
+						onClick={() => setSimulateOpen(true)}
+					/>
 				</Stack>
 			</Flex>
 			<Flex flex='1' minH={0}>

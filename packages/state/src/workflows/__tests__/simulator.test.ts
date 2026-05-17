@@ -29,7 +29,7 @@ describe('walkWorkflow', () => {
 		const events = walkWorkflow(wf);
 		const kinds = events.map(e => e.type);
 		expect(kinds[0]).toBe('workflow-start');
-		expect(kinds.at(-1)).toBe('workflow-complete');
+		expect(kinds[kinds.length - 1]).toBe('workflow-complete');
 		expect(events.some(e => e.type === 'enter-node' && e.nodeId === 'r1')).toBe(true);
 		expect(events.some(e => e.type === 'enter-node' && e.nodeId === 'n1')).toBe(true);
 	});
@@ -113,7 +113,7 @@ describe('walkWorkflow', () => {
 			],
 		};
 		const events = walkWorkflow(wf, { maxSteps: 10 });
-		expect(events.at(-1)).toEqual({ type: 'workflow-aborted', workflowId: 'wf', reason: 'max steps exceeded' });
+		expect(events[events.length - 1]).toEqual({ type: 'workflow-aborted', workflowId: 'wf', reason: 'max steps exceeded' });
 	});
 
 	it('skips comments cleanly', () => {
@@ -127,7 +127,7 @@ describe('walkWorkflow', () => {
 		// walked. Workflow completes cleanly.
 		const events = walkWorkflow(wf);
 		expect(events.some(e => e.type === 'comment-skipped')).toBe(false);
-		expect(events.at(-1)?.type).toBe('workflow-complete');
+		expect(events[events.length - 1]?.type).toBe('workflow-complete');
 	});
 
 	it('falls back to bare outbound when a labelled handle is missing', () => {
