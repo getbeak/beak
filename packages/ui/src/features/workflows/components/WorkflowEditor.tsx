@@ -376,7 +376,7 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 
 	if (!workflow) return null;
 
-	function addNode(kind: AddableNodeKind, at?: { x: number; y: number }) {
+	function addNode(kind: AddableNodeKind, at?: { x: number; y: number }, opts?: { wireFromSelection?: boolean }) {
 		const id = ksuid.generate('node').toString();
 		const position = at ?? placeNewNode(workflow.nodes);
 		let node: WorkflowNode;
@@ -398,6 +398,23 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 				break;
 		}
 		dispatch(workflowActions.addNode({ id: workflowId, node }));
+		// If a node was selected when the user added a new one (typically via
+		// the pane right-click menu after picking a step), wire from the
+		// selection into the new node. Skip for comments — they don't take
+		// inbound edges. Skip for non-Request → Start guard.
+		if (opts?.wireFromSelection && kind !== 'comment' && selectedNodeId) {
+			const source = workflow.nodes.find(n => n.id === selectedNodeId);
+			if (source && source.type !== 'comment') {
+				dispatch(
+					workflowActions.addEdge({
+						id: workflowId,
+						edge: { id: ksuid.generate('edge').toString(), source: selectedNodeId, target: id },
+					}),
+				);
+			}
+		}
+		// Select the new node so subsequent edits land on it.
+		replaceSelection(id);
 	}
 
 	return (
@@ -406,7 +423,7 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 				<PaneContextMenu
 					screen={paneMenu.screen}
 					onPick={kind => {
-						addNode(kind, paneMenu.flow);
+						addNode(kind, paneMenu.flow, { wireFromSelection: true });
 						setPaneMenu(null);
 					}}
 					onClose={() => setPaneMenu(null)}
