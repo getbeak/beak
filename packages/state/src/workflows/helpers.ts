@@ -318,6 +318,34 @@ export function connectedComponents(workflow: WorkflowFile): string[][] {
 }
 
 /**
+ * Find every workflow request step that references the given project
+ * request id. Returns `{ workflowId, nodeId }[]` so the caller can
+ * jump straight to a usage. Useful for a tree-level "this request is
+ * referenced by N workflows" indicator and for safe-rename / safe-
+ * delete prompts before a request goes away.
+ */
+export interface RequestUsage {
+	workflowId: string;
+	nodeId: string;
+}
+
+export function findRequestStepsUsing(
+	workflows: ReadonlyArray<WorkflowFile> | Record<string, WorkflowFile>,
+	requestId: string,
+): RequestUsage[] {
+	const list = Array.isArray(workflows) ? workflows : Object.values(workflows);
+	const usages: RequestUsage[] = [];
+	for (const wf of list) {
+		for (const node of wf.nodes) {
+			if (node.type !== 'request') continue;
+			const d = node.data as { requestId: string | null };
+			if (d.requestId === requestId) usages.push({ workflowId: wf.id, nodeId: node.id });
+		}
+	}
+	return usages;
+}
+
+/**
  * Sort a workflow collection by updatedAt descending. Workflows without
  * a timestamp (legacy files pre-dating the field) land last in their
  * insertion order so they don't shuffle on every open.

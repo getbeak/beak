@@ -10,6 +10,7 @@ import {
 	countOverrideEntries,
 	edgesAfterNodeRemoval,
 	extractAllTags,
+	findRequestStepsUsing,
 	findSourcesOf,
 	findTargetsOf,
 	firstIssueNode,
@@ -765,6 +766,47 @@ describe('nodeIssuesFromHealth + firstIssueNode', () => {
 		expect(firstIssueNode(makeHealth({ cycleNodes: ['a'], unlinkedRequestNodes: ['b'], unreachable: ['c'] }))).toBe('a');
 		expect(firstIssueNode(makeHealth({ unlinkedRequestNodes: ['b'], unreachable: ['c'] }))).toBe('b');
 		expect(firstIssueNode(makeHealth({ unreachable: ['c'] }))).toBe('c');
+	});
+});
+
+describe('findRequestStepsUsing', () => {
+	const wfA: WorkflowFile = {
+		id: 'a',
+		name: 'A',
+		nodes: [
+			{ id: 'n1', type: 'request', position: { x: 0, y: 0 }, data: { requestId: 'req-1' } },
+			{ id: 'n2', type: 'request', position: { x: 0, y: 0 }, data: { requestId: 'req-2' } },
+		],
+		edges: [],
+	};
+	const wfB: WorkflowFile = {
+		id: 'b',
+		name: 'B',
+		nodes: [
+			{ id: 'n3', type: 'request', position: { x: 0, y: 0 }, data: { requestId: 'req-1' } },
+			{ id: 'n4', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } },
+		],
+		edges: [],
+	};
+
+	it('returns every {workflowId, nodeId} touching the request', () => {
+		expect(findRequestStepsUsing([wfA, wfB], 'req-1').sort((a, b) => a.nodeId.localeCompare(b.nodeId))).toEqual([
+			{ workflowId: 'a', nodeId: 'n1' },
+			{ workflowId: 'b', nodeId: 'n3' },
+		]);
+	});
+
+	it('returns [] when the request is never referenced', () => {
+		expect(findRequestStepsUsing([wfA, wfB], 'req-ghost')).toEqual([]);
+	});
+
+	it('accepts a record input', () => {
+		expect(findRequestStepsUsing({ a: wfA, b: wfB }, 'req-2')).toEqual([{ workflowId: 'a', nodeId: 'n2' }]);
+	});
+
+	it('does not count unlinked request nodes', () => {
+		expect(findRequestStepsUsing([wfB], 'req-1')).toEqual([{ workflowId: 'b', nodeId: 'n3' }]);
+		// n4 has requestId === null, not 'req-1'.
 	});
 });
 
