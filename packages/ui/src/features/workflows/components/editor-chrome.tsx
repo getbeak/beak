@@ -3,7 +3,7 @@ import { useAppSelector } from '@beak/ui/store/redux';
 import { Box, Button, Flex, Stack } from '@chakra-ui/react';
 import { AlertTriangle, Bell, GitBranch, Globe, Repeat, StickyNote, Trash2, X } from 'lucide-react';
 import * as React from 'react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 /**
  * Editor-chrome bits — the pieces that surround the xyflow canvas but
@@ -288,6 +288,98 @@ export const EmptySelectionPanel: React.FC<EmptySelectionPanelProps> = ({
 				</Box>
 			</Box>
 		</Flex>
+	);
+};
+
+interface PaneContextMenuProps {
+	screen: { x: number; y: number };
+	onPick: (kind: AddableNodeKind) => void;
+	onClose: () => void;
+}
+
+const paneMenuItems: { kind: AddableNodeKind; icon: React.ReactNode; label: string; tone: string }[] = [
+	{ kind: 'request', icon: <Globe size={13} strokeWidth={1.8} />, label: 'Request', tone: 'pink' },
+	{ kind: 'loop', icon: <Repeat size={13} strokeWidth={1.8} />, label: 'Loop', tone: 'teal' },
+	{ kind: 'condition', icon: <GitBranch size={13} strokeWidth={1.8} />, label: 'Condition', tone: 'indigo' },
+	{ kind: 'notification', icon: <Bell size={13} strokeWidth={1.8} />, label: 'Notification', tone: 'warning' },
+	{ kind: 'comment', icon: <StickyNote size={13} strokeWidth={1.8} />, label: 'Note', tone: 'warning' },
+];
+
+/**
+ * Floating "Add step here" menu spawned by right-clicking the canvas
+ * pane. Renders at the click position via fixed coordinates; closes on
+ * Escape or any outside click. We deliberately avoid Chakra's MenuRoot
+ * here — its trigger model doesn't match a context-menu position;
+ * rolling a tiny absolute panel is simpler.
+ */
+export const PaneContextMenu: React.FC<PaneContextMenuProps> = ({ screen, onPick, onClose }) => {
+	const ref = useRef<HTMLDivElement | null>(null);
+
+	useEffect(() => {
+		function onDoc(event: MouseEvent) {
+			if (ref.current && !ref.current.contains(event.target as Node)) onClose();
+		}
+		function onKey(event: KeyboardEvent) {
+			if (event.key === 'Escape') onClose();
+		}
+		document.addEventListener('mousedown', onDoc);
+		document.addEventListener('keydown', onKey);
+		return () => {
+			document.removeEventListener('mousedown', onDoc);
+			document.removeEventListener('keydown', onKey);
+		};
+	}, [onClose]);
+
+	return (
+		<Box
+			ref={ref}
+			position='fixed'
+			left={`${screen.x}px`}
+			top={`${screen.y}px`}
+			zIndex={50}
+			minW='180px'
+			bg='bg.surface'
+			borderRadius='md'
+			borderWidth='1px'
+			borderColor='border.subtle'
+			boxShadow='md'
+			py='1'
+			fontSize='12px'
+			color='fg.default'
+		>
+			<Box px='2.5' py='1' fontSize='10px' fontWeight='700' color='fg.muted' textTransform='uppercase' letterSpacing='0.06em'>
+				{'Add step here'}
+			</Box>
+			{paneMenuItems.map(item => (
+				<Flex
+					as='button'
+					key={item.kind}
+					role='menuitem'
+					align='center'
+					gap='2'
+					px='2.5'
+					py='1.5'
+					textAlign='left'
+					bg='transparent'
+					cursor='pointer'
+					_hover={{ bg: 'bg.subtle' }}
+					onClick={() => onPick(item.kind)}
+				>
+					<Flex
+						align='center'
+						justify='center'
+						w='18px'
+						h='18px'
+						borderRadius='sm'
+						color={`accent.${item.tone}`}
+						bg={`color-mix(in srgb, var(--beak-colors-accent-${item.tone}) 14%, transparent)`}
+					>
+						{item.icon}
+					</Flex>
+					<Box>{item.label}</Box>
+				</Flex>
+			))}
+		</Box>
 	);
 };
 

@@ -24,6 +24,7 @@ import {
 	type NodeChange,
 	ReactFlow,
 	ReactFlowProvider,
+	useReactFlow,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { Bell, GitBranch, Globe, LayoutTemplate, Repeat, StickyNote, Workflow as WorkflowIcon } from 'lucide-react';
@@ -36,6 +37,7 @@ import {
 	EmptySelectionPanel,
 	MetaPill,
 	MultiSelectPanel,
+	PaneContextMenu,
 	SaveStateIndicator,
 	ToolbarButton,
 	WarningPill,
@@ -80,6 +82,12 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 	// keyboard duplicate, edge-highlight) — those derive the single id below.
 	const [selectedIds, setSelectedIds] = useState<ReadonlySet<string>>(() => new Set());
 	const [searchOpen, setSearchOpen] = useState(false);
+	// `{ x, y }` is in flow-coordinates (already mapped); rendered absolutely
+	// over the canvas at `screen-x/y` for the menu position.
+	const [paneMenu, setPaneMenu] = useState<{ flow: { x: number; y: number }; screen: { x: number; y: number } } | null>(
+		null,
+	);
+	const reactFlow = useReactFlow();
 	const selectedNodeId = selectedIds.size === 1 ? [...selectedIds][0] : null;
 
 	const clearSelection = useCallback(() => setSelectedIds(new Set()), []);
@@ -219,7 +227,26 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 	const onNodesChange = useCallback(
 		(changes: NodeChange[]) => {
 			if (!workflow) return;
-			const next = applyNodeChanges(changes, rfNodes) as unknown as WorkflowNode[];
+			// Mirror xyflow's `select` changes into our Set — that's how shift-
+			// drag lasso gets reflected in the panel and Delete handler.
+			let selectionShifted = false;
+			const selectChanges = changes.filter(c => c.type === 'select') as { id: string; selected: boolean }[];
+			if (selectChanges.length > 0) {
+				selectionShifted = true;
+				setSelectedIds(prev => {
+					const next = new Set(prev);
+					for (const c of selectChanges) {
+						if (c.selected) next.add(c.id);
+						else next.delete(c.id);
+					}
+					return next;
+				});
+			}
+			// Strip select changes before persisting — they're a UI artefact
+			// and shouldn't flow into the file via replaceGraph.
+			const persistable = selectionShifted ? changes.filter(c => c.type !== 'select') : changes;
+			if (persistable.length === 0) return;
+			const next = applyNodeChanges(persistable, rfNodes) as unknown as WorkflowNode[];
 			dispatch(workflowActions.replaceGraph({ id: workflowId, nodes: next, edges: workflow.edges }));
 		},
 		[dispatch, rfNodes, workflow, workflowId],
@@ -277,9 +304,9 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 
 	if (!workflow) return null;
 
-	function addNode(kind: AddableNodeKind) {
+	function addNode(kind: AddableNodeKind, at?: { x: number; y: number }) {
 		const id = ksuid.generate('node').toString();
-		const position = placeNewNode(workflow.nodes);
+		const position = at ?? placeNewNode(workflow.nodes);
 		let node: WorkflowNode;
 		switch (kind) {
 			case 'request':
@@ -302,7 +329,17 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 	}
 
 	return (
-		<Flex direction='column' h='100%' bg='bg.canvas' minH={0}>
+		<Flex direction='column' h='100%' bg='bg.canvas' minH={0} position='relative'>
+			{paneMenu && (
+				<PaneContextMenu
+					screen={paneMenu.screen}
+					onPick={kind => {
+						addNode(kind, paneMenu.flow);
+						setPaneMenu(null);
+					}}
+					onClose={() => setPaneMenu(null)}
+				/>
+			)}
 			<NodeSearchDialog
 				workflow={workflow}
 				open={searchOpen}
@@ -414,7 +451,16 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 							if (event.metaKey || event.ctrlKey) toggleSelection(node.id);
 							else replaceSelection(node.id);
 						}}
-						onPaneClick={() => clearSelection()}
+						onPaneClick={() => {
+							clearSelection();
+							setPaneMenu(null);
+						}}
+						onPaneContextMenu={event => {
+							const e = event as React.MouseEvent;
+							e.preventDefault();
+							const flow = reactFlow.screenToFlowPosition({ x: e.clientX, y: e.clientY });
+							setPaneMenu({ flow, screen: { x: e.clientX, y: e.clientY } });
+						}}
 						onEdgeContextMenu={(event, edge) => {
 							// Right-click an edge to delete it. Native context menu would
 							// just show "Inspect"; suppressing + dispatching removeEdge is
@@ -424,6 +470,10 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 						}}
 						nodeTypes={nodeTypes}
 						fitView
+						snapToGrid
+						snapGrid={[20, 20]}
+						multiSelectionKeyCode={['Meta', 'Control']}
+						selectionKeyCode='Shift'
 						proOptions={{ hideAttribution: true }}
 					>
 						<Background gap={20} size={1} />
