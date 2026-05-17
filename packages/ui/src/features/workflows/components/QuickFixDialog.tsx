@@ -1,4 +1,4 @@
-import { inspectGraph, type WorkflowFile } from '@beak/state/workflows';
+import { inspectGraph, validateWorkflow, type WorkflowFile } from '@beak/state/workflows';
 import { actions as workflowActions } from '@beak/ui/store/workflows';
 import { Box, Button, Dialog, Flex, Stack } from '@chakra-ui/react';
 import { Bell, GitBranch, Globe, Repeat, StickyNote, Workflow as WorkflowIcon } from 'lucide-react';
@@ -24,7 +24,9 @@ interface QuickFixDialogProps {
 const QuickFixDialog: React.FC<QuickFixDialogProps> = ({ workflow, open, onClose, onJumpToNode }) => {
 	const dispatch = useDispatch();
 	const health = useMemo(() => inspectGraph(workflow), [workflow]);
-	const issueCount = health.cycleNodes.length + health.unlinkedRequestNodes.length + health.unreachable.length;
+	const warnings = useMemo(() => validateWorkflow(workflow), [workflow]);
+	const issueCount =
+		health.cycleNodes.length + health.unlinkedRequestNodes.length + health.unreachable.length + warnings.size;
 
 	const nodesById = useMemo(() => new Map(workflow.nodes.map(n => [n.id, n])), [workflow]);
 
@@ -143,6 +145,20 @@ const QuickFixDialog: React.FC<QuickFixDialogProps> = ({ workflow, open, onClose
 												</Button>
 											</Row>
 										))}
+									</Section>
+								)}
+
+								{warnings.size > 0 && (
+									<Section title='Configuration warnings'>
+										{[...warnings.entries()].flatMap(([id, list]) =>
+											list.map(w => (
+												<Row key={`${id}:${w.kind}`} icon={iconFor(id)} label={nodeLabel(id)} hint={w.message}>
+													<Button type='button' size='xs' variant='outline' onClick={() => jump(id)}>
+														{'Fix →'}
+													</Button>
+												</Row>
+											)),
+										)}
 									</Section>
 								)}
 							</Stack>

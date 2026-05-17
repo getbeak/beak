@@ -11,6 +11,7 @@ import {
 	serializeForExport,
 	toMarkdown,
 	validateConnection,
+	validateWorkflow,
 	type WorkflowEdge,
 	type WorkflowNode,
 } from '@beak/state/workflows';
@@ -157,8 +158,9 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 			data: { ...n.data, _issue: nodeIssues.get(n.id), _name: (n as { name?: string }).name },
 		})) as unknown as Node[];
 	}, [workflow, selectedIds, nodeIssues]);
+	const nodeWarningsCount = useMemo(() => (workflow ? validateWorkflow(workflow).size : 0), [workflow]);
 	const warningCount = health
-		? health.unreachable.length + health.unlinkedRequestNodes.length + health.cycleNodes.length
+		? health.unreachable.length + health.unlinkedRequestNodes.length + health.cycleNodes.length + nodeWarningsCount
 		: 0;
 
 	// Edge decorations: highlight the wires touching the selected node, and
