@@ -32,6 +32,7 @@ import {
 	searchWorkflows,
 	serializeForExport,
 	topologicalOrder,
+	uniqueWorkflowName,
 	validateConnection,
 	workflowsByTag,
 } from '../helpers';
@@ -838,6 +839,42 @@ describe('duplicateWorkflow', () => {
 			expect(cloned.nodes.some(n => n.id === e.target)).toBe(true);
 		}
 	});
+
+	it('uses base name when existingNames does not collide', () => {
+		const cloned = duplicateWorkflow(source, makeMinter(), { existingNames: ['Unrelated'] });
+		expect(cloned.name).toBe('Copy of Original');
+	});
+
+	it('appends a (2) suffix when "Copy of …" already exists', () => {
+		const cloned = duplicateWorkflow(source, makeMinter(), { existingNames: ['Copy of Original'] });
+		expect(cloned.name).toBe('Copy of Original (2)');
+	});
+
+	it('walks up the suffix until a free slot is found', () => {
+		const cloned = duplicateWorkflow(source, makeMinter(), {
+			existingNames: ['Copy of Original', 'Copy of Original (2)', 'Copy of Original (3)'],
+		});
+		expect(cloned.name).toBe('Copy of Original (4)');
+	});
+
+	it('compares names case-insensitively', () => {
+		const cloned = duplicateWorkflow(source, makeMinter(), { existingNames: ['copy of original'] });
+		expect(cloned.name).toBe('Copy of Original (2)');
+	});
+});
+
+describe('uniqueWorkflowName', () => {
+	it('returns the base when no collision', () => {
+		expect(uniqueWorkflowName('Authy', ['Auth chain'])).toBe('Authy');
+	});
+
+	it('handles repeated collisions by walking the counter', () => {
+		expect(uniqueWorkflowName('Auth', ['Auth', 'Auth (2)'])).toBe('Auth (3)');
+	});
+
+	it('trims and lowercases for comparison', () => {
+		expect(uniqueWorkflowName('Auth', ['  AUTH  '])).toBe('Auth (2)');
+	});
 });
 
 describe('findRequestStepsUsing', () => {
@@ -1004,7 +1041,8 @@ describe('workflowsByTag', () => {
 	});
 
 	it('accepts a record as well as an array', () => {
-		const record = Object.fromEntries(wfs.map(w => [w.id, w])) as Record<string, WorkflowFile>;
+		const record: Record<string, WorkflowFile> = {};
+		for (const w of wfs) record[w.id] = w;
 		expect([...workflowsByTag(record).keys()]).toEqual(['auth', 'smoke', 'staging', '']);
 	});
 });

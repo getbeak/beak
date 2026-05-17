@@ -330,7 +330,7 @@ export function connectedComponents(workflow: WorkflowFile): string[][] {
 export function duplicateWorkflow(
 	source: WorkflowFile,
 	mintId: (prefix: 'workflow' | 'node' | 'edge') => string,
-	options: { name?: string } = {},
+	options: { name?: string; existingNames?: ReadonlyArray<string> } = {},
 ): WorkflowFile {
 	const nodeIdMap = new Map<string, string>();
 	const nodes = source.nodes.map(node => {
@@ -346,15 +346,33 @@ export function duplicateWorkflow(
 			source: nodeIdMap.get(edge.source)!,
 			target: nodeIdMap.get(edge.target)!,
 		}));
+	const baseName = options.name ?? `Copy of ${source.name}`;
+	const finalName = options.existingNames ? uniqueWorkflowName(baseName, options.existingNames) : baseName;
 	return {
 		...source,
 		id: mintId('workflow'),
-		name: options.name ?? `Copy of ${source.name}`,
+		name: finalName,
 		nodes,
 		edges,
 		createdAt: undefined,
 		updatedAt: undefined,
 	};
+}
+
+/**
+ * Returns `base` if it's not already in `existing`, otherwise appends a
+ * " (2)", " (3)"… suffix until a unique name is found. The comparison is
+ * case-insensitive so "Copy of Auth" and "COPY OF AUTH" don't both squeeze
+ * through; the original casing of `base` is preserved in the returned name.
+ */
+export function uniqueWorkflowName(base: string, existing: ReadonlyArray<string>): string {
+	const taken = new Set(existing.map(n => n.trim().toLowerCase()));
+	if (!taken.has(base.trim().toLowerCase())) return base;
+	for (let counter = 2; counter < 1000; counter += 1) {
+		const candidate = `${base} (${counter})`;
+		if (!taken.has(candidate.trim().toLowerCase())) return candidate;
+	}
+	return `${base} (${Date.now()})`;
 }
 
 /**

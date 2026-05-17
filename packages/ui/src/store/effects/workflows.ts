@@ -189,11 +189,11 @@ export function registerWorkflowsEffects(start: AppStartListening) {
 			const source = api.getState().global.workflows.workflows[payload.sourceId];
 			if (!source) return;
 
-			const clone = duplicateWorkflowFile(
-				source,
-				prefix => ksuid.generate(prefix).toString(),
-				payload.name ? { name: payload.name } : {},
-			);
+			const existingNames = Object.values(api.getState().global.workflows.workflows).map(wf => wf.name);
+			const clone = duplicateWorkflowFile(source, prefix => ksuid.generate(prefix).toString(), {
+				...(payload.name ? { name: payload.name } : {}),
+				existingNames,
+			});
 
 			if (api.getState().global.project.mode === 'disk') {
 				await ensureWorkflowsDir();

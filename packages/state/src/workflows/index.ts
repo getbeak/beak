@@ -40,6 +40,7 @@ export {
 	type WorkflowSearchResult,
 	serializeForExport,
 	topologicalOrder,
+	uniqueWorkflowName,
 	validateConnection,
 	workflowsByTag,
 } from './helpers';
