@@ -1,4 +1,4 @@
-import type { WorkflowNodeKind } from '@beak/state/workflows';
+import type { WorkflowEdge, WorkflowNodeKind } from '@beak/state/workflows';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { Box, Button, Flex, Stack } from '@chakra-ui/react';
 import { AlertTriangle, Bell, GitBranch, Globe, Repeat, StickyNote, Trash2, X } from 'lucide-react';
@@ -308,6 +308,178 @@ export const EmptySelectionPanel: React.FC<EmptySelectionPanelProps> = ({
 					<KbdHint>Double-click</KbdHint> {'an edge to label it'}
 				</Box>
 			</Box>
+		</Flex>
+	);
+};
+
+interface EdgeInspectorPanelProps {
+	edge: WorkflowEdge;
+	sourceLabel: string;
+	targetLabel: string;
+	onRename: (label: string | undefined) => void;
+	onDelete: () => void;
+	onClose: () => void;
+	onJumpToNode: (nodeId: string) => void;
+}
+
+/**
+ * Right-side panel that mirrors the node properties panel but for an
+ * edge selection — source / target / handle / inline label editor +
+ * a Delete button. Click either endpoint to jump back to that node.
+ */
+export const EdgeInspectorPanel: React.FC<EdgeInspectorPanelProps> = ({
+	edge,
+	sourceLabel,
+	targetLabel,
+	onRename,
+	onDelete,
+	onClose,
+	onJumpToNode,
+}) => {
+	const [draft, setDraft] = useState(edge.label ?? '');
+	useEffect(() => {
+		setDraft(edge.label ?? '');
+	}, [edge.id, edge.label]);
+
+	function commit() {
+		const next = draft.trim();
+		onRename(next || undefined);
+	}
+
+	return (
+		<Flex
+			direction='column'
+			w='320px'
+			flexShrink={0}
+			bg='bg.surface'
+			borderLeftWidth='1px'
+			borderColor='border.subtle'
+			minH={0}
+		>
+			<Flex align='center' h='38px' px='3' gap='2' borderBottomWidth='1px' borderColor='border.subtle' flexShrink={0}>
+				<Box
+					fontSize='10px'
+					fontWeight='700'
+					color='fg.muted'
+					textTransform='uppercase'
+					letterSpacing='0.06em'
+					flex='1'
+				>
+					{'Edge'}
+				</Box>
+				<Button
+					type='button'
+					size='xs'
+					variant='ghost'
+					color='accent.alert'
+					aria-label='Delete edge'
+					onClick={onDelete}
+					_hover={{ bg: 'color-mix(in srgb, var(--beak-colors-accent-alert) 14%, transparent)' }}
+				>
+					<Trash2 size={13} strokeWidth={1.8} />
+				</Button>
+				<Button
+					type='button'
+					size='xs'
+					variant='ghost'
+					color='fg.muted'
+					aria-label='Close panel'
+					onClick={onClose}
+					_hover={{ color: 'fg.default' }}
+				>
+					<X size={14} strokeWidth={1.8} />
+				</Button>
+			</Flex>
+			<Stack gap='3' px='3' py='3'>
+				<Stack gap='1'>
+					<Box fontSize='10px' fontWeight='700' color='fg.muted' textTransform='uppercase' letterSpacing='0.06em'>
+						{'From'}
+					</Box>
+					<Flex
+						as='button'
+						role='button'
+						align='center'
+						gap='2'
+						px='2'
+						py='1.5'
+						bg='bg.subtle'
+						borderRadius='sm'
+						borderWidth='1px'
+						borderColor='border.subtle'
+						cursor='pointer'
+						_hover={{ borderColor: 'accent.pink' }}
+						onClick={() => onJumpToNode(edge.source)}
+					>
+						<Box fontSize='12px' fontWeight='600' color='fg.default' flex='1' minW={0}>
+							{sourceLabel}
+						</Box>
+						{edge.sourceHandle && (
+							<Box fontSize='10px' color='fg.muted' fontFamily='mono'>
+								{`:${edge.sourceHandle}`}
+							</Box>
+						)}
+					</Flex>
+				</Stack>
+				<Stack gap='1'>
+					<Box fontSize='10px' fontWeight='700' color='fg.muted' textTransform='uppercase' letterSpacing='0.06em'>
+						{'To'}
+					</Box>
+					<Flex
+						as='button'
+						role='button'
+						align='center'
+						gap='2'
+						px='2'
+						py='1.5'
+						bg='bg.subtle'
+						borderRadius='sm'
+						borderWidth='1px'
+						borderColor='border.subtle'
+						cursor='pointer'
+						_hover={{ borderColor: 'accent.pink' }}
+						onClick={() => onJumpToNode(edge.target)}
+					>
+						<Box fontSize='12px' fontWeight='600' color='fg.default' flex='1' minW={0}>
+							{targetLabel}
+						</Box>
+						{edge.targetHandle && (
+							<Box fontSize='10px' color='fg.muted' fontFamily='mono'>
+								{`:${edge.targetHandle}`}
+							</Box>
+						)}
+					</Flex>
+				</Stack>
+				<Stack gap='1'>
+					<Box fontSize='10px' fontWeight='700' color='fg.muted' textTransform='uppercase' letterSpacing='0.06em'>
+						{'Label'}
+					</Box>
+					<input
+						value={draft}
+						onChange={e => setDraft(e.target.value)}
+						onBlur={commit}
+						onKeyDown={e => {
+							if (e.key === 'Enter') {
+								e.preventDefault();
+								commit();
+							}
+						}}
+						placeholder='e.g. happy path'
+						style={{
+							width: '100%',
+							padding: '6px 8px',
+							fontSize: '12px',
+							background: 'var(--beak-colors-bg-canvas)',
+							border: '1px solid var(--beak-colors-border-default)',
+							borderRadius: '4px',
+							color: 'inherit',
+							outline: 'none',
+						}}
+					/>
+					<Box fontSize='11px' color='fg.subtle' lineHeight='1.5'>
+						{'Press Enter or click away to save. Empty = no label.'}
+					</Box>
+				</Stack>
+			</Stack>
 		</Flex>
 	);
 };

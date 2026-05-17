@@ -55,6 +55,7 @@ import { useDispatch } from 'react-redux';
 
 import {
 	type AddableNodeKind,
+	EdgeInspectorPanel,
 	EdgeLabelEditor,
 	EmptySelectionPanel,
 	MetaPill,
@@ -106,6 +107,7 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 	// of the editor still cares about "the one selection" (single-pane,
 	// keyboard duplicate, edge-highlight) — those derive the single id below.
 	const [selectedIds, setSelectedIds] = useState<ReadonlySet<string>>(() => new Set());
+	const [selectedEdgeId, setSelectedEdgeId] = useState<string | null>(null);
 	const [searchOpen, setSearchOpen] = useState(false);
 	const [simulateOpen, setSimulateOpen] = useState(false);
 	const [quickFixOpen, setQuickFixOpen] = useState(false);
@@ -183,6 +185,11 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 		if (!workflow || !selectedNodeId) return undefined;
 		return workflow.nodes.find(n => n.id === selectedNodeId);
 	}, [workflow, selectedNodeId]);
+
+	const selectedEdge = useMemo(() => {
+		if (!workflow || !selectedEdgeId) return undefined;
+		return workflow.edges.find(e => e.id === selectedEdgeId);
+	}, [workflow, selectedEdgeId]);
 
 	// Keyboard: Delete/Backspace removes the selected node (unless it's Start),
 	// Escape clears selection. Skip when focus is inside a text field so the
@@ -617,9 +624,15 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 							// instinctively when they want to fan out a delete or move.
 							if (event.metaKey || event.ctrlKey) toggleSelection(node.id);
 							else replaceSelection(node.id);
+							setSelectedEdgeId(null);
+						}}
+						onEdgeClick={(_event, edge) => {
+							setSelectedEdgeId(edge.id);
+							clearSelection();
 						}}
 						onPaneClick={() => {
 							clearSelection();
+							setSelectedEdgeId(null);
 							setPaneMenu(null);
 						}}
 						onPaneContextMenu={event => {
@@ -667,6 +680,24 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 					/>
 				) : selectedNode ? (
 					<NodePropertiesPanel workflowId={workflowId} node={selectedNode} onClose={() => clearSelection()} />
+				) : selectedEdge ? (
+					<EdgeInspectorPanel
+						edge={selectedEdge}
+						sourceLabel={nodeLabelById(workflow, selectedEdge.source)}
+						targetLabel={nodeLabelById(workflow, selectedEdge.target)}
+						onRename={label =>
+							dispatch(workflowActions.updateEdgeLabel({ id: workflowId, edgeId: selectedEdge.id, label }))
+						}
+						onDelete={() => {
+							dispatch(workflowActions.removeEdge({ id: workflowId, edgeId: selectedEdge.id }));
+							setSelectedEdgeId(null);
+						}}
+						onClose={() => setSelectedEdgeId(null)}
+						onJumpToNode={id => {
+							replaceSelection(id);
+							setSelectedEdgeId(null);
+						}}
+					/>
 				) : (
 					<EmptySelectionPanel
 						addNode={addNode}
@@ -679,5 +710,28 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 		</Flex>
 	);
 };
+
+function nodeLabelById(workflow: WorkflowFileLike, id: string): string {
+	const node = workflow.nodes.find(n => n.id === id);
+	if (!node) return `(missing ${id.slice(0, 6)})`;
+	const explicit = (node as { name?: string }).name?.trim();
+	if (explicit) return explicit;
+	switch (node.type) {
+		case 'start':
+			return 'Start';
+		case 'request':
+			return 'Request';
+		case 'loop':
+			return 'Loop';
+		case 'condition':
+			return 'Condition';
+		case 'notification':
+			return 'Notification';
+		case 'comment':
+			return 'Note';
+	}
+}
+
+type WorkflowFileLike = { nodes: ReadonlyArray<WorkflowNode> };
 
 export default WorkflowEditor;
