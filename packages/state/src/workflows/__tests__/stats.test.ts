@@ -1,7 +1,16 @@
 import { describe, expect, it } from 'vitest';
 
 import { workflowStats } from '../stats';
+import { instantiateTemplate, type TemplateKey } from '../templates';
 import type { WorkflowFile, WorkflowNode } from '../types';
+
+function counterMinter() {
+	const counts: Record<string, number> = {};
+	return (prefix: 'workflow' | 'node' | 'edge') => {
+		counts[prefix] = (counts[prefix] ?? 0) + 1;
+		return `${prefix}-${counts[prefix]}`;
+	};
+}
 
 describe('workflowStats', () => {
 	it('reports zero counts for an empty workflow', () => {
@@ -66,6 +75,23 @@ describe('workflowStats', () => {
 		const stats = workflowStats(wf);
 		expect(stats.edgesByHandle).toEqual({ '': 1, body: 1, after: 1 });
 		expect(stats.edgeCount).toBe(3);
+	});
+
+	it('templates report sensible stats', () => {
+		const cases: { template: TemplateKey; expect: { start: number; request: number; loop: number; notification: number } }[] = [
+			{ template: 'blank', expect: { start: 1, request: 0, loop: 0, notification: 0 } },
+			{ template: 'smoke-test', expect: { start: 1, request: 1, loop: 0, notification: 1 } },
+			{ template: 'auth-chain', expect: { start: 1, request: 2, loop: 0, notification: 0 } },
+			{ template: 'paginated-fetch', expect: { start: 1, request: 1, loop: 1, notification: 0 } },
+		];
+		for (const c of cases) {
+			const wf = instantiateTemplate({ template: c.template, name: 't', mintId: counterMinter() });
+			const stats = workflowStats(wf);
+			expect(stats.nodesByKind.start).toBe(c.expect.start);
+			expect(stats.nodesByKind.request).toBe(c.expect.request);
+			expect(stats.nodesByKind.loop).toBe(c.expect.loop);
+			expect(stats.nodesByKind.notification).toBe(c.expect.notification);
+		}
 	});
 
 	it('reports connected-component count', () => {
