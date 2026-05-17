@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
+import { workflowSchema } from '../../schemas/beak-workflow';
 import {
 	autoLayout,
 	cloneNodeAt,
@@ -10,12 +11,14 @@ import {
 	inspectGraph,
 	nodeIssuesFromHealth,
 	overrideBadgeText,
+	parseImportedWorkflow,
 	placeNewNode,
 	previewValueSections,
 	reachableFromNode,
 	reachableFromStart,
 	readPlainText,
 	searchNodes,
+	serializeForExport,
 	topologicalOrder,
 	validateConnection,
 } from '../helpers';
@@ -456,6 +459,63 @@ describe('topologicalOrder', () => {
 			],
 		};
 		expect(() => topologicalOrder(wf)).toThrow(/cycle/);
+	});
+});
+
+describe('serializeForExport + parseImportedWorkflow', () => {
+	function makeMinter() {
+		const counts: Record<string, number> = {};
+		return (prefix: 'workflow' | 'node' | 'edge') => {
+			counts[prefix] = (counts[prefix] ?? 0) + 1;
+			return `${prefix}-${counts[prefix]}`;
+		};
+	}
+
+	const wf: WorkflowFile = {
+		id: 'wf-original',
+		name: 'Export me',
+		nodes: [
+			{ id: 's', type: 'start', position: { x: 0, y: 0 }, data: {} },
+			{ id: 'a', type: 'request', position: { x: 10, y: 10 }, data: { requestId: 'req-a' } },
+		],
+		edges: [{ id: 'e1', source: 's', target: 'a' }],
+	};
+
+	it('round-trips a workflow through serialize → parse', () => {
+		const text = serializeForExport(wf);
+		const result = parseImportedWorkflow(text, makeMinter(), raw => workflowSchema.parse(raw));
+		expect(result.ok).toBe(true);
+		expect(result.workflow).toBeDefined();
+		expect(result.workflow!.name).toBe('Export me');
+		expect(result.workflow!.nodes).toHaveLength(2);
+		expect(result.workflow!.edges).toHaveLength(1);
+	});
+
+	it('re-keys every id so paste doesnt collide with the source', () => {
+		const text = serializeForExport(wf);
+		const result = parseImportedWorkflow(text, makeMinter(), raw => workflowSchema.parse(raw));
+		expect(result.workflow!.id).not.toBe('wf-original');
+		// All node ids should be fresh + sourced from the minter prefix.
+		for (const n of result.workflow!.nodes) {
+			expect(n.id.startsWith('node-')).toBe(true);
+		}
+		// Edges should reference the new node ids, not the old ones.
+		for (const e of result.workflow!.edges) {
+			expect(result.workflow!.nodes.some(n => n.id === e.source)).toBe(true);
+			expect(result.workflow!.nodes.some(n => n.id === e.target)).toBe(true);
+		}
+	});
+
+	it('returns { ok: false } on malformed JSON', () => {
+		const result = parseImportedWorkflow('{not json', makeMinter(), raw => workflowSchema.parse(raw));
+		expect(result.ok).toBe(false);
+		expect(result.reason).toBeTruthy();
+	});
+
+	it('returns { ok: false } on schema-invalid JSON', () => {
+		const result = parseImportedWorkflow('{"id":"x"}', makeMinter(), raw => workflowSchema.parse(raw));
+		expect(result.ok).toBe(false);
+		expect(result.reason).toBeTruthy();
 	});
 });
 

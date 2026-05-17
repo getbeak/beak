@@ -464,6 +464,71 @@ export function edgesAfterNodeRemoval(edges: ReadonlyArray<WorkflowEdge>, nodeId
 	return edges.filter(e => e.source !== nodeId && e.target !== nodeId);
 }
 
+/**
+ * Pretty-print the workflow as JSON for clipboard export. The shape is
+ * the on-disk schema verbatim — pasting it back via `parseImportedWorkflow`
+ * produces an equivalent workflow with re-keyed ids.
+ */
+export function serializeForExport(workflow: WorkflowFile): string {
+	return JSON.stringify(workflow, null, 2);
+}
+
+/**
+ * Parse + re-id a workflow from clipboard JSON. The caller supplies an
+ * id minter so the new workflow + its nodes / edges get fresh KSUIDs;
+ * otherwise paste would collide with the source. Returns `{ ok: false }`
+ * on parse error rather than throwing — the UI's paste flow surfaces
+ * the reason in a toast.
+ *
+ * The actual Zod validation lives in the schema package; we accept the
+ * shape loosely here and rely on the schema parse to enforce it.
+ */
+export interface ParseImportResult {
+	ok: boolean;
+	workflow?: WorkflowFile;
+	reason?: string;
+}
+
+export function parseImportedWorkflow(
+	json: string,
+	mintId: (prefix: 'workflow' | 'node' | 'edge') => string,
+	parseSchema: (raw: unknown) => WorkflowFile,
+): ParseImportResult {
+	let raw: unknown;
+	try {
+		raw = JSON.parse(json);
+	} catch (err) {
+		return { ok: false, reason: (err as Error).message };
+	}
+	let parsed: WorkflowFile;
+	try {
+		parsed = parseSchema(raw);
+	} catch (err) {
+		return { ok: false, reason: (err as Error).message };
+	}
+	// Re-key every id: workflow, every node, every edge (rewriting source/
+	// target to the new node ids).
+	const nodeIdMap = new Map<string, string>();
+	const reKeyedNodes = parsed.nodes.map(node => {
+		const newId = mintId('node');
+		nodeIdMap.set(node.id, newId);
+		return { ...node, id: newId };
+	});
+	const reKeyedEdges = parsed.edges.map(edge => ({
+		...edge,
+		id: mintId('edge'),
+		source: nodeIdMap.get(edge.source) ?? edge.source,
+		target: nodeIdMap.get(edge.target) ?? edge.target,
+	}));
+	const workflow: WorkflowFile = {
+		...parsed,
+		id: mintId('workflow'),
+		nodes: reKeyedNodes,
+		edges: reKeyedEdges,
+	};
+	return { ok: true, workflow };
+}
+
 export type NodeIssue = 'cycle' | 'unlinked' | 'unreachable';
 
 /**

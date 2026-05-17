@@ -1,14 +1,18 @@
 import ksuid from '@beak/ksuid';
+import { workflowSchema } from '@beak/state/schemas/beak-workflow';
 import {
 	autoLayout,
 	inspectGraph,
 	type NodeIssue,
 	nodeIssuesFromHealth,
+	parseImportedWorkflow,
 	placeNewNode,
+	serializeForExport,
 	validateConnection,
 	type WorkflowEdge,
 	type WorkflowNode,
 } from '@beak/state/workflows';
+import { changeTab } from '@beak/ui/features/tabs/store/actions';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { actions as workflowActions } from '@beak/ui/store/workflows';
 import { Box, Flex, Input, Stack } from '@chakra-ui/react';
@@ -29,7 +33,18 @@ import {
 	useReactFlow,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
-import { Bell, GitBranch, Globe, LayoutTemplate, Play, Repeat, StickyNote, Workflow as WorkflowIcon } from 'lucide-react';
+import {
+	Bell,
+	Clipboard,
+	ClipboardPaste,
+	GitBranch,
+	Globe,
+	LayoutTemplate,
+	Play,
+	Repeat,
+	StickyNote,
+	Workflow as WorkflowIcon,
+} from 'lucide-react';
 import * as React from 'react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -236,6 +251,34 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 		const laidOut = autoLayout(workflow);
 		dispatch(workflowActions.replaceGraph({ id: workflowId, nodes: laidOut.nodes, edges: laidOut.edges }));
 	}, [dispatch, workflow, workflowId]);
+
+	const copyWorkflowJson = useCallback(async () => {
+		if (!workflow) return;
+		try {
+			await navigator.clipboard.writeText(serializeForExport(workflow));
+		} catch (err) {
+			console.warn('[workflows] copy to clipboard failed', err);
+		}
+	}, [workflow]);
+
+	const pasteWorkflowJson = useCallback(async () => {
+		try {
+			const text = await navigator.clipboard.readText();
+			const result = parseImportedWorkflow(
+				text,
+				prefix => ksuid.generate(prefix).toString(),
+				raw => workflowSchema.parse(raw),
+			);
+			if (!result.ok || !result.workflow) {
+				console.warn('[workflows] paste rejected', result.reason);
+				return;
+			}
+			dispatch(workflowActions.insertNewWorkflow({ id: result.workflow.id, workflow: result.workflow }));
+			dispatch(changeTab({ type: 'workflow_editor', payload: result.workflow.id, temporary: false }));
+		} catch (err) {
+			console.warn('[workflows] paste failed', err);
+		}
+	}, [dispatch]);
 
 	const onNodesChange = useCallback(
 		(changes: NodeChange[]) => {
@@ -464,6 +507,17 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 						icon={<Play size={13} strokeWidth={1.8} />}
 						label='Simulate'
 						onClick={() => setSimulateOpen(true)}
+					/>
+					<Box w='1px' h='14px' bg='border.subtle' alignSelf='center' mx='1' />
+					<ToolbarButton
+						icon={<Clipboard size={13} strokeWidth={1.8} />}
+						label='Copy'
+						onClick={copyWorkflowJson}
+					/>
+					<ToolbarButton
+						icon={<ClipboardPaste size={13} strokeWidth={1.8} />}
+						label='Paste'
+						onClick={pasteWorkflowJson}
 					/>
 				</Stack>
 			</Flex>
