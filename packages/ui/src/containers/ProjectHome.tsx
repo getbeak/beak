@@ -19,7 +19,8 @@ const ProjectHome: React.FC = () => {
 	const projectName = useAppSelector(s => s.global.project.name) ?? 'Project';
 	const isMemory = useAppSelector(s => s.global.project.mode === 'memory');
 	const workflows = useAppSelector(s => s.global.workflows.workflows);
-	const recentFlows = recentWorkflows(workflows).slice(0, 5);
+	const recentFlows = recentWorkflows(workflows, 5);
+	const workflowCount = Object.keys(workflows).length;
 
 	function openEndpointsSidebar() {
 		dispatch(sidebarPreferenceSetCollapse({ key: 'sidebar', collapsed: false }));
@@ -56,7 +57,9 @@ const ProjectHome: React.FC = () => {
 					</Box>
 				</Flex>
 				<Box fontSize='sm' color='fg.subtle' mt='1' mb='6'>
-					{'Project-level controls land here as they’re built.'}
+					{workflowCount === 0
+						? 'Project-level controls land here as they’re built.'
+						: `${workflowCount} workflow${workflowCount === 1 ? '' : 's'} · project-level controls land here.`}
 				</Box>
 
 				<ChakraButton
