@@ -1,4 +1,4 @@
-import { inspectGraph } from '@beak/state/workflows';
+import { inspectGraph, validateWorkflow } from '@beak/state/workflows';
 import { changeTab } from '@beak/ui/features/tabs/store/actions';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { actions as workflowActions } from '@beak/ui/store/workflows';
@@ -36,7 +36,9 @@ const Workflows: React.FC = () => {
 				const isActive = selectedTabId === wf.id;
 				const nodeCount = wf.nodes.length;
 				const health = inspectGraph(wf);
-				const issueCount = health.unreachable.length + health.unlinkedRequestNodes.length + health.cycleNodes.length;
+				const warnings = validateWorkflow(wf);
+				const issueCount =
+					health.unreachable.length + health.unlinkedRequestNodes.length + health.cycleNodes.length + warnings.size;
 				const dotColor =
 					issueCount > 0
 						? 'var(--beak-colors-accent-warning)'
