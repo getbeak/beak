@@ -45,6 +45,7 @@ import {
 	FileText,
 	GitBranch,
 	Globe,
+	HelpCircle,
 	LayoutTemplate,
 	Play,
 	Repeat,
@@ -724,6 +725,12 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 						icon={<ClipboardPaste size={13} strokeWidth={1.8} />}
 						label='Paste'
 						onClick={pasteWorkflowJson}
+					/>
+					<Box w='1px' h='14px' bg='border.subtle' alignSelf='center' mx='1' />
+					<ToolbarButton
+						icon={<HelpCircle size={13} strokeWidth={1.8} />}
+						label='Help'
+						onClick={() => setCheatSheetOpen(true)}
 					/>
 				</Stack>
 			</Flex>
