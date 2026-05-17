@@ -78,9 +78,8 @@ export const SaveStateIndicator: React.FC = () => {
 		);
 	}
 	if (!latest) return null;
-	const seconds = Math.max(1, Math.floor((now - latest) / 1000));
-	const label =
-		seconds < 60 ? `Saved ${seconds}s ago` : seconds < 3600 ? `Saved ${Math.floor(seconds / 60)}m ago` : 'Saved';
+	const seconds = Math.max(0, Math.floor((now - latest) / 1000));
+	const label = formatSavedLabel(seconds);
 	return (
 		<Flex
 			align='center'
@@ -684,6 +683,18 @@ export const PaneContextMenu: React.FC<PaneContextMenuProps> = ({ screen, onPick
 		</Box>
 	);
 };
+
+/**
+ * Pretty-print the "saved X ago" label. Under 5s reads as "just now"
+ * to avoid the "0s ago" stutter right after a save; over an hour
+ * drops the unit entirely since the user usually doesn't care.
+ */
+function formatSavedLabel(seconds: number): string {
+	if (seconds < 5) return 'Saved just now';
+	if (seconds < 60) return `Saved ${seconds}s ago`;
+	if (seconds < 3600) return `Saved ${Math.floor(seconds / 60)}m ago`;
+	return 'Saved';
+}
 
 interface MultiSelectPanelProps {
 	count: number;
