@@ -729,6 +729,11 @@ describe('searchNodes', () => {
 		const results = searchNodes(wf, 'users', names);
 		expect(results.map(r => r.id)).not.toContain('r3');
 	});
+
+	it('matches by node id substring as a fallback', () => {
+		const results = searchNodes(wf, 'r1', names);
+		expect(results.map(r => r.id)).toContain('r1');
+	});
 });
 
 describe('validateConnection', () => {

@@ -612,12 +612,15 @@ export function searchNodes(
 		const labelIdx = labelLower.indexOf(trimmed);
 		const kindIdx = kindLower.indexOf(trimmed);
 		const subtitleIdx = item.subtitle.toLowerCase().indexOf(trimmed);
-		// Prefer label-prefix > label-substring > kind-substring > subtitle-substring.
+		const idLower = item.id.toLowerCase();
+		const idIdx = idLower.indexOf(trimmed);
+		// Prefer label-prefix > label-substring > kind-substring > subtitle-substring > id-substring.
 		let score = -1;
 		if (labelIdx === 0) score = 1000;
 		else if (labelIdx > 0) score = 500 - labelIdx;
 		else if (kindIdx >= 0) score = 200 - kindIdx;
 		else if (subtitleIdx >= 0) score = 100 - subtitleIdx;
+		else if (idIdx >= 0) score = 50 - idIdx;
 		if (score < 0) continue;
 		scored.push({ item, score });
 	}
