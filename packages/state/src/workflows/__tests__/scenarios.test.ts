@@ -11,6 +11,7 @@ import {
 	findDuplicateNames,
 	findTargetsOf,
 	inspectGraph,
+	linkedRequestIds,
 	mergeWorkflows,
 	searchNodes,
 	uniqueWorkflowName,
@@ -457,6 +458,35 @@ describe('workflow lifecycle — build and tear down', () => {
 			}),
 		);
 		expect(completionRatio(state.workflows[seed.id]!)).toBe(0.5);
+	});
+
+	it('linkedRequestIds round-trips through the slice as requests are linked / unlinked', () => {
+		const mint = counterMinter();
+		const seed = instantiateTemplate({ template: 'blank', name: 'flow', mintId: mint });
+		let state = reducer(initialWorkflowsState, actions.insertNewWorkflow({ id: seed.id, workflow: seed }));
+
+		// Two request nodes, one linked.
+		state = reducer(state, actions.addNode({
+			id: seed.id,
+			node: { id: 'r1', type: 'request', position: { x: 0, y: 0 }, data: { requestId: 'req-A' } },
+		}));
+		state = reducer(state, actions.addNode({
+			id: seed.id,
+			node: { id: 'r2', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } },
+		}));
+		expect(linkedRequestIds(state.workflows[seed.id]!)).toEqual(['req-A']);
+
+		// Link the second, distinct id.
+		state = reducer(state, actions.updateNodeData({ id: seed.id, nodeId: 'r2', data: { requestId: 'req-B' } }));
+		expect(linkedRequestIds(state.workflows[seed.id]!)).toEqual(['req-A', 'req-B']);
+
+		// Re-link r2 to the same id as r1 — distinct ids drop back to one.
+		state = reducer(state, actions.updateNodeData({ id: seed.id, nodeId: 'r2', data: { requestId: 'req-A' } }));
+		expect(linkedRequestIds(state.workflows[seed.id]!)).toEqual(['req-A']);
+
+		// Purging req-A propagates: both nodes go back to null, list is empty.
+		state = reducer(state, actions.purgeRequestRefs({ requestIds: ['req-A'] }));
+		expect(linkedRequestIds(state.workflows[seed.id]!)).toEqual([]);
 	});
 
 	it('purges request refs when the underlying project tree drops the request', () => {
