@@ -1,4 +1,4 @@
-import { type WorkflowFile, workflowStats } from '@beak/state/workflows';
+import { nodeBounds, type WorkflowFile, workflowStats } from '@beak/state/workflows';
 import { Box, Button, Dialog, Flex, Stack } from '@chakra-ui/react';
 import * as React from 'react';
 import { useMemo } from 'react';
@@ -16,6 +16,7 @@ interface StatsDialogProps {
  */
 const StatsDialog: React.FC<StatsDialogProps> = ({ workflow, open, onClose }) => {
 	const stats = useMemo(() => workflowStats(workflow), [workflow]);
+	const bounds = useMemo(() => nodeBounds(workflow.nodes), [workflow.nodes]);
 
 	return (
 		<Dialog.Root open={open} onOpenChange={d => (d.open ? null : onClose())} size='md' placement='center'>
@@ -64,6 +65,17 @@ const StatsDialog: React.FC<StatsDialogProps> = ({ workflow, open, onClose }) =>
 									<Count value={stats.unlinkedRequestCount} />
 								</Row>
 							</Section>
+
+							{bounds && (
+								<Section title='Canvas bounds'>
+									<Row label='Width'>
+										<Count value={Math.round(bounds.width)} />
+									</Row>
+									<Row label='Height'>
+										<Count value={Math.round(bounds.height)} />
+									</Row>
+								</Section>
+							)}
 						</Stack>
 					</Dialog.Body>
 					<Dialog.Footer>
