@@ -2,7 +2,7 @@ import { createReducer } from '@reduxjs/toolkit';
 import { describe, expect, it } from 'vitest';
 
 import * as actions from '../actions';
-import { cleanupDanglingEdges, inspectGraph, validateConnection } from '../helpers';
+import { cleanupDanglingEdges, inspectGraph, searchNodes, validateConnection } from '../helpers';
 import { validateWorkflow } from '../validation';
 import { buildWorkflowsReducer } from '../reducer';
 import { instantiateTemplate } from '../templates';
@@ -190,6 +190,19 @@ describe('workflow lifecycle — build and tear down', () => {
 		// Only the OK edge survives; xyflow won't choke on a missing endpoint.
 		expect(wf.edges.map(e => e.id)).toEqual(['e-ok']);
 		expect(inspectGraph(wf).danglingEdges).toEqual([]);
+	});
+
+	it('searchNodes reflects per-node renames after the slice updates them', () => {
+		const mint = counterMinter();
+		const seed = instantiateTemplate({ template: 'auth-chain', name: 'auth flow', mintId: mint });
+		const requestNodeId = seed.nodes.find(n => n.type === 'request')!.id;
+		let state = reducer(initialWorkflowsState, actions.insertNewWorkflow({ id: seed.id, workflow: seed }));
+		state = reducer(state, actions.renameNode({ id: seed.id, nodeId: requestNodeId, name: 'Login' }));
+		const wf = state.workflows[seed.id]!;
+		const results = searchNodes(wf, 'login', new Map());
+		expect(results.map(r => r.id)).toContain(requestNodeId);
+		// Sanity: the renamed node ranks ahead of the un-renamed second request.
+		expect(results[0].id).toBe(requestNodeId);
 	});
 
 	it('catches cycle-closing wires at the validator before they reach the slice', () => {
