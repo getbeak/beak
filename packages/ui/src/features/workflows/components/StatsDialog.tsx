@@ -1,4 +1,12 @@
-import { inspectGraph, nodeBounds, validateWorkflow, type WorkflowFile, workflowStats } from '@beak/state/workflows';
+import {
+	findDuplicateNames,
+	inspectGraph,
+	nodeBounds,
+	validateWorkflow,
+	type WorkflowFile,
+	workflowStats,
+} from '@beak/state/workflows';
+import { useAppSelector } from '@beak/ui/store/redux';
 import { Box, Button, Dialog, Flex, Stack } from '@chakra-ui/react';
 import * as React from 'react';
 import { useMemo } from 'react';
@@ -21,6 +29,13 @@ const StatsDialog: React.FC<StatsDialogProps> = ({ workflow, open, onClose }) =>
 	const warnings = useMemo(() => validateWorkflow(workflow), [workflow]);
 	const totalIssues =
 		health.unreachable.length + health.unlinkedRequestNodes.length + health.cycleNodes.length + warnings.size;
+	// Cross-workflow check: name collisions in the project. Only show the
+	// group(s) that include *this* workflow so the warning is contextual.
+	const allWorkflows = useAppSelector(s => s.global.workflows.workflows);
+	const namesake = useMemo(() => {
+		const dups = findDuplicateNames(allWorkflows);
+		return dups.find(g => g.ids.includes(workflow.id)) ?? null;
+	}, [allWorkflows, workflow.id]);
 
 	return (
 		<Dialog.Root open={open} onOpenChange={d => (d.open ? null : onClose())} size='md' placement='center'>
@@ -32,6 +47,24 @@ const StatsDialog: React.FC<StatsDialogProps> = ({ workflow, open, onClose }) =>
 					</Dialog.Header>
 					<Dialog.Body>
 						<Stack gap='3'>
+							{namesake && namesake.ids.length > 1 && (
+								<Box
+									px='3'
+									py='2'
+									borderRadius='sm'
+									bg='color-mix(in srgb, var(--beak-colors-accent-warning) 12%, transparent)'
+									borderWidth='1px'
+									borderColor='color-mix(in srgb, var(--beak-colors-accent-warning) 30%, transparent)'
+									fontSize='12px'
+									color='fg.default'
+								>
+									<Box fontWeight='700' mb='0.5' color='accent.warning' fontSize='10px' letterSpacing='0.06em' textTransform='uppercase'>
+										{'Name collision'}
+									</Box>
+									{`${namesake.ids.length - 1} other workflow${namesake.ids.length - 1 === 1 ? '' : 's'} also named "${namesake.name}". Rename to disambiguate.`}
+								</Box>
+							)}
+
 							{(workflow.description?.trim() || (workflow.tags && workflow.tags.length > 0)) && (
 								<Section title='Meta'>
 									{workflow.description?.trim() && (
