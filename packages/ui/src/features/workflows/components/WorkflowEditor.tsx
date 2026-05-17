@@ -759,73 +759,123 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 				<Box flex='1 1 auto' />
 
 				<Stack direction='row' gap='1'>
-					<ToolbarButton icon={<Globe size={13} strokeWidth={1.8} />} label='Request' onClick={() => addNode('request')} />
-					<ToolbarButton icon={<Repeat size={13} strokeWidth={1.8} />} label='Loop' onClick={() => addNode('loop')} />
+					<ToolbarButton
+						icon={<Globe size={13} strokeWidth={1.8} />}
+						label='Request'
+						shortcut='R'
+						hint='Add a Request step'
+						onClick={() => addNode('request')}
+					/>
+					<ToolbarButton
+						icon={<Repeat size={13} strokeWidth={1.8} />}
+						label='Loop'
+						shortcut='L'
+						hint='Add a Loop step'
+						onClick={() => addNode('loop')}
+					/>
 					<ToolbarButton
 						icon={<GitBranch size={13} strokeWidth={1.8} />}
 						label='Condition'
+						shortcut='C'
+						hint='Add a Condition step'
 						onClick={() => addNode('condition')}
 					/>
 					<ToolbarButton
 						icon={<Bell size={13} strokeWidth={1.8} />}
 						label='Notification'
+						shortcut='N'
+						hint='Add a Notification step'
 						onClick={() => addNode('notification')}
 					/>
 					<ToolbarButton
 						icon={<StickyNote size={13} strokeWidth={1.8} />}
 						label='Note'
+						shortcut='M'
+						hint='Add a sticky note'
 						onClick={() => addNode('comment')}
 					/>
 					<Box w='1px' h='14px' bg='border.subtle' alignSelf='center' mx='1' />
-					<ToolbarButton icon={<LayoutTemplate size={13} strokeWidth={1.8} />} label='Tidy' onClick={tidyGraph} />
-					<ToolbarButton icon={<Minimize2 size={13} strokeWidth={1.8} />} label='Compact' onClick={compactGraph} />
-					<ToolbarButton icon={<Maximize2 size={13} strokeWidth={1.8} />} label='Fit' onClick={() => fitView('all')} />
-					<ToolbarButton icon={<Trash2 size={13} strokeWidth={1.8} />} label='Clear' onClick={clearGraph} />
+					<ToolbarButton
+						icon={<LayoutTemplate size={13} strokeWidth={1.8} />}
+						label='Tidy'
+						hint='BFS auto-layout — readable left-to-right'
+						onClick={tidyGraph}
+					/>
+					<ToolbarButton
+						icon={<Minimize2 size={13} strokeWidth={1.8} />}
+						label='Compact'
+						hint='Shift the graph back to the canvas origin'
+						onClick={compactGraph}
+					/>
+					<ToolbarButton
+						icon={<Maximize2 size={13} strokeWidth={1.8} />}
+						label='Fit'
+						shortcut='⌘ .'
+						hint='Fit the viewport to the graph'
+						onClick={() => fitView('all')}
+					/>
+					<ToolbarButton
+						icon={<Trash2 size={13} strokeWidth={1.8} />}
+						label='Clear'
+						hint='Drop every node and edge (Start stays)'
+						onClick={clearGraph}
+					/>
 					<ToolbarButton
 						icon={<Play size={13} strokeWidth={1.8} />}
 						label='Simulate'
+						hint='Walk the graph with default resolvers'
 						onClick={() => setSimulateOpen(true)}
 					/>
 					<ToolbarButton
 						icon={<BarChart3 size={13} strokeWidth={1.8} />}
 						label='Stats'
+						hint='Per-kind / per-handle / bounds breakdown'
 						onClick={() => setStatsOpen(true)}
 					/>
 					<ToolbarButton
 						icon={<Wrench size={13} strokeWidth={1.8} />}
 						label='Lint'
+						hint='List per-node warnings and quick fixes'
 						onClick={() => setQuickFixOpen(true)}
 					/>
 					<Box w='1px' h='14px' bg='border.subtle' alignSelf='center' mx='1' />
 					<ToolbarButton
 						icon={<Clipboard size={13} strokeWidth={1.8} />}
 						label='Copy'
+						hint='Copy the whole workflow as JSON to the clipboard'
 						onClick={copyWorkflowJson}
 					/>
 					<ToolbarButton
 						icon={<FileText size={13} strokeWidth={1.8} />}
 						label='Doc'
+						hint='Copy a Markdown summary of the workflow'
 						onClick={copyWorkflowMarkdown}
 					/>
 					<ToolbarButton
 						icon={<ClipboardPaste size={13} strokeWidth={1.8} />}
 						label='Paste'
+						hint='Replace the canvas with JSON from the clipboard (ids re-keyed)'
 						onClick={pasteWorkflowJson}
 					/>
 					<ToolbarButton
 						icon={<Combine size={13} strokeWidth={1.8} />}
 						label='Merge'
+						hint='Graft clipboard JSON into this workflow without overwriting'
 						onClick={mergeWorkflowJson}
 					/>
 					<ToolbarButton
 						icon={<Copy size={13} strokeWidth={1.8} />}
 						label='Fork'
+						shortcut='⌘ ⇧ D'
+						hint='Duplicate this workflow into a sibling "Copy of …"'
 						onClick={() => dispatch(workflowActions.duplicateWorkflow({ sourceId: workflowId }))}
 					/>
 					<Box w='1px' h='14px' bg='border.subtle' alignSelf='center' mx='1' />
 					<ToolbarButton
 						icon={<HelpCircle size={13} strokeWidth={1.8} />}
 						label='Help'
+						shortcut='?'
+						hint='Keyboard shortcut cheat sheet'
 						onClick={() => setCheatSheetOpen(true)}
 					/>
 				</Stack>

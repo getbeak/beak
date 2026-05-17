@@ -931,30 +931,44 @@ export const EmptyCanvasCallout: React.FC<EmptyCanvasCalloutProps> = ({ onAddReq
 	</Box>
 );
 
-export const ToolbarButton: React.FC<{ icon: React.ReactNode; label: string; onClick: () => void }> = ({
-	icon,
-	label,
-	onClick,
-}) => (
-	<Flex
-		as='button'
-		role='button'
-		align='center'
-		gap='1.5'
-		px='2'
-		h='24px'
-		fontSize='12px'
-		color='fg.muted'
-		bg='transparent'
-		borderRadius='sm'
-		cursor='pointer'
-		_hover={{
-			color: 'fg.default',
-			bg: 'color-mix(in srgb, var(--beak-colors-fg-default) 8%, transparent)',
-		}}
-		onClick={onClick}
-	>
-		{icon}
-		<Box>{label}</Box>
-	</Flex>
-);
+export const ToolbarButton: React.FC<{
+	icon: React.ReactNode;
+	label: string;
+	onClick: () => void;
+	/**
+	 * Optional shortcut + extended-tooltip blurb appended to the title
+	 * attribute. The toolbar is dense and unlabelled by default — surfacing
+	 * the keyboard binding on hover saves the user a trip to the cheat
+	 * sheet for "what does Fork do, and is there a hotkey?".
+	 */
+	shortcut?: string;
+	hint?: string;
+}> = ({ icon, label, onClick, shortcut, hint }) => {
+	const titleParts: string[] = [label];
+	if (shortcut) titleParts[0] = `${label}  (${shortcut})`;
+	if (hint) titleParts.push(hint);
+	return (
+		<Flex
+			as='button'
+			role='button'
+			title={titleParts.join(' — ')}
+			align='center'
+			gap='1.5'
+			px='2'
+			h='24px'
+			fontSize='12px'
+			color='fg.muted'
+			bg='transparent'
+			borderRadius='sm'
+			cursor='pointer'
+			_hover={{
+				color: 'fg.default',
+				bg: 'color-mix(in srgb, var(--beak-colors-fg-default) 8%, transparent)',
+			}}
+			onClick={onClick}
+		>
+			{icon}
+			<Box>{label}</Box>
+		</Flex>
+	);
+};
