@@ -150,12 +150,19 @@ export function registerWorkflowsEffects(start: AppStartListening) {
 		actionCreator: createNewWorkflow,
 		effect: async ({ payload }, api) => {
 			const name = payload.name ?? 'Untitled workflow';
-			const workflow: WorkflowFile = instantiateTemplate({
+			const seeded: WorkflowFile = instantiateTemplate({
 				template: payload.template ?? 'blank',
 				name,
 				parent: payload.parent ?? null,
 				mintId: prefix => ksuid.generate(prefix).toString(),
 			});
+			// Initial metadata from the payload — written directly so the
+			// debounced persist captures it on first save.
+			const workflow: WorkflowFile = {
+				...seeded,
+				...(payload.description?.trim() ? { description: payload.description.trim() } : {}),
+				...(payload.tags && payload.tags.length > 0 ? { tags: payload.tags } : {}),
+			};
 
 			if (api.getState().global.project.mode === 'disk') {
 				await ensureWorkflowsDir();

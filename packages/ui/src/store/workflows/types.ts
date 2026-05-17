@@ -35,6 +35,10 @@ export interface CreateNewWorkflowPayload {
 	parent?: string | null;
 	/** Starter template; defaults to 'blank' (single Start node, no wiring). */
 	template?: TemplateKey;
+	/** Optional initial description; persisted directly onto the workflow. */
+	description?: string;
+	/** Optional initial tags; persisted directly (no normalisation here — the slice action handles that on every update). */
+	tags?: string[];
 }
 
 export interface RemoveWorkflowFromDiskPayload {
