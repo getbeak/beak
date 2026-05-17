@@ -12,6 +12,7 @@ import {
 	pruneOverrides,
 	type RequestOverrides,
 	readPlainText,
+	type WorkflowFile,
 	type WorkflowNode,
 } from '@beak/state/workflows';
 import BasicTableEditor from '@beak/ui/features/basic-table-editor/components/BasicTableEditor';
@@ -991,11 +992,29 @@ function ConnectionsSummary({ workflowId, nodeId }: { workflowId: string; nodeId
 			color='fg.muted'
 			fontWeight='600'
 		>
-			<Box>
-				{`Inbound ${sources.length} · Outbound ${targets.length}`}
-			</Box>
+			<Box>{`Inbound ${sources.length}`}</Box>
+			<Box color='fg.subtle'>{'·'}</Box>
+			<Box>{`Outbound ${targets.length}`}</Box>
+			{sources.length > 0 && (
+				<>
+					<Box color='fg.subtle'>{'·'}</Box>
+					<Box fontWeight='400'>
+						{sources.length === 1
+							? `from ${labelForNodeId(workflow, sources[0])}`
+							: `from ${sources.length} steps`}
+					</Box>
+				</>
+			)}
 		</Flex>
 	);
+}
+
+function labelForNodeId(workflow: WorkflowFile, id: string): string {
+	const node = workflow.nodes.find(n => n.id === id);
+	if (!node) return id.slice(0, 6);
+	const explicit = (node as { name?: string }).name?.trim();
+	if (explicit) return explicit;
+	return node.type;
 }
 
 export default NodePropertiesPanel;
