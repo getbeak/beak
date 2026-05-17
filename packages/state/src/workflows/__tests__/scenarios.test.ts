@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 
 import * as actions from '../actions';
 import { inspectGraph, validateConnection } from '../helpers';
+import { validateWorkflow } from '../validation';
 import { buildWorkflowsReducer } from '../reducer';
 import { instantiateTemplate } from '../templates';
 import { initialWorkflowsState, type WorkflowsState } from '../types';
@@ -133,6 +134,38 @@ describe('workflow lifecycle — build and tear down', () => {
 		expect(state.workflows[seed.id]!.nodes.find(n => n.id === sourceReq.id)).toBeUndefined();
 		// The clone survives, deep-clone means its data is independent.
 		expect(state.workflows[seed.id]!.nodes.find(n => n.id === 'r-clone')).toBeDefined();
+	});
+
+	it('config warnings + structural issues compose into a single fix list', () => {
+		const mint = counterMinter();
+		const seed = instantiateTemplate({ template: 'blank', name: 'mixed', mintId: mint });
+		const startId = seed.nodes[0].id;
+		// Add a loop with count=0 (config warning) and an unlinked request
+		// reachable from Start (no health issue) plus a disconnected
+		// notification (unreachable structural issue).
+		const seeded: typeof seed = {
+			...seed,
+			nodes: [
+				...seed.nodes,
+				{ id: 'l', type: 'loop', position: { x: 0, y: 0 }, data: { mode: 'count', count: 0 } },
+				{ id: 'r', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } },
+				{ id: 'n', type: 'notification', position: { x: 0, y: 0 }, data: {} },
+			],
+			edges: [
+				{ id: 'e1', source: startId, target: 'l' },
+				{ id: 'e2', source: 'l', target: 'r', sourceHandle: 'body' },
+			],
+		};
+		const state = reducer(initialWorkflowsState, actions.insertNewWorkflow({ id: seeded.id, workflow: seeded }));
+		const wf = state.workflows[seeded.id]!;
+
+		const health = inspectGraph(wf);
+		expect(health.unreachable).toEqual(['n']); // notification not wired
+		expect(health.unlinkedRequestNodes).toEqual(['r']); // request not linked
+
+		const warnings = validateWorkflow(wf);
+		expect(warnings.has('l')).toBe(true); // loop count=0
+		expect(warnings.has('n')).toBe(true); // notification empty
 	});
 
 	it('catches cycle-closing wires at the validator before they reach the slice', () => {
