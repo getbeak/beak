@@ -21,6 +21,8 @@ export {
 	firstUnlinkedRequest,
 	flightFromNode,
 	groupWorkflowsByParent,
+	linkedRequestIds,
+	parentIdsUsed,
 	type GraphHealth,
 	inspectGraph,
 	type LayoutOptions,

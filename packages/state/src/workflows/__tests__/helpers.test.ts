@@ -22,10 +22,12 @@ import {
 	flightFromNode,
 	groupWorkflowsByParent,
 	inspectGraph,
+	linkedRequestIds,
 	mergeWorkflows,
 	nodeBounds,
 	nodeIssuesFromHealth,
 	overrideBadgeText,
+	parentIdsUsed,
 	parseImportedWorkflow,
 	placeNewNode,
 	previewValueSections,
@@ -1141,6 +1143,69 @@ describe('firstUnlinkedRequest', () => {
 			edges: [],
 		};
 		expect(firstUnlinkedRequest(wf)).toBeNull();
+	});
+});
+
+describe('linkedRequestIds', () => {
+	it('returns distinct ids in first-appearance order', () => {
+		const wf: WorkflowFile = {
+			id: 'wf',
+			name: '',
+			nodes: [
+				{ id: 's', type: 'start', position: { x: 0, y: 0 }, data: {} },
+				{ id: 'r1', type: 'request', position: { x: 0, y: 0 }, data: { requestId: 'req-A' } },
+				{ id: 'r2', type: 'request', position: { x: 0, y: 0 }, data: { requestId: 'req-B' } },
+				{ id: 'r3', type: 'request', position: { x: 0, y: 0 }, data: { requestId: 'req-A' } },
+			],
+			edges: [],
+		};
+		expect(linkedRequestIds(wf)).toEqual(['req-A', 'req-B']);
+	});
+
+	it('skips unlinked request nodes', () => {
+		const wf: WorkflowFile = {
+			id: 'wf',
+			name: '',
+			nodes: [
+				{ id: 'r1', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } },
+				{ id: 'r2', type: 'request', position: { x: 0, y: 0 }, data: { requestId: 'req-A' } },
+			],
+			edges: [],
+		};
+		expect(linkedRequestIds(wf)).toEqual(['req-A']);
+	});
+
+	it('ignores non-request nodes', () => {
+		const wf: WorkflowFile = {
+			id: 'wf',
+			name: '',
+			nodes: [
+				{ id: 's', type: 'start', position: { x: 0, y: 0 }, data: {} },
+				{ id: 'c', type: 'comment', position: { x: 0, y: 0 }, data: { text: 'hi' } },
+			],
+			edges: [],
+		};
+		expect(linkedRequestIds(wf)).toEqual([]);
+	});
+});
+
+describe('parentIdsUsed', () => {
+	it('returns the distinct parent ids sorted', () => {
+		const wfs: WorkflowFile[] = [
+			{ id: 'a', name: 'A', parent: 'folder-2', nodes: [], edges: [] },
+			{ id: 'b', name: 'B', parent: 'folder-1', nodes: [], edges: [] },
+			{ id: 'c', name: 'C', parent: 'folder-1', nodes: [], edges: [] },
+		];
+		expect(parentIdsUsed(wfs)).toEqual(['folder-1', 'folder-2']);
+	});
+
+	it('excludes root-level workflows', () => {
+		const wfs: WorkflowFile[] = [
+			{ id: 'a', name: 'A', nodes: [], edges: [] },
+			{ id: 'b', name: 'B', parent: '', nodes: [], edges: [] },
+			{ id: 'c', name: 'C', parent: '  ', nodes: [], edges: [] },
+		];
+		expect(parentIdsUsed(wfs)).toEqual([]);
 	});
 });
 

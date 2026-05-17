@@ -520,6 +520,41 @@ export function completionRatio(workflow: WorkflowFile): number {
 }
 
 /**
+ * Distinct request ids referenced by the workflow's request nodes.
+ * Returns the ids in first-appearance order so the caller can render
+ * a "this workflow uses these requests" list with a stable layout.
+ */
+export function linkedRequestIds(workflow: WorkflowFile): string[] {
+	const seen = new Set<string>();
+	const out: string[] = [];
+	for (const node of workflow.nodes) {
+		if (node.type !== 'request') continue;
+		const d = node.data as { requestId: string | null };
+		if (!d.requestId) continue;
+		if (seen.has(d.requestId)) continue;
+		seen.add(d.requestId);
+		out.push(d.requestId);
+	}
+	return out;
+}
+
+/**
+ * Distinct parent folder ids used across a collection of workflows.
+ * Excludes the unset / blank parents (root-level workflows). Sorted
+ * for deterministic output.
+ */
+export function parentIdsUsed(workflows: ReadonlyArray<WorkflowFile> | Record<string, WorkflowFile>): string[] {
+	const list = Array.isArray(workflows) ? workflows : Object.values(workflows);
+	const set = new Set<string>();
+	for (const wf of list) {
+		const parent = (wf.parent ?? '').trim();
+		if (parent === '') continue;
+		set.add(parent);
+	}
+	return [...set].sort();
+}
+
+/**
  * Returns the first request node id in the workflow whose `requestId`
  * is null, scanning in insertion order. Used by quick-fix flows to
  * jump straight to the most pressing "unlinked request" without
