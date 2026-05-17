@@ -1,7 +1,7 @@
 import path from 'node:path';
 
 import { ensureWithinProject } from '@beak/apps-host-electron/ipc-layer/fs-service';
-import { getProjectFilePathWindowMapping } from '@beak/apps-host-electron/ipc-layer/fs-shared';
+import { getProjectFolder } from '@beak/apps-host-electron/ipc-layer/utils';
 import {
 	ExtensionsMessages,
 	type IpcExtensionsServiceMain,
@@ -11,9 +11,14 @@ import type { IpcMessage } from '@beak/common/ipc/types';
 import type { Extension, ExtensionVariable, LoadedExtension } from '@beak/common/types/extensions';
 import Squawk from '@beak/common/utils/squawk';
 import ksuid from '@beak/ksuid';
-import { ExtensionManifests } from '@beak/runtime-shared/extensions';
-import type { Context as VariableContext, ValueSections } from '@getbeak/types/values';
-import { type IpcMainInvokeEvent, type IpcRendererEvent, type WebContents, ipcMain } from 'electron';
+import {
+	ExtensionManifests,
+	makeFullyQualifiedType,
+	ProjectExtensionRegistry,
+	packageNameFromType,
+} from '@beak/runtime-shared/extensions';
+import type { ValueSections, Context as VariableContext } from '@getbeak/types/values';
+import { type IpcMainInvokeEvent, type IpcRendererEvent, ipcMain, type WebContents } from 'electron';
 import fs from 'fs-extra';
 import ivm from 'isolated-vm';
 import { Logger } from 'tslog';
@@ -42,8 +47,6 @@ interface VariableHandles {
 		save: ivm.Reference | null;
 	} | null;
 }
-
-type ProjectIsolates = Record<string, Record<string, IsolateRecord>>;
 
 const logger = new Logger({ name: 'extensions' });
 setupLoggerForFsLogging(logger, 'extensions');
@@ -166,7 +169,9 @@ function buildBootScript(userSource: string): string {
 /* -------------------------------------------------------------------------- */
 
 export default class ExtensionManager {
-	private readonly projects: ProjectIsolates = {};
+	private readonly registry = new ProjectExtensionRegistry<IsolateRecord>({
+		dispose: disposeIsolate,
+	});
 	private readonly service: IpcExtensionsServiceMain;
 
 	constructor(service: IpcExtensionsServiceMain) {
@@ -179,15 +184,7 @@ export default class ExtensionManager {
 	 * about to re-register everything.
 	 */
 	async resetProject(projectId: string): Promise<void> {
-		const records = this.projects[projectId];
-
-		if (!records) return;
-
-		for (const record of Object.values(records)) {
-			disposeIsolate(record);
-		}
-
-		this.projects[projectId] = {};
+		await this.registry.resetProject(projectId);
 	}
 
 	/**
@@ -200,7 +197,7 @@ export default class ExtensionManager {
 		const manifests = new ExtensionManifests(getBeakHost().providers);
 		const manifest = await manifests.parse(extensionPath, {
 			validateScriptPath: async scriptPath => {
-				await ensureWithinProject(getProjectFilePathWindowMapping(event), scriptPath);
+				await ensureWithinProject(getProjectFolder(event), scriptPath);
 			},
 		});
 		const userSource = await fs.readFile(manifest.scriptPath, 'utf8');
@@ -212,10 +209,13 @@ export default class ExtensionManager {
 		await global.set('global', global.derefInto());
 
 		// Wire host helpers used by the bootstrap script and the extCtx wrapper.
-		await global.set('__beak_log', new ivm.Reference((level: LogLevel, message: string) => {
-			const fn = (logger as unknown as Record<string, (m: string) => void>)[level] ?? logger.warn.bind(logger);
-			fn(`[${manifest.packageName}] ${message}`);
-		}));
+		await global.set(
+			'__beak_log',
+			new ivm.Reference((level: LogLevel, message: string) => {
+				const fn = (logger as unknown as Record<string, (m: string) => void>)[level] ?? logger.warn.bind(logger);
+				fn(`[${manifest.packageName}] ${message}`);
+			}),
+		);
 
 		// Placeholder — re-bound per call by `variableGetValue` so the right
 		// webContents receives the parse callback.
@@ -228,8 +228,8 @@ export default class ExtensionManager {
 		const script = await isolate.compileScript(buildBootScript(userSource));
 		await script.run(context, { timeout: ISOLATE_BOOT_TIMEOUT_MS });
 
-		const metadataRaw = await global.get('__beak_metadata', { copy: true }) as ExtensionVariable[] | undefined;
-		const handlesRef = await global.get('__beak_handles', { reference: true }) as ivm.Reference | undefined;
+		const metadataRaw = (await global.get('__beak_metadata', { copy: true })) as ExtensionVariable[] | undefined;
+		const handlesRef = (await global.get('__beak_handles', { reference: true })) as ivm.Reference | undefined;
 
 		if (!metadataRaw || !handlesRef)
 			throw new Squawk('extension_bootstrap_incomplete', { packageName: manifest.packageName });
@@ -239,16 +239,10 @@ export default class ExtensionManager {
 			type: makeFullyQualifiedType(manifest.packageName, meta.variableId),
 		}));
 
-		// Drop any previous isolate for this package.
-		if (!this.projects[projectId]) this.projects[projectId] = {};
-		const previous = this.projects[projectId][manifest.packageName];
-		if (previous) disposeIsolate(previous);
-
 		const variableHandles: Record<string, VariableHandles> = {};
 		for (const meta of variables) {
 			const variableRef = await handlesRef.get(meta.variableId, { reference: true });
-			if (!variableRef)
-				throw new Squawk('extension_variable_handle_missing', { variableId: meta.variableId });
+			if (!variableRef) throw new Squawk('extension_variable_handle_missing', { variableId: meta.variableId });
 
 			variableHandles[meta.type] = {
 				createDefaultPayload: await variableRef.get('createDefaultPayload', { reference: true }),
@@ -256,11 +250,12 @@ export default class ExtensionManager {
 				getAssetRef: meta.binary ? await variableRef.get('getAssetRef', { reference: true }) : null,
 				editor: meta.editable
 					? {
-						createUserInterface: await (await variableRef.get('editor', { reference: true }))
-							.get('createUserInterface', { reference: true }),
-						load: await tryGetMember(variableRef, 'editor', 'load'),
-						save: await tryGetMember(variableRef, 'editor', 'save'),
-					}
+							createUserInterface: await (await variableRef.get('editor', { reference: true })).get('createUserInterface', {
+								reference: true,
+							}),
+							load: await tryGetMember(variableRef, 'editor', 'load'),
+							save: await tryGetMember(variableRef, 'editor', 'save'),
+						}
 					: null,
 			};
 		}
@@ -278,29 +273,25 @@ export default class ExtensionManager {
 			variables,
 		};
 
-		this.projects[projectId][manifest.packageName] = {
+		// Hand the record to the shared registry — it manages dispose-on-replace
+		// and the projects bucket. Per-project lifecycle (resetProject, unload,
+		// list, resolve) is identical across both hosts and now lives there.
+		await this.registry.insert(projectId, manifest.packageName, {
 			isolate,
 			context,
 			variables: variableHandles,
 			loaded,
-		};
+		});
 
 		return loaded;
 	}
 
 	async unload(projectId: string, packageName: string): Promise<void> {
-		const record = this.projects[projectId]?.[packageName];
-		if (!record) return;
-
-		disposeIsolate(record);
-		delete this.projects[projectId][packageName];
+		await this.registry.unload(projectId, packageName);
 	}
 
 	list(projectId: string): Extension[] {
-		const records = this.projects[projectId];
-		if (!records) return [];
-
-		return Object.values(records).map(r => r.loaded);
+		return this.registry.list(projectId);
 	}
 
 	/* ---- Variable invocation ------------------------------------------ */
@@ -374,14 +365,17 @@ export default class ExtensionManager {
 
 	/* ---- Internals ----------------------------------------------------- */
 
-	private resolve(projectId: string, type: string): { handles: VariableHandles; record: IsolateRecord } {
+	/**
+	 * Look up the per-package record + per-type variable handles. The
+	 * registry's `byPackage` returns the record; each host applies its
+	 * own per-type lookup (electron stores `variables[fullyQualifiedType]`).
+	 */
+	private resolve(projectId: string, type: string): { record: IsolateRecord; handles: VariableHandles } {
 		const packageName = packageNameFromType(type);
-		const record = this.projects[projectId]?.[packageName];
+		const record = this.registry.byPackage(projectId, packageName);
 		const handles = record?.variables[type];
-
 		if (!record || !handles) throw new Squawk('unknown_registered_extension', { projectId, type });
-
-		return { handles, record };
+		return { record, handles };
 	}
 
 	private async bindParseValueSections(
@@ -413,10 +407,12 @@ export default class ExtensionManager {
 
 				const timeoutHandle = setTimeout(() => {
 					ipcMain.off('extensions', listener);
-					reject(new Squawk('parse_value_sections_timeout', {
-						uniqueSessionId,
-						timeoutMs: PARSE_VALUE_SECTIONS_TIMEOUT_MS,
-					}));
+					reject(
+						new Squawk('parse_value_sections_timeout', {
+							uniqueSessionId,
+							timeoutMs: PARSE_VALUE_SECTIONS_TIMEOUT_MS,
+						}),
+					);
 				}, PARSE_VALUE_SECTIONS_TIMEOUT_MS);
 
 				ipcMain.on('extensions', listener);
@@ -430,21 +426,6 @@ export default class ExtensionManager {
 /* -------------------------------------------------------------------------- */
 /*  Helpers                                                                   */
 /* -------------------------------------------------------------------------- */
-
-function makeFullyQualifiedType(packageName: string, variableId: string): string {
-	return `external:${packageName}/${variableId}`;
-}
-
-function packageNameFromType(type: string): string {
-	if (!type.startsWith('external:'))
-		throw new Squawk('not_an_external_variable_type', { type });
-
-	const remainder = type.slice('external:'.length);
-	const lastSlash = remainder.lastIndexOf('/');
-
-	if (lastSlash === -1) return remainder;
-	return remainder.slice(0, lastSlash);
-}
 
 async function callIntoIsolate<TResult>(reference: ivm.Reference, args: unknown[]): Promise<TResult> {
 	return (await reference.apply(undefined, args, {

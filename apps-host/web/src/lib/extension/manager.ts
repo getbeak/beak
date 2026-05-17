@@ -4,15 +4,17 @@ import {
 	type VariableParseValueSectionsResponse,
 } from '@beak/common/ipc/extensions';
 import type { IpcMessage } from '@beak/common/ipc/types';
-import type {
-	Extension,
-	ExtensionVariable,
-	LoadedExtension,
-} from '@beak/common/types/extensions';
+import type { Extension, ExtensionVariable, LoadedExtension } from '@beak/common/types/extensions';
 import Squawk from '@beak/common/utils/squawk';
 import ksuid from '@beak/ksuid';
-import { ExtensionManifests } from '@beak/runtime-shared/extensions';
-import type { Context as VariableContext, ValueSections } from '@getbeak/types/values';
+import {
+	ExtensionManifests,
+	makeFullyQualifiedType,
+	ProjectExtensionRegistry,
+	packageNameFromType,
+	variableIdFromType,
+} from '@beak/runtime-shared/extensions';
+import type { ValueSections, Context as VariableContext } from '@getbeak/types/values';
 
 import getRuntime from '../../host';
 import { webIpcMain } from '../../ipc/ipc';
@@ -24,8 +26,6 @@ interface WorkerRecord {
 	pendingCalls: Map<string, { resolve: (v: unknown) => void; reject: (e: unknown) => void }>;
 }
 
-type ProjectWorkers = Record<string, Record<string, WorkerRecord>>;
-
 const INIT_TIMEOUT_MS = 5_000;
 const CALL_TIMEOUT_MS = 30_000;
 
@@ -35,7 +35,7 @@ const CALL_TIMEOUT_MS = 30_000;
  * so the IPC handlers can call into either side without branching.
  */
 export default class WebExtensionManager {
-	private readonly projects: ProjectWorkers = {};
+	private readonly registry = new ProjectExtensionRegistry<WorkerRecord>({ dispose: terminate });
 	private readonly service: IpcExtensionsServiceMain;
 	private workerObjectUrl: string | null = null;
 
@@ -44,10 +44,7 @@ export default class WebExtensionManager {
 	}
 
 	async resetProject(projectId: string): Promise<void> {
-		const records = this.projects[projectId];
-		if (!records) return;
-		for (const record of Object.values(records)) terminate(record);
-		this.projects[projectId] = {};
+		await this.registry.resetProject(projectId);
 	}
 
 	async load(projectId: string, extensionPath: string): Promise<LoadedExtension> {
@@ -85,32 +82,28 @@ export default class WebExtensionManager {
 
 		this.attachWorkerListener(record);
 
-		if (!this.projects[projectId]) this.projects[projectId] = {};
-		const previous = this.projects[projectId][manifest.packageName];
-		if (previous) terminate(previous);
-		this.projects[projectId][manifest.packageName] = record;
+		await this.registry.insert(projectId, manifest.packageName, record);
 
 		return record.loaded;
 	}
 
 	async unload(projectId: string, packageName: string): Promise<void> {
-		const record = this.projects[projectId]?.[packageName];
-		if (!record) return;
-		terminate(record);
-		delete this.projects[projectId][packageName];
+		await this.registry.unload(projectId, packageName);
 	}
 
 	list(projectId: string): Extension[] {
-		const records = this.projects[projectId];
-		if (!records) return [];
-		return Object.values(records).map(r => r.loaded);
+		return this.registry.list(projectId);
 	}
 
 	/* ---- Variable invocation ------------------------------------------ */
 
-	async variableCreateDefaultPayload(projectId: string, type: string, varCtx: VariableContext): Promise<Record<string, unknown>> {
+	async variableCreateDefaultPayload(
+		projectId: string,
+		type: string,
+		varCtx: VariableContext,
+	): Promise<Record<string, unknown>> {
 		const { record, variableId } = this.resolve(projectId, type);
-		return await this.call(record, [variableId, 'createDefaultPayload'], [varCtx]) as Record<string, unknown>;
+		return (await this.call(record, [variableId, 'createDefaultPayload'], [varCtx])) as Record<string, unknown>;
 	}
 
 	async variableGetValue(
@@ -121,7 +114,7 @@ export default class WebExtensionManager {
 		recursiveDepth: number,
 	): Promise<string> {
 		const { record, variableId } = this.resolve(projectId, type);
-		return await this.call(record, [variableId, 'getValue'], [varCtx, payload, recursiveDepth]) as string;
+		return (await this.call(record, [variableId, 'getValue'], [varCtx, payload, recursiveDepth])) as string;
 	}
 
 	async variableGetAssetRef(
@@ -133,8 +126,11 @@ export default class WebExtensionManager {
 	): Promise<{ sha256: string; size: number; contentType?: string } | null> {
 		const { record, variableId, meta } = this.resolve(projectId, type);
 		if (!meta.binary) return null;
-		return await this.call(record, [variableId, 'getAssetRef'], [varCtx, payload, recursiveDepth]) as
-			{ sha256: string; size: number; contentType?: string } | null;
+		return (await this.call(record, [variableId, 'getAssetRef'], [varCtx, payload, recursiveDepth])) as {
+			sha256: string;
+			size: number;
+			contentType?: string;
+		} | null;
 	}
 
 	async variableEditorCreateUI(projectId: string, type: string, varCtx: VariableContext) {
@@ -147,17 +143,26 @@ export default class WebExtensionManager {
 		return await this.call(record, [variableId, 'editor', 'load'], [varCtx, payload]);
 	}
 
-	async variableEditorSave(projectId: string, type: string, varCtx: VariableContext, existingPayload: unknown, state: unknown) {
+	async variableEditorSave(
+		projectId: string,
+		type: string,
+		varCtx: VariableContext,
+		existingPayload: unknown,
+		state: unknown,
+	) {
 		const { record, variableId } = this.resolve(projectId, type);
 		return await this.call(record, [variableId, 'editor', 'save'], [varCtx, existingPayload, state]);
 	}
 
 	/* ---- Internals ----------------------------------------------------- */
 
-	private resolve(projectId: string, type: string): { record: WorkerRecord; variableId: string; meta: ExtensionVariable } {
+	private resolve(
+		projectId: string,
+		type: string,
+	): { record: WorkerRecord; variableId: string; meta: ExtensionVariable } {
 		const packageName = packageNameFromType(type);
 		const variableId = variableIdFromType(type);
-		const record = this.projects[projectId]?.[packageName];
+		const record = this.registry.byPackage(projectId, packageName);
 		const meta = record?.loaded.variables.find(v => v.variableId === variableId);
 
 		if (!record || !meta) throw new Squawk('unknown_registered_extension', { projectId, type });
@@ -194,7 +199,9 @@ export default class WebExtensionManager {
 					worker.removeEventListener('message', onInit);
 					const err = (data as unknown as { error: { code: string; message: string; info?: unknown } }).error;
 					worker.terminate();
-					reject(new Squawk(err.code, { ...((err.info as Record<string, unknown>) ?? {}), message: err.message, packageName }));
+					reject(
+						new Squawk(err.code, { ...((err.info as Record<string, unknown>) ?? {}), message: err.message, packageName }),
+					);
 				}
 			};
 
@@ -317,24 +324,6 @@ function deserialiseWorkerError(error?: WorkerErrorEnvelope): Squawk {
 		message: error?.message ?? 'unknown error',
 		info: error?.info,
 	});
-}
-
-function makeFullyQualifiedType(packageName: string, variableId: string): string {
-	return `external:${packageName}/${variableId}`;
-}
-
-function packageNameFromType(type: string): string {
-	if (!type.startsWith('external:')) throw new Squawk('not_an_external_variable_type', { type });
-	const remainder = type.slice('external:'.length);
-	const lastSlash = remainder.lastIndexOf('/');
-	return lastSlash === -1 ? remainder : remainder.slice(0, lastSlash);
-}
-
-function variableIdFromType(type: string): string {
-	if (!type.startsWith('external:')) throw new Squawk('not_an_external_variable_type', { type });
-	const remainder = type.slice('external:'.length);
-	const lastSlash = remainder.lastIndexOf('/');
-	return lastSlash === -1 ? '' : remainder.slice(lastSlash + 1);
 }
 
 function terminate(record: WorkerRecord): void {
