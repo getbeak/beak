@@ -50,6 +50,7 @@ import {
 	Globe,
 	HelpCircle,
 	LayoutTemplate,
+	Maximize2,
 	Minimize2,
 	Play,
 	Repeat,
@@ -369,6 +370,13 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 		if (compacted === workflow) return; // no-op shortcut: nothing changed
 		dispatch(workflowActions.replaceGraph({ id: workflowId, nodes: compacted.nodes, edges: compacted.edges }));
 	}, [dispatch, workflow, workflowId]);
+
+	const fitView = useCallback(() => {
+		// xyflow's instance fits the viewport to the current graph; padding
+		// matches the canvas's fitView prop so the manual click feels
+		// identical to the first-paint behaviour.
+		reactFlow.fitView({ padding: 0.1, duration: 300 });
+	}, [reactFlow]);
 
 	const clearGraph = useCallback(async () => {
 		if (!workflow) return;
@@ -741,6 +749,7 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 					<Box w='1px' h='14px' bg='border.subtle' alignSelf='center' mx='1' />
 					<ToolbarButton icon={<LayoutTemplate size={13} strokeWidth={1.8} />} label='Tidy' onClick={tidyGraph} />
 					<ToolbarButton icon={<Minimize2 size={13} strokeWidth={1.8} />} label='Compact' onClick={compactGraph} />
+					<ToolbarButton icon={<Maximize2 size={13} strokeWidth={1.8} />} label='Fit' onClick={fitView} />
 					<ToolbarButton icon={<Trash2 size={13} strokeWidth={1.8} />} label='Clear' onClick={clearGraph} />
 					<ToolbarButton
 						icon={<Play size={13} strokeWidth={1.8} />}
