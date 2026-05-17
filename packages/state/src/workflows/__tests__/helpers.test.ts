@@ -29,6 +29,7 @@ import {
 	recentWorkflows,
 	readPlainText,
 	searchNodes,
+	searchWorkflows,
 	serializeForExport,
 	topologicalOrder,
 	validateConnection,
@@ -1290,5 +1291,68 @@ describe('autoLayout', () => {
 		const once = autoLayout(input);
 		const twice = autoLayout(once);
 		expect(twice.nodes).toEqual(once.nodes);
+	});
+});
+
+describe('searchWorkflows', () => {
+	function wf(id: string, name: string, extras: Partial<WorkflowFile> = {}): WorkflowFile {
+		return {
+			id,
+			name,
+			nodes: [{ id: `${id}-start`, type: 'start', position: { x: 0, y: 0 }, data: {} }],
+			edges: [],
+			...extras,
+		};
+	}
+
+	const collection = {
+		'wf-1': wf('wf-1', 'Auth chain', { description: 'OAuth token dance', tags: ['auth', 'critical'] }),
+		'wf-2': wf('wf-2', 'Smoke test', { tags: ['ci', 'smoke'] }),
+		'wf-3': wf('wf-3', 'Internal report'),
+		'wf-4': wf('wf-4', 'Authoring'),
+	};
+
+	it('returns every entry in alphabetical order for an empty query', () => {
+		const result = searchWorkflows(collection, '   ');
+		expect(result.map(r => r.name)).toEqual(['Auth chain', 'Authoring', 'Internal report', 'Smoke test']);
+	});
+
+	it('prefers prefix matches over substring matches', () => {
+		const result = searchWorkflows(collection, 'auth');
+		expect(result.map(r => r.id)).toEqual(['wf-1', 'wf-4']);
+	});
+
+	it('matches exact tag with mid-tier score above description-substring', () => {
+		const result = searchWorkflows(collection, 'critical');
+		expect(result.map(r => r.id)).toEqual(['wf-1']);
+	});
+
+	it('matches description substring when name and tags miss', () => {
+		const result = searchWorkflows(collection, 'token');
+		expect(result.map(r => r.id)).toEqual(['wf-1']);
+	});
+
+	it('falls back to id substring as a last resort', () => {
+		const result = searchWorkflows(collection, 'wf-3');
+		expect(result.map(r => r.id)).toEqual(['wf-3']);
+	});
+
+	it('returns no matches when nothing fits', () => {
+		expect(searchWorkflows(collection, 'xyzzy-no-match')).toEqual([]);
+	});
+
+	it('accepts a list as well as a record', () => {
+		const list = Object.values(collection);
+		expect(searchWorkflows(list, 'smoke').map(r => r.id)).toEqual(['wf-2']);
+	});
+
+	it('shows the description and tags in the subtitle', () => {
+		const result = searchWorkflows(collection, 'auth chain');
+		expect(result[0].subtitle).toBe('OAuth token dance · #auth #critical');
+	});
+
+	it('falls back to "Untitled workflow" when name is blank', () => {
+		const blank: Record<string, WorkflowFile> = { 'wf-x': wf('wf-x', '   ') };
+		expect(searchWorkflows(blank, '').map(r => r.name)).toEqual(['Untitled workflow']);
 	});
 });

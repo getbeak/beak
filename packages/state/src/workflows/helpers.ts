@@ -862,6 +862,74 @@ function kindCapitalised(kind: WorkflowNode['type']): string {
 	return kind.charAt(0).toUpperCase() + kind.slice(1);
 }
 
+export interface WorkflowSearchResult {
+	id: string;
+	name: string;
+	subtitle: string;
+}
+
+/**
+ * Free-text fuzzy-ish search across a workflow collection — used by the
+ * Cmd-K omni-bar and the project pane filter. Match rules, in order of
+ * preference:
+ *   - name prefix
+ *   - name substring
+ *   - tag exact
+ *   - description substring
+ *   - id substring (last-resort recovery for power users)
+ * Returns every workflow with no match dropped. Sorted by score, ties
+ * broken alphabetically by name so the list is stable across renders.
+ * An empty query returns every entry in name order — same shape so the
+ * caller can render unconditionally.
+ */
+export function searchWorkflows(
+	workflows: Record<string, WorkflowFile> | readonly WorkflowFile[],
+	query: string,
+): WorkflowSearchResult[] {
+	const list = Array.isArray(workflows) ? (workflows as readonly WorkflowFile[]) : Object.values(workflows);
+	const trimmed = query.trim().toLowerCase();
+	const items: WorkflowSearchResult[] = list.map(wf => ({
+		id: wf.id,
+		name: wf.name?.trim() || 'Untitled workflow',
+		subtitle: composeWorkflowSubtitle(wf),
+	}));
+	if (trimmed === '') {
+		return items.sort((a, b) => a.name.localeCompare(b.name));
+	}
+	const scored: { item: WorkflowSearchResult; score: number }[] = [];
+	for (let i = 0; i < items.length; i += 1) {
+		const wf = list[i];
+		const item = items[i];
+		const nameLower = item.name.toLowerCase();
+		const descLower = (wf.description ?? '').toLowerCase();
+		const idLower = item.id.toLowerCase();
+		const nameIdx = nameLower.indexOf(trimmed);
+		const descIdx = descLower.indexOf(trimmed);
+		const idIdx = idLower.indexOf(trimmed);
+		const tagHit = (wf.tags ?? []).some(t => t === trimmed);
+		const tagSubHit = (wf.tags ?? []).some(t => t.indexOf(trimmed) >= 0);
+		let score = -1;
+		if (nameIdx === 0) score = 1000;
+		else if (nameIdx > 0) score = 500 - nameIdx;
+		else if (tagHit) score = 300;
+		else if (tagSubHit) score = 200;
+		else if (descIdx >= 0) score = 100 - descIdx;
+		else if (idIdx >= 0) score = 50 - idIdx;
+		if (score < 0) continue;
+		scored.push({ item, score });
+	}
+	scored.sort((a, b) => b.score - a.score || a.item.name.localeCompare(b.item.name));
+	return scored.map(s => s.item);
+}
+
+function composeWorkflowSubtitle(wf: WorkflowFile): string {
+	const parts: string[] = [];
+	const desc = wf.description?.trim();
+	if (desc) parts.push(desc);
+	if (wf.tags && wf.tags.length > 0) parts.push(`#${wf.tags.join(' #')}`);
+	return parts.join(' · ');
+}
+
 /**
  * Re-key any node ids inside `node` so that a duplicated subgraph doesn't
  * collide with its source. The caller owns id generation — pass a

@@ -36,6 +36,8 @@ export {
 	recentWorkflows,
 	type RequestUsage,
 	searchNodes,
+	searchWorkflows,
+	type WorkflowSearchResult,
 	serializeForExport,
 	topologicalOrder,
 	validateConnection,
