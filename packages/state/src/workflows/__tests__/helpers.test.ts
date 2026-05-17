@@ -6,6 +6,7 @@ import {
 	cleanupDanglingEdges,
 	cloneNodeAt,
 	compactPositions,
+	completionRatio,
 	connectedComponents,
 	countOverrideEntries,
 	duplicateWorkflow,
@@ -17,6 +18,7 @@ import {
 	findTargetsOf,
 	findWorkflowByName,
 	firstIssueNode,
+	firstUnlinkedRequest,
 	flightFromNode,
 	inspectGraph,
 	mergeWorkflows,
@@ -1041,6 +1043,102 @@ describe('extractAllTags', () => {
 
 	it('returns [] when nothing has tags', () => {
 		expect(extractAllTags([{ id: 'a', name: 'A', nodes: [], edges: [] }])).toEqual([]);
+	});
+});
+
+describe('completionRatio', () => {
+	function reqNode(id: string, linked: boolean): WorkflowNode {
+		return { id, type: 'request', position: { x: 0, y: 0 }, data: { requestId: linked ? `req-${id}` : null } };
+	}
+
+	it('returns 1 when there are no request nodes (vacuous)', () => {
+		const wf: WorkflowFile = {
+			id: 'wf',
+			name: '',
+			nodes: [{ id: 's', type: 'start', position: { x: 0, y: 0 }, data: {} }],
+			edges: [],
+		};
+		expect(completionRatio(wf)).toBe(1);
+	});
+
+	it('returns the linked / total ratio when all requests are linked', () => {
+		const wf: WorkflowFile = {
+			id: 'wf',
+			name: '',
+			nodes: [reqNode('a', true), reqNode('b', true)],
+			edges: [],
+		};
+		expect(completionRatio(wf)).toBe(1);
+	});
+
+	it('returns 0 when none are linked', () => {
+		const wf: WorkflowFile = {
+			id: 'wf',
+			name: '',
+			nodes: [reqNode('a', false), reqNode('b', false)],
+			edges: [],
+		};
+		expect(completionRatio(wf)).toBe(0);
+	});
+
+	it('returns the partial linked / total ratio', () => {
+		const wf: WorkflowFile = {
+			id: 'wf',
+			name: '',
+			nodes: [reqNode('a', true), reqNode('b', false), reqNode('c', false), reqNode('d', false)],
+			edges: [],
+		};
+		expect(completionRatio(wf)).toBeCloseTo(0.25);
+	});
+
+	it('ignores non-request nodes in both numerator and denominator', () => {
+		const wf: WorkflowFile = {
+			id: 'wf',
+			name: '',
+			nodes: [
+				{ id: 's', type: 'start', position: { x: 0, y: 0 }, data: {} },
+				reqNode('a', true),
+				{ id: 'c', type: 'comment', position: { x: 0, y: 0 }, data: { text: 'note' } },
+			],
+			edges: [],
+		};
+		expect(completionRatio(wf)).toBe(1);
+	});
+});
+
+describe('firstUnlinkedRequest', () => {
+	function reqNode(id: string, linked: boolean): WorkflowNode {
+		return { id, type: 'request', position: { x: 0, y: 0 }, data: { requestId: linked ? `req-${id}` : null } };
+	}
+
+	it('returns the first unlinked node id in insertion order', () => {
+		const wf: WorkflowFile = {
+			id: 'wf',
+			name: '',
+			nodes: [reqNode('a', true), reqNode('b', false), reqNode('c', false)],
+			edges: [],
+		};
+		expect(firstUnlinkedRequest(wf)).toBe('b');
+	});
+
+	it('returns null when every request node is linked', () => {
+		const wf: WorkflowFile = {
+			id: 'wf',
+			name: '',
+			nodes: [reqNode('a', true)],
+			edges: [],
+		};
+		expect(firstUnlinkedRequest(wf)).toBeNull();
+	});
+
+	it('returns null when the workflow has no request nodes', () => {
+		const wf: WorkflowFile = {
+			id: 'wf',
+			name: '',
+			nodes: [{ id: 's', type: 'start', position: { x: 0, y: 0 }, data: {} }],
+			edges: [],
+		};
+		expect(firstUnlinkedRequest(wf)).toBeNull();
 	});
 });
 

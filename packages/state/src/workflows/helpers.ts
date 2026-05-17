@@ -463,6 +463,42 @@ export function extractAllTags(workflows: ReadonlyArray<WorkflowFile> | Record<s
 }
 
 /**
+ * Number on [0, 1] representing how many of the workflow's request
+ * nodes have a linked request id. Returns 1 (everything linked) when
+ * the workflow has no request nodes at all — a "vacuous truth" so a
+ * progress bar reads "complete" rather than "0%" for non-request
+ * flows. Useful for a tree-row progress chip or a project-home
+ * "ready to run" indicator.
+ */
+export function completionRatio(workflow: WorkflowFile): number {
+	let total = 0;
+	let linked = 0;
+	for (const node of workflow.nodes) {
+		if (node.type !== 'request') continue;
+		total += 1;
+		const d = node.data as { requestId: string | null };
+		if (d.requestId) linked += 1;
+	}
+	if (total === 0) return 1;
+	return linked / total;
+}
+
+/**
+ * Returns the first request node id in the workflow whose `requestId`
+ * is null, scanning in insertion order. Used by quick-fix flows to
+ * jump straight to the most pressing "unlinked request" without
+ * walking every node. Returns null when nothing's unlinked.
+ */
+export function firstUnlinkedRequest(workflow: WorkflowFile): string | null {
+	for (const node of workflow.nodes) {
+		if (node.type !== 'request') continue;
+		const d = node.data as { requestId: string | null };
+		if (!d.requestId) return node.id;
+	}
+	return null;
+}
+
+/**
  * Find workflows whose display name collides (case-insensitive,
  * whitespace-trimmed) — used by a future "Project doctor" pane to
  * flag accidental duplicates introduced by paste-import or by the
