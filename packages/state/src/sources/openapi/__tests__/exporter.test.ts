@@ -3,6 +3,33 @@ import { describe, expect, it } from 'vitest';
 
 import type { CollectionFile, RequestFile } from '../../../schemas/beak-project';
 import { collectionToOpenapi } from '../exporter';
+import type { OpenApiParameter, OpenApiReference } from '../types';
+
+function isParameter(p: OpenApiParameter | OpenApiReference): p is OpenApiParameter {
+	return !('$ref' in p);
+}
+
+function indexParameters(
+	params: ReadonlyArray<OpenApiParameter | OpenApiReference> | undefined,
+): Record<string, OpenApiParameter> {
+	const out: Record<string, OpenApiParameter> = {};
+	for (const p of params ?? []) {
+		if (!isParameter(p)) continue;
+		out[`${p.in}:${p.name}`] = p;
+	}
+	return out;
+}
+
+function findParameter(
+	params: ReadonlyArray<OpenApiParameter | OpenApiReference> | undefined,
+	predicate: (p: OpenApiParameter) => boolean,
+): OpenApiParameter | undefined {
+	for (const p of params ?? []) {
+		if (!isParameter(p)) continue;
+		if (predicate(p)) return p;
+	}
+	return undefined;
+}
 
 function emptyCollection(): CollectionFile {
 	return {
@@ -102,7 +129,7 @@ describe('collectionToOpenapi', () => {
 		const { document } = collectionToOpenapi(collection, requests);
 		const op = document.paths?.['/items']?.get;
 		expect(op).toBeDefined();
-		const byName = Object.fromEntries((op?.parameters ?? []).map(p => [`${p.in}:${p.name}`, p]));
+		const byName = indexParameters(op?.parameters);
 
 		expect(byName['query:limit']?.required).toBe(true);
 		expect(byName['query:limit']?.description).toBe('Max rows.');
@@ -139,7 +166,7 @@ describe('collectionToOpenapi', () => {
 		];
 		const { document } = collectionToOpenapi(collection, requests);
 		const op = document.paths?.['/users/{id}']?.get;
-		const idParam = op?.parameters?.find(p => p.in === 'path' && p.name === 'id');
+		const idParam = findParameter(op?.parameters, p => p.in === 'path' && p.name === 'id');
 		expect(idParam?.required).toBe(true);
 		expect(idParam?.schema?.format).toBe('uuid');
 	});
@@ -199,7 +226,7 @@ describe('collectionToOpenapi', () => {
 		];
 		const { document } = collectionToOpenapi(collection, requests);
 		const op = document.paths?.['/things']?.get;
-		const q = op?.parameters?.find(p => p.name === 'q');
+		const q = findParameter(op?.parameters, p => p.name === 'q');
 		expect(q).toBeDefined();
 		expect(q?.schema).toBeUndefined();
 	});

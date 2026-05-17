@@ -135,16 +135,17 @@ describe('openapiToCollection', () => {
 		const named = Object.values(payload).filter(e => 'name' in e && e.name !== undefined);
 		const root = Object.values(payload).find(e => e.type === 'object' && !('name' in e && e.name));
 		expect(root).toBeDefined();
-		const byName = Object.fromEntries(named.map(e => [e.name as string, e]));
-		expect(byName.name).toBeDefined();
-		expect(byName.name.type).toBe('string');
-		expect(byName.name.required).toBe(true);
-		expect(byName.name.description).toBe('Display name');
-		expect(byName.count).toBeDefined();
+		const nameEntry = named.find(e => e.name === 'name');
+		const countEntry = named.find(e => e.name === 'count');
+		expect(nameEntry).toBeDefined();
+		expect(nameEntry!.type).toBe('string');
+		expect(nameEntry!.required).toBe(true);
+		expect(nameEntry!.description).toBe('Display name');
+		expect(countEntry).toBeDefined();
 		// integer collapses to number — Beak doesn't have a separate integer
 		// editor affordance.
-		expect(byName.count.type).toBe('number');
-		expect(byName.count.required).toBeUndefined();
+		expect(countEntry!.type).toBe('number');
+		expect(countEntry!.required).toBeUndefined();
 	});
 
 	it('falls back to responses[200] schema when the operation has no requestBody', () => {

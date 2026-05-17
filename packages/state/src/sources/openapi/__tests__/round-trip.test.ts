@@ -64,11 +64,8 @@ describe('OpenAPI round-trip: import → export → import', () => {
 
 		expect(reimported.requests).toHaveLength(first.requests.length);
 
-		const firstByOpId = Object.fromEntries(first.requests.map(r => [r.override.operationId, r.override]));
-		const reByOpId = Object.fromEntries(reimported.requests.map(r => [r.override.operationId, r.override]));
-
-		const listUsersA = firstByOpId.listUsers;
-		const listUsersB = reByOpId.listUsers;
+		const listUsersA = first.requests.find(r => r.override.operationId === 'listUsers')!.override;
+		const listUsersB = reimported.requests.find(r => r.override.operationId === 'listUsers')!.override;
 		expect(listUsersA).toBeDefined();
 		expect(listUsersB).toBeDefined();
 
