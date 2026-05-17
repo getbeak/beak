@@ -5,6 +5,7 @@ import {
 	autoLayout,
 	cleanupDanglingEdges,
 	cloneNodeAt,
+	compactPositions,
 	connectedComponents,
 	countOverrideEntries,
 	edgesAfterNodeRemoval,
@@ -362,6 +363,53 @@ describe('connectedComponents', () => {
 		};
 		const components = connectedComponents(wf);
 		expect(components).toEqual([['s']]);
+	});
+});
+
+describe('compactPositions', () => {
+	const baseWorkflow = (nodes: { x: number; y: number }[]): WorkflowFile => ({
+		id: 'wf',
+		name: 'compact',
+		nodes: nodes.map((p, i) => ({
+			id: `n${i}`,
+			type: 'request',
+			position: p,
+			data: { requestId: null },
+		})) as WorkflowFile['nodes'],
+		edges: [],
+	});
+
+	it('returns the same ref for an empty workflow', () => {
+		const wf: WorkflowFile = { id: 'wf', name: 'empty', nodes: [], edges: [] };
+		expect(compactPositions(wf)).toBe(wf);
+	});
+
+	it('shifts so the leftmost lands at the margin', () => {
+		const wf = baseWorkflow([
+			{ x: -50, y: 100 },
+			{ x: 200, y: 350 },
+		]);
+		const compacted = compactPositions(wf, { x: 40, y: 40 });
+		expect(compacted.nodes[0].position).toEqual({ x: 40, y: 40 });
+		expect(compacted.nodes[1].position).toEqual({ x: 290, y: 290 });
+	});
+
+	it('is idempotent — running twice changes nothing the second time', () => {
+		const wf = baseWorkflow([
+			{ x: -10, y: -20 },
+			{ x: 30, y: 50 },
+		]);
+		const once = compactPositions(wf);
+		const twice = compactPositions(once);
+		expect(twice).toBe(once);
+	});
+
+	it('returns the same ref when nodes are already at the margin', () => {
+		const wf = baseWorkflow([
+			{ x: 40, y: 40 },
+			{ x: 200, y: 100 },
+		]);
+		expect(compactPositions(wf)).toBe(wf);
 	});
 });
 

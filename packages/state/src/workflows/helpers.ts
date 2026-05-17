@@ -740,6 +740,36 @@ export function cloneNodeAt(source: WorkflowNode, newId: string, position: { x: 
 	return { ...source, id: newId, position } as WorkflowNode;
 }
 
+/**
+ * Shift every node so the leftmost is at `margin.x` and the topmost is at
+ * `margin.y`. Useful after a Tidy + manual drag session where the user
+ * has pushed nodes off into negative space; saves them from manually
+ * dragging the viewport back to origin.
+ *
+ * Pure + idempotent: calling twice on the same workflow produces the
+ * same result (the second call shifts by zero). Returns the same
+ * reference when there's nothing to shift.
+ */
+export function compactPositions(workflow: WorkflowFile, margin: { x: number; y: number } = { x: 40, y: 40 }): WorkflowFile {
+	if (workflow.nodes.length === 0) return workflow;
+	let minX = Number.POSITIVE_INFINITY;
+	let minY = Number.POSITIVE_INFINITY;
+	for (const n of workflow.nodes) {
+		if (n.position.x < minX) minX = n.position.x;
+		if (n.position.y < minY) minY = n.position.y;
+	}
+	const dx = margin.x - minX;
+	const dy = margin.y - minY;
+	if (dx === 0 && dy === 0) return workflow;
+	return {
+		...workflow,
+		nodes: workflow.nodes.map(n => ({
+			...n,
+			position: { x: n.position.x + dx, y: n.position.y + dy },
+		})) as typeof workflow.nodes,
+	};
+}
+
 export interface LayoutOptions {
 	/** Pixels between successive ranks (left-to-right). Default 280 — clears NODE_WIDTH + a gutter. */
 	rankSpacing?: number;
