@@ -5,6 +5,7 @@ import * as actions from '../actions';
 import { diffWorkflows, summariseChange } from '../diff';
 import {
 	cleanupDanglingEdges,
+	completionRatio,
 	duplicateWorkflow,
 	extractAllTags,
 	findDuplicateNames,
@@ -421,6 +422,41 @@ describe('workflow lifecycle — build and tear down', () => {
 		// surfaces nothing (since "Auth (2)" is distinct).
 		state = reducer(state, actions.updateWorkflowName({ id: b.id, name: next }));
 		expect(findDuplicateNames(state.workflows)).toEqual([]);
+	});
+
+	it('completionRatio tracks request-step linking through the slice lifecycle', () => {
+		const mint = counterMinter();
+		const seed = instantiateTemplate({ template: 'blank', name: 'flow', mintId: mint });
+		let state = reducer(initialWorkflowsState, actions.insertNewWorkflow({ id: seed.id, workflow: seed }));
+		// Empty workflow (Start only): vacuously complete.
+		expect(completionRatio(state.workflows[seed.id]!)).toBe(1);
+
+		// Add an unlinked request → 0%.
+		state = reducer(
+			state,
+			actions.addNode({
+				id: seed.id,
+				node: { id: 'r1', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } },
+			}),
+		);
+		expect(completionRatio(state.workflows[seed.id]!)).toBe(0);
+
+		// Link it → 100%.
+		state = reducer(
+			state,
+			actions.updateNodeData({ id: seed.id, nodeId: 'r1', data: { requestId: 'req-X' } }),
+		);
+		expect(completionRatio(state.workflows[seed.id]!)).toBe(1);
+
+		// Add a second unlinked request → 50%.
+		state = reducer(
+			state,
+			actions.addNode({
+				id: seed.id,
+				node: { id: 'r2', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } },
+			}),
+		);
+		expect(completionRatio(state.workflows[seed.id]!)).toBe(0.5);
 	});
 
 	it('purges request refs when the underlying project tree drops the request', () => {
