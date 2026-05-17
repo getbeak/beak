@@ -1,0 +1,134 @@
+import { describe, expect, it } from 'vitest';
+
+import { workflowSchema } from '../beak-workflow';
+
+/**
+ * Round-trip a maxed-out workflow through the Zod schema. Catches drift
+ * between the editor's interfaces (in `state/workflows/types.ts`) and the
+ * canonical on-disk shape (this file's schema).
+ *
+ * If a node kind grows a new field and the schema isn't updated, parse
+ * fails here loudly; if the schema gains an optional field that the
+ * editor doesn't emit, we still parse cleanly. Either way the renderer
+ * and the host stay in lockstep with the file format.
+ */
+
+describe('workflowSchema — round-trip', () => {
+	it('accepts a maxed-out workflow with every node kind', () => {
+		const wf = {
+			id: 'wf-1',
+			name: 'Round-trip',
+			parent: null,
+			nodes: [
+				{ id: 's', type: 'start', position: { x: 0, y: 0 }, data: {} },
+				{
+					id: 'r1',
+					type: 'request',
+					position: { x: 200, y: 0 },
+					data: {
+						requestId: 'req-a',
+						overrides: {
+							headers: { h1: { value: ['x'] }, h2: { enabled: false } },
+							query: { q1: { value: ['y'] } },
+							body: {
+								fields: { f1: { value: ['z'] } },
+								raw: { contentType: 'application/json', text: ['{}'] },
+							},
+							fragment: ['#frag'],
+						},
+					},
+				},
+				{
+					id: 'l1',
+					type: 'loop',
+					position: { x: 400, y: 0 },
+					data: { mode: 'count', count: 3 },
+				},
+				{
+					id: 'l2',
+					type: 'loop',
+					position: { x: 400, y: 150 },
+					data: { mode: 'forEach', forEach: ['$.body.items'] },
+				},
+				{
+					id: 'c1',
+					type: 'condition',
+					position: { x: 600, y: 0 },
+					data: { leftPath: 'body.user.id', operator: 'equals', right: ['1'] },
+				},
+				{
+					id: 'c2',
+					type: 'condition',
+					position: { x: 600, y: 150 },
+					data: { operator: 'truthy' },
+				},
+				{
+					id: 'n1',
+					type: 'notification',
+					position: { x: 800, y: 0 },
+					data: { title: ['done'], body: ['ok'] },
+				},
+			],
+			edges: [
+				{ id: 'e1', source: 's', target: 'r1' },
+				{ id: 'e2', source: 'r1', target: 'l1', sourceHandle: null, targetHandle: null },
+				{ id: 'e3', source: 'l1', target: 'c1', sourceHandle: 'body' },
+				{ id: 'e4', source: 'c1', target: 'n1', sourceHandle: 'true' },
+			],
+		};
+
+		// JSON round-trip first to confirm the structure is serialisable.
+		const wire = JSON.parse(JSON.stringify(wf));
+		const parsed = workflowSchema.parse(wire);
+		expect(parsed.id).toBe('wf-1');
+		expect(parsed.nodes).toHaveLength(7);
+		expect(parsed.edges).toHaveLength(4);
+	});
+
+	it('rejects an unknown node kind', () => {
+		const wf = {
+			id: 'wf-2',
+			name: 'Bad kind',
+			nodes: [{ id: 'a', type: 'mystery', position: { x: 0, y: 0 }, data: {} }],
+			edges: [],
+		};
+		expect(() => workflowSchema.parse(wf)).toThrow();
+	});
+
+	it('rejects an unknown top-level key (strict schema)', () => {
+		const wf = {
+			id: 'wf-3',
+			name: 'Strict',
+			nodes: [],
+			edges: [],
+			somethingWeird: 'rogue',
+		};
+		expect(() => workflowSchema.parse(wf)).toThrow();
+	});
+
+	it('accepts a workflow without a parent (omitted)', () => {
+		const wf = {
+			id: 'wf-4',
+			name: 'No parent',
+			nodes: [{ id: 's', type: 'start', position: { x: 0, y: 0 }, data: {} }],
+			edges: [],
+		};
+		const parsed = workflowSchema.parse(wf);
+		expect(parsed.parent).toBeUndefined();
+	});
+
+	it('treats request overrides as fully optional', () => {
+		const wf = {
+			id: 'wf-5',
+			name: 'No overrides',
+			nodes: [
+				{ id: 's', type: 'start', position: { x: 0, y: 0 }, data: {} },
+				{ id: 'r1', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } },
+			],
+			edges: [],
+		};
+		const parsed = workflowSchema.parse(wf);
+		const request = parsed.nodes.find(n => n.type === 'request')!;
+		expect((request.data as { overrides?: unknown }).overrides).toBeUndefined();
+	});
+});
