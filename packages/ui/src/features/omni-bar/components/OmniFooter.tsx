@@ -3,10 +3,11 @@ import { Box, Flex } from '@chakra-ui/react';
 import * as React from 'react';
 
 import { CATEGORY_META } from '../lib/categories';
+import type { OmniCategoryScope } from '../lib/search';
 import type { OmniCategoryKey } from '../lib/types';
 
 interface OmniFooterProps {
-	scope: 'all' | 'commands' | 'recents';
+	scope: OmniCategoryScope;
 	activeCategory?: OmniCategoryKey;
 	resultCount: number;
 }
@@ -53,7 +54,13 @@ const OmniFooter: React.FC<OmniFooterProps> = ({ scope, activeCategory, resultCo
 						boxShadow: `inset 0 0 0 1px color-mix(in srgb, ${accent} 28%, transparent)`,
 					}}
 				>
-					{scope === 'commands' ? 'Commands' : scope === 'recents' ? 'Recents' : (meta?.label ?? 'All')}
+					{scope === 'commands'
+						? 'Commands'
+						: scope === 'recents'
+							? 'Recents'
+							: scope === 'workflows'
+								? 'Workflows'
+								: (meta?.label ?? 'All')}
 				</Box>
 			</Flex>
 		</Flex>

@@ -2,7 +2,7 @@ import { checkShortcut } from '@beak/ui/lib/keyboard-shortcuts';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { Box, chakra, Flex } from '@chakra-ui/react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Command, Search, Sparkles } from 'lucide-react';
+import { Command, Search, Sparkles, Workflow as WorkflowIcon } from 'lucide-react';
 import * as React from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -92,19 +92,30 @@ const Omnibar: React.FC = () => {
 	const accent = useMemo(() => {
 		if (scope === 'commands') return 'var(--beak-colors-accent-success)';
 		if (scope === 'recents') return 'var(--beak-colors-accent-indigo)';
+		if (scope === 'workflows') return 'var(--beak-colors-accent-pink)';
 		return activeItem ? CATEGORY_META[activeItem.category].accent : 'var(--beak-colors-accent-pink)';
 	}, [scope, activeItem]);
 
-	const ModeIcon = scope === 'commands' ? Command : scope === 'recents' ? Sparkles : Search;
+	const ModeIcon =
+		scope === 'commands'
+			? Command
+			: scope === 'recents'
+				? Sparkles
+				: scope === 'workflows'
+					? WorkflowIcon
+					: Search;
 	const placeholder =
 		scope === 'commands'
 			? 'Run a command…'
 			: scope === 'recents'
 				? 'Browse recent items…'
-				: 'Find requests, folders, var sets, pages, commands…';
+				: scope === 'workflows'
+					? 'Find a workflow…'
+					: 'Find requests, folders, var sets, workflows, pages, commands…';
 
 	const trimmedContent = content.trim();
-	const hasQuery = trimmedContent.length > 0 && trimmedContent !== '>' && trimmedContent !== '~';
+	const hasQuery =
+		trimmedContent.length > 0 && trimmedContent !== '>' && trimmedContent !== '~' && trimmedContent !== '#';
 
 	return (
 		<AnimatePresence>
@@ -178,7 +189,15 @@ const Omnibar: React.FC = () => {
 							}}
 						>
 							<motion.div
-								key={ModeIcon === Command ? 'cmd' : ModeIcon === Sparkles ? 'rec' : 'search'}
+								key={
+									ModeIcon === Command
+										? 'cmd'
+										: ModeIcon === Sparkles
+											? 'rec'
+											: ModeIcon === WorkflowIcon
+												? 'wf'
+												: 'search'
+								}
 								initial={{ opacity: 0, scale: 0.85 }}
 								animate={{ opacity: 1, scale: 1 }}
 								transition={{ duration: 0.12, ease: 'easeOut' }}
@@ -263,7 +282,13 @@ const Omnibar: React.FC = () => {
 									boxShadow: 'inset 0 1px 0 color-mix(in srgb, white 14%, transparent)',
 								}}
 							>
-								{scope === 'commands' ? 'Cmd' : scope === 'recents' ? 'Recent' : 'Find'}
+								{scope === 'commands'
+									? 'Cmd'
+									: scope === 'recents'
+										? 'Recent'
+										: scope === 'workflows'
+											? 'Flow'
+											: 'Find'}
 							</Box>
 						</Flex>
 

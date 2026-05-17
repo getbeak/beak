@@ -7,7 +7,7 @@ const MotionBox = motion.create(Box);
 
 export interface OmniEmptyProps {
 	hasQuery: boolean;
-	scope: 'all' | 'commands' | 'recents';
+	scope: 'all' | 'commands' | 'recents' | 'workflows';
 }
 
 const OmniEmpty: React.FC<OmniEmptyProps> = ({ hasQuery, scope }) => {
@@ -24,13 +24,19 @@ const OmniEmpty: React.FC<OmniEmptyProps> = ({ hasQuery, scope }) => {
 					<Flex align='center' gap='2' color='fg.muted'>
 						<Sparkles size={14} />
 						<Box fontSize='xs' fontWeight='600' letterSpacing='-0.005em'>
-							{scope === 'commands' ? 'Run a command' : scope === 'recents' ? 'Browse recents' : 'Search the project'}
+							{scope === 'commands'
+							? 'Run a command'
+							: scope === 'recents'
+								? 'Browse recents'
+								: scope === 'workflows'
+									? 'Find a workflow'
+									: 'Search the project'}
 						</Box>
 					</Flex>
 					<Box fontSize='11.5px' lineHeight='1.55' color='fg.subtle'>
 						{scope === 'all' && (
 							<>
-								{'Find requests, folders, variable sets, pages, and tabs. '}
+								{'Find requests, folders, variable sets, workflows, pages, and tabs. '}
 								<Box as='span' color='accent.success' fontWeight='600'>
 									{'Type > '}
 								</Box>
@@ -38,11 +44,16 @@ const OmniEmpty: React.FC<OmniEmptyProps> = ({ hasQuery, scope }) => {
 								<Box as='span' color='accent.indigo' fontWeight='600'>
 									{'~ '}
 								</Box>
-								{'for recents.'}
+								{'for recents, '}
+								<Box as='span' color='accent.pink' fontWeight='600'>
+									{'# '}
+								</Box>
+								{'for workflows.'}
 							</>
 						)}
 						{scope === 'commands' && 'Type to filter actions, theme switches, tab controls.'}
 						{scope === 'recents' && 'Currently open and recently viewed surfaces.'}
+						{scope === 'workflows' && 'Match by workflow name, description, tag, or id.'}
 					</Box>
 				</Flex>
 			</MotionBox>

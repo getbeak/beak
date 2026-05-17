@@ -15,16 +15,27 @@ const FUSE_OPTIONS: IFuseOptions<OmniItem> = {
 	],
 };
 
+export type OmniCategoryScope = 'all' | 'commands' | 'recents' | 'workflows';
+
 export interface OmniQuery {
 	rawText: string;
 	queryText: string;
-	categoryScope: 'all' | 'commands' | 'recents';
+	categoryScope: OmniCategoryScope;
 }
 
+/**
+ * Prefix-driven scope routing for the omni-bar input:
+ *   `>foo` → command palette
+ *   `~foo` → just recents + open tabs
+ *   `#foo` → just workflows (mirrors the workflow tags pattern;
+ *            also covers the user instinct of typing `#auth`)
+ * Anything else is the "everything" scope.
+ */
 export function parseQuery(rawText: string): OmniQuery {
 	const trimmed = rawText.trimStart();
 	if (trimmed.startsWith('>')) return { rawText, queryText: trimmed.slice(1).trimStart(), categoryScope: 'commands' };
 	if (trimmed.startsWith('~')) return { rawText, queryText: trimmed.slice(1).trimStart(), categoryScope: 'recents' };
+	if (trimmed.startsWith('#')) return { rawText, queryText: trimmed.slice(1).trimStart(), categoryScope: 'workflows' };
 	return { rawText, queryText: trimmed, categoryScope: 'all' };
 }
 
@@ -35,6 +46,7 @@ export function searchOmniItems(items: OmniItem[], query: OmniQuery): OmniGroup[
 	const scoped = items.filter(item => {
 		if (query.categoryScope === 'commands') return item.category === 'commands';
 		if (query.categoryScope === 'recents') return item.category === 'recents' || item.category === 'openTabs';
+		if (query.categoryScope === 'workflows') return item.category === 'workflows';
 		return true;
 	});
 

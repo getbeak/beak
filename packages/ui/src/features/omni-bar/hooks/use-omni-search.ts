@@ -1,12 +1,12 @@
 import { useMemo } from 'react';
 
-import { parseQuery, searchOmniItems } from '../lib/search';
+import { type OmniCategoryScope, parseQuery, searchOmniItems } from '../lib/search';
 import type { OmniGroup, OmniItem } from '../lib/types';
 
 export interface OmniSearchResult {
 	groups: OmniGroup[];
 	flatItems: OmniItem[];
-	scope: 'all' | 'commands' | 'recents';
+	scope: OmniCategoryScope;
 }
 
 export function useOmniSearch(items: OmniItem[], rawText: string): OmniSearchResult {
