@@ -138,6 +138,27 @@ describe('workflowSchema — round-trip', () => {
 		expect(parsed.parent).toBeUndefined();
 	});
 
+	it('accepts an optional version field', () => {
+		const wf = {
+			version: '1',
+			id: 'wf-v',
+			name: 'with version',
+			nodes: [{ id: 's', type: 'start', position: { x: 0, y: 0 }, data: {} }],
+			edges: [],
+		};
+		expect(workflowSchema.parse(wf).version).toBe('1');
+	});
+
+	it('parses workflows without a version (pre-version files)', () => {
+		const wf = {
+			id: 'wf-no-v',
+			name: 'no version',
+			nodes: [{ id: 's', type: 'start', position: { x: 0, y: 0 }, data: {} }],
+			edges: [],
+		};
+		expect(workflowSchema.parse(wf).version).toBeUndefined();
+	});
+
 	it('accepts an optional workflow description', () => {
 		const wf = {
 			id: 'wf-desc',

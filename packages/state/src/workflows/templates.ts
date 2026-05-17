@@ -70,12 +70,13 @@ export function instantiateTemplate(options: InstantiateOptions): WorkflowFile {
 
 	switch (template) {
 		case 'blank': {
-			return { id: workflowId, name, parent, nodes: [startNode], edges: [] };
+			return { version: '1', id: workflowId, name, parent, nodes: [startNode], edges: [] };
 		}
 		case 'smoke-test': {
 			const requestId = mintId('node');
 			const notifId = mintId('node');
 			return {
+				version: '1',
 				id: workflowId,
 				name,
 				parent,
@@ -99,6 +100,7 @@ export function instantiateTemplate(options: InstantiateOptions): WorkflowFile {
 			const loginId = mintId('node');
 			const callId = mintId('node');
 			return {
+				version: '1',
 				id: workflowId,
 				name,
 				parent,
@@ -117,6 +119,7 @@ export function instantiateTemplate(options: InstantiateOptions): WorkflowFile {
 			const loopId = mintId('node');
 			const requestId = mintId('node');
 			return {
+				version: '1',
 				id: workflowId,
 				name,
 				parent,

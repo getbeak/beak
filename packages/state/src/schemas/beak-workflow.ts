@@ -200,6 +200,13 @@ export const workflowEdgeSchema = z.object({
 
 export const workflowSchema = z
 	.object({
+		/**
+		 * Schema version. Optional today so workflows pre-dating the field
+		 * still parse; the writer always emits `'1'`. Bump deliberately when
+		 * the on-disk shape changes — the migrator reads this to pick the
+		 * right transform chain.
+		 */
+		version: z.string().optional(),
 		id: z.string(),
 		name: z.string(),
 		/**

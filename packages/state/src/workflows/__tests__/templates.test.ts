@@ -45,6 +45,13 @@ describe('templates', () => {
 		expect(wf.edges).toEqual([]);
 	});
 
+	it('every template emits version="1"', () => {
+		for (const key of allKeys) {
+			const wf = instantiateTemplate({ template: key, name: 'test', mintId: makeMinter() });
+			expect(wf.version).toBe('1');
+		}
+	});
+
 	it('smoke-test template wires Start → request → notification', () => {
 		const wf = instantiateTemplate({ template: 'smoke-test', name: 'test', mintId: makeMinter() });
 		expect(wf.nodes.map(n => n.type)).toEqual(['start', 'request', 'notification']);
