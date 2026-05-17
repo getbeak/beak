@@ -761,23 +761,19 @@ function NotificationEditor({
 }) {
 	const dispatch = useDispatch();
 
-	const titleText = readPlainText(node.data.title);
-	const bodyText = readPlainText(node.data.body);
-
 	return (
 		<Stack gap='3' px='3' py='3'>
 			<Stack gap='1'>
 				<FieldLabel>{'Title'}</FieldLabel>
-				<Input
-					size='sm'
+				<VariableInputBox
+					parts={(node.data.title ?? []) as ValueSections}
 					placeholder='Step complete'
-					value={titleText}
-					onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+					onChange={next =>
 						dispatch(
 							workflowActions.updateNodeData({
 								id: workflowId,
 								nodeId: node.id,
-								data: { title: e.target.value === '' ? [] : [e.target.value] },
+								data: { title: next.length === 0 ? [] : next },
 							}),
 						)
 					}
@@ -785,25 +781,21 @@ function NotificationEditor({
 			</Stack>
 			<Stack gap='1'>
 				<FieldLabel>{'Body'}</FieldLabel>
-				<Textarea
-					size='sm'
-					rows={5}
+				<VariableInputBox
+					parts={(node.data.body ?? []) as ValueSections}
 					placeholder='Details to show the user…'
-					value={bodyText}
-					onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+					onChange={next =>
 						dispatch(
 							workflowActions.updateNodeData({
 								id: workflowId,
 								nodeId: node.id,
-								data: { body: e.target.value === '' ? [] : [e.target.value] },
+								data: { body: next.length === 0 ? [] : next },
 							}),
 						)
 					}
 				/>
 			</Stack>
-			<HelperText>
-				{'Plain text only for now. Realtime-value templating lands with the loops/conditions editor pass.'}
-			</HelperText>
+			<HelperText>{'Type $ to insert a variable chip — works the same way as request headers/body.'}</HelperText>
 		</Stack>
 	);
 }
