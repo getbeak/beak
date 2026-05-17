@@ -1,5 +1,5 @@
 import { verbToColor, verbToShortLabel } from '@beak/design-system/helpers';
-import { overrideBadgeText, previewValueSections, type RequestOverrides } from '@beak/state/workflows';
+import { type NodeIssue, overrideBadgeText, previewValueSections, type RequestOverrides } from '@beak/state/workflows';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { Box, Flex, Stack } from '@chakra-ui/react';
 import type { RequestNode as ProjectRequestNode } from '@getbeak/types/nodes';
@@ -37,16 +37,29 @@ const NodeShell: React.FC<{
 	noInput?: boolean;
 	noOutput?: boolean;
 	rightHandles?: BranchHandle[];
+	issue?: NodeIssue;
 	children?: React.ReactNode;
-}> = ({ tone, icon, title, selected, noInput, noOutput, rightHandles, children }) => (
+}> = ({ tone, icon, title, selected, noInput, noOutput, rightHandles, issue, children }) => {
+	const issueTone = issue === 'cycle' || issue === 'unlinked' ? 'warning' : issue === 'unreachable' ? 'alert' : null;
+	const borderColor = selected
+		? `accent.${tone}`
+		: issueTone
+			? `accent.${issueTone}`
+			: 'border.default';
+	const boxShadow = selected
+		? `0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-${tone}) 28%, transparent)`
+		: issueTone
+			? `0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-${issueTone}) 22%, transparent)`
+			: 'sm';
+	return (
 	<Box
 		minW='200px'
 		maxW='260px'
 		borderRadius='md'
 		bg='bg.surface'
 		borderWidth='1px'
-		borderColor={selected ? `accent.${tone}` : 'border.default'}
-		boxShadow={selected ? `0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-${tone}) 28%, transparent)` : 'sm'}
+		borderColor={borderColor}
+		boxShadow={boxShadow}
 		fontSize='12px'
 		color='fg.default'
 		position='relative'
@@ -96,7 +109,8 @@ const NodeShell: React.FC<{
 		)}
 		{!rightHandles && !noOutput && <Handle type='source' position={Position.Right} />}
 	</Box>
-);
+	);
+};
 
 const VerbBadge: React.FC<{ verb: string }> = ({ verb }) => (
 	<Box
@@ -118,7 +132,7 @@ const VerbBadge: React.FC<{ verb: string }> = ({ verb }) => (
 );
 
 export function RequestNodeView({ data, selected }: NodeProps) {
-	const d = data as { requestId: string | null; overrides?: RequestOverrides };
+	const d = data as { requestId: string | null; overrides?: RequestOverrides; _issue?: NodeIssue };
 	const linked = useAppSelector(s => {
 		if (!d.requestId) return undefined;
 		const node = s.global.project.tree[d.requestId];
@@ -130,7 +144,7 @@ export function RequestNodeView({ data, selected }: NodeProps) {
 	const urlPreview = linked?.mode === 'valid' ? previewValueSections(linked.info.url) : '';
 
 	return (
-		<NodeShell tone='pink' icon={<Globe size={12} strokeWidth={1.8} />} title='Request' selected={selected}>
+		<NodeShell tone='pink' icon={<Globe size={12} strokeWidth={1.8} />} title='Request' selected={selected} issue={d._issue}>
 			{!d.requestId ? (
 				<Box px='2.5' py='2' color='fg.subtle' fontStyle='italic'>
 					{'Pick a request →'}
@@ -209,7 +223,7 @@ export function StartNodeView({ selected }: NodeProps) {
 }
 
 export function LoopNodeView({ data, selected }: NodeProps) {
-	const d = data as { mode: 'count' | 'forEach'; count?: number };
+	const d = data as { mode: 'count' | 'forEach'; count?: number; _issue?: NodeIssue };
 	const subtitle = d.mode === 'count' ? `Repeat ${d.count ?? 0} ×` : 'For each item';
 	return (
 		<NodeShell
@@ -217,6 +231,7 @@ export function LoopNodeView({ data, selected }: NodeProps) {
 			icon={<Repeat size={12} strokeWidth={1.8} />}
 			title='Loop'
 			selected={selected}
+			issue={d._issue}
 			rightHandles={[
 				{ id: 'body', label: 'body', tone: 'teal' },
 				{ id: 'after', label: 'after', tone: 'pink' },
@@ -238,13 +253,14 @@ const operatorLabels: Record<string, string> = {
 };
 
 export function ConditionNodeView({ data, selected }: NodeProps) {
-	const d = data as { operator: string };
+	const d = data as { operator: string; _issue?: NodeIssue };
 	return (
 		<NodeShell
 			tone='indigo'
 			icon={<GitBranch size={12} strokeWidth={1.8} />}
 			title='Condition'
 			selected={selected}
+			issue={d._issue}
 			rightHandles={[
 				{ id: 'true', label: 'true', tone: 'success' },
 				{ id: 'false', label: 'false', tone: 'alert' },
@@ -297,10 +313,10 @@ export function CommentNodeView({ data, selected }: NodeProps) {
 }
 
 export function NotificationNodeView({ data, selected }: NodeProps) {
-	const d = data as { title?: unknown[]; body?: unknown[] };
+	const d = data as { title?: unknown[]; body?: unknown[]; _issue?: NodeIssue };
 	const title = previewValueSections(d.title) || 'Untitled notification';
 	return (
-		<NodeShell tone='warning' icon={<Bell size={12} strokeWidth={1.8} />} title='Notification' selected={selected}>
+		<NodeShell tone='warning' icon={<Bell size={12} strokeWidth={1.8} />} title='Notification' selected={selected} issue={d._issue}>
 			<Box
 				px='2.5'
 				py='2'

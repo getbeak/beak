@@ -102,27 +102,45 @@ export const SaveStateIndicator: React.FC = () => {
 
 // Amber pill that appears when the graph picks up unreachable steps or
 // unlinked request nodes — same shape as MetaPill so the two read as a row.
-export const WarningPill: React.FC<{ count: number; label: string; title?: string }> = ({ count, label, title }) => (
-	<Flex
-		align='center'
-		gap='1'
-		px='1.5'
-		h='18px'
-		borderRadius='sm'
-		borderWidth='1px'
-		borderColor='color-mix(in srgb, var(--beak-colors-accent-warning) 38%, transparent)'
-		bg='color-mix(in srgb, var(--beak-colors-accent-warning) 14%, transparent)'
-		color='accent.warning'
-		fontVariantNumeric='tabular-nums'
-		title={title}
-	>
-		<AlertTriangle size={10} strokeWidth={2.2} />
-		<Box as='span'>{count}</Box>
-		<Box as='span' opacity={0.85}>
-			{label}
-		</Box>
-	</Flex>
-);
+export const WarningPill: React.FC<{ count: number; label: string; title?: string; onClick?: () => void }> = ({
+	count,
+	label,
+	title,
+	onClick,
+}) => {
+	const clickable = Boolean(onClick);
+	return (
+		<Flex
+			as={clickable ? 'button' : 'div'}
+			align='center'
+			gap='1'
+			px='1.5'
+			h='18px'
+			borderRadius='sm'
+			borderWidth='1px'
+			borderColor='color-mix(in srgb, var(--beak-colors-accent-warning) 38%, transparent)'
+			bg='color-mix(in srgb, var(--beak-colors-accent-warning) 14%, transparent)'
+			color='accent.warning'
+			fontVariantNumeric='tabular-nums'
+			title={title}
+			cursor={clickable ? 'pointer' : undefined}
+			_hover={
+				clickable
+					? {
+						bg: 'color-mix(in srgb, var(--beak-colors-accent-warning) 22%, transparent)',
+					}
+					: undefined
+			}
+			onClick={onClick}
+		>
+			<AlertTriangle size={10} strokeWidth={2.2} />
+			<Box as='span'>{count}</Box>
+			<Box as='span' opacity={0.85}>
+				{label}
+			</Box>
+		</Flex>
+	);
+};
 
 interface EmptySelectionPanelProps {
 	addNode: (kind: AddableNodeKind) => void;

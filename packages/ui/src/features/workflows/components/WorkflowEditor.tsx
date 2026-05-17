@@ -1,7 +1,10 @@
 import ksuid from '@beak/ksuid';
 import {
 	autoLayout,
+	firstIssueNode,
 	inspectGraph,
+	type NodeIssue,
+	nodeIssuesFromHealth,
 	placeNewNode,
 	validateConnection,
 	type WorkflowEdge,
@@ -106,16 +109,23 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 	// xyflow's controlled API takes `Node[]` / `Edge[]`. Our schema is structurally
 	// compatible — we cast through `unknown` because xyflow's generic Node has an
 	// open `data` record and ours is a discriminated union.
-	// Reflect Redux selection back through xyflow's `selected` flag so the
-	// node-views render with their selection ring (NodeShell consumes
-	// `selected` from NodeProps).
-	const rfNodes = useMemo<Node[]>(() => {
-		if (!workflow) return [];
-		return workflow.nodes.map(n => ({ ...n, selected: selectedIds.has(n.id) })) as unknown as Node[];
-	}, [workflow, selectedIds]);
 	const rfEdges = useMemo<Edge[]>(() => (workflow ? (workflow.edges as unknown as Edge[]) : []), [workflow]);
 
 	const health = useMemo(() => (workflow ? inspectGraph(workflow) : null), [workflow]);
+	// Per-node issue (cycle > unlinked > unreachable). Threaded into rfNodes
+	// below so the kind-specific node views can paint a coloured ring.
+	const nodeIssues = useMemo<Map<string, NodeIssue>>(() => (health ? nodeIssuesFromHealth(health) : new Map()), [health]);
+
+	// Reflect Redux selection + per-node issue back through xyflow's node data
+	// so the node-views render with their selection ring + issue accent.
+	const rfNodes = useMemo<Node[]>(() => {
+		if (!workflow) return [];
+		return workflow.nodes.map(n => ({
+			...n,
+			selected: selectedIds.has(n.id),
+			data: { ...n.data, _issue: nodeIssues.get(n.id) },
+		})) as unknown as Node[];
+	}, [workflow, selectedIds, nodeIssues]);
 	const warningCount = health
 		? health.unreachable.length + health.unlinkedRequestNodes.length + health.cycleNodes.length
 		: 0;
@@ -410,11 +420,17 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 											health.unreachable.length > 0 ? `${health.unreachable.length} unreachable` : null,
 											health.unlinkedRequestNodes.length > 0 ? `${health.unlinkedRequestNodes.length} unlinked` : null,
 											health.cycleNodes.length > 0 ? `${health.cycleNodes.length} on cycle` : null,
+											'click to jump',
 										]
 											.filter(Boolean)
 											.join(' · ')
 									: undefined
 							}
+							onClick={() => {
+								if (!health) return;
+								const target = firstIssueNode(health);
+								if (target) replaceSelection(target);
+							}}
 						/>
 					)}
 				</Flex>

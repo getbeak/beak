@@ -464,6 +464,35 @@ export function edgesAfterNodeRemoval(edges: ReadonlyArray<WorkflowEdge>, nodeId
 	return edges.filter(e => e.source !== nodeId && e.target !== nodeId);
 }
 
+export type NodeIssue = 'cycle' | 'unlinked' | 'unreachable';
+
+/**
+ * Compute the issue per node id from a GraphHealth snapshot — used by
+ * the editor to decorate canvas pills with a red/amber ring. Ranking is
+ * cycle > unlinked > unreachable so a single colour reflects the most
+ * actionable problem (cycles can run forever, unlinked requests can't
+ * fire, unreachable is the gentlest).
+ */
+export function nodeIssuesFromHealth(health: GraphHealth): Map<string, NodeIssue> {
+	const issues = new Map<string, NodeIssue>();
+	for (const id of health.unreachable) issues.set(id, 'unreachable');
+	for (const id of health.unlinkedRequestNodes) issues.set(id, 'unlinked');
+	for (const id of health.cycleNodes) issues.set(id, 'cycle');
+	return issues;
+}
+
+/**
+ * First node id with an issue, ranked cycle > unlinked > unreachable.
+ * Returns `null` when the graph is clean. The WarningPill uses this to
+ * jump-to-issue on click.
+ */
+export function firstIssueNode(health: GraphHealth): string | null {
+	if (health.cycleNodes.length > 0) return health.cycleNodes[0];
+	if (health.unlinkedRequestNodes.length > 0) return health.unlinkedRequestNodes[0];
+	if (health.unreachable.length > 0) return health.unreachable[0];
+	return null;
+}
+
 export interface NodeSearchResult {
 	id: string;
 	label: string;

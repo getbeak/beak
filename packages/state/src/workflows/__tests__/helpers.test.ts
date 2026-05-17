@@ -5,8 +5,10 @@ import {
 	cloneNodeAt,
 	countOverrideEntries,
 	edgesAfterNodeRemoval,
+	firstIssueNode,
 	flightFromNode,
 	inspectGraph,
+	nodeIssuesFromHealth,
 	overrideBadgeText,
 	placeNewNode,
 	previewValueSections,
@@ -454,6 +456,46 @@ describe('topologicalOrder', () => {
 			],
 		};
 		expect(() => topologicalOrder(wf)).toThrow(/cycle/);
+	});
+});
+
+describe('nodeIssuesFromHealth + firstIssueNode', () => {
+	function makeHealth(parts: Partial<ReturnType<typeof inspectGraph>>): ReturnType<typeof inspectGraph> {
+		return {
+			nodeCount: 0,
+			edgeCount: 0,
+			reachable: new Set<string>(),
+			unreachable: [],
+			danglingEdges: [],
+			unlinkedRequestNodes: [],
+			cycleNodes: [],
+			...parts,
+		};
+	}
+
+	it('returns an empty map when the graph is clean', () => {
+		expect(nodeIssuesFromHealth(makeHealth({}))).toEqual(new Map());
+		expect(firstIssueNode(makeHealth({}))).toBeNull();
+	});
+
+	it('ranks cycle > unlinked > unreachable per node', () => {
+		const issues = nodeIssuesFromHealth(
+			makeHealth({
+				unreachable: ['x', 'y'],
+				unlinkedRequestNodes: ['x'],
+				cycleNodes: ['x'],
+			}),
+		);
+		// x lands on all three; ranking promotes it to 'cycle'.
+		expect(issues.get('x')).toBe('cycle');
+		// y is only unreachable.
+		expect(issues.get('y')).toBe('unreachable');
+	});
+
+	it('firstIssueNode prefers cycles then unlinked then unreachable', () => {
+		expect(firstIssueNode(makeHealth({ cycleNodes: ['a'], unlinkedRequestNodes: ['b'], unreachable: ['c'] }))).toBe('a');
+		expect(firstIssueNode(makeHealth({ unlinkedRequestNodes: ['b'], unreachable: ['c'] }))).toBe('b');
+		expect(firstIssueNode(makeHealth({ unreachable: ['c'] }))).toBe('c');
 	});
 });
 
