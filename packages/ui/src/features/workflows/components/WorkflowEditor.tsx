@@ -229,6 +229,24 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 		return workflow.edges.find(e => e.id === selectedEdgeId);
 	}, [workflow, selectedEdgeId]);
 
+	const fitView = useCallback(
+		(scope: 'all' | 'selection' = 'all') => {
+			// xyflow's instance fits the viewport to the named nodes (or the
+			// whole graph when `nodes` is omitted). Padding matches the
+			// canvas's fitView prop so the manual click feels identical to
+			// the first-paint behaviour. 300ms animation reads as intentional.
+			const opts: { padding: number; duration: number; nodes?: { id: string }[] } = {
+				padding: 0.1,
+				duration: 300,
+			};
+			if (scope === 'selection' && selectedIds.size > 0) {
+				opts.nodes = [...selectedIds].map(id => ({ id }));
+			}
+			reactFlow.fitView(opts);
+		},
+		[reactFlow, selectedIds],
+	);
+
 	// Keyboard: Delete/Backspace removes the selected node (unless it's Start),
 	// Escape clears selection. Skip when focus is inside a text field so the
 	// properties panel and toolbar inputs keep their native behaviour.
@@ -300,6 +318,14 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 				return;
 			}
 
+			// Cmd-. / Ctrl-. — fit viewport to current selection (or whole
+			// graph if nothing's selected).
+			if ((event.metaKey || event.ctrlKey) && event.key === '.') {
+				event.preventDefault();
+				fitView(selectedIds.size > 0 ? 'selection' : 'all');
+				return;
+			}
+
 			// Cmd/Ctrl-D — duplicate when exactly one node is selected. Multi-
 			// select duplication would need a relayout pass to keep things
 			// readable; skip it for now.
@@ -356,7 +382,7 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 		}
 		window.addEventListener('keydown', onKeyDown);
 		return () => window.removeEventListener('keydown', onKeyDown);
-	}, [clearSelection, dispatch, replaceSelection, selectedIds, selectedNode, workflow, workflowId]);
+	}, [clearSelection, dispatch, fitView, replaceSelection, selectedIds, selectedNode, workflow, workflowId]);
 
 	const tidyGraph = useCallback(() => {
 		if (!workflow) return;
@@ -370,13 +396,6 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 		if (compacted === workflow) return; // no-op shortcut: nothing changed
 		dispatch(workflowActions.replaceGraph({ id: workflowId, nodes: compacted.nodes, edges: compacted.edges }));
 	}, [dispatch, workflow, workflowId]);
-
-	const fitView = useCallback(() => {
-		// xyflow's instance fits the viewport to the current graph; padding
-		// matches the canvas's fitView prop so the manual click feels
-		// identical to the first-paint behaviour.
-		reactFlow.fitView({ padding: 0.1, duration: 300 });
-	}, [reactFlow]);
 
 	const clearGraph = useCallback(async () => {
 		if (!workflow) return;
@@ -749,7 +768,7 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 					<Box w='1px' h='14px' bg='border.subtle' alignSelf='center' mx='1' />
 					<ToolbarButton icon={<LayoutTemplate size={13} strokeWidth={1.8} />} label='Tidy' onClick={tidyGraph} />
 					<ToolbarButton icon={<Minimize2 size={13} strokeWidth={1.8} />} label='Compact' onClick={compactGraph} />
-					<ToolbarButton icon={<Maximize2 size={13} strokeWidth={1.8} />} label='Fit' onClick={fitView} />
+					<ToolbarButton icon={<Maximize2 size={13} strokeWidth={1.8} />} label='Fit' onClick={() => fitView('all')} />
 					<ToolbarButton icon={<Trash2 size={13} strokeWidth={1.8} />} label='Clear' onClick={clearGraph} />
 					<ToolbarButton
 						icon={<Play size={13} strokeWidth={1.8} />}

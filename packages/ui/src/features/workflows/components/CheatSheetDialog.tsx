@@ -54,9 +54,12 @@ const CheatSheetDialog: React.FC<CheatSheetDialogProps> = ({ open, onClose }) =>
 						<Section title='Workflow'>
 							<Row keys={['Simulate']} desc='Walk the graph with default resolvers' />
 							<Row keys={['Tidy']} desc='BFS-rank auto-layout' />
+							<Row keys={['Compact']} desc='Shift the graph back to the origin' />
+							<Row keys={['Fit', '⌘ .']} desc='Fit viewport to graph (or selection)' />
 							<Row keys={['Stats']} desc='Per-kind / per-handle breakdown' />
 							<Row keys={['Doc']} desc='Copy workflow as Markdown' />
 							<Row keys={['Copy / Paste']} desc='Workflow JSON to/from clipboard (Paste re-keys ids)' />
+							<Row keys={['Merge']} desc='Graft clipboard JSON into this workflow' />
 						</Section>
 
 						<Section title='Help'>
