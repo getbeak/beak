@@ -1,6 +1,6 @@
 import type {
-	AddReq,
 	AddRemoteReq,
+	AddReq,
 	BranchReq,
 	CheckoutReq,
 	CloneReq,
