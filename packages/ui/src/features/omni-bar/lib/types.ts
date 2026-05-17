@@ -6,6 +6,7 @@ export type OmniCategoryKey =
 	| 'requests'
 	| 'folders'
 	| 'variableSets'
+	| 'workflows'
 	| 'openTabs'
 	| 'pages'
 	| 'commands';

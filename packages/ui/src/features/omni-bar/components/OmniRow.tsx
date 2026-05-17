@@ -1,4 +1,4 @@
-import { Box, Flex, chakra } from '@chakra-ui/react';
+import { Box, chakra, Flex } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 import { CornerDownLeft } from 'lucide-react';
 import * as React from 'react';
@@ -112,14 +112,7 @@ const OmniRow = forwardRef<HTMLButtonElement, OmniRowProps>(({ item, active, onA
 					{item.title}
 				</Box>
 				{item.subtitle && (
-					<Box
-						fontSize='10.5px'
-						color='fg.subtle'
-						whiteSpace='nowrap'
-						overflow='hidden'
-						textOverflow='ellipsis'
-						mt='0.5'
-					>
+					<Box fontSize='10.5px' color='fg.subtle' whiteSpace='nowrap' overflow='hidden' textOverflow='ellipsis' mt='0.5'>
 						{item.subtitle}
 					</Box>
 				)}

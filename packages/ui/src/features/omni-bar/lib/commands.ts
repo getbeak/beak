@@ -1,8 +1,8 @@
 import tabActions from '@beak/ui/features/tabs/store/actions';
-import { closeTabIntent } from '@beak/ui/store/project/actions';
 import { ipcExplorerService, ipcPreferencesService, ipcWindowService } from '@beak/ui/lib/ipc';
 import { reloadExtensions } from '@beak/ui/store/extensions/actions';
 import { sidebarPreferenceSetCollapse, sidebarPreferenceSetSelected } from '@beak/ui/store/preferences/actions';
+import { closeTabIntent } from '@beak/ui/store/project/actions';
 import {
 	ArrowLeft,
 	ArrowRight,

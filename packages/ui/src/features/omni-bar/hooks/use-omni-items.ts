@@ -16,6 +16,7 @@ import {
 	Settings,
 	Sparkles,
 	Table,
+	Workflow as WorkflowIcon,
 } from 'lucide-react';
 import { useMemo } from 'react';
 
@@ -103,6 +104,7 @@ function describeFolderPath(tree: Tree, node: FolderNode): string {
 export function useOmniItems(): OmniItem[] {
 	const tree = useAppSelector(s => s.global.project.tree) || ({} as Tree);
 	const variableSets = useAppSelector(s => s.global.variableSets.variableSets);
+	const workflows = useAppSelector(s => s.global.workflows.workflows);
 	const activeTabs = useAppSelector(s => s.features.tabs.activeTabs);
 	const selectedTabId = useAppSelector(s => s.features.tabs.selectedTab);
 	const sidebarCollapsed = useAppSelector(s => s.global.preferences.sidebar.collapsed.sidebar);
@@ -148,6 +150,27 @@ export function useOmniItems(): OmniItem[] {
 			});
 		}
 
+		for (const wf of Object.values(workflows ?? {})) {
+			const stepCount = wf.nodes.length;
+			const subtitleParts: string[] = [];
+			const desc = wf.description?.trim();
+			if (desc) subtitleParts.push(desc);
+			subtitleParts.push(`${stepCount} step${stepCount === 1 ? '' : 's'}`);
+			if (wf.tags && wf.tags.length > 0) subtitleParts.push(`#${wf.tags.join(' #')}`);
+			items.push({
+				id: `workflow:${wf.id}`,
+				category: 'workflows',
+				title: wf.name?.trim() || 'Untitled workflow',
+				subtitle: subtitleParts.join(' · '),
+				icon: WorkflowIcon,
+				keywords: wf.tags,
+				accent: 'var(--beak-colors-accent-pink)',
+				action: ({ dispatch }) => {
+					dispatch(changeTab({ type: 'workflow_editor', payload: wf.id, temporary: true }));
+				},
+			});
+		}
+
 		for (const setName of TypedObject.keys(variableSets ?? {})) {
 			const set = variableSets[setName];
 			if (!set) continue;
@@ -165,9 +188,14 @@ export function useOmniItems(): OmniItem[] {
 			});
 		}
 
+		const workflowNames = new Map<string, string>();
+		for (const wf of Object.values(workflows ?? {})) {
+			workflowNames.set(wf.id, wf.name?.trim() || 'Untitled workflow');
+		}
+
 		for (const tab of activeTabs) {
 			if (tab.payload === selectedTabId) continue;
-			const meta = describeTab(tab, tree, variableSets ? Object.keys(variableSets) : []);
+			const meta = describeTab(tab, tree, variableSets ? Object.keys(variableSets) : [], workflowNames);
 			if (!meta) continue;
 			items.push({
 				id: `tab:${tab.type}:${String(tab.payload)}`,
@@ -214,7 +242,7 @@ export function useOmniItems(): OmniItem[] {
 
 		const recentTab = activeTabs.find(t => t.payload === selectedTabId);
 		if (recentTab) {
-			const meta = describeTab(recentTab, tree, variableSets ? Object.keys(variableSets) : []);
+			const meta = describeTab(recentTab, tree, variableSets ? Object.keys(variableSets) : [], workflowNames);
 			if (meta) {
 				items.unshift({
 					id: `recent:${recentTab.type}:${String(recentTab.payload)}`,
@@ -230,19 +258,24 @@ export function useOmniItems(): OmniItem[] {
 		}
 
 		return items;
-	}, [tree, variableSets, activeTabs, selectedTabId, sidebarCollapsed]);
+	}, [tree, variableSets, workflows, activeTabs, selectedTabId, sidebarCollapsed]);
 }
 
 function describeTab(
 	tab: TabItem,
 	tree: Tree,
 	_variableSetNames: string[],
+	workflowNames: ReadonlyMap<string, string> = new Map(),
 ): { title: string; subtitle: string; icon: LucideIcon } | null {
 	switch (tab.type) {
 		case 'request': {
 			const node = tree[tab.payload];
 			if (!node || node.type !== 'request') return null;
 			return { title: node.name, subtitle: describeRequestPath(tree, node as ValidRequestNode), icon: FileText };
+		}
+		case 'workflow_editor': {
+			const name = workflowNames.get(tab.payload) ?? 'Untitled workflow';
+			return { title: name, subtitle: 'Workflow', icon: WorkflowIcon };
 		}
 		case 'variable_set_editor':
 			return { title: String(tab.payload), subtitle: 'Variable set', icon: Table };

@@ -53,7 +53,7 @@ const OmniFooter: React.FC<OmniFooterProps> = ({ scope, activeCategory, resultCo
 						boxShadow: `inset 0 0 0 1px color-mix(in srgb, ${accent} 28%, transparent)`,
 					}}
 				>
-					{scope === 'commands' ? 'Commands' : scope === 'recents' ? 'Recents' : meta?.label ?? 'All'}
+					{scope === 'commands' ? 'Commands' : scope === 'recents' ? 'Recents' : (meta?.label ?? 'All')}
 				</Box>
 			</Flex>
 		</Flex>
@@ -65,7 +65,9 @@ const HintRow: React.FC<React.PropsWithChildren<{ keys: string[] }>> = ({ keys, 
 		{keys.map(k => (
 			<Kbd key={k}>{k}</Kbd>
 		))}
-		<Box as='span' color='fg.muted'>{children}</Box>
+		<Box as='span' color='fg.muted'>
+			{children}
+		</Box>
 	</Flex>
 );
 

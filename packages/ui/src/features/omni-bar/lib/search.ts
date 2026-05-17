@@ -23,10 +23,8 @@ export interface OmniQuery {
 
 export function parseQuery(rawText: string): OmniQuery {
 	const trimmed = rawText.trimStart();
-	if (trimmed.startsWith('>'))
-		return { rawText, queryText: trimmed.slice(1).trimStart(), categoryScope: 'commands' };
-	if (trimmed.startsWith('~'))
-		return { rawText, queryText: trimmed.slice(1).trimStart(), categoryScope: 'recents' };
+	if (trimmed.startsWith('>')) return { rawText, queryText: trimmed.slice(1).trimStart(), categoryScope: 'commands' };
+	if (trimmed.startsWith('~')) return { rawText, queryText: trimmed.slice(1).trimStart(), categoryScope: 'recents' };
 	return { rawText, queryText: trimmed, categoryScope: 'all' };
 }
 

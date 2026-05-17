@@ -1,6 +1,6 @@
-import { Box, Flex, chakra } from '@chakra-ui/react';
 import { checkShortcut } from '@beak/ui/lib/keyboard-shortcuts';
 import { useAppSelector } from '@beak/ui/store/redux';
+import { Box, chakra, Flex } from '@chakra-ui/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Command, Search, Sparkles } from 'lucide-react';
 import * as React from 'react';
@@ -202,9 +202,7 @@ const Omnibar: React.FC = () => {
 											break;
 										case 'ArrowUp':
 											event.preventDefault();
-											setActiveIndex(idx =>
-												flatItems.length === 0 ? 0 : (idx - 1 + flatItems.length) % flatItems.length,
-											);
+											setActiveIndex(idx => (flatItems.length === 0 ? 0 : (idx - 1 + flatItems.length) % flatItems.length));
 											break;
 										case 'Home':
 											if (flatItems.length > 0) {
