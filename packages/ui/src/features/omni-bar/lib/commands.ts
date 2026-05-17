@@ -3,6 +3,7 @@ import { ipcExplorerService, ipcPreferencesService, ipcWindowService } from '@be
 import { reloadExtensions } from '@beak/ui/store/extensions/actions';
 import { sidebarPreferenceSetCollapse, sidebarPreferenceSetSelected } from '@beak/ui/store/preferences/actions';
 import { closeTabIntent } from '@beak/ui/store/project/actions';
+import { actions as workflowActions } from '@beak/ui/store/workflows';
 import {
 	ArrowLeft,
 	ArrowRight,
@@ -18,9 +19,11 @@ import {
 	Pin,
 	Power,
 	Puzzle,
+	Sparkles,
 	Sun,
 	Table,
 	Trash2,
+	Workflow as WorkflowIcon,
 	X,
 } from 'lucide-react';
 import type { Dispatch } from 'redux';
@@ -31,7 +34,7 @@ export interface CommandContext {
 
 export interface CommandDescriptor {
 	id: string;
-	category: 'Tabs' | 'Sidebar' | 'View' | 'Preferences' | 'Extensions' | 'Developer';
+	category: 'Tabs' | 'Sidebar' | 'View' | 'Workflows' | 'Preferences' | 'Extensions' | 'Developer';
 	name: string;
 	keywords: string[];
 	icon: LucideIcon;
@@ -189,6 +192,39 @@ export function buildCommandRegistry(context: CommandContext): CommandDescriptor
 			icon: Cookie,
 			keywords: ['cookies', 'jar', 'session', 'set-cookie'],
 			action: dispatch => dispatch(tabActions.changeTab({ type: 'cookie_jar', temporary: false, payload: 'cookie_jar' })),
+		},
+
+		{
+			id: 'workflows:new_blank',
+			category: 'Workflows',
+			name: 'New workflow (blank)',
+			icon: WorkflowIcon,
+			keywords: ['create', 'add'],
+			action: dispatch => dispatch(workflowActions.createNewWorkflow({ template: 'blank' })),
+		},
+		{
+			id: 'workflows:new_smoke_test',
+			category: 'Workflows',
+			name: 'New workflow from smoke-test template',
+			icon: Sparkles,
+			keywords: ['create', 'template', 'smoke', 'starter'],
+			action: dispatch => dispatch(workflowActions.createNewWorkflow({ template: 'smoke-test' })),
+		},
+		{
+			id: 'workflows:new_auth_chain',
+			category: 'Workflows',
+			name: 'New workflow from auth-chain template',
+			icon: Sparkles,
+			keywords: ['create', 'template', 'auth', 'login', 'starter'],
+			action: dispatch => dispatch(workflowActions.createNewWorkflow({ template: 'auth-chain' })),
+		},
+		{
+			id: 'workflows:new_paginated_fetch',
+			category: 'Workflows',
+			name: 'New workflow from paginated-fetch template',
+			icon: Sparkles,
+			keywords: ['create', 'template', 'paginate', 'loop', 'starter'],
+			action: dispatch => dispatch(workflowActions.createNewWorkflow({ template: 'paginated-fetch' })),
 		},
 
 		{
