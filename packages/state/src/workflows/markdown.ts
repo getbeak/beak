@@ -1,5 +1,6 @@
-import { previewValueSections } from './helpers';
+import { inspectGraph, previewValueSections, summariseHealth } from './helpers';
 import type { WorkflowFile, WorkflowNode } from './types';
+import { validateWorkflow } from './validation';
 
 /**
  * Pure helper that renders a workflow as readable Markdown — useful for
@@ -29,6 +30,13 @@ export function toMarkdown(workflow: WorkflowFile, requestNames: ReadonlyMap<str
 	if (workflow.nodes.length === 0) {
 		lines.push('_Empty workflow._');
 		return lines.join('\n');
+	}
+
+	// Health summary — only emit when the graph has issues so the doc
+	// stays focused on the actual steps for clean workflows.
+	const healthLine = summariseHealth(inspectGraph(workflow), validateWorkflow(workflow).size);
+	if (healthLine) {
+		lines.push(`> :warning: ${healthLine}`, '');
 	}
 
 	lines.push('## Steps', '');

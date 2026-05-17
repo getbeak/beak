@@ -128,4 +128,35 @@ describe('toMarkdown', () => {
 		const md = toMarkdown(wf);
 		expect(md).toContain('Workflow entry point → (missing ghost');
 	});
+
+	it('emits a health warning line when the workflow has issues', () => {
+		// Unreachable request node — Start can't reach it; summariseHealth
+		// should surface it as "1 unreachable".
+		const wf: WorkflowFile = {
+			id: 'wf',
+			name: 'broken',
+			nodes: [
+				{ id: 's', type: 'start', position: { x: 0, y: 0 }, data: {} },
+				{ id: 'a', type: 'request', position: { x: 100, y: 0 }, data: { requestId: 'req-a' } },
+			],
+			edges: [],
+		};
+		const md = toMarkdown(wf);
+		expect(md).toContain(':warning:');
+		expect(md).toMatch(/unreachable|unlinked/);
+	});
+
+	it('omits the health warning line on a clean workflow', () => {
+		const wf: WorkflowFile = {
+			id: 'wf',
+			name: 'tidy',
+			nodes: [
+				{ id: 's', type: 'start', position: { x: 0, y: 0 }, data: {} },
+				{ id: 'a', type: 'request', position: { x: 100, y: 0 }, data: { requestId: 'req-a' } },
+			],
+			edges: [{ id: 'e1', source: 's', target: 'a' }],
+		};
+		const md = toMarkdown(wf, new Map([['req-a', 'GET /users']]));
+		expect(md).not.toContain(':warning:');
+	});
 });
