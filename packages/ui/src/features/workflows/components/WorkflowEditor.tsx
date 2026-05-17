@@ -50,6 +50,7 @@ import {
 	Play,
 	Repeat,
 	StickyNote,
+	Tag,
 	Trash2,
 	Workflow as WorkflowIcon,
 } from 'lucide-react';
@@ -653,6 +654,13 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 							icon={<LayoutTemplate size={10} strokeWidth={2.2} />}
 							count={componentCount}
 							label={componentCount === 1 ? 'island' : 'islands'}
+						/>
+					)}
+					{workflow.tags && workflow.tags.length > 0 && (
+						<MetaPill
+							icon={<Tag size={10} strokeWidth={2.2} />}
+							count={workflow.tags.length}
+							label={workflow.tags.length === 1 ? 'tag' : 'tags'}
 						/>
 					)}
 					<SaveStateIndicator />
