@@ -23,6 +23,7 @@ export {
 } from './helpers';
 export { mergeJson, mergeKv, pruneBody, pruneOverrideMap, pruneOverrides } from './overrides';
 export * from './reducer';
+export { type SimulationContext, type SimulationEvent, walkWorkflow } from './simulator';
 export {
 	type IdMinter,
 	type InstantiateOptions,
