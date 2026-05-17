@@ -5,12 +5,10 @@ import type { Extension, ExtensionSearchResult } from '@beak/common/types/extens
 import Squawk from '@beak/common/utils/squawk';
 import { ExtensionRegistry, packageDestination } from '@beak/runtime-shared/extensions';
 import { type IpcMainInvokeEvent, ipcMain } from 'electron';
-import fs from 'fs-extra';
 
 import getBeakHost from '../host';
 import ExtensionManager, { getExtensionsDir } from '../lib/extension';
 import { ensureWithinProject } from './fs-service';
-import { getProjectFilePathWindowMapping } from './fs-shared';
 import { getProjectFolder } from './utils';
 
 const service = new IpcExtensionsServiceMain(ipcMain);
@@ -31,7 +29,7 @@ async function getProjectId(event: IpcMainInvokeEvent) {
 service.registerList(async event => {
 	const { projectId, projectFolderPath } = await getProjectId(event as IpcMainInvokeEvent);
 	const extensionsDir = getExtensionsDir(projectFolderPath);
-	const installed = await listInstalledOnDisk(extensionsDir);
+	const installed = await getBeakHost().projectExtensions.listInstalled(extensionsDir);
 
 	// Reset the project's isolates so the renderer-driven re-load gets a clean slate.
 	await extensionManager.resetProject(projectId);
@@ -60,13 +58,13 @@ service.registerInstall(async (event, payload) => {
 	const { projectId, projectFolderPath } = await getProjectId(invokeEvent);
 	const extensionsDir = getExtensionsDir(projectFolderPath);
 
-	await ensureExtensionsScaffold(extensionsDir);
+	await getBeakHost().projectExtensions.ensureScaffold(extensionsDir);
 
 	const resolved = await registry.resolveVersion(payload.packageName, payload.versionRange);
 	const destination = await registry.install(resolved, extensionsDir);
 
-	await ensureWithinProject(getProjectFilePathWindowMapping(invokeEvent), destination);
-	await updateManifestEntry(extensionsDir, resolved.packageName, resolved.version);
+	await ensureWithinProject(getProjectFolder(invokeEvent), destination);
+	await getBeakHost().projectExtensions.addDependency(extensionsDir, resolved.packageName, resolved.version);
 
 	const loaded = await extensionManager.load(invokeEvent, projectId, destination);
 	return loaded;
@@ -78,11 +76,11 @@ service.registerRemove(async (event, payload) => {
 	const extensionsDir = getExtensionsDir(projectFolderPath);
 
 	const destination = packageDestination(path, extensionsDir, payload.packageName);
-	await ensureWithinProject(getProjectFilePathWindowMapping(invokeEvent), destination);
+	await ensureWithinProject(getProjectFolder(invokeEvent), destination);
 
 	await extensionManager.unload(projectId, payload.packageName);
 	await registry.remove(payload.packageName, extensionsDir);
-	await removeManifestEntry(extensionsDir, payload.packageName);
+	await getBeakHost().projectExtensions.removeDependency(extensionsDir, payload.packageName);
 });
 
 service.registerUpdate(async (event, payload) => {
@@ -90,14 +88,14 @@ service.registerUpdate(async (event, payload) => {
 	const { projectId, projectFolderPath } = await getProjectId(invokeEvent);
 	const extensionsDir = getExtensionsDir(projectFolderPath);
 
-	await ensureExtensionsScaffold(extensionsDir);
+	await getBeakHost().projectExtensions.ensureScaffold(extensionsDir);
 	await extensionManager.unload(projectId, payload.packageName);
 
 	const resolved = await registry.resolveVersion(payload.packageName, payload.versionRange ?? 'latest');
 	const destination = await registry.install(resolved, extensionsDir);
 
-	await ensureWithinProject(getProjectFilePathWindowMapping(invokeEvent), destination);
-	await updateManifestEntry(extensionsDir, resolved.packageName, resolved.version);
+	await ensureWithinProject(getProjectFolder(invokeEvent), destination);
+	await getBeakHost().projectExtensions.addDependency(extensionsDir, resolved.packageName, resolved.version);
 
 	const loaded = await extensionManager.load(invokeEvent, projectId, destination);
 	return loaded;
@@ -106,16 +104,18 @@ service.registerUpdate(async (event, payload) => {
 service.registerCheckUpdates(async event => {
 	const { projectFolderPath } = await getProjectId(event as IpcMainInvokeEvent);
 	const extensionsDir = getExtensionsDir(projectFolderPath);
-	const installed = await listInstalledOnDisk(extensionsDir);
+	const installed = await getBeakHost().projectExtensions.listInstalled(extensionsDir);
 
-	const results = await Promise.all(installed.map(async entry => {
-		try {
-			return await registry.checkUpdate(entry.packageName, entry.version);
-		} catch {
-			// Network failures shouldn't poison the whole batch.
-			return null;
-		}
-	}));
+	const results = await Promise.all(
+		installed.map(async entry => {
+			try {
+				return await registry.checkUpdate(entry.packageName, entry.version);
+			} catch {
+				// Network failures shouldn't poison the whole batch.
+				return null;
+			}
+		}),
+	);
 
 	return results.filter((u): u is NonNullable<typeof u> => u !== null);
 });
@@ -188,116 +188,3 @@ service.registerVariableEditorSave(async (event, payload) => {
 		payload.state,
 	);
 });
-
-/* -------------------------------------------------------------------------- */
-/*  On-disk helpers                                                           */
-/* -------------------------------------------------------------------------- */
-
-interface InstalledEntry {
-	packageName: string;
-	absolutePath: string;
-	version: string;
-}
-
-async function listInstalledOnDisk(extensionsDir: string): Promise<InstalledEntry[]> {
-	const nodeModulesDir = path.join(extensionsDir, 'node_modules');
-	if (!(await fs.pathExists(nodeModulesDir))) return [];
-
-	const entries = await fs.readdir(nodeModulesDir, { withFileTypes: true });
-	const results: InstalledEntry[] = [];
-
-	for (const entry of entries) {
-		if (!entry.isDirectory()) continue;
-		if (entry.name.startsWith('.')) continue;
-
-		if (entry.name.startsWith('@')) {
-			const scopeDir = path.join(nodeModulesDir, entry.name);
-			const scoped = await fs.readdir(scopeDir, { withFileTypes: true });
-
-			for (const inner of scoped) {
-				if (!inner.isDirectory()) continue;
-				const abs = path.join(scopeDir, inner.name);
-				const pkg = await readBeakPackageJson(abs);
-				if (!pkg) continue;
-				results.push({
-					packageName: `${entry.name}/${inner.name}`,
-					absolutePath: abs,
-					version: pkg.version ?? '0.0.0',
-				});
-			}
-
-			continue;
-		}
-
-		const abs = path.join(nodeModulesDir, entry.name);
-		const pkg = await readBeakPackageJson(abs);
-		if (!pkg) continue;
-
-		results.push({
-			packageName: entry.name,
-			absolutePath: abs,
-			version: pkg.version ?? '0.0.0',
-		});
-	}
-
-	return results;
-}
-
-/**
- * Only return `package.json`s that are Beak extensions — anything without a
- * `beak.apiVersion` field is treated as a transitive dep that wandered in
- * via an older yarn/npm install, and quietly skipped. Without this guard
- * non-Beak packages would surface as `Failed` extensions in the UI.
- */
-async function readBeakPackageJson(folder: string): Promise<{ version?: string } | null> {
-	try {
-		const pkg = (await fs.readJson(path.join(folder, 'package.json'))) as {
-			version?: string;
-			beak?: { apiVersion?: unknown };
-		};
-		if (!pkg.beak || typeof pkg.beak.apiVersion !== 'number') return null;
-		return pkg;
-	} catch {
-		return null;
-	}
-}
-
-async function ensureExtensionsScaffold(extensionsDir: string): Promise<void> {
-	await fs.ensureDir(path.join(extensionsDir, 'node_modules'));
-
-	const manifestPath = path.join(extensionsDir, 'package.json');
-	if (!(await fs.pathExists(manifestPath))) {
-		await fs.writeJson(
-			manifestPath,
-			{ name: 'beak-project-extensions', version: '1.0.0', private: true, dependencies: {} },
-			{ spaces: 2 },
-		);
-	}
-}
-
-interface ProjectExtensionsManifest {
-	name: string;
-	version: string;
-	private?: boolean;
-	dependencies: Record<string, string>;
-}
-
-async function updateManifestEntry(extensionsDir: string, packageName: string, version: string): Promise<void> {
-	const manifestPath = path.join(extensionsDir, 'package.json');
-	const manifest = (await fs.readJson(manifestPath)) as ProjectExtensionsManifest;
-	manifest.dependencies = manifest.dependencies ?? {};
-	manifest.dependencies[packageName] = `^${version}`;
-	await fs.writeJson(manifestPath, manifest, { spaces: 2 });
-}
-
-async function removeManifestEntry(extensionsDir: string, packageName: string): Promise<void> {
-	const manifestPath = path.join(extensionsDir, 'package.json');
-	if (!(await fs.pathExists(manifestPath))) return;
-
-	const manifest = (await fs.readJson(manifestPath)) as ProjectExtensionsManifest;
-	if (!manifest.dependencies) return;
-
-	delete manifest.dependencies[packageName];
-	await fs.writeJson(manifestPath, manifest, { spaces: 2 });
-}
-
