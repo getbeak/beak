@@ -1,28 +1,29 @@
 import path from 'node:path';
 
 import getRuntime from '@beak/apps-host-electron/host';
-import { IpcOpenApiServiceMain, type SyncFromSpecReq, type SyncFromSpecRes } from '@beak/common/ipc/openapi';
-import { openapiToCollection } from '@beak/state/sources/openapi';
+import {
+	type ExportFromFolderReq,
+	type ExportFromFolderRes,
+	IpcOpenApiServiceMain,
+	type SyncFromSpecReq,
+	type SyncFromSpecRes,
+} from '@beak/common/ipc/openapi';
+import { collectionToOpenapi, openapiToCollection } from '@beak/state/sources/openapi';
+import type { VariableSet } from '@getbeak/types/variable-sets';
 import { ipcMain } from 'electron';
 
-import { getProjectFilePathWindowMapping } from './fs-shared';
+import { getProjectFolder } from './utils';
 
 const service = new IpcOpenApiServiceMain(ipcMain);
 
 service.registerSyncFromSpec(async (event, payload: SyncFromSpecReq) => {
-	const projectFilePath = getProjectFilePathWindowMapping(event);
-	if (!projectFilePath) throw new Error('openapi sync: no project bound to this window');
+	const projectRoot = getProjectFolder(event);
+	if (!projectRoot) throw new Error('openapi sync: no project bound to this window');
 
-	const projectRoot = path.dirname(projectFilePath);
-	const targetFolder = path.join(projectRoot, payload.targetFolder);
-
-	// Sandbox: keep the target inside the project root. A hostile renderer
+	// Sandbox: same safety check the FS handlers use — a hostile renderer
 	// can't escape the tree by passing `../../etc/passwd` style segments.
-	const resolved = path.resolve(targetFolder);
-	const root = path.resolve(projectRoot);
-	if (!resolved.startsWith(`${root}${path.sep}`) && resolved !== root) {
-		throw new Error(`openapi sync: targetFolder '${payload.targetFolder}' escapes the project root`);
-	}
+	// Returns the resolved absolute path.
+	const resolved = await getRuntime().fs.ensureWithinProject(projectRoot, payload.targetFolder);
 
 	const conversion = openapiToCollection(payload.spec as never, {
 		seedMode: payload.seedMode,
@@ -43,7 +44,7 @@ service.registerSyncFromSpec(async (event, payload: SyncFromSpecReq) => {
 		requests: conversion.requests,
 		variableSet: conversion.variableSet,
 		folderName,
-		projectRoot: root,
+		projectRoot: path.resolve(projectRoot),
 	});
 
 	const response: SyncFromSpecRes = {
@@ -54,5 +55,42 @@ service.registerSyncFromSpec(async (event, payload: SyncFromSpecReq) => {
 		warnings: conversion.warnings,
 	};
 
+	return response;
+});
+
+service.registerExportFromFolder(async (event, payload: ExportFromFolderReq) => {
+	const projectRoot = getProjectFolder(event);
+	if (!projectRoot) throw new Error('openapi export: no project bound to this window');
+
+	const resolved = await getRuntime().fs.ensureWithinProject(projectRoot, payload.folder);
+	const read = await getRuntime().openapi.readFromFolder(resolved);
+
+	// Variable set lookup is best-effort — when the project doesn't carry one
+	// with the requested name, the exporter falls back to flattening the
+	// baseUrl directly. No throw on missing file.
+	let variableSet: VariableSet | null = null;
+	if (payload.variableSetName) {
+		try {
+			const setPath = path.join(projectRoot, 'variable-sets', `${payload.variableSetName}.json`);
+			const raw = await getRuntime().p.node.fs.promises.readFile(setPath, 'utf8');
+			variableSet = JSON.parse(raw as unknown as string) as VariableSet;
+		} catch {
+			variableSet = null;
+		}
+	}
+
+	const folderTitle = path.basename(resolved) || 'Beak Export';
+	const result = collectionToOpenapi(read.collection, read.requests, {
+		title: payload.title ?? folderTitle,
+		version: payload.version ?? '1.0.0',
+		...(payload.description ? { description: payload.description } : {}),
+		variableSet,
+	});
+
+	const response: ExportFromFolderRes = {
+		document: result.document,
+		warnings: result.warnings,
+		skipped: read.skipped,
+	};
 	return response;
 });
