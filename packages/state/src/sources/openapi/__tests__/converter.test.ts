@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
-
-import type { OpenApiDocument } from '../types';
 import { openapiToCollection } from '../converter';
+import type { OpenApiDocument } from '../types';
 
 const FIXED_NOW = () => '2026-05-13T00:00:00.000Z';
 const STABLE_ID = (op: string, i: number) => `id-${op}-${i}`;
@@ -96,13 +95,127 @@ describe('openapiToCollection', () => {
 		expect(result.warnings.some(w => w.includes('No operationId'))).toBe(true);
 	});
 
-	it('captures a JSON body example when present', () => {
+	it('captures a JSON body example when the schema has no structure', () => {
+		// Example-only schemas (no `type` / `properties` / `items` / `$ref`)
+		// have nothing for the structured editor to bind to — we keep the
+		// example as a text-body seed so the user still sees what's expected.
 		const result = openapiToCollection(minimalSpec(), { now: FIXED_NOW, makeId: STABLE_ID });
 		const createUser = result.requests.find(r => r.override.operationId === 'createUser')!;
 		expect(createUser.override.body?.type).toBe('text');
 		const payload = (createUser.override.body as { type: 'text'; payload: string }).payload;
 		expect(payload).toContain('"name"');
 		expect(payload).toContain('"Alice"');
+	});
+
+	it('converts a JSON body schema with properties into a structured json body', () => {
+		const spec = minimalSpec();
+		spec.paths!['/things'] = {
+			post: {
+				operationId: 'createThing',
+				requestBody: {
+					content: {
+						'application/json': {
+							schema: {
+								type: 'object',
+								required: ['name'],
+								properties: {
+									name: { type: 'string', description: 'Display name' },
+									count: { type: 'integer' },
+								},
+							},
+						},
+					},
+				},
+			},
+		};
+		const result = openapiToCollection(spec, { now: FIXED_NOW, makeId: STABLE_ID });
+		const createThing = result.requests.find(r => r.override.operationId === 'createThing')!;
+		expect(createThing.override.body?.type).toBe('json');
+		const payload = (createThing.override.body as { type: 'json'; payload: Record<string, { type: string; name?: string; required?: boolean; description?: string }> }).payload;
+		const named = Object.values(payload).filter(e => 'name' in e && e.name !== undefined);
+		const root = Object.values(payload).find(e => e.type === 'object' && !('name' in e && e.name));
+		expect(root).toBeDefined();
+		const byName = Object.fromEntries(named.map(e => [e.name as string, e]));
+		expect(byName.name).toBeDefined();
+		expect(byName.name.type).toBe('string');
+		expect(byName.name.required).toBe(true);
+		expect(byName.name.description).toBe('Display name');
+		expect(byName.count).toBeDefined();
+		// integer collapses to number — Beak doesn't have a separate integer
+		// editor affordance.
+		expect(byName.count.type).toBe('number');
+		expect(byName.count.required).toBeUndefined();
+	});
+
+	it('falls back to responses[200] schema when the operation has no requestBody', () => {
+		const spec = minimalSpec();
+		spec.paths!['/widgets'] = {
+			get: {
+				operationId: 'listWidgets',
+				responses: {
+					'200': {
+						description: 'OK',
+						content: {
+							'application/json': {
+								schema: {
+									type: 'object',
+									properties: {
+										widgets: {
+											type: 'array',
+											items: { type: 'string' },
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		};
+		const result = openapiToCollection(spec, { now: FIXED_NOW, makeId: STABLE_ID });
+		const listWidgets = result.requests.find(r => r.override.operationId === 'listWidgets')!;
+		expect(listWidgets.override.body?.type).toBe('json');
+		const payload = (listWidgets.override.body as { type: 'json'; payload: Record<string, { type: string; name?: string }> }).payload;
+		const widgets = Object.values(payload).find(e => 'name' in e && e.name === 'widgets');
+		expect(widgets).toBeDefined();
+		expect(widgets!.type).toBe('array');
+	});
+
+	it('resolves a $ref-based body schema against components.schemas', () => {
+		const spec = minimalSpec();
+		spec.paths!['/widgets'] = {
+			post: {
+				operationId: 'createWidget',
+				requestBody: {
+					content: {
+						'application/json': {
+							schema: { $ref: '#/components/schemas/Widget' },
+						},
+					},
+				},
+			},
+		};
+		spec.components = {
+			...(spec.components ?? {}),
+			schemas: {
+				Widget: {
+					type: 'object',
+					required: ['id'],
+					properties: {
+						id: { type: 'string' },
+						colour: { type: 'string', enum: ['red', 'blue'] },
+					},
+				},
+			},
+		};
+		const result = openapiToCollection(spec, { now: FIXED_NOW, makeId: STABLE_ID });
+		const createWidget = result.requests.find(r => r.override.operationId === 'createWidget')!;
+		expect(createWidget.override.body?.type).toBe('json');
+		const payload = (createWidget.override.body as { type: 'json'; payload: Record<string, { type: string; name?: string; options?: unknown[] }> }).payload;
+		const colour = Object.values(payload).find(e => 'name' in e && e.name === 'colour');
+		expect(colour).toBeDefined();
+		expect(colour!.type).toBe('enum');
+		expect(colour!.options).toEqual(['red', 'blue']);
 	});
 
 	it('warns and produces an empty baseUrl when the spec has no servers', () => {
@@ -238,6 +351,130 @@ describe('openapiToCollection', () => {
 			required: true,
 			type: 'token',
 			description: 'Bearer token.',
+		});
+	});
+
+	it('carries pattern / format / length / min-max constraints onto query + header entries', () => {
+		const spec: OpenApiDocument = {
+			openapi: '3.0.0',
+			info: { title: 's', version: '1' },
+			servers: [{ url: 'https://x' }],
+			paths: {
+				'/things': {
+					get: {
+						operationId: 'list',
+						parameters: [
+							{
+								name: 'limit',
+								in: 'query',
+								schema: { type: 'integer', minimum: 1, maximum: 100, default: 25 },
+							},
+							{
+								name: 'email',
+								in: 'query',
+								schema: { type: 'string', format: 'email', maxLength: 254 },
+							},
+							{
+								name: 'X-Slug',
+								in: 'header',
+								schema: { type: 'string', pattern: '^[a-z0-9-]+$', minLength: 3, maxLength: 40 },
+							},
+							// `format: 'binary'` is OpenAPI-valid but isn't in our
+							// known-format set — should be dropped, not propagated.
+							{
+								name: 'X-Blob',
+								in: 'header',
+								schema: { type: 'string', format: 'binary' },
+							},
+						],
+					},
+				},
+			},
+		};
+		const result = openapiToCollection(spec, { now: FIXED_NOW, makeId: STABLE_ID });
+		const op = result.requests.find(r => r.override.operationId === 'list')!;
+
+		expect(op.override.query?.limit).toMatchObject({
+			constraints: { integer: true, min: 1, max: 100 },
+		});
+		expect(op.override.query?.email).toMatchObject({
+			constraints: { format: 'email', maxLength: 254 },
+		});
+		expect(op.override.headers?.['X-Slug']).toMatchObject({
+			constraints: { pattern: '^[a-z0-9-]+$', minLength: 3, maxLength: 40 },
+		});
+		// Unknown format dropped, but no `constraints` block fabricated.
+		expect(op.override.headers?.['X-Blob']).not.toHaveProperty('constraints');
+	});
+
+	it('flips headers with format: password to type: token (masking in value editor)', () => {
+		const spec: OpenApiDocument = {
+			openapi: '3.0.0',
+			info: { title: 's', version: '1' },
+			servers: [{ url: 'https://x' }],
+			paths: {
+				'/things': {
+					get: {
+						operationId: 'list',
+						parameters: [
+							// Non-credential header name + password format → still token.
+							{ name: 'X-Custom-Secret', in: 'header', schema: { type: 'string', format: 'password' } },
+						],
+					},
+				},
+			},
+		};
+		const result = openapiToCollection(spec, { now: FIXED_NOW, makeId: STABLE_ID });
+		const op = result.requests.find(r => r.override.operationId === 'list')!;
+		expect(op.override.headers?.['X-Custom-Secret']).toMatchObject({ type: 'token' });
+	});
+
+	it('does not emit a constraints block when the schema declares no constraints', () => {
+		const spec: OpenApiDocument = {
+			openapi: '3.0.0',
+			info: { title: 's', version: '1' },
+			servers: [{ url: 'https://x' }],
+			paths: {
+				'/things': {
+					get: {
+						operationId: 'list',
+						parameters: [
+							{ name: 'q', in: 'query', schema: { type: 'string' } },
+							{ name: 'X-Trace', in: 'header', schema: { type: 'string' } },
+						],
+					},
+				},
+			},
+		};
+		const result = openapiToCollection(spec, { now: FIXED_NOW, makeId: STABLE_ID });
+		const op = result.requests.find(r => r.override.operationId === 'list')!;
+		expect(op.override.query?.q).not.toHaveProperty('constraints');
+		expect(op.override.headers?.['X-Trace']).not.toHaveProperty('constraints');
+	});
+
+	it('carries constraints through to path parameters too', () => {
+		const spec: OpenApiDocument = {
+			openapi: '3.0.0',
+			info: { title: 's', version: '1' },
+			servers: [{ url: 'https://x' }],
+			paths: {
+				'/users/{id}': {
+					parameters: [
+						{
+							name: 'id',
+							in: 'path',
+							required: true,
+							schema: { type: 'string', format: 'uuid', pattern: '^[a-f0-9-]+$' },
+						},
+					],
+					get: { operationId: 'getUser' },
+				},
+			},
+		};
+		const result = openapiToCollection(spec, { now: FIXED_NOW, makeId: STABLE_ID });
+		const op = result.requests.find(r => r.override.operationId === 'getUser')!;
+		expect(op.override.pathParameters?.id).toMatchObject({
+			constraints: { format: 'uuid', pattern: '^[a-f0-9-]+$' },
 		});
 	});
 
