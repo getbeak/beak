@@ -8,6 +8,7 @@ export {
 	type ConnectionAttempt,
 	type ConnectionRejection,
 	countOverrideEntries,
+	duplicateWorkflow,
 	edgesAfterNodeRemoval,
 	extractAllTags,
 	findRequestStepsUsing,

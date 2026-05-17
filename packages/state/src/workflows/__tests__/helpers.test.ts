@@ -8,6 +8,7 @@ import {
 	compactPositions,
 	connectedComponents,
 	countOverrideEntries,
+	duplicateWorkflow,
 	edgesAfterNodeRemoval,
 	extractAllTags,
 	findRequestStepsUsing,
@@ -766,6 +767,74 @@ describe('nodeIssuesFromHealth + firstIssueNode', () => {
 		expect(firstIssueNode(makeHealth({ cycleNodes: ['a'], unlinkedRequestNodes: ['b'], unreachable: ['c'] }))).toBe('a');
 		expect(firstIssueNode(makeHealth({ unlinkedRequestNodes: ['b'], unreachable: ['c'] }))).toBe('b');
 		expect(firstIssueNode(makeHealth({ unreachable: ['c'] }))).toBe('c');
+	});
+});
+
+describe('duplicateWorkflow', () => {
+	function makeMinter() {
+		const counts: Record<string, number> = {};
+		return (prefix: 'workflow' | 'node' | 'edge') => {
+			counts[prefix] = (counts[prefix] ?? 0) + 1;
+			return `${prefix}-dup-${counts[prefix]}`;
+		};
+	}
+
+	const source: WorkflowFile = {
+		id: 'wf-src',
+		name: 'Original',
+		createdAt: 100,
+		updatedAt: 200,
+		tags: ['auth'],
+		nodes: [
+			{ id: 's', type: 'start', position: { x: 0, y: 0 }, data: {} },
+			{ id: 'a', type: 'request', position: { x: 10, y: 10 }, data: { requestId: 'req-1' } },
+		],
+		edges: [{ id: 'e1', source: 's', target: 'a' }],
+	};
+
+	it('re-keys every id', () => {
+		const cloned = duplicateWorkflow(source, makeMinter());
+		expect(cloned.id).not.toBe(source.id);
+		for (const n of cloned.nodes) {
+			expect(n.id.startsWith('node-dup-')).toBe(true);
+		}
+		for (const e of cloned.edges) {
+			expect(e.id.startsWith('edge-dup-')).toBe(true);
+		}
+	});
+
+	it('defaults name to "Copy of …"', () => {
+		const cloned = duplicateWorkflow(source, makeMinter());
+		expect(cloned.name).toBe('Copy of Original');
+	});
+
+	it('honours an explicit name override', () => {
+		const cloned = duplicateWorkflow(source, makeMinter(), { name: 'My fork' });
+		expect(cloned.name).toBe('My fork');
+	});
+
+	it('clears createdAt / updatedAt so the clone reads as fresh', () => {
+		const cloned = duplicateWorkflow(source, makeMinter());
+		expect(cloned.createdAt).toBeUndefined();
+		expect(cloned.updatedAt).toBeUndefined();
+	});
+
+	it('preserves tags, description, version', () => {
+		const cloned = duplicateWorkflow(
+			{ ...source, description: 'hi', version: '1' },
+			makeMinter(),
+		);
+		expect(cloned.tags).toEqual(['auth']);
+		expect(cloned.description).toBe('hi');
+		expect(cloned.version).toBe('1');
+	});
+
+	it('edges reference the cloned node ids, not the source', () => {
+		const cloned = duplicateWorkflow(source, makeMinter());
+		for (const e of cloned.edges) {
+			expect(cloned.nodes.some(n => n.id === e.source)).toBe(true);
+			expect(cloned.nodes.some(n => n.id === e.target)).toBe(true);
+		}
 	});
 });
 

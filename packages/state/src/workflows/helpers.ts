@@ -318,6 +318,46 @@ export function connectedComponents(workflow: WorkflowFile): string[][] {
 }
 
 /**
+ * Clone a workflow file with fresh ids on the workflow + every node +
+ * every edge. Names default to "Copy of <name>" — caller can override.
+ * Resets createdAt/updatedAt so the clone reads as "made just now"
+ * rather than inheriting the source's history.
+ *
+ * The caller supplies the id minter so the side-effect of generating
+ * KSUIDs stays out of pure-helper land — same pattern as
+ * `parseImportedWorkflow` and `instantiateTemplate`.
+ */
+export function duplicateWorkflow(
+	source: WorkflowFile,
+	mintId: (prefix: 'workflow' | 'node' | 'edge') => string,
+	options: { name?: string } = {},
+): WorkflowFile {
+	const nodeIdMap = new Map<string, string>();
+	const nodes = source.nodes.map(node => {
+		const newId = mintId('node');
+		nodeIdMap.set(node.id, newId);
+		return { ...node, id: newId } as typeof node;
+	});
+	const edges = source.edges
+		.filter(e => nodeIdMap.has(e.source) && nodeIdMap.has(e.target))
+		.map(edge => ({
+			...edge,
+			id: mintId('edge'),
+			source: nodeIdMap.get(edge.source)!,
+			target: nodeIdMap.get(edge.target)!,
+		}));
+	return {
+		...source,
+		id: mintId('workflow'),
+		name: options.name ?? `Copy of ${source.name}`,
+		nodes,
+		edges,
+		createdAt: undefined,
+		updatedAt: undefined,
+	};
+}
+
+/**
  * Find every workflow request step that references the given project
  * request id. Returns `{ workflowId, nodeId }[]` so the caller can
  * jump straight to a usage. Useful for a tree-level "this request is
