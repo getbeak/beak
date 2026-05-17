@@ -1,7 +1,16 @@
 import { describe, expect, it } from 'vitest';
 
+import { instantiateTemplate, templateCatalog } from '../templates';
 import type { WorkflowFile, WorkflowNode } from '../types';
 import { validateNode, validateWorkflow } from '../validation';
+
+function counterMinter() {
+	const counts: Record<string, number> = {};
+	return (prefix: 'workflow' | 'node' | 'edge') => {
+		counts[prefix] = (counts[prefix] ?? 0) + 1;
+		return `${prefix}-${counts[prefix]}`;
+	};
+}
 
 describe('validateNode', () => {
 	it('flags a loop with count = 0', () => {
@@ -90,6 +99,24 @@ describe('validateNode', () => {
 				data: { requestId: 'req-a' },
 			} as WorkflowNode),
 		).toEqual([]);
+	});
+});
+
+describe('validateWorkflow × templates', () => {
+	it('every starter template seeds a clean validation state', () => {
+		for (const meta of templateCatalog) {
+			const wf = instantiateTemplate({ template: meta.key, name: 't', mintId: counterMinter() });
+			const warnings = validateWorkflow(wf);
+			// Templates ship deliberate defaults — loop count = 3 (not 0),
+			// notifications are unconfigured by intent (user fills in title).
+			// We allow notification-empty since the seed notification is a
+			// placeholder; anything else is a regression.
+			for (const list of warnings.values()) {
+				for (const w of list) {
+					expect(w.kind).toBe('notification-empty');
+				}
+			}
+		}
 	});
 });
 
