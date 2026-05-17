@@ -69,6 +69,7 @@ import {
 	type AddableNodeKind,
 	EdgeInspectorPanel,
 	EdgeLabelEditor,
+	EmptyCanvasCallout,
 	EmptySelectionPanel,
 	MetaPill,
 	MultiSelectPanel,
@@ -830,7 +831,10 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 				</Stack>
 			</Flex>
 			<Flex flex='1' minH={0}>
-				<Box flex='1' minW={0}>
+				<Box flex='1' minW={0} position='relative'>
+					{workflow.nodes.length <= 1 && workflow.edges.length === 0 && (
+						<EmptyCanvasCallout onAddRequest={() => addNode('request')} />
+					)}
 					<ReactFlow
 						nodes={rfNodes}
 						edges={decoratedEdges}

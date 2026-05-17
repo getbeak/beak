@@ -849,6 +849,88 @@ export const KbdHint: React.FC<React.PropsWithChildren> = ({ children }) => (
 	</Box>
 );
 
+interface EmptyCanvasCalloutProps {
+	onAddRequest: () => void;
+}
+
+/**
+ * Centered overlay shown on top of an empty canvas (only the Start node
+ * present, no edges). Surfaces the hotkey grid so first-time users learn
+ * R/L/C/N/M without needing to open the Help panel. The card sits inside
+ * the ReactFlow container as an absolutely-positioned, click-through panel
+ * except for its primary "Add a Request step" button.
+ */
+export const EmptyCanvasCallout: React.FC<EmptyCanvasCalloutProps> = ({ onAddRequest }) => (
+	<Box
+		position='absolute'
+		left='50%'
+		top='50%'
+		transform='translate(-50%, -50%)'
+		zIndex={5}
+		pointerEvents='none'
+		minW='320px'
+		maxW='420px'
+	>
+		<Box
+			pointerEvents='auto'
+			borderWidth='1px'
+			borderStyle='dashed'
+			borderColor='border.emphasized'
+			borderRadius='lg'
+			bg='color-mix(in srgb, var(--beak-colors-bg-surface) 92%, transparent)'
+			boxShadow='lg'
+			p='5'
+		>
+			<Box fontSize='sm' fontWeight='700' color='fg.default' mb='1' letterSpacing='-0.005em'>
+				{'A blank canvas.'}
+			</Box>
+			<Box fontSize='12px' color='fg.muted' mb='3' lineHeight='1.45'>
+				{'Press a hotkey to drop a step next to Start, or right-click anywhere on the canvas to add one inline.'}
+			</Box>
+			<Flex gap='1' wrap='wrap' mb='3'>
+				<KbdHint>R</KbdHint>
+				<Box as='span' color='fg.subtle' fontSize='11px' mr='2'>
+					Request
+				</Box>
+				<KbdHint>L</KbdHint>
+				<Box as='span' color='fg.subtle' fontSize='11px' mr='2'>
+					Loop
+				</Box>
+				<KbdHint>C</KbdHint>
+				<Box as='span' color='fg.subtle' fontSize='11px' mr='2'>
+					Condition
+				</Box>
+				<KbdHint>N</KbdHint>
+				<Box as='span' color='fg.subtle' fontSize='11px' mr='2'>
+					Notification
+				</Box>
+				<KbdHint>M</KbdHint>
+				<Box as='span' color='fg.subtle' fontSize='11px'>
+					Note
+				</Box>
+			</Flex>
+			<Flex
+				as='button'
+				role='button'
+				align='center'
+				gap='2'
+				px='3'
+				py='1.5'
+				borderRadius='md'
+				bg='accent.pink'
+				color='fg.onAccent'
+				fontWeight='600'
+				fontSize='12px'
+				cursor='pointer'
+				_hover={{ filter: 'brightness(1.05)' }}
+				onClick={onAddRequest}
+			>
+				<Box>{'Add a Request step'}</Box>
+			</Flex>
+		</Box>
+	</Box>
+);
+
 export const ToolbarButton: React.FC<{ icon: React.ReactNode; label: string; onClick: () => void }> = ({
 	icon,
 	label,
