@@ -193,6 +193,20 @@ describe('workflow lifecycle — build and tear down', () => {
 		expect(inspectGraph(wf).danglingEdges).toEqual([]);
 	});
 
+	it('tags + description round-trip through the slice', () => {
+		const mint = counterMinter();
+		const seed = instantiateTemplate({ template: 'blank', name: 'meta', mintId: mint });
+		let state = reducer(initialWorkflowsState, actions.insertNewWorkflow({ id: seed.id, workflow: seed }));
+
+		state = reducer(state, actions.updateWorkflowDescription({ id: seed.id, description: 'Smoke test against staging' }));
+		state = reducer(state, actions.setWorkflowTags({ id: seed.id, tags: ['  AUTH ', 'Auth', 'staging'] }));
+
+		const wf = state.workflows[seed.id]!;
+		expect(wf.description).toBe('Smoke test against staging');
+		// Normalised: trimmed + lowercased + deduped.
+		expect(wf.tags).toEqual(['auth', 'staging']);
+	});
+
 	it('workflowStats follows the slice through add/remove cycles', () => {
 		const mint = counterMinter();
 		const seed = instantiateTemplate({ template: 'blank', name: 'live', mintId: mint });
