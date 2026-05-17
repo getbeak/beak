@@ -42,6 +42,7 @@ export {
 	serializeForExport,
 	topologicalOrder,
 	uniqueWorkflowName,
+	unusedTags,
 	validateConnection,
 	workflowsByTag,
 } from './helpers';

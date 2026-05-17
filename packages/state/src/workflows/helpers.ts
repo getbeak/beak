@@ -463,6 +463,30 @@ export function extractAllTags(workflows: ReadonlyArray<WorkflowFile> | Record<s
 }
 
 /**
+ * Tags that appear in `known` but never on any workflow in `workflows`.
+ * Useful when the project tracks a curated tag vocabulary (eg. read from
+ * project.json) and we want to flag stale entries. Returns the tags
+ * sorted so the output is deterministic for diffs / UI snapshots.
+ */
+export function unusedTags(
+	workflows: ReadonlyArray<WorkflowFile> | Record<string, WorkflowFile>,
+	known: ReadonlyArray<string>,
+): string[] {
+	const inUse = new Set(extractAllTags(workflows));
+	const seen = new Set<string>();
+	const out: string[] = [];
+	for (const raw of known) {
+		const tag = raw.trim().toLowerCase();
+		if (!tag) continue;
+		if (inUse.has(tag)) continue;
+		if (seen.has(tag)) continue;
+		seen.add(tag);
+		out.push(tag);
+	}
+	return out.sort();
+}
+
+/**
  * Bucket workflows by tag — used by the (future) tag-filter chip bar in
  * the project pane. Workflows with no tags fall into the empty-string
  * bucket so the caller can choose whether to show an "Untagged" group.

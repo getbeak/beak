@@ -34,6 +34,7 @@ import {
 	serializeForExport,
 	topologicalOrder,
 	uniqueWorkflowName,
+	unusedTags,
 	validateConnection,
 	workflowsByTag,
 } from '../helpers';
@@ -1038,6 +1039,33 @@ describe('extractAllTags', () => {
 
 	it('returns [] when nothing has tags', () => {
 		expect(extractAllTags([{ id: 'a', name: 'A', nodes: [], edges: [] }])).toEqual([]);
+	});
+});
+
+describe('unusedTags', () => {
+	const wfs: WorkflowFile[] = [
+		{ id: 'a', name: 'A', tags: ['auth', 'staging'], nodes: [], edges: [] },
+		{ id: 'b', name: 'B', tags: ['staging', 'smoke'], nodes: [], edges: [] },
+	];
+
+	it('returns the tags from `known` that no workflow uses', () => {
+		expect(unusedTags(wfs, ['auth', 'staging', 'smoke', 'legacy', 'experiment'])).toEqual(['experiment', 'legacy']);
+	});
+
+	it('drops empty + duplicate entries from known', () => {
+		expect(unusedTags(wfs, ['legacy', '', '   ', 'legacy', 'LEGACY'])).toEqual(['legacy']);
+	});
+
+	it('returns [] when every known tag is in use', () => {
+		expect(unusedTags(wfs, ['auth', 'staging', 'smoke'])).toEqual([]);
+	});
+
+	it('handles the empty-known case as []', () => {
+		expect(unusedTags(wfs, [])).toEqual([]);
+	});
+
+	it('compares case-insensitively', () => {
+		expect(unusedTags(wfs, ['AUTH'])).toEqual([]);
 	});
 });
 
