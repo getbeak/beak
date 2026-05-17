@@ -302,6 +302,9 @@ export const EmptySelectionPanel: React.FC<EmptySelectionPanelProps> = ({
 					<KbdHint>⌘ K</KbdHint> {'jump to a step by name'}
 				</Box>
 				<Box mb='0.5'>
+					<KbdHint>R / L / C / N / M</KbdHint> {'add a step'}
+				</Box>
+				<Box mb='0.5'>
 					<KbdHint>Right-click</KbdHint> {'an edge to delete it'}
 				</Box>
 				<Box>

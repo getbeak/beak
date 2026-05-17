@@ -258,6 +258,19 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 					}),
 				);
 				replaceSelection(newId);
+				return;
+			}
+
+			// Bare-letter hotkeys for adding nodes — R / L / C / N / M. Skip
+			// when modifiers are held so Cmd-R (page reload) etc. aren't
+			// hijacked. The `isEditable` guard above already protects inputs.
+			if (workflow && !event.metaKey && !event.ctrlKey && !event.altKey) {
+				const kind = kindForKey(event.key);
+				if (kind) {
+					event.preventDefault();
+					addNode(kind);
+					return;
+				}
 			}
 		}
 		window.addEventListener('keydown', onKeyDown);
@@ -710,6 +723,28 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 		</Flex>
 	);
 };
+
+/**
+ * Maps the canvas hotkeys (R / L / C / N / M) onto add-node kinds.
+ * Returns `null` for unrecognised keys so the keyboard handler can
+ * pass them through to xyflow / browser defaults.
+ */
+function kindForKey(key: string): AddableNodeKind | null {
+	switch (key.toLowerCase()) {
+		case 'r':
+			return 'request';
+		case 'l':
+			return 'loop';
+		case 'c':
+			return 'condition';
+		case 'n':
+			return 'notification';
+		case 'm':
+			return 'comment';
+		default:
+			return null;
+	}
+}
 
 function nodeLabelById(workflow: WorkflowFileLike, id: string): string {
 	const node = workflow.nodes.find(n => n.id === id);
