@@ -1,6 +1,6 @@
 import type { WorkflowEdge, WorkflowNodeKind } from '@beak/state/workflows';
 import { useAppSelector } from '@beak/ui/store/redux';
-import { Box, Button, Flex, Stack } from '@chakra-ui/react';
+import { Box, Button, Flex, Input, Stack, Textarea } from '@chakra-ui/react';
 import { AlertTriangle, Bell, GitBranch, Globe, Repeat, StickyNote, Trash2, X } from 'lucide-react';
 import * as React from 'react';
 import { useEffect, useRef, useState } from 'react';
@@ -126,8 +126,8 @@ export const WarningPill: React.FC<{ count: number; label: string; title?: strin
 			_hover={
 				clickable
 					? {
-						bg: 'color-mix(in srgb, var(--beak-colors-accent-warning) 22%, transparent)',
-					}
+							bg: 'color-mix(in srgb, var(--beak-colors-accent-warning) 22%, transparent)',
+						}
 					: undefined
 			}
 			onClick={onClick}
@@ -214,34 +214,17 @@ export const EmptySelectionPanel: React.FC<EmptySelectionPanelProps> = ({
 			overflowY='auto'
 		>
 			<Box px='3' py='3' borderBottomWidth='1px' borderColor='border.subtle'>
-				<Box
-					fontSize='10px'
-					fontWeight='700'
-					color='fg.muted'
-					textTransform='uppercase'
-					letterSpacing='0.06em'
-					mb='1'
-				>
+				<Box fontSize='10px' fontWeight='700' color='fg.muted' textTransform='uppercase' letterSpacing='0.06em' mb='1'>
 					{'Description'}
 				</Box>
-				<textarea
+				<Textarea
+					size='sm'
 					value={description}
 					placeholder='What does this workflow do?'
-					onChange={e => onChangeDescription(e.target.value)}
+					minH='60px'
+					resize='vertical'
+					onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => onChangeDescription(e.target.value)}
 					onBlur={() => onChangeDescription(description.trim() || undefined)}
-					style={{
-						width: '100%',
-						minHeight: '60px',
-						padding: '6px 8px',
-						fontSize: '12px',
-						fontFamily: 'inherit',
-						background: 'var(--beak-colors-bg-canvas)',
-						border: '1px solid var(--beak-colors-border-default)',
-						borderRadius: '4px',
-						color: 'inherit',
-						resize: 'vertical',
-						outline: 'none',
-					}}
 				/>
 			</Box>
 			<TagsEditor tags={tags} onChange={onChangeTags} />
@@ -405,14 +388,7 @@ export const EdgeInspectorPanel: React.FC<EdgeInspectorPanelProps> = ({
 			minH={0}
 		>
 			<Flex align='center' h='38px' px='3' gap='2' borderBottomWidth='1px' borderColor='border.subtle' flexShrink={0}>
-				<Box
-					fontSize='10px'
-					fontWeight='700'
-					color='fg.muted'
-					textTransform='uppercase'
-					letterSpacing='0.06em'
-					flex='1'
-				>
+				<Box fontSize='10px' fontWeight='700' color='fg.muted' textTransform='uppercase' letterSpacing='0.06em' flex='1'>
 					{'Edge'}
 				</Box>
 				<Button
@@ -501,26 +477,17 @@ export const EdgeInspectorPanel: React.FC<EdgeInspectorPanelProps> = ({
 					<Box fontSize='10px' fontWeight='700' color='fg.muted' textTransform='uppercase' letterSpacing='0.06em'>
 						{'Label'}
 					</Box>
-					<input
+					<Input
+						size='sm'
 						value={draft}
-						onChange={e => setDraft(e.target.value)}
+						placeholder='e.g. happy path'
+						onChange={(e: React.ChangeEvent<HTMLInputElement>) => setDraft(e.target.value)}
 						onBlur={commit}
-						onKeyDown={e => {
+						onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
 							if (e.key === 'Enter') {
 								e.preventDefault();
 								commit();
 							}
-						}}
-						placeholder='e.g. happy path'
-						style={{
-							width: '100%',
-							padding: '6px 8px',
-							fontSize: '12px',
-							background: 'var(--beak-colors-bg-canvas)',
-							border: '1px solid var(--beak-colors-border-default)',
-							borderRadius: '4px',
-							color: 'inherit',
-							outline: 'none',
 						}}
 					/>
 					<Box fontSize='11px' color='fg.subtle' lineHeight='1.5'>
@@ -568,12 +535,17 @@ export const EdgeLabelEditor: React.FC<EdgeLabelEditorProps> = ({ screen, initia
 			borderColor='accent.pink'
 			boxShadow='md'
 		>
-			<input
+			<Input
 				ref={inputRef}
+				size='sm'
+				variant='subtle'
+				bg='transparent'
+				borderWidth='0'
 				value={value}
-				onChange={e => setValue(e.target.value)}
+				placeholder='Edge label'
+				onChange={(e: React.ChangeEvent<HTMLInputElement>) => setValue(e.target.value)}
 				onBlur={() => onCommit(value.trim())}
-				onKeyDown={e => {
+				onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
 					if (e.key === 'Enter') {
 						e.preventDefault();
 						onCommit(value.trim());
@@ -581,16 +553,6 @@ export const EdgeLabelEditor: React.FC<EdgeLabelEditorProps> = ({ screen, initia
 						e.preventDefault();
 						onCancel();
 					}
-				}}
-				placeholder='Edge label'
-				style={{
-					width: '100%',
-					padding: '4px 8px',
-					fontSize: '12px',
-					background: 'transparent',
-					border: 'none',
-					outline: 'none',
-					color: 'inherit',
 				}}
 			/>
 		</Box>
@@ -653,7 +615,15 @@ export const PaneContextMenu: React.FC<PaneContextMenuProps> = ({ screen, onPick
 			fontSize='12px'
 			color='fg.default'
 		>
-			<Box px='2.5' py='1' fontSize='10px' fontWeight='700' color='fg.muted' textTransform='uppercase' letterSpacing='0.06em'>
+			<Box
+				px='2.5'
+				py='1'
+				fontSize='10px'
+				fontWeight='700'
+				color='fg.muted'
+				textTransform='uppercase'
+				letterSpacing='0.06em'
+			>
 				{'Add step here'}
 			</Box>
 			{paneMenuItems.map(item => (
@@ -724,14 +694,7 @@ export const MultiSelectPanel: React.FC<MultiSelectPanelProps> = ({ count, onDel
 		minH={0}
 	>
 		<Flex align='center' h='38px' px='3' gap='2' borderBottomWidth='1px' borderColor='border.subtle' flexShrink={0}>
-			<Box
-				fontSize='10px'
-				fontWeight='700'
-				color='fg.muted'
-				textTransform='uppercase'
-				letterSpacing='0.06em'
-				flex='1'
-			>
+			<Box fontSize='10px' fontWeight='700' color='fg.muted' textTransform='uppercase' letterSpacing='0.06em' flex='1'>
 				{`${count} steps selected`}
 			</Box>
 			<Button
@@ -748,15 +711,11 @@ export const MultiSelectPanel: React.FC<MultiSelectPanelProps> = ({ count, onDel
 		</Flex>
 		<Stack gap='3' px='3' py='3'>
 			<Box fontSize='12px' color='fg.subtle' lineHeight='1.5'>
-				{'Editing properties is per-kind, so the panel switches to bulk actions when more than one step is selected. Start nodes are excluded from delete automatically.'}
+				{
+					'Editing properties is per-kind, so the panel switches to bulk actions when more than one step is selected. Start nodes are excluded from delete automatically.'
+				}
 			</Box>
-			<Button
-				type='button'
-				size='sm'
-				colorPalette='red'
-				variant='outline'
-				onClick={onDelete}
-			>
+			<Button type='button' size='sm' colorPalette='red' variant='outline' onClick={onDelete}>
 				<Trash2 size={13} strokeWidth={1.8} />
 				{`Delete ${count} steps`}
 			</Button>
@@ -840,12 +799,13 @@ const TagsEditor: React.FC<{ tags: string[]; onChange: (next: string[]) => void 
 					</Flex>
 				))}
 			</Flex>
-			<input
+			<Input
+				size='xs'
 				value={draft}
 				placeholder='Add a tag…'
-				onChange={e => setDraft(e.target.value)}
+				onChange={(e: React.ChangeEvent<HTMLInputElement>) => setDraft(e.target.value)}
 				onBlur={commitDraft}
-				onKeyDown={e => {
+				onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
 					if (e.key === 'Enter') {
 						e.preventDefault();
 						commitDraft();
@@ -855,17 +815,6 @@ const TagsEditor: React.FC<{ tags: string[]; onChange: (next: string[]) => void 
 						e.preventDefault();
 						removeAt(tags.length - 1);
 					}
-				}}
-				style={{
-					width: '100%',
-					padding: '4px 8px',
-					fontSize: '11px',
-					fontFamily: 'inherit',
-					background: 'var(--beak-colors-bg-canvas)',
-					border: '1px solid var(--beak-colors-border-default)',
-					borderRadius: '4px',
-					color: 'inherit',
-					outline: 'none',
 				}}
 			/>
 		</Box>
