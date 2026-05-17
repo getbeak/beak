@@ -463,6 +463,35 @@ export function extractAllTags(workflows: ReadonlyArray<WorkflowFile> | Record<s
 }
 
 /**
+ * One-line human summary of a workflow's structural issues. Returns
+ * `null` when everything is clean so the caller can skip rendering the
+ * line entirely. The output is comma-separated and prefixes counts —
+ * "1 unreachable, 2 cycle members, 3 unlinked requests, 2 warnings" —
+ * stable enough to use in a tooltip, the Markdown export, or a
+ * notification toast.
+ */
+export function summariseHealth(health: GraphHealth, warningCount: number): string | null {
+	const parts: string[] = [];
+	if (health.unreachable.length > 0) {
+		const n = health.unreachable.length;
+		parts.push(`${n} unreachable`);
+	}
+	if (health.cycleNodes.length > 0) {
+		const n = health.cycleNodes.length;
+		parts.push(`${n} cycle member${n === 1 ? '' : 's'}`);
+	}
+	if (health.unlinkedRequestNodes.length > 0) {
+		const n = health.unlinkedRequestNodes.length;
+		parts.push(`${n} unlinked request${n === 1 ? '' : 's'}`);
+	}
+	if (warningCount > 0) {
+		parts.push(`${warningCount} warning${warningCount === 1 ? '' : 's'}`);
+	}
+	if (parts.length === 0) return null;
+	return parts.join(', ');
+}
+
+/**
  * Tags that appear in `known` but never on any workflow in `workflows`.
  * Useful when the project tracks a curated tag vocabulary (eg. read from
  * project.json) and we want to flag stale entries. Returns the tags

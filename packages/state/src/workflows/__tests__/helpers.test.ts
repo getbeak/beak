@@ -32,6 +32,7 @@ import {
 	searchNodes,
 	searchWorkflows,
 	serializeForExport,
+	summariseHealth,
 	topologicalOrder,
 	uniqueWorkflowName,
 	unusedTags,
@@ -1039,6 +1040,44 @@ describe('extractAllTags', () => {
 
 	it('returns [] when nothing has tags', () => {
 		expect(extractAllTags([{ id: 'a', name: 'A', nodes: [], edges: [] }])).toEqual([]);
+	});
+});
+
+describe('summariseHealth', () => {
+	function emptyHealth() {
+		return {
+			nodeCount: 0,
+			edgeCount: 0,
+			reachable: new Set<string>(),
+			unreachable: [],
+			danglingEdges: [],
+			unlinkedRequestNodes: [],
+			cycleNodes: [],
+		};
+	}
+
+	it('returns null when everything is clean', () => {
+		expect(summariseHealth(emptyHealth(), 0)).toBeNull();
+	});
+
+	it('joins per-category lines with commas in stable order', () => {
+		const h = emptyHealth();
+		h.unreachable = ['a', 'b'];
+		h.cycleNodes = ['c', 'd', 'e'];
+		h.unlinkedRequestNodes = ['f'];
+		expect(summariseHealth(h, 2)).toBe('2 unreachable, 3 cycle members, 1 unlinked request, 2 warnings');
+	});
+
+	it('uses singular form for count of 1', () => {
+		const h = emptyHealth();
+		h.cycleNodes = ['x'];
+		expect(summariseHealth(h, 1)).toBe('1 cycle member, 1 warning');
+	});
+
+	it('omits categories with zero counts', () => {
+		const h = emptyHealth();
+		h.unreachable = ['x'];
+		expect(summariseHealth(h, 0)).toBe('1 unreachable');
 	});
 });
 
