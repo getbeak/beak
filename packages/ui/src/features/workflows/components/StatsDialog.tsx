@@ -1,9 +1,11 @@
 import {
 	findDuplicateNames,
+	findIsolatedNodes,
 	inspectGraph,
 	linkedRequestIds,
 	nodeBounds,
 	validateWorkflow,
+	workflowDepth,
 	type WorkflowFile,
 	workflowStats,
 } from '@beak/state/workflows';
@@ -34,6 +36,8 @@ const StatsDialog: React.FC<StatsDialogProps> = ({ workflow, open, onClose }) =>
 	// group(s) that include *this* workflow so the warning is contextual.
 	const allWorkflows = useAppSelector(s => s.global.workflows.workflows);
 	const reqIds = useMemo(() => linkedRequestIds(workflow), [workflow]);
+	const depth = useMemo(() => workflowDepth(workflow), [workflow]);
+	const isolated = useMemo(() => findIsolatedNodes(workflow), [workflow]);
 	const namesake = useMemo(() => {
 		const dups = findDuplicateNames(allWorkflows);
 		return dups.find(g => g.ids.includes(workflow.id)) ?? null;
@@ -125,6 +129,18 @@ const StatsDialog: React.FC<StatsDialogProps> = ({ workflow, open, onClose }) =>
 							<Section title='Health'>
 								<Row label='Components'>
 									<Count value={stats.componentCount} />
+								</Row>
+								<Row label='Depth'>
+									{depth === Number.POSITIVE_INFINITY ? (
+										<Box fontSize='12px' color='accent.warning' fontWeight='600'>
+											{'∞ (cycle)'}
+										</Box>
+									) : (
+										<Count value={depth} />
+									)}
+								</Row>
+								<Row label='Isolated nodes'>
+									<Count value={isolated.length} />
 								</Row>
 								<Row label='Linked requests'>
 									<Count value={stats.linkedRequestCount} />
