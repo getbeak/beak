@@ -5,6 +5,7 @@ import {
 	autoLayout,
 	cleanupDanglingEdges,
 	cloneNodeAt,
+	connectedComponents,
 	countOverrideEntries,
 	edgesAfterNodeRemoval,
 	firstIssueNode,
@@ -321,6 +322,46 @@ describe('inspectGraph', () => {
 		const r = inspectGraph(wf);
 		expect(r.cycleNodes).toEqual(['b', 'c']);
 		expect(r.unreachable).toEqual(['b', 'c']);
+	});
+});
+
+describe('connectedComponents', () => {
+	it('returns one component per weakly-connected group', () => {
+		const wf: WorkflowFile = {
+			id: 'wf',
+			name: 'components',
+			nodes: [
+				{ id: 's', type: 'start', position: { x: 0, y: 0 }, data: {} },
+				{ id: 'a', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } },
+				{ id: 'b', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } },
+				{ id: 'c', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } },
+				{ id: 'd', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } },
+			],
+			edges: [
+				{ id: 'e1', source: 's', target: 'a' },
+				{ id: 'e2', source: 'a', target: 'b' },
+				// c <-> d is its own island
+				{ id: 'e3', source: 'c', target: 'd' },
+			],
+		};
+		const components = connectedComponents(wf);
+		expect(components).toHaveLength(2);
+		expect(components[0].sort()).toEqual(['a', 'b', 's']);
+		expect(components[1].sort()).toEqual(['c', 'd']);
+	});
+
+	it('skips comment nodes (they are never wired into the flow)', () => {
+		const wf: WorkflowFile = {
+			id: 'wf',
+			name: 'with-comment',
+			nodes: [
+				{ id: 's', type: 'start', position: { x: 0, y: 0 }, data: {} },
+				{ id: 'cm', type: 'comment', position: { x: 0, y: 0 }, data: { text: 'hi' } } as never,
+			],
+			edges: [],
+		};
+		const components = connectedComponents(wf);
+		expect(components).toEqual([['s']]);
 	});
 });
 

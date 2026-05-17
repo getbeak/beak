@@ -3,6 +3,7 @@ export {
 	autoLayout,
 	cleanupDanglingEdges,
 	cloneNodeAt,
+	connectedComponents,
 	type ConnectionAttempt,
 	type ConnectionRejection,
 	countOverrideEntries,

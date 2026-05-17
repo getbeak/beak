@@ -278,6 +278,46 @@ export function reachableFromStart(workflow: WorkflowFile): string[] {
 }
 
 /**
+ * Group nodes into weakly-connected components — two nodes are in the
+ * same component if there's a path between them via edges in either
+ * direction. Comments are intentionally excluded since they're never
+ * wired into the main flow. Output is component sets in node-insertion
+ * order so tests / UI get a deterministic ordering.
+ *
+ * Useful as a "what does the workflow actually contain?" surface — a
+ * graph with 3 components is probably 3 independent flows pasted into
+ * one file, not a single coherent workflow.
+ */
+export function connectedComponents(workflow: WorkflowFile): string[][] {
+	const eligible = workflow.nodes.filter(n => n.type !== 'comment');
+	const nodeIds = new Set(eligible.map(n => n.id));
+	const undirected = new Map<string, Set<string>>();
+	for (const n of eligible) undirected.set(n.id, new Set());
+	for (const e of workflow.edges) {
+		if (!nodeIds.has(e.source) || !nodeIds.has(e.target)) continue;
+		undirected.get(e.source)?.add(e.target);
+		undirected.get(e.target)?.add(e.source);
+	}
+
+	const seen = new Set<string>();
+	const components: string[][] = [];
+	for (const node of eligible) {
+		if (seen.has(node.id)) continue;
+		const stack = [node.id];
+		const component: string[] = [];
+		while (stack.length > 0) {
+			const id = stack.pop();
+			if (!id || seen.has(id)) continue;
+			seen.add(id);
+			component.push(id);
+			for (const next of undirected.get(id) ?? []) stack.push(next);
+		}
+		components.push(component);
+	}
+	return components;
+}
+
+/**
  * BFS reachability from an arbitrary node id. Mirrors `reachableFromStart`
  * but lets a caller anchor on any node — used by run-from-here to compute
  * the partial walk and by tests that need to scope a slice of the graph.
