@@ -56,6 +56,17 @@ const Omnibar: React.FC = () => {
 				event.preventDefault();
 				return;
 			}
+			if (checkShortcut('omni-bar.launch.workflows', event)) {
+				if (open) {
+					reset();
+				} else {
+					dispatch(actions.showOmniBar({ mode: 'workflows' }));
+					setContent('# ');
+					setActiveIndex(0);
+				}
+				event.preventDefault();
+				return;
+			}
 			if (event.key === 'Escape' && open) {
 				reset();
 				event.preventDefault();
@@ -67,6 +78,7 @@ const Omnibar: React.FC = () => {
 
 	useEffect(() => {
 		if (open && mode === 'commands' && !content.startsWith('>')) setContent('> ');
+		if (open && mode === 'workflows' && !content.startsWith('#')) setContent('# ');
 		if (open) setTimeout(() => inputRef.current?.focus(), 16);
 	}, [open, mode]); // eslint-disable-line react-hooks/exhaustive-deps
 

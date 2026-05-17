@@ -1,40 +1,34 @@
-import type React from 'react';
 import { instance as windowSessionInstance } from '@beak/ui/contexts/window-session-context';
+import type React from 'react';
 
 import type { PlatformAgnosticDefinitions, PlatformSpecificDefinitions } from './types';
 
 export type Shortcuts =
 	| 'global.execute-request'
-
 	| 'sidebar.toggle-view'
 	| 'sidebar.switch-project'
 	| 'sidebar.switch-variables'
 	| 'sidebar.switch-endpoints'
 	| 'sidebar.switch-extensions'
-
 	| 'tree-view.node.up'
 	| 'tree-view.node.down'
 	| 'tree-view.node.left'
 	| 'tree-view.node.right'
 	| 'tree-view.node.rename'
 	| 'tree-view.node.delete'
-
 	| 'variable-sets.variable-set.open'
 	| 'variable-sets.variable-set.delete'
-
 	| 'project-explorer.request.open'
 	| 'project-explorer.request.duplicate'
 	| 'project-explorer.item.delete'
-
 	| 'omni-bar.launch.commands'
 	| 'omni-bar.launch.finder'
-
+	| 'omni-bar.launch.workflows'
 	| 'tab-bar.all.next'
 	| 'tab-bar.all.previous'
 	| 'tab-bar.all.close'
 	| 'tab-bar.all.close-others'
 	| 'tab-bar.current.close'
-
 	| 'menu-bar.file.new-request'
 	| 'menu-bar.file.new-folder';
 
@@ -86,9 +80,20 @@ export const shortcutDefinitions: Record<Shortcuts, PlatformSpecificDefinitions 
 
 	'omni-bar.launch.commands': { type: 'agnostic', ctrlOrMeta: true, shift: true, key: 'P' },
 	'omni-bar.launch.finder': { type: 'agnostic', ctrlOrMeta: true, key: ['P', 'K'] },
+	'omni-bar.launch.workflows': { type: 'agnostic', ctrlOrMeta: true, shift: true, key: 'O' },
 
-	'tab-bar.all.next': { type: 'agnostic', ctrl: true, key: 'Tab' },
-	'tab-bar.all.previous': { type: 'agnostic', ctrl: true, shift: true, key: 'Tab' },
+	'tab-bar.all.next': {
+		type: 'specific',
+		darwin: { shift: true, key: 'Tab' },
+		windows: { ctrl: true, key: 'Tab' },
+		linux: { ctrl: true, key: 'Tab' },
+	},
+	'tab-bar.all.previous': {
+		type: 'specific',
+		darwin: { shift: true, key: 'ArrowUp' },
+		windows: { ctrl: true, shift: true, key: 'Tab' },
+		linux: { ctrl: true, shift: true, key: 'Tab' },
+	},
 	'tab-bar.all.close': { type: 'agnostic', ctrlOrMeta: true, key: 'W' },
 	'tab-bar.all.close-others': { type: 'agnostic', ctrlOrMeta: true, alt: true, key: 'T' },
 	'tab-bar.current.close': { type: 'agnostic', ctrlOrMeta: true, shift: true, key: 'W' },
@@ -103,8 +108,7 @@ export function checkShortcut(shortcutKey: Shortcuts, event: React.KeyboardEvent
 	const platformDefinition = shortcutDefinitions[shortcutKey];
 
 	const shortcutDefinition = (() => {
-		if (platformDefinition.type === 'agnostic')
-			return platformDefinition;
+		if (platformDefinition.type === 'agnostic') return platformDefinition;
 
 		const platform = windowSessionInstance.getPlatform();
 
