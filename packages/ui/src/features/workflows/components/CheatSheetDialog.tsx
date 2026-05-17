@@ -58,6 +58,10 @@ const CheatSheetDialog: React.FC<CheatSheetDialogProps> = ({ open, onClose }) =>
 							<Row keys={['Doc']} desc='Copy workflow as Markdown' />
 							<Row keys={['Copy / Paste']} desc='Workflow JSON to/from clipboard (Paste re-keys ids)' />
 						</Section>
+
+						<Section title='Help'>
+							<Row keys={['?', '⌘ /']} desc='Open this cheat sheet' />
+						</Section>
 					</Stack>
 				</Dialog.Body>
 			</Dialog.Content>

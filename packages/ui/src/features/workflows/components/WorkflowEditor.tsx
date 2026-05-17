@@ -283,10 +283,13 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 				return;
 			}
 
-			// ? — open the cheat sheet. Skips when modifiers are held so
-			// the user can still type "?" into focused inputs (those are
-			// handled by the isEditable guard at the top of the handler).
-			if (!event.metaKey && !event.ctrlKey && !event.altKey && event.key === '?') {
+			// ? (or Cmd-/) — open the cheat sheet. ? alone requires shift on
+			// most layouts; Cmd-/ is the universal "help" shortcut every
+			// editor on a Mac uses.
+			if (
+				(!event.metaKey && !event.ctrlKey && !event.altKey && event.key === '?') ||
+				((event.metaKey || event.ctrlKey) && event.key === '/')
+			) {
 				event.preventDefault();
 				setCheatSheetOpen(true);
 				return;
