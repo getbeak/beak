@@ -2,8 +2,7 @@ import type { WorkflowEditorTabItem } from '@beak/common/types/beak-project';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { Box } from '@chakra-ui/react';
 import { Workflow } from 'lucide-react';
-import React from 'react';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 
 import TabItem from '../../../../components/atoms/TabItem';
@@ -18,15 +17,22 @@ const WorkflowEditorTab: React.FC<React.PropsWithChildren<WorkflowEditorTabProps
 	const dispatch = useDispatch();
 	const selectedTabPayload = useAppSelector(s => s.features.tabs.selectedTab);
 	const name = useAppSelector(s => s.global.workflows.workflows[tab.payload]?.name);
+	const pendingWrite = useAppSelector(s => Boolean(s.global.workflows.writeDebouncer));
 	const [target, setTarget] = useState<HTMLElement>();
 
-	const label = name ?? 'Workflow';
+	const isActive = selectedTabPayload === tab.payload;
+	const base = name ?? 'Workflow';
+	// Bullet shows only on the active tab — writeDebouncer is global so we
+	// can't pinpoint which workflow is dirty, but only the active tab can
+	// have caused the pending write (editor dispatches come from its mount).
+	const label = pendingWrite && isActive ? `• ${base}` : base;
 
 	return (
 		<TabContextMenuWrapper tab={tab} target={target}>
 			<TabItem
 				active={selectedTabPayload === tab.payload}
 				variant='card'
+				preview={tab.temporary}
 				leading={
 					<Box
 						as='span'
@@ -55,7 +61,7 @@ const WorkflowEditorTab: React.FC<React.PropsWithChildren<WorkflowEditorTabProps
 				}}
 				onClose={() => dispatch(closeTab(tab.payload))}
 			>
-				{tab.temporary ? <em>{label}</em> : label}
+				{label}
 			</TabItem>
 		</TabContextMenuWrapper>
 	);
