@@ -47,6 +47,7 @@ const Workflows: React.FC = () => {
 					<ChakraButton
 						type='button'
 						key={wf.id}
+						title={wf.description?.trim() || undefined}
 						onClick={() => dispatch(changeTab({ type: 'workflow_editor', payload: wf.id, temporary: true }))}
 						onDoubleClick={() => dispatch(changeTab({ type: 'workflow_editor', payload: wf.id, temporary: false }))}
 						onContextMenu={event => {
