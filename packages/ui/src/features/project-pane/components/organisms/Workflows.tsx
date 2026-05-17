@@ -103,6 +103,32 @@ const Workflows: React.FC = () => {
 						<Box flex='1 1 auto' minW={0} overflow='hidden' textOverflow='ellipsis' whiteSpace='nowrap'>
 							{wf.name || 'Untitled workflow'}
 						</Box>
+						{wf.tags && wf.tags.length > 0 && (
+							<Flex gap='1' flexShrink={0} alignItems='center'>
+								{wf.tags.slice(0, 2).map(tag => (
+									<Box
+										key={tag}
+										fontSize='9px'
+										px='1'
+										h='14px'
+										display='inline-flex'
+										alignItems='center'
+										borderRadius='sm'
+										borderWidth='1px'
+										borderColor='border.subtle'
+										bg='bg.canvas'
+										color='fg.muted'
+									>
+										{tag}
+									</Box>
+								))}
+								{wf.tags.length > 2 && (
+									<Box fontSize='9px' color='fg.subtle'>
+										{`+${wf.tags.length - 2}`}
+									</Box>
+								)}
+							</Flex>
+						)}
 						<Box
 							as='span'
 							flexShrink={0}
