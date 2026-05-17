@@ -20,6 +20,7 @@ import {
 	firstIssueNode,
 	firstUnlinkedRequest,
 	flightFromNode,
+	groupWorkflowsByParent,
 	inspectGraph,
 	mergeWorkflows,
 	nodeBounds,
@@ -1139,6 +1140,53 @@ describe('firstUnlinkedRequest', () => {
 			edges: [],
 		};
 		expect(firstUnlinkedRequest(wf)).toBeNull();
+	});
+});
+
+describe('groupWorkflowsByParent', () => {
+	const wfs: WorkflowFile[] = [
+		{ id: 'a', name: 'A', parent: 'folder-1', nodes: [], edges: [] },
+		{ id: 'b', name: 'B', nodes: [], edges: [] },
+		{ id: 'c', name: 'C', parent: 'folder-1', nodes: [], edges: [] },
+		{ id: 'd', name: 'D', parent: 'folder-2', nodes: [], edges: [] },
+	];
+
+	it('puts root workflows under the empty-string bucket first', () => {
+		const map = groupWorkflowsByParent(wfs);
+		expect([...map.keys()][0]).toBe('');
+		expect(map.get('')!.map(w => w.id)).toEqual(['b']);
+	});
+
+	it('groups same-parent workflows together', () => {
+		const map = groupWorkflowsByParent(wfs);
+		expect(map.get('folder-1')!.map(w => w.id)).toEqual(['a', 'c']);
+		expect(map.get('folder-2')!.map(w => w.id)).toEqual(['d']);
+	});
+
+	it('preserves insertion order for nested parents', () => {
+		const map = groupWorkflowsByParent(wfs);
+		expect([...map.keys()].slice(1)).toEqual(['folder-1', 'folder-2']);
+	});
+
+	it('skips the empty-string bucket when every workflow has a parent', () => {
+		const onlyNested: WorkflowFile[] = [{ id: 'a', name: 'A', parent: 'f', nodes: [], edges: [] }];
+		expect(groupWorkflowsByParent(onlyNested).has('')).toBe(false);
+	});
+
+	it('treats whitespace-only parents as no parent', () => {
+		const messy: WorkflowFile[] = [
+			{ id: 'a', name: 'A', parent: '   ', nodes: [], edges: [] },
+			{ id: 'b', name: 'B', parent: undefined, nodes: [], edges: [] },
+		];
+		const map = groupWorkflowsByParent(messy);
+		expect(map.get('')!.map(w => w.id)).toEqual(['a', 'b']);
+	});
+
+	it('accepts a record', () => {
+		const record: Record<string, WorkflowFile> = {};
+		for (const w of wfs) record[w.id] = w;
+		const map = groupWorkflowsByParent(record);
+		expect(map.size).toBe(3);
 	});
 });
 

@@ -360,6 +360,42 @@ export function duplicateWorkflow(
 }
 
 /**
+ * Bucket workflows by their `parent` folder id. Workflows with no
+ * parent fall under the empty-string bucket so callers can render
+ * "Root" / "Untagged"-equivalent groups. Returns a Map keyed by parent
+ * id (with root first by convention) — iteration order is stable as
+ * long as the caller renders parents in insertion order.
+ */
+export function groupWorkflowsByParent(
+	workflows: ReadonlyArray<WorkflowFile> | Record<string, WorkflowFile>,
+): Map<string, WorkflowFile[]> {
+	const list = Array.isArray(workflows) ? workflows : Object.values(workflows);
+	const out = new Map<string, WorkflowFile[]>();
+	const root: WorkflowFile[] = [];
+	const nestedKeys: string[] = [];
+	const buckets = new Map<string, WorkflowFile[]>();
+	for (const wf of list) {
+		const parent = (wf.parent ?? '').trim();
+		if (parent === '') {
+			root.push(wf);
+			continue;
+		}
+		const bucket = buckets.get(parent);
+		if (!bucket) {
+			buckets.set(parent, [wf]);
+			nestedKeys.push(parent);
+		} else {
+			bucket.push(wf);
+		}
+	}
+	if (root.length > 0) out.set('', root);
+	for (const key of nestedKeys) {
+		out.set(key, buckets.get(key)!);
+	}
+	return out;
+}
+
+/**
  * Find a workflow by its display name. Case-insensitive, whitespace-
  * trimmed. Returns the first match — duplicate names can exist (the
  * conflict-suffix is best-effort, not enforced at the slice), so the

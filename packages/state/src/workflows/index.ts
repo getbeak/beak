@@ -20,6 +20,7 @@ export {
 	firstIssueNode,
 	firstUnlinkedRequest,
 	flightFromNode,
+	groupWorkflowsByParent,
 	type GraphHealth,
 	inspectGraph,
 	type LayoutOptions,
