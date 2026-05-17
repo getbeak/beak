@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { propertyConstraintsSchema } from './request-schema';
+
 /**
  * Project-wide cookie configuration. Lives on the project file because the
  * primary variable set is a property of the project, not of a particular
@@ -87,7 +89,10 @@ const jsonEntrySchema = z.discriminatedUnion('type', [
 	jsonEntryBaseSchema.extend({
 		type: z.literal('enum'),
 		value: valuePartsSchema.optional(),
-		options: z.array(z.string()).optional(),
+		// Typed primitives — string | number | boolean | null. Older projects
+		// only wrote string options; the wider union is a strict superset so
+		// existing data validates unchanged.
+		options: z.array(z.union([z.string(), z.number(), z.boolean(), z.null()])).optional(),
 	}),
 	jsonEntryBaseSchema.extend({
 		type: z.literal('array'),
@@ -97,13 +102,56 @@ const jsonEntrySchema = z.discriminatedUnion('type', [
 	}),
 ]);
 
+/**
+ * Header / query parameter entry. The minimum shape (name + value + enabled)
+ * is what hand-authored requests carry; the optional schema-flavoured fields
+ * (type, required, description, options, constraints) get populated by
+ * importers that have a spec to draw from — OpenAPI in particular pulls
+ * these "for free" off each parameter's schema. The value editor surfaces
+ * them as inline hints + masks; on export we round-trip them back out.
+ *
+ * Passthrough is intentional: older project files predate these fields and
+ * forward-compat must hold across versions. Anything we *can* validate, we
+ * do — anything else slips through unchanged.
+ */
 const keyValuePairSchema = z
 	.object({
 		name: z.string(),
 		value: valuePartsSchema,
 		enabled: z.boolean(),
+		type: z.enum(['string', 'number', 'boolean', 'enum', 'token']).optional(),
+		required: z.boolean().optional(),
+		description: z.string().optional(),
+		options: z.array(z.string()).optional(),
+		constraints: propertyConstraintsSchema.optional(),
 	})
 	.passthrough();
+
+/**
+ * Path parameter entry — one per `{name}` placeholder declared on an
+ * OpenAPI operation. The converter populates this from the spec; the
+ * renderer surfaces an inline editor section in the request pane so the
+ * user can bind values without touching the URL. At flight time the URL's
+ * `:name` substrings get substituted with the bound `value` before
+ * parsing variables.
+ *
+ * `enabled` is intentionally absent — path params are required by URL
+ * structure, so toggling them off would only produce a broken request.
+ * Hand-authored URLs (no spec provenance) don't populate this map today.
+ */
+const pathParameterEntrySchema = z
+	.object({
+		name: z.string(),
+		value: valuePartsSchema,
+		type: z.enum(['string', 'number', 'boolean', 'enum', 'token']).optional(),
+		required: z.boolean().optional(),
+		description: z.string().optional(),
+		options: z.array(z.string()).optional(),
+		constraints: propertyConstraintsSchema.optional(),
+	})
+	.passthrough();
+
+export type PathParameterEntry = z.infer<typeof pathParameterEntrySchema>;
 
 const graphQlSchema = z
 	.object({
@@ -156,6 +204,10 @@ const bodySchema = z.discriminatedUnion('type', [
 		.object({
 			type: z.literal('json_raw'),
 			payload: z.string(),
+			// Carried from the previously-authored `json` body so Monaco can
+			// validate raw JSON against the user's schema. Absent on fresh
+			// json_raw bodies.
+			schemaSeed: z.record(z.string(), jsonEntrySchema).optional(),
 		})
 		.passthrough(),
 	z
@@ -237,6 +289,14 @@ export const requestFileSchema = z
 		// still address them unconditionally.
 		query: z.record(z.string(), keyValuePairSchema).optional(),
 		headers: z.record(z.string(), keyValuePairSchema).optional(),
+		/**
+		 * Path parameters declared by the source spec (OpenAPI `in: 'path'`).
+		 * Optional — populated only on linked OpenAPI imports. The renderer
+		 * shows an inline editor section above the modifier tabs when this
+		 * is non-empty; flight prep substitutes `:name` in the URL value-parts
+		 * with each entry's bound value before resolving variables.
+		 */
+		pathParameters: z.record(z.string(), pathParameterEntrySchema).optional(),
 		body: bodySchema.optional(),
 		options: requestOptionsSchema.optional(),
 		/** Seed introspection file for an endpoint collection — see `RequestOverview.introspection`. */
@@ -294,6 +354,7 @@ export const requestFileOverrideSchema = z
 		url: valuePartsSchema.optional(),
 		query: z.record(z.string(), keyValuePairSchema).optional(),
 		headers: z.record(z.string(), keyValuePairSchema).optional(),
+		pathParameters: z.record(z.string(), pathParameterEntrySchema).optional(),
 		body: bodySchema.optional(),
 		options: requestOptionsSchema.optional(),
 		/** Seed introspection file for an endpoint collection — see `RequestOverview.introspection`. */
