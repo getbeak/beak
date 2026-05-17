@@ -1,4 +1,4 @@
-import { inspectGraph, validateWorkflow } from '@beak/state/workflows';
+import { inspectGraph, recentWorkflows, validateWorkflow } from '@beak/state/workflows';
 import { changeTab } from '@beak/ui/features/tabs/store/actions';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { actions as workflowActions } from '@beak/ui/store/workflows';
@@ -20,7 +20,10 @@ const Workflows: React.FC = () => {
 	const dispatch = useDispatch();
 	const selectedTabId = useAppSelector(s => s.features.tabs.selectedTab);
 	const workflows = useAppSelector(s => s.global.workflows.workflows);
-	const entries = Object.values(workflows);
+	// Sort by updatedAt desc so the most recently-edited workflow is always
+	// near the top — saves the user from scanning a long list. Legacy
+	// (no-timestamp) files trail in insertion order via the helper's rule.
+	const entries = recentWorkflows(workflows);
 
 	if (entries.length === 0) {
 		return (
