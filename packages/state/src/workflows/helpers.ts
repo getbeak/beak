@@ -464,6 +464,105 @@ export function edgesAfterNodeRemoval(edges: ReadonlyArray<WorkflowEdge>, nodeId
 	return edges.filter(e => e.source !== nodeId && e.target !== nodeId);
 }
 
+export interface NodeSearchResult {
+	id: string;
+	label: string;
+	subtitle: string;
+	kind: WorkflowNode['type'];
+}
+
+/**
+ * Search the workflow's nodes by free-text query — used by the editor's
+ * Cmd-K node finder. The "label" is whatever the user would recognise:
+ * the linked request's name for request nodes (resolved by the caller —
+ * we get it via the `requestNames` lookup, since pure helpers don't see
+ * the project tree), trimmed comment text for comment nodes, and the
+ * node kind otherwise.
+ *
+ * Returns nodes whose label OR kind contains the query (case-insensitive),
+ * sorted by match position (prefix > substring) and tie-broken by label.
+ */
+export function searchNodes(
+	workflow: WorkflowFile,
+	query: string,
+	requestNames: ReadonlyMap<string, string>,
+): NodeSearchResult[] {
+	const all = workflow.nodes.map(n => describeNodeForSearch(n, requestNames));
+	const trimmed = query.trim().toLowerCase();
+	if (trimmed === '') return all;
+	const scored: { item: NodeSearchResult; score: number }[] = [];
+	for (const item of all) {
+		const labelLower = item.label.toLowerCase();
+		const kindLower = item.kind.toLowerCase();
+		const labelIdx = labelLower.indexOf(trimmed);
+		const kindIdx = kindLower.indexOf(trimmed);
+		const subtitleIdx = item.subtitle.toLowerCase().indexOf(trimmed);
+		// Prefer label-prefix > label-substring > kind-substring > subtitle-substring.
+		let score = -1;
+		if (labelIdx === 0) score = 1000;
+		else if (labelIdx > 0) score = 500 - labelIdx;
+		else if (kindIdx >= 0) score = 200 - kindIdx;
+		else if (subtitleIdx >= 0) score = 100 - subtitleIdx;
+		if (score < 0) continue;
+		scored.push({ item, score });
+	}
+	scored.sort((a, b) => b.score - a.score || a.item.label.localeCompare(b.item.label));
+	return scored.map(s => s.item);
+}
+
+function describeNodeForSearch(
+	node: WorkflowNode,
+	requestNames: ReadonlyMap<string, string>,
+): NodeSearchResult {
+	switch (node.type) {
+		case 'start':
+			return { id: node.id, label: 'Start', subtitle: 'Workflow entry point', kind: 'start' };
+		case 'request': {
+			const d = node.data as { requestId: string | null };
+			const linked = d.requestId ? requestNames.get(d.requestId) : undefined;
+			return {
+				id: node.id,
+				label: linked ?? 'Untitled request step',
+				subtitle: linked ? 'Linked request' : 'No request linked',
+				kind: 'request',
+			};
+		}
+		case 'loop': {
+			const d = node.data as { mode: 'count' | 'forEach'; count?: number };
+			return {
+				id: node.id,
+				label: d.mode === 'count' ? `Loop ${d.count ?? 0}×` : 'Loop for each',
+				subtitle: 'Loop',
+				kind: 'loop',
+			};
+		}
+		case 'condition': {
+			const d = node.data as { operator?: string };
+			return {
+				id: node.id,
+				label: `Condition (${d.operator ?? 'truthy'})`,
+				subtitle: 'Condition',
+				kind: 'condition',
+			};
+		}
+		case 'notification': {
+			const d = node.data as { title?: unknown[] };
+			const title = previewValueSections(d.title) || 'Untitled notification';
+			return { id: node.id, label: title, subtitle: 'Notification', kind: 'notification' };
+		}
+		case 'comment': {
+			const d = node.data as { text?: string };
+			const text = (d.text ?? '').trim();
+			return {
+				id: node.id,
+				label: text || 'Empty note',
+				subtitle: 'Comment',
+				kind: 'comment',
+			};
+		}
+	}
+}
+
 /**
  * Re-key any node ids inside `node` so that a duplicated subgraph doesn't
  * collide with its source. The caller owns id generation — pass a

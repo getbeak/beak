@@ -13,6 +13,7 @@ import {
 	reachableFromNode,
 	reachableFromStart,
 	readPlainText,
+	searchNodes,
 	topologicalOrder,
 	validateConnection,
 } from '../helpers';
@@ -525,6 +526,72 @@ describe('reachableFromNode + flightFromNode', () => {
 			],
 		};
 		expect(() => flightFromNode(cyclic, 'a')).toThrow(/cycle/);
+	});
+});
+
+describe('searchNodes', () => {
+	const wf: WorkflowFile = {
+		id: 'wf',
+		name: 'searchable',
+		nodes: [
+			{ id: 's', type: 'start', position: { x: 0, y: 0 }, data: {} },
+			{ id: 'r1', type: 'request', position: { x: 0, y: 0 }, data: { requestId: 'req-a' } },
+			{ id: 'r2', type: 'request', position: { x: 0, y: 0 }, data: { requestId: 'req-b' } },
+			{ id: 'r3', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } },
+			{ id: 'l1', type: 'loop', position: { x: 0, y: 0 }, data: { mode: 'count', count: 5 } } as WorkflowNode,
+			{ id: 'c1', type: 'comment', position: { x: 0, y: 0 }, data: { text: 'remember to authenticate first' } } as WorkflowNode,
+		],
+		edges: [],
+	};
+	const names = new Map([
+		['req-a', 'GET /users'],
+		['req-b', 'POST /sessions'],
+	]);
+
+	it('returns every node when the query is empty', () => {
+		expect(searchNodes(wf, '', names)).toHaveLength(6);
+		expect(searchNodes(wf, '   ', names)).toHaveLength(6);
+	});
+
+	it('matches linked request names case-insensitively', () => {
+		const results = searchNodes(wf, 'users', names);
+		expect(results.map(r => r.id)).toContain('r1');
+		expect(results.map(r => r.id)).not.toContain('r2');
+	});
+
+	it('matches comment text', () => {
+		const results = searchNodes(wf, 'authenticate', names);
+		expect(results.map(r => r.id)).toContain('c1');
+	});
+
+	it('matches by node kind', () => {
+		const results = searchNodes(wf, 'loop', names);
+		expect(results.map(r => r.id)).toContain('l1');
+	});
+
+	it('ranks label-prefix matches above substring matches', () => {
+		const wfRanked: WorkflowFile = {
+			id: 'wf',
+			name: 'rank',
+			nodes: [
+				{ id: 'a', type: 'request', position: { x: 0, y: 0 }, data: { requestId: 'req-1' } },
+				{ id: 'b', type: 'request', position: { x: 0, y: 0 }, data: { requestId: 'req-2' } },
+			],
+			edges: [],
+		};
+		const m = new Map([
+			['req-1', 'gather metrics'],
+			['req-2', 'metrics dashboard'],
+		]);
+		const results = searchNodes(wfRanked, 'metrics', m);
+		// "metrics dashboard" is a prefix match — should rank above "gather metrics".
+		expect(results[0].id).toBe('b');
+		expect(results[1].id).toBe('a');
+	});
+
+	it('drops the unlinked-request placeholder when the user types', () => {
+		const results = searchNodes(wf, 'users', names);
+		expect(results.map(r => r.id)).not.toContain('r3');
 	});
 });
 

@@ -42,6 +42,7 @@ import {
 } from './editor-chrome';
 import { nodeTypes } from './node-views';
 import NodePropertiesPanel from './NodePropertiesPanel';
+import NodeSearchDialog from './NodeSearchDialog';
 
 interface WorkflowEditorProps {
 	workflowId: string;
@@ -78,6 +79,7 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 	// of the editor still cares about "the one selection" (single-pane,
 	// keyboard duplicate, edge-highlight) — those derive the single id below.
 	const [selectedIds, setSelectedIds] = useState<ReadonlySet<string>>(() => new Set());
+	const [searchOpen, setSearchOpen] = useState(false);
 	const selectedNodeId = selectedIds.size === 1 ? [...selectedIds][0] : null;
 
 	const clearSelection = useCallback(() => setSelectedIds(new Set()), []);
@@ -174,6 +176,14 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 				event.preventDefault();
 				const ids = workflow.nodes.filter(n => n.type !== 'start').map(n => n.id);
 				setSelectedIds(new Set(ids));
+				return;
+			}
+
+			// Cmd/Ctrl-K — open the node finder. Cmd-K is the universal "go to"
+			// — every major code editor uses it for the same purpose.
+			if ((event.metaKey || event.ctrlKey) && (event.key === 'k' || event.key === 'K')) {
+				event.preventDefault();
+				setSearchOpen(true);
 				return;
 			}
 
@@ -293,6 +303,12 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 
 	return (
 		<Flex direction='column' h='100%' bg='bg.canvas' minH={0}>
+			<NodeSearchDialog
+				workflow={workflow}
+				open={searchOpen}
+				onClose={() => setSearchOpen(false)}
+				onPick={nodeId => replaceSelection(nodeId)}
+			/>
 			<Flex
 				align='center'
 				gap='2'
