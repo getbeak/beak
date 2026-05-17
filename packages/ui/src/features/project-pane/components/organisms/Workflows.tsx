@@ -1,9 +1,9 @@
-import { inspectGraph, recentWorkflows, validateWorkflow } from '@beak/state/workflows';
+import { inspectGraph, recentWorkflows, searchWorkflows, validateWorkflow } from '@beak/state/workflows';
 import { changeTab } from '@beak/ui/features/tabs/store/actions';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { actions as workflowActions } from '@beak/ui/store/workflows';
-import { Box, chakra, Flex } from '@chakra-ui/react';
-import { Copy, Pencil, Trash2, Workflow as WorkflowIcon } from 'lucide-react';
+import { Box, chakra, Flex, Input } from '@chakra-ui/react';
+import { Copy, Pencil, Search, Trash2, Workflow as WorkflowIcon } from 'lucide-react';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 
@@ -26,12 +26,21 @@ const Workflows: React.FC = () => {
 	const selectedTabId = useAppSelector(s => s.features.tabs.selectedTab);
 	const workflows = useAppSelector(s => s.global.workflows.workflows);
 	const [menu, setMenu] = React.useState<ContextMenuState | null>(null);
+	const [filter, setFilter] = React.useState('');
+	const total = Object.keys(workflows).length;
 	// Sort by updatedAt desc so the most recently-edited workflow is always
 	// near the top — saves the user from scanning a long list. Legacy
 	// (no-timestamp) files trail in insertion order via the helper's rule.
-	const entries = recentWorkflows(workflows);
+	// When a filter is typed, switch to searchWorkflows scoring instead so
+	// the row order matches the user's mental model of "best match first".
+	const entries = React.useMemo(() => {
+		const trimmed = filter.trim();
+		if (trimmed === '') return recentWorkflows(workflows);
+		const ranked = searchWorkflows(workflows, trimmed);
+		return ranked.map(r => workflows[r.id]).filter((wf): wf is NonNullable<typeof wf> => Boolean(wf));
+	}, [filter, workflows]);
 
-	if (entries.length === 0) {
+	if (total === 0) {
 		return (
 			<Box px='3' py='2' fontSize='11px' color='fg.subtle' lineHeight='1.45'>
 				{'Chain requests together. Use the workflow icon at the top of the explorer to add one.'}
@@ -39,10 +48,33 @@ const Workflows: React.FC = () => {
 		);
 	}
 
+	const showFilter = total >= 3;
+
 	return (
 		<>
 			<Flex direction='column' minW={0}>
-				{renderRows()}
+				{showFilter && (
+					<Box px='3' pt='1' pb='1' position='relative'>
+						<Box position='absolute' left='17px' top='50%' transform='translateY(-50%)' pointerEvents='none' color='fg.subtle'>
+							<Search size={11} strokeWidth={1.8} />
+						</Box>
+						<Input
+							size='xs'
+							placeholder='Filter workflows…'
+							value={filter}
+							onChange={event => setFilter(event.target.value)}
+							pl='6'
+							fontSize='11px'
+						/>
+					</Box>
+				)}
+				{entries.length === 0 ? (
+					<Box px='3' py='2' fontSize='11px' color='fg.subtle' lineHeight='1.45'>
+						{`No workflow matches “${filter.trim()}”.`}
+					</Box>
+				) : (
+					renderRows()
+				)}
 			</Flex>
 			{menu && (
 				<WorkflowRowContextMenu
