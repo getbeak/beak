@@ -1,5 +1,5 @@
 import { requestBodyContentType } from '@beak/common/helpers/request';
-import { SseParser, isSseContentType } from '@beak/common/helpers/sse-parser';
+import { isSseContentType, SseParser } from '@beak/common/helpers/sse-parser';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import type {
 	FlightCompletePayload,

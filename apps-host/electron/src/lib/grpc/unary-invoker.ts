@@ -111,19 +111,15 @@ async function invokeWithFallback(
 		const credentials = useTls ? grpc.credentials.createSsl() : grpc.credentials.createInsecure();
 		const client = new grpc.Client(parsed.address, credentials);
 		try {
-			const result = await singleUnaryCall(
-				client,
-				methodPath,
-				serialize,
-				deserialize,
-				requestMessage,
-				responseType,
-				opts,
-			);
+			const result = await singleUnaryCall(client, methodPath, serialize, deserialize, requestMessage, responseType, opts);
 			client.close();
 			return result;
 		} catch (err) {
-			try { client.close(); } catch { /* socket already closed */ }
+			try {
+				client.close();
+			} catch {
+				/* socket already closed */
+			}
 			lastError = err;
 			if (!isLikelyTlsMismatch(err) || useTls === attempts[attempts.length - 1]) throw err;
 		}
@@ -230,8 +226,7 @@ function lookupServiceFlexibly(root: protobuf.Root, serviceName: string): protob
 			// importing the runtime type so this stays cheap to compile.
 			if ((child as unknown as { methodsArray?: unknown[] }).methodsArray !== undefined) {
 				const candidate = child as protobuf.Service;
-				if (candidate.name === serviceName || stripLeadingDot(candidate.fullName) === serviceName)
-					return candidate;
+				if (candidate.name === serviceName || stripLeadingDot(candidate.fullName) === serviceName) return candidate;
 			}
 			if ((child as protobuf.NamespaceBase).nestedArray) stack.push(child as protobuf.NamespaceBase);
 		}

@@ -1,11 +1,7 @@
 import path from 'node:path';
 
 import getRuntime from '@beak/apps-host-electron/host';
-import {
-	IpcValuesServiceMain,
-	type LoadValuesRes,
-	type SaveValuesReq,
-} from '@beak/common/ipc/values';
+import { IpcValuesServiceMain, type LoadValuesRes, type SaveValuesReq } from '@beak/common/ipc/values';
 import { ipcMain } from 'electron';
 
 import { getProjectFilePathWindowMapping } from './fs-shared';

@@ -4,7 +4,7 @@ import Squawk from '@beak/common/utils/squawk';
 import { dialog, type IpcMainInvokeEvent, ipcMain } from 'electron';
 
 import getBeakHost from '../host';
-import { openProjectDialog, tryOpenProjectFolder } from '../host/extensions/project';
+import { openProjectDialog, tryOpenProjectFolder } from '../host/project';
 import { closeWindow, createProjectMainWindow, tryCloseWelcomeWindow, windowStack } from '../window-management';
 import { getProjectFolder } from './utils';
 
@@ -159,4 +159,3 @@ service.registerMaterialiseFromMemory(async (event, payload) => {
 		return null;
 	}
 });
-

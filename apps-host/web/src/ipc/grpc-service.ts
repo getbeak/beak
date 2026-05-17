@@ -14,7 +14,7 @@ import { webIpcMain } from './ipc';
 const service = new IpcGrpcServiceMain(webIpcMain);
 
 const NOT_AVAILABLE_MESSAGE =
-	'gRPC isn\'t available in the web shell — browsers can\'t speak HTTP/2 directly. Run Beak as a desktop app, or wire your service behind a gRPC-Web proxy (this is on the roadmap).';
+	"gRPC isn't available in the web shell — browsers can't speak HTTP/2 directly. Run Beak as a desktop app, or wire your service behind a gRPC-Web proxy (this is on the roadmap).";
 
 service.registerDiscoverMethods(async (_event, _payload: DiscoverMethodsReq) => {
 	throw new Error(NOT_AVAILABLE_MESSAGE);

@@ -1,9 +1,5 @@
 import getRuntime from '@beak/apps-host-web/host';
-import {
-	IpcValuesServiceMain,
-	type LoadValuesRes,
-	type SaveValuesReq,
-} from '@beak/common/ipc/values';
+import { IpcValuesServiceMain, type LoadValuesRes, type SaveValuesReq } from '@beak/common/ipc/values';
 
 import { webIpcMain } from './ipc';
 import { getCurrentProjectFolder } from './utils';

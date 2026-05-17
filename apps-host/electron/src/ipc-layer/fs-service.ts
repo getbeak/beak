@@ -9,24 +9,24 @@ import {
 	type WriteJsonReq,
 	type WriteTextReq,
 } from '@beak/common/ipc/fs';
-import Squawk from '@beak/common/utils/squawk';
 import { BrowserWindow, type IpcMainInvokeEvent, ipcMain, shell } from 'electron';
 import fs from 'fs-extra';
 import type { JFReadOptions } from 'jsonfile';
 
+import getBeakHost from '../host';
 import { openReferenceFile, previewReferencedFile } from '../lib/referenced-files';
-import { getProjectFilePathWindowMapping } from './fs-shared';
+import { getProjectFolder } from './utils';
 
 const service = new IpcFsServiceMain(ipcMain);
 
 service.registerReadJson(async (event, payload: ReadJsonReq) => {
-	const filePath = await ensureWithinProject(getProjectFilePathWindowMapping(event), payload.filePath);
+	const filePath = await ensureWithinProject(getProjectFolder(event), payload.filePath);
 
 	return await backoffJsonRead(filePath, payload.options);
 });
 
 service.registerWriteJson(async (event, payload: WriteJsonReq) => {
-	const filePath = await ensureWithinProject(getProjectFilePathWindowMapping(event), payload.filePath);
+	const filePath = await ensureWithinProject(getProjectFolder(event), payload.filePath);
 
 	await ensureParentDirectoryExists(filePath);
 
@@ -34,13 +34,13 @@ service.registerWriteJson(async (event, payload: WriteJsonReq) => {
 });
 
 service.registerReadText(async (event, payload: ReadTextReq) => {
-	const filePath = await ensureWithinProject(getProjectFilePathWindowMapping(event), payload.filePath);
+	const filePath = await ensureWithinProject(getProjectFolder(event), payload.filePath);
 
 	return await fs.readFile(filePath, { encoding: 'utf-8' });
 });
 
 service.registerWriteText(async (event, payload: WriteTextReq) => {
-	const filePath = await ensureWithinProject(getProjectFilePathWindowMapping(event), payload.filePath);
+	const filePath = await ensureWithinProject(getProjectFolder(event), payload.filePath);
 
 	await ensureParentDirectoryExists(filePath);
 
@@ -48,38 +48,38 @@ service.registerWriteText(async (event, payload: WriteTextReq) => {
 });
 
 service.registerPathExists(async (event, payload: SimplePath) => {
-	const filePath = await ensureWithinProject(getProjectFilePathWindowMapping(event), payload.filePath);
+	const filePath = await ensureWithinProject(getProjectFolder(event), payload.filePath);
 
 	return await fs.pathExists(filePath);
 });
 
 service.registerEnsureFile(async (event, payload: SimplePath) => {
-	const filePath = await ensureWithinProject(getProjectFilePathWindowMapping(event), payload.filePath);
+	const filePath = await ensureWithinProject(getProjectFolder(event), payload.filePath);
 
 	return await fs.ensureFile(filePath);
 });
 
 service.registerEnsureDir(async (event, payload: SimplePath) => {
-	const filePath = await ensureWithinProject(getProjectFilePathWindowMapping(event), payload.filePath);
+	const filePath = await ensureWithinProject(getProjectFolder(event), payload.filePath);
 
 	return await fs.ensureDir(filePath);
 });
 
 service.registerRemove(async (event, payload: SimplePath) => {
-	const filePath = await ensureWithinProject(getProjectFilePathWindowMapping(event), payload.filePath);
+	const filePath = await ensureWithinProject(getProjectFolder(event), payload.filePath);
 
 	return await shell.trashItem(filePath);
 });
 
 service.registerMove(async (event, payload: MoveReq) => {
-	const srcPath = await ensureWithinProject(getProjectFilePathWindowMapping(event), payload.srcPath);
-	const dstPath = await ensureWithinProject(getProjectFilePathWindowMapping(event), payload.dstPath);
+	const srcPath = await ensureWithinProject(getProjectFolder(event), payload.srcPath);
+	const dstPath = await ensureWithinProject(getProjectFolder(event), payload.dstPath);
 
 	return await fs.move(srcPath, dstPath);
 });
 
 service.registerReadDir(async (event, payload: ReadDirReq) => {
-	const filePath = await ensureWithinProject(getProjectFilePathWindowMapping(event), payload.filePath);
+	const filePath = await ensureWithinProject(getProjectFolder(event), payload.filePath);
 	const directoryEntries = await fs.readdir(filePath, payload.options || void 0);
 
 	return directoryEntries.map(d => ({
@@ -151,27 +151,13 @@ async function backoffJsonRead(filePath: string, options?: JFReadOptions) {
 	throw latestError;
 }
 
-export async function ensureWithinProject(projectFilePath: string, inputPath: string) {
-	const exists = await fs.pathExists(projectFilePath);
-
-	if (!exists) throw new Squawk('path_not_project', { projectFilePath, inputPath });
-
-	const project = await fs.readJson(projectFilePath);
-
-	if (typeof project !== 'object') throw new Squawk('path_project_corrupt', { projectFilePath, inputPath });
-
-	if (!project.id || !project.version || !project.name)
-		throw new Squawk('path_project_invalid', { projectFilePath, inputPath });
-
-	const projectDir = path.resolve(path.join(projectFilePath, '..'));
-	const resolved = path.resolve(path.join(projectDir, inputPath));
-	// Match either an exact dir hit OR a true descendant. The previous
-	// `startsWith(projectDir)` check accepted siblings whose name shared a
-	// prefix (`/p/Cool` matched `/p/Cool-evil/...`), letting a compromised
-	// renderer read out-of-project files via the fs IPC.
-	const isWithinProject = resolved === projectDir || resolved.startsWith(projectDir + path.sep);
-
-	if (!isWithinProject) throw new Squawk('path_not_within_project', { projectFilePath, inputPath });
-
-	return resolved;
+/**
+ * Thin proxy into the unified `Runtime.fs.ensureWithinProject` — both
+ * hosts share one safety surface. Signature now takes the project
+ * folder (matching web's pre-existing shape and the runtime helper's);
+ * callers that previously passed `getProjectFilePathWindowMapping(event)`
+ * (the `.../project.json` file path) should now pass `getProjectFolder(event)`.
+ */
+export async function ensureWithinProject(projectFolderPath: string, inputPath: string) {
+	return getBeakHost().fs.ensureWithinProject(projectFolderPath, inputPath);
 }

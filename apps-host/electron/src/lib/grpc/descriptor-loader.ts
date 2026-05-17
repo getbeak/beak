@@ -51,7 +51,9 @@ export async function loadDescriptor(
 			return loadViaProtoFile(protoPath);
 		}
 		case 'buf':
-			throw new Error('Buf Schema Registry descriptors are not yet wired up — use reflection or a local proto file for now.');
+			throw new Error(
+				'Buf Schema Registry descriptors are not yet wired up — use reflection or a local proto file for now.',
+			);
 	}
 }
 
@@ -94,7 +96,11 @@ async function loadViaReflection(endpoint: string): Promise<LoadedDescriptor> {
 			client.close();
 			return { root: buildRootFromDescriptors(fileDescriptors) };
 		} catch (err) {
-			try { client.close(); } catch { /* socket already closed */ }
+			try {
+				client.close();
+			} catch {
+				/* socket already closed */
+			}
 			lastError = err;
 			if (!isLikelyTlsMismatch(err) || useTls === attempts[attempts.length - 1]) throw err;
 		}
@@ -186,18 +192,18 @@ function callReflectionOnce<T>(
 	pluck: (response: unknown) => T | null,
 ): Promise<T> {
 	return new Promise<T>((resolve, reject) => {
-		const stream = client.makeBidiStreamRequest(
-			REFLECTION_METHOD_PATH,
-			serialize,
-			deserialize,
-			new grpc.Metadata(),
-			{ deadline: new Date(Date.now() + REFLECTION_TIMEOUT_MS) },
-		);
+		const stream = client.makeBidiStreamRequest(REFLECTION_METHOD_PATH, serialize, deserialize, new grpc.Metadata(), {
+			deadline: new Date(Date.now() + REFLECTION_TIMEOUT_MS),
+		});
 		let settled = false;
 		const settle = (fn: () => void) => {
 			if (settled) return;
 			settled = true;
-			try { stream.end(); } catch { /* socket already closed */ }
+			try {
+				stream.end();
+			} catch {
+				/* socket already closed */
+			}
 			fn();
 		};
 		stream.on('data', (frame: unknown) => {
@@ -221,9 +227,11 @@ function callReflectionOnce<T>(
  * crawl it's cheaper to look at the two fields we care about.
  */
 function peekFileNameAndDeps(bytes: Uint8Array): { name: string; deps: string[] } {
-	const fd = (descriptor as unknown as {
-		FileDescriptorProto: { decode: (buf: Uint8Array) => unknown };
-	}).FileDescriptorProto.decode(bytes) as { name?: string; dependency?: string[] };
+	const fd = (
+		descriptor as unknown as {
+			FileDescriptorProto: { decode: (buf: Uint8Array) => unknown };
+		}
+	).FileDescriptorProto.decode(bytes) as { name?: string; dependency?: string[] };
 	return { name: fd.name ?? '', deps: fd.dependency ?? [] };
 }
 
@@ -233,18 +241,24 @@ function peekFileNameAndDeps(bytes: Uint8Array): { name: string; deps: string[] 
  * by FQ name (e.g. `helloworld.HelloRequest`).
  */
 function buildRootFromDescriptors(fileBytes: Uint8Array[]): protobuf.Root {
-	const FileDescriptorSet = (descriptor as unknown as {
-		FileDescriptorSet: protobuf.Type;
-	}).FileDescriptorSet;
+	const FileDescriptorSet = (
+		descriptor as unknown as {
+			FileDescriptorSet: protobuf.Type;
+		}
+	).FileDescriptorSet;
 	const files = fileBytes.map(b =>
-		(descriptor as unknown as {
-			FileDescriptorProto: { decode: (buf: Uint8Array) => unknown };
-		}).FileDescriptorProto.decode(b),
+		(
+			descriptor as unknown as {
+				FileDescriptorProto: { decode: (buf: Uint8Array) => unknown };
+			}
+		).FileDescriptorProto.decode(b),
 	);
 	const set = FileDescriptorSet.fromObject({ file: files });
-	const root = (protobuf.Root as unknown as {
-		fromDescriptor: (set: unknown) => protobuf.Root;
-	}).fromDescriptor(set);
+	const root = (
+		protobuf.Root as unknown as {
+			fromDescriptor: (set: unknown) => protobuf.Root;
+		}
+	).fromDescriptor(set);
 	root.resolveAll();
 	return root;
 }

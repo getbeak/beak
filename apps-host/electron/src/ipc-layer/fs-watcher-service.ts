@@ -5,7 +5,8 @@ import { type IpcMainInvokeEvent, ipcMain } from 'electron';
 import type { FSWatcher } from 'original-fs';
 
 import { ensureWithinProject } from './fs-service';
-import { getProjectFilePathWindowMapping, platformNormalizePath, removeProjectPathPrefix } from './fs-shared';
+import { platformNormalizePath, removeProjectPathPrefix } from './fs-shared';
+import { getProjectFolder } from './utils';
 
 const watchers: Record<string, FSWatcher> = {};
 const windowContentsMapping: Record<string, string[]> = {};
@@ -13,7 +14,7 @@ const windowContentsMapping: Record<string, string[]> = {};
 const service = new IpcFsWatcherServiceMain(ipcMain);
 
 service.registerStartWatching(async (event, payload: StartWatchingReq) => {
-	const filePath = await ensureWithinProject(getProjectFilePathWindowMapping(event), payload.filePath);
+	const filePath = await ensureWithinProject(getProjectFolder(event), payload.filePath);
 
 	const sender = (event as IpcMainInvokeEvent).sender;
 	const senderIdStr = sender.id.toString();
@@ -38,7 +39,14 @@ service.registerStartWatching(async (event, payload: StartWatchingReq) => {
 	const watcher = chokidar
 		.watch(filePath, options)
 		.on('all', (eventName, path) => {
-			if (eventName !== 'add' && eventName !== 'addDir' && eventName !== 'change' && eventName !== 'unlink' && eventName !== 'unlinkDir') return;
+			if (
+				eventName !== 'add' &&
+				eventName !== 'addDir' &&
+				eventName !== 'change' &&
+				eventName !== 'unlink' &&
+				eventName !== 'unlinkDir'
+			)
+				return;
 			const destroyed = checkForDestruction(() => {
 				service.sendWatcherEvent(sender, payload.sessionIdentifier, {
 					eventName,
@@ -50,7 +58,11 @@ service.registerStartWatching(async (event, payload: StartWatchingReq) => {
 		})
 		.on('error', error => {
 			const destroyed = checkForDestruction(() => {
-				service.sendWatcherError(sender, payload.sessionIdentifier, error instanceof Error ? error : new Error(String(error)));
+				service.sendWatcherError(
+					sender,
+					payload.sessionIdentifier,
+					error instanceof Error ? error : new Error(String(error)),
+				);
 			});
 
 			if (destroyed) closeAndForget();

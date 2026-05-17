@@ -8,7 +8,6 @@ import {
 	type WriteJsonReq,
 	type WriteTextReq,
 } from '@beak/common/ipc/fs';
-import Squawk from '@beak/common/utils/squawk';
 
 import getBeakHost from '../host';
 import { fileOrFolderExists } from './fs-shared';
@@ -99,7 +98,9 @@ service.registerRemove(async (_event, payload: SimplePath) => {
 
 	const filePath = await ensureWithinProject(projectFolder, payload.filePath);
 
-	await getBeakHost().providers.node.fs.promises.rm(filePath);
+	// User-facing "delete" — match the electron handler's `shell.trashItem`
+	// semantics by recursing into folders and tolerating already-gone paths.
+	await getBeakHost().providers.node.fs.promises.rm(filePath, { recursive: true, force: true });
 });
 
 service.registerMove(async (_event, payload: MoveReq) => {
@@ -225,17 +226,13 @@ async function ensureParentDirectoryExists(filePath: string) {
 	}
 }
 
+/**
+ * Thin proxy into the unified `Runtime.fs.ensureWithinProject` — both
+ * hosts share one safety surface. The previous local implementation
+ * used `startsWith(projectDir)` which let sibling paths sharing a name
+ * prefix through (`/p/Cool` matched `/p/Cool-evil/...`); the runtime
+ * helper uses safe path-segment boundary matching.
+ */
 export async function ensureWithinProject(projectFolderPath: string, inputPath: string) {
-	const projectFilePath = getBeakHost().p.node.path.join(projectFolderPath, 'project.json');
-	const projectFile = await getBeakHost().project.readProjectFile(projectFolderPath);
-
-	if (!projectFile) throw new Squawk('path_not_project', { projectFilePath });
-
-	const projectDir = getBeakHost().p.node.path.join(projectFilePath, '..');
-	const resolved = getBeakHost().p.node.path.resolve(getBeakHost().p.node.path.join(projectDir, inputPath));
-	const isWithinProject = resolved.startsWith(projectDir) && getBeakHost().p.node.path.isAbsolute(resolved);
-
-	if (!isWithinProject) throw new Squawk('path_not_within_project', { projectFilePath });
-
-	return resolved;
+	return getBeakHost().fs.ensureWithinProject(projectFolderPath, inputPath);
 }

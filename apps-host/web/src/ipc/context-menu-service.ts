@@ -8,8 +8,20 @@ const service = new IpcContextMenuServiceMain(webIpcMain);
 // the IPC payload doesn't carry x/y, so we track the cursor here and use the
 // most recent position when a menu is requested.
 let lastPos = { x: 0, y: 0 };
-window.addEventListener('mousemove', event => { lastPos = { x: event.clientX, y: event.clientY }; }, true);
-window.addEventListener('contextmenu', event => { lastPos = { x: event.clientX, y: event.clientY }; }, true);
+window.addEventListener(
+	'mousemove',
+	event => {
+		lastPos = { x: event.clientX, y: event.clientY };
+	},
+	true,
+);
+window.addEventListener(
+	'contextmenu',
+	event => {
+		lastPos = { x: event.clientX, y: event.clientY };
+	},
+	true,
+);
 
 service.registerOpenContextMenu(async (_event, payload: OpenContextMenuPayload) => {
 	openDomContextMenu({
@@ -111,7 +123,8 @@ function openDomContextMenu({ items, x, y, onSelect }: OpenArgs): void {
 			row.addEventListener('mouseenter', () => {
 				row.style.background = 'var(--beak-colors-accent-pink)';
 				row.style.color = 'var(--beak-colors-fg-onAccent)';
-				if (item.accelerator) (row.lastChild as HTMLElement).style.color = 'color-mix(in srgb, var(--beak-colors-fg-onAccent) 80%, transparent)';
+				if (item.accelerator)
+					(row.lastChild as HTMLElement).style.color = 'color-mix(in srgb, var(--beak-colors-fg-onAccent) 80%, transparent)';
 			});
 			row.addEventListener('mouseleave', () => {
 				row.style.background = '';

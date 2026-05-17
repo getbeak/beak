@@ -52,7 +52,9 @@ service.registerDiscoverMethods(async (event, payload: DiscoverMethodsReq): Prom
 			// BSR fetch is a follow-up — the discriminator is here so the
 			// renderer's "Discover" call still lands cleanly and gets a
 			// telling error rather than a 500 from a missing handler.
-			throw new Error('Buf Schema Registry descriptors are not yet wired up — use reflection or a local proto file for now.');
+			throw new Error(
+				'Buf Schema Registry descriptors are not yet wired up — use reflection or a local proto file for now.',
+			);
 	}
 
 	return {

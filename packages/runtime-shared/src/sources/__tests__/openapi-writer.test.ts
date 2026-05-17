@@ -27,6 +27,23 @@ function createMemoryFs() {
 			rm: async (filePath: string) => {
 				files.delete(filePath);
 			},
+			readdir: async (dir: string, _opts?: unknown) => {
+				const prefix = dir.endsWith('/') ? dir : `${dir}/`;
+				const direct = new Map<string, 'file' | 'dir'>();
+				for (const f of files.keys()) {
+					if (!f.startsWith(prefix)) continue;
+					const rest = f.slice(prefix.length);
+					if (!rest) continue;
+					const slash = rest.indexOf('/');
+					if (slash === -1) direct.set(rest, 'file');
+					else direct.set(rest.slice(0, slash), 'dir');
+				}
+				return Array.from(direct.entries()).map(([name, kind]) => ({
+					name,
+					isFile: () => kind === 'file',
+					isDirectory: () => kind === 'dir',
+				}));
+			},
 		},
 	};
 }
@@ -116,7 +133,7 @@ describe('OpenApiWriter.syncToFolder', () => {
 		expect(requestBack.operationId).toBe('listPets');
 	});
 
-	it("reports an existing collection file as overwritten", async () => {
+	it('reports an existing collection file as overwritten', async () => {
 		const writer = new OpenApiWriter(providers);
 		await writer.syncToFolder(TARGET, {
 			collection: { source: { type: 'manual' } },
@@ -139,11 +156,7 @@ describe('OpenApiWriter.syncToFolder', () => {
 				{ suggestedName: 'list', override: { id: 'c' } },
 			],
 		});
-		expect(result.requestPaths).toEqual([
-			`${TARGET}/list.json`,
-			`${TARGET}/list-2.json`,
-			`${TARGET}/list-3.json`,
-		]);
+		expect(result.requestPaths).toEqual([`${TARGET}/list.json`, `${TARGET}/list-2.json`, `${TARGET}/list-3.json`]);
 	});
 
 	it('skips requests whose name sanitises to empty', async () => {
@@ -182,5 +195,67 @@ describe('OpenApiWriter.syncToFolder', () => {
 		const collection = fs.files.get(`${TARGET}/_collection.json`)!;
 		expect(collection.includes('\t')).toBe(true);
 		expect(collection.endsWith('\n')).toBe(true);
+	});
+});
+
+describe('OpenApiWriter.readFromFolder', () => {
+	let providers: Providers;
+	let fs: ReturnType<typeof createMemoryFs>;
+
+	beforeEach(() => {
+		({ providers, fs } = buildProviders());
+	});
+
+	it('reads _collection.json + each request, merging defaults into concrete RequestFiles', async () => {
+		const writer = new OpenApiWriter(providers);
+		await writer.syncToFolder(TARGET, {
+			collection: {
+				source: { type: 'manual' },
+				defaults: { baseUrl: ['https://api.example.com'], verb: 'get' },
+			},
+			requests: [
+				{ suggestedName: 'listPets', override: { id: 'r-list', operationId: 'listPets', url: ['/pets'] } },
+				{ suggestedName: 'getPet', override: { id: 'r-get', operationId: 'getPet', url: ['/pets/:id'] } },
+			],
+		});
+
+		const read = await writer.readFromFolder(TARGET);
+		expect(read.collection.source.type).toBe('manual');
+		expect(read.requests).toHaveLength(2);
+		// Merge propagates the collection's `verb` default onto each request.
+		expect(read.requests.every(r => r.verb === 'get')).toBe(true);
+		// And the per-request url override survives.
+		const ids = read.requests.map(r => r.id).sort();
+		expect(ids).toEqual(['r-get', 'r-list']);
+	});
+
+	it('recurses into subfolders so groupByPath layouts round-trip', async () => {
+		const writer = new OpenApiWriter(providers);
+		await writer.syncToFolder(TARGET, {
+			collection: { source: { type: 'manual' } },
+			requests: [
+				{ suggestedName: 'getPet', folder: 'pets', override: { id: 'a', url: ['/pets/:id'] } },
+				{ suggestedName: 'listOrders', folder: 'orders', override: { id: 'b', url: ['/orders'] } },
+			],
+		});
+		const read = await writer.readFromFolder(TARGET);
+		expect(read.requests).toHaveLength(2);
+	});
+
+	it('records malformed individual files in `skipped` without aborting', async () => {
+		// Seed the folder via the writer then drop a bogus file in by hand.
+		const writer = new OpenApiWriter(providers);
+		await writer.syncToFolder(TARGET, {
+			collection: { source: { type: 'manual' } },
+			requests: [{ suggestedName: 'good', override: { id: 'good' } }],
+		});
+		fs.files.set(`${TARGET}/broken.json`, '{not valid json');
+		// And one that parses but has no id.
+		fs.files.set(`${TARGET}/no-id.json`, '{"verb":"get"}');
+
+		const read = await writer.readFromFolder(TARGET);
+		expect(read.requests).toHaveLength(1);
+		expect(read.requests[0].id).toBe('good');
+		expect(read.skipped.map(s => s.path).sort()).toEqual([`${TARGET}/broken.json`, `${TARGET}/no-id.json`]);
 	});
 });

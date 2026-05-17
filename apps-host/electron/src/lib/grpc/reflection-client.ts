@@ -96,7 +96,11 @@ export async function discoverViaReflection(endpoint: string): Promise<Reflectio
 			return await runDiscovery(client);
 		} catch (err) {
 			lastError = err;
-			try { client.close(); } catch { /* socket already closed */ }
+			try {
+				client.close();
+			} catch {
+				/* socket already closed */
+			}
 			if (!isLikelyTlsMismatch(err) || attempt === attempts[attempts.length - 1]) throw err;
 			// Otherwise: continue to the next attempt.
 		}
@@ -117,12 +121,7 @@ function isLikelyTlsMismatch(err: unknown): boolean {
 	// gRPC code 14 = UNAVAILABLE — covers both "TLS handshake failed" and
 	// "couldn't reach host". The message body is what disambiguates.
 	if (e.code !== 14) return false;
-	return (
-		/wrong version number/i.test(msg) ||
-		/SSL routines/i.test(msg) ||
-		/tls/i.test(msg) ||
-		/deadline/i.test(msg)
-	);
+	return /wrong version number/i.test(msg) || /SSL routines/i.test(msg) || /tls/i.test(msg) || /deadline/i.test(msg);
 }
 
 async function runDiscovery(client: grpc.Client): Promise<ReflectionResult> {
@@ -146,9 +145,7 @@ async function runDiscovery(client: grpc.Client): Promise<ReflectionResult> {
 				const body = response as Record<string, unknown>;
 				if (body.errorResponse) {
 					const err = body.errorResponse as { errorMessage?: string; errorCode?: number };
-					throw new Error(
-						`Reflection error ${err.errorCode ?? '?'}: ${err.errorMessage ?? 'no message'}`,
-					);
+					throw new Error(`Reflection error ${err.errorCode ?? '?'}: ${err.errorMessage ?? 'no message'}`);
 				}
 				if (!body.listServicesResponse) return null;
 				const list = body.listServicesResponse as { service?: Array<{ name?: string }> };
@@ -226,19 +223,19 @@ function callReflection<T>(
 ): Promise<T> {
 	return new Promise<T>((resolve, reject) => {
 		const deadline = new Date(Date.now() + REFLECTION_TIMEOUT_MS);
-		const stream = client.makeBidiStreamRequest(
-			REFLECTION_METHOD_PATH,
-			serialize,
-			deserialize,
-			new grpc.Metadata(),
-			{ deadline },
-		);
+		const stream = client.makeBidiStreamRequest(REFLECTION_METHOD_PATH, serialize, deserialize, new grpc.Metadata(), {
+			deadline,
+		});
 
 		let settled = false;
 		const settle = (fn: () => void) => {
 			if (settled) return;
 			settled = true;
-			try { stream.end(); } catch { /* socket already closed */ }
+			try {
+				stream.end();
+			} catch {
+				/* socket already closed */
+			}
 			fn();
 		};
 
@@ -272,9 +269,11 @@ function callReflection<T>(
  */
 function extractMethodsForService(serviceName: string, fileDescriptors: Uint8Array[]): GrpcMethodDescriptor[] {
 	for (const bytes of fileDescriptors) {
-		const fd = (descriptor as unknown as {
-			FileDescriptorProto: { decode: (buf: Uint8Array) => unknown };
-		}).FileDescriptorProto.decode(bytes) as FileDescriptorProtoShape;
+		const fd = (
+			descriptor as unknown as {
+				FileDescriptorProto: { decode: (buf: Uint8Array) => unknown };
+			}
+		).FileDescriptorProto.decode(bytes) as FileDescriptorProtoShape;
 
 		const pkg = fd.package ?? '';
 		for (const svc of fd.service ?? []) {
@@ -339,9 +338,11 @@ interface EnumDescriptorProtoShape {
 }
 
 function decodeFileDescriptorProto(bytes: Uint8Array): FileDescriptorProtoShape {
-	return (descriptor as unknown as {
-		FileDescriptorProto: { decode: (buf: Uint8Array) => unknown };
-	}).FileDescriptorProto.decode(bytes) as FileDescriptorProtoShape;
+	return (
+		descriptor as unknown as {
+			FileDescriptorProto: { decode: (buf: Uint8Array) => unknown };
+		}
+	).FileDescriptorProto.decode(bytes) as FileDescriptorProtoShape;
 }
 
 /**
@@ -424,8 +425,6 @@ function projectField(field: FieldDescriptorProtoShape): GrpcMessageField {
 		// implicit oneof in the descriptor — we surface the former so the
 		// renderer can render a "clear" affordance distinct from "default".
 		optional: Boolean(field.proto3Optional),
-		...(typeof field.oneofIndex === 'number' && !field.proto3Optional
-			? { oneofIndex: field.oneofIndex }
-			: {}),
+		...(typeof field.oneofIndex === 'number' && !field.proto3Optional ? { oneofIndex: field.oneofIndex } : {}),
 	};
 }
