@@ -159,6 +159,17 @@ describe('workflowSchema — round-trip', () => {
 		expect(workflowSchema.parse(wf).version).toBeUndefined();
 	});
 
+	it('accepts an optional tags array', () => {
+		const wf = {
+			id: 'wf-tags',
+			name: 'tagged',
+			tags: ['auth', 'staging'],
+			nodes: [{ id: 's', type: 'start', position: { x: 0, y: 0 }, data: {} }],
+			edges: [],
+		};
+		expect(workflowSchema.parse(wf).tags).toEqual(['auth', 'staging']);
+	});
+
 	it('accepts an optional workflow description', () => {
 		const wf = {
 			id: 'wf-desc',

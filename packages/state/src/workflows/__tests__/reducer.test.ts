@@ -317,6 +317,28 @@ describe('workflows reducer — duplicateNode', () => {
 	});
 });
 
+describe('workflows reducer — setWorkflowTags', () => {
+	it('normalises tags: trim, lowercase, dedupe', () => {
+		const start: WorkflowsState = { loaded: true, workflows: { wf1: makeWorkflow() } };
+		const next = reducer(start, actions.setWorkflowTags({ id: 'wf1', tags: ['  Auth ', 'auth', 'API', ''] }));
+		expect(next.workflows.wf1!.tags).toEqual(['auth', 'api']);
+	});
+
+	it('clears the field when the resulting list is empty', () => {
+		const start: WorkflowsState = {
+			loaded: true,
+			workflows: { wf1: { ...makeWorkflow(), tags: ['x'] } },
+		};
+		const cleared = reducer(start, actions.setWorkflowTags({ id: 'wf1', tags: [''] }));
+		expect((cleared.workflows.wf1 as { tags?: string[] }).tags).toBeUndefined();
+	});
+
+	it('is a no-op when the workflow is missing', () => {
+		const start: WorkflowsState = { loaded: true, workflows: { wf1: makeWorkflow() } };
+		expect(reducer(start, actions.setWorkflowTags({ id: 'missing', tags: ['x'] }))).toEqual(start);
+	});
+});
+
 describe('workflows reducer — updateWorkflowDescription', () => {
 	it('sets and clears the description', () => {
 		const start: WorkflowsState = {

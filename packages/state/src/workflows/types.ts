@@ -45,6 +45,10 @@ export interface UpdateWorkflowDescriptionPayload extends WorkflowId {
 	description: string | undefined;
 }
 
+export interface SetWorkflowTagsPayload extends WorkflowId {
+	tags: string[];
+}
+
 export interface SetWorkflowParentPayload extends WorkflowId {
 	parent: string | null;
 }

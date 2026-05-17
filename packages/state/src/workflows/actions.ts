@@ -12,6 +12,7 @@ import type {
 	RemoveNodePayload,
 	RemoveNodesPayload,
 	RenameNodePayload,
+	SetWorkflowTagsPayload,
 	UpdateEdgeLabelPayload,
 	UpdateWorkflowDescriptionPayload,
 	ReplaceGraphPayload,
@@ -30,6 +31,7 @@ export const updateWorkflowName = createAction<UpdateWorkflowNamePayload>('workf
 export const updateWorkflowDescription = createAction<UpdateWorkflowDescriptionPayload>(
 	'workflows/updateWorkflowDescription',
 );
+export const setWorkflowTags = createAction<SetWorkflowTagsPayload>('workflows/setWorkflowTags');
 export const setWorkflowParent = createAction<SetWorkflowParentPayload>('workflows/setWorkflowParent');
 
 export const addNode = createAction<AddNodePayload>('workflows/addNode');

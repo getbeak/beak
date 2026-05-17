@@ -221,6 +221,12 @@ export const workflowSchema = z
 		 * the empty-selection panel and the Markdown export. Not parsed.
 		 */
 		description: z.string().optional(),
+		/**
+		 * Free-form labels for organising workflows in larger projects.
+		 * Lowercase, kebab-cased convention but the schema doesn't enforce
+		 * it. Surfaced in the tag editor + future tree-filtering UI.
+		 */
+		tags: z.array(z.string()).optional(),
 		nodes: z.array(workflowNodeSchema),
 		edges: z.array(workflowEdgeSchema),
 	})

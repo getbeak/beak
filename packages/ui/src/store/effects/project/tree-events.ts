@@ -5,12 +5,12 @@ import {
 	insertRequestNode,
 	removeNodeFromStoreByPath,
 } from '@beak/state/project';
-import { closeTab } from '@beak/state/tabs';
 import { purgeRequestRefs } from '@beak/state/workflows';
-import type { TreeEvent } from '@beak/ui/lib/fs-emitter';
-import { consumeAddEvent, consumeRemoveEvent } from '@beak/ui/lib/fs-emitter';
+import { closeTab } from '@beak/ui/features/tabs/store/actions';
 import { readFolderNode } from '@beak/ui/lib/beak-project/folder';
 import { readRequestNode } from '@beak/ui/lib/beak-project/request';
+import type { TreeEvent } from '@beak/ui/lib/fs-emitter';
+import { consumeAddEvent, consumeRemoveEvent } from '@beak/ui/lib/fs-emitter';
 import { ipcDialogService, ipcEncryptionService, ipcFsService } from '@beak/ui/lib/ipc';
 import type { Tree } from '@getbeak/types/nodes';
 import path from 'path-browserify';

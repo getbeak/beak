@@ -34,6 +34,22 @@ export function buildWorkflowsReducer<S extends WorkflowsState>(builder: ActionR
 			if (trimmed) workflow.description = trimmed;
 			else delete workflow.description;
 		})
+		.addCase(actions.setWorkflowTags, (state, { payload }) => {
+			const workflow = state.workflows[payload.id];
+			if (!workflow) return;
+			// Normalise: trim, lowercase, dedupe, drop empties — so the file
+			// stays canonical and search works the way the user expects.
+			const seen = new Set<string>();
+			const next: string[] = [];
+			for (const raw of payload.tags) {
+				const tag = raw.trim().toLowerCase();
+				if (!tag || seen.has(tag)) continue;
+				seen.add(tag);
+				next.push(tag);
+			}
+			if (next.length === 0) delete workflow.tags;
+			else workflow.tags = next;
+		})
 		.addCase(actions.setWorkflowParent, (state, { payload }) => {
 			const workflow = state.workflows[payload.id];
 			if (!workflow) return;
