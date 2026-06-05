@@ -122,16 +122,24 @@ export function buildProjectTreeReducer<S extends ProjectTreeState>(builder: Act
 			// Folders are keyed by filePath but the lookup id we receive is the
 			// caller's chosen identity (request id, or folder filePath). Try
 			// both — id-keyed first (request path), then filePath-keyed (folder).
-			const node = state.tree[payload.nodeId]
-				?? Object.values(state.tree).find(n => n.filePath === payload.nodeId);
+			const node = state.tree[payload.nodeId] ?? Object.values(state.tree).find(n => n.filePath === payload.nodeId);
 			if (!node) return;
 
 			if (node.type === 'request') {
-				// Memory-mode requests carry synthetic filePaths like
-				// `tree/<name>.json` — nothing reads them, Save Project As
-				// regenerates real paths from the tree shape. Just patch the
-				// name; leave the stale path in place.
+				// Update the name and re-derive the filePath under the same
+				// directory + extension. Disk-mode callers (the rename effect)
+				// rely on this optimistic path update so the open tab stays
+				// mounted while the fs-watcher's delete-then-create cycle is
+				// in flight. Memory-mode filePaths are synthetic — rewriting
+				// `tree/<old>.json` to `tree/<new>.json` keeps them
+				// consistent without changing any read paths.
 				node.name = payload.name;
+				const slash = node.filePath.lastIndexOf('/');
+				const dir = slash >= 0 ? node.filePath.slice(0, slash) : '';
+				const base = slash >= 0 ? node.filePath.slice(slash + 1) : node.filePath;
+				const dot = base.lastIndexOf('.');
+				const ext = dot > 0 ? base.slice(dot) : '';
+				node.filePath = dir ? `${dir}/${payload.name}${ext}` : `${payload.name}${ext}`;
 				return;
 			}
 
@@ -144,8 +152,7 @@ export function buildProjectTreeReducer<S extends ProjectTreeState>(builder: Act
 			state.tree = rewriteFolderTreePaths(state.tree as Tree, node as FolderNode, newPath);
 		})
 		.addCase(actions.moveNodeInTree, (state, { payload }) => {
-			const node = state.tree[payload.nodeId]
-				?? Object.values(state.tree).find(n => n.filePath === payload.nodeId);
+			const node = state.tree[payload.nodeId] ?? Object.values(state.tree).find(n => n.filePath === payload.nodeId);
 			if (!node) return;
 
 			const newPath = `${payload.destinationFolderPath}/${basename(node.filePath)}`;

@@ -113,10 +113,26 @@ describe('project tree reducer (renameNodeInTree — folder rename rewrites desc
 		//   /tree/foo/bar     (folder, key=/tree/foo/bar)
 		//     /tree/foo/bar/req-b   (request, key=req-b)
 		let s = empty;
-		s = reducer(s, insertFolderNode(makeFolderNode({ id: '/tree/foo', name: 'foo', filePath: '/tree/foo', parent: '/tree' })));
-		s = reducer(s, insertFolderNode(makeFolderNode({ id: '/tree/foo/bar', name: 'bar', filePath: '/tree/foo/bar', parent: '/tree/foo' })));
-		s = reducer(s, insertRequestNode(makeRequestNode({ id: 'req-a', name: 'a', filePath: '/tree/foo/a.json', parent: '/tree/foo' })));
-		s = reducer(s, insertRequestNode(makeRequestNode({ id: 'req-b', name: 'b', filePath: '/tree/foo/bar/b.json', parent: '/tree/foo/bar' })));
+		s = reducer(
+			s,
+			insertFolderNode(makeFolderNode({ id: '/tree/foo', name: 'foo', filePath: '/tree/foo', parent: '/tree' })),
+		);
+		s = reducer(
+			s,
+			insertFolderNode(
+				makeFolderNode({ id: '/tree/foo/bar', name: 'bar', filePath: '/tree/foo/bar', parent: '/tree/foo' }),
+			),
+		);
+		s = reducer(
+			s,
+			insertRequestNode(makeRequestNode({ id: 'req-a', name: 'a', filePath: '/tree/foo/a.json', parent: '/tree/foo' })),
+		);
+		s = reducer(
+			s,
+			insertRequestNode(
+				makeRequestNode({ id: 'req-b', name: 'b', filePath: '/tree/foo/bar/b.json', parent: '/tree/foo/bar' }),
+			),
+		);
 		return s;
 	}
 
@@ -148,11 +164,17 @@ describe('project tree reducer (renameNodeInTree — folder rename rewrites desc
 		expect(reqB?.parent).toBe('/tree/baz/bar');
 	});
 
-	it('renaming a request node only changes its name', () => {
-		const seeded = reducer(empty, insertRequestNode(makeRequestNode({ id: 'r2', name: 'old', filePath: '/tree/old.json' })));
+	it('renaming a request node updates its name and re-derives the filePath', () => {
+		const seeded = reducer(
+			empty,
+			insertRequestNode(makeRequestNode({ id: 'r2', name: 'old', filePath: '/tree/old.json' })),
+		);
 		const next = reducer(seeded, renameNodeInTree({ nodeId: 'r2', name: 'new' }));
 		expect(next.tree.r2?.name).toBe('new');
-		expect(next.tree.r2?.filePath).toBe('/tree/old.json');
+		// filePath rewrite is what lets the disk-mode rename effect
+		// optimistically update the tree before the fs-watcher catches up,
+		// keeping the open tab mounted instead of flashing closed/open.
+		expect(next.tree.r2?.filePath).toBe('/tree/new.json');
 	});
 
 	it('is a no-op when the new name resolves to the same path', () => {
@@ -172,11 +194,30 @@ describe('project tree reducer (moveNodeInTree — memory move)', () => {
 		// /tree/foo and /tree/bar both at root.
 		// /tree/foo has one request and one subfolder with a request.
 		let s = empty;
-		s = reducer(s, insertFolderNode(makeFolderNode({ id: '/tree/foo', name: 'foo', filePath: '/tree/foo', parent: '/tree' })));
-		s = reducer(s, insertFolderNode(makeFolderNode({ id: '/tree/bar', name: 'bar', filePath: '/tree/bar', parent: '/tree' })));
-		s = reducer(s, insertFolderNode(makeFolderNode({ id: '/tree/foo/sub', name: 'sub', filePath: '/tree/foo/sub', parent: '/tree/foo' })));
-		s = reducer(s, insertRequestNode(makeRequestNode({ id: 'req-a', name: 'a', filePath: '/tree/foo/a.json', parent: '/tree/foo' })));
-		s = reducer(s, insertRequestNode(makeRequestNode({ id: 'req-b', name: 'b', filePath: '/tree/foo/sub/b.json', parent: '/tree/foo/sub' })));
+		s = reducer(
+			s,
+			insertFolderNode(makeFolderNode({ id: '/tree/foo', name: 'foo', filePath: '/tree/foo', parent: '/tree' })),
+		);
+		s = reducer(
+			s,
+			insertFolderNode(makeFolderNode({ id: '/tree/bar', name: 'bar', filePath: '/tree/bar', parent: '/tree' })),
+		);
+		s = reducer(
+			s,
+			insertFolderNode(
+				makeFolderNode({ id: '/tree/foo/sub', name: 'sub', filePath: '/tree/foo/sub', parent: '/tree/foo' }),
+			),
+		);
+		s = reducer(
+			s,
+			insertRequestNode(makeRequestNode({ id: 'req-a', name: 'a', filePath: '/tree/foo/a.json', parent: '/tree/foo' })),
+		);
+		s = reducer(
+			s,
+			insertRequestNode(
+				makeRequestNode({ id: 'req-b', name: 'b', filePath: '/tree/foo/sub/b.json', parent: '/tree/foo/sub' }),
+			),
+		);
 		return s;
 	}
 
