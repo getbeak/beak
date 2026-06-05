@@ -1,5 +1,5 @@
-import type { Context } from '@getbeak/types/values';
 import type { EditableVariable } from '@getbeak/extension-sdk';
+import type { Context } from '@getbeak/types/values';
 
 export async function previewValue<T extends Record<string, any>>(
 	ctx: Context,
@@ -7,11 +7,9 @@ export async function previewValue<T extends Record<string, any>>(
 	item: any,
 	state: T,
 ) {
-	if (!rtv.editor)
-		return 'Editor not available';
+	if (!rtv.editor) return 'Editor not available';
 
-	if (!rtv.editor.save)
-		return await rtv.getValue(ctx, state, 0);
+	if (!rtv.editor.save) return await rtv.getValue(ctx, state, 0);
 
 	const payload = await rtv.editor.save(ctx, item, state);
 

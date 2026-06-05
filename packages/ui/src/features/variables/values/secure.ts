@@ -48,11 +48,13 @@ const definition: EditableVariable<SecureRtv, EditorState> = {
 	attributes: {},
 
 	editor: {
-		createUserInterface: async () => [{
-			type: 'value_parts_input',
-			label: 'Enter the value you want to be encrypted:',
-			stateBinding: 'value',
-		}],
+		createUserInterface: async () => [
+			{
+				type: 'value_parts_input',
+				label: 'Enter the value you want to be encrypted:',
+				stateBinding: 'value',
+			},
+		],
 
 		load: async (_ctx, item) => {
 			if (item.datum !== void 0) {

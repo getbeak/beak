@@ -31,8 +31,7 @@ const definition: EditableVariable<DigestRtv, EditorState> = {
 		const isArray = Array.isArray(input);
 		const parsed = await parseValueSections(ctx, isArray ? input : [input as unknown as string], recursiveDepth);
 
-		if (algorithm === 'MD5')
-			return MD5.hashStr(parsed);
+		if (algorithm === 'MD5') return MD5.hashStr(parsed);
 
 		// Hash the UTF-8 bytes — matches openssl/curl/etc. so digests are
 		// interoperable with other tooling. Encoding via Uint16Array (the
@@ -53,31 +52,40 @@ const definition: EditableVariable<DigestRtv, EditorState> = {
 	attributes: {},
 
 	editor: {
-		createUserInterface: async () => [{
-			type: 'value_parts_input',
-			label: 'Enter the data for the digest:',
-			stateBinding: 'input',
-		}, {
-			type: 'options_input',
-			label: 'Pick the digest algorithm:',
-			stateBinding: 'algorithm',
-			options: [{
-				key: 'SHA-1',
-				label: 'SHA-1 (Considered unsafe for cryptographic use)',
-			}, {
-				key: 'SHA-256',
-				label: 'SHA-256',
-			}, {
-				key: 'SHA-384',
-				label: 'SHA-384',
-			}, {
-				key: 'SHA-512',
-				label: 'SHA-512',
-			}, {
-				key: 'MD5',
-				label: 'MD5 (Considered unsafe for cryptographic use)',
-			}],
-		}],
+		createUserInterface: async () => [
+			{
+				type: 'value_parts_input',
+				label: 'Enter the data for the digest:',
+				stateBinding: 'input',
+			},
+			{
+				type: 'options_input',
+				label: 'Pick the digest algorithm:',
+				stateBinding: 'algorithm',
+				options: [
+					{
+						key: 'SHA-1',
+						label: 'SHA-1 (Considered unsafe for cryptographic use)',
+					},
+					{
+						key: 'SHA-256',
+						label: 'SHA-256',
+					},
+					{
+						key: 'SHA-384',
+						label: 'SHA-384',
+					},
+					{
+						key: 'SHA-512',
+						label: 'SHA-512',
+					},
+					{
+						key: 'MD5',
+						label: 'MD5 (Considered unsafe for cryptographic use)',
+					},
+				],
+			},
+		],
 
 		load: async (_ctx, item) => ({ algorithm: item.algorithm, input: item.input }),
 

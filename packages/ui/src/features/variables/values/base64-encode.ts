@@ -35,11 +35,9 @@ const definition: EditableVariable<Base64EncodedRtv, EditorState> = {
 		for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
 		let encoded = btoa(binary);
 
-		if (payload.characterSet === 'websafe_base64')
-			encoded = encoded.replaceAll('/', '_').replaceAll('+', '-');
+		if (payload.characterSet === 'websafe_base64') encoded = encoded.replaceAll('/', '_').replaceAll('+', '-');
 
-		if (payload.removePadding)
-			encoded = encoded.replaceAll('=', '');
+		if (payload.removePadding) encoded = encoded.replaceAll('=', '');
 
 		return encoded;
 	},
@@ -47,26 +45,33 @@ const definition: EditableVariable<Base64EncodedRtv, EditorState> = {
 	attributes: {},
 
 	editor: {
-		createUserInterface: async () => [{
-			type: 'value_parts_input',
-			label: 'Enter the data to encode:',
-			stateBinding: 'input',
-		}, {
-			type: 'options_input',
-			label: 'Pick the digest algorithm:',
-			stateBinding: 'characterSet',
-			options: [{
-				key: 'base64',
-				label: 'Base64',
-			}, {
-				key: 'websafe_base64',
-				label: 'Websafe Base64',
-			}],
-		}, {
-			type: 'checkbox_input',
-			label: 'Remove padding:',
-			stateBinding: 'removePadding',
-		}],
+		createUserInterface: async () => [
+			{
+				type: 'value_parts_input',
+				label: 'Enter the data to encode:',
+				stateBinding: 'input',
+			},
+			{
+				type: 'options_input',
+				label: 'Pick the digest algorithm:',
+				stateBinding: 'characterSet',
+				options: [
+					{
+						key: 'base64',
+						label: 'Base64',
+					},
+					{
+						key: 'websafe_base64',
+						label: 'Websafe Base64',
+					},
+				],
+			},
+			{
+				type: 'checkbox_input',
+				label: 'Remove padding:',
+				stateBinding: 'removePadding',
+			},
+		],
 
 		load: async (_ctx, item) => ({
 			characterSet: item.characterSet,

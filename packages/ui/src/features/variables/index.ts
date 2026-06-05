@@ -114,16 +114,18 @@ function buildAdapter(variable: ExtensionVariable): BasicOrEditableVariable {
 		sensitive: variable.sensitive,
 		external: true,
 		attributes: variable.attributes,
-		createDefaultPayload: async ctx => ipcExtensionsService.variableCreateDefaultPayload({
-			type: variable.type,
-			context: ctx,
-		}),
-		getValue: async (ctx, payload, recursiveDepth) => ipcExtensionsService.variableGetValue({
-			type: variable.type,
-			context: ctx,
-			payload,
-			recursiveDepth,
-		}),
+		createDefaultPayload: async ctx =>
+			ipcExtensionsService.variableCreateDefaultPayload({
+				type: variable.type,
+				context: ctx,
+			}),
+		getValue: async (ctx, payload, recursiveDepth) =>
+			ipcExtensionsService.variableGetValue({
+				type: variable.type,
+				context: ctx,
+				payload,
+				recursiveDepth,
+			}),
 	};
 
 	if (variable.binary) {

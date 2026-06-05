@@ -27,16 +27,13 @@ const definition: EditableVariable<ResponseBodyJsonRtv, ResponseBodyJsonRtv> = {
 	getValue: async (ctx, payload, recursiveDepth) => {
 		const requestNode = getRequestNode(payload.requestId, ctx);
 
-		if (!requestNode)
-			return '';
+		if (!requestNode) return '';
 
 		const latestFlight = getLatestFlight(requestNode.id, ctx);
 
-		if (!latestFlight?.response)
-			return '';
+		if (!latestFlight?.response) return '';
 
-		if (!latestFlight.response.hasBody)
-			return '';
+		if (!latestFlight.response.hasBody) return '';
 
 		const dotPath = await parseValueSections(ctx, payload.dotPath, recursiveDepth);
 		const binary = binaryStore.get(latestFlight.binaryStoreKey);
@@ -44,11 +41,9 @@ const definition: EditableVariable<ResponseBodyJsonRtv, ResponseBodyJsonRtv> = {
 		const parsed = attemptTextToJson(json);
 		const resolved = dotPath === '' ? parsed : get(parsed, dotPath, '');
 
-		if (!resolved)
-			return '';
+		if (!resolved) return '';
 
-		if (allowedRawJson.includes(typeof resolved))
-			return String(resolved);
+		if (allowedRawJson.includes(typeof resolved)) return String(resolved);
 
 		return JSON.stringify(resolved);
 	},
@@ -58,15 +53,18 @@ const definition: EditableVariable<ResponseBodyJsonRtv, ResponseBodyJsonRtv> = {
 	},
 
 	editor: {
-		createUserInterface: async () => [{
-			type: 'request_select_input',
-			label: 'Select the request:',
-			stateBinding: 'requestId',
-		}, {
-			type: 'value_parts_input',
-			label: 'JSON dot path:',
-			stateBinding: 'dotPath',
-		}],
+		createUserInterface: async () => [
+			{
+				type: 'request_select_input',
+				label: 'Select the request:',
+				stateBinding: 'requestId',
+			},
+			{
+				type: 'value_parts_input',
+				label: 'JSON dot path:',
+				stateBinding: 'dotPath',
+			},
+		],
 
 		load: async (_ctx, item) => ({
 			requestId: item.requestId,

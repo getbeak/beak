@@ -43,25 +43,32 @@ const definition: EditableVariable<TimestampRtv, EditorState> = {
 	attributes: {},
 
 	editor: {
-		createUserInterface: async () => [{
-			type: 'options_input',
-			label: 'Pick a date format:',
-			stateBinding: 'type',
-			options: [{
-				key: 'iso_8601',
-				label: 'ISO-8601',
-			}, {
-				key: 'unix_s',
-				label: 'Unix timestamp (seconds)',
-			}, {
-				key: 'unix_ms',
-				label: 'Unix timestamp (ms)',
-			}],
-		}, {
-			type: 'number_input',
-			label: 'Delta (in seconds):',
-			stateBinding: 'delta',
-		}],
+		createUserInterface: async () => [
+			{
+				type: 'options_input',
+				label: 'Pick a date format:',
+				stateBinding: 'type',
+				options: [
+					{
+						key: 'iso_8601',
+						label: 'ISO-8601',
+					},
+					{
+						key: 'unix_s',
+						label: 'Unix timestamp (seconds)',
+					},
+					{
+						key: 'unix_ms',
+						label: 'Unix timestamp (ms)',
+					},
+				],
+			},
+			{
+				type: 'number_input',
+				label: 'Delta (in seconds):',
+				stateBinding: 'delta',
+			},
+		],
 
 		load: async (_ctx, item) => ({ type: item.type, delta: item.delta ?? 0 }),
 		save: async (_ctx, _item, state) => ({ type: state.type, delta: state.delta }),

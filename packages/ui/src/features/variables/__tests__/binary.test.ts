@@ -38,11 +38,7 @@ describe('resolveValuePartForBinary', () => {
 			getAssetRef: vi.fn(async () => REF),
 			getValue: vi.fn(async () => '[binary]'),
 		});
-		const out = await resolveValuePartForBinary(
-			FAKE_CTX,
-			{ type: 'fileUpload', payload: { path: '/x' } },
-			0,
-		);
+		const out = await resolveValuePartForBinary(FAKE_CTX, { type: 'fileUpload', payload: { path: '/x' } }, 0);
 		expect(out).toBe(REF);
 	});
 
@@ -52,11 +48,7 @@ describe('resolveValuePartForBinary', () => {
 			getAssetRef: vi.fn(async () => null),
 			getValue: vi.fn(async () => 'fallback-string'),
 		});
-		const out = await resolveValuePartForBinary(
-			FAKE_CTX,
-			{ type: 'fileUpload', payload: {} },
-			0,
-		);
+		const out = await resolveValuePartForBinary(FAKE_CTX, { type: 'fileUpload', payload: {} }, 0);
 		expect(out).toBe('fallback-string');
 	});
 

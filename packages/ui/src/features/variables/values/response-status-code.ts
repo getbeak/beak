@@ -16,8 +16,7 @@ const definition: EditableVariable<ResponseStatusCodeRtv, ResponseStatusCodeRtv>
 	getValue: async (ctx, payload) => {
 		const requestNode = getRequestNode(payload.requestId, ctx);
 
-		if (!requestNode)
-			return '';
+		if (!requestNode) return '';
 
 		const latestFlight = getLatestFlight(requestNode.id, ctx);
 
@@ -29,11 +28,13 @@ const definition: EditableVariable<ResponseStatusCodeRtv, ResponseStatusCodeRtv>
 	},
 
 	editor: {
-		createUserInterface: async () => [{
-			type: 'request_select_input',
-			label: 'Select the request:',
-			stateBinding: 'requestId',
-		}],
+		createUserInterface: async () => [
+			{
+				type: 'request_select_input',
+				label: 'Select the request:',
+				stateBinding: 'requestId',
+			},
+		],
 
 		load: async (_ctx, item) => ({ requestId: item.requestId }),
 		save: async (_ctx, _item, state) => ({ requestId: state.requestId }),

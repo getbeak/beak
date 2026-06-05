@@ -13,7 +13,8 @@ interface EditorState {
 const definition: EditableVariable<PrivateRtv, EditorState> = {
 	type: 'private',
 	name: 'Private',
-	description: 'A value only stored locally, and never included in the project (it is also encrypted at rest). Useful for PII fields.',
+	description:
+		'A value only stored locally, and never included in the project (it is also encrypted at rest). Useful for PII fields.',
 	sensitive: true,
 	external: false,
 
@@ -37,8 +38,7 @@ const definition: EditableVariable<PrivateRtv, EditorState> = {
 		const exists = await ipcFsService.pathExists(cipherTextPath);
 		const cipherText = exists ? await ipcFsService.readText(cipherTextPath) : null;
 
-		if (!cipherText)
-			return '';
+		if (!cipherText) return '';
 
 		const decrypted = await ipcEncryptionService.decryptObject<ValueSections>({
 			iv: item.iv,
@@ -51,11 +51,13 @@ const definition: EditableVariable<PrivateRtv, EditorState> = {
 	attributes: {},
 
 	editor: {
-		createUserInterface: async () => [{
-			type: 'value_parts_input',
-			label: 'Enter the value you want to be private:',
-			stateBinding: 'value',
-		}],
+		createUserInterface: async () => [
+			{
+				type: 'value_parts_input',
+				label: 'Enter the value you want to be private:',
+				stateBinding: 'value',
+			},
+		],
 
 		load: async (_ctx, item) => {
 			// Get from private store
@@ -63,8 +65,7 @@ const definition: EditableVariable<PrivateRtv, EditorState> = {
 			const exists = await ipcFsService.pathExists(cipherTextPath);
 			const cipherText = exists ? await ipcFsService.readText(cipherTextPath) : null;
 
-			if (!cipherText)
-				return { value: [] };
+			if (!cipherText) return { value: [] };
 
 			const decrypted = await ipcEncryptionService.decryptObject<ValueSections>({
 				iv: item.iv,

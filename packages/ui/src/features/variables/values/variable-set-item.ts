@@ -1,7 +1,7 @@
 import { TypedObject } from '@beak/common/helpers/typescript';
 import type { VariableSetItemRtv } from '@beak/ui/features/variables/values';
-import type { VariableSets } from '@getbeak/types/variable-sets';
 import type { Variable } from '@getbeak/extension-sdk';
+import type { VariableSets } from '@getbeak/types/variable-sets';
 
 import { getValueSections, parseValueSections } from '../parser';
 
@@ -27,10 +27,7 @@ const definition: Variable<VariableSetItemRtv> = {
 	attributes: {},
 };
 
-export function createFauxValue(
-	item: VariableSetItemRtv,
-	variableSets: VariableSets,
-): Variable<VariableSetItemRtv> {
+export function createFauxValue(item: VariableSetItemRtv, variableSets: VariableSets): Variable<VariableSetItemRtv> {
 	return {
 		type,
 		name: getVariableSetItemName(item, variableSets),
@@ -50,8 +47,7 @@ export function createFauxValue(
 }
 
 export function getVariableSetItemName(item: VariableSetItemRtv, variableSets: VariableSets) {
-	if (!variableSets)
-		return 'Unknown';
+	if (!variableSets) return 'Unknown';
 
 	const keys = TypedObject.keys(variableSets);
 
@@ -59,8 +55,7 @@ export function getVariableSetItemName(item: VariableSetItemRtv, variableSets: V
 		const vg = variableSets[key];
 		const itemValue = vg.items[item.itemId];
 
-		if (itemValue)
-			return `${key} (${itemValue})`;
+		if (itemValue) return `${key} (${itemValue})`;
 	}
 
 	return 'Unknown';

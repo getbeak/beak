@@ -12,8 +12,7 @@ const definition: Variable<any> = {
 	getValue: async ctx => {
 		const node = ctx.projectTree[ctx.currentRequestId!];
 
-		if (!node || node.type !== 'request' || node.mode !== 'valid')
-			return '';
+		if (!node || node.type !== 'request' || node.mode !== 'valid') return '';
 
 		return node.info.verb.toUpperCase();
 	},

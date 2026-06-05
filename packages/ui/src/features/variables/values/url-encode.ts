@@ -27,11 +27,13 @@ const definition: EditableVariable<EditorState, EditorState> = {
 	attributes: {},
 
 	editor: {
-		createUserInterface: async () => [{
-			type: 'value_parts_input',
-			label: 'Enter the data to encode:',
-			stateBinding: 'input',
-		}],
+		createUserInterface: async () => [
+			{
+				type: 'value_parts_input',
+				label: 'Enter the data to encode:',
+				stateBinding: 'input',
+			},
+		],
 
 		load: async (_ctx, item) => ({ input: item.input }),
 		save: async (_ctx, _item, state) => ({ input: state.input }),

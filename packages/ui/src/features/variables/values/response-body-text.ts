@@ -17,16 +17,13 @@ const definition: EditableVariable<ResponseBodyTextRtv, ResponseBodyTextRtv> = {
 	getValue: async (ctx, payload) => {
 		const requestNode = getRequestNode(payload.requestId, ctx);
 
-		if (!requestNode)
-			return '';
+		if (!requestNode) return '';
 
 		const latestFlight = getLatestFlight(requestNode.id, ctx);
 
-		if (!latestFlight?.response)
-			return '';
+		if (!latestFlight?.response) return '';
 
-		if (!latestFlight.response.hasBody)
-			return '';
+		if (!latestFlight.response.hasBody) return '';
 
 		const binary = binaryStore.get(latestFlight.binaryStoreKey);
 		const body = new TextDecoder().decode(binary);
@@ -39,11 +36,13 @@ const definition: EditableVariable<ResponseBodyTextRtv, ResponseBodyTextRtv> = {
 	},
 
 	editor: {
-		createUserInterface: async () => [{
-			type: 'request_select_input',
-			label: 'Select the request:',
-			stateBinding: 'requestId',
-		}],
+		createUserInterface: async () => [
+			{
+				type: 'request_select_input',
+				label: 'Select the request:',
+				stateBinding: 'requestId',
+			},
+		],
 
 		load: async (_ctx, item) => ({ requestId: item.requestId }),
 

@@ -21,18 +21,15 @@ const definition: EditableVariable<ResponseHeaderRtv, ResponseHeaderRtv> = {
 	getValue: async (ctx, payload, recursiveDepth) => {
 		const requestNode = getRequestNode(payload.requestId, ctx);
 
-		if (!requestNode)
-			return '';
+		if (!requestNode) return '';
 
 		const latestFlight = getLatestFlight(requestNode.id, ctx);
 
-		if (!latestFlight?.response)
-			return '';
+		if (!latestFlight?.response) return '';
 
 		const headers = latestFlight.response.headers;
 		const parsedHeaderName = await parseValueSections(ctx, payload.headerName, recursiveDepth);
-		const headerKey = TypedObject.keys(headers)
-			.find(k => k.toLocaleLowerCase() === parsedHeaderName.toLocaleLowerCase());
+		const headerKey = TypedObject.keys(headers).find(k => k.toLocaleLowerCase() === parsedHeaderName.toLocaleLowerCase());
 
 		const header = headers[headerKey!];
 
@@ -44,15 +41,18 @@ const definition: EditableVariable<ResponseHeaderRtv, ResponseHeaderRtv> = {
 	},
 
 	editor: {
-		createUserInterface: async () => [{
-			type: 'request_select_input',
-			label: 'Select the request:',
-			stateBinding: 'requestId',
-		}, {
-			type: 'value_parts_input',
-			label: 'Header name:',
-			stateBinding: 'headerName',
-		}],
+		createUserInterface: async () => [
+			{
+				type: 'request_select_input',
+				label: 'Select the request:',
+				stateBinding: 'requestId',
+			},
+			{
+				type: 'value_parts_input',
+				label: 'Header name:',
+				stateBinding: 'headerName',
+			},
+		],
 
 		load: async (_ctx, item) => ({
 			requestId: item.requestId,

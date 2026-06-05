@@ -33,18 +33,23 @@ const definition: EditableVariable<UuidRtv, EditorState> = {
 	attributes: {},
 
 	editor: {
-		createUserInterface: async () => [{
-			type: 'options_input',
-			label: 'Pick a UUID format:',
-			stateBinding: 'version',
-			options: [{
-				key: 'v1',
-				label: 'UUID v1',
-			}, {
-				key: 'v4',
-				label: 'UUID v4',
-			}],
-		}],
+		createUserInterface: async () => [
+			{
+				type: 'options_input',
+				label: 'Pick a UUID format:',
+				stateBinding: 'version',
+				options: [
+					{
+						key: 'v1',
+						label: 'UUID v1',
+					},
+					{
+						key: 'v4',
+						label: 'UUID v4',
+					},
+				],
+			},
+		],
 
 		load: async (_ctx, item) => ({ version: item.version }),
 		save: async (_ctx, _item, state) => ({ version: state.version }),

@@ -12,13 +12,11 @@ const definition: Variable<any> = {
 	getValue: async ctx => {
 		const node = ctx.projectTree[ctx.currentRequestId!];
 
-		if (!node || node.type !== 'request' || node.mode !== 'valid')
-			return '';
+		if (!node || node.type !== 'request' || node.mode !== 'valid') return '';
 
 		const parentNode = ctx.projectTree[node.parent!];
 
-		if (!parentNode || parentNode.type !== 'folder')
-			return '';
+		if (!parentNode || parentNode.type !== 'folder') return '';
 
 		return parentNode.name;
 	},

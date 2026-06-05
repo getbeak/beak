@@ -26,8 +26,7 @@ const definition: EditableVariable<Base64DecodedRtv, EditorState> = {
 
 		let encoded = await parseValueSections(ctx, input, recursiveDepth);
 
-		if (payload.characterSet === 'websafe_base64')
-			encoded = encoded.replaceAll('_', '/').replaceAll('-', '+');
+		if (payload.characterSet === 'websafe_base64') encoded = encoded.replaceAll('_', '/').replaceAll('-', '+');
 
 		try {
 			const binary = atob(encoded);
@@ -38,8 +37,7 @@ const definition: EditableVariable<Base64DecodedRtv, EditorState> = {
 			for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
 			return new TextDecoder().decode(bytes);
 		} catch (error) {
-			if (error instanceof Error && error.name === 'InvalidCharacterError')
-				return '';
+			if (error instanceof Error && error.name === 'InvalidCharacterError') return '';
 
 			throw error;
 		}
@@ -48,22 +46,28 @@ const definition: EditableVariable<Base64DecodedRtv, EditorState> = {
 	attributes: {},
 
 	editor: {
-		createUserInterface: async () => [{
-			type: 'value_parts_input',
-			label: 'Enter the data to decode:',
-			stateBinding: 'input',
-		}, {
-			type: 'options_input',
-			label: 'Pick the digest algorithm:',
-			stateBinding: 'characterSet',
-			options: [{
-				key: 'base64',
-				label: 'Base64',
-			}, {
-				key: 'websafe_base64',
-				label: 'Websafe Base64',
-			}],
-		}],
+		createUserInterface: async () => [
+			{
+				type: 'value_parts_input',
+				label: 'Enter the data to decode:',
+				stateBinding: 'input',
+			},
+			{
+				type: 'options_input',
+				label: 'Pick the digest algorithm:',
+				stateBinding: 'characterSet',
+				options: [
+					{
+						key: 'base64',
+						label: 'Base64',
+					},
+					{
+						key: 'websafe_base64',
+						label: 'Websafe Base64',
+					},
+				],
+			},
+		],
 
 		load: async (_ctx, item) => ({
 			characterSet: item.characterSet,

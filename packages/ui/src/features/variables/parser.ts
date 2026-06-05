@@ -10,52 +10,48 @@ export async function parseValueSections(
 	depth = 0,
 	sensitiveMode = false,
 ): Promise<string> {
-	const out = await Promise.all(parts.map(async p => {
-		if (typeof p === 'string')
-			return p;
+	const out = await Promise.all(
+		parts.map(async p => {
+			if (typeof p === 'string') return p;
 
-		if (typeof p !== 'object')
-			return '';
+			if (typeof p !== 'object') return '';
 
-		const rtv = VariableManager.getVariable(p.type);
+			const rtv = VariableManager.getVariable(p.type);
 
-		if (!rtv)
-			return '';
+			if (!rtv) return '';
 
-		// Oversimplified check for recursion. I'll build a proper system for this later
-		if (depth >= 5)
-			return '[Recursion detected]';
+			// Oversimplified check for recursion. I'll build a proper system for this later
+			if (depth >= 5) return '[Recursion detected]';
 
-		if (sensitiveMode && rtv.sensitive)
-			return '[Sensitive mode enabled]';
+			if (sensitiveMode && rtv.sensitive) return '[Sensitive mode enabled]';
 
-		try {
-			// Easier than using an abort controller
-			let complete = false;
+			try {
+				// Easier than using an abort controller
+				let complete = false;
 
-			const value = await Promise.race([
-				rtv.getValue(ctx, p.payload, depth + 1),
-				new Promise(resolve => {
-					window.setTimeout(() => {
-						if (!complete)
-							console.error(`Fetching value for ${rtv.type} exceeded 600ms`);
+				const value = await Promise.race([
+					rtv.getValue(ctx, p.payload, depth + 1),
+					new Promise(resolve => {
+						window.setTimeout(() => {
+							if (!complete) console.error(`Fetching value for ${rtv.type} exceeded 600ms`);
 
-						resolve('');
-					}, 600);
-				}),
-			]);
+							resolve('');
+						}, 600);
+					}),
+				]);
 
-			complete = true;
+				complete = true;
 
-			return value;
-		} catch {
-			// TODO(afr): Move this to some sort of alert
+				return value;
+			} catch {
+				// TODO(afr): Move this to some sort of alert
 
-			console.error(`Failed to get value from ${rtv.type}`);
+				console.error(`Failed to get value from ${rtv.type}`);
 
-			return '';
-		}
-	}));
+				return '';
+			}
+		}),
+	);
 
 	return out.join('');
 }
@@ -70,8 +66,7 @@ export function getValueObject(ctx: Context, itemId: string) {
 		const selectedSet = ctx.selectedSets[key];
 		const value = variableSet.values[generateValueIdent(selectedSet, itemId)];
 
-		if (value)
-			return value;
+		if (value) return value;
 	}
 
 	return null;

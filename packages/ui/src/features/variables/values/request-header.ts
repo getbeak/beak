@@ -22,17 +22,16 @@ const definition: EditableVariable<RequestHeaderRtv, EditorState> = {
 	getValue: async (ctx, payload, recursiveDepth) => {
 		const node = ctx.projectTree[ctx.currentRequestId!];
 
-		if (!node || node.type !== 'request' || node.mode !== 'valid')
-			return '';
+		if (!node || node.type !== 'request' || node.mode !== 'valid') return '';
 
 		const parsedHeaderName = await parseValueSections(ctx, payload.headerName, recursiveDepth);
-		const headerKey = TypedObject.keys(node.info.headers)
-			.find(k => node.info.headers[k].name.toLocaleLowerCase() === parsedHeaderName.toLocaleLowerCase());
+		const headerKey = TypedObject.keys(node.info.headers).find(
+			k => node.info.headers[k].name.toLocaleLowerCase() === parsedHeaderName.toLocaleLowerCase(),
+		);
 
 		const header = node.info.headers[headerKey!];
 
-		if (!header || !header.value)
-			return '';
+		if (!header || !header.value) return '';
 
 		return await parseValueSections(ctx, header.value, recursiveDepth);
 	},
@@ -42,11 +41,13 @@ const definition: EditableVariable<RequestHeaderRtv, EditorState> = {
 	},
 
 	editor: {
-		createUserInterface: async () => [{
-			type: 'value_parts_input',
-			label: 'Header name:',
-			stateBinding: 'headerName',
-		}],
+		createUserInterface: async () => [
+			{
+				type: 'value_parts_input',
+				label: 'Header name:',
+				stateBinding: 'headerName',
+			},
+		],
 
 		load: async (_ctx, item) => ({ headerName: item.headerName }),
 		save: async (_ctx, _item, state) => ({ headerName: state.headerName }),
