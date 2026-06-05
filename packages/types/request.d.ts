@@ -6,6 +6,15 @@ export interface RequestOverview {
 	url: ValueSections;
 	query: Record<string, ToggleKeyValue>;
 	headers: Record<string, ToggleKeyValue>;
+	/**
+	 * Path parameters declared by the source spec (OpenAPI `in: 'path'`).
+	 * Optional — present only on linked-OpenAPI requests today. The request
+	 * pane renders an inline editor section when this map is non-empty;
+	 * flight prep substitutes `:name` in the URL value-parts with each
+	 * entry's bound value before resolving variables. Hand-authored URLs
+	 * don't populate this map (no spec to derive metadata from).
+	 */
+	pathParameters?: Record<string, PathParameter>;
 	body: RequestBody;
 	options: RequestOptions;
 	/**
@@ -61,10 +70,18 @@ export interface RequestBodyJson {
  * and renders in a Monaco editor with JSON language highlighting. Pick this
  * when you want full control over the JSON text (and you're fine losing
  * Beak's structured-edit affordances + variable insertion).
+ *
+ * `schemaSeed` carries the EntryMap the user authored when this body was a
+ * structured `json` body. We persist it across the json → json_raw switch
+ * so (a) Monaco's JSON language service can validate the raw text against
+ * a generated JSON Schema, and (b) the user can flip back to structured
+ * mode without losing their schema (required / type / description /
+ * options). On a fresh json_raw body the field is absent.
  */
 export interface RequestBodyJsonRaw {
 	type: 'json_raw';
 	payload: string;
+	schemaSeed?: import('./body-editor-json').EntryMap;
 }
 
 export interface RequestBodyUrlEncodedForm {
@@ -156,6 +173,21 @@ export interface RequestOptions {
  */
 export type ScalarPropertyType = 'string' | 'number' | 'boolean' | 'enum' | 'token';
 
+/**
+ * Path-parameter entry — one per `{name}` placeholder declared by the source
+ * spec on an OpenAPI operation. Mirrors {@link ToggleKeyValue} sans
+ * `enabled`: path params are required by URL structure, so toggling them
+ * off would only produce broken requests.
+ */
+export interface PathParameter {
+	name: string;
+	value: ValueSections;
+	type?: ScalarPropertyType;
+	required?: boolean;
+	description?: string;
+	options?: import('./body-editor-json').EnumOption[];
+}
+
 export interface ToggleKeyValue {
 	name: string;
 	value: ValueSections;
@@ -166,7 +198,10 @@ export interface ToggleKeyValue {
 	description?: string;
 	/**
 	 * For `type === 'enum'`, the allowed values. Value mode renders a select
-	 * instead of a free-text input when this list is non-empty.
+	 * instead of a free-text input when this list is non-empty. Typed
+	 * primitives (`string | number | boolean | null`) so enums like
+	 * `[200, 404, 500]` keep their wire shape; the editor auto-detects the
+	 * type from what the user types.
 	 */
-	options?: string[];
+	options?: import('./body-editor-json').EnumOption[];
 }

@@ -49,11 +49,19 @@ export interface ArrayEntry extends Base {
  * picker in value mode and an options-list editor in schema mode. `options`
  * is the schema constraint; missing or empty means the editor falls back to
  * free text.
+ *
+ * Options are typed primitives (string | number | boolean | null) so an
+ * enum like `[200, 404, 500]` round-trips as numbers — matches what JSON
+ * Schema accepts and what most OpenAPI specs author. The editor auto-
+ * detects the type from what the user types; wrap a value in quotes to
+ * force a string (e.g. `"200"` to enforce the string literal "200").
  */
+export type EnumOption = string | number | boolean | null;
+
 export interface EnumEntry extends Base {
 	type: 'enum';
 	value: ValueSections;
-	options?: string[];
+	options?: EnumOption[];
 }
 
 export interface NamedStringEntry extends StringEntry, NamedEntryBase {}
