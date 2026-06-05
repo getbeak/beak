@@ -1,3 +1,4 @@
+import { glassChakraProps } from '@beak/ui/lib/glass';
 import { Box, Flex } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 import * as React from 'react';
@@ -89,7 +90,9 @@ const Popover: React.FC<React.PropsWithChildren<PopoverProps>> = ({
 		const wantsBottom = placement === 'bottom';
 		const spaceBelow = window.innerHeight - rect.bottom - offset - VIEWPORT_MARGIN;
 		const spaceAbove = rect.top - offset - VIEWPORT_MARGIN;
-		const flipped = wantsBottom ? spaceBelow < popoverHeight && spaceAbove > spaceBelow : spaceAbove >= popoverHeight || spaceAbove > spaceBelow;
+		const flipped = wantsBottom
+			? spaceBelow < popoverHeight && spaceAbove > spaceBelow
+			: spaceAbove >= popoverHeight || spaceAbove > spaceBelow;
 
 		const top = flipped
 			? Math.max(VIEWPORT_MARGIN, rect.top - offset - popoverHeight)
@@ -148,16 +151,14 @@ const Popover: React.FC<React.PropsWithChildren<PopoverProps>> = ({
 				display='flex'
 				flexDirection='column'
 				borderRadius='lg'
-				borderWidth='1px'
-				borderColor='border.default'
-				bg='bg.surface'
-				boxShadow='0 18px 44px rgba(0,0,0,0.28), 0 6px 16px rgba(0,0,0,0.16)'
+				{...glassChakraProps.popover}
 				overflow='hidden'
 				style={{
 					top: pos?.top ?? -9999,
 					left: pos?.left ?? -9999,
 					visibility: pos ? 'visible' : 'hidden',
 					pointerEvents: 'auto',
+					WebkitBackdropFilter: 'blur(28px) saturate(180%)',
 				}}
 				onClick={event => event.stopPropagation()}
 			>

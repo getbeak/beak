@@ -1,3 +1,4 @@
+import { glassChakraProps } from '@beak/ui/lib/glass';
 import { Box, Flex } from '@chakra-ui/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { X } from 'lucide-react';
@@ -58,11 +59,12 @@ const AlertToaster: React.FC = () => {
 							borderRadius='md'
 							borderWidth='1px'
 							borderColor={`color-mix(in srgb, ${accent} 40%, transparent)`}
-							bg='bg.surface.emphasized'
-							boxShadow={`0 16px 36px -8px color-mix(in srgb, ${accent} 28%, transparent), 0 0 0 1px color-mix(in srgb, ${accent} 14%, transparent)`}
+							bg={glassChakraProps.toast.bg}
+							backdropFilter={glassChakraProps.toast.backdropFilter}
+							boxShadow={`${glassChakraProps.toast.boxShadow}, 0 16px 36px -8px color-mix(in srgb, ${accent} 28%, transparent), 0 0 0 1px color-mix(in srgb, ${accent} 14%, transparent)`}
 							minW='280px'
 							maxW='380px'
-							style={{ pointerEvents: 'auto' }}
+							style={{ pointerEvents: 'auto', WebkitBackdropFilter: glassChakraProps.toast.backdropFilter }}
 							onClick={() => openAlertsPanel(toast.severity)}
 							cursor='pointer'
 						>

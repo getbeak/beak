@@ -1,4 +1,5 @@
 import BeakTooltip from '@beak/ui/components/atoms/BeakTooltip';
+import { glassChakraProps } from '@beak/ui/lib/glass';
 import { Box, chakra, Flex, Menu, Portal } from '@chakra-ui/react';
 import { ArrowUpRight, Check, Filter, type LucideIcon, Workflow as WorkflowIcon } from 'lucide-react';
 import * as React from 'react';
@@ -88,15 +89,7 @@ const ExplorerFilterMenu: React.FC<ExplorerFilterMenuProps> = ({ value, onChange
 			</BeakTooltip>
 			<Portal>
 				<Menu.Positioner>
-					<Menu.Content
-						bg='bg.surface.emphasized'
-						borderWidth='1px'
-						borderColor='border.default'
-						borderRadius='md'
-						boxShadow='0 8px 24px rgba(0,0,0,0.28)'
-						p='1'
-						minW='200px'
-					>
+					<Menu.Content {...glassChakraProps.menu} borderRadius='md' p='1' minW='200px'>
 						{OPTIONS.map(opt => {
 							const selected = opt.value === value;
 							return (

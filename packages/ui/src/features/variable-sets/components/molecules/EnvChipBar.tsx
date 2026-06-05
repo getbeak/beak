@@ -1,5 +1,6 @@
 import { TypedObject } from '@beak/common/helpers/typescript';
 import DebouncedInput from '@beak/ui/components/atoms/DebouncedInput';
+import { glassChakraProps } from '@beak/ui/lib/glass';
 import { ipcDialogService } from '@beak/ui/lib/ipc';
 import { editorPreferencesSetSelectedVariableGroup } from '@beak/ui/store/preferences/actions';
 import { useAppSelector } from '@beak/ui/store/redux';
@@ -169,15 +170,7 @@ const EnvChipBar: React.FC<EnvChipBarProps> = ({ variableSetName }) => {
 							</Menu.Trigger>
 							<Portal>
 								<Menu.Positioner>
-									<Menu.Content
-										bg='bg.surface.emphasized'
-										borderWidth='1px'
-										borderColor='border.default'
-										borderRadius='md'
-										boxShadow='0 8px 24px rgba(0,0,0,0.28)'
-										p='1'
-										minW='180px'
-									>
+									<Menu.Content {...glassChakraProps.menu} borderRadius='md' p='1' minW='180px'>
 										<Menu.Item
 											value='rename'
 											onClick={() => setRenamingId(setId)}

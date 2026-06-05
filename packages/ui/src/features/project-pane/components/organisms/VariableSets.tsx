@@ -1,5 +1,6 @@
 import { TypedObject } from '@beak/common/helpers/typescript';
 import useSectionBody from '@beak/ui/features/sidebar/hooks/use-section-body';
+import { glassChakraProps } from '@beak/ui/lib/glass';
 import { editorPreferencesSetSelectedVariableGroup } from '@beak/ui/store/preferences/actions';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { Box, chakra, Flex, Menu, Portal } from '@chakra-ui/react';
@@ -105,15 +106,7 @@ const VariableSets: React.FC = () => {
 							</Menu.Trigger>
 							<Portal>
 								<Menu.Positioner>
-									<Menu.Content
-										bg='bg.surface.emphasized'
-										borderWidth='1px'
-										borderColor='border.default'
-										borderRadius='md'
-										boxShadow='0 8px 24px rgba(0,0,0,0.28)'
-										p='1'
-										minW='200px'
-									>
+									<Menu.Content {...glassChakraProps.menu} borderRadius='md' p='1' minW='200px'>
 										{setKeys.map(gk => {
 											const isActive = gk === value;
 											return (

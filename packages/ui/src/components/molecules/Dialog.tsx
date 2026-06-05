@@ -1,3 +1,4 @@
+import { glassChakraProps } from '@beak/ui/lib/glass';
 import { Dialog as ChakraDialog, Portal } from '@chakra-ui/react';
 import * as React from 'react';
 
@@ -68,13 +69,11 @@ const Dialog: React.FC<React.PropsWithChildren<DialogProps>> = ({ children, onCl
 					<ChakraDialog.Content
 						maxW='unset'
 						w='auto'
-						bg='bg.surface'
-						borderWidth='1px'
-						borderColor='border.default'
+						{...glassChakraProps.dialog}
 						borderRadius='lg'
-						boxShadow='0 24px 60px rgba(0,0,0,0.32), 0 6px 16px rgba(0,0,0,0.18)'
 						p='0'
 						overflow='hidden'
+						css={{ WebkitBackdropFilter: 'blur(36px) saturate(180%)' }}
 					>
 						<DialogToneContext.Provider value={toneValue}>{children}</DialogToneContext.Provider>
 					</ChakraDialog.Content>

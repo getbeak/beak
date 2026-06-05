@@ -1,8 +1,10 @@
 import { TypedObject } from '@beak/common/helpers/typescript';
+import { valueParts } from '@beak/state';
 import DebouncedInput from '@beak/ui/components/atoms/DebouncedInput';
 import VariableInput from '@beak/ui/features/variable-input/components/VariableInput';
 import type { ValueSections } from '@beak/ui/features/variables/values';
 import { generateValueIdent } from '@beak/ui/lib/beak-variable-set/utils';
+import { glassChakraProps } from '@beak/ui/lib/glass';
 import { ipcDialogService } from '@beak/ui/lib/ipc';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { duplicateItem, moveItem, removeItem, updateItemName, updateValue } from '@beak/ui/store/variable-sets/actions';
@@ -187,15 +189,7 @@ const VariableCard: React.FC<VariableCardProps> = ({
 							</Menu.Trigger>
 							<Portal>
 								<Menu.Positioner>
-									<Menu.Content
-										bg='bg.surface.emphasized'
-										borderWidth='1px'
-										borderColor='border.default'
-										borderRadius='md'
-										boxShadow='0 8px 24px rgba(0,0,0,0.28)'
-										p='1'
-										minW='220px'
-									>
+									<Menu.Content {...glassChakraProps.menu} borderRadius='md' p='1' minW='220px'>
 										<Menu.Item
 											value='copy-active-to-all'
 											onClick={copyActiveToAllEnvs}
@@ -426,18 +420,14 @@ const ValueShell: React.FC<ValueShellProps> = ({ isActive, children }) => (
 
 function valuesEqual(a: ValueSections | undefined, b: ValueSections | undefined): boolean {
 	if (a === b) return true;
-	if ((!a || a.length === 0 || isEmptyParts(a)) && (!b || b.length === 0 || isEmptyParts(b))) return true;
+	if (valueParts.isEmpty(a) && valueParts.isEmpty(b)) return true;
 	if (!a || !b) return false;
 	return JSON.stringify(a) === JSON.stringify(b);
 }
 
-function isEmptyParts(parts: ValueSections): boolean {
-	return parts.length === 1 && parts[0] === '';
-}
-
 function flatten(value: ValueSections | undefined): string {
 	if (!value) return '';
-	return value.map(p => (typeof p === 'string' ? p : `\${${p.type}}`)).join('');
+	return valueParts.flatten(value, p => `\${${p.type}}`);
 }
 
 export default VariableCard;

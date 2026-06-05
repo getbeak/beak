@@ -1,3 +1,4 @@
+import { glassChakraProps } from '@beak/ui/lib/glass';
 import { Box, Flex } from '@chakra-ui/react';
 import type { MenuItemConstructorOptions } from 'electron';
 import * as React from 'react';
@@ -82,7 +83,7 @@ const ContextMenuHost: React.FC = () => {
 			return;
 		}
 		const rect = containerRef.current.getBoundingClientRect();
-		const margin = 4;
+		const margin = 6;
 		const left = Math.max(margin, Math.min(state.x, window.innerWidth - rect.width - margin));
 		const top = Math.max(margin, Math.min(state.y, window.innerHeight - rect.height - margin));
 		setPos({ left, top });
@@ -150,15 +151,11 @@ const ContextMenuHost: React.FC = () => {
 			ref={containerRef}
 			role='menu'
 			position='fixed'
-			minW='200px'
-			maxW='320px'
-			py='1'
-			borderRadius='md'
-			borderWidth='1px'
-			borderColor='border.default'
-			bg='color-mix(in srgb, var(--beak-colors-bg-surface-emphasized) 92%, transparent)'
-			backdropFilter='blur(14px) saturate(160%)'
-			boxShadow='0 14px 32px rgba(0,0,0,0.28), 0 4px 10px rgba(0,0,0,0.12), inset 0 1px 0 color-mix(in srgb, white 8%, transparent)'
+			minW='220px'
+			maxW='340px'
+			p='1.5'
+			borderRadius='lg'
+			{...glassChakraProps.menu}
 			fontFamily='body'
 			fontSize='13px'
 			color='fg.default'
@@ -167,11 +164,13 @@ const ContextMenuHost: React.FC = () => {
 				left: pos?.left ?? state.x,
 				top: pos?.top ?? state.y,
 				visibility: pos ? 'visible' : 'hidden',
+				WebkitBackdropFilter: glassChakraProps.menu.backdropFilter,
 			}}
 			css={{
-				animation: 'beak-ctxmenu-in 0.08s ease-out both',
+				transformOrigin: 'top left',
+				animation: 'beak-ctxmenu-in 0.14s cubic-bezier(0.2, 0.9, 0.3, 1.05) both',
 				'@keyframes beak-ctxmenu-in': {
-					'0%': { opacity: 0, transform: 'scale(0.98) translateY(-2px)' },
+					'0%': { opacity: 0, transform: 'scale(0.96) translateY(-4px)' },
 					'100%': { opacity: 1, transform: 'scale(1) translateY(0)' },
 				},
 			}}
@@ -185,8 +184,8 @@ const ContextMenuHost: React.FC = () => {
 							role='separator'
 							h='1px'
 							my='1'
-							mx='1.5'
-							bg='border.subtle'
+							mx='1'
+							bg='color-mix(in srgb, var(--beak-colors-border-subtle) 70%, transparent)'
 						/>
 					);
 				}
@@ -201,20 +200,13 @@ const ContextMenuHost: React.FC = () => {
 						align='center'
 						justify='space-between'
 						gap='4'
-						mx='1'
-						px='2'
-						py='1'
-						borderRadius='sm'
+						px='2.5'
+						py='1.5'
+						borderRadius='md'
 						cursor={disabled ? 'not-allowed' : 'default'}
-						color={disabled ? 'fg.disabled' : 'fg.default'}
-						bg={!disabled && isFocused ? 'color-mix(in srgb, var(--beak-colors-accent-pink) 22%, transparent)' : undefined}
-						_hover={
-							disabled
-								? undefined
-								: {
-										bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 22%, transparent)',
-									}
-						}
+						color={disabled ? 'fg.disabled' : isFocused ? 'fg.onAccent' : 'fg.default'}
+						bg={!disabled && isFocused ? 'accent.pink' : undefined}
+						transition='background-color 0.06s ease, color 0.06s ease'
 						onMouseEnter={() => !disabled && setFocused(idx)}
 						onMouseLeave={() => !disabled && setFocused(prev => (prev === idx ? -1 : prev))}
 						onClick={() => {
@@ -232,7 +224,13 @@ const ContextMenuHost: React.FC = () => {
 								flex='0 0 auto'
 								fontSize='11px'
 								fontFamily='mono'
-								color={disabled ? 'fg.disabled' : 'fg.subtle'}
+								color={
+									disabled
+										? 'fg.disabled'
+										: isFocused
+											? 'color-mix(in srgb, var(--beak-colors-fg-onAccent) 85%, transparent)'
+											: 'fg.subtle'
+								}
 								letterSpacing='0.04em'
 							>
 								{String(item.accelerator)}
