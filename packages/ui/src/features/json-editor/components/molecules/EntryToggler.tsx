@@ -9,11 +9,7 @@ import { JsonEditorContext } from '../../contexts/json-editor-context';
 interface EntryTogglerProps {
 	requestId: string;
 	id: string;
-	/**
-	 * Value-mode display state — the entry's `enabled` flag. In schema mode
-	 * the toggler reads `required` from the entry directly via context, so
-	 * this prop is ignored when `schemaMode` is on.
-	 */
+	/** Current `enabled` state for the entry — whether it'll fire on the wire. */
 	value: boolean;
 	onChange?: (enabled: boolean) => void;
 }
@@ -21,38 +17,37 @@ interface EntryTogglerProps {
 const ToggleButton = chakra('button');
 
 /**
- * Per-entry switch. In Value mode it toggles `enabled` (skip this field on
- * the wire); in Schema mode it toggles `required` (this field must be
- * filled in). Same chrome both modes — accent colour shifts to indigo when
- * authoring the contract so the meaning reads visually.
+ * Per-entry switch — toggles `enabled` (whether the field is sent on the
+ * wire). Schema-side affordances (`required`) live in a separate control
+ * inside the description cell, so this toggle keeps one consistent meaning
+ * across Values and Schema modes.
  */
 const EntryToggler: React.FC<EntryTogglerProps> = ({ requestId, id, value, onChange }) => {
 	const editorContext = useContext(JsonEditorContext)!;
 	const entries = useAppSelector(editorContext.editorSelector);
 	const dispatch = useDispatch();
 
-	const schemaMode = editorContext.schemaMode;
-	const displayValue = schemaMode ? entries[id]?.required === true : value;
-	const accent = schemaMode ? 'accent.indigo' : 'accent.pink';
-	const accentVar = schemaMode ? 'var(--beak-colors-accent-indigo)' : 'var(--beak-colors-accent-pink)';
-	const ariaLabel = schemaMode
-		? displayValue
-			? 'Mark optional'
-			: 'Mark required'
+	const displayValue = value;
+	// In `valuesOnly` mode, required-by-schema entries can't be disabled —
+	// the linked request's contract pins them on. Normal editing stays live.
+	const required = entries[id]?.required === true;
+	const locked = editorContext.valuesOnly && required;
+	const accent = 'accent.pink';
+	const accentVar = 'var(--beak-colors-accent-pink)';
+	const ariaLabel = locked
+		? 'Required by schema — cannot be disabled for this step'
 		: displayValue
 			? 'Disable entry'
 			: 'Enable entry';
 
 	function handle(next: boolean) {
-		if (schemaMode) {
-			dispatch(editorContext.requiredChange({ requestId, id, required: next ? true : null }));
-		} else {
-			dispatch(editorContext.enabledChange({ requestId, id, enabled: next }));
-		}
+		if (locked) return;
+		dispatch(editorContext.enabledChange({ requestId, id, enabled: next }));
 		onChange?.(next);
 	}
 
 	function onKeyDown(event: React.KeyboardEvent<HTMLButtonElement>) {
+		if (locked) return;
 		if (event.key === ' ' || event.key === 'Enter') {
 			event.preventDefault();
 			handle(!displayValue);
@@ -64,9 +59,10 @@ const EntryToggler: React.FC<EntryTogglerProps> = ({ requestId, id, value, onCha
 			type='button'
 			role='switch'
 			aria-checked={displayValue}
+			aria-disabled={locked || undefined}
 			aria-label={ariaLabel}
 			title={ariaLabel}
-			tabIndex={0}
+			tabIndex={locked ? -1 : 0}
 			onClick={() => handle(!displayValue)}
 			onKeyDown={onKeyDown}
 			position='relative'
@@ -83,11 +79,16 @@ const EntryToggler: React.FC<EntryTogglerProps> = ({ requestId, id, value, onCha
 			}
 			display='inline-flex'
 			alignItems='center'
-			cursor='pointer'
-			transition='background-color .18s ease, border-color .18s ease, box-shadow .18s ease'
-			_hover={{
-				borderColor: displayValue ? accent : 'fg.muted',
-			}}
+			cursor={locked ? 'not-allowed' : 'pointer'}
+			opacity={locked ? 0.55 : 1}
+			transition='background-color .18s ease, border-color .18s ease, box-shadow .18s ease, opacity .18s ease'
+			_hover={
+				locked
+					? undefined
+					: {
+							borderColor: displayValue ? accent : 'fg.muted',
+						}
+			}
 			_focusVisible={{
 				outline: 'none',
 				boxShadow: `0 0 0 2px color-mix(in srgb, ${accentVar} 50%, transparent)`,

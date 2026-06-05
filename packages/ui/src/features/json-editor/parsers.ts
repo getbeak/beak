@@ -1,5 +1,6 @@
 import { TypedObject } from '@beak/common/helpers/typescript';
 import ksuid from '@beak/ksuid';
+import { entryMap } from '@beak/state';
 import type { Entries, EntryMap, NamedEntries, StringEntry } from '@getbeak/types/body-editor-json';
 import type { Context } from '@getbeak/types/values';
 
@@ -8,9 +9,8 @@ import { parseValueSections } from '../variables/parser';
 type JsonTypes = null | string | number | boolean | Record<string, unknown> | unknown[];
 
 export async function convertToRealJson(context: Context, entries: EntryMap) {
-	const root = TypedObject.values(entries).find(e => e.parentId === null);
-
-	if (!root || !root.enabled) return null;
+	const root = entryMap.findRoot(entries);
+	if (!root) return null;
 
 	return await convertEntry(context, entries, root);
 }
@@ -28,22 +28,18 @@ async function convertEntry(context: Context, entries: EntryMap, entry: Entries)
 			return await parseValueSections(context, entry.value);
 
 		case 'array': {
-			const children = TypedObject.values(entries).filter(e => e.parentId === entry.id && e.enabled);
-
+			const children = entryMap.findChildren(entries, entry.id);
 			return await Promise.all(children.map(c => convertEntry(context, entries, c)));
 		}
 
 		case 'object': {
-			const children = TypedObject.values(entries).filter(e => e.parentId === entry.id && e.enabled) as NamedEntries[];
-
+			const children = entryMap.findChildren(entries, entry.id) as NamedEntries[];
 			const out: Record<string, unknown> = {};
-
 			await Promise.all(
 				children.map(async c => {
 					out[c.name] = await convertEntry(context, entries, c);
 				}),
 			);
-
 			return out;
 		}
 

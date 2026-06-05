@@ -1,6 +1,9 @@
 import { TypedObject } from '@beak/common/helpers/typescript';
 import DebouncedInput from '@beak/ui/components/atoms/DebouncedInput';
+import TagListInput from '@beak/ui/components/molecules/TagListInput';
+import { glassChakraProps } from '@beak/ui/lib/glass';
 import { Box, Button, chakra, Flex, Menu, Portal, Text } from '@chakra-ui/react';
+import type { EnumOption } from '@getbeak/types/body-editor-json';
 import type { ScalarPropertyType, ToggleKeyValue } from '@getbeak/types/request';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronDown, Plus, ShieldCheck, ShieldOff } from 'lucide-react';
@@ -29,7 +32,7 @@ interface SchemaTableEditorProps {
 	updateItem?: (
 		key: 'name' | 'type' | 'required' | 'description' | 'options',
 		ident: string,
-		value: string | boolean | ScalarPropertyType | string[] | null,
+		value: string | boolean | ScalarPropertyType | EnumOption[] | null,
 	) => void;
 }
 
@@ -150,15 +153,7 @@ const TypeButton: React.FC<{
 			</Menu.Trigger>
 			<Portal>
 				<Menu.Positioner>
-					<Menu.Content
-						bg='bg.surface.emphasized'
-						borderWidth='1px'
-						borderColor='border.default'
-						borderRadius='md'
-						boxShadow='0 8px 24px rgba(0,0,0,0.28)'
-						p='1'
-						minW='180px'
-					>
+					<Menu.Content {...glassChakraProps.menu} borderRadius='md' p='1' minW='180px'>
 						{TYPE_OPTIONS.map(o => {
 							const isActive = o.key === value;
 							return (
@@ -290,18 +285,12 @@ const SchemaTableEditor: React.FC<SchemaTableEditorProps> = ({ items, readOnly, 
 											onChange={v => updateItem?.('description', k, v || null)}
 										/>
 										{type === 'enum' && (
-											<DebouncedInput
-												type='text'
-												value={(item.options ?? []).join(', ')}
+											<TagListInput
+												value={item.options ?? []}
 												disabled={readOnly}
-												placeholder='Comma-separated allowed values (e.g. free, pro, enterprise)'
-												onChange={v => {
-													const parsed = v
-														.split(',')
-														.map(s => s.trim())
-														.filter(s => s.length > 0);
-													updateItem?.('options', k, parsed.length === 0 ? null : parsed);
-												}}
+												placeholder='Type a value and press Enter (e.g. free)'
+												noun='option'
+												onChange={next => updateItem?.('options', k, next.length === 0 ? null : next)}
 											/>
 										)}
 									</Flex>

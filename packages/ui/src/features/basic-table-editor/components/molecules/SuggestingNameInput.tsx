@@ -1,4 +1,5 @@
-import DebouncedInput from '@beak/ui/components/atoms/DebouncedInput';
+import useDebounce from '@beak/ui/hooks/use-debounce';
+import { glassInlineStyle } from '@beak/ui/lib/glass';
 import { Box, Flex } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 import Fuse from 'fuse.js';
@@ -47,35 +48,51 @@ const SuggestingNameInput: React.FC<SuggestingNameInputProps> = ({
 	const [focused, setFocused] = useState(false);
 	const [active, setActive] = useState(0);
 	const [pos, setPos] = useState<PopupPosition | null>(null);
-	// We track the last typed value (not the prop) so the popup filters
-	// against the user's in-flight keystrokes rather than the debounced
-	// committed value — keeps the suggestions snappy.
+	// Local draft updates on every keystroke so the suggestion list re-filters
+	// instantly. The parent `onChange` is debounced separately below so we
+	// don't spam redux on every character.
 	const [draft, setDraft] = useState(value);
+	const dirtyRef = useRef(false);
 
 	useEffect(() => {
+		dirtyRef.current = false;
 		setDraft(value);
 	}, [value]);
+
+	useDebounce(
+		() => {
+			if (dirtyRef.current) onChange(draft);
+		},
+		300,
+		[draft],
+	);
 
 	const fuse = useMemo(
 		() => new Fuse(suggestions, { keys: ['name', 'description'], includeScore: true, threshold: 0.4 }),
 		[suggestions],
 	);
 
+	// The header list is small (~50 items) but we still debounce the fuzzy
+	// search so a fast typist doesn't pay a fuse.search() on every keystroke.
+	// 60ms is well under the perceptual threshold and lets us coalesce bursts.
+	const [searchTerm, setSearchTerm] = useState(value);
+	useDebounce(() => setSearchTerm(draft), 60, [draft]);
+
 	const matches = useMemo(() => {
-		const trimmed = draft.trim();
+		const trimmed = searchTerm.trim();
 		if (!trimmed) return suggestions.slice(0, MAX_RESULTS);
 		// Already an exact (case-insensitive) match? Don't surface suggestions —
 		// the user is done with this field.
 		const exact = suggestions.find(s => s.name.toLowerCase() === trimmed.toLowerCase());
 		if (exact && exact.name === trimmed) return [];
 		return fuse.search(trimmed, { limit: MAX_RESULTS }).map(r => r.item);
-	}, [draft, suggestions, fuse]);
+	}, [searchTerm, suggestions, fuse]);
 
 	const open = focused && matches.length > 0;
 
 	useEffect(() => {
 		setActive(0);
-	}, [draft]);
+	}, [searchTerm]);
 
 	const updatePosition = useCallback(() => {
 		const el = inputRef.current;
@@ -100,7 +117,9 @@ const SuggestingNameInput: React.FC<SuggestingNameInputProps> = ({
 	}, [open, updatePosition]);
 
 	function commit(name: string) {
+		dirtyRef.current = false;
 		setDraft(name);
+		setSearchTerm(name);
 		onChange(name);
 		// Close the popup so the user moves on cleanly; refocus the
 		// input so the typeahead doesn't fight cell-to-cell navigation.
@@ -139,21 +158,28 @@ const SuggestingNameInput: React.FC<SuggestingNameInputProps> = ({
 
 	return (
 		<React.Fragment>
-			<DebouncedInput
+			<input
 				type='text'
 				value={draft}
 				disabled={disabled}
 				placeholder={placeholder}
-				innerRef={el => {
+				ref={el => {
 					inputRef.current = el;
 					innerRef?.(el);
 				}}
-				onChange={v => {
-					setDraft(v);
-					onChange(v);
+				onChange={event => {
+					dirtyRef.current = true;
+					setDraft(event.target.value);
 				}}
 				onFocus={() => setFocused(true)}
 				onBlur={() => {
+					// Flush any pending draft to the parent before closing — the
+					// debounce timer might still be waiting when the user tabs
+					// out, and we don't want to drop in-flight edits.
+					if (dirtyRef.current) {
+						dirtyRef.current = false;
+						onChange(draft);
+					}
 					// A short delay so a click on a suggestion can fire its
 					// mousedown handler before blur tears the popup down.
 					window.setTimeout(() => setFocused(false), 100);
@@ -200,10 +226,8 @@ const SuggestionPopup: React.FC<SuggestionPopupProps> = ({ pos, matches, active,
 				width: pos.width,
 				zIndex: 110,
 				borderRadius: 8,
-				border: '1px solid var(--beak-colors-border-default)',
-				background: 'var(--beak-colors-bg-surface)',
-				boxShadow: '0 12px 32px rgba(0,0,0,0.22), 0 4px 12px rgba(0,0,0,0.14)',
 				overflow: 'hidden',
+				...glassInlineStyle.popover,
 			}}
 		>
 			<Box maxH='220px' overflowY='auto' py='1'>

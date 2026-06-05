@@ -1,4 +1,4 @@
-import { chakra } from '@chakra-ui/react';
+import { Box, chakra } from '@chakra-ui/react';
 import { Plus } from 'lucide-react';
 import * as React from 'react';
 import { useContext } from 'react';
@@ -30,6 +30,29 @@ const EntryEmptyState: React.FC<EntryEmptyStateProps> = ({ parentId, parentType,
 	const editorContext = useContext(JsonEditorContext)!;
 
 	const label = parentType === 'array' ? 'Add first item' : 'Add first field';
+
+	// In `valuesOnly` mode the schema is locked — the user can't add entries,
+	// so the empty container reads as a passive "(empty)" hint instead of an
+	// add-first call to action.
+	if (editorContext.valuesOnly) {
+		const hint = parentType === 'array' ? '(empty array)' : '(empty object)';
+		return (
+			<Row data-empty='true' style={{ gridTemplateColumns: '1fr' }}>
+				<Box
+					as='span'
+					display='inline-flex'
+					alignItems='center'
+					h='28px'
+					color='fg.subtle'
+					fontSize='11.5px'
+					fontStyle='italic'
+					style={{ paddingLeft: `${54 + depth * 12}px` }}
+				>
+					{hint}
+				</Box>
+			</Row>
+		);
+	}
 
 	return (
 		<Row data-empty='true' style={{ gridTemplateColumns: '1fr' }}>

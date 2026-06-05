@@ -18,6 +18,15 @@ export const Row = chakra('div', {
 		position: 'relative',
 		display: 'grid',
 		gridTemplateColumns: '18px 28px minmax(0, .9fr) 56px minmax(0, 1fr) 56px 24px',
+		// In valuesOnly the action + drag-handle slots are empty (no
+		// add/remove, no reorder). Rather than just collapse them and let
+		// the value cell hog the room, repurpose the action track as the
+		// "Description" column — the schema's docs deserve real estate in
+		// the table itself, not a hover-only Info icon. Drag slot stays
+		// 0px since reordering would still be wrong.
+		'&[data-values-only="true"]': {
+			gridTemplateColumns: '18px 28px minmax(0, .9fr) 56px minmax(0, 1fr) minmax(0, 1.1fr) 0px',
+		},
 		gridTemplateRows: 'minmax(0, 1fr)',
 		alignItems: 'stretch',
 		minHeight: '26px',

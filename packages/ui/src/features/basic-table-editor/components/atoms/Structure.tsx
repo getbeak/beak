@@ -16,6 +16,14 @@ export const Row = chakra('div', {
 		position: 'relative',
 		display: 'grid',
 		gridTemplateColumns: '22px 28px minmax(0, .8fr) minmax(0, 1fr) 28px',
+		// In valuesOnly the expand chevron is hidden (no schema panel) and
+		// the action button is gone (no add/remove), but we don't just
+		// collapse those tracks — the freed real estate goes to a new
+		// "Description" column so the schema's field doc lives in the
+		// table itself rather than behind a hover-only Info icon.
+		'&[data-values-only="true"]': {
+			gridTemplateColumns: '0px 28px minmax(0, .8fr) minmax(0, 1fr) minmax(0, 1.2fr)',
+		},
 		gridTemplateRows: 'minmax(0, 1fr)',
 		alignItems: 'stretch',
 		minHeight: '28px',

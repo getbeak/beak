@@ -80,7 +80,14 @@ export const BodyInputWrapper: React.FC<BoxProps> = ({ children, ...rest }) => (
 		display='flex'
 		alignItems='stretch'
 		css={{
-			'& > div, & > input[type=text]': {
+			// Scope the stretch rule to ONLY the DebouncedInput wrapper (the
+			// div carrying an `<article>` contentEditable). The unscoped
+			// `& > div` used to catch sibling indicators like `RequiredDot`
+			// and `DescriptionHint` (themselves divs) and stretch them
+			// across the cell — producing a fat pink bar instead of a tiny
+			// dot. The indicators live as flex children of this wrapper and
+			// keep their intrinsic size now.
+			'& > div:has(> article), & > input[type=text]': {
 				width: '100%',
 				display: 'flex',
 				alignItems: 'center',

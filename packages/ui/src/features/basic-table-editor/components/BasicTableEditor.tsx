@@ -1,10 +1,12 @@
 import { TypedObject } from '@beak/common/helpers/typescript';
+import { valueParts } from '@beak/state';
 import DebouncedInput from '@beak/ui/components/atoms/DebouncedInput';
 import type { ValueSections } from '@beak/ui/features/variables/values';
 import { Box, chakra, Flex } from '@chakra-ui/react';
+import type { EnumOption } from '@getbeak/types/body-editor-json';
 import type { ScalarPropertyType, ToggleKeyValue } from '@getbeak/types/request';
 import { AnimatePresence, motion } from 'framer-motion';
-import { AlertCircle, ChevronDown, ChevronRight, Plus } from 'lucide-react';
+import { ChevronDown, ChevronRight, Plus } from 'lucide-react';
 import * as React from 'react';
 import { useEffect, useRef, useState } from 'react';
 
@@ -31,17 +33,6 @@ import SchemaPanel from './molecules/SchemaPanel';
 import SuggestingNameInput from './molecules/SuggestingNameInput';
 
 /**
- * A `ValueSections` is "effectively empty" when it has no parts, or every
- * part is an empty string (variables are never empty — their presence
- * means a value will resolve at flight time). Used by schema-driven
- * validation to flag required-but-blank rows.
- */
-function isValueEmpty(parts: ValueSections | undefined): boolean {
-	if (!parts || parts.length === 0) return true;
-	return parts.every(p => typeof p === 'string' && p.length === 0);
-}
-
-/**
  * A row has "schema authored" when any of the optional schema fields has
  * been set. The expand chevron tints indigo in that state so the user can
  * scan the table for which rows already have a contract attached.
@@ -59,6 +50,16 @@ interface BasicTableEditorProps {
 	items: Record<string, ToggleKeyValue>;
 	requestId?: string;
 	readOnly?: boolean;
+	/**
+	 * "Values-only" mode — locks the schema (key, type, add/remove, schema
+	 * panel) but keeps value cells and the per-row enabled toggle editable.
+	 * Used by the workflow request-node override panel, where the schema
+	 * belongs to the linked request and the workflow step only edits values.
+	 * In this mode the description (if any) is surfaced via an Info icon
+	 * next to the key so the user can read the contract without expanding
+	 * the (hidden) schema panel.
+	 */
+	valuesOnly?: boolean;
 	disableItemToggle?: boolean;
 	/**
 	 * When set, the key cell renders a typeahead-style input that suggests
@@ -76,7 +77,7 @@ interface BasicTableEditorProps {
 	updateItem?: (
 		type: keyof ToggleKeyValue,
 		ident: string,
-		value: string | boolean | ValueSections | ScalarPropertyType | string[] | null,
+		value: string | boolean | ValueSections | ScalarPropertyType | EnumOption[] | null,
 	) => void;
 	removeItem?: (ident: string) => void;
 }
@@ -162,57 +163,78 @@ const BoolValueToggle: React.FC<{
  * tokens so it doesn't look out of place next to the variable input.
  */
 const EnumSelect: React.FC<{
-	options: string[];
+	options: EnumOption[];
 	value: string;
 	disabled?: boolean;
 	onChange: (next: string) => void;
-}> = ({ options, value, disabled, onChange }) => (
-	<Box position='relative' flexGrow={1} display='inline-flex' alignItems='stretch'>
-		<ChakraSelect
-			value={value}
-			disabled={disabled}
-			onChange={e => onChange((e.target as HTMLSelectElement).value)}
-			w='100%'
-			h='30px'
-			minH='30px'
-			px='10px'
-			pr='28px'
-			borderWidth='0'
-			borderRadius='0'
-			bg='transparent'
-			color='fg.default'
-			fontSize='12px'
-			fontFamily='inherit'
-			appearance='none'
-			cursor={disabled ? 'default' : 'pointer'}
-			outline='none'
-			_focus={{
-				bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 5%, transparent)',
-				boxShadow: 'inset 0 -1px 0 var(--beak-colors-accent-pink)',
-			}}
-		>
-			{!options.includes(value) && value !== '' && <option value={value}>{`${value} (off-list)`}</option>}
-			{value === '' && <option value=''>{'Choose a value…'}</option>}
-			{options.map(o => (
-				<option key={o} value={o}>
-					{o}
-				</option>
-			))}
-		</ChakraSelect>
-		<Box
-			position='absolute'
-			right='8px'
-			top='50%'
-			transform='translateY(-50%)'
-			pointerEvents='none'
-			color='fg.subtle'
-			display='inline-flex'
-			alignItems='center'
-		>
-			<ChevronDown size={12} strokeWidth={1.8} />
+}> = ({ options, value, disabled, onChange }) => {
+	// Typed options (string | number | boolean | null) all roundtrip through
+	// the HTML select as their canonical string form — `null` → `"null"`, the
+	// literal `200` → `"200"`, etc. The value cell stores the picked string
+	// in ValueSections; flight prep would coerce back to the original type
+	// when the schema asks for it.
+	const stringOptions = options.map(formatEnumOption);
+	return (
+		<Box position='relative' flexGrow={1} display='inline-flex' alignItems='stretch'>
+			<ChakraSelect
+				value={value}
+				disabled={disabled}
+				onChange={e => onChange((e.target as HTMLSelectElement).value)}
+				w='100%'
+				h='30px'
+				minH='30px'
+				px='10px'
+				pr='28px'
+				borderWidth='0'
+				borderRadius='0'
+				bg='transparent'
+				color='fg.default'
+				fontSize='12px'
+				fontFamily='inherit'
+				appearance='none'
+				cursor={disabled ? 'default' : 'pointer'}
+				outline='none'
+				_focus={{
+					bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 5%, transparent)',
+					boxShadow: 'inset 0 -1px 0 var(--beak-colors-accent-pink)',
+				}}
+			>
+				{!stringOptions.includes(value) && value !== '' && <option value={value}>{`${value} (off-list)`}</option>}
+				{value === '' && <option value=''>{'Choose a value…'}</option>}
+				{options.map(o => {
+					const label = formatEnumOption(o);
+					return (
+						<option key={label} value={label}>
+							{label}
+						</option>
+					);
+				})}
+			</ChakraSelect>
+			<Box
+				position='absolute'
+				right='8px'
+				top='50%'
+				transform='translateY(-50%)'
+				pointerEvents='none'
+				color='fg.subtle'
+				display='inline-flex'
+				alignItems='center'
+			>
+				<ChevronDown size={12} strokeWidth={1.8} />
+			</Box>
 		</Box>
-	</Box>
-);
+	);
+};
+
+/**
+ * Format an `EnumOption` for display in the select. Booleans + null come
+ * out as their JSON literal so the user can tell `true` from `"true"`.
+ */
+function formatEnumOption(value: EnumOption): string {
+	if (value === null) return 'null';
+	if (typeof value === 'boolean') return value ? 'true' : 'false';
+	return String(value);
+}
 
 /**
  * Tiny indicator that the schema declared this field required. Pink dot,
@@ -220,17 +242,58 @@ const EnumSelect: React.FC<{
  * the key cell so it scans as "this field has a contract obligation"
  * without stealing real estate.
  */
-const RequiredDot: React.FC = () => (
+/**
+ * Subtle "*" indicator next to the key when the schema declared the row
+ * required. Borrows the form-field convention: a small asterisk says
+ * "this matters", no painted bar required. Indigo by default; shifts to
+ * alert when the row also has no value. Tooltip carries the description.
+ */
+const RequiredBadge: React.FC<{ description?: string; missing?: boolean }> = ({ description, missing }) => {
+	const tone = missing ? 'alert' : 'indigo';
+	const tooltip = missing
+		? `Required — value can't be empty${description ? `. ${description}` : ''}`
+		: (description ?? 'Required by schema');
+	return (
+		<Box
+			as='span'
+			flexShrink={0}
+			ml='1'
+			color={`accent.${tone}`}
+			fontSize='13px'
+			fontWeight='600'
+			lineHeight='1'
+			cursor='help'
+			data-tooltip-id='tt-schema-row-description'
+			data-tooltip-content={tooltip}
+		>
+			{'∗'}
+		</Box>
+	);
+};
+
+/**
+ * `valuesOnly` description column — renders the field's schema description
+ * as actual table content in the slot freed up by hiding the action +
+ * expand chevron. Single-line, truncated with a `title` so the user can
+ * hover for the full text on long descriptions. Empty when no description
+ * is set (which reads as "no docs" without making it look broken).
+ */
+const DescriptionCell: React.FC<{ description?: string }> = ({ description }) => (
 	<Box
-		flexShrink={0}
-		w='5px'
-		h='5px'
-		ml='1.5'
-		borderRadius='full'
-		bg='accent.pink'
-		data-tooltip-id='tt-schema-row-description'
-		data-tooltip-content='Required by schema'
-	/>
+		display='flex'
+		alignItems='center'
+		minW={0}
+		px='2'
+		fontSize='11px'
+		color={description ? 'fg.subtle' : 'fg.disabled'}
+		fontStyle={description ? undefined : 'italic'}
+		title={description ?? undefined}
+		whiteSpace='nowrap'
+		overflow='hidden'
+		textOverflow='ellipsis'
+	>
+		{description ?? ''}
+	</Box>
 );
 
 /**
@@ -264,6 +327,7 @@ const BasicTableEditor: React.FC<BasicTableEditorProps> = ({
 	items,
 	requestId,
 	readOnly,
+	valuesOnly,
 	disableItemToggle,
 	nameSuggestions,
 	addItem,
@@ -271,6 +335,10 @@ const BasicTableEditor: React.FC<BasicTableEditorProps> = ({
 	removeItem,
 }) => {
 	const editable = !readOnly;
+	// "Schema editable" — covers everything that mutates structure (key text,
+	// expand-to-schema-panel, remove row, trailing add-row stub). `valuesOnly`
+	// blocks all of these while keeping values + the row enabled toggle live.
+	const schemaEditable = editable && !valuesOnly;
 	const showToggle = !disableItemToggle;
 	const keys = TypedObject.keys(items);
 	const hasRows = keys.length > 0;
@@ -297,12 +365,12 @@ const BasicTableEditor: React.FC<BasicTableEditorProps> = ({
 	return (
 		<Flex direction='column' h='100%' w='100%' fontSize='sm' fontWeight='400' color='fg.muted'>
 			<Header>
-				<Row data-empty='true'>
+				<Row data-empty='true' data-values-only={valuesOnly ? 'true' : undefined}>
 					<HeaderExpandCell />
 					<HeaderToggleCell />
 					<HeaderKeyCell>{'Key'}</HeaderKeyCell>
 					<HeaderValueCell>{'Value'}</HeaderValueCell>
-					{editable && <HeaderAction />}
+					{valuesOnly ? <HeaderKeyCell>{'Description'}</HeaderKeyCell> : schemaEditable && <HeaderAction />}
 				</Row>
 			</Header>
 			<Body flex='1' display='flex' flexDirection='column' minH={0}>
@@ -314,7 +382,7 @@ const BasicTableEditor: React.FC<BasicTableEditorProps> = ({
 						const type = item.type;
 						const description = item.description;
 						const showTypeChip = type !== undefined && type !== 'string';
-						const missingRequired = required && enabled && isValueEmpty(item.value);
+						const missingRequired = required && enabled && valueParts.isEmpty(item.value);
 						// Empty-key rows are silently dropped at the prepare-request
 						// boundary; flag them in the editor so the user notices the
 						// row that won't actually be sent. Disabled rows aren't sent
@@ -369,14 +437,18 @@ const BasicTableEditor: React.FC<BasicTableEditorProps> = ({
 									transition={{ duration: 0.16, ease: 'easeOut' }}
 									data-missing-required={missingRequired ? 'true' : undefined}
 									data-empty-key={emptyKey ? 'true' : undefined}
+									data-values-only={valuesOnly ? 'true' : undefined}
 									css={{
+										// The asterisk on the key cell says *why* the row is
+										// flagged; the left strip gives at-a-glance scanability
+										// across long tables. No cell wash — that read as an
+										// error state rather than an actionable hint.
 										'&[data-missing-required="true"]::before': {
 											opacity: 1,
 											backgroundColor: 'var(--beak-colors-accent-alert)',
 										},
 										'&[data-empty-key="true"]': {
-											backgroundColor:
-												'color-mix(in srgb, var(--beak-colors-accent-warning) 8%, transparent)',
+											backgroundColor: 'color-mix(in srgb, var(--beak-colors-accent-warning) 8%, transparent)',
 										},
 										'&[data-empty-key="true"]::before': {
 											opacity: 1,
@@ -385,46 +457,75 @@ const BasicTableEditor: React.FC<BasicTableEditorProps> = ({
 									}}
 								>
 									<BodyExpandCell>
-										<ChakraExpandButton
-											type='button'
-											aria-label={isExpanded ? 'Collapse' : 'Expand'}
-											aria-expanded={isExpanded}
-											title={expandTooltip}
-											onClick={() =>
-												setExpanded(prev => ({
-													...prev,
-													[k]: !(prev[k] !== undefined ? prev[k] : isCookieRow),
-												}))
-											}
-											display='inline-flex'
-											alignItems='center'
-											justifyContent='center'
-											w='18px'
-											h='18px'
-											p='0'
-											border='none'
-											bg='transparent'
-											color={expandColor}
-											cursor='pointer'
-											transition='color .12s ease, transform .12s ease'
-											_hover={{ color: isCookieRow ? 'accent.pink' : schemaAuthored ? 'accent.indigo' : 'fg.default' }}
-											_focusVisible={{
-												outline: 'none',
-												boxShadow: '0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-indigo) 35%, transparent)',
-												borderRadius: '4px',
-											}}
-										>
-											{isExpanded ? <ChevronDown size={11} strokeWidth={2} /> : <ChevronRight size={11} strokeWidth={2} />}
-										</ChakraExpandButton>
+										{schemaEditable && (
+											<ChakraExpandButton
+												type='button'
+												aria-label={isExpanded ? 'Collapse' : 'Expand'}
+												aria-expanded={isExpanded}
+												title={expandTooltip}
+												onClick={() =>
+													setExpanded(prev => ({
+														...prev,
+														[k]: !(prev[k] !== undefined ? prev[k] : isCookieRow),
+													}))
+												}
+												display='inline-flex'
+												alignItems='center'
+												justifyContent='center'
+												w='18px'
+												h='18px'
+												p='0'
+												border='none'
+												bg='transparent'
+												color={expandColor}
+												cursor='pointer'
+												transition='color .12s ease, transform .12s ease'
+												_hover={{ color: isCookieRow ? 'accent.pink' : schemaAuthored ? 'accent.indigo' : 'fg.default' }}
+												_focusVisible={{
+													outline: 'none',
+													boxShadow: '0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-indigo) 35%, transparent)',
+													borderRadius: '4px',
+												}}
+											>
+												{isExpanded ? <ChevronDown size={11} strokeWidth={2} /> : <ChevronRight size={11} strokeWidth={2} />}
+											</ChakraExpandButton>
+										)}
 									</BodyExpandCell>
 									<BodyToggleCell>
 										{editable && showToggle && (
-											<EntryToggler value={item.enabled} onChange={enabled => updateItem?.('enabled', k, enabled)} />
+											<EntryToggler
+												value={item.enabled}
+												disabled={valuesOnly && required}
+												disabledReason={
+													valuesOnly && required ? 'Required by schema — cannot be disabled for this step' : undefined
+												}
+												onChange={enabled => updateItem?.('enabled', k, enabled)}
+											/>
 										)}
 									</BodyToggleCell>
 									<BodyPrimaryCell>
 										<BodyInputWrapper {...tooltipAttrs}>
-											{nameSuggestions ? (
+											{valuesOnly ? (
+												<Box
+													flex='1'
+													display='inline-flex'
+													alignItems='center'
+													h='26px'
+													px='8px'
+													fontSize='12px'
+													lineHeight='26px'
+													color='fg.default'
+													whiteSpace='nowrap'
+													overflow='hidden'
+													textOverflow='ellipsis'
+												>
+													{item.name || (
+														<Box as='span' color='fg.subtle'>
+															{'(unnamed)'}
+														</Box>
+													)}
+												</Box>
+											) : nameSuggestions ? (
 												<SuggestingNameInput
 													innerRef={el => {
 														if (focusKeyRef.current === k && el) {
@@ -453,7 +554,7 @@ const BasicTableEditor: React.FC<BasicTableEditorProps> = ({
 													onChange={v => updateItem?.('name', k, v)}
 												/>
 											)}
-											{required && <RequiredDot />}
+											{required && <RequiredBadge description={description} missing={missingRequired} />}
 										</BodyInputWrapper>
 									</BodyPrimaryCell>
 									<BodyInputValueCell>
@@ -482,29 +583,20 @@ const BasicTableEditor: React.FC<BasicTableEditorProps> = ({
 													onChange={parts => updateItem?.('value', k, parts)}
 												/>
 											)}
-											{missingRequired && (
-												<Box
-													flexShrink={0}
-													mr='2'
-													display='inline-flex'
-													alignItems='center'
-													color='accent.alert'
-													data-tooltip-id='tt-schema-row-description'
-													data-tooltip-content='Required by schema but the value is empty'
-												>
-													<AlertCircle size={12} strokeWidth={2} />
-												</Box>
-											)}
 										</BodyInputWrapper>
 									</BodyInputValueCell>
-									{editable && (
-										<BodyAction>
-											<EntryActions onRemove={() => removeItem?.(k)} />
-										</BodyAction>
+									{valuesOnly ? (
+										<DescriptionCell description={description} />
+									) : (
+										schemaEditable && (
+											<BodyAction>
+												<EntryActions onRemove={() => removeItem?.(k)} />
+											</BodyAction>
+										)
 									)}
 								</MotionRow>
 								<AnimatePresence initial={false}>
-									{isExpanded && editable && isCookieRow && (
+									{isExpanded && schemaEditable && isCookieRow && (
 										<CookieHeaderEditor
 											key={`${k}-cookie-panel`}
 											value={item.value}
@@ -512,7 +604,7 @@ const BasicTableEditor: React.FC<BasicTableEditorProps> = ({
 											onChange={next => updateItem?.('value', k, next)}
 										/>
 									)}
-									{isExpanded && editable && !isCookieRow && (
+									{isExpanded && schemaEditable && !isCookieRow && (
 										<SchemaPanel
 											key={`${k}-panel`}
 											item={item}
@@ -529,7 +621,7 @@ const BasicTableEditor: React.FC<BasicTableEditorProps> = ({
 					})}
 				</AnimatePresence>
 
-				{editable && <TrailingGhostRow hasRows={hasRows} onAdd={() => addItem?.()} />}
+				{schemaEditable && <TrailingGhostRow hasRows={hasRows} onAdd={() => addItem?.()} />}
 			</Body>
 		</Flex>
 	);

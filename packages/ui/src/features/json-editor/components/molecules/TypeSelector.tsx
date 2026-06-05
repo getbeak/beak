@@ -50,6 +50,10 @@ const TypeSelector: React.FC<TypeSelectorProps> = ({ disabled, requestId, id, va
 	const allowedSet = allowedTypes ? new Set(allowedTypes) : null;
 	const showPrimitives = !allowedSet || PRIMITIVE_TYPES.some(t => allowedSet.has(t));
 	const showContainers = !allowedSet || CONTAINER_TYPES.some(t => allowedSet.has(t));
+	// `valuesOnly` locks the schema — the chip stays visible as a read-only
+	// signal, but the click-through `<select>` is gone so the user can't
+	// retype the field.
+	const locked = disabled || editorContext.valuesOnly;
 
 	return (
 		<Box
@@ -59,47 +63,49 @@ const TypeSelector: React.FC<TypeSelectorProps> = ({ disabled, requestId, id, va
 			display='flex'
 			alignItems='center'
 			justifyContent='center'
-			cursor={disabled ? 'default' : 'pointer'}
+			cursor={locked ? 'default' : 'pointer'}
 		>
-			<select
-				ref={selectRef}
-				aria-label={`Type: ${value}`}
-				disabled={disabled}
-				value={value}
-				tabIndex={-1}
-				style={{
-					position: 'absolute',
-					inset: 0,
-					margin: 0,
-					padding: 0,
-					opacity: 0,
-					width: '100%',
-					height: '100%',
-					cursor: disabled ? 'default' : 'pointer',
-				}}
-				onChange={e => {
-					const type = e.currentTarget.value as EntryType;
-					dispatch(editorContext.typeChange({ requestId, id, type }));
-					onChange?.(type);
-					selectRef.current!.blur();
-				}}
-			>
-				{showPrimitives && (
-					<optgroup label='Primitives'>
-						{(!allowedSet || allowedSet.has('string')) && <option value='string'>{'String'}</option>}
-						{(!allowedSet || allowedSet.has('number')) && <option value='number'>{'Number'}</option>}
-						{(!allowedSet || allowedSet.has('boolean')) && <option value='boolean'>{'Boolean'}</option>}
-						{(!allowedSet || allowedSet.has('null')) && <option value='null'>{'Null'}</option>}
-						{(!allowedSet || allowedSet.has('enum')) && <option value='enum'>{'Enum'}</option>}
-					</optgroup>
-				)}
-				{showContainers && (
-					<optgroup label='Objects'>
-						{(!allowedSet || allowedSet.has('array')) && <option value='array'>{'Array'}</option>}
-						{(!allowedSet || allowedSet.has('object')) && <option value='object'>{'Object'}</option>}
-					</optgroup>
-				)}
-			</select>
+			{!editorContext.valuesOnly && (
+				<select
+					ref={selectRef}
+					aria-label={`Type: ${value}`}
+					disabled={disabled}
+					value={value}
+					tabIndex={-1}
+					style={{
+						position: 'absolute',
+						inset: 0,
+						margin: 0,
+						padding: 0,
+						opacity: 0,
+						width: '100%',
+						height: '100%',
+						cursor: disabled ? 'default' : 'pointer',
+					}}
+					onChange={e => {
+						const type = e.currentTarget.value as EntryType;
+						dispatch(editorContext.typeChange({ requestId, id, type }));
+						onChange?.(type);
+						selectRef.current!.blur();
+					}}
+				>
+					{showPrimitives && (
+						<optgroup label='Primitives'>
+							{(!allowedSet || allowedSet.has('string')) && <option value='string'>{'String'}</option>}
+							{(!allowedSet || allowedSet.has('number')) && <option value='number'>{'Number'}</option>}
+							{(!allowedSet || allowedSet.has('boolean')) && <option value='boolean'>{'Boolean'}</option>}
+							{(!allowedSet || allowedSet.has('null')) && <option value='null'>{'Null'}</option>}
+							{(!allowedSet || allowedSet.has('enum')) && <option value='enum'>{'Enum'}</option>}
+						</optgroup>
+					)}
+					{showContainers && (
+						<optgroup label='Objects'>
+							{(!allowedSet || allowedSet.has('array')) && <option value='array'>{'Array'}</option>}
+							{(!allowedSet || allowedSet.has('object')) && <option value='object'>{'Object'}</option>}
+						</optgroup>
+					)}
+				</select>
+			)}
 			<Box
 				w='22px'
 				h='22px'

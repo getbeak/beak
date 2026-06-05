@@ -1,5 +1,5 @@
 import { Box, chakra, Flex } from '@chakra-ui/react';
-import type { EnumEntry, NamedEnumEntry } from '@getbeak/types/body-editor-json';
+import type { EnumEntry, EnumOption, NamedEnumEntry } from '@getbeak/types/body-editor-json';
 import { ChevronDown } from 'lucide-react';
 import React, { useContext } from 'react';
 import { useDispatch } from 'react-redux';
@@ -25,58 +25,70 @@ const ChakraSelect = chakra('select');
  * defined yet (schema mode is still authoring the contract). Off-list
  * values surface explicitly so existing data isn't silently dropped.
  */
+function formatEnumOption(value: EnumOption): string {
+	if (value === null) return 'null';
+	if (typeof value === 'boolean') return value ? 'true' : 'false';
+	return String(value);
+}
+
 const EnumValueSelect: React.FC<{
-	options: string[];
+	options: EnumOption[];
 	value: string;
 	disabled?: boolean;
 	onChange: (next: string) => void;
-}> = ({ options, value, disabled, onChange }) => (
-	<Box position='relative' flexGrow={1} display='inline-flex' alignItems='stretch'>
-		<ChakraSelect
-			value={value}
-			disabled={disabled}
-			onChange={e => onChange((e.target as HTMLSelectElement).value)}
-			w='100%'
-			h='30px'
-			minH='30px'
-			px='10px'
-			pr='28px'
-			borderWidth='0'
-			borderRadius='0'
-			bg='transparent'
-			color='fg.default'
-			fontSize='12px'
-			fontFamily='inherit'
-			appearance='none'
-			cursor={disabled ? 'default' : 'pointer'}
-			outline='none'
-			_focus={{
-				bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 5%, transparent)',
-				boxShadow: 'inset 0 -1px 0 var(--beak-colors-accent-pink)',
-			}}
-		>
-			{!options.includes(value) && value !== '' && <option value={value}>{`${value} (off-list)`}</option>}
-			{value === '' && <option value=''>{'Choose a value…'}</option>}
-			{options.map(o => (
-				<option key={o} value={o}>
-					{o}
-				</option>
-			))}
-		</ChakraSelect>
-		<Box
-			position='absolute'
-			right='8px'
-			top='50%'
-			transform='translateY(-50%)'
-			pointerEvents='none'
-			color='fg.subtle'
-			display='inline-flex'
-			alignItems='center'
-		>
-			<ChevronDown size={12} strokeWidth={1.8} />
+}> = ({ options, value, disabled, onChange }) => {
+	const stringOptions = options.map(formatEnumOption);
+	return (
+		<Box position='relative' flexGrow={1} display='inline-flex' alignItems='stretch'>
+			<ChakraSelect
+				value={value}
+				disabled={disabled}
+				onChange={e => onChange((e.target as HTMLSelectElement).value)}
+				w='100%'
+				h='30px'
+				minH='30px'
+				px='10px'
+				pr='28px'
+				borderWidth='0'
+				borderRadius='0'
+				bg='transparent'
+				color='fg.default'
+				fontSize='12px'
+				fontFamily='inherit'
+				appearance='none'
+				cursor={disabled ? 'default' : 'pointer'}
+				outline='none'
+				_focus={{
+					bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 5%, transparent)',
+					boxShadow: 'inset 0 -1px 0 var(--beak-colors-accent-pink)',
+				}}
+			>
+				{!stringOptions.includes(value) && value !== '' && <option value={value}>{`${value} (off-list)`}</option>}
+				{value === '' && <option value=''>{'Choose a value…'}</option>}
+				{options.map(o => {
+					const label = formatEnumOption(o);
+					return (
+						<option key={label} value={label}>
+							{label}
+						</option>
+					);
+				})}
+			</ChakraSelect>
+			<Box
+				position='absolute'
+				right='8px'
+				top='50%'
+				transform='translateY(-50%)'
+				pointerEvents='none'
+				color='fg.subtle'
+				display='inline-flex'
+				alignItems='center'
+			>
+				<ChevronDown size={12} strokeWidth={1.8} />
+			</Box>
 		</Box>
-	</Box>
-);
+	);
+};
 
 const JsonEnumEntry: React.FC<React.PropsWithChildren<JsonEnumEntryProps>> = props => {
 	const { depth, requestId, value, nameOverride } = props;

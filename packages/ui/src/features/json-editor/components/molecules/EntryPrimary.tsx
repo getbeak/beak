@@ -1,3 +1,4 @@
+import { entryMap, valueParts } from '@beak/state';
 import DebouncedInput from '@beak/ui/components/atoms/DebouncedInput';
 import { Box } from '@chakra-ui/react';
 import type { Entries } from '@getbeak/types/body-editor-json';
@@ -10,22 +11,35 @@ import { BodyInputWrapper, BodyNameOverrideWrapper } from '../atoms/Cells';
 import { detectName } from './JsonEntry';
 
 /**
- * Mirrors the BasicTableEditor's required dot — pink bullet next to the
- * key cell when the schema declared this entry required. Tooltip is the
- * shared `tt-schema-row-description` anchor.
+ * Subtle "*" indicator that flags a row as required by the schema. Borrows
+ * the form-field convention from the rest of the world: a small asterisk
+ * after the field name says "this matters", without painting half the row.
+ * Indigo by default (schema-authoring palette); shifts to alert-red when
+ * the row also has no value so a single look tells the user *which*
+ * required row still needs filling in. Tooltip carries the description.
  */
-const RequiredDot: React.FC<{ description?: string }> = ({ description }) => (
-	<Box
-		flexShrink={0}
-		w='5px'
-		h='5px'
-		ml='1.5'
-		borderRadius='full'
-		bg='accent.pink'
-		data-tooltip-id='tt-schema-row-description'
-		data-tooltip-content={description ?? 'Required by schema'}
-	/>
-);
+const RequiredBadge: React.FC<{ description?: string; missing?: boolean }> = ({ description, missing }) => {
+	const tone = missing ? 'alert' : 'indigo';
+	const tooltip = missing
+		? `Required — value can't be empty${description ? `. ${description}` : ''}`
+		: (description ?? 'Required by schema');
+	return (
+		<Box
+			as='span'
+			flexShrink={0}
+			ml='1'
+			color={`accent.${tone}`}
+			fontSize='13px'
+			fontWeight='600'
+			lineHeight='1'
+			cursor='help'
+			data-tooltip-id='tt-schema-row-description'
+			data-tooltip-content={tooltip}
+		>
+			{'∗'}
+		</Box>
+	);
+};
 
 interface EntryPrimaryProps {
 	depth: number;
@@ -63,21 +77,59 @@ const EntryPrimary: React.FC<EntryPrimaryProps> = ({ depth, requestId, value, na
 
 	const description = value.description;
 	const tooltipAttrs: Record<string, string> = {};
-	if (description && !editorContext.schemaMode) {
+	// In `valuesOnly` mode the description gets its own Info icon (see below)
+	// so we don't double up the tooltip on the input wrapper.
+	if (description && !editorContext.schemaMode && !editorContext.valuesOnly) {
 		tooltipAttrs['data-tooltip-id'] = 'tt-schema-row-description';
 		tooltipAttrs['data-tooltip-content'] = description;
 	}
 
+	const name = detectName(depth, value);
+	// Mirror EntryRow's missingRequired check so the badge can shift to its
+	// "needs a value" tone — same predicate keeps the two indicators in
+	// lockstep without threading a prop through every entry kind.
+	const missingRequired =
+		value.required === true && !editorContext.schemaMode && value.enabled !== false && isEntryValueEmpty(value);
+
 	return (
 		<BodyInputWrapper {...tooltipAttrs}>
-			<DebouncedInput
-				type='text'
-				value={detectName(depth, value)}
-				onChange={name => dispatch(editorContext.nameChange({ id: value.id, requestId, name }))}
-			/>
-			{value.required === true && !editorContext.schemaMode && <RequiredDot description={description} />}
+			{editorContext.valuesOnly ? (
+				<Box
+					flex='1'
+					display='inline-flex'
+					alignItems='center'
+					h='26px'
+					px='8px'
+					fontSize='12px'
+					lineHeight='26px'
+					color='fg.default'
+					whiteSpace='nowrap'
+					overflow='hidden'
+					textOverflow='ellipsis'
+				>
+					{name || (
+						<Box as='span' color='fg.subtle'>
+							{'(unnamed)'}
+						</Box>
+					)}
+				</Box>
+			) : (
+				<DebouncedInput
+					type='text'
+					value={name}
+					placeholder='Field name'
+					onChange={n => dispatch(editorContext.nameChange({ id: value.id, requestId, name: n }))}
+				/>
+			)}
+			{value.required === true && !editorContext.schemaMode && (
+				<RequiredBadge description={description} missing={missingRequired} />
+			)}
 		</BodyInputWrapper>
 	);
 };
+
+function isEntryValueEmpty(entry: Entries): boolean {
+	return entryMap.isEntryValueEmpty(entry, valueParts.isEmpty);
+}
 
 export default EntryPrimary;

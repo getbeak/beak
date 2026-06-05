@@ -18,6 +18,9 @@ const EntryActions: React.FC<EntryActionsProps> = ({ requestId, id, entry }) => 
 	const dispatch = useDispatch();
 	const editorContext = useContext(JsonEditorContext)!;
 
+	// `valuesOnly` locks the schema — no add/remove affordances at all.
+	if (editorContext.valuesOnly) return null;
+
 	// Don't show any icons for root level primitives
 	if (isRoot && !['array', 'object'].includes(entry.type)) return null;
 

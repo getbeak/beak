@@ -68,7 +68,14 @@ export const BodyInputWrapper: React.FC<BoxProps> = props => (
 		display='flex'
 		alignItems='stretch'
 		css={{
-			'& > div, & > input[type=text]': {
+			// Scope the "stretch to fill" rule to ONLY the DebouncedInput's
+			// wrapper div (the one carrying an `<article>` contentEditable) —
+			// without `:has(> article)` the rule used to catch every sibling
+			// div, including the 5×5 `RequiredDot` and similar inline
+			// indicators, blowing them out to a full-row pink bar. The
+			// indicators sit alongside the input as their own children so the
+			// flex parent lays them out naturally.
+			'& > div:has(> article), & > input[type=text]': {
 				width: '100%',
 				display: 'flex',
 				alignItems: 'center',

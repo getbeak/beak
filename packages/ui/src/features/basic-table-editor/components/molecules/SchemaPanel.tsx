@@ -1,5 +1,8 @@
 import DebouncedInput from '@beak/ui/components/atoms/DebouncedInput';
+import TagListInput from '@beak/ui/components/molecules/TagListInput';
+import { glassChakraProps } from '@beak/ui/lib/glass';
 import { Box, chakra, Flex, Menu, Portal } from '@chakra-ui/react';
+import type { EnumOption } from '@getbeak/types/body-editor-json';
 import type { ScalarPropertyType, ToggleKeyValue } from '@getbeak/types/request';
 import { motion } from 'framer-motion';
 import { ChevronDown, ShieldCheck, ShieldOff } from 'lucide-react';
@@ -19,7 +22,7 @@ interface SchemaPanelProps {
 	onChangeType: (next: ScalarPropertyType | null) => void;
 	onChangeRequired: (next: boolean | null) => void;
 	onChangeDescription: (next: string | null) => void;
-	onChangeOptions: (next: string[] | null) => void;
+	onChangeOptions: (next: EnumOption[] | null) => void;
 }
 
 const TYPE_OPTIONS: { key: ScalarPropertyType; label: string; hint: string }[] = [
@@ -84,15 +87,7 @@ const TypeButton: React.FC<{
 			</Menu.Trigger>
 			<Portal>
 				<Menu.Positioner>
-					<Menu.Content
-						bg='bg.surface.emphasized'
-						borderWidth='1px'
-						borderColor='border.default'
-						borderRadius='md'
-						boxShadow='0 8px 24px rgba(0,0,0,0.28)'
-						p='1'
-						minW='180px'
-					>
+					<Menu.Content {...glassChakraProps.menu} borderRadius='md' p='1' minW='180px'>
 						{TYPE_OPTIONS.map(o => {
 							const isActive = o.key === value;
 							return (
@@ -224,7 +219,7 @@ const SchemaPanel: React.FC<SchemaPanelProps> = ({
 					</Box>
 				</Flex>
 				{type === 'enum' && (
-					<Flex align='center' gap='2'>
+					<Flex align='flex-start' gap='2'>
 						<Box
 							as='span'
 							fontSize='10px'
@@ -233,22 +228,17 @@ const SchemaPanel: React.FC<SchemaPanelProps> = ({
 							letterSpacing='0.05em'
 							textTransform='uppercase'
 							minW='80px'
+							pt='1.5'
 						>
 							{'Options'}
 						</Box>
-						<Box flex='1' borderWidth='1px' borderColor='border.subtle' borderRadius='sm' bg='bg.surface'>
-							<DebouncedInput
-								type='text'
-								value={options.join(', ')}
+						<Box flex='1'>
+							<TagListInput
+								value={options}
 								disabled={readOnly}
-								placeholder='Comma-separated allowed values (e.g. free, pro, enterprise)'
-								onChange={v => {
-									const parsed = v
-										.split(',')
-										.map(s => s.trim())
-										.filter(s => s.length > 0);
-									onChangeOptions(parsed.length === 0 ? null : parsed);
-								}}
+								placeholder='Type a value and press Enter (e.g. free)'
+								noun='option'
+								onChange={next => onChangeOptions(next.length === 0 ? null : next)}
 							/>
 						</Box>
 					</Flex>
