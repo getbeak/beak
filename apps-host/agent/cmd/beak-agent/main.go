@@ -1,0 +1,90 @@
+// Command beak-agent runs the local agent menu-bar process. See
+// docs/adr/0001-local-agent-for-web-host.md.
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
+
+	"github.com/getbeak/beak/apps-host/agent/internal/config"
+	"github.com/getbeak/beak/apps-host/agent/internal/pairing"
+	"github.com/getbeak/beak/apps-host/agent/internal/server"
+	"github.com/getbeak/beak/apps-host/agent/internal/tray"
+	"github.com/getbeak/beak/apps-host/agent/internal/wire"
+)
+
+func main() {
+	if err := run(); err != nil {
+		fmt.Fprintf(os.Stderr, "beak-agent: %v\n", err)
+		os.Exit(1)
+	}
+}
+
+func run() error {
+	tokens, err := pairing.OpenTokenStore()
+	if err != nil {
+		return fmt.Errorf("open token store: %w", err)
+	}
+
+	approvals := pairing.NewApprovalQueue()
+	srv := server.New(tokens, approvals)
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	port, err := srv.ListenAndServe(ctx)
+	if err != nil {
+		return fmt.Errorf("listen: %w", err)
+	}
+	if err := config.WriteRuntime(port, wire.AgentSemver); err != nil {
+		fmt.Fprintf(os.Stderr, "beak-agent: warn: could not write runtime.json: %v\n", err)
+	}
+	defer config.ClearRuntime()
+
+	fmt.Printf("[beak-agent] listening on http://127.0.0.1:%d\n", port)
+
+	// Sweep expired pending pairings every minute.
+	go func() {
+		ticker := time.NewTicker(60 * time.Second)
+		defer ticker.Stop()
+		for {
+			select {
+			case <-ticker.C:
+				srv.SweepPending()
+			case <-ctx.Done():
+				return
+			}
+		}
+	}()
+
+	// OS signals: gracefully shut down on Ctrl-C / SIGTERM.
+	sigCh := make(chan os.Signal, 1)
+	signal.Notify(sigCh, syscall.SIGINT, syscall.SIGTERM)
+	go func() {
+		<-sigCh
+		shutdown(srv)
+		cancel()
+	}()
+
+	tray.Run(tray.Options{
+		BaseURL:   fmt.Sprintf("http://127.0.0.1:%d", port),
+		Tokens:    tokens,
+		Approvals: approvals,
+		OnQuit: func() {
+			shutdown(srv)
+			cancel()
+		},
+	})
+
+	return nil
+}
+
+func shutdown(srv *server.Server) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	_ = srv.Shutdown(ctx)
+}

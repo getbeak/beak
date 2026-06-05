@@ -1,3 +1,4 @@
+import { type AgentSliceState, agentSlice, initialAgentState } from '@beak/state/agent';
 import { type CookieSliceState, cookiesSlice, initialCookieState } from '@beak/state/cookies';
 // Flight slice lives in @beak/state (pure domain), used here as a global state shard.
 import { type FlightSliceState, flightSlice } from '@beak/state/flight';
@@ -45,6 +46,7 @@ export interface ApplicationState {
 		tabs: TabsState;
 	};
 	global: {
+		agent: AgentSliceState;
 		cookies: CookieSliceState;
 		extensions: ExtensionsState;
 		flight: FlightSliceState;
@@ -70,6 +72,7 @@ function createRootReducer() {
 			tabs: tabsStore.reducer,
 		}),
 		global: combineReducers({
+			agent: agentSlice,
 			cookies: cookiesSlice,
 			extensions: extensionsStore.reducers,
 			flight: flightSlice,
@@ -96,6 +99,7 @@ function createInitialState(): ApplicationState {
 			tabs: tabsStore.types.initialState,
 		},
 		global: {
+			agent: initialAgentState,
 			cookies: initialCookieState,
 			extensions: extensionsStore.types.initialState,
 			flight: {
@@ -117,6 +121,8 @@ function createInitialState(): ApplicationState {
 	};
 }
 
+let appStoreSingleton: Store<ApplicationState> | undefined;
+
 export function configureStore(): Store<ApplicationState> {
 	const initialState = createInitialState();
 	const composeEnhancers = composeWithDevTools({});
@@ -129,5 +135,16 @@ export function configureStore(): Store<ApplicationState> {
 
 	registerAllEffects();
 
+	appStoreSingleton = store;
 	return store;
+}
+
+/**
+ * Module-level handle to the store, set during `configureStore()`. Used by
+ * code that runs outside React (host-side IPC handlers) and so can't get
+ * the store via context. Throws if accessed before configuration.
+ */
+export function getAppStore(): Store<ApplicationState> {
+	if (!appStoreSingleton) throw new Error('getAppStore() called before configureStore()');
+	return appStoreSingleton;
 }

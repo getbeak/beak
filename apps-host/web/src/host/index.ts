@@ -79,6 +79,7 @@ const runtime = new Runtime({
 		systemKeychain: false,
 		fileSystemAccess: 'sandboxed',
 		binaryStreaming: false,
+		localAgent: 'optional',
 	},
 	providers: {
 		aes: new AesProvider(),

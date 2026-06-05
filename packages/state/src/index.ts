@@ -1,3 +1,4 @@
+export * as agent from './agent';
 export * as assets from './assets';
 export * as cookies from './cookies';
 export * as entryMap from './entry-map';

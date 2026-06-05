@@ -23,6 +23,7 @@ const runtime = new Runtime({
 		systemKeychain: true,
 		fileSystemAccess: 'native',
 		binaryStreaming: true,
+		localAgent: 'unsupported',
 	},
 	providers: {
 		aes: new AesProvider(),

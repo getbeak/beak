@@ -1,6 +1,7 @@
 import { Box, Flex } from '@chakra-ui/react';
 import * as React from 'react';
 
+import AgentStatusBanner from '../components/molecules/AgentStatusBanner';
 import MeshGradient from '../components/molecules/MeshGradient';
 import WebMenuBar from '../features/menu-bar/components/WebMenuBar';
 import ProjectMain from './ProjectMain';
@@ -30,6 +31,9 @@ const WebProjectMain: React.FC = () => (
 
 		<Box position='relative' zIndex={1}>
 			<WebMenuBar />
+		</Box>
+		<Box position='relative' zIndex={1}>
+			<AgentStatusBanner />
 		</Box>
 		<Box flex='1' minH='0' position='relative' zIndex={1}>
 			<ProjectMain />

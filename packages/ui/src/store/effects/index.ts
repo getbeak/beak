@@ -1,4 +1,5 @@
 import { startAppListening } from '../listener';
+import { registerAgentEffects } from './agent';
 import { registerAlertsEffects } from './alerts';
 import { registerCookieEffects } from './cookies';
 import { registerEndpointSyncEffects } from './endpoint-sync';
@@ -20,6 +21,7 @@ import { registerWorkflowsEffects } from './workflows';
  * adding a new effect doesn't require editing this file.
  */
 export function registerAllEffects(): void {
+	registerAgentEffects(startAppListening);
 	registerAlertsEffects(startAppListening);
 	registerCookieEffects(startAppListening);
 	registerEndpointSyncEffects(startAppListening);

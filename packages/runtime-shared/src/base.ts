@@ -25,6 +25,19 @@ export interface RuntimeCapabilities {
 	fileSystemAccess: 'native' | 'sandboxed';
 	/** True if request/response binary bodies can stream incrementally. */
 	binaryStreaming: boolean;
+	/**
+	 * Can this host route flights through a local agent process?
+	 *
+	 *   'unsupported' — host has its own request execution. Renderer skips
+	 *                   all agent UI and state.
+	 *   'optional'    — host can use a paired agent if one is reachable,
+	 *                   falls back to its default path otherwise.
+	 *   'required'    — host has no other way to fire requests. Renderer
+	 *                   forces pair-or-fail UI.
+	 *
+	 * See docs/adr/0001-local-agent-for-web-host.md.
+	 */
+	localAgent: 'unsupported' | 'optional' | 'required';
 }
 
 /**
