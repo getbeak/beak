@@ -33,9 +33,7 @@ const OpenSocketSchema = z.object({
 	requestId: z.string().min(1),
 	url: z.string().min(1),
 	protocols: z.array(z.string()).optional(),
-	headers: z
-		.array(z.object({ name: z.string(), value: z.string() }))
-		.optional(),
+	headers: z.array(z.object({ name: z.string(), value: z.string() })).optional(),
 });
 
 const SendSocketSchema = z.object({

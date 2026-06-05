@@ -35,7 +35,11 @@ test('web host: renderer mounts something into <body>', async ({ page }) => {
 	await expect
 		.poll(
 			async () => {
-				const text = (await page.locator('body').textContent({ timeout: 1_000 }).catch(() => '')) ?? '';
+				const text =
+					(await page
+						.locator('body')
+						.textContent({ timeout: 1_000 })
+						.catch(() => '')) ?? '';
 				return text.length;
 			},
 			{ timeout: 30_000, intervals: [500, 1_000, 2_000] },

@@ -149,7 +149,11 @@
 			}
 		},
 		{
-			"includes": ["packages/extension-sdk/**/*.ts", "packages/extension-sdk/**/*.tsx", "packages/extension-sdk/**/*.d.ts"],
+			"includes": [
+				"packages/extension-sdk/**/*.ts",
+				"packages/extension-sdk/**/*.tsx",
+				"packages/extension-sdk/**/*.d.ts"
+			],
 			"linter": {
 				"rules": {
 					"style": {

@@ -25,11 +25,14 @@ export default class AesProvider extends AesProviderBase {
 		return base64.fromByteArray(iv);
 	}
 
-	async encrypt(payload: Uint8Array,keyBase64: string, ivBase64: string): Promise<string> {
-		const key = await window.crypto.subtle.importKey('raw', base64.toByteArray(keyBase64) as BufferSource, 'AES-CTR', true, [
-			'encrypt',
-			'decrypt',
-		]);
+	async encrypt(payload: Uint8Array, keyBase64: string, ivBase64: string): Promise<string> {
+		const key = await window.crypto.subtle.importKey(
+			'raw',
+			base64.toByteArray(keyBase64) as BufferSource,
+			'AES-CTR',
+			true,
+			['encrypt', 'decrypt'],
+		);
 
 		const cipherText = await window.crypto.subtle.encrypt(
 			{

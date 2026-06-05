@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { SseParser, isSseContentType } from '../sse-parser';
+import { isSseContentType, SseParser } from '../sse-parser';
 
 function encode(str: string): Uint8Array {
 	return new TextEncoder().encode(str);

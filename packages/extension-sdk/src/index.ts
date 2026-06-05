@@ -133,10 +133,7 @@ export interface VariableDefinition<TPayload = unknown, TEditorState = TPayload>
 	attributes?: VariableAttributes;
 
 	/** Build the default payload for a fresh insertion of this variable. */
-	createDefaultPayload: (
-		extCtx: ExtensionContext,
-		varCtx: VariableContext,
-	) => Promise<TPayload> | TPayload;
+	createDefaultPayload: (extCtx: ExtensionContext, varCtx: VariableContext) => Promise<TPayload> | TPayload;
 
 	/** Resolve the variable to a string value. */
 	getValue: (
@@ -172,11 +169,7 @@ export interface VariableEditor<TPayload, TEditorState> {
 		extCtx: ExtensionContext,
 		varCtx: VariableContext,
 	) => Promise<UISection<TEditorState>[]> | UISection<TEditorState>[];
-	load?: (
-		extCtx: ExtensionContext,
-		varCtx: VariableContext,
-		payload: TPayload,
-	) => Promise<TEditorState> | TEditorState;
+	load?: (extCtx: ExtensionContext, varCtx: VariableContext, payload: TPayload) => Promise<TEditorState> | TEditorState;
 	save?: (
 		extCtx: ExtensionContext,
 		varCtx: VariableContext,

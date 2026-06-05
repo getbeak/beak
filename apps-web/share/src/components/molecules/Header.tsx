@@ -23,14 +23,7 @@ const Header: React.FC = () => (
 			}}
 		/>
 		<Box>
-			<Box
-				fontSize='10px'
-				fontWeight='700'
-				letterSpacing='0.08em'
-				textTransform='uppercase'
-				color='accent.pink'
-				mb='0.5'
-			>
+			<Box fontSize='10px' fontWeight='700' letterSpacing='0.08em' textTransform='uppercase' color='accent.pink' mb='0.5'>
 				{'Shared with you'}
 			</Box>
 			<Box fontWeight='600' fontSize='2xl' lineHeight='1.1' color='fg.default'>

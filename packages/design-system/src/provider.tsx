@@ -24,12 +24,7 @@ interface BeakChakraProviderProps {
  *    (`packages/design-system/src/theme.ts`) to every descendant.
  */
 const BeakChakraProvider: React.FC<BeakChakraProviderProps> = ({ themeKey, children }) => (
-	<NextThemesProvider
-		attribute='class'
-		defaultTheme={themeKey}
-		forcedTheme={themeKey}
-		enableSystem={false}
-	>
+	<NextThemesProvider attribute='class' defaultTheme={themeKey} forcedTheme={themeKey} enableSystem={false}>
 		<ChakraProvider value={system}>{children}</ChakraProvider>
 	</NextThemesProvider>
 );

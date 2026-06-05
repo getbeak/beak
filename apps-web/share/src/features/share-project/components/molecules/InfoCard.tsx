@@ -1,7 +1,7 @@
-import { Box, Grid } from '@chakra-ui/react';
 import CtaButton from '@beak/apps-web-share/components/atoms/Buttons';
 import { SubTitle, Title } from '@beak/apps-web-share/components/atoms/Typography';
 import useBeakProjectUrl from '@beak/apps-web-share/hooks/use-beak-project-url';
+import { Box, Grid } from '@chakra-ui/react';
 import * as React from 'react';
 import { useEffect } from 'react';
 
@@ -22,7 +22,8 @@ const InfoCard: React.FC = () => {
 			borderColor='color-mix(in srgb, var(--beak-colors-accent-pink) 22%, var(--beak-colors-border-subtle))'
 			p='6'
 			style={{
-				boxShadow: '0 16px 40px rgba(0,0,0,0.18), 0 4px 12px color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent), inset 0 1px 0 color-mix(in srgb, white 14%, transparent)',
+				boxShadow:
+					'0 16px 40px rgba(0,0,0,0.18), 0 4px 12px color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent), inset 0 1px 0 color-mix(in srgb, white 14%, transparent)',
 			}}
 		>
 			<Box

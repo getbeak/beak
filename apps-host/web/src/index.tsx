@@ -1,7 +1,6 @@
 import type { Theme } from '@beak/common/types/theme';
 import { BeakChakraProvider } from '@beak/design-system';
-import React from 'react';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 
 import '@beak/ui';

@@ -1,6 +1,6 @@
-import { Box, Flex } from '@chakra-ui/react';
 import { SmallContainer } from '@beak/apps-web-share/components/atoms/Container';
 import { BodyRegular, Title, TitleSubtle } from '@beak/apps-web-share/components/atoms/Typography';
+import { Box, Flex } from '@chakra-ui/react';
 import { Bug } from 'lucide-react';
 import * as React from 'react';
 
@@ -31,7 +31,8 @@ const ErrorFallback: React.FC = () => (
 				color='accent.alert'
 				mb='3'
 				style={{
-					boxShadow: '0 6px 18px color-mix(in srgb, var(--beak-colors-accent-alert) 22%, transparent), inset 0 1px 0 color-mix(in srgb, white 16%, transparent)',
+					boxShadow:
+						'0 6px 18px color-mix(in srgb, var(--beak-colors-accent-alert) 22%, transparent), inset 0 1px 0 color-mix(in srgb, white 16%, transparent)',
 				}}
 			>
 				<Bug size={24} strokeWidth={1.8} />

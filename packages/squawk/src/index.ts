@@ -59,11 +59,7 @@ export default class Squawk extends Error {
 
 	constructor(code: string, meta?: Meta | null, reasons?: readonly Error[]);
 	constructor(code: string, options: SquawkOptions);
-	constructor(
-		code: string,
-		metaOrOptions?: Meta | SquawkOptions | null,
-		legacyReasons?: readonly Error[],
-	) {
+	constructor(code: string, metaOrOptions?: Meta | SquawkOptions | null, legacyReasons?: readonly Error[]) {
 		const opts = normaliseConstructorArgs(metaOrOptions, legacyReasons);
 		const message = opts.message ?? buildMessage(code, opts.meta);
 		super(message);
@@ -190,8 +186,7 @@ export class ValidationError extends Squawk {
 	): ValidationError {
 		const issues = zodError.issues ?? [];
 		const fieldErrors: Record<string, string> = {};
-		const formatPath = (path: ReadonlyArray<PropertyKey> | undefined) =>
-			(path ?? []).map(String).join('.') || '(root)';
+		const formatPath = (path: ReadonlyArray<PropertyKey> | undefined) => (path ?? []).map(String).join('.') || '(root)';
 
 		for (const issue of issues) {
 			fieldErrors[formatPath(issue.path)] = issue.message;
@@ -240,8 +235,7 @@ function normaliseConstructorArgs(
 	}
 	const keys = Object.keys(metaOrOptions);
 	const looksLikeOptions =
-		keys.length > 0 &&
-		keys.every(k => k === 'meta' || k === 'reasons' || k === 'httpStatus' || k === 'message');
+		keys.length > 0 && keys.every(k => k === 'meta' || k === 'reasons' || k === 'httpStatus' || k === 'message');
 	if (looksLikeOptions) {
 		return metaOrOptions as SquawkOptions;
 	}

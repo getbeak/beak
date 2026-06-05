@@ -1,6 +1,6 @@
-import type { Context, ValueSections } from '@getbeak/types/values';
 // biome-ignore lint/style/noRestrictedImports: type-only imports of the SDK's UI contract used in cross-process payloads.
 import type { UISection } from '@getbeak/extension-sdk';
+import type { Context, ValueSections } from '@getbeak/types/values';
 import type { WebContents } from 'electron';
 
 import type {
