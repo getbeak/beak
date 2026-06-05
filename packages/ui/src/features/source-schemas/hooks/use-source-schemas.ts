@@ -1,17 +1,26 @@
+import { projectTree } from '@beak/state';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { shallowEqual } from 'react-redux';
 
-import { enumerateEndpoints } from '../lib/enumerate';
-import type { EndpointEntry, EndpointKind } from '../types';
+import { enumerateSourceSchemas } from '../lib/enumerate';
+import type { SourceSchemaEntry, SourceSchemaKind } from '../types';
 
 /**
  * Subscribe to the list of endpoints of a given kind in the current
- * project. Re-enumerates when the tree changes. Returns entries, a
- * manual refresh callback, and a loading flag for the initial paint.
+ * project. Re-enumerates when the set of project folders changes.
+ *
+ * We deliberately *don't* depend on the whole tree — that would re-fire
+ * the enumerator on every keystroke inside a request body (Immer hands
+ * back a fresh tree reference on every request edit, even though no
+ * folder structure changed). Subscribing to the folder list with
+ * `shallowEqual` is enough: Immer preserves the reference of every
+ * unchanged folder node, so a request-body edit yields a shallow-equal
+ * folder array and the hook stays quiet.
  */
-export function useEndpoints(kind: EndpointKind) {
-	const tree = useAppSelector(s => s.global.project.tree);
-	const [entries, setEntries] = useState<EndpointEntry[]>([]);
+export function useSourceSchemas(kind: SourceSchemaKind) {
+	const folders = useAppSelector(s => projectTree.filterByType(s.global.project.tree, 'folder'), shallowEqual);
+	const [entries, setEntries] = useState<SourceSchemaEntry[]>([]);
 	const [loading, setLoading] = useState(false);
 	// Guard against stale enumerations resolving out-of-order (e.g. user
 	// clicks Refresh twice rapidly) by tagging each call with a sequence
@@ -23,7 +32,7 @@ export function useEndpoints(kind: EndpointKind) {
 		const tag = seqRef.current;
 		setLoading(true);
 		try {
-			const next = await enumerateEndpoints(kind, tree);
+			const next = await enumerateSourceSchemas(kind, folders);
 			if (tag === seqRef.current) setEntries(next);
 		} catch (error) {
 			console.warn(`${kind} endpoint enumeration failed`, error);
@@ -31,7 +40,7 @@ export function useEndpoints(kind: EndpointKind) {
 		} finally {
 			if (tag === seqRef.current) setLoading(false);
 		}
-	}, [kind, tree]);
+	}, [kind, folders]);
 
 	useEffect(() => {
 		void refresh();

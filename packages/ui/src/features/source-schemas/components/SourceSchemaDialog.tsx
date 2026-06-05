@@ -1,10 +1,11 @@
-import type { GrpcDescriptor } from '@beak/state/schemas';
+import type { CollectionSource, GrpcDescriptor } from '@beak/state/schemas';
 import Button from '@beak/ui/components/atoms/Button';
 import Dialog, { DialogBody, DialogFooter, DialogHeader } from '@beak/ui/components/molecules/Dialog';
 import { Box, chakra, Flex } from '@chakra-ui/react';
 import {
 	AlertCircle,
 	AlertOctagon,
+	AlertTriangle,
 	CheckCircle2,
 	Circle,
 	ClipboardPaste,
@@ -19,22 +20,24 @@ import {
 	RefreshCw,
 } from 'lucide-react';
 import * as React from 'react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { pickSpecFile } from '../../openapi-import/pick-file';
 import {
-	createEndpointFolder,
-	createOpenApiEndpointFolder,
-	updateEndpoint,
-	updateOpenApiEndpoint,
+	createOpenApiSourceSchemaFolder,
+	createSourceSchemaFolder,
+	deriveFolderNameFromUrl,
+	peekRootSource,
+	updateOpenApiSourceSchema,
+	updateSourceSchema,
 } from '../lib/persist';
 import { describeSync, type SyncStatus } from '../lib/sync-status';
-import { ENDPOINT_CONFIG, type EndpointKind, type OpenApiSource } from '../types';
+import { type OpenApiSource, SOURCE_SCHEMA_CONFIG, type SourceSchemaKind } from '../types';
 
 type Mode = { kind: 'create' } | { kind: 'edit'; folderPath: string; folderName: string };
 
-interface EndpointDialogProps {
-	endpointKind: EndpointKind;
+interface SourceSchemaDialogProps {
+	sourceSchemaKind: SourceSchemaKind;
 	mode: Mode;
 	initialEndpoint?: string;
 	/** Existing descriptor on the source — only meaningful when kind is grpc. */
@@ -68,12 +71,13 @@ const ChakraInput = chakra('input');
 /**
  * Reject folder names that would either break on common filesystems or
  * collide with Beak's reserved metadata. Returns `null` when the name is
- * acceptable, an error message otherwise. Callers gate submit on this
- * + show the message inline.
+ * acceptable, an error message otherwise. Blank is allowed — it means
+ * "drop the source at the project root"; callers handle that branch
+ * separately.
  */
 function validateFolderName(raw: string): string | null {
 	const name = raw.trim();
-	if (!name) return 'Pick a folder name.';
+	if (!name) return null;
 	if (name.includes('/') || name.includes('\\')) return 'No slashes — pick a single folder name.';
 	// Reserved on Windows + characters that need shell quoting on POSIX. Banning
 	// them across the board keeps projects portable without per-platform
@@ -95,8 +99,8 @@ function validateFolderName(raw: string): string | null {
  * monospace chip beneath the form, replacing the previous two-pane layout
  * whose sidebar made the dialog feel busy without paying its weight.
  */
-const EndpointDialog: React.FC<EndpointDialogProps> = ({
-	endpointKind,
+const SourceSchemaDialog: React.FC<SourceSchemaDialogProps> = ({
+	sourceSchemaKind,
 	mode,
 	initialEndpoint,
 	initialDescriptor,
@@ -106,9 +110,9 @@ const EndpointDialog: React.FC<EndpointDialogProps> = ({
 	onOpenIntrospection,
 	onClose,
 }) => {
-	if (endpointKind === 'openapi')
+	if (sourceSchemaKind === 'openapi')
 		return (
-			<OpenApiEndpointDialog
+			<OpenApiSourceSchemaDialog
 				mode={mode}
 				initialOpenApiSource={initialOpenApiSource}
 				lastSyncedAt={lastSyncedAt}
@@ -117,17 +121,23 @@ const EndpointDialog: React.FC<EndpointDialogProps> = ({
 			/>
 		);
 
-	const config = ENDPOINT_CONFIG[endpointKind];
+	const config = SOURCE_SCHEMA_CONFIG[sourceSchemaKind];
 	const isCreate = mode.kind === 'create';
-	const isGrpc = endpointKind === 'grpc';
+	const isGrpc = sourceSchemaKind === 'grpc';
 
 	const [folderName, setFolderName] = useState(isCreate ? '' : mode.kind === 'edit' ? mode.folderName : '');
 	const [endpoint, setEndpoint] = useState(initialEndpoint ?? '');
+	const [deriveFromUrl, setDeriveFromUrl] = useState(false);
 	const [descriptorKind, setDescriptorKind] = useState<DescriptorKind>(initialDescriptor?.type ?? 'reflection');
 	const [protoPath, setProtoPath] = useState(initialDescriptor?.type === 'proto' ? initialDescriptor.path : '');
 	const [bufModule, setBufModule] = useState(initialDescriptor?.type === 'buf' ? initialDescriptor.module : '');
+	const [rootSource, setRootSource] = useState<CollectionSource | null>(null);
 	const [busy, setBusy] = useState(false);
 	const [error, setError] = useState<string | null>(null);
+
+	const derivedFolderName = React.useMemo(() => deriveFolderNameFromUrl(endpoint), [endpoint]);
+	const effectiveFolderName = isCreate ? (deriveFromUrl ? derivedFolderName : folderName.trim()) : folderName.trim();
+	const isDroppingAtRoot = isCreate && effectiveFolderName.length === 0;
 
 	function buildDescriptor(): GrpcDescriptor | undefined {
 		if (!isGrpc) return undefined;
@@ -147,23 +157,44 @@ const EndpointDialog: React.FC<EndpointDialogProps> = ({
 		(descriptorKind === 'proto' && protoPath.trim().length > 0) ||
 		(descriptorKind === 'buf' && bufModule.trim().length > 0);
 
-	const folderNameError = isCreate ? validateFolderName(folderName) : null;
+	const folderNameError = isCreate ? validateFolderName(deriveFromUrl ? derivedFolderName : folderName) : null;
 	const canSubmit =
 		!busy && endpoint.trim().length > 0 && descriptorReady && (isCreate ? folderNameError === null : true);
+
+	// Peek the root collection when the user is about to drop at root so we
+	// can warn before overwriting a non-manual source. Multiple sources
+	// across the project are fine — only the root is single-occupancy.
+	useEffect(() => {
+		if (!isCreate || !isDroppingAtRoot) {
+			setRootSource(null);
+			return;
+		}
+		let cancelled = false;
+		peekRootSource()
+			.then(src => {
+				if (!cancelled) setRootSource(src);
+			})
+			.catch(() => {
+				if (!cancelled) setRootSource(null);
+			});
+		return () => {
+			cancelled = true;
+		};
+	}, [isCreate, isDroppingAtRoot]);
 
 	async function submit() {
 		setBusy(true);
 		setError(null);
 		try {
 			if (mode.kind === 'create') {
-				await createEndpointFolder({
-					kind: endpointKind,
-					folderName: folderName.trim(),
+				await createSourceSchemaFolder({
+					kind: sourceSchemaKind,
+					folderName: effectiveFolderName,
 					endpoint: endpoint.trim(),
 					descriptor: buildDescriptor(),
 				});
 			} else {
-				await updateEndpoint(mode.folderPath, endpointKind, {
+				await updateSourceSchema(mode.folderPath, sourceSchemaKind, {
 					endpoint: endpoint.trim(),
 					descriptor: buildDescriptor(),
 				});
@@ -177,9 +208,10 @@ const EndpointDialog: React.FC<EndpointDialogProps> = ({
 		}
 	}
 
-	const folderPreview = `${folderName.trim() || (isCreate ? 'untitled' : folderName)}/`;
-	const KindIcon = endpointKind === 'graphql' ? Hash : Network;
-	const tone = endpointKind === 'graphql' ? 'indigo' : 'teal';
+	const folderPreview = effectiveFolderName ? `${effectiveFolderName}/` : 'project root';
+	const rootWarning = buildRootWarning(rootSource, sourceSchemaKind, isDroppingAtRoot);
+	const KindIcon = sourceSchemaKind === 'graphql' ? Hash : Network;
+	const tone = sourceSchemaKind === 'graphql' ? 'indigo' : 'teal';
 
 	return (
 		<Dialog onClose={() => onClose(false)} tone={tone}>
@@ -196,13 +228,17 @@ const EndpointDialog: React.FC<EndpointDialogProps> = ({
 				<DialogBody>
 					<Flex direction='column' gap='3'>
 						{isCreate && (
-							<Field label='Folder name' description='Display name + folder for this schema source.'>
+							<Field
+								label='Folder name'
+								description='Leave blank to drop the source at the project root — handy when this is the only source in the project.'
+							>
 								<DialogInput
 									autoFocus
-									value={folderName}
+									value={deriveFromUrl ? derivedFolderName : folderName}
 									placeholder='acme-api'
-									onChange={setFolderName}
+									onChange={deriveFromUrl ? () => {} : setFolderName}
 									accentVar={config.accentVar}
+									disabled={deriveFromUrl}
 								/>
 								{folderName.trim().length > 0 && folderNameError && (
 									<Box mt='1' fontSize='10px' color='accent.alert' lineHeight='1.4'>
@@ -211,10 +247,11 @@ const EndpointDialog: React.FC<EndpointDialogProps> = ({
 								)}
 							</Field>
 						)}
+						{isCreate && <DeriveFromUrlToggle checked={deriveFromUrl} onChange={setDeriveFromUrl} />}
 						<Field
 							label='Endpoint URL'
 							description={
-								endpointKind === 'graphql'
+								sourceSchemaKind === 'graphql'
 									? 'The GraphQL endpoint requests inside this folder send to.'
 									: 'The gRPC service address. Plain `host:port` is fine.'
 							}
@@ -261,39 +298,11 @@ const EndpointDialog: React.FC<EndpointDialogProps> = ({
 							</Field>
 						)}
 
-						<Flex
-							align='center'
-							gap='2'
-							px='2.5'
-							py='1.5'
-							borderRadius='md'
-							borderWidth='1px'
-							borderColor='border.subtle'
-							bg='bg.canvas'
-							fontSize='xs'
-						>
-							<Box color='fg.subtle' flex='0 0 auto'>
-								<Folder size={11} strokeWidth={2} />
-							</Box>
-							<Box color='fg.subtle' fontSize='10px' fontWeight='700' textTransform='uppercase' letterSpacing='0.06em'>
-								{'Saves to'}
-							</Box>
-							<Box
-								flex='1 1 auto'
-								minW={0}
-								fontFamily='mono'
-								color='fg.default'
-								overflow='hidden'
-								textOverflow='ellipsis'
-								whiteSpace='nowrap'
-							>
-								<Box as='span' color={config.accentToken} fontWeight='500'>
-									{folderPreview || '(pick a name)'}
-								</Box>
-							</Box>
-						</Flex>
+						<SavesToChip preview={folderPreview} accentToken={config.accentToken} />
 
-						{!isCreate && endpointKind === 'graphql' && onOpenIntrospection && (
+						{rootWarning && <RootOverrideWarning message={rootWarning} />}
+
+						{!isCreate && sourceSchemaKind === 'graphql' && onOpenIntrospection && (
 							<IntrospectionLauncher onOpen={onOpenIntrospection} accentVar={config.accentVar} />
 						)}
 
@@ -511,10 +520,10 @@ const DescriptorPicker: React.FC<{
 
 type OpenApiSourceMode = 'file' | 'url' | 'paste';
 
-interface OpenApiEndpointDialogProps {
+interface OpenApiSourceSchemaDialogProps {
 	mode: Mode;
 	initialOpenApiSource?: OpenApiSource;
-	/** Live sync timestamp — see EndpointDialogProps. */
+	/** Live sync timestamp — see SourceSchemaDialogProps. */
 	lastSyncedAt?: string;
 	/** Manual re-sync trigger — only meaningful for URL sources. */
 	onSyncNow?: () => Promise<void> | void;
@@ -531,14 +540,14 @@ interface OpenApiEndpointDialogProps {
  * Edit mode is meaningful only for URL sources (you can change the URL or
  * the auto-sync cadence). File/paste edit just shows source info.
  */
-const OpenApiEndpointDialog: React.FC<OpenApiEndpointDialogProps> = ({
+const OpenApiSourceSchemaDialog: React.FC<OpenApiSourceSchemaDialogProps> = ({
 	mode,
 	initialOpenApiSource,
 	lastSyncedAt,
 	onSyncNow,
 	onClose,
 }) => {
-	const config = ENDPOINT_CONFIG.openapi;
+	const config = SOURCE_SCHEMA_CONFIG.openapi;
 	const isCreate = mode.kind === 'create';
 	const seededMode: OpenApiSourceMode =
 		initialOpenApiSource?.seedMode ??
@@ -552,9 +561,32 @@ const OpenApiEndpointDialog: React.FC<OpenApiEndpointDialogProps> = ({
 	const [pickedFilename, setPickedFilename] = useState<string | null>(initialOpenApiSource?.specPath ?? null);
 	const [pickedSource, setPickedSource] = useState<string | null>(null);
 	const [pasteContent, setPasteContent] = useState('');
+	const [groupByPath, setGroupByPath] = useState(false);
+	const [rootSource, setRootSource] = useState<CollectionSource | null>(null);
 	const [busy, setBusy] = useState(false);
 	const [syncing, setSyncing] = useState(false);
 	const [error, setError] = useState<string | null>(null);
+
+	const trimmedFolderName = folderName.trim();
+	const isDroppingAtRoot = isCreate && trimmedFolderName.length === 0;
+
+	useEffect(() => {
+		if (!isCreate || !isDroppingAtRoot) {
+			setRootSource(null);
+			return;
+		}
+		let cancelled = false;
+		peekRootSource()
+			.then(src => {
+				if (!cancelled) setRootSource(src);
+			})
+			.catch(() => {
+				if (!cancelled) setRootSource(null);
+			});
+		return () => {
+			cancelled = true;
+		};
+	}, [isCreate, isDroppingAtRoot]);
 
 	async function handleSyncNow() {
 		if (!onSyncNow) return;
@@ -599,26 +631,30 @@ const OpenApiEndpointDialog: React.FC<OpenApiEndpointDialogProps> = ({
 				return Number.isFinite(n) && n >= 1 ? Math.floor(n) : 60;
 			})();
 			if (mode.kind === 'create') {
+				const groupOpt = groupByPath ? { groupByPath: true as const } : {};
 				if (sourceMode === 'url') {
-					await createOpenApiEndpointFolder({
-						folderName: folderName.trim(),
+					await createOpenApiSourceSchemaFolder({
+						folderName: trimmedFolderName,
+						...groupOpt,
 						seed: { mode: 'url', url: url.trim(), autoSync, intervalMinutes: minutes },
 					});
 				} else if (sourceMode === 'file') {
 					if (!pickedSource || !pickedFilename) throw new Error('Pick a spec file first.');
-					await createOpenApiEndpointFolder({
-						folderName: folderName.trim(),
+					await createOpenApiSourceSchemaFolder({
+						folderName: trimmedFolderName,
+						...groupOpt,
 						seed: { mode: 'file', filename: pickedFilename, source: pickedSource },
 					});
 				} else {
-					await createOpenApiEndpointFolder({
-						folderName: folderName.trim(),
+					await createOpenApiSourceSchemaFolder({
+						folderName: trimmedFolderName,
+						...groupOpt,
 						seed: { mode: 'paste', source: pasteContent },
 					});
 				}
 			} else {
 				if (sourceMode !== 'url') throw new Error('Only URL sources can be edited — re-create to change the source.');
-				await updateOpenApiEndpoint(mode.folderPath, { url: url.trim(), autoSync, intervalMinutes: minutes });
+				await updateOpenApiSourceSchema(mode.folderPath, { url: url.trim(), autoSync, intervalMinutes: minutes });
 			}
 			onClose(true);
 		} catch (e) {
@@ -629,7 +665,8 @@ const OpenApiEndpointDialog: React.FC<OpenApiEndpointDialogProps> = ({
 		}
 	}
 
-	const folderPreview = `${folderName.trim() || (isCreate ? 'untitled' : folderName)}/`;
+	const folderPreview = trimmedFolderName ? `${trimmedFolderName}/` : isCreate ? 'project root' : `${folderName}/`;
+	const rootWarning = buildRootWarning(rootSource, 'openapi', isDroppingAtRoot);
 
 	return (
 		<Dialog onClose={() => onClose(false)} tone='pink'>
@@ -646,7 +683,10 @@ const OpenApiEndpointDialog: React.FC<OpenApiEndpointDialogProps> = ({
 				<DialogBody>
 					<Flex direction='column' gap='3'>
 						{isCreate && (
-							<Field label='Folder name' description='Display name + folder for this schema source.'>
+							<Field
+								label='Folder name'
+								description='Leave blank to drop the generated requests at the project root — handy when this is the only spec in the project.'
+							>
 								<DialogInput
 									autoFocus
 									value={folderName}
@@ -719,6 +759,43 @@ const OpenApiEndpointDialog: React.FC<OpenApiEndpointDialogProps> = ({
 							</Flex>
 						</Field>
 
+						{isCreate && (
+							<Flex
+								as='label'
+								align='flex-start'
+								gap='2'
+								cursor='pointer'
+								fontSize='xs'
+								color='fg.muted'
+								px='1'
+								borderRadius='md'
+								_hover={{ color: 'fg.default' }}
+							>
+								<input
+									type='checkbox'
+									checked={groupByPath}
+									onChange={e => setGroupByPath(e.currentTarget.checked)}
+									style={{ marginTop: '2px' }}
+								/>
+								<Box>
+									<Box fontWeight='600' color='fg.default'>
+										{'Group by URL path'}
+									</Box>
+									<Box fontSize='10px' color='fg.subtle' mt='0.5'>
+										{'Mirror the URL hierarchy in the tree — '}
+										<Box as='span' fontFamily='mono'>
+											{'/api/agents/{id}'}
+										</Box>
+										{' lands under '}
+										<Box as='span' fontFamily='mono'>
+											{'api/agents/'}
+										</Box>
+										{' instead of all in one folder.'}
+									</Box>
+								</Box>
+							</Flex>
+						)}
+
 						{sourceMode === 'url' && (
 							<Field
 								label='Auto-sync'
@@ -746,37 +823,9 @@ const OpenApiEndpointDialog: React.FC<OpenApiEndpointDialogProps> = ({
 							</Field>
 						)}
 
-						<Flex
-							align='center'
-							gap='2'
-							px='2.5'
-							py='1.5'
-							borderRadius='md'
-							borderWidth='1px'
-							borderColor='border.subtle'
-							bg='bg.canvas'
-							fontSize='xs'
-						>
-							<Box color='fg.subtle' flex='0 0 auto'>
-								<Folder size={11} strokeWidth={2} />
-							</Box>
-							<Box color='fg.subtle' fontSize='10px' fontWeight='700' textTransform='uppercase' letterSpacing='0.06em'>
-								{'Saves to'}
-							</Box>
-							<Box
-								flex='1 1 auto'
-								minW={0}
-								fontFamily='mono'
-								color='fg.default'
-								overflow='hidden'
-								textOverflow='ellipsis'
-								whiteSpace='nowrap'
-							>
-								<Box as='span' color={config.accentToken} fontWeight='500'>
-									{folderPreview || '(pick a name)'}
-								</Box>
-							</Box>
-						</Flex>
+						<SavesToChip preview={folderPreview} accentToken={config.accentToken} />
+
+						{rootWarning && <RootOverrideWarning message={rootWarning} />}
 
 						{!isCreate && (
 							<SyncStatusChip
@@ -1004,4 +1053,125 @@ const PasteArea: React.FC<{ value: string; onChange: (v: string) => void; accent
 	);
 };
 
-export default EndpointDialog;
+/**
+ * "Derive folder name from endpoint URL" checkbox shared by the graphql /
+ * gRPC create branches. The OpenAPI dialog has its own auto-naming story
+ * (the spec carries an `info.title`) so it doesn't reuse this control.
+ */
+const DeriveFromUrlToggle: React.FC<{ checked: boolean; onChange: (next: boolean) => void }> = ({
+	checked,
+	onChange,
+}) => (
+	<Flex
+		as='label'
+		align='flex-start'
+		gap='2'
+		cursor='pointer'
+		fontSize='xs'
+		color='fg.muted'
+		px='1'
+		borderRadius='md'
+		_hover={{ color: 'fg.default' }}
+	>
+		<input
+			type='checkbox'
+			checked={checked}
+			onChange={e => onChange(e.currentTarget.checked)}
+			style={{ marginTop: '2px' }}
+		/>
+		<Box>
+			<Box fontWeight='600' color='fg.default'>
+				{'Derive folder name from endpoint URL'}
+			</Box>
+			<Box fontSize='10px' color='fg.subtle' mt='0.5'>
+				{'Use the URL host as the folder name — '}
+				<Box as='span' fontFamily='mono'>
+					{'api.example.com'}
+				</Box>
+				{' lands under '}
+				<Box as='span' fontFamily='mono'>
+					{'api-example-com/'}
+				</Box>
+				{'.'}
+			</Box>
+		</Box>
+	</Flex>
+);
+
+/**
+ * Footer-style chip rendering the resolved save target — `project root`
+ * when the folder name is blank, `<name>/` otherwise. Shared between the
+ * three create branches so they all preview the same shape.
+ */
+const SavesToChip: React.FC<{ preview: string; accentToken: string }> = ({ preview, accentToken }) => (
+	<Flex
+		align='center'
+		gap='2'
+		px='2.5'
+		py='1.5'
+		borderRadius='md'
+		borderWidth='1px'
+		borderColor='border.subtle'
+		bg='bg.canvas'
+		fontSize='xs'
+	>
+		<Box color='fg.subtle' flex='0 0 auto'>
+			<Folder size={11} strokeWidth={2} />
+		</Box>
+		<Box color='fg.subtle' fontSize='10px' fontWeight='700' textTransform='uppercase' letterSpacing='0.06em'>
+			{'Saves to'}
+		</Box>
+		<Box
+			flex='1 1 auto'
+			minW={0}
+			fontFamily='mono'
+			color='fg.default'
+			overflow='hidden'
+			textOverflow='ellipsis'
+			whiteSpace='nowrap'
+		>
+			<Box as='span' color={accentToken} fontWeight='500'>
+				{preview}
+			</Box>
+		</Box>
+	</Flex>
+);
+
+/**
+ * Inline amber banner shown when the user is about to drop a source at the
+ * project root that already carries a non-manual source. Multiple sources
+ * are fine across the tree; only the root is single-occupancy, so this is
+ * the one place we surface an override warning.
+ */
+const RootOverrideWarning: React.FC<{ message: string }> = ({ message }) => (
+	<Flex
+		align='flex-start'
+		gap='2'
+		px='2.5'
+		py='1.5'
+		borderRadius='md'
+		borderWidth='1px'
+		borderColor='color-mix(in srgb, var(--beak-colors-accent-warning) 38%, var(--beak-colors-border-subtle))'
+		bg='color-mix(in srgb, var(--beak-colors-accent-warning) 10%, var(--beak-colors-bg-surface))'
+		fontSize='xs'
+		color='fg.default'
+	>
+		<Box color='accent.warning' flex='0 0 auto' mt='0.5'>
+			<AlertTriangle size={12} />
+		</Box>
+		<Box>{message}</Box>
+	</Flex>
+);
+
+function buildRootWarning(
+	rootSource: CollectionSource | null,
+	kind: SourceSchemaKind,
+	isDroppingAtRoot: boolean,
+): string | null {
+	if (!isDroppingAtRoot || !rootSource || rootSource.type === 'manual') return null;
+	if (rootSource.type === kind)
+		return `An existing ${kind} source is registered at the project root — saving will replace it.`;
+	return `This will replace the existing ${rootSource.type} source at the project root.`;
+}
+
+export default SourceSchemaDialog;

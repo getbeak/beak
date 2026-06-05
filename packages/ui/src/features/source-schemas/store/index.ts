@@ -1,23 +1,23 @@
 import { createAction, createReducer } from '@reduxjs/toolkit';
 
-import type { EndpointKind } from '../types';
+import type { SourceSchemaKind } from '../types';
 
 /**
  * Renderer-only UI state for the schema-sources sidebar. Right now this
  * carries a single "pending dialog intent" — fired by the welcome screen
  * when the user clicks one of the "Connect …" tiles, consumed by
- * `EndpointsPane` once it mounts so the matching `EndpointDialog` opens
+ * `SourceSchemasPane` once it mounts so the matching `SourceSchemaDialog` opens
  * automatically.
  */
 export interface State {
-	pendingSourceKind: EndpointKind | null;
+	pendingSourceKind: SourceSchemaKind | null;
 }
 
 export const initialState: State = {
 	pendingSourceKind: null,
 };
 
-export const requestSchemaSourceDialog = createAction<EndpointKind>('endpoints-ui/requestSchemaSourceDialog');
+export const requestSchemaSourceDialog = createAction<SourceSchemaKind>('endpoints-ui/requestSchemaSourceDialog');
 export const clearPendingSchemaSource = createAction('endpoints-ui/clearPendingSchemaSource');
 
 export const reducer = createReducer(initialState, builder => {

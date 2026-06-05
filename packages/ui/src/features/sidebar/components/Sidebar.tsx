@@ -10,10 +10,9 @@ import { Plus } from 'lucide-react';
 import * as React from 'react';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-
-import EndpointsPane from '../../endpoints/components/EndpointsPane';
 import ExtensionsPane from '../../extension/components/ExtensionsPane';
 import ProjectPane from '../../project-pane/components/ProjectPane';
+import SourceSchemasPane from '../../source-schemas/components/SourceSchemasPane';
 import VariablesPane from '../../variables-sets/components/VariablesPane';
 import SidebarMenuItem from './molecules/SidebarMenuItem';
 
@@ -190,6 +189,12 @@ const Sidebar: React.FC = () => {
 					flexShrink={0}
 					w={`${ACTIVITY_BAR_WIDTH}px`}
 					pt={`${topSpacer}px`}
+					borderRightWidth='1px'
+					borderRightStyle='solid'
+					// `border.subtle` solid (gray.200 / gray.800) — visible without
+					// shouting. The earlier 60%-transparent recipe was the right
+					// token, just too washed out against the backdrop blur.
+					borderRightColor='border.subtle'
 					style={embedded ? ({ WebkitAppRegion: 'drag' } as React.CSSProperties) : undefined}
 				>
 					<Box style={embedded ? ({ WebkitAppRegion: 'no-drag' } as React.CSSProperties) : undefined}>
@@ -287,7 +292,7 @@ const Sidebar: React.FC = () => {
 						<Box flex='1' minH={0} display='flex' flexDirection='column' overflow='hidden'>
 							{selectedSidebar === 'project' && <ProjectPane />}
 							{selectedSidebar === 'variables' && <VariablesPane />}
-							{selectedSidebar === 'schemas' && <EndpointsPane />}
+							{selectedSidebar === 'schemas' && <SourceSchemasPane />}
 							{selectedSidebar === 'extensions' && <ExtensionsPane />}
 						</Box>
 					</Flex>

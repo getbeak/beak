@@ -7,14 +7,14 @@ import type { CollectionFile, CollectionSource } from '@beak/state/schemas';
  * persistence pattern), so the rest of the feature is parameterised over
  * this single tag.
  */
-export type EndpointKind = 'graphql' | 'grpc' | 'openapi';
+export type SourceSchemaKind = 'graphql' | 'grpc' | 'openapi';
 
 export type GraphqlSource = Extract<CollectionSource, { type: 'graphql' }>;
 export type GrpcSource = Extract<CollectionSource, { type: 'grpc' }>;
 export type OpenApiSource = Extract<CollectionSource, { type: 'openapi' }>;
-export type EndpointSource = GraphqlSource | GrpcSource | OpenApiSource;
+export type SourceSchemaSource = GraphqlSource | GrpcSource | OpenApiSource;
 
-export interface EndpointEntry<S extends EndpointSource = EndpointSource> {
+export interface SourceSchemaEntry<S extends SourceSchemaSource = SourceSchemaSource> {
 	folderPath: string;
 	relativeFolder: string;
 	folderName: string;
@@ -22,8 +22,8 @@ export interface EndpointEntry<S extends EndpointSource = EndpointSource> {
 	source: S;
 }
 
-export interface EndpointKindConfig {
-	kind: EndpointKind;
+export interface SourceSchemaKindConfig {
+	kind: SourceSchemaKind;
 	/** Display label (singular). */
 	label: string;
 	/** Display label (plural). */
@@ -42,7 +42,7 @@ export interface EndpointKindConfig {
 	endpointPlaceholder: string;
 }
 
-export const ENDPOINT_CONFIG: Record<EndpointKind, EndpointKindConfig> = {
+export const SOURCE_SCHEMA_CONFIG: Record<SourceSchemaKind, SourceSchemaKindConfig> = {
 	graphql: {
 		kind: 'graphql',
 		label: 'GraphQL endpoint',

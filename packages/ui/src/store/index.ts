@@ -9,14 +9,14 @@ import * as cloneRepoStore from '../features/clone-repo/store';
 import type { State as CloneRepoState } from '../features/clone-repo/store/types';
 import * as encryptionStore from '../features/encryption/store';
 import type { State as EncryptionState } from '../features/encryption/store/types';
-import * as endpointsUiStore from '../features/endpoints/store';
-import type { State as EndpointsUiState } from '../features/endpoints/store/types';
 import * as omniBarStore from '../features/omni-bar/store';
 import type { State as OmniBarState } from '../features/omni-bar/store/types';
 import * as openApiImportStore from '../features/openapi-import/store';
 import type { State as OpenApiImportState } from '../features/openapi-import/store/types';
 import * as sourceControlStore from '../features/source-control/store';
 import type { State as SourceControlState } from '../features/source-control/store/types';
+import * as sourceSchemasUiStore from '../features/source-schemas/store';
+import type { State as SourceSchemasUiState } from '../features/source-schemas/store/types';
 import * as tabsStore from '../features/tabs/store';
 import type { State as TabsState } from '../features/tabs/store/types';
 import { registerAllEffects } from './effects';
@@ -38,7 +38,7 @@ export interface ApplicationState {
 	features: {
 		cloneRepo: CloneRepoState;
 		encryption: EncryptionState;
-		endpointsUi: EndpointsUiState;
+		sourceSchemasUi: SourceSchemasUiState;
 		omniBar: OmniBarState;
 		openApiImport: OpenApiImportState;
 		sourceControl: SourceControlState;
@@ -63,7 +63,7 @@ function createRootReducer() {
 		features: combineReducers({
 			cloneRepo: cloneRepoStore.reducer,
 			encryption: encryptionStore.reducer,
-			endpointsUi: endpointsUiStore.reducer,
+			sourceSchemasUi: sourceSchemasUiStore.reducer,
 			omniBar: omniBarStore.reducer,
 			openApiImport: openApiImportStore.reducer,
 			sourceControl: sourceControlStore.reducer,
@@ -89,7 +89,7 @@ function createInitialState(): ApplicationState {
 		features: {
 			cloneRepo: cloneRepoStore.initialState,
 			encryption: encryptionStore.types.initialState,
-			endpointsUi: endpointsUiStore.initialState,
+			sourceSchemasUi: sourceSchemasUiStore.initialState,
 			omniBar: omniBarStore.types.initialState,
 			openApiImport: openApiImportStore.types.initialState,
 			sourceControl: sourceControlStore.initialState,

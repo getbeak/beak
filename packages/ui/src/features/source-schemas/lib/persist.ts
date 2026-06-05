@@ -1,5 +1,5 @@
-import ksuid from '@beak/ksuid';
 import type { SyncFromSpecRes } from '@beak/common/ipc/openapi';
+import ksuid from '@beak/ksuid';
 import type { CollectionFile, CollectionSource, GrpcDescriptor } from '@beak/state/schemas';
 import { collectionFileSchema } from '@beak/state/schemas';
 import type { RequestNodeFile } from '@getbeak/types/nodes';
@@ -8,7 +8,7 @@ import path from 'path-browserify';
 import { ipcFsService, ipcOpenApiService } from '../../../lib/ipc';
 import { looksLikeOpenApi3, parseSpecSource } from '../../openapi-import/parse-spec-source';
 import { syncFromUrl } from '../../project-home/lib/sync-from-url';
-import type { EndpointKind } from '../types';
+import type { SourceSchemaKind } from '../types';
 
 const COLLECTION_FILENAME = '_collection.json';
 
@@ -22,12 +22,19 @@ const COLLECTION_FILENAME = '_collection.json';
  * `kind` is unused at the path level, but kept on the signature so callers
  * can pass it without juggling a parallel API.
  */
-function endpointsBase(_kind: EndpointKind): string {
+function sourceSchemasBase(_kind: SourceSchemaKind): string {
 	return 'tree';
 }
 
-export interface CreateEndpointInput {
-	kind: EndpointKind;
+export interface CreateSourceSchemaInput {
+	kind: SourceSchemaKind;
+	/**
+	 * Folder name under `tree/`. Blank string → drop the source at the
+	 * project root (`tree/_collection.json`). Single-source-at-root means
+	 * the dialog warns first via `peekRootSource` if the root already
+	 * carries a non-manual source; this function trusts the caller has
+	 * confirmed.
+	 */
 	folderName: string;
 	endpoint: string;
 	/**
@@ -39,7 +46,7 @@ export interface CreateEndpointInput {
 	descriptor?: GrpcDescriptor;
 }
 
-export interface UpdateEndpointInput {
+export interface UpdateSourceSchemaInput {
 	endpoint?: string;
 	descriptor?: GrpcDescriptor;
 }
@@ -100,7 +107,7 @@ fragment TypeRef on __Type {
  * dead end. Clicking a gRPC endpoint row opens the edit dialog instead;
  * once method invocation is wired we'll seed a typed gRPC method stub here.
  */
-async function writeSeedRequest(folderPath: string, input: CreateEndpointInput): Promise<string | null> {
+async function writeSeedRequest(folderPath: string, input: CreateSourceSchemaInput): Promise<string | null> {
 	if (input.kind !== 'graphql') return null;
 
 	const id = ksuid.generate('request').toString();
@@ -143,13 +150,15 @@ async function writeSeedRequest(folderPath: string, input: CreateEndpointInput):
  * handle `requestId === null` by opening the edit dialog or a placeholder
  * instead of a request tab.
  */
-export async function createEndpointFolder(
-	input: CreateEndpointInput,
+export async function createSourceSchemaFolder(
+	input: CreateSourceSchemaInput,
 ): Promise<{ folderPath: string; requestId: string | null }> {
-	const folderPath = path.join(endpointsBase(input.kind), input.folderName);
+	const trimmed = input.folderName.trim();
+	const isRoot = trimmed.length === 0;
+	const folderPath = isRoot ? sourceSchemasBase(input.kind) : path.join(sourceSchemasBase(input.kind), trimmed);
 
-	if (await ipcFsService.pathExists(folderPath))
-		throw new Error(`A folder named "${input.folderName}" already exists in the project tree.`);
+	if (!isRoot && (await ipcFsService.pathExists(folderPath)))
+		throw new Error(`A folder named "${trimmed}" already exists in the project tree.`);
 
 	const source: CollectionSource =
 		input.kind === 'graphql'
@@ -160,11 +169,15 @@ export async function createEndpointFolder(
 					...(input.descriptor ? { descriptor: input.descriptor } : {}),
 				};
 
-	const collection: CollectionFile = { source };
+	const collectionPath = path.join(folderPath, COLLECTION_FILENAME);
+	// Root mode preserves any existing `defaults` and replaces only the
+	// source field; sub-folder mode writes a fresh collection.
+	const existing = isRoot ? await readCollectionIfPresent(collectionPath) : null;
+	const collection: CollectionFile = existing ? { ...existing, source } : { source };
+
 	collectionFileSchema.parse(collection);
 
 	await ipcFsService.ensureDir(folderPath);
-	const collectionPath = path.join(folderPath, COLLECTION_FILENAME);
 	await ipcFsService.writeJson(collectionPath, collection, { spaces: '\t' });
 
 	const requestId = await writeSeedRequest(folderPath, input);
@@ -178,17 +191,16 @@ export async function createEndpointFolder(
  * headers / variables now happen on the seed request itself (opened in
  * the regular request pane).
  */
-export async function updateEndpoint(
+export async function updateSourceSchema(
 	folderPath: string,
-	kind: EndpointKind,
-	patch: UpdateEndpointInput,
+	kind: SourceSchemaKind,
+	patch: UpdateSourceSchemaInput,
 ): Promise<void> {
 	const collectionPath = path.join(folderPath, COLLECTION_FILENAME);
 	const raw = await ipcFsService.readJson<unknown>(collectionPath);
 	const parsed = collectionFileSchema.safeParse(raw);
 	if (!parsed.success) throw new Error(`Collection at ${collectionPath} failed schema validation.`);
-	if (parsed.data.source.type !== kind)
-		throw new Error(`Collection at ${collectionPath} is not a ${kind} source.`);
+	if (parsed.data.source.type !== kind) throw new Error(`Collection at ${collectionPath} is not a ${kind} source.`);
 
 	const next: CollectionFile = {
 		...parsed.data,
@@ -212,8 +224,56 @@ export async function updateEndpoint(
  * the endpoints hook to drop the entry from the sidebar immediately rather
  * than waiting for the watcher tick.
  */
-export async function deleteEndpointFolder(folderPath: string): Promise<void> {
+export async function deleteSourceSchemaFolder(folderPath: string): Promise<void> {
 	await ipcFsService.remove(folderPath);
+}
+
+/**
+ * Read the source declared on the project root's `tree/_collection.json`,
+ * if any. Used by the dialog to warn before a root drop would overwrite
+ * an existing non-manual source. Returns `null` when the file is missing
+ * or malformed — both are safe to drop a fresh source onto.
+ */
+export async function peekRootSource(): Promise<CollectionSource | null> {
+	const collectionPath = path.join('tree', COLLECTION_FILENAME);
+	const existing = await readCollectionIfPresent(collectionPath);
+	return existing ? existing.source : null;
+}
+
+async function readCollectionIfPresent(collectionPath: string): Promise<CollectionFile | null> {
+	if (!(await ipcFsService.pathExists(collectionPath))) return null;
+	try {
+		const raw = await ipcFsService.readJson<unknown>(collectionPath);
+		const parsed = collectionFileSchema.safeParse(raw);
+		return parsed.success ? parsed.data : null;
+	} catch {
+		return null;
+	}
+}
+
+/**
+ * Project an endpoint URL onto a filesystem-friendly folder name. Used by
+ * the dialog's "derive folder name from URL" toggle. Strips the scheme +
+ * path, drops a leading `www.`, replaces dots with dashes, and caps the
+ * length. Falls back to an empty string on unparseable input — the caller
+ * treats that as "use root" or "no suggestion".
+ */
+export function deriveFolderNameFromUrl(endpoint: string): string {
+	const trimmed = endpoint.trim();
+	if (!trimmed) return '';
+	try {
+		const url = new URL(trimmed);
+		const host = url.hostname.replace(/^www\./i, '');
+		if (!host) return '';
+		return host
+			.replace(/[^a-zA-Z0-9.-]/g, '')
+			.replace(/\./g, '-')
+			.replace(/-+/g, '-')
+			.replace(/^-+|-+$/g, '')
+			.slice(0, 80);
+	} catch {
+		return '';
+	}
 }
 
 // ─── OpenAPI ──────────────────────────────────────────────────────────────
@@ -226,8 +286,19 @@ export async function deleteEndpointFolder(folderPath: string): Promise<void> {
 // collection itself happens inside the IPC handler — the converter writes
 // `_collection.json` with the chosen seedMode + specPath/specUrl/etc.
 
-export interface CreateOpenApiEndpointInput {
+export interface CreateOpenApiSourceSchemaInput {
+	/**
+	 * Folder name under `tree/`. Blank string → drop the generated
+	 * collection + requests at the project root (`tree/`), replacing the
+	 * root `_collection.json`. Single-source-at-root: callers should peek
+	 * first and confirm if the root already carries a non-manual source.
+	 */
 	folderName: string;
+	/**
+	 * Mirror the spec's URL hierarchy in the generated tree — `/api/agents/{id}`
+	 * lands under `api/agents/`. Off by default; users opt in per import.
+	 */
+	groupByPath?: boolean;
 	/**
 	 * Where the spec came from. `paste` covers ad-hoc imports without a
 	 * re-sync source; `file` records the filename (no on-disk path on web
@@ -240,7 +311,7 @@ export interface CreateOpenApiEndpointInput {
 		| { mode: 'paste'; source: string };
 }
 
-export interface CreateOpenApiEndpointResult {
+export interface CreateOpenApiSourceSchemaResult {
 	folderPath: string;
 	sync: SyncFromSpecRes;
 }
@@ -250,12 +321,15 @@ export interface CreateOpenApiEndpointResult {
  * write the generated collection + request files. Throws on bad spec
  * input so the caller can surface the message in the dialog.
  */
-export async function createOpenApiEndpointFolder(
-	input: CreateOpenApiEndpointInput,
-): Promise<CreateOpenApiEndpointResult> {
-	const folderPath = path.join(endpointsBase('openapi'), input.folderName);
-	if (await ipcFsService.pathExists(folderPath))
-		throw new Error(`A folder named "${input.folderName}" already exists in the project tree.`);
+export async function createOpenApiSourceSchemaFolder(
+	input: CreateOpenApiSourceSchemaInput,
+): Promise<CreateOpenApiSourceSchemaResult> {
+	const trimmed = input.folderName.trim();
+	const isRoot = trimmed.length === 0;
+	const folderPath = isRoot ? sourceSchemasBase('openapi') : path.join(sourceSchemasBase('openapi'), trimmed);
+
+	if (!isRoot && (await ipcFsService.pathExists(folderPath)))
+		throw new Error(`A folder named "${trimmed}" already exists in the project tree.`);
 
 	if (input.seed.mode === 'url') {
 		const outcome = await syncFromUrl({
@@ -263,6 +337,7 @@ export async function createOpenApiEndpointFolder(
 			url: input.seed.url,
 			autoSync: input.seed.autoSync,
 			intervalMinutes: input.seed.intervalMinutes,
+			...(input.groupByPath ? { groupByPath: true } : {}),
 		});
 		if (!outcome.ok) throw new Error(outcome.error);
 		return { folderPath, sync: outcome.result };
@@ -282,6 +357,7 @@ export async function createOpenApiEndpointFolder(
 		spec: parsed.spec,
 		seedMode: input.seed.mode,
 		...(input.seed.mode === 'file' ? { specPath: input.seed.filename } : {}),
+		...(input.groupByPath ? { groupByPath: true } : {}),
 	});
 	return { folderPath, sync };
 }
@@ -298,7 +374,7 @@ export interface UpdateOpenApiInput {
  * needs its config tweaked. Re-validates against the collection schema
  * so a buggy patch can't corrupt the file.
  */
-export async function updateOpenApiEndpoint(folderPath: string, patch: UpdateOpenApiInput): Promise<void> {
+export async function updateOpenApiSourceSchema(folderPath: string, patch: UpdateOpenApiInput): Promise<void> {
 	const collectionPath = path.join(folderPath, COLLECTION_FILENAME);
 	const raw = await ipcFsService.readJson<unknown>(collectionPath);
 	const parsed = collectionFileSchema.safeParse(raw);

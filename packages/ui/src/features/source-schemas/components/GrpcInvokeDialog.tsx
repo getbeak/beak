@@ -1,13 +1,9 @@
+import type { GrpcMethodDescriptor, GrpcServiceDescriptor, InvokeUnaryRes } from '@beak/common/ipc/grpc';
+import type { GrpcDescriptor } from '@beak/state/schemas';
 import Button from '@beak/ui/components/atoms/Button';
 import Dialog, { DialogBody, DialogFooter, DialogHeader } from '@beak/ui/components/molecules/Dialog';
 import { ipcGrpcService } from '@beak/ui/lib/ipc';
 import { Box, chakra, Flex } from '@chakra-ui/react';
-import type { GrpcDescriptor } from '@beak/state/schemas';
-import type {
-	GrpcMethodDescriptor,
-	GrpcServiceDescriptor,
-	InvokeUnaryRes,
-} from '@beak/common/ipc/grpc';
 import { AlertOctagon, ChevronDown, Network, Play, Sparkles } from 'lucide-react';
 import * as React from 'react';
 import { useMemo, useState } from 'react';
@@ -192,9 +188,7 @@ const GrpcInvokeDialog: React.FC<GrpcInvokeDialogProps> = ({
 								<FieldLabel>Request body (JSON)</FieldLabel>
 								<ChakraTextarea
 									value={requestJson}
-									onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
-										setRequestJson(e.currentTarget.value)
-									}
+									onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setRequestJson(e.currentTarget.value)}
 									spellCheck={false}
 									w='100%'
 									h='140px'
@@ -215,9 +209,7 @@ const GrpcInvokeDialog: React.FC<GrpcInvokeDialogProps> = ({
 									}}
 								/>
 								<Box fontSize='10.5px' color='fg.subtle' lineHeight='1.45'>
-									{
-										'protobuf JSON form — field names match the message definition. Missing fields take protobuf defaults.'
-									}
+									{'protobuf JSON form — field names match the message definition. Missing fields take protobuf defaults.'}
 								</Box>
 							</Flex>
 						)}
@@ -250,7 +242,7 @@ const GrpcInvokeDialog: React.FC<GrpcInvokeDialogProps> = ({
 									wordBreak='break-word'
 									m='0'
 								>
-									{result.status === 0 ? formatJson(result.responseJson) : (result.statusMessage || `gRPC code ${result.status}`)}
+									{result.status === 0 ? formatJson(result.responseJson) : result.statusMessage || `gRPC code ${result.status}`}
 								</Box>
 								{Object.keys(result.trailers).length > 0 && (
 									<Box fontSize='10.5px' color='fg.subtle'>
@@ -299,14 +291,7 @@ const GrpcInvokeDialog: React.FC<GrpcInvokeDialogProps> = ({
 };
 
 const FieldLabel: React.FC<React.PropsWithChildren> = ({ children }) => (
-	<Box
-		as='label'
-		fontSize='10px'
-		fontWeight='700'
-		color='fg.subtle'
-		letterSpacing='0.06em'
-		textTransform='uppercase'
-	>
+	<Box as='label' fontSize='10px' fontWeight='700' color='fg.subtle' letterSpacing='0.06em' textTransform='uppercase'>
 		{children}
 	</Box>
 );

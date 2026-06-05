@@ -1,28 +1,28 @@
 import { collectionFileSchema } from '@beak/state/schemas';
-import type { Tree } from '@getbeak/types/nodes';
+import type { FolderNode } from '@getbeak/types/nodes';
 import path from 'path-browserify';
 
 import { ipcFsService } from '../../../lib/ipc';
-import type { EndpointEntry, EndpointKind } from '../types';
+import type { SourceSchemaEntry, SourceSchemaKind } from '../types';
 
 const COLLECTION_FILENAME = '_collection.json';
 
 /**
- * Walk the project tree and pull every folder whose `_collection.json` is
- * a source of the given kind (graphql / grpc). Re-read from disk each call
- * — collections change rarely, the sidebar is mounted on demand, and a
- * stale cache would hide a freshly-registered endpoint.
+ * Walk the supplied folder list and pull every folder whose `_collection.json`
+ * is a source of the given kind (graphql / grpc / openapi). Re-read from disk
+ * each call — collections change rarely, the sidebar is mounted on demand,
+ * and a stale cache would hide a freshly-registered endpoint.
  *
- * Paths from the tree are already project-relative (the loader scans
- * starting from `tree/`), so no project-folder argument is needed.
+ * Takes folders rather than the full tree so callers can subscribe to a
+ * shallow-stable folder slice and skip re-enumeration on every request-body
+ * edit (which churns tree references without changing the folder set).
  */
-export async function enumerateEndpoints<K extends EndpointKind>(
+export async function enumerateSourceSchemas<K extends SourceSchemaKind>(
 	kind: K,
-	tree: Tree,
-): Promise<EndpointEntry[]> {
-	const out: EndpointEntry[] = [];
+	folders: FolderNode[],
+): Promise<SourceSchemaEntry[]> {
+	const out: SourceSchemaEntry[] = [];
 
-	const folders = Object.values(tree).filter(n => n.type === 'folder');
 	for (const folder of folders) {
 		const collectionPath = path.join(folder.filePath, COLLECTION_FILENAME);
 		// eslint-disable-next-line no-await-in-loop
@@ -40,7 +40,7 @@ export async function enumerateEndpoints<K extends EndpointKind>(
 				relativeFolder: folder.filePath,
 				folderName: path.basename(folder.filePath),
 				collection: parsed.data,
-				source: parsed.data.source as EndpointEntry['source'],
+				source: parsed.data.source as SourceSchemaEntry['source'],
 			});
 		} catch {
 			// Malformed collections shouldn't break the sidebar; skip them.
