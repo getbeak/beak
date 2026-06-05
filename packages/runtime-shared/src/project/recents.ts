@@ -8,7 +8,10 @@ export default class BeakRecents extends BeakBase {
 	 * `desktop`, web → `browser`) so legacy entries without a stored `source`
 	 * field don't render as the wrong type after this field landed.
 	 */
-	constructor(providers: Providers, private readonly defaultSource: RecentProjectSource = 'desktop') {
+	constructor(
+		providers: Providers,
+		private readonly defaultSource: RecentProjectSource = 'desktop',
+	) {
 		super(providers);
 	}
 
@@ -24,12 +27,18 @@ export default class BeakRecents extends BeakBase {
 				const source = r.source ?? this.defaultSource;
 
 				try {
-					const pfStat = await this.p.node.fs.promises.stat(projectFilePath);
-					const accessTime = pfStat.atime?.toISOString() ?? new Date(pfStat.mtimeMs).toISOString();
+					// Existence probe — drop entries whose folder is gone. We
+					// intentionally ignore stat times here: the stored accessTime
+					// already reflects when the user last opened the project via
+					// Beak, which is what "recent" should mean. Some filesystems
+					// (OPFS in the web host) don't track atime/mtime on
+					// directories at all and would return epoch 0 → "56 years
+					// ago" in the UI.
+					await this.p.node.fs.promises.stat(projectFilePath);
 
 					return {
 						...r,
-						accessTime,
+						accessTime: validAccessTime(r.accessTime) ?? new Date().toISOString(),
 						source,
 					};
 				} catch (error) {
@@ -46,22 +55,25 @@ export default class BeakRecents extends BeakBase {
 	}
 
 	async addProject(recent: Omit<RecentProject, 'exists' | 'accessTime'>) {
-		const recents = await this.listProjects();
-		const filteredRecents = recents.filter(r => r.path !== recent.path);
+		const has = await this.p.storage.has('recents');
+		const existing = has ? await this.p.storage.get('recents') : [];
+		const others = existing.filter(r => r.path !== recent.path);
 		const source = recent.source ?? this.defaultSource;
 
 		// TODO(afr): Find a way to add project to app recent document list on electron
 		// app.addRecentDocument(recent.path);
 
-		await this.p.storage.set(
-			'recents',
-			[{ ...recent, source }, ...filteredRecents].map<RecentProject>(r => ({
-				name: r.name,
-				path: r.path,
-				accessTime: new Date().toISOString(),
-				source: r.source ?? this.defaultSource,
-			})),
-		);
+		// Only stamp the entry being added — leaving the rest alone preserves
+		// the true last-opened ordering. (Previously every entry got
+		// re-stamped to "now" on every add.)
+		const head: RecentProject = {
+			name: recent.name,
+			path: recent.path,
+			accessTime: new Date().toISOString(),
+			source,
+		};
+
+		await this.p.storage.set('recents', [head, ...others]);
 	}
 
 	async renameProject(projectPath: string, name: string) {
@@ -74,4 +86,11 @@ export default class BeakRecents extends BeakBase {
 			recents.map(r => (r.path === projectPath ? { ...r, name } : r)),
 		);
 	}
+}
+
+function validAccessTime(value: string | undefined): string | undefined {
+	if (!value) return undefined;
+	const parsed = Date.parse(value);
+	if (!Number.isFinite(parsed) || parsed <= 0) return undefined;
+	return value;
 }
