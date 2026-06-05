@@ -83,8 +83,7 @@ export async function renameVariableSet(oldName: string, newName: string) {
 	const oldFilePath = path.join('variable-sets', `${oldName}.json`);
 	const newFilePath = path.join('variable-sets', `${newName}.json`);
 
-	if (await ipcFsService.pathExists(newFilePath))
-		throw new Error('Variable set already exists');
+	if (await ipcFsService.pathExists(newFilePath)) throw new Error('Variable set already exists');
 
 	await ipcFsService.move(oldFilePath, newFilePath);
 }
@@ -93,8 +92,7 @@ function generateVariableSetName() {
 	const firstWord = getWordIndex();
 	const secondWord = getWordIndex();
 
-	if (firstWord === secondWord)
-		return firstWord;
+	if (firstWord === secondWord) return firstWord;
 
 	return `${firstWord} ${secondWord}`;
 }

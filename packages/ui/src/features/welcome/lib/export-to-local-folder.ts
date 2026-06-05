@@ -49,9 +49,11 @@ type PermissionedHandle = FileSystemDirectoryHandle & {
 };
 
 export async function exportProjectToLocalFolder({ projectId, projectName }: ExportArgs): Promise<ExportOutcome> {
-	const picker = (window as unknown as {
-		showDirectoryPicker?: (opts?: { mode?: 'read' | 'readwrite' }) => Promise<FileSystemDirectoryHandle>;
-	}).showDirectoryPicker;
+	const picker = (
+		window as unknown as {
+			showDirectoryPicker?: (opts?: { mode?: 'read' | 'readwrite' }) => Promise<FileSystemDirectoryHandle>;
+		}
+	).showDirectoryPicker;
 	if (typeof picker !== 'function') return { ok: false, reason: 'unsupported' };
 
 	let target: FileSystemDirectoryHandle;
@@ -137,9 +139,11 @@ async function isEmptyDirectory(handle: FileSystemDirectoryHandle): Promise<bool
 }
 
 async function copyDirectory(src: FileSystemDirectoryHandle, dst: FileSystemDirectoryHandle): Promise<void> {
-	const entries = (src as unknown as {
-		entries(): AsyncIterableIterator<[string, FileSystemHandle]>;
-	}).entries();
+	const entries = (
+		src as unknown as {
+			entries(): AsyncIterableIterator<[string, FileSystemHandle]>;
+		}
+	).entries();
 	for await (const [name, entry] of entries) {
 		if (entry.kind === 'file') {
 			const fileHandle = entry as FileSystemFileHandle;

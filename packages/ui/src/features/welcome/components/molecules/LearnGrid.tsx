@@ -1,5 +1,5 @@
-import { Box, Flex, SimpleGrid, chakra } from '@chakra-ui/react';
 import { ipcExplorerService } from '@beak/ui/lib/ipc';
+import { Box, chakra, Flex, SimpleGrid } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 import { ArrowUpRight, BookOpen, GitBranch, Hash, Layers } from 'lucide-react';
 import * as React from 'react';
@@ -77,7 +77,10 @@ const GuideCard: React.FC<GuideCardProps> = ({ idx, icon: Icon, title, body, cta
 	>
 		<ChakraButton
 			type='button'
-			display='block'
+			display='flex'
+			flexDirection='column'
+			alignItems='stretch'
+			justifyContent='flex-start'
 			textAlign='left'
 			w='100%'
 			h='100%'
@@ -90,9 +93,9 @@ const GuideCard: React.FC<GuideCardProps> = ({ idx, icon: Icon, title, body, cta
 			transition='border-color .14s ease, background-color .14s ease, transform .08s ease, box-shadow .14s ease'
 			_hover={{
 				borderColor: 'accent.pink',
-				bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 6%, var(--beak-colors-bg-surface))',
-				transform: 'translateY(-2px)',
-				boxShadow: '0 12px 28px color-mix(in srgb, var(--beak-colors-accent-pink) 18%, rgba(0,0,0,0.06))',
+				bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 4%, var(--beak-colors-bg-surface))',
+				transform: 'translateY(-1px)',
+				boxShadow: '0 4px 12px color-mix(in srgb, var(--beak-colors-accent-pink) 7%, rgba(0,0,0,0.04))',
 			}}
 			_active={{ transform: 'translateY(-1px) scale(0.99)' }}
 			_focusVisible={{
@@ -114,7 +117,7 @@ const GuideCard: React.FC<GuideCardProps> = ({ idx, icon: Icon, title, body, cta
 					borderWidth='1px'
 					borderColor='color-mix(in srgb, var(--beak-colors-accent-pink) 28%, transparent)'
 					color='accent.pink'
-					boxShadow='0 4px 12px color-mix(in srgb, var(--beak-colors-accent-pink) 22%, transparent), inset 0 1px 0 color-mix(in srgb, white 16%, transparent)'
+					boxShadow='inset 0 1px 0 color-mix(in srgb, white 14%, transparent)'
 				>
 					<Icon size={14} />
 				</Flex>

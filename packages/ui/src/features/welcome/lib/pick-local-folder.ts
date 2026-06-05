@@ -21,7 +21,11 @@ export type PickOutcome =
 	| { ok: false; reason: 'unsupported' | 'cancelled' | 'permission_denied' | 'persistence_failed'; detail?: string };
 
 export async function pickAndPersistLocalFolder(): Promise<PickOutcome> {
-	const picker = (window as unknown as { showDirectoryPicker?: (opts?: { mode?: 'read' | 'readwrite' }) => Promise<FileSystemDirectoryHandle> }).showDirectoryPicker;
+	const picker = (
+		window as unknown as {
+			showDirectoryPicker?: (opts?: { mode?: 'read' | 'readwrite' }) => Promise<FileSystemDirectoryHandle>;
+		}
+	).showDirectoryPicker;
 	if (typeof picker !== 'function') {
 		return { ok: false, reason: 'unsupported' };
 	}

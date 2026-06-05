@@ -31,9 +31,7 @@ export default function createFsEmitter(
 		handler({ type: payload.eventName, path: payload.path });
 	});
 
-	ipcFsWatcherService.registerWatcherError(sessionIdentifier, async (_event, payload) =>
-		console.error(payload),
-	);
+	ipcFsWatcherService.registerWatcherError(sessionIdentifier, async (_event, payload) => console.error(payload));
 
 	ipcFsWatcherService.startWatching(sessionIdentifier, watchPath, { ...options, ignoreInitial: true });
 

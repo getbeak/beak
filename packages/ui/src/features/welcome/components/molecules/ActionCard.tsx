@@ -1,4 +1,4 @@
-import { Box, Flex, chakra } from '@chakra-ui/react';
+import { Box, chakra, Flex } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 import * as React from 'react';
 
@@ -49,7 +49,10 @@ const ActionCard: React.FC<ActionCardProps> = ({
 		>
 			<ChakraButton
 				type='button'
-				display='block'
+				display='flex'
+				flexDirection='column'
+				alignItems='stretch'
+				justifyContent='flex-start'
 				textAlign='left'
 				w='100%'
 				h='100%'
@@ -66,10 +69,10 @@ const ActionCard: React.FC<ActionCardProps> = ({
 						? undefined
 						: {
 								borderColor: accent,
-								bg: `color-mix(in srgb, ${accent} 7%, var(--beak-colors-bg-surface))`,
-								transform: 'translateY(-2px)',
-								boxShadow: `0 12px 28px color-mix(in srgb, ${accent} 22%, rgba(0,0,0,0.06))`,
-						  }
+								bg: `color-mix(in srgb, ${accent} 5%, var(--beak-colors-bg-surface))`,
+								transform: 'translateY(-1px)',
+								boxShadow: `0 4px 12px color-mix(in srgb, ${accent} 8%, rgba(0,0,0,0.04))`,
+							}
 				}
 				_active={disabled ? undefined : { transform: 'translateY(-1px) scale(0.99)' }}
 				_focusVisible={{
@@ -98,7 +101,7 @@ const ActionCard: React.FC<ActionCardProps> = ({
 							borderStyle: 'solid',
 							borderColor: `color-mix(in srgb, ${accent} 30%, transparent)`,
 							color: accent,
-							boxShadow: `0 4px 12px color-mix(in srgb, ${accent} 22%, transparent), inset 0 1px 0 color-mix(in srgb, white 16%, transparent)`,
+							boxShadow: `inset 0 1px 0 color-mix(in srgb, white 14%, transparent)`,
 						}}
 					>
 						<Icon size={15} />

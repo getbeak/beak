@@ -14,11 +14,7 @@
 		}
 	},
 
-	"required": [
-		"sets",
-		"items",
-		"values"
-	],
+	"required": ["sets", "items", "values"],
 
 	"properties": {
 		"sets": { "$ref": "#/definitions/mapping" },

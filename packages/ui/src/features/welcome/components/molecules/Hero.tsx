@@ -1,11 +1,10 @@
-import { Box, Flex } from '@chakra-ui/react';
 import { ipcExplorerService } from '@beak/ui/lib/ipc';
+import { Box, Flex } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 import { BookOpen, Sparkles, Zap } from 'lucide-react';
 import * as React from 'react';
-
-import MeshGradient from '../../../../components/molecules/MeshGradient';
 import Button from '../../../../components/atoms/Button';
+import MeshGradient from '../../../../components/molecules/MeshGradient';
 
 interface HeroProps {
 	onPrimary: () => void;
@@ -20,20 +19,13 @@ const Hero: React.FC<HeroProps> = ({ onPrimary }) => (
 		borderColor='border.subtle'
 		boxShadow='0 24px 64px rgba(0,0,0,0.25)'
 	>
-		<MeshGradient
-			position='absolute'
-			inset='0'
-			tone='welcome'
-			intensity='strong'
-			pointerEvents='none'
-		/>
+		<MeshGradient position='absolute' inset='0' tone='welcome' intensity='strong' pointerEvents='none' />
 		<Box
 			position='absolute'
 			inset='0'
 			pointerEvents='none'
 			css={{
-				background:
-					'linear-gradient(105deg, rgba(8,10,20,0.72) 0%, rgba(8,10,20,0.55) 45%, rgba(8,10,20,0.20) 100%)',
+				background: 'linear-gradient(105deg, rgba(8,10,20,0.72) 0%, rgba(8,10,20,0.55) 45%, rgba(8,10,20,0.20) 100%)',
 			}}
 		/>
 
@@ -68,14 +60,7 @@ const Hero: React.FC<HeroProps> = ({ onPrimary }) => (
 				>
 					{'Craft, test, and ship beautiful API requests.'}
 				</Box>
-				<Box
-					color='white'
-					opacity={0.85}
-					fontSize={{ base: 'xs', md: 'sm' }}
-					lineHeight='1.5'
-					maxW='480px'
-					mb='4'
-				>
+				<Box color='white' opacity={0.85} fontSize={{ base: 'xs', md: 'sm' }} lineHeight='1.5' maxW='480px' mb='4'>
 					{'Pick up where you left off, start fresh, or pull a Git repo down to work with.'}
 				</Box>
 				<Flex gap='2.5' wrap='wrap'>

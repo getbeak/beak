@@ -1,4 +1,4 @@
-import { collectionFileSchema, type CollectionFile } from '@beak/state/schemas';
+import { type CollectionFile, collectionFileSchema } from '@beak/state/schemas';
 import path from 'path-browserify';
 
 import { ipcFsService } from '../ipc';

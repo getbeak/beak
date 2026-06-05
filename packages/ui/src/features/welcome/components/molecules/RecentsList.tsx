@@ -1,5 +1,5 @@
 import type { RecentProject, RecentProjectSource } from '@beak/common/types/beak-hub';
-import { Box, Flex, Input, chakra } from '@chakra-ui/react';
+import { Box, chakra, Flex, Input } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 import { Clock, Cloud, FolderGit2, FolderOpen, HardDrive, History, Pencil } from 'lucide-react';
 import * as React from 'react';
@@ -23,11 +23,7 @@ const RecentsList: React.FC<RecentsListProps> = ({ embedded }) => {
 
 	return (
 		<Box>
-			<Flex
-				align='center'
-				justify='space-between'
-				mb='2.5'
-			>
+			<Flex align='center' justify='space-between' mb='2.5'>
 				<Flex
 					align='center'
 					gap='1.5'
@@ -81,9 +77,7 @@ const RecentsList: React.FC<RecentsListProps> = ({ embedded }) => {
 				</Box>
 			)}
 
-			{!error && loading && (
-				<RecentsSkeleton />
-			)}
+			{!error && loading && <RecentsSkeleton />}
 
 			{!error && !loading && recents.length === 0 && (
 				<Box
@@ -165,9 +159,7 @@ const RecentItem: React.FC<RecentItemProps> = ({ idx, recent, embedded, onRename
 		borderRadius: 'md',
 		borderWidth: '1px',
 		borderColor: renaming ? 'accent.pink' : 'border.subtle',
-		bg: renaming
-			? 'color-mix(in srgb, var(--beak-colors-accent-pink) 4%, var(--beak-colors-bg-surface))'
-			: 'bg.surface',
+		bg: renaming ? 'color-mix(in srgb, var(--beak-colors-accent-pink) 4%, var(--beak-colors-bg-surface))' : 'bg.surface',
 	};
 
 	const body = (
