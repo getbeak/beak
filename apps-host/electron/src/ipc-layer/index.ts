@@ -5,7 +5,7 @@ import './context-menu-service';
 import './dialog-service';
 import './encryption-service';
 import './explorer-service';
-import './extension-service';
+import './extensions-service';
 import './flight-service';
 import './fs-service';
 import './fs-watcher-service';

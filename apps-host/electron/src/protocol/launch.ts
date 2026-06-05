@@ -1,7 +1,7 @@
 import { BrowserWindow, dialog } from 'electron';
 
 import getBeakHost from '../host';
-import { tryOpenProjectFolder } from '../host/extensions/project';
+import { tryOpenProjectFolder } from '../host/project';
 import { projectIdToWindowIdMapping, windowStack } from '../window-management';
 
 export default async function handleLaunch(url: URL) {

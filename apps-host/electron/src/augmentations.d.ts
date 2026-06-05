@@ -11,7 +11,6 @@ declare module '@getbeak/extension-sdk' {
 	}
 
 	interface Variable<TPayload extends GenericDictionary> {
-
 		/**
 		 * Gets the string value of the value, given the payload body
 		 * @param {Context} ctx The project context.
@@ -22,7 +21,6 @@ declare module '@getbeak/extension-sdk' {
 	}
 
 	interface EditableVariable<TPayload extends GenericDictionary> {
-
 		/**
 		 * Gets the string value of the value, given the payload body
 		 * @param {Context} ctx The project context.

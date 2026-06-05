@@ -20,7 +20,7 @@ process.stdout.on('error', err => {
 
 import './ipc-layer';
 import getBeakHost from './host';
-import { tryOpenProjectFolder } from './host/extensions/project';
+import { tryOpenProjectFolder } from './host/project';
 import handleUrlEvent from './protocol';
 import { attemptShowPostUpdateWelcome } from './updater';
 import { createAndSetMenu } from './utils/menu';
@@ -81,11 +81,7 @@ app.on('ready', () => {
 
 	if (appIsPackaged) return;
 
-	const {
-		default: installExtension,
-		REDUX_DEVTOOLS,
-		REACT_DEVELOPER_TOOLS,
-	} = require('electron-devtools-installer');
+	const { default: installExtension, REDUX_DEVTOOLS, REACT_DEVELOPER_TOOLS } = require('electron-devtools-installer');
 
 	electronDebug({ showDevTools: false });
 	installExtension(REDUX_DEVTOOLS);

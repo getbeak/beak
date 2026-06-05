@@ -4,7 +4,7 @@ import type { WindowPresence } from '@beak/runtime-shared/providers/storage';
 import { app, BrowserWindow, type BrowserWindowConstructorOptions, dialog, nativeTheme } from 'electron';
 
 import getBeakHost from './host';
-import { tryOpenProjectFolder } from './host/extensions/project';
+import { tryOpenProjectFolder } from './host/project';
 import { getProjectFilePathFromWindowId } from './ipc-layer/fs-shared';
 import { closeWatchersOnWindow } from './ipc-layer/fs-watcher-service';
 import WindowStateManager from './lib/window-state-manager';

@@ -14,11 +14,7 @@ export default class WindowStateManager {
 
 	private stateChangeTimer: NodeJS.Timeout | undefined;
 
-	constructor(
-		existingWindowState: WindowState | undefined,
-		windowKey: string,
-		windowOptions: SizedWindowOptions,
-	) {
+	constructor(existingWindowState: WindowState | undefined, windowKey: string, windowOptions: SizedWindowOptions) {
 		this.windowKey = windowKey;
 		this.windowOptions = windowOptions;
 
