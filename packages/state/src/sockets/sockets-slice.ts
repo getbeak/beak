@@ -213,11 +213,10 @@ export default socketsSlice.reducer;
 export const selectSocketSession = (socketId: string) => (state: { global: { sockets: SocketsSliceState } }) =>
 	state.global.sockets.sessions[socketId] || null;
 
-export const selectSocketsForRequest =
-	(requestId: string) => (state: { global: { sockets: SocketsSliceState } }) => {
-		const ids = state.global.sockets.socketsByRequest[requestId] ?? [];
-		return ids.map(id => state.global.sockets.sessions[id]).filter(Boolean);
-	};
+export const selectSocketsForRequest = (requestId: string) => (state: { global: { sockets: SocketsSliceState } }) => {
+	const ids = state.global.sockets.socketsByRequest[requestId] ?? [];
+	return ids.map(id => state.global.sockets.sessions[id]).filter(Boolean);
+};
 
 /**
  * Most-recent socket session for a given request, or null. Mirrors

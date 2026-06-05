@@ -1,4 +1,4 @@
-import type { EntryMap, Entries } from '@getbeak/types/body-editor-json';
+import type { Entries, EntryMap } from '@getbeak/types/body-editor-json';
 import type { RequestBody, RequestOverview, ToggleKeyValue } from '@getbeak/types/request';
 import type { ValueSections } from '@getbeak/types/values';
 
@@ -68,9 +68,10 @@ export function mergeSchemaAndValues(
 
 // ─── Scalar (headers / query) ─────────────────────────────────────────────
 
-function splitScalarMap(
-	map: Record<string, ToggleKeyValue> | undefined,
-): { headers: RequestSchema['headers']; headerValues: PropertyValueMap } {
+function splitScalarMap(map: Record<string, ToggleKeyValue> | undefined): {
+	headers: RequestSchema['headers'];
+	headerValues: PropertyValueMap;
+} {
 	const headers: RequestSchema['headers'] = [];
 	const headerValues: PropertyValueMap = {};
 	if (!map) return { headers, headerValues };
@@ -206,10 +207,7 @@ function mergeBody(schema: BodySchema, values: BodyValue): RequestBody | undefin
 		case 'url_encoded_form':
 			return {
 				type: 'url_encoded_form',
-				payload: mergeScalarMap(
-					schema.fields,
-					values.type === 'url_encoded_form' ? values.values : {},
-				),
+				payload: mergeScalarMap(schema.fields, values.type === 'url_encoded_form' ? values.values : {}),
 			};
 		case 'file': {
 			if (values.type !== 'file') return { type: 'file', payload: {} };
@@ -228,10 +226,7 @@ function mergeBody(schema: BodySchema, values: BodyValue): RequestBody | undefin
 				type: 'graphql',
 				payload: {
 					query: values.type === 'graphql' ? values.query : schema.query,
-					variables: mergeJsonEntries(
-						schema.variables,
-						values.type === 'graphql' ? values.variables : {},
-					),
+					variables: mergeJsonEntries(schema.variables, values.type === 'graphql' ? values.variables : {}),
 				},
 			};
 		case 'grpc':
@@ -255,9 +250,7 @@ function mergeBody(schema: BodySchema, values: BodyValue): RequestBody | undefin
 // name, enabled, type, value). The first five become the schema property;
 // the value goes to the values store.
 
-function splitJsonEntries(
-	entries: EntryMap | undefined,
-): { properties: JsonPropertyMap; values: PropertyValueMap } {
+function splitJsonEntries(entries: EntryMap | undefined): { properties: JsonPropertyMap; values: PropertyValueMap } {
 	const properties: JsonPropertyMap = {};
 	const values: PropertyValueMap = {};
 	if (!entries) return { properties, values };
@@ -275,7 +268,7 @@ function entryToProperty(id: string, entry: Entries): JsonProperty {
 	const base = {
 		id,
 		parentId: entry.parentId,
-		...(('name' in entry && typeof entry.name === 'string') ? { name: entry.name } : {}),
+		...('name' in entry && typeof entry.name === 'string' ? { name: entry.name } : {}),
 		...(entry.required === true ? { required: true } : {}),
 		...(entry.description ? { description: entry.description } : {}),
 	};
@@ -296,9 +289,7 @@ function entryToProperty(id: string, entry: Entries): JsonProperty {
 			return {
 				...base,
 				type: 'string',
-				...(entry.options && entry.options.length > 0
-					? { constraints: { enum: entry.options } }
-					: {}),
+				...(entry.options && entry.options.length > 0 ? { constraints: { enum: entry.options } } : {}),
 			};
 		case 'array':
 			return { ...base, type: 'array' };

@@ -1,8 +1,4 @@
-import type {
-	FlightHistoryFile,
-	PersistedFlightEntry,
-	PersistedFlightHistory,
-} from '../schemas/flight-history';
+import type { FlightHistoryFile, PersistedFlightEntry, PersistedFlightHistory } from '../schemas/flight-history';
 import type { FlightHistory, FlightHistoryEntry } from './types';
 
 /**
@@ -67,9 +63,7 @@ function isTextualContentType(contentType: string | undefined | null): boolean {
 	if (lower.startsWith('text/')) return true;
 	if (lower.startsWith('application/')) {
 		// json / graphql / xml / x-www-form-urlencoded etc.
-		return /^application\/(json|graphql|xml|javascript|xhtml\+xml|x-www-form-urlencoded|.*\+json|.*\+xml)/.test(
-			lower,
-		);
+		return /^application\/(json|graphql|xml|javascript|xhtml\+xml|x-www-form-urlencoded|.*\+json|.*\+xml)/.test(lower);
 	}
 	return false;
 }
@@ -145,9 +139,7 @@ export function compressEntry(
 	for (const v of Object.values(headers)) {
 		if (v.enabled !== false) {
 			const value = Array.isArray(v.value)
-				? v.value
-						.map(p => (typeof p === 'string' ? p : `{{${(p as { type: string }).type}}}`))
-						.join('')
+				? v.value.map(p => (typeof p === 'string' ? p : `{{${(p as { type: string }).type}}}`)).join('')
 				: String(v.value);
 			requestHeaders[v.name] = value;
 		}
@@ -168,9 +160,7 @@ export function compressEntry(
 		request: {
 			verb: entry.request.verb,
 			url: Array.isArray(entry.request.url)
-				? entry.request.url
-						.map(p => (typeof p === 'string' ? p : `{{${(p as { type: string }).type}}}`))
-						.join('')
+				? entry.request.url.map(p => (typeof p === 'string' ? p : `{{${(p as { type: string }).type}}}`)).join('')
 				: String(entry.request.url),
 			headers: redactHeaders(requestHeaders),
 			...compressedRequestBody,
@@ -215,10 +205,7 @@ export function compressEntry(
  * across requests (the project-cap pass) can take the tail of each list
  * without resorting.
  */
-export function pruneRequestHistory(
-	entries: PersistedFlightEntry[],
-	now = Date.now(),
-): PersistedFlightEntry[] {
+export function pruneRequestHistory(entries: PersistedFlightEntry[], now = Date.now()): PersistedFlightEntry[] {
 	const minStartedAt = now - HISTORY_RULES.maxAgeMs;
 	const fresh = entries.filter(e => e.timing.startedAt >= minStartedAt);
 	fresh.sort((a, b) => b.timing.startedAt - a.timing.startedAt);

@@ -91,15 +91,15 @@ export default requestValuesSlice.reducer;
 type RootShape = { global: { requestValues: RequestValuesSliceState } };
 
 /** Whole values envelope for a request, or `null` if absent. */
-export const selectRequestValues = (requestId: string) => (state: RootShape): RequestValues | null =>
-	state.global.requestValues.requests[requestId] ?? null;
+export const selectRequestValues =
+	(requestId: string) =>
+	(state: RootShape): RequestValues | null =>
+		state.global.requestValues.requests[requestId] ?? null;
 
 /** One scalar (header/query) cell, or `null` if unset. */
 export const selectScalarValue =
-	(requestId: string, scope: 'headers' | 'query', propertyId: string) =>
-	(state: RootShape) =>
+	(requestId: string, scope: 'headers' | 'query', propertyId: string) => (state: RootShape) =>
 		state.global.requestValues.requests[requestId]?.[scope][propertyId] ?? null;
 
 /** True after hydration; UI may show a splash until then. */
-export const selectRequestValuesLoaded = (state: RootShape) =>
-	state.global.requestValues.loaded;
+export const selectRequestValuesLoaded = (state: RootShape) => state.global.requestValues.loaded;

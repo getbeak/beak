@@ -22,9 +22,7 @@ function fixture(body: RequestOverview['body']): RequestOverview {
 
 describe('splitRequestIntoSchemaAndValues', () => {
 	it('headers and query become schema lists + value cells', () => {
-		const { schema, values } = splitRequestIntoSchemaAndValues(
-			fixture({ type: 'text', payload: '' }),
-		);
+		const { schema, values } = splitRequestIntoSchemaAndValues(fixture({ type: 'text', payload: '' }));
 		expect(schema.headers.map(h => h.name)).toEqual(['Authorization', 'X-Trace-Id']);
 		expect(schema.query.map(q => q.name)).toEqual(['limit', 'offset']);
 		expect(values.headers.h1).toMatchObject({ kind: 'string', value: ['Bearer abc'], enabled: true });

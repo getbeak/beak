@@ -109,7 +109,10 @@ describe('pruneRequestHistory', () => {
 	const now = 100_000_000;
 
 	it('drops entries older than maxAgeMs', () => {
-		const recent = compressEntry(makeRuntimeEntry({ flightId: 'recent', timing: { beakStart: now - 10_000, beakEnd: now } }), {});
+		const recent = compressEntry(
+			makeRuntimeEntry({ flightId: 'recent', timing: { beakStart: now - 10_000, beakEnd: now } }),
+			{},
+		);
 		const stale = compressEntry(
 			makeRuntimeEntry({
 				flightId: 'stale',
@@ -141,9 +144,7 @@ describe('enforceProjectCap', () => {
 			version: 1,
 			histories: {
 				r1: {
-					entries: [
-						compressEntry(makeRuntimeEntry({ flightId: 'f1', timing: { beakStart: 1, beakEnd: 2 } }), {}),
-					],
+					entries: [compressEntry(makeRuntimeEntry({ flightId: 'f1', timing: { beakStart: 1, beakEnd: 2 } }), {})],
 					metadata: { totalFlights: 1, successfulExecutions: 1, successRate: 1 },
 				},
 			},

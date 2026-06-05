@@ -23,9 +23,7 @@ function petstoreSpec(): OpenApiDocument {
 				parameters: [{ $ref: '#/components/parameters/Trace' }],
 				get: {
 					operationId: 'listPets',
-					parameters: [
-						{ name: 'limit', in: 'query', schema: { type: 'integer', default: 25 } },
-					],
+					parameters: [{ name: 'limit', in: 'query', schema: { type: 'integer', default: 25 } }],
 				},
 				post: {
 					operationId: 'createPet',

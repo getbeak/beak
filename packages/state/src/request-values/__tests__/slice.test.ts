@@ -35,10 +35,7 @@ describe('request-values slice', () => {
 	});
 
 	it('replace overwrites one request', () => {
-		const seeded = requestValuesReducer(
-			emptyState,
-			hydrateRequestValues({ requests: { r1: emptyRequestValues() } }),
-		);
+		const seeded = requestValuesReducer(emptyState, hydrateRequestValues({ requests: { r1: emptyRequestValues() } }));
 		const next = requestValuesReducer(
 			seeded,
 			replaceRequestValues({
@@ -56,10 +53,7 @@ describe('request-values slice', () => {
 	});
 
 	it('remove drops the request', () => {
-		const seeded = requestValuesReducer(
-			emptyState,
-			hydrateRequestValues({ requests: { r1: emptyRequestValues() } }),
-		);
+		const seeded = requestValuesReducer(emptyState, hydrateRequestValues({ requests: { r1: emptyRequestValues() } }));
 		const next = requestValuesReducer(seeded, removeRequestValues({ requestId: 'r1' }));
 		expect(next.requests.r1).toBeUndefined();
 	});
@@ -90,10 +84,7 @@ describe('request-values slice', () => {
 				value: { kind: 'string', value: ['v'], enabled: true },
 			}),
 		);
-		const next = requestValuesReducer(
-			seeded,
-			clearScalarValue({ requestId: 'r1', scope: 'query', propertyId: 'q1' }),
-		);
+		const next = requestValuesReducer(seeded, clearScalarValue({ requestId: 'r1', scope: 'query', propertyId: 'q1' }));
 		expect(next.requests.r1?.query.q1).toBeUndefined();
 	});
 
@@ -209,10 +200,7 @@ describe('request-values slice', () => {
 				value: { kind: 'string', value: ['x'], enabled: true },
 			}),
 		);
-		const next = requestValuesReducer(
-			seeded2,
-			clearBodyPropertyValue({ requestId: 'r1', propertyId: 'n1' }),
-		);
+		const next = requestValuesReducer(seeded2, clearBodyPropertyValue({ requestId: 'r1', propertyId: 'n1' }));
 		expect(next.requests.r1?.body).toMatchObject({ type: 'json', values: {} });
 	});
 });

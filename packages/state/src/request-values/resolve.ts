@@ -24,10 +24,7 @@ import type { PropertyValue, PropertyValueMap, RequestValues } from '../schemas/
  * URL / verb / options always come from the legacy tree — they're not
  * part of the schema/values split.
  */
-export function resolveLegacyWithValues(
-	overview: RequestOverview,
-	values: RequestValues | null,
-): RequestOverview {
+export function resolveLegacyWithValues(overview: RequestOverview, values: RequestValues | null): RequestOverview {
 	if (!values) return overview;
 
 	return {

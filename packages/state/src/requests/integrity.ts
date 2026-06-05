@@ -1,5 +1,5 @@
-import { extractAssetRefs, type AssetRef } from './introspection';
 import type { RequestFile, RequestFileOverride } from '../schemas/beak-project';
+import { type AssetRef, extractAssetRefs } from './introspection';
 
 export interface IntegrityReport {
 	missing: AssetRef[];

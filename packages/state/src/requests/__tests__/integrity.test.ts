@@ -20,10 +20,7 @@ function base(): RequestFile {
 
 describe('checkAssetIntegrity', () => {
 	it('returns empty report for a request with no asset refs', () => {
-		const out = checkAssetIntegrity(
-			{ ...base(), body: { type: 'text', payload: 'hi' } },
-			new Set([SHA_A]),
-		);
+		const out = checkAssetIntegrity({ ...base(), body: { type: 'text', payload: 'hi' } }, new Set([SHA_A]));
 		expect(out.missing).toEqual([]);
 		expect(out.present).toEqual([]);
 	});

@@ -136,8 +136,7 @@ const flightSlice = createSlice({
 						flight.lastUpdate = heartbeat.payload.timestamp;
 						return;
 					case 'head_received': {
-						const { contentLength, headers, status, url, redirected, contentType, streamKind, timestamp } =
-							heartbeat.payload;
+						const { contentLength, headers, status, url, redirected, contentType, streamKind, timestamp } = heartbeat.payload;
 						flight.contentLength = contentLength;
 						flight.bodyTransferred = 0;
 						flight.bodyTransferPercentage = 0;
