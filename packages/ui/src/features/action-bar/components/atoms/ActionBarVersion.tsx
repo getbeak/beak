@@ -1,5 +1,5 @@
-import { Box } from '@chakra-ui/react';
 import WindowSessionContext from '@beak/ui/contexts/window-session-context';
+import { Box } from '@chakra-ui/react';
 import React, { useContext } from 'react';
 import semverParse from 'semver/functions/parse';
 

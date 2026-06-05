@@ -61,25 +61,39 @@ const OperationStatus: React.FC<OperationStatusProps> = ({ state }) => {
 
 function verb(op: GitOperation): string {
 	switch (op) {
-		case 'init': return 'Initialising repository';
-		case 'commit': return 'Committing';
-		case 'push': return 'Pushing';
-		case 'pull': return 'Pulling';
-		case 'fetch': return 'Fetching';
-		case 'checkout': return 'Switching branch';
-		default: return 'Working';
+		case 'init':
+			return 'Initialising repository';
+		case 'commit':
+			return 'Committing';
+		case 'push':
+			return 'Pushing';
+		case 'pull':
+			return 'Pulling';
+		case 'fetch':
+			return 'Fetching';
+		case 'checkout':
+			return 'Switching branch';
+		default:
+			return 'Working';
 	}
 }
 
 function pastVerb(op: GitOperation): string {
 	switch (op) {
-		case 'init': return 'Repository initialised';
-		case 'commit': return 'Commit created';
-		case 'push': return 'Pushed';
-		case 'pull': return 'Pulled';
-		case 'fetch': return 'Fetched';
-		case 'checkout': return 'Switched branch';
-		default: return 'Done';
+		case 'init':
+			return 'Repository initialised';
+		case 'commit':
+			return 'Commit created';
+		case 'push':
+			return 'Pushed';
+		case 'pull':
+			return 'Pulled';
+		case 'fetch':
+			return 'Fetched';
+		case 'checkout':
+			return 'Switched branch';
+		default:
+			return 'Done';
 	}
 }
 

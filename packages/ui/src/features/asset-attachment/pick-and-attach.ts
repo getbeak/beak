@@ -1,4 +1,4 @@
-import { attachFile, type AttachFileOutcome } from './attach-file';
+import { type AttachFileOutcome, attachFile } from './attach-file';
 
 /**
  * Open the platform file picker, read the chosen file as bytes, and persist

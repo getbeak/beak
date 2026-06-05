@@ -30,14 +30,7 @@ const ChakraButton = chakra('button');
  * conflicts are resolved by hand in the user's terminal. This component
  * only manipulates HEAD pointers.
  */
-const BranchSwitcher: React.FC<BranchSwitcherProps> = ({
-	branch,
-	branches,
-	dirty,
-	disabled,
-	onSwitch,
-	onCreate,
-}) => {
+const BranchSwitcher: React.FC<BranchSwitcherProps> = ({ branch, branches, dirty, disabled, onSwitch, onCreate }) => {
 	const triggerRef = useRef<HTMLButtonElement | null>(null);
 	const [open, setOpen] = useState(false);
 	const [newName, setNewName] = useState('');
@@ -208,13 +201,7 @@ const BranchSwitcher: React.FC<BranchSwitcherProps> = ({
 					<PopoverFooter
 						leading={
 							<Flex direction='column' gap='1' minW={0}>
-								<Box
-									fontSize='9.5px'
-									fontWeight='700'
-									textTransform='uppercase'
-									letterSpacing='0.06em'
-									color='fg.subtle'
-								>
+								<Box fontSize='9.5px' fontWeight='700' textTransform='uppercase' letterSpacing='0.06em' color='fg.subtle'>
 									{'Create new branch'}
 								</Box>
 								<Input

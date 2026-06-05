@@ -4,8 +4,7 @@ import Checkbox from '@beak/ui/components/atoms/Checkbox';
 import { ipcPreferencesService } from '@beak/ui/lib/ipc';
 import type { IpcRendererEvent } from 'electron';
 import { Monitor, Moon, Sun } from 'lucide-react';
-import React from 'react';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import NotificationStateSelect from '../atoms/NotificationStateSelect';
 import Row from '../atoms/Row';
@@ -24,8 +23,12 @@ const GeneralPane: React.FC = () => {
 
 	useEffect(() => {
 		let cancelled = false;
-		ipcPreferencesService.getThemeMode().then(m => { if (!cancelled && m) setTheme(m); });
-		ipcPreferencesService.getNotificationOverview().then(n => { if (!cancelled) setNotifications(n); });
+		ipcPreferencesService.getThemeMode().then(m => {
+			if (!cancelled && m) setTheme(m);
+		});
+		ipcPreferencesService.getNotificationOverview().then(n => {
+			if (!cancelled) setNotifications(n);
+		});
 
 		const onThemeUpdate = (_event: IpcRendererEvent, next: ThemeMode) => setTheme(next);
 		window.secureBridge.ipc.on('theme_mode_updated', onThemeUpdate);
@@ -51,19 +54,11 @@ const GeneralPane: React.FC = () => {
 		<>
 			<Section title='Appearance'>
 				<Row label='Theme' description="Follows the system if you don't pick one.">
-					<SegmentedControl
-						ariaLabel='Application theme'
-						items={THEME_ITEMS}
-						value={theme}
-						onChange={changeTheme}
-					/>
+					<SegmentedControl ariaLabel='Application theme' items={THEME_ITEMS} value={theme} onChange={changeTheme} />
 				</Row>
 			</Section>
 
-			<Section
-				title='Notifications'
-				description='Choose how Beak announces request results.'
-			>
+			<Section title='Notifications' description='Choose how Beak announces request results.'>
 				{notifications && (
 					<>
 						<Row label='Successful requests' indicator='teal'>
@@ -73,11 +68,7 @@ const GeneralPane: React.FC = () => {
 								onChange={value => updateNotification('onSuccessfulRequest', value)}
 							/>
 						</Row>
-						<Row
-							label='Information & redirects'
-							description='100–199 and 300–399 responses'
-							indicator='indigo'
-						>
+						<Row label='Information & redirects' description='100–199 and 300–399 responses' indicator='indigo'>
 							<NotificationStateSelect
 								label='Information and redirect requests'
 								value={notifications.onInformationRequest}
@@ -99,9 +90,7 @@ const GeneralPane: React.FC = () => {
 								id='showRequestNotificationWhenFocused'
 								aria-label='Show notifications while Beak has focus'
 								checked={notifications.showRequestNotificationWhenFocused}
-								onChange={event =>
-									updateNotification('showRequestNotificationWhenFocused', event.currentTarget.checked)
-								}
+								onChange={event => updateNotification('showRequestNotificationWhenFocused', event.currentTarget.checked)}
 							/>
 						</Row>
 					</>

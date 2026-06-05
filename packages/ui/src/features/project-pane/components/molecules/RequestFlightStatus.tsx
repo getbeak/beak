@@ -1,8 +1,8 @@
-import { Box } from '@chakra-ui/react';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { statusToColor } from '@beak/design-system/helpers';
 import type { TreeViewItem } from '@beak/ui/features/tree-view/types';
 import { useAppSelector } from '@beak/ui/store/redux';
+import { Box } from '@chakra-ui/react';
 import * as React from 'react';
 
 interface RequestFlightStatusProps {

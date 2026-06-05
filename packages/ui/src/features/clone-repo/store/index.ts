@@ -28,7 +28,9 @@ export const start = createAction('clone-repo/start');
 export const close = createAction('clone-repo/close');
 export const updateUrl = createAction<string>('clone-repo/updateUrl');
 export const updateTargetName = createAction<string>('clone-repo/updateTargetName');
-export const cloneSubmitted = createAction<{ url: string; targetName: string; dir: string }>('clone-repo/cloneSubmitted');
+export const cloneSubmitted = createAction<{ url: string; targetName: string; dir: string }>(
+	'clone-repo/cloneSubmitted',
+);
 export const cloneSucceeded = createAction<{ dir: string; openable: boolean }>('clone-repo/cloneSucceeded');
 export const cloneFailed = createAction<{ error: string }>('clone-repo/cloneFailed');
 export const validationFailed = createAction<{ error: string }>('clone-repo/validationFailed');

@@ -7,9 +7,7 @@ export interface CloneRequest {
 	targetName: string;
 }
 
-export type CloneResult =
-	| { ok: true; dir: string; openable: boolean }
-	| { ok: false; error: string };
+export type CloneResult = { ok: true; dir: string; openable: boolean } | { ok: false; error: string };
 
 /**
  * Drive the clone flow end-to-end. Returns the resolved target directory
@@ -66,7 +64,10 @@ export async function openClonedProject(dir: string): Promise<void> {
 }
 
 function sanitiseTargetName(name: string): string {
-	return name.trim().replace(/[^a-zA-Z0-9._-]+/g, '-').replace(/^-+|-+$/g, '');
+	return name
+		.trim()
+		.replace(/[^a-zA-Z0-9._-]+/g, '-')
+		.replace(/^-+|-+$/g, '');
 }
 
 function joinPath(a: string, b: string): string {

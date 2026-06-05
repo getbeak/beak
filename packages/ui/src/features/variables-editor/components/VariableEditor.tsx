@@ -252,11 +252,7 @@ const VariableEditor: React.FC<React.PropsWithChildren<VariableEditorProps>> = (
 										$beakSize={'sm'}
 										aria-label={section.label ?? stateBinding}
 										type='number'
-										value={
-											Number.isFinite(state[stateBinding] as number)
-												? (state[stateBinding] as number).toString(10)
-												: ''
-										}
+										value={Number.isFinite(state[stateBinding] as number) ? (state[stateBinding] as number).toString(10) : ''}
 										onChange={e => {
 											const raw = e.currentTarget.value;
 											const parsed = raw === '' ? 0 : Number.parseInt(raw, 10);

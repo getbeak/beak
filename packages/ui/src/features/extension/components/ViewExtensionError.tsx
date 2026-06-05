@@ -35,13 +35,7 @@ const ViewExtensionError: React.FC<ViewExtensionErrorProps> = props => (
 					mb='3'
 				>
 					<Flex justify='space-between' gap='2' align='center'>
-						<Box
-							fontSize='10px'
-							fontWeight='700'
-							letterSpacing='0.06em'
-							textTransform='uppercase'
-							color='fg.subtle'
-						>
+						<Box fontSize='10px' fontWeight='700' letterSpacing='0.06em' textTransform='uppercase' color='fg.subtle'>
 							{'Name'}
 						</Box>
 						<Box fontWeight='600' color='fg.default' fontFamily='mono' textAlign='right'>
@@ -49,13 +43,7 @@ const ViewExtensionError: React.FC<ViewExtensionErrorProps> = props => (
 						</Box>
 					</Flex>
 					<Flex justify='space-between' gap='2' align='center'>
-						<Box
-							fontSize='10px'
-							fontWeight='700'
-							letterSpacing='0.06em'
-							textTransform='uppercase'
-							color='fg.subtle'
-						>
+						<Box fontSize='10px' fontWeight='700' letterSpacing='0.06em' textTransform='uppercase' color='fg.subtle'>
 							{'Path'}
 						</Box>
 						<Button
@@ -77,14 +65,7 @@ const ViewExtensionError: React.FC<ViewExtensionErrorProps> = props => (
 					</Flex>
 				</Flex>
 
-				<Box
-					fontSize='10px'
-					fontWeight='700'
-					color='fg.subtle'
-					textTransform='uppercase'
-					letterSpacing='0.06em'
-					mb='1'
-				>
+				<Box fontSize='10px' fontWeight='700' color='fg.subtle' textTransform='uppercase' letterSpacing='0.06em' mb='1'>
 					{'Error details'}
 				</Box>
 				<Box borderRadius='md' borderWidth='1px' borderColor='border.subtle' overflow='hidden' bg='bg.canvas'>

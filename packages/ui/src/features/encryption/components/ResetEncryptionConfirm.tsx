@@ -1,3 +1,4 @@
+import { clearAllCookies } from '@beak/state/cookies';
 import Button from '@beak/ui/components/atoms/Button';
 import FormError from '@beak/ui/components/atoms/FormError';
 import FormInput from '@beak/ui/components/atoms/FormInput';
@@ -5,7 +6,6 @@ import Input from '@beak/ui/components/atoms/Input';
 import Label from '@beak/ui/components/atoms/Label';
 import Dialog, { DialogBody, DialogFooter, DialogHeader } from '@beak/ui/components/molecules/Dialog';
 import { ipcEncryptionService } from '@beak/ui/lib/ipc';
-import { clearAllCookies } from '@beak/state/cookies';
 import { alertRemoveType } from '@beak/ui/store/project/actions';
 import { Box, Flex } from '@chakra-ui/react';
 import { AlertOctagon, KeyRound, Skull } from 'lucide-react';
@@ -87,22 +87,16 @@ const ResetEncryptionConfirm: React.FC<ResetEncryptionConfirmProps> = ({ onClose
 							<Box as='span' fontWeight='600' display='block' mb='1'>
 								{'This cannot be undone.'}
 							</Box>
-							{'A fresh AES-256 key replaces the current one. Existing ciphertext stays on disk but will no longer decrypt — the values become garbage until you re-enter each one.'}
+							{
+								'A fresh AES-256 key replaces the current one. Existing ciphertext stays on disk but will no longer decrypt — the values become garbage until you re-enter each one.'
+							}
 						</Box>
 					</Flex>
 
 					<Box as='p' fontSize='sm' color='fg.default' mb='2' fontWeight='600'>
 						{'What gets lost:'}
 					</Box>
-					<Box
-						as='ul'
-						pl='4'
-						mb='4'
-						fontSize='xs'
-						color='fg.muted'
-						lineHeight='1.7'
-						css={{ listStyle: 'disc' }}
-					>
+					<Box as='ul' pl='4' mb='4' fontSize='xs' color='fg.muted' lineHeight='1.7' css={{ listStyle: 'disc' }}>
 						<Box as='li'>{'Every secure variable value across all variable sets.'}</Box>
 						<Box as='li'>{'Every private variable value (your local-only secrets).'}</Box>
 						<Box as='li'>{'The sealed cookie jar for this project.'}</Box>
@@ -110,7 +104,9 @@ const ResetEncryptionConfirm: React.FC<ResetEncryptionConfirmProps> = ({ onClose
 
 					<Box as='p' fontSize='xs' color='fg.muted' mb='3' lineHeight='1.55'>
 						{'If you still have the original key, '}
-						<Box as='strong' color='fg.default'>{'cancel and paste it in'}</Box>
+						<Box as='strong' color='fg.default'>
+							{'cancel and paste it in'}
+						</Box>
 						{' instead — that recovers everything. Reset is only the right move when the key is genuinely gone.'}
 					</Box>
 

@@ -167,26 +167,19 @@ const CookieJars: React.FC = () => {
 							opacity={isPrimary ? 1 : 0}
 							transition='opacity .12s linear'
 						>
-							<BeakTooltip
-								content={isPrimary ? 'Primary cookie jar' : `Set ${setName} as primary`}
-							>
+							<BeakTooltip content={isPrimary ? 'Primary cookie jar' : `Set ${setName} as primary`}>
 								<RowIconButton
 									aria-label={isPrimary ? 'Primary cookie jar' : `Set ${setName} as primary`}
 									active={isPrimary}
 									onClick={() => markPrimary(setName)}
 								>
-									<Star
-										size={11}
-										strokeWidth={1.8}
-										fill={isPrimary ? 'currentColor' : 'transparent'}
-									/>
+									<Star size={11} strokeWidth={1.8} fill={isPrimary ? 'currentColor' : 'transparent'} />
 								</RowIconButton>
 							</BeakTooltip>
 						</Flex>
 					</Flex>
 				);
 			})}
-
 		</Flex>
 	);
 };

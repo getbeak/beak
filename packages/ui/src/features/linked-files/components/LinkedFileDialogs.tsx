@@ -66,7 +66,9 @@ const UnlinkConfirmDialog: React.FC = () => {
 				<DialogBody>
 					<Box as='p' fontSize='sm' color='fg.default' lineHeight='1.55'>
 						{'Closing this tab will discard your edits unless you unlink. '}
-						{'Unlinking copies your changes into a new file (the original stays in place so the next re-sync repopulates it).'}
+						{
+							'Unlinking copies your changes into a new file (the original stays in place so the next re-sync repopulates it).'
+						}
 					</Box>
 				</DialogBody>
 				<DialogFooter>
@@ -85,9 +87,7 @@ const UnlinkConfirmDialog: React.FC = () => {
 const StaleReloadDialog: React.FC = () => {
 	const dispatch = useDispatch();
 	const pending = useAppSelector(s => s.global.project.pendingStaleReload);
-	const isDirty = useAppSelector(s =>
-		pending ? Boolean(s.global.project.linkedDirty[pending.requestId]) : false,
-	);
+	const isDirty = useAppSelector(s => (pending ? Boolean(s.global.project.linkedDirty[pending.requestId]) : false));
 	const node = useAppSelector(s => (pending ? s.global.project.tree[pending.requestId] : undefined));
 	if (!pending) return null;
 

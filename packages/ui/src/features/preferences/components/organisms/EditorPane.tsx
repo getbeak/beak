@@ -2,10 +2,8 @@ import type { EditorPreferences } from '@beak/common/types/preferences';
 import type { ThemeMode } from '@beak/common/types/theme';
 import Input from '@beak/ui/components/atoms/Input';
 import { ipcPreferencesService } from '@beak/ui/lib/ipc';
-import React from 'react';
-import { useEffect, useState } from 'react';
-
 import { Monitor, Moon, Sun } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
 
 import Row from '../atoms/Row';
 import Section from '../atoms/Section';
@@ -22,7 +20,9 @@ const EditorPane: React.FC = () => {
 
 	useEffect(() => {
 		let cancelled = false;
-		ipcPreferencesService.getEditorOverview().then(p => { if (!cancelled) setPrefs(p); });
+		ipcPreferencesService.getEditorOverview().then(p => {
+			if (!cancelled) setPrefs(p);
+		});
 		return () => {
 			cancelled = true;
 		};
@@ -41,10 +41,7 @@ const EditorPane: React.FC = () => {
 				title='Code editor'
 				description='Applies to the Monaco editor inside Beak — request and response bodies, raw views.'
 			>
-				<Row
-					label='Theme override'
-					description='By default, the editor follows Beak’s theme.'
-				>
+				<Row label='Theme override' description='By default, the editor follows Beak’s theme.'>
 					<SegmentedControl
 						ariaLabel='Editor theme override'
 						items={THEME_ITEMS}

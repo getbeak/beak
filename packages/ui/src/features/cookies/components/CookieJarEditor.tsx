@@ -360,8 +360,7 @@ const JarUsageBadge: React.FC<{ usage: JarUsage }> = ({ usage }) => {
 	if (usage === 'primary')
 		return <Pill icon={<Star size={9} strokeWidth={2.4} fill='currentColor' />} label='Primary' tone='success' />;
 	if (usage === 'used') return <Pill icon={<CookieIcon size={9} strokeWidth={2.4} />} label='In use' tone='info' />;
-	if (usage === 'orphan')
-		return <Pill icon={<ShieldOff size={9} strokeWidth={2.4} />} label='Orphan' tone='warning' />;
+	if (usage === 'orphan') return <Pill icon={<ShieldOff size={9} strokeWidth={2.4} />} label='Orphan' tone='warning' />;
 	return <Pill icon={null} label='Unused' tone='subtle' />;
 };
 

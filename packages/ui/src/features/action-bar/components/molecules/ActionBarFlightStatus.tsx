@@ -1,6 +1,6 @@
-import { Box } from '@chakra-ui/react';
 import { statusToColor } from '@beak/design-system/helpers';
 import BeakTooltip from '@beak/ui/components/atoms/BeakTooltip';
+import { Box } from '@chakra-ui/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { CircleCheck, CircleDot, CircleX, Loader2 } from 'lucide-react';
 import React from 'react';

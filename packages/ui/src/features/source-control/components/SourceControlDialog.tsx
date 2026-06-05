@@ -37,11 +37,7 @@ const SourceControlDialog: React.FC = () => {
 	const pending = git.operation.phase === 'pending';
 	const dirty = (git.status?.files.length ?? 0) > 0;
 	const canCommit =
-		!pending &&
-		message.trim().length > 0 &&
-		author.name.trim().length > 0 &&
-		author.email.trim().length > 0 &&
-		dirty;
+		!pending && message.trim().length > 0 && author.name.trim().length > 0 && author.email.trim().length > 0 && dirty;
 
 	useEffect(() => {
 		if (!open) return;
@@ -176,13 +172,7 @@ const SourceControlDialog: React.FC = () => {
 								<OperationStatus state={git.operation} />
 
 								<Flex direction='column' gap='1'>
-									<Box
-										fontSize='10px'
-										fontWeight='700'
-										textTransform='uppercase'
-										letterSpacing='0.06em'
-										color='fg.subtle'
-									>
+									<Box fontSize='10px' fontWeight='700' textTransform='uppercase' letterSpacing='0.06em' color='fg.subtle'>
 										{'Commit message'}
 									</Box>
 									<Input

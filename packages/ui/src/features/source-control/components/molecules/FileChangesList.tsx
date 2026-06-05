@@ -1,6 +1,6 @@
 import type { GitFileStatus } from '@beak/state/git';
 import { Box, Flex } from '@chakra-ui/react';
-import { File, FileMinus, FilePlus, FilePen } from 'lucide-react';
+import { File, FileMinus, FilePen, FilePlus } from 'lucide-react';
 import * as React from 'react';
 
 interface FileChangesListProps {
@@ -41,21 +41,22 @@ const FileChangesList: React.FC<FileChangesListProps> = ({ files, loading }) => 
 	const overflow = files.length - visible.length;
 
 	return (
-		<Box
-			maxH='240px'
-			overflowY='auto'
-			borderWidth='1px'
-			borderColor='border.subtle'
-			borderRadius='md'
-			bg='bg.surface'
-		>
+		<Box maxH='240px' overflowY='auto' borderWidth='1px' borderColor='border.subtle' borderRadius='md' bg='bg.surface'>
 			<Flex direction='column'>
 				{visible.map(file => (
 					<FileRow key={file.filepath} file={file} />
 				))}
 			</Flex>
 			{overflow > 0 && (
-				<Box px='3' py='2' fontSize='10px' color='fg.subtle' borderTopWidth='1px' borderColor='border.subtle' fontFamily='mono'>
+				<Box
+					px='3'
+					py='2'
+					fontSize='10px'
+					color='fg.subtle'
+					borderTopWidth='1px'
+					borderColor='border.subtle'
+					fontFamily='mono'
+				>
 					{`+ ${overflow} more file${overflow === 1 ? '' : 's'} (only the first ${MAX_VISIBLE} are shown)`}
 				</Box>
 			)}
@@ -115,13 +116,7 @@ const FileRow: React.FC<FileRowProps> = ({ file }) => {
 			>
 				{file.filepath}
 			</Box>
-			<Box
-				flex='0 0 auto'
-				fontSize='9px'
-				fontWeight='700'
-				letterSpacing='0.06em'
-				css={{ color: tone }}
-			>
+			<Box flex='0 0 auto' fontSize='9px' fontWeight='700' letterSpacing='0.06em' css={{ color: tone }}>
 				{label}
 			</Box>
 		</Flex>

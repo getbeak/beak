@@ -1,5 +1,5 @@
-import { openSourceControl } from '@beak/ui/features/source-control/store';
 import useSectionBody from '@beak/ui/features/sidebar/hooks/use-section-body';
+import { openSourceControl } from '@beak/ui/features/source-control/store';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { Box, Flex } from '@chakra-ui/react';
 import { GitBranch } from 'lucide-react';

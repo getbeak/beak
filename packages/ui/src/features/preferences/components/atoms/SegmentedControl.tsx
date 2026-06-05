@@ -67,9 +67,11 @@ function SegmentedControl<T extends string>({
 							boxShadow: '0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-pink) 45%, transparent)',
 						}}
 						_active={{ transform: 'scale(0.98)' }}
-						boxShadow={active
-							? '0 1px 0 color-mix(in srgb, var(--beak-colors-gray-950) 6%, transparent), 0 1px 3px color-mix(in srgb, var(--beak-colors-gray-950) 8%, transparent)'
-							: undefined}
+						boxShadow={
+							active
+								? '0 1px 0 color-mix(in srgb, var(--beak-colors-gray-950) 6%, transparent), 0 1px 3px color-mix(in srgb, var(--beak-colors-gray-950) 8%, transparent)'
+								: undefined
+						}
 						onClick={() => onChange(item.key)}
 						onKeyDown={event => {
 							if (event.key === 'Enter' || event.key === ' ') {

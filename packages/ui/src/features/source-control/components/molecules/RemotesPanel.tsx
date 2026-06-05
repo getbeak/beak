@@ -46,17 +46,25 @@ const RemotesPanel: React.FC<RemotesPanelProps> = ({ remotes, currentBranch, dis
 					{'No remotes configured — add one to push or pull.'}
 				</Box>
 			) : (
-				<Box
-					p='2.5'
-					borderWidth='1px'
-					borderColor='border.subtle'
-					borderRadius='md'
-					bg='bg.surface'
-				>
-					<Box fontSize='10px' fontWeight='700' color='accent.indigo' textTransform='uppercase' letterSpacing='0.06em' mb='1'>
+				<Box p='2.5' borderWidth='1px' borderColor='border.subtle' borderRadius='md' bg='bg.surface'>
+					<Box
+						fontSize='10px'
+						fontWeight='700'
+						color='accent.indigo'
+						textTransform='uppercase'
+						letterSpacing='0.06em'
+						mb='1'
+					>
 						{origin!.remote}
 					</Box>
-					<Box fontSize='xs' fontFamily='mono' color='fg.muted' overflow='hidden' textOverflow='ellipsis' whiteSpace='nowrap'>
+					<Box
+						fontSize='xs'
+						fontFamily='mono'
+						color='fg.muted'
+						overflow='hidden'
+						textOverflow='ellipsis'
+						whiteSpace='nowrap'
+					>
 						{origin!.url}
 					</Box>
 					{remotes.length > 1 && (
