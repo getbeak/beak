@@ -1,9 +1,7 @@
-/* eslint-disable no-process-env */
-import SentryCli from '@sentry/cli';
+import { createRequire } from 'node:module';
+import path from 'node:path';
+import SentryCliModule from '@sentry/cli';
 import type { BuildOptions, PluginBuild } from 'esbuild';
-import fs from 'fs/promises';
-import { createRequire } from 'module';
-import path from 'path';
 
 const require = createRequire(import.meta.url);
 
@@ -58,7 +56,6 @@ const sentrySourceMapsPlugin = {
 	name: 'sentry-source-maps',
 	setup: (build: PluginBuild) => {
 		// Needs to be set again, electron-esbuild overrides it. stupid.
-		// eslint-disable-next-line no-param-reassign
 		build.initialOptions.sourcemap = true;
 
 		build.onEnd(async () => {
@@ -68,75 +65,64 @@ const sentrySourceMapsPlugin = {
 				return;
 			}
 
-			const cli = new SentryCli(null, {
+			// Narrow the env-derived values once so the rest of this function is
+			// `!`-free. In CI both are guaranteed by the workflow.
+			if (!releaseIdentifier || !environment) {
+				return;
+			}
+
+			// biome-ignore lint/suspicious/noExplicitAny: Sentry CLI ships untyped CJS interop.
+			const SentryCliCtor = ((SentryCliModule as any).default ?? SentryCliModule) as new (
+				configFile: string | null,
+				options: Record<string, unknown>,
+				// biome-ignore lint/suspicious/noExplicitAny: see above
+			) => any;
+			const cli = new SentryCliCtor(null, {
 				authToken: process.env.SENTRY_AUTH_TOKEN,
 				org: 'beak',
 				project: 'apps-host-electron',
 			});
 
-			await cli.releases.new(releaseIdentifier!);
-			await cli.releases.uploadSourceMaps(releaseIdentifier!, {
+			await cli.releases.new(releaseIdentifier);
+			await cli.releases.uploadSourceMaps(releaseIdentifier, {
 				include: ['./dist'],
 				urlPrefix: '~/',
 			});
-			await cli.releases.setCommits(releaseIdentifier!, { auto: true });
-			await cli.releases.newDeploy(releaseIdentifier!, {
-				env: environment!,
+			await cli.releases.setCommits(releaseIdentifier, { auto: true });
+			await cli.releases.newDeploy(releaseIdentifier, {
+				env: environment,
 				url: `https://github.com/getbeak/beak/tree/${commitIdentifier}`,
 			});
 
-			await cli.releases.finalize(releaseIdentifier!);
+			await cli.releases.finalize(releaseIdentifier);
 		});
 	},
 };
 
-const handleVm2Plugin = {
-	name: 'handle-vm2',
-	setup: (build: PluginBuild) => {
-		build.onEnd(async () => {
-			const outDir = build.initialOptions.outdir!;
-			const vm2Dir = path.join(outDir, '../../../../node_modules/vm2/lib/');
-			const bridge = path.join(vm2Dir, 'bridge.js');
-			const setupSandbox = path.join(vm2Dir, 'setup-sandbox.js');
-			const setupNodeSandbox = path.join(vm2Dir, 'setup-node-sandbox.js');
-
-			await Promise.all([
-				fs.copyFile(bridge, path.join(outDir, 'bridge.js')),
-				fs.copyFile(setupSandbox, path.join(outDir, 'setup-sandbox.js')),
-				fs.copyFile(setupNodeSandbox, path.join(outDir, 'setup-node-sandbox.js')),
-			]);
-		});
+export default [
+	{
+		platform: 'node',
+		target: 'node18.12.1', // TODO(afr): automatic electron version target
+		bundle: true,
+		format: 'cjs',
+		minify: environment !== 'development',
+		entryPoints: [path.resolve('src/main.ts'), path.resolve('src/preload.ts')],
+		plugins: [nativeNodeModulesPlugin, sentrySourceMapsPlugin],
+		define: {
+			'process.env.BUILD_ENVIRONMENT': writeDefinition(process.env.BUILD_ENVIRONMENT),
+			'process.env.RELEASE_IDENTIFIER': writeDefinition(releaseIdentifier),
+			'process.env.ENVIRONMENT': writeDefinition(environment),
+		},
+		sourcemap: true,
+		assetNames: '[name]',
+		// isolated-vm is a native module — leave it out of the bundle so the
+		// .node binding resolves correctly at runtime from node_modules.
+		external: ['node:fs', 'isolated-vm'],
 	},
-};
-
-export default [{
-	platform: 'node',
-	target: 'node18.12.1', // TODO(afr): automatic electron version target
-	bundle: true,
-	format: 'cjs',
-	minify: environment !== 'development',
-	entryPoints: [
-		path.resolve('src/main.ts'),
-		path.resolve('src/preload.ts'),
-	],
-	plugins: [
-		nativeNodeModulesPlugin,
-		sentrySourceMapsPlugin,
-		handleVm2Plugin,
-	],
-	define: {
-		'process.env.BUILD_ENVIRONMENT': writeDefinition(process.env.BUILD_ENVIRONMENT),
-		'process.env.RELEASE_IDENTIFIER': writeDefinition(releaseIdentifier),
-		'process.env.ENVIRONMENT': writeDefinition(environment),
-	},
-	sourcemap: true,
-	assetNames: '[name]',
-	external: ['node:fs'],
-}] as BuildOptions[];
+] as BuildOptions[];
 
 function writeDefinition(value: string | undefined) {
-	if (value === void 0)
-		return value;
+	if (value === void 0) return value;
 
 	return `'${value}'`;
 }

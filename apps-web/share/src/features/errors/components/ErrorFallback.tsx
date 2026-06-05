@@ -1,67 +1,54 @@
-import React from 'react';
 import { SmallContainer } from '@beak/apps-web-share/components/atoms/Container';
 import { BodyRegular, Title, TitleSubtle } from '@beak/apps-web-share/components/atoms/Typography';
-import { faBug } from '@fortawesome/free-solid-svg-icons/faBug';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import styled from 'styled-components';
+import { Box, Flex } from '@chakra-ui/react';
+import { Bug } from 'lucide-react';
+import * as React from 'react';
 
-const ErrorFallback: React.FC<React.PropsWithChildren<unknown>> = () => (
-	<Header>
-		<Container>
-			<IconWrapper>
-				<FontAwesomeIcon icon={faBug} />
-			</IconWrapper>
+const ErrorFallback: React.FC = () => (
+	<Box py={{ base: '10', md: '20' }} overflow='hidden' bg='bg.canvas'>
+		<SmallContainer position='relative'>
+			<Box
+				position='absolute'
+				top='-10'
+				right='-10'
+				opacity={0.06}
+				transform='rotate(20deg)'
+				color='accent.alert'
+				css={{ '> svg': { width: '300px !important', height: '300px !important' } }}
+			>
+				<Bug />
+			</Box>
 
-			<Title>
-				{'This is awkward... something broke'}
-			</Title>
-			<TitleSubtle>
-				{'Wait a minute, how did this happen? We\'re smarter than this...'}
-			</TitleSubtle>
+			<Flex
+				align='center'
+				justify='center'
+				w='56px'
+				h='56px'
+				borderRadius='full'
+				bg='color-mix(in srgb, var(--beak-colors-accent-alert) 14%, transparent)'
+				borderWidth='1px'
+				borderColor='color-mix(in srgb, var(--beak-colors-accent-alert) 28%, transparent)'
+				color='accent.alert'
+				mb='3'
+				style={{
+					boxShadow:
+						'0 6px 18px color-mix(in srgb, var(--beak-colors-accent-alert) 22%, transparent), inset 0 1px 0 color-mix(in srgb, white 16%, transparent)',
+				}}
+			>
+				<Bug size={24} strokeWidth={1.8} />
+			</Flex>
 
-			<Body>
+			<Title>{'This is awkward... something broke'}</Title>
+			<TitleSubtle>{"Wait a minute, how did this happen? We're smarter than this..."}</TitleSubtle>
+
+			<Box mt='10'>
 				<BodyRegular>
-					{'The error you\'re encountering has been reported. Please try again or a little bit later if you '}
+					{"The error you're encountering has been reported. Please try again or a little bit later if you "}
 					{'keep encountering it.'}
 				</BodyRegular>
-			</Body>
-		</Container>
-	</Header>
+			</Box>
+		</SmallContainer>
+	</Box>
 );
-
-const Container = styled(SmallContainer)`
-	position: relative;
-`;
-
-const Header = styled.div`
-	padding-top: 80px;
-	padding-bottom: 80px;
-	overflow: hidden;
-
-	background: ${p => p.theme.ui.background};
-
-	@media (max-width: 850px) {
-		padding-top: 40px;
-		padding-bottom: 40px;
-	}
-`;
-
-const Body = styled.div`
-	margin-top: 40px;
-`;
-
-const IconWrapper = styled.div`
-	position: absolute;
-	top: -40px;
-	right: -40px;
-
-	opacity: .05;
-	transform: rotate(20deg);
-
-	> svg {
-		width: 300px !important;
-		height: 300px !important;
-	}
-`;
 
 export default ErrorFallback;

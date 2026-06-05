@@ -1,10 +1,10 @@
-import React, { useRef, useState } from 'react';
-import { createPortal } from 'react-dom';
-import { faSortDown } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import styled from 'styled-components';
+import Popover, { PopoverBody } from '@beak/ui/components/molecules/Popover';
+import { Box, Flex } from '@chakra-ui/react';
+import { Check, ChevronDown } from 'lucide-react';
+import * as React from 'react';
+import { useRef, useState } from 'react';
 
-import { TabSubItem } from './TabItem';
+import type { TabSubItem } from './TabItem';
 
 interface TabItemSubItemsDropdownProps<T = string> {
 	activeSubItem: string;
@@ -24,87 +24,90 @@ const TabItemSubItemsDropdown = <T = string>(props: TabItemSubItemsDropdownProps
 
 	return (
 		<React.Fragment>
-			{` (${subItems.find(i => i.key === activeSubItem)?.label})`}
-			<DropdownButton
-				ref={parentRef}
-				onClick={event => {
+			<Box as='span' color='fg.muted' ml='1' fontSize='xs' fontWeight='500'>
+				{subItems.find(i => i.key === activeSubItem)?.label}
+			</Box>
+			<Box
+				as='button'
+				ref={parentRef as unknown as React.Ref<HTMLElement>}
+				display='inline-flex'
+				alignItems='center'
+				justifyContent='center'
+				border='none'
+				bg='none'
+				color='inherit'
+				w='14px'
+				h='14px'
+				m='0'
+				p='0'
+				ml='0.5'
+				borderRadius='sm'
+				cursor='pointer'
+				transition='background-color .12s ease'
+				_hover={{ bg: 'color-mix(in srgb, var(--beak-colors-fg-default) 14%, transparent)' }}
+				onClick={(event: React.MouseEvent) => {
 					event.stopPropagation();
 					event.preventDefault();
-
-					setShowDropdown(true);
+					setShowDropdown(s => !s);
 				}}
 			>
-				<FontAwesomeIcon icon={faSortDown} />
-			</DropdownButton>
+				<ChevronDown size={10} strokeWidth={2.2} />
+			</Box>
 
-			{parentRef.current && showDropdown && createPortal(
-				<Container onClick={() => setShowDropdown(false)}>
-					<Wrapper
-						$top={parentRef.current!.getBoundingClientRect().top + parentRef.current!.clientHeight + 6}
-						$left={parentRef.current!.getBoundingClientRect().left - 140 + 10}
-						onClick={event => void event.stopPropagation()}
-					>
-						{subItems.map(i => (
-							<WrapperItem
-								tabIndex={0}
-								role={'button'}
-								key={i.key as string}
-								onClick={() => setSubItem(i.key)}
-								onKeyDown={event => {
-									if (event.key === 'Enter') setSubItem(i.key);
-								}}
-							>
-								{i.label}
-							</WrapperItem>
-						))}
-					</Wrapper>
-				</Container>,
-				document.getElementById('tab-item-sub-items-popover')!,
+			{showDropdown && (
+				<Popover
+					anchor={parentRef.current}
+					onClose={() => setShowDropdown(false)}
+					width={180}
+					align='end'
+					ariaLabel='Sub-tab'
+				>
+					<PopoverBody padding='4px'>
+						{subItems.map(i => {
+							const isActive = (i.key as unknown as string) === activeSubItem;
+							return (
+								<Flex
+									tabIndex={0}
+									role='option'
+									aria-selected={isActive}
+									key={i.key as string}
+									align='center'
+									justify='space-between'
+									gap='2'
+									px='2'
+									py='1.5'
+									fontSize='xs'
+									fontWeight={isActive ? '600' : '500'}
+									cursor='pointer'
+									borderRadius='md'
+									color={isActive ? 'accent.pink' : 'fg.default'}
+									bg={isActive ? 'color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent)' : 'transparent'}
+									_hover={{
+										bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 12%, transparent)',
+										color: 'accent.pink',
+									}}
+									onClick={() => setSubItem(i.key)}
+									onKeyDown={(event: React.KeyboardEvent) => {
+										if (event.key === 'Enter' || event.key === ' ') {
+											event.preventDefault();
+											setSubItem(i.key);
+										}
+									}}
+								>
+									<Box>{i.label}</Box>
+									{isActive && (
+										<Box color='accent.pink' display='inline-flex'>
+											<Check size={11} strokeWidth={3} />
+										</Box>
+									)}
+								</Flex>
+							);
+						})}
+					</PopoverBody>
+				</Popover>
 			)}
 		</React.Fragment>
 	);
 };
-
-const DropdownButton = styled.button`
-	display: flow-root;
-	border: none; background: none; color: inherit;
-	margin: 0; padding: 0;
-
-	margin-left: 5px;
-	margin-top: -2px;
-	cursor: pointer;
-`;
-
-const Container = styled.div`
-	position: fixed;
-	top: 0; bottom: 0; left: 0; right: 0;
-`;
-
-const Wrapper = styled.div<{ $top: number; $left: number }>`
-	position: fixed;
-	margin-top: ${p => p.$top}px;
-	margin-left: ${p => p.$left}px;
-
-	width: 140px;
-	border: 1px solid ${p => p.theme.ui.backgroundBorderSeparator};
-	border-radius: 5px;
-	background: ${p => p.theme.ui.background};
-
-	padding: 5px;
-	z-index: 101;
-`;
-
-const WrapperItem = styled.div`
-	padding: 4px 6px;
-	font-size: 15px;
-	cursor: pointer;
-
-	border-radius: 5px;
-	color: ${p => p.theme.ui.textOnSurfaceBackground};
-
-	&:hover {
-		background: ${p => p.theme.ui.secondarySurface};
-	}
-`;
 
 export default TabItemSubItemsDropdown;

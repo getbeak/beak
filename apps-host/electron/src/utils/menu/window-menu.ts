@@ -1,6 +1,6 @@
-import { MenuItemConstructorOptions } from 'electron';
+import type { MenuItemConstructorOptions } from 'electron';
 
-import { Context } from '.';
+import type { Context } from '.';
 
 export default function generateWindowMenu(ctx: Context): MenuItemConstructorOptions {
 	const template: MenuItemConstructorOptions = {
@@ -20,11 +20,7 @@ export default function generateWindowMenu(ctx: Context): MenuItemConstructorOpt
 
 		(template.submenu as MenuItemConstructorOptions[]).push(...darwinTemplate);
 	} else {
-		const nonDarwinTemplate: MenuItemConstructorOptions[] = [
-			{ role: 'minimize' },
-			{ role: 'zoom' },
-			{ role: 'close' },
-		];
+		const nonDarwinTemplate: MenuItemConstructorOptions[] = [{ role: 'minimize' }, { role: 'zoom' }, { role: 'close' }];
 
 		(template.submenu as MenuItemConstructorOptions[]).push(...nonDarwinTemplate);
 	}

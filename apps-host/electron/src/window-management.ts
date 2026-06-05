@@ -1,17 +1,17 @@
-import { WindowPresence } from '@beak/common-host/providers/storage';
-import { app, BrowserWindow, BrowserWindowConstructorOptions, nativeTheme } from 'electron';
-import * as path from 'path';
-import * as url from 'url';
+import * as path from 'node:path';
+import * as url from 'node:url';
+import type { WindowPresence } from '@beak/runtime-shared/providers/storage';
+import { app, BrowserWindow, type BrowserWindowConstructorOptions, dialog, nativeTheme } from 'electron';
 
 import getBeakHost from './host';
-import { tryOpenProjectFolder } from './host/extensions/project';
+import { tryOpenProjectFolder } from './host/project';
 import { getProjectFilePathFromWindowId } from './ipc-layer/fs-shared';
 import { closeWatchersOnWindow } from './ipc-layer/fs-watcher-service';
 import WindowStateManager from './lib/window-state-manager';
 import { screenshotSizing } from './main';
 import { staticPath } from './utils/static-path';
 
-export type Container = 'project-main' | 'welcome' | 'preferences' | 'portal';
+export type Container = 'project-main' | 'preferences';
 
 // This is pretty lame, there should be a better way
 export const projectIdToWindowIdMapping: Record<string, number> = {};
@@ -22,8 +22,61 @@ export const windowStack: Record<number, BrowserWindow> = {};
 export const windowType: Record<number, Container> = {};
 export const stackMap: Record<string, number> = {};
 
-const DEV_URL = 'http://localhost:5173';
-// eslint-disable-next-line no-process-env
+/**
+ * Window IDs whose renderer reports unsaved in-memory changes. Updated by
+ * the renderer via `ipcWindowService.setDirty` whenever the project mode
+ * + tree size combination crosses the dirty boundary. Drives the
+ * unsaved-changes confirmation on window close.
+ */
+const dirtyWindowIds = new Set<number>();
+
+/** True if the close path is currently dispatching the unsaved-changes
+ *  dialog for a given window — used to ensure the renderer's in-flight
+ *  Save Project As doesn't race the dialog and double-prompt.
+ */
+const closeInFlight = new Set<number>();
+
+export function setWindowDirty(windowId: number, dirty: boolean) {
+	if (dirty) dirtyWindowIds.add(windowId);
+	else dirtyWindowIds.delete(windowId);
+}
+
+async function promptUnsavedClose(window: BrowserWindow) {
+	const result = await dialog.showMessageBox(window, {
+		type: 'warning',
+		title: 'Save changes to this project?',
+		message: 'Your changes will be lost if you don’t save them.',
+		buttons: ['Save…', "Don't save", 'Cancel'],
+		defaultId: 0,
+		cancelId: 2,
+	});
+
+	switch (result.response) {
+		case 2:
+			// Cancel — keep the window open. closeInFlight clears via finally.
+			return;
+		case 1:
+			// Don't save — drop dirty + force-close, bypassing the close guard.
+			dirtyWindowIds.delete(window.id);
+			window.destroy();
+			delete windowStack[window.id];
+			return;
+		case 0:
+		default: {
+			// Save — ask the renderer to run materialiseFromMemory. The
+			// successful save closes + reopens this window itself; if the
+			// user cancels the folder picker, the window stays open and
+			// stays dirty, ready for them to try again.
+			window.webContents.send('window:request_save');
+			return;
+		}
+	}
+}
+
+// Electron's renderer dev server lives on 5174; 5173 is the web host
+// (apps-host/web) which uses HTTPS + service workers and would refuse
+// our embedded BrowserWindow's plain-frame load.
+const DEV_URL = 'http://localhost:5174';
 const environment = process.env.NODE_ENV;
 
 export function generateWindowPresence() {
@@ -31,16 +84,18 @@ export function generateWindowPresence() {
 	const windowPresence = windows.reduce<(WindowPresence | null)[]>((acc, val) => {
 		const type = windowType[val.id];
 
-		// Don't persist portal, as it's only used for signed out state
-		if (!type || type === 'portal')
-			return [...acc, null];
+		if (!type) return [...acc, null];
 
 		if (type === 'project-main') {
 			const projectFilePath = getProjectFilePathFromWindowId(val.id);
-			const projectPath = path.dirname(projectFilePath);
 
-			if (!projectPath)
-				return [...acc, null];
+			// No projectFilePath = empty workbench window. Persist as a generic
+			// 'empty' payload so cold restore opens the welcome workbench again
+			// instead of falling through to the most-recent project.
+			if (!projectFilePath) return [...acc, { type: 'generic', payload: 'empty' }];
+
+			const projectPath = path.dirname(projectFilePath);
+			if (!projectPath) return [...acc, null];
 
 			return [...acc, { type: 'project-main', payload: projectPath }];
 		}
@@ -52,71 +107,63 @@ export function generateWindowPresence() {
 }
 
 export async function attemptWindowPresenceLoad() {
-	if (screenshotSizing)
-		return false;
+	if (screenshotSizing) return false;
 
 	const previousWindowPresence = await getBeakHost().providers.storage.get('previousWindowPresence');
 
-	if (previousWindowPresence.length === 0)
-		return false;
+	if (previousWindowPresence.length === 0) return false;
 
 	let success = false;
 
-	await Promise.all(previousWindowPresence.map(async p => {
-		if (p.type === 'project-main') {
-			const response = await tryOpenProjectFolder(p.payload, true);
+	await Promise.all(
+		previousWindowPresence.map(async p => {
+			if (p.type === 'project-main') {
+				const response = await tryOpenProjectFolder(p.payload, true);
 
-			if (response !== null)
-				success = true;
+				if (response !== null) success = true;
 
-			return;
-		}
-
-		switch (p.payload) {
-			case 'portal':
-				await createPortalWindow();
-
-				success = true;
-				break;
-
-			case 'preferences':
-				await createPreferencesWindow();
-
-				success = true;
-				break;
-
-			case 'welcome':
-				await createWelcomeWindow();
-
-				success = true;
-				break;
-
-			default:
 				return;
-		}
-	}));
+			}
+
+			switch (p.payload) {
+				case 'preferences':
+					await createPreferencesWindow();
+
+					success = true;
+					break;
+
+				case 'empty':
+					await createEmptyProjectMainWindow();
+
+					success = true;
+					break;
+
+				default:
+					// 'welcome' / unknown payloads — no-op. Cold boot will fall
+					// back to opening the most-recent project or an empty
+					// workbench window.
+					return;
+			}
+		}),
+	);
 
 	return success;
 }
 
-function generateLoadUrl(
-	container: Container,
-	windowId: number,
-	additionalParams?: Record<string, string>,
-) {
-	let loadUrl = new URL(url.format({
-		pathname: path.join(staticPath, 'index.html'),
-		protocol: 'file:',
-		slashes: true,
-	}));
+function generateLoadUrl(container: Container, windowId: number, additionalParams?: Record<string, string>) {
+	let loadUrl = new URL(
+		url.format({
+			pathname: path.join(staticPath, 'index.html'),
+			protocol: 'file:',
+			slashes: true,
+		}),
+	);
 
-	if (environment !== 'production')
-		loadUrl = new URL(DEV_URL);
+	if (environment !== 'production') loadUrl = new URL(DEV_URL);
 
 	if (additionalParams) {
 		Object.keys(additionalParams).forEach(k => {
-			if (k === 'container')
-				return; // Just to be extra safe
+			if (k === 'container') return; // Just to be extra safe
 
 			const urlSafe = encodeURIComponent(additionalParams[k]);
 
@@ -133,19 +180,17 @@ function generateLoadUrl(
 }
 
 async function createWindow(
-	windowOpts: BrowserWindowConstructorOptions,
+	windowOpts: BrowserWindowConstructorOptions & { width: number; height: number },
 	container: Container,
 	additionalParams?: Record<string, string>,
 ) {
 	nativeTheme.themeSource = await getBeakHost().providers.storage.get('themeMode');
 
 	if (screenshotSizing && container === 'project-main') {
-		/* eslint-disable no-param-reassign */
 		windowOpts.minWidth = 1300;
 		windowOpts.maxWidth = 1300;
 		windowOpts.minHeight = 800;
 		windowOpts.maxHeight = 800;
-		/* eslint-enable no-param-reassign */
 	}
 
 	const windowStateManager = await WindowStateManager.create(container, windowOpts);
@@ -166,7 +211,18 @@ async function createWindow(
 		window.show();
 		window.focus();
 	});
-	window.on('close', () => {
+	window.on('close', event => {
+		// Unsaved-changes guard. Only project-main windows can be dirty
+		// (memory-mode projects with non-empty trees); the renderer keeps
+		// dirtyWindowIds in sync via ipcWindowService.setDirty.
+		if (dirtyWindowIds.has(window.id) && !closeInFlight.has(window.id)) {
+			event.preventDefault();
+			closeInFlight.add(window.id);
+			void promptUnsavedClose(window).finally(() => closeInFlight.delete(window.id));
+			return;
+		}
+
+		dirtyWindowIds.delete(window.id);
 		delete windowStack[window.id];
 	});
 
@@ -182,28 +238,20 @@ async function createWindow(
 	return window;
 }
 
+/**
+ * Welcome screens were removed in May 2026 — Beak now boots straight into
+ * a project window (most-recent or untitled). This stub is kept temporarily
+ * so call sites that used to close the welcome window during project-open
+ * flows are no-ops instead of throwing during the migration.
+ */
 export function tryCloseWelcomeWindow() {
-	const windowId = stackMap.welcome;
-
-	if (windowId === void 0)
-		return;
-
-	const window = windowStack[windowId];
-
-	if (!window)
-		return;
-
-	window.close();
-
-	delete windowStack[windowId];
-	delete stackMap.welcome;
+	// Intentionally empty — see comment above.
 }
 
 export function closeWindow(windowId: number) {
 	const window = BrowserWindow.getAllWindows().find(win => win.webContents.id === windowId);
 
-	if (!window)
-		return; // probs already closed...
+	if (!window) return; // probs already closed...
 
 	window.close();
 	delete windowStack[windowId];
@@ -212,63 +260,23 @@ export function closeWindow(windowId: number) {
 export function reloadWindow(windowId: number) {
 	const window = BrowserWindow.getAllWindows().find(win => win.webContents.id === windowId);
 
-	if (!window)
-		return; // probs already closed...
+	if (!window) return; // probs already closed...
 
 	window.reload();
-}
-
-export async function createWelcomeWindow() {
-	const existing = stackMap.welcome;
-
-	if (existing && windowStack[existing]) {
-		if (windowStack[existing].isMinimized())
-			windowStack[existing].restore();
-
-		windowStack[existing].focus();
-
-		return existing;
-	}
-
-	const windowOpts: BrowserWindowConstructorOptions = {
-		height: 500,
-		width: 900,
-		resizable: false,
-		title: 'Welcome to Beak!',
-		autoHideMenuBar: true,
-		transparent: true,
-		visualEffectState: 'active',
-		vibrancy: 'under-window',
-	};
-
-	if (process.platform === 'darwin')
-		windowOpts.frame = false;
-
-	if (process.platform === 'darwin')
-		windowOpts.frame = false;
-	if (process.platform !== 'darwin')
-		windowOpts.height = 550;
-
-	const window = await createWindow(windowOpts, 'welcome');
-
-	stackMap.welcome = window.id;
-
-	return window.id;
 }
 
 export async function createPreferencesWindow() {
 	const existing = stackMap.preferences;
 
 	if (existing && windowStack[existing]) {
-		if (windowStack[existing].isMinimized())
-			windowStack[existing].restore();
+		if (windowStack[existing].isMinimized()) windowStack[existing].restore();
 
 		windowStack[existing].focus();
 
 		return existing;
 	}
 
-	const windowOpts: BrowserWindowConstructorOptions = {
+	const windowOpts: BrowserWindowConstructorOptions & { width: number; height: number } = {
 		height: 550,
 		width: 900,
 		resizable: false,
@@ -280,8 +288,7 @@ export async function createPreferencesWindow() {
 		vibrancy: 'under-window',
 	};
 
-	if (process.platform === 'darwin')
-		windowOpts.frame = false;
+	if (process.platform === 'darwin') windowOpts.frame = false;
 
 	const window = await createWindow(windowOpts, 'preferences');
 
@@ -290,8 +297,8 @@ export async function createPreferencesWindow() {
 	return window.id;
 }
 
-export async function createProjectMainWindow(projectId: string, projectFilePath: string) {
-	const windowOpts: BrowserWindowConstructorOptions = {
+function projectMainWindowOpts(): BrowserWindowConstructorOptions & { width: number; height: number } {
+	const windowOpts: BrowserWindowConstructorOptions & { width: number; height: number } = {
 		height: 850,
 		width: 1400,
 		minHeight: 450,
@@ -310,10 +317,13 @@ export async function createProjectMainWindow(projectId: string, projectFilePath
 	}
 
 	// On Windows we want total control of the frame
-	if (process.platform !== 'darwin')
-		windowOpts.autoHideMenuBar = false;
+	if (process.platform !== 'darwin') windowOpts.autoHideMenuBar = false;
 
-	const window = await createWindow(windowOpts, 'project-main');
+	return windowOpts;
+}
+
+export async function createProjectMainWindow(projectId: string, projectFilePath: string) {
+	const window = await createWindow(projectMainWindowOpts(), 'project-main');
 
 	projectIdToWindowIdMapping[projectId] = window.id;
 	windowIdToProjectIdMapping[window.id] = projectId;
@@ -324,36 +334,14 @@ export async function createProjectMainWindow(projectId: string, projectFilePath
 	return window.id;
 }
 
-export async function createPortalWindow() {
-	const existing = stackMap.portal;
-
-	if (existing && windowStack[existing]) {
-		if (windowStack[existing].isMinimized())
-			windowStack[existing].restore();
-
-		windowStack[existing].focus();
-
-		return existing;
-	}
-
-	const windowOpts: BrowserWindowConstructorOptions = {
-		height: 400,
-		width: 800,
-		resizable: false,
-		title: 'Welcome to Beak',
-		autoHideMenuBar: true,
-		transparent: true,
-		titleBarStyle: 'hiddenInset',
-		visualEffectState: 'active',
-		vibrancy: 'under-window',
-	};
-
-	if (process.platform === 'darwin')
-		windowOpts.frame = false;
-
-	const window = await createWindow(windowOpts, 'portal');
-
-	stackMap.portal = window.id;
-
+/**
+ * Empty workbench window — same chrome as a project-main window but with no
+ * project bound to it. The renderer reads `?empty=1` and skips the project
+ * load entirely, opening the welcome tab. Used as the cold-start landing
+ * when there are no recents to restore.
+ */
+export async function createEmptyProjectMainWindow() {
+	const window = await createWindow(projectMainWindowOpts(), 'project-main', { empty: '1' });
+	window.setTitle('Beak');
 	return window.id;
 }

@@ -1,10 +1,11 @@
-import React, { useEffect } from 'react';
 import CtaButton from '@beak/apps-web-share/components/atoms/Buttons';
 import { SubTitle, Title } from '@beak/apps-web-share/components/atoms/Typography';
 import useBeakProjectUrl from '@beak/apps-web-share/hooks/use-beak-project-url';
-import styled from 'styled-components';
+import { Box, Grid } from '@chakra-ui/react';
+import * as React from 'react';
+import { useEffect } from 'react';
 
-const InfoCard: React.FC<React.PropsWithChildren<unknown>> = () => {
+const InfoCard: React.FC = () => {
 	const beakUrl = useBeakProjectUrl();
 
 	useEffect(() => {
@@ -12,50 +13,57 @@ const InfoCard: React.FC<React.PropsWithChildren<unknown>> = () => {
 	}, [beakUrl]);
 
 	return (
-		<Card>
-			<Brand />
-			<Ugh>
+		<Grid
+			templateColumns='150px 1fr'
+			gap='5'
+			borderRadius='xl'
+			bg='color-mix(in srgb, var(--beak-colors-bg-surface) 80%, transparent)'
+			borderWidth='1px'
+			borderColor='color-mix(in srgb, var(--beak-colors-accent-pink) 22%, var(--beak-colors-border-subtle))'
+			p='6'
+			style={{
+				boxShadow:
+					'0 16px 40px rgba(0,0,0,0.18), 0 4px 12px color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent), inset 0 1px 0 color-mix(in srgb, white 14%, transparent)',
+			}}
+		>
+			<Box
+				role='img'
+				aria-label='Beak logo'
+				h='100px'
+				w='100px'
+				mx='auto'
+				borderRadius='lg'
+				bgColor='color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent)'
+				borderWidth='1px'
+				borderColor='color-mix(in srgb, var(--beak-colors-accent-pink) 28%, transparent)'
+				style={{
+					backgroundImage: "url('/assets/logo-tile.png')",
+					backgroundRepeat: 'no-repeat',
+					backgroundPosition: 'center',
+					backgroundSize: '100px',
+					boxShadow:
+						'0 8px 24px color-mix(in srgb, var(--beak-colors-accent-pink) 28%, transparent), inset 0 1px 0 color-mix(in srgb, white 18%, transparent)',
+				}}
+			/>
+			<Box>
 				<Title>{'Someone has shared a Beak with you'}</Title>
 				<SubTitle>
-					{'Someone has shared a beak project with you, if Beak doesn\'t launch automatically, you can '}
+					{"Someone has shared a beak project with you, if Beak doesn't launch automatically, you can "}
 					{'tap the button below.'}
 				</SubTitle>
-
-				<Spacer />
-
-				<CtaButton $style={'primary'} onClick={() => {
-					window.location.href = beakUrl;
-				}}>
-					{'Launch Beak'}
-				</CtaButton>
-			</Ugh>
-		</Card>
+				<Box mt='5'>
+					<CtaButton
+						tone='primary'
+						onClick={() => {
+							window.location.href = beakUrl;
+						}}
+					>
+						{'Launch Beak'}
+					</CtaButton>
+				</Box>
+			</Box>
+		</Grid>
 	);
 };
-
-const Card = styled.div`
-	display: grid;
-	gap: 20px;
-	grid-template-columns: 150px 1fr;
-	border-radius: 10px;
-	background: ${p => p.theme.ui.surface};
-	padding: 25px;
-`;
-
-const Brand = styled.div`
-	background-image: url('/assets/logo-tile.png');
-	background-position: center;
-	background-repeat: no-repeat;
-	background-size: 100px;
-	height: 100px;
-`;
-
-const Ugh = styled.div`
-	
-`;
-
-const Spacer = styled.div`
-	margin-top: 20px;
-`;
 
 export default InfoCard;

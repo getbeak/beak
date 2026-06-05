@@ -1,24 +1,69 @@
 import { IpcFlightServiceMain } from '@beak/common/ipc/flight';
-import { FlightRequestPayload } from '@beak/common/types/requester';
+import type { FlightRequestPayload } from '@beak/common/types/requester';
+import { decideRouting, selectAgentBaseUrl } from '@beak/state/agent';
+import { getAppStore } from '@beak/ui/store';
 
-import { RequesterOptions, startRequester } from '../requester';
+import { clearAgentToken, getAgentToken } from '@beak/ui/services/agent/storage';
+
+import getRuntime from '../host';
+import { browserFetchRequester, createAgentRequester, type Requester, type RequesterOptions } from '../requester';
 import { webIpcMain } from './ipc';
 
 const service = new IpcFlightServiceMain(webIpcMain);
+const sender = webIpcMain.webContents;
 
-service.registerStartFlight(async (event, payload: FlightRequestPayload) => {
+service.registerStartFlight(async (_event, payload: FlightRequestPayload) => {
 	const options: RequesterOptions = {
 		payload,
 		callbacks: {
-			// heartbeat: payload => service.sendHeartbeat(sender, payload),
-			// complete: payload => service.sendComplete(sender, payload),
-			// failed: payload => service.sendFailed(sender, payload),
-
-			heartbeat: console.info,
-			complete: console.info,
-			failed: console.info,
+			heartbeat: p => service.sendHeartbeat(sender, p),
+			complete: p => service.sendComplete(sender, p),
+			failed: p => {
+				if (p.error?.message === 'agent_unauthorized') clearAgentToken();
+				service.sendFailed(sender, p);
+			},
 		},
 	};
 
-	startRequester(options).then();
+	const requester = pickRequester();
+	if (requester === 'force-fail') {
+		service.sendFailed(sender, {
+			flightId: payload.flightId,
+			error: new Error('agent_required_but_not_paired'),
+		});
+		return;
+	}
+
+	requester.start(options).catch(error => {
+		console.error('[flight] requester crashed', error);
+		service.sendFailed(sender, { flightId: payload.flightId, error: error as Error });
+	});
 });
+
+function pickRequester(): Requester | 'force-fail' {
+	const { capabilities } = getRuntime();
+	const store = getAppStore();
+	const state = store.getState();
+	const decision = decideRouting({
+		capability: capabilities.localAgent,
+		status: state.global.agent.status,
+		routingMode: state.global.agent.routingMode,
+	});
+
+	switch (decision) {
+		case 'via-default':
+			return browserFetchRequester;
+		case 'force-fail':
+			return 'force-fail';
+		case 'via-agent': {
+			const baseUrl = selectAgentBaseUrl(state);
+			const token = getAgentToken();
+			if (!baseUrl || !token) {
+				// State says paired but the corresponding handles are missing —
+				// shouldn't happen, but degrade gracefully.
+				return browserFetchRequester;
+			}
+			return createAgentRequester(baseUrl, token);
+		}
+	}
+}

@@ -1,5 +1,5 @@
 import React from 'react';
-import UAParser from 'ua-parser-js';
+import { UAParser } from 'ua-parser-js';
 
 type Platform = 'darwin' | 'win32' | 'browser' | 'linux';
 export type BeakPlatform = 'darwin' | 'windows' | 'browser' | 'linux';
@@ -13,10 +13,8 @@ export class WindowSession {
 	constructor() {
 		const params = new URLSearchParams(window.location.search);
 
-		if (window.embeddedIndicator)
-			this.platform = params.get('platform')! as Platform;
-		else
-			this.platform = 'browser';
+		if (window.embeddedIndicator) this.platform = params.get('platform')! as Platform;
+		else this.platform = 'browser';
 
 		this.windowId = params.get('windowId');
 		this.os = generateOS();
@@ -26,21 +24,27 @@ export class WindowSession {
 	}
 
 	getPlatform(): BeakPlatform {
-		if (this.platform === 'darwin')
-			return 'darwin';
+		if (this.platform === 'darwin') return 'darwin';
 
-		if (this.platform === 'win32')
-			return 'windows';
+		if (this.platform === 'win32') return 'windows';
 
-		if (this.platform === 'browser')
-			return 'browser';
+		if (this.platform === 'browser') return 'browser';
 
 		// Fallback
 		return 'linux';
 	}
 
 	isDarwin() {
-		return this.platform === 'darwin';
+		if (this.platform === 'darwin') return true;
+		// In the browser host we don't get a `platform` query string from
+		// electron, but the user still expects macOS shortcut glyphs when
+		// they're on a Mac. Sniff the UA so the web host renders the right
+		// keymap.
+		if (this.platform === 'browser') {
+			const ua = new UAParser(window.navigator.userAgent);
+			return ua.getOS().name === 'macOS';
+		}
+		return false;
 	}
 
 	isBrowser() {

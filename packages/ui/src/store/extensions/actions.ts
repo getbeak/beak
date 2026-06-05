@@ -1,16 +1,47 @@
-import { createAction } from '@reduxjs/toolkit';
-
+// Source of truth is @beak/state/extensions; this re-export keeps existing UI imports working.
 import {
-	ActionTypes as AT,
-	ExtensionsOpenedPayload,
-} from './types';
-
-export const startExtensions = createAction(AT.START_EXTENSIONS);
-export const reloadExtensions = createAction(AT.RELOAD_EXTENSIONS);
-export const extensionsOpened = createAction<ExtensionsOpenedPayload>(AT.EXTENSIONS_OPENED);
-
-export default {
-	startExtensions,
+	checkExtensionUpdates,
+	extensionRemoved,
+	extensionsLoaded,
+	extensionUpsert,
+	installExtension,
+	operationChanged,
 	reloadExtensions,
-	extensionsOpened,
+	removeExtension,
+	searchExtensions,
+	searchStateChanged,
+	startExtensions,
+	updateExtension,
+	updatesAvailable,
+} from '@beak/state/extensions';
+
+export {
+	checkExtensionUpdates,
+	extensionRemoved,
+	extensionsLoaded,
+	extensionUpsert,
+	installExtension,
+	operationChanged,
+	reloadExtensions,
+	removeExtension,
+	searchExtensions,
+	searchStateChanged,
+	startExtensions,
+	updateExtension,
+	updatesAvailable,
+};
+export default {
+	checkExtensionUpdates,
+	extensionRemoved,
+	extensionUpsert,
+	extensionsLoaded,
+	installExtension,
+	operationChanged,
+	reloadExtensions,
+	removeExtension,
+	searchExtensions,
+	searchStateChanged,
+	startExtensions,
+	updateExtension,
+	updatesAvailable,
 };

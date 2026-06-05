@@ -1,22 +1,22 @@
-import React from 'react';
-import { faPersonCircleQuestion } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import styled from 'styled-components';
+import { Box, Flex } from '@chakra-ui/react';
+import { motion } from 'framer-motion';
+import { CircleHelp } from 'lucide-react';
+import * as React from 'react';
 
-import { NotEligible } from '../../hooks/use-flight-body-info';
+import type { NotEligible } from '../../hooks/use-flight-body-info';
 
 const reasons: Record<NotEligible, Reason> = {
 	request_invalid_body: {
-		title: 'The request body brok',
-		description: 'The internal request body is in an invalid format. Report this as a bug.',
+		title: 'Invalid request body',
+		description: 'The internal request body is in an invalid format. Please report this as a bug.',
 	},
 	request_no_body: {
-		title: 'This request had no body, to love',
-		description: 'The request had no body, so you don\'t need to be looking here',
+		title: 'No request body',
+		description: 'This request was sent without a body — nothing to preview here.',
 	},
 	response_no_body: {
-		title: 'This response had no body',
-		description: 'The response had no body, so you don\'t need to be looking here',
+		title: 'No response body',
+		description: 'The server replied without a body — nothing to preview here.',
 	},
 };
 
@@ -33,41 +33,38 @@ const PrettyViewIneligible: React.FC<PrettyViewIneligibleProps> = ({ eligibility
 	const reason = reasons[eligibility];
 
 	return (
-		<Container>
-			<ErrorInformation>
-				<FontAwesomeIcon
-					icon={faPersonCircleQuestion}
-					opacity={0.4}
-					size={'4x'}
-				/>
-				<Title>{reason.title}</Title>
-				<Description>{reason.description}</Description>
-			</ErrorInformation>
-		</Container>
+		<Flex align='center' justify='center' h='100%' px='10'>
+			<motion.div
+				initial={{ opacity: 0, y: 6 }}
+				animate={{ opacity: 1, y: 0 }}
+				transition={{ duration: 0.22, ease: 'easeOut' }}
+				style={{ textAlign: 'center', maxWidth: 380 }}
+			>
+				<Flex
+					align='center'
+					justify='center'
+					mx='auto'
+					w='48px'
+					h='48px'
+					borderRadius='full'
+					bg='color-mix(in srgb, var(--beak-colors-fg-subtle) 10%, transparent)'
+					borderWidth='1px'
+					borderColor='color-mix(in srgb, var(--beak-colors-fg-subtle) 22%, transparent)'
+					color='fg.subtle'
+					mb='2.5'
+					boxShadow='0 4px 12px color-mix(in srgb, var(--beak-colors-fg-subtle) 14%, transparent), inset 0 1px 0 color-mix(in srgb, white 14%, transparent)'
+				>
+					<CircleHelp size={22} strokeWidth={1.8} />
+				</Flex>
+				<Box fontSize='md' fontWeight='600' color='fg.default' letterSpacing='-0.005em'>
+					{reason.title}
+				</Box>
+				<Box fontSize='xs' color='fg.muted' mt='1.5' lineHeight='1.5'>
+					{reason.description}
+				</Box>
+			</motion.div>
+		</Flex>
 	);
 };
-
-const Container = styled.div`
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	height: 100%;
-	padding: 0 40px;
-`;
-
-const ErrorInformation = styled.div`
-	text-align: center;
-`;
-
-const Title = styled.div`
-	font-size: 23px;
-	margin: 10px 0;
-	font-weight: 300;
-	color: ${p => p.theme.ui.textOnSurfaceBackground};
-`;
-const Description = styled.div`
-	font-size: 13px;
-	color: ${p => p.theme.ui.textMinor};
-`;
 
 export default PrettyViewIneligible;

@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
 import { ipcEncryptionService } from '@beak/ui/lib/ipc';
 import { useAppSelector } from '@beak/ui/store/redux';
+import React, { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 
 import { hideEncryptionView } from '../store/actions';
 import FixProjectEncryption from './FixProjectEncryption';
@@ -15,8 +15,13 @@ const ProjectEncryption: React.FC<React.PropsWithChildren<unknown>> = () => {
 	const [status, setStatus] = useState<Status>('pending');
 
 	useEffect(() => {
-		ipcEncryptionService.checkStatus()
-			.then(check => setStatus(check ? 'has_key' : 'needs_key'));
+		let cancelled = false;
+		ipcEncryptionService.checkStatus().then(check => {
+			if (!cancelled) setStatus(check ? 'has_key' : 'needs_key');
+		});
+		return () => {
+			cancelled = true;
+		};
 	}, [open]);
 
 	function close() {
@@ -24,8 +29,7 @@ const ProjectEncryption: React.FC<React.PropsWithChildren<unknown>> = () => {
 		dispatch(hideEncryptionView());
 	}
 
-	if (!open)
-		return null;
+	if (!open) return null;
 
 	switch (status) {
 		case 'has_key':

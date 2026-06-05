@@ -11,10 +11,11 @@
 		"@beak/squawk": "*"
 	},
 	"scripts": {
-		"build": "yarn clean && yarn compile",
+		"build": "pnpm clean && pnpm compile",
 		"clean": "rm -rf ./dist && rm -rf tsconfig.tsbuildinfo",
-		"compile": "tsc -b tsconfig.json",
-		"typecheck": "tsc",
-		"start": "tsc -b tsconfig.json -w"
+		"compile": "tsgo --build tsconfig.json",
+		"typecheck": "tsgo",
+		"lint": "biome lint .",
+		"start": "tsgo --build tsconfig.json --watch"
 	}
 }

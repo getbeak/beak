@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react';
 import ksuid from '@beak/ksuid';
 import { showContextMenu } from '@beak/ui/utils/context-menu';
 import type { MenuItemConstructorOptions } from 'electron';
+import React, { useEffect } from 'react';
 
 interface ContextMenuProps {
 	target: HTMLElement | undefined;
@@ -12,8 +12,7 @@ const ContextMenu: React.FC<React.PropsWithChildren<ContextMenuProps>> = props =
 	const { children, menuItems, target } = props;
 
 	useEffect(() => {
-		if (!target)
-			return void 0;
+		if (!target) return void 0;
 
 		const id = ksuid.generate('ctxmenu').toString();
 
@@ -29,13 +28,9 @@ const ContextMenu: React.FC<React.PropsWithChildren<ContextMenuProps>> = props =
 		return () => {
 			target?.removeEventListener('contextmenu', handleContextMenu);
 		};
-	}, [children, target, menuItems]);
+	}, [target, menuItems]);
 
-	return (
-		<React.Fragment>
-			{children}
-		</React.Fragment>
-	);
+	return <React.Fragment>{children}</React.Fragment>;
 };
 
 export default ContextMenu;

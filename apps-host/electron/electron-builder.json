@@ -1,77 +1,72 @@
 {
-  "appId": "app.getbeak.beak",
-  "productName": "Beak",
-  "copyright": "Copyright © 2022 Flamingo Corp Ltd",
-  "extraMetadata": {
-    "name": "Beak",
-    "main": "main.js"
-  },
+	"appId": "app.getbeak.beak",
+	"productName": "Beak",
+	"copyright": "Copyright © 2022 Flamingo Corp Ltd",
+	"extraMetadata": {
+		"name": "Beak",
+		"main": "main.js"
+	},
 
-  "protocols": [
-    {
-      "name": "Beak app launcher protocol",
-      "schemes": ["beak-app"]
-    }
-  ],
+	"protocols": [
+		{
+			"name": "Beak app launcher protocol",
+			"schemes": ["beak-app"]
+		}
+	],
 
-  "files": [
-    { "from": ".", "filter": ["package.json"]},
-    { "from": "dist/main" }
-  ],
-  "extraFiles": [
-    { "from": "dist-react/", "to": "Resources/static/", "filter": "**/*" }
-  ],
+	"files": [{ "from": ".", "filter": ["package.json"] }, { "from": "dist/main" }],
+	"extraFiles": [{ "from": "dist-react/", "to": "Resources/static/", "filter": "**/*" }],
 
-  "directories": {
-    "output": "dist-electron"
-  },
+	"directories": {
+		"output": "dist-electron"
+	},
 
-  "generateUpdatesFilesForAllChannels": true,
-  "detectUpdateChannel": true,
-  "publish": {
-    "provider": "s3",
-    "bucket": "builds.getbeak.app",
-    "region": "eu-west-2"
-  },
+	"generateUpdatesFilesForAllChannels": true,
+	"detectUpdateChannel": true,
+	"publish": {
+		"provider": "s3",
+		"bucket": "builds.getbeak.app",
+		"region": "eu-west-2"
+	},
 
-  "mac": {
-    "category": "public.app-category.developer-tools",
-    "hardenedRuntime": true,
-    "gatekeeperAssess": false,
-    "entitlements": "build/entitlements.mac.plist",
-    "entitlementsInherit": "build/entitlements.mac.plist",
-    "extendInfo": {
-      "NSUserNotificationAlertStyle": "alert"
-    },
-    "target": [
-      {
-        "target": "dmg",
-        "arch": ["x64", "arm64"]
-      },
-      {
-        "target": "zip",
-        "arch": ["x64", "arm64"]
-      }
-    ]
-  },
-  "dmg": {
-    "sign": false
-  },
+	"mac": {
+		"category": "public.app-category.developer-tools",
+		"hardenedRuntime": true,
+		"gatekeeperAssess": false,
+		"entitlements": "build/entitlements.mac.plist",
+		"entitlementsInherit": "build/entitlements.mac.plist",
+		"extendInfo": {
+			"NSUserNotificationAlertStyle": "alert"
+		},
+		"target": [
+			{
+				"target": "dmg",
+				"arch": ["x64", "arm64"]
+			},
+			{
+				"target": "zip",
+				"arch": ["x64", "arm64"]
+			}
+		]
+	},
+	"dmg": {
+		"sign": false
+	},
 
-  "win": {
-    "verifyUpdateCodeSignature": false,
-    "target": [
-      {
-        "target": "nsis",
-        "arch": ["x64"]
-      },
-      {
-        "target": "zip",
-        "arch": ["x64"]
-      }
-    ]
-  },
+	"win": {
+		"verifyUpdateCodeSignature": false,
+		"target": [
+			{
+				"target": "nsis",
+				"arch": ["x64"]
+			},
+			{
+				"target": "zip",
+				"arch": ["x64"]
+			}
+		]
+	},
 
-  "afterSign": "scripts/notarize.js",
-  "afterPack": "scripts/after-pack.js"
+	"afterSign": "scripts/notarize.js",
+	"afterPack": "scripts/after-pack.js"
 }

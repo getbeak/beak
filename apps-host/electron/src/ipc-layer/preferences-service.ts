@@ -1,6 +1,6 @@
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { IpcPreferencesServiceMain } from '@beak/common/ipc/preferences';
-import { Environment } from '@beak/common/types/beak';
+import type { Environment } from '@beak/common/types/beak';
 import { app, ipcMain } from 'electron';
 
 import getBeakHost from '../host';
@@ -13,7 +13,9 @@ const service = new IpcPreferencesServiceMain(ipcMain);
 service.registerGetEnvironment(async () => await getBeakHost().providers.storage.get('environment'));
 
 service.registerGetNotificationOverview(async () => await getBeakHost().providers.storage.get('notifications'));
-service.registerGetNotificationValue(async (_event, key) => await getBeakHost().providers.storage.get(`notifications.${key}`));
+service.registerGetNotificationValue(
+	async (_event, key) => await getBeakHost().providers.storage.get(`notifications.${key}`),
+);
 service.registerSetNotificationValue(async (_event, { key, value }) => {
 	await getBeakHost().providers.storage.set(`notifications.${key}`, value);
 });
@@ -24,8 +26,7 @@ service.registerSetEditorValue(async (_event, { key, value }) => {
 	await getBeakHost().providers.storage.set(`editor.${key}`, value);
 
 	TypedObject.values(windowStack).forEach(window => {
-		if (!window)
-			return;
+		if (!window) return;
 
 		window.webContents.send('editor_preferences_updated');
 	});
@@ -38,6 +39,12 @@ service.registerSwitchEnvironment(async (_event, environment) => {
 });
 service.registerSwitchThemeMode(async (_event, themeMode) => {
 	await setThemeMode(themeMode);
+
+	TypedObject.values(windowStack).forEach(window => {
+		if (!window) return;
+
+		window.webContents.send('theme_mode_updated', themeMode);
+	});
 });
 
 service.registerResetConfig(async () => {

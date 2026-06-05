@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
 import useDebounce from '@beak/ui/hooks/use-debounce';
+import React, { useEffect, useRef, useState } from 'react';
 
 interface DebouncedInputProps extends Omit<React.HTMLProps<HTMLInputElement>, 'onChange'> {
 	type: 'text';
@@ -11,20 +11,31 @@ interface DebouncedInputProps extends Omit<React.HTMLProps<HTMLInputElement>, 'o
 const DebouncedInput: React.FC<React.PropsWithChildren<DebouncedInputProps>> = props => {
 	const { innerRef, onChange, ...rest } = props;
 	const ref = innerRef ?? null;
-	const [localValue, setLocalValue] = useState('');
+	const [localValue, setLocalValue] = useState(props.value);
+	const dirtyRef = useRef(false);
 
 	useEffect(() => {
+		dirtyRef.current = false;
 		setLocalValue(props.value);
 	}, [props.value]);
 
-	useDebounce(() => onChange(localValue), 300, [localValue]);
+	useDebounce(
+		() => {
+			if (dirtyRef.current) onChange(localValue);
+		},
+		300,
+		[localValue],
+	);
 
 	return (
 		<input
 			{...rest}
 			ref={ref}
 			value={localValue}
-			onChange={e => setLocalValue(e.target.value)}
+			onChange={e => {
+				dirtyRef.current = true;
+				setLocalValue(e.target.value);
+			}}
 		/>
 	);
 };

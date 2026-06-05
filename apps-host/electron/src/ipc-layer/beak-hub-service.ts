@@ -6,3 +6,5 @@ import getBeakHost from '../host';
 const service = new IpcBeakHubServiceMain(ipcMain);
 
 service.registerListRecentProjects(async () => await getBeakHost().project.recents.listProjects());
+
+service.registerGetRootSource(async () => 'desktop');

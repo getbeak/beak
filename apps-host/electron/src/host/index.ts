@@ -1,8 +1,9 @@
-import BeakHost from '@beak/common-host';
-import { app } from 'electron';
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
+import Runtime from '@beak/runtime-shared';
+import { app } from 'electron';
+import gitHttp from 'isomorphic-git/http/node';
 import { Logger } from 'tslog';
 
 import { setupLoggerForFsLogging } from '../lib/logger';
@@ -14,48 +15,65 @@ const beakHostLogger = new Logger({ name: 'electron-host' });
 
 setupLoggerForFsLogging(beakHostLogger, 'main');
 
-const beakHost = new BeakHost({
-	aes: new AesProvider(),
-	logger: beakHostLogger,
-	credentials: new CredentialsProvider(),
-	storage: new StorageProvider({
-		recents: [],
-		windowStates: {},
-		previousWindowPresence: [],
-		beakId: crypto.randomBytes(128).toString('base64url'),
+const runtime = new Runtime({
+	capabilities: {
+		nativeContextMenus: true,
+		extensions: true,
+		multipleWindows: true,
+		systemKeychain: true,
+		fileSystemAccess: 'native',
+		binaryStreaming: true,
+		localAgent: 'unsupported',
+	},
+	providers: {
+		aes: new AesProvider(),
+		logger: beakHostLogger,
+		credentials: new CredentialsProvider(),
+		storage: new StorageProvider({
+			recents: [],
+			windowStates: {},
+			previousWindowPresence: [],
+			beakId: crypto.randomBytes(128).toString('base64url'),
 
-		latestKnownVersion: app.getVersion(),
-		environment: 'prod',
+			latestKnownVersion: app.getVersion(),
+			environment: 'prod',
 
-		encryptedAuth: null,
+			encryptedAuth: null,
 
-		referenceFiles: {},
+			referenceFiles: {},
 
-		notifications: {
-			onSuccessfulRequest: 'sound-only',
-			onInformationRequest: 'on',
-			onFailedRequest: 'on',
-			showRequestNotificationWhenFocused: false,
+			notifications: {
+				onSuccessfulRequest: 'sound-only',
+				onInformationRequest: 'on',
+				onFailedRequest: 'on',
+				showRequestNotificationWhenFocused: false,
 
-			onUpdateAvailable: 'on',
+				onUpdateAvailable: 'on',
+			},
+
+			editor: {
+				fontSize: 11,
+				themeOverride: 'system',
+			},
+
+			passedOnboarding: false,
+			projectMappings: {},
+
+			themeMode: 'system',
+		}),
+		node: {
+			fs,
+			path,
 		},
-
-		editor: {
-			fontSize: 11,
-			themeOverride: 'system',
+		git: {
+			http: gitHttp,
 		},
-
-		passedOnboarding: false,
-		projectMappings: {},
-
-		themeMode: 'system',
-	}),
-	node: {
-		fs,
-		path,
 	},
 });
 
-export default function getBeakHost() {
-	return beakHost;
+export default function getRuntime() {
+	return runtime;
 }
+
+/** @deprecated use {@link getRuntime}. Kept during the migration. */
+export const getBeakHost = getRuntime;

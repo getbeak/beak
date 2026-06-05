@@ -1,8 +1,9 @@
-import React from 'react';
 import type { Entries, NamedEntries } from '@getbeak/types/body-editor-json';
+import React from 'react';
 
 import JsonArrayEntry from './JsonArrayEntry';
 import JsonBooleanEntry from './JsonBooleanEntry';
+import JsonEnumEntry from './JsonEnumEntry';
 import JsonNullEntry from './JsonNullEntry';
 import JsonNumberEntry from './JsonNumberEntry';
 import JsonObjectEntry from './JsonObjectEntry';
@@ -29,6 +30,8 @@ export const JsonEntry: React.FC<React.PropsWithChildren<JsonEntryProps>> = prop
 			return <JsonBooleanEntry depth={depth} requestId={requestId} value={value} nameOverride={nameOverride} />;
 		case 'null':
 			return <JsonNullEntry depth={depth} requestId={requestId} value={value} nameOverride={nameOverride} />;
+		case 'enum':
+			return <JsonEnumEntry depth={depth} requestId={requestId} value={value} nameOverride={nameOverride} />;
 
 		case 'array':
 			return <JsonArrayEntry depth={depth} requestId={requestId} value={value} nameOverride={nameOverride} />;
@@ -50,11 +53,9 @@ export const JsonEntry: React.FC<React.PropsWithChildren<JsonEntryProps>> = prop
 };
 
 export function detectName(depth: number, entry: Entries) {
-	if (depth === 0)
-		return '<Root>';
+	if (depth === 0) return '<Root>';
 
-	if ((entry as NamedEntries).name !== void 0)
-		return (entry as NamedEntries).name;
+	if ((entry as NamedEntries).name !== void 0) return (entry as NamedEntries).name;
 
 	return '';
 }

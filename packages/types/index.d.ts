@@ -6,4 +6,4 @@ export { default as Request } from './request';
 export { default as Response } from './response';
 export { default as Squawk } from './squawk';
 export { default as Values } from './values';
-export { default as VariableGroups } from './variable-groups';
+export { default as VariableSets } from './variable-sets';

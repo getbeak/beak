@@ -1,36 +1,50 @@
-import React from 'react';
+import { selectActiveFlight } from '@beak/state/flight';
 import { useAppSelector } from '@beak/ui/store/redux';
-import styled from 'styled-components';
+import { Box } from '@chakra-ui/react';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
+import * as React from 'react';
 
-const ProgressIndicator: React.FC<React.PropsWithChildren<unknown>> = () => {
-	const currentFlight = useAppSelector(s => s.global.flight.currentFlight);
+const MotionDiv = motion.div;
+
+const ProgressIndicator: React.FC = () => {
+	const reduced = useReducedMotion();
+	const selectedTab = useAppSelector(s => s.features.tabs.selectedTab);
+	const activeFlight = useAppSelector(s => (selectedTab ? selectActiveFlight(selectedTab)(s) : null));
+
+	const percentage = activeFlight?.bodyTransferPercentage ?? 0;
 
 	return (
-		<Wrapper>
-			{currentFlight?.flighting && (
-				<IndicatorBar
-					style={{ width: `${currentFlight.bodyTransferPercentage || 0}%` }}
-				/>
-			)}
-		</Wrapper>
+		<Box position='relative' h='2px' overflow='visible' zIndex={50}>
+			<AnimatePresence>
+				{activeFlight && (
+					<MotionDiv
+						key='progress'
+						initial={{ opacity: 0 }}
+						animate={{ opacity: 1 }}
+						exit={{ opacity: 0 }}
+						transition={{ duration: 0.16 }}
+						style={{
+							position: 'absolute',
+							top: 0,
+							left: 0,
+							zIndex: 101,
+							height: 2,
+							width: `${percentage}%`,
+							transition: 'width 140ms cubic-bezier(.4, 0, .2, 1)',
+							background:
+								'linear-gradient(90deg, var(--beak-colors-accent-pink), var(--beak-colors-accent-teal), var(--beak-colors-accent-indigo), var(--beak-colors-accent-pink))',
+							backgroundSize: '300% 100%',
+							animation: reduced ? undefined : 'beakProgressShimmer 2.4s linear infinite',
+							boxShadow:
+								'0 0 12px color-mix(in srgb, var(--beak-colors-accent-pink) 60%, transparent), 0 0 4px color-mix(in srgb, var(--beak-colors-accent-teal) 40%, transparent)',
+							borderTopRightRadius: '2px',
+							borderBottomRightRadius: '2px',
+						}}
+					/>
+				)}
+			</AnimatePresence>
+		</Box>
 	);
 };
-
-const Wrapper = styled.div`
-	position: relative;
-	height: 4px;
-`;
-
-const IndicatorBar = styled.div`
-	position: absolute;
-	top: 0;
-	left: 0;
-	z-index: 101;
-
-	transition: width .1s ease;
-	height: 4px;
-
-	background-color: ${props => props.theme.ui.primaryFill};
-`;
 
 export default ProgressIndicator;

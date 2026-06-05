@@ -1,28 +1,71 @@
-import React, { useContext, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
-import { SidebarVariant } from '@beak/common/types/beak-hub';
-import { MenuEventPayload } from '@beak/common/web-contents/types';
-import WindowSessionContext from '@beak/ui/contexts/window-session-context';
-import { toVibrancyAlpha } from '@beak/ui/design-system/utils';
+import type { SidebarVariant } from '@beak/common/types/beak-hub';
+import type { MenuEventPayload } from '@beak/common/web-contents/types';
+import { changeTab } from '@beak/ui/features/tabs/store/actions';
 import { checkShortcut } from '@beak/ui/lib/keyboard-shortcuts';
 import { sidebarPreferenceSetCollapse, sidebarPreferenceSetSelected } from '@beak/ui/store/preferences/actions';
 import { useAppSelector } from '@beak/ui/store/redux';
-import styled, { css } from 'styled-components';
-
+import { actions as variableSetActions } from '@beak/ui/store/variable-sets';
+import { Box, chakra, Flex } from '@chakra-ui/react';
+import { Plus } from 'lucide-react';
+import * as React from 'react';
+import { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import ExtensionsPane from '../../extension/components/ExtensionsPane';
 import ProjectPane from '../../project-pane/components/ProjectPane';
-import VariablesPane from '../../variables/components/VariablesPane';
-import SidebarMenuHighlighter from './molecules/SidebarMenuHighlighter';
+import SourceSchemasPane from '../../source-schemas/components/SourceSchemasPane';
+import VariablesPane from '../../variables-sets/components/VariablesPane';
 import SidebarMenuItem from './molecules/SidebarMenuItem';
 
-const sidebarVariants: SidebarVariant[] = ['project', 'variables'];
+const embedded = Boolean(window.embeddedIndicator);
+// Electron leans on the BrowserWindow's native `under-window` vibrancy on
+// macOS — we keep the surface very transparent so the platform's blur shows
+// through. On web (and non-darwin Electron) we approximate the same look
+// with a single solid translucent panel + `backdrop-filter: blur(...)`.
+// No mesh, no per-section borders — the panel is one slab.
+const useNativeVibrancy = embedded;
+const ACTIVITY_BAR_WIDTH = 48;
 
-const Sidebar: React.FC<React.PropsWithChildren<unknown>> = () => {
-	const windowSession = useContext(WindowSessionContext);
+const ChakraButton = chakra('button');
+
+const ViewActionButton: React.FC<
+	React.PropsWithChildren<{
+		'aria-label': string;
+		title: string;
+		onClick: () => void;
+	}>
+> = ({ children, onClick, ...rest }) => (
+	<ChakraButton
+		type='button'
+		display='inline-flex'
+		alignItems='center'
+		justifyContent='center'
+		w='22px'
+		h='22px'
+		borderRadius='sm'
+		bg='transparent'
+		color='fg.muted'
+		cursor='pointer'
+		transition='color .1s linear, background-color .1s linear'
+		_hover={{
+			color: 'fg.default',
+			bg: 'color-mix(in srgb, var(--beak-colors-fg-default) 10%, transparent)',
+		}}
+		_focusVisible={{
+			outline: 'none',
+			color: 'fg.default',
+			boxShadow: 'inset 0 0 0 1px color-mix(in srgb, var(--beak-colors-accent-pink) 60%, transparent)',
+		}}
+		onClick={onClick}
+		{...rest}
+	>
+		{children}
+	</ChakraButton>
+);
+
+const Sidebar: React.FC = () => {
 	const selectedSidebar = useAppSelector(s => s.global.preferences.sidebar.selected);
 	const sidebarCollapsed = useAppSelector(s => s.global.preferences.sidebar.collapsed.sidebar);
 	const dispatch = useDispatch();
-
-	const variantIndex = sidebarVariants.indexOf(selectedSidebar);
 
 	useEffect(() => {
 		const onKeyDown = (event: KeyboardEvent) => {
@@ -30,49 +73,56 @@ const Sidebar: React.FC<React.PropsWithChildren<unknown>> = () => {
 				case checkShortcut('sidebar.toggle-view', event):
 					event.stopPropagation();
 					dispatch(sidebarPreferenceSetCollapse({ key: 'sidebar', collapsed: !sidebarCollapsed }));
-
 					break;
-
 				case checkShortcut('sidebar.switch-project', event):
 					event.stopPropagation();
 					dispatch(sidebarPreferenceSetCollapse({ key: 'sidebar', collapsed: false }));
 					dispatch(sidebarPreferenceSetSelected('project'));
-
 					break;
-
 				case checkShortcut('sidebar.switch-variables', event):
 					event.stopPropagation();
 					dispatch(sidebarPreferenceSetCollapse({ key: 'sidebar', collapsed: false }));
 					dispatch(sidebarPreferenceSetSelected('variables'));
-
 					break;
-
+				case checkShortcut('sidebar.switch-endpoints', event):
+					event.stopPropagation();
+					dispatch(sidebarPreferenceSetCollapse({ key: 'sidebar', collapsed: false }));
+					dispatch(sidebarPreferenceSetSelected('schemas'));
+					break;
+				case checkShortcut('sidebar.switch-extensions', event):
+					event.stopPropagation();
+					dispatch(sidebarPreferenceSetCollapse({ key: 'sidebar', collapsed: false }));
+					dispatch(sidebarPreferenceSetSelected('extensions'));
+					break;
 				default:
 					return;
 			}
-
 			event.preventDefault();
 		};
 
 		function listener(_event: unknown, payload: MenuEventPayload) {
-			const { code } = payload;
-
-			switch (code) {
+			switch (payload.code) {
 				case 'toggle_sidebar':
 					dispatch(sidebarPreferenceSetCollapse({ key: 'sidebar', collapsed: !sidebarCollapsed }));
 					break;
-
 				case 'sidebar_show_project':
 					dispatch(sidebarPreferenceSetCollapse({ key: 'sidebar', collapsed: false }));
 					dispatch(sidebarPreferenceSetSelected('project'));
 					break;
-
 				case 'sidebar_show_variables':
 					dispatch(sidebarPreferenceSetCollapse({ key: 'sidebar', collapsed: false }));
 					dispatch(sidebarPreferenceSetSelected('variables'));
 					break;
-
-				default: break;
+				case 'sidebar_show_endpoints':
+					dispatch(sidebarPreferenceSetCollapse({ key: 'sidebar', collapsed: false }));
+					dispatch(sidebarPreferenceSetSelected('schemas'));
+					break;
+				case 'sidebar_show_extensions':
+					dispatch(sidebarPreferenceSetCollapse({ key: 'sidebar', collapsed: false }));
+					dispatch(sidebarPreferenceSetSelected('extensions'));
+					break;
+				default:
+					break;
 			}
 		}
 
@@ -85,7 +135,7 @@ const Sidebar: React.FC<React.PropsWithChildren<unknown>> = () => {
 		};
 	}, [dispatch, sidebarCollapsed]);
 
-	function usefulSetVariant(newVariant: SidebarVariant) {
+	function handleActivityClick(newVariant: SidebarVariant) {
 		if (selectedSidebar === newVariant) {
 			dispatch(sidebarPreferenceSetCollapse({ key: 'sidebar', collapsed: !sidebarCollapsed }));
 		} else {
@@ -94,75 +144,162 @@ const Sidebar: React.FC<React.PropsWithChildren<unknown>> = () => {
 		}
 	}
 
+	const topSpacer = embedded ? 36 : 0;
+	const title =
+		selectedSidebar === 'variables'
+			? 'Variables'
+			: selectedSidebar === 'schemas'
+				? 'Schema sources'
+				: selectedSidebar === 'extensions'
+					? 'Extensions'
+					: 'Explorer';
+
 	return (
-		<Container $darwin={windowSession.isDarwin()}>
-			<DragBar $collapsed={sidebarCollapsed} />
-			{sidebarCollapsed && <CollapsedLogo />}
-			<SidebarMenu $collapsed={sidebarCollapsed}>
-				<SidebarMenuHighlighter hidden={sidebarCollapsed} index={variantIndex} />
+		<Box position='relative' h='100%' w='100%' overflow='hidden'>
+			{/* Vibrancy emulation: a heavily-blurred translucent panel sits
+				over whatever's behind the sidebar — on electron that's the
+				BrowserWindow vibrancy, on web it's the root mesh from
+				WebProjectMain. Either way the surface picks up colour from
+				below the way macOS vibrancy does. */}
+			<Box
+				position='absolute'
+				inset='0'
+				zIndex={1}
+				pointerEvents='none'
+				backdropFilter={useNativeVibrancy ? undefined : 'blur(40px) saturate(140%)'}
+				css={{
+					// Lean transparent in both modes so the mesh underneath
+					// actually reads as colour-through-glass. Blur + saturation
+					// keep text legible on top.
+					background: useNativeVibrancy
+						? 'color-mix(in srgb, var(--beak-colors-bg-surface-alt) 55%, transparent)'
+						: 'color-mix(in srgb, var(--beak-colors-bg-surface-alt) 72%, transparent)',
+					'.dark &': {
+						background: useNativeVibrancy
+							? 'color-mix(in srgb, var(--beak-colors-gray-850) 60%, transparent)'
+							: 'color-mix(in srgb, var(--beak-colors-gray-900) 62%, transparent)',
+					},
+				}}
+			/>
+			<Flex position='relative' zIndex={2} h='100%' w='100%'>
+				<Flex
+					as='nav'
+					aria-label='Activity bar'
+					direction='column'
+					flexShrink={0}
+					w={`${ACTIVITY_BAR_WIDTH}px`}
+					pt={`${topSpacer}px`}
+					borderRightWidth='1px'
+					borderRightStyle='solid'
+					// `border.subtle` solid (gray.200 / gray.800) — visible without
+					// shouting. The earlier 60%-transparent recipe was the right
+					// token, just too washed out against the backdrop blur.
+					borderRightColor='border.subtle'
+					style={embedded ? ({ WebkitAppRegion: 'drag' } as React.CSSProperties) : undefined}
+				>
+					<Box style={embedded ? ({ WebkitAppRegion: 'no-drag' } as React.CSSProperties) : undefined}>
+						<SidebarMenuItem
+							item='project'
+							name='Project'
+							selectedItem={sidebarCollapsed ? null : selectedSidebar}
+							shortcut='sidebar.switch-project'
+							onClick={handleActivityClick}
+						/>
+						<SidebarMenuItem
+							item='variables'
+							name='Variables'
+							selectedItem={sidebarCollapsed ? null : selectedSidebar}
+							shortcut='sidebar.switch-variables'
+							onClick={handleActivityClick}
+						/>
+						<SidebarMenuItem
+							item='schemas'
+							name='Schema sources'
+							selectedItem={sidebarCollapsed ? null : selectedSidebar}
+							shortcut='sidebar.switch-endpoints'
+							onClick={handleActivityClick}
+						/>
+						<SidebarMenuItem
+							item='extensions'
+							name='Extensions'
+							selectedItem={sidebarCollapsed ? null : selectedSidebar}
+							shortcut='sidebar.switch-extensions'
+							onClick={handleActivityClick}
+						/>
+					</Box>
+				</Flex>
 
-				<SidebarMenuItem
-					item={'project'}
-					name={'Project'}
-					selectedItem={selectedSidebar}
-					shortcut={'sidebar.switch-project'}
-					onClick={usefulSetVariant}
-				/>
-				<SidebarMenuItem
-					item={'variables'}
-					name={'Variables'}
-					selectedItem={selectedSidebar}
-					shortcut={'sidebar.switch-variables'}
-					onClick={usefulSetVariant}
-				/>
-			</SidebarMenu>
-
-			{selectedSidebar === 'project' && <ProjectPane />}
-			{selectedSidebar === 'variables' && <VariablesPane />}
-		</Container>
+				{!sidebarCollapsed && (
+					<Flex direction='column' flex='1' minW={0} overflow='hidden'>
+						{embedded && (
+							<Box h={`${topSpacer}px`} flexShrink={0} style={{ WebkitAppRegion: 'drag' } as React.CSSProperties} />
+						)}
+						<Flex
+							align='center'
+							h='35px'
+							flexShrink={0}
+							px='3'
+							gap='1'
+							style={embedded ? ({ WebkitAppRegion: 'drag' } as React.CSSProperties) : undefined}
+							css={{
+								'&:hover [data-view-actions], &:focus-within [data-view-actions]': { opacity: 1 },
+								...(embedded && {
+									// Empty space in the title strip stays a drag region; the
+									// title text + hover action buttons opt out so they
+									// stay clickable.
+									'button, [role=button], [data-no-drag]': {
+										WebkitAppRegion: 'no-drag' as never,
+									},
+								}),
+							}}
+						>
+							<Box
+								flex='1'
+								minW={0}
+								color='fg.default'
+								fontSize='11px'
+								fontWeight='600'
+								textTransform='uppercase'
+								letterSpacing='0.04em'
+								whiteSpace='nowrap'
+								overflow='hidden'
+								textOverflow='ellipsis'
+								title={title}
+							>
+								{title}
+							</Box>
+							<Flex data-view-actions align='center' gap='0.5' opacity={0} transition='opacity .12s ease'>
+								{selectedSidebar === 'variables' && (
+									<ViewActionButton
+										aria-label='New variable set'
+										title='New variable set'
+										onClick={() => {
+											dispatch(variableSetActions.createNewVariableSet({}));
+											dispatch(
+												changeTab({
+													type: 'variable_set_editor',
+													payload: 'New variable set',
+													temporary: false,
+												}),
+											);
+										}}
+									>
+										<Plus size={14} strokeWidth={2} />
+									</ViewActionButton>
+								)}
+							</Flex>
+						</Flex>
+						<Box flex='1' minH={0} display='flex' flexDirection='column' overflow='hidden'>
+							{selectedSidebar === 'project' && <ProjectPane />}
+							{selectedSidebar === 'variables' && <VariablesPane />}
+							{selectedSidebar === 'schemas' && <SourceSchemasPane />}
+							{selectedSidebar === 'extensions' && <ExtensionsPane />}
+						</Box>
+					</Flex>
+				)}
+			</Flex>
+		</Box>
 	);
 };
-
-const Container = styled.div<{ $darwin: boolean }>`
-	position: relative;
-	display: grid;
-	grid-template-columns: 40px 1fr;
-	height: calc(100% - 72px);
-	padding-top: 72px;
-	background: ${p => toVibrancyAlpha(p.theme.ui.background, 0.75)};
-	overflow: hidden;
-`;
-
-const DragBar = styled.div<{ $collapsed: boolean }>`
-	position: absolute;
-	top: 0; left: 0; right: 0;
-	height: 71px;
-	-webkit-app-region: drag;
-
-	${p => p.$collapsed && css`
-		background: ${p => p.theme.ui.secondarySurface};
-		border-bottom: 1px solid ${p => p.theme.ui.backgroundBorderSeparator};
-	`}
-`;
-
-const CollapsedLogo = styled.div`
-	position: absolute;
-	top: 0; left: 0; right: 0;
-	height: 71px;
-
-	background: url('images/logo.svg');
-	background-position: center 85%;
-	background-size: 20px;
-	background-repeat: no-repeat;
-	transform: scaleX(-1);
-	/* filter: brightness(0) invert(1); */
-`;
-
-const SidebarMenu = styled.div<{ $collapsed: boolean }>`
-	position: relative;
-	width: 40px;
-
-	${p => p.$collapsed && css`border-right: 2px solid ${p.theme.ui.backgroundBorderSeparator};`}
-`;
 
 export default Sidebar;

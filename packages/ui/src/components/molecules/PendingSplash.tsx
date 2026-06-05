@@ -1,10 +1,16 @@
-import React from 'react';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import Kbd from '@beak/ui/components/atoms/Kbd';
-import shortcutDefinitions, { Shortcuts } from '@beak/ui/lib/keyboard-shortcuts';
-import { PlatformAgnosticDefinitions, PlatformSpecificDefinitions, ShortcutDefinition } from '@beak/ui/lib/keyboard-shortcuts/types';
+import { instance as windowSessionInstance } from '@beak/ui/contexts/window-session-context';
+import shortcutDefinitions, { type Shortcuts } from '@beak/ui/lib/keyboard-shortcuts';
+import type {
+	PlatformAgnosticDefinitions,
+	PlatformSpecificDefinitions,
+	ShortcutDefinition,
+} from '@beak/ui/lib/keyboard-shortcuts/types';
 import { renderSimpleKey } from '@beak/ui/utils/keyboard-rendering';
-import styled from 'styled-components';
+import { Box, Flex, Grid } from '@chakra-ui/react';
+import { motion, useReducedMotion } from 'framer-motion';
+import * as React from 'react';
 
 const displayShortcuts: Partial<Record<Shortcuts, string>> = {
 	'menu-bar.file.new-request': 'Create new request',
@@ -14,108 +20,129 @@ const displayShortcuts: Partial<Record<Shortcuts, string>> = {
 	'sidebar.toggle-view': 'Toggle sidebar',
 };
 
-const PendingSlash: React.FC<React.PropsWithChildren<unknown>> = () => (
-	<Wrapper>
-		<FadedLogo />
-		<ShortcutContainer>
-			{TypedObject.keys(displayShortcuts).map(k => {
-				const name = displayShortcuts[k];
-				const definition = shortcutDefinition(shortcutDefinitions[k]);
+const MotionBox = motion.create(Box);
+const MotionGrid = motion.create(Grid);
 
-				return (
-					<SingleShortcut key={k}>
-						<ShortcutName>{name}</ShortcutName>
-						<NonCommandKeys>
-							{Array.isArray(definition.key) && definition.key.map(k => (
-								<React.Fragment key={k}>
-									<CommandKeys definition={definition} />
-									<Kbd>{renderSimpleKey(k)}</Kbd>
-									<KbdOption>{'|'}</KbdOption>
-								</React.Fragment>
-							))}
-							{typeof definition.key === 'string' && (
-								<React.Fragment>
-									<CommandKeys definition={definition} />
-									<Kbd>{renderSimpleKey(definition.key)}</Kbd>
-								</React.Fragment>
-							)}
-						</NonCommandKeys>
-					</SingleShortcut>
-				);
-			})}
-		</ShortcutContainer>
-	</Wrapper>
-);
+const PendingSplash: React.FC = () => {
+	const reduced = useReducedMotion();
 
-const CommandKeys: React.FC<{ definition: ShortcutDefinition }> = ({ definition }) => (
-	<>
-		{definition.ctrlOrMeta && <Kbd>{'⌘'}</Kbd>}
-		{definition.ctrl && <Kbd>{'⌃'}</Kbd>}
-		{definition.alt && <Kbd>{'⌥'}</Kbd>}
-		{definition.meta && <Kbd>{'⌘'}</Kbd>}
-		{definition.shift && <Kbd>{'⇧'}</Kbd>}
-	</>
-);
+	return (
+		<Box
+			position='relative'
+			w='100%'
+			h='100%'
+			overflow='hidden'
+			css={{
+				// Distinct from the request pane (`bg.surface`): lighter in
+				// light mode, lifted in dark. Solid-enough to read as its own
+				// surface, but still translucent so the mesh hints through.
+				background: 'color-mix(in srgb, var(--beak-colors-bg-canvas) 88%, transparent)',
+				'.dark &': {
+					background: 'color-mix(in srgb, var(--beak-colors-bg-surface-emphasized) 78%, transparent)',
+				},
+			}}
+		>
+			<Flex position='relative' w='100%' h='100%' align='center' justify='center' direction='column' gap='10' px='6'>
+				<Flex direction='column' align='center' gap='3'>
+					<MotionBox
+						initial={{ opacity: 0, y: 8, scale: 0.96 }}
+						animate={{ opacity: 1, y: 0, scale: 1 }}
+						transition={{ duration: 0.35, ease: 'easeOut' }}
+					>
+						<MotionBox
+							w='140px'
+							h='140px'
+							bgImage="url('images/logo-blank.png')"
+							bgRepeat='no-repeat'
+							bgPos='center'
+							bgSize='contain'
+							opacity={0.14}
+							css={{ 'html.light &': { opacity: 0.24 } }}
+							animate={
+								reduced
+									? undefined
+									: {
+											transform: ['translate3d(0,0,0)', 'translate3d(0,-6px,0)', 'translate3d(0,0,0)'],
+										}
+							}
+							transition={{ duration: 6, ease: 'easeInOut', repeat: Infinity }}
+						/>
+					</MotionBox>
+
+					<MotionBox
+						initial={{ opacity: 0, y: 4 }}
+						animate={{ opacity: 1, y: 0 }}
+						transition={{ duration: 0.4, ease: 'easeOut', delay: 0.08 }}
+						textAlign='center'
+						color='fg.muted'
+						fontSize='sm'
+					>
+						{'Make a request to see its details here'}
+					</MotionBox>
+				</Flex>
+
+				<MotionGrid
+					initial={{ opacity: 0, y: 8 }}
+					animate={{ opacity: 1, y: 0 }}
+					transition={{ duration: 0.4, ease: 'easeOut', delay: 0.16 }}
+					templateColumns='auto auto'
+					columnGap='5'
+					rowGap='2'
+				>
+					{TypedObject.keys(displayShortcuts).map(k => {
+						const name = displayShortcuts[k];
+						const definition = shortcutDefinition(shortcutDefinitions[k]);
+
+						return (
+							<React.Fragment key={k}>
+								<Flex align='center' justify='right' fontSize='xs' color='fg.muted'>
+									{name}
+								</Flex>
+								<Box display='inline-flex' alignItems='center' gap='0.5'>
+									{Array.isArray(definition.key) ? (
+										definition.key.map((k2, i) => (
+											<React.Fragment key={k2}>
+												{i > 0 && (
+													<Box as='span' color='fg.subtle' mx='1'>
+														{'|'}
+													</Box>
+												)}
+												<CommandKeys definition={definition} />
+												<Kbd>{renderSimpleKey(k2)}</Kbd>
+											</React.Fragment>
+										))
+									) : (
+										<React.Fragment>
+											<CommandKeys definition={definition} />
+											<Kbd>{renderSimpleKey(definition.key)}</Kbd>
+										</React.Fragment>
+									)}
+								</Box>
+							</React.Fragment>
+						);
+					})}
+				</MotionGrid>
+			</Flex>
+		</Box>
+	);
+};
+
+const CommandKeys: React.FC<{ definition: ShortcutDefinition }> = ({ definition }) => {
+	const darwin = windowSessionInstance.isDarwin();
+	return (
+		<>
+			{definition.ctrlOrMeta && <Kbd>{darwin ? '⌘' : '⌃'}</Kbd>}
+			{definition.ctrl && <Kbd>{'⌃'}</Kbd>}
+			{definition.alt && <Kbd>{darwin ? '⌥' : 'Alt'}</Kbd>}
+			{definition.meta && <Kbd>{'⌘'}</Kbd>}
+			{definition.shift && <Kbd>{'⇧'}</Kbd>}
+		</>
+	);
+};
 
 function shortcutDefinition(definition: PlatformSpecificDefinitions | PlatformAgnosticDefinitions) {
-	if (definition.type === 'agnostic')
-		return definition;
-
-	// return definition[windowSessionInstance.getPlatform()];
-	return definition.darwin;
+	if (definition.type === 'agnostic') return definition;
+	return windowSessionInstance.isDarwin() ? definition.darwin : definition.windows;
 }
 
-const Wrapper = styled.div`
-	display: flex;
-	width: 100%;
-	height: 100%;
-
-	align-items: center;
-	justify-content: center;
-	flex-direction: column;
-`;
-
-const FadedLogo = styled.div`
-	width: 200px;
-	height: 200px;
-	background: url('images/logo-blank.png');
-	background-repeat: no-repeat;
-	background-position: center;
-	background-size: contain;
-	opacity: ${p => p.theme.theme === 'light' ? 0.3 : 0.15};
-`;
-
-const ShortcutContainer = styled.div``;
-
-const SingleShortcut = styled.div`
-	display: grid;
-	grid-template-columns: 1fr 1fr;
-	gap: 10px;
-	margin-bottom: 10px;
-
-	font-size: 12px;
-	line-height: 11px;
-	color: ${p => p.theme.ui.textMinor};
-`;
-
-const ShortcutName = styled.div`
-	display: flex;
-	align-items: center;
-	justify-content: right;
-`;
-
-const NonCommandKeys = styled.div`
-	display: inline-block;
-`;
-
-const KbdOption = styled.div`
-	display: inline-block;
-	content: '|';
-	margin: 0 2px;
-
-	&:last-child {
-		display: none;
-	}
-`;
-
-export default PendingSlash;
+export default PendingSplash;

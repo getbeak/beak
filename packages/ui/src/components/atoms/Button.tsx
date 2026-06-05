@@ -1,107 +1,120 @@
-import { toHexAlpha } from '@beak/design-system/utils';
-import styled, { css } from 'styled-components';
+import { Button as ChakraButton, type ButtonProps as ChakraButtonProps } from '@chakra-ui/react';
+import * as React from 'react';
 
-const primaryCss = css`
-	background: ${props => toHexAlpha(props.theme.ui.background, 0.5)};
-	border: 2px solid ${props => props.theme.ui.primaryFill};
-
-	&:not(:disabled) {
-		&:hover {
-			background: ${props => props.theme.ui.primaryFill};
-		}
-
-		&:focus {
-			border-color: ${props => props.theme.ui.primaryFill};
-		}
-	}
-`;
-
-const secondaryCss = css`
-	background: ${props => toHexAlpha(props.theme.ui.background, 0.5)};
-	border: 2px solid ${props => props.theme.ui.secondaryAction};
-
-	&:not(:disabled) {
-		&:hover {
-			background: ${props => props.theme.ui.secondaryAction};
-		}
-
-		&:focus {
-			border-color: ${props => props.theme.ui.secondaryAction};
-		}
-	}
-`;
-
-const destructiveCss = css`
-	background: ${props => toHexAlpha(props.theme.ui.background, 0.5)};
-	border: 2px solid ${props => props.theme.ui.destructiveAction};
-
-	&:not(:disabled) {
-		&:hover {
-			background: ${props => props.theme.ui.destructiveAction};
-		}
-
-		&:focus {
-			border-color: ${props => props.theme.ui.destructiveAction};
-		}
-	}
-`;
-
-const mdCss = css`
-	padding: 5px 10px;
-	font-size: 14px;
-`;
-
-const smCss = css`
-	padding: 4px 8px;
-	font-size: 13px;
-`;
-
-export interface ButtonProps {
+/**
+ * Beak's button — Chakra v3 under the hood.
+ *
+ * Three variants:
+ *   - `primary`     — solid accent-pink fill with white text. The CTA.
+ *   - `secondary`   — outlined: 1px border, foreground text. Use for
+ *                     dismiss / cancel / cancel-equivalent actions.
+ *   - `destructive` — solid accent-alert fill with white text.
+ *
+ * High contrast in both light & dark mode (the primary fills with the
+ * brand colour rather than relying on a 2-px outline you have to squint
+ * at). Sharper hover (no fill flip; lifts colour instead), 0.96 press
+ * scale, brand-glow focus ring.
+ */
+export interface ButtonProps extends Omit<ChakraButtonProps, 'colorScheme' | 'size'> {
 	colour?: 'primary' | 'secondary' | 'destructive';
 	size?: 'md' | 'sm';
 }
 
-const Button = styled.button<ButtonProps>`
-	border-radius: 4px;
-	color: ${props => props.theme.ui.textOnSurfaceBackground};
-	transition: transform ease .1s;
-	cursor: pointer;
+type Tone = NonNullable<ButtonProps['colour']>;
 
-	&:disabled {
-		opacity: .7;
-		cursor: default;
-	}
+interface ToneSpec {
+	bg: string;
+	bgHover: string;
+	bgActive: string;
+	text: string;
+	border: string;
+	borderHover: string;
+	glow: string;
+}
 
-	&:not(:disabled) {
-		&:active {
-			transform: scale(.95);
-		}
+const TONES: Record<Tone, ToneSpec> = {
+	primary: {
+		bg: 'var(--beak-colors-accent-pink)',
+		bgHover: 'color-mix(in srgb, var(--beak-colors-accent-pink) 88%, white)',
+		bgActive: 'color-mix(in srgb, var(--beak-colors-accent-pink) 92%, black)',
+		text: 'var(--beak-colors-fg-onAccent)',
+		border: 'var(--beak-colors-accent-pink)',
+		borderHover: 'var(--beak-colors-accent-pink)',
+		glow: 'var(--beak-colors-accent-pink)',
+	},
+	secondary: {
+		bg: 'transparent',
+		bgHover: 'color-mix(in srgb, var(--beak-colors-accent-pink) 10%, transparent)',
+		bgActive: 'color-mix(in srgb, var(--beak-colors-accent-pink) 14%, transparent)',
+		text: 'var(--beak-colors-fg-default)',
+		border: 'var(--beak-colors-border-default)',
+		borderHover: 'var(--beak-colors-accent-pink)',
+		glow: 'var(--beak-colors-accent-pink)',
+	},
+	destructive: {
+		bg: 'var(--beak-colors-accent-alert)',
+		bgHover: 'color-mix(in srgb, var(--beak-colors-accent-alert) 88%, white)',
+		bgActive: 'color-mix(in srgb, var(--beak-colors-accent-alert) 92%, black)',
+		text: 'var(--beak-colors-fg-onAccent)',
+		border: 'var(--beak-colors-accent-alert)',
+		borderHover: 'var(--beak-colors-accent-alert)',
+		glow: 'var(--beak-colors-accent-alert)',
+	},
+};
 
-		&:focus {
-			outline: none;
-		}
-	}
+const Button: React.FC<ButtonProps> = ({ colour = 'primary', size = 'md', children, ...rest }) => {
+	const tone = TONES[colour];
+	const isSm = size === 'sm';
 
-	${({ colour }) => {
-		if (colour === 'primary')
-			return primaryCss;
-		if (!colour || colour === 'secondary')
-			return secondaryCss;
-		if (colour === 'destructive')
-			return destructiveCss;
-
-		return '';
-	}}
-
-	${({ size }) => {
-		if (size === 'sm')
-			return smCss;
-
-		if (!size || size === 'md')
-			return mdCss;
-
-		return '';
-	}}
-`;
+	return (
+		<ChakraButton
+			borderWidth='1px'
+			borderRadius='md'
+			px={isSm ? '2.5' : '3.5'}
+			py={isSm ? '1' : '1.5'}
+			h='auto'
+			minH={isSm ? '26px' : '32px'}
+			fontSize={isSm ? 'xs' : 'sm'}
+			fontWeight='600'
+			letterSpacing='0.01em'
+			lineHeight='1'
+			transitionProperty='transform, background, border-color, box-shadow, color'
+			transitionDuration='0.14s'
+			transitionTimingFunction='ease'
+			style={{
+				background: tone.bg,
+				color: tone.text,
+				borderColor: tone.border,
+				boxShadow:
+					colour === 'secondary'
+						? undefined
+						: `0 4px 12px color-mix(in srgb, ${tone.glow} 28%, transparent), inset 0 1px 0 color-mix(in srgb, white 18%, transparent)`,
+			}}
+			_hover={{
+				bg: tone.bgHover,
+				borderColor: tone.borderHover,
+				transform: colour === 'secondary' ? undefined : 'translateY(-1px)',
+				boxShadow:
+					colour === 'secondary'
+						? undefined
+						: `0 8px 22px color-mix(in srgb, ${tone.glow} 45%, transparent), inset 0 1px 0 color-mix(in srgb, white 22%, transparent)`,
+			}}
+			_active={{ transform: 'translateY(0) scale(0.97)', bg: tone.bgActive }}
+			_focus={{ outline: 'none' }}
+			_focusVisible={{
+				outline: 'none',
+				boxShadow: `0 0 0 3px color-mix(in srgb, ${tone.glow} 32%, transparent)`,
+			}}
+			_disabled={{
+				opacity: 0.5,
+				cursor: 'not-allowed',
+				_hover: { bg: tone.bg, borderColor: tone.border },
+			}}
+			{...rest}
+		>
+			{children}
+		</ChakraButton>
+	);
+};
 
 export default Button;

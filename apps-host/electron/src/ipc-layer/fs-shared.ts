@@ -1,6 +1,8 @@
-import { IpcEvent } from '@beak/common/ipc/ipc';
-import { BrowserWindow, IpcMainInvokeEvent } from 'electron';
-import path from 'path';
+import { BrowserWindow, type IpcMainInvokeEvent, type IpcRendererEvent } from 'electron';
+
+type IpcEvent = IpcMainInvokeEvent | IpcRendererEvent;
+
+import path from 'node:path';
 
 import { windowIdToProjectFilePathMapping, windowIdToProjectIdMapping } from '../window-management';
 
@@ -14,6 +16,9 @@ export function setProjectFilePathWindowMapping(windowId: number, projectFilePat
 
 export function getProjectFilePathWindowMapping(event: IpcEvent) {
 	const sender = (event as IpcMainInvokeEvent).sender;
+	// A live IPC sender always has a window; a missing one would mean the
+	// window closed mid-flight (a teardown race), not a normal flow.
+	// biome-ignore lint/style/noNonNullAssertion: see above
 	const window = BrowserWindow.fromWebContents(sender)!;
 
 	return windowIdToProjectFilePathMapping[window.id];

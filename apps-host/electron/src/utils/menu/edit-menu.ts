@@ -1,6 +1,6 @@
-import { MenuItemConstructorOptions } from 'electron';
+import type { MenuItemConstructorOptions } from 'electron';
 
-import { Context } from '.';
+import type { Context } from '.';
 import { isProjectEditor, sendMenuItemClick } from './shared';
 
 export default function generateEditMenu(ctx: Context): MenuItemConstructorOptions {
@@ -32,10 +32,7 @@ export default function generateEditMenu(ctx: Context): MenuItemConstructorOptio
 			{ type: 'separator' },
 			{
 				label: 'Speech',
-				submenu: [
-					{ role: 'startSpeaking' },
-					{ role: 'stopSpeaking' },
-				],
+				submenu: [{ role: 'startSpeaking' }, { role: 'stopSpeaking' }],
 			},
 		];
 

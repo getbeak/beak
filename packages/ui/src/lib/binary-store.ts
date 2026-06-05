@@ -18,8 +18,7 @@ class BinaryStore {
 	}
 
 	append(key: string, buf: Uint8Array) {
-		if (!this.exists(key))
-			throw new Error(`binary store for ${key} doesn't exist`);
+		if (!this.exists(key)) throw new Error(`binary store for ${key} doesn't exist`);
 
 		if (this.get(key).length === 0) {
 			this.set(key, buf);

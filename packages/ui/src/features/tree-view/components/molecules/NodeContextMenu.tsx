@@ -1,9 +1,9 @@
-import React, { useContext, useEffect, useState } from 'react';
 import ContextMenu from '@beak/ui/components/atoms/ContextMenu';
 import type { MenuItemConstructorOptions } from 'electron';
+import React, { useContext, useEffect, useState } from 'react';
 
 import { TreeViewAbstractionsContext } from '../../contexts/abstractions-context';
-import { TreeViewItem } from '../../types';
+import type { TreeViewItem } from '../../types';
 
 interface NodeContextMenuProps {
 	node: TreeViewItem;
@@ -17,11 +17,10 @@ const NodeContextMenu: React.FC<React.PropsWithChildren<NodeContextMenuProps>> =
 	const abs = useContext(TreeViewAbstractionsContext);
 
 	useEffect(() => {
-		if (!abs.onContextMenu || disabled)
-			return;
+		if (!abs.onContextMenu || disabled) return;
 
-		setMenuItems(abs.onContextMenu(node));
-	}, [disabled, node.id, Boolean(abs.onContextMenu)]);
+		setMenuItems(abs.onContextMenu(node, abs.commands));
+	}, [disabled, node.id, abs.commands, Boolean(abs.onContextMenu)]);
 
 	return (
 		<ContextMenu menuItems={menuItems} target={target.current!}>

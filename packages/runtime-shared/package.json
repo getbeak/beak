@@ -1,0 +1,35 @@
+{
+	"name": "@beak/runtime-shared",
+	"version": "0.0.0",
+	"private": true,
+	"main": "dist/index",
+	"types": "dist/index",
+	"files": [
+		"dist"
+	],
+	"scripts": {
+		"build": "pnpm clean && pnpm compile",
+		"clean": "rm -rf ./dist && rm -rf tsconfig.tsbuildinfo",
+		"compile": "tsgo --build tsconfig.json",
+		"typecheck": "tsgo",
+		"start": "tsgo --build tsconfig.json --watch",
+		"lint": "biome lint .",
+		"test": "vitest",
+		"test:run": "vitest run --passWithNoTests",
+		"test:coverage": "vitest run --coverage --passWithNoTests",
+		"test:ui": "vitest --ui"
+	},
+	"dependencies": {
+		"@beak/common": "*",
+		"@beak/ksuid": "*",
+		"@beak/state": "*",
+		"@getbeak/extension-sdk": "*",
+		"@getbeak/types": "^2.1.0",
+		"isomorphic-git": "^1.37.6",
+		"tslog": "^4.10.2"
+	},
+	"devDependencies": {
+		"vitest": "^4.1.6",
+		"@vitest/coverage-v8": "^4.1.6"
+	}
+}

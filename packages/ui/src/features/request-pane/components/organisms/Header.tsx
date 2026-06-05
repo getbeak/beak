@@ -1,217 +1,415 @@
-import React from 'react';
-import { useDispatch } from 'react-redux';
-import useRealtimeValueContext from '@beak/ui/features/realtime-values/hooks/use-realtime-value-context';
-import { parseValueParts } from '@beak/ui/features/realtime-values/parser';
-import { ValueParts } from '@beak/ui/features/realtime-values/values';
+import { verbToColor } from '@beak/design-system/helpers';
+import ksuid from '@beak/ksuid';
+import { selectActiveFlight } from '@beak/state/flight';
+import { closeSocket, openSocket, selectLatestSocketForRequest } from '@beak/state/sockets';
+import WindowSessionContext from '@beak/ui/contexts/window-session-context';
 import VariableInput from '@beak/ui/features/variable-input/components/VariableInput';
+import useVariableContext from '@beak/ui/features/variables/hooks/use-variable-context';
+import { parseValueSections } from '@beak/ui/features/variables/parser';
+import type { ValueSections } from '@beak/ui/features/variables/values';
+import { glassChakraProps } from '@beak/ui/lib/glass';
+import { summarizeMissingRequired } from '@beak/ui/services/request/missing-required';
+import { analyseUrlEdit } from '@beak/ui/services/url';
 import { requestPreferenceSetReqMainTab } from '@beak/ui/store/preferences/actions';
 import { useAppSelector } from '@beak/ui/store/redux';
-import { faSpinner } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Box, chakra, Flex, Menu, Portal } from '@chakra-ui/react';
 import type { ValidRequestNode } from '@getbeak/types/nodes';
-import styled, { useTheme } from 'styled-components';
-import URL from 'url-parse';
+import { AnimatePresence, motion } from 'framer-motion';
+import { ChevronDown, Loader2, Plug, PlugZap, Send } from 'lucide-react';
+import * as React from 'react';
+import { useContext } from 'react';
+import { useDispatch } from 'react-redux';
 
 import { requestFlight } from '../../../../store/flight/actions';
 import { requestQueryAdded, requestUriUpdated } from '../../../../store/project/actions';
+import PreFlightWarningDialog from '../molecules/PreFlightWarningDialog';
+import RequestPaneFlightControls from '../molecules/RequestPaneFlightControls';
 
 export interface HeaderProps {
 	node: ValidRequestNode;
 }
 
-const Header: React.FC<React.PropsWithChildren<HeaderProps>> = props => {
-	const dispatch = useDispatch();
-	const theme = useTheme();
-	const currentFlight = useAppSelector(s => s.global.flight.currentFlight);
-	const flighting = currentFlight && currentFlight.flighting && currentFlight.requestId === props.node.id;
-	const { node } = props;
-	const context = useRealtimeValueContext(node.id);
-	const verb = node.info.verb;
+const VERBS = ['get', 'post', 'put', 'patch', 'delete', 'head', 'options'];
 
-	function dispatchFlightRequest() {
+const ChakraButton = chakra('button');
+
+const Header: React.FC<HeaderProps> = ({ node }) => {
+	const dispatch = useDispatch();
+	const currentFlight = useAppSelector(s => selectActiveFlight(node.id)(s));
+	const currentSocket = useAppSelector(s => selectLatestSocketForRequest(node.id)(s));
+	const flighting = Boolean(currentFlight);
+	const windowSession = useContext(WindowSessionContext);
+	const context = useVariableContext(node.id);
+	const verb = node.info.verb;
+	const verbColor = verbToColor(verb);
+	const cmdGlyph = windowSession.isDarwin() ? '⌘' : 'Ctrl';
+
+	// The URL's first static segment is a strong-enough signal — variable
+	// interpolation can change later segments but `ws://` is always at the
+	// front of a WebSocket URL. We re-derive the resolved URL on send so any
+	// variables get evaluated against the current context.
+	const isSocketUrl = React.useMemo(() => {
+		const first = node.info.url[0];
+		return typeof first === 'string' && /^wss?:\/\//i.test(first);
+	}, [node.info.url]);
+
+	const socketActive = currentSocket?.status === 'open' || currentSocket?.status === 'connecting';
+
+	const missingRequiredSummary = React.useMemo(() => summarizeMissingRequired(node), [node]);
+	const missingRequired = missingRequiredSummary.count;
+	const [preFlightWarningOpen, setPreFlightWarningOpen] = React.useState(false);
+
+	function performSend() {
 		dispatch(requestFlight());
+	}
+
+	async function dispatchSendAction() {
+		if (!isSocketUrl) {
+			// Soft-gate on the schema contract — open the warning when any
+			// required field is empty, but never block the path through. The
+			// user confirms in the dialog with `performSend`.
+			if (missingRequired > 0) {
+				setPreFlightWarningOpen(true);
+				return;
+			}
+			performSend();
+			return;
+		}
+
+		// Close a live session before opening a new one. If there's a closed
+		// or failed session we open a fresh one with a new socketId so the
+		// log of the old attempt stays around.
+		if (socketActive && currentSocket) {
+			dispatch(closeSocket({ socketId: currentSocket.socketId, code: 1000, reason: 'user' }));
+			return;
+		}
+
+		const url = await parseValueSections(context, node.info.url);
+		dispatch(
+			openSocket({
+				socketId: ksuid.generate('socket').toString(),
+				requestId: node.id,
+				url,
+			}),
+		);
 	}
 
 	function urlQueryStringDetected() {
 		dispatch(requestPreferenceSetReqMainTab({ id: node.id, tab: 'url_query' }));
 	}
 
-	async function handleUrlChange(parts: ValueParts) {
-		const value = await parseValueParts(context, parts);
-		let sanitizedParts = [...parts];
-		const parsed = new URL(value, true);
+	async function handleUrlChange(parts: ValueSections) {
+		const { sanitisedParts, extractedQuery, queryDetected } = await analyseUrlEdit(parts, context);
 
-		// If it can be parsed, and there is a query string, strip it out and move to correct part of request info
-		if (Object.keys(parsed.query).length) {
-			Object.keys(parsed.query).forEach(key => {
-				dispatch(requestQueryAdded({
-					requestId: node.id,
-					name: key,
-					value: [parsed.query[key]!],
-				}));
-			});
+		for (const { name, value } of extractedQuery) {
+			dispatch(requestQueryAdded({ requestId: node.id, name, value: [value] }));
 		}
 
-		if (value.includes('?')) {
-			// We want to remove the query string from the URL, ofc
-			const searchIndex = parts.findIndex(p => typeof p === 'string' && p.includes('?'));
-			const searchPartIndex = (parts[searchIndex] as string).indexOf('?');
+		if (queryDetected) dispatch(requestPreferenceSetReqMainTab({ id: node.id, tab: 'url_query' }));
 
-			sanitizedParts = parts.slice(0, searchIndex);
-			sanitizedParts.push((parts[searchIndex] as string).slice(0, searchPartIndex));
-
-			// Move focus to query string editor
-			dispatch(requestPreferenceSetReqMainTab({ id: node.id, tab: 'url_query' }));
-		}
-
-		dispatch(requestUriUpdated({
-			requestId: node.id,
-			url: sanitizedParts,
-		}));
+		dispatch(requestUriUpdated({ requestId: node.id, url: sanitisedParts }));
 	}
 
 	return (
-		<Container>
-			<VerbContainer>
-				<VerbPickerRenderer>
-					<option value={verb}>{verb}</option>
-				</VerbPickerRenderer>
-				<VerbPickerHidden
-					value={verb}
-					onChange={e => {
-						dispatch(requestUriUpdated({
-							requestId: node.id,
-							verb: e.currentTarget.value,
-						}));
+		<Flex
+			align='center'
+			gap='2'
+			px='3'
+			py='2'
+			borderBottomWidth='1px'
+			borderColor='border.default'
+			bg='bg.surface'
+			css={{
+				backgroundImage:
+					'linear-gradient(180deg, color-mix(in srgb, var(--beak-colors-bg-canvas) 22%, transparent) 0%, transparent 100%)',
+				boxShadow: 'inset 0 1px 0 color-mix(in srgb, white 5%, transparent)',
+			}}
+		>
+			<RequestPaneFlightControls requestId={node.id} />
+			{/* Single fused control: verb chip | URL input | send icon. One
+			    rounded chassis, one focus ring, three segments flush against
+			    each other. */}
+			<Flex
+				flex='1 1 auto'
+				minW={0}
+				align='stretch'
+				h='30px'
+				borderRadius='md'
+				borderWidth='1px'
+				borderColor='border.subtle'
+				bg='bg.canvas'
+				transition='border-color .14s ease, box-shadow .14s ease'
+				overflow='hidden'
+				_hover={{ borderColor: 'border.default' }}
+				css={{
+					'&:focus-within': {
+						borderColor: 'var(--beak-colors-accent-pink)',
+						boxShadow: '0 0 0 3px color-mix(in srgb, var(--beak-colors-accent-pink) 22%, transparent)',
+					},
+				}}
+			>
+				<Menu.Root>
+					<Menu.Trigger asChild>
+						<ChakraButton
+							type='button'
+							aria-label={`HTTP verb: ${verb.toUpperCase()}`}
+							title={`HTTP verb: ${verb.toUpperCase()}`}
+							display='inline-flex'
+							alignItems='center'
+							justifyContent='center'
+							gap='1.5'
+							px='2.5'
+							minW='78px'
+							flexShrink={0}
+							border='none'
+							borderRightWidth='1px'
+							borderRightStyle='solid'
+							borderRightColor='border.subtle'
+							borderRadius='0'
+							fontWeight='700'
+							fontSize='11px'
+							letterSpacing='0.07em'
+							textTransform='uppercase'
+							cursor='pointer'
+							fontVariantNumeric='tabular-nums'
+							transition='background-color .14s ease, filter .14s ease, transform .08s ease'
+							_active={{ transform: 'translateY(0.5px)' }}
+							_focusVisible={{
+								outline: 'none',
+								boxShadow: `inset 0 0 0 2px color-mix(in srgb, ${verbColor} 55%, transparent)`,
+								zIndex: 1,
+							}}
+							style={{
+								color: verbColor,
+								background: `color-mix(in srgb, ${verbColor} 14%, transparent)`,
+							}}
+							css={{
+								'&:hover': {
+									background: `color-mix(in srgb, ${verbColor} 22%, transparent)`,
+								},
+								'&[data-state="open"]': {
+									background: `color-mix(in srgb, ${verbColor} 28%, transparent)`,
+								},
+								'&[data-state="open"] svg.lucide-chevron-down': { transform: 'rotate(180deg)' },
+								'svg.lucide-chevron-down': {
+									transition: 'transform .18s cubic-bezier(0.16, 1, 0.3, 1)',
+								},
+							}}
+						>
+							<Box as='span'>{verb.toUpperCase()}</Box>
+							<ChevronDown size={11} strokeWidth={2.4} style={{ opacity: 0.7 }} />
+						</ChakraButton>
+					</Menu.Trigger>
+					<Portal>
+						<Menu.Positioner>
+							<Menu.Content
+								{...glassChakraProps.menu}
+								borderRadius='lg'
+								p='1'
+								minW='150px'
+								css={{
+									'@keyframes verbMenuIn': {
+										from: { opacity: 0, transform: 'translateY(-4px) scale(0.97)' },
+										to: { opacity: 1, transform: 'translateY(0) scale(1)' },
+									},
+									animation: 'verbMenuIn 120ms cubic-bezier(0.16, 1, 0.3, 1)',
+									transformOrigin: 'top left',
+								}}
+							>
+								{VERBS.map(v => {
+									const c = verbToColor(v);
+									const isActive = v === verb;
+									return (
+										<Menu.Item
+											key={v}
+											value={v}
+											onClick={() => dispatch(requestUriUpdated({ requestId: node.id, verb: v }))}
+											fontSize='xs'
+											fontWeight='700'
+											textTransform='uppercase'
+											letterSpacing='0.07em'
+											borderRadius='md'
+											py='1.5'
+											pl='2.5'
+											pr='2'
+											gap='2'
+											display='flex'
+											alignItems='center'
+											justifyContent='space-between'
+											transition='background-color .12s ease, padding-left .12s ease'
+											style={{
+												color: c,
+												background: isActive ? `color-mix(in srgb, ${c} 18%, transparent)` : undefined,
+											}}
+											_hover={{
+												bg: `color-mix(in srgb, ${c} 14%, transparent)`,
+											}}
+										>
+											<Box as='span'>{v}</Box>
+											{isActive && (
+												<Box
+													as='span'
+													w='6px'
+													h='6px'
+													borderRadius='full'
+													style={{ background: c, boxShadow: `0 0 0 3px color-mix(in srgb, ${c} 22%, transparent)` }}
+												/>
+											)}
+										</Menu.Item>
+									);
+								})}
+							</Menu.Content>
+						</Menu.Positioner>
+					</Portal>
+				</Menu.Root>
+
+				<Box
+					flex='1 1 auto'
+					minW={0}
+					display='flex'
+					alignItems='stretch'
+					position='relative'
+					css={{
+						'& > div': { display: 'flex', alignItems: 'center', width: '100%' },
+						'& > div > article': {
+							padding: '0 12px',
+							background: 'transparent',
+							border: 'none',
+							color: 'var(--beak-colors-fg-default)',
+							fontFamily: 'var(--beak-fonts-mono)',
+							fontSize: '12.5px',
+							fontWeight: 400,
+							letterSpacing: '0.005em',
+							outline: 'none',
+							width: '100%',
+							lineHeight: '28px',
+						},
+						'& > div > article:focus-within': { outline: 'none' },
 					}}
 				>
-					<optgroup label={'Standard'}>
-						<option value={'get'}>{'GET'}</option>
-						<option value={'post'}>{'POST'}</option>
-						<option value={'patch'}>{'PATCH'}</option>
-						<option value={'put'}>{'PUT'}</option>
-						<option value={'delete'}>{'DELETE'}</option>
-						<option value={'head'}>{'HEAD'}</option>
-						<option value={'options'}>{'OPTIONS'}</option>
-					</optgroup>
-					<optgroup label={'Custom'}>
-						<option value={'custom'} disabled>{'Create...'}</option>
-					</optgroup>
-				</VerbPickerHidden>
-			</VerbContainer>
-
-			<OmniBar>
-				<VariableInput
-					requestId={node.id}
-					parts={node.info.url}
-					placeholder={'httpbin.org'}
-					onChange={e => handleUrlChange(e)}
-					onUrlQueryStringDetection={urlQueryStringDetected}
-				/>
-			</OmniBar>
-
-			<DispatchButton onClick={() => dispatchFlightRequest()}>
-				{flighting && (
-					<FontAwesomeIcon
-						icon={faSpinner}
-						color={theme.ui.goAction}
-						spin
-						fontSize={'13px'}
+					<VariableInput
+						requestId={node.id}
+						parts={node.info.url}
+						placeholder='https://httpbin.org/anything'
+						onChange={e => handleUrlChange(e)}
+						onUrlQueryStringDetection={urlQueryStringDetected}
 					/>
-				)}
-				{!flighting && 'GO'}
-			</DispatchButton>
-		</Container>
+				</Box>
+
+				<ChakraButton
+					type='button'
+					aria-label={
+						isSocketUrl
+							? socketActive
+								? 'Close WebSocket'
+								: 'Open WebSocket'
+							: flighting
+								? 'Sending request'
+								: 'Send request'
+					}
+					title={
+						isSocketUrl
+							? socketActive
+								? `Close socket (${cmdGlyph}+Enter)`
+								: `Open socket (${cmdGlyph}+Enter)`
+							: missingRequired > 0
+								? `Send request (${cmdGlyph}+Enter) — ${missingRequired} required field${
+										missingRequired === 1 ? '' : 's'
+									} empty`
+								: `Send request (${cmdGlyph}+Enter)`
+					}
+					flexShrink={0}
+					display='inline-flex'
+					alignItems='center'
+					justifyContent='center'
+					w='38px'
+					border='none'
+					borderRadius='0'
+					color='fg.onAccent'
+					cursor='pointer'
+					position='relative'
+					transition='filter .12s ease, box-shadow .14s ease, transform .08s ease'
+					style={{
+						background: isSocketUrl
+							? 'linear-gradient(180deg, color-mix(in srgb, var(--beak-colors-accent-teal) 100%, white 12%) 0%, var(--beak-colors-accent-teal) 100%)'
+							: 'linear-gradient(180deg, color-mix(in srgb, var(--beak-colors-accent-pink) 100%, white 12%) 0%, var(--beak-colors-accent-pink) 100%)',
+						boxShadow: 'inset 1px 0 0 color-mix(in srgb, white 18%, transparent)',
+					}}
+					_hover={{ filter: 'brightness(1.08)' }}
+					_active={{ filter: 'brightness(0.94)', transform: 'translateY(0.5px)' }}
+					_focusVisible={{
+						outline: 'none',
+						boxShadow: 'inset 0 0 0 2px color-mix(in srgb, white 70%, transparent)',
+						zIndex: 1,
+					}}
+					onClick={() => {
+						void dispatchSendAction();
+					}}
+				>
+					{!isSocketUrl && !flighting && missingRequired > 0 && (
+						<Box
+							position='absolute'
+							top='4px'
+							right='5px'
+							w='8px'
+							h='8px'
+							borderRadius='full'
+							bg='accent.alert'
+							boxShadow='0 0 0 1.5px var(--beak-colors-accent-pink), 0 0 6px color-mix(in srgb, var(--beak-colors-accent-alert) 70%, transparent)'
+							pointerEvents='none'
+						/>
+					)}
+					<AnimatePresence initial={false} mode='wait'>
+						{isSocketUrl ? (
+							<motion.span
+								key={socketActive ? 'socket-open' : 'socket-closed'}
+								initial={{ opacity: 0, scale: 0.6 }}
+								animate={{ opacity: 1, scale: 1 }}
+								exit={{ opacity: 0, scale: 0.6 }}
+								transition={{ duration: 0.16, ease: [0.16, 1, 0.3, 1] }}
+								style={{ display: 'inline-flex' }}
+							>
+								{socketActive ? <PlugZap size={14} strokeWidth={2.2} /> : <Plug size={14} strokeWidth={2.2} />}
+							</motion.span>
+						) : flighting ? (
+							<motion.span
+								key='sending'
+								initial={{ opacity: 0, scale: 0.6 }}
+								animate={{ opacity: 1, scale: 1 }}
+								exit={{ opacity: 0, scale: 0.6 }}
+								transition={{ duration: 0.16, ease: [0.16, 1, 0.3, 1] }}
+								style={{ display: 'inline-flex' }}
+							>
+								<Loader2 size={14} style={{ animation: 'beakSpin 1s linear infinite' }} />
+							</motion.span>
+						) : (
+							<motion.span
+								key='send'
+								initial={{ opacity: 0, scale: 0.6 }}
+								animate={{ opacity: 1, scale: 1 }}
+								exit={{ opacity: 0, scale: 0.6 }}
+								transition={{ duration: 0.16, ease: [0.16, 1, 0.3, 1] }}
+								style={{ display: 'inline-flex' }}
+							>
+								<Send size={14} strokeWidth={2.2} />
+							</motion.span>
+						)}
+					</AnimatePresence>
+				</ChakraButton>
+			</Flex>
+			{preFlightWarningOpen && (
+				<PreFlightWarningDialog
+					missingCount={missingRequired}
+					scopes={missingRequiredSummary.scopes}
+					onCancel={() => setPreFlightWarningOpen(false)}
+					onConfirm={() => {
+						setPreFlightWarningOpen(false);
+						performSend();
+					}}
+				/>
+			)}
+		</Flex>
 	);
 };
-
-const Container = styled.div`
-	display: grid;
-	grid-template-columns: auto minmax(0, 1fr) auto;
-	justify-content: space-between;
-	align-items: center;
-
-	margin: 25px 0;
-	padding: 0 10px;
-	font-size: 13px;
-	max-width: calc(100% - 20px);
-`;
-
-const VerbPickerRenderer = styled.select`
-	-webkit-appearance: none;
-	-moz-appearance: none;
-	text-overflow: '';
-
-	padding: 6px 6px;
-	padding-top: 7px;
-	margin-right: 10px;
-	border-radius: 4px;
-	border: 1px solid ${props => props.theme.ui.backgroundBorderSeparator};
-	background: ${props => props.theme.ui.surface};
-	color: ${props => props.theme.ui.primaryFill};
-	text-transform: uppercase;
-	font-weight: 800;
-
-	&:hover, &:focus {
-		outline: none;
-		border: 1px solid ${props => props.theme.ui.primaryFill};
-	}
-`;
-
-const VerbPickerHidden = styled(VerbPickerRenderer)`
-	position: absolute;
-	text-transform: none;
-	left: 0;
-	opacity: 0.0000001; /* lol */
-`;
-
-const VerbContainer = styled.div`
-	position: relative;
-	flex: 0 0 auto;
-
-	&:hover > ${VerbPickerRenderer} {
-		border: 1px solid ${props => props.theme.ui.primaryFill};
-	}
-`;
-
-const OmniBar = styled.div`
-	flex: 1 1 auto;
-
-	> div > article {
-		padding: 6px 6px;
-		margin-right: 10px;
-		border-radius: 4px;
-		border: 1px solid ${props => props.theme.ui.backgroundBorderSeparator};
-		background: ${props => props.theme.ui.surface};
-		color: ${props => props.theme.ui.textOnSurfaceBackground};
-		font-size: 13px;
-		font-weight: 400;
-
-		&:hover, &:focus {
-			outline: none;
-			border: 1px solid ${props => props.theme.ui.primaryFill};
-		}
-	}
-`;
-
-const DispatchButton = styled.button`
-	flex: 0 0 auto;
-	width: 35px;
-	padding: 6px 6px;
-	padding-top: 7px;
-	border-radius: 4px;
-	border: 1px solid ${props => props.theme.ui.backgroundBorderSeparator};
-	background: ${props => props.theme.ui.surface};
-
-	color: ${props => props.theme.ui.goAction};
-	font-weight: 800;
-
-	&:hover, &:focus {
-		outline: none;
-		border: 1px solid ${props => props.theme.ui.goAction};
-	}
-
-	cursor: pointer;
-`;
 
 export default Header;

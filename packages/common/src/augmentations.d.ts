@@ -1,7 +1,8 @@
-import '@getbeak/types-realtime-value';
+// biome-ignore lint/style/noRestrictedImports: declarative augmentation of the extension SDK module's VariableBase. Type-only; no runtime dependency.
+import '@getbeak/extension-sdk';
 
-declare module '@getbeak/types-realtime-value' {
-	interface RealtimeValueBase {
+declare module '@getbeak/extension-sdk' {
+	interface VariableBase {
 		type: string;
 		external: boolean;
 	}

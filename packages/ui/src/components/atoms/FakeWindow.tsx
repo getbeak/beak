@@ -1,24 +1,33 @@
-import styled, { css } from 'styled-components';
+import { Box, type BoxProps } from '@chakra-ui/react';
+import * as React from 'react';
 
-interface FakeWindowProps {
+interface FakeWindowProps extends Omit<BoxProps, 'maxWidth' | 'maxHeight' | 'width' | 'height'> {
 	$maxWidth?: number;
 	$maxHeight?: number;
-
 	$width?: number;
 	$height?: number;
 }
 
-export const FakeWindow = styled.div<FakeWindowProps>`
-	position: relative;
-	border-radius: 12px;
-	overflow: hidden;
-
-	${p => Boolean(p.$maxHeight) && css`max-height: ${p.$maxHeight}px;`}
-	${p => Boolean(p.$maxWidth) && css`max-width: ${p.$maxWidth}px;`}
-
-	${p => Boolean(p.$height) && css`height: ${p.$height}px;`}
-	${p => Boolean(p.$width) && css`width: ${p.$width}px;`}
-
-	backdrop-filter: blur(30px);
-	box-shadow: 0 22px 70px 4px rgba(0, 0, 0, 0.56);
-`;
+export const FakeWindow: React.FC<FakeWindowProps> = ({
+	$maxWidth,
+	$maxHeight,
+	$width,
+	$height,
+	children,
+	...rest
+}) => (
+	<Box
+		position='relative'
+		borderRadius='xl'
+		overflow='hidden'
+		maxW={$maxWidth ? `${$maxWidth}px` : undefined}
+		maxH={$maxHeight ? `${$maxHeight}px` : undefined}
+		w={$width ? `${$width}px` : undefined}
+		h={$height ? `${$height}px` : undefined}
+		backdropFilter='blur(30px)'
+		boxShadow='0 22px 70px 4px rgba(0, 0, 0, 0.56)'
+		{...rest}
+	>
+		{children}
+	</Box>
+);

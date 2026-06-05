@@ -1,114 +1,150 @@
-import createSagaMiddleware from '@redux-saga/core';
-import { all, fork } from '@redux-saga/core/effects';
-import { applyMiddleware, combineReducers, createStore, Store } from 'redux';
+import { type AgentSliceState, agentSlice, initialAgentState } from '@beak/state/agent';
+import { type CookieSliceState, cookiesSlice, initialCookieState } from '@beak/state/cookies';
+// Flight slice lives in @beak/state (pure domain), used here as a global state shard.
+import { type FlightSliceState, flightSlice } from '@beak/state/flight';
+import { type RequestValuesSliceState, requestValuesSlice } from '@beak/state/request-values';
+import { type SocketsSliceState, socketsSlice } from '@beak/state/sockets';
+import { applyMiddleware, combineReducers, createStore, type Store } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
-
+import * as cloneRepoStore from '../features/clone-repo/store';
+import type { State as CloneRepoState } from '../features/clone-repo/store/types';
 import * as encryptionStore from '../features/encryption/store';
-import { State as EncryptionState } from '../features/encryption/store/types';
+import type { State as EncryptionState } from '../features/encryption/store/types';
 import * as omniBarStore from '../features/omni-bar/store';
-import { State as OmniBarState } from '../features/omni-bar/store/types';
+import type { State as OmniBarState } from '../features/omni-bar/store/types';
+import * as openApiImportStore from '../features/openapi-import/store';
+import type { State as OpenApiImportState } from '../features/openapi-import/store/types';
+import * as sourceControlStore from '../features/source-control/store';
+import type { State as SourceControlState } from '../features/source-control/store/types';
+import * as sourceSchemasUiStore from '../features/source-schemas/store';
+import type { State as SourceSchemasUiState } from '../features/source-schemas/store/types';
 import * as tabsStore from '../features/tabs/store';
-import { State as TabsState } from '../features/tabs/store/types';
-import { handleUnhandledError } from '../utils/unhandled-error-handler';
-import * as arbiterStore from './arbiter';
-import { State as ArbiterState } from './arbiter/types';
+import type { State as TabsState } from '../features/tabs/store/types';
+import { registerAllEffects } from './effects';
 import * as extensionsStore from './extensions';
-import { State as ExtensionsState } from './extensions/types';
-import * as flightStore from './flight';
-import { State as FlightState } from './flight/types';
+import type { State as ExtensionsState } from './extensions/types';
 import * as gitStore from './git';
-import { State as GitState } from './git/types';
+import type { State as GitState } from './git/types';
+import { listenerMiddleware } from './listener';
 import * as preferencesStore from './preferences';
-import { State as PreferencesState } from './preferences/types';
+import type { State as PreferencesState } from './preferences/types';
 import * as projectStore from './project';
-import { State as ProjectState } from './project/types';
-import * as variableGroupsStore from './variable-groups';
-import { State as VariableGroupState } from './variable-groups/types';
+import type { State as ProjectState } from './project/types';
+import * as variableSetsStore from './variable-sets';
+import type { State as VariableSetState } from './variable-sets/types';
+import * as workflowsStore from './workflows';
+import type { State as WorkflowsState } from './workflows/types';
 
 export interface ApplicationState {
 	features: {
+		cloneRepo: CloneRepoState;
 		encryption: EncryptionState;
+		sourceSchemasUi: SourceSchemasUiState;
 		omniBar: OmniBarState;
+		openApiImport: OpenApiImportState;
+		sourceControl: SourceControlState;
 		tabs: TabsState;
 	};
 	global: {
-		arbiter: ArbiterState;
+		agent: AgentSliceState;
+		cookies: CookieSliceState;
 		extensions: ExtensionsState;
-		flight: FlightState;
+		flight: FlightSliceState;
 		git: GitState;
 		preferences: PreferencesState;
 		project: ProjectState;
-		variableGroups: VariableGroupState;
+		requestValues: RequestValuesSliceState;
+		sockets: SocketsSliceState;
+		variableSets: VariableSetState;
+		workflows: WorkflowsState;
 	};
 }
 
 function createRootReducer() {
-	return combineReducers<ApplicationState>({
+	return combineReducers({
 		features: combineReducers({
+			cloneRepo: cloneRepoStore.reducer,
 			encryption: encryptionStore.reducer,
+			sourceSchemasUi: sourceSchemasUiStore.reducer,
 			omniBar: omniBarStore.reducer,
+			openApiImport: openApiImportStore.reducer,
+			sourceControl: sourceControlStore.reducer,
 			tabs: tabsStore.reducer,
 		}),
 		global: combineReducers({
-			arbiter: arbiterStore.reducers,
+			agent: agentSlice,
+			cookies: cookiesSlice,
 			extensions: extensionsStore.reducers,
-			flight: flightStore.reducers,
+			flight: flightSlice,
 			git: gitStore.reducers,
 			preferences: preferencesStore.reducers,
 			project: projectStore.reducers,
-			variableGroups: variableGroupsStore.reducers,
+			requestValues: requestValuesSlice,
+			sockets: socketsSlice,
+			variableSets: variableSetsStore.reducers,
+			workflows: workflowsStore.reducers,
 		}),
 	});
-}
-
-function* rootSaga() {
-	yield all([
-		fork(arbiterStore.sagas),
-		fork(extensionsStore.sagas),
-		fork(flightStore.sagas),
-		fork(tabsStore.sagas),
-		fork(gitStore.sagas),
-		fork(preferencesStore.sagas),
-		fork(projectStore.sagas),
-		fork(variableGroupsStore.sagas),
-	]);
 }
 
 function createInitialState(): ApplicationState {
 	return {
 		features: {
+			cloneRepo: cloneRepoStore.initialState,
 			encryption: encryptionStore.types.initialState,
+			sourceSchemasUi: sourceSchemasUiStore.initialState,
 			omniBar: omniBarStore.types.initialState,
+			openApiImport: openApiImportStore.types.initialState,
+			sourceControl: sourceControlStore.initialState,
 			tabs: tabsStore.types.initialState,
 		},
 		global: {
-			arbiter: arbiterStore.types.initialState,
+			agent: initialAgentState,
+			cookies: initialCookieState,
 			extensions: extensionsStore.types.initialState,
-			flight: flightStore.types.initialState,
+			flight: {
+				flightStates: {},
+				flightHistories: {},
+				activeFlights: {},
+				flightsByRequest: {},
+				loading: {},
+				errors: {},
+			},
 			git: gitStore.types.initialState,
 			preferences: preferencesStore.types.initialState,
 			project: projectStore.types.initialState,
-			variableGroups: variableGroupsStore.types.initialState,
+			requestValues: { loaded: false, requests: {} },
+			sockets: { sessions: {}, socketsByRequest: {} },
+			variableSets: variableSetsStore.types.initialState,
+			workflows: workflowsStore.types.initialState,
 		},
 	};
 }
+
+let appStoreSingleton: Store<ApplicationState> | undefined;
 
 export function configureStore(): Store<ApplicationState> {
 	const initialState = createInitialState();
 	const composeEnhancers = composeWithDevTools({});
 
-	const sagaMiddleware = createSagaMiddleware({
-		onError: error => handleUnhandledError(error),
-	});
-
 	const store = createStore(
 		createRootReducer(),
 		initialState,
-		composeEnhancers(applyMiddleware(sagaMiddleware)),
-	);
+		composeEnhancers(applyMiddleware(listenerMiddleware.middleware)),
+	) as Store<ApplicationState>;
 
-	sagaMiddleware.run(rootSaga);
-	store.dispatch(arbiterStore.actions.startArbiter());
+	registerAllEffects();
 
+	appStoreSingleton = store;
 	return store;
+}
+
+/**
+ * Module-level handle to the store, set during `configureStore()`. Used by
+ * code that runs outside React (host-side IPC handlers) and so can't get
+ * the store via context. Throws if accessed before configuration.
+ */
+export function getAppStore(): Store<ApplicationState> {
+	if (!appStoreSingleton) throw new Error('getAppStore() called before configureStore()');
+	return appStoreSingleton;
 }

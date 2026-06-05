@@ -1,6 +1,6 @@
 import { instance as windowSessionInstance } from '../contexts/window-session-context';
-import shortcutDefinitions, { Shortcuts } from '../lib/keyboard-shortcuts';
-import { PlatformAgnosticDefinitions, PlatformSpecificDefinitions } from '../lib/keyboard-shortcuts/types';
+import shortcutDefinitions, { type Shortcuts } from '../lib/keyboard-shortcuts';
+import type { PlatformAgnosticDefinitions, PlatformSpecificDefinitions } from '../lib/keyboard-shortcuts/types';
 
 function selectDefinition(platformDefinition: PlatformSpecificDefinitions | PlatformAgnosticDefinitions) {
 	if (platformDefinition.type === 'agnostic') return platformDefinition;
@@ -22,10 +22,8 @@ export function renderAcceleratorDefinition(shortcutKey: Shortcuts) {
 	if (definition.shift) parts.push('Shift');
 	if (definition.meta) parts.push('Meta');
 
-	if (Array.isArray(definition.key))
-		parts.push(definition.key[0]);
-	else
-		parts.push(definition.key);
+	if (Array.isArray(definition.key)) parts.push(definition.key[0]);
+	else parts.push(definition.key);
 
 	return parts.join('+');
 }
@@ -36,10 +34,8 @@ export function renderPlainTextDefinition(shortcutKey: Shortcuts) {
 	const parts: string[] = [];
 
 	if (definition.ctrlOrMeta) {
-		if (darwin === void 0)
-			parts.push('⌘');
-		else
-			parts.push(renderPlatformAwareCtrlOrMeta(darwin));
+		if (darwin === void 0) parts.push('⌘');
+		else parts.push(renderPlatformAwareCtrlOrMeta(darwin));
 	}
 
 	if (Array.isArray(definition.key)) {
@@ -69,20 +65,21 @@ export function renderPlainTextDefinition(shortcutKey: Shortcuts) {
 }
 
 export function renderPlatformAwareCtrlOrMeta(darwin: boolean) {
-	if (darwin)
-		return '⌘';
+	if (darwin) return '⌘';
 
 	return '⌃';
 }
 
 export function renderSimpleKey(key: string) {
-	if (key.length === 1)
-		return key.toUpperCase();
+	if (key.length === 1) return key.toUpperCase();
 
 	switch (key) {
-		case 'ArrowUp': return '↑';
-		case 'ArrowDown': return '↓';
+		case 'ArrowUp':
+			return '↑';
+		case 'ArrowDown':
+			return '↓';
 
-		default: return key;
+		default:
+			return key;
 	}
 }

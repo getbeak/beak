@@ -1,92 +1,227 @@
-import React, { useEffect, useState } from 'react';
-import { statusToColor } from '@beak/design-system/helpers';
-import useRealtimeValueContext from '@beak/ui/features/realtime-values/hooks/use-realtime-value-context';
+import { statusToColor, verbToColor } from '@beak/design-system/helpers';
+import BeakTooltip from '@beak/ui/components/atoms/BeakTooltip';
+import useVariableContext from '@beak/ui/features/variables/hooks/use-variable-context';
+import { convertRequestToUrl } from '@beak/ui/services/url';
 import { getStatusReasonPhrase } from '@beak/ui/utils/http';
-import { convertRequestToUrl } from '@beak/ui/utils/uri';
+import { Box, Flex, IconButton } from '@chakra-ui/react';
 import type { Flight } from '@getbeak/types/flight';
-import styled from 'styled-components';
+import { motion } from 'framer-motion';
+import { AlertTriangle, Check, CheckCircle2, Copy, MoveRight, XCircle } from 'lucide-react';
+import * as React from 'react';
+import { useEffect, useRef, useState } from 'react';
+
+const MotionFlex = motion.create(Flex);
 
 export interface HeaderProps {
 	selectedFlight: Flight;
 }
 
-const Header: React.FC<React.PropsWithChildren<HeaderProps>> = props => {
-	const { error, request, response } = props.selectedFlight;
-	const context = useRealtimeValueContext(props.selectedFlight.requestId);
+function statusIcon(status: number) {
+	if (status >= 200 && status < 300) return CheckCircle2;
+	if (status >= 300 && status < 400) return MoveRight;
+	if (status >= 400 && status < 500) return AlertTriangle;
+	return XCircle;
+}
+
+const Header: React.FC<HeaderProps> = ({ selectedFlight }) => {
+	const { error, request, response } = selectedFlight;
+	const context = useVariableContext(selectedFlight.requestId);
 	const [url, setUrl] = useState('');
+	const [justCopied, setJustCopied] = useState(false);
+	const copiedTimerRef = useRef<number | null>(null);
 
 	useEffect(() => {
-		convertRequestToUrl(context, request).then(s => setUrl(s.toString()));
+		let cancelled = false;
+		convertRequestToUrl(context, request).then(s => {
+			if (!cancelled) setUrl(s.toString());
+		});
+		return () => {
+			cancelled = true;
+		};
 	}, [context, request]);
 
+	useEffect(
+		() => () => {
+			if (copiedTimerRef.current !== null) window.clearTimeout(copiedTimerRef.current);
+		},
+		[],
+	);
+
+	const verb = request.verb.toUpperCase();
+	const verbColor = verbToColor(verb);
+	const statusColor = response ? statusToColor(response.status) : error ? statusToColor(500) : undefined;
+	const StatusIcon = response ? statusIcon(response.status) : XCircle;
+
+	function copyUrl() {
+		if (typeof navigator !== 'undefined' && navigator.clipboard) {
+			navigator.clipboard.writeText(url).catch(() => {
+				/* clipboard refused */
+			});
+			setJustCopied(true);
+			if (copiedTimerRef.current !== null) window.clearTimeout(copiedTimerRef.current);
+			copiedTimerRef.current = window.setTimeout(() => {
+				setJustCopied(false);
+				copiedTimerRef.current = null;
+			}, 1200);
+		}
+	}
+
 	return (
-		<UrlHeaderWrapper>
-			<Section>
-				<strong>{request.verb.toUpperCase()}</strong>
-			</Section>
-			<UrlSection>
-				<div
-					data-tooltip-id={'tt-response-header-url-bar'}
-					data-tooltip-content={url}
+		<MotionFlex
+			initial={{ opacity: 0, y: -4 }}
+			animate={{ opacity: 1, y: 0 }}
+			transition={{ duration: 0.18, ease: 'easeOut' }}
+			position='relative'
+			align='center'
+			gap='1.5'
+			my='4'
+			mx='auto'
+			px='2.5'
+			fontSize='sm'
+			maxW='calc(100% - 20px)'
+		>
+			<Box
+				flex='0 0 auto'
+				display='inline-flex'
+				alignItems='center'
+				borderRadius='md'
+				borderWidth='1px'
+				px='2'
+				py='1'
+				fontWeight='700'
+				fontSize='xs'
+				letterSpacing='0.06em'
+				textTransform='uppercase'
+				style={{
+					color: verbColor,
+					background: `color-mix(in srgb, ${verbColor} 12%, var(--beak-colors-bg-surface))`,
+					borderColor: `color-mix(in srgb, ${verbColor} 35%, var(--beak-colors-border-subtle))`,
+					borderLeft: `3px solid ${verbColor}`,
+					boxShadow: `inset 0 1px 0 color-mix(in srgb, white 16%, transparent)`,
+				}}
+			>
+				{verb}
+			</Box>
+
+			<Flex
+				flex='1 1 auto'
+				align='center'
+				gap='1'
+				minW={0}
+				bg='bg.canvas'
+				borderRadius='md'
+				borderWidth='1px'
+				borderColor='border.subtle'
+				px='2'
+				py='1'
+				transition='border-color .12s ease, box-shadow .12s ease'
+				_hover={{ borderColor: 'color-mix(in srgb, var(--beak-colors-accent-pink) 35%, var(--beak-colors-border-subtle))' }}
+				_focusWithin={{
+					borderColor: 'accent.pink',
+					boxShadow: '0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-pink) 22%, transparent)',
+				}}
+			>
+				<BeakTooltip content={url}>
+					<Box
+						flex='1 1 auto'
+						minW={0}
+						overflow='hidden'
+						textOverflow='ellipsis'
+						whiteSpace='nowrap'
+						fontFamily='mono'
+						fontSize='xs'
+						color='fg.default'
+					>
+						{url}
+					</Box>
+				</BeakTooltip>
+				<IconButton
+					aria-label='Copy URL'
+					title={justCopied ? 'Copied!' : 'Copy URL'}
+					size='xs'
+					variant='ghost'
+					h='20px'
+					w='20px'
+					minW='20px'
+					borderRadius='sm'
+					color={justCopied ? 'accent.teal' : 'fg.subtle'}
+					transition='color .12s ease, background-color .12s ease, transform .08s ease'
+					_hover={{
+						color: justCopied ? 'accent.teal' : 'accent.pink',
+						bg: `color-mix(in srgb, var(--beak-colors-${justCopied ? 'accent-teal' : 'accent-pink'}) 14%, transparent)`,
+					}}
+					_focusVisible={{
+						outline: 'none',
+						boxShadow: '0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-pink) 45%, transparent)',
+					}}
+					_active={{ transform: 'scale(0.9)' }}
+					onClick={copyUrl}
 				>
-					{/* The "&lrm;" char is a requirement of using RTL to trim the end vs start of the string */}
-					{url}&lrm;
-				</div>
-			</UrlSection>
+					{justCopied ? <Check size={11} strokeWidth={3} /> : <Copy size={11} />}
+				</IconButton>
+			</Flex>
+
 			{response && (
-				<StatusSection $status={response.status}>
-					<strong>{response.status}</strong>
-					{' '}
-					{getStatusReasonPhrase(response.status)}
-				</StatusSection>
+				<MotionFlex
+					initial={{ opacity: 0, scale: 0.96 }}
+					animate={{ opacity: 1, scale: 1 }}
+					key={response.status}
+					transition={{ type: 'spring', stiffness: 600, damping: 28 }}
+					flex='0 0 auto'
+					align='center'
+					gap='1'
+					px='2'
+					py='1'
+					borderRadius='md'
+					borderWidth='1px'
+					whiteSpace='nowrap'
+					style={{
+						background: `color-mix(in srgb, ${statusColor} 12%, var(--beak-colors-bg-surface))`,
+						color: statusColor,
+						borderColor: `color-mix(in srgb, ${statusColor} 35%, var(--beak-colors-border-subtle))`,
+						borderLeft: `3px solid ${statusColor}`,
+						boxShadow: 'inset 0 1px 0 color-mix(in srgb, white 16%, transparent)',
+					}}
+				>
+					<StatusIcon size={12} strokeWidth={2.2} />
+					<Box as='span' fontWeight='700' fontFamily='mono' style={{ fontVariantNumeric: 'tabular-nums' }}>
+						{response.status}
+					</Box>
+					<Box
+						as='span'
+						fontWeight='500'
+						style={{ color: `color-mix(in srgb, ${statusColor} 75%, var(--beak-colors-fg-default))` }}
+					>
+						{getStatusReasonPhrase(response.status)}
+					</Box>
+				</MotionFlex>
 			)}
 			{error && (
-				<StatusSection $status={500}>
-					<strong>{'Error'}</strong>
-				</StatusSection>
+				<Flex
+					flex='0 0 auto'
+					align='center'
+					gap='1'
+					px='2'
+					py='1'
+					borderRadius='md'
+					borderWidth='1px'
+					whiteSpace='nowrap'
+					style={{
+						background: 'color-mix(in srgb, var(--beak-colors-accent-alert) 12%, var(--beak-colors-bg-surface))',
+						color: 'var(--beak-colors-accent-alert)',
+						borderColor: 'color-mix(in srgb, var(--beak-colors-accent-alert) 35%, var(--beak-colors-border-subtle))',
+						borderLeft: '3px solid var(--beak-colors-accent-alert)',
+						boxShadow: 'inset 0 1px 0 color-mix(in srgb, white 16%, transparent)',
+					}}
+				>
+					<XCircle size={12} strokeWidth={2.2} />
+					<Box as='span' fontWeight='700' letterSpacing='0.06em' textTransform='uppercase' fontSize='10px'>
+						{'Error'}
+					</Box>
+				</Flex>
 			)}
-		</UrlHeaderWrapper>
+		</MotionFlex>
 	);
 };
-
-const UrlHeaderWrapper = styled.div`
-	position: relative;
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-
-	margin: 25px auto;
-	margin-bottom: 26.5px;
-	padding: 0 10px;
-	font-size: 13px;
-	max-width: calc(100% - 20px);
-`;
-
-const Section = styled.div`
-	flex: 0 0 auto;
-	background-color: ${p => p.theme.ui.background};
-
-	border: 1px solid ${p => p.theme.ui.primaryFill};
-	border-radius: 4px;
-
-	padding: 5px 8px;
-	margin: 0 5px;
-`;
-
-const UrlSection = styled(Section)`
-	flex: 1 1 auto;
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	direction: rtl;
-`;
-
-const StatusSection = styled(Section)<{ $status: number }>`
-	background-color: ${p => p.theme.ui.background};
-	border-color: ${p => statusToColor(p.theme, p.$status)};
-	color: ${p => statusToColor(p.theme, p.$status)};
-
-	white-space: nowrap;
-`;
 
 export default Header;

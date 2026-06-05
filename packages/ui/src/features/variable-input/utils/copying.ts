@@ -1,6 +1,6 @@
-import { ValueParts } from '@beak/ui/features/realtime-values/values';
+import type { ValueSections } from '@beak/ui/features/variables/values';
 
-export function detectRelevantCopiedValueParts(valueParts: ValueParts) {
+export function detectRelevantCopiedValueSections(ValueSections: ValueSections) {
 	const sel = window.getSelection()!;
 
 	let startNode = sel.anchorNode!;
@@ -11,7 +11,7 @@ export function detectRelevantCopiedValueParts(valueParts: ValueParts) {
 	const position = startNode.compareDocumentPosition(endNode);
 
 	// Reverse things if the selection is reversed
-	if (!position && sel.anchorOffset > sel.focusOffset || position === Node.DOCUMENT_POSITION_PRECEDING) {
+	if ((!position && sel.anchorOffset > sel.focusOffset) || position === Node.DOCUMENT_POSITION_PRECEDING) {
 		const tempNode = startNode;
 		const tempOffset = startOffset;
 
@@ -23,8 +23,7 @@ export function detectRelevantCopiedValueParts(valueParts: ValueParts) {
 
 	const root = findParentNode(startNode, 'ARTICLE');
 
-	if (!root)
-		return null;
+	if (!root) return null;
 
 	const rootChildren = root.childNodes;
 
@@ -38,11 +37,9 @@ export function detectRelevantCopiedValueParts(valueParts: ValueParts) {
 		} else if (n.nodeName === 'SPAN') {
 			const textNode = findChildNode(n, '#text');
 
-			if (!textNode)
-				return null;
+			if (!textNode) return null;
 
-			if (startNode === textNode)
-				startIndex = i;
+			if (startNode === textNode) startIndex = i;
 		}
 
 		if (n === endNode) {
@@ -50,19 +47,16 @@ export function detectRelevantCopiedValueParts(valueParts: ValueParts) {
 		} else if (n.nodeName === 'SPAN') {
 			const textNode = findChildNode(n, '#text');
 
-			if (!textNode)
-				return null;
+			if (!textNode) return null;
 
-			if (endNode === textNode)
-				endIndex = i;
+			if (endNode === textNode) endIndex = i;
 		}
 	}
 
 	// If something is wrong, do nothing
-	if (startIndex === -1 || endIndex === -1)
-		return null;
+	if (startIndex === -1 || endIndex === -1) return null;
 
-	const relevantParts = valueParts.slice(startIndex, endIndex + 1);
+	const relevantParts = ValueSections.slice(startIndex, endIndex + 1);
 	const samePart = startIndex === endIndex;
 
 	if (samePart) {
@@ -81,11 +75,9 @@ function findParentNode(node: Node, nodeName: string) {
 	let currentNode = node;
 
 	while (true) {
-		if (!currentNode)
-			return null;
+		if (!currentNode) return null;
 
-		if (currentNode.nodeName === nodeName)
-			return currentNode;
+		if (currentNode.nodeName === nodeName) return currentNode;
 
 		currentNode = currentNode.parentNode!;
 	}
@@ -95,11 +87,9 @@ function findChildNode(node: Node, nodeName: string) {
 	let currentNode = node;
 
 	while (true) {
-		if (!currentNode)
-			return null;
+		if (!currentNode) return null;
 
-		if (currentNode.nodeName === nodeName)
-			return currentNode;
+		if (currentNode.nodeName === nodeName) return currentNode;
 
 		currentNode = currentNode.childNodes[0];
 	}

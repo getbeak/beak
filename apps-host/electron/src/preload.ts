@@ -1,4 +1,4 @@
-import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
+import { contextBridge, type IpcRendererEvent, ipcRenderer } from 'electron';
 
 import '@sentry/electron/preload';
 

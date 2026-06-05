@@ -1,28 +1,43 @@
-import styled from 'styled-components';
+import { chakra } from '@chakra-ui/react';
 
-export const Title = styled.div`
-	font-size: 30px;
-	font-weight: 700;
-	color: ${p => p.theme.ui.textOnSurfaceBackground};
-`;
+export const Title = chakra('div', {
+	base: {
+		fontSize: '30px',
+		fontWeight: '700',
+		letterSpacing: '-0.02em',
+		lineHeight: '1.1',
+		color: 'fg.default',
+	},
+});
 
-export const TitleSubtle = styled(Title)`
-	font-size: 20px;
-	line-height: 24px;
-	color: ${p => p.theme.ui.textMinor};
-`;
+export const TitleSubtle = chakra('div', {
+	base: {
+		fontSize: '2xl',
+		fontWeight: '600',
+		letterSpacing: '-0.01em',
+		lineHeight: '1.2',
+		color: 'fg.muted',
+	},
+});
 
-export const SubTitle = styled.div`
-	font-size: 16px;
-	margin-top: 5px;
-	color: ${p => p.theme.ui.textMinor};
-`;
+export const SubTitle = chakra('div', {
+	base: {
+		fontSize: 'xl',
+		mt: '1.5',
+		lineHeight: '1.5',
+		color: 'fg.muted',
+	},
+});
 
-export const BodyRegular = styled.div`
-	color: ${p => p.theme.ui.textOnSurfaceBackground};
-`;
+export const BodyRegular = chakra('div', {
+	base: {
+		color: 'fg.default',
+	},
+});
 
-export const BodyBold = styled.div`
-	font-weight: 600;
-	color: ${p => p.theme.ui.textOnSurfaceBackground};
-`;
+export const BodyBold = chakra('div', {
+	base: {
+		fontWeight: 'semibold',
+		color: 'fg.default',
+	},
+});

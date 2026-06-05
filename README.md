@@ -25,8 +25,9 @@ Beak is a simple, extensible, and powerful API creation and management tool. Bui
 
 Beak includes:
 - Powerful feature set for creating APIs interactions
-- Realtime values for dynamic variable replacement
-- Extensions API to create custom realtime values
+- Variables, which allow you to use dynamic values in requests
+- Variable Sets, which allow you to group variables together and easily switch between sets
+- An extensions API to create custom Beak Variables
 - Un-opinionated project syncing, just use the version control of your choice
 - Beautiful design language
 - And of course, fully cross platform

@@ -20,3 +20,8 @@ tsconfig.tsbuildinfo
 
 # Beak
 .beak
+.claude/
+test-results/
+
+.playwright-cli/
+screenshots/

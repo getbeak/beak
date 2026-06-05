@@ -1,42 +1,39 @@
 {
-  "extends": "../../tsconfig.json",
-  "compilerOptions": {
-    "outDir": "./dist-ts",
+	"extends": "./../../tsconfig.json",
+	"compilerOptions": {
+		"outDir": "./dist-ts",
 
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
-    "allowJs": true,
-    "skipLibCheck": true,
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "module": "ES2022",
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "jsx": "react"
-  },
-  "references": [{
-    "path": "../../packages/ui"
-  }, {
-    "path": "../../packages/common"
-  }, {
-    "path": "../../packages/common-host"
-  }, {
-    "path": "../../packages/ksuid"
-  }, {
-    "path": "../../packages/design-system"
-  }],
-  "include": [
-    "src/**/*.ts",
-    "src/**/*.tsx",
-    "src/**/*.json"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist",
-    "dist-ts"
-  ]
+		"lib": ["dom", "dom.iterable", "esnext"],
+		"allowJs": true,
+		"skipLibCheck": true,
+		"esModuleInterop": true,
+		"forceConsistentCasingInFileNames": true,
+		"module": "ES2022",
+		"moduleResolution": "bundler",
+		"resolveJsonModule": true,
+		"isolatedModules": true,
+		"jsx": "react"
+	},
+	"references": [
+		{
+			"path": "../../packages/ui"
+		},
+		{
+			"path": "../../packages/common"
+		},
+		{
+			"path": "../../packages/runtime-shared"
+		},
+		{
+			"path": "../../packages/state"
+		},
+		{
+			"path": "../../packages/ksuid"
+		},
+		{
+			"path": "../../packages/design-system"
+		}
+	],
+	"include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.json"],
+	"exclude": ["node_modules", "dist", "dist-ts"]
 }

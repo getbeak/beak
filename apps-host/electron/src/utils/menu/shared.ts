@@ -1,9 +1,9 @@
 import { getCheckingForUpdates, getPendingUpdate, getUpdateDownloading } from '@beak/apps-host-electron/updater';
-import { MenuEventCode } from '@beak/common/web-contents/types';
-import { MenuItemConstructorOptions } from 'electron';
+import type { MenuEventCode } from '@beak/common/web-contents/types';
+import type { MenuItemConstructorOptions } from 'electron';
 import { autoUpdater } from 'electron-updater';
 
-import { Context } from '.';
+import type { Context } from '.';
 
 export function createUpdateMenuItem(): MenuItemConstructorOptions {
 	const checkingForUpdates = getCheckingForUpdates();
@@ -42,8 +42,7 @@ export function isProjectEditor(ctx: Context) {
 }
 
 export function sendMenuItemClick(ctx: Context, code: MenuEventCode) {
-	if (!ctx.browserWindow)
-		return;
+	if (!ctx.browserWindow) return;
 
 	ctx.browserWindow.webContents.send('menu:menu_item_click', { code });
 }

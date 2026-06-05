@@ -1,56 +1,41 @@
-import React, { useEffect, useState } from 'react';
 import Button from '@beak/ui/components/atoms/Button';
-import { Select } from '@beak/ui/components/atoms/Input';
-import { ipcNestService, ipcPreferencesService } from '@beak/ui/lib/ipc';
+import { ipcDialogService, ipcPreferencesService } from '@beak/ui/lib/ipc';
+import React from 'react';
 
-import { ItemGroup, ItemLabel, ItemSpacer } from '../atoms/item';
-import Pane from '../molecules/Pane';
+import AgentPreferencesSection from '../molecules/AgentPreferencesSection';
+import Row from '../atoms/Row';
+import Section from '../atoms/Section';
 
-const EngineeringPane: React.FC<React.PropsWithChildren<unknown>> = () => {
-	const [environment, setEnvironment] = useState<string | undefined>(void 0);
-	const [hasAuth, setHasAuth] = useState(false);
-
-	useEffect(() => {
-		ipcPreferencesService.getEnvironment().then(setEnvironment);
-		ipcNestService.hasAuth().then(setHasAuth);
-	}, []);
-
-	return (
-		<Pane title={'Shhh...'}>
-			<ItemGroup>
-				<ItemLabel>{'Environment:'}</ItemLabel>
-				<Select
-					disabled={environment === void 0}
-					value={environment}
-					onChange={e => {
-						setEnvironment(e.target.value);
-						ipcPreferencesService.switchEnvironment(e.target.value);
+const EngineeringPane: React.FC = () => (
+	<>
+		<AgentPreferencesSection />
+		<Section title='Maintenance'>
+			<Row
+				label='Reset config & cache'
+				description='Clears local preferences and cached responses. Project files are not affected.'
+			>
+				<Button
+					colour='secondary'
+					size='sm'
+					onClick={async () => {
+						const result = await ipcDialogService.showMessageBox({
+							title: 'Reset config & cache?',
+							message: 'This clears all local preferences and cached responses.',
+							detail: 'Project files are not affected.',
+							type: 'warning',
+							buttons: ['Reset', 'Cancel'],
+							defaultId: 1,
+							cancelId: 1,
+						});
+						if (result.response === 1) return;
+						ipcPreferencesService.resetConfig();
 					}}
 				>
-					<option value={'prod'}>{'Production'}</option>
-					<option value={'nonprod'}>{'Non-production'}</option>
-				</Select>
-			</ItemGroup>
-
-			<ItemGroup>
-				<ItemLabel>{'Actions:'}</ItemLabel>
-				<Button onClick={() => ipcPreferencesService.resetConfig()}>
-					{'Reset config & cache'}
+					{'Reset'}
 				</Button>
-				{hasAuth && (
-					<React.Fragment>
-						<ItemSpacer />
-						<Button
-							colour={'destructive'}
-							onClick={() => ipcPreferencesService.signOut()}
-						>
-							{'Sign out'}
-						</Button>
-					</React.Fragment>
-				)}
-			</ItemGroup>
-		</Pane>
-	);
-};
+			</Row>
+		</Section>
+	</>
+);
 
 export default EngineeringPane;

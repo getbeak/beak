@@ -1,4 +1,8 @@
-import { IpcServiceMain, IpcServiceRenderer, Listener, PartialIpcMain, PartialIpcRenderer } from './ipc';
+import type { PartialIpcMain } from './main';
+import { IpcServiceMain } from './main';
+import type { PartialIpcRenderer } from './renderer';
+import { IpcServiceRenderer } from './renderer';
+import type { IpcListener } from './types';
 
 export const ExplorerMessages = {
 	RevealFile: 'reveal_file',
@@ -6,7 +10,7 @@ export const ExplorerMessages = {
 	LaunchUrl: 'launch_url',
 };
 
-export class IpcExplorerServiceRenderer extends IpcServiceRenderer {
+export class IpcExplorerServiceRenderer extends IpcServiceRenderer<'explorer'> {
 	constructor(ipc: PartialIpcRenderer) {
 		super('explorer', ipc);
 	}
@@ -24,20 +28,20 @@ export class IpcExplorerServiceRenderer extends IpcServiceRenderer {
 	}
 }
 
-export class IpcExplorerServiceMain extends IpcServiceMain {
+export class IpcExplorerServiceMain extends IpcServiceMain<'explorer'> {
 	constructor(ipc: PartialIpcMain) {
 		super('explorer', ipc);
 	}
 
-	registerRevealFile(fn: Listener<string>) {
-		this.registerListener(ExplorerMessages.RevealFile, fn);
+	registerRevealFile(fn: IpcListener<string>) {
+		this.registerRequestHandler(ExplorerMessages.RevealFile, fn);
 	}
 
-	registerCopyFullNodePath(fn: Listener<string>) {
-		this.registerListener(ExplorerMessages.CopyFullNodePath, fn);
+	registerCopyFullNodePath(fn: IpcListener<string>) {
+		this.registerRequestHandler(ExplorerMessages.CopyFullNodePath, fn);
 	}
 
-	registerLaunchUrl(fn: Listener<string>) {
-		this.registerListener(ExplorerMessages.LaunchUrl, fn);
+	registerLaunchUrl(fn: IpcListener<string>) {
+		this.registerRequestHandler(ExplorerMessages.LaunchUrl, fn);
 	}
 }

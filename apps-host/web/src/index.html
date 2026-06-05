@@ -4,6 +4,11 @@
     <meta charset="utf-8" />
     <meta name="robots" content="noindex" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Lock relative URLs to the app root regardless of React Router path.
+         Without this, image paths like `images/logo-tile.png` resolve under
+         `/project/<id>` and 404. -->
+    <base href="/" />
+    <title>Beak</title>
     <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
   </head>
   <body>

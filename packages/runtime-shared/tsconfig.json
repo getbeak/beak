@@ -1,0 +1,21 @@
+{
+	"extends": "./../../tsconfig.json",
+	"compilerOptions": {
+		"outDir": "./dist",
+		"module": "ESNext",
+		"types": ["node"]
+	},
+	"references": [
+		{
+			"path": "../common"
+		},
+		{
+			"path": "../ksuid"
+		},
+		{
+			"path": "../state"
+		}
+	],
+	"include": ["src/**/*.ts"],
+	"exclude": ["node_modules", "dist"]
+}

@@ -1,35 +1,27 @@
-import React from 'react';
-import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import styled from 'styled-components';
+import { Box } from '@chakra-ui/react';
+import { ChevronRight } from 'lucide-react';
+import * as React from 'react';
 
 interface ChevronProps {
 	$collapsed: boolean;
 	$collapsible: boolean;
 }
 
-const Chevron: React.FC<React.PropsWithChildren<ChevronProps>> = props => (
-	<ChevronElement {...props}>
-		<FontAwesomeIcon icon={faChevronRight} />
-	</ChevronElement>
+const Chevron: React.FC<ChevronProps> = ({ $collapsed, $collapsible }) => (
+	<Box
+		display={$collapsible ? 'inline-flex' : 'none'}
+		alignItems='center'
+		justifyContent='center'
+		mr='0.5'
+		ml='1'
+		w='12px'
+		h='12px'
+		color='fg.subtle'
+		transform={$collapsed ? 'rotate(0deg)' : 'rotate(90deg)'}
+		transition='transform .16s ease-out'
+	>
+		<ChevronRight size={11} strokeWidth={2.2} />
+	</Box>
 );
-
-const ChevronElement = styled.div<ChevronProps>`
-	display: inline-block;
-	${p => !p.$collapsible && 'display: none;'}
-	margin-right: 2px;
-	margin-left: 5px;
-	width: 10px;
-
-	font-size: 9px;
-	line-height: 9px;
-	color: ${p => p.theme.ui.textMinor};
-
-	> svg {
-		transition: transform .2s ease;
-		transform-origin: center center;
-		transform: rotate(${p => p.$collapsed ? '0deg' : '90deg'});
-	}
-`;
 
 export default Chevron;

@@ -1,13 +1,8 @@
 {
-  "extends": "../../tsconfig.json",
-  "compilerOptions": {
-    "module": "ES2022",
-    "baseUrl": "./src",
-    "typeRoots": [
-        "./src"
-    ],
-  },
-  "include": [
-    "src/**/*.ts"
-  ]
+	"extends": "./../../tsconfig.json",
+	"compilerOptions": {
+		"module": "ES2022",
+		"typeRoots": ["./src"]
+	},
+	"include": ["src/**/*.ts"]
 }

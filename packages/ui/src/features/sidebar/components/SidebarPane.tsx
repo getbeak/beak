@@ -1,22 +1,10 @@
-import React from 'react';
-import styled from 'styled-components';
+import { Flex } from '@chakra-ui/react';
+import * as React from 'react';
 
-interface SidebarPaneProps {
-
-}
-
-const SidebarPane: React.FC<React.PropsWithChildren<SidebarPaneProps>> = ({ children }) => (
-	<Container>
+const SidebarPane: React.FC<React.PropsWithChildren> = ({ children }) => (
+	<Flex direction='column' h='100%' overflowY='hidden'>
 		{children}
-	</Container>
+	</Flex>
 );
-
-const Container = styled.div`
-	display: flex;
-	flex-direction: column;
-
-	height: 100%;
-	overflow-y: hidden;
-`;
 
 export default SidebarPane;

@@ -1,124 +1,248 @@
-import { Context, ValueParts } from '@getbeak/types/values';
-import { UISection } from '@getbeak/types-realtime-value';
-import type { IpcMain, WebContents } from 'electron';
+// biome-ignore lint/style/noRestrictedImports: type-only imports of the SDK's UI contract used in cross-process payloads.
+import type { UISection } from '@getbeak/extension-sdk';
+import type { Context, ValueSections } from '@getbeak/types/values';
+import type { WebContents } from 'electron';
 
-import { RealtimeValueExtension } from '../types/extensions';
-import { IpcServiceMain, IpcServiceRenderer, Listener, PartialIpcRenderer } from './ipc';
+import type {
+	AvailableUpdate,
+	Extension,
+	ExtensionOperation,
+	ExtensionSearchResult,
+	LoadedExtension,
+} from '../types/extensions';
+import type { PartialIpcMain } from './main';
+import { IpcServiceMain } from './main';
+import type { PartialIpcRenderer } from './renderer';
+import { IpcServiceRenderer } from './renderer';
+import type { IpcListener } from './types';
 
 export const ExtensionsMessages = {
-	RegisterRtv: 'register_rtv',
-	RtvCreateDefaultValue: 'rtv_create_default_payload',
-	RtvGetValue: 'rtv_get_value',
-	RtvEditorCreateUserInterface: 'rtv_editor_create_user_interface',
-	RtvEditorLoad: 'rtv_editor_load',
-	RtvEditorSave: 'rtv_editor_save',
-	RtvParseValueParts: 'rtv_parse_value_parts',
-	RtvParseValuePartsResponse: 'rtv_parse_value_parts_response',
-};
+	/* Management */
+	List: 'list',
+	Install: 'install',
+	Remove: 'remove',
+	Update: 'update',
+	CheckUpdates: 'check_updates',
+	Search: 'search',
+	OperationChanged: 'operation_changed',
 
-interface RegisterRtvPayload { extensionFilePath: string }
+	/* Variable runtime */
+	VariableCreateDefaultPayload: 'variable_create_default_payload',
+	VariableGetValue: 'variable_get_value',
+	VariableGetAssetRef: 'variable_get_asset_ref',
+	VariableEditorCreateUI: 'variable_editor_create_ui',
+	VariableEditorLoad: 'variable_editor_load',
+	VariableEditorSave: 'variable_editor_save',
+	VariableParseValueSections: 'variable_parse_value_sections',
+	VariableParseValueSectionsResponse: 'variable_parse_value_sections_response',
+} as const;
 
-interface RtvBase {
+/* -------------------------------------------------------------------------- */
+/*  Management payloads                                                       */
+/* -------------------------------------------------------------------------- */
+
+export interface InstallExtensionPayload {
+	packageName: string;
+	/** Semver range, exact version, or dist-tag. Defaults to `latest`. */
+	versionRange?: string;
+}
+
+export interface RemoveExtensionPayload {
+	packageName: string;
+}
+
+export interface UpdateExtensionPayload {
+	packageName: string;
+	/** Optional target. Defaults to `latest`. */
+	versionRange?: string;
+}
+
+export interface SearchExtensionsPayload {
+	query: string;
+	limit?: number;
+}
+
+/* -------------------------------------------------------------------------- */
+/*  Variable runtime payloads                                                 */
+/* -------------------------------------------------------------------------- */
+
+interface VariableBase {
 	type: string;
 	context: Context;
 }
 
-interface RtvCreateDefaultValuePayload extends RtvBase { }
+export interface VariableCreateDefaultPayloadPayload extends VariableBase {}
 
-interface RtvGetValuePayload extends RtvBase {
-	payload: Record<string, any>;
+export interface VariableGetValuePayload extends VariableBase {
+	payload: Record<string, unknown>;
 	recursiveDepth: number;
 }
 
-interface RtvEditorCreateUserInterface extends RtvBase { }
+export interface VariableGetAssetRefPayload extends VariableBase {
+	payload: Record<string, unknown>;
+	recursiveDepth: number;
+}
 
-interface RtvEditorLoad extends RtvBase {
+export interface VariableEditorCreateUIPayload extends VariableBase {}
+
+export interface VariableEditorLoadPayload extends VariableBase {
 	payload: unknown;
 }
 
-interface RtvEditorSave extends RtvBase {
+export interface VariableEditorSavePayload extends VariableBase {
 	existingPayload: unknown;
 	state: unknown;
 }
 
-export interface RtvParseValueParts extends Omit<RtvBase, 'type'> {
+export interface VariableParseValueSections extends Omit<VariableBase, 'type'> {
 	uniqueSessionId: string;
 	recursiveDepth: number;
-	parts: ValueParts;
+	parts: ValueSections;
 }
 
-export interface RtvParseValuePartsResponse {
+export interface VariableParseValueSectionsResponse {
 	uniqueSessionId: string;
 	parsed: string;
 }
 
-export class IpcExtensionsServiceRenderer extends IpcServiceRenderer {
+/* -------------------------------------------------------------------------- */
+/*  Renderer side                                                             */
+/* -------------------------------------------------------------------------- */
+
+export class IpcExtensionsServiceRenderer extends IpcServiceRenderer<'extensions'> {
 	constructor(ipc: PartialIpcRenderer) {
 		super('extensions', ipc);
 	}
 
-	async registerRtv(payload: RegisterRtvPayload): Promise<RealtimeValueExtension> {
-		return await this.invoke(ExtensionsMessages.RegisterRtv, payload);
+	/* ---- Management ----------------------------------------------------- */
+
+	async list(): Promise<Extension[]> {
+		return await this.invoke(ExtensionsMessages.List, {});
 	}
 
-	async rtvCreateDefaultPayload(payload: RtvCreateDefaultValuePayload): Promise<Record<string, any>> {
-		return await this.invoke(ExtensionsMessages.RtvCreateDefaultValue, payload);
+	async install(payload: InstallExtensionPayload): Promise<LoadedExtension> {
+		return await this.invoke(ExtensionsMessages.Install, payload);
 	}
 
-	async rtvGetValue(payload: RtvGetValuePayload): Promise<string> {
-		return await this.invoke(ExtensionsMessages.RtvGetValue, payload);
+	async remove(payload: RemoveExtensionPayload): Promise<void> {
+		await this.invoke(ExtensionsMessages.Remove, payload);
 	}
 
-	async rtvEditorCreateUserInterface(payload: RtvEditorCreateUserInterface): Promise<UISection[]> {
-		return await this.invoke(ExtensionsMessages.RtvEditorCreateUserInterface, payload);
+	async update(payload: UpdateExtensionPayload): Promise<LoadedExtension> {
+		return await this.invoke(ExtensionsMessages.Update, payload);
 	}
 
-	async rtvEditorLoad(payload: RtvEditorLoad): Promise<any> {
-		return await this.invoke(ExtensionsMessages.RtvEditorLoad, payload);
+	async checkUpdates(): Promise<AvailableUpdate[]> {
+		return await this.invoke(ExtensionsMessages.CheckUpdates, {});
 	}
 
-	async rtvEditorSave(payload: RtvEditorSave): Promise<any> {
-		return await this.invoke(ExtensionsMessages.RtvEditorSave, payload);
+	async search(payload: SearchExtensionsPayload): Promise<ExtensionSearchResult[]> {
+		return await this.invoke(ExtensionsMessages.Search, payload);
 	}
 
-	registerRtvParseValueParts(fn: Listener<RtvParseValueParts>) {
-		this.registerListener(ExtensionsMessages.RtvParseValueParts, fn);
+	registerOperationChanged(fn: IpcListener<{ packageName: string; operation: ExtensionOperation | null }>) {
+		this.registerListener(ExtensionsMessages.OperationChanged, fn);
+	}
+
+	/* ---- Variable runtime ---------------------------------------------- */
+
+	async variableCreateDefaultPayload(payload: VariableCreateDefaultPayloadPayload): Promise<Record<string, unknown>> {
+		return await this.invoke(ExtensionsMessages.VariableCreateDefaultPayload, payload);
+	}
+
+	async variableGetValue(payload: VariableGetValuePayload): Promise<string> {
+		return await this.invoke(ExtensionsMessages.VariableGetValue, payload);
+	}
+
+	async variableGetAssetRef(
+		payload: VariableGetAssetRefPayload,
+	): Promise<{ sha256: string; size: number; contentType?: string } | null> {
+		return await this.invoke(ExtensionsMessages.VariableGetAssetRef, payload);
+	}
+
+	async variableEditorCreateUI(payload: VariableEditorCreateUIPayload): Promise<UISection[]> {
+		return await this.invoke(ExtensionsMessages.VariableEditorCreateUI, payload);
+	}
+
+	async variableEditorLoad(payload: VariableEditorLoadPayload): Promise<unknown> {
+		return await this.invoke(ExtensionsMessages.VariableEditorLoad, payload);
+	}
+
+	async variableEditorSave(payload: VariableEditorSavePayload): Promise<unknown> {
+		return await this.invoke(ExtensionsMessages.VariableEditorSave, payload);
+	}
+
+	registerVariableParseValueSections(fn: IpcListener<VariableParseValueSections>) {
+		this.registerListener(ExtensionsMessages.VariableParseValueSections, fn);
 	}
 }
 
-export class IpcExtensionsServiceMain extends IpcServiceMain {
-	constructor(ipc: IpcMain) {
+/* -------------------------------------------------------------------------- */
+/*  Main side                                                                 */
+/* -------------------------------------------------------------------------- */
+
+export class IpcExtensionsServiceMain extends IpcServiceMain<'extensions'> {
+	constructor(ipc: PartialIpcMain) {
 		super('extensions', ipc);
 	}
 
-	registerRegisterRtv(fn: Listener<RegisterRtvPayload, RealtimeValueExtension>) {
-		this.registerListener(ExtensionsMessages.RegisterRtv, fn);
+	/* ---- Management ----------------------------------------------------- */
+
+	registerList(fn: IpcListener<Record<string, never>>) {
+		this.registerRequestHandler(ExtensionsMessages.List, fn);
 	}
 
-	registerRtvCreateDefaultPayload(fn: Listener<RtvCreateDefaultValuePayload, Record<string, any>>) {
-		this.registerListener(ExtensionsMessages.RtvCreateDefaultValue, fn);
+	registerInstall(fn: IpcListener<InstallExtensionPayload>) {
+		this.registerRequestHandler(ExtensionsMessages.Install, fn);
 	}
 
-	registerRtvGetValuePayload(fn: Listener<RtvGetValuePayload, string>) {
-		this.registerListener(ExtensionsMessages.RtvGetValue, fn);
+	registerRemove(fn: IpcListener<RemoveExtensionPayload>) {
+		this.registerRequestHandler(ExtensionsMessages.Remove, fn);
 	}
 
-	registerRtvEditorCreateUserInterface(fn: Listener<RtvEditorCreateUserInterface, UISection[]>) {
-		this.registerListener(ExtensionsMessages.RtvEditorCreateUserInterface, fn);
+	registerUpdate(fn: IpcListener<UpdateExtensionPayload>) {
+		this.registerRequestHandler(ExtensionsMessages.Update, fn);
 	}
 
-	registerRtvEditorLoad(fn: Listener<RtvEditorLoad, any>) {
-		this.registerListener(ExtensionsMessages.RtvEditorLoad, fn);
+	registerCheckUpdates(fn: IpcListener<Record<string, never>>) {
+		this.registerRequestHandler(ExtensionsMessages.CheckUpdates, fn);
 	}
 
-	registerRtvEditorSave(fn: Listener<RtvEditorSave, any>) {
-		this.registerListener(ExtensionsMessages.RtvEditorSave, fn);
+	registerSearch(fn: IpcListener<SearchExtensionsPayload>) {
+		this.registerRequestHandler(ExtensionsMessages.Search, fn);
 	}
 
-	rtvParseValueParts(wc: WebContents, payload: RtvParseValueParts) {
-		wc.send(this.channel, {
-			code: ExtensionsMessages.RtvParseValueParts,
-			payload,
-		});
+	operationChanged(wc: WebContents, payload: { packageName: string; operation: ExtensionOperation | null }) {
+		this.sendMessage(wc, ExtensionsMessages.OperationChanged, payload);
+	}
+
+	/* ---- Variable runtime ---------------------------------------------- */
+
+	registerVariableCreateDefaultPayload(fn: IpcListener<VariableCreateDefaultPayloadPayload>) {
+		this.registerRequestHandler(ExtensionsMessages.VariableCreateDefaultPayload, fn);
+	}
+
+	registerVariableGetValue(fn: IpcListener<VariableGetValuePayload>) {
+		this.registerRequestHandler(ExtensionsMessages.VariableGetValue, fn);
+	}
+
+	registerVariableGetAssetRef(fn: IpcListener<VariableGetAssetRefPayload>) {
+		this.registerRequestHandler(ExtensionsMessages.VariableGetAssetRef, fn);
+	}
+
+	registerVariableEditorCreateUI(fn: IpcListener<VariableEditorCreateUIPayload>) {
+		this.registerRequestHandler(ExtensionsMessages.VariableEditorCreateUI, fn);
+	}
+
+	registerVariableEditorLoad(fn: IpcListener<VariableEditorLoadPayload>) {
+		this.registerRequestHandler(ExtensionsMessages.VariableEditorLoad, fn);
+	}
+
+	registerVariableEditorSave(fn: IpcListener<VariableEditorSavePayload>) {
+		this.registerRequestHandler(ExtensionsMessages.VariableEditorSave, fn);
+	}
+
+	variableParseValueSections(wc: WebContents, payload: VariableParseValueSections) {
+		this.sendMessage(wc, ExtensionsMessages.VariableParseValueSections, payload);
 	}
 }

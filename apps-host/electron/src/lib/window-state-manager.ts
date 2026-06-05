@@ -1,28 +1,20 @@
-import { WindowState } from '@beak/common-host/providers/storage';
-import {
-	BrowserWindow,
-	BrowserWindowConstructorOptions,
-	Rectangle,
-	screen,
-} from 'electron';
+import type { WindowState } from '@beak/runtime-shared/providers/storage';
+import { type BrowserWindow, type BrowserWindowConstructorOptions, type Rectangle, screen } from 'electron';
 
 import getBeakHost from '../host';
 import { screenshotSizing } from '../main';
+
+type SizedWindowOptions = BrowserWindowConstructorOptions & { width: number; height: number };
 
 export default class WindowStateManager {
 	private windowKey: string;
 	private window: BrowserWindow | undefined;
 	private state: WindowState;
-	private windowOptions: BrowserWindowConstructorOptions;
+	private windowOptions: SizedWindowOptions;
 
-	// eslint-disable-next-line
 	private stateChangeTimer: NodeJS.Timeout | undefined;
 
-	constructor(
-		existingWindowState: WindowState | undefined,
-		windowKey: string,
-		windowOptions: BrowserWindowConstructorOptions,
-	) {
+	constructor(existingWindowState: WindowState | undefined, windowKey: string, windowOptions: SizedWindowOptions) {
 		this.windowKey = windowKey;
 		this.windowOptions = windowOptions;
 
@@ -33,8 +25,8 @@ export default class WindowStateManager {
 			const display = screen.getDisplayNearestPoint(cursor);
 
 			this.state = {
-				height: windowOptions.height!,
-				width: windowOptions.width!,
+				height: windowOptions.height,
+				width: windowOptions.width,
 				x: 0,
 				y: 0,
 				isFullScreen: false,
@@ -47,7 +39,7 @@ export default class WindowStateManager {
 		}
 	}
 
-	static async create(windowKey: string, windowOptions: BrowserWindowConstructorOptions) {
+	static async create(windowKey: string, windowOptions: SizedWindowOptions) {
 		const windowStates = await getBeakHost().providers.storage.get('windowStates');
 		const windowState = windowStates[windowKey];
 
@@ -59,17 +51,13 @@ export default class WindowStateManager {
 
 		this.ensureWindowBoundsAcceptable();
 
-		if (this.state.isMaximized)
-			this.window.maximize();
-		else if (this.state.isFullScreen)
-			this.window.setFullScreen(true);
+		if (this.state.isMaximized) this.window.maximize();
+		else if (this.state.isFullScreen) this.window.setFullScreen(true);
 
 		this.window.setPosition(this.state.x, this.state.y);
 
-		if (this.windowOptions.resizable)
-			this.window.setSize(this.state.width, this.state.height);
-		else
-			this.window.setSize(this.windowOptions.width!, this.windowOptions.height!);
+		if (this.windowOptions.resizable) this.window.setSize(this.state.width, this.state.height);
+		else this.window.setSize(this.windowOptions.width, this.windowOptions.height);
 
 		this.window.on('resize', () => this.stateChangedHandler());
 		this.window.on('move', () => this.stateChangedHandler());
@@ -78,16 +66,13 @@ export default class WindowStateManager {
 	}
 
 	detach() {
-		if (!this.window)
-			return;
+		if (!this.window) return;
 
-		if (this.stateChangeTimer)
-			global.clearTimeout(this.stateChangeTimer);
+		if (this.stateChangeTimer) global.clearTimeout(this.stateChangeTimer);
 	}
 
 	private stateChangedHandler() {
-		if (this.stateChangeTimer)
-			global.clearTimeout(this.stateChangeTimer);
+		if (this.stateChangeTimer) global.clearTimeout(this.stateChangeTimer);
 
 		this.stateChangeTimer = setTimeout(() => this.updateState(), 100);
 	}
@@ -102,8 +87,7 @@ export default class WindowStateManager {
 	}
 
 	private updateState() {
-		if (!this.window)
-			return;
+		if (!this.window) return;
 
 		const bounds = this.window.getBounds();
 		const display = screen.getDisplayMatching(bounds);
@@ -124,8 +108,7 @@ export default class WindowStateManager {
 	}
 
 	private isWindowNormal() {
-		if (!this.window)
-			return true;
+		if (!this.window) return true;
 
 		return !this.window.isMaximized() && !this.window.isMinimized() && !this.window.isFullScreen();
 	}
@@ -141,14 +124,12 @@ export default class WindowStateManager {
 	}
 
 	private windowWithinBounds(bounds: Rectangle) {
-		/* eslint-disable operator-linebreak */
 		return (
 			this.state.x >= bounds.x &&
 			this.state.y >= bounds.y &&
 			this.state.x + this.state.width <= bounds.x + bounds.width &&
 			this.state.y + this.state.height <= bounds.y + bounds.height
 		);
-		/* eslint-enable operator-linebreak */
 	}
 
 	private ensureWindowBoundsAcceptable() {

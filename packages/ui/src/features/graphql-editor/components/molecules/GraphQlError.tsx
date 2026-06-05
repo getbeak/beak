@@ -1,138 +1,161 @@
-import React from 'react';
 import { ipcWindowService } from '@beak/ui/lib/ipc';
 import { renderPlainTextDefinition } from '@beak/ui/utils/keyboard-rendering';
-import { faCloudBolt, faLightbulb } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import styled from 'styled-components';
+import { Box, Flex, Link } from '@chakra-ui/react';
+import { CloudLightning, Lightbulb } from 'lucide-react';
+import * as React from 'react';
 
 interface GraphQlErrorProps {
 	error: Error;
 }
 
+const HINTS: Array<string | React.ReactNode> = [
+	'Check the URL is correct',
+	'Check that any security headers are provided',
+	'Check the HTTP method/verb is correct',
+];
+
 const GraphQlError: React.FC<GraphQlErrorProps> = ({ error }) => (
-	<Wrapper>
-		<FontAwesomeIcon
-			icon={faCloudBolt}
-			opacity={0.4}
-			size={'4x'}
-		/>
-		<Title>{'Unable to fetch GraphQL schema'}</Title>
-		<ErrorMessage>{'Error message: '}{error.message}</ErrorMessage>
-		<Separator />
-		<Body>
-			{'You can try the troubleshooting points below, but if that fails to '}
-			{'resolve the issue, you can view more details in the developer tools '}
-			{'network tab.'}
-		</Body>
-		<UnstyledList>
-			<ListItem>
-				<FontAwesomeIcon
-					icon={faLightbulb}
-					opacity={0.6}
-					size={'1x'}
-				/>
-				{' Check the URL is correct'}
-			</ListItem>
-			<ListItem>
-				<FontAwesomeIcon
-					icon={faLightbulb}
-					opacity={0.6}
-					size={'1x'}
-				/>
-				{' Check that any security headers are provided'}
-			</ListItem>
-			<ListItem>
-				<FontAwesomeIcon
-					icon={faLightbulb}
-					opacity={0.6}
-					size={'1x'}
-				/>
-				{' Check the HTTP method/verb is correct'}
-			</ListItem>
-			<ListItem>
-				<FontAwesomeIcon
-					icon={faLightbulb}
-					opacity={0.6}
-					size={'1x'}
-				/>
-				{` Toggle developer tools from the command search bar ${renderPlainTextDefinition('omni-bar.launch.commands')}`}
-			</ListItem>
-			<ListItem>
-				<FontAwesomeIcon
-					icon={faLightbulb}
-					opacity={0.6}
-					size={'1x'}
-				/>
-				{' Toggle developer tools by clicking '}
-				<DevToolsToggle
-					href={'#'}
-					onClick={event => {
-						event.preventDefault();
-						event.stopPropagation();
+	<Flex
+		direction='column'
+		px='6'
+		py='10'
+		h='100%'
+		maxW='560px'
+		mx='auto'
+		align='center'
+		justify='center'
+		gap='3'
+		textAlign='center'
+	>
+		<Flex
+			align='center'
+			justify='center'
+			w='52px'
+			h='52px'
+			borderRadius='full'
+			bg='color-mix(in srgb, var(--beak-colors-accent-alert) 14%, transparent)'
+			borderWidth='1px'
+			borderColor='color-mix(in srgb, var(--beak-colors-accent-alert) 28%, transparent)'
+			color='accent.alert'
+			mb='1'
+			boxShadow='0 8px 24px color-mix(in srgb, var(--beak-colors-accent-alert) 24%, transparent), inset 0 1px 0 color-mix(in srgb, white 18%, transparent)'
+		>
+			<CloudLightning size={24} strokeWidth={1.8} />
+		</Flex>
 
-						ipcWindowService.toggleDeveloperTools();
-					}}
+		<Flex direction='column' gap='1'>
+			<Box fontSize='xl' fontWeight='700' color='fg.default' letterSpacing='-0.02em' lineHeight='1.1'>
+				{'Unable to fetch GraphQL schema'}
+			</Box>
+			<Box fontSize='10px' color='accent.alert' letterSpacing='0.06em' textTransform='uppercase' fontWeight='700'>
+				{'Introspection failed'}
+			</Box>
+		</Flex>
+
+		<Box
+			w='100%'
+			mt='1'
+			p='2.5'
+			borderRadius='md'
+			borderWidth='1px'
+			borderColor='color-mix(in srgb, var(--beak-colors-accent-alert) 28%, var(--beak-colors-border-subtle))'
+			bg='color-mix(in srgb, var(--beak-colors-accent-alert) 6%, var(--beak-colors-bg-surface))'
+			boxShadow='0 4px 12px color-mix(in srgb, var(--beak-colors-accent-alert) 10%, rgba(0,0,0,0.04)), inset 0 1px 0 color-mix(in srgb, white 14%, transparent)'
+			css={{ borderLeft: '3px solid var(--beak-colors-accent-alert)' }}
+			fontFamily='mono'
+			fontSize='xs'
+			color='fg.default'
+			textAlign='left'
+			overflowWrap='anywhere'
+		>
+			<Box
+				fontSize='10px'
+				fontWeight='700'
+				letterSpacing='0.06em'
+				textTransform='uppercase'
+				color='accent.alert'
+				mb='1'
+				fontFamily='body'
+			>
+				{'Error message'}
+			</Box>
+			{error.message}
+		</Box>
+
+		<Box
+			w='100%'
+			mt='2'
+			p='3'
+			borderRadius='md'
+			borderWidth='1px'
+			borderColor='border.subtle'
+			bg='color-mix(in srgb, var(--beak-colors-bg-surface) 70%, transparent)'
+			textAlign='left'
+		>
+			<Flex align='center' gap='1.5' mb='2'>
+				<Flex
+					align='center'
+					justify='center'
+					w='20px'
+					h='20px'
+					borderRadius='sm'
+					bg='color-mix(in srgb, var(--beak-colors-accent-warning) 14%, transparent)'
+					borderWidth='1px'
+					borderColor='color-mix(in srgb, var(--beak-colors-accent-warning) 28%, transparent)'
+					color='accent.warning'
+					boxShadow='inset 0 1px 0 color-mix(in srgb, white 14%, transparent)'
 				>
-					{'here'}
-				</DevToolsToggle>
-			</ListItem>
-		</UnstyledList>
-	</Wrapper>
+					<Lightbulb size={11} strokeWidth={2.2} />
+				</Flex>
+				<Box fontSize='10px' fontWeight='700' letterSpacing='0.06em' textTransform='uppercase' color='accent.warning'>
+					{'Troubleshooting'}
+				</Box>
+			</Flex>
+			<Flex direction='column' gap='1.5' as='ul' listStyleType='none' fontSize='xs' color='fg.muted' lineHeight='1.5'>
+				{HINTS.map(hint => (
+					<Box as='li' key={String(hint)} pl='4' position='relative'>
+						<Box
+							position='absolute'
+							left='0'
+							top='7px'
+							w='4px'
+							h='4px'
+							borderRadius='full'
+							bg='color-mix(in srgb, var(--beak-colors-accent-pink) 60%, transparent)'
+						/>
+						{hint}
+					</Box>
+				))}
+				<Box as='li' pl='4' position='relative'>
+					<Box
+						position='absolute'
+						left='0'
+						top='7px'
+						w='4px'
+						h='4px'
+						borderRadius='full'
+						bg='color-mix(in srgb, var(--beak-colors-accent-pink) 60%, transparent)'
+					/>
+					{`Toggle developer tools from the command bar (${renderPlainTextDefinition('omni-bar.launch.commands')}) or `}
+					<Link
+						href='#'
+						color='accent.pink'
+						fontWeight='600'
+						textDecoration='underline'
+						textDecorationStyle='dotted'
+						_hover={{ textDecorationStyle: 'solid' }}
+						onClick={event => {
+							event.preventDefault();
+							event.stopPropagation();
+							ipcWindowService.toggleDeveloperTools();
+						}}
+					>
+						{'open them here'}
+					</Link>
+				</Box>
+			</Flex>
+		</Box>
+	</Flex>
 );
-
-const Wrapper = styled.div`
-	display: flex;
-	flex-direction: column;
-	text-align: center;
-	padding: 60px 40px;
-	height: calc(100% - 120px);
-	max-width: 600px;
-	margin: 0 auto;
-
-	align-items: center;
-
-	svg > path {
-		fill: ${p => p.theme.ui.textMinor};
-	}
-`;
-
-const Title = styled.div`
-	font-size: 18px;
-	margin: 10px 0;
-	font-weight: 300;
-	color: ${p => p.theme.ui.textOnSurfaceBackground};
-`;
-
-const ErrorMessage = styled.div`
-	font-size: 13px;
-	color: ${p => p.theme.ui.textMinor};
-	overflow-wrap: anywhere;
-`;
-
-const Separator = styled.div`
-	width: 250px;
-	height: 1px;
-	margin: 20px 0;
-	background-color: ${p => p.theme.ui.backgroundBorderSeparator};
-`;
-
-const Body = styled.div`
-	font-size: 13px;
-	color: ${p => p.theme.ui.textMinor};
-`;
-
-const UnstyledList = styled.ul`
-	list-style: none;
-`;
-
-const ListItem = styled.li`
-	font-size: 12px;
-	margin: 6px;
-	color: ${p => p.theme.ui.textMinor};
-`;
-
-const DevToolsToggle = styled.a`
-	color: ${p => p.theme.ui.secondaryAction};
-`;
 
 export default GraphQlError;

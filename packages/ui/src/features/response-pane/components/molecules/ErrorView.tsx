@@ -1,54 +1,64 @@
-import React from 'react';
-import { faCloudBolt } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import styled from 'styled-components';
+import { Box, Flex } from '@chakra-ui/react';
+import { motion } from 'framer-motion';
+import { CloudLightning } from 'lucide-react';
+import * as React from 'react';
 
 interface ErrorViewProps {
 	error: Error;
 }
 
-const ErrorView: React.FC<React.PropsWithChildren<ErrorViewProps>> = ({ error }) => (
-	<Wrapper>
-		<Content>
-			<FontAwesomeIcon
-				icon={faCloudBolt}
-				opacity={0.4}
-				size={'4x'}
-			/>
-			<Title>{'There was an error executing this request'}</Title>
-			<ErrorMessage>{error.message}</ErrorMessage>
-		</Content>
-	</Wrapper>
+const ErrorView: React.FC<ErrorViewProps> = ({ error }) => (
+	<Flex textAlign='center' px='10' py='5' h='calc(100% - 40px)' align='center' justify='center'>
+		<motion.div
+			initial={{ opacity: 0, y: 6 }}
+			animate={{ opacity: 1, y: 0 }}
+			transition={{ duration: 0.22, ease: 'easeOut' }}
+			style={{ textAlign: 'center', maxWidth: 420, width: '100%' }}
+		>
+			<Flex
+				justify='center'
+				align='center'
+				mx='auto'
+				w='52px'
+				h='52px'
+				borderRadius='full'
+				bg='color-mix(in srgb, var(--beak-colors-accent-alert) 14%, transparent)'
+				borderWidth='1px'
+				borderColor='color-mix(in srgb, var(--beak-colors-accent-alert) 28%, transparent)'
+				color='accent.alert'
+				mb='3'
+				boxShadow='0 8px 24px color-mix(in srgb, var(--beak-colors-accent-alert) 24%, transparent), inset 0 1px 0 color-mix(in srgb, white 18%, transparent)'
+			>
+				<CloudLightning size={24} strokeWidth={1.8} />
+			</Flex>
+			<Box fontSize='xl' fontWeight='700' color='fg.default' letterSpacing='-0.02em' lineHeight='1.1'>
+				{'Request failed'}
+			</Box>
+			<Box fontSize='xs' color='fg.muted' mt='1.5' mb='3' lineHeight='1.5' maxW='360px' mx='auto'>
+				{'The network call didn’t complete. Check the message below for details.'}
+			</Box>
+			<Box
+				display='inline-block'
+				textAlign='left'
+				w='100%'
+				maxW='400px'
+				p='2.5'
+				borderRadius='md'
+				borderWidth='1px'
+				borderColor='color-mix(in srgb, var(--beak-colors-accent-alert) 32%, var(--beak-colors-border-subtle))'
+				bg='color-mix(in srgb, var(--beak-colors-accent-alert) 6%, var(--beak-colors-bg-surface))'
+				boxShadow='0 4px 12px color-mix(in srgb, var(--beak-colors-accent-alert) 10%, rgba(0,0,0,0.04)), inset 0 1px 0 color-mix(in srgb, white 14%, transparent)'
+				css={{ borderLeft: '3px solid var(--beak-colors-accent-alert)' }}
+			>
+				<Box fontSize='10px' fontWeight='700' letterSpacing='0.06em' textTransform='uppercase' color='accent.alert' mb='1'>
+					{'Error message'}
+				</Box>
+				<Box fontSize='xs' color='fg.default' overflowWrap='anywhere' fontFamily='mono' lineHeight='1.45'>
+					{error.message}
+				</Box>
+			</Box>
+		</motion.div>
+	</Flex>
 );
-
-const Wrapper = styled.div`
-	display: flex;
-	text-align: center;
-	padding: 20px 40px;
-	height: calc(100% - 40px);
-
-	align-items: center;
-`;
-
-const Content = styled.div`
-	flex: 1;
-
-	> svg > path {
-		fill: ${p => p.theme.ui.textMinor};
-	}
-`;
-
-const Title = styled.div`
-	font-size: 23px;
-	margin: 10px 0;
-	font-weight: 300;
-	color: ${p => p.theme.ui.textOnSurfaceBackground};
-`;
-
-const ErrorMessage = styled.div`
-	font-size: 13px;
-	color: ${p => p.theme.ui.textMinor};
-	overflow-wrap: anywhere;
-`;
 
 export default ErrorView;

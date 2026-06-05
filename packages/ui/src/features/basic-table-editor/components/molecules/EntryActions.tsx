@@ -1,29 +1,38 @@
-import React from 'react';
-import ActionIconButton from '@beak/ui/components/molecules/ActionIconButton';
-import { faMinus } from '@fortawesome/free-solid-svg-icons';
-import styled from 'styled-components';
+import { IconButton } from '@chakra-ui/react';
+import { Trash2 } from 'lucide-react';
+import * as React from 'react';
 
 interface EntryActionsProps {
 	onRemove: () => void;
 }
 
-const EntryActions: React.FC<React.PropsWithChildren<EntryActionsProps>> = ({ onRemove }) => (
-	<Wrapper>
-		<ActionIconButton
-			tabIndex={-1}
-			icon={faMinus}
-			onClick={() => onRemove()}
-		/>
-	</Wrapper>
+const EntryActions: React.FC<EntryActionsProps> = ({ onRemove }) => (
+	<IconButton
+		aria-label='Remove row'
+		title='Remove row'
+		size='xs'
+		variant='ghost'
+		color='fg.subtle'
+		tabIndex={-1}
+		h='18px'
+		w='18px'
+		minW='18px'
+		borderRadius='sm'
+		_hover={{
+			color: 'accent.alert',
+			bg: 'color-mix(in srgb, var(--beak-colors-accent-alert) 18%, transparent)',
+		}}
+		_focusVisible={{
+			outline: 'none',
+			color: 'accent.alert',
+			boxShadow: '0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-alert) 45%, transparent)',
+		}}
+		_active={{ transform: 'scale(0.92)' }}
+		transition='color .12s ease, background-color .12s ease, transform .08s ease'
+		onClick={() => onRemove()}
+	>
+		<Trash2 size={11} strokeWidth={2.2} />
+	</IconButton>
 );
-
-const Wrapper = styled.div`
-	display: flex;
-	height: 100%;
-
-	flex-direction: row;
-	justify-content: flex-end;
-	align-items: center;
-`;
 
 export default EntryActions;

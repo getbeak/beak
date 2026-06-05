@@ -1,0 +1,50 @@
+diff --git a/dist/index.js b/dist/index.js
+index 2ac6a0430a9e8d970d2e2fadf95401b368c6002f..32606d776ba5ef186810f8167c1c5c84defaadeb 100644
+--- a/dist/index.js
++++ b/dist/index.js
+@@ -10,12 +10,26 @@ const esbuild = require('esbuild');
+  * Return a resolved path for a given Monaco file.
+  */
+ function resolveMonacoPath(filePath) {
+-    try {
+-        return require.resolve(path.join(process.cwd(), 'node_modules', filePath));
+-    }
+-    catch (err) {
+-        return require.resolve(filePath);
++    // patched: monaco-editor's exports map ("./*": "./*") doesn't synthesise the
++    // `.js` extension for bare-specifier require.resolve, and pnpm hoists
++    // monaco-editor to the workspace root so process.cwd()/node_modules/... is
++    // empty inside a workspace package. Try the cwd-rooted path first (with
++    // and without `.js`), then the bare specifier (with and without `.js`).
++    const tries = [
++        path.join(process.cwd(), 'node_modules', filePath),
++        path.join(process.cwd(), 'node_modules', filePath) + '.js',
++        filePath,
++        filePath + '.js',
++    ];
++    let lastErr;
++    for (const t of tries) {
++        try {
++            return require.resolve(t);
++        } catch (err) {
++            lastErr = err;
++        }
+     }
++    throw lastErr;
+ }
+ exports.resolveMonacoPath = resolveMonacoPath;
+ function getWorks(options) {
+diff --git a/dist/workerMiddleware.js b/dist/workerMiddleware.js
+index dd8681c56cd5106dbc6dbc6c9cd03cbada397dfc..64eab8d4f16d76050dac00416a3d501bbf776daf 100644
+--- a/dist/workerMiddleware.js
++++ b/dist/workerMiddleware.js
+@@ -43,7 +43,8 @@ function workerMiddleware(middlewares, config, options) {
+     const works = index_1.getWorks(options);
+     // clear cacheDir
+     if (fs.existsSync(exports.cacheDir)) {
+-        fs.rmdirSync(exports.cacheDir, { recursive: true, force: true });
++        // patched: rmdirSync({ recursive: true }) is removed in Node 22+; rmSync is the replacement.
++        fs.rmSync(exports.cacheDir, { recursive: true, force: true });
+     }
+     for (const work of works) {
+         middlewares.use(config.base + options.publicPath + '/' + getFilenameByEntry(work.entry), function (req, res, next) {

@@ -1,22 +1,66 @@
-import { createAction } from '@reduxjs/toolkit';
-
+// Source of truth is @beak/state/git; this re-export keeps existing UI imports working.
 import {
-	ActionTypes as AT,
-	GitOpenedPayload,
-} from './types';
+	addBranch,
+	changeSelectedBranch,
+	gitClosed,
+	gitOpened,
+	operationDismissed,
+	operationFailed,
+	operationStarted,
+	operationSucceeded,
+	remotesUpdated,
+	removeBranch,
+	requestCheckout,
+	requestCommit,
+	requestFetch,
+	requestPull,
+	requestPush,
+	requestStatus,
+	startGit,
+	statusFailed,
+	statusFetched,
+} from '@beak/state/git';
 
-export const startGit = createAction(AT.START_GIT);
-export const gitOpened = createAction<GitOpenedPayload>(AT.GIT_OPENED);
-
-export const addBranch = createAction<string>(AT.ADD_BRANCH);
-export const removeBranch = createAction<string>(AT.REMOVE_BRANCH);
-export const changeSelectedBranch = createAction<string | undefined>(AT.CHANGE_SELECTED_BRANCH);
+export {
+	addBranch,
+	changeSelectedBranch,
+	gitClosed,
+	gitOpened,
+	operationDismissed,
+	operationFailed,
+	operationStarted,
+	operationSucceeded,
+	remotesUpdated,
+	removeBranch,
+	requestCheckout,
+	requestCommit,
+	requestFetch,
+	requestPull,
+	requestPush,
+	requestStatus,
+	startGit,
+	statusFailed,
+	statusFetched,
+};
 
 export default {
-	startGit,
-	gitOpened,
-
 	addBranch,
-	removeBranch,
 	changeSelectedBranch,
+	gitClosed,
+	gitOpened,
+	operationDismissed,
+	operationFailed,
+	operationStarted,
+	operationSucceeded,
+	remotesUpdated,
+	removeBranch,
+	requestCheckout,
+	requestCommit,
+	requestFetch,
+	requestPull,
+	requestPush,
+	requestStatus,
+	startGit,
+	statusFailed,
+	statusFetched,
 };

@@ -3,7 +3,7 @@ export const ActionTypes = {
 	HIDE_OMNI_BAR: '@beak/features/omni-bar/HIDE_OMNI_BAR',
 };
 
-export type OmniMode = 'search' | 'commands';
+export type OmniMode = 'search' | 'commands' | 'workflows';
 
 export interface State {
 	open: boolean;

@@ -1,26 +1,26 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { useDispatch } from 'react-redux';
-import RealtimeValueEditor from '@beak/ui/features/realtime-value-editor/components/RealtimeValueEditor';
-import { ValuePart, ValueParts } from '@beak/ui/features/realtime-values/values';
+import type { ValuePart, ValueSections } from '@beak/ui/features/variables/values';
+import VariableEditor from '@beak/ui/features/variables-editor/components/VariableEditor';
 import useForceReRender from '@beak/ui/hooks/use-force-rerender';
 import { checkShortcut } from '@beak/ui/lib/keyboard-shortcuts';
 import { requestFlight } from '@beak/ui/store/flight/actions';
 import { useAppSelector } from '@beak/ui/store/redux';
-import styled from 'styled-components';
-
-import useRealtimeValueContext from '../../realtime-values/hooks/use-realtime-value-context';
-import { parseValueParts } from '../../realtime-values/parser';
-import renderValueParts from '../../realtime-values/renderer';
-import { NormalizedSelection, normalizeSelection, trySetSelection } from '../utils/browser-selection';
-import { detectRelevantCopiedValueParts } from '../utils/copying';
+import { Box } from '@chakra-ui/react';
+import React, { useEffect, useRef, useState } from 'react';
+import { useDispatch } from 'react-redux';
+import useVariableContext from '../../variables/hooks/use-variable-context';
+import { parseValueSections } from '../../variables/parser';
+import renderValueSections from '../../variables/renderer';
+import { type NormalizedSelection, normalizeSelection, trySetSelection } from '../utils/browser-selection';
+import { detectRelevantCopiedValueSections } from '../utils/copying';
+import { parseDomState } from '../utils/dom-state';
 import { handlePaste } from '../utils/pasting';
-import { sanitiseValueParts } from '../utils/sanitation';
-import { determineInsertionMode, VariableSelectionState } from '../utils/variables';
+import { sanitiseValueSections } from '../utils/sanitation';
+import { determineInsertionMode, type VariableSelectionState } from '../utils/variables';
 import VariableSelector from './molecules/VariableSelector';
 import UnmanagedInput from './organisms/UnmanagedInput';
 
 interface UnmanagedState {
-	valueParts: ValueParts;
+	ValueSections: ValueSections;
 	debounceHandler?: number;
 	lastUpstreamReport: number;
 	lastSelectionPosition?: NormalizedSelection;
@@ -31,79 +31,101 @@ export interface VariableInputProps {
 	disabled?: boolean;
 	placeholder?: string;
 	requestId?: string;
-	parts: ValueParts;
+	parts: ValueSections;
 	readOnly?: boolean;
+	/**
+	 * When true, mask the rendered text with bullets (CSS text-security).
+	 * Used for schema `type: 'token'` fields so secrets aren't shown in
+	 * plaintext while editing. Keys + values still copy/paste normally —
+	 * the masking is purely visual.
+	 */
+	mask?: boolean;
 
-	onChange: (parts: ValueParts) => void;
+	onChange: (parts: ValueSections) => void;
 	onUrlQueryStringDetection?: () => void;
 }
 
 const VariableInput = React.forwardRef<HTMLElement, VariableInputProps>((props, forwardedRef) => {
-	const { disabled, requestId, placeholder, parts: incomingParts, onChange, readOnly } = props;
+	const { disabled, requestId, placeholder, parts: incomingParts, onChange, readOnly, mask } = props;
 	const dispatch = useDispatch();
 
 	const [latestForceRerender, forceRerender] = useForceReRender();
 	const [showSelector, setShowSelector] = useState(() => false);
 	const [query, setQuery] = useState('');
 
-	const { variableGroups } = useAppSelector(s => s.global.variableGroups);
-	const selectedGroups = useAppSelector(s => s.global.preferences.editor.selectedVariableGroups);
+	const { variableSets } = useAppSelector(s => s.global.variableSets);
 
-	const context = useRealtimeValueContext(props.requestId);
+	const context = useVariableContext(props.requestId);
 	const editableRef = useRef<HTMLDivElement | null>(null);
-	const placeholderRef = useRef<HTMLDivElement | null>(null);
 	const unmanagedStateRef = useRef<UnmanagedState>({
 		lastUpstreamReport: 0,
-		valueParts: incomingParts,
+		ValueSections: incomingParts,
 	});
 
 	// Setup ref
 	useEffect(() => {
-		if (!editableRef.current)
-			return;
+		if (!editableRef.current) return;
 
-		if (forwardedRef && typeof forwardedRef === 'function')
-			forwardedRef(editableRef.current);
+		if (forwardedRef && typeof forwardedRef === 'function') forwardedRef(editableRef.current);
 
 		const elem = editableRef.current;
 
 		unmanagedStateRef.current = {
 			lastUpstreamReport: 0,
-			valueParts: incomingParts,
+			ValueSections: incomingParts,
 		};
 
-		if (readOnly)
-			elem.contentEditable = 'false';
+		if (readOnly) elem.contentEditable = 'false';
 
-		elem.innerHTML = renderValueParts(
-			unmanagedStateRef.current.valueParts,
-			variableGroups,
-		);
+		elem.innerHTML = renderValueSections(unmanagedStateRef.current.ValueSections, variableSets);
 	}, [requestId, readOnly, latestForceRerender]);
+
+	// Handlers close over render-time state (showSelector, query, variableSets).
+	// Previously the listener `useEffect` listed all of those in its deps so it
+	// could pick up fresh closures — which meant we tore down + re-added every
+	// DOM listener on every selector toggle and every keystroke that mutated
+	// `query`. That rebind can race with the very `input`/`blur` event that
+	// triggered the state change. We instead pin the listeners once per
+	// requestId and delegate through a ref that always carries the latest
+	// closures.
+	const handlersRef = useRef({
+		handleChange,
+		handleKeyDown,
+		handleCopy,
+		handleBlur,
+	});
+	handlersRef.current = { handleChange, handleKeyDown, handleCopy, handleBlur };
 
 	useEffect(() => {
 		const elem = editableRef.current;
 
-		if (!elem) return () => { /* */ };
+		if (!elem)
+			return () => {
+				/* */
+			};
 
-		elem.addEventListener('input', handleChange);
-		elem.addEventListener('keydown', handleKeyDown);
-		elem.addEventListener('copy', handleCopy);
-		elem.addEventListener('blur', handleBlur);
+		const onInput = (e: Event) => handlersRef.current.handleChange(e);
+		const onKeyDown = (e: KeyboardEvent) => handlersRef.current.handleKeyDown(e);
+		const onCopy = (e: ClipboardEvent) => handlersRef.current.handleCopy(e);
+		const onBlur = () => handlersRef.current.handleBlur();
+
+		elem.addEventListener('input', onInput);
+		elem.addEventListener('keydown', onKeyDown);
+		elem.addEventListener('copy', onCopy);
+		elem.addEventListener('blur', onBlur);
 		elem.addEventListener('paste', handlePaste);
 
 		return () => {
-			elem.removeEventListener('input', handleChange);
-			elem.removeEventListener('keydown', handleKeyDown);
-			elem.removeEventListener('copy', handleCopy);
-			elem.removeEventListener('blur', handleBlur);
+			elem.removeEventListener('input', onInput);
+			elem.removeEventListener('keydown', onKeyDown);
+			elem.removeEventListener('copy', onCopy);
+			elem.removeEventListener('blur', onBlur);
 			elem.removeEventListener('paste', handlePaste);
 		};
-	}, [requestId, showSelector, query, variableGroups, selectedGroups]);
+	}, [requestId]);
 
 	useEffect(() => {
-		if (!editableRef.current)
-			return;
+		if (!editableRef.current) return;
 
 		// Pretend it's an input, as it technically is
 		// (editableRef.current as HTMLInputElement).disabled = Boolean(disabled);
@@ -113,7 +135,7 @@ const VariableInput = React.forwardRef<HTMLElement, VariableInputProps>((props, 
 	useEffect(() => {
 		// Update unmanaged state if the change comes in more than 100ms after our last known write
 		if (unmanagedStateRef.current.lastUpstreamReport + 100 < Date.now()) {
-			unmanagedStateRef.current.valueParts = incomingParts;
+			unmanagedStateRef.current.ValueSections = incomingParts;
 
 			forceRerender();
 		}
@@ -131,29 +153,26 @@ const VariableInput = React.forwardRef<HTMLElement, VariableInputProps>((props, 
 		reconcile();
 
 		if (!showSelector) {
-			if (delta === '{')
-				openSelector();
+			if (delta === '{') openSelector();
 
 			return;
 		}
 
-		const { variableSelectionState, valueParts } = unmanagedStateRef.current;
+		const { variableSelectionState, ValueSections } = unmanagedStateRef.current;
 
 		// Sanity check, but by now the selector will be open
 		if (!variableSelectionState) {
 			// Ensure the selector is closed if there is no state too
-			if (showSelector)
-				closeSelector();
+			if (showSelector) closeSelector();
 
 			return;
 		}
 
 		// Selector is open, so update query
-		const part = valueParts[variableSelectionState.queryStartSelection.partIndex];
+		const part = ValueSections[variableSelectionState.queryStartSelection.partIndex];
 
 		if (typeof part !== 'string') {
-			if (showSelector)
-				closeSelector();
+			if (showSelector) closeSelector();
 
 			return;
 		}
@@ -161,43 +180,42 @@ const VariableInput = React.forwardRef<HTMLElement, VariableInputProps>((props, 
 		const queryWithOpener = part.substring(variableSelectionState.queryStartSelection.offset - 1);
 		const query = part.substring(variableSelectionState.queryStartSelection.offset);
 
-		if (queryWithOpener === '')
-			closeSelector();
-		else
-			setQuery(query);
+		if (queryWithOpener === '') closeSelector();
+		else setQuery(query);
 	}
 
 	async function handleCopy(event: ClipboardEvent) {
-		const { anomalyDetected, valueParts } = parseDomState();
+		const { anomalyDetected, valueParts } = parseDomState(editableRef.current, {
+			onUrlQueryStringDetection: props.onUrlQueryStringDetection,
+			onQueryStringBlur: () => editableRef.current?.blur(),
+		});
 
-		if (anomalyDetected || valueParts.length === 0)
-			return;
+		if (anomalyDetected || valueParts.length === 0) return;
 
-		const relevantParts = detectRelevantCopiedValueParts(valueParts);
+		const relevantParts = detectRelevantCopiedValueSections(valueParts);
 
-		if (relevantParts === null)
-			return;
+		if (relevantParts === null) return;
 
-		const parsed = await parseValueParts(context, relevantParts);
+		const parsed = await parseValueSections(context, relevantParts);
 		const clipboard = await navigator.clipboard.read();
 		const html = await clipboard[0].getType('text/html');
 
-		navigator.clipboard.write([new ClipboardItem({
-			'text/plain': new Blob([parsed], { type: 'text/plain' }),
-			'text/html': html,
-		})]);
+		navigator.clipboard.write([
+			new ClipboardItem({
+				'text/plain': new Blob([parsed], { type: 'text/plain' }),
+				'text/html': html,
+			}),
+		]);
 
 		event.preventDefault();
 	}
 
 	function handleKeyDown(event: KeyboardEvent) {
-		if (!['Escape', 'Enter', 'ArrowUp', 'ArrowDown'].includes(event.key))
-			return;
+		if (!['Escape', 'Enter', 'ArrowUp', 'ArrowDown'].includes(event.key)) return;
 
 		event.preventDefault();
 
-		if (event.key === 'Escape')
-			closeSelector();
+		if (event.key === 'Escape') closeSelector();
 
 		// If a flight is about to happen, make sure the data is correct!
 		if (checkShortcut('global.execute-request', event)) {
@@ -214,86 +232,17 @@ const VariableInput = React.forwardRef<HTMLElement, VariableInputProps>((props, 
 		reportChange();
 	}
 
-	function parseDomState() {
-		if (!editableRef.current)
-			return { anomalyDetected: false, valueParts: [] };
-
-		const reconciledParts: ValueParts = [];
-		const children = editableRef.current.childNodes;
-
-		// If we detect some invalid state, we just ask React to re-render to clear out any
-		// unsafe/unknown code for us
-		let anomalyDetected = false;
-
-		Array.from(children).forEach(n => {
-			// Detect simple text content
-			if (n.nodeName === '#text' || n.nodeName === 'SPAN') {
-				let originalTextContent = (n.textContent || '').replaceAll(
-					/(?:[\u00a0]+)/g,
-					// eslint-disable-next-line newline-per-chained-call
-					substring => new Array(substring.length).fill(' ').join(''),
-				);
-
-				// Handle optional query string detection here
-				// TODO(afr): Pass query body back to parent component
-				if (props.onUrlQueryStringDetection && originalTextContent.includes('?')) {
-					const textContext = originalTextContent.replaceAll('?', '');
-
-					// eslint-disable-next-line no-param-reassign
-					n.textContent = textContext;
-					originalTextContent = textContext;
-
-					props.onUrlQueryStringDetection();
-					editableRef.current?.blur();
-				}
-
-				reconciledParts.push(originalTextContent);
-
-				return;
-			}
-
-			// Handle weird browser edge case
-			if (n.nodeName === 'BR')
-				return;
-
-			// Detect un-allowed div content
-			if (n.nodeName !== 'DIV') {
-				console.error(`Unknown node detected in variable input ${n.nodeName}`);
-				anomalyDetected = true;
-
-				return;
-			}
-
-			const elem = n as HTMLElement;
-			const type = elem.dataset.type!;
-
-			// TODO(afr): Detect if payload is corrected, if it is ignore and mark the
-			// entire realtime value as an anomaly
-			const purePayload = elem.dataset.payload;
-
-			reconciledParts.push({
-				type,
-				payload: purePayload ? JSON.parse(purePayload) : void 0,
-			});
-
-			return;
-		});
-
-		return { anomalyDetected, valueParts: reconciledParts };
-	}
-
 	function reconcile() {
-		if (!editableRef.current)
-			return;
+		if (!editableRef.current) return;
 
-		const { anomalyDetected, valueParts } = parseDomState();
+		const { anomalyDetected, valueParts } = parseDomState(editableRef.current, {
+			onUrlQueryStringDetection: props.onUrlQueryStringDetection,
+			onQueryStringBlur: () => editableRef.current?.blur(),
+		});
 		const { lastSelectionPosition } = unmanagedStateRef.current;
 
-		unmanagedStateRef.current.valueParts = valueParts;
+		unmanagedStateRef.current.ValueSections = valueParts;
 		unmanagedStateRef.current.lastSelectionPosition = normalizeSelection(lastSelectionPosition);
-
-		if (placeholderRef.current)
-			placeholderRef.current.style.display = valueParts.length === 0 ? 'block' : 'none';
 
 		// This means something really weird has happened, such as an unknown element getting into our DOM state. If
 		// that happens we just tell React to re-render and override with the state that we know about
@@ -311,8 +260,7 @@ const VariableInput = React.forwardRef<HTMLElement, VariableInputProps>((props, 
 	function debounceChange() {
 		const { debounceHandler } = unmanagedStateRef.current;
 
-		if (debounceHandler)
-			window.clearTimeout(debounceHandler);
+		if (debounceHandler) window.clearTimeout(debounceHandler);
 
 		unmanagedStateRef.current.debounceHandler = window.setTimeout(reportChange, 50);
 	}
@@ -320,32 +268,29 @@ const VariableInput = React.forwardRef<HTMLElement, VariableInputProps>((props, 
 	function reportChange(ignoreSelectorCheck = false) {
 		// Don't report changes upstream while the variable selector is open
 		if (showSelector) {
-			if (!ignoreSelectorCheck)
-				return;
+			if (!ignoreSelectorCheck) return;
 		}
 
-		const { debounceHandler, lastSelectionPosition, valueParts } = unmanagedStateRef.current;
+		const { debounceHandler, lastSelectionPosition, ValueSections } = unmanagedStateRef.current;
 
 		// Make sure we aren't double reporting!
-		if (debounceHandler)
-			window.clearTimeout(debounceHandler);
+		if (debounceHandler) window.clearTimeout(debounceHandler);
 
 		unmanagedStateRef.current.lastUpstreamReport = Date.now();
 		unmanagedStateRef.current.lastSelectionPosition = normalizeSelection(lastSelectionPosition);
 
 		// Cleanup the format before we pass it back to the store. If we do this internally it'll mess up some of the
 		// DOM <-> State management. Very bad design from me.
-		onChange(sanitiseValueParts(valueParts));
+		onChange(sanitiseValueSections(ValueSections));
 	}
 
 	function openSelector() {
 		setShowSelector(true);
 
 		const selection = normalizeSelection(unmanagedStateRef.current.lastSelectionPosition);
-		const part = unmanagedStateRef.current.valueParts[selection.partIndex];
+		const part = unmanagedStateRef.current.ValueSections[selection.partIndex];
 
-		if (typeof part !== 'string')
-			return;
+		if (typeof part !== 'string') return;
 
 		unmanagedStateRef.current.variableSelectionState = {
 			queryStartSelection: normalizeSelection(selection),
@@ -354,43 +299,40 @@ const VariableInput = React.forwardRef<HTMLElement, VariableInputProps>((props, 
 	}
 
 	function insertVariable(variable: ValuePart) {
-		const { valueParts, variableSelectionState } = unmanagedStateRef.current;
+		const { ValueSections, variableSelectionState } = unmanagedStateRef.current;
 
-		if (!variableSelectionState)
-			return;
+		if (!variableSelectionState) return;
 
 		const { queryStartSelection, queryTrailingLength } = variableSelectionState;
 		const { offset, partIndex } = queryStartSelection;
 		const queryLength = query.length;
-		const mode = determineInsertionMode(valueParts, variableSelectionState, queryLength);
+		const mode = determineInsertionMode(ValueSections, variableSelectionState, queryLength);
 		const newPartSelectionIndex = mode === 'append' ? partIndex + 2 : partIndex + 1;
-		const mutatedValueParts = [...valueParts];
+		const mutatedValueSections = [...ValueSections];
 
 		if (['prepend', 'append'].includes(mode)) {
 			let finalPartIndex = partIndex;
 
 			if (mode === 'prepend') {
 				finalPartIndex += 1;
-				mutatedValueParts.splice(partIndex, 0, variable);
-			} else { // append
-				mutatedValueParts.splice(partIndex + 1, 0, variable);
+				mutatedValueSections.splice(partIndex, 0, variable);
+			} else {
+				// append
+				mutatedValueSections.splice(partIndex + 1, 0, variable);
 			}
 
-			const part = (mutatedValueParts[finalPartIndex] as string);
-			const partWithoutQuery = [
-				part.substring(0, offset - 1),
-				part.substr(part.length - queryTrailingLength),
-			].join('');
+			const part = mutatedValueSections[finalPartIndex] as string;
+			const partWithoutQuery = [part.substring(0, offset - 1), part.substr(part.length - queryTrailingLength)].join('');
 
-			mutatedValueParts[finalPartIndex] = partWithoutQuery;
+			mutatedValueSections[finalPartIndex] = partWithoutQuery;
 		} else if (mode === 'inject') {
-			const part = (mutatedValueParts[partIndex] as string);
+			const part = mutatedValueSections[partIndex] as string;
 			const pre = part.substring(0, offset - 1);
 			const post = part.substr(part.length - queryTrailingLength);
 
-			mutatedValueParts[partIndex] = pre;
-			mutatedValueParts.splice(partIndex + 1, 0, variable);
-			mutatedValueParts.splice(partIndex + 2, 0, post);
+			mutatedValueSections[partIndex] = pre;
+			mutatedValueSections.splice(partIndex + 1, 0, variable);
+			mutatedValueSections.splice(partIndex + 2, 0, post);
 		} else {
 			closeSelector();
 
@@ -404,19 +346,24 @@ const VariableInput = React.forwardRef<HTMLElement, VariableInputProps>((props, 
 		};
 
 		unmanagedStateRef.current.lastSelectionPosition = newSelectionPosition;
-		unmanagedStateRef.current.valueParts = mutatedValueParts;
+		unmanagedStateRef.current.ValueSections = mutatedValueSections;
 
 		closeSelector();
 
-		window.setTimeout(() => {
+		// rAF instead of `setTimeout(…, 100)`: we need to wait for React to
+		// commit the selector-close render (since the selector portal sits over
+		// the editable element), but a 100ms delay is wildly conservative and
+		// is the visible source of "the caret disappears for a beat after I
+		// pick a variable". rAF lands on the very next paint boundary.
+		window.requestAnimationFrame(() => {
 			reportChange();
 			internalPartUpdate();
-		}, 100);
+		});
 	}
 
 	function variableEditSaved(partIndex: number, type: string, item: any) {
-		const valueParts = unmanagedStateRef.current.valueParts;
-		const part = unmanagedStateRef.current.valueParts[partIndex];
+		const ValueSections = unmanagedStateRef.current.ValueSections;
+		const part = unmanagedStateRef.current.ValueSections[partIndex];
 
 		if (typeof part !== 'object' || part.type !== type) {
 			console.error(`Part ordering change mid edit, cannot continue. expected ${type}`);
@@ -424,32 +371,39 @@ const VariableInput = React.forwardRef<HTMLElement, VariableInputProps>((props, 
 			return;
 		}
 
-		const newParts = [...valueParts];
+		const newParts = [...ValueSections];
 		const existingPart = newParts[partIndex] as ValuePart;
 
 		if (typeof existingPart !== 'string') {
-			(newParts[partIndex]) = {
+			newParts[partIndex] = {
 				...existingPart,
 				payload: item,
 			};
 		}
 
-		unmanagedStateRef.current.valueParts = newParts;
+		unmanagedStateRef.current.ValueSections = newParts;
 
-		window.setTimeout(() => {
+		// Same rationale as `insertVariable`: rAF instead of `setTimeout(…, 100)`
+		// so the saved-payload re-render appears on the next paint, not a tenth
+		// of a second later.
+		window.requestAnimationFrame(() => {
 			reportChange();
 			internalPartUpdate();
-		}, 100);
+		});
 	}
 
 	function internalPartUpdate() {
-		editableRef.current!.innerHTML = renderValueParts(
-			unmanagedStateRef.current.valueParts,
-			variableGroups,
-		);
+		editableRef.current!.innerHTML = renderValueSections(unmanagedStateRef.current.ValueSections, variableSets);
 
-		// eslint-disable-next-line no-new
-		new Promise(() => {
+		// Selection has to wait until after the innerHTML mutation has flushed
+		// AND the browser has had a chance to lay out the new nodes — otherwise
+		// `setStart` lands on a stale node reference and the caret disappears.
+		// A microtask covers the React/DOM stack; a follow-up rAF covers the
+		// paint boundary (matters for the chip-just-inserted case).
+		queueMicrotask(() => {
+			trySetSelection(editableRef.current, unmanagedStateRef.current.lastSelectionPosition);
+		});
+		window.requestAnimationFrame(() => {
 			trySetSelection(editableRef.current, unmanagedStateRef.current.lastSelectionPosition);
 		});
 	}
@@ -458,20 +412,16 @@ const VariableInput = React.forwardRef<HTMLElement, VariableInputProps>((props, 
 		setShowSelector(false);
 		setQuery('');
 
+		if (!unmanagedStateRef.current.variableSelectionState) return;
+
+		// const { queryStartSelection } = unmanagedStateRef.current.variableSelectionState;
+
 		unmanagedStateRef.current.variableSelectionState = void 0;
 	}
 
 	return (
-		<Wrapper>
-			<UnmanagedInput innerRef={editableRef} />
-			{placeholder && (
-				<Placeholder
-					ref={placeholderRef}
-					$shown={unmanagedStateRef.current.valueParts.length === 0}
-				>
-					{placeholder}
-				</Placeholder>
-			)}
+		<Box position='relative'>
+			<UnmanagedInput innerRef={editableRef} placeholder={placeholder} mask={mask} />
 			{showSelector && editableRef && (
 				<VariableSelector
 					requestId={props.requestId}
@@ -483,26 +433,10 @@ const VariableInput = React.forwardRef<HTMLElement, VariableInputProps>((props, 
 				/>
 			)}
 			{editableRef.current && (
-				<RealtimeValueEditor
-					requestId={props.requestId}
-					editable={editableRef.current}
-					onSave={variableEditSaved}
-				/>
+				<VariableEditor requestId={props.requestId} editable={editableRef.current} onSave={variableEditSaved} />
 			)}
-		</Wrapper>
+		</Box>
 	);
 });
-
-const Wrapper = styled.div`
-	position: relative;
-`;
-
-const Placeholder = styled.div<{ $shown: boolean }>`
-	display: ${p => p.$shown ? 'block' : 'none'};
-	position: absolute;
-	top: 7px; left: 7px;
-	color: ${p => p.theme.ui.textMinor};
-	pointer-events: none;
-`;
 
 export default VariableInput;

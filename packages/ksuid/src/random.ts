@@ -13,21 +13,17 @@ export function getRandomBytes(len: number): Uint8Array {
 
 	const nodeCrypto = getNodeCrypto();
 
-	if (typeof nodeCrypto !== 'undefined')
-		return new Uint8Array(nodeCrypto.randomBytes(len));
+	if (typeof nodeCrypto !== 'undefined') return new Uint8Array(nodeCrypto.randomBytes(len));
 
 	throw new Error('UnsupportedEnvironment');
 }
 
 function getWebCrypto(): Crypto | undefined {
-	if (typeof global !== 'undefined' && global.crypto)
-		return global.crypto;
+	if (typeof global !== 'undefined' && global.crypto) return global.crypto;
 
-	if (typeof window !== 'undefined' && window.crypto)
-		return window.crypto;
+	if (typeof window !== 'undefined' && window.crypto) return window.crypto;
 
 	if (typeof crypto !== 'undefined') {
-		// eslint-disable-next-line no-undef
 		return crypto;
 	}
 
@@ -37,8 +33,7 @@ function getWebCrypto(): Crypto | undefined {
 function getNodeCrypto(): any | undefined {
 	const r = require;
 
-	if (typeof r === 'undefined')
-		return void 0;
+	if (typeof r === 'undefined') return void 0;
 
 	// indirect use of require to avoid Metro's dependency resolution
 	return r('crypto');

@@ -1,6 +1,10 @@
-import { EditorPreferences, NotificationPreferences } from '../types/preferences';
-import { ThemeMode } from '../types/theme';
-import { IpcServiceMain, IpcServiceRenderer, Listener, PartialIpcMain, PartialIpcRenderer } from './ipc';
+import type { EditorPreferences, NotificationPreferences } from '../types/preferences';
+import type { ThemeMode } from '../types/theme';
+import type { PartialIpcMain } from './main';
+import { IpcServiceMain } from './main';
+import type { PartialIpcRenderer } from './renderer';
+import { IpcServiceRenderer } from './renderer';
+import type { IpcListener } from './types';
 
 export const PreferencesMessages = {
 	GetEnvironment: 'get_environment',
@@ -30,7 +34,7 @@ export interface SetEditorValueReq {
 	value: EditorPreferences[keyof EditorPreferences];
 }
 
-export class IpcPreferencesServiceRenderer extends IpcServiceRenderer {
+export class IpcPreferencesServiceRenderer extends IpcServiceRenderer<'preferences'> {
 	constructor(ipc: PartialIpcRenderer) {
 		super('preferences', ipc);
 	}
@@ -51,7 +55,6 @@ export class IpcPreferencesServiceRenderer extends IpcServiceRenderer {
 		return this.invoke<NotificationPreferences[Key]>(PreferencesMessages.GetNotificationValue, key);
 	}
 
-	// eslint-disable-next-line max-len
 	async setNotificationValue<Key extends keyof NotificationPreferences>(key: Key, value: NotificationPreferences[Key]) {
 		return this.invoke(PreferencesMessages.SetNotificationValue, { key, value });
 	}
@@ -64,7 +67,6 @@ export class IpcPreferencesServiceRenderer extends IpcServiceRenderer {
 		return this.invoke<EditorPreferences[Key]>(PreferencesMessages.GetEditorValue, key);
 	}
 
-	// eslint-disable-next-line max-len
 	async setEditorValue<Key extends keyof EditorPreferences>(key: Key, value: EditorPreferences[Key]) {
 		return this.invoke(PreferencesMessages.SetEditorValue, { key, value });
 	}
@@ -86,60 +88,56 @@ export class IpcPreferencesServiceRenderer extends IpcServiceRenderer {
 	}
 }
 
-export class IpcPreferencesServiceMain extends IpcServiceMain {
+export class IpcPreferencesServiceMain extends IpcServiceMain<'preferences'> {
 	constructor(ipc: PartialIpcMain) {
 		super('preferences', ipc);
 	}
 
-	registerGetEnvironment(fn: Listener<void, string>) {
-		this.registerListener(PreferencesMessages.GetEnvironment, fn);
+	registerGetEnvironment(fn: IpcListener<void>) {
+		this.registerRequestHandler(PreferencesMessages.GetEnvironment, fn);
 	}
 
-	registerSwitchEnvironment(fn: Listener<string>) {
-		this.registerListener(PreferencesMessages.SwitchEnvironment, fn);
+	registerSwitchEnvironment(fn: IpcListener<string>) {
+		this.registerRequestHandler(PreferencesMessages.SwitchEnvironment, fn);
 	}
 
-	// eslint-disable-next-line max-len
-	registerGetNotificationOverview(fn: Listener<void, NotificationPreferences>) {
-		this.registerListener(PreferencesMessages.GetNotificationOverview, fn);
+	registerGetNotificationOverview(fn: IpcListener<void>) {
+		this.registerRequestHandler(PreferencesMessages.GetNotificationOverview, fn);
 	}
 
-	// eslint-disable-next-line max-len
-	registerGetNotificationValue<Key extends keyof NotificationPreferences>(fn: Listener<Key, NotificationPreferences[Key]>) {
-		this.registerListener(PreferencesMessages.GetNotificationValue, fn);
+	registerGetNotificationValue<Key extends keyof NotificationPreferences>(fn: IpcListener<Key>) {
+		this.registerRequestHandler(PreferencesMessages.GetNotificationValue, fn);
 	}
 
-	registerSetNotificationValue(fn: Listener<SetNotificationValueReq, void>) {
-		this.registerListener(PreferencesMessages.SetNotificationValue, fn);
+	registerSetNotificationValue(fn: IpcListener<SetNotificationValueReq>) {
+		this.registerRequestHandler(PreferencesMessages.SetNotificationValue, fn);
 	}
 
-	// eslint-disable-next-line max-len
-	registerGetEditorOverview(fn: Listener<void, EditorPreferences>) {
-		this.registerListener(PreferencesMessages.GetEditorOverview, fn);
+	registerGetEditorOverview(fn: IpcListener<void>) {
+		this.registerRequestHandler(PreferencesMessages.GetEditorOverview, fn);
 	}
 
-	// eslint-disable-next-line max-len
-	registerGetEditorValue<Key extends keyof EditorPreferences>(fn: Listener<Key, EditorPreferences[Key]>) {
-		this.registerListener(PreferencesMessages.GetEditorValue, fn);
+	registerGetEditorValue<Key extends keyof EditorPreferences>(fn: IpcListener<Key>) {
+		this.registerRequestHandler(PreferencesMessages.GetEditorValue, fn);
 	}
 
-	registerSetEditorValue(fn: Listener<SetEditorValueReq, void>) {
-		this.registerListener(PreferencesMessages.SetEditorValue, fn);
+	registerSetEditorValue(fn: IpcListener<SetEditorValueReq>) {
+		this.registerRequestHandler(PreferencesMessages.SetEditorValue, fn);
 	}
 
-	registerGetThemeMode(fn: Listener<void, ThemeMode>) {
-		this.registerListener(PreferencesMessages.GetThemeMode, fn);
+	registerGetThemeMode(fn: IpcListener<void>) {
+		this.registerRequestHandler(PreferencesMessages.GetThemeMode, fn);
 	}
 
-	registerSwitchThemeMode(fn: Listener<ThemeMode>) {
-		this.registerListener(PreferencesMessages.SwitchThemeMode, fn);
+	registerSwitchThemeMode(fn: IpcListener<ThemeMode>) {
+		this.registerRequestHandler(PreferencesMessages.SwitchThemeMode, fn);
 	}
 
-	registerResetConfig(fn: Listener<void>) {
-		this.registerListener(PreferencesMessages.ResetConfig, fn);
+	registerResetConfig(fn: IpcListener<void>) {
+		this.registerRequestHandler(PreferencesMessages.ResetConfig, fn);
 	}
 
-	registerSignOut(fn: Listener<void>) {
-		this.registerListener(PreferencesMessages.SignOut, fn);
+	registerSignOut(fn: IpcListener<void>) {
+		this.registerRequestHandler(PreferencesMessages.SignOut, fn);
 	}
 }

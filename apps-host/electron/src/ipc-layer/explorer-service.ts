@@ -1,6 +1,6 @@
+import path from 'node:path';
 import { IpcExplorerServiceMain } from '@beak/common/ipc/explorer';
 import { clipboard, ipcMain, shell } from 'electron';
-import path from 'path';
 
 import { getProjectFilePathWindowMapping } from './fs-shared';
 

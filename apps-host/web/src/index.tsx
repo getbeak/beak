@@ -1,8 +1,7 @@
+import type { Theme } from '@beak/common/types/theme';
+import { BeakChakraProvider } from '@beak/design-system';
 import React, { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { Theme } from '@beak/common/types/theme';
-// import { GlobalStyle } from '@beak/design-system';
-import { DesignSystemProvider } from '@beak/design-system';
 
 import '@beak/ui';
 import './ipc/services';
@@ -10,8 +9,7 @@ import './ipc/services';
 function getSystemTheme(): Theme {
 	let theme: Theme = 'light';
 
-	if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)
-		theme = 'dark';
+	if (window.matchMedia?.('(prefers-color-scheme: dark)').matches) theme = 'dark';
 
 	return theme;
 }
@@ -28,9 +26,7 @@ const App: React.FC = () => {
 	return (
 		<>
 			<base href={'./'} />
-			<DesignSystemProvider themeKey={theme}>
-				{/* <GlobalStyle $darwin /> */}
-			</DesignSystemProvider>
+			<BeakChakraProvider themeKey={theme} />
 		</>
 	);
 };

@@ -6,11 +6,9 @@ const service = new IpcNotificationServiceMain(webIpcMain);
 
 service.registerNotificationBeep(async () => console.warn('Not implemented: `registerNotificationBeep`'));
 service.registerSendNotification(async (_event, payload) => {
-	if (!await checkIfPermissionsAllowed())
-		return;
+	if (!(await checkIfPermissionsAllowed())) return;
 
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	const notification = new Notification(payload.title ?? 'Title', {
+	new Notification(payload.title ?? 'Title', {
 		body: payload.body,
 		icon: '/images/logo-title.png',
 		// TODO(afr): Set custom type for this due to experimental status

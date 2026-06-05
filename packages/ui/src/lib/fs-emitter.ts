@@ -1,32 +1,47 @@
-import { eventChannel } from '@redux-saga/core';
 import type { ChokidarOptions } from 'chokidar';
 import path from 'path-browserify';
 
 import { ipcFsService, ipcFsWatcherService } from './ipc';
 
-export default function createFsEmitter(path: string, options?: ChokidarOptions) {
+export interface FsEvent {
+	type: 'add' | 'addDir' | 'change' | 'unlink' | 'unlinkDir' | 'ready';
+	path: string;
+}
+
+export interface FsSubscription {
+	close(): void;
+}
+
+/**
+ * Subscribe to fs events under `path`. The handler is called for each event;
+ * call the returned `close()` to stop watching.
+ *
+ * Replaces the previous `createFsEmitter` (which returned a redux-saga
+ * eventChannel). The new shape works for listener effects, hooks, or any
+ * other consumer that wants direct callbacks.
+ */
+export default function createFsEmitter(
+	watchPath: string,
+	handler: (event: FsEvent) => void,
+	options?: ChokidarOptions,
+): FsSubscription {
 	const sessionIdentifier = ipcFsWatcherService.generateSessionIdentifier();
 
-	const channel = eventChannel(emitter => {
-		ipcFsWatcherService.registerWatcherEvent(sessionIdentifier, async (_event, payload) => {
-			emitter({ type: payload.eventName, path: payload.path });
-		});
+	ipcFsWatcherService.registerWatcherEvent(sessionIdentifier, async (_event, payload) => {
+		handler({ type: payload.eventName, path: payload.path });
+	});
 
-		ipcFsWatcherService.registerWatcherError(sessionIdentifier, async (_event, payload) =>
+	ipcFsWatcherService.registerWatcherError(sessionIdentifier, async (_event, payload) => console.error(payload));
 
-			console.error(payload),
-		);
+	ipcFsWatcherService.startWatching(sessionIdentifier, watchPath, { ...options, ignoreInitial: true });
 
-		return () => {
+	return {
+		close() {
 			ipcFsWatcherService.stopWatching(sessionIdentifier);
 			ipcFsWatcherService.unregisterWatcherError(sessionIdentifier);
 			ipcFsWatcherService.unregisterWatcherEvent(sessionIdentifier);
-		};
-	});
-
-	ipcFsWatcherService.startWatching(sessionIdentifier, path, { ...options, ignoreInitial: true });
-
-	return channel;
+		},
+	};
 }
 
 export interface ScanResult {
@@ -37,8 +52,7 @@ export interface ScanResult {
 export async function scanDirectoryRecursively(dir: string, allowAllFiles?: boolean) {
 	const items: ScanResult[] = [];
 
-	for await (const item of scanDirectoryRecursivelyIter(dir, allowAllFiles))
-		items.push(item);
+	for await (const item of scanDirectoryRecursivelyIter(dir, allowAllFiles)) items.push(item);
 
 	return items;
 }
@@ -57,7 +71,10 @@ async function* scanDirectoryRecursivelyIter(
 			yield { path: res, isDirectory: true };
 
 			yield* scanDirectoryRecursivelyIter(res, allowAllFiles);
-		} else if (allowAllFiles || extension === '.json') {
+		} else if ((allowAllFiles || extension === '.json') && !dirent.name.startsWith('_')) {
+			// `_`-prefixed files are metadata (e.g. `_collection.json`) — they
+			// live in the tree but are not request nodes. Skip them so the
+			// renderer doesn't try to parse them as requests.
 			yield { path: res, isDirectory: false };
 		}
 	}

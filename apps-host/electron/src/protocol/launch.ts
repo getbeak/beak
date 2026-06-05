@@ -1,7 +1,7 @@
 import { BrowserWindow, dialog } from 'electron';
 
 import getBeakHost from '../host';
-import { tryOpenProjectFolder } from '../host/extensions/project';
+import { tryOpenProjectFolder } from '../host/project';
 import { projectIdToWindowIdMapping, windowStack } from '../window-management';
 
 export default async function handleLaunch(url: URL) {
@@ -9,7 +9,8 @@ export default async function handleLaunch(url: URL) {
 		case '/project':
 			return await handleProject(url);
 
-		default: return null;
+		default:
+			return null;
 	}
 }
 
@@ -17,8 +18,7 @@ async function handleProject(url: URL) {
 	const projectId = url.searchParams.get('projectId');
 	const requestId = url.searchParams.get('requestId');
 
-	if (!projectId || !requestId)
-		return false;
+	if (!projectId || !requestId) return false;
 
 	// Check if the project already has a window open
 	const existingWindowId = projectIdToWindowIdMapping[projectId];
@@ -29,8 +29,7 @@ async function handleProject(url: URL) {
 		if (window && !window.isDestroyed()) {
 			window.focus();
 
-			if (requestId)
-				window.webContents.send('reveal_request', { requestId });
+			if (requestId) window.webContents.send('reveal_request', { requestId });
 
 			return true;
 		}
@@ -44,7 +43,7 @@ async function handleProject(url: URL) {
 		await dialog.showMessageBox({
 			type: 'info',
 			title: 'Unable to open project',
-			message: 'The share link you clicked was for a project you don\'t have on your machine.',
+			message: "The share link you clicked was for a project you don't have on your machine.",
 		});
 
 		return false;
@@ -52,8 +51,7 @@ async function handleProject(url: URL) {
 
 	const windowId = await tryOpenProjectFolder(projectPath);
 
-	if (!windowId)
-		return false;
+	if (!windowId) return false;
 
 	if (requestId) {
 		const window = BrowserWindow.fromId(windowId);

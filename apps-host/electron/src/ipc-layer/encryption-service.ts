@@ -1,6 +1,6 @@
 import { IpcEncryptionServiceMain } from '@beak/common/ipc/encryption';
+import type { ValueSections } from '@getbeak/types/values';
 import { clipboard, ipcMain } from 'electron';
-import { ValueParts } from 'packages/types/values';
 
 import getBeakHost from '../host';
 import { getProjectId } from './utils';
@@ -25,14 +25,25 @@ service.registerSubmitKey(async (event, { key }) => {
 	return true;
 });
 
+service.registerResetKey(async event => {
+	const projectId = getProjectId(event);
+	const newKey = await getBeakHost().providers.aes.generateKey();
+
+	await getBeakHost().providers.credentials.setProjectEncryption(projectId, {
+		key: newKey,
+		algorithm: getBeakHost().providers.aes.aesAlgo,
+	});
+
+	return true;
+});
+
 service.registerGenerateIv(async () => await getBeakHost().providers.aes.generateIv());
 
 service.registerEncryptString(async (event, { iv, payload }) => {
 	const projectId = getProjectId(event);
 	const encryption = await getBeakHost().providers.credentials.getProjectEncryption(projectId);
 
-	if (encryption === null)
-		return '';
+	if (encryption === null) return '';
 
 	return await getBeakHost().providers.aes.encryptString(payload, encryption.key, iv);
 });
@@ -41,8 +52,7 @@ service.registerDecryptString(async (event, { iv, payload }): Promise<string> =>
 	const projectId = getProjectId(event);
 	const encryption = await getBeakHost().providers.credentials.getProjectEncryption(projectId);
 
-	if (encryption === null)
-		return '[Encryption key missing]';
+	if (encryption === null) return '[Encryption key missing]';
 
 	return await getBeakHost().providers.aes.decryptString(payload, encryption.key, iv);
 });
@@ -52,29 +62,25 @@ service.registerEncryptObject(async (event, { iv, payload }) => {
 	const projectId = getProjectId(event);
 	const encryption = await getBeakHost().providers.credentials.getProjectEncryption(projectId);
 
-	if (encryption === null)
-		return '';
+	if (encryption === null) return '';
 
 	return await getBeakHost().providers.aes.encryptString(json, encryption.key, iv);
 });
 
-service.registerDecryptObject(async (event, { iv, payload }): Promise<ValueParts> => {
+service.registerDecryptObject(async (event, { iv, payload }): Promise<ValueSections> => {
 	const projectId = getProjectId(event);
 	const encryption = await getBeakHost().providers.credentials.getProjectEncryption(projectId);
 
-	if (encryption === null)
-		return ['[Encryption key missing]'];
+	if (encryption === null) return ['[Encryption key missing]'];
 
 	const decrypted = await getBeakHost().providers.aes.decryptString(payload, encryption.key, iv);
 
-	if (decrypted === '')
-		return [];
+	if (decrypted === '') return [];
 
 	try {
 		const parsed = JSON.parse(decrypted);
 
-		if (Array.isArray(parsed))
-			return parsed;
+		if (Array.isArray(parsed)) return parsed;
 
 		return [parsed];
 	} catch {
@@ -86,6 +92,5 @@ service.registerCopyEncryptionKey(async event => {
 	const projectId = getProjectId(event);
 	const encryption = await getBeakHost().providers.credentials.getProjectEncryption(projectId);
 
-	if (encryption)
-		clipboard.writeText(encryption.key);
+	if (encryption) clipboard.writeText(encryption.key);
 });

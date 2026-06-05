@@ -1,61 +1,113 @@
-import React from 'react';
-import { useDispatch } from 'react-redux';
 import EditorView from '@beak/ui/components/atoms/EditorView';
 import actions from '@beak/ui/store/preferences/actions';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { attemptJsonStringFormat } from '@beak/ui/utils/json';
+import { Box, Flex } from '@chakra-ui/react';
 import type { Flight } from '@getbeak/types/flight';
-import styled from 'styled-components';
+import * as React from 'react';
+import { useEffect, useMemo } from 'react';
+import { useDispatch } from 'react-redux';
 import xmlFormatter from 'xml-formatter';
 
 import useDetectedFlightFormat from '../../hooks/use-detected-flight-format';
 import useFlightBodyInfo from '../../hooks/use-flight-body-info';
+import JsonTreeViewer from '../molecules/json-tree/JsonTreeViewer';
 import PrettyRenderSelection from '../molecules/PrettyRenderSelection';
 import PrettyViewIneligible from '../molecules/PrettyViewIneligible';
+
+interface BlobViewerProps {
+	body: Uint8Array;
+	contentType: string | null;
+	kind: 'image' | 'video';
+}
+
+const BlobViewer: React.FC<BlobViewerProps> = ({ body, contentType, kind }) => {
+	const url = useMemo(() => {
+		const fallback = kind === 'image' ? 'image/jpeg' : 'video/mp4';
+		return URL.createObjectURL(new Blob([body as BlobPart], { type: contentType ?? fallback }));
+	}, [body, contentType, kind]);
+
+	useEffect(() => () => URL.revokeObjectURL(url), [url]);
+
+	if (kind === 'image') {
+		return (
+			<Box
+				h='100%'
+				bgPos='center'
+				bgSize='contain'
+				bgRepeat='no-repeat'
+				bg='color-mix(in srgb, var(--beak-colors-bg-canvas) 80%, transparent)'
+				style={{
+					backgroundImage: `radial-gradient(circle at center, transparent 50%, color-mix(in srgb, var(--beak-colors-bg-canvas) 35%, transparent) 100%), url(${url})`,
+				}}
+			/>
+		);
+	}
+
+	return (
+		// biome-ignore lint/a11y/useMediaCaption: response bodies are arbitrary HTTP video responses; no caption track is available.
+		<video controls autoPlay style={{ width: '100%', height: '100%' }}>
+			<source src={url} />
+		</video>
+	);
+};
 
 interface PrettyViewerProps {
 	flight: Flight;
 	mode: 'request' | 'response';
 }
 
-const PrettyViewer: React.FC<React.PropsWithChildren<PrettyViewerProps>> = ({ flight, mode }) => {
+const PrettyViewer: React.FC<PrettyViewerProps> = ({ flight, mode }) => {
 	const dispatch = useDispatch();
 	const requestId = flight.requestId;
-	const preferences = useAppSelector(s => s.global.preferences.requests[requestId].response.pretty[mode]);
+	const preferences = useAppSelector(s => s.global.preferences.requests[requestId]?.response.pretty[mode]);
 	const [eligibility, body] = useFlightBodyInfo(flight, mode);
 	const [contentType, detectedFormat] = useDetectedFlightFormat(flight, mode);
-	const selectedLanguage = preferences.language ?? detectedFormat;
+	// Prefer the modern tree viewer when JSON is detected; the user can still
+	// switch to the raw editor via the dropdown.
+	const defaultLanguage = detectedFormat === 'json' ? 'json+viewer' : detectedFormat;
+	const selectedLanguage = preferences?.language ?? defaultLanguage;
 
-	if (eligibility !== 'eligible')
-		return <PrettyViewIneligible eligibility={eligibility} />;
+	if (eligibility !== 'eligible') return <PrettyViewIneligible eligibility={eligibility} />;
 
 	return (
-		<Container>
-			<PrettyRenderSelection
-				selectedLanguage={selectedLanguage}
-				onSelectedLanguageChange={lang => dispatch(actions.requestPreferenceSetResPrettyLanguage({
-					id: requestId,
-					mode,
-					language: lang,
-				}))}
-			/>
-			{renderFormat(selectedLanguage, contentType, body)}
-		</Container>
+		<Flex direction='column' h='100%' minH={0}>
+			<Box flexShrink={0}>
+				<PrettyRenderSelection
+					selectedLanguage={selectedLanguage}
+					onSelectedLanguageChange={lang =>
+						dispatch(
+							actions.requestPreferenceSetResPrettyLanguage({
+								id: requestId,
+								mode,
+								language: lang,
+							}),
+						)
+					}
+				/>
+			</Box>
+			<Box flex='1 1 auto' minH={0} overflow='hidden'>
+				{renderFormat(selectedLanguage, contentType, body)}
+			</Box>
+		</Flex>
 	);
 };
 
 function renderFormat(language: string | null, contentType: string | null, body: Uint8Array) {
 	switch (language) {
+		case 'json+viewer': {
+			const json = new TextDecoder().decode(body);
+			try {
+				const parsed = JSON.parse(json);
+				return <JsonTreeViewer value={parsed} />;
+			} catch {
+				return <EditorView language='json' value={attemptJsonStringFormat(json)} options={{ readOnly: true }} />;
+			}
+		}
+
 		case 'json': {
 			const json = new TextDecoder().decode(body);
-
-			return (
-				<EditorView
-					language={'json'}
-					value={attemptJsonStringFormat(json)}
-					options={{ readOnly: true }}
-				/>
-			);
+			return <EditorView language='json' value={attemptJsonStringFormat(json)} options={{ readOnly: true }} />;
 		}
 
 		case 'hex': {
@@ -69,92 +121,44 @@ function renderFormat(language: string | null, contentType: string | null, body:
 					.map(r => r.toString(16).padStart(2, '0'))
 					.join(' ');
 
-				const textValue = new TextDecoder('ascii').decode(row)
+				const textValue = new TextDecoder('ascii')
+					.decode(row)
 					.replaceAll(/[^\x20-\x7F]/g, '.')
 					.replaceAll(/\s/g, ' ')
 					.padEnd(15, '.');
 
-				const rowParts = [
-					i.toString(16).padStart(8, '0'),
-					hexValue.padEnd(44, ' '),
-					textValue,
-				];
+				const rowParts = [i.toString(16).padStart(8, '0'), hexValue.padEnd(44, ' '), textValue];
 
 				outputParts.push(rowParts.join('  '));
 			}
 
-			return (
-				<EditorView
-					language={'text'}
-					value={outputParts.join('\n')}
-					options={{ readOnly: true }}
-				/>
-			);
+			return <EditorView language='text' value={outputParts.join('\n')} options={{ readOnly: true }} />;
 		}
 
 		case 'xml': {
 			const xml = new TextDecoder().decode(body);
-
-			return (
-				<EditorView
-					language={'xml'}
-					value={tryFormatXml(xml)}
-					options={{ readOnly: true }}
-				/>
-			);
+			return <EditorView language='xml' value={tryFormatXml(xml)} options={{ readOnly: true }} />;
 		}
 
 		case 'html': {
 			const html = new TextDecoder().decode(body);
-
-			return (
-				<EditorView
-					language={'html'}
-					value={tryFormatXml(html)}
-					options={{ readOnly: true }}
-				/>
-			);
+			return <EditorView language='html' value={tryFormatXml(html)} options={{ readOnly: true }} />;
 		}
 
 		case 'css': {
 			const css = new TextDecoder().decode(body);
-
-			return (
-				<EditorView
-					language={'css'}
-					value={css}
-					options={{ readOnly: true }}
-				/>
-			);
+			return <EditorView language='css' value={css} options={{ readOnly: true }} />;
 		}
 
-		case 'image': {
-			const blob = URL.createObjectURL(new Blob([body], { type: contentType ?? 'image/jpeg' }));
+		case 'image':
+			return <BlobViewer body={body} contentType={contentType} kind='image' />;
 
-			return <Image $imageBlob={blob} />;
-		}
+		case 'video':
+			return <BlobViewer body={body} contentType={contentType} kind='video' />;
 
-		case 'video': {
-			const blob = URL.createObjectURL(new Blob([body], { type: contentType ?? 'video/mp4' }));
-
-			return (
-				<Video controls autoPlay>
-					<source src={blob} />
-				</Video>
-			);
-		}
-
-		case null:
 		default: {
 			const text = new TextDecoder().decode(body);
-
-			return (
-				<EditorView
-					language={'text'}
-					value={text}
-					options={{ readOnly: true }}
-				/>
-			);
+			return <EditorView language='text' value={text} options={{ readOnly: true }} />;
 		}
 	}
 }
@@ -167,24 +171,7 @@ function tryFormatXml(xml: string) {
 	}
 }
 
-const Container = styled.div`
-	height: calc(100% - 35px);
-`;
-
-const Image = styled.div<{ $imageBlob: string }>`
-	background-image: url(${p => p.$imageBlob});
-	background-position: center;
-	background-size: contain;
-	background-repeat: no-repeat;
-	height: 100%;
-`;
-
-const Video = styled.video`
-	width: 100%;
-	height: 100%;
-`;
-
 export default React.memo(
 	PrettyViewer,
-	(prev, next) => prev.flight.flightId === next.flight.flightId,
+	(prev, next) => prev.flight.flightId === next.flight.flightId && prev.mode === next.mode,
 );

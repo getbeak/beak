@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
+
+import path from 'node:path';
 import { notarize } from '@electron/notarize';
-import path from 'path';
 
 export default async function notarizing(context) {
 	const { electronPlatformName, appOutDir } = context;
 
-	if (electronPlatformName !== 'darwin')
-		return;
+	if (electronPlatformName !== 'darwin') return;
 
 	const appName = context.packager.appInfo.productFilename;
 	const appFilePath = path.join(appOutDir, `${appName}.app`);
@@ -18,4 +18,4 @@ export default async function notarizing(context) {
 		teamId: process.env.APPLE_TEAM_ID,
 		appPath: appFilePath,
 	});
-};
+}

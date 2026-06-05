@@ -1,6 +1,6 @@
-import { ValueParts } from '@beak/ui/features/realtime-values/values';
+import type { ValueSections } from '@beak/ui/features/variables/values';
 
-import { NormalizedSelection } from './browser-selection';
+import type { NormalizedSelection } from './browser-selection';
 
 type Mode = 'prepend' | 'append' | 'inject';
 
@@ -10,7 +10,7 @@ export interface VariableSelectionState {
 }
 
 export function determineInsertionMode(
-	valueParts: ValueParts,
+	ValueSections: ValueSections,
 	variableSelectionState: VariableSelectionState,
 	queryLength: number,
 ): Mode {
@@ -18,14 +18,12 @@ export function determineInsertionMode(
 	const { offset, partIndex } = queryStartSelection;
 
 	// Offset is 1 due to the `{` prefix
-	if (partIndex === 0 && offset === 1)
-		return 'prepend';
+	if (partIndex === 0 && offset === 1) return 'prepend';
 
-	if (partIndex === valueParts.length - 1) {
-		const part = valueParts[partIndex] as string;
+	if (partIndex === ValueSections.length - 1) {
+		const part = ValueSections[partIndex] as string;
 
-		if (part.length - queryLength === offset + 1)
-			return 'append';
+		if (part.length - queryLength === offset + 1) return 'append';
 	}
 
 	return 'inject';

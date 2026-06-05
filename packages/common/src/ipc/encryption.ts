@@ -1,8 +1,30 @@
-import { IpcServiceMain, IpcServiceRenderer, Listener, PartialIpcMain, PartialIpcRenderer } from './ipc';
+import { z } from 'zod';
+import type { PartialIpcMain } from './main';
+import { IpcServiceMain } from './main';
+import type { PartialIpcRenderer } from './renderer';
+import { IpcServiceRenderer } from './renderer';
+import type { IpcListener } from './types';
+
+// Inbound payload schemas — guard renderer→main encryption requests.
+const encryptStringSchema = z.object({
+	iv: z.string().min(1),
+	payload: z.string(),
+});
+const decryptStringSchema = encryptStringSchema; // same shape
+const encryptObjectSchema = z.object({
+	iv: z.string().min(1),
+	payload: z.union([z.record(z.string(), z.unknown()), z.array(z.unknown())]),
+});
+const decryptObjectSchema = z.object({
+	iv: z.string().min(1),
+	payload: z.string(),
+});
+const submitKeySchema = z.object({ key: z.string().min(1) });
 
 export const EncryptionMessages = {
 	CheckStatus: 'check_status',
 	SubmitKey: 'submit_key',
+	ResetKey: 'reset_key',
 	GenerateIv: 'generate_iv',
 	EncryptString: 'encrypt_string',
 	DecryptString: 'decrypt_string',
@@ -35,7 +57,7 @@ export interface SubmitKeyReq {
 	key: string;
 }
 
-export class IpcEncryptionServiceRenderer extends IpcServiceRenderer {
+export class IpcEncryptionServiceRenderer extends IpcServiceRenderer<'encryption'> {
 	constructor(ipc: PartialIpcRenderer) {
 		super('encryption', ipc);
 	}
@@ -46,6 +68,17 @@ export class IpcEncryptionServiceRenderer extends IpcServiceRenderer {
 
 	async submitKey(payload: SubmitKeyReq) {
 		return this.invoke<boolean>(EncryptionMessages.SubmitKey, payload);
+	}
+
+	/**
+	 * Destroy the project's current encryption key and replace it with a freshly
+	 * generated one. Pre-existing secure/private values and the sealed cookie
+	 * jar remain on disk but become unreadable — they're overwritten lazily as
+	 * the user re-edits them. Caller is responsible for the destructive UX
+	 * confirmation; this IPC does no second-guessing.
+	 */
+	async resetKey() {
+		return this.invoke<boolean>(EncryptionMessages.ResetKey);
 	}
 
 	async generateIv() {
@@ -73,40 +106,44 @@ export class IpcEncryptionServiceRenderer extends IpcServiceRenderer {
 	}
 }
 
-export class IpcEncryptionServiceMain extends IpcServiceMain {
+export class IpcEncryptionServiceMain extends IpcServiceMain<'encryption'> {
 	constructor(ipc: PartialIpcMain) {
 		super('encryption', ipc);
 	}
 
-	registerCheckStatus(fn: Listener<string, boolean>) {
-		this.registerListener(EncryptionMessages.CheckStatus, fn);
+	registerCheckStatus(fn: IpcListener<void>) {
+		this.registerRequestHandler(EncryptionMessages.CheckStatus, fn);
 	}
 
-	registerSubmitKey(fn: Listener<SubmitKeyReq, boolean>) {
-		this.registerListener(EncryptionMessages.SubmitKey, fn);
+	registerSubmitKey(fn: IpcListener<SubmitKeyReq>) {
+		this.registerRequestHandler(EncryptionMessages.SubmitKey, fn, submitKeySchema as never);
 	}
 
-	registerGenerateIv(fn: Listener<void, string>) {
-		this.registerListener(EncryptionMessages.GenerateIv, fn);
+	registerResetKey(fn: IpcListener<void>) {
+		this.registerRequestHandler(EncryptionMessages.ResetKey, fn);
 	}
 
-	registerEncryptString(fn: Listener<EncryptStringReq, string>) {
-		this.registerListener(EncryptionMessages.EncryptString, fn);
+	registerGenerateIv(fn: IpcListener<void>) {
+		this.registerRequestHandler(EncryptionMessages.GenerateIv, fn);
 	}
 
-	registerDecryptString(fn: Listener<DecryptStringReq, string>) {
-		this.registerListener(EncryptionMessages.DecryptString, fn);
+	registerEncryptString(fn: IpcListener<EncryptStringReq>) {
+		this.registerRequestHandler(EncryptionMessages.EncryptString, fn, encryptStringSchema as never);
 	}
 
-	registerEncryptObject(fn: Listener<EncryptObjectReq, string>) {
-		this.registerListener(EncryptionMessages.EncryptObject, fn);
+	registerDecryptString(fn: IpcListener<DecryptStringReq>) {
+		this.registerRequestHandler(EncryptionMessages.DecryptString, fn, decryptStringSchema as never);
 	}
 
-	registerDecryptObject(fn: Listener<DecryptObjectReq, unknown>) {
-		this.registerListener(EncryptionMessages.DecryptObject, fn);
+	registerEncryptObject(fn: IpcListener<EncryptObjectReq>) {
+		this.registerRequestHandler(EncryptionMessages.EncryptObject, fn, encryptObjectSchema as never);
 	}
 
-	registerCopyEncryptionKey(fn: Listener<void, void>) {
-		this.registerListener(EncryptionMessages.CopyEncryptionKey, fn);
+	registerDecryptObject(fn: IpcListener<DecryptObjectReq>) {
+		this.registerRequestHandler(EncryptionMessages.DecryptObject, fn, decryptObjectSchema as never);
+	}
+
+	registerCopyEncryptionKey(fn: IpcListener<void>) {
+		this.registerRequestHandler(EncryptionMessages.CopyEncryptionKey, fn);
 	}
 }

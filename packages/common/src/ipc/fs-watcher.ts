@@ -1,8 +1,11 @@
 import ksuid from '@beak/ksuid';
 import type { ChokidarOptions } from 'chokidar';
-import { WebContents } from 'electron';
-
-import { IpcServiceMain, IpcServiceRenderer, Listener, PartialIpcMain, PartialIpcRenderer } from './ipc';
+import type { WebContents } from 'electron';
+import type { PartialIpcMain } from './main';
+import { IpcServiceMain } from './main';
+import type { PartialIpcRenderer } from './renderer';
+import { IpcServiceRenderer } from './renderer';
+import type { IpcListener } from './types';
 
 export const FsWatcherMessages = {
 	StartWatching: 'start_watching',
@@ -22,7 +25,7 @@ export interface WatcherEvent {
 	path: string;
 }
 
-export class IpcFsWatcherServiceRenderer extends IpcServiceRenderer {
+export class IpcFsWatcherServiceRenderer extends IpcServiceRenderer<'fs_watcher'> {
 	constructor(ipc: PartialIpcRenderer) {
 		super('fs_watcher', ipc);
 	}
@@ -43,11 +46,11 @@ export class IpcFsWatcherServiceRenderer extends IpcServiceRenderer {
 		await this.invoke(FsWatcherMessages.StopWatching, sessionIdentifier);
 	}
 
-	registerWatcherEvent(sessionIdentifier: string, fn: Listener<WatcherEvent>) {
+	registerWatcherEvent(sessionIdentifier: string, fn: IpcListener<WatcherEvent>) {
 		this.registerListener(createEventCode(sessionIdentifier, FsWatcherMessages.WatcherEvent), fn);
 	}
 
-	registerWatcherError(sessionIdentifier: string, fn: Listener<Error>) {
+	registerWatcherError(sessionIdentifier: string, fn: IpcListener<Error>) {
 		this.registerListener(createEventCode(sessionIdentifier, FsWatcherMessages.WatcherError), fn);
 	}
 
@@ -60,31 +63,25 @@ export class IpcFsWatcherServiceRenderer extends IpcServiceRenderer {
 	}
 }
 
-export class IpcFsWatcherServiceMain extends IpcServiceMain {
+export class IpcFsWatcherServiceMain extends IpcServiceMain<'fs_watcher'> {
 	constructor(ipc: PartialIpcMain) {
 		super('fs_watcher', ipc);
 	}
 
-	registerStartWatching(fn: Listener<StartWatchingReq>) {
-		this.registerListener(FsWatcherMessages.StartWatching, fn);
+	registerStartWatching(fn: IpcListener<StartWatchingReq>) {
+		this.registerRequestHandler(FsWatcherMessages.StartWatching, fn);
 	}
 
-	registerStopWatching(fn: Listener<string>) {
-		this.registerListener(FsWatcherMessages.StopWatching, fn);
+	registerStopWatching(fn: IpcListener<string>) {
+		this.registerRequestHandler(FsWatcherMessages.StopWatching, fn);
 	}
 
 	sendWatcherEvent(wc: WebContents, sessionIdentifier: string, payload: WatcherEvent) {
-		wc.send(this.channel, {
-			code: createEventCode(sessionIdentifier, FsWatcherMessages.WatcherEvent),
-			payload,
-		});
+		this.sendMessage(wc, createEventCode(sessionIdentifier, FsWatcherMessages.WatcherEvent), payload);
 	}
 
 	sendWatcherError(wc: WebContents, sessionIdentifier: string, payload: Error) {
-		wc.send(this.channel, {
-			code: createEventCode(sessionIdentifier, FsWatcherMessages.WatcherError),
-			payload,
-		});
+		this.sendMessage(wc, createEventCode(sessionIdentifier, FsWatcherMessages.WatcherError), payload);
 	}
 }
 

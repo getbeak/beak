@@ -1,34 +1,43 @@
-import Squawk from '@beak/common/utils/squawk';
-import Ajv, { SchemaObject } from 'ajv';
+import { ValidationError } from '@beak/common/utils/squawk';
 import path from 'path-browserify';
+import type { ZodTypeAny } from 'zod';
 
 import { ipcFsService } from './ipc';
 
-const avj = new Ajv();
-
-export async function readJsonAndValidate<T>(filePath: string, schema: SchemaObject, avoidThrow = false) {
-	const requestFile = await ipcFsService.readJson<T>(filePath);
+/**
+ * Reads a JSON file from disk and parses it through a zod schema. Throws a
+ * `ValidationError` (kind: `schema_invalid`) on failure, with the full
+ * Zod issue list flattened into `meta.fieldErrors` (`{ path: message }`) so
+ * downstream UI can render readable diagnostics.
+ *
+ * When `avoidThrow=true`, returns `{ error }` instead of throwing.
+ */
+export async function readJsonAndValidate<T>(filePath: string, schema: ZodTypeAny, avoidThrow = false) {
+	const file = await ipcFsService.readJson<T>(filePath);
 
 	const extension = path.extname(filePath);
 	const name = path.basename(filePath, extension);
-	const validator = avj.compile(schema);
-	const valid = validator(requestFile);
 
-	if (!valid && !avoidThrow) {
-		throw new Squawk('schema_invalid', {
-			errors: validator.errors,
+	const result = schema.safeParse(file);
+
+	if (!result.success) {
+		const error = ValidationError.fromZodError(result.error, { filePath });
+		if (!avoidThrow) throw error;
+
+		return {
+			file: file as T,
 			filePath,
-		});
+			name,
+			extension,
+			error,
+		};
 	}
 
 	return {
-		file: requestFile,
+		file: result.data as T,
 		filePath,
 		name,
 		extension,
-		error: valid ? null : new Squawk('schema_invalid', {
-			errors: validator.errors,
-			filePath,
-		}),
+		error: null as ValidationError | null,
 	};
 }

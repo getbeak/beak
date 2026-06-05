@@ -1,56 +1,51 @@
-import React from 'react';
-import { faAnglesLeft, faAnglesRight } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import styled, { useTheme } from 'styled-components';
+import { Button, Flex } from '@chakra-ui/react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+
+import * as React from 'react';
 
 interface ArrowButtonProps {
 	direction?: 'left' | 'right';
 	onClick: () => void;
 }
 
-const ArrowButton: React.FC<React.PropsWithChildren<ArrowButtonProps>> = props => {
-	const { direction = 'left', children, onClick } = props;
-	const theme = useTheme();
-
-	return (
-		<Button onClick={onClick}>
-			{direction === 'left' && (
-				<FontAwesomeIcon
-					icon={faAnglesLeft}
-					color={theme.ui.textOnSurfaceBackground}
-					fontSize={'12px'}
-				/>
-			)}
-			<Children>{children}</Children>
-			{direction === 'right' && (
-				<FontAwesomeIcon
-					icon={faAnglesRight}
-					color={theme.ui.textOnSurfaceBackground}
-				/>
-			)}
-		</Button>
-	);
-};
-
-const Button = styled.button`
-	display: flex;
-	align-items: center;
-	background: none;
-	border: none;
-	color: ${p => p.theme.ui.textOnSurfaceBackground};
-	padding: 4px;
-	border-radius: 4px;
-	font-size: 14px;
-	cursor: pointer;
-
-	&:hover {
-		background: ${p => p.theme.ui.secondaryActionMuted};
-	}
-`;
-
-const Children = styled.div`
-	display: inline-block;
-	margin: 0 5px;
-`;
+const ArrowButton: React.FC<React.PropsWithChildren<ArrowButtonProps>> = ({
+	direction = 'left',
+	children,
+	onClick,
+}) => (
+	<Button
+		variant='ghost'
+		size='xs'
+		bg='transparent'
+		border='none'
+		color='fg.muted'
+		px='1.5'
+		py='1'
+		h='auto'
+		minH='22px'
+		borderRadius='sm'
+		fontSize='xs'
+		fontWeight='500'
+		cursor='pointer'
+		transition='color .12s ease, background-color .12s ease, transform .08s ease'
+		_hover={{
+			color: 'accent.pink',
+			bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 12%, transparent)',
+		}}
+		_focusVisible={{
+			outline: 'none',
+			color: 'accent.pink',
+			boxShadow: '0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-pink) 40%, transparent)',
+		}}
+		_active={{ transform: 'scale(0.96)' }}
+		onClick={onClick}
+	>
+		<Flex align='center' gap='1'>
+			{direction === 'left' && <ChevronLeft size={12} />}
+			<Flex display='inline-flex'>{children}</Flex>
+			{direction === 'right' && <ChevronRight size={12} />}
+		</Flex>
+	</Button>
+);
 
 export default ArrowButton;

@@ -1,5 +1,4 @@
-/* eslint-disable operator-linebreak */
-import * as path from 'path';
+import * as path from 'node:path';
 
 // Is our app packaged in a binary or still in Electron?
 export const appIsPackaged = !process.defaultApp;

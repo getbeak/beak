@@ -21,18 +21,9 @@ test('setting valid environment', t => {
 });
 
 test('setting invalid environment', t => {
-	t.throws(
-		() => (ksuid.environment = 'xo_xo'),
-		/environment must be a valid prefix/,
-	);
-	t.throws(
-		() => (ksuid.environment = '!env'),
-		/environment must be a valid prefix/,
-	);
-	t.throws(
-		() => (ksuid.environment = 'Env'),
-		/environment must be a valid prefix/,
-	);
+	t.throws(() => (ksuid.environment = 'xo_xo'), /environment must be a valid prefix/);
+	t.throws(() => (ksuid.environment = '!env'), /environment must be a valid prefix/);
+	t.throws(() => (ksuid.environment = 'Env'), /environment must be a valid prefix/);
 
 	t.end();
 });
@@ -51,35 +42,17 @@ test('parsing without environment', t => {
 });
 
 test('parsing with invalid environment', t => {
-	t.throws(
-		() => ksuid.parse('Xx_test_000000BPG1Uoez0pTaSKn9EtsNayW'),
-		/id is invalid/,
-	);
-	t.throws(
-		() => ksuid.parse('x!_test_000000BPG1Uoez0pTaSKn9EtsNayW'),
-		/id is invalid/,
-	);
-	t.throws(
-		() => ksuid.parse('_x_test_000000BPG1Uoez0pTaSKn9EtsNayW'),
-		/id is invalid/,
-	);
+	t.throws(() => ksuid.parse('Xx_test_000000BPG1Uoez0pTaSKn9EtsNayW'), /id is invalid/);
+	t.throws(() => ksuid.parse('x!_test_000000BPG1Uoez0pTaSKn9EtsNayW'), /id is invalid/);
+	t.throws(() => ksuid.parse('_x_test_000000BPG1Uoez0pTaSKn9EtsNayW'), /id is invalid/);
 
 	t.end();
 });
 
 test('parsing with invalid resource', t => {
-	t.throws(
-		() => ksuid.parse('t!est_000000BPG1Uoez0pTaSKn9EtsNayW'),
-		/id is invalid/,
-	);
-	t.throws(
-		() => ksuid.parse('Tes&t_000000BPG1Uoez0pTaSKn9EtsNayW'),
-		/id is invalid/,
-	);
-	t.throws(
-		() => ksuid.parse('__test_000000BPG1Uoez0pTaSKn9EtsNayW'),
-		/id is invalid/,
-	);
+	t.throws(() => ksuid.parse('t!est_000000BPG1Uoez0pTaSKn9EtsNayW'), /id is invalid/);
+	t.throws(() => ksuid.parse('Tes&t_000000BPG1Uoez0pTaSKn9EtsNayW'), /id is invalid/);
+	t.throws(() => ksuid.parse('__test_000000BPG1Uoez0pTaSKn9EtsNayW'), /id is invalid/);
 
 	t.end();
 });
@@ -104,32 +77,20 @@ test('parsing without environment or resource', t => {
 });
 
 test('parsing with invalid id characters', t => {
-	t.throws(
-		() => ksuid.parse('test_000000BPG296UCnyv841TMQvmOhq!'),
-		/id is invalid/,
-	);
+	t.throws(() => ksuid.parse('test_000000BPG296UCnyv841TMQvmOhq!'), /id is invalid/);
 
 	t.end();
 });
 
 test('parsing with invalid id length', t => {
-	t.throws(
-		() => ksuid.parse('test_000000BPG296UCnyv841TMQvmOhqSP'),
-		/id is invalid/,
-	);
-	t.throws(
-		() => ksuid.parse('test_000000BPG296UCnyv841TMQvmOhq'),
-		/id is invalid/,
-	);
+	t.throws(() => ksuid.parse('test_000000BPG296UCnyv841TMQvmOhqSP'), /id is invalid/);
+	t.throws(() => ksuid.parse('test_000000BPG296UCnyv841TMQvmOhq'), /id is invalid/);
 
 	t.end();
 });
 
 test('parsing with prod env specified', t => {
-	t.throws(
-		() => ksuid.parse('prod_test_000000BPG296UCnyv841TMQvmOhqS'),
-		/production env is implied/,
-	);
+	t.throws(() => ksuid.parse('prod_test_000000BPG296UCnyv841TMQvmOhqS'), /production env is implied/);
 
 	t.end();
 });
@@ -196,10 +157,7 @@ test('generating non-prod id', t => {
 });
 
 test('id constructor string validation', t => {
-	t.throws(
-		() => new Id('', 'test', 0, null, 0),
-		/environment must be a valid prefix/,
-	);
+	t.throws(() => new Id('', 'test', 0, null, 0), /environment must be a valid prefix/);
 
 	t.end();
 });
@@ -211,14 +169,8 @@ test('id constructor timestamp validation', t => {
 });
 
 test('id constructor scheme validation', t => {
-	t.throws(
-		() => new Instance(256, new Uint8Array(8)),
-		/scheme must be a uint8/,
-	);
-	t.throws(
-		() => new Instance(0, new Uint8Array(6)),
-		/identifier must be 8 bytes/,
-	);
+	t.throws(() => new Instance(256, new Uint8Array(8)), /scheme must be a uint8/);
+	t.throws(() => new Instance(0, new Uint8Array(6)), /identifier must be 8 bytes/);
 
 	t.end();
 });

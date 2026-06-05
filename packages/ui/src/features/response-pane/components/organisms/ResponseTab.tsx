@@ -1,23 +1,23 @@
-import React, { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
 import { TypedObject } from '@beak/common/helpers/typescript';
-import ksuid from '@beak/ksuid';
 import EditorView from '@beak/ui/components/atoms/EditorView';
-import BasicTableEditor from '@beak/ui/features/basic-table-editor/components/BasicTableEditor';
 import binaryStore from '@beak/ui/lib/binary-store';
 import { requestPreferenceSetResSubTab } from '@beak/ui/store/preferences/actions';
 import { useAppSelector } from '@beak/ui/store/redux';
+import { Box, Flex } from '@chakra-ui/react';
 import type { Flight } from '@getbeak/types/flight';
-import styled from 'styled-components';
+import React, { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 
 import TabBar from '../../../../components/atoms/TabBar';
 import TabItem from '../../../../components/atoms/TabItem';
 import TabSpacer from '../../../../components/atoms/TabSpacer';
 import ErrorView from '../molecules/ErrorView';
+import ResponseHeadersTable from '../molecules/ResponseHeadersTable';
 import PrettyViewer from './PrettyViewer';
+import SseTab from './SseTab';
 
-type Tab = typeof tabs[number];
-const tabs = ['headers', 'pretty', 'raw'] as const;
+type Tab = (typeof tabs)[number];
+const tabs = ['headers', 'pretty', 'raw', 'events'] as const;
 
 export interface ResponseTabProps {
 	flight: Flight;
@@ -28,21 +28,20 @@ const ResponseTab: React.FC<React.PropsWithChildren<ResponseTabProps>> = props =
 	const dispatch = useDispatch();
 	const { error, response, requestId } = flight;
 	const hasErrored = Boolean(error);
-	const tab = useAppSelector(s =>
-		s.global.preferences.requests[requestId]?.response.subTab.response,
-	) as Tab | undefined;
+	const tab = useAppSelector(s => s.global.preferences.requests[requestId]?.response.subTab.response) as Tab | undefined;
 
-	function convertHeaderFormat() {
-		return Object.keys(flight.response!.headers)
-			.reduce((acc, val) => ({
-				...acc,
-				[ksuid.generate('header').toString()]: {
-					name: val,
-					value: [flight.response!.headers[val]],
-					enabled: true,
-				},
-			}), {});
-	}
+	// Show the Events tab whenever the flight is (or was) an SSE stream — we
+	// check live state for in-progress flights and the persisted streamKind on
+	// completed history entries so the tab persists post-completion.
+	const showSseTab = useAppSelector(s => {
+		const live = s.global.flight.activeFlights[flight.flightId]?.head?.streamKind;
+		if (live) return live === 'sse';
+		const historic = s.global.flight.flightHistories[requestId]?.history[flight.flightId]?.streamKind;
+		return historic === 'sse';
+	});
+
+	const responseHeaders = flight.response?.headers ?? {};
+	const responseUrl = flight.response?.url;
 
 	// Ensure we have a valid tab
 	useEffect(() => {
@@ -52,86 +51,65 @@ const ResponseTab: React.FC<React.PropsWithChildren<ResponseTabProps>> = props =
 			return;
 		}
 
-		if (!tab || !tabs.includes(tab))
+		if (!tab || !tabs.includes(tab)) {
+			// SSE responses default to the events tab — that's the meaningful view.
+			const initial: Tab = showSseTab ? 'events' : 'pretty';
+			dispatch(requestPreferenceSetResSubTab({ id: requestId, tab: 'response', subTab: initial }));
+		} else if (tab === 'events' && !showSseTab) {
+			// Tab was remembered from a prior SSE flight but this one is standard.
 			dispatch(requestPreferenceSetResSubTab({ id: requestId, tab: 'response', subTab: 'pretty' }));
-	}, [tab, flight.flightId]);
+		}
+	}, [tab, flight.flightId, hasErrored, requestId, dispatch, showSseTab]);
 
 	function setTab(tab: Tab) {
 		dispatch(requestPreferenceSetResSubTab({ id: requestId, tab: 'response', subTab: tab }));
 	}
 
 	return (
-		<Container>
+		<Flex direction='column' overflow='hidden' h='100%'>
 			<TabBar $centered>
 				<TabSpacer />
 				{!hasErrored && (
 					<React.Fragment>
-						<TabItem
-							active={tab === 'headers'}
-							size={'sm'}
-							onClick={() => setTab('headers')}
-						>
+						<TabItem active={tab === 'headers'} size={'sm'} onClick={() => setTab('headers')}>
 							{'Headers'}
 						</TabItem>
-						<TabItem
-							active={tab === 'pretty'}
-							size={'sm'}
-							onClick={() => setTab('pretty')}
-						>
+						{showSseTab && (
+							<TabItem active={tab === 'events'} size={'sm'} onClick={() => setTab('events')}>
+								{'Events'}
+							</TabItem>
+						)}
+						<TabItem active={tab === 'pretty'} size={'sm'} onClick={() => setTab('pretty')}>
 							{'Pretty'}
 						</TabItem>
 					</React.Fragment>
 				)}
-				<TabItem
-					active={tab === 'raw'}
-					size={'sm'}
-					onClick={() => setTab('raw')}
-				>
+				<TabItem active={tab === 'raw'} size={'sm'} onClick={() => setTab('raw')}>
 					{hasErrored ? 'Error' : 'Raw'}
 				</TabItem>
 				<TabSpacer />
 			</TabBar>
 
-			<TabBody>
-				{tab === 'headers' && (
-					<BasicTableEditor
-						items={convertHeaderFormat()}
-						readOnly
-					/>
-				)}
-				{tab === 'pretty' && (
-					<PrettyViewer flight={flight} mode={'response'} />
-				)}
+			<Box flexGrow={2} overflowY='hidden' h='100%'>
+				{tab === 'headers' && <ResponseHeadersTable headers={responseHeaders} responseUrl={responseUrl} />}
+				{tab === 'events' && showSseTab && <SseTab flight={flight} />}
+				{tab === 'pretty' && <PrettyViewer flight={flight} mode={'response'} />}
 				{tab === 'raw' && (
 					<React.Fragment>
 						{response && (
 							<EditorView
 								language={'http'}
 								value={createHttpResponseMessage(flight)}
-								options={{ readOnly: true }}
+								options={{ readOnly: true, wordWrap: 'on' }}
 							/>
 						)}
 						{error && <ErrorView error={error} />}
 					</React.Fragment>
 				)}
-			</TabBody>
-		</Container>
+			</Box>
+		</Flex>
 	);
 };
-
-const Container = styled.div`
-	display: flex;
-	flex-direction: column;
-	overflow: hidden;
-	height: 100%;
-`;
-
-const TabBody = styled.div`
-	flex-grow: 2;
-
-	overflow-y: hidden;
-	height: 100%;
-`;
 
 function createHttpResponseMessage(flight: Flight) {
 	const { binaryStoreKey, response } = flight;
@@ -148,10 +126,8 @@ function createHttpResponseMessage(flight: Flight) {
 		const decoder = new TextDecoder('utf-8');
 		const string = decoder.decode(store);
 
-		if (string.startsWith('\n'))
-			lines.push(string);
-		else
-			lines.push('', string);
+		if (string.startsWith('\n')) lines.push(string);
+		else lines.push('', string);
 	}
 
 	return lines.join('\n');

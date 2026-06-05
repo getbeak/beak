@@ -1,4 +1,4 @@
-import Squawk from '@beak/common/utils/squawk';
+import type Squawk from '@beak/common/utils/squawk';
 import { createAction } from '@reduxjs/toolkit';
 
 import { createAsyncActionTypes } from './action-types';

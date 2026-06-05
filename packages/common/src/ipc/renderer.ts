@@ -1,0 +1,64 @@
+import type { IpcRenderer, IpcRendererEvent } from 'electron';
+
+import { IpcServiceBase } from './base';
+import type { IpcMessage } from './types';
+
+export class IpcServiceRenderer<T extends string> extends IpcServiceBase<T> {
+	constructor(
+		channel: T,
+		protected readonly ipc: PartialIpcRenderer,
+	) {
+		super(channel);
+		this.setupMessageHandling();
+	}
+
+	protected async invoke<R = void>(code: string, payload?: unknown): Promise<R> {
+		try {
+			const response = await this.ipc.invoke(this.channel, { code, payload });
+
+			if (response && typeof response === 'object' && 'error' in response && response.error) {
+				// Carry the host-side `code` onto the thrown Error so renderer
+				// effects can branch on it (e.g. `error.code === 'ENOENT'` to
+				// treat a missing file as "fresh state" rather than logging a
+				// scary warning). Without this the renderer only sees the
+				// stringified IpcError in `.message`.
+				const ipcError = response.error as { code?: unknown; message?: unknown };
+				const message = typeof ipcError.message === 'string' ? ipcError.message : JSON.stringify(ipcError);
+				const wrapped = new Error(`IPC Error: ${message}`) as Error & { code?: string };
+				if (typeof ipcError.code === 'string') wrapped.code = ipcError.code;
+				throw wrapped;
+			}
+
+			return (response as any)?.response as R;
+		} catch (error) {
+			throw this.normalizeError(error);
+		}
+	}
+
+	private setupMessageHandling(): void {
+		this.ipc.on(this.channel, (event, message: IpcMessage) => {
+			if (!message || !message.code) {
+				console.warn('Malformed IPC message received:', message);
+				return;
+			}
+
+			const listener = this.listeners.get(message.code);
+			if (listener) {
+				listener(event, message.payload);
+			} else {
+				console.warn(`No listener for message: ${message.code}`);
+			}
+		});
+	}
+
+	private normalizeError(error: unknown): Error {
+		if (error instanceof Error) return error;
+		if (typeof error === 'string') return new Error(error);
+		return new Error('Unknown IPC error');
+	}
+}
+
+export interface PartialIpcRenderer {
+	on: (channel: string, listening: (event: IpcRendererEvent, ...args: any[]) => void) => void;
+	invoke: IpcRenderer['invoke'];
+}

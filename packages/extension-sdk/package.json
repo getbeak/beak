@@ -1,0 +1,46 @@
+{
+	"name": "@getbeak/extension-sdk",
+	"version": "0.2.0",
+	"private": false,
+	"description": "Public SDK for authoring Beak extensions (variables, realtime values, helpers).",
+	"homepage": "https://github.com/getbeak/beak/tree/master/packages/extension-sdk",
+	"license": "MIT",
+	"contributors": [
+		{
+			"name": "Alexander Forbes-Reed",
+			"url": "https://github.com/0xdeafcafe",
+			"githubUsername": "0xdeafcafe"
+		}
+	],
+	"main": "dist/index",
+	"types": "dist/index",
+	"files": [
+		"dist",
+		"src/variables.d.ts"
+	],
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/getbeak/beak.git",
+		"directory": "packages/extension-sdk"
+	},
+	"scripts": {
+		"build": "pnpm clean && pnpm compile",
+		"clean": "rm -rf ./dist && rm -rf tsconfig.tsbuildinfo",
+		"compile": "tsgo --build tsconfig.json",
+		"typecheck": "tsgo",
+		"start": "tsgo --build tsconfig.json --watch",
+		"lint": "biome lint .",
+		"test": "vitest",
+		"test:run": "vitest run --passWithNoTests",
+		"test:coverage": "vitest run --coverage --passWithNoTests",
+		"test:ui": "vitest --ui"
+	},
+	"dependencies": {
+		"@getbeak/types": "2.1.0",
+		"base64-js": "^1.5.1"
+	},
+	"devDependencies": {
+		"vitest": "^4.1.6",
+		"@vitest/coverage-v8": "^4.1.6"
+	}
+}

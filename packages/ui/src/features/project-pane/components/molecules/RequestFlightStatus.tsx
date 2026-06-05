@@ -1,43 +1,43 @@
-import React from 'react';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { statusToColor } from '@beak/design-system/helpers';
-import { TreeViewItem } from '@beak/ui/features/tree-view/types';
+import type { TreeViewItem } from '@beak/ui/features/tree-view/types';
 import { useAppSelector } from '@beak/ui/store/redux';
-import styled from 'styled-components';
+import { Box } from '@chakra-ui/react';
+import * as React from 'react';
 
 interface RequestFlightStatusProps {
 	node: TreeViewItem;
 }
 
-const RequestFlightStatus: React.FC<React.PropsWithChildren<RequestFlightStatusProps>> = ({ node }) => {
-	const flight = useAppSelector(s => s.global.flight.flightHistory[node.id]);
+const RequestFlightStatus: React.FC<RequestFlightStatusProps> = ({ node }) => {
+	const flight = useAppSelector(s => s.global.flight.flightHistories[node.id]);
 	let mostRecentFlight: number | undefined;
 
 	if (flight?.history) {
-		const flightHistory = TypedObject.values(flight.history);
-		const lastIndex = flightHistory.length - 1;
+		const flightHistories = TypedObject.values(flight.history);
+		const lastIndex = flightHistories.length - 1;
 
-		if (lastIndex > -1)
-			mostRecentFlight = flightHistory[lastIndex]?.response?.status;
+		if (lastIndex > -1) mostRecentFlight = flightHistories[lastIndex]?.response?.status;
 	}
 
-	if (mostRecentFlight === void 0)
-		return null;
+	if (mostRecentFlight === void 0) return null;
 
-	return <RequestStatusBlob $status={mostRecentFlight} />;
+	const color = statusToColor(mostRecentFlight);
+
+	return (
+		<Box
+			role='img'
+			aria-label={`Last response status ${mostRecentFlight}`}
+			title={`Last response: HTTP ${mostRecentFlight}`}
+			w='8px'
+			h='8px'
+			borderRadius='full'
+			style={{
+				backgroundColor: color,
+				boxShadow: `0 0 0 1.5px color-mix(in srgb, ${color} 24%, transparent), 0 0 6px color-mix(in srgb, ${color} 40%, transparent)`,
+			}}
+		/>
+	);
 };
-
-interface RequestStatusBlobProps {
-	$status: number;
-}
-
-const RequestStatusBlob = styled.div<RequestStatusBlobProps>`
-	width: 9px; height: 9px;
-
-	border: 1px solid ${props => props.theme.ui.surfaceBorderSeparator};
-	border-radius: 100%;
-
-	background-color: ${p => statusToColor(p.theme, p.$status)};
-`;
 
 export default RequestFlightStatus;

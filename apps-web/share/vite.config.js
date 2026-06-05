@@ -1,8 +1,8 @@
 /* eslint-disable no-process-env */
 /* eslint-disable @typescript-eslint/no-var-requires */
 
+import path from 'node:path';
 import reactPlugin from '@vitejs/plugin-react';
-import path from 'path';
 import viteSentryPlugin from 'vite-plugin-sentry';
 
 const environment = process.env.NODE_ENV;
@@ -26,7 +26,11 @@ export default {
 		},
 	},
 	plugins: [
-		reactPlugin({ include: '**/*.tsx' }),
+		reactPlugin({
+			babel: {
+				plugins: [['babel-plugin-react-compiler', { target: '19' }]],
+			},
+		}),
 		viteSentryPlugin({
 			authToken: process.env.SENTRY_AUTH_TOKEN,
 			dryRun: process.env.BUILD_ENVIRONMENT !== 'ci',
@@ -47,7 +51,7 @@ export default {
 		}),
 	],
 	build: {
-		target: 'modules',
+		target: 'es2020',
 		outDir: '../dist',
 		emptyOutDir: true,
 		sourcemap: true,
@@ -65,8 +69,7 @@ export default {
 };
 
 function writeDefinition(value) {
-	if (value === void 0)
-		return value;
+	if (value === void 0) return value;
 
 	return `'${value}'`;
 }
