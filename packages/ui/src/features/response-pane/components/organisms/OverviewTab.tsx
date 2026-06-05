@@ -120,20 +120,48 @@ const OverviewTab: React.FC<OverviewTabProps> = ({ flight }) => {
 							<Box
 								as='span'
 								fontWeight='500'
-								style={{ color: `color-mix(in srgb, var(--beak-colors-${statusToken(status).replace('accent.', 'accent-')}) 75%, var(--beak-colors-fg-default))` }}
+								style={{
+									color: `color-mix(in srgb, var(--beak-colors-${statusToken(status).replace('accent.', 'accent-')}) 75%, var(--beak-colors-fg-default))`,
+								}}
 							>
 								{getStatusReasonPhrase(status)}
 							</Box>
 						</Flex>
 					)}
 					{flight.response?.redirected && (
-						<Flex align='center' gap='1' px='2' py='1' borderRadius='md' borderWidth='1px' borderColor='border.subtle' fontSize='10px' fontWeight='700' color='accent.indigo' letterSpacing='0.06em' textTransform='uppercase'>
+						<Flex
+							align='center'
+							gap='1'
+							px='2'
+							py='1'
+							borderRadius='md'
+							borderWidth='1px'
+							borderColor='border.subtle'
+							fontSize='10px'
+							fontWeight='700'
+							color='accent.indigo'
+							letterSpacing='0.06em'
+							textTransform='uppercase'
+						>
 							<Shuffle size={10} />
 							{'Redirected'}
 						</Flex>
 					)}
 					{tls && (
-						<Flex align='center' gap='1' px='2' py='1' borderRadius='md' borderWidth='1px' borderColor='border.subtle' fontSize='10px' fontWeight='700' color='accent.success' letterSpacing='0.06em' textTransform='uppercase'>
+						<Flex
+							align='center'
+							gap='1'
+							px='2'
+							py='1'
+							borderRadius='md'
+							borderWidth='1px'
+							borderColor='border.subtle'
+							fontSize='10px'
+							fontWeight='700'
+							color='accent.success'
+							letterSpacing='0.06em'
+							textTransform='uppercase'
+						>
 							<Lock size={10} />
 							{'TLS'}
 						</Flex>
@@ -229,9 +257,18 @@ const OverviewTab: React.FC<OverviewTabProps> = ({ flight }) => {
 };
 
 const TONE_RAMP: Record<string, { color: string; bg: string }> = {
-	pink: { color: 'var(--beak-colors-accent-pink)', bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 10%, transparent)' },
-	teal: { color: 'var(--beak-colors-accent-teal)', bg: 'color-mix(in srgb, var(--beak-colors-accent-teal) 10%, transparent)' },
-	indigo: { color: 'var(--beak-colors-accent-indigo)', bg: 'color-mix(in srgb, var(--beak-colors-accent-indigo) 10%, transparent)' },
+	pink: {
+		color: 'var(--beak-colors-accent-pink)',
+		bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 10%, transparent)',
+	},
+	teal: {
+		color: 'var(--beak-colors-accent-teal)',
+		bg: 'color-mix(in srgb, var(--beak-colors-accent-teal) 10%, transparent)',
+	},
+	indigo: {
+		color: 'var(--beak-colors-accent-indigo)',
+		bg: 'color-mix(in srgb, var(--beak-colors-accent-indigo) 10%, transparent)',
+	},
 };
 
 const StatCard: React.FC<{
@@ -277,7 +314,14 @@ const StatCard: React.FC<{
 					{label}
 				</Box>
 			</Flex>
-			<Box fontSize='md' fontWeight='600' color='fg.default' fontFamily='mono' lineHeight='1.2' style={{ fontVariantNumeric: 'tabular-nums' }}>
+			<Box
+				fontSize='md'
+				fontWeight='600'
+				color='fg.default'
+				fontFamily='mono'
+				lineHeight='1.2'
+				style={{ fontVariantNumeric: 'tabular-nums' }}
+			>
 				{value}
 			</Box>
 			{sub && (
@@ -307,13 +351,7 @@ const HeaderPill: React.FC<{ label: string; value: string; tone: 'pink' | 'teal'
 			bg='bg.surface'
 			minW={0}
 		>
-			<Box
-				fontSize='10px'
-				fontWeight='700'
-				letterSpacing='0.06em'
-				textTransform='uppercase'
-				style={{ color: t.color }}
-			>
+			<Box fontSize='10px' fontWeight='700' letterSpacing='0.06em' textTransform='uppercase' style={{ color: t.color }}>
 				{label}
 			</Box>
 			<Box fontSize='12px' fontFamily='mono' color='fg.default' truncate title={value}>

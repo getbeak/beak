@@ -6,11 +6,12 @@ import { convertKeyValueToString } from '@beak/ui/features/basic-table-editor/pa
 import { convertToRealJson } from '@beak/ui/features/json-editor/parsers';
 import useVariableContext from '@beak/ui/features/variables/hooks/use-variable-context';
 import { parseValueSections } from '@beak/ui/features/variables/parser';
-import { ipcFsService } from '@beak/ui/lib/ipc';
+import { ipcAssetsService, ipcFsService } from '@beak/ui/lib/ipc';
+import { resolveAssetBytes } from '@beak/ui/services/assets/resolve';
+import { convertRequestToUrl } from '@beak/ui/services/url';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { requestAllowsBody } from '@beak/ui/utils/http';
 import { contentTypeToMonacoLanguage } from '@beak/ui/utils/monaco';
-import { convertRequestToUrl } from '@beak/ui/utils/uri';
 import type { ValidRequestNode } from '@getbeak/types/nodes';
 import type { RequestBody, RequestOverview, ToggleKeyValue } from '@getbeak/types/request';
 import type { Context } from '@getbeak/types/values';
@@ -166,7 +167,7 @@ export async function createSplitHttpOutput(
 		} else if (body.type === 'url_encoded_form') {
 			bodyText = await convertKeyValueToString(context, body.payload);
 		} else if (body.type === 'file') {
-			bodyText = await readReferencedFile(body.payload.fileReferenceId);
+			bodyText = await readFileBody(body.payload);
 		} else if (!requestAllowsBody(verb) && body.type === 'graphql') {
 			bodyText = '';
 		} else if (requestAllowsBody(verb) && body.type === 'graphql') {
@@ -205,17 +206,26 @@ function readLiteralContentTypeHeader(headers: Record<string, ToggleKeyValue>): 
 	return parts[0];
 }
 
-async function readReferencedFile(fileReferenceId: string | undefined) {
-	if (!fileReferenceId) return '';
-
-	try {
-		const response = await ipcFsService.readReferencedFile(fileReferenceId, 1000);
-		const decoded = new TextDecoder().decode(response.body);
-
-		return decoded;
-	} catch {
-		return '';
-	}
+/**
+ * Pull the file body's bytes for the preview pane. Uses the same
+ * assetRef → fileReferenceId resolution rule the flight prep uses, so a
+ * preview of an asset-based body shows the actual contents instead of
+ * being silently empty (the bug fixed in B6).
+ */
+async function readFileBody(payload: {
+	assetRef?: { sha256: string; size: number; contentType?: string };
+	fileReferenceId?: string;
+}) {
+	const result = await resolveAssetBytes(payload, {
+		readAsset: async ref => {
+			const res = await ipcAssetsService.read({ ref });
+			if (!res.bytes) return null;
+			return { body: res.bytes };
+		},
+		readReferencedFile: id => ipcFsService.readReferencedFile(id, 1000),
+	});
+	if (result.kind === 'asset' || result.kind === 'file') return new TextDecoder().decode(result.bytes);
+	return '';
 }
 
 function hasHeader(header: string, headers: Record<string, ToggleKeyValue>) {

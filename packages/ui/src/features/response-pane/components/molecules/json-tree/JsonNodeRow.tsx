@@ -1,4 +1,4 @@
-import { Box, Flex, chakra } from '@chakra-ui/react';
+import { Box, chakra, Flex } from '@chakra-ui/react';
 import { ChevronRight, Copy, Link2 } from 'lucide-react';
 import * as React from 'react';
 
@@ -52,7 +52,9 @@ const JsonNodeRow: React.FC<JsonNodeRowProps> = ({
 			return (
 				<Box as='span' color='accent.pink' fontWeight='500'>
 					{JSON.stringify(row.key)}
-					<Box as='span' color='fg.subtle'>{': '}</Box>
+					<Box as='span' color='fg.subtle'>
+						{': '}
+					</Box>
 				</Box>
 			);
 		}
@@ -87,9 +89,9 @@ const JsonNodeRow: React.FC<JsonNodeRowProps> = ({
 				'&:hover .json-row-actions': { opacity: 1 },
 				...(highlightSearch
 					? {
-						background: 'color-mix(in srgb, var(--beak-colors-accent-pink) 24%, transparent)',
-						boxShadow: 'inset 2px 0 0 var(--beak-colors-accent-pink)',
-					}
+							background: 'color-mix(in srgb, var(--beak-colors-accent-pink) 24%, transparent)',
+							boxShadow: 'inset 2px 0 0 var(--beak-colors-accent-pink)',
+						}
 					: {}),
 			}}
 			style={{ paddingLeft: `${indent}px`, fontVariantNumeric: 'tabular-nums' }}
@@ -160,7 +162,9 @@ const JsonNodeRow: React.FC<JsonNodeRowProps> = ({
 				)}
 
 				{isOpener && !collapsed && (
-					<Box as='span' color='fg.subtle'>{bracketOpen}</Box>
+					<Box as='span' color='fg.subtle'>
+						{bracketOpen}
+					</Box>
 				)}
 
 				{isOpener && collapsed && (
@@ -176,19 +180,14 @@ const JsonNodeRow: React.FC<JsonNodeRowProps> = ({
 				)}
 
 				{isCloser && (
-					<Box as='span' color='fg.subtle'>{bracketClose}</Box>
+					<Box as='span' color='fg.subtle'>
+						{bracketClose}
+					</Box>
 				)}
 			</Box>
 
 			{/* hover actions */}
-			<Flex
-				className='json-row-actions'
-				gap='0.5'
-				opacity={0}
-				transition='opacity .12s ease'
-				align='center'
-				ml='2'
-			>
+			<Flex className='json-row-actions' gap='0.5' opacity={0} transition='opacity .12s ease' align='center' ml='2'>
 				<ChakraButton
 					type='button'
 					aria-label='Copy path'

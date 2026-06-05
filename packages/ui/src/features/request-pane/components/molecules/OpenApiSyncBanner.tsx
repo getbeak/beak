@@ -1,14 +1,11 @@
-import { collectionFileSchema, type CollectionSource } from '@beak/state/schemas';
-import { ipcFsService } from '@beak/ui/lib/ipc';
+import type { CollectionSource } from '@beak/state/schemas';
+import { readOpenApiSource } from '@beak/ui/services/source-schemas/read-openapi-source';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { Box, Flex } from '@chakra-ui/react';
 import type { Tree } from '@getbeak/types/nodes';
 import { FileText } from 'lucide-react';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
-import path from 'path-browserify';
-
-const COLLECTION_FILENAME = '_collection.json';
 
 type OpenApiSource = Extract<CollectionSource, { type: 'openapi' }>;
 
@@ -39,22 +36,8 @@ const OpenApiSyncBanner: React.FC<BannerProps> = ({ requestId }) => {
 				if (!cancelled) setSource(null);
 				return;
 			}
-			const collectionPath = path.join(folderPath, COLLECTION_FILENAME);
-			if (!(await ipcFsService.pathExists(collectionPath))) {
-				if (!cancelled) setSource(null);
-				return;
-			}
-			try {
-				const raw = await ipcFsService.readJson<unknown>(collectionPath);
-				const parsed = collectionFileSchema.safeParse(raw);
-				if (!parsed.success || parsed.data.source.type !== 'openapi') {
-					if (!cancelled) setSource(null);
-					return;
-				}
-				if (!cancelled) setSource(parsed.data.source);
-			} catch {
-				if (!cancelled) setSource(null);
-			}
+			const next = await readOpenApiSource(folderPath);
+			if (!cancelled) setSource(next);
 		})();
 		return () => {
 			cancelled = true;
@@ -66,9 +49,9 @@ const OpenApiSyncBanner: React.FC<BannerProps> = ({ requestId }) => {
 	const seedMode = source.seedMode ?? (source.specUrl ? 'url' : source.specPath ? 'file' : 'paste');
 	const sourceLabel =
 		seedMode === 'url'
-			? source.specUrl ?? 'a URL'
+			? (source.specUrl ?? 'a URL')
 			: seedMode === 'file'
-				? source.specPath ?? 'a local file'
+				? (source.specPath ?? 'a local file')
 				: 'a pasted document';
 
 	return (

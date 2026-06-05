@@ -97,7 +97,11 @@ const ResponseTab: React.FC<React.PropsWithChildren<ResponseTabProps>> = props =
 				{tab === 'raw' && (
 					<React.Fragment>
 						{response && (
-							<EditorView language={'http'} value={createHttpResponseMessage(flight)} options={{ readOnly: true }} />
+							<EditorView
+								language={'http'}
+								value={createHttpResponseMessage(flight)}
+								options={{ readOnly: true, wordWrap: 'on' }}
+							/>
 						)}
 						{error && <ErrorView error={error} />}
 					</React.Fragment>

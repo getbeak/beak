@@ -1,11 +1,11 @@
+import type { GrpcEnumDescriptor, GrpcMessageDescriptor, InvokeUnaryRes } from '@beak/common/ipc/grpc';
+import type { GrpcDescriptor } from '@beak/state/schemas';
 import Button from '@beak/ui/components/atoms/Button';
 import EditorView from '@beak/ui/components/atoms/EditorView';
 import { ipcGrpcService } from '@beak/ui/lib/ipc';
+import { type ResolveGrpcContextResult, resolveGrpcContext } from '@beak/ui/services/grpc/resolve-descriptor';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { Box, chakra, Flex } from '@chakra-ui/react';
-import type { CollectionFile, GrpcDescriptor } from '@beak/state/schemas';
-import { collectionFileSchema } from '@beak/state/schemas';
-import type { GrpcEnumDescriptor, GrpcMessageDescriptor, InvokeUnaryRes } from '@beak/common/ipc/grpc';
 import type { Nodes, ValidRequestNode } from '@getbeak/types/nodes';
 import type { RequestBodyGrpc } from '@getbeak/types/request';
 import { AlertOctagon, Braces, KeyRound, ListTree, Network, Play, Plus, Save, Trash2 } from 'lucide-react';
@@ -13,13 +13,9 @@ import path from 'path-browserify';
 import * as React from 'react';
 import { useEffect, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
-
-import {
-	requestBodyGrpcMetadataChanged,
-	requestBodyGrpcRequestJsonChanged,
-} from '../../../store/project/actions';
 import { ipcFsService } from '../../../lib/ipc';
-import { readGrpcDescriptor } from '../../endpoints/lib/persist';
+import { requestBodyGrpcMetadataChanged, requestBodyGrpcRequestJsonChanged } from '../../../store/project/actions';
+import { readGrpcDescriptor } from '../../source-schemas/lib/persist';
 import GrpcFieldsEditor from './grpc/GrpcFieldsEditor';
 
 interface GrpcRequestPaneProps {
@@ -71,72 +67,36 @@ const GrpcRequestPane: React.FC<GrpcRequestPaneProps> = ({ node }) => {
 	useEffect(() => {
 		let cancelled = false;
 		(async () => {
-			try {
-				const folderPath = findOwningEndpointFolder(node, tree);
-				if (!folderPath) {
-					setContextError(
-						'This request file isn\'t inside a gRPC endpoint folder — Beak can\'t tell which service to talk to. Move it under `tree/endpoints/grpc/<endpoint>/` or re-run Discover.',
-					);
-					return;
-				}
-				const collectionPath = path.join(folderPath, '_collection.json');
-				const raw = await ipcFsService.readJson<unknown>(collectionPath);
-				const parsed = collectionFileSchema.safeParse(raw);
-				if (!parsed.success) {
-					setContextError(`Collection at ${collectionPath} failed validation — re-run Discover.`);
-					return;
-				}
-				const collection = parsed.data as CollectionFile;
-				if (collection.source.type !== 'grpc') {
-					setContextError('Parent collection is not a gRPC source — this request file is misplaced.');
-					return;
-				}
-				const descriptor = collection.source.descriptor;
-				if (!descriptor) {
-					setContextError('Parent collection has no descriptor set — edit the endpoint to pick reflection / proto / buf.');
-					return;
-				}
-				if (cancelled) return;
-				setContext({
-					folderPath,
-					endpoint: collection.source.endpoint,
-					descriptor,
-				});
-				setContextError(null);
-
-				// Load the persisted descriptor sidecar so the Fields editor
-				// can render typed inputs. Missing sidecar / missing
-				// service is OK — the Fields tab falls back to "no schema"
-				// state and the JSON tab still works.
-				const persisted = await readGrpcDescriptor(folderPath);
-				if (cancelled || !persisted) return;
-				setMessagesByName(persisted.messages ?? {});
-				setEnumsByName(persisted.enums ?? {});
-
-				const svc = persisted.services.find(s => s.name === body.payload.service);
-				const method = svc?.methods.find(m => m.name === body.payload.method);
-				if (!method) {
-					setRequestMessageName(null);
-					return;
-				}
-				const candidates = persisted.messages ?? {};
-				const target = method.requestType;
-				const trimmed = target.startsWith('.') ? target.slice(1) : target;
-				if (candidates[target]) setRequestMessageName(target);
-				else if (candidates[trimmed]) setRequestMessageName(trimmed);
-				else {
-					const suffixMatch = Object.keys(candidates).find(k => k === trimmed || k.endsWith(`.${trimmed}`));
-					setRequestMessageName(suffixMatch ?? null);
-				}
-			} catch (err) {
-				if (cancelled) return;
-				setContextError(err instanceof Error ? err.message : String(err));
+			const folderPath = findOwningEndpointFolder(node, tree);
+			if (!folderPath) {
+				setContextError(
+					"This request file isn't inside a gRPC endpoint folder — Beak can't tell which service to talk to. Move it under `tree/endpoints/grpc/<endpoint>/` or re-run Discover.",
+				);
+				return;
 			}
+			const result = await resolveGrpcContext(
+				{ folderPath, service: body.payload.service, method: body.payload.method },
+				{
+					readCollection: collectionPath => ipcFsService.readJson<unknown>(collectionPath),
+					readDescriptorSidecar: readGrpcDescriptor,
+					joinPath: (folder, file) => path.join(folder, file),
+				},
+			);
+			if (cancelled) return;
+			if (result.kind !== 'ok') {
+				setContextError(messageForResolveError(result));
+				return;
+			}
+			setContext({ folderPath, endpoint: result.endpoint, descriptor: result.descriptor });
+			setContextError(null);
+			setMessagesByName(result.messagesByName);
+			setEnumsByName(result.enumsByName);
+			setRequestMessageName(result.requestMessageName);
 		})();
 		return () => {
 			cancelled = true;
 		};
-	}, [node.id, node.parent, tree]);
+	}, [node.id, node.parent, tree, body.payload.service, body.payload.method]);
 
 	async function invoke() {
 		if (!context) return;
@@ -187,9 +147,7 @@ const GrpcRequestPane: React.FC<GrpcRequestPaneProps> = ({ node }) => {
 		if (text.length === 0) return {};
 		try {
 			const parsed = JSON.parse(text);
-			return parsed && typeof parsed === 'object' && !Array.isArray(parsed)
-				? (parsed as Record<string, unknown>)
-				: {};
+			return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? (parsed as Record<string, unknown>) : {};
 		} catch {
 			return {};
 		}
@@ -291,10 +249,7 @@ const GrpcRequestPane: React.FC<GrpcRequestPaneProps> = ({ node }) => {
 				)}
 				{activeTab === 'metadata' && (
 					<Box flex='1' minH={0} overflowY='auto' px='3' py='2'>
-						<MetadataEditor
-							metadata={body.payload.metadata ?? {}}
-							onChange={onMetadataChange}
-						/>
+						<MetadataEditor metadata={body.payload.metadata ?? {}} onChange={onMetadataChange} />
 					</Box>
 				)}
 
@@ -346,14 +301,7 @@ interface TabBarProps {
 }
 
 const TabBar: React.FC<TabBarProps> = ({ active, onChange, hasParseError, metadataCount }) => (
-	<Flex
-		align='center'
-		gap='0.5'
-		borderBottomWidth='1px'
-		borderColor='border.subtle'
-		bg='bg.surface'
-		px='2'
-	>
+	<Flex align='center' gap='0.5' borderBottomWidth='1px' borderColor='border.subtle' bg='bg.surface' px='2'>
 		<TabButton
 			active={active === 'fields'}
 			onClick={() => onChange('fields')}
@@ -439,15 +387,7 @@ interface MethodHeaderProps {
 }
 
 const MethodHeader: React.FC<MethodHeaderProps> = ({ service, method, endpoint, pending, canSend, onSend }) => (
-	<Flex
-		align='center'
-		gap='3'
-		px='3'
-		py='2'
-		borderBottomWidth='1px'
-		borderColor='border.subtle'
-		bg='bg.surface'
-	>
+	<Flex align='center' gap='3' px='3' py='2' borderBottomWidth='1px' borderColor='border.subtle' bg='bg.surface'>
 		<Flex
 			align='center'
 			justify='center'
@@ -560,9 +500,7 @@ const MetadataEditor: React.FC<MetadataEditorProps> = ({ metadata, onChange }) =
 							type='text'
 							value={key}
 							placeholder='key'
-							onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-								updateRow(index, e.currentTarget.value, value)
-							}
+							onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateRow(index, e.currentTarget.value, value)}
 							flex='1'
 							h='26px'
 							px='1.5'
@@ -579,9 +517,7 @@ const MetadataEditor: React.FC<MetadataEditorProps> = ({ metadata, onChange }) =
 							type='text'
 							value={value}
 							placeholder='value'
-							onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-								updateRow(index, key, e.currentTarget.value)
-							}
+							onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateRow(index, key, e.currentTarget.value)}
 							flex='2'
 							h='26px'
 							px='1.5'
@@ -710,6 +646,24 @@ function formatJson(s: string): string {
 		return JSON.stringify(JSON.parse(s), null, 2);
 	} catch {
 		return s;
+	}
+}
+
+/**
+ * Translate a structured `ResolveGrpcContextResult` error into the
+ * user-facing string the pane shows. Lives next to its only caller so
+ * the wording can evolve without round-tripping through the service.
+ */
+function messageForResolveError(result: Exclude<ResolveGrpcContextResult, { kind: 'ok' }>): string {
+	switch (result.reason) {
+		case 'collection-invalid':
+			return `Collection at ${result.collectionPath} failed validation — re-run Discover.`;
+		case 'not-grpc-source':
+			return 'Parent collection is not a gRPC source — this request file is misplaced.';
+		case 'no-descriptor':
+			return 'Parent collection has no descriptor set — edit the endpoint to pick reflection / proto / buf.';
+		case 'caught':
+			return result.message;
 	}
 }
 

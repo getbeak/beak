@@ -1,13 +1,13 @@
-import { Box, chakra, Flex, Input } from '@chakra-ui/react';
+import ksuid from '@beak/ksuid';
 import {
 	closeSocket,
 	openSocket,
-	sendSocketMessage,
 	type SocketMessage,
 	type SocketSession,
+	sendSocketMessage,
 } from '@beak/state/sockets';
-import ksuid from '@beak/ksuid';
 import { useAppSelector } from '@beak/ui/store/redux';
+import { Box, chakra, Flex, Input } from '@chakra-ui/react';
 import React from 'react';
 import { useDispatch } from 'react-redux';
 
@@ -129,10 +129,7 @@ const SocketPanel: React.FC<SocketPanelProps> = ({ session }) => {
 					<Box>{`↓ ${session.messagesIn} (${formatBytes(session.bytesIn)})`}</Box>
 					<Box>{`↑ ${session.messagesOut} (${formatBytes(session.bytesOut)})`}</Box>
 				</Flex>
-				<ActionButton
-					onClick={isTerminal ? handleReconnect : handleClose}
-					danger={!isTerminal}
-				>
+				<ActionButton onClick={isTerminal ? handleReconnect : handleClose} danger={!isTerminal}>
 					{isTerminal ? 'Reconnect' : 'Close'}
 				</ActionButton>
 			</Flex>
@@ -161,14 +158,7 @@ const SocketPanel: React.FC<SocketPanelProps> = ({ session }) => {
 						))}
 					</Box>
 
-					<Flex
-						gap='2'
-						p='2'
-						borderTopWidth='1px'
-						borderColor='border.default'
-						bg='bg.surface'
-						align='center'
-					>
+					<Flex gap='2' p='2' borderTopWidth='1px' borderColor='border.default' bg='bg.surface' align='center'>
 						<Input
 							size='sm'
 							placeholder={isOpen ? 'Send a text message — Enter to send' : 'Connect first'}
@@ -204,9 +194,7 @@ const HandshakeView: React.FC<{ session: SocketSession }> = ({ session }) => {
 						<KvRow name='Sub-protocols' value={session.protocols.join(', ')} mono />
 					)}
 					{requestHeaders.length > 0 ? (
-						requestHeaders.map((h, i) => (
-							<KvRow key={`${h.name}-${i}`} name={h.name} value={h.value} mono />
-						))
+						requestHeaders.map((h, i) => <KvRow key={`${h.name}-${i}`} name={h.name} value={h.value} mono />)
 					) : (
 						<Empty>{'No user-authored headers — only the standard upgrade headers were sent.'}</Empty>
 					)}
@@ -217,17 +205,11 @@ const HandshakeView: React.FC<{ session: SocketSession }> = ({ session }) => {
 						<KvRow name='Opened at' value={new Date(session.openedAt).toISOString()} mono />
 					) : (
 						<Empty>
-							{session.status === 'connecting'
-								? 'Awaiting upgrade…'
-								: 'Server never completed the upgrade handshake.'}
+							{session.status === 'connecting' ? 'Awaiting upgrade…' : 'Server never completed the upgrade handshake.'}
 						</Empty>
 					)}
-					{session.negotiatedProtocol && (
-						<KvRow name='Sec-WebSocket-Protocol' value={session.negotiatedProtocol} mono />
-					)}
-					{session.extensions && (
-						<KvRow name='Sec-WebSocket-Extensions' value={session.extensions} mono />
-					)}
+					{session.negotiatedProtocol && <KvRow name='Sec-WebSocket-Protocol' value={session.negotiatedProtocol} mono />}
+					{session.extensions && <KvRow name='Sec-WebSocket-Extensions' value={session.extensions} mono />}
 				</Section>
 
 				{isTerminal && (
@@ -250,20 +232,10 @@ const HandshakeView: React.FC<{ session: SocketSession }> = ({ session }) => {
 							/>
 						)}
 						{session.openedAt && session.closedAt && (
-							<KvRow
-								name='Duration'
-								value={formatDuration(session.closedAt - session.openedAt)}
-								mono
-							/>
+							<KvRow name='Duration' value={formatDuration(session.closedAt - session.openedAt)} mono />
 						)}
-						<KvRow
-							name='Messages'
-							value={`↓ ${session.messagesIn}  ·  ↑ ${session.messagesOut}`}
-						/>
-						<KvRow
-							name='Bytes'
-							value={`↓ ${formatBytes(session.bytesIn)}  ·  ↑ ${formatBytes(session.bytesOut)}`}
-						/>
+						<KvRow name='Messages' value={`↓ ${session.messagesIn}  ·  ↑ ${session.messagesOut}`} />
+						<KvRow name='Bytes' value={`↓ ${formatBytes(session.bytesIn)}  ·  ↑ ${formatBytes(session.bytesOut)}`} />
 					</Section>
 				)}
 			</Flex>
@@ -278,13 +250,7 @@ const Section: React.FC<React.PropsWithChildren<{ title: string; subtitle?: stri
 }) => (
 	<Box>
 		<Flex direction='column' gap='0.5' mb='2'>
-			<Box
-				fontSize='10px'
-				fontWeight='700'
-				textTransform='uppercase'
-				letterSpacing='0.08em'
-				color='fg.subtle'
-			>
+			<Box fontSize='10px' fontWeight='700' textTransform='uppercase' letterSpacing='0.08em' color='fg.subtle'>
 				{title}
 			</Box>
 			{subtitle && (
@@ -308,13 +274,7 @@ const KvRow: React.FC<{ name: string; value: string; mono?: boolean }> = ({ name
 		<Box flex='0 0 160px' color='fg.subtle' fontWeight='500'>
 			{name}
 		</Box>
-		<Box
-			flex='1 1 auto'
-			minW={0}
-			fontFamily={mono ? 'mono' : undefined}
-			color='fg.default'
-			wordBreak='break-all'
-		>
+		<Box flex='1 1 auto' minW={0} fontFamily={mono ? 'mono' : undefined} color='fg.default' wordBreak='break-all'>
 			{value}
 		</Box>
 	</Flex>
@@ -353,11 +313,7 @@ const MessageRow: React.FC<{ message: SocketMessage }> = ({ message }) => {
 					px='1.5'
 					py='0'
 					borderRadius='sm'
-					bg={
-						isSystem
-							? 'transparent'
-							: 'color-mix(in srgb, var(--beak-colors-accent-teal) 14%, transparent)'
-					}
+					bg={isSystem ? 'transparent' : 'color-mix(in srgb, var(--beak-colors-accent-teal) 14%, transparent)'}
 					color={isSystem ? 'fg.subtle' : 'accent.teal'}
 					fontWeight='600'
 					textTransform='uppercase'
@@ -375,18 +331,19 @@ const MessageRow: React.FC<{ message: SocketMessage }> = ({ message }) => {
 				fontStyle={isSystem ? 'italic' : 'normal'}
 				m='0'
 			>
-				{message.data || <Box as='span' color='fg.disabled'>{'(empty)'}</Box>}
+				{message.data || (
+					<Box as='span' color='fg.disabled'>
+						{'(empty)'}
+					</Box>
+				)}
 			</Box>
 		</Flex>
 	);
 };
 
-const ActionButton: React.FC<React.PropsWithChildren<{ onClick: () => void; disabled?: boolean; danger?: boolean }>> = ({
-	onClick,
-	disabled,
-	danger,
-	children,
-}) => (
+const ActionButton: React.FC<
+	React.PropsWithChildren<{ onClick: () => void; disabled?: boolean; danger?: boolean }>
+> = ({ onClick, disabled, danger, children }) => (
 	<ChakraButton
 		type='button'
 		onClick={() => !disabled && onClick()}

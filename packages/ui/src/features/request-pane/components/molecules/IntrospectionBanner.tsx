@@ -36,7 +36,9 @@ const IntrospectionBanner: React.FC = () => (
 			<Box as='span' fontWeight='600' color='fg.default'>
 				{'Endpoint introspection seed'}
 			</Box>
-			{' — this request was generated when you registered the endpoint. Hit Send to fetch the schema. Customising headers or auth is fine; replacing the query loses the canonical introspection body.'}
+			{
+				' — this request was generated when you registered the endpoint. Hit Send to fetch the schema. Customising headers or auth is fine; replacing the query loses the canonical introspection body.'
+			}
 		</Box>
 	</Flex>
 );

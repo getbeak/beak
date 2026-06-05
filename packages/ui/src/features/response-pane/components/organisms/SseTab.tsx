@@ -1,6 +1,6 @@
-import { Box, Flex } from '@chakra-ui/react';
 import { type SseEvent } from '@beak/state/flight';
 import { useAppSelector } from '@beak/ui/store/redux';
+import { Box, Flex } from '@chakra-ui/react';
 import type { Flight } from '@getbeak/types/flight';
 import React from 'react';
 
@@ -97,21 +97,15 @@ const EventRow: React.FC<{ event: SseEvent; index: number }> = ({ event, index }
 				>
 					{eventName}
 				</Box>
-				{event.id !== undefined && (
-					<Box color='fg.subtle'>{`id: ${event.id}`}</Box>
-				)}
-				{event.retry !== undefined && (
-					<Box color='fg.subtle'>{`retry: ${event.retry}ms`}</Box>
-				)}
+				{event.id !== undefined && <Box color='fg.subtle'>{`id: ${event.id}`}</Box>}
+				{event.retry !== undefined && <Box color='fg.subtle'>{`retry: ${event.retry}ms`}</Box>}
 			</Flex>
-			<Box
-				as='pre'
-				whiteSpace='pre-wrap'
-				wordBreak='break-word'
-				color='fg.default'
-				m='0'
-			>
-				{event.data || <Box as='span' color='fg.disabled'>{'(empty)'}</Box>}
+			<Box as='pre' whiteSpace='pre-wrap' wordBreak='break-word' color='fg.default' m='0'>
+				{event.data || (
+					<Box as='span' color='fg.disabled'>
+						{'(empty)'}
+					</Box>
+				)}
 			</Box>
 		</Flex>
 	);

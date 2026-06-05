@@ -1,8 +1,8 @@
-import { Box } from '@chakra-ui/react';
 import EditorView from '@beak/ui/components/atoms/EditorView';
 import actions from '@beak/ui/store/preferences/actions';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { attemptJsonStringFormat } from '@beak/ui/utils/json';
+import { Box, Flex } from '@chakra-ui/react';
 import type { Flight } from '@getbeak/types/flight';
 import * as React from 'react';
 import { useEffect, useMemo } from 'react';
@@ -71,21 +71,25 @@ const PrettyViewer: React.FC<PrettyViewerProps> = ({ flight, mode }) => {
 	if (eligibility !== 'eligible') return <PrettyViewIneligible eligibility={eligibility} />;
 
 	return (
-		<Box h='calc(100% - 35px)'>
-			<PrettyRenderSelection
-				selectedLanguage={selectedLanguage}
-				onSelectedLanguageChange={lang =>
-					dispatch(
-						actions.requestPreferenceSetResPrettyLanguage({
-							id: requestId,
-							mode,
-							language: lang,
-						}),
-					)
-				}
-			/>
-			{renderFormat(selectedLanguage, contentType, body)}
-		</Box>
+		<Flex direction='column' h='100%' minH={0}>
+			<Box flexShrink={0}>
+				<PrettyRenderSelection
+					selectedLanguage={selectedLanguage}
+					onSelectedLanguageChange={lang =>
+						dispatch(
+							actions.requestPreferenceSetResPrettyLanguage({
+								id: requestId,
+								mode,
+								language: lang,
+							}),
+						)
+					}
+				/>
+			</Box>
+			<Box flex='1 1 auto' minH={0} overflow='hidden'>
+				{renderFormat(selectedLanguage, contentType, body)}
+			</Box>
+		</Flex>
 	);
 };
 

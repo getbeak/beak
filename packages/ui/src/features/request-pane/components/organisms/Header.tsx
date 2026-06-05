@@ -7,18 +7,18 @@ import VariableInput from '@beak/ui/features/variable-input/components/VariableI
 import useVariableContext from '@beak/ui/features/variables/hooks/use-variable-context';
 import { parseValueSections } from '@beak/ui/features/variables/parser';
 import type { ValueSections } from '@beak/ui/features/variables/values';
+import { glassChakraProps } from '@beak/ui/lib/glass';
+import { summarizeMissingRequired } from '@beak/ui/services/request/missing-required';
+import { analyseUrlEdit } from '@beak/ui/services/url';
 import { requestPreferenceSetReqMainTab } from '@beak/ui/store/preferences/actions';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { Box, chakra, Flex, Menu, Portal } from '@chakra-ui/react';
-import type { Entries } from '@getbeak/types/body-editor-json';
 import type { ValidRequestNode } from '@getbeak/types/nodes';
-import type { ToggleKeyValue } from '@getbeak/types/request';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronDown, Loader2, Plug, PlugZap, Send } from 'lucide-react';
 import * as React from 'react';
 import { useContext } from 'react';
 import { useDispatch } from 'react-redux';
-import URL from 'url-parse';
 
 import { requestFlight } from '../../../../store/flight/actions';
 import { requestQueryAdded, requestUriUpdated } from '../../../../store/project/actions';
@@ -32,77 +32,6 @@ export interface HeaderProps {
 const VERBS = ['get', 'post', 'put', 'patch', 'delete', 'head', 'options'];
 
 const ChakraButton = chakra('button');
-
-function isScalarEmpty(item: ToggleKeyValue): boolean {
-	const parts = item.value;
-	if (!parts || parts.length === 0) return true;
-	return parts.every(p => typeof p === 'string' && p.length === 0);
-}
-
-function isJsonEntryEmpty(entry: Entries): boolean {
-	if (entry.type === 'object' || entry.type === 'array') return false;
-	if (entry.type === 'boolean' || entry.type === 'null') return false;
-	const parts = entry.value;
-	if (!parts || parts.length === 0) return true;
-	return parts.every(p => typeof p === 'string' && p.length === 0);
-}
-
-interface MissingRequiredSummary {
-	count: number;
-	scopes: string[];
-}
-
-/**
- * Sum of required-but-empty fields across every scope. Drives the warning
- * dot on the Send button and the pre-flight dialog — purely advisory, the
- * user can still send.
- */
-function summarizeMissingRequired(node: ValidRequestNode): MissingRequiredSummary {
-	const scopes: string[] = [];
-	let count = 0;
-
-	let headersCount = 0;
-	for (const h of Object.values(node.info.headers)) {
-		if (h.required === true && h.enabled !== false && isScalarEmpty(h)) headersCount++;
-	}
-	if (headersCount > 0) {
-		scopes.push('Headers');
-		count += headersCount;
-	}
-
-	let queryCount = 0;
-	for (const q of Object.values(node.info.query)) {
-		if (q.required === true && q.enabled !== false && isScalarEmpty(q)) queryCount++;
-	}
-	if (queryCount > 0) {
-		scopes.push('Params');
-		count += queryCount;
-	}
-
-	let bodyCount = 0;
-	const body = node.info.body;
-	if (body) {
-		if (body.type === 'json') {
-			for (const e of Object.values(body.payload)) {
-				if (e.required === true && e.enabled !== false && isJsonEntryEmpty(e)) bodyCount++;
-			}
-		} else if (body.type === 'url_encoded_form') {
-			for (const item of Object.values(body.payload)) {
-				if (item.required === true && item.enabled !== false && isScalarEmpty(item)) bodyCount++;
-			}
-		} else if (body.type === 'graphql') {
-			for (const e of Object.values(body.payload.variables)) {
-				if (e.required === true && e.enabled !== false && isJsonEntryEmpty(e)) bodyCount++;
-			}
-		}
-	}
-	if (bodyCount > 0) {
-		scopes.push('Body');
-		count += bodyCount;
-	}
-
-	return { count, scopes };
-}
 
 const Header: React.FC<HeaderProps> = ({ node }) => {
 	const dispatch = useDispatch();
@@ -170,38 +99,15 @@ const Header: React.FC<HeaderProps> = ({ node }) => {
 	}
 
 	async function handleUrlChange(parts: ValueSections) {
-		const value = await parseValueSections(context, parts);
-		let sanitizedParts = [...parts];
-		const parsed = new URL(value, true);
+		const { sanitisedParts, extractedQuery, queryDetected } = await analyseUrlEdit(parts, context);
 
-		if (Object.keys(parsed.query).length) {
-			Object.keys(parsed.query).forEach(key => {
-				dispatch(
-					requestQueryAdded({
-						requestId: node.id,
-						name: key,
-						value: [parsed.query[key]!],
-					}),
-				);
-			});
+		for (const { name, value } of extractedQuery) {
+			dispatch(requestQueryAdded({ requestId: node.id, name, value: [value] }));
 		}
 
-		if (value.includes('?')) {
-			const searchIndex = parts.findIndex(p => typeof p === 'string' && p.includes('?'));
-			const searchPartIndex = (parts[searchIndex] as string).indexOf('?');
+		if (queryDetected) dispatch(requestPreferenceSetReqMainTab({ id: node.id, tab: 'url_query' }));
 
-			sanitizedParts = parts.slice(0, searchIndex);
-			sanitizedParts.push((parts[searchIndex] as string).slice(0, searchPartIndex));
-
-			dispatch(requestPreferenceSetReqMainTab({ id: node.id, tab: 'url_query' }));
-		}
-
-		dispatch(
-			requestUriUpdated({
-				requestId: node.id,
-				url: sanitizedParts,
-			}),
-		);
+		dispatch(requestUriUpdated({ requestId: node.id, url: sanitisedParts }));
 	}
 
 	return (
@@ -238,8 +144,7 @@ const Header: React.FC<HeaderProps> = ({ node }) => {
 				css={{
 					'&:focus-within': {
 						borderColor: 'var(--beak-colors-accent-pink)',
-						boxShadow:
-							'0 0 0 3px color-mix(in srgb, var(--beak-colors-accent-pink) 22%, transparent)',
+						boxShadow: '0 0 0 3px color-mix(in srgb, var(--beak-colors-accent-pink) 22%, transparent)',
 					},
 				}}
 			>
@@ -298,12 +203,8 @@ const Header: React.FC<HeaderProps> = ({ node }) => {
 					<Portal>
 						<Menu.Positioner>
 							<Menu.Content
-								bg='color-mix(in srgb, var(--beak-colors-bg-surface-emphasized) 92%, transparent)'
-								backdropFilter='blur(12px) saturate(140%)'
-								borderWidth='1px'
-								borderColor='border.default'
+								{...glassChakraProps.menu}
 								borderRadius='lg'
-								boxShadow='0 12px 32px rgba(0,0,0,0.32), 0 2px 6px rgba(0,0,0,0.18)'
 								p='1'
 								minW='150px'
 								css={{

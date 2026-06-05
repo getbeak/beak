@@ -1,7 +1,7 @@
 import type { PreviewReferencedFileRes } from '@beak/common/ipc/fs';
 import { attachFile } from '@beak/ui/features/asset-attachment/attach-file';
 import { pickAndAttachAsset } from '@beak/ui/features/asset-attachment/pick-and-attach';
-import { ipcFsService } from '@beak/ui/lib/ipc';
+import { fetchFilePreview, pickReferenceFile } from '@beak/ui/services/file-preview';
 import { requestBodyAssetChanged, requestBodyFileChanged } from '@beak/ui/store/project/actions';
 import { Box, Flex, IconButton } from '@chakra-ui/react';
 import type { ValidRequestNode } from '@getbeak/types/nodes';
@@ -26,38 +26,34 @@ const FileUploadView: React.FC<FileUploadViewProps> = ({ node }) => {
 
 	useEffect(() => {
 		let cancelled = false;
-		openPreviewFor(body.payload.fileReferenceId).catch(() => {
-			/* ignore */
-		});
+		fetchFilePreview(body.payload.fileReferenceId)
+			.then(outcome => {
+				if (cancelled || !outcome) return;
+				applyPreviewOutcome(outcome);
+			})
+			.catch(() => {
+				/* ignore */
+			});
 		return () => {
 			cancelled = true;
 		};
-
-		async function openPreviewFor(fileReferenceId: string | undefined) {
-			if (!fileReferenceId) return;
-			const result = await ipcFsService.previewReferencedFile(fileReferenceId);
-			if (cancelled) return;
-			if (!result) {
-				setPreview(void 0);
-				dispatch(
-					requestBodyFileChanged({
-						requestId: node.id,
-						fileReferenceId: void 0,
-						contentType: void 0,
-					}),
-				);
-				return;
-			}
-			setPreview(result);
-			dispatch(
-				requestBodyFileChanged({
-					requestId: node.id,
-					fileReferenceId,
-					contentType: mime.lookup(result.fileExtension) || '',
-				}),
-			);
-		}
 	}, [body.payload.fileReferenceId]);
+
+	function applyPreviewOutcome(outcome: NonNullable<Awaited<ReturnType<typeof fetchFilePreview>>>) {
+		if (outcome.kind === 'missing') {
+			setPreview(void 0);
+			dispatch(requestBodyFileChanged({ requestId: node.id, fileReferenceId: void 0, contentType: void 0 }));
+			return;
+		}
+		setPreview(outcome.preview);
+		dispatch(
+			requestBodyFileChanged({
+				requestId: node.id,
+				fileReferenceId: outcome.fileReferenceId,
+				contentType: mime.lookup(outcome.fileExtension) || '',
+			}),
+		);
+	}
 
 	async function clearFile(event: React.MouseEvent) {
 		event.stopPropagation();
@@ -71,37 +67,11 @@ const FileUploadView: React.FC<FileUploadViewProps> = ({ node }) => {
 		);
 	}
 
-	async function openPreview(fileReferenceId: string | undefined) {
-		if (!fileReferenceId) return;
-
-		const preview = await ipcFsService.previewReferencedFile(fileReferenceId);
-
-		if (!preview) {
-			setPreview(void 0);
-			dispatch(
-				requestBodyFileChanged({
-					requestId: node.id,
-					fileReferenceId: void 0,
-					contentType: void 0,
-				}),
-			);
-			return;
-		}
-
-		setPreview(preview);
-		dispatch(
-			requestBodyFileChanged({
-				requestId: node.id,
-				fileReferenceId,
-				contentType: mime.lookup(preview.fileExtension) || '',
-			}),
-		);
-	}
-
 	async function openFile() {
-		const response = await ipcFsService.openReferenceFile();
-		if (!response) return;
-		await openPreview(response.fileReferenceId);
+		const picked = await pickReferenceFile();
+		if (!picked) return;
+		const outcome = await fetchFilePreview(picked.fileReferenceId);
+		if (outcome) applyPreviewOutcome(outcome);
 	}
 
 	const assetRef = body.payload.assetRef;

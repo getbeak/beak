@@ -18,6 +18,7 @@ import OpenApiSyncBanner from './molecules/OpenApiSyncBanner';
 import RequestOutput from './molecules/RequestOutput';
 import Header from './organisms/Header';
 import Modifiers from './organisms/Modifiers';
+import PathParameters from './organisms/PathParameters';
 import RequestPaneToolbar from './organisms/RequestPaneToolbar';
 
 const RequestPane: React.FC<React.PropsWithChildren<unknown>> = () => {
@@ -85,6 +86,7 @@ const RequestPane: React.FC<React.PropsWithChildren<unknown>> = () => {
 				{selectedNode.info.introspection !== true && <OpenApiSyncBanner requestId={selectedNode.id} />}
 				<AlertBanner requestId={selectedNode.id} />
 				<Header node={selectedNode} />
+				<PathParameters node={selectedNode} />
 				<ReflexContainer orientation={'horizontal'}>
 					<ReflexElement flex={modRawSplit.firstFlex} minSize={300} onStopResize={modRawSplit.onStopResize}>
 						<Modifiers node={selectedNode} />

@@ -130,11 +130,28 @@ const HeaderRow: React.FC<{ row: Row }> = ({ row }) => {
 
 const PlainHeader: React.FC<{ name: string; value: string }> = ({ name, value }) => (
 	<RowWrapper>
-		<Flex gap='2' fontSize='12px' fontFamily='mono' lineHeight='1.5'>
-			<Box flex='0 0 30%' color='fg.muted' fontWeight='600' wordBreak='break-all'>
+		<Flex gap='2' fontSize='12px' fontFamily='mono' lineHeight='1.5' align='center'>
+			<Box
+				flex='0 0 30%'
+				minW={0}
+				color='fg.muted'
+				fontWeight='600'
+				overflow='hidden'
+				textOverflow='ellipsis'
+				whiteSpace='nowrap'
+				title={name}
+			>
 				{name}
 			</Box>
-			<Box flex='1 1 auto' color='fg.default' wordBreak='break-all'>
+			<Box
+				flex='1 1 auto'
+				minW={0}
+				color='fg.default'
+				overflow='hidden'
+				textOverflow='ellipsis'
+				whiteSpace='nowrap'
+				title={value}
+			>
 				{value}
 			</Box>
 		</Flex>
@@ -153,21 +170,31 @@ const SetCookieHeader: React.FC<{ row: CookieRow }> = ({ row }) => {
 	return (
 		<RowWrapper>
 			<Flex gap='2' fontSize='12px' lineHeight='1.5' align='flex-start'>
-				<Box flex='0 0 30%' color='accent.pink' fontWeight='700' fontFamily='mono' wordBreak='break-all'>
+				<Box flex='0 0 30%' minW={0} color='accent.pink' fontWeight='700' fontFamily='mono'>
 					<Flex align='center' gap='1.5'>
-						<CookieIcon size={11} strokeWidth={2.2} />
-						<Box as='span'>{row.name}</Box>
+						<CookieIcon size={11} strokeWidth={2.2} flexShrink={0} />
+						<Box as='span' overflow='hidden' textOverflow='ellipsis' whiteSpace='nowrap' title={row.name}>
+							{row.name}
+						</Box>
 					</Flex>
 				</Box>
 				<Flex direction='column' gap='1' flex='1 1 auto' minW={0}>
-					<Flex gap='1.5' wrap='wrap' fontFamily='mono' fontSize='12px' color='fg.default'>
-						<Box as='span' fontWeight='600' color='accent.pink' wordBreak='break-all'>
+					<Flex gap='1.5' align='center' fontFamily='mono' fontSize='12px' color='fg.default' minW={0}>
+						<Box as='span' fontWeight='600' color='accent.pink' flexShrink={0}>
 							{row.cookieName}
 						</Box>
-						<Box as='span' color='fg.subtle'>
+						<Box as='span' color='fg.subtle' flexShrink={0}>
 							{'='}
 						</Box>
-						<Box as='span' wordBreak='break-all'>
+						<Box
+							as='span'
+							flex='1 1 auto'
+							minW={0}
+							overflow='hidden'
+							textOverflow='ellipsis'
+							whiteSpace='nowrap'
+							title={row.cookieValue}
+						>
 							{row.cookieValue}
 						</Box>
 					</Flex>

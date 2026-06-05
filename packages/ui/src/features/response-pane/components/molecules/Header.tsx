@@ -1,9 +1,9 @@
-import { Box, Flex, IconButton } from '@chakra-ui/react';
 import { statusToColor, verbToColor } from '@beak/design-system/helpers';
 import BeakTooltip from '@beak/ui/components/atoms/BeakTooltip';
 import useVariableContext from '@beak/ui/features/variables/hooks/use-variable-context';
+import { convertRequestToUrl } from '@beak/ui/services/url';
 import { getStatusReasonPhrase } from '@beak/ui/utils/http';
-import { convertRequestToUrl } from '@beak/ui/utils/uri';
+import { Box, Flex, IconButton } from '@chakra-ui/react';
 import type { Flight } from '@getbeak/types/flight';
 import { motion } from 'framer-motion';
 import { AlertTriangle, Check, CheckCircle2, Copy, MoveRight, XCircle } from 'lucide-react';
@@ -40,9 +40,12 @@ const Header: React.FC<HeaderProps> = ({ selectedFlight }) => {
 		};
 	}, [context, request]);
 
-	useEffect(() => () => {
-		if (copiedTimerRef.current !== null) window.clearTimeout(copiedTimerRef.current);
-	}, []);
+	useEffect(
+		() => () => {
+			if (copiedTimerRef.current !== null) window.clearTimeout(copiedTimerRef.current);
+		},
+		[],
+	);
 
 	const verb = request.verb.toUpperCase();
 	const verbColor = verbToColor(verb);
@@ -51,7 +54,9 @@ const Header: React.FC<HeaderProps> = ({ selectedFlight }) => {
 
 	function copyUrl() {
 		if (typeof navigator !== 'undefined' && navigator.clipboard) {
-			navigator.clipboard.writeText(url).catch(() => { /* clipboard refused */ });
+			navigator.clipboard.writeText(url).catch(() => {
+				/* clipboard refused */
+			});
 			setJustCopied(true);
 			if (copiedTimerRef.current !== null) window.clearTimeout(copiedTimerRef.current);
 			copiedTimerRef.current = window.setTimeout(() => {
@@ -111,7 +116,10 @@ const Header: React.FC<HeaderProps> = ({ selectedFlight }) => {
 				py='1'
 				transition='border-color .12s ease, box-shadow .12s ease'
 				_hover={{ borderColor: 'color-mix(in srgb, var(--beak-colors-accent-pink) 35%, var(--beak-colors-border-subtle))' }}
-				_focusWithin={{ borderColor: 'accent.pink', boxShadow: '0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-pink) 22%, transparent)' }}
+				_focusWithin={{
+					borderColor: 'accent.pink',
+					boxShadow: '0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-pink) 22%, transparent)',
+				}}
 			>
 				<BeakTooltip content={url}>
 					<Box
@@ -142,7 +150,10 @@ const Header: React.FC<HeaderProps> = ({ selectedFlight }) => {
 						color: justCopied ? 'accent.teal' : 'accent.pink',
 						bg: `color-mix(in srgb, var(--beak-colors-${justCopied ? 'accent-teal' : 'accent-pink'}) 14%, transparent)`,
 					}}
-					_focusVisible={{ outline: 'none', boxShadow: '0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-pink) 45%, transparent)' }}
+					_focusVisible={{
+						outline: 'none',
+						boxShadow: '0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-pink) 45%, transparent)',
+					}}
 					_active={{ transform: 'scale(0.9)' }}
 					onClick={copyUrl}
 				>
@@ -173,7 +184,9 @@ const Header: React.FC<HeaderProps> = ({ selectedFlight }) => {
 					}}
 				>
 					<StatusIcon size={12} strokeWidth={2.2} />
-					<Box as='span' fontWeight='700' fontFamily='mono' style={{ fontVariantNumeric: 'tabular-nums' }}>{response.status}</Box>
+					<Box as='span' fontWeight='700' fontFamily='mono' style={{ fontVariantNumeric: 'tabular-nums' }}>
+						{response.status}
+					</Box>
 					<Box
 						as='span'
 						fontWeight='500'
@@ -202,7 +215,9 @@ const Header: React.FC<HeaderProps> = ({ selectedFlight }) => {
 					}}
 				>
 					<XCircle size={12} strokeWidth={2.2} />
-					<Box as='span' fontWeight='700' letterSpacing='0.06em' textTransform='uppercase' fontSize='10px'>{'Error'}</Box>
+					<Box as='span' fontWeight='700' letterSpacing='0.06em' textTransform='uppercase' fontSize='10px'>
+						{'Error'}
+					</Box>
 				</Flex>
 			)}
 		</MotionFlex>

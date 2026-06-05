@@ -1,7 +1,7 @@
-import { Flex } from '@chakra-ui/react';
 import { type FlightInProgress as FlightInProgressType, selectActiveFlight } from '@beak/state/flight';
 import PendingSlash from '@beak/ui/components/molecules/PendingSplash';
 import { useAppSelector } from '@beak/ui/store/redux';
+import { Flex } from '@chakra-ui/react';
 import type { Flight } from '@getbeak/types/flight';
 import * as React from 'react';
 
@@ -17,9 +17,8 @@ const ResponsePane: React.FC = () => {
 	const currentFlight = useAppSelector(s => (selectedTab ? selectActiveFlight(selectedTab)(s) : null)) ?? undefined;
 	const selectedNode = tree![selectedTab!];
 	const flightHistory = flightHistories[selectedTab!];
-	const selectedFlight = flightHistory?.selected !== undefined
-		? flightHistory.history[flightHistory.selected]
-		: undefined;
+	const selectedFlight =
+		flightHistory?.selected !== undefined ? flightHistory.history[flightHistory.selected] : undefined;
 
 	// Prefer the live, in-progress flight once its head has landed — that lets the
 	// Inspector render status, headers, and a streaming body before `complete`
@@ -53,7 +52,8 @@ const ResponsePane: React.FC = () => {
 					bottom: '8%',
 					left: 0,
 					width: '1px',
-					background: 'linear-gradient(to bottom, transparent, color-mix(in srgb, var(--beak-colors-border-default) 65%, transparent) 8%, color-mix(in srgb, var(--beak-colors-border-default) 65%, transparent) 92%, transparent)',
+					background:
+						'linear-gradient(to bottom, transparent, color-mix(in srgb, var(--beak-colors-border-default) 65%, transparent) 8%, color-mix(in srgb, var(--beak-colors-border-default) 65%, transparent) 92%, transparent)',
 					pointerEvents: 'none',
 					zIndex: 1,
 				},

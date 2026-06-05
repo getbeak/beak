@@ -56,8 +56,12 @@ const PrettyViewIneligible: React.FC<PrettyViewIneligibleProps> = ({ eligibility
 				>
 					<CircleHelp size={22} strokeWidth={1.8} />
 				</Flex>
-				<Box fontSize='md' fontWeight='600' color='fg.default' letterSpacing='-0.005em'>{reason.title}</Box>
-				<Box fontSize='xs' color='fg.muted' mt='1.5' lineHeight='1.5'>{reason.description}</Box>
+				<Box fontSize='md' fontWeight='600' color='fg.default' letterSpacing='-0.005em'>
+					{reason.title}
+				</Box>
+				<Box fontSize='xs' color='fg.muted' mt='1.5' lineHeight='1.5'>
+					{reason.description}
+				</Box>
 			</motion.div>
 		</Flex>
 	);

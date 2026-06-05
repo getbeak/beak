@@ -1,6 +1,6 @@
-import { Box, Flex, Link } from '@chakra-ui/react';
 import { ipcWindowService } from '@beak/ui/lib/ipc';
 import { renderPlainTextDefinition } from '@beak/ui/utils/keyboard-rendering';
+import { Box, Flex, Link } from '@chakra-ui/react';
 import { CloudLightning, Lightbulb } from 'lucide-react';
 import * as React from 'react';
 
@@ -68,7 +68,15 @@ const GraphQlError: React.FC<GraphQlErrorProps> = ({ error }) => (
 			textAlign='left'
 			overflowWrap='anywhere'
 		>
-			<Box fontSize='10px' fontWeight='700' letterSpacing='0.06em' textTransform='uppercase' color='accent.alert' mb='1' fontFamily='body'>
+			<Box
+				fontSize='10px'
+				fontWeight='700'
+				letterSpacing='0.06em'
+				textTransform='uppercase'
+				color='accent.alert'
+				mb='1'
+				fontFamily='body'
+			>
 				{'Error message'}
 			</Box>
 			{error.message}
@@ -106,12 +114,28 @@ const GraphQlError: React.FC<GraphQlErrorProps> = ({ error }) => (
 			<Flex direction='column' gap='1.5' as='ul' listStyleType='none' fontSize='xs' color='fg.muted' lineHeight='1.5'>
 				{HINTS.map(hint => (
 					<Box as='li' key={String(hint)} pl='4' position='relative'>
-						<Box position='absolute' left='0' top='7px' w='4px' h='4px' borderRadius='full' bg='color-mix(in srgb, var(--beak-colors-accent-pink) 60%, transparent)' />
+						<Box
+							position='absolute'
+							left='0'
+							top='7px'
+							w='4px'
+							h='4px'
+							borderRadius='full'
+							bg='color-mix(in srgb, var(--beak-colors-accent-pink) 60%, transparent)'
+						/>
 						{hint}
 					</Box>
 				))}
 				<Box as='li' pl='4' position='relative'>
-					<Box position='absolute' left='0' top='7px' w='4px' h='4px' borderRadius='full' bg='color-mix(in srgb, var(--beak-colors-accent-pink) 60%, transparent)' />
+					<Box
+						position='absolute'
+						left='0'
+						top='7px'
+						w='4px'
+						h='4px'
+						borderRadius='full'
+						bg='color-mix(in srgb, var(--beak-colors-accent-pink) 60%, transparent)'
+					/>
 					{`Toggle developer tools from the command bar (${renderPlainTextDefinition('omni-bar.launch.commands')}) or `}
 					<Link
 						href='#'

@@ -1,9 +1,9 @@
 import type { ResponsePreferenceMainTab } from '@beak/common/types/beak-hub';
 import { requestPreferenceSetResMainTab } from '@beak/ui/store/preferences/actions';
 import { useAppSelector } from '@beak/ui/store/redux';
+import { Box } from '@chakra-ui/react';
 import type { Flight } from '@getbeak/types/flight';
 import React from 'react';
-import { Box } from '@chakra-ui/react';
 import { useDispatch } from 'react-redux';
 
 import TabBar from '../../../../components/atoms/TabBar';

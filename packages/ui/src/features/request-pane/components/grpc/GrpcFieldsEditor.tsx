@@ -49,14 +49,7 @@ const GrpcFieldsEditor: React.FC<GrpcFieldsEditorProps> = ({ requestType, messag
 	}
 
 	return (
-		<MessageBlock
-			descriptor={descriptor}
-			messages={messages}
-			enums={enums}
-			value={value}
-			onChange={onChange}
-			depth={0}
-		/>
+		<MessageBlock descriptor={descriptor} messages={messages} enums={enums} value={value} onChange={onChange} depth={0} />
 	);
 };
 
@@ -102,9 +95,7 @@ const MessageBlock: React.FC<MessageBlockProps> = ({ descriptor, messages, enums
 					field={field}
 					messages={messages}
 					enums={enums}
-					oneofName={
-						typeof field.oneofIndex === 'number' ? descriptor.oneofs[field.oneofIndex] : undefined
-					}
+					oneofName={typeof field.oneofIndex === 'number' ? descriptor.oneofs[field.oneofIndex] : undefined}
 					value={value[field.name]}
 					onChange={next => setFieldValue(field, next)}
 					onClear={() => clearField(field)}
@@ -236,12 +227,7 @@ const FieldInput: React.FC<FieldInputProps> = ({ field, messages, enums, value, 
 			unknown
 		>;
 		return (
-			<Box
-				borderLeftWidth='1px'
-				borderColor='border.subtle'
-				pl='2'
-				py='1'
-			>
+			<Box borderLeftWidth='1px' borderColor='border.subtle' pl='2' py='1'>
 				<MessageBlock
 					descriptor={inner}
 					messages={messages}
@@ -256,7 +242,7 @@ const FieldInput: React.FC<FieldInputProps> = ({ field, messages, enums, value, 
 
 	if (field.type === 'enum') {
 		const enumDescriptor = enums[field.typeName];
-		const current = typeof value === 'string' ? value : enumDescriptor?.values[0]?.name ?? '';
+		const current = typeof value === 'string' ? value : (enumDescriptor?.values[0]?.name ?? '');
 		return (
 			<ChakraSelect
 				value={current}

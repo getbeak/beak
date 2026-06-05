@@ -1,5 +1,5 @@
-import { selectActiveFlightsForRequest } from '@beak/state/flight';
 import { statusToColor } from '@beak/design-system/helpers';
+import { selectActiveFlightsForRequest } from '@beak/state/flight';
 import BeakTooltip from '@beak/ui/components/atoms/BeakTooltip';
 import {
 	useNavigateFlightHistoryForSelectedTab,
@@ -7,7 +7,7 @@ import {
 	useSelectedTabFlightStatus,
 } from '@beak/ui/services/flight/tab-integration';
 import { useAppSelector } from '@beak/ui/store/redux';
-import { Box, Flex, Popover, Portal, chakra } from '@chakra-ui/react';
+import { Box, chakra, Flex, Popover, Portal } from '@chakra-ui/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronLeft, ChevronRight, CircleCheck, CircleDot, CircleX, Loader2 } from 'lucide-react';
 import * as React from 'react';
@@ -46,11 +46,7 @@ const RequestPaneFlightControls: React.FC<RequestPaneFlightControlsProps> = ({ r
 			flexShrink={0}
 		>
 			<BeakTooltip content='Previous flight in history'>
-				<ArrowButton
-					aria-label='Previous flight in history'
-					disabled={!requirements?.canGoBack}
-					onClick={goToPrevious}
-				>
+				<ArrowButton aria-label='Previous flight in history' disabled={!requirements?.canGoBack} onClick={goToPrevious}>
 					<ChevronLeft size={13} />
 				</ArrowButton>
 			</BeakTooltip>
@@ -99,11 +95,7 @@ const RequestPaneFlightControls: React.FC<RequestPaneFlightControlsProps> = ({ r
 			</Popover.Root>
 
 			<BeakTooltip content='Next flight in history'>
-				<ArrowButton
-					aria-label='Next flight in history'
-					disabled={!requirements?.canGoForward}
-					onClick={goToNext}
-				>
+				<ArrowButton aria-label='Next flight in history' disabled={!requirements?.canGoForward} onClick={goToNext}>
 					<ChevronRight size={13} />
 				</ArrowButton>
 			</BeakTooltip>
@@ -134,7 +126,11 @@ const ArrowButton: React.FC<
 		cursor={disabled ? 'default' : 'pointer'}
 		color={disabled ? 'fg.disabled' : 'fg.muted'}
 		transition='color .1s linear, background-color .1s linear'
-		_hover={disabled ? undefined : { color: 'fg.default', bg: 'color-mix(in srgb, var(--beak-colors-fg-default) 8%, transparent)' }}
+		_hover={
+			disabled
+				? undefined
+				: { color: 'fg.default', bg: 'color-mix(in srgb, var(--beak-colors-fg-default) 8%, transparent)' }
+		}
 	>
 		{children}
 	</ChakraButton>

@@ -1,5 +1,5 @@
-import { Box, Flex, chakra } from '@chakra-ui/react';
 import Kbd from '@beak/ui/components/atoms/Kbd';
+import { Box, chakra, Flex } from '@chakra-ui/react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { ChevronsDownUp, ChevronsUpDown } from 'lucide-react';
 import * as React from 'react';
@@ -43,10 +43,7 @@ const JsonTreeViewer: React.FC<JsonTreeViewerProps> = ({ value }) => {
 
 	const rows = useFlattenedJson(value, { collapsed, searchTerm: searchOpen ? search : '' });
 
-	const hits = useMemo(
-		() => rows.map((r, i) => (r.matchesSearch ? i : -1)).filter(i => i >= 0),
-		[rows],
-	);
+	const hits = useMemo(() => rows.map((r, i) => (r.matchesSearch ? i : -1)).filter(i => i >= 0), [rows]);
 
 	useEffect(() => {
 		if (hitIndex >= hits.length) setHitIndex(Math.max(0, hits.length - 1));
@@ -216,12 +213,7 @@ const JsonTreeViewer: React.FC<JsonTreeViewerProps> = ({ value }) => {
 				</ChakraButton>
 				<Flex ml='auto' align='center' gap='1' color='fg.subtle' fontSize='10px'>
 					<Kbd>{'⌘F'}</Kbd>
-					<Box
-						as='span'
-						fontWeight='700'
-						letterSpacing='0.06em'
-						textTransform='uppercase'
-					>
+					<Box as='span' fontWeight='700' letterSpacing='0.06em' textTransform='uppercase'>
 						{'Search'}
 					</Box>
 				</Flex>

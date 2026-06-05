@@ -3,66 +3,20 @@ import type { RequestEditorMode, RequestPreferenceMainTab } from '@beak/common/t
 import BasicTableEditor from '@beak/ui/features/basic-table-editor/components/BasicTableEditor';
 import { COMMON_REQUEST_HEADERS } from '@beak/ui/features/basic-table-editor/constants/common-headers';
 import type { EditorMode } from '@beak/ui/features/graphql-editor/types';
+import { summarizeMissingRequired } from '@beak/ui/services/request/missing-required';
 import { requestPreferenceSetReqEditorMode, requestPreferenceSetReqMainTab } from '@beak/ui/store/preferences/actions';
 import actions from '@beak/ui/store/project/actions';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { Box, chakra, Flex } from '@chakra-ui/react';
-import type { Entries } from '@getbeak/types/body-editor-json';
 import type { ValidRequestNode } from '@getbeak/types/nodes';
-import type { ToggleKeyValue } from '@getbeak/types/request';
 import * as React from 'react';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 
 import { useChangeBodyType } from '../../use-change-body-type';
-import BodyTypeSelector from '../molecules/BodyTypeSelector';
 import EditorModeToggle from '../molecules/EditorModeToggle';
 import BodyTab from './BodyTab';
 import OptionsView from './OptionsView';
-
-/**
- * Mirror of `isValueEmpty` from BasicTableEditor: a ToggleKeyValue's value
- * counts as empty when it has no parts or every part is an empty string.
- */
-function isToggleValueEmpty(item: ToggleKeyValue): boolean {
-	const parts = item.value;
-	if (!parts || parts.length === 0) return true;
-	return parts.every(p => typeof p === 'string' && p.length === 0);
-}
-
-/**
- * Mirror of `isEntryValueEmpty` from EntryRow — container + intrinsic
- * types satisfy the contract by their presence; string/number entries
- * count as empty when no parts or every part is an empty literal.
- */
-function isJsonEntryValueEmpty(entry: Entries): boolean {
-	if (entry.type === 'object' || entry.type === 'array') return false;
-	if (entry.type === 'boolean' || entry.type === 'null') return false;
-	const parts = entry.value;
-	if (!parts || parts.length === 0) return true;
-	return parts.every(p => typeof p === 'string' && p.length === 0);
-}
-
-function countMissingRequiredInBody(node: ValidRequestNode): number {
-	const body = node.info.body;
-	if (!body) return 0;
-	switch (body.type) {
-		case 'json':
-			return TypedObject.values(body.payload).filter(
-				entry => entry.required === true && entry.enabled !== false && isJsonEntryValueEmpty(entry),
-			).length;
-		case 'url_encoded_form':
-			return TypedObject.values(body.payload).filter(
-				item => item.required === true && item.enabled !== false && isToggleValueEmpty(item),
-			).length;
-		case 'graphql':
-			return TypedObject.values(body.payload.variables).filter(
-				entry => entry.required === true && entry.enabled !== false && isJsonEntryValueEmpty(entry),
-			).length;
-		default:
-			return 0;
-	}
-}
 
 export interface ModifiersProps {
 	node: ValidRequestNode;
@@ -74,25 +28,6 @@ const TABS: { key: RequestPreferenceMainTab; label: string }[] = [
 	{ key: 'body', label: 'Body' },
 	{ key: 'options', label: 'Options' },
 ];
-
-function bodyTypeLabel(type: string): string {
-	switch (type) {
-		case 'text':
-			return 'Text';
-		case 'json':
-			return 'JSON';
-		case 'json_raw':
-			return 'JSON (raw)';
-		case 'url_encoded_form':
-			return 'Form';
-		case 'graphql':
-			return 'GraphQL';
-		case 'file':
-			return 'File';
-		default:
-			return type;
-	}
-}
 
 const ChakraButton = chakra('button');
 
@@ -108,18 +43,14 @@ const Modifiers: React.FC<React.PropsWithChildren<ModifiersProps>> = props => {
 	const headerCount = TypedObject.values(node.info.headers).filter(h => h.enabled).length;
 	const queryCount = TypedObject.values(node.info.query).filter(q => q.enabled).length;
 	const bodyType = node.info.body.type;
-	const bodyLabel = bodyTypeLabel(bodyType);
 
 	// Count required fields with empty values per scope. Surfaced as a tiny red
 	// badge in the tab label so the user sees "you owe values" without having
 	// to open each tab.
-	const headersMissing = TypedObject.values(node.info.headers).filter(
-		h => h.required === true && h.enabled !== false && isToggleValueEmpty(h),
-	).length;
-	const queryMissing = TypedObject.values(node.info.query).filter(
-		q => q.required === true && q.enabled !== false && isToggleValueEmpty(q),
-	).length;
-	const bodyMissing = countMissingRequiredInBody(node);
+	const { perScope } = summarizeMissingRequired(node);
+	const headersMissing = perScope.headers;
+	const queryMissing = perScope.query;
+	const bodyMissing = perScope.body;
 
 	function setTab(tab: RequestPreferenceMainTab) {
 		dispatch(requestPreferenceSetReqMainTab({ id: node.id, tab }));
@@ -141,8 +72,6 @@ const Modifiers: React.FC<React.PropsWithChildren<ModifiersProps>> = props => {
 				return headerCount > 0 ? headerCount : undefined;
 			case 'url_query':
 				return queryCount > 0 ? queryCount : undefined;
-			case 'body':
-				return bodyType === 'text' ? undefined : bodyLabel;
 			default:
 				return undefined;
 		}
@@ -246,15 +175,6 @@ const Modifiers: React.FC<React.PropsWithChildren<ModifiersProps>> = props => {
 				<Box flex='1 1 auto' />
 
 				{showModeToggle && <EditorModeToggle mode={editorMode} onChange={setEditorMode} />}
-
-				{tab === 'body' && (
-					<BodyTypeSelector
-						value={bodyType}
-						graphQlMode={graphQlMode}
-						onTypeChange={changeBodyType}
-						onGraphQlModeChange={setGraphQlMode}
-					/>
-				)}
 			</Flex>
 
 			<Box flexGrow={2} overflowY='auto' h='100%'>
@@ -307,7 +227,15 @@ const Modifiers: React.FC<React.PropsWithChildren<ModifiersProps>> = props => {
 						}
 					/>
 				)}
-				{tab === 'body' && <BodyTab node={node} graphQlMode={graphQlMode} editorMode={editorMode} />}
+				{tab === 'body' && (
+					<BodyTab
+						node={node}
+						graphQlMode={graphQlMode}
+						editorMode={editorMode}
+						onBodyTypeChange={changeBodyType}
+						onGraphQlModeChange={setGraphQlMode}
+					/>
+				)}
 				{tab === 'options' && <OptionsView node={node} />}
 			</Box>
 		</Flex>
