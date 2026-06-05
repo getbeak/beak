@@ -320,6 +320,29 @@ class OpfsFsPromises {
 		this.emit({ eventName: 'addDir', path });
 	}
 
+	/**
+	 * Mirrors Node's `fs.promises.rm`. Unifies file + directory removal so
+	 * callers don't need to stat first. With `recursive: true`, directories
+	 * are removed with all contents. With `force: true`, missing paths are
+	 * silently ignored (Node semantics).
+	 */
+	async rm(path: string, opts?: { recursive?: boolean; force?: boolean }): Promise<void> {
+		const recursive = Boolean(opts?.recursive);
+		const force = Boolean(opts?.force);
+		let stats: OpfsStats;
+		try {
+			stats = await this.stat(path);
+		} catch (err) {
+			if (force && err instanceof Error && (err as { code?: string }).code === 'ENOENT') return;
+			throw err;
+		}
+		if (stats.isDirectory()) {
+			await this.rmdir(path, { recursive });
+			return;
+		}
+		await this.unlink(path);
+	}
+
 	async rmdir(path: string, opts?: { recursive?: boolean }): Promise<void> {
 		const segments = parsePath(path);
 		if (segments.length === 0) throw makeError('EBUSY', 'cannot remove OPFS root');
@@ -424,4 +447,3 @@ class OpfsFsPromises {
 		/* writes are durable as soon as the underlying close resolves */
 	}
 }
-
