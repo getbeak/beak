@@ -21,13 +21,7 @@ const Preferences: React.FC = () => {
 	return (
 		<Box h='100%' overflowY='auto' bg='bg.canvas'>
 			<Box maxW='760px' mx='auto' px='8' pt='9' pb='12'>
-				<Box
-					fontSize='3xl'
-					fontWeight='700'
-					letterSpacing='-0.02em'
-					lineHeight='1.05'
-					color='fg.default'
-				>
+				<Box fontSize='3xl' fontWeight='700' letterSpacing='-0.02em' lineHeight='1.05' color='fg.default'>
 					{'Settings'}
 				</Box>
 				<Box fontSize='sm' color='fg.subtle' mt='1' mb='5'>
@@ -41,12 +35,7 @@ const Preferences: React.FC = () => {
 				/>
 
 				<Box mb='6'>
-					<SegmentedControl
-						ariaLabel='Preferences section'
-						items={SECTIONS}
-						value={active}
-						onChange={setActive}
-					/>
+					<SegmentedControl ariaLabel='Preferences section' items={SECTIONS} value={active} onChange={setActive} />
 				</Box>
 
 				<Box>

@@ -1,4 +1,4 @@
-import { Box, Flex, chakra } from '@chakra-ui/react';
+import { Box, chakra, Flex } from '@chakra-ui/react';
 import { Check } from 'lucide-react';
 import * as React from 'react';
 import { useId } from 'react';
@@ -61,7 +61,11 @@ const Checkbox: React.FC<CheckboxProps> = ({ label, ...rest }) => {
 					borderWidth='1px'
 					borderColor={isChecked ? 'accent.pink' : 'border.default'}
 					bg={isChecked ? 'accent.pink' : 'var(--beak-colors-bg-surface)'}
-					boxShadow={isChecked ? '0 0 0 0.5px color-mix(in srgb, white 22%, transparent) inset, 0 2px 6px color-mix(in srgb, var(--beak-colors-accent-pink) 35%, transparent)' : 'inset 0 1px 2px rgba(0,0,0,0.04)'}
+					boxShadow={
+						isChecked
+							? '0 0 0 0.5px color-mix(in srgb, white 22%, transparent) inset, 0 2px 6px color-mix(in srgb, var(--beak-colors-accent-pink) 35%, transparent)'
+							: 'inset 0 1px 2px rgba(0,0,0,0.04)'
+					}
 					transition='background-color .14s ease, border-color .14s ease, box-shadow .14s ease, transform .08s ease'
 					pointerEvents='none'
 				>

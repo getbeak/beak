@@ -44,12 +44,7 @@ export const KeyboardStateProvider: React.FC<React.PropsWithChildren> = ({ child
 				shift: e.shiftKey,
 			};
 			const prev = modsRef.current;
-			if (
-				prev.meta !== next.meta ||
-				prev.ctrl !== next.ctrl ||
-				prev.alt !== next.alt ||
-				prev.shift !== next.shift
-			) {
+			if (prev.meta !== next.meta || prev.ctrl !== next.ctrl || prev.alt !== next.alt || prev.shift !== next.shift) {
 				modsRef.current = next;
 				return true;
 			}

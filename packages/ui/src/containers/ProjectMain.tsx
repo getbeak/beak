@@ -4,11 +4,11 @@ import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet';
 
 import ReflexStyles from '../components/atoms/ReflexStyles';
+import BrowserStorageBanner from '../components/molecules/BrowserStorageBanner';
 import ErrorBoundary from '../components/molecules/ErrorBoundary';
 import ProgressIndicator from '../components/molecules/ProgressIndicator';
 import ProjectLoadFailed from '../components/molecules/ProjectLoadFailed';
 import ProjectLoading from '../components/molecules/ProjectLoading';
-import BrowserStorageBanner from '../components/molecules/BrowserStorageBanner';
 import UntitledBanner from '../components/molecules/UntitledBanner';
 import ActionBar from '../features/action-bar/components/ActionBar';
 import AlertStatusStrip from '../features/alerts/components/AlertStatusStrip';

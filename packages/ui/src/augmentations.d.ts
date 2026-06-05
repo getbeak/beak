@@ -1,6 +1,6 @@
-import type { Store } from 'react-redux';
 import type { IpcRendererEvent } from 'electron';
 import type { Worker } from 'monaco-editor';
+import type { Store } from 'react-redux';
 
 import 'vite/client';
 import { ApplicationState } from './store';

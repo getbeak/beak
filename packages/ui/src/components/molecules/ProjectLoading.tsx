@@ -1,5 +1,5 @@
-import { Box, Flex, Image } from '@chakra-ui/react';
 import { renderPlainTextDefinition } from '@beak/ui/utils/keyboard-rendering';
+import { Box, Flex, Image } from '@chakra-ui/react';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
@@ -57,9 +57,13 @@ const ProjectLoading: React.FC = () => {
 						aria-hidden
 						mb='5'
 						filter='drop-shadow(0px 8px 24px color-mix(in srgb, var(--beak-colors-accent-pink) 40%, transparent))'
-						style={reduced ? undefined : {
-							animation: 'beakLogoFloat 4s ease-in-out infinite',
-						}}
+						style={
+							reduced
+								? undefined
+								: {
+										animation: 'beakLogoFloat 4s ease-in-out infinite',
+									}
+						}
 					/>
 				</motion.div>
 				<Flex

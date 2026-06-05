@@ -1,5 +1,5 @@
-import { Box, Button, Flex, Text } from '@chakra-ui/react';
 import { useAppSelector } from '@beak/ui/store/redux';
+import { Box, Button, Flex, Text } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 import { FileWarning } from 'lucide-react';
 import * as React from 'react';
@@ -62,7 +62,15 @@ const UntitledBanner: React.FC = () => {
 				<FileWarning size={12} strokeWidth={2.2} />
 			</Flex>
 			<Text flex='1 1 auto' truncate lineHeight='1.4'>
-				<Text as='span' fontWeight='700' color='accent.pink' textTransform='uppercase' fontSize='10px' letterSpacing='0.06em' mr='1'>
+				<Text
+					as='span'
+					fontWeight='700'
+					color='accent.pink'
+					textTransform='uppercase'
+					fontSize='10px'
+					letterSpacing='0.06em'
+					mr='1'
+				>
 					{'Untitled'}
 				</Text>
 				{'Changes are held in memory only. Save to keep them.'}

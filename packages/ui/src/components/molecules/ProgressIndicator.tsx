@@ -1,6 +1,6 @@
-import { Box } from '@chakra-ui/react';
 import { selectActiveFlight } from '@beak/state/flight';
 import { useAppSelector } from '@beak/ui/store/redux';
+import { Box } from '@chakra-ui/react';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import * as React from 'react';
 
@@ -35,7 +35,8 @@ const ProgressIndicator: React.FC = () => {
 								'linear-gradient(90deg, var(--beak-colors-accent-pink), var(--beak-colors-accent-teal), var(--beak-colors-accent-indigo), var(--beak-colors-accent-pink))',
 							backgroundSize: '300% 100%',
 							animation: reduced ? undefined : 'beakProgressShimmer 2.4s linear infinite',
-							boxShadow: '0 0 12px color-mix(in srgb, var(--beak-colors-accent-pink) 60%, transparent), 0 0 4px color-mix(in srgb, var(--beak-colors-accent-teal) 40%, transparent)',
+							boxShadow:
+								'0 0 12px color-mix(in srgb, var(--beak-colors-accent-pink) 60%, transparent), 0 0 4px color-mix(in srgb, var(--beak-colors-accent-teal) 40%, transparent)',
 							borderTopRightRadius: '2px',
 							borderBottomRightRadius: '2px',
 						}}

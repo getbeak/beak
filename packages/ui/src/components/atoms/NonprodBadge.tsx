@@ -1,5 +1,5 @@
-import { Box, Flex } from '@chakra-ui/react';
 import { ipcPreferencesService } from '@beak/ui/lib/ipc';
+import { Box, Flex } from '@chakra-ui/react';
 import { useReducedMotion } from 'framer-motion';
 import { AlertTriangle } from 'lucide-react';
 import * as React from 'react';

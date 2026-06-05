@@ -1,6 +1,5 @@
 import useDebounce from '@beak/ui/hooks/use-debounce';
-import React from 'react';
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 interface DebouncedInputProps extends Omit<React.HTMLProps<HTMLInputElement>, 'onChange'> {
 	type: 'text';

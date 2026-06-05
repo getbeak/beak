@@ -36,13 +36,7 @@ const splitterStyle = (
 	cursor: disabled ? 'default' : undefined,
 });
 
-const ReflexSplitter: React.FC<ReflexSplitterProps> = ({
-	orientation,
-	$disabled,
-	$customChildren,
-	style,
-	...rest
-}) => {
+const ReflexSplitter: React.FC<ReflexSplitterProps> = ({ orientation, $disabled, $customChildren, style, ...rest }) => {
 	// `orientation` lives on RSP but RS's own typed surface omits it; we pass
 	// everything through via cast so the runtime gets what react-reflex needs.
 	const splitterProps = {

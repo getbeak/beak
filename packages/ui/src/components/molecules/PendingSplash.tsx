@@ -1,4 +1,3 @@
-import { Box, Flex, Grid } from '@chakra-ui/react';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import Kbd from '@beak/ui/components/atoms/Kbd';
 import { instance as windowSessionInstance } from '@beak/ui/contexts/window-session-context';
@@ -9,6 +8,7 @@ import type {
 	ShortcutDefinition,
 } from '@beak/ui/lib/keyboard-shortcuts/types';
 import { renderSimpleKey } from '@beak/ui/utils/keyboard-rendering';
+import { Box, Flex, Grid } from '@chakra-ui/react';
 import { motion, useReducedMotion } from 'framer-motion';
 import * as React from 'react';
 
@@ -42,58 +42,52 @@ const PendingSplash: React.FC = () => {
 				},
 			}}
 		>
-			<Flex
-				position='relative'
-				w='100%'
-				h='100%'
-				align='center'
-				justify='center'
-				direction='column'
-				gap='6'
-				px='6'
-			>
-				<MotionBox
-					initial={{ opacity: 0, y: 8, scale: 0.96 }}
-					animate={{ opacity: 1, y: 0, scale: 1 }}
-					transition={{ duration: 0.35, ease: 'easeOut' }}
-				>
+			<Flex position='relative' w='100%' h='100%' align='center' justify='center' direction='column' gap='10' px='6'>
+				<Flex direction='column' align='center' gap='3'>
 					<MotionBox
-						w='160px'
-						h='160px'
-						bgImage="url('images/logo-blank.png')"
-						bgRepeat='no-repeat'
-						bgPos='center'
-						bgSize='contain'
-						opacity={0.16}
-						css={{ 'html.light &': { opacity: 0.3 } }}
-						animate={
-							reduced
-								? undefined
-								: {
-										transform: [
-											'translate3d(0,0,0)',
-											'translate3d(0,-6px,0)',
-											'translate3d(0,0,0)',
-										],
-								  }
-						}
-						transition={{ duration: 6, ease: 'easeInOut', repeat: Infinity }}
-					/>
-				</MotionBox>
+						initial={{ opacity: 0, y: 8, scale: 0.96 }}
+						animate={{ opacity: 1, y: 0, scale: 1 }}
+						transition={{ duration: 0.35, ease: 'easeOut' }}
+					>
+						<MotionBox
+							w='140px'
+							h='140px'
+							bgImage="url('images/logo-blank.png')"
+							bgRepeat='no-repeat'
+							bgPos='center'
+							bgSize='contain'
+							opacity={0.14}
+							css={{ 'html.light &': { opacity: 0.24 } }}
+							animate={
+								reduced
+									? undefined
+									: {
+											transform: ['translate3d(0,0,0)', 'translate3d(0,-6px,0)', 'translate3d(0,0,0)'],
+										}
+							}
+							transition={{ duration: 6, ease: 'easeInOut', repeat: Infinity }}
+						/>
+					</MotionBox>
 
-				<Box textAlign='center' color='accent.pink' fontSize='10px' letterSpacing='0.08em' textTransform='uppercase' fontWeight='700'>
-					{'Make a request to see its details here'}
-				</Box>
+					<MotionBox
+						initial={{ opacity: 0, y: 4 }}
+						animate={{ opacity: 1, y: 0 }}
+						transition={{ duration: 0.4, ease: 'easeOut', delay: 0.08 }}
+						textAlign='center'
+						color='fg.muted'
+						fontSize='sm'
+					>
+						{'Make a request to see its details here'}
+					</MotionBox>
+				</Flex>
 
 				<MotionGrid
 					initial={{ opacity: 0, y: 8 }}
 					animate={{ opacity: 1, y: 0 }}
-					transition={{ duration: 0.4, ease: 'easeOut', delay: 0.12 }}
+					transition={{ duration: 0.4, ease: 'easeOut', delay: 0.16 }}
 					templateColumns='auto auto'
-					columnGap='4'
-					rowGap='2.5'
-					px='2'
-					py='1'
+					columnGap='5'
+					rowGap='2'
 				>
 					{TypedObject.keys(displayShortcuts).map(k => {
 						const name = displayShortcuts[k];
@@ -105,8 +99,8 @@ const PendingSplash: React.FC = () => {
 									{name}
 								</Flex>
 								<Box display='inline-flex' alignItems='center' gap='0.5'>
-									{Array.isArray(definition.key)
-										? definition.key.map((k2, i) => (
+									{Array.isArray(definition.key) ? (
+										definition.key.map((k2, i) => (
 											<React.Fragment key={k2}>
 												{i > 0 && (
 													<Box as='span' color='fg.subtle' mx='1'>
@@ -117,12 +111,12 @@ const PendingSplash: React.FC = () => {
 												<Kbd>{renderSimpleKey(k2)}</Kbd>
 											</React.Fragment>
 										))
-										: (
-											<React.Fragment>
-												<CommandKeys definition={definition} />
-												<Kbd>{renderSimpleKey(definition.key)}</Kbd>
-											</React.Fragment>
-										)}
+									) : (
+										<React.Fragment>
+											<CommandKeys definition={definition} />
+											<Kbd>{renderSimpleKey(definition.key)}</Kbd>
+										</React.Fragment>
+									)}
 								</Box>
 							</React.Fragment>
 						);

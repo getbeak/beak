@@ -1,5 +1,5 @@
-import { chakra } from '@chakra-ui/react';
 import { useIsKeyHeld } from '@beak/ui/contexts/keyboard-state-context';
+import { chakra } from '@chakra-ui/react';
 import * as React from 'react';
 
 const StyledKbd = chakra('kbd', {
@@ -34,8 +34,7 @@ const StyledKbd = chakra('kbd', {
 			color: 'var(--beak-colors-accent-pink)',
 			bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 18%, var(--beak-colors-bg-surface-alt))',
 			borderColor: 'color-mix(in srgb, var(--beak-colors-accent-pink) 45%, transparent)',
-			boxShadow:
-				'inset 0 1px 2px color-mix(in srgb, var(--beak-colors-gray-950) 22%, transparent)',
+			boxShadow: 'inset 0 1px 2px color-mix(in srgb, var(--beak-colors-gray-950) 22%, transparent)',
 		},
 	},
 });

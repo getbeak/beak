@@ -20,13 +20,7 @@ interface BeakTooltipProps {
  * react-tooltip styling and stay consistent with the rest of the design
  * system.
  */
-const BeakTooltip: React.FC<BeakTooltipProps> = ({
-	content,
-	openDelay = 200,
-	closeDelay = 0,
-	disabled,
-	children,
-}) => {
+const BeakTooltip: React.FC<BeakTooltipProps> = ({ content, openDelay = 200, closeDelay = 0, disabled, children }) => {
 	if (disabled || content === null || content === undefined || content === '') return children;
 
 	return (
