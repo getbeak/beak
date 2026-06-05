@@ -45,8 +45,12 @@ function defaultManifest(): ProjectExtensionsManifest {
  * yarn/npm install; without the guard they'd surface as `Failed`
  * extensions in the UI.
  */
+// biome-ignore lint/suspicious/noExplicitAny: Node's fs.promises.readFile has a
+// wider overload set than the shape we actually need; using `any` here keeps
+// the indirection without re-spelling all the overloads.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function readBeakPackageJsonRaw(
-	fs: { readFile: (p: string, enc?: string) => Promise<unknown> },
+	fs: { readFile: (p: string, enc?: any) => Promise<unknown> },
 	path: { join: (...parts: string[]) => string },
 	folder: string,
 ): Promise<{ version?: string } | null> {

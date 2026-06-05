@@ -680,7 +680,7 @@ export function findDuplicateNames(
 		const display = (wf.name ?? '').trim();
 		if (display === '') continue;
 		const key = display.toLowerCase();
-		const bucket = buckets.get(key) ?? { display, ids: [] };
+		const bucket = buckets.get(key) ?? { display, ids: [] as string[] };
 		bucket.ids.push(wf.id);
 		buckets.set(key, bucket);
 	}

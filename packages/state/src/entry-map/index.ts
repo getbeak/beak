@@ -103,5 +103,5 @@ export function isEntryValueEmpty(
 	if (entry.type === 'object' || entry.type === 'array') return false;
 	if (entry.type === 'boolean' || entry.type === 'null') return false;
 	// string / number / enum — value is a ValueSections; delegate to value-parts.
-	return isValuePartsEmpty((entry as { value: never }).value);
+	return isValuePartsEmpty((entry as unknown as { value: never }).value);
 }

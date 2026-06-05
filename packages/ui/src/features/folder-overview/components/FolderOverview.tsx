@@ -258,24 +258,29 @@ const FolderOverview: React.FC<FolderOverviewProps> = ({ folderId }) => {
 								{`DEFAULT ${verbToShortLabel(collection.defaults.verb)}`}
 							</Box>
 						)}
-						{collection.defaults?.baseUrl && collection.defaults.baseUrl.length > 0 && (
-							<Box
-								fontFamily='mono'
-								fontSize='11px'
-								color='fg.muted'
-								px='2'
-								py='0.5'
-								borderRadius='sm'
-								borderWidth='1px'
-								borderColor='border.subtle'
-								bg='bg.surface'
-								truncate
-								maxW='420px'
-								title={renderValueParts(collection.defaults.baseUrl)}
-							>
-								{renderValueParts(collection.defaults.baseUrl)}
-							</Box>
-						)}
+						{(() => {
+							const baseUrlParts = collection.defaults?.baseUrl as ReadonlyArray<unknown> | undefined;
+							if (!baseUrlParts || baseUrlParts.length === 0) return null;
+							const rendered = renderValueParts(baseUrlParts);
+							return (
+								<Box
+									fontFamily='mono'
+									fontSize='11px'
+									color='fg.muted'
+									px='2'
+									py='0.5'
+									borderRadius='sm'
+									borderWidth='1px'
+									borderColor='border.subtle'
+									bg='bg.surface'
+									truncate
+									maxW='420px'
+									title={rendered}
+								>
+									{rendered}
+								</Box>
+							);
+						})()}
 					</Flex>
 				)}
 

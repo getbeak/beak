@@ -39,12 +39,12 @@ describe('provenance/unlinkRequest', () => {
 	});
 
 	it('stamps openapi as default source when none exists', () => {
-		const result = unlinkRequest({});
+		const result: { _provenance?: { source: string; linked: boolean } } = unlinkRequest({});
 		expect(result._provenance).toEqual({ source: 'openapi', linked: false });
 	});
 
 	it('honours an explicit defaultSource for hand-authored unlinks', () => {
-		const result = unlinkRequest({}, 'grpc');
+		const result: { _provenance?: { source: string; linked: boolean } } = unlinkRequest({}, 'grpc');
 		expect(result._provenance).toEqual({ source: 'grpc', linked: false });
 	});
 
@@ -66,7 +66,8 @@ describe('provenance/stripProvenance', () => {
 	});
 
 	it('is a no-op on inputs without _provenance', () => {
-		const result = stripProvenance({ id: 'r-1' });
+		const input: { id: string; _provenance?: never } = { id: 'r-1' };
+		const result = stripProvenance(input);
 		expect(result).toEqual({ id: 'r-1' });
 	});
 });

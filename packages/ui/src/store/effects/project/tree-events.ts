@@ -1,17 +1,11 @@
 import ksuid from '@beak/ksuid';
-import {
-	attemptReconciliation,
-	insertFolderNode,
-	insertRequestNode,
-	removeNodeFromStoreByPath,
-} from '@beak/state/project';
+import { insertFolderNode, insertRequestNode, removeNodeFromStoreByPath } from '@beak/state/project';
 import { purgeRequestRefs } from '@beak/state/workflows';
-import { closeTab } from '@beak/ui/features/tabs/store/actions';
+import { attemptReconciliation, closeTab } from '@beak/ui/features/tabs/store/actions';
 import { readFolderNode } from '@beak/ui/lib/beak-project/folder';
 import { readRequestNode } from '@beak/ui/lib/beak-project/request';
-import type { TreeEvent } from '@beak/ui/lib/fs-emitter';
-import { consumeAddEvent, consumeRemoveEvent } from '@beak/ui/lib/fs-emitter';
 import { ipcDialogService, ipcEncryptionService, ipcFsService } from '@beak/ui/lib/ipc';
+import { consumeAddEvent, consumeRemoveEvent, type TreeEvent } from '@beak/ui/services/project';
 import type { Tree } from '@getbeak/types/nodes';
 import path from 'path-browserify';
 

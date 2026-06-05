@@ -1,5 +1,5 @@
 import { TypedObject } from '@beak/common/helpers/typescript';
-import ksuid from '@beak/ksuid';
+import ksuid, { type KsuidKind } from '@beak/ksuid';
 import type { ToggleKeyValue } from '@getbeak/types/request';
 import type { Context } from '@getbeak/types/values';
 
@@ -22,7 +22,7 @@ export async function convertKeyValueToString(context: Context, items: Record<st
 	return params.toString();
 }
 
-export function convertStringToKeyValue(str: string, resource: string) {
+export function convertStringToKeyValue(str: string, resource: KsuidKind) {
 	if (!queryStringRegex.test(str)) return {};
 
 	const params = new URLSearchParams(str);

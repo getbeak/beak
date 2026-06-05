@@ -1307,10 +1307,10 @@ describe('summariseHealth', () => {
 			nodeCount: 0,
 			edgeCount: 0,
 			reachable: new Set<string>(),
-			unreachable: [],
-			danglingEdges: [],
-			unlinkedRequestNodes: [],
-			cycleNodes: [],
+			unreachable: [] as string[],
+			danglingEdges: [] as string[],
+			unlinkedRequestNodes: [] as string[],
+			cycleNodes: [] as string[],
 		};
 	}
 

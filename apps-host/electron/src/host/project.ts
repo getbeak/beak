@@ -2,7 +2,7 @@ import path from 'node:path';
 import { createProjectMainWindow } from '@beak/apps-host-electron/window-management';
 import { app, type BrowserWindow, dialog, type MessageBoxOptions, type OpenDialogOptions } from 'electron';
 
-import getBeakHost from '..';
+import getBeakHost from '.';
 
 export async function tryOpenProjectFolder(projectPath: string, silent = false) {
 	let projectFilePath = projectPath;

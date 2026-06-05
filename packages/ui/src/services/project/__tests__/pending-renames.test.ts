@@ -23,7 +23,7 @@ function makeRequest(id: string, filePath: string): RequestNode {
 		name: filePath.slice(filePath.lastIndexOf('/') + 1),
 		id,
 		mode: 'failed',
-		error: { type: 'unknown_error' as never },
+		error: { code: 'unknown_error' } as never,
 	};
 }
 

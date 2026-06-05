@@ -7,7 +7,7 @@ import { BeakBase } from '../base';
 
 export interface OpenApiSyncInput {
 	collection: CollectionFile;
-	requests: Array<{ suggestedName: string; override: RequestFileOverride }>;
+	requests: Array<{ suggestedName: string; folder?: string; override: RequestFileOverride }>;
 	/**
 	 * Proposed Environments-style variable set. When all three of
 	 * `variableSet`, `folderName`, and `projectRoot` are provided, the writer

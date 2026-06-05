@@ -5,7 +5,7 @@ import Input from '@beak/ui/components/atoms/Input';
 import Label from '@beak/ui/components/atoms/Label';
 import Dialog, { DialogBody, DialogFooter, DialogHeader } from '@beak/ui/components/molecules/Dialog';
 import { ipcEncryptionService } from '@beak/ui/lib/ipc';
-import { Box, Flex } from '@chakra-ui/react';
+import { Box, chakra, Flex } from '@chakra-ui/react';
 import { KeyRound, Lock } from 'lucide-react';
 import * as React from 'react';
 import { useState } from 'react';
@@ -95,8 +95,7 @@ const FixProjectEncryption: React.FC<FixProjectEncryptionProps> = ({ onClose }) 
 					<Box mt='4' pt='3' borderTop='1px solid var(--beak-colors-border-subtle)'>
 						<Box as='p' fontSize='xs' color='fg.muted' lineHeight='1.55'>
 							{'Lost the key for good? You can '}
-							<Box
-								as='button'
+							<chakra.button
 								type='button'
 								onClick={() => setResetting(true)}
 								color='accent.alert'
@@ -111,7 +110,7 @@ const FixProjectEncryption: React.FC<FixProjectEncryptionProps> = ({ onClose }) 
 								}}
 							>
 								{'reset project encryption'}
-							</Box>
+							</chakra.button>
 							{'. This is destructive — every previously-encrypted value becomes unreadable.'}
 						</Box>
 					</Box>

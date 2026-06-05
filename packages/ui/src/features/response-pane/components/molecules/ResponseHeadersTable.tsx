@@ -172,7 +172,9 @@ const SetCookieHeader: React.FC<{ row: CookieRow }> = ({ row }) => {
 			<Flex gap='2' fontSize='12px' lineHeight='1.5' align='flex-start'>
 				<Box flex='0 0 30%' minW={0} color='accent.pink' fontWeight='700' fontFamily='mono'>
 					<Flex align='center' gap='1.5'>
-						<CookieIcon size={11} strokeWidth={2.2} flexShrink={0} />
+						<Box as='span' flexShrink={0} display='inline-flex'>
+							<CookieIcon size={11} strokeWidth={2.2} />
+						</Box>
 						<Box as='span' overflow='hidden' textOverflow='ellipsis' whiteSpace='nowrap' title={row.name}>
 							{row.name}
 						</Box>

@@ -45,7 +45,7 @@ const FileUploadView: React.FC<FileUploadViewProps> = ({ node }) => {
 			dispatch(requestBodyFileChanged({ requestId: node.id, fileReferenceId: void 0, contentType: void 0 }));
 			return;
 		}
-		setPreview(outcome.preview);
+		setPreview(outcome.preview ?? void 0);
 		dispatch(
 			requestBodyFileChanged({
 				requestId: node.id,

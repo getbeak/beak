@@ -1,5 +1,5 @@
 import type { EntryMap } from '@getbeak/types/body-editor-json';
-import type { RequestBody, RequestBodyType } from '@getbeak/types/request';
+import type { RequestBody, RequestBodyType, ToggleKeyValue } from '@getbeak/types/request';
 import type { Context } from '@getbeak/types/values';
 
 /**
@@ -26,7 +26,7 @@ import type { Context } from '@getbeak/types/values';
  */
 export interface BodyTransitionDeps {
 	convertToRealJson: (context: Context, payload: EntryMap) => Promise<unknown>;
-	convertKeyValueToString: (context: Context, payload: Record<string, unknown>) => Promise<string>;
+	convertKeyValueToString: (context: Context, payload: Record<string, ToggleKeyValue>) => Promise<string>;
 	/** Generate a fresh entry id for a synthesised JSON/GraphQL root entry. */
 	generateEntryId: () => string;
 	/**
@@ -37,7 +37,7 @@ export interface BodyTransitionDeps {
 	 */
 	textToEntryJson: (text: string) => EntryMap;
 	/** Parse `a=1&b=2` style text into the url-encoded-form payload. */
-	textToUrlEncodedForm: (text: string) => Record<string, unknown>;
+	textToUrlEncodedForm: (text: string) => Record<string, ToggleKeyValue>;
 }
 
 export interface TransitionOptions {

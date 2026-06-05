@@ -1,4 +1,4 @@
-import type { GrpcMessageDescriptor, GrpcServiceDescriptor } from '@beak/common/ipc/grpc';
+import type { GrpcEnumDescriptor, GrpcMessageDescriptor, GrpcServiceDescriptor } from '@beak/common/ipc/grpc';
 import type { CollectionFile, GrpcDescriptor } from '@beak/state/schemas';
 import { collectionFileSchema } from '@beak/state/schemas';
 
@@ -22,7 +22,7 @@ export interface ResolveGrpcContextDeps {
 	readDescriptorSidecar: (folderPath: string) => Promise<{
 		services: GrpcServiceDescriptor[];
 		messages?: Record<string, GrpcMessageDescriptor>;
-		enums?: Record<string, unknown>;
+		enums?: Record<string, GrpcEnumDescriptor>;
 	} | null>;
 	/** Build the absolute path of a sibling file in a folder. */
 	joinPath: (folderPath: string, filename: string) => string;
@@ -41,7 +41,7 @@ export type ResolveGrpcContextResult =
 			descriptor: GrpcDescriptor;
 			services: GrpcServiceDescriptor[];
 			messagesByName: Record<string, GrpcMessageDescriptor>;
-			enumsByName: Record<string, unknown>;
+			enumsByName: Record<string, GrpcEnumDescriptor>;
 			requestMessageName: string | null;
 	  }
 	| { kind: 'error'; reason: 'collection-invalid'; collectionPath: string }
