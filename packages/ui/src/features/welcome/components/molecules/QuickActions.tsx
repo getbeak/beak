@@ -1,19 +1,20 @@
 import ksuid from '@beak/ksuid';
 import { materialiseInMemoryProject } from '@beak/state/project';
 import { Box, Flex, SimpleGrid } from '@chakra-ui/react';
-import { FilePlus2, FolderOpen, GitBranch, Hash, ImportIcon, Network } from 'lucide-react';
+import { FilePlus2, FolderOpen, GitBranch } from 'lucide-react';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
 
 import { useMenuActionDispatcher } from '../../../../hooks/use-application-menu-event-listener';
 import { ipcProjectService } from '../../../../lib/ipc';
-import { actions as endpointsUiActions } from '../../../endpoints/store';
-import type { EndpointKind } from '../../../endpoints/types';
 import { sidebarPreferenceSetSelected } from '../../../../store/preferences/actions';
 import { useAppSelector } from '../../../../store/redux';
+import { actions as sourceSchemasUiActions } from '../../../source-schemas/store';
+import type { SourceSchemaKind } from '../../../source-schemas/types';
 import { fsaSupported, pickAndPersistLocalFolder } from '../../lib/pick-local-folder';
 
 import ActionCard from './ActionCard';
+import SchemaSourceCard from './SchemaSourceCard';
 
 interface QuickActionsProps {
 	embedded: boolean;
@@ -30,10 +31,10 @@ const QuickActions: React.FC<QuickActionsProps> = ({ embedded, cloneEnabled, onC
 
 	// Welcome → schema-source tile path: promote the empty workbench to an
 	// in-memory scratch project, switch the sidebar to Schema sources, and
-	// post a "open the dialog for this kind" intent for EndpointsPane to
+	// post a "open the dialog for this kind" intent for SourceSchemasPane to
 	// pick up on mount. Same flow regardless of which of the three tiles
 	// the user clicked — the kind picks the dialog variant.
-	function startWithSource(kind: EndpointKind) {
+	function startWithSource(kind: SourceSchemaKind) {
 		if (projectMode === 'none') {
 			dispatch(
 				materialiseInMemoryProject({
@@ -43,7 +44,7 @@ const QuickActions: React.FC<QuickActionsProps> = ({ embedded, cloneEnabled, onC
 			);
 		}
 		dispatch(sidebarPreferenceSetSelected('schemas'));
-		dispatch(endpointsUiActions.requestSchemaSourceDialog(kind));
+		dispatch(sourceSchemasUiActions.requestSchemaSourceDialog(kind));
 	}
 
 	return (
@@ -103,30 +104,7 @@ const QuickActions: React.FC<QuickActionsProps> = ({ embedded, cloneEnabled, onC
 					disabledReason='Git integration is in flight — clone will land in the next update.'
 					onClick={onCloneRequested}
 				/>
-				<ActionCard
-					idx={3}
-					icon={ImportIcon}
-					tone='orange'
-					title='Import OpenAPI'
-					body='Pick a spec — Beak creates a project and seeds every operation as a request.'
-					onClick={() => startWithSource('openapi')}
-				/>
-				<ActionCard
-					idx={4}
-					icon={Hash}
-					tone='indigo'
-					title='Connect GraphQL'
-					body='Point Beak at a GraphQL endpoint — it introspects and folders up the schema as requests.'
-					onClick={() => startWithSource('graphql')}
-				/>
-				<ActionCard
-					idx={5}
-					icon={Network}
-					tone='teal'
-					title='Connect gRPC'
-					body='Reflect (or upload a .proto) and Beak materialises every method as a request.'
-					onClick={() => startWithSource('grpc')}
-				/>
+				<SchemaSourceCard idx={3} onPick={startWithSource} />
 			</SimpleGrid>
 		</Box>
 	);
