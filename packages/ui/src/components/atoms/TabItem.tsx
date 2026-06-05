@@ -18,6 +18,7 @@ export interface TabItemProps<T = string> extends Omit<React.HTMLProps<HTMLDivEl
 	size?: 'sm' | 'md';
 	variant?: TabItemVariant;
 	leading?: React.ReactNode;
+	preview?: boolean;
 	subItems?: TabSubItem<T>[];
 	onSubItemChanged?: (subItem: T) => void;
 	onClose?: (event: React.MouseEvent) => void;
@@ -32,6 +33,7 @@ const TabItem = <T = string>(props: React.PropsWithChildren<TabItemProps<T>>): R
 		leading,
 		onClose,
 		onSubItemChanged,
+		preview,
 		size,
 		subItems,
 		variant = 'underline',
@@ -64,7 +66,7 @@ const TabItem = <T = string>(props: React.PropsWithChildren<TabItemProps<T>>): R
 			gap='1.5'
 			color={active ? 'fg.default' : 'fg.muted'}
 			fontSize={isCard ? 'sm' : sm ? 'sm' : 'md'}
-			fontWeight={active ? '600' : '500'}
+			fontWeight='500'
 			letterSpacing={isCard ? '-0.005em' : undefined}
 			px={isCard ? '2.5' : sm ? '2' : '2.5'}
 			py={isCard ? '1.5' : sm ? '1' : '1.5'}
@@ -87,19 +89,21 @@ const TabItem = <T = string>(props: React.PropsWithChildren<TabItemProps<T>>): R
 			borderBottomStyle={isCard ? undefined : 'solid'}
 			borderBottomColor={isCard ? undefined : 'border.default'}
 			bg={isCard && active ? 'bg.surface' : 'transparent'}
-			boxShadow={isCard && active ? '0 -2px 6px color-mix(in srgb, var(--beak-colors-gray-900) 6%, transparent)' : undefined}
+			boxShadow={
+				isCard && active ? '0 -2px 6px color-mix(in srgb, var(--beak-colors-gray-900) 6%, transparent)' : undefined
+			}
 			cursor='pointer'
 			whiteSpace='nowrap'
-			transition='color .12s ease, background-color .12s ease, font-weight .12s ease'
+			transition='color .12s ease, background-color .12s ease'
 			_hover={
 				active
 					? undefined
 					: {
-						color: 'fg.default',
-						bg: isCard
-							? 'color-mix(in srgb, var(--beak-colors-bg-surface) 55%, transparent)'
-							: 'color-mix(in srgb, var(--beak-colors-bg-surface) 50%, transparent)',
-					}
+							color: 'fg.default',
+							bg: isCard
+								? 'color-mix(in srgb, var(--beak-colors-bg-surface) 55%, transparent)'
+								: 'color-mix(in srgb, var(--beak-colors-bg-surface) 50%, transparent)',
+						}
 			}
 			_focusVisible={{
 				outline: 'none',
@@ -132,7 +136,9 @@ const TabItem = <T = string>(props: React.PropsWithChildren<TabItemProps<T>>): R
 					{leading}
 				</Box>
 			)}
-			<Box as='span' position='relative'>{children}</Box>
+			<Box as='span' position='relative' fontStyle={preview ? 'italic' : undefined}>
+				{children}
+			</Box>
 			{subItems && subItems.length > 0 && (
 				<TabItemSubItemsDropdown<T>
 					activeSubItem={activeSubItem!}

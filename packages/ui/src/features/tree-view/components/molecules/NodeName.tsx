@@ -1,4 +1,5 @@
 import { verbToColor } from '@beak/design-system/helpers';
+import { provenance } from '@beak/state';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { Box } from '@chakra-ui/react';
 import type { ValidRequestNode } from '@getbeak/types/nodes';
@@ -47,7 +48,7 @@ const NodeName: React.FC<React.PropsWithChildren<NodeNameProps>> = props => {
 	const requestNode = useAppSelector(s => (isRequest ? (s.global.project.tree[node.id] as ValidRequestNode) : null));
 	const nonReq = nonRequestIcon(node, Boolean(collapsed));
 	const verb = requestNode?.info?.verb;
-	const isLinked = requestNode?.info?._provenance?.linked === true;
+	const isLinked = provenance.isLinked(requestNode?.info);
 	const Icon = isLinked ? Link2 : ArrowUpRight;
 
 	return (

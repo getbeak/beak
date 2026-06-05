@@ -5,8 +5,9 @@ export interface TabBarProps extends Omit<FlexProps, 'justify'> {
 	$centered?: boolean;
 }
 
-const TabBar: React.FC<TabBarProps> = ({ $centered, children, ...rest }) => (
+const TabBar = React.forwardRef<HTMLDivElement, TabBarProps>(({ $centered, children, ...rest }, ref) => (
 	<Flex
+		ref={ref}
 		role='tablist'
 		direction='row'
 		align='flex-end'
@@ -22,6 +23,8 @@ const TabBar: React.FC<TabBarProps> = ({ $centered, children, ...rest }) => (
 	>
 		{children}
 	</Flex>
-);
+));
+
+TabBar.displayName = 'TabBar';
 
 export default TabBar;

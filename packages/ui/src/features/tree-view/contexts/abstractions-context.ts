@@ -20,6 +20,12 @@ export interface TreeCommands {
 	expandDescendantsOf: (nodeId: string) => void;
 	/** Collapse `nodeId` and every descendant folder under it. */
 	collapseDescendantsOf: (nodeId: string) => void;
+	/**
+	 * Current multi-selection (Zag tree machine's `selectedValue`). Used by
+	 * context-menu actions that should apply to every selected node when the
+	 * right-clicked node is part of the selection — e.g. bulk delete.
+	 */
+	getSelection: () => string[];
 }
 
 interface Context {

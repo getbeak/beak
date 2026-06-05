@@ -40,9 +40,8 @@ const AlertBanner: React.FC<AlertBannerProps> = ({ requestId }) => {
 	const Icon = preset.icon;
 	const accent = preset.accentVar;
 	const firstAlert = scoped[0];
-	const summary = scoped.length === 1 && firstAlert
-		? singleAlertSummary(firstAlert)
-		: `${scoped.length} problems on this request`;
+	const summary =
+		scoped.length === 1 && firstAlert ? singleAlertSummary(firstAlert) : `${scoped.length} problems on this request`;
 
 	return (
 		<Box

@@ -65,6 +65,9 @@ const TreeView: React.FC<React.PropsWithChildren<TreeViewProps>> = props => {
 
 	const visibleNodes = useMemo(() => treeApi.getVisibleNodes(), [treeApi]);
 
+	const treeApiRef = useRef(treeApi);
+	treeApiRef.current = treeApi;
+
 	const commands = useMemo<TreeCommands>(
 		() => ({
 			expandAll: () => treeApi.expand(),
@@ -84,6 +87,11 @@ const TreeView: React.FC<React.PropsWithChildren<TreeViewProps>> = props => {
 				const branches = new Set([nodeId, ...collection.getBranchValues(node)]);
 				treeApi.setExpandedValue(treeApi.expandedValue.filter(id => !branches.has(id)));
 			},
+			// Resolve through a ref each call — `treeApi` reads we capture at
+			// memo time go stale the moment the user clicks a new row. The ref
+			// trampoline keeps the lazy commands object stable across renders
+			// while still returning a current snapshot of the selection.
+			getSelection: () => treeApiRef.current.selectedValue ?? [],
 		}),
 		[treeApi, collection],
 	);

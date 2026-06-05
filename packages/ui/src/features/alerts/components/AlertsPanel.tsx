@@ -248,7 +248,7 @@ const AlertRow: React.FC<AlertRowProps> = ({ entry }) => {
 		if (scope.kind === 'request') {
 			const node = tree[scope.requestId];
 			if (node && node.type === 'request') {
-				dispatch(changeTab({ type: 'request', payload: scope.requestId, temporary: false }));
+				dispatch(changeTab({ type: 'request', payload: scope.requestId, temporary: true }));
 				closeAlertsPanel();
 			}
 		}

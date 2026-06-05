@@ -1,5 +1,5 @@
-import { Box } from '@chakra-ui/react';
 import BeakTooltip from '@beak/ui/components/atoms/BeakTooltip';
+import { Box } from '@chakra-ui/react';
 import * as React from 'react';
 import { useContext, useEffect, useRef, useState } from 'react';
 import validFilename from 'valid-filename';
@@ -59,12 +59,7 @@ const NodeRenamer: React.FC<NodeRenamerProps> = ({ node }) => {
 	if (!renaming) {
 		return (
 			<BeakTooltip content={node.name} disabled={!canShowTooltip}>
-				<Box
-					ref={wrappedTextRef}
-					overflow='hidden'
-					whiteSpace='nowrap'
-					textOverflow='ellipsis'
-				>
+				<Box ref={wrappedTextRef} overflow='hidden' whiteSpace='nowrap' textOverflow='ellipsis'>
 					{node.name}
 				</Box>
 			</BeakTooltip>
