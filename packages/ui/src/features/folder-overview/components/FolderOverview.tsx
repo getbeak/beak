@@ -1,5 +1,6 @@
-import type { CollectionFile, CollectionSource } from '@beak/state/schemas';
 import { verbToColor, verbToShortLabel } from '@beak/design-system/helpers';
+import { projectTree } from '@beak/state';
+import type { CollectionFile, CollectionSource } from '@beak/state/schemas';
 import { loadCollectionAtFolder } from '@beak/ui/lib/beak-project/collection';
 import { actions as projectActions } from '@beak/ui/store/project';
 import { useAppSelector } from '@beak/ui/store/redux';
@@ -29,7 +30,10 @@ const FolderOverview: React.FC<FolderOverviewProps> = ({ folderId }) => {
 	const breadcrumb = useMemo(() => buildBreadcrumb(folderId, tree), [folderId, tree]);
 	const { folders, requests } = useMemo(() => groupChildren(folderId, tree), [folderId, tree]);
 	const childWorkflows = useMemo(
-		() => Object.values(workflows).filter(w => w.parent === folderId).sort((a, b) => a.name.localeCompare(b.name)),
+		() =>
+			Object.values(workflows)
+				.filter(w => w.parent === folderId)
+				.sort((a, b) => a.name.localeCompare(b.name)),
 		[workflows, folderId],
 	);
 
@@ -281,8 +285,18 @@ const FolderOverview: React.FC<FolderOverviewProps> = ({ folderId }) => {
 
 				<Flex gap='2' mb='8' wrap='wrap'>
 					<QuickAction icon={<Plus size={13} strokeWidth={2.2} />} label='New request' onClick={newRequest} accent='pink' />
-					<QuickAction icon={<FolderPlus size={13} strokeWidth={2.2} />} label='New folder' onClick={newFolder} accent='indigo' />
-					<QuickAction icon={<WorkflowIcon size={13} strokeWidth={2.2} />} label='New workflow' onClick={newWorkflow} accent='teal' />
+					<QuickAction
+						icon={<FolderPlus size={13} strokeWidth={2.2} />}
+						label='New folder'
+						onClick={newFolder}
+						accent='indigo'
+					/>
+					<QuickAction
+						icon={<WorkflowIcon size={13} strokeWidth={2.2} />}
+						label='New workflow'
+						onClick={newWorkflow}
+						accent='teal'
+					/>
 				</Flex>
 
 				{totalChildren === 0 && (
@@ -487,11 +501,12 @@ const SOURCE_ACCENT: Record<CollectionSource['type'], 'indigo' | 'pink' | 'teal'
 const SourceBadge: React.FC<{ source: CollectionSource }> = ({ source }) => {
 	const accent = SOURCE_ACCENT[source.type];
 	const label = SOURCE_LABEL[source.type];
-	const detail = source.type === 'graphql' || source.type === 'grpc'
-		? source.endpoint
-		: source.type === 'openapi'
-			? source.specUrl ?? source.specPath
-			: undefined;
+	const detail =
+		source.type === 'graphql' || source.type === 'grpc'
+			? source.endpoint
+			: source.type === 'openapi'
+				? (source.specUrl ?? source.specPath)
+				: undefined;
 
 	return (
 		<Flex
@@ -544,15 +559,15 @@ function summaryText(folders: number, requests: number, workflows: number): stri
 }
 
 function buildBreadcrumb(folderId: string, tree: Record<string, Nodes>): Array<{ id: string; name: string }> {
+	const self = tree[folderId];
+	const ancestors = projectTree.getParentChain(tree, folderId);
+	// `getParentChain` walks parent-first; the breadcrumb wants root-first.
 	const chain: Array<{ id: string; name: string }> = [];
-	let cursor: string | null = folderId;
-	let safety = 64;
-	while (cursor && cursor !== 'root' && safety-- > 0) {
-		const n = tree[cursor];
-		if (!n) break;
-		chain.unshift({ id: n.id, name: n.name });
-		cursor = n.parent;
+	for (let i = ancestors.length - 1; i >= 0; i--) {
+		const a = ancestors[i]!;
+		chain.push({ id: a.id, name: a.name });
 	}
+	if (self) chain.push({ id: self.id, name: self.name });
 	chain.unshift({ id: 'root', name: 'Project' });
 	return chain;
 }
@@ -561,15 +576,14 @@ function groupChildren(
 	folderId: string,
 	tree: Record<string, Nodes>,
 ): { folders: FolderNode[]; requests: RequestNode[] } {
-	const folders: FolderNode[] = [];
-	const requests: RequestNode[] = [];
-	for (const n of Object.values(tree)) {
-		if (n.parent !== folderId) continue;
-		if (n.type === 'folder') folders.push(n);
-		else if (n.type === 'request') requests.push(n);
-	}
-	folders.sort((a, b) => a.name.localeCompare(b.name));
-	requests.sort((a, b) => a.name.localeCompare(b.name));
+	const folders = projectTree
+		.findChildren(tree, folderId, 'folder')
+		.slice()
+		.sort((a, b) => a.name.localeCompare(b.name));
+	const requests = projectTree
+		.findChildren(tree, folderId, 'request')
+		.slice()
+		.sort((a, b) => a.name.localeCompare(b.name));
 	return { folders, requests };
 }
 
