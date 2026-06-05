@@ -38,11 +38,7 @@ function emptyCollection(): CollectionFile {
 	};
 }
 
-function reqGet(
-	id: string,
-	url: string,
-	extra: Partial<RequestFile> = {},
-): RequestFile {
+function reqGet(id: string, url: string, extra: Partial<RequestFile> = {}): RequestFile {
 	return {
 		id,
 		verb: 'get',

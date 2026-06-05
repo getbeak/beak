@@ -728,7 +728,8 @@ function bodyForOperation(
 	const fromRequest = pickJsonContent(operation.requestBody, doc);
 	if (fromRequest) return materialiseBody(fromRequest.schema, fromRequest.mediaType, doc, warnings);
 
-	const fromResponse = pickJsonContent(operation.responses?.['200'], doc) ?? pickJsonContent(operation.responses?.['204'], doc);
+	const fromResponse =
+		pickJsonContent(operation.responses?.['200'], doc) ?? pickJsonContent(operation.responses?.['204'], doc);
 	if (fromResponse) return materialiseBody(fromResponse.schema, fromResponse.mediaType, doc, warnings);
 
 	// No JSON schema anywhere — but a non-JSON content might still carry an
@@ -765,9 +766,7 @@ function pickJsonContent(
 	return { schema, mediaType: jsonType };
 }
 
-function pickTextContent(
-	holder: OpenApiOperation['requestBody'] | undefined,
-): string | null {
+function pickTextContent(holder: OpenApiOperation['requestBody'] | undefined): string | null {
 	if (!holder || '$ref' in holder) return null;
 	const content = holder.content ?? {};
 	const mediaTypes = Object.keys(content);
@@ -801,7 +800,9 @@ function materialiseBody(
 }
 
 function isReference(value: unknown): value is OpenApiReference {
-	return typeof value === 'object' && value !== null && '$ref' in value && typeof (value as OpenApiReference).$ref === 'string';
+	return (
+		typeof value === 'object' && value !== null && '$ref' in value && typeof (value as OpenApiReference).$ref === 'string'
+	);
 }
 
 function derefRequestBodyOrResponse(

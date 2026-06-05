@@ -131,7 +131,12 @@ describe('openapiToCollection', () => {
 		const result = openapiToCollection(spec, { now: FIXED_NOW, makeId: STABLE_ID });
 		const createThing = result.requests.find(r => r.override.operationId === 'createThing')!;
 		expect(createThing.override.body?.type).toBe('json');
-		const payload = (createThing.override.body as { type: 'json'; payload: Record<string, { type: string; name?: string; required?: boolean; description?: string }> }).payload;
+		const payload = (
+			createThing.override.body as {
+				type: 'json';
+				payload: Record<string, { type: string; name?: string; required?: boolean; description?: string }>;
+			}
+		).payload;
 		const named = Object.values(payload).filter(e => 'name' in e && e.name !== undefined);
 		const root = Object.values(payload).find(e => e.type === 'object' && !('name' in e && e.name));
 		expect(root).toBeDefined();
@@ -176,7 +181,9 @@ describe('openapiToCollection', () => {
 		const result = openapiToCollection(spec, { now: FIXED_NOW, makeId: STABLE_ID });
 		const listWidgets = result.requests.find(r => r.override.operationId === 'listWidgets')!;
 		expect(listWidgets.override.body?.type).toBe('json');
-		const payload = (listWidgets.override.body as { type: 'json'; payload: Record<string, { type: string; name?: string }> }).payload;
+		const payload = (
+			listWidgets.override.body as { type: 'json'; payload: Record<string, { type: string; name?: string }> }
+		).payload;
 		const widgets = Object.values(payload).find(e => 'name' in e && e.name === 'widgets');
 		expect(widgets).toBeDefined();
 		expect(widgets!.type).toBe('array');
@@ -212,7 +219,12 @@ describe('openapiToCollection', () => {
 		const result = openapiToCollection(spec, { now: FIXED_NOW, makeId: STABLE_ID });
 		const createWidget = result.requests.find(r => r.override.operationId === 'createWidget')!;
 		expect(createWidget.override.body?.type).toBe('json');
-		const payload = (createWidget.override.body as { type: 'json'; payload: Record<string, { type: string; name?: string; options?: unknown[] }> }).payload;
+		const payload = (
+			createWidget.override.body as {
+				type: 'json';
+				payload: Record<string, { type: string; name?: string; options?: unknown[] }>;
+			}
+		).payload;
 		const colour = Object.values(payload).find(e => 'name' in e && e.name === 'colour');
 		expect(colour).toBeDefined();
 		expect(colour!.type).toBe('enum');

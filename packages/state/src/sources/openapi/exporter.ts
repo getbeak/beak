@@ -116,11 +116,7 @@ function isHttpMethod(verb: string): boolean {
  * `type` name as a `{placeholder}` so the export at least surfaces where the
  * dynamic chunks lived — better than silently dropping them.
  */
-function stringifyUrl(
-	parts: unknown,
-	warnings: string[],
-	operationId: string | undefined,
-): string | null {
+function stringifyUrl(parts: unknown, warnings: string[], operationId: string | undefined): string | null {
 	if (!Array.isArray(parts)) return null;
 	const out: string[] = [];
 	for (const part of parts) {
@@ -130,9 +126,7 @@ function stringifyUrl(
 		}
 		if (part && typeof part === 'object' && 'type' in part) {
 			const t = String((part as { type: unknown }).type);
-			warnings.push(
-				`${operationId ?? 'request'}: URL contains a non-literal value-part (${t}) — emitted as placeholder.`,
-			);
+			warnings.push(`${operationId ?? 'request'}: URL contains a non-literal value-part (${t}) — emitted as placeholder.`);
 			out.push(`{${t}}`);
 		}
 	}
@@ -201,11 +195,7 @@ interface ScalarLike {
 	constraints?: PropertyConstraints;
 }
 
-function scalarEntryToParameter(
-	name: string,
-	entry: unknown,
-	location: 'query' | 'header',
-): OpenApiParameter {
+function scalarEntryToParameter(name: string, entry: unknown, location: 'query' | 'header'): OpenApiParameter {
 	const e = (entry ?? {}) as ScalarLike;
 	const schema = entryToSchema(e);
 	const param: OpenApiParameter = { name, in: location };
@@ -335,7 +325,9 @@ function resolveServers(
 			(part as { type: string }).type === 'variable_set_item'
 		) {
 			if (!variableSet) {
-				warnings.push('Collection baseUrl references a variable-set item but no variable set was supplied — servers will be empty.');
+				warnings.push(
+					'Collection baseUrl references a variable-set item but no variable set was supplied — servers will be empty.',
+				);
 				return [];
 			}
 			const itemId = (part as { payload?: { itemId?: string } }).payload?.itemId;
@@ -358,11 +350,7 @@ function resolveServers(
 	return [];
 }
 
-function resolveServersFromVariableSet(
-	itemId: string,
-	set: VariableSet,
-	warnings: string[],
-): OpenApiServer[] {
+function resolveServersFromVariableSet(itemId: string, set: VariableSet, warnings: string[]): OpenApiServer[] {
 	const itemName = set.items[itemId];
 	if (itemName === undefined) {
 		warnings.push(`Variable set has no item with id '${itemId}' — servers will be empty.`);

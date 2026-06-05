@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
-
-import { mergeCollectionDefaults } from '../../../schemas/collection-merge';
 import type { RequestFile } from '../../../schemas/beak-project';
+import { mergeCollectionDefaults } from '../../../schemas/collection-merge';
 import { openapiToCollection } from '../converter';
 import { collectionToOpenapi } from '../exporter';
 import type { OpenApiDocument } from '../types';
@@ -57,7 +56,9 @@ describe('OpenAPI round-trip: import → export → import', () => {
 	it('preserves parameters + their constraints across a full round-trip', () => {
 		const first = openapiToCollection(spec(), { now: FIXED_NOW, makeId: STABLE_ID });
 		// Materialise concrete request files so we can pass them to the exporter.
-		const requests: RequestFile[] = first.requests.map(r => mergeCollectionDefaults(first.collection.defaults, r.override));
+		const requests: RequestFile[] = first.requests.map(r =>
+			mergeCollectionDefaults(first.collection.defaults, r.override),
+		);
 
 		const exported = collectionToOpenapi(first.collection, requests).document;
 		const reimported = openapiToCollection(exported, { now: FIXED_NOW, makeId: STABLE_ID });
@@ -103,7 +104,9 @@ describe('OpenAPI round-trip: import → export → import', () => {
 
 	it('preserves the path parameter id + format across the round trip', () => {
 		const first = openapiToCollection(spec(), { now: FIXED_NOW, makeId: STABLE_ID });
-		const requests: RequestFile[] = first.requests.map(r => mergeCollectionDefaults(first.collection.defaults, r.override));
+		const requests: RequestFile[] = first.requests.map(r =>
+			mergeCollectionDefaults(first.collection.defaults, r.override),
+		);
 		const exported = collectionToOpenapi(first.collection, requests).document;
 		const reimported = openapiToCollection(exported, { now: FIXED_NOW, makeId: STABLE_ID });
 
