@@ -21,6 +21,7 @@ import {
 	firstIssueNode,
 	firstUnlinkedRequest,
 	flightFromNode,
+	formatRelativeTime,
 	groupWorkflowsByParent,
 	inspectGraph,
 	linkedRequestIds,
@@ -1804,6 +1805,41 @@ describe('searchWorkflows', () => {
 	it('falls back to "Untitled workflow" when name is blank', () => {
 		const blank: Record<string, WorkflowFile> = { 'wf-x': wf('wf-x', '   ') };
 		expect(searchWorkflows(blank, '').map(r => r.name)).toEqual(['Untitled workflow']);
+	});
+});
+
+describe('formatRelativeTime', () => {
+	const now = 1_700_000_000_000;
+
+	it('returns "just now" for differences under a minute', () => {
+		expect(formatRelativeTime(now - 5_000, now)).toBe('just now');
+		expect(formatRelativeTime(now - 59_000, now)).toBe('just now');
+	});
+
+	it('returns minutes between 1m and 59m', () => {
+		expect(formatRelativeTime(now - 60_000, now)).toBe('1m ago');
+		expect(formatRelativeTime(now - 5 * 60_000, now)).toBe('5m ago');
+	});
+
+	it('returns hours between 1h and 23h', () => {
+		expect(formatRelativeTime(now - 3 * 3_600_000, now)).toBe('3h ago');
+		expect(formatRelativeTime(now - 23 * 3_600_000, now)).toBe('23h ago');
+	});
+
+	it('returns days for 1d to 29d', () => {
+		expect(formatRelativeTime(now - 2 * 86_400_000, now)).toBe('2d ago');
+	});
+
+	it('returns months between 1mo and 11mo', () => {
+		expect(formatRelativeTime(now - 60 * 86_400_000, now)).toBe('2mo ago');
+	});
+
+	it('returns years past 12 months', () => {
+		expect(formatRelativeTime(now - 400 * 86_400_000, now)).toBe('1y ago');
+	});
+
+	it('clamps negatives to "just now" — never lies about the future', () => {
+		expect(formatRelativeTime(now + 1000, now)).toBe('just now');
 	});
 });
 
