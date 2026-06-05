@@ -1,11 +1,9 @@
 import { promises as fs } from 'node:fs';
 import { mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
-import nodePath from 'node:path';
-
-import { openapiToCollection } from '@beak/state/sources/openapi';
+import nodePath, { join } from 'node:path';
 import type { OpenApiDocument } from '@beak/state/sources/openapi';
+import { openapiToCollection } from '@beak/state/sources/openapi';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import AssetStore from '../assets';

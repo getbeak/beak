@@ -111,11 +111,14 @@ const SHA_C = 'cafe1111111111111111111111111111111111111111111111111111111111ff'
 describe('collectShas', () => {
 	it('finds shas nested deep inside a request file', () => {
 		const into = new Set<string>();
-		collectShas({
-			id: 'r1',
-			body: { type: 'file', payload: { assetRef: { sha256: SHA_A, size: 4 } } },
-			headers: { Auth: { name: 'Auth', value: [{ type: 'asset', payload: { sha256: SHA_B } }] } },
-		}, into);
+		collectShas(
+			{
+				id: 'r1',
+				body: { type: 'file', payload: { assetRef: { sha256: SHA_A, size: 4 } } },
+				headers: { Auth: { name: 'Auth', value: [{ type: 'asset', payload: { sha256: SHA_B } }] } },
+			},
+			into,
+		);
 		expect(into).toEqual(new Set([SHA_A, SHA_B]));
 	});
 
@@ -146,10 +149,7 @@ describe('AssetGc.findReferencedShas', () => {
 	});
 
 	it('walks tree/ recursively and harvests every sha mentioned', async () => {
-		fs.writeFileSync(
-			`${PROJECT}/tree/_collection.json`,
-			JSON.stringify({ source: { type: 'manual' } }),
-		);
+		fs.writeFileSync(`${PROJECT}/tree/_collection.json`, JSON.stringify({ source: { type: 'manual' } }));
 		fs.writeFileSync(
 			`${PROJECT}/tree/users/list.json`,
 			JSON.stringify({ id: 'r1', body: { type: 'file', payload: { assetRef: { sha256: SHA_A, size: 1 } } } }),
@@ -165,10 +165,7 @@ describe('AssetGc.findReferencedShas', () => {
 
 	it('skips unreadable JSON without crashing', async () => {
 		fs.writeFileSync(`${PROJECT}/tree/broken.json`, '{ this is not valid json');
-		fs.writeFileSync(
-			`${PROJECT}/tree/ok.json`,
-			JSON.stringify({ ref: { sha256: SHA_A } }),
-		);
+		fs.writeFileSync(`${PROJECT}/tree/ok.json`, JSON.stringify({ ref: { sha256: SHA_A } }));
 		const gc = new AssetGc(providers);
 		expect(await gc.findReferencedShas(PROJECT)).toEqual(new Set([SHA_A]));
 	});
@@ -208,10 +205,7 @@ describe('AssetGc.findOrphans + delete', () => {
 
 	it('reports stored shas that nothing under tree/ references', async () => {
 		fs.writeFileSync(`${PROJECT}/tree/_collection.json`, JSON.stringify({ source: { type: 'manual' } }));
-		fs.writeFileSync(
-			`${PROJECT}/tree/keeper.json`,
-			JSON.stringify({ ref: { sha256: SHA_A, size: 1 } }),
-		);
+		fs.writeFileSync(`${PROJECT}/tree/keeper.json`, JSON.stringify({ ref: { sha256: SHA_A, size: 1 } }));
 		fs.writeFileSync(`${PROJECT}/_assets/${SHA_A.slice(0, 2)}/${SHA_A}`, 'keeper');
 		fs.writeFileSync(`${PROJECT}/_assets/${SHA_B.slice(0, 2)}/${SHA_B}`, 'orphan-b');
 		fs.writeFileSync(`${PROJECT}/_assets/${SHA_C.slice(0, 2)}/${SHA_C}`, 'orphan-c');

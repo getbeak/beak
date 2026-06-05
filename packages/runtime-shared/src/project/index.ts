@@ -1,5 +1,5 @@
-import ksuid from '@beak/ksuid';
 import type { RecentProjectSource } from '@beak/common/types/beak-hub';
+import ksuid from '@beak/ksuid';
 import type { RequestNodeFile } from '@getbeak/types/nodes';
 import type { ProjectFile } from '@getbeak/types/project';
 import type { VariableSet } from '@getbeak/types/variable-sets';
@@ -114,8 +114,7 @@ export default class BeakProject extends BeakBase {
 			},
 		};
 
-		if (await fileExists(this, projectFolderPath))
-			throw new Error('Project folder already exists');
+		if (await fileExists(this, projectFolderPath)) throw new Error('Project folder already exists');
 
 		// Create project folder
 		await this.p.node.fs.promises.mkdir(projectFolderPath, { recursive: true });
@@ -134,9 +133,7 @@ export default class BeakProject extends BeakBase {
 		);
 
 		// Create variable sets structure
-		await this.p.node.fs.promises.mkdir(
-			this.p.node.path.join(projectFolderPath, 'variable-sets'),
-		);
+		await this.p.node.fs.promises.mkdir(this.p.node.path.join(projectFolderPath, 'variable-sets'));
 		await this.p.node.fs.promises.writeFile(
 			this.p.node.path.join(projectFolderPath, 'variable-sets', 'Environment.json'),
 			JSON.stringify(variableSet, null, '\t'),
@@ -144,9 +141,7 @@ export default class BeakProject extends BeakBase {
 		);
 
 		// Create extensions structure
-		await this.p.node.fs.promises.mkdir(
-			this.p.node.path.join(projectFolderPath, 'extensions'),
-		);
+		await this.p.node.fs.promises.mkdir(this.p.node.path.join(projectFolderPath, 'extensions'));
 		await this.p.node.fs.promises.writeFile(
 			this.p.node.path.join(projectFolderPath, 'extensions', 'package.json'),
 			JSON.stringify(this.beakExtensions.createPackageJsonContent(name), null, '\t'),
@@ -164,9 +159,7 @@ export default class BeakProject extends BeakBase {
 			this.createGitIgnore(),
 			'utf8',
 		);
-		await this.p.node.fs.promises.mkdir(
-			this.p.node.path.join(projectFolderPath, '.beak'),
-		);
+		await this.p.node.fs.promises.mkdir(this.p.node.path.join(projectFolderPath, '.beak'));
 
 		// Create project root files
 		await this.p.node.fs.promises.writeFile(
@@ -196,8 +189,7 @@ export default class BeakProject extends BeakBase {
 		const options: ReadProjectFileOptions = { ...opts };
 		const projectFilePath = this.p.node.path.join(projectFolderPath, 'project.json');
 
-		if (!await fileExists(this, projectFilePath))
-			return null;
+		if (!(await fileExists(this, projectFilePath))) return null;
 
 		const projectFileJson = await this.p.node.fs.promises.readFile(projectFilePath, 'utf8');
 		let projectFile: ProjectFile;
@@ -209,8 +201,7 @@ export default class BeakProject extends BeakBase {
 			return null;
 		}
 
-		if (options.runMigrations)
-			await this.beakMigrations.runMigrations(projectFile, projectFolderPath);
+		if (options.runMigrations) await this.beakMigrations.runMigrations(projectFile, projectFolderPath);
 
 		return projectFile;
 	}
@@ -258,11 +249,7 @@ export default class BeakProject extends BeakBase {
 			version: '0.5.0',
 		};
 
-		await this.p.node.fs.promises.writeFile(
-			projectFilePath,
-			JSON.stringify(profileFile, null, '\t'),
-			'utf8',
-		);
+		await this.p.node.fs.promises.writeFile(projectFilePath, JSON.stringify(profileFile, null, '\t'), 'utf8');
 
 		return [profileFile, projectFilePath];
 	}
@@ -315,7 +302,7 @@ export default class BeakProject extends BeakBase {
 		});
 	}
 
-	private async* listFilesRecursive(dir: string): AsyncGenerator<string> {
+	private async *listFilesRecursive(dir: string): AsyncGenerator<string> {
 		const dirents = await this.p.node.fs.promises.readdir(dir, { encoding: 'utf8', withFileTypes: true });
 
 		for (const dirent of dirents) {
@@ -324,13 +311,10 @@ export default class BeakProject extends BeakBase {
 
 			const stat = await this.p.node.fs.promises.stat(resolvedPath);
 
-			if (direntPath === '.git')
-				continue;
+			if (direntPath === '.git') continue;
 
-			if (stat.isDirectory())
-				yield* this.listFilesRecursive(resolvedPath);
-			else
-				yield resolvedPath;
+			if (stat.isDirectory()) yield* this.listFilesRecursive(resolvedPath);
+			else yield resolvedPath;
 		}
 	}
 }

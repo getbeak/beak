@@ -1,8 +1,7 @@
 import path from 'node:path';
 import { beforeEach, describe, expect, it } from 'vitest';
-
-import AssetStore from '..';
 import type { Providers } from '../../base';
+import AssetStore from '..';
 
 // A tiny in-memory fs that satisfies the parts of node:fs we use here:
 // promises.{mkdir, writeFile, readFile, stat, rm}. Behavior is intentionally
@@ -135,8 +134,6 @@ describe('AssetStore.read / exists / delete', () => {
 
 	it('delete() is forgiving — missing assets do not throw', async () => {
 		const store = new AssetStore(providers);
-		await expect(
-			store.delete(PROJECT, { sha256: '0'.repeat(64), size: 0 }),
-		).resolves.toBeUndefined();
+		await expect(store.delete(PROJECT, { sha256: '0'.repeat(64), size: 0 })).resolves.toBeUndefined();
 	});
 });

@@ -1,5 +1,5 @@
-import { BeakBase, type Providers } from '../../base';
 import type { ProjectFile } from '@getbeak/types/project';
+import { BeakBase, type Providers } from '../../base';
 
 import type BeakExtensions from '../extensions';
 import BeakSilentMigrations from './silent';

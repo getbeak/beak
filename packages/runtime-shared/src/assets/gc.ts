@@ -83,10 +83,7 @@ export default class AssetGc extends BeakBase {
 		return removed;
 	}
 
-	private async walkJsonRecursive(
-		folderPath: string,
-		visit: (value: unknown) => Promise<void>,
-	): Promise<void> {
+	private async walkJsonRecursive(folderPath: string, visit: (value: unknown) => Promise<void>): Promise<void> {
 		const entries = await this.readdirWithTypes(folderPath);
 		for (const entry of entries) {
 			const full = this.p.node.path.join(folderPath, entry.name);
@@ -122,7 +119,9 @@ export default class AssetGc extends BeakBase {
 		}
 	}
 
-	private async readdirWithTypes(folderPath: string): Promise<Array<{ name: string; isDirectory: () => boolean; isFile: () => boolean }>> {
+	private async readdirWithTypes(
+		folderPath: string,
+	): Promise<Array<{ name: string; isDirectory: () => boolean; isFile: () => boolean }>> {
 		try {
 			// biome-ignore lint/suspicious/noExplicitAny: providers.node.fs surface is wide
 			return (await this.p.node.fs.promises.readdir(folderPath, { withFileTypes: true })) as any;

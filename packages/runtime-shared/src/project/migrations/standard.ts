@@ -1,11 +1,11 @@
 import type { ProjectEncryption } from '@beak/common/types/beak-project';
+import type { ProjectFile } from '@getbeak/types/project';
 import { BeakBase, type Providers } from '../../base';
 import { fileExists } from '../../utils/fs';
-import type { ProjectFile } from '@getbeak/types/project';
 
 import type BeakExtensions from '../extensions';
 
-type MigrationHandler = (projectFile: ProjectFile, projectFolderPath: string) => Promise<void>
+type MigrationHandler = (projectFile: ProjectFile, projectFolderPath: string) => Promise<void>;
 
 interface SupersecretFile {
 	encryption: {
@@ -38,8 +38,7 @@ export default class BeakStandardMigrations extends BeakBase {
 		const migrationIndex = migrations.indexOf(projectFile.version);
 
 		// Check if we even need to do a migration
-		if (migrationIndex === -1)
-			return;
+		if (migrationIndex === -1) return;
 
 		for (let i = migrationIndex; i < migrations.length; i++) {
 			const migrationKey = migrations[i];
@@ -71,7 +70,7 @@ export default class BeakStandardMigrations extends BeakBase {
 		const supersecretFilePath = this.p.node.path.join(projectFolderPath, '.beak', 'supersecret.json');
 
 		// Only try and migrate if supersecret exists...
-		if (!await fileExists(this, supersecretFilePath)) return;
+		if (!(await fileExists(this, supersecretFilePath))) return;
 
 		try {
 			const ssfContent = await this.p.node.fs.promises.readFile(supersecretFilePath, 'utf8');
@@ -109,8 +108,7 @@ export default class BeakStandardMigrations extends BeakBase {
 
 		let hasExtensions = true;
 
-		if (!await fileExists(this, extensionsPath))
-			hasExtensions = true;
+		if (!(await fileExists(this, extensionsPath))) hasExtensions = true;
 
 		// Only try and migrate if extensions don't exist... May be left over from beta testers
 		if (!hasExtensions) {
@@ -154,9 +152,24 @@ export default class BeakStandardMigrations extends BeakBase {
 	 */
 	private async handle_0_3_0_to_0_4_0(projectFile: ProjectFile, projectFolderPath: string): Promise<void> {
 		// Edit hidden files
-		await this.replaceStringInBeakFile(projectFolderPath, '.beak/editor.json', 'selectedVariableGroups', 'selectedVariableSets');
-		await this.replaceStringInBeakFile(projectFolderPath, '.beak/tab-state.json', '{"type":"variable_group_editor"', '"type":"variable_set_editor"');
-		await this.replaceStringInBeakFile(projectFolderPath, '.beak/sidebar.json', 'beak.project.variable-groups', 'beak.project.variable-sets');
+		await this.replaceStringInBeakFile(
+			projectFolderPath,
+			'.beak/editor.json',
+			'selectedVariableGroups',
+			'selectedVariableSets',
+		);
+		await this.replaceStringInBeakFile(
+			projectFolderPath,
+			'.beak/tab-state.json',
+			'{"type":"variable_group_editor"',
+			'"type":"variable_set_editor"',
+		);
+		await this.replaceStringInBeakFile(
+			projectFolderPath,
+			'.beak/sidebar.json',
+			'beak.project.variable-groups',
+			'beak.project.variable-sets',
+		);
 
 		// Rename folders
 		if (await fileExists(this, this.p.node.path.join(projectFolderPath, '.beak', 'realtime-values'))) {
@@ -179,32 +192,31 @@ export default class BeakStandardMigrations extends BeakBase {
 			{ withFileTypes: true },
 		);
 
-		await Promise.all(variableSetFilePaths.map(async file => {
-			if (!file.isFile() || !file.name.endsWith('.json'))
-				return;
+		await Promise.all(
+			variableSetFilePaths.map(async file => {
+				if (!file.isFile() || !file.name.endsWith('.json')) return;
 
-			await this.replaceStringInFile(
-				this.p.node.path.join(file.parentPath, file.name),
-				'"groups"', '"sets"',
-			);
-		}));
-
-		// Edit requests
-		const requestFilePaths = await this.p.node.fs.promises.readdir(
-			this.p.node.path.join(projectFolderPath, 'tree'),
-			{ withFileTypes: true, recursive: true },
+				await this.replaceStringInFile(this.p.node.path.join(file.parentPath, file.name), '"groups"', '"sets"');
+			}),
 		);
 
-		await Promise.all(requestFilePaths.map(async file => {
-			if (!file.isFile() || !file.name.endsWith('.json'))
-				return;
+		// Edit requests
+		const requestFilePaths = await this.p.node.fs.promises.readdir(this.p.node.path.join(projectFolderPath, 'tree'), {
+			withFileTypes: true,
+			recursive: true,
+		});
 
-			await this.replaceStringInFile(
-				this.p.node.path.join(file.parentPath, file.name),
-				'"type": "variable_group_item"',
-				'"type": "variable_set_item"',
-			);
-		}));
+		await Promise.all(
+			requestFilePaths.map(async file => {
+				if (!file.isFile() || !file.name.endsWith('.json')) return;
+
+				await this.replaceStringInFile(
+					this.p.node.path.join(file.parentPath, file.name),
+					'"type": "variable_group_item"',
+					'"type": "variable_set_item"',
+				);
+			}),
+		);
 
 		await this.changeProjectFileVersion(projectFile, projectFolderPath, '0.4.0');
 	}
@@ -238,13 +250,11 @@ export default class BeakStandardMigrations extends BeakBase {
 	private async writeCollectionFilesRecursively(folderPath: string): Promise<void> {
 		const collectionFilePath = this.p.node.path.join(folderPath, '_collection.json');
 
-		if (!await fileExists(this, collectionFilePath)) {
+		if (!(await fileExists(this, collectionFilePath))) {
 			const collectionFile = { source: { type: 'manual' } };
-			await this.p.node.fs.promises.writeFile(
-				collectionFilePath,
-				JSON.stringify(collectionFile, null, '\t'),
-				{ encoding: 'utf8' },
-			);
+			await this.p.node.fs.promises.writeFile(collectionFilePath, JSON.stringify(collectionFile, null, '\t'), {
+				encoding: 'utf8',
+			});
 		}
 
 		const entries = await this.p.node.fs.promises.readdir(folderPath, { withFileTypes: true });
@@ -254,23 +264,16 @@ export default class BeakStandardMigrations extends BeakBase {
 		}
 	}
 
-	private async replaceStringInBeakFile(
-		projectFolderPath: string,
-		filePath: string,
-		search: string,
-		replace: string,
-	) {
+	private async replaceStringInBeakFile(projectFolderPath: string, filePath: string, search: string, replace: string) {
 		const fullFilePath = this.p.node.path.join(projectFolderPath, filePath);
 
-		if (!await fileExists(this, fullFilePath))
-			return;
+		if (!(await fileExists(this, fullFilePath))) return;
 
 		await this.replaceStringInFile(fullFilePath, search, replace);
 	}
 
 	private async replaceStringInFile(filePath: string, search: string, replace: string) {
-		if (!await fileExists(this, filePath))
-			return;
+		if (!(await fileExists(this, filePath))) return;
 
 		const fileContent = await this.p.node.fs.promises.readFile(filePath, 'utf8');
 		const updatedFile = fileContent.replace(new RegExp(search, 'g'), replace);
@@ -278,11 +281,7 @@ export default class BeakStandardMigrations extends BeakBase {
 		await this.p.node.fs.promises.writeFile(filePath, updatedFile, 'utf8');
 	}
 
-	private async changeProjectFileVersion(
-		projectFile: ProjectFile,
-		projectFolderPath: string,
-		newVersion: string,
-	) {
+	private async changeProjectFileVersion(projectFile: ProjectFile, projectFolderPath: string, newVersion: string) {
 		// Mutate the caller's reference so readProjectFile's return value
 		// reflects the post-migration state. The previous local re-bind did
 		// nothing for the caller.
