@@ -1,11 +1,7 @@
 import { completeFlight, flightFailure, hydrateFlightHistories } from '@beak/state/flight';
 import { applyHistoryRules, compressEntry, persistedToRuntimeHistory } from '@beak/state/flight/history-rules';
 import { projectOpened } from '@beak/state/project';
-import {
-	emptyFlightHistoryFile,
-	flightHistoryFileSchema,
-	type PersistedFlightEntry,
-} from '@beak/state/schemas';
+import { emptyFlightHistoryFile, flightHistoryFileSchema, type PersistedFlightEntry } from '@beak/state/schemas';
 import binaryStore from '@beak/ui/lib/binary-store';
 import { ipcFsService } from '@beak/ui/lib/ipc';
 import type { ApplicationState } from '@beak/ui/store';
@@ -72,9 +68,8 @@ function buildPersistedHistory(
 				? binaryStore.get(`${entry.binaryStoreKey}-req`)
 				: undefined
 			: undefined;
-		const responseBytes = entry.binaryStoreKey && binaryStore.exists(entry.binaryStoreKey)
-			? binaryStore.get(entry.binaryStoreKey)
-			: undefined;
+		const responseBytes =
+			entry.binaryStoreKey && binaryStore.exists(entry.binaryStoreKey) ? binaryStore.get(entry.binaryStoreKey) : undefined;
 		entries.push(compressEntry(entry, { request: requestBytes, response: responseBytes }));
 	}
 	return {
@@ -140,9 +135,7 @@ export function registerFlightHistoryEffects(start: AppStartListening) {
 				if ((error as { code?: string })?.code !== 'ENOENT') {
 					console.warn('flight-history hydrate failed', error);
 				}
-				api.dispatch(
-					hydrateFlightHistories({ histories: emptyFlightHistoryFile().histories as never }),
-				);
+				api.dispatch(hydrateFlightHistories({ histories: emptyFlightHistoryFile().histories as never }));
 			}
 		},
 	});

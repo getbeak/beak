@@ -3,8 +3,8 @@ import {
 	type Extension,
 	type ExtensionsState,
 	type FailedExtension,
-	type LoadedExtension,
 	initialExtensionsState,
+	type LoadedExtension,
 } from '@beak/state/extensions';
 
 export type State = ExtensionsState;

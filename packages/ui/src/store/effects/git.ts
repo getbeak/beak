@@ -1,8 +1,8 @@
 import {
-	type GitFileStatus,
-	type GitOperation,
 	addBranch,
 	changeSelectedBranch,
+	type GitFileStatus,
+	type GitOperation,
 	gitOpened,
 	operationFailed,
 	operationStarted,

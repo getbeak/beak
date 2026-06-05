@@ -253,10 +253,7 @@ function extractCookiesFromResponse(response: { url: string; headers: Record<str
  * to honour, say, a `cookieDomainOverrides` config knows where to
  * look.
  */
-function pickOwningJar(
-	state: ApplicationState,
-	_cookieDomain: string,
-): { variableSet: string; itemId: string } | null {
+function pickOwningJar(state: ApplicationState, _cookieDomain: string): { variableSet: string; itemId: string } | null {
 	const projectCookies = state.global.project.cookies;
 	const selections = state.global.preferences.editor.selectedVariableSets ?? {};
 	const variableSets = state.global.variableSets.variableSets ?? {};

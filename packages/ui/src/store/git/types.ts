@@ -7,8 +7,8 @@ import {
 	type GitOperationState,
 	type GitState,
 	type GitStatusSummary,
-	type RemoteEntry,
 	initialGitState,
+	type RemoteEntry,
 } from '@beak/state/git';
 
 export type State = GitState;

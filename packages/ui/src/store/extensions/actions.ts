@@ -2,8 +2,8 @@
 import {
 	checkExtensionUpdates,
 	extensionRemoved,
-	extensionUpsert,
 	extensionsLoaded,
+	extensionUpsert,
 	installExtension,
 	operationChanged,
 	reloadExtensions,
@@ -18,8 +18,8 @@ import {
 export {
 	checkExtensionUpdates,
 	extensionRemoved,
-	extensionUpsert,
 	extensionsLoaded,
+	extensionUpsert,
 	installExtension,
 	operationChanged,
 	reloadExtensions,

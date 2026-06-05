@@ -11,9 +11,9 @@ import {
 	splitRequestIntoSchemaAndValues,
 	toggleScalarEnabled,
 } from '@beak/state/request-values';
-import { projectValuesFileSchema, type ProjectRequestValues } from '@beak/state/schemas';
-import type { ApplicationState } from '@beak/ui/store';
+import { type ProjectRequestValues, projectValuesFileSchema } from '@beak/state/schemas';
 import { ipcValuesService } from '@beak/ui/lib/ipc';
+import type { ApplicationState } from '@beak/ui/store';
 import type { Tree, ValidRequestNode } from '@getbeak/types/nodes';
 
 import type { AppStartListening } from '../listener';
