@@ -1,4 +1,4 @@
-import { load as yamlLoad, YAMLException } from 'js-yaml';
+import { YAMLException, load as yamlLoad } from 'js-yaml';
 
 /**
  * Parse a user-supplied OpenAPI spec source (the raw text of a `.json` or
@@ -10,9 +10,7 @@ import { load as yamlLoad, YAMLException } from 'js-yaml';
  * function; no IO. The structural shape isn't validated — that's the
  * converter's job (`openapiToCollection`).
  */
-export type ParseSpecResult =
-	| { ok: true; spec: unknown }
-	| { ok: false; error: string };
+export type ParseSpecResult = { ok: true; spec: unknown } | { ok: false; error: string };
 
 export function parseSpecSource(source: string, filename?: string): ParseSpecResult {
 	const trimmed = source.trim();
@@ -41,9 +39,7 @@ export function parseSpecSource(source: string, filename?: string): ParseSpecRes
 		if (parsed === null || typeof parsed !== 'object' || Array.isArray(parsed)) {
 			return {
 				ok: false,
-				error: extYaml
-					? 'YAML spec did not parse to an object.'
-					: 'Spec did not parse to a JSON or YAML object.',
+				error: extYaml ? 'YAML spec did not parse to an object.' : 'Spec did not parse to a JSON or YAML object.',
 			};
 		}
 		return { ok: true, spec: parsed };

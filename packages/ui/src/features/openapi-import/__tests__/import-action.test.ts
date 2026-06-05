@@ -63,7 +63,7 @@ describe('importOpenApi', () => {
 		expect(syncFromSpec).toHaveBeenCalledTimes(1);
 	});
 
-	it("rejects non-OpenAPI-3 specs before hitting IPC", async () => {
+	it('rejects non-OpenAPI-3 specs before hitting IPC', async () => {
 		const r = await importOpenApi({
 			source: JSON.stringify({ swagger: '2.0', info: { title: 'x' } }),
 			targetFolder: 'tree/pets',

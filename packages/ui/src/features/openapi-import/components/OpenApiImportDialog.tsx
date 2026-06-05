@@ -126,13 +126,7 @@ const OpenApiImportDialog: React.FC = () => {
 							<DialogBody>
 								<Flex direction='column' gap='3'>
 									<Flex direction='column' gap='1'>
-										<Box
-											fontSize='10px'
-											fontWeight='700'
-											textTransform='uppercase'
-											letterSpacing='0.06em'
-											color='fg.subtle'
-										>
+										<Box fontSize='10px' fontWeight='700' textTransform='uppercase' letterSpacing='0.06em' color='fg.subtle'>
 											{'Target folder'}
 										</Box>
 										<Input
@@ -193,13 +187,7 @@ const OpenApiImportDialog: React.FC = () => {
 
 									{folders.length > 0 && (
 										<Flex direction='column' gap='1'>
-											<Box
-												fontSize='10px'
-												fontWeight='700'
-												textTransform='uppercase'
-												letterSpacing='0.06em'
-												color='fg.subtle'
-											>
+											<Box fontSize='10px' fontWeight='700' textTransform='uppercase' letterSpacing='0.06em' color='fg.subtle'>
 												{'Existing folders'}
 											</Box>
 											<Box

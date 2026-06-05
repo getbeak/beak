@@ -21,9 +21,7 @@ export interface State {
 	phase: Phase;
 	targetFolder: string;
 	file?: FilePicked;
-	result?:
-		| { ok: true; outcome: SyncFromSpecRes; notice?: string }
-		| { ok: false; error: string };
+	result?: { ok: true; outcome: SyncFromSpecRes; notice?: string } | { ok: false; error: string };
 }
 
 export const initialState: State = {

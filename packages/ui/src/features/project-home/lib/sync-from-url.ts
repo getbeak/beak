@@ -9,11 +9,11 @@ export interface SyncFromUrlArgs {
 	url: string;
 	autoSync?: boolean;
 	intervalMinutes?: number;
+	/** Mirror the URL hierarchy in the tree (`/api/agents/{id}` → `api/agents/`). */
+	groupByPath?: boolean;
 }
 
-export type SyncFromUrlOutcome =
-	| { ok: true; result: SyncFromSpecRes }
-	| { ok: false; error: string };
+export type SyncFromUrlOutcome = { ok: true; result: SyncFromSpecRes } | { ok: false; error: string };
 
 /**
  * Pull an OpenAPI spec from a URL and write the converted collection into
@@ -40,9 +40,7 @@ export async function syncFromUrl(args: SyncFromUrlArgs): Promise<SyncFromUrlOut
 	}
 
 	if (!response.ok) {
-		const reason = response.status === 0
-			? response.body || 'fetch failed before completion'
-			: `HTTP ${response.status}`;
+		const reason = response.status === 0 ? response.body || 'fetch failed before completion' : `HTTP ${response.status}`;
 		return { ok: false, error: `Failed to download spec (${reason})` };
 	}
 
@@ -61,6 +59,7 @@ export async function syncFromUrl(args: SyncFromUrlArgs): Promise<SyncFromUrlOut
 			specUrl: args.url,
 			autoSync: args.autoSync,
 			intervalMinutes: args.intervalMinutes,
+			...(args.groupByPath ? { groupByPath: true } : {}),
 		});
 		return { ok: true, result };
 	} catch (err) {
