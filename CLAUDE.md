@@ -231,43 +231,61 @@ The root `tsconfig.json` defines `@beak/*` and `@getbeak/*` aliases pointing at 
 
 `docs/release-checklist.md` is the source of truth. In short: bump `apps-host/electron/package.json`, update the release-notes link in `apps-host/electron/src/updater.ts`, commit, tag `beak-app@x.x.x`, push, watch the `beak-host.yml` workflow for signing.
 
-## TypeScript code intelligence (tslsp MCP)
+## TypeScript code intelligence (tslsp)
 
-In any TypeScript or JavaScript project that has a `tsconfig.json`, the
-`tslsp` MCP is type-aware and MUST be used instead of the built-in text
-tools for the operations below. The built-in tools see strings; tslsp
-sees the program.
+In any TS/JS project with a `tsconfig.json`, the `tslsp` tools are type-aware
+and MUST be used instead of the built-in text tools for the operations below.
+Text tools see strings; tslsp sees the program.
 
-| Task                          | DO use                | DO NOT use      |
-| ----------------------------- | --------------------- | --------------- |
-| Find every usage of a symbol  | `tslsp:references`    | `Grep`, `Glob`  |
-| Search for a symbol by name   | `tslsp:find_symbol`   | `Grep`          |
-| Jump to a definition          | `tslsp:definition`    | `Grep` + `Read` |
-| Rename a symbol               | `tslsp:rename`        | `Edit`, `MultiEdit`, find-and-replace |
-| Get a symbol's type / JSDoc   | `tslsp:hover`         | `Read` |
-| Outline a file before diving  | `tslsp:outline`       | `Read` on the whole file |
-| Type errors after an edit     | `tslsp:diagnostics`   | `Bash` running `tsc` ad-hoc |
+Names below are the MCP shape (`tslsp:foo`). With the CLI, replace `tslsp:foo`
+with `tslsp foo` — same arguments, same output.
+
+| Task                            | DO use                   | DO NOT use                              |
+| ------------------------------- | ------------------------ | --------------------------------------- |
+| Find every usage of a symbol    | `tslsp:references`       | `Grep`, `Glob`                          |
+| Search for a symbol by name     | `tslsp:find_symbol`      | `Grep`                                  |
+| Jump to a definition            | `tslsp:definition`       | `Grep` + `Read`                         |
+| Jump to a value's *type*        | `tslsp:type_definition`  | `Grep` + `Read`                         |
+| Find concrete implementations   | `tslsp:implementation`   | `Grep`                                  |
+| Rename a symbol                 | `tslsp:rename`           | `Edit`, `MultiEdit`, find-and-replace   |
+| Rename/move a file or folder    | `tslsp:rename_file`      | `mv` / `git mv` (won't update imports)  |
+| Type / JSDoc for a symbol       | `tslsp:hover`            | `Read`                                  |
+| Outline a file before reading   | `tslsp:outline`          | `Read` on the whole file                |
+| Type errors after an edit       | `tslsp:diagnostics`      | `Bash` running `tsc` ad-hoc             |
+| Trace callers / callees         | `tslsp:call_hierarchy`   | repeated `references` calls             |
+| Organize imports / quick-fix    | `tslsp:code_action`      | manual edit                             |
 
 Hard rules:
 
 1. NEVER rename a TypeScript identifier with `Edit` or `MultiEdit`. Use
-   `tslsp:rename`. Pass `dry_run: true` first when the symbol has many
-   call sites; review the preview, then apply.
-2. NEVER `Grep` for a symbol name to find usages or definitions. Use
+   `tslsp:rename`. Pass `dry_run: true` first when the symbol has many call
+   sites; review the preview, then apply. This applies to every identifier —
+   slice keys (`features.fooUi`), property names, enum members, the lot. If
+   you find yourself string-editing a symbol "just for a couple of files"
+   you have already failed the rule. For bulk renames (e.g. renaming a whole
+   feature), enumerate symbols via `tslsp:outline` on each file in the folder
+   first, then call `tslsp:rename` once per symbol — cheaper in tokens than
+   grep+Read+Edit and safer (no false positives in comments / strings /
+   unrelated identifiers).
+2. NEVER `mv` or `git mv` a TypeScript file or folder. Use `tslsp:rename_file`
+   — it walks every import that references the file and rewrites them. After
+   the move you can still use `tslsp:rename` for any identifier inside.
+3. NEVER `Grep` for a symbol name to find usages or definitions. Use
    `tslsp:references` or `tslsp:definition`. Grep matches strings in
-   comments, in unrelated identifiers, in `.md` files - it lies.
-3. Before reading a large file, call `tslsp:outline` first and use the
-   line numbers to `Read` only the slices you need. Do not page through
-   100s of lines hunting for a function.
-4. After non-trivial edits to a TS file, call `tslsp:diagnostics` on it
-   to confirm it still type-checks before claiming the change is done.
+   comments, in unrelated identifiers, in `.md` files — it lies.
+4. Before reading a large file, call `tslsp:outline` first and use the line
+   numbers to `Read` only the slices you need.
+5. After non-trivial edits to a TS file, call `tslsp:diagnostics` on it to
+   confirm it still type-checks before claiming the change is done.
 
-Locator ergonomics: every position-taking tool accepts
-`{ symbol: "name" }` (workspace search), `{ file, line, symbol }` (line
-scan), or full `{ file, line, character }`. Use the cheapest form you
-have. Ambiguous name-only queries return the candidate list; pick by
-file or line and re-call.
+Locator ergonomics: every position-taking tool accepts `{ symbol: "name" }`
+(workspace search), `{ file, line, symbol }` (line scan), or full
+`{ file, line, character }`. Use the cheapest form you have. Ambiguous
+name-only queries return the candidate list; pick by file or line and re-call.
 
-Fall back to the built-in text tools ONLY for: string literals,
-comments, non-TS files (Markdown, YAML, configs), or projects without a
-`tsconfig.json`.
+Batch: most read-only tools accept `symbols: ["a","b","c"]` (or `files: [...]`).
+tslsp fans the requests out in parallel and labels each block with
+`=== name ===`. One call beats N round-trips.
+
+Fall back to the built-in text tools only for: string literals, comments,
+non-TS files (Markdown, YAML, configs), or projects without a `tsconfig.json`.
