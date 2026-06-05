@@ -26,8 +26,9 @@ import {
 	ipcNotificationService,
 	ipcPreferencesService,
 } from '@beak/ui/lib/ipc';
+import { convertRequestToUrl } from '@beak/ui/services/url';
+import { makeVariableContext } from '@beak/ui/services/variables/context';
 import { requestAllowsBody } from '@beak/ui/utils/http';
-import { convertRequestToUrl } from '@beak/ui/utils/uri';
 import type { RequestNode, ValidRequestNode } from '@getbeak/types/nodes';
 import type { ResponseOverview } from '@getbeak/types/response';
 import type { Context } from '@getbeak/types/values';
@@ -113,13 +114,7 @@ export function registerFlightEffects(start: AppStartListening) {
 			// overwrite the first; both progress independently and both record history entries.
 
 			const state = api.getState();
-			const context: Context = {
-				selectedSets: state.global.preferences.editor.selectedVariableSets,
-				variableSets: state.global.variableSets.variableSets,
-				flightHistory: state.global.flight.flightHistories,
-				projectTree: state.global.project.tree,
-				currentRequestId: requestId,
-			};
+			const context: Context = makeVariableContext(state, requestId);
 
 			// Overlay the values slice onto the legacy tree so flight prep sees
 			// any value-mode edits that bypassed the tree reducers. Today the

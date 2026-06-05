@@ -250,11 +250,7 @@ describe('prepareRequest', () => {
 			},
 		});
 		const errSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-		const result = await prepareRequest(
-			overview,
-			makeContext(),
-			makeDeps({ readAsset: vi.fn(async () => null) }),
-		);
+		const result = await prepareRequest(overview, makeContext(), makeDeps({ readAsset: vi.fn(async () => null) }));
 		expect(result.body).toEqual({ type: 'text', payload: '' });
 		errSpy.mockRestore();
 	});

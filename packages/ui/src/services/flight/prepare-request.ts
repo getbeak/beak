@@ -3,6 +3,8 @@ import type { FlightRequest, FlightRequestKeyValue } from '@beak/state/flight';
 import type { RequestBodyFile, RequestBodyText, RequestOverview, ToggleKeyValue } from '@getbeak/types/request';
 import type { Context, ValueSections } from '@getbeak/types/values';
 
+import { resolveAssetBytes } from '../assets/resolve';
+
 /**
  * Side-effecting helpers that prepareRequest needs in order to resolve
  * realtime-value parts, build the final URL, transform body payloads, and
@@ -138,35 +140,28 @@ async function flattenBody(
 		case 'url_encoded_form':
 			return { type: 'text', payload: await deps.convertKeyValueToString(context, body.payload) };
 		case 'file': {
-			try {
-				// Prefer the new content-addressed asset pointer when present;
-				// fall back to the legacy fileReferenceId for projects that
-				// haven't been migrated. If neither is set, send an empty body.
-				if (body.payload.assetRef && deps.readAsset) {
-					const assetResponse = await deps.readAsset(body.payload.assetRef);
-					if (!assetResponse) {
+			const noopAsset = async () => null;
+			const result = await resolveAssetBytes(body.payload, {
+				readAsset: deps.readAsset ?? noopAsset,
+				readReferencedFile: deps.readReferencedFile,
+			});
+			switch (result.kind) {
+				case 'asset':
+				case 'file':
+					return {
+						type: 'file',
+						payload: { ...body.payload, __hacky__binaryFileData: result.bytes },
+					};
+				case 'missing':
+					if (result.reason === 'asset-not-found' && body.payload.assetRef) {
 						console.error('asset missing from project store', body.payload.assetRef.sha256);
-						return { type: 'text', payload: '' };
 					}
-					return {
-						type: 'file',
-						payload: { ...body.payload, __hacky__binaryFileData: assetResponse.body },
-					};
-				}
-
-				if (body.payload.fileReferenceId) {
-					const response = await deps.readReferencedFile(body.payload.fileReferenceId);
-					return {
-						type: 'file',
-						payload: { ...body.payload, __hacky__binaryFileData: response.body },
-					};
-				}
-
-				return { type: 'text', payload: '' };
-			} catch (error) {
-				console.error('unable to read reference file', error);
-				return { type: 'text', payload: '' };
+					return { type: 'text', payload: '' };
+				case 'error':
+					console.error('unable to read reference file', result.error);
+					return { type: 'text', payload: '' };
 			}
+			return { type: 'text', payload: '' };
 		}
 		case 'graphql': {
 			const variables = await deps.convertToRealJson(context, body.payload.variables);
