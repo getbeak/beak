@@ -20,6 +20,8 @@ export const ActionTypes = {
 	REQUEST_HEADER_UPDATED: '@beak/global/project/REQUEST_HEADER_UPDATED',
 	REQUEST_HEADER_REMOVED: '@beak/global/project/REQUEST_HEADER_REMOVED',
 
+	REQUEST_PATH_PARAMETER_VALUE_UPDATED: '@beak/global/project/REQUEST_PATH_PARAMETER_VALUE_UPDATED',
+
 	DUPLICATE_REQUEST: '@beak/global/project/DUPLICATE_REQUEST',
 
 	REMOVE_NODE_FROM_DISK: '@beak/global/project/REMOVE_NODE_FROM_DISK',
@@ -151,6 +153,13 @@ export interface State {
 	/** Pending stale-reload prompt for the focused tab (modal). */
 	pendingStaleReload?: { requestId: string };
 
+	/**
+	 * Per-request opt-out: the user has explicitly removed an auto-managed
+	 * Content-Type header, so the body-type reducer must not re-add one on
+	 * subsequent type switches. In-memory only (resets on project reload).
+	 */
+	contentTypeOptOut: Record<string, boolean>;
+
 	alerts: Record<string, Alert | undefined>;
 
 	/**
@@ -170,6 +179,7 @@ export const initialState: State = {
 	writeDebouncer: {},
 	linkedDirty: {},
 	linkedStale: {},
+	contentTypeOptOut: {},
 	alerts: {},
 };
 
@@ -198,12 +208,26 @@ export interface ToggleableItemUpdatedPayload extends RequestIdPayload {
 	type?: ScalarPropertyType | null;
 	required?: boolean | null;
 	description?: string | null;
-	/** Enum options. `null` clears the list. */
-	options?: string[] | null;
+	/**
+	 * Enum options — typed primitives (`string | number | boolean | null`).
+	 * `null` clears the list.
+	 */
+	options?: import('@getbeak/types/body-editor-json').EnumOption[] | null;
 }
 
 export interface ToggleableItemRemovedPayload extends RequestIdPayload {
 	identifier: string;
+}
+
+/**
+ * Update the bound value of a single path parameter. Keyed by `name` (the
+ * `{name}` placeholder in the URL), not a synthetic identifier — path
+ * params come from the spec and round-trip on re-sync, so a stable
+ * spec-given name beats a generated id.
+ */
+export interface RequestPathParameterValueUpdatedPayload extends RequestIdPayload {
+	name: string;
+	value: ValueSections;
 }
 
 export interface RequestRenameStarted extends RequestIdPayload {
@@ -267,6 +291,12 @@ interface RequestBodyTypeToJsonPayload extends RequestIdPayload {
 interface RequestBodyTypeToJsonRawPayload extends RequestIdPayload {
 	type: 'json_raw';
 	payload: string;
+	/**
+	 * EntryMap to persist on the json_raw body so Monaco's JSON validation
+	 * can light up errors against the user's schema. Set when transitioning
+	 * from a structured `json` body so the schema survives the switch.
+	 */
+	schemaSeed?: EntryMap;
 }
 
 interface RequestBodyTypeToTextPayload extends RequestIdPayload {
@@ -351,7 +381,13 @@ export interface RequestBodyJsonEditorRequiredChangePayload extends RequestIdPay
 
 export interface RequestBodyJsonEditorOptionsChangePayload extends RequestIdPayload {
 	id: string;
-	options: string[] | null;
+	/**
+	 * Typed enum options — `string | number | boolean | null`. The editor
+	 * auto-detects each value's type from what the user types; the wire
+	 * shape matches JSON Schema's `enum` keyword (which accepts any JSON
+	 * primitive).
+	 */
+	options: import('@getbeak/types/body-editor-json').EnumOption[] | null;
 }
 
 export interface RequestBodyJsonEditorAddEntryPayload extends RequestIdPayload {

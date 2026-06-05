@@ -86,8 +86,25 @@ export default function buildRequestFields(builder: ActionReducerMapBuilder<Stat
 			if (payload.enabled !== void 0) existingItem.enabled = payload.enabled;
 			applySchemaMetadata(existingItem, payload);
 		})
+		.addCase(actions.requestPathParameterValueUpdated, (state, { payload }) => {
+			const node = state.tree[payload.requestId] as ValidRequestNode;
+			const entry = node.info.pathParameters?.[payload.name];
+			// Spec-driven map — silently ignore writes for unknown names so a
+			// stale renderer doesn't materialise entries the converter never
+			// wrote.
+			if (!entry) return;
+			entry.value = payload.value;
+		})
+
 		.addCase(actions.requestHeaderRemoved, (state, action) => {
 			const node = state.tree[action.payload.requestId] as ValidRequestNode;
+			const removed = node.info.headers[action.payload.identifier];
+			// If the user yanks the Content-Type header explicitly, record an
+			// opt-out so the body-type reducer stops re-adding it on every
+			// subsequent type switch.
+			if (removed && typeof removed.name === 'string' && removed.name.toLowerCase() === 'content-type') {
+				state.contentTypeOptOut[action.payload.requestId] = true;
+			}
 			delete node.info.headers[action.payload.identifier];
 		})
 

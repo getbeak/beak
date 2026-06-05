@@ -2,11 +2,56 @@ import { TypedObject } from '@beak/common/helpers/typescript';
 import ksuid from '@beak/ksuid';
 import type { EntryMap, NamedEntries, NamedStringEntry, ValueEntries } from '@getbeak/types/body-editor-json';
 import type { ValidRequestNode } from '@getbeak/types/nodes';
-import type { RequestBodyGraphQl, RequestBodyJson, RequestBodyUrlEncodedForm } from '@getbeak/types/request';
+import type {
+	RequestBodyGraphQl,
+	RequestBodyJson,
+	RequestBodyJsonRaw,
+	RequestBodyType,
+	RequestBodyUrlEncodedForm,
+} from '@getbeak/types/request';
 import type { ActionReducerMapBuilder } from '@reduxjs/toolkit';
 
 import * as actions from '../actions';
 import type { State } from '../types';
+
+/**
+ * Content-Type a freshly-switched body type wants. `null` means we don't
+ * have an opinion (file bodies carry their own MIME on the payload; gRPC
+ * never reaches this reducer at all).
+ */
+const BODY_TYPE_CONTENT_TYPE: Partial<Record<RequestBodyType, string>> = {
+	json: 'application/json',
+	json_raw: 'application/json',
+	url_encoded_form: 'application/x-www-form-urlencoded',
+	text: 'text/plain',
+	graphql: 'application/json',
+};
+
+// The set of values we treat as "Beak owns this header" — only auto-managed
+// strings are safe to overwrite on a body-type switch. Anything custom (the
+// user typed `application/vnd.api+json` etc.) is left alone.
+const MANAGED_CONTENT_TYPES = new Set(Object.values(BODY_TYPE_CONTENT_TYPE));
+
+function headerStringValue(value: unknown): string | null {
+	if (typeof value === 'string') return value;
+	if (Array.isArray(value)) {
+		// ValueParts: only treat as managed when it's a single literal string
+		// part — anything with template variables is by definition custom.
+		if (value.length !== 1) return null;
+		const first = value[0];
+		return typeof first === 'string' ? first : null;
+	}
+	return null;
+}
+
+function findContentTypeEntry(headers: ValidRequestNode['info']['headers']) {
+	for (const [id, entry] of Object.entries(headers ?? {})) {
+		if (typeof entry?.name === 'string' && entry.name.toLowerCase() === 'content-type') {
+			return { id, entry };
+		}
+	}
+	return null;
+}
 
 export default function buildBody(builder: ActionReducerMapBuilder<State>) {
 	builder
@@ -14,6 +59,34 @@ export default function buildBody(builder: ActionReducerMapBuilder<State>) {
 			const node = state.tree[payload.requestId] as ValidRequestNode;
 			node.info.body.type = payload.type;
 			node.info.body.payload = payload.payload;
+			// Carry the EntryMap onto json_raw bodies when supplied — used to
+			// feed Monaco a generated JSON Schema so raw edits get live
+			// validation. Any other body type clears the seed (it'd be stale).
+			if (payload.type === 'json_raw' && payload.schemaSeed) {
+				(node.info.body as RequestBodyJsonRaw).schemaSeed = payload.schemaSeed;
+			} else if (payload.type !== 'json_raw') {
+				delete (node.info.body as { schemaSeed?: unknown }).schemaSeed;
+			}
+
+			const desired = BODY_TYPE_CONTENT_TYPE[payload.type];
+			if (!desired) return;
+			if (state.contentTypeOptOut[payload.requestId]) return;
+
+			const existing = findContentTypeEntry(node.info.headers);
+			if (existing) {
+				// Only rewrite when the current value is one we'd manage —
+				// preserves any custom Content-Type the user has typed.
+				const current = headerStringValue(existing.entry.value);
+				if (current === desired) return;
+				if (current && !MANAGED_CONTENT_TYPES.has(current)) return;
+				existing.entry.value = [desired];
+				existing.entry.enabled = true;
+				return;
+			}
+
+			const id = ksuid.generate('header').toString();
+			node.info.headers = node.info.headers ?? {};
+			node.info.headers[id] = { name: 'Content-Type', value: [desired], enabled: true };
 		})
 		.addCase(actions.requestBodyTextChanged, (state, action) => {
 			const node = state.tree[action.payload.requestId] as ValidRequestNode;

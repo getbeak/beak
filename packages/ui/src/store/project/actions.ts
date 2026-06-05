@@ -62,6 +62,7 @@ import {
 	type RequestOptionSendCookies,
 	type RequestOptionTimeoutMs,
 	type RequestOptionToggleAdditionalCookieJar,
+	type RequestPathParameterValueUpdatedPayload,
 	type RequestRenameCancelled,
 	type RequestRenameResolved,
 	type RequestRenameStarted,
@@ -84,6 +85,10 @@ export const requestQueryRemoved = createAction<ToggleableItemRemovedPayload>(AT
 export const requestHeaderAdded = createAction<ToggleableItemAddedPayload>(AT.REQUEST_HEADER_ADDED);
 export const requestHeaderUpdated = createAction<ToggleableItemUpdatedPayload>(AT.REQUEST_HEADER_UPDATED);
 export const requestHeaderRemoved = createAction<ToggleableItemRemovedPayload>(AT.REQUEST_HEADER_REMOVED);
+
+export const requestPathParameterValueUpdated = createAction<RequestPathParameterValueUpdatedPayload>(
+	AT.REQUEST_PATH_PARAMETER_VALUE_UPDATED,
+);
 
 export const duplicateRequest = createAction<DuplicateRequestPayload>(AT.DUPLICATE_REQUEST);
 
@@ -252,6 +257,8 @@ export default {
 	requestHeaderAdded,
 	requestHeaderUpdated,
 	requestHeaderRemoved,
+
+	requestPathParameterValueUpdated,
 
 	duplicateRequest,
 	insertRequestNode,
