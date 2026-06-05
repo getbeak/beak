@@ -23,6 +23,7 @@ const VariableInputPlaygroundTab: React.FC<VariableInputPlaygroundTabProps> = ({
 			<TabItem
 				active={selectedTabPayload === tab.payload}
 				variant='card'
+				preview={tab.temporary}
 				leading={
 					<Box
 						as='span'
@@ -51,8 +52,7 @@ const VariableInputPlaygroundTab: React.FC<VariableInputPlaygroundTabProps> = ({
 				}}
 				onClose={() => dispatch(closeTab(tab.payload))}
 			>
-				{tab.temporary && <em>{'Variable input lab'}</em>}
-				{!tab.temporary && 'Variable input lab'}
+				{'Variable input lab'}
 			</TabItem>
 		</GenericTabContextMenuWrapper>
 	);

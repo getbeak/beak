@@ -1,8 +1,7 @@
-import { Box, Flex } from '@chakra-ui/react';
-import { TypedObject } from '@beak/common/helpers/typescript';
+import { projectTree } from '@beak/state';
 import Button from '@beak/ui/components/atoms/Button';
 import { useAppSelector } from '@beak/ui/store/redux';
-import type { ValidRequestNode } from '@getbeak/types/nodes';
+import { Box, Flex } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 import { Dices, FileQuestion } from 'lucide-react';
 import * as React from 'react';
@@ -17,21 +16,30 @@ const NotTheTabYourLookingFor: React.FC = () => {
 	const dispatch = useDispatch();
 
 	function spinThatWheel() {
-		const requests = TypedObject.values(tree).filter(n => n.type === 'request') as ValidRequestNode[];
-
+		const requests = projectTree.filterByType(tree, 'request');
 		if (requests.length === 0) return;
 
 		dispatch(
 			changeTab({
 				type: 'request',
-				payload: requests[Math.floor(Math.random() * requests.length)].id,
+				payload: requests[Math.floor(Math.random() * requests.length)]!.id,
 				temporary: false,
 			}),
 		);
 	}
 
 	return (
-		<Flex h='100%' direction='column' align='center' justify='center' gap='3' bg='bg.canvas' px='6' py='8' textAlign='center'>
+		<Flex
+			h='100%'
+			direction='column'
+			align='center'
+			justify='center'
+			gap='3'
+			bg='bg.canvas'
+			px='6'
+			py='8'
+			textAlign='center'
+		>
 			<MotionBox
 				initial={{ opacity: 0, scale: 0.92 }}
 				animate={{ opacity: 1, scale: 1 }}

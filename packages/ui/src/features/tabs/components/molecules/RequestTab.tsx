@@ -1,5 +1,6 @@
 import type { RequestTabItem } from '@beak/common/types/beak-project';
 import { verbToColor } from '@beak/design-system/helpers';
+import { provenance } from '@beak/state';
 import AlertFlair from '@beak/ui/features/alerts/components/AlertFlair';
 import { closeTabIntent } from '@beak/ui/store/project/actions';
 import { useAppSelector } from '@beak/ui/store/redux';
@@ -30,12 +31,14 @@ const RequestTab: React.FC<React.PropsWithChildren<RequestTabProps>> = ({ tab })
 	});
 	const [target, setTarget] = useState<HTMLElement>();
 
+	// Deadness is handled one level up in TabView via `selectTabAlive`; if we
+	// got rendered, the underlying node is still around.
 	if (!node || node.type !== 'request') return null;
 
 	const verb = node.mode === 'valid' ? node.info.verb : 'get';
 	const color = verbToColor(verb);
 	const isIntrospection = node.mode === 'valid' && node.info.introspection === true;
-	const isLinked = node.mode === 'valid' && node.info._provenance?.linked === true;
+	const isLinked = node.mode === 'valid' && provenance.isLinked(node.info);
 	const isDirty = useAppSelector(s => Boolean(s.global.project.linkedDirty[node.id]));
 	const isStale = useAppSelector(s => Boolean(s.global.project.linkedStale[node.id]));
 	const VerbIcon = isLinked ? Link2 : ArrowUpRight;
@@ -49,6 +52,7 @@ const RequestTab: React.FC<React.PropsWithChildren<RequestTabProps>> = ({ tab })
 			<TabItem
 				active={selectedTabPayload === node.id}
 				variant='card'
+				preview={tab.temporary}
 				leading={
 					<Flex align='center' gap='1'>
 						<Box
@@ -106,14 +110,7 @@ const RequestTab: React.FC<React.PropsWithChildren<RequestTabProps>> = ({ tab })
 				}}
 				onClose={() => dispatch(closeTabIntent(tab.payload))}
 			>
-				{(() => {
-					// Introspection seeds get the parent endpoint name appended so the
-					// tab strip is scannable when multiple endpoints are open. Falls
-					// back to the bare name when we can't find a parent (untyped tree
-					// edge cases) instead of inventing a label.
-					const label = isIntrospection && parentName ? `${node.name} · ${parentName}` : node.name;
-					return tab.temporary ? <em>{label}</em> : label;
-				})()}
+				{isIntrospection && parentName ? `${node.name} · ${parentName}` : node.name}
 			</TabItem>
 		</TabContextMenuWrapper>
 	);

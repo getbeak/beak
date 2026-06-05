@@ -1,6 +1,6 @@
-import { Box } from '@chakra-ui/react';
 import type { ProjectHomeTabItem } from '@beak/common/types/beak-project';
 import { useAppSelector } from '@beak/ui/store/redux';
+import { Box } from '@chakra-ui/react';
 import { Home } from 'lucide-react';
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -24,7 +24,8 @@ const ProjectHomeTab: React.FC<ProjectHomeTabProps> = ({ tab }) => {
 			<TabItem
 				active={selectedTabPayload === tab.payload}
 				variant='card'
-				leading={(
+				preview={tab.temporary}
+				leading={
 					<Box
 						as='span'
 						display='inline-flex'
@@ -42,7 +43,7 @@ const ProjectHomeTab: React.FC<ProjectHomeTabProps> = ({ tab }) => {
 					>
 						<Home size={11} strokeWidth={2.2} />
 					</Box>
-				)}
+				}
 				key={tab.payload}
 				lazyForwardedRef={i => setTarget(i!)}
 				onClick={() => dispatch(changeTab(tab))}
@@ -52,8 +53,7 @@ const ProjectHomeTab: React.FC<ProjectHomeTabProps> = ({ tab }) => {
 				}}
 				onClose={() => dispatch(closeTab(tab.payload))}
 			>
-				{tab.temporary && <em>{projectName}</em>}
-				{!tab.temporary && projectName}
+				{projectName}
 			</TabItem>
 		</GenericTabContextMenuWrapper>
 	);

@@ -49,6 +49,7 @@ export function useProjectBootstrap() {
 					selectedTab: 'new_project_intro',
 					activeTabs: [{ type: 'new_project_intro', temporary: false, payload: 'new_project_intro' }],
 					recentlyClosedTabs: [],
+					mruOrder: ['new_project_intro'],
 					lastReconcile: 0,
 					loaded: true,
 				}),

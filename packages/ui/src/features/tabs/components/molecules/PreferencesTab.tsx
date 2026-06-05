@@ -1,6 +1,6 @@
-import { Box } from '@chakra-ui/react';
 import type { PreferencesTabItem } from '@beak/common/types/beak-project';
 import { useAppSelector } from '@beak/ui/store/redux';
+import { Box } from '@chakra-ui/react';
 import { Settings } from 'lucide-react';
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -23,7 +23,8 @@ const PreferencesTab: React.FC<PreferencesTabProps> = ({ tab }) => {
 			<TabItem
 				active={selectedTabPayload === tab.payload}
 				variant='card'
-				leading={(
+				preview={tab.temporary}
+				leading={
 					<Box
 						as='span'
 						display='inline-flex'
@@ -41,7 +42,7 @@ const PreferencesTab: React.FC<PreferencesTabProps> = ({ tab }) => {
 					>
 						<Settings size={11} strokeWidth={2.2} />
 					</Box>
-				)}
+				}
 				key={tab.payload}
 				lazyForwardedRef={i => setTarget(i!)}
 				onClick={() => dispatch(changeTab(tab))}
@@ -51,8 +52,7 @@ const PreferencesTab: React.FC<PreferencesTabProps> = ({ tab }) => {
 				}}
 				onClose={() => dispatch(closeTab(tab.payload))}
 			>
-				{tab.temporary && <em>{'Preferences'}</em>}
-				{!tab.temporary && 'Preferences'}
+				{'Preferences'}
 			</TabItem>
 		</GenericTabContextMenuWrapper>
 	);

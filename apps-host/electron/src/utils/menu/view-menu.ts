@@ -24,14 +24,17 @@ export default function generateViewMenu(ctx: Context): MenuItemConstructorOptio
 				click: async () => sendMenuItemClick(ctx, 'close_other_tabs'),
 			},
 			{
+				// Renderer-side MruSwitcher owns the Ctrl+Tab chord so it can
+				// show the macOS-style overlay; keep the menu items as
+				// invokable commands but skip the accelerator — registering it
+				// here would let Electron's menu fire first and bypass the
+				// overlay entirely.
 				label: 'Select Next Tab',
-				accelerator: 'Ctrl+Tab',
 				enabled: isProjectEditor(ctx),
 				click: async () => sendMenuItemClick(ctx, 'select_next_tab'),
 			},
 			{
 				label: 'Select Previous Tab',
-				accelerator: 'Ctrl+Shift+Tab',
 				enabled: isProjectEditor(ctx),
 				click: async () => sendMenuItemClick(ctx, 'select_previous_tab'),
 			},

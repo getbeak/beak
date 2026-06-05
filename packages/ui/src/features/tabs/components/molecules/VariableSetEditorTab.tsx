@@ -1,10 +1,9 @@
-import { Box } from '@chakra-ui/react';
-import { Variable } from 'lucide-react';
-import React from 'react';
-import { useState } from 'react';
-import { useDispatch } from 'react-redux';
 import type { VariableSetEditorTabItem } from '@beak/common/types/beak-project';
 import { useAppSelector } from '@beak/ui/store/redux';
+import { Box } from '@chakra-ui/react';
+import { Variable } from 'lucide-react';
+import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
 
 import TabItem from '../../../../components/atoms/TabItem';
 import { changeTab, closeTab, makeTabPermanent } from '../../store/actions';
@@ -24,7 +23,8 @@ const VariableSetEditorTab: React.FC<React.PropsWithChildren<VariableSetEditorTa
 			<TabItem
 				active={selectedTabPayload === tab.payload}
 				variant='card'
-				leading={(
+				preview={tab.temporary}
+				leading={
 					<Box
 						as='span'
 						display='inline-flex'
@@ -42,20 +42,18 @@ const VariableSetEditorTab: React.FC<React.PropsWithChildren<VariableSetEditorTa
 					>
 						<Variable size={11} strokeWidth={2.2} />
 					</Box>
-				)}
+				}
 				key={tab.payload}
 				lazyForwardedRef={i => setTarget(i!)}
 				onClick={() => dispatch(changeTab(tab))}
 				onDoubleClick={() => {
-					if (!tab.temporary)
-						return;
+					if (!tab.temporary) return;
 
 					dispatch(makeTabPermanent(tab.payload));
 				}}
 				onClose={() => dispatch(closeTab(tab.payload))}
 			>
-				{tab.temporary && <em>{rendererToName(tab)}</em>}
-				{!tab.temporary && rendererToName(tab)}
+				{rendererToName(tab)}
 			</TabItem>
 		</TabContextMenuWrapper>
 	);

@@ -24,6 +24,7 @@ const CookieJarTab: React.FC<React.PropsWithChildren<CookieJarTabProps>> = ({ ta
 			<TabItem
 				active={selectedTabPayload === tab.payload}
 				variant='card'
+				preview={tab.temporary}
 				leading={
 					<Box
 						as='span'
@@ -52,7 +53,7 @@ const CookieJarTab: React.FC<React.PropsWithChildren<CookieJarTabProps>> = ({ ta
 				}}
 				onClose={() => dispatch(closeTab(tab.payload))}
 			>
-				{tab.temporary ? <em>{'Cookie jars'}</em> : 'Cookie jars'}
+				{'Cookie jars'}
 			</TabItem>
 		</TabContextMenuWrapper>
 	);

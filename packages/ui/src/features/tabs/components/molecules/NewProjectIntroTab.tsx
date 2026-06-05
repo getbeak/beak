@@ -1,9 +1,8 @@
-import { Box } from '@chakra-ui/react';
 import type { NewProjectIntroTabItem } from '@beak/common/types/beak-project';
 import { useAppSelector } from '@beak/ui/store/redux';
+import { Box } from '@chakra-ui/react';
 import { Sparkles } from 'lucide-react';
-import React from 'react';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 
 import TabItem from '../../../../components/atoms/TabItem';
@@ -36,7 +35,8 @@ const NewProjectIntroTab: React.FC<React.PropsWithChildren<NewProjectIntroTabPro
 			<TabItem
 				active={active}
 				variant='card'
-				leading={(
+				preview={tab.temporary}
+				leading={
 					<Box
 						as='span'
 						display='inline-flex'
@@ -54,7 +54,7 @@ const NewProjectIntroTab: React.FC<React.PropsWithChildren<NewProjectIntroTabPro
 					>
 						<Sparkles size={11} strokeWidth={2.2} />
 					</Box>
-				)}
+				}
 				key={tab.payload}
 				lazyForwardedRef={i => setTarget(i!)}
 				title={showLabel ? undefined : 'Getting started'}
@@ -68,13 +68,9 @@ const NewProjectIntroTab: React.FC<React.PropsWithChildren<NewProjectIntroTabPro
 				// Only offer the close affordance when the user has somewhere to
 				// fall back to — closing onto an empty workbench would just
 				// re-select the intro anyway.
-				onClose={
-					active && hasOtherTabs
-						? () => dispatch(changeTabNext())
-						: undefined
-				}
+				onClose={active && hasOtherTabs ? () => dispatch(changeTabNext()) : undefined}
 			>
-				{showLabel && (tab.temporary ? <em>{'Getting started'}</em> : 'Getting started')}
+				{showLabel && 'Getting started'}
 			</TabItem>
 		</GenericTabContextMenuWrapper>
 	);

@@ -3,8 +3,7 @@ import ContextMenu from '@beak/ui/components/atoms/ContextMenu';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { renderAcceleratorDefinition } from '@beak/ui/utils/keyboard-rendering';
 import type { MenuItemConstructorOptions } from 'electron';
-import React from 'react';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 
 import { closeTab, closeTabsAll, closeTabsLeft, closeTabsOther, closeTabsRight } from '../../store/actions';

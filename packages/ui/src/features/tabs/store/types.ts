@@ -24,6 +24,13 @@ export interface State {
 	activeTabs: TabItem[];
 	recentlyClosedTabs: TabItem[];
 
+	/**
+	 * Tab payloads in most-recently-used order, head = current. Drives the
+	 * Ctrl+Tab switcher overlay so users land on the tab they just came from
+	 * rather than the next-by-index neighbour.
+	 */
+	mruOrder: string[];
+
 	lastReconcile: number;
 	loaded: boolean;
 }
@@ -32,6 +39,8 @@ export const initialState: State = {
 	selectedTab: void 0,
 	activeTabs: [],
 	recentlyClosedTabs: [],
+
+	mruOrder: [],
 
 	lastReconcile: 0,
 	loaded: false,

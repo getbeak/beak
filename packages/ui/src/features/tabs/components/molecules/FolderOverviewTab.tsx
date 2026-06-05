@@ -26,7 +26,8 @@ const FolderOverviewTab: React.FC<FolderOverviewTabProps> = ({ tab }) => {
 			<TabItem
 				active={selectedTabPayload === tab.payload}
 				variant='card'
-				leading={(
+				preview={tab.temporary}
+				leading={
 					<Box
 						as='span'
 						display='inline-flex'
@@ -44,7 +45,7 @@ const FolderOverviewTab: React.FC<FolderOverviewTabProps> = ({ tab }) => {
 					>
 						<Folder size={11} strokeWidth={2.2} />
 					</Box>
-				)}
+				}
 				key={tab.payload}
 				lazyForwardedRef={i => setTarget(i!)}
 				onClick={() => dispatch(changeTab(tab))}
@@ -54,8 +55,7 @@ const FolderOverviewTab: React.FC<FolderOverviewTabProps> = ({ tab }) => {
 				}}
 				onClose={() => dispatch(closeTab(tab.payload))}
 			>
-				{tab.temporary && <em>{node.name}</em>}
-				{!tab.temporary && node.name}
+				{node.name}
 			</TabItem>
 		</GenericTabContextMenuWrapper>
 	);

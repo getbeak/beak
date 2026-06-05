@@ -2,14 +2,13 @@ import type { TabItem } from '@beak/common/types/beak-project';
 import ContextMenu from '@beak/ui/components/atoms/ContextMenu';
 import WindowSessionContext from '@beak/ui/contexts/window-session-context';
 import { ipcExplorerService } from '@beak/ui/lib/ipc';
+import { closeTabIntent } from '@beak/ui/store/project/actions';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { renderAcceleratorDefinition } from '@beak/ui/utils/keyboard-rendering';
 import type { MenuItemConstructorOptions } from 'electron';
 import React, { useContext, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-
 import { useTabPresentation } from '../../contexts/tab-presentation';
-import { closeTabIntent } from '@beak/ui/store/project/actions';
 import { closeTabsAll, closeTabsLeft, closeTabsOther, closeTabsRight } from '../../store/actions';
 
 interface RequestTabContextMenuWrapperProps {
