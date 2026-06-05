@@ -1,4 +1,5 @@
 import ksuid from '@beak/ksuid';
+import { provenance } from '@beak/state';
 import {
 	diffFromDefaults,
 	mergeCollectionDefaults,
@@ -132,6 +133,10 @@ function ensureRuntimeShape(file: RequestNodeFile): RequestNodeFile {
 			timeoutMs: 0,
 			maxRedirects: 5,
 		},
+		// `pathParameters` stays absent rather than backfilled to `{}` so the
+		// renderer can distinguish "linked OpenAPI request with declared
+		// params" from "hand-authored request" — the section only mounts
+		// when this map is present.
 	};
 }
 
@@ -183,9 +188,7 @@ export async function renameRequestNode(newName: string, requestNode: RequestNod
  * switch + dirty-flag clear in the orchestrator (the helper is
  * deliberately I/O-only so it's easy to test).
  */
-export async function unlinkAndPersistAs(
-	request: RequestNode,
-): Promise<{ id: string; filePath: string } | null> {
+export async function unlinkAndPersistAs(request: RequestNode): Promise<{ id: string; filePath: string } | null> {
 	if (request.mode === 'failed') return null;
 
 	const oldPath = request.filePath;
@@ -196,10 +199,10 @@ export async function unlinkAndPersistAs(
 	const { fullPath } = await generateSafeNewPath(`${baseName}-edited`, directory, extension);
 
 	const newId = ksuid.generate('request').toString();
+	const unlinkedInfo = provenance.unlinkRequest(request.info);
 	const node: RequestNodeFile = {
-		...request.info,
+		...unlinkedInfo,
 		id: newId,
-		_provenance: { source: request.info._provenance?.source ?? 'openapi', linked: false },
 	};
 
 	await ipcFsService.writeJson(fullPath, node, { spaces: '\t' });

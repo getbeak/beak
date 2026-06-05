@@ -1,5 +1,6 @@
 import Squawk from '@beak/common/utils/squawk';
 import ksuid from '@beak/ksuid';
+import { provenance } from '@beak/state';
 import {
 	insertFolderNode,
 	insertProjectInfo,
@@ -36,7 +37,7 @@ import {
 	writeRequestNode,
 } from '@beak/ui/lib/beak-project/request';
 import { ipcDialogService, ipcEncryptionService, ipcFsService } from '@beak/ui/lib/ipc';
-import { loadProject, startTreeWatcher, type TreeEvent } from '@beak/ui/services/project';
+import { loadProject, registerFolderRename, registerRequestRename, startTreeWatcher } from '@beak/ui/services/project';
 import type { FolderNode, RequestNode, Tree } from '@getbeak/types/nodes';
 import path from 'path-browserify';
 import * as uuid from 'uuid';
@@ -53,7 +54,32 @@ import {
 	revealRequestExternal,
 } from '../project/actions';
 import { startVariableSets } from '../variable-sets/actions';
+import * as workflowActions from '../workflows/actions';
 import { startWorkflows, updateWorkflowName } from '../workflows/actions';
+import { ensureEncryptionAlert, handleTreeEvent } from './project/tree-events';
+
+/**
+ * Walk a tree rooted at `nodeId` and return every request node id under it
+ * (the node itself if it's a request). Folders don't appear; the workflow
+ * cleanup only cares about request refs.
+ */
+function collectRequestIdsUnder(tree: Tree, nodeId: string): string[] {
+	const start = tree[nodeId];
+	if (!start) return [];
+	if (start.type === 'request') return [start.id];
+	if (start.type !== 'folder') return [];
+	const out: string[] = [];
+	const stack: string[] = [start.id];
+	while (stack.length > 0) {
+		const cur = stack.pop()!;
+		for (const node of Object.values(tree)) {
+			if (node.parent !== cur) continue;
+			if (node.type === 'request') out.push(node.id);
+			else if (node.type === 'folder') stack.push(node.id);
+		}
+	}
+	return out;
+}
 
 function selectMode(api: { getState: () => { global: { project: { mode: ProjectMode } } } }): ProjectMode {
 	return api.getState().global.project.mode;
@@ -122,6 +148,7 @@ export function registerProjectEffects(start: AppStartListening) {
 		projectActions.requestHeaderAdded,
 		projectActions.requestHeaderUpdated,
 		projectActions.requestHeaderRemoved,
+		projectActions.requestPathParameterValueUpdated,
 		projectActions.requestBodyTypeChanged,
 		projectActions.requestBodyTextChanged,
 		projectActions.requestBodyFileChanged,
@@ -164,7 +191,7 @@ export function registerProjectEffects(start: AppStartListening) {
 				// the user must explicitly unlink (close-tab dialog → rename) for
 				// edits to persist. Until then the edit lives in redux state with
 				// a dirty flag; the project effect skips the debounced write.
-				if (node.mode === 'valid' && node.info._provenance?.linked === true) {
+				if (node.mode === 'valid' && provenance.isLinked(node.info)) {
 					if (!api.getState().global.project.linkedDirty[requestId]) {
 						api.dispatch(projectActions.linkedDirtyMarked({ requestId }));
 					}
@@ -383,6 +410,13 @@ export function registerProjectEffects(start: AppStartListening) {
 				if (response.response === 1) return;
 			}
 
+			// Collect every request id that's about to disappear — the node
+			// itself if it's a request, plus every request descendant if
+			// it's a folder — so we can later notify workflows to drop
+			// dangling references. (Captured *before* mutating the tree.)
+			const tree = api.getState().global.project.tree;
+			const droppedRequestIds = collectRequestIdsUnder(tree, requestId);
+
 			if (mode === 'disk') {
 				if (node.type === 'folder') await removeFolderNode(node.filePath);
 				else if (node.type === 'request') await removeRequestNode(node.filePath);
@@ -390,6 +424,9 @@ export function registerProjectEffects(start: AppStartListening) {
 
 			api.dispatch(removeNodeFromStore(requestId));
 			api.dispatch(attemptReconciliation());
+			if (droppedRequestIds.length > 0) {
+				api.dispatch(workflowActions.purgeRequestRefs({ requestIds: droppedRequestIds }));
+			}
 		},
 	});
 
@@ -433,9 +470,18 @@ export function registerProjectEffects(start: AppStartListening) {
 
 			if (node.type === 'request') {
 				try {
+					const oldPath = node.filePath;
+					const newPath = path.join(path.dirname(oldPath), `${activeRename.name}${path.extname(oldPath)}`);
+
+					// Suppress the unlink(old) + add(new) the fs-watcher is
+					// about to emit, then optimistically rewrite the tree.
+					// The tab stays mounted because its backing node never
+					// leaves the store.
+					registerRequestRename(oldPath, newPath);
+					api.dispatch(renameNodeInTree({ nodeId: payload.requestId, name: activeRename.name }));
+
 					await renameRequestNode(activeRename.name, node as RequestNode);
 					api.dispatch(projectActions.renameResolved({ requestId: payload.requestId }));
-					await api.delay(200);
 					api.dispatch(changeTab({ type: 'request', temporary: false, payload: node.id }));
 				} catch (error) {
 					if (error instanceof Error && error.message === 'Request already exists') {
@@ -454,6 +500,17 @@ export function registerProjectEffects(start: AppStartListening) {
 				}
 			} else if (node.type === 'folder') {
 				try {
+					const oldPath = node.filePath;
+					const newPath = path.join(path.dirname(oldPath), activeRename.name);
+
+					// Folder rename fans out to every descendant: each file
+					// inside reports unlink+add at its old/new path, plus
+					// the folder itself and any nested folders. Register
+					// all of them (exact + prefix) before the move so the
+					// tree-event handler can drop the whole burst.
+					registerFolderRename(api.getState().global.project.tree as Tree, oldPath, newPath);
+					api.dispatch(renameNodeInTree({ nodeId: payload.requestId, name: activeRename.name }));
+
 					await renameFolderNode(activeRename.name, node as FolderNode);
 					api.dispatch(projectActions.renameResolved({ requestId: payload.requestId }));
 				} catch (error) {
@@ -634,142 +691,4 @@ export function registerProjectEffects(start: AppStartListening) {
 			}
 		},
 	});
-}
-
-interface ProjectListenerApi {
-	getState: () => {
-		global: {
-			project: {
-				tree: Tree;
-				latestWrite?: { filePath: string; writtenAt: number };
-				linkedDirty: Record<string, boolean>;
-				linkedStale: Record<string, boolean>;
-			};
-		};
-		features: {
-			tabs: {
-				selectedTab: string | undefined;
-				activeTabs: Array<{ type: string; payload: string; temporary: boolean }>;
-			};
-		};
-	};
-	dispatch: (a: { type: string; [k: string]: unknown }) => unknown;
-}
-
-/**
- * If keychain access is missing, drop an inline alert so the UI can prompt
- * the user. Kept here so the project lifecycle isn't bundled into a
- * separate service for what's effectively a single dispatch.
- */
-async function ensureEncryptionAlert(api: ProjectListenerApi) {
-	const ok = await ipcEncryptionService.checkStatus();
-	if (ok) return;
-	api.dispatch(
-		alertInsert({
-			ident: ksuid.generate('alert').toString(),
-			alert: {
-				type: 'missing_encryption',
-				severity: 'error',
-				scope: { kind: 'project' },
-			},
-		}),
-	);
-}
-
-/**
- * Translate a `TreeEvent` from the watcher into the right tree-state
- * actions. Splitting it out keeps the orchestrator small and lets us
- * unit-test the mapping without booting redux + the fs emitter.
- */
-async function handleTreeEvent(api: ProjectListenerApi, event: TreeEvent) {
-	try {
-		switch (event.kind) {
-			case 'folder-added': {
-				const node = await readFolderNode(event.path);
-				if (api.getState().global.project.tree[node.id]) return;
-				api.dispatch(insertFolderNode(node));
-				return;
-			}
-			case 'folder-removed': {
-				api.dispatch(removeNodeFromStoreByPath(event.path));
-				api.dispatch(attemptReconciliation());
-				return;
-			}
-			case 'request-changed': {
-				// Debounce self-triggered writes so the renderer's own save
-				// doesn't immediately bounce a fresh read through the tree.
-				const lastWrite = api.getState().global.project.latestWrite;
-				if (lastWrite && lastWrite.filePath === event.path) {
-					const expiry = lastWrite.writtenAt + 1000;
-					if (expiry > Date.now()) return;
-				}
-				// If a linked file's user has unsaved in-memory edits, don't
-				// clobber redux state — mark the request stale so the reload
-				// dialog can ask them on next tab focus.
-				const existing = Object.values(api.getState().global.project.tree).find(n => n.filePath === event.path);
-				if (existing?.type === 'request' && api.getState().global.project.linkedDirty[existing.id]) {
-					api.dispatch(projectActions.linkedStaleMarked({ requestId: existing.id }));
-					return;
-				}
-				const node = await readRequestNode(event.path);
-				api.dispatch(insertRequestNode(node));
-				return;
-			}
-			case 'request-added': {
-				const node = await readRequestNode(event.path);
-				api.dispatch(insertRequestNode(node));
-				return;
-			}
-			case 'request-removed': {
-				const tree = api.getState().global.project.tree;
-				const node = Object.values(tree).find(n => n.filePath === event.path);
-				if (node) api.dispatch(closeTab(node.id));
-				api.dispatch(removeNodeFromStoreByPath(event.path));
-				api.dispatch(attemptReconciliation());
-				return;
-			}
-			case 'collection-changed':
-			case 'collection-removed': {
-				// A collection file changes the merged shape of every request
-				// whose nearest collection is this one. Cheapest correct move:
-				// re-read every request under the collection's folder; ones
-				// shadowed by a deeper `_collection.json` simply re-read with
-				// the same merged data (no visible churn).
-				await refreshRequestsUnderCollection(api, event.path);
-				return;
-			}
-		}
-	} catch (error) {
-		if (!(error instanceof Error)) return;
-		await ipcDialogService.showMessageBox({
-			type: 'error',
-			title: 'Project data error',
-			message: 'There was a problem reading a file or directory in your project',
-			detail: [error.message, error.stack].join('\n'),
-		});
-	}
-}
-
-async function refreshRequestsUnderCollection(api: ProjectListenerApi, collectionPath: string) {
-	const folder = path.dirname(collectionPath);
-	const prefix = `${folder}/`;
-	const tree = api.getState().global.project.tree;
-	const linkedDirty = api.getState().global.project.linkedDirty;
-
-	const affected = Object.values(tree).filter(
-		n => n.type === 'request' && (n.parent === folder || (n.parent ?? '').startsWith(prefix)),
-	);
-
-	await Promise.all(
-		affected.map(async n => {
-			// Mirror request-changed: protect in-memory edits on dirty linked
-			// files. Mark them stale so the reload dialog picks it up.
-			if (linkedDirty[n.id]) {
-				api.dispatch(projectActions.linkedStaleMarked({ requestId: n.id }));
-				return;
-			}
-			const refreshed = await readRequestNode(n.filePath);
-			api.dispatch(insertRequestNode(refreshed));
-		}),
-	);
 }
