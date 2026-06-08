@@ -1,7 +1,6 @@
 import path from 'node:path';
 
 import { ensureWithinProject } from '@beak/apps-host-electron/ipc-layer/fs-service';
-import { getProjectFolder } from '@beak/apps-host-electron/ipc-layer/utils';
 import {
 	ExtensionsMessages,
 	type IpcExtensionsServiceMain,
@@ -17,8 +16,9 @@ import {
 	ProjectExtensionRegistry,
 	packageNameFromType,
 } from '@beak/runtime-shared/extensions';
+import type { ExtensionSender } from '@beak/runtime-shared/ports/extension-runtime';
 import type { ValueSections, Context as VariableContext } from '@getbeak/types/values';
-import { type IpcMainInvokeEvent, type IpcRendererEvent, ipcMain, type WebContents } from 'electron';
+import { ipcMain } from 'electron';
 import fs from 'fs-extra';
 import ivm from 'isolated-vm';
 import { Logger } from 'tslog';
@@ -26,7 +26,6 @@ import { Logger } from 'tslog';
 import getBeakHost from '../../host';
 import { type LogLevel, setupLoggerForFsLogging } from '../logger';
 
-type IpcEvent = IpcMainInvokeEvent | IpcRendererEvent;
 type RequestPayload<T> = IpcMessage<T>;
 
 interface IsolateRecord {
@@ -193,11 +192,11 @@ export default class ExtensionManager {
 	 * available. Idempotent — re-loading the same package replaces its
 	 * isolate cleanly.
 	 */
-	async load(event: IpcEvent, projectId: string, extensionPath: string): Promise<LoadedExtension> {
+	async load(projectFolder: string, projectId: string, extensionPath: string): Promise<LoadedExtension> {
 		const manifests = new ExtensionManifests(getBeakHost().providers);
 		const manifest = await manifests.parse(extensionPath, {
 			validateScriptPath: async scriptPath => {
-				await ensureWithinProject(getProjectFolder(event), scriptPath);
+				await ensureWithinProject(projectFolder, scriptPath);
 			},
 		});
 		const userSource = await fs.readFile(manifest.scriptPath, 'utf8');
@@ -309,13 +308,13 @@ export default class ExtensionManager {
 		projectId: string,
 		type: string,
 		varCtx: VariableContext,
-		webContents: WebContents,
+		sender: ExtensionSender,
 		payload: unknown,
 		recursiveDepth: number,
 	): Promise<string> {
 		const { handles, record } = this.resolve(projectId, type);
 
-		await this.bindParseValueSections(record, webContents, recursiveDepth);
+		await this.bindParseValueSections(record, sender, recursiveDepth);
 
 		return await callIntoIsolate(handles.getValue, [varCtx, payload, recursiveDepth]);
 	}
@@ -324,14 +323,14 @@ export default class ExtensionManager {
 		projectId: string,
 		type: string,
 		varCtx: VariableContext,
-		webContents: WebContents,
+		sender: ExtensionSender,
 		payload: unknown,
 		recursiveDepth: number,
 	): Promise<{ sha256: string; size: number; contentType?: string } | null> {
 		const { handles, record } = this.resolve(projectId, type);
 		if (!handles.getAssetRef) return null;
 
-		await this.bindParseValueSections(record, webContents, recursiveDepth);
+		await this.bindParseValueSections(record, sender, recursiveDepth);
 
 		return await callIntoIsolate(handles.getAssetRef, [varCtx, payload, recursiveDepth]);
 	}
@@ -380,14 +379,14 @@ export default class ExtensionManager {
 
 	private async bindParseValueSections(
 		record: IsolateRecord,
-		webContents: WebContents,
+		sender: ExtensionSender,
 		recursiveDepth: number,
 	): Promise<void> {
 		const service = this.service;
 		const ref = new ivm.Reference(async (varCtx: VariableContext, parts: ValueSections) => {
 			const uniqueSessionId = ksuid.generate('rtvparsersp').toString();
 
-			service.variableParseValueSections(webContents, {
+			service.variableParseValueSectionsBySender(sender, {
 				uniqueSessionId,
 				context: varCtx,
 				parts,
