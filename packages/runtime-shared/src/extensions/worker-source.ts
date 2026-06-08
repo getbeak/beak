@@ -53,109 +53,50 @@ globalThis.addEventListener = (type, fn) => {
 	if (type === 'message') parentPort.on('message', data => fn({ data }));
 };
 
-const sandboxGlobals = Object.create(null);
-
-// Global values
-sandboxGlobals.undefined = undefined;
-sandboxGlobals.NaN = NaN;
-sandboxGlobals.Infinity = Infinity;
-
-// Global functions
-sandboxGlobals.parseInt = parseInt;
-sandboxGlobals.parseFloat = parseFloat;
-sandboxGlobals.isNaN = isNaN;
-sandboxGlobals.isFinite = isFinite;
-sandboxGlobals.encodeURI = encodeURI;
-sandboxGlobals.encodeURIComponent = encodeURIComponent;
-sandboxGlobals.decodeURI = decodeURI;
-sandboxGlobals.decodeURIComponent = decodeURIComponent;
-
-// Fundamental objects + Function constructor (sandboxed: code it
-// compiles inherits the same restricted globals via the vm context).
-sandboxGlobals.Object = Object;
-sandboxGlobals.Function = Function;
-sandboxGlobals.Boolean = Boolean;
-sandboxGlobals.Symbol = Symbol;
-
-// Errors
-sandboxGlobals.Error = Error;
-sandboxGlobals.TypeError = TypeError;
-sandboxGlobals.RangeError = RangeError;
-sandboxGlobals.SyntaxError = SyntaxError;
-sandboxGlobals.ReferenceError = ReferenceError;
-sandboxGlobals.EvalError = EvalError;
-sandboxGlobals.URIError = URIError;
-sandboxGlobals.AggregateError = AggregateError;
-
-// Numbers + math
-sandboxGlobals.Number = Number;
-sandboxGlobals.BigInt = BigInt;
-sandboxGlobals.Math = Math;
-sandboxGlobals.Date = Date;
-
-// Text
-sandboxGlobals.String = String;
-sandboxGlobals.RegExp = RegExp;
-
-// Collections
-sandboxGlobals.Array = Array;
-sandboxGlobals.Map = Map;
-sandboxGlobals.Set = Set;
-sandboxGlobals.WeakMap = WeakMap;
-sandboxGlobals.WeakSet = WeakSet;
-
-// Structured data
-sandboxGlobals.JSON = JSON;
-sandboxGlobals.ArrayBuffer = ArrayBuffer;
-sandboxGlobals.DataView = DataView;
-sandboxGlobals.Uint8Array = Uint8Array;
-sandboxGlobals.Uint8ClampedArray = Uint8ClampedArray;
-sandboxGlobals.Uint16Array = Uint16Array;
-sandboxGlobals.Uint32Array = Uint32Array;
-sandboxGlobals.Int8Array = Int8Array;
-sandboxGlobals.Int16Array = Int16Array;
-sandboxGlobals.Int32Array = Int32Array;
-sandboxGlobals.Float32Array = Float32Array;
-sandboxGlobals.Float64Array = Float64Array;
-sandboxGlobals.BigInt64Array = BigInt64Array;
-sandboxGlobals.BigUint64Array = BigUint64Array;
-
-// Control abstractions
-sandboxGlobals.Promise = Promise;
-
-// Reflection
-sandboxGlobals.Reflect = Reflect;
-sandboxGlobals.Proxy = Proxy;
-
-// Intl — locale-aware formatting; pure with no external state.
-sandboxGlobals.Intl = Intl;
-
-// Deliberately omitted (security): process, Buffer, require, globalThis-as-Node,
-// dynamic import(), fetch, crypto, console, setTimeout/setInterval, URL,
-// SharedArrayBuffer, Atomics, WebAssembly, eval (blocked via codeGeneration).
-
-const sandboxContext = vm.createContext(sandboxGlobals, {
+// Build the sandbox as a *fresh* vm context — the empty seed gives the
+// realm its own primordials (Object/Function/Array/…) so user code
+// can't walk \`anyValue.constructor.constructor\` up to the outer realm's
+// Function constructor and call it as a code-gen-permitted escape.
+// codeGeneration.{strings:false,wasm:false} blocks the in-context
+// Function constructor + eval + WebAssembly.compile.
+const sandboxContext = vm.createContext({}, {
 	name: 'beak-extension-sandbox',
-	// Disallow Function/eval from generating code from strings inside
-	// the sandbox. WASM is also off — extensions don't need it.
 	codeGeneration: { strings: false, wasm: false },
 });
 
+// Strip globals that vm hands us by default but extensions shouldn't reach:
+//   console        — extensions use extCtx.log
+//   Atomics + SharedArrayBuffer — memory-race surface, not needed
+//   WebAssembly    — wasm:false already blocks compile, drop the object too
+//   escape/unescape— legacy noise, no use case
+//   eval           — strings:false already blocks usage; drop the binding
+//   globalThis is left in place — it's the sandbox's own globalThis,
+//   not the outer one.
+const stripped = ['console', 'Atomics', 'SharedArrayBuffer', 'WebAssembly', 'escape', 'unescape', 'eval'];
+vm.runInContext(JSON.stringify(stripped) + '.forEach(k => { delete globalThis[k]; });', sandboxContext);
+
 globalThis.__beak_vm_evaluate = function (userSource) {
-	const module = { exports: {} };
-	sandboxGlobals.module = module;
-	sandboxGlobals.exports = module.exports;
+	// module and exports MUST be created inside the sandbox realm; passing
+	// outer-realm objects in lets the user walk
+	// \`module.constructor.constructor('return process')()\` to the outer
+	// Function and call it (codeGeneration restriction is per-context).
+	vm.runInContext('globalThis.module = { exports: {} }; globalThis.exports = module.exports;', sandboxContext);
 	try {
 		vm.runInContext(
 			'(function (module, exports) {' + userSource + '\\n})(module, exports);',
 			sandboxContext,
 			{ filename: 'beak-extension.js' },
 		);
+		// Read the user's exports out of the sandbox. The returned reference is
+		// a sandbox-realm object; cross-realm reads are fine, writes from the
+		// outer realm would mutate sandbox state (we don't do that).
+		return vm.runInContext(
+			'(module.exports && module.exports.default !== undefined) ? module.exports.default : module.exports',
+			sandboxContext,
+		);
 	} finally {
-		delete sandboxGlobals.module;
-		delete sandboxGlobals.exports;
+		vm.runInContext('delete globalThis.module; delete globalThis.exports;', sandboxContext);
 	}
-	return module.exports && (module.exports.default !== undefined ? module.exports.default : module.exports);
 };
 `;
 
