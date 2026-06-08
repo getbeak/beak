@@ -218,6 +218,10 @@ function extractCookiesFromResponse(response: { url: string; headers: Record<str
 		return [];
 	}
 
+	// Mint the creation/lastAccessed timestamp once here, at dispatch-prep time,
+	// so every cookie in this response batch shares the same epoch and the value
+	// never originates inside a reducer (ADR 0005 §2).
+	const now = Date.now();
 	const out: CookieEntry[] = [];
 	for (const [name, value] of Object.entries(response.headers)) {
 		if (name.toLowerCase() !== 'set-cookie') continue;
@@ -225,7 +229,7 @@ function extractCookiesFromResponse(response: { url: string; headers: Record<str
 		// `splitFoldedSetCookies` puts them back into individual cookie strings.
 		const candidates = splitFoldedSetCookies(value);
 		for (const raw of candidates) {
-			const cookie = parseSetCookie(raw, { requestHost: host, requestPath });
+			const cookie = parseSetCookie(raw, { requestHost: host, requestPath, now });
 			if (cookie) out.push(cookie);
 		}
 	}
