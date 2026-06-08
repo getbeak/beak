@@ -1,8 +1,7 @@
 import ksuid from '@beak/ksuid';
+import { ipcFsService } from '@beak/ui/lib/ipc';
 import type { VariableSet } from '@getbeak/types/variable-sets';
 import path from 'path-browserify';
-
-import { ipcFsService } from '@beak/ui/lib/ipc';
 import { generateSafeNewPath } from './utils';
 
 const variableSetNameWordlist = [
