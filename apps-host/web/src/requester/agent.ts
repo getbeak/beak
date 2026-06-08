@@ -175,19 +175,21 @@ function handleAgentFrame(
 		case 'head_received':
 		case 'sse_event': {
 			const result = flightHeartbeatSchema.safeParse(frame);
-			if (!result.success) {
+			if (!result.success || result.data.stage !== eventType) {
+				// The SSE `event:` line and the JSON body's `stage` must
+				// agree — otherwise a malicious agent could ship an
+				// envelope whose dispatch path doesn't match its declared
+				// stage (e.g. `event: fetch_response` carrying a
+				// `reading_body` payload bypasses the base64 decode).
 				callbacks.failed({ flightId, error: new Error(`agent sent malformed ${eventType} frame`) });
 				return;
 			}
-			// Wire shape for these stages is identical to the in-process shape
-			// (no base64 buffer involved); the cast crosses the type system
-			// because the discriminated union still includes `reading_body`.
 			callbacks.heartbeat(result.data as FlightHeartbeatPayload);
 			return;
 		}
 		case 'reading_body': {
 			const result = flightHeartbeatSchema.safeParse(frame);
-			if (!result.success || result.data.stage !== 'reading_body') {
+			if (!result.success || result.data.stage !== eventType) {
 				callbacks.failed({ flightId, error: new Error('agent sent malformed reading_body frame') });
 				return;
 			}
