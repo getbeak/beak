@@ -2,8 +2,8 @@ import { workflowSchema } from '@beak/state/schemas';
 import type { WorkflowFile } from '@beak/state/workflows';
 import path from 'path-browserify';
 
-import { readJsonAndValidate } from '../fs';
-import { ipcFsService } from '../ipc';
+import { readJsonAndValidate } from '../../lib/fs';
+import { ipcFsService } from '../../lib/ipc';
 
 export const WORKFLOWS_DIR = 'workflows';
 

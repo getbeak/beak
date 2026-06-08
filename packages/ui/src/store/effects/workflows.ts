@@ -13,7 +13,7 @@ import {
 	removeWorkflow,
 	WORKFLOWS_DIR,
 	writeWorkflow,
-} from '@beak/ui/lib/beak-workflow';
+} from '@beak/ui/services/workflows';
 import createFsEmitter, { type FsSubscription, scanDirectoryRecursively } from '@beak/ui/lib/fs-emitter';
 import { ipcDialogService, ipcFsService } from '@beak/ui/lib/ipc';
 import path from 'path-browserify';
