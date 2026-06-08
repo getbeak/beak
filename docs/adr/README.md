@@ -41,10 +41,12 @@ Do **not** write an ADR for:
 
 ## Index
 
-| #    | Status   | Title                                                                  |
-| ---- | -------- | ---------------------------------------------------------------------- |
-| 0000 | Accepted | [Adopt MADR-style ADRs and Gherkin feature files](0000-adr-process.md) |
-| 0001 | Accepted | [Local agent for the web host](0001-local-agent-for-web-host.md)       |
+| #    | Status   | Title                                                                                              |
+| ---- | -------- | -------------------------------------------------------------------------------------------------- |
+| 0000 | Accepted | [Adopt MADR-style ADRs and Gherkin feature files](0000-adr-process.md)                             |
+| 0001 | Accepted | [Local agent for the web host](0001-local-agent-for-web-host.md)                                   |
+| 0002 | Proposed | [Signed-challenge identity verification for the local agent](0002-signed-challenge-identity-verification.md) |
+| 0003 | Proposed | [Agent token storage beyond `localStorage`](0003-agent-token-storage.md)                           |
 
 ## Granularity guideline
 
