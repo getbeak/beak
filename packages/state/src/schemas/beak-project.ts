@@ -1,3 +1,4 @@
+import { assetRefSchema } from '@beak/common/types/asset-ref';
 import { z } from 'zod';
 
 import { propertyConstraintsSchema } from './request-schema';
@@ -232,14 +233,7 @@ const bodySchema = z.discriminatedUnion('type', [
 					 * Phase 7+8 store. When present this is the canonical body source
 					 * for flight execution; `fileReferenceId` is read-only legacy.
 					 */
-					assetRef: z
-						.object({
-							sha256: z.string().regex(/^[0-9a-f]{64}$/),
-							size: z.number().int().nonnegative(),
-							contentType: z.string().optional(),
-						})
-						.strict()
-						.optional(),
+					assetRef: assetRefSchema.optional(),
 					contentType: z.string().optional(),
 				})
 				.strict(),
