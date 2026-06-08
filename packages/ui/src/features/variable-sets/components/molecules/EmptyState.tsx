@@ -1,4 +1,5 @@
 import Button from '@beak/ui/components/atoms/Button';
+import ksuid from '@beak/ksuid';
 import { insertNewGroup, insertNewItem } from '@beak/ui/store/variable-sets/actions';
 import { Box, Flex } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
@@ -48,8 +49,8 @@ const EmptyState: React.FC<EmptyStateProps> = ({ variant, variableSet }) => {
 			<Button
 				size='sm'
 				onClick={() => {
-					if (isSets) dispatch(insertNewGroup({ id: variableSet, setName: '' }));
-					else dispatch(insertNewItem({ id: variableSet, itemName: '' }));
+					if (isSets) dispatch(insertNewGroup({ id: variableSet, setId: ksuid.generate('set').toString(), setName: '' }));
+					else dispatch(insertNewItem({ id: variableSet, itemId: ksuid.generate('item').toString(), itemName: '' }));
 				}}
 			>
 				<Flex align='center' gap='1.5'>

@@ -1,4 +1,5 @@
 import { TypedObject } from '@beak/common/helpers/typescript';
+import ksuid from '@beak/ksuid';
 import { valueParts } from '@beak/state';
 import DebouncedInput from '@beak/ui/components/atoms/DebouncedInput';
 import VariableInput from '@beak/ui/features/variable-input/components/VariableInput';
@@ -148,7 +149,7 @@ const VariableCard: React.FC<VariableCardProps> = ({
 					>
 						<RowIcon
 							label='Duplicate variable'
-							onClick={() => dispatch(duplicateItem({ id: variableSetName, itemId }))}
+							onClick={() => dispatch(duplicateItem({ id: variableSetName, itemId, newItemId: ksuid.generate('item').toString(), now: Date.now() }))}
 							hoverColor='accent.pink'
 						>
 							<Copy size={12} strokeWidth={2} />
@@ -209,7 +210,7 @@ const VariableCard: React.FC<VariableCardProps> = ({
 										</Menu.Item>
 										<Menu.Item
 											value='duplicate'
-											onClick={() => dispatch(duplicateItem({ id: variableSetName, itemId }))}
+											onClick={() => dispatch(duplicateItem({ id: variableSetName, itemId, newItemId: ksuid.generate('item').toString(), now: Date.now() }))}
 											fontSize='12px'
 											gap='2'
 											borderRadius='sm'

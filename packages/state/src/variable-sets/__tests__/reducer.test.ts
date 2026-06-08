@@ -207,7 +207,7 @@ describe('variable-groups reducer (core)', () => {
 			},
 		};
 		const seeded = reducer(empty, insertNewVariableSet({ id: 'vg1', variableSet: base }));
-		const dup = reducer(seeded, duplicateItem({ id: 'vg1', itemId: 'item-1' }));
+		const dup = reducer(seeded, duplicateItem({ id: 'vg1', itemId: 'item-1', newItemId: 'item-copy-1', now: 1000 }));
 
 		const itemEntries = Object.entries(dup.variableSets.vg1.items);
 		expect(itemEntries).toHaveLength(2);
@@ -228,7 +228,7 @@ describe('variable-groups reducer (core)', () => {
 			},
 		};
 		const seeded = reducer(empty, insertNewVariableSet({ id: 'vg1', variableSet: base }));
-		const dup = reducer(seeded, duplicateGroup({ id: 'vg1', setId: 'set-b' }));
+		const dup = reducer(seeded, duplicateGroup({ id: 'vg1', setId: 'set-b', newSetId: 'set-copy-b', now: 1000 }));
 
 		const setEntries = Object.entries(dup.variableSets.vg1.sets);
 		expect(setEntries.map(([, v]) => v)).toEqual(['dev', 'prod', 'prod copy']);

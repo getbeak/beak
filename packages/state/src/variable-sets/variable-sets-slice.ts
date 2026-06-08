@@ -1,5 +1,4 @@
 import { TypedObject } from '@beak/common/helpers/typescript';
-import ksuid from '@beak/ksuid';
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
 import * as actions from './actions';
@@ -69,13 +68,13 @@ function insertKeyAfter<T>(record: Record<string, T>, afterKey: string, newKey: 
  * TODO ADR 0005 §4 — inline business logic (uniqueName); extract to a
  * dedicated utility once the §4 sweep lands.
  */
-function uniqueName(base: string, taken: string[]): string {
+function uniqueName(base: string, taken: string[], now: number): string {
 	if (!taken.includes(base)) return base;
 	for (let i = 2; i < 1000; i++) {
 		const candidate = `${base} ${i}`;
 		if (!taken.includes(candidate)) return candidate;
 	}
-	return `${base} ${Date.now()}`; // TODO ADR 0005 §2 — side-effectful Date.now() in reducer
+	return `${base} ${now}`;
 }
 
 // ---------------------------------------------------------------------------
@@ -98,15 +97,13 @@ export function reduceInsertNewVariableSet(state: VariableSetsState, { payload }
 export function reduceInsertNewGroup(state: VariableSetsState, { payload }: PayloadAction<InsertNewGroupPayload>) {
 	const variableSet = state.variableSets[payload.id];
 	if (!variableSet) return;
-	// TODO ADR 0005 §2 — ksuid.generate() call inside reducer; mint IDs in the action creator / effect instead
-	variableSet.sets[ksuid.generate('set').toString()] = payload.setName;
+	variableSet.sets[payload.setId] = payload.setName;
 }
 
 export function reduceInsertNewItem(state: VariableSetsState, { payload }: PayloadAction<InsertNewItemPayload>) {
 	const variableSet = state.variableSets[payload.id];
 	if (!variableSet) return;
-	// TODO ADR 0005 §2 — ksuid.generate() call inside reducer; mint IDs in the action creator / effect instead
-	variableSet.items[ksuid.generate('item').toString()] = payload.itemName;
+	variableSet.items[payload.itemId] = payload.itemName;
 }
 
 export function reduceUpdateGroupName(state: VariableSetsState, { payload }: PayloadAction<UpdateGroupNamePayload>) {
@@ -172,10 +169,9 @@ export function reduceDuplicateItem(state: VariableSetsState, { payload }: Paylo
 	if (!variableSet || !(payload.itemId in variableSet.items)) return;
 
 	const sourceName = variableSet.items[payload.itemId];
-	// TODO ADR 0005 §2 — ksuid.generate() call inside reducer; mint IDs in the action creator / effect instead
-	const newItemId = ksuid.generate('item').toString();
+	const newItemId = payload.newItemId;
 	// TODO ADR 0005 §4 — inline uniqueName business logic; extract once the §4 sweep lands
-	const newName = uniqueName(`${sourceName} copy`, TypedObject.values(variableSet.items));
+	const newName = uniqueName(`${sourceName} copy`, TypedObject.values(variableSet.items), payload.now);
 
 	variableSet.items = insertKeyAfter(variableSet.items, payload.itemId, newItemId, newName);
 
@@ -192,10 +188,9 @@ export function reduceDuplicateGroup(state: VariableSetsState, { payload }: Payl
 	if (!variableSet || !(payload.setId in variableSet.sets)) return;
 
 	const sourceName = variableSet.sets[payload.setId];
-	// TODO ADR 0005 §2 — ksuid.generate() call inside reducer; mint IDs in the action creator / effect instead
-	const newSetId = ksuid.generate('set').toString();
+	const newSetId = payload.newSetId;
 	// TODO ADR 0005 §4 — inline uniqueName business logic; extract once the §4 sweep lands
-	const newName = uniqueName(`${sourceName} copy`, TypedObject.values(variableSet.sets));
+	const newName = uniqueName(`${sourceName} copy`, TypedObject.values(variableSet.sets), payload.now);
 
 	variableSet.sets = insertKeyAfter(variableSet.sets, payload.setId, newSetId, newName);
 
