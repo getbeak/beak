@@ -6,27 +6,16 @@ import { webIpcMain } from './ipc';
 const service = new IpcProjectServiceMain(webIpcMain);
 
 service.registerOpenFolder(async (_event, projectPath) => {
-	const project = await getBeakHost().project.readProjectFile(projectPath, {
-		runMigrations: true,
-	});
+	const result = await getBeakHost().projectOpener.openProjectFolder(projectPath);
 
-	if (!project) {
-		alert('Unable to load project, the project you tried to open could not be found.');
+	if (!result) return;
 
-		return;
-	}
-
-	if (!project.name) {
-		alert('Unable to load project, please check it is not corrupt and try again');
-
-		return;
-	}
-
-	window.location.assign(`/project/${project.id}`);
+	window.location.assign(`/project/${result.id}`);
 });
 
 service.registerOpenProject(async _event => {
-	alert('Not implemented: `registerOpenProject`');
+	// The web host has no native folder picker — project selection happens
+	// through the in-app welcome screen. This IPC is a no-op here.
 });
 
 service.registerRenameProjectAtPath(async (_event, payload) => {
