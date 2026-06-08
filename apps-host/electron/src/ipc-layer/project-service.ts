@@ -6,7 +6,6 @@ import { dialog, type IpcMainInvokeEvent, ipcMain } from 'electron';
 import getBeakHost from '../host';
 import { openProjectDialog, tryOpenProjectFolder } from '../host/project';
 import { closeWindow, createProjectMainWindow, tryCloseWelcomeWindow, windowStack } from '../window-management';
-import { getProjectFolder } from './utils';
 
 const service = new IpcProjectServiceMain(ipcMain);
 

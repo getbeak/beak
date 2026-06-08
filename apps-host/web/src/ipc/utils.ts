@@ -1,17 +1,19 @@
+import { getActiveProjectIdHint } from '@beak/ui/services/web-bridge';
+
 import { getRootMode } from '../host';
 
 const projectIdRegex = /\/project\/(.+)/g;
 
-export function getCurrentProjectId() {
+export function getCurrentProjectId(): string | null {
 	const { pathname } = window.location;
 
 	const matches = [...pathname.matchAll(projectIdRegex)][0];
 
-	const projectId = matches[1];
+	if (matches?.[1]) return matches[1];
 
-	if (!projectId) return null;
-
-	return projectId;
+	// Memory-mode projects don't navigate the URL; the renderer leaves a
+	// hint in sessionStorage so we can still scope per-project work.
+	return getActiveProjectIdHint();
 }
 
 /**

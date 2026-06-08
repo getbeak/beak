@@ -18,7 +18,6 @@ const versionRelease = Boolean(process.env.VERSION_RELEASE);
 const versionIdentifier = packageJson.version;
 const commitIdentifier = process.env.COMMIT_IDENTIFIER;
 const releaseIdentifier = versionRelease ? `beak-app@${versionIdentifier}` : commitIdentifier;
-const sourcePathInDev = environment === 'development' ? 'src' : '';
 
 /**
  * @type {import('vite').UserConfig}
@@ -34,7 +33,7 @@ export default {
 		alias: {
 			'@beak/apps-host-web': path.join(__dirname, './src'),
 
-			'@beak/ui': path.join(__dirname, `../../packages/ui/${sourcePathInDev}`),
+			'@beak/ui': path.join(__dirname, '../../packages/ui/src'),
 			'@beak/common': path.join(__dirname, '../../packages/common/src'),
 			'@beak/runtime-shared': path.join(__dirname, '../../packages/runtime-shared/src'),
 			'@beak/state': path.join(__dirname, '../../packages/state/src'),

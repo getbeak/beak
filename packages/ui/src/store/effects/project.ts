@@ -1,4 +1,3 @@
-import Squawk from '@beak/common/utils/squawk';
 import ksuid from '@beak/ksuid';
 import { provenance } from '@beak/state';
 import {
@@ -11,7 +10,6 @@ import {
 	projectLoadFailed,
 	projectOpened,
 	removeNodeFromStore,
-	removeNodeFromStoreByPath,
 	renameNodeInTree,
 	renameProject,
 	startProject,
@@ -24,7 +22,7 @@ import {
 	makeTabPermanent,
 } from '@beak/ui/features/tabs/store/actions';
 import type { ActiveRename } from '@beak/ui/features/tree-view/types';
-import { createFolderNode, readFolderNode, removeFolderNode, renameFolderNode } from '@beak/ui/lib/beak-project/folder';
+import { createFolderNode, removeFolderNode, renameFolderNode } from '@beak/ui/lib/beak-project/folder';
 import { moveNodesOnDisk } from '@beak/ui/lib/beak-project/nodes';
 import { readProjectFile } from '@beak/ui/lib/beak-project/project';
 import {
@@ -36,7 +34,7 @@ import {
 	unlinkAndPersistAs,
 	writeRequestNode,
 } from '@beak/ui/lib/beak-project/request';
-import { ipcDialogService, ipcEncryptionService, ipcFsService } from '@beak/ui/lib/ipc';
+import { ipcDialogService, ipcFsService } from '@beak/ui/lib/ipc';
 import { loadProject, registerFolderRename, registerRequestRename, startTreeWatcher } from '@beak/ui/services/project';
 import type { FolderNode, RequestNode, Tree } from '@getbeak/types/nodes';
 import path from 'path-browserify';
@@ -44,7 +42,6 @@ import * as uuid from 'uuid';
 import type { AppStartListening } from '../listener';
 import * as projectActions from '../project/actions';
 import {
-	alertInsert,
 	createNewFolder,
 	createNewRequest,
 	duplicateRequest,

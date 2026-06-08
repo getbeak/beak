@@ -8,6 +8,7 @@ import {
 	type WriteJsonReq,
 	type WriteTextReq,
 } from '@beak/common/ipc/fs';
+import Squawk from '@beak/common/utils/squawk';
 
 import getBeakHost from '../host';
 import { fileOrFolderExists } from './fs-shared';
@@ -16,15 +17,29 @@ import { getCurrentProjectFolder } from './utils';
 
 const service = new IpcFsServiceMain(webIpcMain);
 
+// Memory-mode projects on the web don't have a `project.json` on OPFS yet —
+// `ensureWithinProject` throws `path_not_project` for them. Reads return safe
+// defaults so the renderer can still load preferences / discover that nothing
+// exists, and writes silently swallow because there's no disk identity to
+// persist to until the user runs "Save Project As…".
+function isMissingProjectError(error: unknown): boolean {
+	return error instanceof Squawk && error.code === 'path_not_project';
+}
+
 service.registerReadJson(async (_event, payload: ReadJsonReq) => {
 	const projectFolder = getCurrentProjectFolder();
 
 	if (!projectFolder) return '';
 
-	const filePath = await ensureWithinProject(projectFolder, payload.filePath);
-	const fileJson = await getBeakHost().p.node.fs.promises.readFile(filePath, 'utf8');
+	try {
+		const filePath = await ensureWithinProject(projectFolder, payload.filePath);
+		const fileJson = await getBeakHost().p.node.fs.promises.readFile(filePath, 'utf8');
 
-	return JSON.parse(fileJson);
+		return JSON.parse(fileJson);
+	} catch (error) {
+		if (isMissingProjectError(error)) return '';
+		throw error;
+	}
 });
 
 service.registerWriteJson(async (_event, payload: WriteJsonReq) => {
@@ -32,11 +47,20 @@ service.registerWriteJson(async (_event, payload: WriteJsonReq) => {
 
 	if (!projectFolder) return '';
 
-	const filePath = await ensureWithinProject(projectFolder, payload.filePath);
+	try {
+		const filePath = await ensureWithinProject(projectFolder, payload.filePath);
 
-	await ensureParentDirectoryExists(filePath);
+		await ensureParentDirectoryExists(filePath);
 
-	return await getBeakHost().p.node.fs.promises.writeFile(filePath, JSON.stringify(payload.content, null, '\t'), 'utf8');
+		return await getBeakHost().p.node.fs.promises.writeFile(
+			filePath,
+			JSON.stringify(payload.content, null, '\t'),
+			'utf8',
+		);
+	} catch (error) {
+		if (isMissingProjectError(error)) return '';
+		throw error;
+	}
 });
 
 service.registerReadText(async (_event, payload: ReadTextReq) => {
@@ -44,9 +68,14 @@ service.registerReadText(async (_event, payload: ReadTextReq) => {
 
 	if (!projectFolder) return '';
 
-	const filePath = await ensureWithinProject(projectFolder, payload.filePath);
+	try {
+		const filePath = await ensureWithinProject(projectFolder, payload.filePath);
 
-	return await getBeakHost().p.node.fs.promises.readFile(filePath, 'utf8');
+		return await getBeakHost().p.node.fs.promises.readFile(filePath, 'utf8');
+	} catch (error) {
+		if (isMissingProjectError(error)) return '';
+		throw error;
+	}
 });
 
 service.registerWriteText(async (_event, payload: WriteTextReq) => {
@@ -54,11 +83,16 @@ service.registerWriteText(async (_event, payload: WriteTextReq) => {
 
 	if (!projectFolder) return '';
 
-	const filePath = await ensureWithinProject(projectFolder, payload.filePath);
+	try {
+		const filePath = await ensureWithinProject(projectFolder, payload.filePath);
 
-	await ensureParentDirectoryExists(filePath);
+		await ensureParentDirectoryExists(filePath);
 
-	return await getBeakHost().p.node.fs.promises.writeFile(filePath, payload.content, 'utf8');
+		return await getBeakHost().p.node.fs.promises.writeFile(filePath, payload.content, 'utf8');
+	} catch (error) {
+		if (isMissingProjectError(error)) return '';
+		throw error;
+	}
 });
 
 service.registerPathExists(async (_event, payload: SimplePath) => {
@@ -66,9 +100,14 @@ service.registerPathExists(async (_event, payload: SimplePath) => {
 
 	if (!projectFolder) return false;
 
-	const filePath = await ensureWithinProject(projectFolder, payload.filePath);
+	try {
+		const filePath = await ensureWithinProject(projectFolder, payload.filePath);
 
-	return fileOrFolderExists(filePath);
+		return fileOrFolderExists(filePath);
+	} catch (error) {
+		if (isMissingProjectError(error)) return false;
+		throw error;
+	}
 });
 
 service.registerEnsureFile(async (_event, payload: SimplePath) => {
@@ -76,9 +115,14 @@ service.registerEnsureFile(async (_event, payload: SimplePath) => {
 
 	if (!projectFolder) return;
 
-	const filePath = await ensureWithinProject(projectFolder, payload.filePath);
+	try {
+		const filePath = await ensureWithinProject(projectFolder, payload.filePath);
 
-	await ensureParentDirectoryExists(filePath);
+		await ensureParentDirectoryExists(filePath);
+	} catch (error) {
+		if (isMissingProjectError(error)) return;
+		throw error;
+	}
 });
 
 service.registerEnsureDir(async (_event, payload: SimplePath) => {
@@ -86,9 +130,14 @@ service.registerEnsureDir(async (_event, payload: SimplePath) => {
 
 	if (!projectFolder) return;
 
-	const filePath = await ensureWithinProject(projectFolder, payload.filePath);
+	try {
+		const filePath = await ensureWithinProject(projectFolder, payload.filePath);
 
-	await ensureParentDirectoryExists(filePath);
+		await ensureParentDirectoryExists(filePath);
+	} catch (error) {
+		if (isMissingProjectError(error)) return;
+		throw error;
+	}
 });
 
 service.registerRemove(async (_event, payload: SimplePath) => {
@@ -96,11 +145,16 @@ service.registerRemove(async (_event, payload: SimplePath) => {
 
 	if (!projectFolder) return;
 
-	const filePath = await ensureWithinProject(projectFolder, payload.filePath);
+	try {
+		const filePath = await ensureWithinProject(projectFolder, payload.filePath);
 
-	// User-facing "delete" — match the electron handler's `shell.trashItem`
-	// semantics by recursing into folders and tolerating already-gone paths.
-	await getBeakHost().providers.node.fs.promises.rm(filePath, { recursive: true, force: true });
+		// User-facing "delete" — match the electron handler's `shell.trashItem`
+		// semantics by recursing into folders and tolerating already-gone paths.
+		await getBeakHost().providers.node.fs.promises.rm(filePath, { recursive: true, force: true });
+	} catch (error) {
+		if (isMissingProjectError(error)) return;
+		throw error;
+	}
 });
 
 service.registerMove(async (_event, payload: MoveReq) => {
@@ -108,10 +162,15 @@ service.registerMove(async (_event, payload: MoveReq) => {
 
 	if (!projectFolder) return;
 
-	const srcPath = await ensureWithinProject(projectFolder, payload.srcPath);
-	const dstPath = await ensureWithinProject(projectFolder, payload.dstPath);
+	try {
+		const srcPath = await ensureWithinProject(projectFolder, payload.srcPath);
+		const dstPath = await ensureWithinProject(projectFolder, payload.dstPath);
 
-	await getBeakHost().p.node.fs.promises.rename(srcPath, dstPath);
+		await getBeakHost().p.node.fs.promises.rename(srcPath, dstPath);
+	} catch (error) {
+		if (isMissingProjectError(error)) return;
+		throw error;
+	}
 });
 
 service.registerReadDir(async (_event, payload: ReadDirReq) => {
@@ -119,7 +178,13 @@ service.registerReadDir(async (_event, payload: ReadDirReq) => {
 
 	if (!projectFolder) return [];
 
-	const filePath = await ensureWithinProject(projectFolder, payload.filePath);
+	let filePath: string;
+	try {
+		filePath = await ensureWithinProject(projectFolder, payload.filePath);
+	} catch (error) {
+		if (isMissingProjectError(error)) return [];
+		throw error;
+	}
 	// lightning-fs partially supports the node fs.promises.readdir API but
 	// its `withFileTypes` handling returns `[name, stat]` tuples in some
 	// versions, which then break the downstream `path.join(dir, name)` call

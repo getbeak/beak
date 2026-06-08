@@ -102,7 +102,7 @@ const TabView: React.FC<TabViewProps> = ({ selectedTab, tabs, rightSlot }) => {
 			{ root, threshold: [0, 0.92, 1] },
 		);
 
-		children.forEach(el => observer.observe(el));
+		for (const el of children) observer.observe(el);
 		return () => observer.disconnect();
 	}, [sortedTabs]);
 

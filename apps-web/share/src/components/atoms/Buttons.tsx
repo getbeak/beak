@@ -1,4 +1,4 @@
-import { Box, type BoxProps, chakra } from '@chakra-ui/react';
+import { type BoxProps, chakra } from '@chakra-ui/react';
 import * as React from 'react';
 
 interface CtaButtonProps extends Omit<BoxProps, 'as'> {

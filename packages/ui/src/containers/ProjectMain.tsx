@@ -30,8 +30,6 @@ import { useProjectBootstrap } from '../hooks/use-project-bootstrap';
 import { useProjectLoading } from '../hooks/use-project-loading';
 import { useUnsavedChangesGuard } from '../hooks/use-unsaved-changes-guard';
 
-const embedded = Boolean(window.embeddedIndicator);
-
 const ProjectMain: React.FC = () => {
 	const [title, setTitle] = useState('Loading… - Beak');
 	const [setup, setSetup] = useState(false);

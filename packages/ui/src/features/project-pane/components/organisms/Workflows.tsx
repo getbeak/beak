@@ -57,6 +57,13 @@ const Workflows: React.FC = () => {
 		return ranked.map(r => workflows[r.id]).filter((wf): wf is NonNullable<typeof wf> => Boolean(wf));
 	}, [filter, workflows]);
 
+	// Tag chip bar above the row list. Click a chip to populate the filter
+	// input with the matching #tag prefix — discoverability for the new
+	// tag-filter path. Hidden until the project has at least a couple of
+	// tagged workflows so the chrome doesn't dominate small projects. Hoisted
+	// above the empty-state early-return so hook order stays stable.
+	const allTags = React.useMemo(() => extractAllTags(workflows), [workflows]);
+
 	if (total === 0) {
 		return (
 			<Box px='3' py='2' fontSize='11px' color='fg.subtle' lineHeight='1.45'>
@@ -66,11 +73,6 @@ const Workflows: React.FC = () => {
 	}
 
 	const showFilter = total >= 3;
-	// Tag chip bar above the row list. Click a chip to populate the filter
-	// input with the matching #tag prefix — discoverability for the new
-	// tag-filter path. Hidden until the project has at least a couple of
-	// tagged workflows so the chrome doesn't dominate small projects.
-	const allTags = React.useMemo(() => extractAllTags(workflows), [workflows]);
 	const activeTag = filter.trim().startsWith('#') ? filter.trim().slice(1).trim().toLowerCase() : '';
 
 	return (
