@@ -1,4 +1,7 @@
 import type { ActionReducerMapBuilder } from '@reduxjs/toolkit';
+import { deepCloneNodeData } from './clone';
+import { applyGraphReplacement, purgeRequestRefsFromWorkflows } from './graph-ops';
+import { normaliseWorkflowTags } from './tags';
 import type { WorkflowsState } from './types';
 import {
 	addEdge,
@@ -70,16 +73,9 @@ export function buildWorkflowsReducer<S extends WorkflowsState>(builder: ActionR
 		.addCase(setWorkflowTags, (state, { payload }) => {
 			const workflow = state.workflows[payload.id];
 			if (!workflow) return;
-			const seen = new Set<string>();
-			const next: string[] = [];
-			for (const raw of payload.tags) {
-				const tag = raw.trim().toLowerCase();
-				if (!tag || seen.has(tag)) continue;
-				seen.add(tag);
-				next.push(tag);
-			}
-			if (next.length === 0) delete workflow.tags;
-			else workflow.tags = next;
+			const normalised = normaliseWorkflowTags(payload.tags);
+			if (normalised) workflow.tags = normalised;
+			else delete workflow.tags;
 			touch(workflow, payload.now);
 		})
 		.addCase(setWorkflowParent, (state, { payload }) => {
@@ -156,13 +152,7 @@ export function buildWorkflowsReducer<S extends WorkflowsState>(builder: ActionR
 			const source = workflow.nodes.find(n => n.id === payload.sourceNodeId);
 			if (!source) return;
 			if (source.type === 'start') return;
-			// TODO ADR 0005 §4 — JSON clone is inline structural logic.
-			const cloned = {
-				...source,
-				id: payload.newNodeId,
-				position: payload.position,
-				data: JSON.parse(JSON.stringify(source.data)),
-			} as (typeof workflow.nodes)[number];
+			const cloned = deepCloneNodeData(source, payload.newNodeId, payload.position);
 			workflow.nodes.push(cloned);
 			touch(workflow, payload.now);
 		})
@@ -194,9 +184,9 @@ export function buildWorkflowsReducer<S extends WorkflowsState>(builder: ActionR
 		.addCase(replaceGraph, (state, { payload }) => {
 			const workflow = state.workflows[payload.id];
 			if (!workflow) return;
-			// TODO ADR 0005 §4 — graph replacement is structural; callers own the arrays.
-			workflow.nodes = payload.nodes;
-			workflow.edges = payload.edges;
+			const replacement = applyGraphReplacement(workflow, payload.nodes, payload.edges);
+			workflow.nodes = replacement.nodes;
+			workflow.edges = replacement.edges;
 			touch(workflow, payload.now);
 		})
 		.addCase(clearGraph, (state, { payload }) => {
@@ -210,18 +200,9 @@ export function buildWorkflowsReducer<S extends WorkflowsState>(builder: ActionR
 			delete state.workflows[payload];
 		})
 		.addCase(purgeRequestRefs, (state, { payload }) => {
-			// TODO ADR 0005 §4 — cross-workflow sweep; mirrors findRequestStepsUsing in helpers.ts.
 			const dropped = new Set(payload.requestIds);
 			if (dropped.size === 0) return;
-			for (const workflow of Object.values(state.workflows)) {
-				for (const node of workflow.nodes) {
-					if (node.type !== 'request') continue;
-					const d = node.data as { requestId: string | null };
-					if (d.requestId && dropped.has(d.requestId)) {
-						d.requestId = null;
-					}
-				}
-			}
+			purgeRequestRefsFromWorkflows(state.workflows, dropped);
 		});
 }
 
