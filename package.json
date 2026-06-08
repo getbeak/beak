@@ -70,7 +70,7 @@
 		"@biomejs/biome": "^2.4.15",
 		"@playwright/test": "^1.60.0",
 		"@types/node": "^25.7.0",
-		"@typescript/native-preview": "^7.0.0-dev.20260511.1",
+		"@typescript/native-preview": "^7.0.0-dev.20260608.1",
 		"cross-env": "^7.0.3",
 		"typescript": "^6.0.3",
 		"vitest": "^4.1.6"
