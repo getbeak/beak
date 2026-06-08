@@ -41,6 +41,12 @@ The decision to defer the runner is captured in
 - [`agent-flight.feature`](agent-flight.feature) — routing decisions,
   request execution against the agent (GET, POST, SSE upstream,
   timeout, binary), concurrency, and cancellation.
+- [`variable-input.feature`](variable-input.feature) — typing,
+  chip insertion, the `{` trigger flow, the state-modal popover,
+  clipboard round-trips, masking, missing-variable rendering,
+  disabled/readOnly states, single-line constraint, debounced
+  upstream sync, and the parity contract for every legacy call
+  site.
 
 Grouping mirrors the [ADR convention](../adr/README.md): one feature,
 one ADR; one feature, at most a couple of `.feature` files split along
