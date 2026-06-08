@@ -1,24 +1,21 @@
 import type { FolderNode, ValidRequestNode } from '@getbeak/types/nodes';
-import { createReducer } from '@reduxjs/toolkit';
 import { describe, expect, it } from 'vitest';
 
 import {
-	buildProjectTreeReducer,
 	initialProjectTreeState,
 	insertFolderNode,
 	insertProjectInfo,
 	insertRequestNode,
 	moveNodeInTree,
 	projectOpened,
+	projectReducer,
 	removeNodeFromStore,
 	removeNodeFromStoreByPath,
 	renameNodeInTree,
 	startProject,
 } from '..';
 
-const reducer = createReducer(initialProjectTreeState, builder => {
-	buildProjectTreeReducer(builder);
-});
+const reducer = projectReducer;
 
 function makeRequestNode(overrides: Partial<ValidRequestNode> = {}): ValidRequestNode {
 	return {
@@ -55,7 +52,7 @@ const empty = reducer(undefined, { type: '@@INIT' });
 
 describe('project tree reducer (core)', () => {
 	it('starts with an empty tree, unloaded, in `none` mode', () => {
-		expect(empty).toEqual({ loaded: false, mode: 'none', tree: {} });
+		expect(empty).toEqual(initialProjectTreeState);
 	});
 
 	it('startProject marks unloaded', () => {

@@ -47,6 +47,9 @@ export const initialProjectTreeState: ProjectTreeState = {
 	tree: {},
 };
 
+// ---------------------------------------------------------------------------
+// Action payload types
+
 export interface ProjectInfoPayload {
 	id: string;
 	name: string;
@@ -61,4 +64,29 @@ export interface ProjectOpenedPayload {
 
 export interface ProjectLoadFailedPayload {
 	error: SerializedSquawk;
+}
+
+export interface MaterialiseInMemoryProjectPayload {
+	id: string;
+	name: string;
+}
+
+export interface RenameProjectPayload {
+	name: string;
+}
+
+export interface RenameNodeInTreePayload {
+	nodeId: string;
+	name: string;
+}
+
+export interface MoveNodeInTreePayload {
+	/** ksuid for requests; folder.filePath for folders. */
+	nodeId: string;
+	/**
+	 * Destination folder path — what the moved node's new parent will be.
+	 * `null` means the project root (we use `'tree'` to match the on-disk
+	 * convention).
+	 */
+	destinationFolderPath: string;
 }
