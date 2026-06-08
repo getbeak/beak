@@ -1,8 +1,4 @@
-import {
-	selectAgentBaseUrl,
-	selectAgentPairingError,
-	selectAgentStatus,
-} from '@beak/state/agent';
+import { selectAgentBaseUrl, selectAgentPairingError, selectAgentStatus } from '@beak/state/agent';
 import { useAppDispatch, useAppSelector } from '@beak/ui/store/redux';
 import { Box, Button, Flex, Text } from '@chakra-ui/react';
 import { AlertTriangle, Plug, ServerOff, ShieldAlert, Zap } from 'lucide-react';
@@ -105,13 +101,7 @@ const AgentStatusBanner: React.FC = () => {
 				</Text>
 			</Box>
 			{content.secondaryLabel && content.onSecondary && (
-				<Button
-					type='button'
-					size='xs'
-					variant='ghost'
-					color='fg.muted'
-					onClick={content.onSecondary}
-				>
+				<Button type='button' size='xs' variant='ghost' color='fg.muted' onClick={content.onSecondary}>
 					{content.secondaryLabel}
 				</Button>
 			)}

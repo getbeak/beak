@@ -59,7 +59,13 @@ const NodeSearchDialog: React.FC<NodeSearchDialogProps> = ({ workflow, open, onC
 	}
 
 	return (
-		<Dialog.Root open={open} onOpenChange={d => (d.open ? null : onClose())} size='md' placement='center' initialFocusEl={() => inputRef.current}>
+		<Dialog.Root
+			open={open}
+			onOpenChange={d => (d.open ? null : onClose())}
+			size='md'
+			placement='center'
+			initialFocusEl={() => inputRef.current}
+		>
 			<Dialog.Backdrop />
 			<Dialog.Positioner>
 				<Dialog.Content>

@@ -25,12 +25,12 @@ const OmniEmpty: React.FC<OmniEmptyProps> = ({ hasQuery, scope }) => {
 						<Sparkles size={14} />
 						<Box fontSize='xs' fontWeight='600' letterSpacing='-0.005em'>
 							{scope === 'commands'
-							? 'Run a command'
-							: scope === 'recents'
-								? 'Browse recents'
-								: scope === 'workflows'
-									? 'Find a workflow'
-									: 'Search the project'}
+								? 'Run a command'
+								: scope === 'recents'
+									? 'Browse recents'
+									: scope === 'workflows'
+										? 'Find a workflow'
+										: 'Search the project'}
 						</Box>
 					</Flex>
 					<Box fontSize='11.5px' lineHeight='1.55' color='fg.subtle'>

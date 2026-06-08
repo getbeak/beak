@@ -109,7 +109,7 @@ export function walkWorkflow(workflow: WorkflowFile, context: SimulationContext 
 			}
 			case 'loop': {
 				const loop = node as Extract<WorkflowNode, { type: 'loop' }>;
-				const iterations = context.loopIterations?.(loop) ?? (loop.data.count ?? 0);
+				const iterations = context.loopIterations?.(loop) ?? loop.data.count ?? 0;
 				for (let i = 0; i < iterations; i++) {
 					if (aborted) break;
 					events.push({ type: 'loop-iteration', nodeId, index: i });

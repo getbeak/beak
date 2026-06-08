@@ -78,7 +78,10 @@ describe('workflowStats', () => {
 	});
 
 	it('templates report sensible stats', () => {
-		const cases: { template: TemplateKey; expect: { start: number; request: number; loop: number; notification: number } }[] = [
+		const cases: {
+			template: TemplateKey;
+			expect: { start: number; request: number; loop: number; notification: number };
+		}[] = [
 			{ template: 'blank', expect: { start: 1, request: 0, loop: 0, notification: 0 } },
 			{ template: 'smoke-test', expect: { start: 1, request: 1, loop: 0, notification: 1 } },
 			{ template: 'auth-chain', expect: { start: 1, request: 2, loop: 0, notification: 0 } },

@@ -46,9 +46,7 @@ export function registerAgentEffects(startListening: AppStartListening): void {
 			// Try the cached URL first; it's almost always the right answer.
 			const cached = getCachedAgentBaseUrl();
 			const cachedHealthz = cached ? await probe(cached) : null;
-			const discovered = cached && cachedHealthz
-				? { baseUrl: cached, healthz: cachedHealthz }
-				: await discoverAgent();
+			const discovered = cached && cachedHealthz ? { baseUrl: cached, healthz: cachedHealthz } : await discoverAgent();
 
 			if (!discovered) {
 				clearCachedAgentBaseUrl();

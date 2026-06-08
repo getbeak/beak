@@ -335,7 +335,10 @@ describe('workflow lifecycle — build and tear down', () => {
 		const start = seed.nodes[0];
 		const a = { id: 'a', type: 'request' as const, position: { x: 0, y: 0 }, data: { requestId: null } };
 		const b = { id: 'b', type: 'request' as const, position: { x: 0, y: 0 }, data: { requestId: null } };
-		let state = reducer(initialWorkflowsState, actions.insertNewWorkflow({ id: seed.id, workflow: { ...seed, nodes: [...seed.nodes, a, b] } }));
+		let state = reducer(
+			initialWorkflowsState,
+			actions.insertNewWorkflow({ id: seed.id, workflow: { ...seed, nodes: [...seed.nodes, a, b] } }),
+		);
 		state = reducer(state, actions.addEdge({ id: seed.id, edge: { id: 'e1', source: start.id, target: 'a' } }));
 		state = reducer(state, actions.addEdge({ id: seed.id, edge: { id: 'e2', source: 'a', target: 'b' } }));
 		// Validator should reject "b → a" since reaching back from a closes the cycle.
@@ -397,7 +400,9 @@ describe('workflow lifecycle — build and tear down', () => {
 
 		// Three workflows under three distinct ids.
 		expect(Object.keys(state.workflows).length).toBe(3);
-		const names = Object.values(state.workflows).map(w => w.name).sort();
+		const names = Object.values(state.workflows)
+			.map(w => w.name)
+			.sort();
 		expect(names).toEqual(['Copy of Original', 'Copy of Original (2)', 'Original']);
 	});
 
@@ -443,10 +448,7 @@ describe('workflow lifecycle — build and tear down', () => {
 		expect(completionRatio(state.workflows[seed.id]!)).toBe(0);
 
 		// Link it → 100%.
-		state = reducer(
-			state,
-			actions.updateNodeData({ id: seed.id, nodeId: 'r1', data: { requestId: 'req-X' } }),
-		);
+		state = reducer(state, actions.updateNodeData({ id: seed.id, nodeId: 'r1', data: { requestId: 'req-X' } }));
 		expect(completionRatio(state.workflows[seed.id]!)).toBe(1);
 
 		// Add a second unlinked request → 50%.
@@ -466,14 +468,20 @@ describe('workflow lifecycle — build and tear down', () => {
 		let state = reducer(initialWorkflowsState, actions.insertNewWorkflow({ id: seed.id, workflow: seed }));
 
 		// Two request nodes, one linked.
-		state = reducer(state, actions.addNode({
-			id: seed.id,
-			node: { id: 'r1', type: 'request', position: { x: 0, y: 0 }, data: { requestId: 'req-A' } },
-		}));
-		state = reducer(state, actions.addNode({
-			id: seed.id,
-			node: { id: 'r2', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } },
-		}));
+		state = reducer(
+			state,
+			actions.addNode({
+				id: seed.id,
+				node: { id: 'r1', type: 'request', position: { x: 0, y: 0 }, data: { requestId: 'req-A' } },
+			}),
+		);
+		state = reducer(
+			state,
+			actions.addNode({
+				id: seed.id,
+				node: { id: 'r2', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } },
+			}),
+		);
 		expect(linkedRequestIds(state.workflows[seed.id]!)).toEqual(['req-A']);
 
 		// Link the second, distinct id.

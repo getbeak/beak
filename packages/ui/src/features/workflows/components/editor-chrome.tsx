@@ -50,7 +50,7 @@ export const MetaPill: React.FC<MetaPillProps> = ({ icon, count, label }) => (
 export const SaveStateIndicator: React.FC<{ workflowId?: string }> = ({ workflowId }) => {
 	const pending = useAppSelector(s => s.global.workflows.writeDebouncer);
 	const latestWrite = useAppSelector(s => s.global.workflows.latestWrite ?? 0);
-	const updatedAt = useAppSelector(s => (workflowId ? s.global.workflows.workflows[workflowId]?.updatedAt ?? 0 : 0));
+	const updatedAt = useAppSelector(s => (workflowId ? (s.global.workflows.workflows[workflowId]?.updatedAt ?? 0) : 0));
 	const latest = latestWrite || updatedAt;
 	const [now, setNow] = useState(() => Date.now());
 

@@ -57,11 +57,13 @@ function defaultFilename(title: string | undefined, folder: string): string {
 }
 
 function slugify(s: string): string {
-	return s
-		.toLowerCase()
-		.replace(/[^a-z0-9]+/g, '-')
-		.replace(/^-+|-+$/g, '')
-		.slice(0, 80) || 'openapi';
+	return (
+		s
+			.toLowerCase()
+			.replace(/[^a-z0-9]+/g, '-')
+			.replace(/^-+|-+$/g, '')
+			.slice(0, 80) || 'openapi'
+	);
 }
 
 function downloadAsJson(document: unknown, filename: string): void {

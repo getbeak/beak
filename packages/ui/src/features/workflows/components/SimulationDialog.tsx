@@ -100,7 +100,9 @@ const SimulationDialog: React.FC<SimulationDialogProps> = ({ workflow, open, onC
 					</Dialog.Header>
 					<Dialog.Body>
 						<Box mb='2' fontSize='12px' color='fg.muted'>
-							{'Walks the graph as if every condition were truthy and every loop ran its declared count. Requests are skipped (no real HTTP fires).'}
+							{
+								'Walks the graph as if every condition were truthy and every loop ran its declared count. Requests are skipped (no real HTTP fires).'
+							}
 						</Box>
 						<Flex align='center' gap='1' mb='2'>
 							<Button
@@ -263,10 +265,7 @@ function describe(
 			return {
 				label: `? ${labelFor(event.nodeId, nodeLabels)} = ${event.branch}`,
 				nodeId: event.nodeId,
-				tone:
-					event.branch === 'true'
-						? 'var(--beak-colors-accent-success)'
-						: 'var(--beak-colors-accent-alert)',
+				tone: event.branch === 'true' ? 'var(--beak-colors-accent-success)' : 'var(--beak-colors-accent-alert)',
 				indent: 2,
 			};
 		case 'loop-iteration':

@@ -1166,10 +1166,7 @@ export function searchNodes(
 	return scored.map(s => s.item);
 }
 
-function describeNodeForSearch(
-	node: WorkflowNode,
-	requestNames: ReadonlyMap<string, string>,
-): NodeSearchResult {
+function describeNodeForSearch(node: WorkflowNode, requestNames: ReadonlyMap<string, string>): NodeSearchResult {
 	// A user-given `name` always wins over the derived label.
 	const explicit = (node as { name?: string }).name?.trim();
 	if (explicit) {
@@ -1394,7 +1391,10 @@ export function nodeBounds(nodes: ReadonlyArray<{ position: { x: number; y: numb
  * same result (the second call shifts by zero). Returns the same
  * reference when there's nothing to shift.
  */
-export function compactPositions(workflow: WorkflowFile, margin: { x: number; y: number } = { x: 40, y: 40 }): WorkflowFile {
+export function compactPositions(
+	workflow: WorkflowFile,
+	margin: { x: number; y: number } = { x: 40, y: 40 },
+): WorkflowFile {
 	if (workflow.nodes.length === 0) return workflow;
 	let minX = Number.POSITIVE_INFINITY;
 	let minY = Number.POSITIVE_INFINITY;

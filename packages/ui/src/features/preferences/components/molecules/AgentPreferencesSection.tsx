@@ -38,10 +38,7 @@ const AgentPreferencesSection: React.FC = () => {
 
 	return (
 		<Section title='Local agent'>
-			<Row
-				label='Request routing'
-				description='Pick when the web host should route flights through the local agent.'
-			>
+			<Row label='Request routing' description='Pick when the web host should route flights through the local agent.'>
 				<SegmentedControl
 					ariaLabel='Agent routing mode'
 					items={ROUTING_ITEMS}

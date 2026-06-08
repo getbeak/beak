@@ -85,7 +85,9 @@ const QuickFixDialog: React.FC<QuickFixDialogProps> = ({ workflow, open, onClose
 			<Dialog.Positioner>
 				<Dialog.Content>
 					<Dialog.Header>
-						<Dialog.Title>{issueCount === 0 ? 'Looks good!' : `Fix ${issueCount} issue${issueCount === 1 ? '' : 's'}`}</Dialog.Title>
+						<Dialog.Title>
+							{issueCount === 0 ? 'Looks good!' : `Fix ${issueCount} issue${issueCount === 1 ? '' : 's'}`}
+						</Dialog.Title>
 					</Dialog.Header>
 					<Dialog.Body>
 						{issueCount === 0 ? (
@@ -100,13 +102,7 @@ const QuickFixDialog: React.FC<QuickFixDialogProps> = ({ workflow, open, onClose
 									const target = firstIssueNode(health);
 									if (!target) return null;
 									return (
-										<Button
-											type='button'
-											size='sm'
-											colorPalette='blue'
-											variant='outline'
-											onClick={() => jump(target)}
-										>
+										<Button type='button' size='sm' colorPalette='blue' variant='outline' onClick={() => jump(target)}>
 											{'Jump to first issue'}
 										</Button>
 									);
@@ -152,13 +148,7 @@ const QuickFixDialog: React.FC<QuickFixDialogProps> = ({ workflow, open, onClose
 									<Section title='Unreachable steps'>
 										{health.unreachable.map(id => (
 											<Row key={id} icon={iconFor(id)} label={nodeLabel(id)} hint={'Start can’t reach this node'}>
-												<Button
-													type='button'
-													size='xs'
-													colorPalette='red'
-													variant='outline'
-													onClick={() => remove([id])}
-												>
+												<Button type='button' size='xs' colorPalette='red' variant='outline' onClick={() => remove([id])}>
 													{'Remove'}
 												</Button>
 											</Row>
@@ -195,13 +185,7 @@ const QuickFixDialog: React.FC<QuickFixDialogProps> = ({ workflow, open, onClose
 
 const Section: React.FC<React.PropsWithChildren<{ title: string }>> = ({ title, children }) => (
 	<Stack gap='1.5'>
-		<Box
-			fontSize='10px'
-			fontWeight='700'
-			color='fg.muted'
-			textTransform='uppercase'
-			letterSpacing='0.06em'
-		>
+		<Box fontSize='10px' fontWeight='700' color='fg.muted' textTransform='uppercase' letterSpacing='0.06em'>
 			{title}
 		</Box>
 		<Stack gap='1'>{children}</Stack>

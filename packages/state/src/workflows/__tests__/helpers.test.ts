@@ -463,9 +463,7 @@ describe('mergeWorkflows', () => {
 	it('shifts source nodes to land right of `into`s rightmost', () => {
 		const merged = mergeWorkflows(into, source, makeMinter());
 		const intoMax = Math.max(...into.nodes.map(n => n.position.x));
-		const sourceXs = merged.nodes
-			.filter(n => !into.nodes.some(prev => prev.id === n.id))
-			.map(n => n.position.x);
+		const sourceXs = merged.nodes.filter(n => !into.nodes.some(prev => prev.id === n.id)).map(n => n.position.x);
 		for (const x of sourceXs) expect(x).toBeGreaterThan(intoMax);
 	});
 });
@@ -836,10 +834,7 @@ describe('duplicateWorkflow', () => {
 	});
 
 	it('preserves tags, description, version', () => {
-		const cloned = duplicateWorkflow(
-			{ ...source, description: 'hi', version: '1' },
-			makeMinter(),
-		);
+		const cloned = duplicateWorkflow({ ...source, description: 'hi', version: '1' }, makeMinter());
 		expect(cloned.tags).toEqual(['auth']);
 		expect(cloned.description).toBe('hi');
 		expect(cloned.version).toBe('1');
@@ -1399,7 +1394,12 @@ describe('workflowsByTag', () => {
 		const map = workflowsByTag(wfs);
 		expect(map.get('auth')!.map(w => w.id)).toEqual(['a']);
 		expect(map.get('smoke')!.map(w => w.id)).toEqual(['b']);
-		expect(map.get('staging')!.map(w => w.id).sort()).toEqual(['a', 'b']);
+		expect(
+			map
+				.get('staging')!
+				.map(w => w.id)
+				.sort(),
+		).toEqual(['a', 'b']);
 	});
 
 	it('buckets untagged workflows under the empty-string key', () => {
@@ -1506,7 +1506,12 @@ describe('searchNodes', () => {
 			{ id: 'r2', type: 'request', position: { x: 0, y: 0 }, data: { requestId: 'req-b' } },
 			{ id: 'r3', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } },
 			{ id: 'l1', type: 'loop', position: { x: 0, y: 0 }, data: { mode: 'count', count: 5 } } as WorkflowNode,
-			{ id: 'c1', type: 'comment', position: { x: 0, y: 0 }, data: { text: 'remember to authenticate first' } } as WorkflowNode,
+			{
+				id: 'c1',
+				type: 'comment',
+				position: { x: 0, y: 0 },
+				data: { text: 'remember to authenticate first' },
+			} as WorkflowNode,
 		],
 		edges: [],
 	};

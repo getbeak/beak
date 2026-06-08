@@ -169,7 +169,10 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 	const componentCount = useMemo(() => (workflow ? connectedComponents(workflow).length : 0), [workflow]);
 	// Per-node issue (cycle > unlinked > unreachable). Threaded into rfNodes
 	// below so the kind-specific node views can paint a coloured ring.
-	const nodeIssues = useMemo<Map<string, NodeIssue>>(() => (health ? nodeIssuesFromHealth(health) : new Map()), [health]);
+	const nodeIssues = useMemo<Map<string, NodeIssue>>(
+		() => (health ? nodeIssuesFromHealth(health) : new Map()),
+		[health],
+	);
 	const nodeWarnings = useMemo(() => (workflow ? validateWorkflow(workflow) : new Map<string, unknown>()), [workflow]);
 	const nodeWarningsCount = nodeWarnings.size;
 
@@ -745,13 +748,7 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 						// 100% chip on a Loop/Notification-only flow.
 						const ratio = completionRatio(workflow);
 						if (ratio === 1) return null;
-						return (
-							<MetaPill
-								icon={<Globe size={10} strokeWidth={2.2} />}
-								count={Math.round(ratio * 100)}
-								label='% linked'
-							/>
-						);
+						return <MetaPill icon={<Globe size={10} strokeWidth={2.2} />} count={Math.round(ratio * 100)} label='% linked' />;
 					})()}
 					<SaveStateIndicator workflowId={workflowId} />
 					{warningCount > 0 && (
@@ -759,11 +756,7 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 							count={warningCount}
 							label={warningCount === 1 ? 'issue' : 'issues'}
 							title={
-								health
-									? [summariseHealth(health, nodeWarnings.size), 'click to jump']
-											.filter(Boolean)
-											.join(' · ')
-									: undefined
+								health ? [summariseHealth(health, nodeWarnings.size), 'click to jump'].filter(Boolean).join(' · ') : undefined
 							}
 							onClick={() => setQuickFixOpen(true)}
 						/>
@@ -981,9 +974,7 @@ const WorkflowEditorInner: React.FC<WorkflowEditorProps> = ({ workflowId }) => {
 						edge={selectedEdge}
 						sourceLabel={nodeLabelById(workflow, selectedEdge.source)}
 						targetLabel={nodeLabelById(workflow, selectedEdge.target)}
-						onRename={label =>
-							dispatch(workflowActions.updateEdgeLabel({ id: workflowId, edgeId: selectedEdge.id, label }))
-						}
+						onRename={label => dispatch(workflowActions.updateEdgeLabel({ id: workflowId, edgeId: selectedEdge.id, label }))}
 						onDelete={() => {
 							dispatch(workflowActions.removeEdge({ id: workflowId, edgeId: selectedEdge.id }));
 							setSelectedEdgeId(null);

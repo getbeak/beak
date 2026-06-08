@@ -110,14 +110,7 @@ const ProjectHome: React.FC = () => {
 
 				{recentFlows.length > 0 && (
 					<Box mt='8'>
-						<Box
-							fontSize='10px'
-							fontWeight='700'
-							color='fg.muted'
-							letterSpacing='0.08em'
-							textTransform='uppercase'
-							mb='2'
-						>
+						<Box fontSize='10px' fontWeight='700' color='fg.muted' letterSpacing='0.08em' textTransform='uppercase' mb='2'>
 							{'Recent workflows'}
 						</Box>
 						<Flex direction='column' gap='1.5'>
@@ -127,9 +120,7 @@ const ProjectHome: React.FC = () => {
 									<ChakraButton
 										type='button'
 										key={wf.id}
-										onClick={() =>
-											dispatch(changeTab({ type: 'workflow_editor', payload: wf.id, temporary: false }))
-										}
+										onClick={() => dispatch(changeTab({ type: 'workflow_editor', payload: wf.id, temporary: false }))}
 										display='flex'
 										alignItems='center'
 										gap='3'

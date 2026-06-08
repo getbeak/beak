@@ -76,12 +76,7 @@ const TemplatePickerDialog: React.FC<TemplatePickerDialogProps> = ({ open, onClo
 													{item.title}
 												</Box>
 												{previewStats && (
-													<Box
-														fontSize='10px'
-														color='fg.muted'
-														fontVariantNumeric='tabular-nums'
-														fontFamily='mono'
-													>
+													<Box fontSize='10px' color='fg.muted' fontVariantNumeric='tabular-nums' fontFamily='mono'>
 														{previewStats}
 													</Box>
 												)}

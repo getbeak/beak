@@ -109,7 +109,13 @@ describe('toMarkdown', () => {
 			name: 'named',
 			nodes: [
 				{ id: 's', type: 'start', position: { x: 0, y: 0 }, data: {} },
-				{ id: 'a', type: 'request', position: { x: 0, y: 0 }, data: { requestId: 'req-a' }, name: 'Login flow' } as WorkflowNode,
+				{
+					id: 'a',
+					type: 'request',
+					position: { x: 0, y: 0 },
+					data: { requestId: 'req-a' },
+					name: 'Login flow',
+				} as WorkflowNode,
 			],
 			edges: [],
 		};

@@ -25,10 +25,7 @@ const WorkflowEditorTab: React.FC<React.PropsWithChildren<WorkflowEditorTabProps
 		const health = inspectGraph(workflow);
 		const warnings = validateWorkflow(workflow);
 		const total =
-			health.unreachable.length +
-			health.unlinkedRequestNodes.length +
-			health.cycleNodes.length +
-			warnings.size;
+			health.unreachable.length + health.unlinkedRequestNodes.length + health.cycleNodes.length + warnings.size;
 		return { issueCount: total, issueTooltip: summariseHealth(health, warnings.size) ?? '' };
 	}, [workflow]);
 	const pendingWrite = useAppSelector(s => Boolean(s.global.workflows.writeDebouncer));
@@ -83,14 +80,7 @@ const WorkflowEditorTab: React.FC<React.PropsWithChildren<WorkflowEditorTabProps
 						{`${labelPrefix}${base}`}
 					</Box>
 					{showCount && issueCount === 0 && (
-						<Box
-							as='span'
-							flexShrink={0}
-							fontSize='10px'
-							color='fg.subtle'
-							fontVariantNumeric='tabular-nums'
-							opacity={0.8}
-						>
+						<Box as='span' flexShrink={0} fontSize='10px' color='fg.subtle' fontVariantNumeric='tabular-nums' opacity={0.8}>
 							{stepCount}
 						</Box>
 					)}

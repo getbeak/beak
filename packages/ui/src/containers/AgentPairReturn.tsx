@@ -39,19 +39,25 @@ const AgentPairReturn: React.FC = () => {
 			<VStack gap={4} maxW='420px' textAlign='center'>
 				{status === 'paired' && (
 					<>
-						<Heading size='md' color='fg.default'>Paired with the Beak agent</Heading>
+						<Heading size='md' color='fg.default'>
+							Paired with the Beak agent
+						</Heading>
 						<Text color='fg.muted'>Sending you back to your project…</Text>
 					</>
 				)}
 				{status === 'pairing' && (
 					<>
 						<Spinner size='lg' color='accent.pink' />
-						<Heading size='md' color='fg.default'>Finishing pairing…</Heading>
+						<Heading size='md' color='fg.default'>
+							Finishing pairing…
+						</Heading>
 					</>
 				)}
 				{(status === 'unpaired' || status === 'unreachable') && error && (
 					<>
-						<Heading size='md' color='fg.default'>Pairing failed</Heading>
+						<Heading size='md' color='fg.default'>
+							Pairing failed
+						</Heading>
 						<Text color='fg.muted'>{error}</Text>
 					</>
 				)}

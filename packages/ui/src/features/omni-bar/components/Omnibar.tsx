@@ -109,13 +109,7 @@ const Omnibar: React.FC = () => {
 	}, [scope, activeItem]);
 
 	const ModeIcon =
-		scope === 'commands'
-			? Command
-			: scope === 'recents'
-				? Sparkles
-				: scope === 'workflows'
-					? WorkflowIcon
-					: Search;
+		scope === 'commands' ? Command : scope === 'recents' ? Sparkles : scope === 'workflows' ? WorkflowIcon : Search;
 	const placeholder =
 		scope === 'commands'
 			? 'Run a command…'
@@ -201,15 +195,7 @@ const Omnibar: React.FC = () => {
 							}}
 						>
 							<motion.div
-								key={
-									ModeIcon === Command
-										? 'cmd'
-										: ModeIcon === Sparkles
-											? 'rec'
-											: ModeIcon === WorkflowIcon
-												? 'wf'
-												: 'search'
-								}
+								key={ModeIcon === Command ? 'cmd' : ModeIcon === Sparkles ? 'rec' : ModeIcon === WorkflowIcon ? 'wf' : 'search'}
 								initial={{ opacity: 0, scale: 0.85 }}
 								animate={{ opacity: 1, scale: 1 }}
 								transition={{ duration: 0.12, ease: 'easeOut' }}
@@ -294,13 +280,7 @@ const Omnibar: React.FC = () => {
 									boxShadow: 'inset 0 1px 0 color-mix(in srgb, white 14%, transparent)',
 								}}
 							>
-								{scope === 'commands'
-									? 'Cmd'
-									: scope === 'recents'
-										? 'Recent'
-										: scope === 'workflows'
-											? 'Flow'
-											: 'Find'}
+								{scope === 'commands' ? 'Cmd' : scope === 'recents' ? 'Recent' : scope === 'workflows' ? 'Flow' : 'Find'}
 							</Box>
 						</Flex>
 

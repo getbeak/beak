@@ -43,97 +43,80 @@ const NodeShell: React.FC<{
 	children?: React.ReactNode;
 }> = ({ tone, icon, title, name, selected, noInput, noOutput, rightHandles, issue, warned, children }) => {
 	const issueTone = issue === 'cycle' || issue === 'unlinked' ? 'warning' : issue === 'unreachable' ? 'alert' : null;
-	const borderColor = selected
-		? `accent.${tone}`
-		: issueTone
-			? `accent.${issueTone}`
-			: 'border.default';
+	const borderColor = selected ? `accent.${tone}` : issueTone ? `accent.${issueTone}` : 'border.default';
 	const boxShadow = selected
 		? `0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-${tone}) 28%, transparent)`
 		: issueTone
 			? `0 0 0 2px color-mix(in srgb, var(--beak-colors-accent-${issueTone}) 22%, transparent)`
 			: 'sm';
 	return (
-	<Box
-		minW='200px'
-		maxW='260px'
-		borderRadius='md'
-		bg='bg.surface'
-		borderWidth='1px'
-		borderColor={borderColor}
-		boxShadow={boxShadow}
-		fontSize='12px'
-		color='fg.default'
-		position='relative'
-		transition='border-color .12s ease, box-shadow .12s ease'
-	>
-		{!noInput && <Handle type='target' position={Position.Left} />}
-		<Flex
-			align='center'
-			gap='2'
-			px='2.5'
-			py='1.5'
-			borderTopRadius='md'
-			bg={`color-mix(in srgb, var(--beak-colors-accent-${tone}) 16%, transparent)`}
-			color={`accent.${tone}`}
+		<Box
+			minW='200px'
+			maxW='260px'
+			borderRadius='md'
+			bg='bg.surface'
+			borderWidth='1px'
+			borderColor={borderColor}
+			boxShadow={boxShadow}
+			fontSize='12px'
+			color='fg.default'
+			position='relative'
+			transition='border-color .12s ease, box-shadow .12s ease'
 		>
-			{icon}
-			<Box fontWeight='600' fontSize='11px' textTransform='uppercase' letterSpacing='0.04em' flex='1' minW={0}>
-				{title}
-			</Box>
-			{warned && (
-				<Box
-					w='6px'
-					h='6px'
-					borderRadius='full'
-					bg='accent.warning'
-					title='This step has configuration warnings'
-				/>
-			)}
-		</Flex>
-		{name && (
-			<Box
+			{!noInput && <Handle type='target' position={Position.Left} />}
+			<Flex
+				align='center'
+				gap='2'
 				px='2.5'
-				pt='1.5'
-				fontSize='12px'
-				fontWeight='600'
-				color='fg.default'
-				whiteSpace='nowrap'
-				overflow='hidden'
-				textOverflow='ellipsis'
+				py='1.5'
+				borderTopRadius='md'
+				bg={`color-mix(in srgb, var(--beak-colors-accent-${tone}) 16%, transparent)`}
+				color={`accent.${tone}`}
 			>
-				{name}
-			</Box>
-		)}
-		{children}
-		{rightHandles && rightHandles.length > 0 && (
-			<Box borderTopWidth='1px' borderColor='border.subtle'>
-				{rightHandles.map(h => (
-					<Box
-						key={h.id}
-						position='relative'
-						px='2.5'
-						py='1.5'
-						_notLast={{ borderBottomWidth: '1px', borderColor: 'border.subtle' }}
-					>
-						<Flex
-							align='center'
-							gap='1.5'
-							justify='flex-end'
-							fontSize='10px'
-							fontWeight='600'
-							color={`accent.${h.tone}`}
+				{icon}
+				<Box fontWeight='600' fontSize='11px' textTransform='uppercase' letterSpacing='0.04em' flex='1' minW={0}>
+					{title}
+				</Box>
+				{warned && (
+					<Box w='6px' h='6px' borderRadius='full' bg='accent.warning' title='This step has configuration warnings' />
+				)}
+			</Flex>
+			{name && (
+				<Box
+					px='2.5'
+					pt='1.5'
+					fontSize='12px'
+					fontWeight='600'
+					color='fg.default'
+					whiteSpace='nowrap'
+					overflow='hidden'
+					textOverflow='ellipsis'
+				>
+					{name}
+				</Box>
+			)}
+			{children}
+			{rightHandles && rightHandles.length > 0 && (
+				<Box borderTopWidth='1px' borderColor='border.subtle'>
+					{rightHandles.map(h => (
+						<Box
+							key={h.id}
+							position='relative'
+							px='2.5'
+							py='1.5'
+							_notLast={{ borderBottomWidth: '1px', borderColor: 'border.subtle' }}
 						>
-							<Box w='5px' h='5px' borderRadius='full' bg='currentColor' />
-							{h.label}
-						</Flex>
-						<Handle id={h.id} type='source' position={Position.Right} />
-					</Box>
-				))}
-			</Box>
-		)}
-		{!rightHandles && !noOutput && <Handle type='source' position={Position.Right} />}
-	</Box>
+							<Flex align='center' gap='1.5' justify='flex-end' fontSize='10px' fontWeight='600' color={`accent.${h.tone}`}>
+								<Box w='5px' h='5px' borderRadius='full' bg='currentColor' />
+								{h.label}
+							</Flex>
+							<Handle id={h.id} type='source' position={Position.Right} />
+						</Box>
+					))}
+				</Box>
+			)}
+			{!rightHandles && !noOutput && <Handle type='source' position={Position.Right} />}
+		</Box>
 	);
 };
 
@@ -157,7 +140,13 @@ const VerbBadge: React.FC<{ verb: string }> = ({ verb }) => (
 );
 
 export function RequestNodeView({ data, selected }: NodeProps) {
-	const d = data as { requestId: string | null; overrides?: RequestOverrides; _issue?: NodeIssue; _name?: string; _warned?: boolean };
+	const d = data as {
+		requestId: string | null;
+		overrides?: RequestOverrides;
+		_issue?: NodeIssue;
+		_name?: string;
+		_warned?: boolean;
+	};
 	const linked = useAppSelector(s => {
 		if (!d.requestId) return undefined;
 		const node = s.global.project.tree[d.requestId];
@@ -169,7 +158,15 @@ export function RequestNodeView({ data, selected }: NodeProps) {
 	const urlPreview = linked?.mode === 'valid' ? previewValueSections(linked.info.url) : '';
 
 	return (
-		<NodeShell tone='pink' icon={<Globe size={12} strokeWidth={1.8} />} title='Request' name={d._name} selected={selected} issue={d._issue} warned={d._warned}>
+		<NodeShell
+			tone='pink'
+			icon={<Globe size={12} strokeWidth={1.8} />}
+			title='Request'
+			name={d._name}
+			selected={selected}
+			issue={d._issue}
+			warned={d._warned}
+		>
 			{!d.requestId ? (
 				<Box px='2.5' py='2' color='fg.subtle' fontStyle='italic'>
 					{'Pick a request →'}
@@ -348,7 +345,15 @@ export function NotificationNodeView({ data, selected }: NodeProps) {
 	const d = data as { title?: unknown[]; body?: unknown[]; _issue?: NodeIssue; _name?: string; _warned?: boolean };
 	const title = previewValueSections(d.title) || 'Untitled notification';
 	return (
-		<NodeShell tone='warning' icon={<Bell size={12} strokeWidth={1.8} />} title='Notification' name={d._name} selected={selected} issue={d._issue} warned={d._warned}>
+		<NodeShell
+			tone='warning'
+			icon={<Bell size={12} strokeWidth={1.8} />}
+			title='Notification'
+			name={d._name}
+			selected={selected}
+			issue={d._issue}
+			warned={d._warned}
+		>
 			<Box
 				px='2.5'
 				py='2'

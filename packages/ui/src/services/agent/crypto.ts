@@ -36,13 +36,9 @@ export async function sha256(input: string): Promise<Uint8Array> {
  */
 export async function hmacSha256Base64Url(keyText: string, messageText: string): Promise<string> {
 	const encoder = new TextEncoder();
-	const key = await subtle().importKey(
-		'raw',
-		encoder.encode(keyText),
-		{ name: 'HMAC', hash: 'SHA-256' },
-		false,
-		['sign'],
-	);
+	const key = await subtle().importKey('raw', encoder.encode(keyText), { name: 'HMAC', hash: 'SHA-256' }, false, [
+		'sign',
+	]);
 	const signature = await subtle().sign('HMAC', key, encoder.encode(messageText));
 	return bytesToBase64Url(new Uint8Array(signature));
 }

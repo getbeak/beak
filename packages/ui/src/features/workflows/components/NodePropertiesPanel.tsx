@@ -833,13 +833,7 @@ function NotificationEditor({
 
 // ── Comment ──────────────────────────────────────────────────────────────────
 
-function CommentEditor({
-	workflowId,
-	node,
-}: {
-	workflowId: string;
-	node: Extract<WorkflowNode, { type: 'comment' }>;
-}) {
+function CommentEditor({ workflowId, node }: { workflowId: string; node: Extract<WorkflowNode, { type: 'comment' }> }) {
 	const dispatch = useDispatch();
 	return (
 		<Stack gap='3' px='3' py='3'>
@@ -999,9 +993,7 @@ function ConnectionsSummary({ workflowId, nodeId }: { workflowId: string; nodeId
 				<>
 					<Box color='fg.subtle'>{'·'}</Box>
 					<Box fontWeight='400'>
-						{sources.length === 1
-							? `from ${labelForNodeId(workflow, sources[0])}`
-							: `from ${sources.length} steps`}
+						{sources.length === 1 ? `from ${labelForNodeId(workflow, sources[0])}` : `from ${sources.length} steps`}
 					</Box>
 				</>
 			)}

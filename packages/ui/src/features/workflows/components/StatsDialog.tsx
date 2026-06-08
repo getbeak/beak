@@ -64,7 +64,14 @@ const StatsDialog: React.FC<StatsDialogProps> = ({ workflow, open, onClose }) =>
 									fontSize='12px'
 									color='fg.default'
 								>
-									<Box fontWeight='700' mb='0.5' color='accent.warning' fontSize='10px' letterSpacing='0.06em' textTransform='uppercase'>
+									<Box
+										fontWeight='700'
+										mb='0.5'
+										color='accent.warning'
+										fontSize='10px'
+										letterSpacing='0.06em'
+										textTransform='uppercase'
+									>
 										{'Name collision'}
 									</Box>
 									{`${namesake.ids.length - 1} other workflow${namesake.ids.length - 1 === 1 ? '' : 's'} also named "${namesake.name}". Rename to disambiguate.`}

@@ -78,11 +78,14 @@ export function diffWorkflows(before: WorkflowFile, after: WorkflowFile): Workfl
  */
 export function summariseChange(diff: WorkflowDiff): string | null {
 	const parts: string[] = [];
-	if (diff.addedNodes.length > 0) parts.push(`+${diff.addedNodes.length} step${diff.addedNodes.length === 1 ? '' : 's'}`);
-	if (diff.removedNodes.length > 0) parts.push(`-${diff.removedNodes.length} step${diff.removedNodes.length === 1 ? '' : 's'}`);
+	if (diff.addedNodes.length > 0)
+		parts.push(`+${diff.addedNodes.length} step${diff.addedNodes.length === 1 ? '' : 's'}`);
+	if (diff.removedNodes.length > 0)
+		parts.push(`-${diff.removedNodes.length} step${diff.removedNodes.length === 1 ? '' : 's'}`);
 	if (diff.modifiedNodes.length > 0)
 		parts.push(`~${diff.modifiedNodes.length} step${diff.modifiedNodes.length === 1 ? '' : 's'}`);
-	if (diff.addedEdges.length > 0) parts.push(`+${diff.addedEdges.length} edge${diff.addedEdges.length === 1 ? '' : 's'}`);
+	if (diff.addedEdges.length > 0)
+		parts.push(`+${diff.addedEdges.length} edge${diff.addedEdges.length === 1 ? '' : 's'}`);
 	if (diff.removedEdges.length > 0)
 		parts.push(`-${diff.removedEdges.length} edge${diff.removedEdges.length === 1 ? '' : 's'}`);
 	if (diff.modifiedEdges.length > 0)

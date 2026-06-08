@@ -38,10 +38,7 @@ describe('walkWorkflow', () => {
 		const wf: WorkflowFile = {
 			id: 'wf',
 			name: 'completed',
-			nodes: [
-				baseStart,
-				{ id: 'r1', type: 'request', position: { x: 0, y: 0 }, data: { requestId: 'req-a' } },
-			],
+			nodes: [baseStart, { id: 'r1', type: 'request', position: { x: 0, y: 0 }, data: { requestId: 'req-a' } }],
 			edges: [{ id: 'e1', source: 's', target: 'r1' }],
 		};
 		const events = walkWorkflow(wf, { runRequest: () => ({ status: 200, body: 'ok' }) });
@@ -145,7 +142,11 @@ describe('walkWorkflow', () => {
 			],
 		};
 		const events = walkWorkflow(wf, { maxSteps: 10 });
-		expect(events[events.length - 1]).toEqual({ type: 'workflow-aborted', workflowId: 'wf', reason: 'max steps exceeded' });
+		expect(events[events.length - 1]).toEqual({
+			type: 'workflow-aborted',
+			workflowId: 'wf',
+			reason: 'max steps exceeded',
+		});
 	});
 
 	it('skips comments cleanly', () => {

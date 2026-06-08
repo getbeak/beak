@@ -36,8 +36,12 @@ describe('diffWorkflows', () => {
 	});
 
 	it('detects added + removed nodes', () => {
-		const before = makeWorkflow({ nodes: [baseStart, { id: 'a', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } }] });
-		const after = makeWorkflow({ nodes: [baseStart, { id: 'b', type: 'notification', position: { x: 0, y: 0 }, data: {} }] });
+		const before = makeWorkflow({
+			nodes: [baseStart, { id: 'a', type: 'request', position: { x: 0, y: 0 }, data: { requestId: null } }],
+		});
+		const after = makeWorkflow({
+			nodes: [baseStart, { id: 'b', type: 'notification', position: { x: 0, y: 0 }, data: {} }],
+		});
 		const d = diffWorkflows(before, after);
 		expect(d.addedNodes).toEqual(['b']);
 		expect(d.removedNodes).toEqual(['a']);
@@ -55,10 +59,26 @@ describe('diffWorkflows', () => {
 
 	it('ignores key-order differences in node data', () => {
 		const before = makeWorkflow({
-			nodes: [baseStart, { id: 'a', type: 'request', position: { x: 0, y: 0 }, data: { requestId: 'req-1', overrides: { headers: { h1: { value: ['x'] } } } } as never }],
+			nodes: [
+				baseStart,
+				{
+					id: 'a',
+					type: 'request',
+					position: { x: 0, y: 0 },
+					data: { requestId: 'req-1', overrides: { headers: { h1: { value: ['x'] } } } } as never,
+				},
+			],
 		});
 		const after = makeWorkflow({
-			nodes: [baseStart, { id: 'a', type: 'request', position: { x: 0, y: 0 }, data: { overrides: { headers: { h1: { value: ['x'] } } }, requestId: 'req-1' } as never }],
+			nodes: [
+				baseStart,
+				{
+					id: 'a',
+					type: 'request',
+					position: { x: 0, y: 0 },
+					data: { overrides: { headers: { h1: { value: ['x'] } } }, requestId: 'req-1' } as never,
+				},
+			],
 		});
 		expect(diffWorkflows(before, after).modifiedNodes).toEqual([]);
 	});
