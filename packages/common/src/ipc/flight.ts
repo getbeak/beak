@@ -15,6 +15,7 @@ import type { IpcListener } from './types';
 
 export const FlightMessages = {
 	StartFlight: 'start_flight',
+	CancelFlight: 'cancel_flight',
 	FlightHeartbeat: 'flight_heartbeat',
 	FlightComplete: 'flight_complete',
 	FlightFailed: 'flight_failed',
@@ -41,6 +42,12 @@ const StartFlightSchema = z.object({
 		.passthrough(),
 });
 
+const CancelFlightSchema = z.object({
+	flightId: z.string().min(1),
+});
+
+export type CancelFlightPayload = z.infer<typeof CancelFlightSchema>;
+
 export class IpcFlightServiceRenderer extends IpcServiceRenderer<'flight'> {
 	constructor(ipc: PartialIpcRenderer) {
 		super('flight', ipc);
@@ -48,6 +55,10 @@ export class IpcFlightServiceRenderer extends IpcServiceRenderer<'flight'> {
 
 	async startFlight(payload: FlightRequestPayload) {
 		return this.invoke(FlightMessages.StartFlight, payload);
+	}
+
+	async cancelFlight(payload: CancelFlightPayload) {
+		return this.invoke(FlightMessages.CancelFlight, payload);
 	}
 
 	registerFlightHeartbeat(fn: IpcListener<FlightHeartbeatPayload>) {
@@ -74,6 +85,10 @@ export class IpcFlightServiceMain extends IpcServiceMain<'flight'> {
 
 	registerStartFlight(fn: IpcListener<FlightRequestPayload>) {
 		this.registerRequestHandler(FlightMessages.StartFlight, fn, StartFlightSchema as never);
+	}
+
+	registerCancelFlight(fn: IpcListener<CancelFlightPayload>) {
+		this.registerRequestHandler(FlightMessages.CancelFlight, fn, CancelFlightSchema as never);
 	}
 
 	sendHeartbeat(wc: WebContents, payload: FlightHeartbeatPayload) {

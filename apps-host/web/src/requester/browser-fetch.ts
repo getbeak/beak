@@ -19,17 +19,26 @@ Stages:
 */
 
 async function startRequester(options: RequesterOptions): Promise<void> {
-	const { payload, callbacks } = options;
+	const { payload, signal, callbacks } = options;
 	const { complete, failed, heartbeat } = callbacks;
 	const { flightId, request } = payload;
 	const start = Date.now();
+
+	if (signal.aborted) {
+		failed({ flightId, error: new Error('flight_cancelled') });
+		return;
+	}
 
 	heartbeat({ flightId, stage: 'fetch_response', payload: { timestamp: start } });
 
 	let response: Response;
 	try {
-		response = await runRequest(request);
+		response = await runRequest(request, signal);
 	} catch (error) {
+		if (signal.aborted) {
+			failed({ flightId, error: new Error('flight_cancelled') });
+			return;
+		}
 		failed({ flightId, error: error as Error });
 		return;
 	}
@@ -105,12 +114,13 @@ function classifyStream(contentType: string | null, transferEncoding: string | n
 	return 'standard';
 }
 
-async function runRequest(overview: RequestOverview) {
+async function runRequest(overview: RequestOverview, signal: AbortSignal) {
 	const { body, headers, verb } = overview;
 	const url = overview.url[0];
 
 	const init: RequestInit = {
 		method: verb,
+		signal,
 		headers: TypedObject.values(headers)
 			.filter(h => h.enabled)
 			.reduce(

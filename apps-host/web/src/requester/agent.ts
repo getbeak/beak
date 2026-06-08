@@ -20,15 +20,19 @@ import type { Requester, RequesterOptions } from './types';
 export function createAgentRequester(baseUrl: string, token: string): Requester {
 	return {
 		async start(options: RequesterOptions) {
-			const { payload, callbacks } = options;
+			const { payload, signal, callbacks } = options;
 			const { flightId } = payload;
 
-			const controller = new AbortController();
+			if (signal.aborted) {
+				callbacks.failed({ flightId, error: new Error('flight_cancelled') });
+				return;
+			}
+
 			let response: Response;
 			try {
 				response = await fetch(`${baseUrl}${AGENT_FLIGHT_PATH}`, {
 					method: 'POST',
-					signal: controller.signal,
+					signal,
 					headers: {
 						'Content-Type': 'application/json',
 						// biome-ignore lint/style/useNamingConvention: HTTP header names (RFC 7231/7235).
@@ -39,6 +43,10 @@ export function createAgentRequester(baseUrl: string, token: string): Requester 
 					body: JSON.stringify(payload),
 				});
 			} catch (error) {
+				if (signal.aborted) {
+					callbacks.failed({ flightId, error: new Error('flight_cancelled') });
+					return;
+				}
 				callbacks.failed({ flightId, error: error as Error });
 				return;
 			}
