@@ -25,12 +25,19 @@ export interface VariableSelectorProps {
 	editableElement: HTMLDivElement;
 	sel: NormalizedSelection;
 	query: string;
+	/**
+	 * Optional override for the popover anchor. When set, the legacy
+	 * `editableElement.childNodes[sel.partIndex]` lookup is bypassed and the
+	 * given rect is used directly. The Lexical-backed VariableInputV2 path
+	 * uses this; the legacy contenteditable path leaves it undefined.
+	 */
+	anchorRect?: { top: number; left: number; width: number; height: number };
 	onClose: () => void;
 	onDone: (value: any) => void;
 }
 
 const VariableSelector: React.FC<React.PropsWithChildren<VariableSelectorProps>> = props => {
-	const { editableElement, sel, query, requestId, onClose, onDone } = props;
+	const { editableElement, sel, query, requestId, anchorRect, onClose, onDone } = props;
 	const { variableSets } = useAppSelector(s => s.global.variableSets);
 
 	const activeRef = useRef<HTMLDivElement | null>(null);
@@ -61,6 +68,16 @@ const VariableSelector: React.FC<React.PropsWithChildren<VariableSelectorProps>>
 	}, [variableSets, query]);
 
 	useEffect(() => {
+		const cardWidth = 360;
+		const margin = 12;
+
+		if (anchorRect) {
+			const rawLeft = anchorRect.left - 18;
+			const left = Math.min(Math.max(margin, rawLeft), window.innerWidth - cardWidth - margin);
+			setPosition({ left, top: anchorRect.top + anchorRect.height + 6 });
+			return;
+		}
+
 		if (!sel) return;
 		const node = editableElement.childNodes[sel.partIndex];
 		if (!node) return;
@@ -74,12 +91,22 @@ const VariableSelector: React.FC<React.PropsWithChildren<VariableSelectorProps>>
 		// Clamp the popup so the right edge stays a few pixels inside the
 		// viewport — without this the dialog can hang off-screen for URLs
 		// that approach the right side of a project window.
-		const cardWidth = 360;
-		const margin = 12;
 		const rawLeft = rect.left + offsetDelta - 18;
 		const left = Math.min(Math.max(margin, rawLeft), window.innerWidth - cardWidth - margin);
 		setPosition({ left, top: rect.top + rect.height + 6 });
-	}, [Boolean(sel), editableElement]);
+		// Depend on the concrete selection (partIndex / offset / isTextNode) so the
+		// popover re-anchors as the user types the `{query}` and the caret moves.
+		// `Boolean(sel)` would only fire once on first open and then never again.
+	}, [
+		sel?.partIndex,
+		sel?.offset,
+		sel?.isTextNode,
+		editableElement,
+		anchorRect?.top,
+		anchorRect?.left,
+		anchorRect?.width,
+		anchorRect?.height,
+	]);
 
 	useEffect(() => {
 		// @ts-expect-error scrollIntoViewIfNeeded exists in Chromium

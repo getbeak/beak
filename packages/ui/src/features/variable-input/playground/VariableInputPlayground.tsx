@@ -1,7 +1,8 @@
 import VariableInput from '@beak/ui/features/variable-input/components/VariableInput';
+import { useVariableInputV2Flag, VariableInputV2 } from '@beak/ui/features/variable-input-v2';
 import type { ValueSections } from '@beak/ui/features/variables/values';
 import { Badge, Box, Button, Flex, Stack, Text } from '@chakra-ui/react';
-import { Bug, FlaskConical, RotateCcw } from 'lucide-react';
+import { Bug, FlaskConical, RotateCcw, Sparkles } from 'lucide-react';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import DebugPanel from './components/DebugPanel';
@@ -72,6 +73,7 @@ interface PlaygroundInputProps {
 	parts: ValueSections;
 	onChange: (parts: ValueSections) => void;
 	onEvent: (event: { kind: string; detail?: string }) => void;
+	useV2?: boolean;
 }
 
 /**
@@ -81,7 +83,7 @@ interface PlaygroundInputProps {
  * what we want to inspect in the playground.
  */
 const PlaygroundInput = React.forwardRef<HTMLElement, PlaygroundInputProps>((props, forwardedRef) => {
-	const { scenario, parts, onChange, onEvent } = props;
+	const { scenario, parts, onChange, onEvent, useV2 } = props;
 	const localRef = useRef<HTMLElement | null>(null);
 
 	const setRef = useCallback(
@@ -120,8 +122,9 @@ const PlaygroundInput = React.forwardRef<HTMLElement, PlaygroundInputProps>((pro
 		};
 	}, [scenario.id, onEvent]);
 
+	const Component = useV2 ? VariableInputV2 : VariableInput;
 	return (
-		<VariableInput
+		<Component
 			ref={setRef}
 			parts={parts}
 			onChange={onChange}
@@ -135,14 +138,17 @@ const VariableInputPlayground: React.FC = () => {
 	const [scenarioId, setScenarioId] = useState(SCENARIOS[3].id);
 	const scenario = useMemo(() => SCENARIOS.find(s => s.id === scenarioId) ?? SCENARIOS[0], [scenarioId]);
 	const [parts, setParts] = useState<ValueSections>(scenario.parts);
+	const [v2Parts, setV2Parts] = useState<ValueSections>(scenario.parts);
 	const [resetKey, setResetKey] = useState(0);
 	const [events, setEvents] = useState<Array<{ ts: number; kind: string; detail?: string }>>([]);
 	const inputRef = useRef<HTMLElement | null>(null);
+	const [v2Flag, setV2Flag] = useVariableInputV2Flag();
 
 	// Reset state whenever the scenario changes so we don't accidentally
 	// carry parts from one scenario into the next.
 	useEffect(() => {
 		setParts(scenario.parts);
+		setV2Parts(scenario.parts);
 		setEvents([]);
 		setResetKey(k => k + 1);
 	}, [scenario.id]);
@@ -181,9 +187,20 @@ const VariableInputPlayground: React.FC = () => {
 				<Box flex='1' />
 				<Button
 					size='xs'
+					variant={v2Flag ? 'solid' : 'outline'}
+					colorPalette={v2Flag ? 'pink' : undefined}
+					onClick={() => setV2Flag(!v2Flag)}
+					title='Persist the V2 preference to localStorage so call-sites that opt in pick it up. Both implementations always render in this lab.'
+				>
+					<Sparkles size={11} strokeWidth={2.2} style={{ marginRight: 4 }} />
+					{v2Flag ? 'V2 preferred' : 'V2 off (preference)'}
+				</Button>
+				<Button
+					size='xs'
 					variant='outline'
 					onClick={() => {
 						setParts(scenario.parts);
+						setV2Parts(scenario.parts);
 						setEvents([]);
 						setResetKey(k => k + 1);
 					}}
@@ -209,16 +226,41 @@ const VariableInputPlayground: React.FC = () => {
 							</Text>
 						</Flex>
 
-						<Box
-							key={resetKey}
-							px='3'
-							py='2'
-							borderRadius='md'
-							borderWidth='1px'
-							borderColor='border.default'
-							bg='bg.surface'
-						>
-							<PlaygroundInput ref={inputRef} scenario={scenario} parts={parts} onChange={setParts} onEvent={handleEvent} />
+						<Box>
+							<Text fontSize='10px' fontWeight='700' letterSpacing='0.08em' textTransform='uppercase' color='fg.subtle' mb='1'>
+								{'Legacy contenteditable'}
+							</Text>
+							<Box
+								key={`legacy-${resetKey}`}
+								px='3'
+								py='2'
+								borderRadius='md'
+								borderWidth='1px'
+								borderColor='border.default'
+								bg='bg.surface'
+							>
+								<PlaygroundInput ref={inputRef} scenario={scenario} parts={parts} onChange={setParts} onEvent={handleEvent} />
+							</Box>
+						</Box>
+
+						<Box>
+							<Flex align='center' gap='1.5' mb='1'>
+								<Sparkles size={10} strokeWidth={2.4} color='var(--beak-colors-accent-pink)' />
+								<Text fontSize='10px' fontWeight='700' letterSpacing='0.08em' textTransform='uppercase' color='accent.pink'>
+									{'V2 — Lexical'}
+								</Text>
+							</Flex>
+							<Box
+								key={`v2-${resetKey}`}
+								px='3'
+								py='2'
+								borderRadius='md'
+								borderWidth='1px'
+								borderColor='color-mix(in srgb, var(--beak-colors-accent-pink) 30%, transparent)'
+								bg='bg.surface'
+							>
+								<PlaygroundInput scenario={scenario} parts={v2Parts} onChange={setV2Parts} onEvent={handleEvent} useV2 />
+							</Box>
 						</Box>
 
 						<Flex gap='2' align='center' fontSize='xs' color='fg.subtle'>

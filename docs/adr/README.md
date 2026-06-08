@@ -45,6 +45,7 @@ Do **not** write an ADR for:
 | ---- | -------- | ---------------------------------------------------------------------- |
 | 0000 | Accepted | [Adopt MADR-style ADRs and Gherkin feature files](0000-adr-process.md) |
 | 0001 | Accepted | [Local agent for the web host](0001-local-agent-for-web-host.md)       |
+| 0002 | Accepted | [Lexical-backed VariableInput](0002-lexical-variable-input.md)         |
 
 ## Granularity guideline
 
