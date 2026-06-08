@@ -1,22 +1,105 @@
 /**
- * Source for the per-extension Web Worker. Built into a Blob URL at
- * `WebExtensionManager.load`-time so each extension gets a fresh worker.
+ * Source for the per-extension worker — runs identically in browser Web
+ * Workers and `node:worker_threads`. Built into a Blob URL (web) or eval'd
+ * inline (Node) at load-time, so each extension gets a fresh worker.
  *
- * Protocol (worker side):
+ * Cross-runtime contract:
+ *  - The script assumes the Web Worker API surface: `self`, top-level
+ *    `postMessage`, `self.addEventListener('message', ...)`.
+ *  - Node's `worker_threads` doesn't expose those; the Electron adapter
+ *    prepends the `WORKER_RUNTIME_NODE_SHIM` below before passing the
+ *    source to `new Worker(..., { eval: true })`.
+ *
+ * Wire protocol:
  *  - in:  `{ kind: 'init', userSource: string, packageName: string }`
- *  - out: `{ kind: 'init-ok', metadata: ExtensionVariable[] }` |
- *         `{ kind: 'init-error', error: { code, info } }`
+ *  - out: `{ kind: 'init-ok', metadata: ExtensionVariable[] }`
+ *         `{ kind: 'init-error', error: { code, message, info } }`
  *  - in:  `{ kind: 'call', callId, path: string[], args: unknown[] }`
- *  - out: `{ kind: 'result', callId, value }` | `{ kind: 'error', callId, error }`
+ *  - out: `{ kind: 'result', callId, value }`
+ *         `{ kind: 'error', callId, error }`
  *  - out: `{ kind: 'parse-value-sections', requestId, ctx, parts }`
- *  - in:  `{ kind: 'parse-value-sections-result', requestId, parsed }` |
+ *  - in:  `{ kind: 'parse-value-sections-result', requestId, parsed }`
  *         `{ kind: 'parse-value-sections-error', requestId, error }`
+ *  - out: `{ kind: 'log', packageName, level, message }`
  *
- * The worker has no DOM, no access to Beak's React state, and no
- * reference to the main thread's globals. It can still issue `fetch()`
- * and read IndexedDB on Beak's origin — that's the documented v1
- * trust model.
+ * Trust model: extensions are user-installed under a project's
+ * `extensions/` folder. Worker isolation provides V8-level memory
+ * separation but is not a defence against actively malicious code.
+ * See ADR-0003 for the full rationale.
  */
+
+/**
+ * Aliases the Web Worker globals onto Node's `parentPort` so the shared
+ * worker source can run unchanged under `node:worker_threads`. Also
+ * installs `__beak_vm_evaluate` — a stricter evaluator that runs the
+ * user's extension code in a `vm.createContext` sandbox with an
+ * ECMAScript-only global. Prepended by the Electron WorkerProvider
+ * before `new Worker(source, { eval: true })`.
+ *
+ * The sandbox restores the isolation guarantee the previous
+ * `isolated-vm` implementation provided: no `process`, `Buffer`,
+ * `require`, dynamic `import()`, `fetch`, `console`, `setTimeout`, or
+ * any Node / Web platform API. Extensions get the language plus
+ * `extCtx` (the host bridge passed in as an argument) — full stop.
+ * See ADR-0003 §3 (Trust model).
+ */
+export const WORKER_RUNTIME_NODE_SHIM = `
+const { parentPort } = require('node:worker_threads');
+const vm = require('node:vm');
+
+globalThis.self = globalThis;
+globalThis.postMessage = parentPort.postMessage.bind(parentPort);
+globalThis.addEventListener = (type, fn) => {
+	if (type === 'message') parentPort.on('message', data => fn({ data }));
+};
+
+// Build the sandbox as a *fresh* vm context — the empty seed gives the
+// realm its own primordials (Object/Function/Array/…) so user code
+// can't walk \`anyValue.constructor.constructor\` up to the outer realm's
+// Function constructor and call it as a code-gen-permitted escape.
+// codeGeneration.{strings:false,wasm:false} blocks the in-context
+// Function constructor + eval + WebAssembly.compile.
+const sandboxContext = vm.createContext({}, {
+	name: 'beak-extension-sandbox',
+	codeGeneration: { strings: false, wasm: false },
+});
+
+// Strip globals that vm hands us by default but extensions shouldn't reach:
+//   console        — extensions use extCtx.log
+//   Atomics + SharedArrayBuffer — memory-race surface, not needed
+//   WebAssembly    — wasm:false already blocks compile, drop the object too
+//   escape/unescape— legacy noise, no use case
+//   eval           — strings:false already blocks usage; drop the binding
+//   globalThis is left in place — it's the sandbox's own globalThis,
+//   not the outer one.
+const stripped = ['console', 'Atomics', 'SharedArrayBuffer', 'WebAssembly', 'escape', 'unescape', 'eval'];
+vm.runInContext(JSON.stringify(stripped) + '.forEach(k => { delete globalThis[k]; });', sandboxContext);
+
+globalThis.__beak_vm_evaluate = function (userSource) {
+	// module and exports MUST be created inside the sandbox realm; passing
+	// outer-realm objects in lets the user walk
+	// \`module.constructor.constructor('return process')()\` to the outer
+	// Function and call it (codeGeneration restriction is per-context).
+	vm.runInContext('globalThis.module = { exports: {} }; globalThis.exports = module.exports;', sandboxContext);
+	try {
+		vm.runInContext(
+			'(function (module, exports) {' + userSource + '\\n})(module, exports);',
+			sandboxContext,
+			{ filename: 'beak-extension.js' },
+		);
+		// Read the user's exports out of the sandbox. The returned reference is
+		// a sandbox-realm object; cross-realm reads are fine, writes from the
+		// outer realm would mutate sandbox state (we don't do that).
+		return vm.runInContext(
+			'(module.exports && module.exports.default !== undefined) ? module.exports.default : module.exports',
+			sandboxContext,
+		);
+	} finally {
+		vm.runInContext('delete globalThis.module; delete globalThis.exports;', sandboxContext);
+	}
+};
+`;
+
 export const WORKER_SOURCE = `
 'use strict';
 
@@ -115,6 +198,15 @@ function validateAndBindExtension(raw, packageName) {
 }
 
 function evaluateUserSource(userSource) {
+	// In Node \`worker_threads\`, the runtime shim installs a vm-based
+	// evaluator that runs the user's extension code with an
+	// ECMAScript-only global (no Node APIs, no Web APIs). In a browser
+	// Web Worker the shim is absent and we fall back to \`new Function\` —
+	// the worker's globalThis still exposes Web APIs but cannot reach
+	// Beak's main thread state. See ADR-0003 §3.
+	if (typeof globalThis.__beak_vm_evaluate === 'function') {
+		return globalThis.__beak_vm_evaluate(userSource);
+	}
 	const module = { exports: {} };
 	const exports = module.exports;
 	const fn = new Function('module', 'exports', userSource);

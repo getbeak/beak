@@ -1,13 +1,11 @@
 import type { Extension, LoadedExtension } from '@beak/common/types/extensions';
 
 /**
- * Per-project, per-package extension record. Each host parameterises the
- * registry with its own concrete shape:
- *   electron → `{ isolate, context, variables, loaded }`
- *   web      → `{ worker, loaded, pendingCalls, variables }`
- *
- * The base only requires a `loaded` field for the management IPC's
- * `list` call — every other shape is opaque.
+ * Per-project, per-package extension record. Both hosts now use the same
+ * Worker-based shape (`WorkerExtensionManager`'s `WorkerRecord`) — see
+ * ADR-0003. The base only requires a `loaded` field for the management
+ * IPC's `list` call — every other shape is opaque so this stays usable
+ * if a third host shape ever appears.
  */
 export interface RegisteredRecord {
 	readonly loaded: LoadedExtension;
@@ -21,15 +19,8 @@ export interface RegistryOptions<TRecord> {
 /**
  * Lifecycle + lookup primitives shared by both extension managers. The
  * registry owns the `Record<projectId, Record<packageName, Record>>`
- * shape; per-host managers consume it for the variable-invocation
- * methods that vary by execution model (isolated-vm vs Worker).
- *
- * Type-to-package resolution is host-owned because the two hosts walk
- * the resolved record differently:
- *   electron looks up `record.variables[fully-qualified-type]`
- *   web looks up by `variableId` derived from the type
- * The registry just hands you the per-package record; the manager
- * extracts whichever per-variable shape it stores there.
+ * shape; the manager (`WorkerExtensionManager`) consumes it for the
+ * variable-invocation methods.
  */
 export class ProjectExtensionRegistry<TRecord extends RegisteredRecord> {
 	private readonly projects: Record<string, Record<string, TRecord>> = {};
