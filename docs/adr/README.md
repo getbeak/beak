@@ -50,12 +50,19 @@ Do **not** write an ADR for:
 | 0004 | Proposed | [Service layer in `@beak/ui`](0004-service-layer-in-ui.md)                                         |
 | 0005 | Proposed | [State slice convention in `@beak/state`](0005-state-slice-convention.md)                          |
 | 0006 | Proposed | [Host ports and adapters](0006-host-ports-and-adapters.md)                                         |
+| 0007 | Accepted | [Realtime-values redesign: binary, blobs, streams, multipart](0007-realtime-values-redesign.md)    |
+| 0008 | Superseded by 0007 | [Realtime values v1 (retrofit)](0008-realtime-values-v1-retrofit.md)                     |
 
 ADRs 0002–0006 are a single set — the architectural prescription
 that came out of the domain audit in [`../audit/`](../audit/). They
 cross-reference each other and are intended to land as one PR. See
 [`../audit/README.md`](../audit/README.md) for the discovery work
 that motivated them.
+
+ADR 0007 is the realtime-values redesign. It supersedes 0008 (which
+retroactively documents the legacy v1 system the redesign replaces)
+and sits on top of 0002–0006 — every cell it touches is one of the
+domain paths declared in 0002.
 
 ## Granularity guideline
 
