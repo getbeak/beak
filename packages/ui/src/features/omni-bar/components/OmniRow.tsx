@@ -1,8 +1,7 @@
 import { Box, chakra, Flex } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 import { CornerDownLeft } from 'lucide-react';
-import * as React from 'react';
-import { forwardRef } from 'react';
+import React, { forwardRef } from 'react';
 
 import { CATEGORY_META } from '../lib/categories';
 import type { OmniItem } from '../lib/types';

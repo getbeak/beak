@@ -81,7 +81,8 @@ function validateFolderName(raw: string): string | null {
 	if (name.includes('/') || name.includes('\\')) return 'No slashes — pick a single folder name.';
 	// Reserved on Windows + characters that need shell quoting on POSIX. Banning
 	// them across the board keeps projects portable without per-platform
-	// guesswork.
+	// guesswork. The control-char range \x00-\x1f is intentional here.
+	// biome-ignore lint/suspicious/noControlCharactersInRegex: intentional — validating against control chars
 	if (/[<>:"|?*\x00-\x1f]/.test(name)) return 'Use plain characters — no control characters, <, >, :, ", |, ?, or *.';
 	if (name === '.' || name === '..') return '“.” and “..” aren’t valid folder names.';
 	if (name.startsWith('.') || name.startsWith('-')) return 'Don’t start with a dot or dash.';
@@ -99,28 +100,39 @@ function validateFolderName(raw: string): string | null {
  * monospace chip beneath the form, replacing the previous two-pane layout
  * whose sidebar made the dialog feel busy without paying its weight.
  */
-const SourceSchemaDialog: React.FC<SourceSchemaDialogProps> = ({
+/**
+ * Dispatcher: OpenAPI renders its own dialog (which owns its hooks); the gRPC
+ * and GraphQL variants share `GrpcOrGraphqlSourceSchemaDialog` (which owns its
+ * hooks). Keeping the dispatch hook-free is mandatory — Rules of Hooks forbids
+ * a conditional early-return before useState calls.
+ */
+const SourceSchemaDialog: React.FC<SourceSchemaDialogProps> = props => {
+	if (props.sourceSchemaKind === 'openapi')
+		return (
+			<OpenApiSourceSchemaDialog
+				mode={props.mode}
+				initialOpenApiSource={props.initialOpenApiSource}
+				lastSyncedAt={props.lastSyncedAt}
+				onSyncNow={props.onSyncNow}
+				onClose={props.onClose}
+			/>
+		);
+	return <GrpcOrGraphqlSourceSchemaDialog {...props} sourceSchemaKind={props.sourceSchemaKind} />;
+};
+
+interface GrpcOrGraphqlSourceSchemaDialogProps extends Omit<SourceSchemaDialogProps, 'sourceSchemaKind'> {
+	sourceSchemaKind: Exclude<SourceSchemaDialogProps['sourceSchemaKind'], 'openapi'>;
+}
+
+const GrpcOrGraphqlSourceSchemaDialog: React.FC<GrpcOrGraphqlSourceSchemaDialogProps> = ({
 	sourceSchemaKind,
 	mode,
 	initialEndpoint,
 	initialDescriptor,
-	initialOpenApiSource,
 	lastSyncedAt,
-	onSyncNow,
 	onOpenIntrospection,
 	onClose,
 }) => {
-	if (sourceSchemaKind === 'openapi')
-		return (
-			<OpenApiSourceSchemaDialog
-				mode={mode}
-				initialOpenApiSource={initialOpenApiSource}
-				lastSyncedAt={lastSyncedAt}
-				onSyncNow={onSyncNow}
-				onClose={onClose}
-			/>
-		);
-
 	const config = SOURCE_SCHEMA_CONFIG[sourceSchemaKind];
 	const isCreate = mode.kind === 'create';
 	const isGrpc = sourceSchemaKind === 'grpc';

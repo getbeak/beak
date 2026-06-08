@@ -62,7 +62,8 @@ export function findDescendants(tree: Tree, rootId: string, type?: Nodes['type']
 	const childrenByParent: Record<string, Nodes[]> = {};
 	for (const node of Object.values(tree)) {
 		const key = node.parent ?? '';
-		(childrenByParent[key] ??= []).push(node);
+		if (!childrenByParent[key]) childrenByParent[key] = [];
+		childrenByParent[key].push(node);
 	}
 	const out: Nodes[] = [];
 	const stack: string[] = [rootId];

@@ -30,17 +30,19 @@ const RequestTab: React.FC<React.PropsWithChildren<RequestTabProps>> = ({ tab })
 		return parent?.type === 'folder' ? parent.name : undefined;
 	});
 	const [target, setTarget] = useState<HTMLElement>();
+	// Hooks must precede the early-return; pass `node?.id` defensively so the
+	// hook order stays stable when `node` is briefly missing (deadness is
+	// handled one level up in TabView via `selectTabAlive`).
+	const nodeId = node && node.type === 'request' ? node.id : null;
+	const isDirty = useAppSelector(s => (nodeId ? Boolean(s.global.project.linkedDirty[nodeId]) : false));
+	const isStale = useAppSelector(s => (nodeId ? Boolean(s.global.project.linkedStale[nodeId]) : false));
 
-	// Deadness is handled one level up in TabView via `selectTabAlive`; if we
-	// got rendered, the underlying node is still around.
 	if (!node || node.type !== 'request') return null;
 
 	const verb = node.mode === 'valid' ? node.info.verb : 'get';
 	const color = verbToColor(verb);
 	const isIntrospection = node.mode === 'valid' && node.info.introspection === true;
 	const isLinked = node.mode === 'valid' && provenance.isLinked(node.info);
-	const isDirty = useAppSelector(s => Boolean(s.global.project.linkedDirty[node.id]));
-	const isStale = useAppSelector(s => Boolean(s.global.project.linkedStale[node.id]));
 	const VerbIcon = isLinked ? Link2 : ArrowUpRight;
 	const verbIconColor = isStale ? 'var(--beak-colors-accent-alert)' : color;
 	const verbIconTitle = isLinked

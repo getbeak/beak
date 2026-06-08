@@ -39,7 +39,8 @@
 			"bracketSpacing": true,
 			"arrowParentheses": "asNeeded",
 			"quoteProperties": "asNeeded"
-		}
+		},
+		"jsxRuntime": "reactClassic"
 	},
 	"json": {
 		"formatter": {

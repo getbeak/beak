@@ -1,5 +1,5 @@
 import { useAppSelector } from '@beak/ui/store/redux';
-import { Box, Button, Flex, Text } from '@chakra-ui/react';
+import { Button, Flex, Text } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 import { FileWarning } from 'lucide-react';
 import * as React from 'react';
