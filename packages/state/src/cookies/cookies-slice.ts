@@ -136,15 +136,15 @@ const cookiesSlice = createSlice({
 				variableSet: string;
 				itemId: string;
 				keys: { name: string; domain: string; path: string }[];
-				now?: number;
+				/** Epoch ms — must be minted at dispatch time (ADR 0005 §2). */
+				now: number;
 			}>,
 		) => {
 			const { variableSet, itemId, keys, now } = action.payload;
 			const list = state.jars[variableSet]?.[itemId];
 			if (!list) return;
-			const ts = now ?? Date.now();
 			for (const cookie of list) {
-				if (keys.some(k => sameIdentity(cookie, k))) cookie.lastAccessed = ts;
+				if (keys.some(k => sameIdentity(cookie, k))) cookie.lastAccessed = now;
 			}
 		},
 	},

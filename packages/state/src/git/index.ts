@@ -1,4 +1,23 @@
-import { createAction, createReducer } from '@reduxjs/toolkit';
+import type {
+	GitCheckoutRequest,
+	GitCommitRequest,
+	GitCreateBranchRequest,
+	GitFetchRequest,
+	GitInitRequest,
+	GitPullRequest,
+	GitPushRequest,
+} from '@beak/common/ipc/git';
+import { createAction, createSlice, type PayloadAction } from '@reduxjs/toolkit';
+
+export type {
+	GitCheckoutRequest,
+	GitCommitRequest,
+	GitCreateBranchRequest,
+	GitFetchRequest,
+	GitInitRequest,
+	GitPullRequest,
+	GitPushRequest,
+};
 
 export interface Branch {
 	name: string;
@@ -73,63 +92,11 @@ export interface GitOpenedPayload {
 	selectedBranch: string | undefined;
 }
 
-export interface GitInitRequest {
-	defaultBranch?: string;
-}
-
-export interface GitCommitRequest {
-	message: string;
-	author: { name: string; email: string };
-	committer?: { name: string; email: string };
-}
-
-export interface GitPushRequest {
-	remote?: string;
-	ref?: string;
-	force?: boolean;
-	auth?: { username?: string; password?: string };
-}
-
-export interface GitPullRequest {
-	remote?: string;
-	ref?: string;
-	fastForwardOnly?: boolean;
-	auth?: { username?: string; password?: string };
-	author: { name: string; email: string };
-}
-
-export interface GitFetchRequest {
-	remote?: string;
-	ref?: string;
-	auth?: { username?: string; password?: string };
-}
-
-export interface GitCheckoutRequest {
-	ref: string;
-	force?: boolean;
-}
-
-export interface GitCreateBranchRequest {
-	/** New branch name. */
-	ref: string;
-	/** Optional starting point — defaults to HEAD when omitted. */
-	object?: string;
-	/** Switch to the new branch after creating it. */
-	checkout?: boolean;
-}
+/* -------------------------------------------------------------------------- */
+/*  Effect-trigger actions (no state mutation — signal to listener middleware) */
+/* -------------------------------------------------------------------------- */
 
 export const startGit = createAction('git/startGit');
-export const gitOpened = createAction<GitOpenedPayload>('git/gitOpened');
-export const gitClosed = createAction('git/gitClosed');
-export const addBranch = createAction<string>('git/addBranch');
-export const removeBranch = createAction<string>('git/removeBranch');
-export const changeSelectedBranch = createAction<string | undefined>('git/changeSelectedBranch');
-
-export const requestStatus = createAction('git/requestStatus');
-export const statusFetched = createAction<GitStatusSummary>('git/statusFetched');
-export const statusFailed = createAction<string>('git/statusFailed');
-export const remotesUpdated = createAction<RemoteEntry[]>('git/remotesUpdated');
-
 export const requestInit = createAction<GitInitRequest>('git/requestInit');
 export const requestCommit = createAction<GitCommitRequest>('git/requestCommit');
 export const requestPush = createAction<GitPushRequest>('git/requestPush');
@@ -138,19 +105,20 @@ export const requestFetch = createAction<GitFetchRequest>('git/requestFetch');
 export const requestCheckout = createAction<GitCheckoutRequest>('git/requestCheckout');
 export const requestCreateBranch = createAction<GitCreateBranchRequest>('git/requestCreateBranch');
 
-export const operationStarted = createAction<{ op: GitOperation }>('git/operationStarted');
-export const operationSucceeded = createAction<{ op: GitOperation; notice?: string }>('git/operationSucceeded');
-export const operationFailed = createAction<{ op: GitOperation; error: string }>('git/operationFailed');
-export const operationDismissed = createAction('git/operationDismissed');
+/* -------------------------------------------------------------------------- */
+/*  Slice                                                                     */
+/* -------------------------------------------------------------------------- */
 
-const gitReducer = createReducer(initialGitState, builder => {
-	builder
-		.addCase(gitOpened, (state, { payload }) => {
+const gitSlice = createSlice({
+	name: 'git',
+	initialState: initialGitState,
+	reducers: {
+		gitOpened: (state, { payload }: PayloadAction<GitOpenedPayload>) => {
 			state.available = true;
 			state.branches = payload.branches;
 			state.selectedBranch = payload.selectedBranch;
-		})
-		.addCase(gitClosed, state => {
+		},
+		gitClosed: state => {
 			state.available = false;
 			state.branches = [];
 			state.selectedBranch = void 0;
@@ -159,55 +127,117 @@ const gitReducer = createReducer(initialGitState, builder => {
 			state.statusLoading = false;
 			state.statusError = null;
 			state.operation = { phase: 'idle' };
-		})
-		.addCase(addBranch, (state, { payload }) => {
+		},
+		addBranch: (state, { payload }: PayloadAction<string>) => {
 			if (state.branches.some(b => b.name === payload)) return;
 			state.branches.push({ name: payload });
-		})
-		.addCase(removeBranch, (state, { payload }) => {
+		},
+		removeBranch: (state, { payload }: PayloadAction<string>) => {
 			state.branches = state.branches.filter(b => b.name !== payload);
-		})
-		.addCase(changeSelectedBranch, (state, { payload }) => {
+		},
+		changeSelectedBranch: (state, { payload }: PayloadAction<string | undefined>) => {
 			state.selectedBranch = payload;
-		})
-		.addCase(requestStatus, state => {
+		},
+		requestStatus: state => {
 			state.statusLoading = true;
 			state.statusError = null;
-		})
-		.addCase(statusFetched, (state, { payload }) => {
+		},
+		statusFetched: (state, { payload }: PayloadAction<GitStatusSummary>) => {
 			state.status = payload;
 			state.statusLoading = false;
 			state.statusError = null;
-		})
-		.addCase(statusFailed, (state, { payload }) => {
+		},
+		statusFailed: (state, { payload }: PayloadAction<string>) => {
 			state.statusLoading = false;
 			state.statusError = payload;
-		})
-		.addCase(remotesUpdated, (state, { payload }) => {
+		},
+		remotesUpdated: (state, { payload }: PayloadAction<RemoteEntry[]>) => {
 			state.remotes = payload;
-		})
-		.addCase(operationStarted, (state, { payload }) => {
+		},
+		operationStarted: (state, { payload }: PayloadAction<{ op: GitOperation }>) => {
 			state.operation = { phase: 'pending', op: payload.op };
-		})
-		.addCase(operationSucceeded, (state, { payload }) => {
+		},
+		operationSucceeded: (state, { payload }: PayloadAction<{ op: GitOperation; notice?: string; at: string }>) => {
 			state.operation = {
 				phase: 'success',
 				op: payload.op,
 				notice: payload.notice,
-				at: new Date().toISOString(),
+				at: payload.at,
 			};
-		})
-		.addCase(operationFailed, (state, { payload }) => {
+		},
+		operationFailed: (state, { payload }: PayloadAction<{ op: GitOperation; error: string; at: string }>) => {
 			state.operation = {
 				phase: 'error',
 				op: payload.op,
 				error: payload.error,
-				at: new Date().toISOString(),
+				at: payload.at,
 			};
-		})
-		.addCase(operationDismissed, state => {
+		},
+		operationDismissed: state => {
 			state.operation = { phase: 'idle' };
-		});
+		},
+	},
 });
 
-export default gitReducer;
+export const {
+	gitOpened,
+	gitClosed,
+	addBranch,
+	removeBranch,
+	changeSelectedBranch,
+	requestStatus,
+	statusFetched,
+	statusFailed,
+	remotesUpdated,
+	operationStarted,
+	operationSucceeded,
+	operationFailed,
+	operationDismissed,
+} = gitSlice.actions;
+
+export default gitSlice.reducer;
+
+/* -------------------------------------------------------------------------- */
+/*  Selectors                                                                 */
+/* -------------------------------------------------------------------------- */
+
+export interface GitRootState {
+	global: { git: GitState };
+}
+
+export function selectGitAvailable(state: GitRootState): boolean {
+	return state.global.git.available;
+}
+
+export function selectGitBranches(state: GitRootState): Branch[] {
+	return state.global.git.branches;
+}
+
+export function selectGitSelectedBranch(state: GitRootState): string | undefined {
+	return state.global.git.selectedBranch;
+}
+
+export function selectGitRemotes(state: GitRootState): RemoteEntry[] {
+	return state.global.git.remotes;
+}
+
+export function selectGitStatus(state: GitRootState): GitStatusSummary | null {
+	return state.global.git.status;
+}
+
+export function selectGitStatusLoading(state: GitRootState): boolean {
+	return state.global.git.statusLoading;
+}
+
+export function selectGitStatusError(state: GitRootState): string | null {
+	return state.global.git.statusError;
+}
+
+export function selectGitOperation(state: GitRootState): GitOperationState {
+	return state.global.git.operation;
+}
+
+/** Convenience: true when any git operation is in flight. */
+export function selectGitOperationPending(state: GitRootState): boolean {
+	return state.global.git.operation.phase === 'pending';
+}

@@ -4,12 +4,17 @@ import { IpcExtensionsServiceMain } from '@beak/common/ipc/extensions';
 import type { Extension, ExtensionSearchResult } from '@beak/common/types/extensions';
 import Squawk from '@beak/common/utils/squawk';
 import { ExtensionRegistry, packageDestination } from '@beak/runtime-shared/extensions';
+import type { ExtensionSender } from '@beak/runtime-shared/ports/extension-runtime';
 import { type IpcMainInvokeEvent, ipcMain } from 'electron';
 
 import getBeakHost from '../host';
 import ExtensionManager, { getExtensionsDir } from '../lib/extension';
 import { ensureWithinProject } from './fs-service';
 import { getProjectFolder } from './utils';
+
+function makeSender(event: IpcMainInvokeEvent): ExtensionSender {
+	return { send: (channel, payload) => event.sender.send(channel, payload) };
+}
 
 const service = new IpcExtensionsServiceMain(ipcMain);
 const extensionManager = new ExtensionManager(service);
@@ -38,7 +43,7 @@ service.registerList(async event => {
 
 	for (const entry of installed) {
 		try {
-			const loaded = await extensionManager.load(event, projectId, entry.absolutePath);
+			const loaded = await extensionManager.load(projectFolderPath, projectId, entry.absolutePath);
 			results.push(loaded);
 		} catch (error) {
 			results.push({
@@ -63,10 +68,10 @@ service.registerInstall(async (event, payload) => {
 	const resolved = await registry.resolveVersion(payload.packageName, payload.versionRange);
 	const destination = await registry.install(resolved, extensionsDir);
 
-	await ensureWithinProject(getProjectFolder(invokeEvent), destination);
+	await ensureWithinProject(projectFolderPath, destination);
 	await getBeakHost().projectExtensions.addDependency(extensionsDir, resolved.packageName, resolved.version);
 
-	const loaded = await extensionManager.load(invokeEvent, projectId, destination);
+	const loaded = await extensionManager.load(projectFolderPath, projectId, destination);
 	return loaded;
 });
 
@@ -76,7 +81,7 @@ service.registerRemove(async (event, payload) => {
 	const extensionsDir = getExtensionsDir(projectFolderPath);
 
 	const destination = packageDestination(path, extensionsDir, payload.packageName);
-	await ensureWithinProject(getProjectFolder(invokeEvent), destination);
+	await ensureWithinProject(projectFolderPath, destination);
 
 	await extensionManager.unload(projectId, payload.packageName);
 	await registry.remove(payload.packageName, extensionsDir);
@@ -94,10 +99,10 @@ service.registerUpdate(async (event, payload) => {
 	const resolved = await registry.resolveVersion(payload.packageName, payload.versionRange ?? 'latest');
 	const destination = await registry.install(resolved, extensionsDir);
 
-	await ensureWithinProject(getProjectFolder(invokeEvent), destination);
+	await ensureWithinProject(projectFolderPath, destination);
 	await getBeakHost().projectExtensions.addDependency(extensionsDir, resolved.packageName, resolved.version);
 
-	const loaded = await extensionManager.load(invokeEvent, projectId, destination);
+	const loaded = await extensionManager.load(projectFolderPath, projectId, destination);
 	return loaded;
 });
 
@@ -149,7 +154,7 @@ service.registerVariableGetValue(async (event, payload) => {
 		projectId,
 		payload.type,
 		payload.context,
-		invokeEvent.sender,
+		makeSender(invokeEvent),
 		payload.payload,
 		payload.recursiveDepth,
 	);
@@ -162,7 +167,7 @@ service.registerVariableGetAssetRef(async (event, payload) => {
 		projectId,
 		payload.type,
 		payload.context,
-		invokeEvent.sender,
+		makeSender(invokeEvent),
 		payload.payload,
 		payload.recursiveDepth,
 	);

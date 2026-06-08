@@ -2,7 +2,7 @@ import { BeakError } from '@beak/common/utils/squawk';
 import { type CollectionFile, requestFileOverrideSchema, requestFileSchema, toJsonSchema } from '@beak/state/schemas';
 import Button from '@beak/ui/components/atoms/Button';
 import EditorView from '@beak/ui/components/atoms/EditorView';
-import { loadCollectionForRequest } from '@beak/ui/lib/beak-project/collection';
+import { loadCollectionForRequest } from '@beak/ui/services/project';
 import { ipcExplorerService, ipcFsService } from '@beak/ui/lib/ipc';
 import { Box, Flex } from '@chakra-ui/react';
 import type { RequestNode } from '@getbeak/types/nodes';

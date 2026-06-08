@@ -80,7 +80,7 @@ const Header: React.FC<HeaderProps> = ({ node }) => {
 		// or failed session we open a fresh one with a new socketId so the
 		// log of the old attempt stays around.
 		if (socketActive && currentSocket) {
-			dispatch(closeSocket({ socketId: currentSocket.socketId, code: 1000, reason: 'user' }));
+			dispatch(closeSocket({ socketId: currentSocket.socketId, code: 1000, reason: 'user', timestamp: Date.now() }));
 			return;
 		}
 
@@ -90,6 +90,7 @@ const Header: React.FC<HeaderProps> = ({ node }) => {
 				socketId: ksuid.generate('socket').toString(),
 				requestId: node.id,
 				url,
+				timestamp: Date.now(),
 			}),
 		);
 	}

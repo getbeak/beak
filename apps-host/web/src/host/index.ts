@@ -4,10 +4,14 @@ import gitHttp from 'isomorphic-git/http/web';
 import path from 'path-browserify';
 import { Logger } from 'tslog';
 
+import WebDialog from '../adapters/dialog';
+import WebNotification from '../adapters/notification';
+import WebProjectOpener from '../adapters/project-opener';
 import { checkHandlePermission, loadHandle } from './fsa-handle-storage';
 import OpfsFs from './opfs-fs';
 import AesProvider from './providers/aes';
 import CredentialsProvider from './providers/credentials';
+import WebPreferencesStore from './providers/preferences-store';
 import StorageProvider from './providers/storage';
 
 const beakHostLogger = new Logger({ name: 'web-host' });
@@ -71,7 +75,41 @@ export function getRootMode(): RootMode {
 
 export const rootModeReady: Promise<RootMode> = fsRootPromise.then(() => currentRootMode);
 
+const storageProvider = new StorageProvider({
+	recents: [],
+	windowStates: {},
+	previousWindowPresence: [],
+	beakId: base64.fromByteArray(window.crypto.getRandomValues(new Uint8Array(128))),
+
+	latestKnownVersion: '2.0.0',
+	environment: 'prod',
+
+	encryptedAuth: null,
+
+	referenceFiles: {},
+
+	notifications: {
+		onSuccessfulRequest: 'sound-only',
+		onInformationRequest: 'on',
+		onFailedRequest: 'on',
+		showRequestNotificationWhenFocused: false,
+
+		onUpdateAvailable: 'on',
+	},
+
+	editor: {
+		fontSize: 11,
+		themeOverride: 'system',
+	},
+
+	passedOnboarding: false,
+	projectMappings: {},
+
+	themeMode: 'system',
+});
+
 const runtime = new Runtime({
+	writeToClipboard: async text => navigator.clipboard.writeText(text),
 	capabilities: {
 		nativeContextMenus: false,
 		extensions: true,
@@ -85,38 +123,11 @@ const runtime = new Runtime({
 		aes: new AesProvider(),
 		logger: beakHostLogger,
 		credentials: new CredentialsProvider(),
-		storage: new StorageProvider({
-			recents: [],
-			windowStates: {},
-			previousWindowPresence: [],
-			beakId: base64.fromByteArray(window.crypto.getRandomValues(new Uint8Array(128))),
-
-			latestKnownVersion: '2.0.0',
-			environment: 'prod',
-
-			encryptedAuth: null,
-
-			referenceFiles: {},
-
-			notifications: {
-				onSuccessfulRequest: 'sound-only',
-				onInformationRequest: 'on',
-				onFailedRequest: 'on',
-				showRequestNotificationWhenFocused: false,
-
-				onUpdateAvailable: 'on',
-			},
-
-			editor: {
-				fontSize: 11,
-				themeOverride: 'system',
-			},
-
-			passedOnboarding: false,
-			projectMappings: {},
-
-			themeMode: 'system',
-		}),
+		dialog: new WebDialog(),
+		notification: new WebNotification(),
+		preferences: new WebPreferencesStore(storageProvider),
+		projectOpener: new WebProjectOpener(),
+		storage: storageProvider,
 		node: {
 			// @ts-expect-error path-browserify lacks the full node:path surface (matchesGlob, toNamespacedPath) — fine for renderer.
 			fs: beakBrowserFs,

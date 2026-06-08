@@ -8,6 +8,8 @@ import {
 	duplicateItem,
 	generateValueIdent,
 	initialVariableSetsState,
+	insertNewGroup,
+	insertNewItem,
 	insertNewVariableSet,
 	moveGroup,
 	moveItem,
@@ -19,11 +21,16 @@ import {
 	updateItemName,
 	updateValue,
 	variableSetsOpened,
+	variableSetsSlice,
 } from '..';
 
+// Legacy shim path — still exercised by the UI store
 const reducer = createReducer(initialVariableSetsState, builder => {
 	buildVariableSetsReducer(builder);
 });
+
+// New canonical slice path
+const sliceReducer = variableSetsSlice.reducer;
 
 function makeGroup(): VariableSet {
 	return {
@@ -34,6 +41,49 @@ function makeGroup(): VariableSet {
 }
 
 const empty = reducer(undefined, { type: '@@INIT' });
+const sliceEmpty = sliceReducer(undefined, { type: '@@INIT' });
+
+describe('action type strings (legacy variableGroups/ namespace)', () => {
+	it('preserves the legacy action type namespace', () => {
+		expect(startVariableSets.type).toBe('variableGroups/startVariableSets');
+		expect(variableSetsOpened.type).toBe('variableGroups/variableSetsOpened');
+		expect(insertNewVariableSet.type).toBe('variableGroups/insertNewVariableSet');
+		expect(insertNewGroup.type).toBe('variableGroups/insertNewGroup');
+		expect(insertNewItem.type).toBe('variableGroups/insertNewItem');
+		expect(updateGroupName.type).toBe('variableGroups/updateGroupName');
+		expect(updateItemName.type).toBe('variableGroups/updateItemName');
+		expect(updateValue.type).toBe('variableGroups/updateValue');
+		expect(removeVariableSetFromStore.type).toBe('variableGroups/removeVariableSetFromStore');
+		expect(removeGroup.type).toBe('variableGroups/removeGroup');
+		expect(removeItem.type).toBe('variableGroups/removeItem');
+		expect(duplicateItem.type).toBe('variableGroups/duplicateItem');
+		expect(duplicateGroup.type).toBe('variableGroups/duplicateGroup');
+		expect(moveItem.type).toBe('variableGroups/moveItem');
+		expect(moveGroup.type).toBe('variableGroups/moveGroup');
+	});
+});
+
+describe('variableSetsSlice parity with buildVariableSetsReducer shim', () => {
+	it('produces identical initial state', () => {
+		expect(sliceEmpty).toEqual(empty);
+	});
+
+	it('sliceReducer handles startVariableSets the same as shim', () => {
+		const via = reducer({ ...empty, loaded: true }, startVariableSets());
+		const direct = sliceReducer({ ...sliceEmpty, loaded: true }, startVariableSets());
+		expect(direct.loaded).toBe(false);
+		expect(direct).toEqual(via);
+	});
+
+	it('sliceReducer handles variableSetsOpened the same as shim', () => {
+		const payload = { variableSets: { vg1: makeGroup() } };
+		const via = reducer(empty, variableSetsOpened(payload));
+		const direct = sliceReducer(sliceEmpty, variableSetsOpened(payload));
+		expect(direct.loaded).toBe(true);
+		expect(direct.variableSets.vg1).toBeDefined();
+		expect(JSON.stringify(direct)).toBe(JSON.stringify(via));
+	});
+});
 
 describe('variable-groups reducer (core)', () => {
 	it('starts unloaded with empty map', () => {
@@ -157,7 +207,7 @@ describe('variable-groups reducer (core)', () => {
 			},
 		};
 		const seeded = reducer(empty, insertNewVariableSet({ id: 'vg1', variableSet: base }));
-		const dup = reducer(seeded, duplicateItem({ id: 'vg1', itemId: 'item-1' }));
+		const dup = reducer(seeded, duplicateItem({ id: 'vg1', itemId: 'item-1', newItemId: 'item-copy-1', now: 1000 }));
 
 		const itemEntries = Object.entries(dup.variableSets.vg1.items);
 		expect(itemEntries).toHaveLength(2);
@@ -178,7 +228,7 @@ describe('variable-groups reducer (core)', () => {
 			},
 		};
 		const seeded = reducer(empty, insertNewVariableSet({ id: 'vg1', variableSet: base }));
-		const dup = reducer(seeded, duplicateGroup({ id: 'vg1', setId: 'set-b' }));
+		const dup = reducer(seeded, duplicateGroup({ id: 'vg1', setId: 'set-b', newSetId: 'set-copy-b', now: 1000 }));
 
 		const setEntries = Object.entries(dup.variableSets.vg1.sets);
 		expect(setEntries.map(([, v]) => v)).toEqual(['dev', 'prod', 'prod copy']);

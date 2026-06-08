@@ -1,6 +1,6 @@
 import os from 'node:os';
 import type { ProjectEncryption } from '@beak/common/types/beak-project';
-import CredentialsProviderBase from '@beak/runtime-shared/providers/credentials';
+import CredentialsProviderBase from '@beak/runtime-shared/ports/credentials';
 import keytar from 'keytar';
 
 export default class CredentialsProvider extends CredentialsProviderBase {

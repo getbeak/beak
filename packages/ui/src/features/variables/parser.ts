@@ -1,5 +1,5 @@
 import { TypedObject } from '@beak/common/helpers/typescript';
-import { generateValueIdent } from '@beak/ui/lib/beak-variable-set/utils';
+import { generateValueIdent } from '@beak/ui/services/variable-sets/utils';
 import type { Context, ValueSections } from '@getbeak/types/values';
 
 import { VariableManager } from '.';

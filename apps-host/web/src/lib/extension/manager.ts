@@ -14,6 +14,7 @@ import {
 	packageNameFromType,
 	variableIdFromType,
 } from '@beak/runtime-shared/extensions';
+import type { ExtensionSender } from '@beak/runtime-shared/ports/extension-runtime';
 import type { ValueSections, Context as VariableContext } from '@getbeak/types/values';
 
 import getRuntime from '../../host';
@@ -110,6 +111,7 @@ export default class WebExtensionManager {
 		projectId: string,
 		type: string,
 		varCtx: VariableContext,
+		_sender: ExtensionSender,
 		payload: unknown,
 		recursiveDepth: number,
 	): Promise<string> {
@@ -121,6 +123,7 @@ export default class WebExtensionManager {
 		projectId: string,
 		type: string,
 		varCtx: VariableContext,
+		_sender: ExtensionSender,
 		payload: unknown,
 		recursiveDepth: number,
 	): Promise<{ sha256: string; size: number; contentType?: string } | null> {
@@ -265,7 +268,7 @@ export default class WebExtensionManager {
 
 				webIpcMain.on('extensions', listener);
 
-				service.variableParseValueSections(webIpcMain.webContents, {
+				service.variableParseValueSectionsBySender(webIpcMain.webContents, {
 					uniqueSessionId,
 					context: ctx,
 					parts,

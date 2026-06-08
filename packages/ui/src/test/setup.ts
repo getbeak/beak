@@ -33,7 +33,7 @@ global.IntersectionObserver = vi.fn().mockImplementation(() => ({
 if (!global.crypto?.randomUUID) {
 	global.crypto = {
 		...global.crypto,
-		randomUUID: (() => 'test-uuid-' + Math.random().toString(36).substr(2, 9)) as Crypto['randomUUID'],
+		randomUUID: (() => `test-uuid-${Math.random().toString(36).substr(2, 9)}`) as Crypto['randomUUID'],
 	};
 }
 

@@ -13,7 +13,7 @@ import {
 	removeWorkflow,
 	WORKFLOWS_DIR,
 	writeWorkflow,
-} from '@beak/ui/lib/beak-workflow';
+} from '@beak/ui/services/workflows';
 import createFsEmitter, { type FsSubscription, scanDirectoryRecursively } from '@beak/ui/lib/fs-emitter';
 import { ipcDialogService, ipcFsService } from '@beak/ui/lib/ipc';
 import path from 'path-browserify';
@@ -175,7 +175,7 @@ export function registerWorkflowsEffects(start: AppStartListening) {
 				await ensureWorkflowsDir();
 			}
 
-			api.dispatch(insertNewWorkflow({ id: workflow.id, workflow }));
+			api.dispatch(insertNewWorkflow({ id: workflow.id, workflow, now: Date.now() }));
 			api.dispatch(changeTab({ type: 'workflow_editor', payload: workflow.id, temporary: false }));
 		},
 	});
@@ -199,7 +199,7 @@ export function registerWorkflowsEffects(start: AppStartListening) {
 				await ensureWorkflowsDir();
 			}
 
-			api.dispatch(insertNewWorkflow({ id: clone.id, workflow: clone }));
+			api.dispatch(insertNewWorkflow({ id: clone.id, workflow: clone, now: Date.now() }));
 			if (payload.openTab !== false) {
 				api.dispatch(changeTab({ type: 'workflow_editor', payload: clone.id, temporary: false }));
 			}

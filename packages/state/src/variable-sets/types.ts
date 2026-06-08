@@ -28,9 +28,11 @@ export interface InsertNewVariableSetPayload {
 	variableSet: VariableSet;
 }
 export interface InsertNewGroupPayload extends VariableSetId {
+	setId: string;
 	setName: string;
 }
 export interface InsertNewItemPayload extends VariableSetId {
+	itemId: string;
 	itemName: string;
 }
 
@@ -57,9 +59,13 @@ export interface RemoveItemPayload extends VariableSetId {
 
 export interface DuplicateItemPayload extends VariableSetId {
 	itemId: string;
+	newItemId: string;
+	now: number;
 }
 export interface DuplicateGroupPayload extends VariableSetId {
 	setId: string;
+	newSetId: string;
+	now: number;
 }
 
 export interface MoveItemPayload extends VariableSetId {

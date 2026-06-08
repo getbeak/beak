@@ -63,12 +63,15 @@ type Row = PlainRow | CookieRow;
 function buildRows(headers: Record<string, string>, responseUrl?: string): Row[] {
 	const ctxHost = safeUrlHost(responseUrl);
 	const ctxPath = safeUrlPath(responseUrl);
+	// Mint render-time timestamp once so all parsed cookies in this frame share
+	// the same reference epoch (ADR 0005 §2 — no Date.now inside called parsers).
+	const now = Date.now();
 	const out: Row[] = [];
 	for (const [name, value] of Object.entries(headers)) {
 		if (name.toLowerCase() === 'set-cookie') {
 			const candidates = splitFoldedSetCookies(value);
 			for (const raw of candidates) {
-				const parsed = parseSetCookie(raw, { requestHost: ctxHost, requestPath: ctxPath });
+				const parsed = parseSetCookie(raw, { requestHost: ctxHost, requestPath: ctxPath, now });
 				if (!parsed) {
 					out.push({ kind: 'plain', name, value: raw });
 					continue;

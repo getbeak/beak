@@ -137,6 +137,7 @@ export function registerFlightEffects(start: AppStartListening) {
 					reason: 'request_editor',
 					showProgress: true,
 					showResult: true,
+					timestamp: Date.now(),
 				}),
 			);
 		},
@@ -162,6 +163,7 @@ export function registerFlightEffects(start: AppStartListening) {
 					reason: payload.reason,
 					showProgress: Boolean(payload.showProgress),
 					showResult: typeof payload.showResult === 'string' ? payload.showResult : Boolean(payload.showResult),
+					timestamp: Date.now(),
 				}),
 			);
 		},
@@ -181,7 +183,8 @@ export function registerFlightEffects(start: AppStartListening) {
 					flightFailure({
 						flightId,
 						requestId,
-						error: new Error(`Max redirect depth hit ${redirectDepth}`),
+						error: { message: `Max redirect depth hit ${redirectDepth}` },
+						timestamp: Date.now(),
 					}),
 				);
 				return;
@@ -212,7 +215,12 @@ export function registerFlightEffects(start: AppStartListening) {
 					},
 					onFailed: failedPayload => {
 						error = failedPayload.error;
-						api.dispatch(flightFailure({ flightId, requestId, error: failedPayload.error }));
+						api.dispatch(flightFailure({
+							flightId,
+							requestId,
+							error: { message: failedPayload.error.message, code: (failedPayload.error as { code?: string }).code },
+							timestamp: Date.now(),
+						}));
 						resolve();
 					},
 				});
@@ -316,6 +324,7 @@ function handleRedirect(
 			reason: payload.reason,
 			showProgress: payload.showProgress,
 			showResult: payload.showResult,
+			timestamp: Date.now(),
 		}),
 	);
 

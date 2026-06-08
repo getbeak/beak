@@ -1,7 +1,7 @@
 import { verbToColor, verbToShortLabel } from '@beak/design-system/helpers';
 import { projectTree } from '@beak/state';
 import type { CollectionFile, CollectionSource } from '@beak/state/schemas';
-import { loadCollectionAtFolder } from '@beak/ui/lib/beak-project/collection';
+import { loadCollectionAtFolder } from '@beak/ui/services/project';
 import { actions as projectActions } from '@beak/ui/store/project';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { actions as workflowActions } from '@beak/ui/store/workflows';

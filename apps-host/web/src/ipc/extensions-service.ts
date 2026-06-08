@@ -2,11 +2,22 @@ import { IpcExtensionsServiceMain } from '@beak/common/ipc/extensions';
 import type { Extension, ExtensionSearchResult } from '@beak/common/types/extensions';
 import Squawk from '@beak/common/utils/squawk';
 import { ExtensionRegistry } from '@beak/runtime-shared/extensions';
+import type { ExtensionSender } from '@beak/runtime-shared/ports/extension-runtime';
 
 import getRuntime from '../host';
 import WebExtensionManager, { getExtensionsDir } from '../lib/extension/manager';
 import { webIpcMain } from './ipc';
 import { getCurrentProjectFolder } from './utils';
+
+/**
+ * For the web host the worker manages its own IPC round-trip for
+ * `parseValueSections`; the sender argument to variableGetValue /
+ * variableGetAssetRef is accepted but not forwarded. We pass the
+ * webContents shim so the call site remains uniform with Electron.
+ */
+function makeSender(): ExtensionSender {
+	return webIpcMain.webContents as unknown as ExtensionSender;
+}
 
 const service = new IpcExtensionsServiceMain(webIpcMain);
 const manager = new WebExtensionManager(service);
@@ -139,6 +150,7 @@ service.registerVariableGetValue(async (_event, payload) => {
 		projectId,
 		payload.type,
 		payload.context,
+		makeSender(),
 		payload.payload,
 		payload.recursiveDepth,
 	);
@@ -150,6 +162,7 @@ service.registerVariableGetAssetRef(async (_event, payload) => {
 		projectId,
 		payload.type,
 		payload.context,
+		makeSender(),
 		payload.payload,
 		payload.recursiveDepth,
 	);

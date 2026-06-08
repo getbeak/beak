@@ -3,10 +3,14 @@ import type path from 'node:path';
 import type { HttpClient } from 'isomorphic-git';
 import type { Logger } from 'tslog';
 
-import type CredentialsProvider from './providers/credentials';
-import type AesProvider from './providers/encryption-aes';
-import type StorageProvider from './providers/storage';
-import type { GenericStore } from './providers/storage';
+import type CredentialsProvider from './ports/credentials';
+import type Dialog from './ports/dialog';
+import type AesProvider from './ports/encryption-aes';
+import type NotificationPort from './ports/notification';
+import type PreferencesStore from './ports/preferences-store';
+import type ProjectOpener from './ports/project-opener';
+import type StorageProvider from './ports/storage';
+import type { GenericStore } from './ports/storage';
 
 /**
  * Capabilities matrix advertised by a concrete runtime. Renderer features
@@ -53,7 +57,11 @@ export interface GitProvider {
 export interface Providers {
 	aes: AesProvider;
 	credentials: CredentialsProvider;
+	dialog: Dialog;
 	logger: Logger<unknown>;
+	notification: NotificationPort;
+	preferences: PreferencesStore;
+	projectOpener: ProjectOpener;
 	storage: StorageProvider<GenericStore>;
 
 	node: {
@@ -67,6 +75,13 @@ export interface Providers {
 export interface RuntimeOptions {
 	providers: Providers;
 	capabilities: RuntimeCapabilities;
+	/**
+	 * Host-provided clipboard writer. Electron passes `(t) => clipboard.writeText(t)`;
+	 * web passes `(t) => navigator.clipboard.writeText(t)`. Abstracted here so
+	 * `ProjectSecrets` (shared concrete in `runtime-shared`) doesn't depend on either
+	 * host's platform API directly.
+	 */
+	writeToClipboard: (text: string) => Promise<void>;
 }
 
 /**

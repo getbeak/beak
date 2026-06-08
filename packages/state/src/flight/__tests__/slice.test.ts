@@ -23,7 +23,7 @@ function makeRequest(): FlightRequest {
 	};
 }
 
-function beginPayload(requestId: string, flightId: string) {
+function beginPayload(requestId: string, flightId: string, timestamp = 0) {
 	return {
 		requestId,
 		flightId,
@@ -33,6 +33,7 @@ function beginPayload(requestId: string, flightId: string) {
 		reason: 'manual' as const,
 		showProgress: true,
 		showResult: true,
+		timestamp,
 	};
 }
 
@@ -196,7 +197,8 @@ describe('flightSlice', () => {
 			flightFailure({
 				requestId: 'r1',
 				flightId: 'f1',
-				error: new Error('boom'),
+				error: { message: 'boom' },
+				timestamp: 100,
 			}),
 		);
 
