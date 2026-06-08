@@ -95,7 +95,7 @@ const BEAK_DARK: monaco.editor.IStandaloneThemeData = {
 
 // Modified version of code from https://github.com/microsoft/monaco-editor/issues/2209
 //
-// The `content_type` state branches on mime-type and stores the *Monaco
+// The `contentType` state branches on mime-type and stores the *Monaco
 // language id* (not the raw mime) on the parent state via the `.<id>` arg.
 // That way `nextEmbedded: '$S2'` resolves to a language Monaco actually knows
 // about (`json`, `xml`, …) and the body section gets full syntax
@@ -111,7 +111,7 @@ const httpLanguageDefinition: monaco.languages.IMonarchLanguage = {
 		root: [[/^(?:[A-Z0-9]+\s)/, 'comment', '@overview']],
 		overview: [[/(.+\s)(.*)(\n)$/, ['variable.name', 'source', { token: 'source', next: '@headers' }]]],
 		headers: [
-			[/^(content-type\s*)(:)/, ['variable.name', { token: 'delimiter', next: '@content_type' }]],
+			[/^(content-type\s*)(:)/, ['variable.name', { token: 'delimiter', next: '@contentType' }]],
 			[/^([^:]+)(:)(.+\n)$/, ['variable.name', 'delimiter', 'source']],
 
 			// We're going to the body now

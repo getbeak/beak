@@ -1,8 +1,6 @@
 import ksuid from '@beak/ksuid';
 import {
-	insertFolderNode,
 	insertProjectInfo,
-	insertRequestNode,
 	materialiseInMemoryProject,
 	type ProjectMode,
 	projectLoadFailed,

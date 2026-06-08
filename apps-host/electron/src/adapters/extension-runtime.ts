@@ -2,7 +2,7 @@ import type { Extension } from '@beak/common/types/extensions';
 import ExtensionRuntime, { type ExtensionSender } from '@beak/runtime-shared/ports/extension-runtime';
 import type { Context as VariableContext } from '@getbeak/types/values';
 
-import ExtensionManager from '../lib/extension';
+import type ExtensionManager from '../lib/extension';
 
 /**
  * Electron adapter for the `ExtensionRuntime` port.

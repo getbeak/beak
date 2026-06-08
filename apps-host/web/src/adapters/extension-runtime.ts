@@ -2,7 +2,7 @@ import type { Extension } from '@beak/common/types/extensions';
 import ExtensionRuntime, { type ExtensionSender } from '@beak/runtime-shared/ports/extension-runtime';
 import type { Context as VariableContext } from '@getbeak/types/values';
 
-import WebExtensionManager from '../lib/extension/manager';
+import type WebExtensionManager from '../lib/extension/manager';
 
 /**
  * Web adapter for the `ExtensionRuntime` port.
