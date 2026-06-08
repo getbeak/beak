@@ -33,6 +33,8 @@ export {
 export { default as BeakGit } from './git';
 export { type GitBindingsOptions, registerGitBindings } from './git/bindings';
 export { type FetchTextDeps, fetchText, makeCappedBodyReader, parseHttpUrl } from './http/fetch-text';
+export type { PreferencesChangeEvent } from './ports/preferences-store';
+export { default as PreferencesStore } from './ports/preferences-store';
 export { default as ProjectSecrets } from './secrets/project-secrets';
 export type { OpenApiReadResult, OpenApiSyncInput, OpenApiSyncResult } from './sources/openapi-writer';
 export { default as OpenApiWriter } from './sources/openapi-writer';

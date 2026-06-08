@@ -5,6 +5,7 @@ import type { Logger } from 'tslog';
 
 import type CredentialsProvider from './ports/credentials';
 import type AesProvider from './ports/encryption-aes';
+import type PreferencesStore from './ports/preferences-store';
 import type ProjectOpener from './ports/project-opener';
 import type StorageProvider from './ports/storage';
 import type { GenericStore } from './ports/storage';
@@ -55,6 +56,7 @@ export interface Providers {
 	aes: AesProvider;
 	credentials: CredentialsProvider;
 	logger: Logger<unknown>;
+	preferences: PreferencesStore;
 	projectOpener: ProjectOpener;
 	storage: StorageProvider<GenericStore>;
 
