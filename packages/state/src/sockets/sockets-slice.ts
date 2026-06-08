@@ -86,7 +86,7 @@ const socketsSlice = createSlice({
 				// `openSocket` is the user intent — the effect will follow up with
 				// `socketConnecting` once the IPC is dispatched. We seed the session
 				// here so the UI can render immediately rather than wait a tick.
-				const { socketId, requestId, url, protocols, headers } = action.payload;
+				const { socketId, requestId, url, protocols, headers, timestamp } = action.payload;
 				const session: SocketSession = {
 					socketId,
 					requestId,
@@ -101,7 +101,7 @@ const socketsSlice = createSlice({
 					messagesOut: 0,
 				};
 				indexSession(state, session);
-				pushSystemMessage(session, `Connecting to ${url}…`, Date.now());
+				pushSystemMessage(session, `Connecting to ${url}…`, timestamp);
 			})
 			.addCase(socketConnecting, (state, action) => {
 				const session = state.sessions[action.payload.socketId];
@@ -137,7 +137,7 @@ const socketsSlice = createSlice({
 				// Same "render before IPC settles" pattern as openSocket — the effect
 				// will refine via `socketMessageSent` if/when the host acks, but the
 				// UI doesn't need to wait.
-				const { socketId, kind, data } = action.payload;
+				const { socketId, kind, data, timestamp } = action.payload;
 				const session = state.sessions[socketId];
 				if (!session) return;
 				const size = sizeOf(kind, data);
@@ -149,7 +149,7 @@ const socketsSlice = createSlice({
 					kind,
 					data,
 					size,
-					receivedAt: Date.now(),
+					receivedAt: timestamp,
 				});
 			})
 			.addCase(socketMessageSent, () => {
@@ -161,7 +161,7 @@ const socketsSlice = createSlice({
 				if (!session) return;
 				if (session.status === 'closed' || session.status === 'failed') return;
 				session.status = 'closing';
-				pushSystemMessage(session, 'Closing…', Date.now());
+				pushSystemMessage(session, 'Closing…', action.payload.timestamp);
 			})
 			.addCase(socketClosing, (state, action) => {
 				const session = state.sessions[action.payload.socketId];

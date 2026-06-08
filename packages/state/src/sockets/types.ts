@@ -58,6 +58,8 @@ export interface OpenSocketPayload {
 	url: string;
 	protocols?: string[];
 	headers?: SocketRequestHeader[];
+	/** Timestamp (ms since epoch) when the open was initiated, minted by the caller. */
+	timestamp: number;
 }
 
 export interface SocketOpenedPayload {
@@ -80,6 +82,8 @@ export interface SendSocketMessagePayload {
 	kind: 'text' | 'binary';
 	/** UTF-8 string for text, base64 for binary. */
 	data: string;
+	/** Timestamp (ms since epoch) when the message was queued, minted by the caller. */
+	timestamp: number;
 }
 
 export interface SocketMessageSentPayload {
@@ -94,6 +98,8 @@ export interface CloseSocketPayload {
 	socketId: string;
 	code?: number;
 	reason?: string;
+	/** Timestamp (ms since epoch) when the close was initiated, minted by the caller. */
+	timestamp: number;
 }
 
 export interface SocketClosedPayload {
