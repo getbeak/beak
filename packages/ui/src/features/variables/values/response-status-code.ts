@@ -13,14 +13,14 @@ const definition: EditableVariable<ResponseStatusCodeRtv, ResponseStatusCodeRtv>
 
 	createDefaultPayload: async () => ({ requestId: '' }),
 
-	getValue: async (ctx, payload) => {
+	resolve: async ({ variableContext: ctx }, payload) => {
 		const requestNode = getRequestNode(payload.requestId, ctx);
 
-		if (!requestNode) return '';
+		if (!requestNode) return { kind: 'text', text: '' };
 
 		const latestFlight = getLatestFlight(requestNode.id, ctx);
 
-		return latestFlight?.response?.status.toString() ?? '';
+		return { kind: 'text', text: latestFlight?.response?.status.toString() ?? '' };
 	},
 
 	attributes: {

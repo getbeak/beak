@@ -24,28 +24,28 @@ const definition: EditableVariable<ResponseBodyJsonRtv, ResponseBodyJsonRtv> = {
 		dotPath: [''],
 	}),
 
-	getValue: async (ctx, payload, recursiveDepth) => {
+	resolve: async ({ variableContext: ctx, depth }, payload) => {
 		const requestNode = getRequestNode(payload.requestId, ctx);
 
-		if (!requestNode) return '';
+		if (!requestNode) return { kind: 'text', text: '' };
 
 		const latestFlight = getLatestFlight(requestNode.id, ctx);
 
-		if (!latestFlight?.response) return '';
+		if (!latestFlight?.response) return { kind: 'text', text: '' };
 
-		if (!latestFlight.response.hasBody) return '';
+		if (!latestFlight.response.hasBody) return { kind: 'text', text: '' };
 
-		const dotPath = await parseValueSections(ctx, payload.dotPath, recursiveDepth);
+		const dotPath = await parseValueSections(ctx, payload.dotPath, depth);
 		const binary = binaryStore.get(latestFlight.binaryStoreKey);
 		const json = new TextDecoder().decode(binary);
 		const parsed = attemptTextToJson(json);
 		const resolved = dotPath === '' ? parsed : get(parsed, dotPath, '');
 
-		if (!resolved) return '';
+		if (!resolved) return { kind: 'text', text: '' };
 
-		if (allowedRawJson.includes(typeof resolved)) return String(resolved);
+		if (allowedRawJson.includes(typeof resolved)) return { kind: 'text', text: String(resolved) };
 
-		return JSON.stringify(resolved);
+		return { kind: 'text', text: JSON.stringify(resolved) };
 	},
 
 	attributes: {

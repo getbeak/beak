@@ -1,5 +1,6 @@
 import type { Extension } from '@beak/common/types/extensions';
 import ExtensionRuntime, { type ExtensionSender } from '@beak/runtime-shared/ports/extension-runtime';
+import type { ResolvedValue, Sink } from '@getbeak/extension-sdk';
 import type { Context as VariableContext } from '@getbeak/types/values';
 
 import type WebExtensionManager from '../lib/extension/manager';
@@ -9,9 +10,9 @@ import type WebExtensionManager from '../lib/extension/manager';
  *
  * Wraps `WebExtensionManager` (Web Workers) and exposes the port's abstract
  * interface. The web host's `capabilities.extensions = true` so this adapter
- * is active, but note that `variableGetValue` / `variableGetAssetRef` receive
- * an `ExtensionSender` that is intentionally ignored — the worker manages its
- * own `parseValueSections` round-trip via `webIpcMain` without needing the
+ * is active, but note that `variableResolve` receives an `ExtensionSender`
+ * that is intentionally ignored — the worker manages its own
+ * `parseValueSections` round-trip via `webIpcMain` without needing the
  * per-call sender.
  *
  * ADR 0006 §3.
@@ -48,33 +49,28 @@ export default class WebExtensionRuntime extends ExtensionRuntime {
 		return await this.manager.variableCreateDefaultPayload(projectId, type, varCtx);
 	}
 
-	async variableGetValue(
+	async variableResolve(
 		projectId: string,
 		type: string,
 		varCtx: VariableContext,
 		sender: ExtensionSender,
 		payload: unknown,
 		recursiveDepth: number,
-	): Promise<string> {
-		return await this.manager.variableGetValue(projectId, type, varCtx, sender, payload, recursiveDepth);
-	}
-
-	async variableGetAssetRef(
-		projectId: string,
-		type: string,
-		varCtx: VariableContext,
-		sender: ExtensionSender,
-		payload: unknown,
-		recursiveDepth: number,
-	): Promise<{ sha256: string; size: number; contentType?: string } | null> {
-		return await this.manager.variableGetAssetRef(projectId, type, varCtx, sender, payload, recursiveDepth);
+		sink: Sink,
+	): Promise<ResolvedValue> {
+		return await this.manager.variableResolve(projectId, type, varCtx, sender, payload, recursiveDepth, sink);
 	}
 
 	async variableEditorCreateUI(projectId: string, type: string, varCtx: VariableContext): Promise<unknown> {
 		return await this.manager.variableEditorCreateUI(projectId, type, varCtx);
 	}
 
-	async variableEditorLoad(projectId: string, type: string, varCtx: VariableContext, payload: unknown): Promise<unknown> {
+	async variableEditorLoad(
+		projectId: string,
+		type: string,
+		varCtx: VariableContext,
+		payload: unknown,
+	): Promise<unknown> {
 		return await this.manager.variableEditorLoad(projectId, type, varCtx, payload);
 	}
 

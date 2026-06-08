@@ -28,24 +28,24 @@ const definition: EditableVariable<PrivateRtv, EditorState> = {
 		};
 	},
 
-	getValue: async (ctx, item, recursiveDepth) => {
+	resolve: async ({ variableContext: ctx, depth }, item) => {
 		const encryptionSetup = await ipcEncryptionService.checkStatus();
 
-		if (!encryptionSetup) return '[Encryption key missing]';
+		if (!encryptionSetup) return { kind: 'text', text: '[Encryption key missing]' };
 
 		// Get from private store
 		const cipherTextPath = createPath(item.identifier);
 		const exists = await ipcFsService.pathExists(cipherTextPath);
 		const cipherText = exists ? await ipcFsService.readText(cipherTextPath) : null;
 
-		if (!cipherText) return '';
+		if (!cipherText) return { kind: 'text', text: '' };
 
 		const decrypted = await ipcEncryptionService.decryptObject<ValueSections>({
 			iv: item.iv,
 			payload: cipherText,
 		});
 
-		return await parseValueSections(ctx, decrypted, recursiveDepth);
+		return { kind: 'text', text: await parseValueSections(ctx, decrypted, depth) };
 	},
 
 	attributes: {},

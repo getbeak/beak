@@ -4,7 +4,7 @@ import type { ApiVersion, VariableStaticInformation } from '@getbeak/extension-s
 /**
  * Metadata describing one variable an extension contributes. The renderer
  * uses this to register the variable with `VariableManager`; runtime calls
- * (createDefaultPayload, getValue, …) round-trip back over IPC into the
+ * (createDefaultPayload, resolve, …) round-trip back over IPC into the
  * extension's isolate.
  */
 export interface ExtensionVariable extends VariableStaticInformation {
@@ -14,8 +14,6 @@ export interface ExtensionVariable extends VariableStaticInformation {
 	type: string;
 	/** True when an editor block was declared — surface "edit" UI. */
 	editable: boolean;
-	/** True when the variable can resolve to binary content. */
-	binary: boolean;
 }
 
 /**

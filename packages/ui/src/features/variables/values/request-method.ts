@@ -9,12 +9,12 @@ const definition: Variable<any> = {
 
 	createDefaultPayload: async () => void 0,
 
-	getValue: async ctx => {
+	resolve: async ({ variableContext: ctx }) => {
 		const node = ctx.projectTree[ctx.currentRequestId!];
 
-		if (!node || node.type !== 'request' || node.mode !== 'valid') return '';
+		if (!node || node.type !== 'request' || node.mode !== 'valid') return { kind: 'text', text: '' };
 
-		return node.info.verb.toUpperCase();
+		return { kind: 'text', text: node.info.verb.toUpperCase() };
 	},
 
 	attributes: {

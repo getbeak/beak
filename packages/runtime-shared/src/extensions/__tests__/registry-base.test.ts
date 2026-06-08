@@ -17,7 +17,7 @@ function makeRecord(id: string, packageName: string): TestRecord {
 			version: '1.0.0',
 			displayName: packageName,
 			filePath: `/tmp/${packageName}`,
-			apiVersion: 1,
+			apiVersion: 2,
 			variables: [],
 		},
 	};

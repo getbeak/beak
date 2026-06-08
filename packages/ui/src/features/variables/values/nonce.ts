@@ -10,12 +10,12 @@ const definition: Variable<any> = {
 
 	createDefaultPayload: async () => void 0,
 
-	getValue: async () => {
+	resolve: async () => {
 		const array = new Uint8Array(10);
 
 		crypto.getRandomValues(array);
 
-		return toWebSafeBase64(array);
+		return { kind: 'text', text: toWebSafeBase64(array) };
 	},
 
 	attributes: {},

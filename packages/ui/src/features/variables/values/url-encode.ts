@@ -18,10 +18,10 @@ const definition: EditableVariable<EditorState, EditorState> = {
 		input: [''],
 	}),
 
-	getValue: async (ctx, payload, recursiveDepth) => {
-		const parsed = await parseValueSections(ctx, payload.input, recursiveDepth);
+	resolve: async ({ variableContext: ctx, depth }, payload) => {
+		const parsed = await parseValueSections(ctx, payload.input, depth);
 
-		return encodeURIComponent(parsed);
+		return { kind: 'text', text: encodeURIComponent(parsed) };
 	},
 
 	attributes: {},

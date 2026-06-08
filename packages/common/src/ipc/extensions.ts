@@ -1,5 +1,5 @@
 // biome-ignore lint/style/noRestrictedImports: type-only imports of the SDK's UI contract used in cross-process payloads.
-import type { UISection } from '@getbeak/extension-sdk';
+import type { ResolvedValue, UISection } from '@getbeak/extension-sdk';
 import type { Context, ValueSections } from '@getbeak/types/values';
 import type { WebContents } from 'electron';
 
@@ -28,8 +28,7 @@ export const ExtensionsMessages = {
 
 	/* Variable runtime */
 	VariableCreateDefaultPayload: 'variable_create_default_payload',
-	VariableGetValue: 'variable_get_value',
-	VariableGetAssetRef: 'variable_get_asset_ref',
+	VariableResolve: 'variable_resolve',
 	VariableEditorCreateUI: 'variable_editor_create_ui',
 	VariableEditorLoad: 'variable_editor_load',
 	VariableEditorSave: 'variable_editor_save',
@@ -73,14 +72,11 @@ interface VariableBase {
 
 export interface VariableCreateDefaultPayloadPayload extends VariableBase {}
 
-export interface VariableGetValuePayload extends VariableBase {
+export interface VariableResolvePayload extends VariableBase {
 	payload: Record<string, unknown>;
 	recursiveDepth: number;
-}
-
-export interface VariableGetAssetRefPayload extends VariableBase {
-	payload: Record<string, unknown>;
-	recursiveDepth: number;
+	/** Consumer sink — the renderer-side resolver coerces if needed. */
+	sink: { kind: 'text' } | { kind: 'binary' } | { kind: 'stream' };
 }
 
 export interface VariableEditorCreateUIPayload extends VariableBase {}
@@ -150,14 +146,8 @@ export class IpcExtensionsServiceRenderer extends IpcServiceRenderer<'extensions
 		return await this.invoke(ExtensionsMessages.VariableCreateDefaultPayload, payload);
 	}
 
-	async variableGetValue(payload: VariableGetValuePayload): Promise<string> {
-		return await this.invoke(ExtensionsMessages.VariableGetValue, payload);
-	}
-
-	async variableGetAssetRef(
-		payload: VariableGetAssetRefPayload,
-	): Promise<{ sha256: string; size: number; contentType?: string } | null> {
-		return await this.invoke(ExtensionsMessages.VariableGetAssetRef, payload);
+	async variableResolve(payload: VariableResolvePayload): Promise<ResolvedValue> {
+		return await this.invoke(ExtensionsMessages.VariableResolve, payload);
 	}
 
 	async variableEditorCreateUI(payload: VariableEditorCreateUIPayload): Promise<UISection[]> {
@@ -222,12 +212,8 @@ export class IpcExtensionsServiceMain extends IpcServiceMain<'extensions'> {
 		this.registerRequestHandler(ExtensionsMessages.VariableCreateDefaultPayload, fn);
 	}
 
-	registerVariableGetValue(fn: IpcListener<VariableGetValuePayload>) {
-		this.registerRequestHandler(ExtensionsMessages.VariableGetValue, fn);
-	}
-
-	registerVariableGetAssetRef(fn: IpcListener<VariableGetAssetRefPayload>) {
-		this.registerRequestHandler(ExtensionsMessages.VariableGetAssetRef, fn);
+	registerVariableResolve(fn: IpcListener<VariableResolvePayload>) {
+		this.registerRequestHandler(ExtensionsMessages.VariableResolve, fn);
 	}
 
 	registerVariableEditorCreateUI(fn: IpcListener<VariableEditorCreateUIPayload>) {

@@ -18,10 +18,10 @@ const definition: Variable<VariableSetItemRtv> = {
 		throw new Error('Not supported, this should not happen.');
 	},
 
-	getValue: async (ctx, item, recursiveDepth) => {
+	resolve: async ({ variableContext: ctx, depth }, item) => {
 		const parts = getValueSections(ctx, item.itemId) || [];
 
-		return await parseValueSections(ctx, parts, recursiveDepth);
+		return { kind: 'text', text: await parseValueSections(ctx, parts, depth) };
 	},
 
 	attributes: {},
@@ -38,7 +38,7 @@ export function createFauxValue(item: VariableSetItemRtv, variableSets: Variable
 		getContextAwareName: void 0,
 		createDefaultPayload: async () => item,
 
-		getValue: () => {
+		resolve: () => {
 			throw new Error('Not supported, this should not happen.');
 		},
 

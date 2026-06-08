@@ -11,9 +11,9 @@ import { getCurrentProjectFolder } from './utils';
 
 /**
  * For the web host the worker manages its own IPC round-trip for
- * `parseValueSections`; the sender argument to variableGetValue /
- * variableGetAssetRef is accepted but not forwarded. We pass the
- * webContents shim so the call site remains uniform with Electron.
+ * `parseValueSections`; the sender argument to variableResolve is
+ * accepted but not forwarded. We pass the webContents shim so the
+ * call site remains uniform with Electron.
  */
 function makeSender(): ExtensionSender {
 	return webIpcMain.webContents as unknown as ExtensionSender;
@@ -144,27 +144,16 @@ service.registerVariableCreateDefaultPayload(async (_event, payload) => {
 	return await manager.variableCreateDefaultPayload(projectId, payload.type, payload.context);
 });
 
-service.registerVariableGetValue(async (_event, payload) => {
+service.registerVariableResolve(async (_event, payload) => {
 	const { projectId } = projectContext();
-	return await manager.variableGetValue(
+	return await manager.variableResolve(
 		projectId,
 		payload.type,
 		payload.context,
 		makeSender(),
 		payload.payload,
 		payload.recursiveDepth,
-	);
-});
-
-service.registerVariableGetAssetRef(async (_event, payload) => {
-	const { projectId } = projectContext();
-	return await manager.variableGetAssetRef(
-		projectId,
-		payload.type,
-		payload.context,
-		makeSender(),
-		payload.payload,
-		payload.recursiveDepth,
+		payload.sink,
 	);
 });
 

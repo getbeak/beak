@@ -9,12 +9,12 @@ const definition: Variable<any> = {
 
 	createDefaultPayload: async () => void 0,
 
-	getValue: async ctx => {
+	resolve: async ({ variableContext: ctx }) => {
 		const node = ctx.projectTree[ctx.currentRequestId!];
 
-		if (!node || node.type !== 'request') return '';
+		if (!node || node.type !== 'request') return { kind: 'text', text: '' };
 
-		return node.name;
+		return { kind: 'text', text: node.name };
 	},
 
 	attributes: {

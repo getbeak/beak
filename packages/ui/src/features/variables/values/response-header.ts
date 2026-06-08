@@ -18,22 +18,22 @@ const definition: EditableVariable<ResponseHeaderRtv, ResponseHeaderRtv> = {
 		headerName: [''],
 	}),
 
-	getValue: async (ctx, payload, recursiveDepth) => {
+	resolve: async ({ variableContext: ctx, depth }, payload) => {
 		const requestNode = getRequestNode(payload.requestId, ctx);
 
-		if (!requestNode) return '';
+		if (!requestNode) return { kind: 'text', text: '' };
 
 		const latestFlight = getLatestFlight(requestNode.id, ctx);
 
-		if (!latestFlight?.response) return '';
+		if (!latestFlight?.response) return { kind: 'text', text: '' };
 
 		const headers = latestFlight.response.headers;
-		const parsedHeaderName = await parseValueSections(ctx, payload.headerName, recursiveDepth);
+		const parsedHeaderName = await parseValueSections(ctx, payload.headerName, depth);
 		const headerKey = TypedObject.keys(headers).find(k => k.toLocaleLowerCase() === parsedHeaderName.toLocaleLowerCase());
 
 		const header = headers[headerKey!];
 
-		return header ?? '';
+		return { kind: 'text', text: header ?? '' };
 	},
 
 	attributes: {

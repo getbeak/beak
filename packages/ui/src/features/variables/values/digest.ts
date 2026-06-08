@@ -26,12 +26,12 @@ const definition: EditableVariable<DigestRtv, EditorState> = {
 		hmac: void 0,
 	}),
 
-	getValue: async (ctx, payload, recursiveDepth) => {
+	resolve: async ({ variableContext: ctx, depth }, payload) => {
 		const { algorithm, input, hmac } = payload;
 		const isArray = Array.isArray(input);
-		const parsed = await parseValueSections(ctx, isArray ? input : [input as unknown as string], recursiveDepth);
+		const parsed = await parseValueSections(ctx, isArray ? input : [input as unknown as string], depth);
 
-		if (algorithm === 'MD5') return MD5.hashStr(parsed);
+		if (algorithm === 'MD5') return { kind: 'text', text: MD5.hashStr(parsed) };
 
 		// Hash the UTF-8 bytes — matches openssl/curl/etc. so digests are
 		// interoperable with other tooling. Encoding via Uint16Array (the
@@ -41,12 +41,12 @@ const definition: EditableVariable<DigestRtv, EditorState> = {
 
 		if (hmac) {
 			// return crypto.subtle.sign(algorithm, key, bytes);
-			return '';
+			return { kind: 'text', text: '' };
 		}
 
 		const digest = await crypto.subtle.digest(algorithm, bytes);
 
-		return arrayBufferToHexString(digest);
+		return { kind: 'text', text: arrayBufferToHexString(digest) };
 	},
 
 	attributes: {},

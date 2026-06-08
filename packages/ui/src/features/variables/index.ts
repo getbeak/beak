@@ -119,26 +119,15 @@ function buildAdapter(variable: ExtensionVariable): BasicOrEditableVariable {
 				type: variable.type,
 				context: ctx,
 			}),
-		getValue: async (ctx, payload, recursiveDepth) =>
-			ipcExtensionsService.variableGetValue({
+		resolve: async (rctx, payload) =>
+			ipcExtensionsService.variableResolve({
 				type: variable.type,
-				context: ctx,
-				payload,
-				recursiveDepth,
+				context: rctx.variableContext,
+				payload: payload as Record<string, unknown>,
+				recursiveDepth: rctx.depth,
+				sink: rctx.sink,
 			}),
 	};
-
-	if (variable.binary) {
-		base.getAssetRef = async (ctx, payload, recursiveDepth) => {
-			const ref = await ipcExtensionsService.variableGetAssetRef({
-				type: variable.type,
-				context: ctx,
-				payload,
-				recursiveDepth,
-			});
-			return ref;
-		};
-	}
 
 	if (!variable.editable) return base;
 

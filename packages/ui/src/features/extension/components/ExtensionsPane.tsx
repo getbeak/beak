@@ -392,7 +392,6 @@ const LoadedDetails: React.FC<{ extension: LoadedExtension }> = ({ extension }) 
 							{v.variableId}
 						</Box>
 						{v.editable && <FeatureChip label='editor' />}
-						{v.binary && <FeatureChip label='binary' />}
 						{v.sensitive && <FeatureChip label='sensitive' tone='alert' />}
 					</Flex>
 				))}

@@ -14,21 +14,21 @@ const definition: EditableVariable<ResponseBodyTextRtv, ResponseBodyTextRtv> = {
 
 	createDefaultPayload: async () => ({ requestId: '' }),
 
-	getValue: async (ctx, payload) => {
+	resolve: async ({ variableContext: ctx }, payload) => {
 		const requestNode = getRequestNode(payload.requestId, ctx);
 
-		if (!requestNode) return '';
+		if (!requestNode) return { kind: 'text', text: '' };
 
 		const latestFlight = getLatestFlight(requestNode.id, ctx);
 
-		if (!latestFlight?.response) return '';
+		if (!latestFlight?.response) return { kind: 'text', text: '' };
 
-		if (!latestFlight.response.hasBody) return '';
+		if (!latestFlight.response.hasBody) return { kind: 'text', text: '' };
 
 		const binary = binaryStore.get(latestFlight.binaryStoreKey);
 		const body = new TextDecoder().decode(binary);
 
-		return body;
+		return { kind: 'text', text: body };
 	},
 
 	attributes: {

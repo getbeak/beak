@@ -34,7 +34,7 @@ function createCharacter(type: keyof typeof characters): Variable<any> {
 
 		createDefaultPayload: async () => void 0,
 
-		getValue: async () => character.character,
+		resolve: async () => ({ kind: 'text', text: character.character }),
 
 		attributes: {},
 	};

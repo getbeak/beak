@@ -17,17 +17,19 @@ const definition: EditableVariable<UuidRtv, EditorState> = {
 		version: 'v4',
 	}),
 
-	getValue: async (_ctx, item) => {
+	resolve: async (_ctx, item) => {
+		let text: string;
 		switch (item.version) {
 			case 'v1':
-				return uuid.v1();
-
+				text = uuid.v1();
+				break;
 			case 'v4':
-				return uuid.v4();
-
+				text = uuid.v4();
+				break;
 			default:
-				return 'unknown_version';
+				text = 'unknown_version';
 		}
+		return { kind: 'text', text };
 	},
 
 	attributes: {},

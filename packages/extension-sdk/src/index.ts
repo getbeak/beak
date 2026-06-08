@@ -15,7 +15,7 @@
  *   "name": "@example/timestamp-ext",
  *   "version": "1.0.0",
  *   "main": "dist/index.js",
- *   "beak": { "apiVersion": 1 }
+ *   "beak": { "apiVersion": 2 }
  * }
  * ```
  *
@@ -30,10 +30,12 @@
  *       name: 'Timestamp',
  *       description: 'Current timestamp',
  *       createDefaultPayload: () => ({ format: 'unix' }),
- *       getValue: (_extCtx, _varCtx, payload) =>
- *         payload.format === 'iso'
+ *       resolve: (_extCtx, _ctx, payload) => ({
+ *         kind: 'text',
+ *         text: payload.format === 'iso'
  *           ? new Date().toISOString()
  *           : String(Math.floor(Date.now() / 1000)),
+ *       }),
  *     }),
  *   ],
  * });
@@ -42,6 +44,11 @@
  * Beak runs each extension in an isolated V8 context. The extension does
  * not have network, filesystem, or process access; the only host-provided
  * functionality is what arrives on the `ExtensionContext` argument.
+ *
+ * The single `resolve` callback returns a typed {@link ResolvedValue} —
+ * text, bytes, an asset ref, or a byte stream. The renderer negotiates
+ * between the producer's kind and the consumer's {@link Sink} via a
+ * fixed coercion table — see ADR-0007.
  */
 
 import type { Context as VariableContextType } from '@getbeak/types/values';
@@ -55,8 +62,12 @@ export { arrayBufferToHexString } from './utils/encoding';
 /*  Versioning                                                                */
 /* -------------------------------------------------------------------------- */
 
-/** Major version of the extension API. Beak refuses to load other majors. */
-export const CURRENT_API_VERSION = 1 as const;
+/**
+ * Major version of the extension API. Beak refuses to load extensions
+ * declaring any other major. v1 (pre-ADR-0007: `getValue` + optional
+ * `getAssetRef`) is retired; declarations of `apiVersion: 1` fail loudly.
+ */
+export const CURRENT_API_VERSION = 2 as const;
 export type ApiVersion = typeof CURRENT_API_VERSION;
 
 /* -------------------------------------------------------------------------- */
@@ -81,8 +92,9 @@ export interface ExtensionContext {
 	/** Structured log line that appears in Beak's logs tagged with the extension's id. */
 	log: (level: Level, message: string) => void;
 	/**
-	 * Recurse into Beak's variable system. Useful when a variable's
-	 * payload contains its own value-sections (e.g. nested variables).
+	 * Recurse into Beak's variable system to resolve nested value-sections
+	 * as text. Useful when a variable's payload contains its own
+	 * value-sections (e.g. a hash of a templated input).
 	 */
 	parseValueSections: (varCtx: VariableContext, parts: unknown[]) => Promise<string>;
 }
@@ -93,14 +105,69 @@ export interface ExtensionContext {
 
 /**
  * Content-addressed pointer to a binary asset stored under the project's
- * `_assets/` directory. Variables that produce binary content (file uploads,
- * decoded response bodies, etc.) return one of these from `getAssetRef`
- * instead of stringifying through `getValue`.
+ * `_assets/` directory. Variables that resolve to existing project bytes
+ * (file uploads, decoded response bodies, etc.) return one of these from
+ * `resolve` instead of materialising the bytes inline.
+ *
+ * The internal canonical schema lives in `@beak/common/types/asset-ref`;
+ * this interface is the structurally-mirrored public surface — keep them
+ * in sync.
  */
 export interface AssetRef {
 	sha256: string;
 	size: number;
 	contentType?: string;
+}
+
+/* -------------------------------------------------------------------------- */
+/*  ResolvedValue + Sink                                                      */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * The four shapes a variable can resolve to. Producers pick whichever is
+ * cheapest to express the value naturally; consumers declare a {@link Sink}
+ * and the host coerces between them via a fixed table — see ADR-0007.
+ *
+ * - `text` — a UTF-8 string. The cheapest default.
+ * - `bytes` — an in-memory `Uint8Array`. Cheap for small computed values
+ *   like signatures or encoded protobufs.
+ * - `asset` — a content-addressed pointer into the project's `_assets/`
+ *   store. The wire layer reads bytes on demand; the renderer never
+ *   materialises them.
+ * - `stream` — a producer that emits bytes lazily. Used for streaming
+ *   uploads and for chaining a live response into a follow-up request.
+ */
+export type ResolvedValue =
+	| { kind: 'text'; text: string; contentType?: string }
+	| { kind: 'bytes'; bytes: Uint8Array; contentType?: string }
+	| { kind: 'asset'; ref: AssetRef }
+	| { kind: 'stream'; stream: ReadableStream<Uint8Array>; size?: number; contentType?: string };
+
+/**
+ * The kind of value a consumer wants. Picked by the renderer based on
+ * where the value is going on the wire:
+ *
+ * - `text` — headers, URL parts, query string, JSON property values,
+ *   GraphQL variables, form fields.
+ * - `binary` — file body, multipart binary parts. Bytes-in-hand.
+ * - `stream` — streaming uploads, response-as-input. The consumer is
+ *   prepared to iterate over chunks.
+ */
+export type Sink = { kind: 'text' } | { kind: 'binary' } | { kind: 'stream' };
+
+/**
+ * Argument bag passed to every `resolve` callback. Carries the variable
+ * context, the sink the consumer is asking for, and the current recursion
+ * depth (used by host-side variables that recurse into `parseValueSections`).
+ *
+ * Implementations may inspect `sink.kind` to choose the cheapest output —
+ * but they are not required to. A variable that always returns text is
+ * still valid; the coercion table handles the rest.
+ */
+export interface ResolveContext {
+	variableContext: VariableContext;
+	sink: Sink;
+	depth: number;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -135,27 +202,14 @@ export interface VariableDefinition<TPayload = unknown, TEditorState = TPayload>
 	/** Build the default payload for a fresh insertion of this variable. */
 	createDefaultPayload: (extCtx: ExtensionContext, varCtx: VariableContext) => Promise<TPayload> | TPayload;
 
-	/** Resolve the variable to a string value. */
-	getValue: (
-		extCtx: ExtensionContext,
-		varCtx: VariableContext,
-		payload: TPayload,
-		recursiveDepth: number,
-	) => Promise<string> | string;
-
 	/**
-	 * Optional binary resolver. Implement when the variable naturally
-	 * resolves to bytes (file uploads, decoded responses). When the
-	 * consumer is a binary sink (e.g. a `file` request body), Beak
-	 * prefers `getAssetRef`. String sinks still go through `getValue`.
-	 * Returning `null` falls back to `getValue`.
+	 * Resolve the variable for a specific consumer sink. The returned
+	 * {@link ResolvedValue} may use any kind regardless of `ctx.sink.kind`;
+	 * the host coerces. Implementations that *can* honour the sink cheaply
+	 * should — e.g. a file-reading variable returning `{ kind: 'asset' }`
+	 * for a binary sink avoids a needless UTF-8 round-trip.
 	 */
-	getAssetRef?: (
-		extCtx: ExtensionContext,
-		varCtx: VariableContext,
-		payload: TPayload,
-		recursiveDepth: number,
-	) => Promise<AssetRef | null> | AssetRef | null;
+	resolve: (extCtx: ExtensionContext, ctx: ResolveContext, payload: TPayload) => Promise<ResolvedValue> | ResolvedValue;
 
 	/** Override the display name based on the current payload. */
 	getContextAwareName?: (payload: TPayload) => string;
@@ -230,7 +284,7 @@ export interface ExtensionManifestOverrides {
 }
 
 export interface ExtensionDefinition {
-	/** Authoring API the extension targets. Currently always `1`. */
+	/** Authoring API the extension targets. Currently always `2`. */
 	apiVersion: ApiVersion;
 	/** In-code overrides for `package.json`-sourced metadata. */
 	manifest?: ExtensionManifestOverrides;
@@ -279,17 +333,17 @@ export interface VariableStaticInformation extends VariableBase {
 }
 
 /**
- * Legacy single-variable shape used by Beak's built-in RTVs. New extension
- * authors should use {@link defineVariable} + {@link defineExtension}
- * instead — this remains exported as an internal contract for the
- * renderer's built-in variable registry.
+ * Shape used by Beak's built-in RTVs and by the adapter that wraps
+ * extension-contributed variables for the renderer registry. Same shape
+ * as {@link VariableDefinition} but with the host's narrower call
+ * signatures — no `ExtensionContext`, since built-ins talk to the host
+ * directly.
  *
  * @internal
  */
 export interface Variable<TPayload> extends VariableStaticInformation {
 	createDefaultPayload: (ctx: VariableContext) => Promise<TPayload>;
-	getValue: (ctx: VariableContext, payload: TPayload, recursiveDepth: number) => Promise<string>;
-	getAssetRef?: (ctx: VariableContext, payload: TPayload, recursiveDepth: number) => Promise<AssetRef | null>;
+	resolve: (ctx: ResolveContext, payload: TPayload) => Promise<ResolvedValue>;
 	getContextAwareName?: (payload: TPayload) => string;
 }
 
