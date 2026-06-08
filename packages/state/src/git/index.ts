@@ -157,22 +157,20 @@ const gitSlice = createSlice({
 		operationStarted: (state, { payload }: PayloadAction<{ op: GitOperation }>) => {
 			state.operation = { phase: 'pending', op: payload.op };
 		},
-		operationSucceeded: (state, { payload }: PayloadAction<{ op: GitOperation; notice?: string }>) => {
-			// TODO ADR 0005 §2 — Date.now() / toISOString() side-effect belongs in a listener, not a reducer
+		operationSucceeded: (state, { payload }: PayloadAction<{ op: GitOperation; notice?: string; at: string }>) => {
 			state.operation = {
 				phase: 'success',
 				op: payload.op,
 				notice: payload.notice,
-				at: new Date().toISOString(),
+				at: payload.at,
 			};
 		},
-		operationFailed: (state, { payload }: PayloadAction<{ op: GitOperation; error: string }>) => {
-			// TODO ADR 0005 §2 — Date.now() / toISOString() side-effect belongs in a listener, not a reducer
+		operationFailed: (state, { payload }: PayloadAction<{ op: GitOperation; error: string; at: string }>) => {
 			state.operation = {
 				phase: 'error',
 				op: payload.op,
 				error: payload.error,
-				at: new Date().toISOString(),
+				at: payload.at,
 			};
 		},
 		operationDismissed: state => {
