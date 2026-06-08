@@ -1,4 +1,4 @@
-import { type SimulationEvent, walkWorkflow, type WorkflowFile } from '@beak/state/workflows';
+import { type SimulationEvent, type WorkflowFile, walkWorkflow } from '@beak/state/workflows';
 import { Box, Button, Dialog, Flex, Stack } from '@chakra-ui/react';
 import { ChevronLeft, ChevronRight, Play, RotateCcw, SkipForward } from 'lucide-react';
 import * as React from 'react';
@@ -304,8 +304,8 @@ function describe(
 				indent: 2,
 			};
 		default: {
-			const _exhaustive: never = event;
-			void _exhaustive;
+			const Exhaustive: never = event;
+			void Exhaustive;
 			return { label: 'unknown', tone: 'var(--beak-colors-fg-subtle)', indent: 0 };
 		}
 	}

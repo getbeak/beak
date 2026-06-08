@@ -1,4 +1,4 @@
-import { instantiateTemplate, templateCatalog, type TemplateKey, workflowStats } from '@beak/state/workflows';
+import { instantiateTemplate, type TemplateKey, templateCatalog, workflowStats } from '@beak/state/workflows';
 import { Box, Button, Dialog, Flex, Stack } from '@chakra-ui/react';
 import { Bell, GitBranch, LayoutTemplate, Repeat, Workflow as WorkflowIcon } from 'lucide-react';
 import * as React from 'react';

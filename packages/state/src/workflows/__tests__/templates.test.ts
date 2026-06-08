@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { workflowSchema } from '../../schemas/beak-workflow';
 import { inspectGraph } from '../helpers';
-import { instantiateTemplate, templateCatalog, type TemplateKey } from '../templates';
+import { instantiateTemplate, type TemplateKey, templateCatalog } from '../templates';
 
 /**
  * Deterministic minter — emits prefixed monotonically-increasing ids so

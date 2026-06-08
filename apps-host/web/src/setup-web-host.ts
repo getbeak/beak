@@ -1,5 +1,5 @@
-import { Buffer } from 'buffer';
 import { setLocalAgentCapability } from '@beak/ui/services/agent';
+import { Buffer } from 'buffer';
 
 import getRuntime from './host';
 

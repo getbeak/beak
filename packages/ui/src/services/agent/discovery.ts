@@ -3,8 +3,8 @@ import {
 	AGENT_HEALTHZ_PATH,
 	AGENT_PORT_RANGE_END,
 	AGENT_PORT_RANGE_START,
-	healthzResponseSchema,
 	type HealthzResponseWire,
+	healthzResponseSchema,
 } from '@beak/common/wire/agent';
 
 import { bytesToBase64Url, hmacSha256Base64Url, randomBytes } from './crypto';

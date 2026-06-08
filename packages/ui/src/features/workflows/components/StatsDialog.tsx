@@ -5,8 +5,8 @@ import {
 	linkedRequestIds,
 	nodeBounds,
 	validateWorkflow,
-	workflowDepth,
 	type WorkflowFile,
+	workflowDepth,
 	workflowStats,
 } from '@beak/state/workflows';
 import { useAppSelector } from '@beak/ui/store/redux';

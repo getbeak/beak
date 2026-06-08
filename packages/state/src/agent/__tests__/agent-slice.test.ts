@@ -166,10 +166,7 @@ describe('agentSlice reducer', () => {
 				baseUrl: 'http://127.0.0.1:47821',
 				pairingError: 'stale_attempt',
 			};
-			const result = reducer(
-				previous,
-				pairingSucceeded({ tokenId: 'k1', lastSeenAt: 1717_000_000_000 }),
-			);
+			const result = reducer(previous, pairingSucceeded({ tokenId: 'k1', lastSeenAt: 1717_000_000_000 }));
 			expect(result).toEqual({
 				status: 'paired',
 				routingMode: 'agent-when-available',

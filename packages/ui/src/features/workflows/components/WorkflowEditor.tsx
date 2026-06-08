@@ -66,7 +66,7 @@ import {
 import * as React from 'react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
-
+import CheatSheetDialog from './CheatSheetDialog';
 import {
 	type AddableNodeKind,
 	EdgeInspectorPanel,
@@ -80,10 +80,9 @@ import {
 	ToolbarButton,
 	WarningPill,
 } from './editor-chrome';
-import { nodeTypes } from './node-views';
-import CheatSheetDialog from './CheatSheetDialog';
 import NodePropertiesPanel from './NodePropertiesPanel';
 import NodeSearchDialog from './NodeSearchDialog';
+import { nodeTypes } from './node-views';
 import QuickFixDialog from './QuickFixDialog';
 import SimulationDialog from './SimulationDialog';
 import StatsDialog from './StatsDialog';

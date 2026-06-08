@@ -1,6 +1,6 @@
-import type { LocalAgentCapability } from '@beak/common/types/runtime';
 import type fs from 'node:fs';
 import type path from 'node:path';
+import type { LocalAgentCapability } from '@beak/common/types/runtime';
 import type { HttpClient } from 'isomorphic-git';
 import type { Logger } from 'tslog';
 

@@ -1,9 +1,8 @@
 import { IpcFlightServiceMain } from '@beak/common/ipc/flight';
 import type { FlightRequestPayload } from '@beak/common/types/requester';
 import { decideRouting, selectAgentBaseUrl, tokenRevoked } from '@beak/state/agent';
-import { getAppStore } from '@beak/ui/store';
-
 import { clearAgentToken, getAgentToken } from '@beak/ui/services/agent/storage';
+import { getAppStore } from '@beak/ui/store';
 
 import getRuntime from '../host';
 import { browserFetchRequester, createAgentRequester, type Requester, type RequesterOptions } from '../requester';

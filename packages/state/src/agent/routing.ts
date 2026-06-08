@@ -38,4 +38,3 @@ export function decideRouting(input: RoutingInput): 'via-agent' | 'via-default' 
 			return status === 'paired' ? 'via-agent' : 'via-default';
 	}
 }
-

@@ -20,8 +20,8 @@ import {
 import { buildWorkflowsReducer } from '../reducer';
 import { workflowStats } from '../stats';
 import { instantiateTemplate } from '../templates';
-import { validateWorkflow } from '../validation';
 import { initialWorkflowsState, type WorkflowsState } from '../types';
+import { validateWorkflow } from '../validation';
 
 /**
  * End-to-end scenarios over the pure workflow slice. These mirror the

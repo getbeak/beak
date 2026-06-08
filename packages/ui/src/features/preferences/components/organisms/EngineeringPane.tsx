@@ -1,10 +1,9 @@
 import Button from '@beak/ui/components/atoms/Button';
 import { ipcDialogService, ipcPreferencesService } from '@beak/ui/lib/ipc';
 import React from 'react';
-
-import AgentPreferencesSection from '../molecules/AgentPreferencesSection';
 import Row from '../atoms/Row';
 import Section from '../atoms/Section';
+import AgentPreferencesSection from '../molecules/AgentPreferencesSection';
 
 const EngineeringPane: React.FC = () => (
 	<>

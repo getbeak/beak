@@ -1,7 +1,7 @@
 import { TypedObject } from '@beak/common/helpers/typescript';
 import type { TabItem } from '@beak/common/types/beak-project';
-import { completionRatio } from '@beak/state/workflows';
 import { verbToColor, verbToShortLabel } from '@beak/design-system/helpers';
+import { completionRatio } from '@beak/state/workflows';
 import tabActions, { changeTab } from '@beak/ui/features/tabs/store/actions';
 import { sidebarPreferenceSetCollapse, sidebarPreferenceSetSelected } from '@beak/ui/store/preferences/actions';
 import { useAppSelector } from '@beak/ui/store/redux';
