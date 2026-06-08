@@ -92,7 +92,9 @@ func newPKCEPair(t *testing.T) (verifier, challenge string) {
 }
 
 // pairOnce drives the full PKCE pairing handshake end-to-end:
-//   GET /pair → POST /pair/decision → POST /pair/token
+//
+//	GET /pair → POST /pair/decision → POST /pair/token
+//
 // and returns the issued bearer token. Mirrors what the renderer's
 // services/agent/pairing.ts does.
 func pairOnce(t *testing.T, baseURL, origin string) string {

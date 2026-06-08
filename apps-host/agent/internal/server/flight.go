@@ -151,4 +151,3 @@ func (e *sseEmitter) writeEvent(eventType string, payload any) {
 	}
 	e.flusher.Flush()
 }
-

@@ -16,9 +16,9 @@ const (
 	PairTokenPath = "/pair/token"
 	FlightPath    = "/flight"
 
-	FingerprintName  = "beak"
-	ProtocolVersion  = "pkce-pair-v1"
-	AgentSemver      = "0.1.0"
+	FingerprintName = "beak"
+	ProtocolVersion = "pkce-pair-v1"
+	AgentSemver     = "0.1.0"
 )
 
 // ----- /flight -----
@@ -59,9 +59,9 @@ const (
 )
 
 type FetchResponseHeartbeat struct {
-	FlightID string                  `json:"flightId"`
-	Stage    HeartbeatStage          `json:"stage"`
-	Payload  FetchResponsePayload    `json:"payload"`
+	FlightID string               `json:"flightId"`
+	Stage    HeartbeatStage       `json:"stage"`
+	Payload  FetchResponsePayload `json:"payload"`
 }
 
 type FetchResponsePayload struct {
@@ -69,8 +69,8 @@ type FetchResponsePayload struct {
 }
 
 type HeadReceivedHeartbeat struct {
-	FlightID string             `json:"flightId"`
-	Stage    HeartbeatStage     `json:"stage"`
+	FlightID string              `json:"flightId"`
+	Stage    HeartbeatStage      `json:"stage"`
 	Payload  HeadReceivedPayload `json:"payload"`
 }
 
@@ -86,9 +86,9 @@ type HeadReceivedPayload struct {
 }
 
 type ReadingBodyHeartbeat struct {
-	FlightID string              `json:"flightId"`
-	Stage    HeartbeatStage      `json:"stage"`
-	Payload  ReadingBodyPayload  `json:"payload"`
+	FlightID string             `json:"flightId"`
+	Stage    HeartbeatStage     `json:"stage"`
+	Payload  ReadingBodyPayload `json:"payload"`
 }
 
 type ReadingBodyPayload struct {
@@ -105,9 +105,9 @@ type SseEvent struct {
 }
 
 type SseEventHeartbeat struct {
-	FlightID string           `json:"flightId"`
-	Stage    HeartbeatStage   `json:"stage"`
-	Payload  SseEventPayload  `json:"payload"`
+	FlightID string          `json:"flightId"`
+	Stage    HeartbeatStage  `json:"stage"`
+	Payload  SseEventPayload `json:"payload"`
 }
 
 type SseEventPayload struct {
@@ -130,8 +130,8 @@ type FlightCompleteOverview struct {
 }
 
 type FlightFailed struct {
-	FlightID string             `json:"flightId"`
-	Error    FlightFailedError  `json:"error"`
+	FlightID string            `json:"flightId"`
+	Error    FlightFailedError `json:"error"`
 }
 
 type FlightFailedError struct {
