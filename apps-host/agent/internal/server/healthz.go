@@ -11,7 +11,7 @@ import (
 )
 
 func (s *Server) handleHealthz(w http.ResponseWriter, r *http.Request) {
-	applyHealthzCORS(w)
+	applyHealthzCORS(w, r.Header.Get("Origin"))
 	if r.Method == http.MethodOptions {
 		w.WriteHeader(http.StatusNoContent)
 		return
