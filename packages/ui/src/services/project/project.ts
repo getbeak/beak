@@ -1,8 +1,8 @@
 import type { ProjectFile } from '@getbeak/types/project';
 import semver from 'semver';
 
-import { readJsonAndValidate } from '../fs';
-import { ipcFsService } from '../ipc';
+import { readJsonAndValidate } from '@beak/ui/lib/fs';
+import { ipcFsService } from '@beak/ui/lib/ipc';
 import { projectSchema } from './schemas';
 
 const latestSupported = '0.5.0';

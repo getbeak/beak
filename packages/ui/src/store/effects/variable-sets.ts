@@ -1,7 +1,7 @@
 import { TypedObject } from '@beak/common/helpers/typescript';
 import { attemptReconciliation, changeTab } from '@beak/ui/features/tabs/store/actions';
 import type { ActiveRename } from '@beak/ui/features/tree-view/types';
-import { createVariableSet, renameVariableSet } from '@beak/ui/lib/beak-project/variable-sets';
+import { createVariableSet, renameVariableSet } from '@beak/ui/services/project';
 import { readVariableSet, removeVariableSet, writeVariableSet } from '@beak/ui/lib/beak-variable-set';
 import createFsEmitter, { type FsSubscription, scanDirectoryRecursively } from '@beak/ui/lib/fs-emitter';
 import { ipcDialogService, ipcFsService } from '@beak/ui/lib/ipc';

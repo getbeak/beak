@@ -12,9 +12,9 @@
  */
 
 import Squawk from '@beak/common/utils/squawk';
-import { readFolderNode } from '@beak/ui/lib/beak-project/folder';
-import { readProjectFile } from '@beak/ui/lib/beak-project/project';
-import { readRequestNode } from '@beak/ui/lib/beak-project/request';
+import { readFolderNode } from './folder';
+import { readProjectFile } from './project';
+import { readRequestNode } from './request';
 import { scanDirectoryRecursively } from '@beak/ui/lib/fs-emitter';
 import type { Tree } from '@getbeak/types/nodes';
 import type { ProjectFile } from '@getbeak/types/project';

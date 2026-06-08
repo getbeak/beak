@@ -1,6 +1,6 @@
 import path from 'path-browserify';
 
-import { ipcFsService } from '../ipc';
+import { ipcFsService } from '@beak/ui/lib/ipc';
 
 export async function generateSafeNewPath(name: string, directory: string, extension?: string) {
 	function createPath(name: string) {

@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-vi.mock('../../ipc', () => ({
+vi.mock('@beak/ui/lib/ipc', () => ({
 	ipcFsService: {
 		pathExists: vi.fn(),
 		readJson: vi.fn(),
@@ -8,7 +8,7 @@ vi.mock('../../ipc', () => ({
 	},
 }));
 
-const { ipcFsService } = await import('../../ipc');
+const { ipcFsService } = await import('@beak/ui/lib/ipc');
 const { readRequestNode, writeRequestNode } = await import('../request');
 
 const pathExists = ipcFsService.pathExists as ReturnType<typeof vi.fn>;
