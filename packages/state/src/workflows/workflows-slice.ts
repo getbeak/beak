@@ -1,5 +1,8 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
+import { deepCloneNodeData } from './clone';
+import { applyGraphReplacement, purgeRequestRefsFromWorkflows } from './graph-ops';
+import { normaliseWorkflowTags } from './tags';
 import type {
 	AddEdgePayload,
 	AddNodePayload,
@@ -80,18 +83,9 @@ const workflowsSlice = createSlice({
 			if (!workflow) return;
 			// Normalise: trim, lowercase, dedupe, drop empties — so the file
 			// stays canonical and search works the way the user expects.
-			// TODO ADR 0005 §4 — tag normalisation is inline business logic;
-			// candidate for a pure helper function if reused elsewhere.
-			const seen = new Set<string>();
-			const next: string[] = [];
-			for (const raw of payload.tags) {
-				const tag = raw.trim().toLowerCase();
-				if (!tag || seen.has(tag)) continue;
-				seen.add(tag);
-				next.push(tag);
-			}
-			if (next.length === 0) delete workflow.tags;
-			else workflow.tags = next;
+			const normalised = normaliseWorkflowTags(payload.tags);
+			if (normalised) workflow.tags = normalised;
+			else delete workflow.tags;
 			touch(workflow);
 		},
 
@@ -187,16 +181,7 @@ const workflowsSlice = createSlice({
 			// graph can never end up with two entry points (or none, depending
 			// on how the orchestrator picks).
 			if (source.type === 'start') return;
-			// Deep-clone via JSON — workflow node data is JSON-safe per the
-			// schema, and structuredClone chokes on Immer's draft proxies.
-			// TODO ADR 0005 §4 — JSON round-trip clone is inline structural logic;
-			// candidate for a shared deepCloneNodeData helper.
-			const cloned = {
-				...source,
-				id: payload.newNodeId,
-				position: payload.position,
-				data: JSON.parse(JSON.stringify(source.data)),
-			} as (typeof workflow.nodes)[number];
+			const cloned = deepCloneNodeData(source, payload.newNodeId, payload.position);
 			workflow.nodes.push(cloned);
 			touch(workflow);
 		},
@@ -234,10 +219,9 @@ const workflowsSlice = createSlice({
 		replaceGraph: (state, { payload }: PayloadAction<ReplaceGraphPayload>) => {
 			const workflow = state.workflows[payload.id];
 			if (!workflow) return;
-			// TODO ADR 0005 §4 — graph replacement is structural; callers (layout
-			// auto-arrange, import) own the new nodes/edges arrays.
-			workflow.nodes = payload.nodes;
-			workflow.edges = payload.edges;
+			const replacement = applyGraphReplacement(workflow, payload.nodes, payload.edges);
+			workflow.nodes = replacement.nodes;
+			workflow.edges = replacement.edges;
 			touch(workflow);
 		},
 
@@ -259,20 +243,9 @@ const workflowsSlice = createSlice({
 			// node's `data.requestId` that still points at one. Editors then
 			// render the canonical "Pick a request →" empty state instead of
 			// a dangling id; the workflow file will rewrite on next save.
-			// TODO ADR 0005 §4 — cross-workflow sweep is business logic; the
-			// helpers.ts domain helpers (e.g. findRequestStepsUsing) express
-			// the same traversal shape and should be co-located eventually.
 			const dropped = new Set(payload.requestIds);
 			if (dropped.size === 0) return;
-			for (const workflow of Object.values(state.workflows)) {
-				for (const node of workflow.nodes) {
-					if (node.type !== 'request') continue;
-					const d = node.data as { requestId: string | null };
-					if (d.requestId && dropped.has(d.requestId)) {
-						d.requestId = null;
-					}
-				}
-			}
+			purgeRequestRefsFromWorkflows(state.workflows, dropped);
 		},
 	},
 });
