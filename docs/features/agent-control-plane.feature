@@ -133,3 +133,19 @@ Feature: Local agent control plane (discovery, pairing, lifecycle)
     Then the next flight POST fails with connection refused
     And the agent slice status transitions to "unreachable"
     And in-flight SSE streams close, surfacing failed events with reason "agent_disconnected"
+
+  # ---------- Single-instance enforcement ----------
+
+  Scenario: A second agent process refuses to start
+    Given a beak-agent is already running with PID 11197 on port 47821
+    When a second beak-agent is launched (double-click, launchd, terminal)
+    Then the second process acquires no port and writes no tokens.json
+    And it prints "beak-agent: already running (PID 11197, version 0.1.0, started …) on http://127.0.0.1:47821"
+    And it exits with status 0
+    And the user still sees exactly one tray icon
+
+  Scenario: The first agent's crash releases the singleton lock
+    Given a beak-agent crashed without graceful shutdown
+    When a new beak-agent is launched
+    Then it acquires the lock (the OS released it on FD reap)
+    And it starts normally on a free port in 47821..47840
