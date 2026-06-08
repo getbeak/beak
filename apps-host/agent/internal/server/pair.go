@@ -64,6 +64,17 @@ func (s *Server) handlePairDecision(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
+	// The state nonce stops a drive-by page replaying a known state,
+	// but it doesn't stop a malicious page that has *somehow* learned
+	// the state from POSTing the user's decision. Require the request
+	// to look like it came from the agent's own pair HTML page: either
+	// no Origin (form posts may omit it depending on the browser /
+	// referrer-policy) or the agent's own loopback origin. Also reject
+	// any Sec-Fetch-Site that admits a cross-site origin outright.
+	if !originAllowedForDecision(r, s.LoopbackOrigin()) {
+		http.Error(w, "origin not allowed", http.StatusForbidden)
+		return
+	}
 	if err := r.ParseForm(); err != nil {
 		http.Error(w, "invalid form", http.StatusBadRequest)
 		return
@@ -113,6 +124,10 @@ func (s *Server) handlePairToken(w http.ResponseWriter, r *http.Request) {
 	// /pair/token is renderer→agent, browser-fetched. Reflect the
 	// requesting origin only if it's already paired OR is a fresh
 	// pairing target — but during pairing we don't yet have a token.
+	// TODO: tighten Origin policy — currently reflects any caller; should
+	// match the pending pairing's Origin pre-token-issue, or the renderer
+	// allowlist post-issue. Tracked separately from the /pair/decision
+	// fix to keep that change small.
 	origin := r.Header.Get("Origin")
 	if origin != "" {
 		w.Header().Set("Access-Control-Allow-Origin", origin)
@@ -221,5 +236,30 @@ func generateRandomToken(n int) (string, error) {
 func htmlEscape(s string) string {
 	r := strings.NewReplacer("&", "&amp;", "<", "&lt;", ">", "&gt;", "\"", "&quot;", "'", "&#39;")
 	return r.Replace(s)
+}
+
+// originAllowedForDecision enforces the rule documented on
+// handlePairDecision: Origin must be unset OR match the agent's own
+// loopback origin, and Sec-Fetch-Site must not announce a cross-site
+// caller. Returning false means the request is treated as 403.
+func originAllowedForDecision(r *http.Request, loopback string) bool {
+	switch strings.ToLower(r.Header.Get("Sec-Fetch-Site")) {
+	case "cross-site", "cross-origin":
+		return false
+	}
+	origin := r.Header.Get("Origin")
+	if origin == "" || strings.EqualFold(origin, "null") {
+		// Some browsers omit Origin on same-origin form POSTs, or set
+		// it to "null" when the page was opened via file:// or with a
+		// no-referrer policy. Neither is a cross-site signal on its own.
+		return true
+	}
+	if loopback == "" {
+		// Defensive: if we don't know our own URL, the only safe answer
+		// for an explicitly-set Origin is to reject. Runtime always knows
+		// its own port; tests stub LoopbackOrigin via overrideLoopback.
+		return false
+	}
+	return strings.EqualFold(origin, loopback)
 }
 

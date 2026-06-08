@@ -27,6 +27,10 @@ type Server struct {
 
 	httpServer *http.Server
 	listener   net.Listener
+
+	// overrideLoopback lets tests substitute the expected loopback
+	// origin without binding the real port range. Unused at runtime.
+	overrideLoopback string
 }
 
 type pendingInit struct {
@@ -106,6 +110,24 @@ func (s *Server) Shutdown(ctx context.Context) error {
 		return nil
 	}
 	return s.httpServer.Shutdown(ctx)
+}
+
+// LoopbackOrigin returns the agent's own loopback URL — e.g.
+// `http://127.0.0.1:47821` — derived from the bound listener. Returns
+// the empty string if the server hasn't started yet (tests may inject
+// a listener directly).
+func (s *Server) LoopbackOrigin() string {
+	if s.overrideLoopback != "" {
+		return s.overrideLoopback
+	}
+	if s.listener == nil {
+		return ""
+	}
+	tcpAddr, ok := s.listener.Addr().(*net.TCPAddr)
+	if !ok {
+		return ""
+	}
+	return fmt.Sprintf("http://127.0.0.1:%d", tcpAddr.Port)
 }
 
 // Approvals exposes the queue for the tray glue.
