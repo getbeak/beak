@@ -9,7 +9,7 @@ import {
 	previousFlightHistory,
 	updateFlightProgress,
 } from './actions';
-import type { FlightHistory, FlightHistoryEntry, FlightInProgress, FlightState } from './types';
+import type { FlightErrorShape, FlightHistory, FlightHistoryEntry, FlightInProgress, FlightState } from './types';
 
 export interface FlightSliceState {
 	/** Latest state machine per request (idle / preparing / executing / completed / failed). */
@@ -23,7 +23,7 @@ export interface FlightSliceState {
 	/** Per-request "is anything loading for this request" — true if at least one active flight exists. */
 	loading: Record<string, boolean>;
 	/** Latest error per request (does not block new flights). */
-	errors: Record<string, Error | null>;
+	errors: Record<string, FlightErrorShape | null>;
 }
 
 const initialState: FlightSliceState = {
@@ -48,7 +48,7 @@ function ensureHistory(state: FlightSliceState, requestId: string): FlightHistor
 	return history;
 }
 
-function recordHistoryEntry(history: FlightHistory, entry: FlightHistoryEntry) {
+function recordHistoryEntry(history: FlightHistory, entry: FlightHistoryEntry, lastExecuted: number) {
 	history.history[entry.flightId] = entry;
 	history.selected = entry.flightId;
 	const total = history.metadata.totalFlights + 1;
@@ -57,7 +57,7 @@ function recordHistoryEntry(history: FlightHistory, entry: FlightHistoryEntry) {
 		totalFlights: total,
 		successfulExecutions: successful,
 		successRate: (successful / total) * 100,
-		lastExecuted: Date.now(),
+		lastExecuted,
 		averageResponseTime: history.metadata.averageResponseTime,
 	};
 }
@@ -109,14 +109,14 @@ const flightSlice = createSlice({
 	extraReducers: builder => {
 		builder
 			.addCase(beginFlightRequest, (state, action) => {
-				const { requestId, flightId, request, binaryStoreKey } = action.payload;
+				const { requestId, flightId, request, binaryStoreKey, timestamp } = action.payload;
 				const flight: FlightInProgress = {
 					requestId,
 					flightId,
 					request,
 					binaryStoreKey,
 					flighting: true,
-					timing: { beakStart: Date.now() },
+					timing: { beakStart: timestamp },
 				};
 				state.activeFlights[flightId] = flight;
 				const existing = state.flightsByRequest[requestId] ?? [];
@@ -179,7 +179,7 @@ const flightSlice = createSlice({
 				flight.response = response;
 				flight.flighting = false;
 				flight.timing.responseEnd = timestamp;
-				flight.timing.beakEnd = Date.now();
+				flight.timing.beakEnd = timestamp;
 
 				const entry: FlightHistoryEntry = {
 					flightId,
@@ -193,19 +193,19 @@ const flightSlice = createSlice({
 				};
 
 				const history = ensureHistory(state, requestId);
-				recordHistoryEntry(history, entry);
+				recordHistoryEntry(history, entry, timestamp);
 
 				state.flightStates[requestId] = { status: 'completed', result: entry };
 				removeFlightFromRequest(state, requestId, flightId);
 			})
 			.addCase(flightFailure, (state, action) => {
-				const { requestId, flightId, error } = action.payload;
+				const { requestId, flightId, error, timestamp } = action.payload;
 				const flight = state.activeFlights[flightId];
 				if (!flight) return;
 
 				flight.error = error;
 				flight.flighting = false;
-				flight.timing.beakEnd = Date.now();
+				flight.timing.beakEnd = timestamp;
 
 				const entry: FlightHistoryEntry = {
 					flightId,
@@ -219,7 +219,7 @@ const flightSlice = createSlice({
 				};
 
 				const history = ensureHistory(state, requestId);
-				recordHistoryEntry(history, entry);
+				recordHistoryEntry(history, entry, timestamp);
 
 				state.flightStates[requestId] = { status: 'failed', error };
 				state.errors[requestId] = error;

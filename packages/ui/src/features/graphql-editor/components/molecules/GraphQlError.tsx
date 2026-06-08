@@ -5,7 +5,7 @@ import { CloudLightning, Lightbulb } from 'lucide-react';
 import * as React from 'react';
 
 interface GraphQlErrorProps {
-	error: Error;
+	error: { message: string };
 }
 
 const HINTS: Array<string | React.ReactNode> = [

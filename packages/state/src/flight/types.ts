@@ -37,13 +37,19 @@ export interface FlightRequest {
 	options: RequestOptions;
 }
 
+/** Serialised error stored in state and history (no live Error instance in the store). */
+export interface FlightErrorShape {
+	message: string;
+	code?: string;
+}
+
 /** A finalized flight (success or failure) stored in history. Shape-compatible with legacy `Flight`. */
 export interface FlightHistoryEntry {
 	flightId: string;
 	requestId: string;
 	request: RequestOverview;
 	response?: ResponseOverview;
-	error?: Error;
+	error?: FlightErrorShape;
 	binaryStoreKey: string;
 	timing: FlightTiming;
 	/** For text/event-stream responses, the parsed event log accumulated during the flight. */
@@ -111,7 +117,7 @@ export interface FlightInProgress {
 	/** Server-Sent Events accumulated when the response is `text/event-stream`. */
 	sseEvents?: SseEvent[];
 	response?: ResponseOverview;
-	error?: Error;
+	error?: FlightErrorShape;
 }
 
 export type FlightState =
@@ -119,7 +125,7 @@ export type FlightState =
 	| { status: 'preparing'; request: FlightRequest }
 	| { status: 'executing'; flight: FlightInProgress }
 	| { status: 'completed'; result: FlightHistoryEntry }
-	| { status: 'failed'; error: Error };
+	| { status: 'failed'; error: FlightErrorShape };
 
 export interface FlightOptions {
 	showProgress: boolean;
@@ -192,6 +198,8 @@ export interface BeginFlightPayload {
 	reason: FlightReason;
 	showProgress: boolean;
 	showResult: ShowResultMode;
+	/** Millisecond timestamp minted by the caller at dispatch time (ADR 0005 §2). */
+	timestamp: number;
 }
 
 export interface UpdateFlightProgressPayload {
@@ -210,7 +218,10 @@ export interface CompleteFlightPayload {
 export interface FlightFailurePayload {
 	requestId: string;
 	flightId: string;
-	error: Error;
+	/** Serialised error — no live Error instances cross the reducer boundary (ADR 0005 §2). */
+	error: FlightErrorShape;
+	/** Millisecond timestamp minted by the caller at dispatch time (ADR 0005 §2). */
+	timestamp: number;
 }
 
 export interface FlightHistoryChangePayload {

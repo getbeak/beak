@@ -4,7 +4,7 @@ import { CloudLightning } from 'lucide-react';
 import * as React from 'react';
 
 interface ErrorViewProps {
-	error: Error;
+	error: { message: string };
 }
 
 const ErrorView: React.FC<ErrorViewProps> = ({ error }) => (
