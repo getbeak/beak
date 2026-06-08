@@ -1,4 +1,5 @@
 import { TypedObject } from '@beak/common/helpers/typescript';
+import ksuid from '@beak/ksuid';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { duplicateItem, insertNewItem, moveItem, removeItem } from '@beak/ui/store/variable-sets/actions';
 import { Box, Button, chakra, Flex, IconButton, Stack } from '@chakra-ui/react';
@@ -83,7 +84,7 @@ const VariableSetEditor: React.FC<React.PropsWithChildren<VariableSetEditorProps
 
 			if (meta && !e.shiftKey && e.key.toLowerCase() === 'd') {
 				e.preventDefault();
-				dispatch(duplicateItem({ id: variableSetName, itemId }));
+				dispatch(duplicateItem({ id: variableSetName, itemId, newItemId: ksuid.generate('item').toString(), now: Date.now() }));
 				return;
 			}
 
@@ -231,7 +232,7 @@ const VariableSetEditor: React.FC<React.PropsWithChildren<VariableSetEditorProps
 												color: 'accent.pink',
 												bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 10%, transparent)',
 											}}
-											onClick={() => dispatch(insertNewItem({ id: variableSetName, itemName: '' }))}
+											onClick={() => dispatch(insertNewItem({ id: variableSetName, itemId: ksuid.generate('item').toString(), itemName: '' }))}
 										>
 											<Plus size={12} strokeWidth={2.2} />
 											Add variable

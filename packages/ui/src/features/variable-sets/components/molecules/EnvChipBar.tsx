@@ -1,4 +1,5 @@
 import { TypedObject } from '@beak/common/helpers/typescript';
+import ksuid from '@beak/ksuid';
 import DebouncedInput from '@beak/ui/components/atoms/DebouncedInput';
 import { glassChakraProps } from '@beak/ui/lib/glass';
 import { ipcDialogService } from '@beak/ui/lib/ipc';
@@ -185,7 +186,7 @@ const EnvChipBar: React.FC<EnvChipBarProps> = ({ variableSetName }) => {
 										</Menu.Item>
 										<Menu.Item
 											value='duplicate'
-											onClick={() => dispatch(duplicateGroup({ id: variableSetName, setId }))}
+											onClick={() => dispatch(duplicateGroup({ id: variableSetName, setId, newSetId: ksuid.generate('set').toString(), now: Date.now() }))}
 											fontSize='12px'
 											gap='2'
 											borderRadius='sm'
@@ -274,7 +275,7 @@ const EnvChipBar: React.FC<EnvChipBarProps> = ({ variableSetName }) => {
 					color: 'accent.pink',
 					bg: 'color-mix(in srgb, var(--beak-colors-accent-pink) 10%, transparent)',
 				}}
-				onClick={() => dispatch(insertNewGroup({ id: variableSetName, setName: '' }))}
+				onClick={() => dispatch(insertNewGroup({ id: variableSetName, setId: ksuid.generate('set').toString(), setName: '' }))}
 				flex='0 0 auto'
 			>
 				<Plus size={12} strokeWidth={2.2} />
