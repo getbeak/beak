@@ -275,11 +275,15 @@ func requestTimeout(options map[string]json.RawMessage) (time.Duration, bool) {
 	if ms <= 0 {
 		return 0, false
 	}
-	dur := time.Duration(ms) * time.Millisecond
-	if dur > maxRequestTimeout {
-		dur = maxRequestTimeout
+	// Clamp on the float side, before converting to time.Duration. A naive
+	// `time.Duration(ms) * time.Millisecond` overflows int64 for any ms
+	// past ~2^53 ns: the float→int cast is implementation-defined past
+	// int64 range, and the multiplication wraps. Floats clamp predictably.
+	const maxMs = float64(maxRequestTimeout / time.Millisecond)
+	if ms > maxMs {
+		ms = maxMs
 	}
-	return dur, false
+	return time.Duration(ms) * time.Millisecond, false
 }
 
 func reqURL(overview wire.RequestOverview) string {

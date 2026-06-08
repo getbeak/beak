@@ -167,6 +167,14 @@ func TestRequestTimeout_Parsing(t *testing.T) {
 			wantDur: 10 * time.Minute,
 		},
 		{
+			name: "absurdly large ms clamps without overflow",
+			// 1e18 ms = 1e15 seconds. Naive `time.Duration(ms) * time.Millisecond`
+			// would multiply past int64 range and wrap. Clamp must happen on
+			// the float side so the final Duration is still 10m, not garbage.
+			input:   map[string]json.RawMessage{"timeoutMs": json.RawMessage("1e18")},
+			wantDur: 10 * time.Minute,
+		},
+		{
 			name:      "malformed string",
 			input:     map[string]json.RawMessage{"timeoutMs": json.RawMessage(`"not-a-number"`)},
 			wantError: true,

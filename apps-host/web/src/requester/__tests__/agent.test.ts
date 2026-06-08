@@ -238,6 +238,26 @@ describe('createAgentRequester — error paths', () => {
 });
 
 describe('createAgentRequester — trust-boundary validation', () => {
+	it('rejects frames where SSE event-type does not match inner stage', async () => {
+		// An agent that shipped `event: fetch_response` carrying a
+		// `reading_body` payload would skip the base64-decode path and
+		// forward the wrong in-process shape downstream. Cross-check the
+		// two fields at the trust boundary.
+		const payload = basePayload();
+		const callbacks = makeCallbacks();
+		const frame =
+			'event: fetch_response\ndata: {"flightId":"flight-1","stage":"reading_body","payload":{"timestamp":1,"buffer":"aGVsbG8="}}\n\n';
+
+		fetchSpy.mockResolvedValueOnce(buildResponse({ body: streamFromFrames([frame]) }));
+
+		const requester = createAgentRequester(baseUrl, token);
+		await requester.start({ payload, signal: new AbortController().signal, callbacks });
+
+		expect(callbacks.heartbeat).not.toHaveBeenCalled();
+		expect(callbacks.failed).toHaveBeenCalledTimes(1);
+		expect(callbacks.failed.mock.calls[0][0].error.message).toMatch(/malformed fetch_response/);
+	});
+
 	it('malformed fetch_response frame (missing payload) emits failed', async () => {
 		const payload = basePayload();
 		const callbacks = makeCallbacks();

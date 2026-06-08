@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"net"
 	"testing"
 
@@ -30,31 +31,26 @@ func TestBindInRange_ReturnsListenerOnFreshHost(t *testing.T) {
 }
 
 func TestBindInRange_SkipsHeldPorts(t *testing.T) {
-	// Hold the first port in the range; bindInRange must return a
-	// later one rather than failing.
-	hold, err := net.Listen("tcp", "127.0.0.1:0") // not in range, but proves we can bind freely
+	// Take the first port in the range so bindInRange has to walk past it.
+	// If port 47821 is already held by an unrelated process on this box we
+	// can't prove the walk; skip in that case rather than test the wrong
+	// thing.
+	held, err := net.Listen("tcp", fmt.Sprintf("127.0.0.1:%d", wire.PortRangeStart))
 	if err != nil {
-		t.Skipf("cannot bind a placeholder port: %v", err)
+		t.Skipf("cannot seed held port %d: %v", wire.PortRangeStart, err)
 	}
-	defer hold.Close()
+	defer held.Close()
 
-	first, ln1, err := bindInRange()
+	port, ln, err := bindInRange()
 	if err != nil {
-		t.Fatalf("first bind: %v", err)
+		t.Fatalf("bindInRange: %v", err)
 	}
-	defer ln1.Close()
+	defer ln.Close()
 
-	// Take a second slot — proves the loop advances past held ports.
-	second, ln2, err := bindInRange()
-	if err != nil {
-		t.Fatalf("second bind: %v", err)
+	if port == wire.PortRangeStart {
+		t.Fatalf("bindInRange should have skipped the held port %d", wire.PortRangeStart)
 	}
-	defer ln2.Close()
-
-	if first == second {
-		t.Fatalf("bindInRange returned the same port twice: %d", first)
-	}
-	if first < wire.PortRangeStart || second > wire.PortRangeEnd {
-		t.Fatalf("ports out of range: first=%d second=%d", first, second)
+	if port < wire.PortRangeStart || port > wire.PortRangeEnd {
+		t.Fatalf("port %d outside %d..%d", port, wire.PortRangeStart, wire.PortRangeEnd)
 	}
 }
