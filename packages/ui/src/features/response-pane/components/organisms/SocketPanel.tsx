@@ -67,7 +67,7 @@ const SocketPanel: React.FC<SocketPanelProps> = ({ session }) => {
 	function handleSend() {
 		const text = draft;
 		if (!text || !isOpen) return;
-		dispatch(sendSocketMessage({ socketId: session.socketId, kind: 'text', data: text }));
+		dispatch(sendSocketMessage({ socketId: session.socketId, kind: 'text', data: text, timestamp: Date.now() }));
 		setDraft('');
 	}
 
@@ -83,12 +83,13 @@ const SocketPanel: React.FC<SocketPanelProps> = ({ session }) => {
 				url: session.url,
 				protocols: session.protocols,
 				headers: session.headers,
+				timestamp: Date.now(),
 			}),
 		);
 	}
 
 	function handleClose() {
-		dispatch(closeSocket({ socketId: session.socketId, code: 1000, reason: 'user' }));
+		dispatch(closeSocket({ socketId: session.socketId, code: 1000, reason: 'user', timestamp: Date.now() }));
 	}
 
 	function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
