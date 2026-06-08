@@ -152,7 +152,12 @@ service.registerSearch(async (_event, payload) => {
 service.registerVariableCreateDefaultPayload(async (event, payload) => {
 	const invokeEvent = event as IpcMainInvokeEvent;
 	const { projectId } = await getProjectId(invokeEvent);
-	return await extensionManager.variableCreateDefaultPayload(projectId, payload.type, payload.context, invokeEvent.sender);
+	return await extensionManager.variableCreateDefaultPayload(
+		projectId,
+		payload.type,
+		payload.context,
+		invokeEvent.sender,
+	);
 });
 
 service.registerVariableGetValue(async (event, payload) => {

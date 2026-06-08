@@ -2,11 +2,10 @@ import type { Extension, ExtensionVariable, LoadedExtension } from '@beak/common
 import Squawk from '@beak/common/utils/squawk';
 import ksuid from '@beak/ksuid';
 import type { ValueSections, Context as VariableContext } from '@getbeak/types/values';
-
+import type { Providers } from '../base';
 import { ExtensionManifests, type ParsedExtensionManifest } from './manifest';
 import { makeFullyQualifiedType, packageNameFromType, variableIdFromType } from './manifest-helpers';
 import { ProjectExtensionRegistry } from './registry-base';
-import type { Providers } from '../base';
 
 /**
  * Per-package worker record held by the registry. The opaque worker handle
@@ -280,9 +279,9 @@ export class WorkerExtensionManager<TCallerCtx = unknown> {
 					const code =
 						error instanceof Squawk
 							? error.code
-							: (error as { code?: string } | undefined)?.code ?? 'parse_value_sections_failed';
+							: ((error as { code?: string } | undefined)?.code ?? 'parse_value_sections_failed');
 					const messageText =
-						error instanceof Error ? error.message : (error as { message?: string })?.message ?? 'unknown error';
+						error instanceof Error ? error.message : ((error as { message?: string })?.message ?? 'unknown error');
 					record.worker.postMessage({
 						kind: 'parse-value-sections-error',
 						requestId,

@@ -15,7 +15,6 @@ export type { RegisteredRecord, RegistryOptions } from './registry-base';
 export { ProjectExtensionRegistry } from './registry-base';
 export type { TarEntry } from './tar';
 export { gunzip, readTar } from './tar';
-export { WORKER_SOURCE, WORKER_RUNTIME_NODE_SHIM } from './worker-source';
 export type {
 	UnifiedWorker,
 	WorkerExtensionManagerOptions,
@@ -23,3 +22,4 @@ export type {
 	WorkerProvider,
 } from './worker-manager';
 export { WorkerExtensionManager } from './worker-manager';
+export { WORKER_RUNTIME_NODE_SHIM, WORKER_SOURCE } from './worker-source';

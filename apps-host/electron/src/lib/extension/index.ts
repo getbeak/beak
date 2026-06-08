@@ -48,8 +48,7 @@ export default class ExtensionManager extends WorkerExtensionManager<WebContents
 				parseValueSections: (callerCtx, varCtx, parts, recursiveDepth) =>
 					parseValueSectionsViaIpc(service, callerCtx, varCtx, parts, recursiveDepth),
 				log: (packageName, level, message) => {
-					const fn =
-						(logger as unknown as Record<string, (m: string) => void>)[level] ?? logger.warn.bind(logger);
+					const fn = (logger as unknown as Record<string, (m: string) => void>)[level] ?? logger.warn.bind(logger);
 					fn(`[${packageName}] ${message}`);
 				},
 			},
