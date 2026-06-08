@@ -1,96 +1,41 @@
 import { IpcEncryptionServiceMain } from '@beak/common/ipc/encryption';
-import type { ValueSections } from '@getbeak/types/values';
-import { clipboard, ipcMain } from 'electron';
+import { ipcMain } from 'electron';
 
-import getBeakHost from '../host';
+import getRuntime from '../host';
 import { getProjectId } from './utils';
 
 const service = new IpcEncryptionServiceMain(ipcMain);
 
-service.registerCheckStatus(async event => {
-	const projectId = getProjectId(event);
-	const encryption = await getBeakHost().providers.credentials.getProjectEncryption(projectId);
-
-	return encryption !== null;
-});
+service.registerCheckStatus(async event => getRuntime().secrets.checkStatus(getProjectId(event)));
 
 service.registerSubmitKey(async (event, { key }) => {
-	const projectId = getProjectId(event);
-
-	await getBeakHost().providers.credentials.setProjectEncryption(projectId, {
-		key,
-		algorithm: getBeakHost().providers.aes.aesAlgo,
-	});
+	await getRuntime().secrets.submitKey(getProjectId(event), key);
 
 	return true;
 });
 
 service.registerResetKey(async event => {
-	const projectId = getProjectId(event);
-	const newKey = await getBeakHost().providers.aes.generateKey();
-
-	await getBeakHost().providers.credentials.setProjectEncryption(projectId, {
-		key: newKey,
-		algorithm: getBeakHost().providers.aes.aesAlgo,
-	});
+	await getRuntime().secrets.resetKey(getProjectId(event));
 
 	return true;
 });
 
-service.registerGenerateIv(async () => await getBeakHost().providers.aes.generateIv());
+service.registerGenerateIv(async () => getRuntime().secrets.generateIv());
 
-service.registerEncryptString(async (event, { iv, payload }) => {
-	const projectId = getProjectId(event);
-	const encryption = await getBeakHost().providers.credentials.getProjectEncryption(projectId);
+service.registerEncryptString(async (event, { iv, payload }) =>
+	getRuntime().secrets.encryptString(getProjectId(event), iv, payload),
+);
 
-	if (encryption === null) return '';
+service.registerDecryptString(async (event, { iv, payload }) =>
+	getRuntime().secrets.decryptString(getProjectId(event), iv, payload),
+);
 
-	return await getBeakHost().providers.aes.encryptString(payload, encryption.key, iv);
-});
+service.registerEncryptObject(async (event, { iv, payload }) =>
+	getRuntime().secrets.encryptObject(getProjectId(event), iv, payload),
+);
 
-service.registerDecryptString(async (event, { iv, payload }): Promise<string> => {
-	const projectId = getProjectId(event);
-	const encryption = await getBeakHost().providers.credentials.getProjectEncryption(projectId);
+service.registerDecryptObject(async (event, { iv, payload }) =>
+	getRuntime().secrets.decryptObject(getProjectId(event), iv, payload),
+);
 
-	if (encryption === null) return '[Encryption key missing]';
-
-	return await getBeakHost().providers.aes.decryptString(payload, encryption.key, iv);
-});
-
-service.registerEncryptObject(async (event, { iv, payload }) => {
-	const json = JSON.stringify(payload);
-	const projectId = getProjectId(event);
-	const encryption = await getBeakHost().providers.credentials.getProjectEncryption(projectId);
-
-	if (encryption === null) return '';
-
-	return await getBeakHost().providers.aes.encryptString(json, encryption.key, iv);
-});
-
-service.registerDecryptObject(async (event, { iv, payload }): Promise<ValueSections> => {
-	const projectId = getProjectId(event);
-	const encryption = await getBeakHost().providers.credentials.getProjectEncryption(projectId);
-
-	if (encryption === null) return ['[Encryption key missing]'];
-
-	const decrypted = await getBeakHost().providers.aes.decryptString(payload, encryption.key, iv);
-
-	if (decrypted === '') return [];
-
-	try {
-		const parsed = JSON.parse(decrypted);
-
-		if (Array.isArray(parsed)) return parsed;
-
-		return [parsed];
-	} catch {
-		return [];
-	}
-});
-
-service.registerCopyEncryptionKey(async event => {
-	const projectId = getProjectId(event);
-	const encryption = await getBeakHost().providers.credentials.getProjectEncryption(projectId);
-
-	if (encryption) clipboard.writeText(encryption.key);
-});
+service.registerCopyEncryptionKey(async event => getRuntime().secrets.copyKeyToClipboard(getProjectId(event)));

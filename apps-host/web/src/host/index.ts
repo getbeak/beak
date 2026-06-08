@@ -72,6 +72,7 @@ export function getRootMode(): RootMode {
 export const rootModeReady: Promise<RootMode> = fsRootPromise.then(() => currentRootMode);
 
 const runtime = new Runtime({
+	writeToClipboard: async text => navigator.clipboard.writeText(text),
 	capabilities: {
 		nativeContextMenus: false,
 		extensions: true,

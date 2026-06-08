@@ -5,6 +5,7 @@ import { ProjectExtensions } from './extensions/project-extensions';
 import { FsSandbox } from './fs-sandbox';
 import BeakGit from './git';
 import BeakProject from './project';
+import ProjectSecrets from './secrets/project-secrets';
 import OpenApiWriter from './sources/openapi-writer';
 import ValueStore from './values';
 
@@ -31,6 +32,7 @@ export {
 export { default as BeakGit } from './git';
 export { type GitBindingsOptions, registerGitBindings } from './git/bindings';
 export { type FetchTextDeps, fetchText, makeCappedBodyReader, parseHttpUrl } from './http/fetch-text';
+export { default as ProjectSecrets } from './secrets/project-secrets';
 export type { OpenApiReadResult, OpenApiSyncInput, OpenApiSyncResult } from './sources/openapi-writer';
 export { default as OpenApiWriter } from './sources/openapi-writer';
 export { default as ValueStore } from './values';
@@ -51,6 +53,7 @@ export default class Runtime extends RuntimeBase {
 	private readonly beakGit: BeakGit;
 	private readonly projectExt: ProjectExtensions;
 	private readonly fsSandbox: FsSandbox;
+	private readonly projectSecrets: ProjectSecrets;
 
 	constructor(options: RuntimeOptions) {
 		super(options.providers);
@@ -66,6 +69,7 @@ export default class Runtime extends RuntimeBase {
 		this.beakGit = new BeakGit(this.providers);
 		this.projectExt = new ProjectExtensions(this.providers);
 		this.fsSandbox = new FsSandbox(this.providers, this.beakProject);
+		this.projectSecrets = new ProjectSecrets(this.providers.aes, this.providers.credentials, options.writeToClipboard);
 	}
 
 	get project() {
@@ -116,5 +120,13 @@ export default class Runtime extends RuntimeBase {
 	 */
 	get fs() {
 		return this.fsSandbox;
+	}
+
+	/**
+	 * Per-project encryption surface. IPC handlers delegate all key-management
+	 * and crypto work here instead of reaching into providers directly.
+	 */
+	get secrets() {
+		return this.projectSecrets;
 	}
 }
