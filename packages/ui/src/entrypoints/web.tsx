@@ -3,8 +3,9 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
 import AgentPairReturn from '../containers/AgentPairReturn';
 import WebProjectMain from '../containers/WebProjectMain';
+import { setActiveProjectIdHint } from '../services/web-bridge';
 import { discoverAgentRequested } from '../store/effects/agent';
-import { useAppDispatch } from '../store/redux';
+import { useAppDispatch, useAppSelector } from '../store/redux';
 
 // `/` mounts the empty workbench (welcome tab, no project bootstrap).
 // `/project/:projectId` mounts a bound project — same shell, full bootstrap.
@@ -23,9 +24,17 @@ const router = createBrowserRouter([
 
 export const WebEntrypoint: React.FC = () => {
 	const dispatch = useAppDispatch();
+	const activeProjectId = useAppSelector(state => state.global.project.id ?? null);
+
 	useEffect(() => {
 		dispatch(discoverAgentRequested());
 	}, [dispatch]);
+
+	// Reflect the active project id into sessionStorage so the web host's
+	// IPC handlers can find it when the URL stays at `/` (memory mode).
+	useEffect(() => {
+		setActiveProjectIdHint(activeProjectId);
+	}, [activeProjectId]);
 
 	return <RouterProvider router={router} />;
 };

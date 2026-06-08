@@ -2,7 +2,14 @@ import { AGENT_PAIR_PATH, AGENT_PAIR_TOKEN_PATH, pairTokenResponseSchema } from 
 
 import { newPkcePair, newState } from './crypto';
 
-const SESSION_STORAGE_KEY = 'beak.agent.pairing.pending';
+// Pending pairings are keyed by the CSRF `state` token so the return tab
+// (a separate browser tab opened by `window.open`) can find the matching
+// PKCE verifier in `localStorage`. `sessionStorage` doesn't work here —
+// it's per-tab, and the agent's return URL lands in a fresh tab with an
+// empty sessionStorage. `localStorage` is shared across same-origin tabs,
+// and the `state` lookup means a concurrent second pairing can't collide.
+const STORAGE_KEY_PREFIX = 'beak.agent.pairing.pending.';
+const MAX_AGE_MS = 5 * 60 * 1000;
 
 interface PendingPairing {
 	state: string;
@@ -11,19 +18,49 @@ interface PendingPairing {
 	startedAt: number;
 }
 
+function storageKeyFor(state: string): string {
+	return `${STORAGE_KEY_PREFIX}${state}`;
+}
+
+function sweepExpired(): void {
+	if (typeof window === 'undefined') return;
+	const now = Date.now();
+	const toDelete: string[] = [];
+	for (let i = 0; i < window.localStorage.length; i++) {
+		const key = window.localStorage.key(i);
+		if (!key?.startsWith(STORAGE_KEY_PREFIX)) continue;
+		const raw = window.localStorage.getItem(key);
+		if (!raw) {
+			toDelete.push(key);
+			continue;
+		}
+		try {
+			const value = JSON.parse(raw) as Partial<PendingPairing>;
+			if (typeof value?.startedAt !== 'number' || now - value.startedAt > MAX_AGE_MS) {
+				toDelete.push(key);
+			}
+		} catch {
+			toDelete.push(key);
+		}
+	}
+	for (const k of toDelete) window.localStorage.removeItem(k);
+}
+
 /**
  * Open the pair tab and stash the PKCE verifier so /pair/return can
- * complete the handshake after the user clicks Allow. `sessionStorage`
- * scopes the pending pairing to this browser tab — opening Beak in two
- * tabs at once produces two independent pairings, which is correct.
+ * complete the handshake after the user clicks Allow. The pending entry
+ * is keyed by the `state` token in `localStorage`, so the new tab opened
+ * by `window.open` can read the same entry (sessionStorage is per-tab
+ * and would be empty in the new tab).
  */
 export async function startPairing(baseUrl: string, returnUrl: string): Promise<void> {
+	sweepExpired();
 	const state = newState();
 	const { codeVerifier, codeChallengePromise } = newPkcePair();
 	const codeChallenge = await codeChallengePromise;
 
 	const pending: PendingPairing = { state, codeVerifier, baseUrl, startedAt: Date.now() };
-	window.sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(pending));
+	window.localStorage.setItem(storageKeyFor(state), JSON.stringify(pending));
 
 	const pairUrl = new URL(`${baseUrl}${AGENT_PAIR_PATH}`);
 	pairUrl.searchParams.set('origin', window.location.origin);
@@ -57,15 +94,17 @@ export interface CompletedPairing {
 }
 
 /**
- * Finish the pair flow: read the pending PKCE state from sessionStorage,
- * exchange the code for a token, return the token + tokenId. Throws on
- * state mismatch, expired/missing pending pairing, or agent failure.
+ * Finish the pair flow: read the pending PKCE state keyed by the `state`
+ * token from localStorage, exchange the code for a token, return the
+ * token + tokenId. Throws on state mismatch, expired/missing pending
+ * pairing, or agent failure.
  */
 export async function completePairing(query: PairingReturnQuery): Promise<CompletedPairing> {
 	if (query.error) throw new Error(`pairing_${query.error}`);
 	if (!query.code || !query.state) throw new Error('pairing_missing_code_or_state');
 
-	const raw = window.sessionStorage.getItem(SESSION_STORAGE_KEY);
+	sweepExpired();
+	const raw = window.localStorage.getItem(storageKeyFor(query.state));
 	if (!raw) throw new Error('pairing_no_pending');
 	let pending: PendingPairing;
 	try {
@@ -90,10 +129,11 @@ export async function completePairing(query: PairingReturnQuery): Promise<Comple
 	const parsed = pairTokenResponseSchema.safeParse(json);
 	if (!parsed.success) throw new Error('pairing_invalid_token_response');
 
-	clearPending();
+	window.localStorage.removeItem(storageKeyFor(query.state));
 	return { token: parsed.data.token, tokenId: parsed.data.tokenId, baseUrl: pending.baseUrl };
 }
 
 export function clearPending(): void {
-	window.sessionStorage.removeItem(SESSION_STORAGE_KEY);
+	// No specific state to clear — sweep everything stale and call it done.
+	sweepExpired();
 }
