@@ -41,6 +41,7 @@ import {
 	type RequestBodyJsonEditorEnabledChangePayload,
 	type RequestBodyJsonEditorMoveEntryPayload,
 	type RequestBodyJsonEditorNameChangePayload,
+	type RequestBodyMultipartChangedPayload,
 	type RequestBodyJsonEditorOptionsChangePayload,
 	type RequestBodyJsonEditorRemoveEntryPayload,
 	type RequestBodyJsonEditorReplacePayloadPayload,
@@ -139,6 +140,9 @@ export const requestBodyJsonRawChanged = createAction<RequestBodyJsonRawChangedP
 );
 export const requestBodyFileChanged = createAction<RequestBodyFileChangedPayload>(AT.REQUEST_BODY_FILE_CHANGED);
 export const requestBodyAssetChanged = createAction<RequestBodyAssetChangedPayload>(AT.REQUEST_BODY_ASSET_CHANGED);
+export const requestBodyMultipartChanged = createAction<RequestBodyMultipartChangedPayload>(
+	AT.REQUEST_BODY_MULTIPART_CHANGED,
+);
 
 export const requestBodyJsonEditorNameChange = createAction<RequestBodyJsonEditorNameChangePayload>(
 	AT.REQUEST_BODY_JSON_EDITOR_NAME_CHANGE,
@@ -302,6 +306,7 @@ export default {
 	requestBodyJsonRawChanged,
 	requestBodyFileChanged,
 	requestBodyAssetChanged,
+	requestBodyMultipartChanged,
 
 	requestBodyJsonEditorNameChange,
 	requestBodyJsonEditorValueChange,

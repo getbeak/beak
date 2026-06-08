@@ -4,6 +4,7 @@ import { ipcExtensionsService } from '@beak/ui/lib/ipc';
 import type { EditableVariable, Variable } from '@getbeak/extension-sdk';
 
 import './ipc';
+import attachedFileRtv from './values/attached-file';
 import base64DecodeRtv from './values/base64-decode';
 import base64EncodeRtv from './values/base64-encode';
 import digestRtv from './values/digest';
@@ -31,6 +32,7 @@ export class VariableManager {
 	private static externalVariables: Record<string, BasicOrEditableVariable> = {};
 	private static externalVariablesByPackage: Record<string, string[]> = {};
 	private static internalVariables: Record<string, BasicOrEditableVariable> = {
+		[attachedFileRtv.type]: attachedFileRtv,
 		[base64DecodeRtv.type]: base64DecodeRtv,
 		[base64EncodeRtv.type]: base64EncodeRtv,
 		[characterCarriageReturnRtv.type]: characterCarriageReturnRtv,

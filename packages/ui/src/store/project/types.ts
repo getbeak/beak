@@ -61,6 +61,7 @@ export const ActionTypes = {
 
 	REQUEST_BODY_FILE_CHANGED: '@beak/global/project/REQUEST_BODY_FILE_CHANGED',
 	REQUEST_BODY_ASSET_CHANGED: '@beak/global/project/REQUEST_BODY_ASSET_CHANGED',
+	REQUEST_BODY_MULTIPART_CHANGED: '@beak/global/project/REQUEST_BODY_MULTIPART_CHANGED',
 
 	REQUEST_BODY_JSON_EDITOR_NAME_CHANGE: '@beak/global/project/REQUEST_BODY_JSON_EDITOR_NAME_CHANGE',
 	REQUEST_BODY_JSON_EDITOR_VALUE_CHANGE: '@beak/global/project/REQUEST_BODY_JSON_EDITOR_VALUE_CHANGE',
@@ -281,6 +282,7 @@ export type RequestBodyTypeChangedPayload =
 	| RequestBodyTypeToTextPayload
 	| RequestBodyTypeToUrlEncodedFormPayload
 	| RequestBodyTypeToFilePayload
+	| RequestBodyTypeToMultipartPayload
 	| RequestBodyTypeToGraphQlPayload;
 
 interface RequestBodyTypeToJsonPayload extends RequestIdPayload {
@@ -317,6 +319,14 @@ interface RequestBodyTypeToFilePayload extends RequestIdPayload {
 	};
 }
 
+interface RequestBodyTypeToMultipartPayload extends RequestIdPayload {
+	type: 'multipart';
+	payload: {
+		boundary?: string;
+		parts: import('@getbeak/types/request').MultipartPart[];
+	};
+}
+
 interface RequestBodyTypeToGraphQlPayload extends RequestIdPayload {
 	type: 'graphql';
 	payload: {
@@ -347,6 +357,13 @@ export interface RequestBodyAssetRef {
 export interface RequestBodyAssetChangedPayload extends RequestIdPayload {
 	/** `undefined` clears the asset; supplying a ref attaches it. */
 	assetRef: RequestBodyAssetRef | undefined;
+}
+
+export interface RequestBodyMultipartChangedPayload extends RequestIdPayload {
+	/** Full replacement of the multipart parts list. */
+	parts: import('@getbeak/types/request').MultipartPart[];
+	/** Optional explicit boundary; leave undefined to keep the existing one. */
+	boundary?: string;
 }
 
 export interface RequestBodyJsonEditorNameChangePayload extends RequestIdPayload {

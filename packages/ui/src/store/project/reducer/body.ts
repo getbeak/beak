@@ -113,6 +113,19 @@ export default function buildBody(builder: ActionReducerMapBuilder<State>) {
 				...existing,
 				...(action.payload.assetRef ? { assetRef: action.payload.assetRef } : { assetRef: undefined }),
 			};
+		})
+		.addCase(actions.requestBodyMultipartChanged, (state, action) => {
+			const node = state.tree[action.payload.requestId] as ValidRequestNode;
+			const existing = (node.info.body.payload as { boundary?: string } | undefined) ?? {};
+			node.info.body.type = 'multipart';
+			node.info.body.payload = {
+				...(action.payload.boundary !== undefined
+					? { boundary: action.payload.boundary }
+					: existing.boundary
+						? { boundary: existing.boundary }
+						: {}),
+				parts: action.payload.parts,
+			};
 		});
 
 	buildJsonEditor(builder);

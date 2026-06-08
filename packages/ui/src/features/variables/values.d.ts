@@ -1,7 +1,15 @@
+import type { AssetRef } from '@getbeak/extension-sdk';
 import type { ValuePart as GenericValuePart } from '@getbeak/types/values';
 
 export type ValuePart = GenericValuePart;
 export type ValueSections = ValuePart[];
+
+export interface AttachedFileRtv {
+	/** Pointer into the project's `_assets/` content-addressed store. */
+	assetRef?: AssetRef;
+	/** User-supplied filename (preserved across attach/replace flows). */
+	filename?: string;
+}
 
 export interface Base64DecodedRtv {
 	input: ValueSections;
