@@ -1,9 +1,10 @@
 module github.com/getbeak/beak/apps-host/agent
 
-go 1.22
+go 1.24.0
 
 require (
 	github.com/getlantern/systray v1.2.2
+	github.com/gofrs/flock v0.13.0
 	github.com/pkg/browser v0.0.0-20240102092130-5ac0b6a4141c
 )
 
@@ -16,5 +17,5 @@ require (
 	github.com/getlantern/ops v0.0.0-20190325191751-d70cb0d6f85f // indirect
 	github.com/go-stack/stack v1.8.0 // indirect
 	github.com/oxtoacart/bpool v0.0.0-20190530202638-03653db5a59c // indirect
-	golang.org/x/sys v0.1.0 // indirect
+	golang.org/x/sys v0.37.0 // indirect
 )
