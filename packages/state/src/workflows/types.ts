@@ -26,6 +26,8 @@ export const initialWorkflowsState: WorkflowsState = {
 
 export interface WorkflowId {
 	id: string;
+	/** Epoch-ms timestamp minted at dispatch time (ADR 0005 §2). */
+	now?: number;
 }
 
 export interface WorkflowsOpenedPayload {
@@ -35,6 +37,8 @@ export interface WorkflowsOpenedPayload {
 export interface InsertNewWorkflowPayload {
 	id: string;
 	workflow: WorkflowFile;
+	/** Epoch-ms timestamp minted at dispatch time (ADR 0005 §2). */
+	now?: number;
 }
 
 export interface UpdateWorkflowNamePayload extends WorkflowId {
