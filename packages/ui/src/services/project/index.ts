@@ -3,19 +3,32 @@ export { loadCollectionAtFolder, loadCollectionForRequest, loadNearestCollection
 
 // folder
 export { createFolderNode, readFolderNode, removeFolderNode, renameFolderNode } from './folder';
-
+// linked
+export { runRelinkRequest, runReloadStaleRequest, runUnlinkAndRename } from './linked';
 // loader
 export type { ProjectLoadInfo, ProjectLoadResult, ProjectLoadValue } from './loader';
 export { loadProject } from './loader';
-
+// mutations
+export {
+	collectRequestIdsUnder,
+	runCreateNewFolder,
+	runCreateNewRequest,
+	runDuplicateRequest,
+	runMoveNode,
+	runRemoveNode,
+} from './mutations';
+// node-update
+export { handleNodeUpdate } from './node-update';
 // nodes
 export { getDestinationFolder, moveNodesOnDisk } from './nodes';
-
 // pending-renames
 export { consumeAddEvent, consumeRemoveEvent, registerFolderRename, registerRequestRename } from './pending-renames';
 
 // project
-export { readProjectFile } from './project';
+export { persistPrimaryCookieJar, persistProjectName, readProjectFile } from './project';
+
+// rename
+export { runRenameSubmitted } from './rename';
 
 // request
 export {

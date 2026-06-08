@@ -1,7 +1,6 @@
 import { type CollectionFile, collectionFileSchema } from '@beak/state/schemas';
-import path from 'path-browserify';
-
 import { ipcFsService } from '@beak/ui/lib/ipc';
+import path from 'path-browserify';
 
 const COLLECTION_FILENAME = '_collection.json';
 

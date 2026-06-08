@@ -6,11 +6,10 @@ import {
 	type RequestFile,
 	requestFileOverrideSchema,
 } from '@beak/state/schemas';
-import type { RequestNode, RequestNodeFile } from '@getbeak/types/nodes';
-import path from 'path-browserify';
-
 import { readJsonAndValidate } from '@beak/ui/lib/fs';
 import { ipcFsService } from '@beak/ui/lib/ipc';
+import type { RequestNode, RequestNodeFile } from '@getbeak/types/nodes';
+import path from 'path-browserify';
 import { loadCollectionForRequest } from './collection';
 import { requestSchema } from './schemas';
 import { generateSafeNewPath } from './utils';
