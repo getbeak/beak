@@ -79,7 +79,7 @@ class WebWorkerAdapter implements UnifiedWorker {
 		return () => this.worker.removeEventListener('error', handler);
 	}
 
-	terminate(): void {
+	async terminate(): Promise<void> {
 		this.worker.terminate();
 	}
 }

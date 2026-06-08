@@ -38,7 +38,8 @@ export interface UnifiedWorker {
 	postMessage(message: unknown): void;
 	onMessage(listener: (message: unknown) => void): () => void;
 	onError(listener: (error: unknown) => void): () => void;
-	terminate(): void | Promise<unknown>;
+	/** Web Workers terminate synchronously; Node `worker_threads` return a Promise. Adapters normalise to Promise. */
+	terminate(): Promise<unknown>;
 }
 
 /**
@@ -74,7 +75,7 @@ const PARSE_VALUE_SECTIONS_TIMEOUT_MS = 30_000;
  */
 export class WorkerExtensionManager<TCallerCtx = unknown> {
 	private readonly registry = new ProjectExtensionRegistry<WorkerRecord>({
-		dispose: terminate,
+		dispose: disposeRecord,
 	});
 	private readonly providers: Providers;
 	private readonly workerProvider: WorkerProvider;
@@ -276,16 +277,10 @@ export class WorkerExtensionManager<TCallerCtx = unknown> {
 					);
 					record.worker.postMessage({ kind: 'parse-value-sections-result', requestId, parsed });
 				} catch (error) {
-					const code =
-						error instanceof Squawk
-							? error.code
-							: ((error as { code?: string } | undefined)?.code ?? 'parse_value_sections_failed');
-					const messageText =
-						error instanceof Error ? error.message : ((error as { message?: string })?.message ?? 'unknown error');
 					record.worker.postMessage({
 						kind: 'parse-value-sections-error',
 						requestId,
-						error: { code, message: messageText },
+						error: serialiseErrorForWorker(error, 'parse_value_sections_failed'),
 					});
 				}
 				return;
@@ -353,7 +348,24 @@ function deserialiseWorkerError(error?: WorkerErrorEnvelope): Squawk {
 	});
 }
 
-function terminate(record: WorkerRecord): void {
+/**
+ * Inverse of `deserialiseWorkerError` for the host → worker direction —
+ * collapses anything thrown by a host callback into the small envelope
+ * the worker side expects on `parse-value-sections-error`. `Squawk`
+ * gets its `.code` preserved; anything else falls back to
+ * `defaultCode`.
+ */
+function serialiseErrorForWorker(error: unknown, defaultCode: string): WorkerErrorEnvelope {
+	if (error instanceof Squawk) return { code: error.code, message: error.message };
+	if (error instanceof Error) {
+		const code = (error as { code?: string }).code ?? defaultCode;
+		return { code, message: error.message };
+	}
+	const obj = (error ?? {}) as { code?: string; message?: string };
+	return { code: obj.code ?? defaultCode, message: obj.message ?? 'unknown error' };
+}
+
+function disposeRecord(record: WorkerRecord): void {
 	try {
 		record.unsubscribe();
 	} catch {
