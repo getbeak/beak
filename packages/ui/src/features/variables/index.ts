@@ -4,6 +4,7 @@ import { ipcExtensionsService } from '@beak/ui/lib/ipc';
 import type { EditableVariable, Variable } from '@getbeak/extension-sdk';
 
 import './ipc';
+import attachedFileRtv from './values/attached-file';
 import base64DecodeRtv from './values/base64-decode';
 import base64EncodeRtv from './values/base64-encode';
 import digestRtv from './values/digest';
@@ -14,6 +15,7 @@ import requestHeaderRtv from './values/request-header';
 import requestMethodRtv from './values/request-method';
 import requestNameRtv from './values/request-name';
 import responseBodyJsonRtv from './values/response-body-json';
+import responseBodyStreamRtv from './values/response-body-stream';
 import responseBodyTextRtv from './values/response-body-text';
 import responseHeaderRtv from './values/response-header';
 import responseStatusCodeRtv from './values/response-status-code';
@@ -31,6 +33,7 @@ export class VariableManager {
 	private static externalVariables: Record<string, BasicOrEditableVariable> = {};
 	private static externalVariablesByPackage: Record<string, string[]> = {};
 	private static internalVariables: Record<string, BasicOrEditableVariable> = {
+		[attachedFileRtv.type]: attachedFileRtv,
 		[base64DecodeRtv.type]: base64DecodeRtv,
 		[base64EncodeRtv.type]: base64EncodeRtv,
 		[characterCarriageReturnRtv.type]: characterCarriageReturnRtv,
@@ -44,6 +47,7 @@ export class VariableManager {
 		[requestMethodRtv.type]: requestMethodRtv,
 		[requestNameRtv.type]: requestNameRtv,
 		[responseBodyJsonRtv.type]: responseBodyJsonRtv,
+		[responseBodyStreamRtv.type]: responseBodyStreamRtv,
 		[responseBodyTextRtv.type]: responseBodyTextRtv,
 		[responseHeaderRtv.type]: responseHeaderRtv,
 		[responseStatusCodeRtv.type]: responseStatusCodeRtv,
@@ -119,26 +123,15 @@ function buildAdapter(variable: ExtensionVariable): BasicOrEditableVariable {
 				type: variable.type,
 				context: ctx,
 			}),
-		getValue: async (ctx, payload, recursiveDepth) =>
-			ipcExtensionsService.variableGetValue({
+		resolve: async (rctx, payload) =>
+			ipcExtensionsService.variableResolve({
 				type: variable.type,
-				context: ctx,
-				payload,
-				recursiveDepth,
+				context: rctx.variableContext,
+				payload: payload as Record<string, unknown>,
+				recursiveDepth: rctx.depth,
+				sink: rctx.sink,
 			}),
 	};
-
-	if (variable.binary) {
-		base.getAssetRef = async (ctx, payload, recursiveDepth) => {
-			const ref = await ipcExtensionsService.variableGetAssetRef({
-				type: variable.type,
-				context: ctx,
-				payload,
-				recursiveDepth,
-			});
-			return ref;
-		};
-	}
 
 	if (!variable.editable) return base;
 

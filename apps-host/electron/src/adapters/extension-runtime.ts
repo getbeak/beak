@@ -1,5 +1,6 @@
 import type { Extension } from '@beak/common/types/extensions';
 import ExtensionRuntime, { type ExtensionSender } from '@beak/runtime-shared/ports/extension-runtime';
+import type { ResolvedValue, Sink } from '@getbeak/extension-sdk';
 import type { Context as VariableContext } from '@getbeak/types/values';
 
 import type ExtensionManager from '../lib/extension';
@@ -44,33 +45,28 @@ export default class ElectronExtensionRuntime extends ExtensionRuntime {
 		return await this.manager.variableCreateDefaultPayload(projectId, type, varCtx);
 	}
 
-	async variableGetValue(
+	async variableResolve(
 		projectId: string,
 		type: string,
 		varCtx: VariableContext,
 		sender: ExtensionSender,
 		payload: unknown,
 		recursiveDepth: number,
-	): Promise<string> {
-		return await this.manager.variableGetValue(projectId, type, varCtx, sender, payload, recursiveDepth);
-	}
-
-	async variableGetAssetRef(
-		projectId: string,
-		type: string,
-		varCtx: VariableContext,
-		sender: ExtensionSender,
-		payload: unknown,
-		recursiveDepth: number,
-	): Promise<{ sha256: string; size: number; contentType?: string } | null> {
-		return await this.manager.variableGetAssetRef(projectId, type, varCtx, sender, payload, recursiveDepth);
+		sink: Sink,
+	): Promise<ResolvedValue> {
+		return await this.manager.variableResolve(projectId, type, varCtx, sender, payload, recursiveDepth, sink);
 	}
 
 	async variableEditorCreateUI(projectId: string, type: string, varCtx: VariableContext): Promise<unknown> {
 		return await this.manager.variableEditorCreateUI(projectId, type, varCtx);
 	}
 
-	async variableEditorLoad(projectId: string, type: string, varCtx: VariableContext, payload: unknown): Promise<unknown> {
+	async variableEditorLoad(
+		projectId: string,
+		type: string,
+		varCtx: VariableContext,
+		payload: unknown,
+	): Promise<unknown> {
 		return await this.manager.variableEditorLoad(projectId, type, varCtx, payload);
 	}
 

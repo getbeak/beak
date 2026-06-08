@@ -13,8 +13,12 @@ const bodyContentTypeMap: Partial<Record<RequestBodyType, string>> = {
 	graphql: 'application/json',
 };
 
-export function requestBodyContentType(body: RequestBody) {
+export function requestBodyContentType(body: RequestBody): string | undefined {
 	if (body.type === 'file' && body.payload.contentType) return body.payload.contentType;
+	// Multipart's boundary is minted at flight time — the renderer can't
+	// surface a Content-Type header until then. The requester sets the
+	// final `multipart/form-data; boundary=…` header itself.
+	if (body.type === 'multipart') return undefined;
 
 	return bodyContentTypeMap[body.type];
 }

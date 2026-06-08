@@ -41,6 +41,14 @@ The decision to defer the runner is captured in
 - [`agent-flight.feature`](agent-flight.feature) — routing decisions,
   request execution against the agent (GET, POST, SSE upstream,
   timeout, binary), concurrency, and cancellation.
+- [`realtime-values.feature`](realtime-values.feature) — the redesigned
+  RTV resolution (`ResolvedValue` + `Sink` coercion), the multipart
+  body type, end-to-end streaming, and binary-bearing variable-set
+  items. Companion to ADR [0007](../adr/0007-realtime-values-redesign.md).
+- [`realtime-values-v1.feature`](realtime-values-v1.feature) — frozen
+  description of the pre-redesign RTV behaviour. Companion to ADR
+  [0008](../adr/0008-realtime-values-v1-retrofit.md); kept as the
+  before-state once 0007 lands.
 
 Grouping mirrors the [ADR convention](../adr/README.md): one feature,
 one ADR; one feature, at most a couple of `.feature` files split along

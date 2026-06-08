@@ -65,12 +65,12 @@ export interface MaterialiseVariableSet {
 	sets: Record<string, string>;
 	items: Record<string, string>;
 	/**
-	 * `values` carry the same `ValueSections` array shape variable-sets
-	 * use everywhere (string parts and `{ type, payload }` realtime-value
-	 * references). Type-erased here because `@beak/common` cannot depend
-	 * on `@getbeak/types`; the host writes them through unchanged.
+	 * `values` carry either the legacy `ValueSections` array shape (text)
+	 * or a tagged `{ kind: 'text' | 'asset', ... }` envelope. Type-erased
+	 * here because `@beak/common` cannot depend on `@getbeak/types`; the
+	 * host writes them through unchanged.
 	 */
-	values: Record<string, unknown[]>;
+	values: Record<string, unknown[] | { kind: 'text' | 'asset'; [k: string]: unknown }>;
 }
 
 export interface MaterialiseFromMemoryRes {

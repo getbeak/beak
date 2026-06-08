@@ -20,11 +20,11 @@ const definition: EditableVariable<Base64DecodedRtv, EditorState> = {
 		characterSet: 'base64',
 	}),
 
-	getValue: async (ctx, payload, recursiveDepth) => {
+	resolve: async ({ variableContext: ctx, depth }, payload) => {
 		const isArray = Array.isArray(payload.input);
 		const input = isArray ? payload.input : [payload.input as unknown as string];
 
-		let encoded = await parseValueSections(ctx, input, recursiveDepth);
+		let encoded = await parseValueSections(ctx, input, depth);
 
 		if (payload.characterSet === 'websafe_base64') encoded = encoded.replaceAll('_', '/').replaceAll('-', '+');
 
@@ -35,9 +35,9 @@ const definition: EditableVariable<Base64DecodedRtv, EditorState> = {
 			// to its original Unicode string (emoji, non-Latin scripts).
 			const bytes = new Uint8Array(binary.length);
 			for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
-			return new TextDecoder().decode(bytes);
+			return { kind: 'text', text: new TextDecoder().decode(bytes) };
 		} catch (error) {
-			if (error instanceof Error && error.name === 'InvalidCharacterError') return '';
+			if (error instanceof Error && error.name === 'InvalidCharacterError') return { kind: 'text', text: '' };
 
 			throw error;
 		}

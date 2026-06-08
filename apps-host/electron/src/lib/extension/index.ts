@@ -17,6 +17,7 @@ import {
 	packageNameFromType,
 } from '@beak/runtime-shared/extensions';
 import type { ExtensionSender } from '@beak/runtime-shared/ports/extension-runtime';
+import type { ResolvedValue, Sink } from '@getbeak/extension-sdk';
 import type { ValueSections, Context as VariableContext } from '@getbeak/types/values';
 import { ipcMain } from 'electron';
 import fs from 'fs-extra';
@@ -38,8 +39,7 @@ interface IsolateRecord {
 
 interface VariableHandles {
 	createDefaultPayload: ivm.Reference;
-	getValue: ivm.Reference;
-	getAssetRef: ivm.Reference | null;
+	resolve: ivm.Reference;
 	editor: {
 		createUserInterface: ivm.Reference;
 		load: ivm.Reference | null;
@@ -62,14 +62,21 @@ const PARSE_VALUE_SECTIONS_TIMEOUT_MS = 30_000;
  * Wrapper script run inside each extension's isolate. Provides a minimal
  * CommonJS-flavoured environment, materialises a host-backed
  * `ExtensionContext`, binds it to every user callback so the SDK's
- * `(extCtx, varCtx, payload, depth)` signature works naturally, and
- * exposes copyable metadata + callable wrappers back to the host.
+ * `(extCtx, rctx, payload)` signature works naturally, and exposes
+ * copyable metadata + callable wrappers back to the host.
  *
  * `${USER_SOURCE}` is substituted with the extension's bundled main.
  *
  * The script ends by evaluating to `undefined`; the host reads
  * `__beak_metadata` (copyable) and `__beak_handles` (reference) off the
  * global after execution.
+ *
+ * Returned {@link ResolvedValue} kinds are copied across the isolate
+ * boundary. `text` and `asset` round-trip trivially; `bytes`
+ * (`Uint8Array`) copies but is heavy if large. `stream`
+ * (`ReadableStream`) is NOT copyable — extensions returning streams
+ * fail at the boundary, deferred until cross-isolate stream protocol
+ * lands.
  */
 function buildBootScript(userSource: string): string {
 	return `
@@ -97,7 +104,7 @@ function buildBootScript(userSource: string): string {
 	if (!raw || typeof raw !== 'object')
 		throw new Error('Extension did not export a definition. Did you forget to export default defineExtension(...)?');
 
-	if (raw.apiVersion !== 1)
+	if (raw.apiVersion !== 2)
 		throw new Error('Extension declared an unsupported apiVersion: ' + raw.apiVersion);
 
 	if (!Array.isArray(raw.variables) || raw.variables.length === 0)
@@ -115,8 +122,8 @@ function buildBootScript(userSource: string): string {
 			throw new Error('Variable ' + variable.id + ' is missing a description.');
 		if (typeof variable.createDefaultPayload !== 'function')
 			throw new Error('Variable ' + variable.id + ' is missing createDefaultPayload.');
-		if (typeof variable.getValue !== 'function')
-			throw new Error('Variable ' + variable.id + ' is missing getValue.');
+		if (typeof variable.resolve !== 'function')
+			throw new Error('Variable ' + variable.id + ' is missing resolve.');
 
 		const editor = variable.editor && typeof variable.editor === 'object'
 			? {
@@ -140,15 +147,11 @@ function buildBootScript(userSource: string): string {
 				? { requiresRequestId: Boolean(variable.attributes.requiresRequestId) }
 				: { requiresRequestId: false },
 			editable: Boolean(editor),
-			binary: typeof variable.getAssetRef === 'function',
 		});
 
 		handles[variable.id] = {
 			createDefaultPayload: (varCtx) => variable.createDefaultPayload(extCtx, varCtx),
-			getValue: (varCtx, payload, depth) => variable.getValue(extCtx, varCtx, payload, depth),
-			getAssetRef: typeof variable.getAssetRef === 'function'
-				? (varCtx, payload, depth) => variable.getAssetRef(extCtx, varCtx, payload, depth)
-				: null,
+			resolve: (rctx, payload) => variable.resolve(extCtx, rctx, payload),
 			editor: editor ? {
 				createUserInterface: (varCtx) => editor.createUserInterface(extCtx, varCtx),
 				load: editor.load ? (varCtx, payload) => editor.load(extCtx, varCtx, payload) : null,
@@ -216,7 +219,7 @@ export default class ExtensionManager {
 			}),
 		);
 
-		// Placeholder — re-bound per call by `variableGetValue` so the right
+		// Placeholder — re-bound per call by `variableResolve` so the right
 		// webContents receives the parse callback.
 		await global.set('__beak_parseValueSections', new ivm.Reference(async () => ''));
 
@@ -225,7 +228,25 @@ export default class ExtensionManager {
 		await global.set('__beak_ivm_Reference', ivm.Reference);
 
 		const script = await isolate.compileScript(buildBootScript(userSource));
-		await script.run(context, { timeout: ISOLATE_BOOT_TIMEOUT_MS });
+		try {
+			await script.run(context, { timeout: ISOLATE_BOOT_TIMEOUT_MS });
+		} catch (err) {
+			// Bootstrap-script errors are typed `Error` on the way out of
+			// isolated-vm; the message carries the diagnostic. Re-throw as a
+			// Squawk so the renderer can branch on the code (matches the web
+			// host's `beakError(...)` path and the ADR-0007 contract).
+			const message = err instanceof Error ? err.message : String(err);
+			if (message.includes('unsupported apiVersion')) {
+				throw new Squawk('extension_unsupported_api_version', {
+					packageName: manifest.packageName,
+					detail: message,
+				});
+			}
+			throw new Squawk('extension_bootstrap_failed', {
+				packageName: manifest.packageName,
+				detail: message,
+			});
+		}
 
 		const metadataRaw = (await global.get('__beak_metadata', { copy: true })) as ExtensionVariable[] | undefined;
 		const handlesRef = (await global.get('__beak_handles', { reference: true })) as ivm.Reference | undefined;
@@ -245,8 +266,7 @@ export default class ExtensionManager {
 
 			variableHandles[meta.type] = {
 				createDefaultPayload: await variableRef.get('createDefaultPayload', { reference: true }),
-				getValue: await variableRef.get('getValue', { reference: true }),
-				getAssetRef: meta.binary ? await variableRef.get('getAssetRef', { reference: true }) : null,
+				resolve: await variableRef.get('resolve', { reference: true }),
 				editor: meta.editable
 					? {
 							createUserInterface: await (await variableRef.get('editor', { reference: true })).get('createUserInterface', {
@@ -268,7 +288,7 @@ export default class ExtensionManager {
 			author: manifest.author,
 			homepage: manifest.homepage,
 			filePath: extensionPath,
-			apiVersion: 1,
+			apiVersion: 2,
 			variables,
 		};
 
@@ -304,35 +324,20 @@ export default class ExtensionManager {
 		return await callIntoIsolate(handles.createDefaultPayload, [varCtx]);
 	}
 
-	async variableGetValue(
+	async variableResolve(
 		projectId: string,
 		type: string,
 		varCtx: VariableContext,
 		sender: ExtensionSender,
 		payload: unknown,
 		recursiveDepth: number,
-	): Promise<string> {
+		sink: Sink,
+	): Promise<ResolvedValue> {
 		const { handles, record } = this.resolve(projectId, type);
 
 		await this.bindParseValueSections(record, sender, recursiveDepth);
 
-		return await callIntoIsolate(handles.getValue, [varCtx, payload, recursiveDepth]);
-	}
-
-	async variableGetAssetRef(
-		projectId: string,
-		type: string,
-		varCtx: VariableContext,
-		sender: ExtensionSender,
-		payload: unknown,
-		recursiveDepth: number,
-	): Promise<{ sha256: string; size: number; contentType?: string } | null> {
-		const { handles, record } = this.resolve(projectId, type);
-		if (!handles.getAssetRef) return null;
-
-		await this.bindParseValueSections(record, sender, recursiveDepth);
-
-		return await callIntoIsolate(handles.getAssetRef, [varCtx, payload, recursiveDepth]);
+		return await callIntoIsolate(handles.resolve, [{ variableContext: varCtx, sink, depth: recursiveDepth }, payload]);
 	}
 
 	async variableEditorCreateUI(projectId: string, type: string, varCtx: VariableContext) {

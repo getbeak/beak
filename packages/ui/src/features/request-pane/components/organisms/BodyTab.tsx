@@ -18,6 +18,7 @@ import React from 'react';
 import { useDispatch } from 'react-redux';
 import BodyTypeSelector from '../molecules/BodyTypeSelector';
 import FileUploadView from '../molecules/FileUploadView';
+import MultipartView from '../molecules/MultipartView';
 
 /**
  * Read the first literal Content-Type header off a request (ignoring variable
@@ -308,6 +309,7 @@ const BodyTab: React.FC<React.PropsWithChildren<BodyTabProps>> = props => {
 					</Box>
 				)}
 				{!isSchema && body.type === 'file' && <FileUploadView node={node} />}
+				{!isSchema && body.type === 'multipart' && <MultipartView node={node} />}
 			</Box>
 		</Flex>
 	);

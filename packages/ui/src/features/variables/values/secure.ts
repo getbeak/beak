@@ -24,17 +24,18 @@ const definition: EditableVariable<SecureRtv, EditorState> = {
 		};
 	},
 
-	getValue: async (ctx, item) => {
+	resolve: async ({ variableContext: ctx }, item) => {
 		const encryptionSetup = await ipcEncryptionService.checkStatus();
 
-		if (!encryptionSetup) return '[Encryption key missing]';
+		if (!encryptionSetup) return { kind: 'text', text: '[Encryption key missing]' };
 
 		// handle legacy
 		if (item.datum !== void 0) {
-			return await ipcEncryptionService.decryptString({
+			const text = await ipcEncryptionService.decryptString({
 				iv: item.iv,
 				payload: item.datum,
 			});
+			return { kind: 'text', text };
 		}
 
 		const decrypted = await ipcEncryptionService.decryptObject<ValueSections>({
@@ -42,7 +43,7 @@ const definition: EditableVariable<SecureRtv, EditorState> = {
 			payload: item.cipherText,
 		});
 
-		return await parseValueSections(ctx, decrypted);
+		return { kind: 'text', text: await parseValueSections(ctx, decrypted) };
 	},
 
 	attributes: {},

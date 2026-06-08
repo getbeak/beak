@@ -115,6 +115,19 @@ export const bodyValueSchema = z.discriminatedUnion('type', [
 		.strict(),
 	z
 		.object({
+			type: z.literal('multipart'),
+			/**
+			 * Boundary is optional in the values store — when absent, flight
+			 * prep generates a fresh ksuid-derived one per flight. Pinning
+			 * a boundary in the request file (e.g., for reproducible
+			 * fixtures in tests) keeps it stable across flights.
+			 */
+			boundary: z.string().optional(),
+			parts: z.array(z.unknown()).default([]),
+		})
+		.strict(),
+	z
+		.object({
 			type: z.literal('graphql'),
 			query: z.string(),
 			variables: propertyValueMapSchema,
@@ -143,6 +156,7 @@ export type BodyValue =
 			contentType?: string;
 			assetRef?: AssetRef;
 	  }
+	| { type: 'multipart'; boundary?: string; parts: unknown[] }
 	| { type: 'graphql'; query: string; variables: PropertyValueMap }
 	| { type: 'grpc'; service: string; method: string; requestJson: string };
 

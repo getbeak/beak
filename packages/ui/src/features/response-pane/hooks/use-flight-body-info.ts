@@ -1,7 +1,6 @@
 import binaryStore from '@beak/ui/lib/binary-store';
 import { requestAllowsBody } from '@beak/ui/utils/http';
 import type { Flight } from '@getbeak/types/flight';
-import type { RequestBodyFile } from '@getbeak/types/request';
 import { useMemo } from 'react';
 
 export type NotEligible = 'request_invalid_body' | 'request_no_body' | 'response_no_body';
@@ -14,15 +13,26 @@ export default function useFlightBodyInfo(flight: Flight, mode: 'request' | 'res
 		const { request, response } = flight;
 
 		if (mode === 'request') {
-			if (!['text', 'file'].includes(request.body.type)) return ['request_invalid_body', null];
+			const { body, verb } = request;
 
-			if (request.body.payload === '') return ['request_no_body', null];
+			if (!requestAllowsBody(verb)) return ['request_no_body', null];
 
-			if (!requestAllowsBody(request.verb)) return ['request_no_body', null];
+			if (body.type === 'text') {
+				if (body.payload === '') return ['request_no_body', null];
+				return ['eligible', encoder.encode(body.payload)];
+			}
 
-			if (request.body.type === 'text') return ['eligible', encoder.encode(request.body.payload)];
+			if (body.type === 'file') {
+				// File body bytes live behind a ValueProducerHandle now. Inline
+				// producers carry the bytes directly; asset / stream producers
+				// don't materialise them in renderer state, so the preview pane
+				// can't show them synchronously. Future polish: read via IPC.
+				const producer = body.payload.producer;
+				if (producer?.kind === 'inline') return ['eligible', producer.bytes];
+				return ['request_no_body', null];
+			}
 
-			return ['eligible', (request.body as RequestBodyFile).payload.__hacky__binaryFileData! as Uint8Array];
+			return ['request_invalid_body', null];
 		}
 
 		if (!response || !response.hasBody) return ['response_no_body', null];

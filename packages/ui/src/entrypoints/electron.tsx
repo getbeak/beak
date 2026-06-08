@@ -4,6 +4,10 @@ import React from 'react';
 import ErrorBoundary from '../components/molecules/ErrorBoundary';
 import Preferences from '../containers/Preferences';
 import ProjectMain from '../containers/ProjectMain';
+// Side-effect import: registers the streams IPC handlers that the
+// StreamRegistry sits behind. Must happen before any flight kicks off,
+// so the host's first `pull` always reaches a handler.
+import '../services/streams/ipc';
 
 if (import.meta.env.MODE !== 'development') {
 	init({

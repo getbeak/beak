@@ -16,15 +16,15 @@ const definition: EditableVariable<EditorState, EditorState> = {
 
 	createDefaultPayload: async () => ({ input: [''] }),
 
-	getValue: async (ctx, payload, recursiveDepth) => {
-		const parsed = await parseValueSections(ctx, payload.input, recursiveDepth);
+	resolve: async ({ variableContext: ctx, depth }, payload) => {
+		const parsed = await parseValueSections(ctx, payload.input, depth);
 
 		try {
-			return decodeURIComponent(parsed);
+			return { kind: 'text', text: decodeURIComponent(parsed) };
 		} catch {
 			// Malformed escape sequence — surface empty rather than crashing
 			// the whole value-section parse.
-			return '';
+			return { kind: 'text', text: '' };
 		}
 	},
 

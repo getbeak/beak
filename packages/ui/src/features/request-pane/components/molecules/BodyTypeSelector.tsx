@@ -31,6 +31,7 @@ const VARIANTS: Variant[] = [
 	{ key: 'json', label: 'JSON', icon: Braces, hasSchema: true },
 	{ key: 'json_raw', label: 'JSON (raw)', icon: FileJson, hasSchema: false },
 	{ key: 'url_encoded_form', label: 'Form', icon: Network, hasSchema: true },
+	{ key: 'multipart', label: 'Multipart', icon: Network, hasSchema: false },
 	{ key: 'graphql', label: 'GraphQL', icon: Hash, hasSchema: true },
 	{ key: 'file', label: 'File', icon: FileText, hasSchema: false },
 ];

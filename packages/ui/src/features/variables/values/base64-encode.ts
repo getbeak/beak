@@ -22,11 +22,11 @@ const definition: EditableVariable<Base64EncodedRtv, EditorState> = {
 		removePadding: false,
 	}),
 
-	getValue: async (ctx, payload, recursiveDepth) => {
+	resolve: async ({ variableContext: ctx, depth }, payload) => {
 		const isArray = Array.isArray(payload.input);
 		const input = isArray ? payload.input : [payload.input as unknown as string];
 
-		const parsed = await parseValueSections(ctx, input, recursiveDepth);
+		const parsed = await parseValueSections(ctx, input, depth);
 		// Encode UTF-8 → base64. btoa alone throws on any non-Latin-1
 		// codepoint (emoji, Cyrillic, CJK, etc.), so first convert to
 		// a binary string of UTF-8 bytes.
@@ -39,7 +39,7 @@ const definition: EditableVariable<Base64EncodedRtv, EditorState> = {
 
 		if (payload.removePadding) encoded = encoded.replaceAll('=', '');
 
-		return encoded;
+		return { kind: 'text', text: encoded };
 	},
 
 	attributes: {},

@@ -91,6 +91,12 @@ function overlayBody(legacy: RequestBody, values: RequestValues): RequestBody {
 			// File body's bytes don't live in the values slice (the legacy
 			// payload already references content-addressed assets).
 			return legacy;
+		case 'multipart':
+			// Multipart parts are round-tripped through the values store as
+			// an opaque list (see `splitBody` in split.ts). The editor's
+			// authoritative source is the legacy tree node, so the overlay
+			// is a no-op until per-part values land in the slice.
+			return legacy;
 		case 'grpc':
 			return bodyValues.type === 'grpc'
 				? {

@@ -167,6 +167,28 @@ function splitBody(body: RequestBody | undefined): { schema: BodySchema; values:
 				},
 			};
 		}
+		case 'multipart': {
+			// Multipart isn't yet decomposed into schema vs. values — the
+			// parts list carries both metadata (kind / name structure /
+			// contentType hints) and value-sections side by side. For now
+			// the schema is a thin shell carrying part kind + content
+			// types, and `values` keeps the full parts list verbatim.
+			return {
+				schema: {
+					type: 'multipart',
+					parts: body.payload.parts.map(p =>
+						p.kind === 'text'
+							? { kind: 'text', name: '', contentType: p.contentType }
+							: { kind: 'binary', name: '', contentType: undefined },
+					),
+				},
+				values: {
+					type: 'multipart',
+					...(body.payload.boundary ? { boundary: body.payload.boundary } : {}),
+					parts: body.payload.parts,
+				},
+			};
+		}
 		case 'graphql': {
 			const { properties, values } = splitJsonEntries(body.payload.variables);
 			return {
@@ -218,6 +240,21 @@ function mergeBody(schema: BodySchema, values: BodyValue): RequestBody | undefin
 					...(fileReferenceId ? { fileReferenceId } : {}),
 					...(contentType ? { contentType } : {}),
 					...(assetRef ? { assetRef } : {}),
+				},
+			};
+		}
+		case 'multipart': {
+			if (values.type !== 'multipart') return { type: 'multipart', payload: { parts: [] } };
+			return {
+				type: 'multipart',
+				payload: {
+					...(values.boundary ? { boundary: values.boundary } : {}),
+					// `parts` is round-tripped opaquely through the values
+					// store; the editor manipulates the structured shape
+					// directly on the request file's tree node rather than
+					// through the split/merge dance the JSON / form bodies
+					// use. Future polish: typed validation here.
+					parts: (values.parts ?? []) as never,
 				},
 			};
 		}

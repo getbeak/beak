@@ -143,6 +143,8 @@ export function createEmptyBody(type: RequestBodyType, deps: BodyTransitionDeps)
 		}
 		case 'file':
 			return { type, payload: { fileReferenceId: undefined, contentType: undefined } };
+		case 'multipart':
+			return { type, payload: { parts: [] } };
 		case 'graphql': {
 			const id = deps.generateEntryId();
 			return {

@@ -50,7 +50,7 @@ function validateAndBindExtension(raw, packageName) {
 	if (!raw || typeof raw !== 'object')
 		throw beakError('extension_invalid_export', 'Extension did not export a definition. Did you forget to export default defineExtension(...)?');
 
-	if (raw.apiVersion !== 1)
+	if (raw.apiVersion !== 2)
 		throw beakError('extension_unsupported_api_version', 'Extension declared an unsupported apiVersion: ' + raw.apiVersion);
 
 	if (!Array.isArray(raw.variables) || raw.variables.length === 0)
@@ -68,8 +68,8 @@ function validateAndBindExtension(raw, packageName) {
 			throw beakError('extension_variable_missing_description', 'Variable ' + variable.id + ' is missing a description.');
 		if (typeof variable.createDefaultPayload !== 'function')
 			throw beakError('extension_variable_missing_method', 'Variable ' + variable.id + ' is missing createDefaultPayload.');
-		if (typeof variable.getValue !== 'function')
-			throw beakError('extension_variable_missing_method', 'Variable ' + variable.id + ' is missing getValue.');
+		if (typeof variable.resolve !== 'function')
+			throw beakError('extension_variable_missing_method', 'Variable ' + variable.id + ' is missing resolve.');
 
 		const editor = variable.editor && typeof variable.editor === 'object'
 			? {
@@ -92,15 +92,11 @@ function validateAndBindExtension(raw, packageName) {
 				? { requiresRequestId: Boolean(variable.attributes.requiresRequestId) }
 				: { requiresRequestId: false },
 			editable: Boolean(editor),
-			binary: typeof variable.getAssetRef === 'function',
 		});
 
 		handles[variable.id] = {
 			createDefaultPayload: (varCtx) => variable.createDefaultPayload(extCtx, varCtx),
-			getValue: (varCtx, payload, depth) => variable.getValue(extCtx, varCtx, payload, depth),
-			getAssetRef: typeof variable.getAssetRef === 'function'
-				? (varCtx, payload, depth) => variable.getAssetRef(extCtx, varCtx, payload, depth)
-				: null,
+			resolve: (rctx, payload) => variable.resolve(extCtx, rctx, payload),
 			editor: editor
 				? {
 					createUserInterface: (varCtx) => editor.createUserInterface(extCtx, varCtx),

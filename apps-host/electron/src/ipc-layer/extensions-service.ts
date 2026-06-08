@@ -147,29 +147,17 @@ service.registerVariableCreateDefaultPayload(async (event, payload) => {
 	return await extensionManager.variableCreateDefaultPayload(projectId, payload.type, payload.context);
 });
 
-service.registerVariableGetValue(async (event, payload) => {
+service.registerVariableResolve(async (event, payload) => {
 	const invokeEvent = event as IpcMainInvokeEvent;
 	const { projectId } = await getProjectId(invokeEvent);
-	return await extensionManager.variableGetValue(
+	return await extensionManager.variableResolve(
 		projectId,
 		payload.type,
 		payload.context,
 		makeSender(invokeEvent),
 		payload.payload,
 		payload.recursiveDepth,
-	);
-});
-
-service.registerVariableGetAssetRef(async (event, payload) => {
-	const invokeEvent = event as IpcMainInvokeEvent;
-	const { projectId } = await getProjectId(invokeEvent);
-	return await extensionManager.variableGetAssetRef(
-		projectId,
-		payload.type,
-		payload.context,
-		makeSender(invokeEvent),
-		payload.payload,
-		payload.recursiveDepth,
+		payload.sink,
 	);
 });
 

@@ -21,23 +21,25 @@ const definition: EditableVariable<TimestampRtv, EditorState> = {
 		type: 'iso_8601',
 	}),
 
-	getValue: async (_ctx, item) => {
+	resolve: async (_ctx, item) => {
 		const now = new Date();
 		const value = item.delta ? add(now, { seconds: item.delta }) : now;
 
+		let text: string;
 		switch (item.type) {
 			case 'iso_8601':
-				return value.toISOString();
-
+				text = value.toISOString();
+				break;
 			case 'unix_s':
-				return Math.round(value.getTime() / 1000).toString(10);
-
+				text = Math.round(value.getTime() / 1000).toString(10);
+				break;
 			case 'unix_ms':
-				return value.getTime().toString();
-
+				text = value.getTime().toString();
+				break;
 			default:
-				return 'unknown_type';
+				text = 'unknown_type';
 		}
+		return { kind: 'text', text };
 	},
 
 	attributes: {},

@@ -19,21 +19,21 @@ const definition: EditableVariable<RequestHeaderRtv, EditorState> = {
 		headerName: [''],
 	}),
 
-	getValue: async (ctx, payload, recursiveDepth) => {
+	resolve: async ({ variableContext: ctx, depth }, payload) => {
 		const node = ctx.projectTree[ctx.currentRequestId!];
 
-		if (!node || node.type !== 'request' || node.mode !== 'valid') return '';
+		if (!node || node.type !== 'request' || node.mode !== 'valid') return { kind: 'text', text: '' };
 
-		const parsedHeaderName = await parseValueSections(ctx, payload.headerName, recursiveDepth);
+		const parsedHeaderName = await parseValueSections(ctx, payload.headerName, depth);
 		const headerKey = TypedObject.keys(node.info.headers).find(
 			k => node.info.headers[k].name.toLocaleLowerCase() === parsedHeaderName.toLocaleLowerCase(),
 		);
 
 		const header = node.info.headers[headerKey!];
 
-		if (!header || !header.value) return '';
+		if (!header || !header.value) return { kind: 'text', text: '' };
 
-		return await parseValueSections(ctx, header.value, recursiveDepth);
+		return { kind: 'text', text: await parseValueSections(ctx, header.value, depth) };
 	},
 
 	attributes: {

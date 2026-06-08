@@ -13,7 +13,9 @@
 		"compile": "tsgo --build tsconfig.json",
 		"typecheck": "tsgo",
 		"lint": "biome lint .",
-		"start": "tsgo --build tsconfig.json --watch"
+		"watch": "tsgo --build tsconfig.json --watch",
+		"test": "vitest",
+		"test:run": "vitest run --passWithNoTests"
 	},
 	"dependencies": {
 		"@beak/common": "*",
@@ -21,6 +23,7 @@
 		"node-fetch": "^3.3.2"
 	},
 	"devDependencies": {
-		"@types/node-fetch": "^2.6.13"
+		"@types/node-fetch": "^2.6.13",
+		"vitest": "^4.1.6"
 	}
 }

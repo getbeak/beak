@@ -15,6 +15,7 @@ import {
 	variableIdFromType,
 } from '@beak/runtime-shared/extensions';
 import type { ExtensionSender } from '@beak/runtime-shared/ports/extension-runtime';
+import type { ResolvedValue, Sink } from '@getbeak/extension-sdk';
 import type { ValueSections, Context as VariableContext } from '@getbeak/types/values';
 
 import getRuntime from '../../host';
@@ -68,7 +69,7 @@ export default class WebExtensionManager {
 				author: manifest.author,
 				homepage: manifest.homepage,
 				filePath: extensionPath,
-				apiVersion: 1,
+				apiVersion: 2,
 				variables: [],
 			},
 			pendingCalls: new Map(),
@@ -107,33 +108,21 @@ export default class WebExtensionManager {
 		return (await this.call(record, [variableId, 'createDefaultPayload'], [varCtx])) as Record<string, unknown>;
 	}
 
-	async variableGetValue(
+	async variableResolve(
 		projectId: string,
 		type: string,
 		varCtx: VariableContext,
 		_sender: ExtensionSender,
 		payload: unknown,
 		recursiveDepth: number,
-	): Promise<string> {
+		sink: Sink,
+	): Promise<ResolvedValue> {
 		const { record, variableId } = this.resolve(projectId, type);
-		return (await this.call(record, [variableId, 'getValue'], [varCtx, payload, recursiveDepth])) as string;
-	}
-
-	async variableGetAssetRef(
-		projectId: string,
-		type: string,
-		varCtx: VariableContext,
-		_sender: ExtensionSender,
-		payload: unknown,
-		recursiveDepth: number,
-	): Promise<{ sha256: string; size: number; contentType?: string } | null> {
-		const { record, variableId, meta } = this.resolve(projectId, type);
-		if (!meta.binary) return null;
-		return (await this.call(record, [variableId, 'getAssetRef'], [varCtx, payload, recursiveDepth])) as {
-			sha256: string;
-			size: number;
-			contentType?: string;
-		} | null;
+		return (await this.call(
+			record,
+			[variableId, 'resolve'],
+			[{ variableContext: varCtx, sink, depth: recursiveDepth }, payload],
+		)) as ResolvedValue;
 	}
 
 	async variableEditorCreateUI(projectId: string, type: string, varCtx: VariableContext) {

@@ -3,7 +3,7 @@ import type { VariableSetItemRtv } from '@beak/ui/features/variables/values';
 import type { Variable } from '@getbeak/extension-sdk';
 import type { VariableSets } from '@getbeak/types/variable-sets';
 
-import { getValueSections, parseValueSections } from '../parser';
+import { getValueObject, parseValueSections } from '../parser';
 
 const type = 'variable_set_item';
 
@@ -18,10 +18,26 @@ const definition: Variable<VariableSetItemRtv> = {
 		throw new Error('Not supported, this should not happen.');
 	},
 
-	getValue: async (ctx, item, recursiveDepth) => {
-		const parts = getValueSections(ctx, item.itemId) || [];
+	resolve: async (rctx, item) => {
+		const ctx = rctx.variableContext;
+		const raw = getValueObject(ctx, item.itemId);
 
-		return await parseValueSections(ctx, parts, recursiveDepth);
+		// Asset-typed binding: pass the ref through for binary / stream
+		// sinks. Text sinks see a `[file …]` placeholder rather than
+		// UTF-8-decoding random bytes into the editor preview (same shape
+		// as the `attached_file` built-in).
+		if (raw && !Array.isArray(raw) && raw.kind === 'asset') {
+			if (rctx.sink.kind === 'binary' || rctx.sink.kind === 'stream') {
+				return { kind: 'asset', ref: raw.ref };
+			}
+			const label = raw.filename ?? `sha:${raw.ref.sha256.slice(0, 10)}`;
+			return { kind: 'text', text: `[file ${label}]` };
+		}
+
+		// Text-typed (tagged or legacy bare array) bindings recurse through
+		// the resolver.
+		const parts = Array.isArray(raw) ? raw : raw && raw.kind === 'text' ? raw.value : [];
+		return { kind: 'text', text: await parseValueSections(ctx, parts, rctx.depth) };
 	},
 
 	attributes: {},
@@ -38,7 +54,7 @@ export function createFauxValue(item: VariableSetItemRtv, variableSets: Variable
 		getContextAwareName: void 0,
 		createDefaultPayload: async () => item,
 
-		getValue: () => {
+		resolve: () => {
 			throw new Error('Not supported, this should not happen.');
 		},
 

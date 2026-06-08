@@ -1,9 +1,9 @@
 import { TypedObject } from '@beak/common/helpers/typescript';
+import type { VariableSetValue } from '@getbeak/types/variable-sets';
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
 import * as actions from './actions';
 import { insertKeyAfter, reorderRecord, uniqueName } from './helpers';
-import { generateValueIdent, initialVariableSetsState, type VariableSetsState } from './types';
 import type {
 	DuplicateGroupPayload,
 	DuplicateItemPayload,
@@ -19,6 +19,7 @@ import type {
 	UpdateValuePayload,
 	VariableSetsOpenedPayload,
 } from './types';
+import { generateValueIdent, initialVariableSetsState, type VariableSetsState } from './types';
 
 // ---------------------------------------------------------------------------
 // Per-case reducer functions (exported for reuse in buildVariableSetsReducer)
@@ -28,12 +29,18 @@ export function reduceStartVariableSets(state: VariableSetsState) {
 	state.loaded = false;
 }
 
-export function reduceVariableSetsOpened(state: VariableSetsState, { payload }: PayloadAction<VariableSetsOpenedPayload>) {
+export function reduceVariableSetsOpened(
+	state: VariableSetsState,
+	{ payload }: PayloadAction<VariableSetsOpenedPayload>,
+) {
 	state.variableSets = payload.variableSets;
 	state.loaded = true;
 }
 
-export function reduceInsertNewVariableSet(state: VariableSetsState, { payload }: PayloadAction<InsertNewVariableSetPayload>) {
+export function reduceInsertNewVariableSet(
+	state: VariableSetsState,
+	{ payload }: PayloadAction<InsertNewVariableSetPayload>,
+) {
 	state.variableSets[payload.id] = payload.variableSet;
 }
 
@@ -121,7 +128,7 @@ export function reduceDuplicateItem(state: VariableSetsState, { payload }: Paylo
 		const sourceIdent = generateValueIdent(setId, payload.itemId);
 		const sourceValue = variableSet.values[sourceIdent];
 		if (sourceValue === undefined) continue;
-		variableSet.values[generateValueIdent(setId, newItemId)] = [...sourceValue];
+		variableSet.values[generateValueIdent(setId, newItemId)] = cloneVariableSetValue(sourceValue);
 	}
 }
 
@@ -139,7 +146,7 @@ export function reduceDuplicateGroup(state: VariableSetsState, { payload }: Payl
 		const sourceIdent = generateValueIdent(payload.setId, itemId);
 		const sourceValue = variableSet.values[sourceIdent];
 		if (sourceValue === undefined) continue;
-		variableSet.values[generateValueIdent(newSetId, itemId)] = [...sourceValue];
+		variableSet.values[generateValueIdent(newSetId, itemId)] = cloneVariableSetValue(sourceValue);
 	}
 }
 
@@ -153,6 +160,18 @@ export function reduceMoveGroup(state: VariableSetsState, { payload }: PayloadAc
 	const variableSet = state.variableSets[payload.id];
 	if (!variableSet || !(payload.setId in variableSet.sets)) return;
 	variableSet.sets = reorderRecord(variableSet.sets, payload.setId, payload.toIndex);
+}
+
+/**
+ * Deep-copy a {@link VariableSetValue} for the duplicate-item /
+ * duplicate-group reducers. The legacy bare-`ValueSections` array
+ * spreads cleanly; the tagged variants need a structured clone so the
+ * Immer drafts don't keep referencing the source.
+ */
+function cloneVariableSetValue(value: VariableSetValue): VariableSetValue {
+	if (Array.isArray(value)) return [...value];
+	if (value.kind === 'text') return { kind: 'text', value: [...value.value] };
+	return { kind: 'asset', ref: { ...value.ref }, ...(value.filename ? { filename: value.filename } : {}) };
 }
 
 // ---------------------------------------------------------------------------
@@ -205,8 +224,7 @@ export const selectVariableSetById = (id: string) => (state: WithVariableSets) =
 	state.global.variableSets.variableSets[id];
 
 /** All variable-set ids (insertion-ordered). */
-export const selectVariableSetIds = (state: WithVariableSets) =>
-	Object.keys(state.global.variableSets.variableSets);
+export const selectVariableSetIds = (state: WithVariableSets) => Object.keys(state.global.variableSets.variableSets);
 
 /** Total count of variable sets — used for the manage-grid badge. */
 export const selectVariableSetCount = (state: WithVariableSets) =>

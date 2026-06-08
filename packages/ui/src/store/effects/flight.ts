@@ -18,14 +18,10 @@ import { instance as windowSessionInstance } from '@beak/ui/contexts/window-sess
 import { convertKeyValueToString } from '@beak/ui/features/basic-table-editor/parsers';
 import { convertToRealJson } from '@beak/ui/features/json-editor/parsers';
 import { parseValueSections } from '@beak/ui/features/variables/parser';
+import { resolveValueSections } from '@beak/ui/features/variables/resolver';
 import binaryStore from '@beak/ui/lib/binary-store';
-import {
-	ipcAssetsService,
-	ipcFlightService,
-	ipcFsService,
-	ipcNotificationService,
-	ipcPreferencesService,
-} from '@beak/ui/lib/ipc';
+import { ipcFlightService, ipcFsService, ipcNotificationService, ipcPreferencesService } from '@beak/ui/lib/ipc';
+import { streamRegistry } from '@beak/ui/services/streams/registry';
 import { convertRequestToUrl } from '@beak/ui/services/url';
 import { makeVariableContext } from '@beak/ui/services/variables/context';
 import { requestAllowsBody } from '@beak/ui/utils/http';
@@ -77,17 +73,19 @@ function ensureFlightListenersInstalled() {
 function buildPrepareDeps(): PrepareRequestDeps {
 	return {
 		parseValueSections,
+		resolveValueSections,
 		convertRequestToUrl,
 		convertToRealJson,
 		convertKeyValueToString,
 		readReferencedFile: id => ipcFsService.readReferencedFile(id),
-		readAsset: async ref => {
-			const res = await ipcAssetsService.read({ ref });
-			if (!res.bytes) return null;
-			return { body: res.bytes };
-		},
 		requestAllowsBody,
 		requestBodyContentType,
+		generateBoundary: () => `beak-${ksuid.generate('multipart').toString()}`,
+		registerStream: (stream, size, contentType) => {
+			const streamId = ksuid.generate('stream').toString();
+			streamRegistry.register(streamId, { stream, size, contentType });
+			return streamId;
+		},
 		userAgent: `Beak/${windowSessionInstance.version ?? ''} (${windowSessionInstance.os})`,
 		generateId: kind => ksuid.generate(kind).toString(),
 	};
@@ -203,6 +201,7 @@ export function registerFlightEffects(start: AppStartListening) {
 					},
 					onComplete: completePayload => {
 						response = completePayload.overview;
+						binaryStore.complete(binaryStoreKey);
 						api.dispatch(
 							completeFlight({
 								flightId,
@@ -215,18 +214,26 @@ export function registerFlightEffects(start: AppStartListening) {
 					},
 					onFailed: failedPayload => {
 						error = failedPayload.error;
-						api.dispatch(flightFailure({
-							flightId,
-							requestId,
-							error: { message: failedPayload.error.message, code: (failedPayload.error as { code?: string }).code },
-							timestamp: Date.now(),
-						}));
+						binaryStore.complete(binaryStoreKey);
+						api.dispatch(
+							flightFailure({
+								flightId,
+								requestId,
+								error: { message: failedPayload.error.message, code: (failedPayload.error as { code?: string }).code },
+								timestamp: Date.now(),
+							}),
+						);
 						resolve();
 					},
 				});
 			});
 
-			ipcFlightService.startFlight({ flightId, requestId, request });
+			ipcFlightService.startFlight({
+				flightId,
+				requestId,
+				request,
+				projectFolder: api.getState().global.project.folderPath ?? undefined,
+			});
 
 			try {
 				await settled;

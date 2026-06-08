@@ -4,12 +4,13 @@ import { valueParts } from '@beak/state';
 import DebouncedInput from '@beak/ui/components/atoms/DebouncedInput';
 import VariableInput from '@beak/ui/features/variable-input/components/VariableInput';
 import type { ValueSections } from '@beak/ui/features/variables/values';
-import { generateValueIdent } from '@beak/ui/services/variable-sets/utils';
 import { glassChakraProps } from '@beak/ui/lib/glass';
 import { ipcDialogService } from '@beak/ui/lib/ipc';
+import { generateValueIdent } from '@beak/ui/services/variable-sets/utils';
 import { useAppSelector } from '@beak/ui/store/redux';
 import { duplicateItem, moveItem, removeItem, updateItemName, updateValue } from '@beak/ui/store/variable-sets/actions';
 import { Box, chakra, Flex, IconButton, Menu, Portal } from '@chakra-ui/react';
+import type { VariableSetValue } from '@getbeak/types/variable-sets';
 import { ChevronDown, ChevronUp, Copy, Equal, GitCompareArrows, MoreVertical, Share2, Trash2 } from 'lucide-react';
 import * as React from 'react';
 import { useDispatch } from 'react-redux';
@@ -64,7 +65,11 @@ const VariableCard: React.FC<VariableCardProps> = ({
 	function copyActiveToAllEnvs() {
 		if (!activeSetId) return;
 		const source = variableSet.values[generateValueIdent(activeSetId, itemId)];
-		const payload = source ? [...source] : [''];
+		// Asset values aren't broadcast across environments — that would
+		// silently overwrite each env's file. Skip the copy when the
+		// source is an asset; the user can attach explicitly per env.
+		if (!source || isAsset(source)) return;
+		const payload = toTextSections(source) ?? [''];
 		for (const setId of otherSetIds) {
 			dispatch(updateValue({ id: variableSetName, setId, itemId, updated: payload }));
 		}
@@ -125,14 +130,20 @@ const VariableCard: React.FC<VariableCardProps> = ({
 
 				<Box minW={0} display='flex' alignItems='center'>
 					<ValueShell isActive>
-						<VariableInput
-							parts={activeValue || ['']}
-							placeholder='empty'
-							onChange={parts => {
-								if (!activeSetId) return;
-								dispatch(updateValue({ id: variableSetName, setId: activeSetId, itemId, updated: parts }));
-							}}
-						/>
+						{isAsset(activeValue) ? (
+							<Box flex='1 1 auto' fontSize='xs' color='accent.pink' fontFamily='mono' px='2' py='1'>
+								{`📎 ${activeValue.filename ?? `sha:${activeValue.ref.sha256.slice(0, 10)}`}`}
+							</Box>
+						) : (
+							<VariableInput
+								parts={toTextSections(activeValue) ?? ['']}
+								placeholder='empty'
+								onChange={parts => {
+									if (!activeSetId) return;
+									dispatch(updateValue({ id: variableSetName, setId: activeSetId, itemId, updated: parts }));
+								}}
+							/>
+						)}
 					</ValueShell>
 				</Box>
 
@@ -149,7 +160,11 @@ const VariableCard: React.FC<VariableCardProps> = ({
 					>
 						<RowIcon
 							label='Duplicate variable'
-							onClick={() => dispatch(duplicateItem({ id: variableSetName, itemId, newItemId: ksuid.generate('item').toString(), now: Date.now() }))}
+							onClick={() =>
+								dispatch(
+									duplicateItem({ id: variableSetName, itemId, newItemId: ksuid.generate('item').toString(), now: Date.now() }),
+								)
+							}
 							hoverColor='accent.pink'
 						>
 							<Copy size={12} strokeWidth={2} />
@@ -210,7 +225,16 @@ const VariableCard: React.FC<VariableCardProps> = ({
 										</Menu.Item>
 										<Menu.Item
 											value='duplicate'
-											onClick={() => dispatch(duplicateItem({ id: variableSetName, itemId, newItemId: ksuid.generate('item').toString(), now: Date.now() }))}
+											onClick={() =>
+												dispatch(
+													duplicateItem({
+														id: variableSetName,
+														itemId,
+														newItemId: ksuid.generate('item').toString(),
+														now: Date.now(),
+													}),
+												)
+											}
 											fontSize='12px'
 											gap='2'
 											borderRadius='sm'
@@ -285,11 +309,17 @@ const VariableCard: React.FC<VariableCardProps> = ({
 									</Flex>
 									<Box minW={0}>
 										<ValueShell isActive={false}>
-											<VariableInput
-												parts={v || ['']}
-												placeholder='empty'
-												onChange={parts => dispatch(updateValue({ id: variableSetName, setId, itemId, updated: parts }))}
-											/>
+											{isAsset(v) ? (
+												<Box flex='1 1 auto' fontSize='xs' color='accent.pink' fontFamily='mono' px='2' py='1'>
+													{`📎 ${v.filename ?? `sha:${v.ref.sha256.slice(0, 10)}`}`}
+												</Box>
+											) : (
+												<VariableInput
+													parts={toTextSections(v) ?? ['']}
+													placeholder='empty'
+													onChange={parts => dispatch(updateValue({ id: variableSetName, setId, itemId, updated: parts }))}
+												/>
+											)}
 										</ValueShell>
 									</Box>
 									<Box />
@@ -419,16 +449,39 @@ const ValueShell: React.FC<ValueShellProps> = ({ isActive, children }) => (
 	</Box>
 );
 
-function valuesEqual(a: ValueSections | undefined, b: ValueSections | undefined): boolean {
+function valuesEqual(a: VariableSetValue | undefined, b: VariableSetValue | undefined): boolean {
 	if (a === b) return true;
-	if (valueParts.isEmpty(a) && valueParts.isEmpty(b)) return true;
-	if (!a || !b) return false;
-	return JSON.stringify(a) === JSON.stringify(b);
+	const aSections = toTextSections(a);
+	const bSections = toTextSections(b);
+	if (valueParts.isEmpty(aSections) && valueParts.isEmpty(bSections)) {
+		// Equal if both are absent OR both are non-text (assets compare by ref).
+		return !isAsset(a) && !isAsset(b);
+	}
+	if (isAsset(a) || isAsset(b)) {
+		if (!isAsset(a) || !isAsset(b)) return false;
+		return a.ref.sha256 === b.ref.sha256;
+	}
+	return JSON.stringify(aSections) === JSON.stringify(bSections);
 }
 
-function flatten(value: ValueSections | undefined): string {
+function flatten(value: VariableSetValue | undefined): string {
 	if (!value) return '';
-	return valueParts.flatten(value, p => `\${${p.type}}`);
+	if (isAsset(value)) return `[file ${value.filename ?? value.ref.sha256.slice(0, 10)}]`;
+	const sections = toTextSections(value);
+	if (!sections) return '';
+	return valueParts.flatten(sections, p => `\${${p.type}}`);
+}
+
+/** Normalise a {@link VariableSetValue} to its text-typed `ValueSections`, or `undefined` for asset values. */
+function toTextSections(value: VariableSetValue | undefined): ValueSections | undefined {
+	if (!value) return undefined;
+	if (Array.isArray(value)) return value;
+	if (value.kind === 'text') return value.value;
+	return undefined;
+}
+
+function isAsset(value: VariableSetValue | undefined): value is Extract<VariableSetValue, { kind: 'asset' }> {
+	return Boolean(value && !Array.isArray(value) && value.kind === 'asset');
 }
 
 export default VariableCard;

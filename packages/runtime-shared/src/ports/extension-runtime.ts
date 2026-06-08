@@ -1,3 +1,5 @@
+// biome-ignore lint/style/noRestrictedImports: type-only imports of the SDK's ResolvedValue + Sink used in cross-process payloads.
+import type { ResolvedValue, Sink } from '@getbeak/extension-sdk';
 import type { Context as VariableContext } from '@getbeak/types/values';
 
 /**
@@ -41,23 +43,15 @@ export default abstract class ExtensionRuntime {
 		varCtx: VariableContext,
 	): Promise<Record<string, unknown>>;
 
-	abstract variableGetValue(
+	abstract variableResolve(
 		projectId: string,
 		type: string,
 		varCtx: VariableContext,
 		sender: ExtensionSender,
 		payload: unknown,
 		recursiveDepth: number,
-	): Promise<string>;
-
-	abstract variableGetAssetRef(
-		projectId: string,
-		type: string,
-		varCtx: VariableContext,
-		sender: ExtensionSender,
-		payload: unknown,
-		recursiveDepth: number,
-	): Promise<{ sha256: string; size: number; contentType?: string } | null>;
+		sink: Sink,
+	): Promise<ResolvedValue>;
 
 	abstract variableEditorCreateUI(projectId: string, type: string, varCtx: VariableContext): Promise<unknown>;
 

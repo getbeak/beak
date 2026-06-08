@@ -1,15 +1,20 @@
-import { requestBodyContentType } from '@beak/common/helpers/request';
 import { isSseContentType, SseParser } from '@beak/common/helpers/sse-parser';
 import { TypedObject } from '@beak/common/helpers/typescript';
 import type {
 	FlightCompletePayload,
 	FlightFailedPayload,
 	FlightHeartbeatPayload,
+	FlightRequest,
 	FlightRequestPayload,
 	ResponseStreamKind,
 } from '@beak/common/types/requester';
-import type { RequestBodyFile, RequestOverview } from '@getbeak/types/request';
 import fetch, { type RequestInit, type Response } from 'node-fetch';
+
+import { assembleMultipart } from './multipart';
+import { openAssetStreamOrBuffer } from './producer';
+
+export type { StreamHost } from './stream-host';
+export { registerStreamHost, streamProducerToReadable } from './stream-host';
 
 // Verbs that semantically don't carry a body. Matches the renderer-side
 // `requestAllowsBody` so both layers agree on which verbs get a body
@@ -40,14 +45,14 @@ Stages:
 export async function startRequester(options: RequesterOptions) {
 	const { payload, callbacks } = options;
 	const { complete, failed, heartbeat } = callbacks;
-	const { flightId, request } = payload;
+	const { flightId, request, projectFolder } = payload;
 	const start = Date.now();
 
 	heartbeat({ flightId, stage: 'fetch_response', payload: { timestamp: start } });
 
 	let response: Response;
 	try {
-		response = await runRequest(request);
+		response = await runRequest(request, projectFolder);
 	} catch (error) {
 		failed({ flightId, error: error as Error });
 		return;
@@ -124,7 +129,7 @@ function classifyStream(contentType: string | null, transferEncoding: string | n
 	return 'standard';
 }
 
-async function runRequest(overview: RequestOverview) {
+async function runRequest(overview: FlightRequest, projectFolder?: string) {
 	const { body, headers, verb, options } = overview;
 	const url = overview.url[0];
 
@@ -154,31 +159,42 @@ async function runRequest(overview: RequestOverview) {
 	};
 
 	if (!bodyFreeVerbs.includes(verb.toLowerCase())) {
-		switch (body.type) {
-			case 'text':
-			case 'json_raw':
-				init.body = body.payload as string;
-				break;
-
-			case 'file':
-				init.body = Buffer.from((body as RequestBodyFile).payload.__hacky__binaryFileData!);
-				break;
-
-			default:
-				throw new Error(`Unknown body type ${body.type}`);
-		}
-
 		const hasContentTypeHeader = TypedObject.keys(headers)
 			.map(h => h.toLocaleLowerCase())
 			.find(h => h === 'content-type');
 
-		if (!hasContentTypeHeader && body.type !== 'text') {
-			const contentType = requestBodyContentType(body);
-			// `requestBodyContentType` returns undefined for body types Beak
-			// doesn't auto-assign a Content-Type to (json_raw, grpc); skip
-			// the header in that case so we don't write `undefined` into the
-			// HTTP request.
-			if (contentType) (init.headers as Record<string, string>)['Content-Type'] = contentType;
+		switch (body.type) {
+			case 'text':
+				init.body = body.payload;
+				break;
+
+			case 'file': {
+				const producer = body.payload.producer;
+				if (!producer) throw new Error('file body has no producer handle');
+				// Asset producers stream from disk straight into node-fetch —
+				// the bytes never sit in a Buffer in the requester. A 1 GB
+				// upload allocates ~64 KiB at a time, not 1 GB. Inline (and
+				// future stream) producers still go through the buffer
+				// helper because they have no on-disk source.
+				init.body = await openAssetStreamOrBuffer(producer, projectFolder);
+				if (!hasContentTypeHeader) {
+					const contentType = body.payload.contentType ?? 'application/octet-stream';
+					(init.headers as Record<string, string>)['Content-Type'] = contentType;
+				}
+				break;
+			}
+
+			case 'multipart': {
+				const { bytes, contentType } = await assembleMultipart(body, { projectFolder });
+				init.body = bytes;
+				// Multipart's Content-Type carries the boundary picked at
+				// assembly time. Any user-set Content-Type on the request
+				// would either ship without a boundary (and break the
+				// server) or pin a stale boundary the assembler didn't use.
+				// The override always wins.
+				(init.headers as Record<string, string>)['Content-Type'] = contentType;
+				break;
+			}
 		}
 	}
 
