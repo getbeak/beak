@@ -237,6 +237,66 @@ describe('variable-groups reducer (core)', () => {
 		expect(dup.variableSets.vg1.values[generateValueIdent(newSetId, 'item-2')]).toEqual(['https://api']);
 	});
 
+	it('duplicateItem deep-clones tagged-text and asset values without aliasing the source', () => {
+		const sha = 'aa'.repeat(32);
+		const base: VariableSet = {
+			sets: { 'set-a': 'dev' },
+			items: { 'item-1': 'thing' },
+			values: {
+				[generateValueIdent('set-a', 'item-1')]: { kind: 'asset', ref: { sha256: sha, size: 7 }, filename: 'k.pem' },
+			},
+		};
+		const seeded = reducer(empty, insertNewVariableSet({ id: 'vg1', variableSet: base }));
+		const dup = reducer(seeded, duplicateItem({ id: 'vg1', itemId: 'item-1', newItemId: 'item-copy-1', now: 1000 }));
+
+		const newItemId = Object.keys(dup.variableSets.vg1.items)[1];
+		const source = dup.variableSets.vg1.values[generateValueIdent('set-a', 'item-1')];
+		const copy = dup.variableSets.vg1.values[generateValueIdent('set-a', newItemId)];
+
+		expect(copy).toEqual({ kind: 'asset', ref: { sha256: sha, size: 7 }, filename: 'k.pem' });
+		// Different object identity at every reference level — Immer-safe.
+		expect(copy).not.toBe(source);
+		if (
+			source &&
+			!Array.isArray(source) &&
+			source.kind === 'asset' &&
+			copy &&
+			!Array.isArray(copy) &&
+			copy.kind === 'asset'
+		) {
+			expect(copy.ref).not.toBe(source.ref);
+		}
+	});
+
+	it('duplicateGroup deep-clones tagged-text values across the new set', () => {
+		const base: VariableSet = {
+			sets: { 'set-a': 'dev' },
+			items: { 'item-1': 'apiKey' },
+			values: {
+				[generateValueIdent('set-a', 'item-1')]: { kind: 'text', value: ['typed-secret'] },
+			},
+		};
+		const seeded = reducer(empty, insertNewVariableSet({ id: 'vg1', variableSet: base }));
+		const dup = reducer(seeded, duplicateGroup({ id: 'vg1', setId: 'set-a', newSetId: 'set-copy-a', now: 1000 }));
+
+		const newSetId = Object.keys(dup.variableSets.vg1.sets)[1];
+		const source = dup.variableSets.vg1.values[generateValueIdent('set-a', 'item-1')];
+		const copy = dup.variableSets.vg1.values[generateValueIdent(newSetId, 'item-1')];
+
+		expect(copy).toEqual({ kind: 'text', value: ['typed-secret'] });
+		expect(copy).not.toBe(source);
+		if (
+			source &&
+			!Array.isArray(source) &&
+			source.kind === 'text' &&
+			copy &&
+			!Array.isArray(copy) &&
+			copy.kind === 'text'
+		) {
+			expect(copy.value).not.toBe(source.value);
+		}
+	});
+
 	it('moveItem reorders items in the underlying record', () => {
 		const base: VariableSet = {
 			sets: { 'set-a': 'dev' },
