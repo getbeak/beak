@@ -1,6 +1,8 @@
-import type { AgentRoutingMode, AgentSliceState, AgentStatus } from './types';
+import type { LocalAgentCapability } from '@beak/common/types/runtime';
 
-export type LocalAgentCapability = 'unsupported' | 'optional' | 'required';
+import type { AgentRoutingMode, AgentStatus } from './types';
+
+export type { LocalAgentCapability };
 
 interface RoutingInput {
 	capability: LocalAgentCapability;
@@ -37,20 +39,3 @@ export function decideRouting(input: RoutingInput): 'via-agent' | 'via-default' 
 	}
 }
 
-interface AgentRoutingRootState {
-	global: { agent: AgentSliceState };
-}
-
-/**
- * Convenience selector for use sites that have access to the root
- * state but not the static capability. Pass the capability in
- * separately (it lives in the runtime, not the store).
- */
-export function selectRoutingDecision(capability: LocalAgentCapability) {
-	return (state: AgentRoutingRootState) =>
-		decideRouting({
-			capability,
-			status: state.global.agent.status,
-			routingMode: state.global.agent.routingMode,
-		});
-}

@@ -11,7 +11,7 @@ import ValueStore from './values';
 export type { AssetRef } from './assets';
 export { default as AssetStore } from './assets';
 export { default as AssetGc } from './assets/gc';
-export type { GitProvider, Providers, RuntimeCapabilities, RuntimeOptions } from './base';
+export type { GitProvider, LocalAgentCapability, Providers, RuntimeCapabilities, RuntimeOptions } from './base';
 export { RuntimeBase } from './base';
 export type {
 	ExtensionRegistryOptions,
