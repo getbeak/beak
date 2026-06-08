@@ -414,12 +414,11 @@ describe('createAgentRequester — cancellation', () => {
 		// One heartbeat before abort, one failed afterwards, nothing more.
 		expect(callbacks.heartbeat).toHaveBeenCalledTimes(1);
 		expect(callbacks.failed).toHaveBeenCalledTimes(1);
-		// The reader.read() rejection is funnelled through the outer try/catch in
-		// agent.ts; we don't assert on the exact message since DOMException's
-		// shape differs by environment (jsdom's DOMException isn't an Error
-		// subclass) — but the requester must have surfaced something.
-		const failedError = callbacks.failed.mock.calls[0][0].error;
-		expect(failedError).toBeTruthy();
-		expect(typeof failedError.message).toBe('string');
+		// Abort during SSE consumption surfaces the same `flight_cancelled`
+		// message as abort during fetch — the adapter's outer catch checks
+		// signal.aborted before rethrowing. Otherwise the renderer would see
+		// the underlying DOMException message ("aborted", or the env-specific
+		// equivalent) and have to translate it twice.
+		expect(callbacks.failed.mock.calls[0][0].error.message).toBe('flight_cancelled');
 	});
 });
