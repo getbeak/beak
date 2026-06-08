@@ -7,6 +7,7 @@ import gitHttp from 'isomorphic-git/http/node';
 import { Logger } from 'tslog';
 
 import { setupLoggerForFsLogging } from '../lib/logger';
+import ElectronDialog from '../adapters/dialog';
 import ElectronProjectOpener from '../adapters/project-opener';
 import AesProvider from './providers/aes';
 import CredentialsProvider from './providers/credentials';
@@ -65,6 +66,7 @@ const runtime = new Runtime({
 		aes: new AesProvider(),
 		logger: beakHostLogger,
 		credentials: new CredentialsProvider(),
+		dialog: new ElectronDialog(),
 		preferences: new ElectronPreferencesStore(storageProvider),
 		projectOpener: new ElectronProjectOpener(),
 		storage: storageProvider,

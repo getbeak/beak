@@ -14,6 +14,16 @@ export { default as AssetStore } from './assets';
 export { default as AssetGc } from './assets/gc';
 export type { GitProvider, Providers, RuntimeCapabilities, RuntimeOptions } from './base';
 export { RuntimeBase } from './base';
+export type {
+	ConfirmOptions,
+	MessageBoxType,
+	OpenDialogProperty,
+	ShowMessageBoxOptions,
+	ShowMessageBoxResult,
+	ShowOpenDialogOptions,
+	ShowOpenDialogResult,
+} from './ports/dialog';
+export type { default as Dialog } from './ports/dialog';
 export { default as ProjectOpener } from './ports/project-opener';
 export type {
 	ExtensionRegistryOptions,

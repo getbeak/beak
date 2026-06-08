@@ -1,24 +1,11 @@
-import { IpcDialogServiceMain, type ShowMessageBoxReq } from '@beak/common/ipc/dialog';
+import { IpcDialogServiceMain } from '@beak/common/ipc/dialog';
 
+import WebDialog from '../adapters/dialog';
 import { webIpcMain } from './ipc';
 
 const service = new IpcDialogServiceMain(webIpcMain);
+const dialog = new WebDialog();
 
-service.registerShowMessageBox(async (_event, payload: ShowMessageBoxReq) => {
-	alert(`Dialog raised:
-title: ${payload.title} (icon: ${payload.icon})
-message: ${payload.message}
-detail: ${payload.detail}
-button opts: ${payload.buttons}
-`);
+service.registerShowMessageBox(async (_event, payload) => dialog.showMessageBox(payload));
 
-	return { checkboxChecked: false, response: 0 };
-});
-
-service.registerShowOpenDialog(async (_event, _payload) => {
-	// Web has no native folder picker yet — the clone flow on web supplies a
-	// virtual lightning-fs path directly, no chooser needed. When we wire
-	// the File System Access API as the third storage mode this stub will
-	// return the picked handle's resolved path.
-	return { canceled: true, filePaths: [] };
-});
+service.registerShowOpenDialog(async (_event, payload) => dialog.showOpenDialog(payload));
