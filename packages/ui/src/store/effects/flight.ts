@@ -201,6 +201,7 @@ export function registerFlightEffects(start: AppStartListening) {
 					},
 					onComplete: completePayload => {
 						response = completePayload.overview;
+						binaryStore.complete(binaryStoreKey);
 						api.dispatch(
 							completeFlight({
 								flightId,
@@ -213,6 +214,7 @@ export function registerFlightEffects(start: AppStartListening) {
 					},
 					onFailed: failedPayload => {
 						error = failedPayload.error;
+						binaryStore.complete(binaryStoreKey);
 						api.dispatch(
 							flightFailure({
 								flightId,

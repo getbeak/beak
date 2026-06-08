@@ -15,6 +15,7 @@ import requestHeaderRtv from './values/request-header';
 import requestMethodRtv from './values/request-method';
 import requestNameRtv from './values/request-name';
 import responseBodyJsonRtv from './values/response-body-json';
+import responseBodyStreamRtv from './values/response-body-stream';
 import responseBodyTextRtv from './values/response-body-text';
 import responseHeaderRtv from './values/response-header';
 import responseStatusCodeRtv from './values/response-status-code';
@@ -46,6 +47,7 @@ export class VariableManager {
 		[requestMethodRtv.type]: requestMethodRtv,
 		[requestNameRtv.type]: requestNameRtv,
 		[responseBodyJsonRtv.type]: responseBodyJsonRtv,
+		[responseBodyStreamRtv.type]: responseBodyStreamRtv,
 		[responseBodyTextRtv.type]: responseBodyTextRtv,
 		[responseHeaderRtv.type]: responseHeaderRtv,
 		[responseStatusCodeRtv.type]: responseStatusCodeRtv,
