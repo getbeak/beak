@@ -104,9 +104,6 @@ importers:
       fs-extra:
         specifier: ^11.3.5
         version: 11.3.5
-      isolated-vm:
-        specifier: ^6.1.2
-        version: 6.1.2
       isomorphic-git:
         specifier: ^1.37.6
         version: 1.37.6
@@ -4993,10 +4990,6 @@ packages:
     resolution: {integrity: sha512-FFUtZMpoZ8RqHS3XeXEmHWLA4thH+ZxCv2lOiPIn1Xc7CxrqhWzNSDzD+/chS/zbYezmiwWLdQC09JdQKmthOw==}
     engines: {node: '>=20'}
 
-  isolated-vm@6.1.2:
-    resolution: {integrity: sha512-GGfsHqtlZiiurZaxB/3kY7LLAXR3sgzDul0fom4cSyBjx6ZbjpTrFWiH3z/nUfLJGJ8PIq9LQmQFiAxu24+I7A==}
-    engines: {node: '>=22.0.0'}
-
   isomorphic-git@1.37.6:
     resolution: {integrity: sha512-qr1NFCPsVTZ6YGqTXw0CzamnsHyH9QQ1OTEfeXIweSljRUMzuHFCJdUn0wc6OcjtTDns6knxjPb7N6LmJeftOA==}
     engines: {node: '>=14.17'}
@@ -5682,10 +5675,6 @@ packages:
   node-fetch@3.3.2:
     resolution: {integrity: sha512-dRB78srN/l6gqWulah9SrxeYnxeddIG30+GOqK/9OlLVyLg3HPnr6SqOWTWOXKRwC2eGYCkZ59NNuSgvSrpgOA==}
     engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
-
-  node-gyp-build@4.8.4:
-    resolution: {integrity: sha512-LA4ZjwlnUblHVgq0oBF3Jl/6h/Nvs5fzBLwdEF4nuxnFdsfajde4WfxtJr3CaiH+F6ewcIB/q4jQ4UzPyid+CQ==}
-    hasBin: true
 
   node-gyp@12.3.0:
     resolution: {integrity: sha512-QNcUWM+HgJplcPzBvFBZ9VXacyGZ4+VTOb80PwWR+TlVzoHbRKULNEzpRsnaoxG3Wzr7Qh7BYxGDU3CbKib2Yg==}
@@ -12680,10 +12669,6 @@ snapshots:
 
   isexe@4.0.0: {}
 
-  isolated-vm@6.1.2:
-    dependencies:
-      node-gyp-build: 4.8.4
-
   isomorphic-git@1.37.6:
     dependencies:
       async-lock: 1.4.1
@@ -13520,8 +13505,6 @@ snapshots:
       data-uri-to-buffer: 4.0.1
       fetch-blob: 3.2.0
       formdata-polyfill: 4.0.10
-
-  node-gyp-build@4.8.4: {}
 
   node-gyp@12.3.0:
     dependencies:

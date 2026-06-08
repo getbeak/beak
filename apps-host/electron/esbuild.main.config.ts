@@ -109,9 +109,7 @@ export default [
 		},
 		sourcemap: true,
 		assetNames: '[name]',
-		// isolated-vm is a native module — leave it out of the bundle so the
-		// .node binding resolves correctly at runtime from node_modules.
-		external: ['node:fs', 'isolated-vm'],
+		external: ['node:fs'],
 	},
 ] as BuildOptions[];
 

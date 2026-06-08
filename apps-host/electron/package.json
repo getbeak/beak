@@ -16,7 +16,6 @@
 		"prepackage:release": "rm -rf ./dist-electron",
 		"package": "electron-builder -mw --publish never",
 		"package:release": "electron-builder -mw --publish always",
-		"postinstall": "electron-rebuild -f -w isolated-vm",
 		"start": "cross-env NODE_ENV=development electron-esbuild dev",
 		"typecheck": "tsgo",
 		"lint": "biome lint .",
@@ -50,7 +49,6 @@
 		"keytar": "^7.9.0",
 		"lodash.clonedeep": "^4.5.0",
 		"semver": "^7.8.0",
-		"isolated-vm": "^6.1.2",
 		"source-map-support": "^0.5.21",
 		"tslog": "^4.10.2",
 		"uuid": "^14.0.0"

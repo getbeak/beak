@@ -130,7 +130,7 @@ service.registerSearch(async (_event, payload) => {
 
 service.registerVariableCreateDefaultPayload(async (_event, payload) => {
 	const { projectId } = projectContext();
-	return await manager.variableCreateDefaultPayload(projectId, payload.type, payload.context);
+	return await manager.variableCreateDefaultPayload(projectId, payload.type, payload.context, null);
 });
 
 service.registerVariableGetValue(async (_event, payload) => {
@@ -139,6 +139,7 @@ service.registerVariableGetValue(async (_event, payload) => {
 		projectId,
 		payload.type,
 		payload.context,
+		null,
 		payload.payload,
 		payload.recursiveDepth,
 	);
@@ -150,6 +151,7 @@ service.registerVariableGetAssetRef(async (_event, payload) => {
 		projectId,
 		payload.type,
 		payload.context,
+		null,
 		payload.payload,
 		payload.recursiveDepth,
 	);
@@ -157,12 +159,12 @@ service.registerVariableGetAssetRef(async (_event, payload) => {
 
 service.registerVariableEditorCreateUI(async (_event, payload) => {
 	const { projectId } = projectContext();
-	return await manager.variableEditorCreateUI(projectId, payload.type, payload.context);
+	return await manager.variableEditorCreateUI(projectId, payload.type, payload.context, null);
 });
 
 service.registerVariableEditorLoad(async (_event, payload) => {
 	const { projectId } = projectContext();
-	return await manager.variableEditorLoad(projectId, payload.type, payload.context, payload.payload);
+	return await manager.variableEditorLoad(projectId, payload.type, payload.context, null, payload.payload);
 });
 
 service.registerVariableEditorSave(async (_event, payload) => {
@@ -171,6 +173,7 @@ service.registerVariableEditorSave(async (_event, payload) => {
 		projectId,
 		payload.type,
 		payload.context,
+		null,
 		payload.existingPayload,
 		payload.state,
 	);

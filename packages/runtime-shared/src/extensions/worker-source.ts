@@ -1,22 +1,47 @@
 /**
- * Source for the per-extension Web Worker. Built into a Blob URL at
- * `WebExtensionManager.load`-time so each extension gets a fresh worker.
+ * Source for the per-extension worker — runs identically in browser Web
+ * Workers and `node:worker_threads`. Built into a Blob URL (web) or eval'd
+ * inline (Node) at load-time, so each extension gets a fresh worker.
  *
- * Protocol (worker side):
+ * Cross-runtime contract:
+ *  - The script assumes the Web Worker API surface: `self`, top-level
+ *    `postMessage`, `self.addEventListener('message', ...)`.
+ *  - Node's `worker_threads` doesn't expose those; the Electron adapter
+ *    prepends the `WORKER_RUNTIME_NODE_SHIM` below before passing the
+ *    source to `new Worker(..., { eval: true })`.
+ *
+ * Wire protocol:
  *  - in:  `{ kind: 'init', userSource: string, packageName: string }`
- *  - out: `{ kind: 'init-ok', metadata: ExtensionVariable[] }` |
- *         `{ kind: 'init-error', error: { code, info } }`
+ *  - out: `{ kind: 'init-ok', metadata: ExtensionVariable[] }`
+ *         `{ kind: 'init-error', error: { code, message, info } }`
  *  - in:  `{ kind: 'call', callId, path: string[], args: unknown[] }`
- *  - out: `{ kind: 'result', callId, value }` | `{ kind: 'error', callId, error }`
+ *  - out: `{ kind: 'result', callId, value }`
+ *         `{ kind: 'error', callId, error }`
  *  - out: `{ kind: 'parse-value-sections', requestId, ctx, parts }`
- *  - in:  `{ kind: 'parse-value-sections-result', requestId, parsed }` |
+ *  - in:  `{ kind: 'parse-value-sections-result', requestId, parsed }`
  *         `{ kind: 'parse-value-sections-error', requestId, error }`
+ *  - out: `{ kind: 'log', packageName, level, message }`
  *
- * The worker has no DOM, no access to Beak's React state, and no
- * reference to the main thread's globals. It can still issue `fetch()`
- * and read IndexedDB on Beak's origin — that's the documented v1
- * trust model.
+ * Trust model: extensions are user-installed under a project's
+ * `extensions/` folder. Worker isolation provides V8-level memory
+ * separation but is not a defence against actively malicious code.
+ * See ADR-0003 for the full rationale.
  */
+
+/**
+ * Aliases the Web Worker globals onto Node's `parentPort` so the shared
+ * worker source can run unchanged under `node:worker_threads`. Prepended
+ * by the Electron WorkerProvider before `new Worker(source, { eval: true })`.
+ */
+export const WORKER_RUNTIME_NODE_SHIM = `
+const { parentPort } = require('node:worker_threads');
+globalThis.self = globalThis;
+globalThis.postMessage = parentPort.postMessage.bind(parentPort);
+globalThis.addEventListener = (type, fn) => {
+	if (type === 'message') parentPort.on('message', data => fn({ data }));
+};
+`;
+
 export const WORKER_SOURCE = `
 'use strict';
 

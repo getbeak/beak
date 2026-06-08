@@ -38,7 +38,11 @@ service.registerList(async event => {
 
 	for (const entry of installed) {
 		try {
-			const loaded = await extensionManager.load(event, projectId, entry.absolutePath);
+			const loaded = await extensionManager.load(projectId, entry.absolutePath, {
+				validateScriptPath: async scriptPath => {
+					await ensureWithinProject(getProjectFolder(event as IpcMainInvokeEvent), scriptPath);
+				},
+			});
 			results.push(loaded);
 		} catch (error) {
 			results.push({
@@ -66,7 +70,11 @@ service.registerInstall(async (event, payload) => {
 	await ensureWithinProject(getProjectFolder(invokeEvent), destination);
 	await getBeakHost().projectExtensions.addDependency(extensionsDir, resolved.packageName, resolved.version);
 
-	const loaded = await extensionManager.load(invokeEvent, projectId, destination);
+	const loaded = await extensionManager.load(projectId, destination, {
+		validateScriptPath: async scriptPath => {
+			await ensureWithinProject(getProjectFolder(invokeEvent), scriptPath);
+		},
+	});
 	return loaded;
 });
 
@@ -97,7 +105,11 @@ service.registerUpdate(async (event, payload) => {
 	await ensureWithinProject(getProjectFolder(invokeEvent), destination);
 	await getBeakHost().projectExtensions.addDependency(extensionsDir, resolved.packageName, resolved.version);
 
-	const loaded = await extensionManager.load(invokeEvent, projectId, destination);
+	const loaded = await extensionManager.load(projectId, destination, {
+		validateScriptPath: async scriptPath => {
+			await ensureWithinProject(getProjectFolder(invokeEvent), scriptPath);
+		},
+	});
 	return loaded;
 });
 
@@ -138,8 +150,9 @@ service.registerSearch(async (_event, payload) => {
 /* -------------------------------------------------------------------------- */
 
 service.registerVariableCreateDefaultPayload(async (event, payload) => {
-	const { projectId } = await getProjectId(event as IpcMainInvokeEvent);
-	return await extensionManager.variableCreateDefaultPayload(projectId, payload.type, payload.context);
+	const invokeEvent = event as IpcMainInvokeEvent;
+	const { projectId } = await getProjectId(invokeEvent);
+	return await extensionManager.variableCreateDefaultPayload(projectId, payload.type, payload.context, invokeEvent.sender);
 });
 
 service.registerVariableGetValue(async (event, payload) => {
@@ -169,21 +182,31 @@ service.registerVariableGetAssetRef(async (event, payload) => {
 });
 
 service.registerVariableEditorCreateUI(async (event, payload) => {
-	const { projectId } = await getProjectId(event as IpcMainInvokeEvent);
-	return await extensionManager.variableEditorCreateUI(projectId, payload.type, payload.context);
+	const invokeEvent = event as IpcMainInvokeEvent;
+	const { projectId } = await getProjectId(invokeEvent);
+	return await extensionManager.variableEditorCreateUI(projectId, payload.type, payload.context, invokeEvent.sender);
 });
 
 service.registerVariableEditorLoad(async (event, payload) => {
-	const { projectId } = await getProjectId(event as IpcMainInvokeEvent);
-	return await extensionManager.variableEditorLoad(projectId, payload.type, payload.context, payload.payload);
+	const invokeEvent = event as IpcMainInvokeEvent;
+	const { projectId } = await getProjectId(invokeEvent);
+	return await extensionManager.variableEditorLoad(
+		projectId,
+		payload.type,
+		payload.context,
+		invokeEvent.sender,
+		payload.payload,
+	);
 });
 
 service.registerVariableEditorSave(async (event, payload) => {
-	const { projectId } = await getProjectId(event as IpcMainInvokeEvent);
+	const invokeEvent = event as IpcMainInvokeEvent;
+	const { projectId } = await getProjectId(invokeEvent);
 	return await extensionManager.variableEditorSave(
 		projectId,
 		payload.type,
 		payload.context,
+		invokeEvent.sender,
 		payload.existingPayload,
 		payload.state,
 	);
