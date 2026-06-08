@@ -25,6 +25,19 @@ func main() {
 }
 
 func run() error {
+	lock, running, err := config.AcquireSingletonLock()
+	if err != nil {
+		return fmt.Errorf("acquire singleton lock: %w", err)
+	}
+	if lock == nil {
+		// Another agent already holds the lock. The user's intent
+		// ("have an agent running") is satisfied — exit 0 so any
+		// launchd/systemd supervisor doesn't loop us.
+		describeRunningInstance(running)
+		return nil
+	}
+	defer lock.Release()
+
 	tokens, err := pairing.OpenTokenStore()
 	if err != nil {
 		return fmt.Errorf("open token store: %w", err)
@@ -39,6 +52,9 @@ func run() error {
 	port, err := srv.ListenAndServe(ctx)
 	if err != nil {
 		return fmt.Errorf("listen: %w", err)
+	}
+	if err := lock.SetMetadata(port, wire.AgentSemver); err != nil {
+		fmt.Fprintf(os.Stderr, "beak-agent: warn: could not update lock metadata: %v\n", err)
 	}
 	if err := config.WriteRuntime(port, wire.AgentSemver); err != nil {
 		fmt.Fprintf(os.Stderr, "beak-agent: warn: could not write runtime.json: %v\n", err)
@@ -87,4 +103,19 @@ func shutdown(srv *server.Server) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 	_ = srv.Shutdown(ctx)
+}
+
+func describeRunningInstance(running *config.RunningInstance) {
+	if running == nil || running.PID == 0 {
+		fmt.Fprintln(os.Stderr, "beak-agent: already running; check the menu-bar tray. Exiting.")
+		return
+	}
+	url := ""
+	if running.Port != 0 {
+		url = fmt.Sprintf(" on http://127.0.0.1:%d", running.Port)
+	}
+	fmt.Fprintf(os.Stderr,
+		"beak-agent: already running (PID %d, version %s, started %s%s); check the menu-bar tray. Exiting.\n",
+		running.PID, running.Version, running.StartedAt.Format(time.RFC3339), url,
+	)
 }
