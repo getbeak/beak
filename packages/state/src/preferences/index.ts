@@ -9,7 +9,14 @@ import type {
 	SidebarPreferences,
 	SidebarVariant,
 } from '@beak/common/types/beak-hub';
-import { createAction, createReducer } from '@reduxjs/toolkit';
+import type { PayloadAction } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
+
+// NOTE: RequestPreference, EditorPreferences (beak-hub variant), SidebarPreferences,
+// ProjectPanePreferences, and PanePreferences are imported from @beak/common/types/beak-hub.
+// They cross the IPC boundary via @beak/state actions and project-preferences files.
+// TODO ADR 0003: lift to @beak/common/ipc/preferences.ts when the IPC layer is
+// formalised for per-request / per-pane preferences persistence.
 
 export interface PreferencesState {
 	requests: Record<string, RequestPreference>;
@@ -70,69 +77,36 @@ export interface PaneSplitRatioPayload {
 	ratio: number;
 }
 
-// Saga triggers (side-effect intents). The reducer doesn't react to these directly.
-export const loadRequestPreferences = createAction<{ id: string }>('preferences/loadRequestPreferences');
-export const loadEditorPreferences = createAction('preferences/loadEditorPreferences');
-export const loadSidebarPreferences = createAction('preferences/loadSidebarPreferences');
-export const loadProjectPanePreferences = createAction('preferences/loadProjectPanePreferences');
-export const loadPanePreferences = createAction('preferences/loadPanePreferences');
+const preferencesSlice = createSlice({
+	name: 'preferences',
+	initialState: initialPreferencesState,
+	reducers: {
+		// Saga triggers (side-effect intents). The reducer doesn't mutate state —
+		// these actions exist solely so effects can listen to them via actionCreator.
+		loadRequestPreferences: {
+			reducer() {},
+			prepare: (payload: { id: string }) => ({ payload }),
+		},
+		loadEditorPreferences() {},
+		loadSidebarPreferences() {},
+		loadProjectPanePreferences() {},
+		loadPanePreferences() {},
 
-// State updates.
-export const requestPreferencesLoaded = createAction<RequestPreferencesLoadedPayload>(
-	'preferences/requestPreferencesLoaded',
-);
-export const requestPreferenceSetReqMainTab =
-	createAction<RequestPreferencesSetReqMainTabPayload>('preferences/setReqMainTab');
-export const requestPreferenceSetReqEditorMode =
-	createAction<RequestPreferencesSetReqEditorModePayload>('preferences/setReqEditorMode');
-export const requestPreferenceSetReqJsonExpand =
-	createAction<RequestPreferencesSetReqJsonExpandPayload>('preferences/setReqJsonExpand');
-export const requestPreferenceSetResMainTab =
-	createAction<RequestPreferencesSetResMainTabPayload>('preferences/setResMainTab');
-export const requestPreferenceSetResSubTab =
-	createAction<RequestPreferencesSetResSubTabPayload>('preferences/setResSubTab');
-export const requestPreferenceSetResPrettyLanguage = createAction<RequestPreferencesSetResPrettyLanguagePayload>(
-	'preferences/setResPrettyLanguage',
-);
-
-export const editorPreferencesLoaded = createAction<EditorPreferences>('preferences/editorLoaded');
-export const editorPreferencesSetSelectedVariableGroup = createAction<EditorPreferencesSetSelectedVariableSetPayload>(
-	'preferences/editorSetSelectedVariableGroup',
-);
-
-export const sidebarPreferencesLoaded = createAction<SidebarPreferences>('preferences/sidebarLoaded');
-export const sidebarPreferenceSetSelected = createAction<SidebarVariant>('preferences/sidebarSetSelected');
-export const sidebarPreferenceSetCollapse = createAction<SidebarCollapsePayload>('preferences/sidebarSetCollapse');
-
-export const projectPanePreferencesLoaded = createAction<ProjectPanePreferences>('preferences/projectPaneLoaded');
-export const projectPanePreferenceSetCollapse = createAction<ProjectPaneCollapsePayload>(
-	'preferences/projectPaneSetCollapse',
-);
-export const projectPanePreferenceSetShowHidden = createAction<boolean>('preferences/projectPaneSetShowHidden');
-export const projectPanePreferenceSetExplorerFilter = createAction<'all' | 'requests' | 'workflows'>(
-	'preferences/projectPaneSetExplorerFilter',
-);
-
-export const panePreferencesLoaded = createAction<PanePreferences>('preferences/panesLoaded');
-export const panePreferenceSetPixelSize = createAction<PanePixelSizePayload>('preferences/panesSetPixelSize');
-export const panePreferenceSetSplitRatio = createAction<PaneSplitRatioPayload>('preferences/panesSetSplitRatio');
-
-const preferencesReducer = createReducer(initialPreferencesState, builder => {
-	builder
-		.addCase(requestPreferencesLoaded, (state, { payload }) => {
+		// State updates — request preferences.
+		requestPreferencesLoaded(state, { payload }: PayloadAction<RequestPreferencesLoadedPayload>) {
 			state.requests[payload.id] = payload.preferences;
-		})
-		.addCase(requestPreferenceSetReqMainTab, (state, { payload }) => {
+		},
+		requestPreferenceSetReqMainTab(state, { payload }: PayloadAction<RequestPreferencesSetReqMainTabPayload>) {
 			const prefs = state.requests[payload.id];
 			if (!prefs) return;
 			prefs.request.mainTab = payload.tab;
-		})
-		.addCase(requestPreferenceSetReqEditorMode, (state, { payload }) => {
+		},
+		requestPreferenceSetReqEditorMode(state, { payload }: PayloadAction<RequestPreferencesSetReqEditorModePayload>) {
 			const prefs = state.requests[payload.id];
 			if (!prefs) return;
 			prefs.request.editorMode = payload.mode;
-		})
-		.addCase(requestPreferenceSetReqJsonExpand, (state, { payload }) => {
+		},
+		requestPreferenceSetReqJsonExpand(state, { payload }: PayloadAction<RequestPreferencesSetReqJsonExpandPayload>) {
 			const prefs = state.requests[payload.id];
 			if (!prefs) return;
 			prefs.request.jsonEditor = {
@@ -141,62 +115,150 @@ const preferencesReducer = createReducer(initialPreferencesState, builder => {
 					[payload.jsonId]: payload.expanded,
 				},
 			};
-		})
-		.addCase(requestPreferenceSetResMainTab, (state, { payload }) => {
+		},
+		requestPreferenceSetResMainTab(state, { payload }: PayloadAction<RequestPreferencesSetResMainTabPayload>) {
 			const prefs = state.requests[payload.id];
 			if (!prefs) return;
 			prefs.response.mainTab = payload.tab;
-		})
-		.addCase(requestPreferenceSetResSubTab, (state, { payload }) => {
+		},
+		requestPreferenceSetResSubTab(state, { payload }: PayloadAction<RequestPreferencesSetResSubTabPayload>) {
 			const prefs = state.requests[payload.id];
 			if (!prefs) return;
 			prefs.response.subTab[payload.tab] = payload.subTab;
-		})
-		.addCase(requestPreferenceSetResPrettyLanguage, (state, { payload }) => {
+		},
+		requestPreferenceSetResPrettyLanguage(
+			state,
+			{ payload }: PayloadAction<RequestPreferencesSetResPrettyLanguagePayload>,
+		) {
 			const prefs = state.requests[payload.id];
 			if (!prefs) return;
 			prefs.response.pretty[payload.mode].language = payload.language;
-		})
+		},
 
-		.addCase(editorPreferencesLoaded, (state, { payload }) => {
+		// State updates — editor preferences.
+		editorPreferencesLoaded(state, { payload }: PayloadAction<EditorPreferences>) {
 			state.editor = payload;
-		})
-		.addCase(editorPreferencesSetSelectedVariableGroup, (state, { payload }) => {
+		},
+		editorPreferencesSetSelectedVariableGroup(
+			state,
+			{ payload }: PayloadAction<EditorPreferencesSetSelectedVariableSetPayload>,
+		) {
 			state.editor.selectedVariableSets[payload.variableSet] = payload.setId;
-		})
+		},
 
-		.addCase(sidebarPreferencesLoaded, (state, { payload }) => {
+		// State updates — sidebar preferences.
+		sidebarPreferencesLoaded(state, { payload }: PayloadAction<SidebarPreferences>) {
 			state.sidebar = payload;
-		})
-		.addCase(sidebarPreferenceSetSelected, (state, { payload }) => {
+		},
+		sidebarPreferenceSetSelected(state, { payload }: PayloadAction<SidebarVariant>) {
 			state.sidebar.selected = payload;
-		})
-		.addCase(sidebarPreferenceSetCollapse, (state, { payload }) => {
+		},
+		sidebarPreferenceSetCollapse(state, { payload }: PayloadAction<SidebarCollapsePayload>) {
 			state.sidebar.collapsed[payload.key] = payload.collapsed;
-		})
+		},
 
-		.addCase(projectPanePreferencesLoaded, (state, { payload }) => {
+		// State updates — project pane preferences.
+		projectPanePreferencesLoaded(state, { payload }: PayloadAction<ProjectPanePreferences>) {
 			state.projectPane = payload;
-		})
-		.addCase(projectPanePreferenceSetCollapse, (state, { payload }) => {
+		},
+		projectPanePreferenceSetCollapse(state, { payload }: PayloadAction<ProjectPaneCollapsePayload>) {
 			state.projectPane.collapsed[payload.key] = payload.collapsed;
-		})
-		.addCase(projectPanePreferenceSetShowHidden, (state, { payload }) => {
+		},
+		projectPanePreferenceSetShowHidden(state, { payload }: PayloadAction<boolean>) {
 			state.projectPane.showHiddenFolders = payload;
-		})
-		.addCase(projectPanePreferenceSetExplorerFilter, (state, { payload }) => {
+		},
+		projectPanePreferenceSetExplorerFilter(state, { payload }: PayloadAction<'all' | 'requests' | 'workflows'>) {
 			state.projectPane.explorerFilter = payload;
-		})
+		},
 
-		.addCase(panePreferencesLoaded, (state, { payload }) => {
+		// State updates — pane (pixel sizes / split ratios).
+		panePreferencesLoaded(state, { payload }: PayloadAction<PanePreferences>) {
 			state.panes = payload;
-		})
-		.addCase(panePreferenceSetPixelSize, (state, { payload }) => {
+		},
+		panePreferenceSetPixelSize(state, { payload }: PayloadAction<PanePixelSizePayload>) {
 			state.panes.pixelSizes[payload.key] = payload.size;
-		})
-		.addCase(panePreferenceSetSplitRatio, (state, { payload }) => {
+		},
+		panePreferenceSetSplitRatio(state, { payload }: PayloadAction<PaneSplitRatioPayload>) {
 			state.panes.splitRatios[payload.key] = payload.ratio;
-		});
+		},
+	},
 });
 
-export default preferencesReducer;
+// Named action creators — names preserved 1:1 from the legacy createReducer form.
+export const {
+	loadRequestPreferences,
+	loadEditorPreferences,
+	loadSidebarPreferences,
+	loadProjectPanePreferences,
+	loadPanePreferences,
+	requestPreferencesLoaded,
+	requestPreferenceSetReqMainTab,
+	requestPreferenceSetReqEditorMode,
+	requestPreferenceSetReqJsonExpand,
+	requestPreferenceSetResMainTab,
+	requestPreferenceSetResSubTab,
+	requestPreferenceSetResPrettyLanguage,
+	editorPreferencesLoaded,
+	editorPreferencesSetSelectedVariableGroup,
+	sidebarPreferencesLoaded,
+	sidebarPreferenceSetSelected,
+	sidebarPreferenceSetCollapse,
+	projectPanePreferencesLoaded,
+	projectPanePreferenceSetCollapse,
+	projectPanePreferenceSetShowHidden,
+	projectPanePreferenceSetExplorerFilter,
+	panePreferencesLoaded,
+	panePreferenceSetPixelSize,
+	panePreferenceSetSplitRatio,
+} = preferencesSlice.actions;
+
+// Named selectors — ADR 0005 §3.
+// Each selector receives the PreferencesState slice (not the full global store),
+// so they compose cleanly in both useAppSelector inline wrappers and effects.
+
+/** The full request-preferences map. */
+export const selectPreferencesRequests = (state: PreferencesState) => state.requests;
+
+/** Preferences for a single request by id. */
+export const selectPreferencesRequest = (state: PreferencesState, id: string) => state.requests[id];
+
+/** The full editor-preferences object. */
+export const selectPreferencesEditor = (state: PreferencesState) => state.editor;
+
+/** Variable-set selections keyed by variable-set id. */
+export const selectPreferencesEditorSelectedVariableSets = (state: PreferencesState) =>
+	state.editor.selectedVariableSets;
+
+/** The full sidebar-preferences object. */
+export const selectPreferencesSidebar = (state: PreferencesState) => state.sidebar;
+
+/** Currently selected sidebar panel. */
+export const selectPreferencesSidebarSelected = (state: PreferencesState) => state.sidebar.selected;
+
+/** Sidebar collapse map keyed by collapse key. */
+export const selectPreferencesSidebarCollapsed = (state: PreferencesState) => state.sidebar.collapsed;
+
+/** The full project-pane preferences object. */
+export const selectPreferencesProjectPane = (state: PreferencesState) => state.projectPane;
+
+/** Project-pane folder collapse map keyed by collapse key. */
+export const selectPreferencesProjectPaneCollapsed = (state: PreferencesState) => state.projectPane.collapsed;
+
+/** Whether hidden folders are shown in the project pane. */
+export const selectPreferencesProjectPaneShowHiddenFolders = (state: PreferencesState) =>
+	state.projectPane.showHiddenFolders;
+
+/** Active explorer filter ('all' | 'requests' | 'workflows'). */
+export const selectPreferencesProjectPaneExplorerFilter = (state: PreferencesState) =>
+	state.projectPane.explorerFilter ?? 'all';
+
+/** The full panes-preferences object. */
+export const selectPreferencesPanes = (state: PreferencesState) => state.panes;
+
+/** Pixel-size map for fixed-size panes, keyed by pane key. */
+export const selectPreferencesPanesPixelSizes = (state: PreferencesState) => state.panes.pixelSizes;
+
+/** Split-ratio map for resizable panes, keyed by pane key. */
+export const selectPreferencesPanesSplitRatios = (state: PreferencesState) => state.panes.splitRatios;
+
+export default preferencesSlice.reducer;
