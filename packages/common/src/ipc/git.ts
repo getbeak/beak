@@ -380,6 +380,63 @@ export interface ResolveRefRes {
 	oid: string | null;
 }
 
+/**
+ * Redux action payload types — the renderer-side "request" shapes that the
+ * store dispatches when the UI wants to kick off a git operation. They are a
+ * projection of the full IPC `*Req` shapes: the `dir` field is intentionally
+ * absent (the host fills it in from the focused window's project root) and a
+ * few renderer-only fields (`checkout` on create-branch) are added.
+ *
+ * These types cross the IPC contract conceptually — they drive what the
+ * renderer asks the host to do — so they live here in `@beak/common` rather
+ * than in `@beak/state` (ADR 0003 §2).
+ */
+
+export interface GitInitRequest {
+	defaultBranch?: string;
+}
+
+export interface GitCommitRequest {
+	message: string;
+	author: GitAuthor;
+	committer?: GitAuthor;
+}
+
+export interface GitPushRequest {
+	remote?: string;
+	ref?: string;
+	force?: boolean;
+	auth?: GitAuth;
+}
+
+export interface GitPullRequest {
+	remote?: string;
+	ref?: string;
+	fastForwardOnly?: boolean;
+	auth?: GitAuth;
+	author: GitAuthor;
+}
+
+export interface GitFetchRequest {
+	remote?: string;
+	ref?: string;
+	auth?: GitAuth;
+}
+
+export interface GitCheckoutRequest {
+	ref: string;
+	force?: boolean;
+}
+
+export interface GitCreateBranchRequest {
+	/** New branch name. */
+	ref: string;
+	/** Optional starting point — defaults to HEAD when omitted. */
+	object?: string;
+	/** Switch to the new branch after creating it. */
+	checkout?: boolean;
+}
+
 export class IpcGitServiceRenderer extends IpcServiceRenderer<'git'> {
 	constructor(ipc: PartialIpcRenderer) {
 		super('git', ipc);

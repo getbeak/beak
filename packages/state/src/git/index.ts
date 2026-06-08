@@ -1,4 +1,23 @@
+import type {
+	GitCheckoutRequest,
+	GitCommitRequest,
+	GitCreateBranchRequest,
+	GitFetchRequest,
+	GitInitRequest,
+	GitPullRequest,
+	GitPushRequest,
+} from '@beak/common/ipc/git';
 import { createAction, createReducer } from '@reduxjs/toolkit';
+
+export type {
+	GitCheckoutRequest,
+	GitCommitRequest,
+	GitCreateBranchRequest,
+	GitFetchRequest,
+	GitInitRequest,
+	GitPullRequest,
+	GitPushRequest,
+};
 
 export interface Branch {
 	name: string;
@@ -71,51 +90,6 @@ export const initialGitState: GitState = {
 export interface GitOpenedPayload {
 	branches: Branch[];
 	selectedBranch: string | undefined;
-}
-
-export interface GitInitRequest {
-	defaultBranch?: string;
-}
-
-export interface GitCommitRequest {
-	message: string;
-	author: { name: string; email: string };
-	committer?: { name: string; email: string };
-}
-
-export interface GitPushRequest {
-	remote?: string;
-	ref?: string;
-	force?: boolean;
-	auth?: { username?: string; password?: string };
-}
-
-export interface GitPullRequest {
-	remote?: string;
-	ref?: string;
-	fastForwardOnly?: boolean;
-	auth?: { username?: string; password?: string };
-	author: { name: string; email: string };
-}
-
-export interface GitFetchRequest {
-	remote?: string;
-	ref?: string;
-	auth?: { username?: string; password?: string };
-}
-
-export interface GitCheckoutRequest {
-	ref: string;
-	force?: boolean;
-}
-
-export interface GitCreateBranchRequest {
-	/** New branch name. */
-	ref: string;
-	/** Optional starting point — defaults to HEAD when omitted. */
-	object?: string;
-	/** Switch to the new branch after creating it. */
-	checkout?: boolean;
 }
 
 export const startGit = createAction('git/startGit');
