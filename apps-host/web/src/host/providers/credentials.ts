@@ -1,5 +1,5 @@
 import type { ProjectEncryption } from '@beak/common/types/beak-project';
-import CredentialsProviderBase from '@beak/runtime-shared/providers/credentials';
+import CredentialsProviderBase from '@beak/runtime-shared/ports/credentials';
 
 export default class CredentialsProvider extends CredentialsProviderBase {
 	async readFromStore(key: string): Promise<string | null> {

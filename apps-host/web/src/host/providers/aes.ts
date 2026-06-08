@@ -1,4 +1,4 @@
-import AesProviderBase from '@beak/runtime-shared/providers/encryption-aes';
+import AesProviderBase from '@beak/runtime-shared/ports/encryption-aes';
 import base64 from 'base64-js';
 
 const textEncoder = new TextEncoder();
