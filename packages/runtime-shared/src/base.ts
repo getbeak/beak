@@ -3,10 +3,10 @@ import type path from 'node:path';
 import type { HttpClient } from 'isomorphic-git';
 import type { Logger } from 'tslog';
 
-import type CredentialsProvider from './providers/credentials';
-import type AesProvider from './providers/encryption-aes';
-import type StorageProvider from './providers/storage';
-import type { GenericStore } from './providers/storage';
+import type CredentialsProvider from './ports/credentials';
+import type AesProvider from './ports/encryption-aes';
+import type StorageProvider from './ports/storage';
+import type { GenericStore } from './ports/storage';
 
 /**
  * Capabilities matrix advertised by a concrete runtime. Renderer features

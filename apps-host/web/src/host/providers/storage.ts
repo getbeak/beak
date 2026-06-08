@@ -1,6 +1,6 @@
 // TODO(afr): This is temporary, move to a better library in future
 
-import StorageProviderBase, { type GenericStore } from '@beak/runtime-shared/providers/storage';
+import StorageProviderBase, { type GenericStore } from '@beak/runtime-shared/ports/storage';
 
 const keyPrefix = 'app.getbeak.beak.preferences';
 
