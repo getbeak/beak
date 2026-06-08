@@ -295,9 +295,17 @@ export class WorkerExtensionManager<TCallerCtx = unknown> {
 		});
 
 		const unsubError = record.worker.onError(error => {
-			// Surface to logger; in-flight calls still time out individually.
+			// Node `worker_threads` exits after an uncaught exception; Web Workers
+			// keep running but in an undefined state. Either way, pending calls
+			// can't reliably resolve, so reject them immediately rather than let
+			// the user wait out the 30s call timeout. The record stays in the
+			// registry — the next variable invocation will surface either the
+			// real error from a fresh postMessage attempt or a clean timeout.
 			const messageText = error instanceof Error ? error.message : String(error);
 			this.callbacks.log(record.loaded.packageName, 'error', `worker error: ${messageText}`);
+			const reason = new Squawk('extension_worker_error', { packageName: record.loaded.packageName, message: messageText });
+			for (const pending of record.pendingCalls.values()) pending.reject(reason);
+			record.pendingCalls.clear();
 		});
 
 		return () => {
