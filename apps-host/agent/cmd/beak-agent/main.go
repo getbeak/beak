@@ -4,6 +4,7 @@ package main
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	"os"
 	"os/signal"
@@ -17,7 +18,10 @@ import (
 	"github.com/getbeak/beak/apps-host/agent/internal/wire"
 )
 
+var noTray = flag.Bool("no-tray", false, "Skip the menu-bar tray. The HTTP server still runs — used by the integration test harness so it doesn't need a display.")
+
 func main() {
+	flag.Parse()
 	if err := run(); err != nil {
 		fmt.Fprintf(os.Stderr, "beak-agent: %v\n", err)
 		os.Exit(1)
@@ -85,6 +89,19 @@ func run() error {
 		shutdown(srv)
 		cancel()
 	}()
+
+	if *noTray {
+		// Drain the approvals channel so handlePair doesn't stall after
+		// the first eight pending pairings (listener channel has cap 8).
+		// In production the tray goroutine consumes them.
+		go func() {
+			for range approvals.Listen() {
+				// discard — caller drives approvals via /pair/decision directly.
+			}
+		}()
+		<-ctx.Done()
+		return nil
+	}
 
 	tray.Run(tray.Options{
 		BaseURL:   fmt.Sprintf("http://127.0.0.1:%d", port),
