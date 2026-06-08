@@ -2,7 +2,7 @@ import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import Runtime from '@beak/runtime-shared';
-import { app } from 'electron';
+import { app, clipboard } from 'electron';
 import gitHttp from 'isomorphic-git/http/node';
 import { Logger } from 'tslog';
 
@@ -16,6 +16,7 @@ const beakHostLogger = new Logger({ name: 'electron-host' });
 setupLoggerForFsLogging(beakHostLogger, 'main');
 
 const runtime = new Runtime({
+	writeToClipboard: async text => clipboard.writeText(text),
 	capabilities: {
 		nativeContextMenus: true,
 		extensions: true,

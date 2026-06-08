@@ -67,6 +67,13 @@ export interface Providers {
 export interface RuntimeOptions {
 	providers: Providers;
 	capabilities: RuntimeCapabilities;
+	/**
+	 * Host-provided clipboard writer. Electron passes `(t) => clipboard.writeText(t)`;
+	 * web passes `(t) => navigator.clipboard.writeText(t)`. Abstracted here so
+	 * `ProjectSecrets` (shared concrete in `runtime-shared`) doesn't depend on either
+	 * host's platform API directly.
+	 */
+	writeToClipboard: (text: string) => Promise<void>;
 }
 
 /**
