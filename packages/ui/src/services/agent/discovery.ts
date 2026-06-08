@@ -63,6 +63,7 @@ export async function verifyAgentIdentity(baseUrl: string, token: string): Promi
 			signal: AbortSignal.timeout(PROBE_TIMEOUT_MS),
 			mode: 'cors',
 			credentials: 'omit',
+			// biome-ignore lint/style/useNamingConvention: HTTP header name (RFC 7235).
 			headers: { Authorization: `Bearer ${token}` },
 		});
 		if (!response.ok) return false;

@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 export const pairCodeChallengeMethodSchema = z.literal('S256');
 
+// biome-ignore-start lint/style/useNamingConvention: OAuth/PKCE wire fields are spec-mandated snake_case (RFC 7636).
 export const pairInitQuerySchema = z.object({
 	origin: z.string().min(1),
 	state: z.string().min(1),
@@ -24,6 +25,7 @@ export const pairErrorResponseSchema = z.object({
 	error: z.enum(['invalid_request', 'access_denied', 'invalid_grant']),
 	error_description: z.string().optional(),
 });
+// biome-ignore-end lint/style/useNamingConvention: above.
 
 export type PairInitQueryWire = z.infer<typeof pairInitQuerySchema>;
 export type PairTokenRequestWire = z.infer<typeof pairTokenRequestSchema>;

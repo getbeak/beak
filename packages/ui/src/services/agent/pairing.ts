@@ -164,6 +164,7 @@ export async function completePairing(query: PairingReturnQuery): Promise<Comple
 		mode: 'cors',
 		credentials: 'omit',
 		headers: { 'Content-Type': 'application/json' },
+		// biome-ignore lint/style/useNamingConvention: PKCE wire field (RFC 7636).
 		body: JSON.stringify({ code: query.code, code_verifier: pending.codeVerifier }),
 	});
 	if (!response.ok) {
