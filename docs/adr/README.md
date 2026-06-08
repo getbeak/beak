@@ -41,10 +41,21 @@ Do **not** write an ADR for:
 
 ## Index
 
-| #    | Status   | Title                                                                  |
-| ---- | -------- | ---------------------------------------------------------------------- |
-| 0000 | Accepted | [Adopt MADR-style ADRs and Gherkin feature files](0000-adr-process.md) |
-| 0001 | Accepted | [Local agent for the web host](0001-local-agent-for-web-host.md)       |
+| #    | Status   | Title                                                                                              |
+| ---- | -------- | -------------------------------------------------------------------------------------------------- |
+| 0000 | Accepted | [Adopt MADR-style ADRs and Gherkin feature files](0000-adr-process.md)                             |
+| 0001 | Accepted | [Local agent for the web host](0001-local-agent-for-web-host.md)                                   |
+| 0002 | Proposed | [Domain ownership and the rendering data path](0002-domain-ownership-and-rendering-data-path.md)   |
+| 0003 | Proposed | [Single home for schemas and IPC types](0003-schemas-and-ipc-types-home.md)                        |
+| 0004 | Proposed | [Service layer in `@beak/ui`](0004-service-layer-in-ui.md)                                         |
+| 0005 | Proposed | [State slice convention in `@beak/state`](0005-state-slice-convention.md)                          |
+| 0006 | Proposed | [Host ports and adapters](0006-host-ports-and-adapters.md)                                         |
+
+ADRs 0002–0006 are a single set — the architectural prescription
+that came out of the domain audit in [`../audit/`](../audit/). They
+cross-reference each other and are intended to land as one PR. See
+[`../audit/README.md`](../audit/README.md) for the discovery work
+that motivated them.
 
 ## Granularity guideline
 
