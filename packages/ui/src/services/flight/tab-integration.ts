@@ -42,7 +42,7 @@ export function useNavigateFlightHistoryForSelectedTab() {
 export function useSelectedTabFlightStatus():
 	| { status: 'pending' }
 	| { status: 'active'; flightId: string }
-	| { status: 'failed'; error: Error }
+	| { status: 'failed'; error: { message: string; code?: string } }
 	| { status: 'complete'; httpStatus: number; flightId: string } {
 	const selectedTabId = useSelectedTabId();
 	const activeFlight = useAppSelector(s => (selectedTabId ? selectActiveFlight(selectedTabId)(s) : null));

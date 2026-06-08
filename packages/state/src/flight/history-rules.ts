@@ -307,7 +307,7 @@ export function persistedToRuntimeHistory(persisted: PersistedFlightHistory): Fl
 						},
 					}
 				: {}),
-			...(entry.errorMessage ? { error: new Error(entry.errorMessage) } : {}),
+			...(entry.errorMessage ? { error: { message: entry.errorMessage } } : {}),
 			timing: {
 				beakStart: entry.timing.startedAt,
 				...(entry.timing.completedAt !== undefined ? { beakEnd: entry.timing.completedAt } : {}),

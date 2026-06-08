@@ -96,7 +96,7 @@ const GraphQlQueryEditor: React.FC<GraphQlQueryEditorProps> = props => {
 	const [loading, setLoading] = useState(() => true);
 	const [schemaFlightId, setSchemaFlightId] = useState<string>('impossible-yolo');
 	const [hasSchema, setHasSchema] = useState(() => Boolean(schemaCache[node.id]));
-	const [schemaFetchError, setSchemaFetchError] = useState<Error | null>(null);
+	const [schemaFetchError, setSchemaFetchError] = useState<{ message: string } | null>(null);
 	const variableSets = useAppSelector(s => s.global.variableSets.variableSets);
 	const selectedSets = useAppSelector(s => s.global.preferences.editor.selectedVariableSets);
 	const schemaFlight = useAppSelector(s => s.global.flight.flightHistories[node.id]?.history[schemaFlightId]);
