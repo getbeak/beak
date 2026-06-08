@@ -1,5 +1,7 @@
-import type { RequestOverview } from '@getbeak/types/request';
+import type { RequestBodyFile, RequestBodyText, RequestOptions, ToggleKeyValue } from '@getbeak/types/request';
 import type { ResponseOverview } from '@getbeak/types/response';
+
+import type { FlightBodyMultipart } from './multipart';
 
 export const FlightMessages = {
 	heartbeat: 'flight_heartbeat',
@@ -27,10 +29,49 @@ export interface SseEvent {
 
 export type HeartbeatStage = 'fetch_response' | 'head_received' | 'reading_body' | 'sse_event';
 
+/**
+ * A {@link ToggleKeyValue}-shaped header / query entry, but with its value
+ * already resolved to a single string. Flight prep walks every editable
+ * row, runs the RTV resolver over its `value`, and emits this shape so the
+ * requester never has to call into the renderer for substitution.
+ */
+export interface FlightRequestKeyValue extends ToggleKeyValue {
+	name: string;
+	value: [string];
+	enabled: boolean;
+}
+
+/**
+ * Wire shape of the request the requester executes. Everything is resolved
+ * — query and headers carry concrete strings, the body is either a literal
+ * string, a file with a {@link import('./value-producers').ValueProducerHandle},
+ * or a flattened multipart with bytes / asset refs in hand.
+ *
+ * Lives here (not in `@beak/state`) per ADR 0003: types that cross the
+ * renderer↔host boundary belong on the contract. `@beak/state/flight`
+ * re-exports this type for renderer-side use.
+ */
+export interface FlightRequest {
+	verb: string;
+	url: [string];
+	query: Record<string, FlightRequestKeyValue>;
+	headers: Record<string, FlightRequestKeyValue>;
+	body: RequestBodyText | RequestBodyFile | FlightBodyMultipart;
+	options: RequestOptions;
+}
+
 export interface FlightRequestPayload {
 	flightId: string;
 	requestId: string;
-	request: RequestOverview;
+	request: FlightRequest;
+	/**
+	 * Absolute path to the project root. The requester needs this to resolve
+	 * asset producers (`<projectFolder>/_assets/<sha-prefix>/<sha>`) without
+	 * going back through the renderer. Optional for hosts where filesystem
+	 * access isn't available (web's local-agent path doesn't set it; asset
+	 * producers buffer through inline bytes instead).
+	 */
+	projectFolder?: string;
 }
 
 export type FlightHeartbeatPayload =

@@ -1,13 +1,10 @@
-import type {
-	RequestBodyFile,
-	RequestBodyText,
-	RequestOptions,
-	RequestOverview,
-	ToggleKeyValue,
-} from '@getbeak/types/request';
+import type { FlightRequest, FlightRequestKeyValue } from '@beak/common/types/requester';
+import type { RequestOverview } from '@getbeak/types/request';
 import type { ResponseOverview } from '@getbeak/types/response';
 
 import type { FlightError, FlightErrorCode } from './errors';
+
+export type { FlightRequest, FlightRequestKeyValue };
 
 export type { FlightError, FlightErrorCode };
 
@@ -20,21 +17,6 @@ export interface FlightTiming {
 	headersEnd?: number;
 	responseEnd?: number;
 	beakEnd?: number;
-}
-
-export interface FlightRequestKeyValue extends ToggleKeyValue {
-	name: string;
-	value: [string];
-	enabled: boolean;
-}
-
-export interface FlightRequest {
-	verb: string;
-	url: [string];
-	query: Record<string, FlightRequestKeyValue>;
-	headers: Record<string, FlightRequestKeyValue>;
-	body: RequestBodyText | RequestBodyFile;
-	options: RequestOptions;
 }
 
 /** Serialised error stored in state and history (no live Error instance in the store). */

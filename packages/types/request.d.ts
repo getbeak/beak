@@ -1,3 +1,5 @@
+import type { AssetRef } from '@getbeak/extension-sdk';
+
 import { EntryMap } from './body-editor-json';
 import { ValueSections } from './values';
 
@@ -49,10 +51,19 @@ export type RequestBody =
 	| RequestBodyJsonRaw
 	| RequestBodyUrlEncodedForm
 	| RequestBodyFile
+	| RequestBodyMultipart
 	| RequestBodyGraphQl
 	| RequestBodyGrpc;
 
-export type RequestBodyType = 'text' | 'json' | 'json_raw' | 'url_encoded_form' | 'file' | 'graphql' | 'grpc';
+export type RequestBodyType =
+	| 'text'
+	| 'json'
+	| 'json_raw'
+	| 'url_encoded_form'
+	| 'file'
+	| 'multipart'
+	| 'graphql'
+	| 'grpc';
 
 export interface RequestBodyText {
 	type: 'text';
@@ -94,18 +105,58 @@ export interface RequestBodyFile {
 	payload: {
 		fileReferenceId?: string;
 		contentType?: string;
-		__hacky__binaryFileData?: Uint8Array;
 		/**
 		 * Content-addressed pointer into the project's `_assets/` store. When
 		 * present, this is the canonical source of bytes for flight execution;
 		 * `fileReferenceId` stays for legacy projects but is read-only.
 		 */
-		assetRef?: {
-			sha256: string;
-			size: number;
-			contentType?: string;
-		};
+		assetRef?: AssetRef;
+		/**
+		 * Wire-only field populated by flight prep when the body resolves to
+		 * a {@link import('@beak/common/types/value-producers').ValueProducerHandle}.
+		 * For asset-backed bodies the requester reads from disk directly and
+		 * the bytes never cross IPC.
+		 */
+		producer?: import('@beak/common/types/value-producers').ValueProducerHandle;
 	};
+}
+
+/**
+ * Multipart body — ordered list of parts, each independently typed (text or
+ * binary). Lands per ADR-0007 § "Multipart as a first-class body type".
+ *
+ * `boundary` is optional; when absent, the requester picks a fresh
+ * ksuid-derived boundary at flight time so users don't have to think about
+ * collisions. Binary parts resolve via the resolver's `binary` sink, so they
+ * accept any RTV that emits `bytes` / `asset` / `stream`. Asset-backed parts
+ * read from disk in the requester and stream into node-fetch directly;
+ * inline bytes pass through the IPC payload.
+ */
+export interface RequestBodyMultipart {
+	type: 'multipart';
+	payload: {
+		/** Optional explicit boundary; defaults to a fresh ksuid at flight time. */
+		boundary?: string;
+		parts: MultipartPart[];
+	};
+}
+
+export type MultipartPart = MultipartPartText | MultipartPartBinary;
+
+export interface MultipartPartText {
+	kind: 'text';
+	name: ValueSections;
+	value: ValueSections;
+	/** Optional explicit Content-Type; defaults to `text/plain; charset=utf-8`. */
+	contentType?: string;
+}
+
+export interface MultipartPartBinary {
+	kind: 'binary';
+	name: ValueSections;
+	filename?: ValueSections;
+	value: ValueSections;
+	contentType?: ValueSections;
 }
 
 export interface RequestBodyGraphQl {

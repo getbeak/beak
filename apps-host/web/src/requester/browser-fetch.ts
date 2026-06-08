@@ -1,8 +1,6 @@
-import { requestBodyContentType } from '@beak/common/helpers/request';
 import { isSseContentType, SseParser } from '@beak/common/helpers/sse-parser';
 import { TypedObject } from '@beak/common/helpers/typescript';
-import type { ResponseStreamKind } from '@beak/common/types/requester';
-import type { RequestBodyFile, RequestOverview } from '@getbeak/types/request';
+import type { FlightRequest, ResponseStreamKind } from '@beak/common/types/requester';
 
 import type { Requester, RequesterOptions } from './types';
 
@@ -105,7 +103,7 @@ function classifyStream(contentType: string | null, transferEncoding: string | n
 	return 'standard';
 }
 
-async function runRequest(overview: RequestOverview) {
+async function runRequest(overview: FlightRequest) {
 	const { body, headers, verb } = overview;
 	const url = overview.url[0];
 
@@ -124,26 +122,36 @@ async function runRequest(overview: RequestOverview) {
 	};
 
 	if (!bodyFreeVerbs.includes(verb.toLowerCase())) {
-		switch (body.type) {
-			case 'text':
-				init.body = body.payload as string;
-				break;
-
-			case 'file':
-				init.body = (body as RequestBodyFile).payload.__hacky__binaryFileData! as BlobPart as BodyInit;
-				break;
-
-			default:
-				throw new Error(`Unknown body type ${body.type}`);
-		}
-
 		const hasContentTypeHeader = TypedObject.keys(headers)
 			.map(h => h.toLocaleLowerCase())
 			.find(h => h === 'content-type');
 
-		if (!hasContentTypeHeader && body.type !== 'text') {
-			const contentType = requestBodyContentType(body);
-			if (contentType) (init.headers as Record<string, string>)['Content-Type'] = contentType;
+		switch (body.type) {
+			case 'text':
+				init.body = body.payload;
+				break;
+
+			case 'file': {
+				const producer = body.payload.producer;
+				if (!producer) throw new Error('file body has no producer handle');
+				// The web requester can't read from `_assets/` directly (no
+				// fs). Asset bytes would need to be paged in via IPC; for
+				// now we punt asset and stream producers — only `inline`
+				// flows here. Phase 4+ wires IPC asset reads.
+				if (producer.kind !== 'inline') {
+					throw new Error(`web requester cannot consume ${producer.kind} producer`);
+				}
+				init.body = producer.bytes as BlobPart as BodyInit;
+				if (!hasContentTypeHeader) {
+					const contentType = producer.contentType ?? body.payload.contentType ?? 'application/octet-stream';
+					(init.headers as Record<string, string>)['Content-Type'] = contentType;
+				}
+				break;
+			}
+
+			case 'multipart': {
+				throw new Error('web requester does not yet support multipart bodies');
+			}
 		}
 	}
 

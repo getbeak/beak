@@ -191,6 +191,40 @@ export const bodySchemaSchema = z.discriminatedUnion('type', [
 		.strict(),
 	z
 		.object({
+			type: z.literal('multipart'),
+			/**
+			 * The parts list is structural metadata only — names, kinds,
+			 * optional explicit content types — not the values themselves.
+			 * Values live on the request file as `ValueSections` arrays
+			 * under each part's `value`. Keeping the schema-shape thin
+			 * here means a project's schema doesn't churn every time a
+			 * user toggles a part's filename or value.
+			 */
+			parts: z
+				.array(
+					z.discriminatedUnion('kind', [
+						z
+							.object({
+								kind: z.literal('text'),
+								name: z.string(),
+								contentType: z.string().optional(),
+							})
+							.strict(),
+						z
+							.object({
+								kind: z.literal('binary'),
+								name: z.string(),
+								/** Optional explicit content-type hint surfaced in the editor. */
+								contentType: z.string().optional(),
+							})
+							.strict(),
+					]),
+				)
+				.default([]),
+		})
+		.strict(),
+	z
+		.object({
 			type: z.literal('graphql'),
 			query: z.string(),
 			variables: jsonPropertyMapSchema,

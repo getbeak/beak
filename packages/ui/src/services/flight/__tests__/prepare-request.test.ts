@@ -34,6 +34,10 @@ function makeDeps(overrides: Partial<PrepareRequestDeps> = {}): PrepareRequestDe
 		parseValueSections: vi.fn(async (_ctx, parts) =>
 			parts.map((p: unknown) => (typeof p === 'string' ? p : `<${(p as { type: string }).type}>`)).join(''),
 		) as PrepareRequestDeps['parseValueSections'],
+		resolveValueSections: vi.fn(async (_ctx, _parts, sink) => {
+			if (sink.kind === 'text') return { kind: 'text', text: '' } as const;
+			return { kind: 'bytes', bytes: new Uint8Array() } as const;
+		}) as PrepareRequestDeps['resolveValueSections'],
 		convertRequestToUrl: vi.fn(async (_ctx, overview) => new URL((overview.url[0] as string) || 'https://example.com')),
 		convertToRealJson: vi.fn(async (_ctx, payload) => payload),
 		convertKeyValueToString: vi.fn(async () => 'a=1&b=2'),
@@ -44,6 +48,7 @@ function makeDeps(overrides: Partial<PrepareRequestDeps> = {}): PrepareRequestDe
 			if (body.type === 'url_encoded_form') return 'application/x-www-form-urlencoded';
 			return undefined;
 		}),
+		generateBoundary: vi.fn(() => 'test-boundary'),
 		userAgent: 'Beak/test (linux)',
 		generateId: kind => `${kind}-${++idCounter}`,
 		...overrides,
@@ -173,7 +178,7 @@ describe('prepareRequest', () => {
 		expect(result.body).toEqual({ type: 'text', payload: 'k=v' });
 	});
 
-	it('reads file body via readReferencedFile and attaches binary data', async () => {
+	it('reads file body via readReferencedFile and attaches an inline producer', async () => {
 		const overview = makeOverview({
 			verb: 'POST',
 			body: {
@@ -187,7 +192,7 @@ describe('prepareRequest', () => {
 			payload: {
 				fileReferenceId: 'file-1',
 				contentType: 'image/png',
-				__hacky__binaryFileData: new Uint8Array([1, 2, 3]),
+				producer: { kind: 'inline', bytes: new Uint8Array([1, 2, 3]), contentType: 'image/png' },
 			},
 		});
 	});
@@ -214,7 +219,7 @@ describe('prepareRequest', () => {
 		errSpy.mockRestore();
 	});
 
-	it('prefers assetRef over fileReferenceId and reads bytes via readAsset', async () => {
+	it('emits an asset-kind ValueProducerHandle when assetRef is set', async () => {
 		const sha = 'b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9';
 		const overview = makeOverview({
 			verb: 'POST',
@@ -226,46 +231,30 @@ describe('prepareRequest', () => {
 				},
 			},
 		});
-		const readAsset = vi.fn(async () => ({ body: new Uint8Array([9, 8, 7]) }));
 		const readReferencedFile = vi.fn(async () => ({ body: new Uint8Array([1, 2, 3]) }));
-		const result = await prepareRequest(overview, makeContext(), makeDeps({ readAsset, readReferencedFile }));
-		expect(readAsset).toHaveBeenCalledWith({ sha256: sha, size: 11, contentType: 'image/png' });
+		const result = await prepareRequest(overview, makeContext(), makeDeps({ readReferencedFile }));
 		expect(readReferencedFile).not.toHaveBeenCalled();
 		expect(result.body).toMatchObject({
 			type: 'file',
 			payload: {
 				assetRef: { sha256: sha },
-				__hacky__binaryFileData: new Uint8Array([9, 8, 7]),
+				producer: { kind: 'asset', ref: { sha256: sha, size: 11, contentType: 'image/png' } },
 			},
 		});
 	});
 
-	it('falls back to empty text body when the asset is missing', async () => {
-		const sha = 'b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9';
-		const overview = makeOverview({
-			verb: 'POST',
-			body: {
-				type: 'file',
-				payload: { assetRef: { sha256: sha, size: 0 } },
-			},
-		});
-		const errSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-		const result = await prepareRequest(overview, makeContext(), makeDeps({ readAsset: vi.fn(async () => null) }));
-		expect(result.body).toEqual({ type: 'text', payload: '' });
-		errSpy.mockRestore();
-	});
-
-	it('still uses fileReferenceId when only the legacy field is set', async () => {
+	it('falls back to an inline producer reading the legacy fileReferenceId', async () => {
 		const overview = makeOverview({
 			verb: 'POST',
 			body: { type: 'file', payload: { fileReferenceId: 'legacy-only' } },
 		});
-		const readAsset = vi.fn();
-		const result = await prepareRequest(overview, makeContext(), makeDeps({ readAsset }));
-		expect(readAsset).not.toHaveBeenCalled();
+		const result = await prepareRequest(overview, makeContext(), makeDeps());
 		expect(result.body).toMatchObject({
 			type: 'file',
-			payload: { fileReferenceId: 'legacy-only', __hacky__binaryFileData: new Uint8Array([1, 2, 3]) },
+			payload: {
+				fileReferenceId: 'legacy-only',
+				producer: { kind: 'inline', bytes: new Uint8Array([1, 2, 3]) },
+			},
 		});
 	});
 
