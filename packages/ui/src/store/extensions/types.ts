@@ -1,14 +1,14 @@
 // Source of truth is @beak/state/extensions.
 import {
 	type Extension,
-	type ExtensionsState,
+	type ExtensionsSliceState,
 	type FailedExtension,
-	initialExtensionsState,
+	initialExtensionsSliceState,
 	type LoadedExtension,
 } from '@beak/state/extensions';
 
-export type State = ExtensionsState;
-export const initialState: State = initialExtensionsState;
+export type State = ExtensionsSliceState;
+export const initialState: State = initialExtensionsSliceState;
 
 export type { Extension, FailedExtension, LoadedExtension };
 
