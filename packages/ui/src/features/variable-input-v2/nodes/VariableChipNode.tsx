@@ -105,7 +105,12 @@ export class VariableChipNode extends DecoratorNode<React.ReactElement> {
 	}
 
 	createDOM(_config: EditorConfig): HTMLElement {
-		const element = document.createElement('div');
+		// `span` (not `div`) because Lexical mounts inline decorators inside a
+		// `<p>`, and `<div>` inside `<p>` is invalid HTML — the browser
+		// auto-closes the paragraph and re-parents the chip, which breaks
+		// selection across adjacent chips. The CSS uses `display: inline-block`
+		// so the `.bvs-blob` visual is identical.
+		const element = document.createElement('span');
 		element.className = 'bvs-blob';
 		element.contentEditable = 'false';
 		this.applyDataAttributes(element);

@@ -94,7 +94,19 @@ const VariableSelector: React.FC<React.PropsWithChildren<VariableSelectorProps>>
 		const rawLeft = rect.left + offsetDelta - 18;
 		const left = Math.min(Math.max(margin, rawLeft), window.innerWidth - cardWidth - margin);
 		setPosition({ left, top: rect.top + rect.height + 6 });
-	}, [Boolean(sel), editableElement, anchorRect?.top, anchorRect?.left, anchorRect?.width, anchorRect?.height]);
+		// Depend on the concrete selection (partIndex / offset / isTextNode) so the
+		// popover re-anchors as the user types the `{query}` and the caret moves.
+		// `Boolean(sel)` would only fire once on first open and then never again.
+	}, [
+		sel?.partIndex,
+		sel?.offset,
+		sel?.isTextNode,
+		editableElement,
+		anchorRect?.top,
+		anchorRect?.left,
+		anchorRect?.width,
+		anchorRect?.height,
+	]);
 
 	useEffect(() => {
 		// @ts-expect-error scrollIntoViewIfNeeded exists in Chromium

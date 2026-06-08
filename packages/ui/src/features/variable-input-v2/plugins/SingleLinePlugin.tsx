@@ -12,8 +12,13 @@ import { useEffect } from 'react';
  * Enforces the single-line constraint.
  *
  * - `KEY_ENTER_COMMAND` is consumed so Enter cannot insert a newline.
- *   `Cmd/Ctrl + Enter` (request execution) still works because the global
- *   keyboard-shortcut layer intercepts upstream.
+ *   `Cmd/Ctrl + Enter` (request execution) still works because
+ *   `VariableInputV2` registers its own keydown listener on the root
+ *   element, detects the execute-request shortcut, and dispatches
+ *   `requestFlight` directly — it does *not* propagate up to the global
+ *   shortcut layer (it `stopPropagation`s after dispatching). If we ever
+ *   refactor that listener, this plugin's Enter swallow must coordinate
+ *   with whoever ends up handling the execute shortcut.
  * - `INSERT_LINE_BREAK_COMMAND` and `INSERT_PARAGRAPH_COMMAND` are
  *   swallowed too — those are the commands the paste pipeline dispatches
  *   when clipboard content contains newlines. Without these, a paste of

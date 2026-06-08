@@ -11,12 +11,16 @@ export function isVariableInputV2Enabled(): boolean {
 }
 
 export function setVariableInputV2Enabled(enabled: boolean): void {
+	// Storage may fail (private mode, quota, sandboxed iframe). The in-memory
+	// subscribers still need to update, so dispatch the event unconditionally —
+	// the toggle then reflects the user's click even when persistence fails;
+	// only the cross-session memory is lost.
 	try {
 		window.localStorage.setItem(STORAGE_KEY, enabled ? 'true' : 'false');
-		window.dispatchEvent(new CustomEvent('beak:feature-flag-changed', { detail: { key: STORAGE_KEY, enabled } }));
 	} catch {
-		/* localStorage unavailable, ignore */
+		/* persistence unavailable, fall through to in-memory notify */
 	}
+	window.dispatchEvent(new CustomEvent('beak:feature-flag-changed', { detail: { key: STORAGE_KEY, enabled } }));
 }
 
 export function useVariableInputV2Flag(): [boolean, (enabled: boolean) => void] {
