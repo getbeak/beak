@@ -1,13 +1,14 @@
 export * from './actions';
+export { diffWorkflows, summariseChange, type WorkflowDiff } from './diff';
 export {
 	autoLayout,
+	type ConnectionAttempt,
+	type ConnectionRejection,
 	cleanupDanglingEdges,
 	cloneNodeAt,
 	compactPositions,
 	completionRatio,
 	connectedComponents,
-	type ConnectionAttempt,
-	type ConnectionRejection,
 	countOverrideEntries,
 	duplicateWorkflow,
 	edgesAfterNodeRemoval,
@@ -16,37 +17,36 @@ export {
 	findIsolatedNodes,
 	findRequestStepsUsing,
 	findSourcesOf,
-	findWorkflowByName,
 	findTargetsOf,
+	findWorkflowByName,
 	firstIssueNode,
 	firstUnlinkedRequest,
 	flightFromNode,
 	formatRelativeTime,
-	groupWorkflowsByParent,
-	linkedRequestIds,
-	parentIdsUsed,
 	type GraphHealth,
+	groupWorkflowsByParent,
 	inspectGraph,
 	type LayoutOptions,
+	linkedRequestIds,
 	mergeWorkflows,
 	type NodeBounds,
-	nodeBounds,
 	type NodeIssue,
-	nodeIssuesFromHealth,
 	type NodeSearchResult,
+	nodeBounds,
+	nodeIssuesFromHealth,
 	overrideBadgeText,
 	type ParseImportResult,
+	parentIdsUsed,
 	parseImportedWorkflow,
 	placeNewNode,
 	previewValueSections,
+	type RequestUsage,
 	reachableFromNode,
 	reachableFromStart,
 	readPlainText,
 	recentWorkflows,
-	type RequestUsage,
 	searchNodes,
 	searchWorkflows,
-	type WorkflowSearchResult,
 	serializeForExport,
 	summariseHealth,
 	tagCount,
@@ -54,23 +54,33 @@ export {
 	uniqueWorkflowName,
 	unusedTags,
 	validateConnection,
+	type WorkflowSearchResult,
 	workflowDepth,
 	workflowsByTag,
 } from './helpers';
-export { diffWorkflows, summariseChange, type WorkflowDiff } from './diff';
-export { CURRENT_WORKFLOW_VERSION, migrateWorkflow } from './migrate';
 export { toMarkdown } from './markdown';
+export { CURRENT_WORKFLOW_VERSION, migrateWorkflow } from './migrate';
 export { mergeJson, mergeKv, pruneBody, pruneOverrideMap, pruneOverrides } from './overrides';
 export * from './reducer';
 export { type SimulationContext, type SimulationEvent, walkWorkflow } from './simulator';
 export { summariseWorkflow, type WorkflowStats, workflowStats } from './stats';
-export { type NodeWarning, validateNode, validateWorkflow } from './validation';
 export {
 	type IdMinter,
 	type InstantiateOptions,
 	instantiateTemplate,
-	templateCatalog,
 	type TemplateKey,
 	type TemplateMetadata,
+	templateCatalog,
 } from './templates';
 export * from './types';
+export { type NodeWarning, validateNode, validateWorkflow } from './validation';
+export {
+	default as workflowsSliceReducer,
+	selectAllWorkflows,
+	selectWorkflowById,
+	selectWorkflowEdges,
+	selectWorkflowExists,
+	selectWorkflowNodes,
+	selectWorkflowsLoaded,
+	selectWorkflowUpdatedAt,
+} from './workflows-slice';

@@ -1,39 +1,66 @@
 import type { ActionReducerMapBuilder } from '@reduxjs/toolkit';
-
-import * as actions from './actions';
 import type { WorkflowsState } from './types';
+import {
+	addEdge,
+	addNode,
+	clearGraph,
+	duplicateNode,
+	insertNewWorkflow,
+	moveNode,
+	purgeRequestRefs,
+	removeEdge,
+	removeNode,
+	removeNodes,
+	removeWorkflowFromStore,
+	renameNode,
+	replaceGraph,
+	setWorkflowParent,
+	setWorkflowTags,
+	startWorkflows,
+	updateEdgeLabel,
+	updateNode,
+	updateNodeData,
+	updateWorkflowDescription,
+	updateWorkflowName,
+	workflowsOpened,
+} from './workflows-slice';
 
 /**
  * Attaches the pure workflows reducer cases to the given builder. The
  * builder's state type only needs to be a subtype of WorkflowsState — UI
  * packages compose this into a wider state shape with file-watch coordination
- * fields. Every mutating case guards the target workflow first so a stale
- * edit arriving after delete is a no-op rather than a crash.
+ * fields (see `@beak/ui/src/store/workflows/reducers.ts`).
+ *
+ * This shim keeps the published `buildWorkflowsReducer` signature intact so
+ * existing consumers (tests, UI reducer composition) don't need changes.
+ * The real logic now lives in `workflows-slice.ts` (ADR 0005).
  */
 export function buildWorkflowsReducer<S extends WorkflowsState>(builder: ActionReducerMapBuilder<S>) {
+	// Re-export every case from the createSlice-generated action creators.
+	// The slice handles the same action type strings (e.g. 'workflows/addNode')
+	// so action creators emitted by the old actions.ts and the new slice are
+	// interchangeable — they share the same type string constant.
 	builder
-		.addCase(actions.startWorkflows, state => {
+		.addCase(startWorkflows, state => {
 			state.loaded = false;
 		})
-		.addCase(actions.workflowsOpened, (state, { payload }) => {
+		.addCase(workflowsOpened, (state, { payload }) => {
 			state.workflows = payload.workflows;
 			state.loaded = true;
 		})
-		.addCase(actions.insertNewWorkflow, (state, { payload }) => {
-			// Stamp createdAt only if the incoming workflow doesn't already
-			// carry one (paste-imported or file-read workflows preserve the
-			// original).
+		.addCase(insertNewWorkflow, (state, { payload }) => {
 			const incoming = payload.workflow;
+			// TODO ADR 0005 §2 — Date.now() non-deterministic side-effect.
 			const next = incoming.createdAt ? incoming : { ...incoming, createdAt: Date.now() };
 			state.workflows[payload.id] = next;
 		})
-		.addCase(actions.updateWorkflowName, (state, { payload }) => {
+		.addCase(updateWorkflowName, (state, { payload }) => {
 			const workflow = state.workflows[payload.id];
 			if (!workflow) return;
 			workflow.name = payload.name;
 			touch(workflow);
 		})
-		.addCase(actions.updateWorkflowDescription, (state, { payload }) => {
+		.addCase(updateWorkflowDescription, (state, { payload }) => {
 			const workflow = state.workflows[payload.id];
 			if (!workflow) return;
 			const trimmed = payload.description?.trim();
@@ -41,11 +68,9 @@ export function buildWorkflowsReducer<S extends WorkflowsState>(builder: ActionR
 			else delete workflow.description;
 			touch(workflow);
 		})
-		.addCase(actions.setWorkflowTags, (state, { payload }) => {
+		.addCase(setWorkflowTags, (state, { payload }) => {
 			const workflow = state.workflows[payload.id];
 			if (!workflow) return;
-			// Normalise: trim, lowercase, dedupe, drop empties — so the file
-			// stays canonical and search works the way the user expects.
 			const seen = new Set<string>();
 			const next: string[] = [];
 			for (const raw of payload.tags) {
@@ -58,19 +83,19 @@ export function buildWorkflowsReducer<S extends WorkflowsState>(builder: ActionR
 			else workflow.tags = next;
 			touch(workflow);
 		})
-		.addCase(actions.setWorkflowParent, (state, { payload }) => {
+		.addCase(setWorkflowParent, (state, { payload }) => {
 			const workflow = state.workflows[payload.id];
 			if (!workflow) return;
 			workflow.parent = payload.parent;
 			touch(workflow);
 		})
-		.addCase(actions.addNode, (state, { payload }) => {
+		.addCase(addNode, (state, { payload }) => {
 			const workflow = state.workflows[payload.id];
 			if (!workflow) return;
 			workflow.nodes.push(payload.node);
 			touch(workflow);
 		})
-		.addCase(actions.updateNode, (state, { payload }) => {
+		.addCase(updateNode, (state, { payload }) => {
 			const workflow = state.workflows[payload.id];
 			if (!workflow) return;
 			const idx = workflow.nodes.findIndex(n => n.id === payload.nodeId);
@@ -78,17 +103,15 @@ export function buildWorkflowsReducer<S extends WorkflowsState>(builder: ActionR
 			workflow.nodes[idx] = { ...workflow.nodes[idx], ...payload.patch } as (typeof workflow.nodes)[number];
 			touch(workflow);
 		})
-		.addCase(actions.updateNodeData, (state, { payload }) => {
+		.addCase(updateNodeData, (state, { payload }) => {
 			const workflow = state.workflows[payload.id];
 			if (!workflow) return;
 			const node = workflow.nodes.find(n => n.id === payload.nodeId);
 			if (!node) return;
-			// Cast through unknown — `data` shape is per-kind but the editor is
-			// kind-aware and only passes valid keys for this node's kind.
 			node.data = { ...node.data, ...payload.data } as typeof node.data;
 			touch(workflow);
 		})
-		.addCase(actions.moveNode, (state, { payload }) => {
+		.addCase(moveNode, (state, { payload }) => {
 			const workflow = state.workflows[payload.id];
 			if (!workflow) return;
 			const node = workflow.nodes.find(n => n.id === payload.nodeId);
@@ -96,7 +119,7 @@ export function buildWorkflowsReducer<S extends WorkflowsState>(builder: ActionR
 			node.position = payload.position;
 			touch(workflow);
 		})
-		.addCase(actions.renameNode, (state, { payload }) => {
+		.addCase(renameNode, (state, { payload }) => {
 			const workflow = state.workflows[payload.id];
 			if (!workflow) return;
 			const node = workflow.nodes.find(n => n.id === payload.nodeId);
@@ -106,22 +129,17 @@ export function buildWorkflowsReducer<S extends WorkflowsState>(builder: ActionR
 			else delete (node as { name?: string }).name;
 			touch(workflow);
 		})
-		.addCase(actions.removeNode, (state, { payload }) => {
+		.addCase(removeNode, (state, { payload }) => {
 			const workflow = state.workflows[payload.id];
 			if (!workflow) return;
 			workflow.nodes = workflow.nodes.filter(n => n.id !== payload.nodeId);
-			// Drop any edges touching the removed node — otherwise xyflow tries
-			// to render an edge with a missing endpoint and crashes the canvas.
 			workflow.edges = workflow.edges.filter(e => e.source !== payload.nodeId && e.target !== payload.nodeId);
 			touch(workflow);
 		})
-		.addCase(actions.removeNodes, (state, { payload }) => {
+		.addCase(removeNodes, (state, { payload }) => {
 			const workflow = state.workflows[payload.id];
 			if (!workflow) return;
 			if (payload.nodeIds.length === 0) return;
-			// Start is workflow-scoped and must never be deleted — skip it
-			// rather than throwing so the caller can pass a raw selection set
-			// without filtering.
 			const dropping = new Set<string>();
 			for (const id of payload.nodeIds) {
 				const node = workflow.nodes.find(n => n.id === id);
@@ -133,17 +151,13 @@ export function buildWorkflowsReducer<S extends WorkflowsState>(builder: ActionR
 			workflow.edges = workflow.edges.filter(e => !dropping.has(e.source) && !dropping.has(e.target));
 			touch(workflow);
 		})
-		.addCase(actions.duplicateNode, (state, { payload }) => {
+		.addCase(duplicateNode, (state, { payload }) => {
 			const workflow = state.workflows[payload.id];
 			if (!workflow) return;
 			const source = workflow.nodes.find(n => n.id === payload.sourceNodeId);
 			if (!source) return;
-			// Workflows have exactly one Start node — refuse to clone it so the
-			// graph can never end up with two entry points (or none, depending
-			// on how the orchestrator picks).
 			if (source.type === 'start') return;
-			// Deep-clone via JSON — workflow node data is JSON-safe per the
-			// schema, and structuredClone chokes on Immer's draft proxies.
+			// TODO ADR 0005 §4 — JSON clone is inline structural logic.
 			const cloned = {
 				...source,
 				id: payload.newNodeId,
@@ -153,26 +167,24 @@ export function buildWorkflowsReducer<S extends WorkflowsState>(builder: ActionR
 			workflow.nodes.push(cloned);
 			touch(workflow);
 		})
-		.addCase(actions.addEdge, (state, { payload }) => {
+		.addCase(addEdge, (state, { payload }) => {
 			const workflow = state.workflows[payload.id];
 			if (!workflow) return;
 			if (workflow.edges.some(e => e.id === payload.edge.id)) return;
 			workflow.edges.push(payload.edge);
 			touch(workflow);
 		})
-		.addCase(actions.removeEdge, (state, { payload }) => {
+		.addCase(removeEdge, (state, { payload }) => {
 			const workflow = state.workflows[payload.id];
 			if (!workflow) return;
 			workflow.edges = workflow.edges.filter(e => e.id !== payload.edgeId);
 			touch(workflow);
 		})
-		.addCase(actions.updateEdgeLabel, (state, { payload }) => {
+		.addCase(updateEdgeLabel, (state, { payload }) => {
 			const workflow = state.workflows[payload.id];
 			if (!workflow) return;
 			const edge = workflow.edges.find(e => e.id === payload.edgeId);
 			if (!edge) return;
-			// Empty / undefined label drops the field entirely so the on-disk
-			// file stays clean of empty strings.
 			if (!payload.label) {
 				delete (edge as { label?: string }).label;
 			} else {
@@ -180,29 +192,26 @@ export function buildWorkflowsReducer<S extends WorkflowsState>(builder: ActionR
 			}
 			touch(workflow);
 		})
-		.addCase(actions.replaceGraph, (state, { payload }) => {
+		.addCase(replaceGraph, (state, { payload }) => {
 			const workflow = state.workflows[payload.id];
 			if (!workflow) return;
+			// TODO ADR 0005 §4 — graph replacement is structural; callers own the arrays.
 			workflow.nodes = payload.nodes;
 			workflow.edges = payload.edges;
 			touch(workflow);
 		})
-		.addCase(actions.clearGraph, (state, { payload }) => {
+		.addCase(clearGraph, (state, { payload }) => {
 			const workflow = state.workflows[payload.id];
 			if (!workflow) return;
-			// Keep the Start node so the workflow always has an entry point.
 			workflow.nodes = workflow.nodes.filter(n => n.type === 'start');
 			workflow.edges = [];
 			touch(workflow);
 		})
-		.addCase(actions.removeWorkflowFromStore, (state, { payload }) => {
+		.addCase(removeWorkflowFromStore, (state, { payload }) => {
 			delete state.workflows[payload];
 		})
-		.addCase(actions.purgeRequestRefs, (state, { payload }) => {
-			// Project tree just dropped these requests — clear every request
-			// node's `data.requestId` that still points at one. Editors then
-			// render the canonical "Pick a request →" empty state instead of
-			// a dangling id; the workflow file will rewrite on next save.
+		.addCase(purgeRequestRefs, (state, { payload }) => {
+			// TODO ADR 0005 §4 — cross-workflow sweep; mirrors findRequestStepsUsing in helpers.ts.
 			const dropped = new Set(payload.requestIds);
 			if (dropped.size === 0) return;
 			for (const workflow of Object.values(state.workflows)) {
@@ -224,5 +233,7 @@ export function buildWorkflowsReducer<S extends WorkflowsState>(builder: ActionR
  * no-op tests.
  */
 function touch(workflow: { updatedAt?: number }): void {
+	// TODO ADR 0005 §2 — Date.now() is non-deterministic; extract to a clock
+	// argument if tests ever need deterministic updatedAt values.
 	workflow.updatedAt = Date.now();
 }
