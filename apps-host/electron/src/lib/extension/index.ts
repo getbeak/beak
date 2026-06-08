@@ -219,7 +219,7 @@ export default class ExtensionManager {
 			}),
 		);
 
-		// Placeholder — re-bound per call by `variableGetValue` so the right
+		// Placeholder — re-bound per call by `variableResolve` so the right
 		// webContents receives the parse callback.
 		await global.set('__beak_parseValueSections', new ivm.Reference(async () => ''));
 
@@ -228,7 +228,25 @@ export default class ExtensionManager {
 		await global.set('__beak_ivm_Reference', ivm.Reference);
 
 		const script = await isolate.compileScript(buildBootScript(userSource));
-		await script.run(context, { timeout: ISOLATE_BOOT_TIMEOUT_MS });
+		try {
+			await script.run(context, { timeout: ISOLATE_BOOT_TIMEOUT_MS });
+		} catch (err) {
+			// Bootstrap-script errors are typed `Error` on the way out of
+			// isolated-vm; the message carries the diagnostic. Re-throw as a
+			// Squawk so the renderer can branch on the code (matches the web
+			// host's `beakError(...)` path and the ADR-0007 contract).
+			const message = err instanceof Error ? err.message : String(err);
+			if (message.includes('unsupported apiVersion')) {
+				throw new Squawk('extension_unsupported_api_version', {
+					packageName: manifest.packageName,
+					detail: message,
+				});
+			}
+			throw new Squawk('extension_bootstrap_failed', {
+				packageName: manifest.packageName,
+				detail: message,
+			});
+		}
 
 		const metadataRaw = (await global.get('__beak_metadata', { copy: true })) as ExtensionVariable[] | undefined;
 		const handlesRef = (await global.get('__beak_handles', { reference: true })) as ivm.Reference | undefined;
