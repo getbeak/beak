@@ -117,28 +117,46 @@ The host passes a `callerCtx` through each variable-invocation method
 so the manager can hand it back on the parseValueSections callback —
 that's how Electron picks the right `webContents` per recursive call.
 
-### 3. Trust model — unchanged, made explicit
+### 3. Trust model — match the previous `isolated-vm` tightness
 
-Extensions are installed by the user (manifest validated by
-`@beak/runtime-shared`'s `ExtensionManifests.parse`). The sandbox
-exists to:
+Extensions are installed by the user under a project's `extensions/`
+folder. The sandbox exists to:
 
 - Stop one extension's bug or memory leak from crashing the host.
-- Prevent direct DOM / file-system / shared-state access from
-  extension code.
+- Prevent any host capability (filesystem, network, shared state)
+  from leaking into extension code without going through `extCtx`.
 - Enforce timeouts (`extension_init_timeout` 5s,
   `extension_call_timeout` 30s).
 
-It does **not** position against actively malicious code. Both
-Workers (Web and Node) provide V8-isolate-level memory separation —
-identical to `isolated-vm`'s memory-isolation guarantee. Node
-`worker_threads` does expose `globalThis.Buffer` / `globalThis.process`
-to the worker's main scope, and dynamic `import()` resolves Node
-built-ins. We accept this for now — extensions are installed
-explicitly via the project's `extensions/` folder, not arbitrary
-internet payloads. If a tighter sandbox is needed later, wrap the
-`userSource` evaluation in `vm.runInContext` with a stripped global —
-that's an internal change to `WORKER_SOURCE`, no SDK impact.
+The previous `isolated-vm` implementation ran extension code in a
+fresh V8 isolate whose global scope held only the ECMAScript built-ins
+— no `process`, `Buffer`, `require`, `fetch`, `setTimeout`, nothing
+from Node or the DOM. The unified Worker design **preserves that
+tightness on the Electron side**, and best-effort on the Web side:
+
+- **Electron host (Node `worker_threads`)** — the runtime shim
+  prepended to `WORKER_SOURCE` builds a `vm.createContext` with a
+  hand-curated ECMAScript-only global (Object, Array, Promise, Math,
+  Date, JSON, RegExp, the typed-array family, Reflect, Proxy, Intl,
+  Error and its subclasses, the parse/encode/decode helpers, plus
+  `Function` — which is sandboxed by the vm context). `codeGeneration:
+  { strings: false, wasm: false }` blocks `eval` and dynamic WASM.
+  `userSource` is evaluated via `vm.runInContext`; the resulting
+  `module.exports` lands back in the worker's outer scope where the
+  validate-and-bind pass wires `extCtx` and the per-variable handles.
+  No dynamic `import()`, no `globalThis.process`, no `require` —
+  identical to the `isolated-vm` posture.
+
+- **Web host (Web Worker)** — Web Workers don't have a `vm`-style
+  context API; `new Function` inside the worker runs in the worker's
+  globalThis, which still exposes `fetch`, `crypto`, `setTimeout`,
+  `URL`, etc. We accept this as a known asymmetry. Tightening the
+  web side properly needs either the Realms API (Stage 3, not widely
+  shipped) or iframe-based sandboxes (heavyweight, separate origin
+  story). Out of scope for this ADR; tracked as a follow-up.
+
+Memory isolation in both runtimes is identical to `isolated-vm` —
+each worker is its own V8 isolate with its own heap.
 
 ### 4. SDK contract — frozen at apiVersion: 1
 

@@ -30,15 +30,132 @@
 
 /**
  * Aliases the Web Worker globals onto Node's `parentPort` so the shared
- * worker source can run unchanged under `node:worker_threads`. Prepended
- * by the Electron WorkerProvider before `new Worker(source, { eval: true })`.
+ * worker source can run unchanged under `node:worker_threads`. Also
+ * installs `__beak_vm_evaluate` — a stricter evaluator that runs the
+ * user's extension code in a `vm.createContext` sandbox with an
+ * ECMAScript-only global. Prepended by the Electron WorkerProvider
+ * before `new Worker(source, { eval: true })`.
+ *
+ * The sandbox restores the isolation guarantee the previous
+ * `isolated-vm` implementation provided: no `process`, `Buffer`,
+ * `require`, dynamic `import()`, `fetch`, `console`, `setTimeout`, or
+ * any Node / Web platform API. Extensions get the language plus
+ * `extCtx` (the host bridge passed in as an argument) — full stop.
+ * See ADR-0003 §3 (Trust model).
  */
 export const WORKER_RUNTIME_NODE_SHIM = `
 const { parentPort } = require('node:worker_threads');
+const vm = require('node:vm');
+
 globalThis.self = globalThis;
 globalThis.postMessage = parentPort.postMessage.bind(parentPort);
 globalThis.addEventListener = (type, fn) => {
 	if (type === 'message') parentPort.on('message', data => fn({ data }));
+};
+
+const sandboxGlobals = Object.create(null);
+
+// Global values
+sandboxGlobals.undefined = undefined;
+sandboxGlobals.NaN = NaN;
+sandboxGlobals.Infinity = Infinity;
+
+// Global functions
+sandboxGlobals.parseInt = parseInt;
+sandboxGlobals.parseFloat = parseFloat;
+sandboxGlobals.isNaN = isNaN;
+sandboxGlobals.isFinite = isFinite;
+sandboxGlobals.encodeURI = encodeURI;
+sandboxGlobals.encodeURIComponent = encodeURIComponent;
+sandboxGlobals.decodeURI = decodeURI;
+sandboxGlobals.decodeURIComponent = decodeURIComponent;
+
+// Fundamental objects + Function constructor (sandboxed: code it
+// compiles inherits the same restricted globals via the vm context).
+sandboxGlobals.Object = Object;
+sandboxGlobals.Function = Function;
+sandboxGlobals.Boolean = Boolean;
+sandboxGlobals.Symbol = Symbol;
+
+// Errors
+sandboxGlobals.Error = Error;
+sandboxGlobals.TypeError = TypeError;
+sandboxGlobals.RangeError = RangeError;
+sandboxGlobals.SyntaxError = SyntaxError;
+sandboxGlobals.ReferenceError = ReferenceError;
+sandboxGlobals.EvalError = EvalError;
+sandboxGlobals.URIError = URIError;
+sandboxGlobals.AggregateError = AggregateError;
+
+// Numbers + math
+sandboxGlobals.Number = Number;
+sandboxGlobals.BigInt = BigInt;
+sandboxGlobals.Math = Math;
+sandboxGlobals.Date = Date;
+
+// Text
+sandboxGlobals.String = String;
+sandboxGlobals.RegExp = RegExp;
+
+// Collections
+sandboxGlobals.Array = Array;
+sandboxGlobals.Map = Map;
+sandboxGlobals.Set = Set;
+sandboxGlobals.WeakMap = WeakMap;
+sandboxGlobals.WeakSet = WeakSet;
+
+// Structured data
+sandboxGlobals.JSON = JSON;
+sandboxGlobals.ArrayBuffer = ArrayBuffer;
+sandboxGlobals.DataView = DataView;
+sandboxGlobals.Uint8Array = Uint8Array;
+sandboxGlobals.Uint8ClampedArray = Uint8ClampedArray;
+sandboxGlobals.Uint16Array = Uint16Array;
+sandboxGlobals.Uint32Array = Uint32Array;
+sandboxGlobals.Int8Array = Int8Array;
+sandboxGlobals.Int16Array = Int16Array;
+sandboxGlobals.Int32Array = Int32Array;
+sandboxGlobals.Float32Array = Float32Array;
+sandboxGlobals.Float64Array = Float64Array;
+sandboxGlobals.BigInt64Array = BigInt64Array;
+sandboxGlobals.BigUint64Array = BigUint64Array;
+
+// Control abstractions
+sandboxGlobals.Promise = Promise;
+
+// Reflection
+sandboxGlobals.Reflect = Reflect;
+sandboxGlobals.Proxy = Proxy;
+
+// Intl — locale-aware formatting; pure with no external state.
+sandboxGlobals.Intl = Intl;
+
+// Deliberately omitted (security): process, Buffer, require, globalThis-as-Node,
+// dynamic import(), fetch, crypto, console, setTimeout/setInterval, URL,
+// SharedArrayBuffer, Atomics, WebAssembly, eval (blocked via codeGeneration).
+
+const sandboxContext = vm.createContext(sandboxGlobals, {
+	name: 'beak-extension-sandbox',
+	// Disallow Function/eval from generating code from strings inside
+	// the sandbox. WASM is also off — extensions don't need it.
+	codeGeneration: { strings: false, wasm: false },
+});
+
+globalThis.__beak_vm_evaluate = function (userSource) {
+	const module = { exports: {} };
+	sandboxGlobals.module = module;
+	sandboxGlobals.exports = module.exports;
+	try {
+		vm.runInContext(
+			'(function (module, exports) {' + userSource + '\\n})(module, exports);',
+			sandboxContext,
+			{ filename: 'beak-extension.js' },
+		);
+	} finally {
+		delete sandboxGlobals.module;
+		delete sandboxGlobals.exports;
+	}
+	return module.exports && (module.exports.default !== undefined ? module.exports.default : module.exports);
 };
 `;
 
@@ -140,6 +257,15 @@ function validateAndBindExtension(raw, packageName) {
 }
 
 function evaluateUserSource(userSource) {
+	// In Node \`worker_threads\`, the runtime shim installs a vm-based
+	// evaluator that runs the user's extension code with an
+	// ECMAScript-only global (no Node APIs, no Web APIs). In a browser
+	// Web Worker the shim is absent and we fall back to \`new Function\` —
+	// the worker's globalThis still exposes Web APIs but cannot reach
+	// Beak's main thread state. See ADR-0003 §3.
+	if (typeof globalThis.__beak_vm_evaluate === 'function') {
+		return globalThis.__beak_vm_evaluate(userSource);
+	}
 	const module = { exports: {} };
 	const exports = module.exports;
 	const fn = new Function('module', 'exports', userSource);
