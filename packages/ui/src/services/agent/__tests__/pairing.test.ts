@@ -4,13 +4,14 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { clearPending, completePairing, readPairingReturnQuery, startPairing } from '../pairing';
 
 /**
- * PKCE pairing flow tests. Security-sensitive: drive-test audit flagged
- * this as P0-untested. The flow uses `sessionStorage` (single pending
- * pairing per tab) by design — opening Beak twice gives two independent
- * pairings, which is the correct behaviour.
+ * PKCE pairing flow tests. The flow uses `localStorage` keyed by the
+ * PKCE `state` token — `sessionStorage` is per-tab and the agent
+ * redirects the new tab to `/agent/pair/return` where it would find
+ * an empty store. Per-state keys also let concurrent pairings from
+ * the same origin coexist.
  */
 
-const SESSION_STORAGE_KEY = 'beak.agent.pairing.pending';
+const STORAGE_KEY_PREFIX = 'beak.agent.pairing.pending.';
 
 interface PendingPairing {
 	state: string;
@@ -43,20 +44,30 @@ function createMemoryStorage(): Storage {
 	};
 }
 
-function installFakeSessionStorage(): Storage {
+function installFakeLocalStorage(): Storage {
 	const storage = createMemoryStorage();
-	Object.defineProperty(window, 'sessionStorage', { value: storage, writable: true, configurable: true });
+	Object.defineProperty(window, 'localStorage', { value: storage, writable: true, configurable: true });
 	return storage;
 }
 
-function readPending(): PendingPairing | null {
-	const raw = window.sessionStorage.getItem(SESSION_STORAGE_KEY);
-	if (!raw) return null;
-	return JSON.parse(raw) as PendingPairing;
+function readAllPending(): PendingPairing[] {
+	const out: PendingPairing[] = [];
+	for (let i = 0; i < window.localStorage.length; i++) {
+		const key = window.localStorage.key(i);
+		if (!key || !key.startsWith(STORAGE_KEY_PREFIX)) continue;
+		const raw = window.localStorage.getItem(key);
+		if (raw) out.push(JSON.parse(raw) as PendingPairing);
+	}
+	return out;
+}
+
+function readPendingFor(state: string): PendingPairing | null {
+	const raw = window.localStorage.getItem(`${STORAGE_KEY_PREFIX}${state}`);
+	return raw ? (JSON.parse(raw) as PendingPairing) : null;
 }
 
 function writePending(entry: PendingPairing): void {
-	window.sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(entry));
+	window.localStorage.setItem(`${STORAGE_KEY_PREFIX}${entry.state}`, JSON.stringify(entry));
 }
 
 describe('startPairing', () => {
@@ -65,7 +76,7 @@ describe('startPairing', () => {
 	let digestSpy: ReturnType<typeof vi.spyOn>;
 
 	beforeEach(() => {
-		installFakeSessionStorage();
+		installFakeLocalStorage();
 		openSpy = vi.fn();
 		Object.defineProperty(window, 'open', { value: openSpy, writable: true, configurable: true });
 		getRandomValuesSpy = vi.spyOn(window.crypto, 'getRandomValues');
@@ -76,30 +87,31 @@ describe('startPairing', () => {
 		vi.restoreAllMocks();
 	});
 
-	it('writes a single pending entry to sessionStorage', async () => {
+	it('writes a per-state pending entry to localStorage', async () => {
 		await startPairing('http://127.0.0.1:47821', 'https://beak.web/agent/pair/return');
 
-		const pending = readPending();
-		expect(pending).not.toBeNull();
-		expect(pending?.baseUrl).toBe('http://127.0.0.1:47821');
-		expect(pending?.state.length).toBeGreaterThan(0);
-		expect(pending?.codeVerifier.length).toBeGreaterThan(0);
-		expect(typeof pending?.startedAt).toBe('number');
+		const all = readAllPending();
+		expect(all).toHaveLength(1);
+		const pending = all[0];
+		expect(pending.baseUrl).toBe('http://127.0.0.1:47821');
+		expect(pending.state.length).toBeGreaterThan(0);
+		expect(pending.codeVerifier.length).toBeGreaterThan(0);
+		expect(typeof pending.startedAt).toBe('number');
+
+		// The key must include the state so the return tab can find it
+		// without knowing anything else about the pairing.
+		expect(window.localStorage.getItem(`${STORAGE_KEY_PREFIX}${pending.state}`)).not.toBeNull();
 	});
 
 	it('uses CSPRNG for both the state nonce and the PKCE verifier', async () => {
 		await startPairing('http://127.0.0.1:47821', 'https://beak.web/agent/pair/return');
-
-		// newState() does one getRandomValues; newPkcePair() does another.
 		expect(getRandomValuesSpy).toHaveBeenCalledTimes(2);
 	});
 
 	it('derives the code_challenge via SHA-256 (S256, per RFC 7636)', async () => {
 		await startPairing('http://127.0.0.1:47821', 'https://beak.web/agent/pair/return');
-
 		expect(digestSpy).toHaveBeenCalled();
-		const algo = digestSpy.mock.calls[0]?.[0];
-		expect(algo).toBe('SHA-256');
+		expect(digestSpy.mock.calls[0]?.[0]).toBe('SHA-256');
 	});
 
 	it('opens the pair URL with state, code_challenge, method=S256, origin and return', async () => {
@@ -119,13 +131,29 @@ describe('startPairing', () => {
 		expect(features).toContain('noopener');
 	});
 
-	it('generates a different state and verifier on each call', async () => {
+	it('concurrent pairings coexist (per-state keys)', async () => {
 		await startPairing('http://127.0.0.1:47821', 'https://beak.web/agent/pair/return');
-		const first = readPending();
 		await startPairing('http://127.0.0.1:47821', 'https://beak.web/agent/pair/return');
-		const second = readPending();
-		expect(first?.state).not.toBe(second?.state);
-		expect(first?.codeVerifier).not.toBe(second?.codeVerifier);
+		const all = readAllPending();
+		expect(all).toHaveLength(2);
+		expect(all[0].state).not.toBe(all[1].state);
+		expect(all[0].codeVerifier).not.toBe(all[1].codeVerifier);
+	});
+
+	it('sweeps pending entries older than 5 minutes on next call', async () => {
+		const ancient: PendingPairing = {
+			state: 'ancient-state',
+			codeVerifier: 'x'.repeat(43),
+			baseUrl: 'http://127.0.0.1:47821',
+			startedAt: Date.now() - 6 * 60 * 1000, // 6 min ago
+		};
+		writePending(ancient);
+		expect(readPendingFor('ancient-state')).not.toBeNull();
+
+		await startPairing('http://127.0.0.1:47821', 'https://beak.web/agent/pair/return');
+
+		expect(readPendingFor('ancient-state')).toBeNull();
+		expect(readAllPending()).toHaveLength(1);
 	});
 });
 
@@ -133,7 +161,7 @@ describe('completePairing', () => {
 	let fetchSpy: ReturnType<typeof vi.fn>;
 
 	beforeEach(() => {
-		installFakeSessionStorage();
+		installFakeLocalStorage();
 		fetchSpy = vi.fn();
 		Object.defineProperty(window, 'fetch', { value: fetchSpy, writable: true, configurable: true });
 	});
@@ -163,38 +191,48 @@ describe('completePairing', () => {
 	}
 
 	it('rejects when the query carries an agent error', async () => {
-		await expect(
-			completePairing({ state: null, code: null, error: 'access_denied' }),
-		).rejects.toThrow(/pairing_access_denied/);
+		await expect(completePairing({ state: null, code: null, error: 'access_denied' })).rejects.toThrow(
+			/pairing_access_denied/,
+		);
 	});
 
 	it('rejects when code or state is missing', async () => {
-		await expect(
-			completePairing({ state: 's1', code: null, error: null }),
-		).rejects.toThrow(/pairing_missing_code_or_state/);
-		await expect(
-			completePairing({ state: null, code: 'c1', error: null }),
-		).rejects.toThrow(/pairing_missing_code_or_state/);
+		await expect(completePairing({ state: 's1', code: null, error: null })).rejects.toThrow(
+			/pairing_missing_code_or_state/,
+		);
+		await expect(completePairing({ state: null, code: 'c1', error: null })).rejects.toThrow(
+			/pairing_missing_code_or_state/,
+		);
 	});
 
-	it('rejects with pairing_no_pending when sessionStorage has nothing', async () => {
-		await expect(
-			completePairing({ state: 's1', code: 'c1', error: null }),
-		).rejects.toThrow(/pairing_no_pending/);
+	it('rejects with pairing_no_pending when localStorage has nothing for the state', async () => {
+		await expect(completePairing({ state: 's1', code: 'c1', error: null })).rejects.toThrow(/pairing_no_pending/);
 	});
 
-	it('rejects with pairing_corrupt_pending when the entry is not JSON', async () => {
-		window.sessionStorage.setItem(SESSION_STORAGE_KEY, '{ not json');
-		await expect(
-			completePairing({ state: 's1', code: 'c1', error: null }),
-		).rejects.toThrow(/pairing_corrupt_pending/);
+	it('treats a non-JSON entry as expired (sweep evicts before lookup)', async () => {
+		// The sweep runs before lookup and can't tell "corrupt" from "ancient"
+		// — both are entries we don't trust. The user sees pairing_no_pending
+		// and is invited to retry, which is the right outcome either way.
+		window.localStorage.setItem(`${STORAGE_KEY_PREFIX}s1`, '{ not json');
+		await expect(completePairing({ state: 's1', code: 'c1', error: null })).rejects.toThrow(/pairing_no_pending/);
 	});
 
-	it('rejects with pairing_state_mismatch when the query state differs', async () => {
-		seedPending('expected-state');
-		await expect(
-			completePairing({ state: 'attacker-state', code: 'c1', error: null }),
-		).rejects.toThrow(/pairing_state_mismatch/);
+	it('rejects with pairing_state_mismatch when the entry body disagrees with the URL state', async () => {
+		// Hand-build an entry where the key says one state but the body
+		// claims another. The integrity check in completePairing should
+		// catch the mismatch even though the lookup succeeds.
+		window.localStorage.setItem(
+			`${STORAGE_KEY_PREFIX}query-state`,
+			JSON.stringify({
+				state: 'body-state',
+				codeVerifier: 'v'.repeat(43),
+				baseUrl: 'http://127.0.0.1:47821',
+				startedAt: Date.now(),
+			}),
+		);
+		await expect(completePairing({ state: 'query-state', code: 'c1', error: null })).rejects.toThrow(
+			/pairing_state_mismatch/,
+		);
 	});
 
 	it('POSTs to /pair/token with code and code_verifier', async () => {
@@ -217,63 +255,75 @@ describe('completePairing', () => {
 		seedPending('s1');
 		fetchSpy.mockResolvedValue(jsonResponse({}, false, 401));
 
-		await expect(
-			completePairing({ state: 's1', code: 'c1', error: null }),
-		).rejects.toThrow(/pairing_token_exchange_failed_401/);
+		await expect(completePairing({ state: 's1', code: 'c1', error: null })).rejects.toThrow(
+			/pairing_token_exchange_failed_401/,
+		);
 	});
 
-	it('returns { token, tokenId, baseUrl } and clears pending on success', async () => {
+	it('returns { token, tokenId, baseUrl } and removes the matching entry on success', async () => {
 		const entry = seedPending('s1');
+		// Seed a second concurrent pairing to prove only the matched entry is removed.
+		seedPending('s2');
 		fetchSpy.mockResolvedValue(jsonResponse({ token: 'tok', tokenId: 'kid' }));
 
 		const result = await completePairing({ state: 's1', code: 'c1', error: null });
 
 		expect(result).toEqual({ token: 'tok', tokenId: 'kid', baseUrl: entry.baseUrl });
-		expect(readPending()).toBeNull();
+		expect(readPendingFor('s1')).toBeNull();
+		expect(readPendingFor('s2')).not.toBeNull();
 	});
 
 	it('rejects when the token response fails Zod validation', async () => {
 		seedPending('s1');
 		fetchSpy.mockResolvedValue(jsonResponse({ token: 'tok' /* tokenId missing */ }));
 
-		await expect(
-			completePairing({ state: 's1', code: 'c1', error: null }),
-		).rejects.toThrow(/pairing_invalid_token_response/);
+		await expect(completePairing({ state: 's1', code: 'c1', error: null })).rejects.toThrow(
+			/pairing_invalid_token_response/,
+		);
 	});
 
 	it('leaves the pending entry untouched when the token exchange fails', async () => {
-		// Documents current behaviour. Recovery from a 401 needs the user to
-		// re-click `/pair/return` with the same state; clearing pending here
-		// would lock them out. (Worth revisiting once tokens rotate, but the
-		// fix lives in the spec, not this test.)
+		// Documents current behaviour: a 401 leaves the entry so the user
+		// can retry without re-issuing PKCE. Clearing on failure would
+		// trade convenience for a marginal security gain.
 		const entry = seedPending('s1');
 		fetchSpy.mockResolvedValue(jsonResponse({}, false, 401));
 
 		await completePairing({ state: 's1', code: 'c1', error: null }).catch(() => undefined);
 
-		expect(readPending()).toEqual(entry);
+		expect(readPendingFor('s1')).toEqual(entry);
 	});
 });
 
 describe('clearPending', () => {
 	beforeEach(() => {
-		installFakeSessionStorage();
+		installFakeLocalStorage();
 	});
 
-	it('removes the pending entry from sessionStorage', () => {
-		window.sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify({ state: 's1' }));
+	it('sweeps expired entries and leaves fresh ones', () => {
+		writePending({
+			state: 'fresh',
+			codeVerifier: 'a'.repeat(43),
+			baseUrl: 'http://127.0.0.1:47821',
+			startedAt: Date.now(),
+		});
+		writePending({
+			state: 'stale',
+			codeVerifier: 'b'.repeat(43),
+			baseUrl: 'http://127.0.0.1:47821',
+			startedAt: Date.now() - 6 * 60 * 1000,
+		});
+
 		clearPending();
-		expect(window.sessionStorage.getItem(SESSION_STORAGE_KEY)).toBeNull();
+
+		expect(readPendingFor('fresh')).not.toBeNull();
+		expect(readPendingFor('stale')).toBeNull();
 	});
 });
 
 describe('readPairingReturnQuery', () => {
 	it('parses state, code, and error from a search string', () => {
-		expect(readPairingReturnQuery('?state=s1&code=c1')).toEqual({
-			state: 's1',
-			code: 'c1',
-			error: null,
-		});
+		expect(readPairingReturnQuery('?state=s1&code=c1')).toEqual({ state: 's1', code: 'c1', error: null });
 		expect(readPairingReturnQuery('?error=access_denied&state=s1')).toEqual({
 			state: 's1',
 			code: null,
