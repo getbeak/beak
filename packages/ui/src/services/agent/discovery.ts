@@ -21,10 +21,18 @@ export interface DiscoveredAgent {
  * the agent fingerprint. Returns null if none responds. Each probe is
  * capped at {@link PROBE_TIMEOUT_MS} so a cold scan finishes in seconds
  * even if many ports time out.
+ *
+ * `skipBaseUrls` lets the caller resume a scan after detecting an
+ * impostor on a previously-discovered URL: pass the impostor URL in
+ * and the next-best port wins. Without the skip list a paired user
+ * would be stuck behind whatever process squatted on the agent's
+ * preferred port.
  */
-export async function discoverAgent(): Promise<DiscoveredAgent | null> {
+export async function discoverAgent(skipBaseUrls: readonly string[] = []): Promise<DiscoveredAgent | null> {
+	const skip = new Set(skipBaseUrls);
 	for (let port = AGENT_PORT_RANGE_START; port <= AGENT_PORT_RANGE_END; port++) {
 		const baseUrl = `http://127.0.0.1:${port}`;
+		if (skip.has(baseUrl)) continue;
 		const healthz = await probe(baseUrl);
 		if (healthz) return { baseUrl, healthz };
 	}
