@@ -2,6 +2,7 @@ import { TypedObject } from '@beak/common/helpers/typescript';
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
 import * as actions from './actions';
+import { insertKeyAfter, reorderRecord, uniqueName } from './helpers';
 import { generateValueIdent, initialVariableSetsState, type VariableSetsState } from './types';
 import type {
 	DuplicateGroupPayload,
@@ -18,64 +19,6 @@ import type {
 	UpdateValuePayload,
 	VariableSetsOpenedPayload,
 } from './types';
-
-// ---------------------------------------------------------------------------
-// Private helpers
-// ---------------------------------------------------------------------------
-
-/**
- * JS preserves insertion order for non-numeric string keys. To reorder a
- * Record we rebuild it with the keys in the new order. ksuid keys are
- * non-numeric so this is safe.
- *
- * TODO ADR 0005 §4 — inline business logic (reorder); extract to a
- * dedicated utility once the §4 sweep lands.
- */
-function reorderRecord<T>(record: Record<string, T>, key: string, toIndex: number): Record<string, T> {
-	const keys = Object.keys(record);
-	const from = keys.indexOf(key);
-	if (from === -1) return record;
-	const clamped = Math.max(0, Math.min(toIndex, keys.length - 1));
-	if (from === clamped) return record;
-	keys.splice(from, 1);
-	keys.splice(clamped, 0, key);
-	const next: Record<string, T> = {};
-	for (const k of keys) next[k] = record[k];
-	return next;
-}
-
-/**
- * TODO ADR 0005 §4 — inline business logic (insertKeyAfter / duplicate);
- * extract to a dedicated utility once the §4 sweep lands.
- */
-function insertKeyAfter<T>(record: Record<string, T>, afterKey: string, newKey: string, value: T): Record<string, T> {
-	const keys = Object.keys(record);
-	const at = keys.indexOf(afterKey);
-	const next: Record<string, T> = {};
-	if (at === -1) {
-		for (const k of keys) next[k] = record[k];
-		next[newKey] = value;
-		return next;
-	}
-	for (let i = 0; i < keys.length; i++) {
-		next[keys[i]] = record[keys[i]];
-		if (i === at) next[newKey] = value;
-	}
-	return next;
-}
-
-/**
- * TODO ADR 0005 §4 — inline business logic (uniqueName); extract to a
- * dedicated utility once the §4 sweep lands.
- */
-function uniqueName(base: string, taken: string[], now: number): string {
-	if (!taken.includes(base)) return base;
-	for (let i = 2; i < 1000; i++) {
-		const candidate = `${base} ${i}`;
-		if (!taken.includes(candidate)) return candidate;
-	}
-	return `${base} ${now}`;
-}
 
 // ---------------------------------------------------------------------------
 // Per-case reducer functions (exported for reuse in buildVariableSetsReducer)
@@ -170,7 +113,6 @@ export function reduceDuplicateItem(state: VariableSetsState, { payload }: Paylo
 
 	const sourceName = variableSet.items[payload.itemId];
 	const newItemId = payload.newItemId;
-	// TODO ADR 0005 §4 — inline uniqueName business logic; extract once the §4 sweep lands
 	const newName = uniqueName(`${sourceName} copy`, TypedObject.values(variableSet.items), payload.now);
 
 	variableSet.items = insertKeyAfter(variableSet.items, payload.itemId, newItemId, newName);
@@ -189,7 +131,6 @@ export function reduceDuplicateGroup(state: VariableSetsState, { payload }: Payl
 
 	const sourceName = variableSet.sets[payload.setId];
 	const newSetId = payload.newSetId;
-	// TODO ADR 0005 §4 — inline uniqueName business logic; extract once the §4 sweep lands
 	const newName = uniqueName(`${sourceName} copy`, TypedObject.values(variableSet.sets), payload.now);
 
 	variableSet.sets = insertKeyAfter(variableSet.sets, payload.setId, newSetId, newName);
@@ -205,14 +146,12 @@ export function reduceDuplicateGroup(state: VariableSetsState, { payload }: Payl
 export function reduceMoveItem(state: VariableSetsState, { payload }: PayloadAction<MoveItemPayload>) {
 	const variableSet = state.variableSets[payload.id];
 	if (!variableSet || !(payload.itemId in variableSet.items)) return;
-	// TODO ADR 0005 §4 — inline reorderRecord business logic; extract once the §4 sweep lands
 	variableSet.items = reorderRecord(variableSet.items, payload.itemId, payload.toIndex);
 }
 
 export function reduceMoveGroup(state: VariableSetsState, { payload }: PayloadAction<MoveGroupPayload>) {
 	const variableSet = state.variableSets[payload.id];
 	if (!variableSet || !(payload.setId in variableSet.sets)) return;
-	// TODO ADR 0005 §4 — inline reorderRecord business logic; extract once the §4 sweep lands
 	variableSet.sets = reorderRecord(variableSet.sets, payload.setId, payload.toIndex);
 }
 
