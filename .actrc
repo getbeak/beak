@@ -1,0 +1,15 @@
+# Default flags for `act` — run with `act` from repo root.
+#
+# - `--container-architecture linux/amd64` is required on Apple Silicon: act
+#   defaults to the host arch but most GitHub-action images only publish amd64.
+# - `macos-latest` is substituted with a heavy ubuntu image (`act-latest`).
+#   We can't actually run macOS in Docker, so platform-specific steps
+#   (electron-builder packaging .dmg/.pkg, codesigning) will diverge from the
+#   real CI. But lint, typecheck, the vite + esbuild builds, and electron-builder's
+#   "compute electron version" check all run before that — enough to iterate on.
+# - Secrets are read from `.secrets.act.local` (gitignored). See that file for
+#   the list of keys; dummy values are fine for any step that doesn't network out.
+
+--container-architecture linux/amd64
+-P macos-latest=catthehacker/ubuntu:act-latest
+--secret-file .secrets.act.local

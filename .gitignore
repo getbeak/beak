@@ -25,3 +25,8 @@ test-results/
 
 .playwright-cli/
 screenshots/
+
+# act (local GitHub Actions runner) — `.actrc` is committed (shared defaults),
+# `.secrets.act.local` is local-only.
+.secrets.act.local
+
