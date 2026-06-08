@@ -1,0 +1,20 @@
+{
+  "enabledPlugins": {
+    "tslsp@0xdeafcafe-tslsp": true,
+    "skills@0xdeafcafe-skills": true
+  },
+  "extraKnownMarketplaces": {
+    "0xdeafcafe-tslsp": {
+      "source": {
+        "source": "github",
+        "repo": "0xdeafcafe/tslsp-cli"
+      }
+    },
+    "0xdeafcafe-skills": {
+      "source": {
+        "source": "github",
+        "repo": "0xdeafcafe/skills"
+      }
+    }
+  }
+}
