@@ -15,4 +15,3 @@ export const AGENT_PAIR_TOKEN_PATH = '/pair/token';
 export const AGENT_FLIGHT_PATH = '/flight';
 
 export const AGENT_FINGERPRINT_NAME = 'beak';
-export const AGENT_PROTOCOL_VERSION = 'pkce-pair-v1';
