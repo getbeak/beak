@@ -50,15 +50,14 @@ export function buildWorkflowsReducer<S extends WorkflowsState>(builder: ActionR
 		})
 		.addCase(insertNewWorkflow, (state, { payload }) => {
 			const incoming = payload.workflow;
-			// TODO ADR 0005 §2 — Date.now() non-deterministic side-effect.
-			const next = incoming.createdAt ? incoming : { ...incoming, createdAt: Date.now() };
+			const next = incoming.createdAt ? incoming : { ...incoming, createdAt: payload.now ?? Date.now() };
 			state.workflows[payload.id] = next;
 		})
 		.addCase(updateWorkflowName, (state, { payload }) => {
 			const workflow = state.workflows[payload.id];
 			if (!workflow) return;
 			workflow.name = payload.name;
-			touch(workflow);
+			touch(workflow, payload.now);
 		})
 		.addCase(updateWorkflowDescription, (state, { payload }) => {
 			const workflow = state.workflows[payload.id];
@@ -66,7 +65,7 @@ export function buildWorkflowsReducer<S extends WorkflowsState>(builder: ActionR
 			const trimmed = payload.description?.trim();
 			if (trimmed) workflow.description = trimmed;
 			else delete workflow.description;
-			touch(workflow);
+			touch(workflow, payload.now);
 		})
 		.addCase(setWorkflowTags, (state, { payload }) => {
 			const workflow = state.workflows[payload.id];
@@ -81,19 +80,19 @@ export function buildWorkflowsReducer<S extends WorkflowsState>(builder: ActionR
 			}
 			if (next.length === 0) delete workflow.tags;
 			else workflow.tags = next;
-			touch(workflow);
+			touch(workflow, payload.now);
 		})
 		.addCase(setWorkflowParent, (state, { payload }) => {
 			const workflow = state.workflows[payload.id];
 			if (!workflow) return;
 			workflow.parent = payload.parent;
-			touch(workflow);
+			touch(workflow, payload.now);
 		})
 		.addCase(addNode, (state, { payload }) => {
 			const workflow = state.workflows[payload.id];
 			if (!workflow) return;
 			workflow.nodes.push(payload.node);
-			touch(workflow);
+			touch(workflow, payload.now);
 		})
 		.addCase(updateNode, (state, { payload }) => {
 			const workflow = state.workflows[payload.id];
@@ -101,7 +100,7 @@ export function buildWorkflowsReducer<S extends WorkflowsState>(builder: ActionR
 			const idx = workflow.nodes.findIndex(n => n.id === payload.nodeId);
 			if (idx === -1) return;
 			workflow.nodes[idx] = { ...workflow.nodes[idx], ...payload.patch } as (typeof workflow.nodes)[number];
-			touch(workflow);
+			touch(workflow, payload.now);
 		})
 		.addCase(updateNodeData, (state, { payload }) => {
 			const workflow = state.workflows[payload.id];
@@ -109,7 +108,7 @@ export function buildWorkflowsReducer<S extends WorkflowsState>(builder: ActionR
 			const node = workflow.nodes.find(n => n.id === payload.nodeId);
 			if (!node) return;
 			node.data = { ...node.data, ...payload.data } as typeof node.data;
-			touch(workflow);
+			touch(workflow, payload.now);
 		})
 		.addCase(moveNode, (state, { payload }) => {
 			const workflow = state.workflows[payload.id];
@@ -117,7 +116,7 @@ export function buildWorkflowsReducer<S extends WorkflowsState>(builder: ActionR
 			const node = workflow.nodes.find(n => n.id === payload.nodeId);
 			if (!node) return;
 			node.position = payload.position;
-			touch(workflow);
+			touch(workflow, payload.now);
 		})
 		.addCase(renameNode, (state, { payload }) => {
 			const workflow = state.workflows[payload.id];
@@ -127,14 +126,14 @@ export function buildWorkflowsReducer<S extends WorkflowsState>(builder: ActionR
 			const trimmed = payload.name?.trim();
 			if (trimmed) (node as { name?: string }).name = trimmed;
 			else delete (node as { name?: string }).name;
-			touch(workflow);
+			touch(workflow, payload.now);
 		})
 		.addCase(removeNode, (state, { payload }) => {
 			const workflow = state.workflows[payload.id];
 			if (!workflow) return;
 			workflow.nodes = workflow.nodes.filter(n => n.id !== payload.nodeId);
 			workflow.edges = workflow.edges.filter(e => e.source !== payload.nodeId && e.target !== payload.nodeId);
-			touch(workflow);
+			touch(workflow, payload.now);
 		})
 		.addCase(removeNodes, (state, { payload }) => {
 			const workflow = state.workflows[payload.id];
@@ -149,7 +148,7 @@ export function buildWorkflowsReducer<S extends WorkflowsState>(builder: ActionR
 			if (dropping.size === 0) return;
 			workflow.nodes = workflow.nodes.filter(n => !dropping.has(n.id));
 			workflow.edges = workflow.edges.filter(e => !dropping.has(e.source) && !dropping.has(e.target));
-			touch(workflow);
+			touch(workflow, payload.now);
 		})
 		.addCase(duplicateNode, (state, { payload }) => {
 			const workflow = state.workflows[payload.id];
@@ -165,20 +164,20 @@ export function buildWorkflowsReducer<S extends WorkflowsState>(builder: ActionR
 				data: JSON.parse(JSON.stringify(source.data)),
 			} as (typeof workflow.nodes)[number];
 			workflow.nodes.push(cloned);
-			touch(workflow);
+			touch(workflow, payload.now);
 		})
 		.addCase(addEdge, (state, { payload }) => {
 			const workflow = state.workflows[payload.id];
 			if (!workflow) return;
 			if (workflow.edges.some(e => e.id === payload.edge.id)) return;
 			workflow.edges.push(payload.edge);
-			touch(workflow);
+			touch(workflow, payload.now);
 		})
 		.addCase(removeEdge, (state, { payload }) => {
 			const workflow = state.workflows[payload.id];
 			if (!workflow) return;
 			workflow.edges = workflow.edges.filter(e => e.id !== payload.edgeId);
-			touch(workflow);
+			touch(workflow, payload.now);
 		})
 		.addCase(updateEdgeLabel, (state, { payload }) => {
 			const workflow = state.workflows[payload.id];
@@ -190,7 +189,7 @@ export function buildWorkflowsReducer<S extends WorkflowsState>(builder: ActionR
 			} else {
 				edge.label = payload.label;
 			}
-			touch(workflow);
+			touch(workflow, payload.now);
 		})
 		.addCase(replaceGraph, (state, { payload }) => {
 			const workflow = state.workflows[payload.id];
@@ -198,14 +197,14 @@ export function buildWorkflowsReducer<S extends WorkflowsState>(builder: ActionR
 			// TODO ADR 0005 §4 — graph replacement is structural; callers own the arrays.
 			workflow.nodes = payload.nodes;
 			workflow.edges = payload.edges;
-			touch(workflow);
+			touch(workflow, payload.now);
 		})
 		.addCase(clearGraph, (state, { payload }) => {
 			const workflow = state.workflows[payload.id];
 			if (!workflow) return;
 			workflow.nodes = workflow.nodes.filter(n => n.type === 'start');
 			workflow.edges = [];
-			touch(workflow);
+			touch(workflow, payload.now);
 		})
 		.addCase(removeWorkflowFromStore, (state, { payload }) => {
 			delete state.workflows[payload];
@@ -227,13 +226,13 @@ export function buildWorkflowsReducer<S extends WorkflowsState>(builder: ActionR
 }
 
 /**
- * Inline `Date.now()` stamping helper — call at the END of each case
- * AFTER confirming a real mutation occurred. Bypassed when the case
- * short-circuits as a no-op so identity equality stays intact for the
- * no-op tests.
+ * Stamp `updatedAt` on a workflow. Accepts the epoch-ms timestamp minted
+ * at dispatch time (ADR 0005 §2) — falling back to `Date.now()` only
+ * when the caller didn't supply one (legacy / test paths). Call at the
+ * END of each case AFTER confirming a real mutation occurred; bypassed
+ * when the case short-circuits as a no-op so identity equality stays
+ * intact for the no-op tests.
  */
-function touch(workflow: { updatedAt?: number }): void {
-	// TODO ADR 0005 §2 — Date.now() is non-deterministic; extract to a clock
-	// argument if tests ever need deterministic updatedAt values.
-	workflow.updatedAt = Date.now();
+function touch(workflow: { updatedAt?: number }, now?: number): void {
+	workflow.updatedAt = now ?? Date.now();
 }
