@@ -1,3 +1,4 @@
+import { type AssetRef, assetRefSchema } from '@beak/common/types/asset-ref';
 import type { ValueSections } from '@getbeak/types/values';
 import { z } from 'zod';
 
@@ -109,14 +110,7 @@ export const bodyValueSchema = z.discriminatedUnion('type', [
 			type: z.literal('file'),
 			fileReferenceId: z.string().optional(),
 			contentType: z.string().optional(),
-			assetRef: z
-				.object({
-					sha256: z.string().regex(/^[0-9a-f]{64}$/),
-					size: z.number().int().nonnegative(),
-					contentType: z.string().optional(),
-				})
-				.strict()
-				.optional(),
+			assetRef: assetRefSchema.optional(),
 		})
 		.strict(),
 	z
@@ -147,7 +141,7 @@ export type BodyValue =
 			type: 'file';
 			fileReferenceId?: string;
 			contentType?: string;
-			assetRef?: { sha256: string; size: number; contentType?: string };
+			assetRef?: AssetRef;
 	  }
 	| { type: 'graphql'; query: string; variables: PropertyValueMap }
 	| { type: 'grpc'; service: string; method: string; requestJson: string };

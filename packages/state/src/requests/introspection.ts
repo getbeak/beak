@@ -1,12 +1,7 @@
+import type { AssetRef } from '@beak/common/types/asset-ref';
 import type { RequestFile, RequestFileOverride } from '../schemas/beak-project';
 
-/** Same structural shape as `runtime-shared/assets`'s `AssetRef`. Duplicated
- *  here so callers don't pick up a runtime dep just to read refs. */
-export interface AssetRef {
-	sha256: string;
-	size: number;
-	contentType?: string;
-}
+export type { AssetRef };
 
 /**
  * Walk a request and return every `AssetRef` it carries. Used by:
