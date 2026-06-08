@@ -14,6 +14,7 @@ export { default as AssetStore } from './assets';
 export { default as AssetGc } from './assets/gc';
 export type { GitProvider, Providers, RuntimeCapabilities, RuntimeOptions } from './base';
 export { RuntimeBase } from './base';
+export { default as NotificationPort } from './ports/notification';
 export { default as ProjectOpener } from './ports/project-opener';
 export type {
 	ExtensionRegistryOptions,

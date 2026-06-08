@@ -1,12 +1,9 @@
-import { IpcNotificationServiceMain, type SendNotificationReq } from '@beak/common/ipc/notification';
-import { ipcMain, Notification, shell } from 'electron';
+import { IpcNotificationServiceMain } from '@beak/common/ipc/notification';
+import { ipcMain } from 'electron';
+
+import getRuntime from '../host';
 
 const service = new IpcNotificationServiceMain(ipcMain);
 
-service.registerSendNotification(async (_event, payload: SendNotificationReq) => {
-	if (!Notification.isSupported()) return;
-
-	new Notification(payload).show();
-});
-
-service.registerNotificationBeep(async () => shell.beep());
+service.registerSendNotification(async (_event, payload) => getRuntime().providers.notification.sendNotification(payload));
+service.registerNotificationBeep(async () => getRuntime().providers.notification.beep());

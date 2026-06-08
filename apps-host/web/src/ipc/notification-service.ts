@@ -1,30 +1,9 @@
 import { IpcNotificationServiceMain } from '@beak/common/ipc/notification';
 
+import getRuntime from '../host';
 import { webIpcMain } from './ipc';
 
 const service = new IpcNotificationServiceMain(webIpcMain);
 
-service.registerNotificationBeep(async () => console.warn('Not implemented: `registerNotificationBeep`'));
-service.registerSendNotification(async (_event, payload) => {
-	if (!(await checkIfPermissionsAllowed())) return;
-
-	new Notification(payload.title ?? 'Title', {
-		body: payload.body,
-		icon: '/images/logo-title.png',
-		// TODO(afr): Set custom type for this due to experimental status
-		// vibrate: payload.silent ? void 0 : [200, 100, 200],
-		silent: payload.silent,
-		requireInteraction: payload.urgency === 'critical',
-	});
-});
-
-async function checkIfPermissionsAllowed(): Promise<boolean> {
-	if (!window.isSecureContext) return false;
-	if (!('Notification' in window)) return false;
-
-	if (Notification.permission === 'granted') return true;
-
-	const permission = await Notification.requestPermission();
-
-	return permission === 'granted';
-}
+service.registerSendNotification(async (_event, payload) => getRuntime().providers.notification.sendNotification(payload));
+service.registerNotificationBeep(async () => getRuntime().providers.notification.beep());
