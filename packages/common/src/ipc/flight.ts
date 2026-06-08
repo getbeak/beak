@@ -32,6 +32,7 @@ export type FlightMessageType = (typeof FlightMessages)[keyof typeof FlightMessa
 const StartFlightSchema = z.object({
 	flightId: z.string().min(1),
 	requestId: z.string().min(1),
+	projectFolder: z.string().optional(),
 	request: z
 		.object({
 			verb: z.string(),

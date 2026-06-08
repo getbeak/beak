@@ -5,5 +5,7 @@ import getRuntime from '../host';
 
 const service = new IpcNotificationServiceMain(ipcMain);
 
-service.registerSendNotification(async (_event, payload) => getRuntime().providers.notification.sendNotification(payload));
+service.registerSendNotification(async (_event, payload) =>
+	getRuntime().providers.notification.sendNotification(payload),
+);
 service.registerNotificationBeep(async () => getRuntime().providers.notification.beep());

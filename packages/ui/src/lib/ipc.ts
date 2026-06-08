@@ -18,6 +18,7 @@ import { IpcPreferencesServiceRenderer } from '@beak/common/ipc/preferences';
 import { IpcProjectServiceRenderer } from '@beak/common/ipc/project';
 import type { PartialIpcRenderer } from '@beak/common/ipc/renderer';
 import { IpcSocketServiceRenderer } from '@beak/common/ipc/socket';
+import { IpcStreamServiceRenderer } from '@beak/common/ipc/streams';
 import { IpcValuesServiceRenderer } from '@beak/common/ipc/values';
 import { IpcWindowServiceRenderer } from '@beak/common/ipc/window';
 
@@ -45,5 +46,6 @@ export const ipcOpenApiService = new IpcOpenApiServiceRenderer(partialIpcRendere
 export const ipcPreferencesService = new IpcPreferencesServiceRenderer(partialIpcRenderer);
 export const ipcProjectService = new IpcProjectServiceRenderer(partialIpcRenderer);
 export const ipcSocketService = new IpcSocketServiceRenderer(partialIpcRenderer);
+export const ipcStreamService = new IpcStreamServiceRenderer(partialIpcRenderer);
 export const ipcValuesService = new IpcValuesServiceRenderer(partialIpcRenderer);
 export const ipcWindowService = new IpcWindowServiceRenderer(partialIpcRenderer);

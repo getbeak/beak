@@ -21,6 +21,7 @@ import { parseValueSections } from '@beak/ui/features/variables/parser';
 import { resolveValueSections } from '@beak/ui/features/variables/resolver';
 import binaryStore from '@beak/ui/lib/binary-store';
 import { ipcFlightService, ipcFsService, ipcNotificationService, ipcPreferencesService } from '@beak/ui/lib/ipc';
+import { streamRegistry } from '@beak/ui/services/streams/registry';
 import { convertRequestToUrl } from '@beak/ui/services/url';
 import { makeVariableContext } from '@beak/ui/services/variables/context';
 import { requestAllowsBody } from '@beak/ui/utils/http';
@@ -80,6 +81,11 @@ function buildPrepareDeps(): PrepareRequestDeps {
 		requestAllowsBody,
 		requestBodyContentType,
 		generateBoundary: () => `beak-${ksuid.generate('multipart').toString()}`,
+		registerStream: (stream, size, contentType) => {
+			const streamId = ksuid.generate('stream').toString();
+			streamRegistry.register(streamId, { stream, size, contentType });
+			return streamId;
+		},
 		userAgent: `Beak/${windowSessionInstance.version ?? ''} (${windowSessionInstance.os})`,
 		generateId: kind => ksuid.generate(kind).toString(),
 	};
@@ -220,7 +226,12 @@ export function registerFlightEffects(start: AppStartListening) {
 				});
 			});
 
-			ipcFlightService.startFlight({ flightId, requestId, request });
+			ipcFlightService.startFlight({
+				flightId,
+				requestId,
+				request,
+				projectFolder: api.getState().global.project.folderPath ?? undefined,
+			});
 
 			try {
 				await settled;

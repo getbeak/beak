@@ -34,6 +34,7 @@ export const KSUID_PREFIXES = {
 	set: 'set',
 	socket: 'socket',
 	stream: 'stream',
+	streampull: 'streampull',
 	test: 'test',
 	urlencodeditem: 'urlencodeditem',
 	workflow: 'workflow',

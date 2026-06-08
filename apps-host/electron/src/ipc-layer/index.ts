@@ -17,5 +17,6 @@ import './openapi-service';
 import './project-service';
 import './preferences-service';
 import './socket-service';
+import './streams-service';
 import './values-service';
 import './window-service';
