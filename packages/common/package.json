@@ -28,7 +28,7 @@
 		"zod": "^4.4.3"
 	},
 	"devDependencies": {
-		"electron": "^42.0.1",
+		"electron": "^39.8.5",
 		"vitest": "^4.1.6",
 		"@vitest/coverage-v8": "^4.1.6"
 	}
