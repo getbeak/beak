@@ -1,10 +1,10 @@
+import type { FlightCompletePayload, FlightHeartbeatPayload } from '@beak/common/types/requester';
 import {
 	AGENT_FLIGHT_PATH,
 	flightCompleteSchema,
 	flightFailedSchema,
 	flightHeartbeatSchema,
 } from '@beak/common/wire/agent';
-import type { FlightCompletePayload, FlightHeartbeatPayload } from '@beak/common/types/requester';
 
 import type { Requester, RequesterOptions } from './types';
 

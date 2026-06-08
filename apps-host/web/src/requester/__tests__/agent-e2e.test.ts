@@ -1,15 +1,15 @@
 import { type ChildProcess, spawn, spawnSync } from 'node:child_process';
 import { mkdtempSync, rmSync } from 'node:fs';
-import { createServer, type Server } from 'node:http';
+import { createServer, type IncomingMessage, type ServerResponse } from 'node:http';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
-import { AGENT_HEALTHZ_PATH, AGENT_PAIR_PATH, AGENT_PAIR_TOKEN_PATH } from '@beak/common/wire/agent';
 import type {
 	FlightCompletePayload,
 	FlightFailedPayload,
 	FlightHeartbeatPayload,
 	FlightRequestPayload,
 } from '@beak/common/types/requester';
+import { AGENT_HEALTHZ_PATH, AGENT_PAIR_PATH, AGENT_PAIR_TOKEN_PATH } from '@beak/common/wire/agent';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { createAgentRequester } from '../agent';
@@ -97,9 +97,7 @@ description('agent end-to-end (real binary)', () => {
 				// macOS: os.UserConfigDir reads HOME → Library/Application Support
 				// Linux: XDG_CONFIG_HOME / XDG_RUNTIME_DIR
 				HOME: configDir,
-				// biome-ignore lint/style/useNamingConvention: env var names.
 				XDG_CONFIG_HOME: configDir,
-				// biome-ignore lint/style/useNamingConvention: env var names.
 				XDG_RUNTIME_DIR: configDir,
 			},
 			stdio: ['ignore', 'pipe', 'pipe'],
@@ -141,7 +139,7 @@ description('agent end-to-end (real binary)', () => {
 			`&code_challenge=${encodeURIComponent(challenge)}` +
 			'&code_challenge_method=S256' +
 			`&return=${encodeURIComponent(returnUrl)}`;
-		const pairResp = await fetch(pairUrl, { headers: { 'Origin': origin } });
+		const pairResp = await fetch(pairUrl, { headers: { Origin: origin } });
 		expect(pairResp.status).toBe(200);
 		await pairResp.body?.cancel();
 
@@ -162,7 +160,7 @@ description('agent end-to-end (real binary)', () => {
 		// 3. POST /pair/token to exchange the code for a bearer
 		const tokenResp = await fetch(`${baseUrl}${AGENT_PAIR_TOKEN_PATH}`, {
 			method: 'POST',
-			headers: { 'Origin': origin, 'Content-Type': 'application/json' },
+			headers: { Origin: origin, 'Content-Type': 'application/json' },
 			body: JSON.stringify({ code, code_verifier: verifier }),
 		});
 		expect(tokenResp.status).toBe(200);
@@ -171,7 +169,7 @@ description('agent end-to-end (real binary)', () => {
 		return payload.token;
 	}
 
-	function startUpstream(handler: Parameters<typeof createServer>[0]) {
+	function startUpstream(handler: (req: IncomingMessage, res: ServerResponse) => void) {
 		const server = createServer(handler);
 		return new Promise<{ url: string; close: () => Promise<void> }>(res => {
 			server.listen(0, '127.0.0.1', () => {

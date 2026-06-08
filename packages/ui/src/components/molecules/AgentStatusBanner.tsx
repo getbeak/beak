@@ -32,7 +32,7 @@ interface BannerContent {
 function compactLoopback(url?: string): string {
 	if (!url) return '';
 	const match = url.match(/^https?:\/\/127\.0\.0\.1(:\d+)?/);
-	return match ? match[1] ?? '' : url;
+	return match ? (match[1] ?? '') : url;
 }
 
 /**
