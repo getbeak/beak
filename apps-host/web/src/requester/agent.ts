@@ -70,6 +70,10 @@ export function createAgentRequester(baseUrl: string, token: string): Requester 
 			try {
 				await consumeAgentSse(response.body, callbacks, flightId);
 			} catch (error) {
+				if (signal.aborted) {
+					callbacks.failed({ flightId, error: new Error('flight_cancelled') });
+					return;
+				}
 				callbacks.failed({ flightId, error: error as Error });
 			}
 		},
