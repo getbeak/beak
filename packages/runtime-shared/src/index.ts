@@ -24,6 +24,8 @@ export type {
 	ShowOpenDialogResult,
 } from './ports/dialog';
 export type { default as Dialog } from './ports/dialog';
+export type { ExtensionSender } from './ports/extension-runtime';
+export { default as ExtensionRuntime } from './ports/extension-runtime';
 export { default as NotificationPort } from './ports/notification';
 export { default as ProjectOpener } from './ports/project-opener';
 export type {

@@ -245,4 +245,20 @@ export class IpcExtensionsServiceMain extends IpcServiceMain<'extensions'> {
 	variableParseValueSections(wc: WebContents, payload: VariableParseValueSections) {
 		this.sendMessage(wc, ExtensionsMessages.VariableParseValueSections, payload);
 	}
+
+	/**
+	 * Shell-agnostic variant — accepts any object that can `send` a channel
+	 * message. Use this from adapters that hold an `ExtensionSender` instead
+	 * of a raw Electron `WebContents`.
+	 */
+	variableParseValueSectionsBySender(
+		sender: { send(channel: string, payload: unknown): void },
+		payload: VariableParseValueSections,
+	) {
+		sender.send(this.channel, {
+			code: ExtensionsMessages.VariableParseValueSections,
+			payload,
+			timestamp: Date.now(),
+		});
+	}
 }
