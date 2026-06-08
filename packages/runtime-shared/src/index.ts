@@ -14,6 +14,7 @@ export { default as AssetStore } from './assets';
 export { default as AssetGc } from './assets/gc';
 export type { GitProvider, Providers, RuntimeCapabilities, RuntimeOptions } from './base';
 export { RuntimeBase } from './base';
+export { default as ProjectOpener } from './ports/project-opener';
 export type {
 	ExtensionRegistryOptions,
 	RegistryPackageMetadata,
@@ -128,5 +129,14 @@ export default class Runtime extends RuntimeBase {
 	 */
 	get secrets() {
 		return this.projectSecrets;
+	}
+
+	/**
+	 * Host-specific project-opener port — shows a folder picker and
+	 * validates/opens a project folder. Both shells supply their own
+	 * adapter; see ADR 0006 §3.
+	 */
+	get projectOpener() {
+		return this.providers.projectOpener;
 	}
 }
