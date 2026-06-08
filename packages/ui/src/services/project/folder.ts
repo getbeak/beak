@@ -1,7 +1,7 @@
 import type { FolderNode } from '@getbeak/types/nodes';
 import path from 'path-browserify';
 
-import { ipcFsService } from '../ipc';
+import { ipcFsService } from '@beak/ui/lib/ipc';
 import { generateSafeNewPath } from './utils';
 
 export async function createFolderNode(directory: string, name?: string) {

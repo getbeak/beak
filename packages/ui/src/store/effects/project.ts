@@ -22,20 +22,25 @@ import {
 	makeTabPermanent,
 } from '@beak/ui/features/tabs/store/actions';
 import type { ActiveRename } from '@beak/ui/features/tree-view/types';
-import { createFolderNode, removeFolderNode, renameFolderNode } from '@beak/ui/lib/beak-project/folder';
-import { moveNodesOnDisk } from '@beak/ui/lib/beak-project/nodes';
-import { readProjectFile } from '@beak/ui/lib/beak-project/project';
+import { ipcDialogService, ipcFsService } from '@beak/ui/lib/ipc';
 import {
+	createFolderNode,
 	createRequestNode,
 	duplicateRequestNode,
+	loadProject,
+	moveNodesOnDisk,
+	readProjectFile,
 	readRequestNode,
+	registerFolderRename,
+	registerRequestRename,
+	removeFolderNode,
 	removeRequestNode,
+	renameFolderNode,
 	renameRequestNode,
+	startTreeWatcher,
 	unlinkAndPersistAs,
 	writeRequestNode,
-} from '@beak/ui/lib/beak-project/request';
-import { ipcDialogService, ipcFsService } from '@beak/ui/lib/ipc';
-import { loadProject, registerFolderRename, registerRequestRename, startTreeWatcher } from '@beak/ui/services/project';
+} from '@beak/ui/services/project';
 import type { FolderNode, RequestNode, Tree } from '@getbeak/types/nodes';
 import path from 'path-browserify';
 import * as uuid from 'uuid';

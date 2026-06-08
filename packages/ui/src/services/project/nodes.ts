@@ -1,7 +1,7 @@
 import type { Nodes } from '@getbeak/types/nodes';
 import path from 'path-browserify';
 
-import { ipcDialogService, ipcFsService } from '../ipc';
+import { ipcDialogService, ipcFsService } from '@beak/ui/lib/ipc';
 
 export async function moveNodesOnDisk(sourceNode: Nodes, destinationNode: Nodes | null) {
 	const sourcePath = sourceNode.filePath;
