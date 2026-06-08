@@ -262,4 +262,3 @@ func originAllowedForDecision(r *http.Request, loopback string) bool {
 	}
 	return strings.EqualFold(origin, loopback)
 }
-

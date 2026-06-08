@@ -24,9 +24,9 @@ type PendingPairing struct {
 const PendingTTL = 5 * time.Minute
 
 var (
-	ErrPendingNotFound = errors.New("pending pairing not found")
-	ErrPendingExpired  = errors.New("pending pairing expired")
-	ErrPendingConsumed = errors.New("pending pairing already consumed")
+	ErrPendingNotFound  = errors.New("pending pairing not found")
+	ErrPendingExpired   = errors.New("pending pairing expired")
+	ErrPendingConsumed  = errors.New("pending pairing already consumed")
 	ErrVerifierMismatch = errors.New("code_verifier does not match code_challenge")
 )
 

@@ -16,10 +16,10 @@ import (
 // captureEmitter records every emitted event so a test can assert
 // the wire-level outcome of a Run call.
 type captureEmitter struct {
-	mu        sync.Mutex
+	mu         sync.Mutex
 	heartbeats []wire.HeartbeatStage
-	completes []wire.FlightComplete
-	failures  []wire.FlightFailed
+	completes  []wire.FlightComplete
+	failures   []wire.FlightFailed
 }
 
 func (c *captureEmitter) Heartbeat(stage wire.HeartbeatStage, _ any) {

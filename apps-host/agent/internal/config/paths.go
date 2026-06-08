@@ -10,9 +10,9 @@ import (
 // ConfigDir returns the per-user directory the agent uses for tokens.json
 // and similar long-lived state. Created on first use.
 //
-//   macOS:   ~/Library/Application Support/beak-agent
-//   Linux:   $XDG_CONFIG_HOME/beak-agent  (default ~/.config/beak-agent)
-//   Windows: %APPDATA%/beak-agent
+//	macOS:   ~/Library/Application Support/beak-agent
+//	Linux:   $XDG_CONFIG_HOME/beak-agent  (default ~/.config/beak-agent)
+//	Windows: %APPDATA%/beak-agent
 func ConfigDir() (string, error) {
 	dir, err := osConfigDir()
 	if err != nil {

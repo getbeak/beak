@@ -26,9 +26,9 @@ type Emitter interface {
 }
 
 type Options struct {
-	Payload  wire.FlightRequestPayload
-	Emitter  Emitter
-	Client   *http.Client // optional; defaults to http.DefaultClient with a longer-than-default timeout
+	Payload wire.FlightRequestPayload
+	Emitter Emitter
+	Client  *http.Client // optional; defaults to http.DefaultClient with a longer-than-default timeout
 }
 
 // Verbs that don't carry a request body per RFC 9110. Matches the
