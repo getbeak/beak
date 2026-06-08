@@ -1,7 +1,8 @@
-import type { FolderNode, Tree, ValidRequestNode } from '@getbeak/types/nodes';
+import type { FolderNode, ValidRequestNode } from '@getbeak/types/nodes';
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
 import type { ProjectCookieConfig } from '../schemas';
+import { basename, moveFolderInTree, renameFolderInTree } from './helpers';
 import type {
 	MaterialiseInMemoryProjectPayload,
 	MoveNodeInTreePayload,
@@ -13,59 +14,6 @@ import type {
 	RenameProjectPayload,
 } from './types';
 import { initialProjectTreeState } from './types';
-
-// ---------------------------------------------------------------------------
-// Inline business logic helpers
-// TODO ADR 0005 §4: extract rewriteFolderTreePaths to a pure helper alongside the slice
-
-/**
- * Re-home a folder under `newPath`, rewriting every descendant's
- * `filePath` and `parent`. Folder descendants are re-keyed (folders are
- * tree-keyed by filePath); requests stay keyed by ksuid.
- *
- * Used by both folder rename and folder move — same path-rewrite
- * mechanics, the caller decides what `newPath` is.
- *
- * Mutates `tree` in place and returns the new tree object.
- */
-// TODO ADR 0005 §4: extract to a pure helper alongside the slice
-function rewriteFolderTreePaths(tree: Tree, folder: FolderNode, newPath: string): Tree {
-	const oldPath = folder.filePath;
-	if (newPath === oldPath) return tree;
-
-	const oldPrefix = `${oldPath}/`;
-	const newPrefix = `${newPath}/`;
-
-	const next = {} as Tree;
-	for (const [key, child] of Object.entries(tree)) {
-		if (child === folder) continue; // re-inserted by caller
-		if (child.filePath === oldPath) continue; // duplicate of `folder`
-
-		if (child.filePath.startsWith(oldPrefix)) {
-			child.filePath = newPrefix + child.filePath.slice(oldPrefix.length);
-			if (child.parent === oldPath) {
-				child.parent = newPath;
-			} else if (child.parent && child.parent.startsWith(oldPrefix)) {
-				child.parent = newPrefix + child.parent.slice(oldPrefix.length);
-			}
-			next[child.type === 'folder' ? child.filePath : key] = child;
-			continue;
-		}
-
-		next[key] = child;
-	}
-
-	folder.filePath = newPath;
-	folder.id = newPath;
-	next[newPath] = folder;
-	return next;
-}
-
-// TODO ADR 0005 §4: extract to a pure helper alongside the slice
-function basename(p: string): string {
-	const slash = p.lastIndexOf('/');
-	return slash >= 0 ? p.slice(slash + 1) : p;
-}
 
 // ---------------------------------------------------------------------------
 // Slice
@@ -192,13 +140,7 @@ const projectSlice = createSlice({
 			}
 
 			// Folder rename: rebuild the new path under the same parent dir.
-			// TODO ADR 0005 §4: extract rename pipeline to a pure helper alongside the slice
-			node.name = payload.name;
-			const oldPath = node.filePath;
-			const slash = oldPath.lastIndexOf('/');
-			const dir = slash >= 0 ? oldPath.slice(0, slash) : '';
-			const newPath = dir ? `${dir}/${payload.name}` : payload.name;
-			state.tree = rewriteFolderTreePaths(state.tree as Tree, node as FolderNode, newPath);
+			state.tree = renameFolderInTree(state.tree, node as FolderNode, payload.name);
 		},
 
 		/**
@@ -219,9 +161,7 @@ const projectSlice = createSlice({
 				return;
 			}
 
-			// TODO ADR 0005 §4: extract move pipeline to a pure helper alongside the slice
-			node.parent = payload.destinationFolderPath;
-			state.tree = rewriteFolderTreePaths(state.tree as Tree, node as FolderNode, newPath);
+			state.tree = moveFolderInTree(state.tree, node as FolderNode, payload.destinationFolderPath);
 		},
 	},
 });
