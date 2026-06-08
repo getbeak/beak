@@ -13,8 +13,8 @@ import fetch, { type RequestInit, type Response } from 'node-fetch';
 import { assembleMultipart } from './multipart';
 import { openAssetStreamOrBuffer } from './producer';
 
-export { registerStreamHost, streamProducerToReadable } from './stream-host';
 export type { StreamHost } from './stream-host';
+export { registerStreamHost, streamProducerToReadable } from './stream-host';
 
 // Verbs that semantically don't carry a body. Matches the renderer-side
 // `requestAllowsBody` so both layers agree on which verbs get a body

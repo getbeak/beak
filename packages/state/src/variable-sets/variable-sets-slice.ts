@@ -1,10 +1,9 @@
 import { TypedObject } from '@beak/common/helpers/typescript';
-import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import type { VariableSetValue } from '@getbeak/types/variable-sets';
+import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
 import * as actions from './actions';
 import { insertKeyAfter, reorderRecord, uniqueName } from './helpers';
-import { generateValueIdent, initialVariableSetsState, type VariableSetsState } from './types';
 import type {
 	DuplicateGroupPayload,
 	DuplicateItemPayload,
@@ -20,6 +19,7 @@ import type {
 	UpdateValuePayload,
 	VariableSetsOpenedPayload,
 } from './types';
+import { generateValueIdent, initialVariableSetsState, type VariableSetsState } from './types';
 
 // ---------------------------------------------------------------------------
 // Per-case reducer functions (exported for reuse in buildVariableSetsReducer)

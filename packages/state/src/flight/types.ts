@@ -4,9 +4,7 @@ import type { ResponseOverview } from '@getbeak/types/response';
 
 import type { FlightError, FlightErrorCode } from './errors';
 
-export type { FlightRequest, FlightRequestKeyValue };
-
-export type { FlightError, FlightErrorCode };
+export type { FlightError, FlightErrorCode, FlightRequest, FlightRequestKeyValue };
 
 export type FlightReason = 'request_editor' | 'graphql_schema' | 'automation' | 'manual';
 export type ShowResultMode = boolean | 'on_failure';
