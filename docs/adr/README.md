@@ -41,10 +41,11 @@ Do **not** write an ADR for:
 
 ## Index
 
-| #    | Status   | Title                                                                  |
-| ---- | -------- | ---------------------------------------------------------------------- |
-| 0000 | Accepted | [Adopt MADR-style ADRs and Gherkin feature files](0000-adr-process.md) |
-| 0001 | Accepted | [Local agent for the web host](0001-local-agent-for-web-host.md)       |
+| #    | Status   | Title                                                                            |
+| ---- | -------- | -------------------------------------------------------------------------------- |
+| 0000 | Accepted | [Adopt MADR-style ADRs and Gherkin feature files](0000-adr-process.md)           |
+| 0001 | Accepted | [Local agent for the web host](0001-local-agent-for-web-host.md)                 |
+| 0003 | Accepted | [Unified Worker-based extension sandbox](0003-unified-worker-extensions.md)      |
 
 ## Granularity guideline
 
