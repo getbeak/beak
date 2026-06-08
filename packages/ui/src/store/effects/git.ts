@@ -1,7 +1,6 @@
 import {
 	addBranch,
 	changeSelectedBranch,
-	type GitFileStatus,
 	type GitOperation,
 	gitOpened,
 	operationFailed,
@@ -22,7 +21,18 @@ import {
 	statusFetched,
 } from '@beak/state/git';
 import createFsEmitter, { type FsSubscription, scanDirectoryRecursively } from '@beak/ui/lib/fs-emitter';
-import { ipcFsService, ipcGitService } from '@beak/ui/lib/ipc';
+import { ipcFsService } from '@beak/ui/lib/ipc';
+import {
+	gitCheckout,
+	gitCommit,
+	gitCreateBranch,
+	gitFetch,
+	gitFetchStatus,
+	gitInit,
+	gitListRemotes,
+	gitPull,
+	gitPush,
+} from '@beak/ui/services/git';
 import path from 'path-browserify';
 
 import type { AppStartListening } from '../listener';
@@ -30,14 +40,6 @@ import type { AppStartListening } from '../listener';
 const headPrefix = path.join('refs', 'heads');
 const headPrefixFs = path.join('.git', headPrefix);
 const headFilePathFs = path.join('.git', 'HEAD');
-
-/**
- * The renderer no longer tracks the project folder — the host pins `dir`
- * to the project root attached to the invoking window before forwarding
- * to isomorphic-git. We still need to satisfy the IPC schema's `min(1)`
- * constraint, so the renderer ships a placeholder.
- */
-const dir = '.';
 
 export function registerGitEffects(start: AppStartListening) {
 	start({
@@ -75,8 +77,8 @@ export function registerGitEffects(start: AppStartListening) {
 			// Surface remotes once on open so the source-control panel can render
 			// them immediately.
 			try {
-				const remotes = await ipcGitService.listRemotes({ dir });
-				api.dispatch(remotesUpdated(remotes.remotes));
+				const remotes = await gitListRemotes();
+				api.dispatch(remotesUpdated(remotes));
 			} catch {
 				/* not a git repo or read failed — silently skip */
 			}
@@ -89,20 +91,14 @@ export function registerGitEffects(start: AppStartListening) {
 			const op: GitOperation = 'init';
 			api.dispatch(operationStarted({ op }));
 			try {
-				await ipcGitService.init({ dir, defaultBranch: action.payload.defaultBranch ?? 'main' });
-				const { branch } = await ipcGitService.currentBranch({ dir });
+				const { branch, remotes } = await gitInit(action.payload);
 				api.dispatch(
 					gitOpened({
 						branches: branch ? [{ name: branch }] : [],
 						selectedBranch: branch ?? undefined,
 					}),
 				);
-				try {
-					const remotes = await ipcGitService.listRemotes({ dir });
-					api.dispatch(remotesUpdated(remotes.remotes));
-				} catch {
-					/* no remotes yet — fine */
-				}
+				api.dispatch(remotesUpdated(remotes));
 				api.dispatch(operationSucceeded({ op, notice: branch ?? undefined }));
 				api.dispatch(requestStatus());
 			} catch (err) {
@@ -115,8 +111,7 @@ export function registerGitEffects(start: AppStartListening) {
 		actionCreator: requestStatus,
 		effect: async (_action, api) => {
 			try {
-				const result = await ipcGitService.statusMatrix({ dir });
-				api.dispatch(statusFetched(summariseStatus(result.rows)));
+				api.dispatch(statusFetched(await gitFetchStatus()));
 			} catch (err) {
 				api.dispatch(statusFailed(err instanceof Error ? err.message : String(err)));
 			}
@@ -129,29 +124,8 @@ export function registerGitEffects(start: AppStartListening) {
 			const op: GitOperation = 'commit';
 			api.dispatch(operationStarted({ op }));
 			try {
-				// Auto-stage everything that's drifted from index OR untracked
-				// before committing. Mirrors `git add -A && git commit`. The
-				// renderer can drive a richer per-file workflow later; for now
-				// a single Commit button captures the whole working tree.
-				const status = await ipcGitService.statusMatrix({ dir });
-				for (const [filepath, head, workdir, stage] of status.rows) {
-					const drifted = workdir > 0 && workdir !== stage;
-					const untracked = head === 0 && workdir > 0;
-					const deleted = head !== 0 && workdir === 0;
-					if (drifted || untracked) {
-						await ipcGitService.add({ dir, filepath });
-					} else if (deleted) {
-						await ipcGitService.remove({ dir, filepath });
-					}
-				}
-
-				const result = await ipcGitService.commit({
-					dir,
-					message: action.payload.message,
-					author: action.payload.author,
-					committer: action.payload.committer,
-				});
-				api.dispatch(operationSucceeded({ op, notice: result.oid.slice(0, 7) }));
+				const { shortOid } = await gitCommit(action.payload);
+				api.dispatch(operationSucceeded({ op, notice: shortOid }));
 				api.dispatch(requestStatus());
 			} catch (err) {
 				api.dispatch(operationFailed({ op, error: err instanceof Error ? err.message : String(err) }));
@@ -165,13 +139,7 @@ export function registerGitEffects(start: AppStartListening) {
 			const op: GitOperation = 'push';
 			api.dispatch(operationStarted({ op }));
 			try {
-				const result = await ipcGitService.push({
-					dir,
-					remote: action.payload.remote,
-					ref: action.payload.ref,
-					force: action.payload.force,
-					auth: action.payload.auth,
-				});
+				const result = await gitPush(action.payload);
 				if (result.ok) {
 					api.dispatch(operationSucceeded({ op }));
 				} else {
@@ -189,14 +157,7 @@ export function registerGitEffects(start: AppStartListening) {
 			const op: GitOperation = 'pull';
 			api.dispatch(operationStarted({ op }));
 			try {
-				await ipcGitService.pull({
-					dir,
-					remote: action.payload.remote,
-					ref: action.payload.ref,
-					fastForwardOnly: action.payload.fastForwardOnly,
-					author: action.payload.author,
-					auth: action.payload.auth,
-				});
+				await gitPull(action.payload);
 				api.dispatch(operationSucceeded({ op }));
 				api.dispatch(requestStatus());
 			} catch (err) {
@@ -211,12 +172,7 @@ export function registerGitEffects(start: AppStartListening) {
 			const op: GitOperation = 'fetch';
 			api.dispatch(operationStarted({ op }));
 			try {
-				await ipcGitService.fetch({
-					dir,
-					remote: action.payload.remote,
-					ref: action.payload.ref,
-					auth: action.payload.auth,
-				});
+				await gitFetch(action.payload);
 				api.dispatch(operationSucceeded({ op }));
 			} catch (err) {
 				api.dispatch(operationFailed({ op, error: err instanceof Error ? err.message : String(err) }));
@@ -230,11 +186,7 @@ export function registerGitEffects(start: AppStartListening) {
 			const op: GitOperation = 'checkout';
 			api.dispatch(operationStarted({ op }));
 			try {
-				await ipcGitService.checkout({
-					dir,
-					ref: action.payload.ref,
-					force: action.payload.force,
-				});
+				await gitCheckout(action.payload);
 				api.dispatch(operationSucceeded({ op }));
 				api.dispatch(requestStatus());
 			} catch (err) {
@@ -249,11 +201,7 @@ export function registerGitEffects(start: AppStartListening) {
 			const op: GitOperation = 'branch';
 			api.dispatch(operationStarted({ op }));
 			try {
-				await ipcGitService.branch({
-					dir,
-					ref: action.payload.ref,
-					object: action.payload.object,
-				});
+				await gitCreateBranch(action.payload);
 				// fs-emitter on `.git/refs/heads` will pick up the new branch
 				// shortly, but optimistically add it now so the dropdown shows
 				// the result immediately.
@@ -296,45 +244,4 @@ async function parsePointerFile(p: string) {
 	if (!parts) return void 0;
 
 	return parts[1];
-}
-
-/**
- * Roll up isomorphic-git's status matrix into the slice-friendly summary.
- *
- * Matrix codes are `[filepath, HEAD, WORKDIR, STAGE]` where:
- *   HEAD:    0 = absent, 1 = present
- *   WORKDIR: 0 = absent, 1 = identical to HEAD, 2 = different
- *   STAGE:   0 = absent, 1 = identical to HEAD, 2 = identical to WORKDIR, 3 = different
- *
- * From there:
- *   staged    = stage !== head (something is queued for the next commit)
- *   unstaged  = workdir > 0 && workdir !== stage (working tree drifts from index)
- *   untracked = head === 0 && workdir > 0 (file is new — never seen by git)
- *   deleted   = head !== 0 && workdir === 0 (gone from disk; staging may differ)
- */
-function summariseStatus(rows: Array<[string, 0 | 1, 0 | 1 | 2, 0 | 1 | 2 | 3]>): {
-	staged: number;
-	unstaged: number;
-	untracked: number;
-	files: GitFileStatus[];
-	updatedAt: string;
-} {
-	const files: GitFileStatus[] = [];
-	let staged = 0;
-	let unstaged = 0;
-	let untracked = 0;
-
-	for (const [filepath, head, workdir, stage] of rows) {
-		const isStaged = stage !== head;
-		const isUnstaged = workdir > 0 && workdir !== stage;
-		const isUntracked = head === 0 && workdir > 0;
-		const isDeleted = head !== 0 && workdir === 0;
-		if (!isStaged && !isUnstaged && !isUntracked && !isDeleted) continue;
-		files.push({ filepath, staged: isStaged, unstaged: isUnstaged, untracked: isUntracked, deleted: isDeleted });
-		if (isStaged) staged++;
-		if (isUnstaged) unstaged++;
-		if (isUntracked) untracked++;
-	}
-
-	return { staged, unstaged, untracked, files, updatedAt: new Date().toISOString() };
 }
