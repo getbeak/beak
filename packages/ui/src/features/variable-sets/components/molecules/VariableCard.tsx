@@ -3,7 +3,7 @@ import { valueParts } from '@beak/state';
 import DebouncedInput from '@beak/ui/components/atoms/DebouncedInput';
 import VariableInput from '@beak/ui/features/variable-input/components/VariableInput';
 import type { ValueSections } from '@beak/ui/features/variables/values';
-import { generateValueIdent } from '@beak/ui/lib/beak-variable-set/utils';
+import { generateValueIdent } from '@beak/ui/services/variable-sets/utils';
 import { glassChakraProps } from '@beak/ui/lib/glass';
 import { ipcDialogService } from '@beak/ui/lib/ipc';
 import { useAppSelector } from '@beak/ui/store/redux';
