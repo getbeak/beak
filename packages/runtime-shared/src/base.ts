@@ -4,6 +4,7 @@ import type { HttpClient } from 'isomorphic-git';
 import type { Logger } from 'tslog';
 
 import type CredentialsProvider from './ports/credentials';
+import type Dialog from './ports/dialog';
 import type AesProvider from './ports/encryption-aes';
 import type NotificationPort from './ports/notification';
 import type PreferencesStore from './ports/preferences-store';
@@ -56,6 +57,7 @@ export interface GitProvider {
 export interface Providers {
 	aes: AesProvider;
 	credentials: CredentialsProvider;
+	dialog: Dialog;
 	logger: Logger<unknown>;
 	notification: NotificationPort;
 	preferences: PreferencesStore;

@@ -4,6 +4,7 @@ import gitHttp from 'isomorphic-git/http/web';
 import path from 'path-browserify';
 import { Logger } from 'tslog';
 
+import WebDialog from '../adapters/dialog';
 import WebNotification from '../adapters/notification';
 import WebProjectOpener from '../adapters/project-opener';
 import { checkHandlePermission, loadHandle } from './fsa-handle-storage';
@@ -122,6 +123,7 @@ const runtime = new Runtime({
 		aes: new AesProvider(),
 		logger: beakHostLogger,
 		credentials: new CredentialsProvider(),
+		dialog: new WebDialog(),
 		notification: new WebNotification(),
 		preferences: new WebPreferencesStore(storageProvider),
 		projectOpener: new WebProjectOpener(),
