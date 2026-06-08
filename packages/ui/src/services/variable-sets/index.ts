@@ -1,8 +1,8 @@
 import type { VariableSet } from '@getbeak/types/variable-sets';
 import path from 'path-browserify';
 
-import { readJsonAndValidate } from '../fs';
-import { ipcFsService } from '../ipc';
+import { readJsonAndValidate } from '../../lib/fs';
+import { ipcFsService } from '../../lib/ipc';
 import { variableSetSchema } from './schema';
 
 export async function readVariableSet(vgFilePath: string) {
