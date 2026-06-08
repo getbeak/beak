@@ -1,6 +1,6 @@
 import { createRequire } from 'node:module';
 import path from 'node:path';
-import SentryCliModule from '@sentry/cli';
+import { SentryCli } from '@sentry/cli';
 import type { BuildOptions, PluginBuild } from 'esbuild';
 
 const require = createRequire(import.meta.url);
@@ -71,19 +71,13 @@ const sentrySourceMapsPlugin = {
 				return;
 			}
 
-			// biome-ignore lint/suspicious/noExplicitAny: Sentry CLI ships untyped CJS interop.
-			const SentryCliCtor = ((SentryCliModule as any).default ?? SentryCliModule) as new (
-				configFile: string | null,
-				options: Record<string, unknown>,
-				// biome-ignore lint/suspicious/noExplicitAny: see above
-			) => any;
-			const cli = new SentryCliCtor(null, {
+			const cli = new SentryCli(null, {
 				authToken: process.env.SENTRY_AUTH_TOKEN,
 				org: 'beak',
 				project: 'apps-host-electron',
 			});
 
-			await cli.releases.new(releaseIdentifier);
+			await cli.releases.new(releaseIdentifier, {});
 			await cli.releases.uploadSourceMaps(releaseIdentifier, {
 				include: ['./dist'],
 				urlPrefix: '~/',
