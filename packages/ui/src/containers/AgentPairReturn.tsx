@@ -1,13 +1,11 @@
-import { Box, Button, Heading, HStack, Spinner, Text, VStack } from '@chakra-ui/react';
 import { selectAgentPairingError, selectAgentStatus } from '@beak/state/agent';
+import { Box, Button, Heading, HStack, Spinner, Text, VStack } from '@chakra-ui/react';
 import * as React from 'react';
 import { useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-
+import { readPairingReturnQuery } from '../services/agent';
 import { completeAgentPairingRequested, startAgentPairingRequested } from '../store/effects/agent';
 import { useAppDispatch, useAppSelector } from '../store/redux';
-
-import { readPairingReturnQuery } from '../services/agent';
 
 /**
  * Landing page for `/agent/pair/return`. The agent redirects the
