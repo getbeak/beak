@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"path/filepath"
 	"strings"
 	"testing"
 	"time"
@@ -15,8 +16,12 @@ func newTestServer(t *testing.T) (*Server, string) {
 	t.Helper()
 	// We don't actually bind a port — handlePairDecision only cares
 	// about LoopbackOrigin(), which we stub via overrideLoopback.
+	tokens, err := pairing.OpenTokenStoreAt(filepath.Join(t.TempDir(), "tokens.json"))
+	if err != nil {
+		t.Fatalf("OpenTokenStoreAt: %v", err)
+	}
 	srv := &Server{
-		tokens:          &pairing.TokenStore{},
+		tokens:          tokens,
 		pending:         pairing.NewPendingStore(),
 		approvals:       pairing.NewApprovalQueue(),
 		lastTouched:     map[string]time.Time{},

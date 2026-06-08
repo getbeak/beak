@@ -48,8 +48,13 @@ func OpenTokenStore() (*TokenStore, error) {
 	if err != nil {
 		return nil, err
 	}
-	path := filepath.Join(dir, tokensFilename)
+	return OpenTokenStoreAt(filepath.Join(dir, tokensFilename))
+}
 
+// OpenTokenStoreAt opens a TokenStore rooted at an explicit path. Used by
+// the integration harness so tests don't write into the user's real
+// Application Support directory.
+func OpenTokenStoreAt(path string) (*TokenStore, error) {
 	store := &TokenStore{path: path, rawByID: map[string]string{}}
 	if err := store.load(); err != nil && !errors.Is(err, os.ErrNotExist) {
 		return nil, err
