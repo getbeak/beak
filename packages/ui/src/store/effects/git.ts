@@ -103,10 +103,10 @@ export function registerGitEffects(start: AppStartListening) {
 				} catch {
 					/* no remotes yet — fine */
 				}
-				api.dispatch(operationSucceeded({ op, notice: branch ?? undefined }));
+				api.dispatch(operationSucceeded({ op, notice: branch ?? undefined, at: new Date().toISOString() }));
 				api.dispatch(requestStatus());
 			} catch (err) {
-				api.dispatch(operationFailed({ op, error: err instanceof Error ? err.message : String(err) }));
+				api.dispatch(operationFailed({ op, error: err instanceof Error ? err.message : String(err), at: new Date().toISOString() }));
 			}
 		},
 	});
@@ -151,10 +151,10 @@ export function registerGitEffects(start: AppStartListening) {
 					author: action.payload.author,
 					committer: action.payload.committer,
 				});
-				api.dispatch(operationSucceeded({ op, notice: result.oid.slice(0, 7) }));
+				api.dispatch(operationSucceeded({ op, notice: result.oid.slice(0, 7), at: new Date().toISOString() }));
 				api.dispatch(requestStatus());
 			} catch (err) {
-				api.dispatch(operationFailed({ op, error: err instanceof Error ? err.message : String(err) }));
+				api.dispatch(operationFailed({ op, error: err instanceof Error ? err.message : String(err), at: new Date().toISOString() }));
 			}
 		},
 	});
@@ -173,12 +173,12 @@ export function registerGitEffects(start: AppStartListening) {
 					auth: action.payload.auth,
 				});
 				if (result.ok) {
-					api.dispatch(operationSucceeded({ op }));
+					api.dispatch(operationSucceeded({ op, at: new Date().toISOString() }));
 				} else {
-					api.dispatch(operationFailed({ op, error: result.error ?? 'Push rejected by remote.' }));
+					api.dispatch(operationFailed({ op, error: result.error ?? 'Push rejected by remote.', at: new Date().toISOString() }));
 				}
 			} catch (err) {
-				api.dispatch(operationFailed({ op, error: err instanceof Error ? err.message : String(err) }));
+				api.dispatch(operationFailed({ op, error: err instanceof Error ? err.message : String(err), at: new Date().toISOString() }));
 			}
 		},
 	});
@@ -197,10 +197,10 @@ export function registerGitEffects(start: AppStartListening) {
 					author: action.payload.author,
 					auth: action.payload.auth,
 				});
-				api.dispatch(operationSucceeded({ op }));
+				api.dispatch(operationSucceeded({ op, at: new Date().toISOString() }));
 				api.dispatch(requestStatus());
 			} catch (err) {
-				api.dispatch(operationFailed({ op, error: err instanceof Error ? err.message : String(err) }));
+				api.dispatch(operationFailed({ op, error: err instanceof Error ? err.message : String(err), at: new Date().toISOString() }));
 			}
 		},
 	});
@@ -217,9 +217,9 @@ export function registerGitEffects(start: AppStartListening) {
 					ref: action.payload.ref,
 					auth: action.payload.auth,
 				});
-				api.dispatch(operationSucceeded({ op }));
+				api.dispatch(operationSucceeded({ op, at: new Date().toISOString() }));
 			} catch (err) {
-				api.dispatch(operationFailed({ op, error: err instanceof Error ? err.message : String(err) }));
+				api.dispatch(operationFailed({ op, error: err instanceof Error ? err.message : String(err), at: new Date().toISOString() }));
 			}
 		},
 	});
@@ -235,10 +235,10 @@ export function registerGitEffects(start: AppStartListening) {
 					ref: action.payload.ref,
 					force: action.payload.force,
 				});
-				api.dispatch(operationSucceeded({ op }));
+				api.dispatch(operationSucceeded({ op, at: new Date().toISOString() }));
 				api.dispatch(requestStatus());
 			} catch (err) {
-				api.dispatch(operationFailed({ op, error: err instanceof Error ? err.message : String(err) }));
+				api.dispatch(operationFailed({ op, error: err instanceof Error ? err.message : String(err), at: new Date().toISOString() }));
 			}
 		},
 	});
@@ -262,9 +262,9 @@ export function registerGitEffects(start: AppStartListening) {
 				if (action.payload.checkout) {
 					api.dispatch(requestCheckout({ ref: action.payload.ref }));
 				}
-				api.dispatch(operationSucceeded({ op, notice: `Created branch ${action.payload.ref}` }));
+				api.dispatch(operationSucceeded({ op, notice: `Created branch ${action.payload.ref}`, at: new Date().toISOString() }));
 			} catch (err) {
-				api.dispatch(operationFailed({ op, error: err instanceof Error ? err.message : String(err) }));
+				api.dispatch(operationFailed({ op, error: err instanceof Error ? err.message : String(err), at: new Date().toISOString() }));
 			}
 		},
 	});

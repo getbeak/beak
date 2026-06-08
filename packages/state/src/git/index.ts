@@ -139,8 +139,8 @@ export const requestCheckout = createAction<GitCheckoutRequest>('git/requestChec
 export const requestCreateBranch = createAction<GitCreateBranchRequest>('git/requestCreateBranch');
 
 export const operationStarted = createAction<{ op: GitOperation }>('git/operationStarted');
-export const operationSucceeded = createAction<{ op: GitOperation; notice?: string }>('git/operationSucceeded');
-export const operationFailed = createAction<{ op: GitOperation; error: string }>('git/operationFailed');
+export const operationSucceeded = createAction<{ op: GitOperation; notice?: string; at: string }>('git/operationSucceeded');
+export const operationFailed = createAction<{ op: GitOperation; error: string; at: string }>('git/operationFailed');
 export const operationDismissed = createAction('git/operationDismissed');
 
 const gitReducer = createReducer(initialGitState, builder => {
@@ -194,7 +194,7 @@ const gitReducer = createReducer(initialGitState, builder => {
 				phase: 'success',
 				op: payload.op,
 				notice: payload.notice,
-				at: new Date().toISOString(),
+				at: payload.at,
 			};
 		})
 		.addCase(operationFailed, (state, { payload }) => {
@@ -202,7 +202,7 @@ const gitReducer = createReducer(initialGitState, builder => {
 				phase: 'error',
 				op: payload.op,
 				error: payload.error,
-				at: new Date().toISOString(),
+				at: payload.at,
 			};
 		})
 		.addCase(operationDismissed, state => {
