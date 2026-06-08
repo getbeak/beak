@@ -1,6 +1,6 @@
 import { IpcFlightServiceMain } from '@beak/common/ipc/flight';
 import type { FlightRequestPayload } from '@beak/common/types/requester';
-import { decideRouting, selectAgentBaseUrl } from '@beak/state/agent';
+import { decideRouting, selectAgentBaseUrl, tokenRevoked } from '@beak/state/agent';
 import { getAppStore } from '@beak/ui/store';
 
 import { clearAgentToken, getAgentToken } from '@beak/ui/services/agent/storage';
@@ -19,7 +19,13 @@ service.registerStartFlight(async (_event, payload: FlightRequestPayload) => {
 			heartbeat: p => service.sendHeartbeat(sender, p),
 			complete: p => service.sendComplete(sender, p),
 			failed: p => {
-				if (p.error?.message === 'agent_unauthorized') clearAgentToken();
+				if (p.error?.message === 'agent_unauthorized') {
+					clearAgentToken();
+					// Surface the unpaired state to the slice so the renderer
+					// banner re-appears instead of silently falling back to
+					// browser-fetch on the next flight.
+					getAppStore().dispatch(tokenRevoked());
+				}
 				service.sendFailed(sender, p);
 			},
 		},

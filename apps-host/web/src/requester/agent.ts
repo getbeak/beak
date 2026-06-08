@@ -1,4 +1,10 @@
-import { AGENT_FLIGHT_PATH } from '@beak/common/wire/agent';
+import {
+	AGENT_FLIGHT_PATH,
+	flightCompleteSchema,
+	flightFailedSchema,
+	flightHeartbeatSchema,
+} from '@beak/common/wire/agent';
+import type { FlightCompletePayload, FlightHeartbeatPayload } from '@beak/common/types/requester';
 
 import type { Requester, RequesterOptions } from './types';
 
@@ -25,7 +31,9 @@ export function createAgentRequester(baseUrl: string, token: string): Requester 
 					signal: controller.signal,
 					headers: {
 						'Content-Type': 'application/json',
+						// biome-ignore lint/style/useNamingConvention: HTTP header names (RFC 7231/7235).
 						Authorization: `Bearer ${token}`,
+						// biome-ignore lint/style/useNamingConvention: HTTP header name (RFC 7231).
 						Accept: 'text/event-stream',
 					},
 					body: JSON.stringify(payload),
@@ -147,35 +155,56 @@ function handleAgentFrame(
 	if (typeof data !== 'object' || data === null) return;
 	const frame = data as Record<string, unknown>;
 
+	// SSE frames cross a trust boundary (loopback agent → renderer). Validate
+	// every payload against the wire schemas before forwarding to slice
+	// callbacks.
 	switch (eventType) {
 		case 'fetch_response':
 		case 'head_received':
-		case 'sse_event':
-			callbacks.heartbeat(frame as never);
+		case 'sse_event': {
+			const result = flightHeartbeatSchema.safeParse(frame);
+			if (!result.success) {
+				callbacks.failed({ flightId, error: new Error(`agent sent malformed ${eventType} frame`) });
+				return;
+			}
+			// Wire shape for these stages is identical to the in-process shape
+			// (no base64 buffer involved); the cast crosses the type system
+			// because the discriminated union still includes `reading_body`.
+			callbacks.heartbeat(result.data as FlightHeartbeatPayload);
 			return;
+		}
 		case 'reading_body': {
+			const result = flightHeartbeatSchema.safeParse(frame);
+			if (!result.success || result.data.stage !== 'reading_body') {
+				callbacks.failed({ flightId, error: new Error('agent sent malformed reading_body frame') });
+				return;
+			}
 			// Decode the base64 chunk back to Uint8Array so downstream consumers
 			// (flight slice, raw-body viewer) see the same shape as the
 			// Electron/in-process path.
-			const payload = frame.payload as Record<string, unknown> | undefined;
-			if (!payload || typeof payload.buffer !== 'string') return;
-			const buffer = base64ToBytes(payload.buffer);
 			callbacks.heartbeat({
 				flightId,
 				stage: 'reading_body',
 				payload: {
-					timestamp: typeof payload.timestamp === 'number' ? payload.timestamp : Date.now(),
-					buffer,
+					timestamp: result.data.payload.timestamp,
+					buffer: base64ToBytes(result.data.payload.buffer),
 				},
 			});
 			return;
 		}
-		case 'complete':
-			callbacks.complete(frame as never);
+		case 'complete': {
+			const result = flightCompleteSchema.safeParse(frame);
+			if (!result.success) {
+				callbacks.failed({ flightId, error: new Error('agent sent malformed complete frame') });
+				return;
+			}
+			callbacks.complete(result.data as FlightCompletePayload);
 			return;
+		}
 		case 'failed': {
-			const err = frame.error as { message?: string } | undefined;
-			callbacks.failed({ flightId, error: new Error(err?.message ?? 'unknown agent failure') });
+			const result = flightFailedSchema.safeParse(frame);
+			const message = result.success ? result.data.error.message : 'unknown agent failure';
+			callbacks.failed({ flightId, error: new Error(message) });
 			return;
 		}
 	}
