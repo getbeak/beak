@@ -122,14 +122,13 @@ func (s *Server) handlePairDecision(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) handlePairToken(w http.ResponseWriter, r *http.Request) {
 	// /pair/token is renderer→agent, browser-fetched. Reflect the
-	// requesting origin only if it's already paired OR is a fresh
-	// pairing target — but during pairing we don't yet have a token.
-	// TODO: tighten Origin policy — currently reflects any caller; should
-	// match the pending pairing's Origin pre-token-issue, or the renderer
-	// allowlist post-issue. Tracked separately from the /pair/decision
-	// fix to keep that change small.
+	// requesting Origin only if it (a) already holds a paired token, or
+	// (b) has a live pending pairing in flight. An origin with neither
+	// gets no CORS preamble — its preflight returns 204 without ACAO so
+	// the browser blocks the POST, denying any oracle on the body of
+	// invalid_grant / invalid_request responses for a forged `code`.
 	origin := r.Header.Get("Origin")
-	if origin != "" {
+	if origin != "" && s.originAllowedForToken(origin) {
 		w.Header().Set("Access-Control-Allow-Origin", origin)
 		w.Header().Set("Access-Control-Allow-Credentials", "true")
 		w.Header().Set("Vary", "Origin")
@@ -236,6 +235,23 @@ func generateRandomToken(n int) (string, error) {
 func htmlEscape(s string) string {
 	r := strings.NewReplacer("&", "&amp;", "<", "&lt;", ">", "&gt;", "\"", "&quot;", "'", "&#39;")
 	return r.Replace(s)
+}
+
+// originAllowedForToken reports whether the requesting Origin should
+// see the CORS preamble on /pair/token. Either it's already a paired
+// origin (so token rotation / re-fetch is permitted) or it has a live
+// pending pairing (so the in-flight handshake can complete). Anything
+// else gets no ACAO header, and the browser blocks the response —
+// which also denies the code-existence oracle the loose reflection
+// would otherwise create.
+func (s *Server) originAllowedForToken(origin string) bool {
+	if origin == "" {
+		return false
+	}
+	if _, paired := s.tokens.PairedOrigins()[origin]; paired {
+		return true
+	}
+	return s.pending.HasOrigin(origin)
 }
 
 // originAllowedForDecision enforces the rule documented on

@@ -67,9 +67,13 @@ func TestPairToken_HappyPathReturnsTokenAndID(t *testing.T) {
 	}
 }
 
-func TestPairToken_OptionsPreflightAllowsRenderer(t *testing.T) {
+func TestPairToken_OptionsPreflightAllowsRendererWithPending(t *testing.T) {
 	t.Parallel()
 	srv, _ := newTestServer(t)
+	// The preflight only sees CORS reflection when an origin already
+	// has a live pending pair OR a paired token. Seed a pending so the
+	// renderer can complete a fresh pairing.
+	seedPending(t, srv, "https://beak.web", "preflight-code", "preflight-verifier-xxxxxxxxxxxxxxxxxxxxxxxxxx")
 	req := httptest.NewRequest(http.MethodOptions, wire.PairTokenPath, nil)
 	req.Header.Set("Origin", "https://beak.web")
 	rec := httptest.NewRecorder()
@@ -79,7 +83,26 @@ func TestPairToken_OptionsPreflightAllowsRenderer(t *testing.T) {
 		t.Fatalf("preflight status=%d", rec.Code)
 	}
 	if rec.Header().Get("Access-Control-Allow-Origin") != "https://beak.web" {
-		t.Fatal("preflight must reflect Origin")
+		t.Fatal("preflight must reflect Origin for an origin with a live pending pair")
+	}
+}
+
+func TestPairToken_OptionsPreflightOmitsCORSForUnknownOrigin(t *testing.T) {
+	t.Parallel()
+	srv, _ := newTestServer(t)
+	// No pending entry, no paired token — the origin is a complete
+	// stranger. Reflecting its Origin into ACAO would expose the
+	// invalid_grant body as a code-existence oracle.
+	req := httptest.NewRequest(http.MethodOptions, wire.PairTokenPath, nil)
+	req.Header.Set("Origin", "https://attacker.example")
+	rec := httptest.NewRecorder()
+	srv.handlePairToken(rec, req)
+
+	if rec.Code != http.StatusNoContent {
+		t.Fatalf("preflight status=%d", rec.Code)
+	}
+	if got := rec.Header().Get("Access-Control-Allow-Origin"); got != "" {
+		t.Fatalf("expected no ACAO for stranger origin, got %q", got)
 	}
 }
 
