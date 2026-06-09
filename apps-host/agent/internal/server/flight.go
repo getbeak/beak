@@ -1,6 +1,7 @@
 package server
 
 import (
+	"crypto/subtle"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -90,7 +91,10 @@ func (s *Server) authoriseRequest(r *http.Request, origin string) (record TokenR
 	if !found {
 		return TokenRec{}, false
 	}
-	if rec.Origin != origin {
+	// Origin binding is what stops a paired origin's token being replayed
+	// from another origin. Constant-time compare keeps the binding from
+	// leaking via timing — same reason `TokenStore.Lookup` is now CT.
+	if subtle.ConstantTimeCompare([]byte(rec.Origin), []byte(origin)) != 1 {
 		return TokenRec{}, false
 	}
 	return TokenRec{TokenID: rec.TokenID, Origin: rec.Origin}, true
