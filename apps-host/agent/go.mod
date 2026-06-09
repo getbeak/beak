@@ -1,6 +1,11 @@
 module github.com/getbeak/beak/apps-host/agent
 
-go 1.24.0
+// Pinned to a 1.25.x release that contains the fixes for the stdlib
+// advisories surfaced by govulncheck on 1.24/1.25 pre-patch builds —
+// notably GO-2026-4870 (crypto/tls KeyUpdate DoS), GO-2026-4918
+// (HTTP/2 SETTINGS_MAX_FRAME_SIZE infinite loop), and several
+// html/template escaper bugs. Bump deliberately, not opportunistically.
+go 1.25.11
 
 require (
 	github.com/getlantern/systray v1.2.2
