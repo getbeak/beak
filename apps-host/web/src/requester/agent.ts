@@ -47,7 +47,13 @@ export function createAgentRequester(baseUrl: string, token: string): Requester 
 					callbacks.failed({ flightId, error: new Error('flight_cancelled') });
 					return;
 				}
-				callbacks.failed({ flightId, error: error as Error });
+				// Pre-connect fetch error means the agent isn't there — either
+				// it never bound the port we cached, or the process died
+				// between discovery and this flight. Surface a stable code so
+				// the flight-service can transition the agent slice to
+				// `unreachable` and the banner can offer Re-scan / Get the
+				// agent. See docs/features/agent-flight.feature.
+				callbacks.failed({ flightId, error: new Error('agent_disconnected') });
 				return;
 			}
 
@@ -74,7 +80,14 @@ export function createAgentRequester(baseUrl: string, token: string): Requester 
 					callbacks.failed({ flightId, error: new Error('flight_cancelled') });
 					return;
 				}
-				callbacks.failed({ flightId, error: error as Error });
+				// Mid-stream errors that aren't already classified by
+				// `handleAgentFrame` (which would throw a precise
+				// 'agent sent malformed …' message) are network drops —
+				// the SSE stream closed unexpectedly. Treat as
+				// `agent_disconnected` so the slice can recover.
+				const message = error instanceof Error ? error.message : String(error);
+				const code = message.startsWith('agent sent ') ? message : 'agent_disconnected';
+				callbacks.failed({ flightId, error: new Error(code) });
 			}
 		},
 	};

@@ -223,17 +223,42 @@ describe('createAgentRequester — error paths', () => {
 		expect(callbacks.failed.mock.calls[0][0].error.message).toBe('agent returned empty body');
 	});
 
-	it('fetch network error is surfaced as failed', async () => {
+	it('pre-connect fetch error is classified as agent_disconnected', async () => {
+		// The agent went away (port refused, DNS failure, process exit
+		// between cached-URL probe and this flight). The slice needs the
+		// stable `agent_disconnected` code so the flight-service can
+		// flip status to `unreachable` — a raw browser-error string would
+		// leave the banner on `paired` and the next flight would silently
+		// retry against a dead port.
 		const payload = basePayload();
 		const callbacks = makeCallbacks();
-		const networkError = new TypeError('Failed to fetch');
-		fetchSpy.mockRejectedValueOnce(networkError);
+		fetchSpy.mockRejectedValueOnce(new TypeError('Failed to fetch'));
 
 		const requester = createAgentRequester(baseUrl, token);
 		await requester.start({ payload, signal: new AbortController().signal, callbacks });
 
 		expect(callbacks.failed).toHaveBeenCalledTimes(1);
-		expect(callbacks.failed.mock.calls[0][0].error).toBe(networkError);
+		expect(callbacks.failed.mock.calls[0][0].error.message).toBe('agent_disconnected');
+	});
+
+	it('mid-stream network drop is classified as agent_disconnected', async () => {
+		// SSE stream cuts in the middle of a body read. Same recovery
+		// path as a pre-connect failure: evict the cached URL, slice →
+		// unreachable, banner offers Re-scan.
+		const payload = basePayload();
+		const callbacks = makeCallbacks();
+		const { stream, emit, error } = controlledStream();
+		fetchSpy.mockResolvedValueOnce(buildResponse({ body: stream }));
+
+		const requester = createAgentRequester(baseUrl, token);
+		const run = requester.start({ payload, signal: new AbortController().signal, callbacks });
+		emit('event: fetch_response\ndata: {"flightId":"flight-1","stage":"fetch_response","payload":{"timestamp":1}}\n\n');
+		await Promise.resolve();
+		error(new TypeError('network error'));
+		await run;
+
+		const lastFailed = callbacks.failed.mock.calls[callbacks.failed.mock.calls.length - 1]?.[0];
+		expect(lastFailed?.error.message).toBe('agent_disconnected');
 	});
 });
 

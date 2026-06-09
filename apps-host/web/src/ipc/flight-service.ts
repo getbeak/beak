@@ -1,9 +1,9 @@
 import { IpcFlightServiceMain } from '@beak/common/ipc/flight';
 import type { FlightRequestPayload } from '@beak/common/types/requester';
-import { decideRouting, selectAgentBaseUrl, tokenRevoked } from '@beak/state/agent';
+import { agentUnreachable, decideRouting, selectAgentBaseUrl, tokenRevoked } from '@beak/state/agent';
 import { getAppStore } from '@beak/ui/store';
 
-import { clearAgentToken, getAgentToken } from '@beak/ui/services/agent/storage';
+import { clearAgentToken, clearCachedAgentBaseUrl, getAgentToken } from '@beak/ui/services/agent/storage';
 
 import getRuntime from '../host';
 import { browserFetchRequester, createAgentRequester, type Requester, type RequesterOptions } from '../requester';
@@ -42,6 +42,13 @@ service.registerStartFlight(async (_event, payload: FlightRequestPayload) => {
 					// banner re-appears instead of silently falling back to
 					// browser-fetch on the next flight.
 					getAppStore().dispatch(tokenRevoked());
+				} else if (p.error?.message === 'agent_disconnected') {
+					// Mid-flight network drop or pre-connect refusal — the
+					// agent went away. Evict the cached URL and flip the
+					// slice so the banner offers Re-scan instead of silently
+					// retrying against a dead port on the next flight.
+					clearCachedAgentBaseUrl();
+					getAppStore().dispatch(agentUnreachable());
 				}
 				service.sendFailed(sender, p);
 			},
