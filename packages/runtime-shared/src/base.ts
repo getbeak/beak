@@ -1,3 +1,4 @@
+import type { LocalAgentCapability } from '@beak/common/types/runtime';
 import type fs from 'node:fs';
 import type path from 'node:path';
 import type { HttpClient } from 'isomorphic-git';
@@ -11,6 +12,8 @@ import type PreferencesStore from './ports/preferences-store';
 import type ProjectOpener from './ports/project-opener';
 import type StorageProvider from './ports/storage';
 import type { GenericStore } from './ports/storage';
+
+export type { LocalAgentCapability };
 
 /**
  * Capabilities matrix advertised by a concrete runtime. Renderer features
@@ -29,19 +32,8 @@ export interface RuntimeCapabilities {
 	fileSystemAccess: 'native' | 'sandboxed';
 	/** True if request/response binary bodies can stream incrementally. */
 	binaryStreaming: boolean;
-	/**
-	 * Can this host route flights through a local agent process?
-	 *
-	 *   'unsupported' — host has its own request execution. Renderer skips
-	 *                   all agent UI and state.
-	 *   'optional'    — host can use a paired agent if one is reachable,
-	 *                   falls back to its default path otherwise.
-	 *   'required'    — host has no other way to fire requests. Renderer
-	 *                   forces pair-or-fail UI.
-	 *
-	 * See docs/adr/0001-local-agent-for-web-host.md.
-	 */
-	localAgent: 'unsupported' | 'optional' | 'required';
+	/** See `LocalAgentCapability`. */
+	localAgent: LocalAgentCapability;
 }
 
 /**

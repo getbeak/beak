@@ -64,6 +64,17 @@ func (s *Server) handlePairDecision(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
+	// The state nonce stops a drive-by page replaying a known state,
+	// but it doesn't stop a malicious page that has *somehow* learned
+	// the state from POSTing the user's decision. Require the request
+	// to look like it came from the agent's own pair HTML page: either
+	// no Origin (form posts may omit it depending on the browser /
+	// referrer-policy) or the agent's own loopback origin. Also reject
+	// any Sec-Fetch-Site that admits a cross-site origin outright.
+	if !originAllowedForDecision(r, s.LoopbackOrigin()) {
+		http.Error(w, "origin not allowed", http.StatusForbidden)
+		return
+	}
 	if err := r.ParseForm(); err != nil {
 		http.Error(w, "invalid form", http.StatusBadRequest)
 		return
@@ -111,10 +122,13 @@ func (s *Server) handlePairDecision(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) handlePairToken(w http.ResponseWriter, r *http.Request) {
 	// /pair/token is renderer→agent, browser-fetched. Reflect the
-	// requesting origin only if it's already paired OR is a fresh
-	// pairing target — but during pairing we don't yet have a token.
+	// requesting Origin only if it (a) already holds a paired token, or
+	// (b) has a live pending pairing in flight. An origin with neither
+	// gets no CORS preamble — its preflight returns 204 without ACAO so
+	// the browser blocks the POST, denying any oracle on the body of
+	// invalid_grant / invalid_request responses for a forged `code`.
 	origin := r.Header.Get("Origin")
-	if origin != "" {
+	if origin != "" && s.originAllowedForToken(origin) {
 		w.Header().Set("Access-Control-Allow-Origin", origin)
 		w.Header().Set("Access-Control-Allow-Credentials", "true")
 		w.Header().Set("Vary", "Origin")
@@ -223,3 +237,44 @@ func htmlEscape(s string) string {
 	return r.Replace(s)
 }
 
+// originAllowedForToken reports whether the requesting Origin should
+// see the CORS preamble on /pair/token. Either it's already a paired
+// origin (so token rotation / re-fetch is permitted) or it has a live
+// pending pairing (so the in-flight handshake can complete). Anything
+// else gets no ACAO header, and the browser blocks the response —
+// which also denies the code-existence oracle the loose reflection
+// would otherwise create.
+func (s *Server) originAllowedForToken(origin string) bool {
+	if origin == "" {
+		return false
+	}
+	if _, paired := s.tokens.PairedOrigins()[origin]; paired {
+		return true
+	}
+	return s.pending.HasOrigin(origin)
+}
+
+// originAllowedForDecision enforces the rule documented on
+// handlePairDecision: Origin must be unset OR match the agent's own
+// loopback origin, and Sec-Fetch-Site must not announce a cross-site
+// caller. Returning false means the request is treated as 403.
+func originAllowedForDecision(r *http.Request, loopback string) bool {
+	switch strings.ToLower(r.Header.Get("Sec-Fetch-Site")) {
+	case "cross-site", "cross-origin":
+		return false
+	}
+	origin := r.Header.Get("Origin")
+	if origin == "" || strings.EqualFold(origin, "null") {
+		// Some browsers omit Origin on same-origin form POSTs, or set
+		// it to "null" when the page was opened via file:// or with a
+		// no-referrer policy. Neither is a cross-site signal on its own.
+		return true
+	}
+	if loopback == "" {
+		// Defensive: if we don't know our own URL, the only safe answer
+		// for an explicitly-set Origin is to reject. Runtime always knows
+		// its own port; tests stub LoopbackOrigin via overrideLoopback.
+		return false
+	}
+	return strings.EqualFold(origin, loopback)
+}

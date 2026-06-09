@@ -26,9 +26,9 @@ type Emitter interface {
 }
 
 type Options struct {
-	Payload  wire.FlightRequestPayload
-	Emitter  Emitter
-	Client   *http.Client // optional; defaults to http.DefaultClient with a longer-than-default timeout
+	Payload wire.FlightRequestPayload
+	Emitter Emitter
+	Client  *http.Client // optional; defaults to http.DefaultClient with a longer-than-default timeout
 }
 
 // Verbs that don't carry a request body per RFC 9110. Matches the
@@ -39,12 +39,31 @@ var bodyFreeVerbs = map[string]struct{}{
 	"OPTIONS": {},
 }
 
+// maxRequestTimeout caps the user-supplied options.timeoutMs to keep a
+// runaway config from pinning a goroutine + connection indefinitely.
+const maxRequestTimeout = 10 * time.Minute
+
 func Run(ctx context.Context, opts Options) {
 	overview := opts.Payload.Request
 	emit := opts.Emitter
 	flightID := opts.Payload.FlightID
 
 	emit.Heartbeat(wire.StageFetchResponse, wire.FetchResponsePayload{Timestamp: time.Now().UnixMilli()})
+
+	// Honour options.timeoutMs by deriving a deadline-bearing context.
+	// The http.Client.Timeout knob is intentionally 0 so that streamed
+	// responses (SSE, chunked) can run as long as the renderer holds
+	// the connection open — per-request bounds belong on the context.
+	timeout, timedOut := requestTimeout(overview.Options)
+	if timedOut {
+		emit.Failed(wire.FlightFailed{FlightID: flightID, Error: wire.FlightFailedError{Message: "invalid options.timeoutMs"}})
+		return
+	}
+	var cancel context.CancelFunc
+	if timeout > 0 {
+		ctx, cancel = context.WithTimeout(ctx, timeout)
+		defer cancel()
+	}
 
 	req, err := buildRequest(ctx, overview)
 	if err != nil {
@@ -55,7 +74,7 @@ func Run(ctx context.Context, opts Options) {
 	client := opts.Client
 	if client == nil {
 		client = &http.Client{
-			Timeout: 0, // streamed responses can run indefinitely; timeouts are honoured per-options
+			Timeout: 0, // streamed responses can run indefinitely; per-flight bounds live on the request context.
 			CheckRedirect: func(req *http.Request, via []*http.Request) error {
 				return http.ErrUseLastResponse // mirror the browser's "manual" redirect mode
 			},
@@ -64,6 +83,15 @@ func Run(ctx context.Context, opts Options) {
 
 	resp, err := client.Do(req)
 	if err != nil {
+		// Distinguish "client disconnected" (silent) from "upstream
+		// timed out" (visible) — same handling as the read-loop below.
+		if errors.Is(ctx.Err(), context.DeadlineExceeded) {
+			emit.Failed(wire.FlightFailed{FlightID: flightID, Error: wire.FlightFailedError{Message: fmt.Sprintf("upstream timeout after %d ms", timeout.Milliseconds())}})
+			return
+		}
+		if ctx.Err() != nil {
+			return
+		}
 		emit.Failed(wire.FlightFailed{FlightID: flightID, Error: wire.FlightFailedError{Message: err.Error()}})
 		return
 	}
@@ -122,6 +150,13 @@ func Run(ctx context.Context, opts Options) {
 		if readErr != nil {
 			if errors.Is(readErr, io.EOF) {
 				break
+			}
+			if errors.Is(ctx.Err(), context.DeadlineExceeded) {
+				// Upstream took too long — surface as a failure so the
+				// renderer can show a meaningful message rather than a
+				// dangling flight.
+				emit.Failed(wire.FlightFailed{FlightID: flightID, Error: wire.FlightFailedError{Message: fmt.Sprintf("upstream timeout after %d ms", timeout.Milliseconds())}})
+				return
 			}
 			if ctx.Err() != nil {
 				// Client disconnected; quietly stop without emitting failure.
@@ -221,6 +256,34 @@ func buildRequest(ctx context.Context, overview wire.RequestOverview) (*http.Req
 	}
 
 	return req, nil
+}
+
+// requestTimeout parses overview.Options["timeoutMs"] into a
+// time.Duration, capped at maxRequestTimeout. Returns (0, false) when
+// no timeout was supplied. The second return is `true` only when the
+// supplied value is malformed (NaN, wrong JSON shape) so the caller
+// can fail the flight with a clear error rather than silently ignore.
+func requestTimeout(options map[string]json.RawMessage) (time.Duration, bool) {
+	raw, ok := options["timeoutMs"]
+	if !ok || len(raw) == 0 || string(raw) == "null" {
+		return 0, false
+	}
+	var ms float64
+	if err := json.Unmarshal(raw, &ms); err != nil {
+		return 0, true
+	}
+	if ms <= 0 {
+		return 0, false
+	}
+	// Clamp on the float side, before converting to time.Duration. A naive
+	// `time.Duration(ms) * time.Millisecond` overflows int64 for any ms
+	// past ~2^53 ns: the float→int cast is implementation-defined past
+	// int64 range, and the multiplication wraps. Floats clamp predictably.
+	const maxMs = float64(maxRequestTimeout / time.Millisecond)
+	if ms > maxMs {
+		ms = maxMs
+	}
+	return time.Duration(ms) * time.Millisecond, false
 }
 
 func reqURL(overview wire.RequestOverview) string {

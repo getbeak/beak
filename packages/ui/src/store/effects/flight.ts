@@ -6,6 +6,7 @@ import ksuid from '@beak/ksuid';
 import {
 	type BeginFlightPayload,
 	beginFlightRequest,
+	cancelFlightRequest,
 	completeFlight,
 	type FlightRequest,
 	flightFailure,
@@ -92,6 +93,19 @@ function buildPrepareDeps(): PrepareRequestDeps {
 }
 
 export function registerFlightEffects(start: AppStartListening) {
+	// cancelFlightRequest: tell the host to abort any in-flight requesters
+	// for this request. The slice reducer clears `activeFlights`; the host
+	// emits `failed({error: flight_cancelled})` which the existing failed
+	// listener routes through the normal teardown path.
+	start({
+		actionCreator: cancelFlightRequest,
+		effect: async (action, api) => {
+			const requestId = action.payload;
+			const flightIds = api.getOriginalState().global.flight.flightsByRequest[requestId] ?? [];
+			for (const flightId of flightIds) ipcFlightService.cancelFlight({ flightId });
+		},
+	});
+
 	// requestFlight: resolve the current tab, prepare the request, dispatch begin.
 	start({
 		actionCreator: requestFlight,

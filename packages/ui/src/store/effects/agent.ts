@@ -46,37 +46,50 @@ export function registerAgentEffects(startListening: AppStartListening): void {
 			// Try the cached URL first; it's almost always the right answer.
 			const cached = getCachedAgentBaseUrl();
 			const cachedHealthz = cached ? await probe(cached) : null;
-			const discovered = cached && cachedHealthz
-				? { baseUrl: cached, healthz: cachedHealthz }
-				: await discoverAgent();
+			let discovered = cached && cachedHealthz ? { baseUrl: cached, healthz: cachedHealthz } : await discoverAgent();
 
-			if (!discovered) {
-				clearCachedAgentBaseUrl();
-				api.dispatch(agentUnreachable());
-				return;
-			}
-
-			setCachedAgentBaseUrl(discovered.baseUrl);
-			api.dispatch(
-				agentDiscovered({
-					baseUrl: discovered.baseUrl,
-					agentVersion: discovered.healthz.version,
-					agentSupports: discovered.healthz.supports,
-					lastSeenAt: Date.now(),
-				}),
-			);
-
-			// If we already hold a token, prove the loopback endpoint is the
-			// real agent before we trust it for flights.
 			const token = getAgentToken();
-			if (token) {
+			const impostors: string[] = [];
+
+			// Discover → verify → retry-on-impostor loop. Each iteration
+			// considers one candidate URL: if its identity verifies (or we
+			// have no token to verify with) we land on it; if it's an
+			// impostor we record the URL and ask discovery for the next-best
+			// port. Without this loop a single impostor would lock the
+			// paired user out of the real agent.
+			while (discovered) {
+				setCachedAgentBaseUrl(discovered.baseUrl);
+				api.dispatch(
+					agentDiscovered({
+						baseUrl: discovered.baseUrl,
+						agentVersion: discovered.healthz.version,
+						agentSupports: discovered.healthz.supports,
+						lastSeenAt: Date.now(),
+					}),
+				);
+
+				if (!token) return; // No token → impostor check doesn't apply.
+
 				const ok = await verifyAgentIdentity(discovered.baseUrl, token);
-				if (ok) api.dispatch(verifyOk({ lastSeenAt: Date.now() }));
-				else {
-					clearCachedAgentBaseUrl();
-					api.dispatch(verifyImpostor());
+				if (ok) {
+					api.dispatch(verifyOk({ lastSeenAt: Date.now() }));
+					return;
 				}
+
+				// Impostor — drop the cache and keep scanning past it. The
+				// slice flips to `impostor` transiently; the next iteration
+				// replaces it with `verifying` once another candidate
+				// appears, or with `unreachable` if scanning is exhausted.
+				impostors.push(discovered.baseUrl);
+				clearCachedAgentBaseUrl();
+				api.dispatch(verifyImpostor());
+				discovered = await discoverAgent(impostors);
 			}
+
+			// Either the initial discovery returned null, or we exhausted
+			// the port range chasing impostors.
+			clearCachedAgentBaseUrl();
+			api.dispatch(agentUnreachable());
 		},
 	});
 

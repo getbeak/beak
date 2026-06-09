@@ -1,6 +1,7 @@
 package server
 
 import (
+	"crypto/subtle"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -62,7 +63,7 @@ func (s *Server) handleFlight(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	flusher.Flush()
 
-	emit := &sseEmitter{w: w, flusher: flusher}
+	emit := &sseEmitter{w: w, flusher: flusher, flightID: payload.FlightID}
 	requester.Run(r.Context(), requester.Options{
 		Payload: payload,
 		Emitter: emit,
@@ -90,7 +91,10 @@ func (s *Server) authoriseRequest(r *http.Request, origin string) (record TokenR
 	if !found {
 		return TokenRec{}, false
 	}
-	if rec.Origin != origin {
+	// Origin binding is what stops a paired origin's token being replayed
+	// from another origin. Constant-time compare keeps the binding from
+	// leaking via timing — same reason `TokenStore.Lookup` is now CT.
+	if subtle.ConstantTimeCompare([]byte(rec.Origin), []byte(origin)) != 1 {
 		return TokenRec{}, false
 	}
 	return TokenRec{TokenID: rec.TokenID, Origin: rec.Origin}, true
@@ -105,15 +109,27 @@ type TokenRec struct {
 }
 
 type sseEmitter struct {
-	w       http.ResponseWriter
-	flusher http.Flusher
+	w        http.ResponseWriter
+	flusher  http.Flusher
+	flightID string
+}
+
+// heartbeatEnvelope is the JSON shape every heartbeat frame uses on the
+// SSE `data:` line. The renderer's flightHeartbeatSchema (Zod) is a
+// discriminated union over `stage` keyed on this envelope — drop any of
+// the three top-level fields and the renderer rejects the frame.
+type heartbeatEnvelope struct {
+	FlightID string              `json:"flightId"`
+	Stage    wire.HeartbeatStage `json:"stage"`
+	Payload  any                 `json:"payload"`
 }
 
 func (e *sseEmitter) Heartbeat(stage wire.HeartbeatStage, payload any) {
-	// Reuse the same envelope shape for every heartbeat type. The
-	// renderer keys off the SSE `event:` line and discriminates by the
-	// inner `stage` field, so a shared shape is fine.
-	e.writeEvent(string(stage), payload)
+	e.writeEvent(string(stage), heartbeatEnvelope{
+		FlightID: e.flightID,
+		Stage:    stage,
+		Payload:  payload,
+	})
 }
 
 func (e *sseEmitter) Complete(payload wire.FlightComplete) {
@@ -139,4 +155,3 @@ func (e *sseEmitter) writeEvent(eventType string, payload any) {
 	}
 	e.flusher.Flush()
 }
-

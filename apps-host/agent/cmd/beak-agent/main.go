@@ -4,6 +4,7 @@ package main
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	"os"
 	"os/signal"
@@ -17,7 +18,10 @@ import (
 	"github.com/getbeak/beak/apps-host/agent/internal/wire"
 )
 
+var noTray = flag.Bool("no-tray", false, "Skip the menu-bar tray. The HTTP server still runs — used by the integration test harness so it doesn't need a display.")
+
 func main() {
+	flag.Parse()
 	if err := run(); err != nil {
 		fmt.Fprintf(os.Stderr, "beak-agent: %v\n", err)
 		os.Exit(1)
@@ -25,6 +29,19 @@ func main() {
 }
 
 func run() error {
+	lock, running, err := config.AcquireSingletonLock()
+	if err != nil {
+		return fmt.Errorf("acquire singleton lock: %w", err)
+	}
+	if lock == nil {
+		// Another agent already holds the lock. The user's intent
+		// ("have an agent running") is satisfied — exit 0 so any
+		// launchd/systemd supervisor doesn't loop us.
+		describeRunningInstance(running)
+		return nil
+	}
+	defer lock.Release()
+
 	tokens, err := pairing.OpenTokenStore()
 	if err != nil {
 		return fmt.Errorf("open token store: %w", err)
@@ -39,6 +56,9 @@ func run() error {
 	port, err := srv.ListenAndServe(ctx)
 	if err != nil {
 		return fmt.Errorf("listen: %w", err)
+	}
+	if err := lock.SetMetadata(port, wire.AgentSemver); err != nil {
+		fmt.Fprintf(os.Stderr, "beak-agent: warn: could not update lock metadata: %v\n", err)
 	}
 	if err := config.WriteRuntime(port, wire.AgentSemver); err != nil {
 		fmt.Fprintf(os.Stderr, "beak-agent: warn: could not write runtime.json: %v\n", err)
@@ -70,6 +90,19 @@ func run() error {
 		cancel()
 	}()
 
+	if *noTray {
+		// Drain the approvals channel so handlePair doesn't stall after
+		// the first eight pending pairings (listener channel has cap 8).
+		// In production the tray goroutine consumes them.
+		go func() {
+			for range approvals.Listen() {
+				// discard — caller drives approvals via /pair/decision directly.
+			}
+		}()
+		<-ctx.Done()
+		return nil
+	}
+
 	tray.Run(tray.Options{
 		BaseURL:   fmt.Sprintf("http://127.0.0.1:%d", port),
 		Tokens:    tokens,
@@ -87,4 +120,19 @@ func shutdown(srv *server.Server) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 	_ = srv.Shutdown(ctx)
+}
+
+func describeRunningInstance(running *config.RunningInstance) {
+	if running == nil || running.PID == 0 {
+		fmt.Fprintln(os.Stderr, "beak-agent: already running; check the menu-bar tray. Exiting.")
+		return
+	}
+	url := ""
+	if running.Port != 0 {
+		url = fmt.Sprintf(" on http://127.0.0.1:%d", running.Port)
+	}
+	fmt.Fprintf(os.Stderr,
+		"beak-agent: already running (PID %d, version %s, started %s%s); check the menu-bar tray. Exiting.\n",
+		running.PID, running.Version, running.StartedAt.Format(time.RFC3339), url,
+	)
 }

@@ -1,5 +1,14 @@
 import type { RequestBodyFile, RequestBodyText, RequestOptions, ToggleKeyValue } from '@getbeak/types/request';
 import type { ResponseOverview } from '@getbeak/types/response';
+import type { z } from 'zod';
+
+import type {
+	heartbeatFetchResponseSchema,
+	heartbeatHeadReceivedSchema,
+	heartbeatSseEventSchema,
+	responseStreamKindSchema,
+	sseEventSchema,
+} from '../wire/agent';
 
 import type { FlightBodyMultipart } from './multipart';
 
@@ -10,22 +19,19 @@ export const FlightMessages = {
 };
 
 /**
- * Stream classification reported alongside the response head. The renderer
- * uses this to pick a viewer (raw bytes, SSE event log, chunked accumulation).
+ * In-process callback shapes used by every requester (Electron's
+ * `requester-node`, the browser-fetch fallback, the local-agent adapter).
+ * Where these mirror the local-agent wire schemas in `../wire/agent/flight.ts`
+ * we derive via `z.infer` so the two cannot drift; the divergences
+ * (`reading_body.buffer` and `failed.error`) are spelled out below.
  */
-export type ResponseStreamKind = 'standard' | 'sse' | 'chunked';
+
+export type ResponseStreamKind = z.infer<typeof responseStreamKindSchema>;
 
 /**
  * One parsed Server-Sent Events frame (per https://html.spec.whatwg.org/multipage/server-sent-events.html#parsing-an-event-stream).
- * Emitted by the requester when the response content-type is `text/event-stream`.
  */
-export interface SseEvent {
-	receivedAt: number;
-	id?: string;
-	event?: string;
-	data: string;
-	retry?: number;
-}
+export type SseEvent = z.infer<typeof sseEventSchema>;
 
 export type HeartbeatStage = 'fetch_response' | 'head_received' | 'reading_body' | 'sse_event';
 
@@ -80,13 +86,7 @@ export type FlightHeartbeatPayload =
 	| FlightHeartbeatReadingBody
 	| FlightHeartbeatSseEvent;
 
-export interface FlightHeartbeatFetchResponse {
-	flightId: string;
-	stage: 'fetch_response';
-	payload: {
-		timestamp: number;
-	};
-}
+export type FlightHeartbeatFetchResponse = z.infer<typeof heartbeatFetchResponseSchema>;
 
 /**
  * Fired the moment `fetch()` resolves — carries the full response head (status,
@@ -94,21 +94,13 @@ export interface FlightHeartbeatFetchResponse {
  * before any body bytes arrive, which is essential for long responses, SSE
  * streams, and ranged downloads.
  */
-export interface FlightHeartbeatHeadReceived {
-	flightId: string;
-	stage: 'head_received';
-	payload: {
-		timestamp: number;
-		status: number;
-		headers: Record<string, string>;
-		url: string;
-		redirected: boolean;
-		contentType: string | null;
-		contentLength: number;
-		streamKind: ResponseStreamKind;
-	};
-}
+export type FlightHeartbeatHeadReceived = z.infer<typeof heartbeatHeadReceivedSchema>;
 
+/**
+ * Diverges from the wire shape (`heartbeatReadingBodySchema.payload.buffer` is
+ * base64-encoded `string`): once the adapter decodes the chunk, in-process
+ * consumers get raw `Uint8Array` bytes.
+ */
 export interface FlightHeartbeatReadingBody {
 	flightId: string;
 	stage: 'reading_body';
@@ -118,14 +110,7 @@ export interface FlightHeartbeatReadingBody {
 	};
 }
 
-export interface FlightHeartbeatSseEvent {
-	flightId: string;
-	stage: 'sse_event';
-	payload: {
-		timestamp: number;
-		event: SseEvent;
-	};
-}
+export type FlightHeartbeatSseEvent = z.infer<typeof heartbeatSseEventSchema>;
 
 export interface FlightCompletePayload {
 	flightId: string;
@@ -133,6 +118,11 @@ export interface FlightCompletePayload {
 	overview: ResponseOverview;
 }
 
+/**
+ * Diverges from `flightFailedSchema` (which carries `{ message, code? }`) — at
+ * the in-process boundary the adapter has already constructed a real `Error`
+ * with the message; the slice stores the message text, not the instance.
+ */
 export interface FlightFailedPayload {
 	flightId: string;
 	error: Error;

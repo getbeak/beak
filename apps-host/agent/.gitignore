@@ -1,2 +1,4 @@
 bin/
 *.exe
+# Built locally by apps-host/web/src/requester/__tests__/agent-e2e.test.ts.
+beak-agent-test

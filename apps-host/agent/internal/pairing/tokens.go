@@ -7,6 +7,7 @@ package pairing
 import (
 	"crypto/rand"
 	"crypto/sha256"
+	"crypto/subtle"
 	"encoding/base64"
 	"encoding/hex"
 	"encoding/json"
@@ -48,8 +49,13 @@ func OpenTokenStore() (*TokenStore, error) {
 	if err != nil {
 		return nil, err
 	}
-	path := filepath.Join(dir, tokensFilename)
+	return OpenTokenStoreAt(filepath.Join(dir, tokensFilename))
+}
 
+// OpenTokenStoreAt opens a TokenStore rooted at an explicit path. Used by
+// the integration harness so tests don't write into the user's real
+// Application Support directory.
+func OpenTokenStoreAt(path string) (*TokenStore, error) {
 	store := &TokenStore{path: path, rawByID: map[string]string{}}
 	if err := store.load(); err != nil && !errors.Is(err, os.ErrNotExist) {
 		return nil, err
@@ -126,15 +132,26 @@ func (s *TokenStore) Issue(origin, label string) (TokenRecord, string, error) {
 // renderer presents on each request).
 func (s *TokenStore) Lookup(rawToken string) (TokenRecord, bool) {
 	hash := sha256.Sum256([]byte(rawToken))
-	hex := hex.EncodeToString(hash[:])
+	target := []byte(hex.EncodeToString(hash[:]))
+
 	s.mu.RLock()
 	defer s.mu.RUnlock()
-	for _, t := range s.tokens {
-		if t.TokenHash == hex {
-			return t, true
-		}
+	// Walk every record and compare in constant time; never early-exit
+	// on a match. `subtle.ConstantTimeCompare` returns 1 on equal byte
+	// slices of the same length, 0 otherwise — both branches do the
+	// same memory access pattern, so a side-channel observer can't
+	// distinguish "match at index 0" from "no match at all".
+	matchIdx := -1
+	for i, t := range s.tokens {
+		eq := subtle.ConstantTimeCompare([]byte(t.TokenHash), target)
+		// `ConstantTimeSelect(c, a, b)` returns `a` when c==1, `b` when
+		// c==0. The same idiom keeps the index assignment branch-free.
+		matchIdx = subtle.ConstantTimeSelect(eq, i, matchIdx)
 	}
-	return TokenRecord{}, false
+	if matchIdx == -1 {
+		return TokenRecord{}, false
+	}
+	return s.tokens[matchIdx], true
 }
 
 // Revoke deletes the record for tokenID. Returns true if a token was

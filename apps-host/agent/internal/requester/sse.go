@@ -23,11 +23,11 @@ type SseEventOut struct {
 // SseParser is incremental: feed bytes via Push, flush trailing data
 // at EOF via Flush.
 type SseParser struct {
-	buffer        bytes.Buffer
-	currentData   []string
-	currentID     string
-	currentEvent  string
-	currentRetry  *int
+	buffer       bytes.Buffer
+	currentData  []string
+	currentID    string
+	currentEvent string
+	currentRetry *int
 }
 
 func NewSseParser() *SseParser { return &SseParser{} }

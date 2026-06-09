@@ -24,9 +24,9 @@ type PendingPairing struct {
 const PendingTTL = 5 * time.Minute
 
 var (
-	ErrPendingNotFound = errors.New("pending pairing not found")
-	ErrPendingExpired  = errors.New("pending pairing expired")
-	ErrPendingConsumed = errors.New("pending pairing already consumed")
+	ErrPendingNotFound  = errors.New("pending pairing not found")
+	ErrPendingExpired   = errors.New("pending pairing expired")
+	ErrPendingConsumed  = errors.New("pending pairing already consumed")
 	ErrVerifierMismatch = errors.New("code_verifier does not match code_challenge")
 )
 
@@ -68,6 +68,30 @@ func (s *PendingStore) Consume(code, codeVerifier string) (*PendingPairing, erro
 	p.Consumed = true
 	delete(s.entries, code)
 	return p, nil
+}
+
+// HasOrigin reports whether any *live* (non-expired, non-consumed)
+// pending pairing was opened from `origin`. Used by /pair/token to
+// decide whether to reflect the requesting Origin into ACAO before
+// the code+verifier have been presented — without this, a malicious
+// page could use the preflight + error-body as an oracle for code
+// existence.
+func (s *PendingStore) HasOrigin(origin string) bool {
+	if origin == "" {
+		return false
+	}
+	now := time.Now()
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	for _, p := range s.entries {
+		if p.Consumed || now.After(p.ExpiresAt) {
+			continue
+		}
+		if p.Origin == origin {
+			return true
+		}
+	}
+	return false
 }
 
 // SweepExpired removes pending entries past their TTL. Called on a

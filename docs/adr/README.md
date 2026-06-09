@@ -52,6 +52,9 @@ Do **not** write an ADR for:
 | 0006 | Proposed | [Host ports and adapters](0006-host-ports-and-adapters.md)                                         |
 | 0007 | Accepted | [Realtime-values redesign: binary, blobs, streams, multipart](0007-realtime-values-redesign.md)    |
 | 0008 | Superseded by 0007 | [Realtime values v1 (retrofit)](0008-realtime-values-v1-retrofit.md)                     |
+| 0009 | Proposed | [Signed-challenge identity verification for the local agent](0009-signed-challenge-identity-verification.md) |
+| 0010 | Proposed | [Agent token storage beyond `localStorage`](0010-agent-token-storage.md)                           |
+| 0011 | Accepted | [Single-instance enforcement for the local agent](0011-agent-singleton-lock.md)                    |
 
 ADRs 0002–0006 are a single set — the architectural prescription
 that came out of the domain audit in [`../audit/`](../audit/). They

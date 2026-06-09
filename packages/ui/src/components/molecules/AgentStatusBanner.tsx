@@ -9,8 +9,13 @@ import { AlertTriangle, Plug, ServerOff, ShieldAlert, Zap } from 'lucide-react';
 import * as React from 'react';
 import { useCallback } from 'react';
 
-import { getLocalAgentCapability } from '../../services/agent';
+import { friendlyPairingError, getLocalAgentCapability } from '../../services/agent';
 import { discoverAgentRequested, startAgentPairingRequested } from '../../store/effects/agent';
+
+// TODO(docs): replace with the canonical install page once the agent
+// has GA download links. Keeping the URL in one place so updating it
+// is a single edit.
+const AGENT_INSTALL_URL = 'https://docs.getbeak.app/agent';
 
 interface BannerContent {
 	tone: 'pink' | 'alert' | 'warning';
@@ -21,6 +26,17 @@ interface BannerContent {
 	onPrimary?: () => void;
 	secondaryLabel?: string;
 	onSecondary?: () => void;
+}
+
+/**
+ * Trim the protocol and IP out of a localhost URL so the banner copy
+ * stays readable. `http://127.0.0.1:47821` → `:47821`. Falls back to
+ * the raw input when the URL is not a localhost shape.
+ */
+function compactLoopback(url?: string): string {
+	if (!url) return '';
+	const match = url.match(/^https?:\/\/127\.0\.0\.1(:\d+)?/);
+	return match ? (match[1] ?? '') : url;
 }
 
 /**
@@ -158,24 +174,37 @@ function renderContent(input: {
 				body: 'Install or start the Beak agent to fire requests beyond browser CORS.',
 				primaryLabel: 'Re-scan',
 				onPrimary: onRescan,
+				secondaryLabel: 'Get the agent',
+				onSecondary: () => window.open(AGENT_INSTALL_URL, '_blank', 'noopener,noreferrer'),
 			};
-		case 'unpaired':
+		case 'unpaired': {
+			const where = compactLoopback(baseUrl);
+			if (pairingError) {
+				const friendly = friendlyPairingError(pairingError);
+				return {
+					tone: 'pink',
+					icon: <Plug size={12} strokeWidth={2.2} />,
+					label: friendly.title,
+					body: friendly.detail,
+					primaryLabel: 'Try again',
+					onPrimary: onPair,
+				};
+			}
 			return {
 				tone: 'pink',
 				icon: <Plug size={12} strokeWidth={2.2} />,
 				label: 'Agent found',
-				body: `Pair this browser with the agent at ${baseUrl} to route requests through it.${
-					pairingError ? ` (last error: ${pairingError})` : ''
-				}`,
+				body: `Pair this browser with the agent on ${where || 'localhost'} to route requests through it.`,
 				primaryLabel: 'Pair agent',
 				onPrimary: onPair,
 			};
+		}
 		case 'pairing':
 			return {
 				tone: 'pink',
 				icon: <Zap size={12} strokeWidth={2.2} />,
 				label: 'Pairing',
-				body: 'Approve the request in the agent tray to finish.',
+				body: 'Approve the request in the agent tray, then return to this tab.',
 			};
 		case 'impostor':
 			return {
@@ -193,7 +222,9 @@ function renderContent(input: {
 				tone: 'warning',
 				icon: <AlertTriangle size={12} strokeWidth={2.2} />,
 				label: 'Agent',
-				body: 'Unknown agent state.',
+				body: 'Unknown agent state. Try re-scanning.',
+				primaryLabel: 'Re-scan',
+				onPrimary: onRescan,
 			};
 		}
 	}

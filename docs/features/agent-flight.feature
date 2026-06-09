@@ -36,6 +36,16 @@ Feature: Routing flights through the local agent
     And then a terminal "complete" event with hasBody=true
     And the agent closes the SSE stream
 
+  Scenario: Heartbeat frames carry the {flightId, stage, payload} envelope
+    # Pinned after a wire-shape regression: the agent briefly emitted the
+    # inner payload bare, which made the renderer's Zod validator reject
+    # every frame. The envelope shape is the contract — keep it explicit.
+    When the agent emits any heartbeat frame
+    Then the SSE `data:` line parses as JSON with top-level fields {flightId, stage, payload}
+    And flightId matches the flight's flightId
+    And stage matches the SSE `event:` name
+    And the renderer's flightHeartbeatSchema accepts the frame without error
+
   Scenario: POST with JSON body
     When I start a flight with verb=POST, body.type=json_raw, body.payload="{\"a\":1}"
     Then the agent issues POST against the upstream with Content-Type "application/json" and body {"a":1}

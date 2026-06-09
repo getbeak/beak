@@ -100,9 +100,6 @@ export const flightFailedSchema = z.object({
 	}),
 });
 
-export type FlightRequestPayloadWire = z.infer<typeof flightRequestPayloadSchema>;
-export type FlightHeartbeatWire = z.infer<typeof flightHeartbeatSchema>;
-export type FlightCompleteWire = z.infer<typeof flightCompleteSchema>;
-export type FlightFailedWire = z.infer<typeof flightFailedSchema>;
-export type ResponseStreamKindWire = z.infer<typeof responseStreamKindSchema>;
-export type SseEventWire = z.infer<typeof sseEventSchema>;
+// In-process callback types live in `../../types/requester.ts` and derive
+// from these schemas where shape coincides. Adding a duplicate `*Wire` alias
+// here would just rot — consumers should `z.infer` at the call site.
