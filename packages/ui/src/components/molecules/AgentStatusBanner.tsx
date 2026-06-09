@@ -9,7 +9,7 @@ import { AlertTriangle, Plug, ServerOff, ShieldAlert, Zap } from 'lucide-react';
 import * as React from 'react';
 import { useCallback } from 'react';
 
-import { getLocalAgentCapability } from '../../services/agent';
+import { friendlyPairingError, getLocalAgentCapability } from '../../services/agent';
 import { discoverAgentRequested, startAgentPairingRequested } from '../../store/effects/agent';
 
 // TODO(docs): replace with the canonical install page once the agent
@@ -179,15 +179,23 @@ function renderContent(input: {
 			};
 		case 'unpaired': {
 			const where = compactLoopback(baseUrl);
-			const body = pairingError
-				? `Pairing didn't finish: ${pairingError}. Try again.`
-				: `Pair this browser with the agent on ${where || 'localhost'} to route requests through it.`;
+			if (pairingError) {
+				const friendly = friendlyPairingError(pairingError);
+				return {
+					tone: 'pink',
+					icon: <Plug size={12} strokeWidth={2.2} />,
+					label: friendly.title,
+					body: friendly.detail,
+					primaryLabel: 'Try again',
+					onPrimary: onPair,
+				};
+			}
 			return {
 				tone: 'pink',
 				icon: <Plug size={12} strokeWidth={2.2} />,
-				label: pairingError ? 'Agent unpaired' : 'Agent found',
-				body,
-				primaryLabel: pairingError ? 'Try again' : 'Pair agent',
+				label: 'Agent found',
+				body: `Pair this browser with the agent on ${where || 'localhost'} to route requests through it.`,
+				primaryLabel: 'Pair agent',
 				onPrimary: onPair,
 			};
 		}
@@ -214,7 +222,9 @@ function renderContent(input: {
 				tone: 'warning',
 				icon: <AlertTriangle size={12} strokeWidth={2.2} />,
 				label: 'Agent',
-				body: 'Unknown agent state.',
+				body: 'Unknown agent state. Try re-scanning.',
+				primaryLabel: 'Re-scan',
+				onPrimary: onRescan,
 			};
 		}
 	}
