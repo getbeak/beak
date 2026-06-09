@@ -42,7 +42,7 @@ export function createAgentRequester(baseUrl: string, token: string): Requester 
 					},
 					body: JSON.stringify(payload),
 				});
-			} catch (error) {
+			} catch {
 				if (signal.aborted) {
 					callbacks.failed({ flightId, error: new Error('flight_cancelled') });
 					return;
