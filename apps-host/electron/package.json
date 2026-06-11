@@ -33,7 +33,7 @@
 		"@beak/runtime-shared": "*",
 		"@beak/state": "*",
 		"@beak/ui": "*",
-		"@grpc/grpc-js": "^1.13.4",
+		"@grpc/grpc-js": "^1.14.4",
 		"@grpc/proto-loader": "^0.7.13",
 		"@sentry/electron": "^7.13.0",
 		"protobufjs": "^7.5.8",
