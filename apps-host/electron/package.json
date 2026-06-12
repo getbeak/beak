@@ -44,7 +44,7 @@
 		"electron-releases": "^3.1171.0",
 		"electron-store": "^11.0.2",
 		"electron-updater": "^6.8.3",
-		"esbuild": "^0.28.0",
+		"esbuild": "^0.28.1",
 		"fs-extra": "^11.3.5",
 		"isomorphic-git": "^1.37.6",
 		"keytar": "^7.9.0",
