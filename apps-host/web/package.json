@@ -36,7 +36,7 @@
 		"buffer": "^6.0.3",
 		"path-browserify": "^1.0.1",
 		"react": "^19.2.6",
-		"react-dom": "^19.2.6",
+		"react-dom": "^19.2.7",
 		"tslog": "^4.10.2"
 	},
 	"devDependencies": {
